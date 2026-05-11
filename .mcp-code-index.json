@@ -586,6 +586,37 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Browsing",
+      "deps": [
+        "Granit",
+        "Granit.Authorization",
+        "Granit.Guids",
+        "Granit.Http.Security",
+        "Granit.IO",
+        "Granit.MultiTenancy",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Browsing.Playwright",
+      "deps": [
+        "Granit.Browsing",
+        "Granit.Http.Security",
+        "Granit.IO"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Browsing.PuppeteerSharp",
+      "deps": [
+        "Granit.Browsing",
+        "Granit.Http.Security",
+        "Granit.IO"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Caching",
       "deps": [
         "Granit",
@@ -899,6 +930,7 @@
     {
       "name": "Granit.DocumentGeneration.Pdf",
       "deps": [
+        "Granit.Browsing",
         "Granit.DocumentGeneration"
       ],
       "framework": "net10.0"
@@ -917,6 +949,69 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.AssetMetadata",
+      "deps": [
+        "Granit.Documents"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.AssetMetadata.AudioVideo",
+      "deps": [
+        "Granit.Documents.AssetMetadata"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Documents.AssetMetadata",
+        "Granit.Documents"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.AssetMetadata.Endpoints",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Documents.Endpoints",
+        "Granit.Documents.AssetMetadata",
+        "Granit.Http.ApiDocumentation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Documents.AssetMetadata",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.AssetMetadata.Imaging",
+      "deps": [
+        "Granit.Documents.AssetMetadata"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.AssetMetadata.Office",
+      "deps": [
+        "Granit.Documents.AssetMetadata"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.AssetMetadata.Pdf",
+      "deps": [
+        "Granit.Documents.AssetMetadata"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.BackgroundJobs",
       "deps": [
         "Granit.BackgroundJobs",
@@ -930,6 +1025,7 @@
         "Granit.Authorization",
         "Granit.Documents",
         "Granit.Http.ApiDocumentation",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Taxonomy",
         "Granit.Validation"
       ],
@@ -950,6 +1046,65 @@
         "Granit.Documents",
         "Granit.Notifications.Abstractions",
         "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.Renditions",
+      "deps": [
+        "Granit",
+        "Granit.Documents"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.Renditions.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Documents.Renditions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.Renditions.Endpoints",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Documents.Endpoints",
+        "Granit.Documents.Renditions",
+        "Granit.Http.ApiDocumentation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Documents.Renditions",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.Renditions.Imaging",
+      "deps": [
+        "Granit.Documents.Renditions",
+        "Granit.Imaging"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.Renditions.Office",
+      "deps": [
+        "Granit.Documents.Renditions",
+        "Granit.IO"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.Renditions.Pdf",
+      "deps": [
+        "Granit.Browsing",
+        "Granit.Documents.Renditions"
       ],
       "framework": "net10.0"
     },
@@ -1250,9 +1405,24 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Http.Security",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Http.SecurityHeaders",
       "deps": [
         "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.IO",
+      "deps": [
+        "Granit",
+        "Granit.MultiTenancy"
       ],
       "framework": "net10.0"
     },
@@ -2361,7 +2531,8 @@
       "name": "Granit.Privacy.BlobStorage",
       "deps": [
         "Granit.Privacy",
-        "Granit.BlobStorage"
+        "Granit.BlobStorage",
+        "Granit.IO"
       ],
       "framework": "net10.0"
     },
@@ -2969,6 +3140,7 @@
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Http.Resilience",
+        "Granit.Http.Security",
         "Granit.Encryption",
         "Granit.Localization",
         "Granit.QueryEngine.Abstractions",
@@ -6723,6 +6895,28 @@
       "members": []
     },
     {
+      "name": "EvaluateAsyncStringInterpolationAnalyzer",
+      "fqn": "Granit.Analyzers.EvaluateAsyncStringInterpolationAnalyzer",
+      "kind": "class",
+      "project": "Granit.Analyzers",
+      "file": "src/Granit.Analyzers/EvaluateAsyncStringInterpolationAnalyzer.cs",
+      "line": 36,
+      "members": [
+        {
+          "name": "SupportedDiagnostics",
+          "kind": "property",
+          "signature": "ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics",
+          "returnType": "ImmutableArray<DiagnosticDescriptor>"
+        },
+        {
+          "name": "Initialize",
+          "kind": "method",
+          "signature": "Initialize(AnalysisContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "GranitMigrationAnalyzerBase",
       "fqn": "Granit.Analyzers.GranitMigrationAnalyzerBase",
       "kind": "class",
@@ -7041,6 +7235,15 @@
           "returnType": "Guid"
         }
       ]
+    },
+    {
+      "name": "AuditEntityChangeSummaryResponse",
+      "fqn": "Granit.Auditing.Dtos.AuditEntityChangeSummaryResponse",
+      "kind": "record",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Dtos/AuditEntityChangeSummaryResponse.cs",
+      "line": 15,
+      "members": []
     },
     {
       "name": "AuditEntryResponse",
@@ -7698,7 +7901,7 @@
       "kind": "class",
       "project": "Granit.Auditing",
       "file": "src/Granit.Auditing/Queries/AuditEntityChangeQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",
@@ -7761,11 +7964,11 @@
       "members": []
     },
     {
-      "name": "GranitApiKeysBackgroundJobsModule",
-      "fqn": "Granit.Authentication.ApiKeys.BackgroundJobs.GranitApiKeysBackgroundJobsModule",
+      "name": "GranitAuthenticationApiKeysBackgroundJobsModule",
+      "fqn": "Granit.Authentication.ApiKeys.BackgroundJobs.GranitAuthenticationApiKeysBackgroundJobsModule",
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.BackgroundJobs",
-      "file": "src/Granit.Authentication.ApiKeys.BackgroundJobs/GranitApiKeysBackgroundJobsModule.cs",
+      "file": "src/Granit.Authentication.ApiKeys.BackgroundJobs/GranitAuthenticationApiKeysBackgroundJobsModule.cs",
       "line": 18,
       "members": [
         {
@@ -8492,11 +8695,11 @@
       ]
     },
     {
-      "name": "GranitApiKeysNotificationsModule",
-      "fqn": "Granit.Authentication.ApiKeys.Notifications.GranitApiKeysNotificationsModule",
+      "name": "GranitAuthenticationApiKeysNotificationsModule",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.GranitAuthenticationApiKeysNotificationsModule",
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.Notifications",
-      "file": "src/Granit.Authentication.ApiKeys.Notifications/GranitApiKeysNotificationsModule.cs",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/GranitAuthenticationApiKeysNotificationsModule.cs",
       "line": 27,
       "members": [
         {
@@ -13114,6 +13317,981 @@
           "kind": "method",
           "signature": "ValidateAsync(BlobValidationContext context, CancellationToken cancellationToken = default)",
           "returnType": "Task<BlobValidationResult>"
+        }
+      ]
+    },
+    {
+      "name": "BrowserCapabilities",
+      "fqn": "Granit.Browsing.BrowserCapabilities",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/BrowserCapabilities.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "AccessibilityTreeNode",
+      "fqn": "Granit.Browsing.Capabilities.AccessibilityTreeNode",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IAccessibilityCapability.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "IAccessibilityCapability",
+      "fqn": "Granit.Browsing.Capabilities.IAccessibilityCapability",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IAccessibilityCapability.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "SnapshotTreeAsync",
+          "kind": "method",
+          "signature": "SnapshotTreeAsync(IBrowserPage page, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AccessibilityTreeNode>"
+        }
+      ]
+    },
+    {
+      "name": "IHarRecordingCapability",
+      "fqn": "Granit.Browsing.Capabilities.IHarRecordingCapability",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IHarRecordingCapability.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "StartHarAsync",
+          "kind": "method",
+          "signature": "StartHarAsync(IBrowserPage page, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "StopHarAsync",
+          "kind": "method",
+          "signature": "StopHarAsync(IBrowserPage page, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
+        }
+      ]
+    },
+    {
+      "name": "IPdfCapability",
+      "fqn": "Granit.Browsing.Capabilities.IPdfCapability",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IPdfCapability.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "RenderToPdfAsync",
+          "kind": "method",
+          "signature": "RenderToPdfAsync(IBrowserPage page, PdfOptions options, CancellationToken cancellationToken = default)",
+          "returnType": "Task<byte[]>"
+        }
+      ]
+    },
+    {
+      "name": "IPdfDocumentPage",
+      "fqn": "Granit.Browsing.Capabilities.IPdfDocumentPage",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IPdfViewerCapability.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "RenderPageToImageAsync",
+          "kind": "method",
+          "signature": "RenderPageToImageAsync(int pageIndex, RenditionDimensions dimensions, CancellationToken cancellationToken = default)",
+          "returnType": "int PageCount { get; } Task<byte[]>"
+        }
+      ]
+    },
+    {
+      "name": "IPdfViewerCapability",
+      "fqn": "Granit.Browsing.Capabilities.IPdfViewerCapability",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IPdfViewerCapability.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "OpenPdfAsync",
+          "kind": "method",
+          "signature": "OpenPdfAsync(IBrowserPage page, Stream pdf, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IPdfDocumentPage>"
+        }
+      ]
+    },
+    {
+      "name": "ITracingCapability",
+      "fqn": "Granit.Browsing.Capabilities.ITracingCapability",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/ITracingCapability.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "StartTracingAsync",
+          "kind": "method",
+          "signature": "StartTracingAsync(IBrowserPage page, TracingOptions options, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "StopTracingAsync",
+          "kind": "method",
+          "signature": "StopTracingAsync(IBrowserPage page, CancellationToken cancellationToken = default)",
+          "returnType": "Task<byte[]>"
+        }
+      ]
+    },
+    {
+      "name": "PaperFormat",
+      "fqn": "Granit.Browsing.Capabilities.PaperFormat",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/PdfOptions.cs",
+      "line": 51,
+      "members": []
+    },
+    {
+      "name": "PdfMargins",
+      "fqn": "Granit.Browsing.Capabilities.PdfMargins",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/PdfOptions.cs",
+      "line": 48,
+      "members": []
+    },
+    {
+      "name": "PdfOptions",
+      "fqn": "Granit.Browsing.Capabilities.PdfOptions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/PdfOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "Format",
+          "kind": "property",
+          "signature": "PaperFormat? Format",
+          "returnType": "PaperFormat?"
+        },
+        {
+          "name": "Width",
+          "kind": "property",
+          "signature": "string? Width",
+          "returnType": "string?"
+        },
+        {
+          "name": "DisplayHeaderFooter",
+          "kind": "property",
+          "signature": "bool DisplayHeaderFooter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "RenditionDimensions",
+      "fqn": "Granit.Browsing.Capabilities.RenditionDimensions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IPdfViewerCapability.cs",
+      "line": 49,
+      "members": []
+    },
+    {
+      "name": "TracingOptions",
+      "fqn": "Granit.Browsing.Capabilities.TracingOptions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/ITracingCapability.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Snapshots",
+          "kind": "property",
+          "signature": "bool Snapshots",
+          "returnType": "bool"
+        },
+        {
+          "name": "Screenshots",
+          "kind": "property",
+          "signature": "bool Screenshots",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ConsoleMessage",
+      "fqn": "Granit.Browsing.ConsoleMessage",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IBrowserPage.cs",
+      "line": 114,
+      "members": []
+    },
+    {
+      "name": "BrowserPageAcquiredEvent",
+      "fqn": "Granit.Browsing.Diagnostics.BrowserPageAcquiredEvent",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Diagnostics/BrowserPageAcquiredEvent.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "BrowserScriptInjectedEvent",
+      "fqn": "Granit.Browsing.Diagnostics.BrowserScriptInjectedEvent",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Diagnostics/BrowserScriptInjectedEvent.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "BrowserUrlNavigatedEvent",
+      "fqn": "Granit.Browsing.Diagnostics.BrowserUrlNavigatedEvent",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Diagnostics/BrowserUrlNavigatedEvent.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "BrowsingMetrics",
+      "fqn": "Granit.Browsing.Diagnostics.BrowsingMetrics",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Diagnostics/BrowsingMetrics.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "RecordPageReleased",
+          "kind": "method",
+          "signature": "RecordPageReleased(string engine, string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAcquireDuration",
+          "kind": "method",
+          "signature": "RecordAcquireDuration(string engine, string? tenantId, System.TimeSpan duration)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRenderDuration",
+          "kind": "method",
+          "signature": "RecordRenderDuration(string engine, string? tenantId, string operation, System.TimeSpan duration)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordError",
+          "kind": "method",
+          "signature": "RecordError(string engine, string? tenantId, string errorType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordPoolDrainTimeout",
+          "kind": "method",
+          "signature": "RecordPoolDrainTimeout(string engine)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ConsoleRedactor",
+      "fqn": "Granit.Browsing.Diagnostics.ConsoleRedactor",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Diagnostics/ConsoleRedactor.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "Redact",
+          "kind": "method",
+          "signature": "Redact(string? input)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "SandboxViolationException",
+      "fqn": "Granit.Browsing.Exceptions.SandboxViolationException",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Exceptions/SandboxViolationException.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "SandboxViolationException",
+          "kind": "method",
+          "signature": "SandboxViolationException(SandboxViolationKind kind, string message)",
+          "returnType": "SandboxViolationKind Kind { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "SandboxViolationKind",
+      "fqn": "Granit.Browsing.Exceptions.SandboxViolationKind",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Exceptions/SandboxViolationException.cs",
+      "line": 29,
+      "members": []
+    },
+    {
+      "name": "GranitBrowsingModule",
+      "fqn": "Granit.Browsing.GranitBrowsingModule",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/GranitBrowsingModule.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IBrowserPage",
+      "fqn": "Granit.Browsing.IBrowserPage",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IBrowserPage.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "NavigateAsync",
+          "kind": "method",
+          "signature": "NavigateAsync(Uri url, NavigationOptions? options = null, CancellationToken cancellationToken = default)",
+          "returnType": "string EngineName { get; } Task"
+        },
+        {
+          "name": "SetContentAsync",
+          "kind": "method",
+          "signature": "SetContentAsync(string html, NavigationOptions? options = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetCurrentUrlAsync",
+          "kind": "method",
+          "signature": "GetCurrentUrlAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
+        },
+        {
+          "name": "WaitForLoadStateAsync",
+          "kind": "method",
+          "signature": "WaitForLoadStateAsync(LoadState state, TimeSpan? timeout = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WaitForSelectorAsync",
+          "kind": "method",
+          "signature": "WaitForSelectorAsync(string selector, TimeSpan? timeout = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WaitForFunctionAsync",
+          "kind": "method",
+          "signature": "WaitForFunctionAsync(string jsExpression, TimeSpan? timeout = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "AddStyleTagAsync",
+          "kind": "method",
+          "signature": "AddStyleTagAsync(string css, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "AddScriptTagAsync",
+          "kind": "method",
+          "signature": "AddScriptTagAsync(string js, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ScreenshotAsync",
+          "kind": "method",
+          "signature": "ScreenshotAsync(ScreenshotOptions options, CancellationToken cancellationToken = default)",
+          "returnType": "Task<byte[]>"
+        },
+        {
+          "name": "RouteAsync",
+          "kind": "method",
+          "signature": "RouteAsync(RoutePattern pattern, Func<RouteRequest, CancellationToken, ValueTask<RouteDecision>> handler, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IBrowserSandboxProfile",
+      "fqn": "Granit.Browsing.IBrowserSandboxProfile",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IBrowserSandboxProfile.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "IHeadlessBrowser",
+      "fqn": "Granit.Browsing.IHeadlessBrowser",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IHeadlessBrowser.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "Supports",
+          "kind": "method",
+          "signature": "Supports(BrowserCapabilities capability)",
+          "returnType": "string EngineName { get; } BrowserCapabilities Capabilities { get; } bool"
+        },
+        {
+          "name": "AcquirePageAsync",
+          "kind": "method",
+          "signature": "AcquirePageAsync(BrowserPageOptions? options = null, System.Threading.CancellationToken cancellationToken = default)",
+          "returnType": "System.Threading.Tasks.Task<IBrowserPage>"
+        }
+      ]
+    },
+    {
+      "name": "IHeadlessBrowserPool",
+      "fqn": "Granit.Browsing.IHeadlessBrowserPool",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IHeadlessBrowserPool.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "GetStatsAsync",
+          "kind": "method",
+          "signature": "GetStatsAsync(CancellationToken cancellationToken = default)",
+          "returnType": "int ActiveBrowsers { get; } int IdlePages { get; } Task<PoolStats>"
+        },
+        {
+          "name": "DrainAsync",
+          "kind": "method",
+          "signature": "DrainAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "LoadState",
+      "fqn": "Granit.Browsing.LoadState",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IBrowserPage.cs",
+      "line": 99,
+      "members": []
+    },
+    {
+      "name": "BrowserPageOptions",
+      "fqn": "Granit.Browsing.Options.BrowserPageOptions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Viewport",
+          "kind": "property",
+          "signature": "ViewportSize? Viewport",
+          "returnType": "ViewportSize?"
+        },
+        {
+          "name": "UserAgent",
+          "kind": "property",
+          "signature": "string? UserAgent",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "CookieParam",
+      "fqn": "Granit.Browsing.Options.CookieParam",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
+      "line": 54,
+      "members": []
+    },
+    {
+      "name": "GranitBrowsingOptions",
+      "fqn": "Granit.Browsing.Options.GranitBrowsingOptions",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/GranitBrowsingOptions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "MaxBrowsers",
+          "kind": "property",
+          "signature": "int MaxBrowsers",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxPagesPerBrowser",
+          "kind": "property",
+          "signature": "int MaxPagesPerBrowser",
+          "returnType": "int"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan PageIdleTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(30)",
+          "returnType": "TimeSpan PageMaxLifetime { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan AcquireTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan DrainTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ResourceLimits ResourceLimits { get; set; } ="
+        }
+      ]
+    },
+    {
+      "name": "NavigationOptions",
+      "fqn": "Granit.Browsing.Options.NavigationOptions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/NavigationOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Timeout",
+          "kind": "property",
+          "signature": "TimeSpan? Timeout",
+          "returnType": "TimeSpan?"
+        }
+      ]
+    },
+    {
+      "name": "ResourceLimits",
+      "fqn": "Granit.Browsing.Options.ResourceLimits",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/GranitBrowsingOptions.cs",
+      "line": 66,
+      "members": [
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan? MaxRenderDuration { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "ScreenshotClip",
+      "fqn": "Granit.Browsing.Options.ScreenshotClip",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/ScreenshotOptions.cs",
+      "line": 40,
+      "members": []
+    },
+    {
+      "name": "ScreenshotFormat",
+      "fqn": "Granit.Browsing.Options.ScreenshotFormat",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/ScreenshotOptions.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "ScreenshotOptions",
+      "fqn": "Granit.Browsing.Options.ScreenshotOptions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/ScreenshotOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "Format",
+          "kind": "property",
+          "signature": "ScreenshotFormat Format",
+          "returnType": "ScreenshotFormat"
+        }
+      ]
+    },
+    {
+      "name": "ViewportSize",
+      "fqn": "Granit.Browsing.Options.ViewportSize",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
+      "line": 42,
+      "members": []
+    },
+    {
+      "name": "PageError",
+      "fqn": "Granit.Browsing.PageError",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IBrowserPage.cs",
+      "line": 119,
+      "members": []
+    },
+    {
+      "name": "RouteDecision",
+      "fqn": "Granit.Browsing.Pages.RouteDecision",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pages/RouteDecision.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "RouteDecisionKind Kind { get; init; } public string? ErrorCode { get; init; } public int StatusCode { get; init; } public IReadOnlyDictionary<string, string>? Headers { get; init; } public byte[]? Body { get; init; } public RouteDecision Continue { get; } ="
+        },
+        {
+          "name": "Abort",
+          "kind": "method",
+          "signature": "Abort(string errorCode = \"failed\")",
+          "returnType": "RouteDecision"
+        },
+        {
+          "name": "Fulfill",
+          "kind": "method",
+          "signature": "Fulfill(int statusCode, IReadOnlyDictionary<string, string>? headers = null, byte[]? body = null)",
+          "returnType": "RouteDecision"
+        }
+      ]
+    },
+    {
+      "name": "RouteDecisionKind",
+      "fqn": "Granit.Browsing.Pages.RouteDecisionKind",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pages/RouteDecision.cs",
+      "line": 50,
+      "members": []
+    },
+    {
+      "name": "RoutePattern",
+      "fqn": "Granit.Browsing.Pages.RoutePattern",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pages/RoutePattern.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Parse",
+          "kind": "method",
+          "signature": "Parse(string glob)",
+          "returnType": "RoutePattern"
+        }
+      ]
+    },
+    {
+      "name": "RouteRequest",
+      "fqn": "Granit.Browsing.Pages.RouteRequest",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pages/RouteRequest.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "BrowsingPermissions",
+      "fqn": "Granit.Browsing.Permissions.BrowsingPermissions",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Permissions/BrowsingPermissions.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "Pages",
+      "fqn": "Granit.Browsing.Permissions.Pages",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Permissions/BrowsingPermissions.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Browsing.Playwright.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Browsing.Playwright",
+      "file": "src/Granit.Browsing.Playwright/Extensions/ServiceCollectionExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitBrowsingPlaywright",
+          "kind": "method",
+          "signature": "AddGranitBrowsingPlaywright(this IServiceCollection services, Action<GranitBrowsingOptions>? configureBrowsing = null, Action<PlaywrightOptions>? configurePlaywright = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitBrowsingPlaywrightModule",
+      "fqn": "Granit.Browsing.Playwright.GranitBrowsingPlaywrightModule",
+      "kind": "class",
+      "project": "Granit.Browsing.Playwright",
+      "file": "src/Granit.Browsing.Playwright/GranitBrowsingPlaywrightModule.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "BrowserEngine",
+      "fqn": "Granit.Browsing.Playwright.Options.BrowserEngine",
+      "kind": "enum",
+      "project": "Granit.Browsing.Playwright",
+      "file": "src/Granit.Browsing.Playwright/Options/PlaywrightOptions.cs",
+      "line": 38,
+      "members": []
+    },
+    {
+      "name": "PlaywrightOptions",
+      "fqn": "Granit.Browsing.Playwright.Options.PlaywrightOptions",
+      "kind": "class",
+      "project": "Granit.Browsing.Playwright",
+      "file": "src/Granit.Browsing.Playwright/Options/PlaywrightOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "Engine",
+          "kind": "property",
+          "signature": "BrowserEngine Engine",
+          "returnType": "BrowserEngine"
+        },
+        {
+          "name": "ExecutablePath",
+          "kind": "property",
+          "signature": "string? ExecutablePath",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "DefaultEnvironmentProbe",
+      "fqn": "Granit.Browsing.Pool.DefaultEnvironmentProbe",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
+      "line": 121,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "DefaultEnvironmentProbe Instance { get; } ="
+        },
+        {
+          "name": "GetEnvironmentVariable",
+          "kind": "method",
+          "signature": "GetEnvironmentVariable(string name)",
+          "returnType": "string?"
+        },
+        {
+          "name": "IsRunningInContainer",
+          "kind": "method",
+          "signature": "IsRunningInContainer()",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "IEnvironmentProbe",
+      "fqn": "Granit.Browsing.Pool.IEnvironmentProbe",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
+      "line": 108,
+      "members": [
+        {
+          "name": "GetEnvironmentVariable",
+          "kind": "method",
+          "signature": "GetEnvironmentVariable(string name)",
+          "returnType": "string?"
+        },
+        {
+          "name": "IsRunningInContainer",
+          "kind": "method",
+          "signature": "IsRunningInContainer()",
+          "returnType": "bool"
+        },
+        {
+          "name": "IsRunningAsRoot",
+          "kind": "method",
+          "signature": "IsRunningAsRoot()",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "PrivilegedFlagGuard",
+      "fqn": "Granit.Browsing.Pool.PrivilegedFlagGuard",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "EnsureSafe",
+          "kind": "method",
+          "signature": "EnsureSafe(bool disableSandbox, IReadOnlyList<string>? extraArgs, ILogger logger, IEnvironmentProbe? probe = null)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "TenantAwareHeadlessBrowser",
+      "fqn": "Granit.Browsing.Pool.TenantAwareHeadlessBrowser",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pool/TenantAwareHeadlessBrowser.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "Capabilities",
+          "kind": "property",
+          "signature": "BrowserCapabilities Capabilities",
+          "returnType": "BrowserCapabilities"
+        },
+        {
+          "name": "Supports",
+          "kind": "method",
+          "signature": "Supports(BrowserCapabilities capability)",
+          "returnType": "bool"
+        },
+        {
+          "name": "AcquirePageAsync",
+          "kind": "method",
+          "signature": "AcquirePageAsync(BrowserPageOptions? options = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IBrowserPage>"
+        }
+      ]
+    },
+    {
+      "name": "PoolStats",
+      "fqn": "Granit.Browsing.PoolStats",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/PoolStats.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Browsing.PuppeteerSharp.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Browsing.PuppeteerSharp",
+      "file": "src/Granit.Browsing.PuppeteerSharp/Extensions/ServiceCollectionExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitBrowsingPuppeteerSharp",
+          "kind": "method",
+          "signature": "AddGranitBrowsingPuppeteerSharp(this IServiceCollection services, Action<GranitBrowsingOptions>? configureBrowsing = null, Action<PuppeteerSharpOptions>? configurePuppeteer = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitBrowsingPuppeteerSharpModule",
+      "fqn": "Granit.Browsing.PuppeteerSharp.GranitBrowsingPuppeteerSharpModule",
+      "kind": "class",
+      "project": "Granit.Browsing.PuppeteerSharp",
+      "file": "src/Granit.Browsing.PuppeteerSharp/GranitBrowsingPuppeteerSharpModule.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PuppeteerSharpOptions",
+      "fqn": "Granit.Browsing.PuppeteerSharp.Options.PuppeteerSharpOptions",
+      "kind": "class",
+      "project": "Granit.Browsing.PuppeteerSharp",
+      "file": "src/Granit.Browsing.PuppeteerSharp/Options/PuppeteerSharpOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ChromiumExecutablePath",
+          "kind": "property",
+          "signature": "string? ChromiumExecutablePath",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "SandboxProfile",
+      "fqn": "Granit.Browsing.Sandbox.SandboxProfile",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Sandbox/SandboxProfile.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "DisableJavaScript",
+          "kind": "property",
+          "signature": "bool DisableJavaScript",
+          "returnType": "bool"
+        },
+        {
+          "name": "BlockPrivateNetworks",
+          "kind": "property",
+          "signature": "bool BlockPrivateNetworks",
+          "returnType": "bool"
+        },
+        {
+          "name": "AllowedHostPatterns",
+          "kind": "property",
+          "signature": "IReadOnlyList<string>? AllowedHostPatterns",
+          "returnType": "IReadOnlyList<string>?"
+        },
+        {
+          "name": "RedactConsoleMessages",
+          "kind": "property",
+          "signature": "bool RedactConsoleMessages",
+          "returnType": "bool"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan? MaxRenderDuration { get; init; } = TimeSpan."
         }
       ]
     },
@@ -19143,7 +20321,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration.Pdf",
       "file": "src/Granit.DocumentGeneration.Pdf/Extensions/ServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitDocumentGenerationPdf",
@@ -19159,7 +20337,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration.Pdf",
       "file": "src/Granit.DocumentGeneration.Pdf/GranitDocumentGenerationPdfModule.cs",
-      "line": 24,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -19175,7 +20353,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration.Pdf",
       "file": "src/Granit.DocumentGeneration.Pdf/Options/PdfRenderOptions.cs",
-      "line": 9,
+      "line": 15,
       "members": [
         {
           "name": "PaperFormat",
@@ -19220,15 +20398,9 @@
           "returnType": "bool"
         },
         {
-          "name": "ChromiumExecutablePath",
+          "name": "RenderTimeoutMs",
           "kind": "property",
-          "signature": "string? ChromiumExecutablePath",
-          "returnType": "string?"
-        },
-        {
-          "name": "MaxConcurrentPages",
-          "kind": "property",
-          "signature": "int MaxConcurrentPages",
+          "signature": "int RenderTimeoutMs",
           "returnType": "int"
         }
       ]
@@ -19327,6 +20499,605 @@
           "kind": "method",
           "signature": "RenderAsync(string html, DocumentFormat targetFormat, CancellationToken cancellationToken = default)",
           "returnType": "Task<DocumentResult>"
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataResult",
+      "fqn": "Granit.Documents.AssetMetadata.AssetMetadataResult",
+      "kind": "record",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/AssetMetadataResult.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.AudioVideo.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.AudioVideo",
+      "file": "src/Granit.Documents.AssetMetadata.AudioVideo/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataAudioVideo",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataAudioVideo(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataAudioVideoModule",
+      "fqn": "Granit.Documents.AssetMetadata.AudioVideo.GranitDocumentsAssetMetadataAudioVideoModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.AudioVideo",
+      "file": "src/Granit.Documents.AssetMetadata.AudioVideo/GranitDocumentsAssetMetadataAudioVideoModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.BackgroundJobs.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "file": "src/Granit.Documents.AssetMetadata.BackgroundJobs/Extensions/ServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataBackgroundJobs",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataBackgroundJobs(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataBackgroundJobsModule",
+      "fqn": "Granit.Documents.AssetMetadata.BackgroundJobs.GranitDocumentsAssetMetadataBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "file": "src/Granit.Documents.AssetMetadata.BackgroundJobs/GranitDocumentsAssetMetadataBackgroundJobsModule.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DocumentVersionAddedAssetMetadataHandler",
+      "fqn": "Granit.Documents.AssetMetadata.BackgroundJobs.Handlers.DocumentVersionAddedAssetMetadataHandler",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "file": "src/Granit.Documents.AssetMetadata.BackgroundJobs/Handlers/DocumentVersionAddedAssetMetadataHandler.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentVersionAddedEvent evt, IAssetMetadataGenerationService generationService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataGenerationService",
+      "fqn": "Granit.Documents.AssetMetadata.BackgroundJobs.IAssetMetadataGenerationService",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "file": "src/Granit.Documents.AssetMetadata.BackgroundJobs/IAssetMetadataGenerationService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Guid documentId, Guid? tenantId, Guid versionId, Guid blobDescriptorId, string sourceContentType, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataSourceFetcher",
+      "fqn": "Granit.Documents.AssetMetadata.BackgroundJobs.IAssetMetadataSourceFetcher",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "file": "src/Granit.Documents.AssetMetadata.BackgroundJobs/IAssetMetadataSourceFetcher.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "OpenSourceAsync",
+          "kind": "method",
+          "signature": "OpenSourceAsync(Guid blobDescriptorId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Stream>"
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataActivitySource",
+      "fqn": "Granit.Documents.AssetMetadata.Diagnostics.AssetMetadataActivitySource",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Diagnostics/AssetMetadataActivitySource.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Name)",
+          "returnType": "ActivitySource Source ="
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataMetrics",
+      "fqn": "Granit.Documents.AssetMetadata.Diagnostics.AssetMetadataMetrics",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Diagnostics/AssetMetadataMetrics.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "RecordFailed",
+          "kind": "method",
+          "signature": "RecordFailed(string? tenantId, string sourceContentType, string extractor, string errorType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordGpsScrubbed",
+          "kind": "method",
+          "signature": "RecordGpsScrubbed(string? tenantId, string sourceContentType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordExtractionDuration",
+          "kind": "method",
+          "signature": "RecordExtractionDuration(string? tenantId, string extractor, double durationMs)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataStatus",
+      "fqn": "Granit.Documents.AssetMetadata.Domain.AssetMetadataStatus",
+      "kind": "enum",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Domain/AssetMetadataStatus.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "DocumentAssetMetadata",
+      "fqn": "Granit.Documents.AssetMetadata.Domain.DocumentAssetMetadata",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Domain/DocumentAssetMetadata.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, Guid documentId, Guid documentVersionId, string sourceContentType, DateTimeOffset now)",
+          "returnType": "DocumentAssetMetadata"
+        },
+        {
+          "name": "Status",
+          "kind": "property",
+          "signature": "AssetMetadataStatus Status",
+          "returnType": "AssetMetadataStatus"
+        },
+        {
+          "name": "MarkExtracting",
+          "kind": "method",
+          "signature": "MarkExtracting()",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataResponse",
+      "fqn": "Granit.Documents.AssetMetadata.Endpoints.Dtos.AssetMetadataResponse",
+      "kind": "record",
+      "project": "Granit.Documents.AssetMetadata.Endpoints",
+      "file": "src/Granit.Documents.AssetMetadata.Endpoints/Dtos/AssetMetadataResponse.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "AssetMetadataEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.Endpoints.Extensions.AssetMetadataEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Endpoints",
+      "file": "src/Granit.Documents.AssetMetadata.Endpoints/Extensions/AssetMetadataEndpointRouteBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "MapGranitDocumentsAssetMetadata",
+          "kind": "method",
+          "signature": "MapGranitDocumentsAssetMetadata(this RouteGroupBuilder group)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataEndpointsModule",
+      "fqn": "Granit.Documents.AssetMetadata.Endpoints.GranitDocumentsAssetMetadataEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Endpoints",
+      "file": "src/Granit.Documents.AssetMetadata.Endpoints/GranitDocumentsAssetMetadataEndpointsModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "AssetMetadataEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.EntityFrameworkCore.Extensions.AssetMetadataEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "file": "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/Extensions/AssetMetadataEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataModelBuilderExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.EntityFrameworkCore.Extensions.AssetMetadataModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "file": "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/Extensions/AssetMetadataModelBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureAssetMetadataModule",
+          "kind": "method",
+          "signature": "ConfigureAssetMetadataModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAssetMetadataDbProperties",
+      "fqn": "Granit.Documents.AssetMetadata.EntityFrameworkCore.GranitAssetMetadataDbProperties",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "file": "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/GranitAssetMetadataDbProperties.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataEntityFrameworkCoreModule",
+      "fqn": "Granit.Documents.AssetMetadata.EntityFrameworkCore.GranitDocumentsAssetMetadataEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "file": "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/GranitDocumentsAssetMetadataEntityFrameworkCoreModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "DocumentPermanentlyDeletedAssetMetadataHandler",
+      "fqn": "Granit.Documents.AssetMetadata.EntityFrameworkCore.Internal.DocumentPermanentlyDeletedAssetMetadataHandler",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "file": "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/Internal/DocumentPermanentlyDeletedAssetMetadataHandler.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentPermanentlyDeletedEvent evt, IAssetMetadataStore store, ILogger<DocumentPermanentlyDeletedAssetMetadataHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataExtractedEvent",
+      "fqn": "Granit.Documents.AssetMetadata.Events.AssetMetadataExtractedEvent",
+      "kind": "record",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Events/AssetMetadataExtractedEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "AssetMetadataFailedEvent",
+      "fqn": "Granit.Documents.AssetMetadata.Events.AssetMetadataFailedEvent",
+      "kind": "record",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Events/AssetMetadataFailedEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "AssetMetadataExtractionException",
+      "fqn": "Granit.Documents.AssetMetadata.Exceptions.AssetMetadataExtractionException",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Exceptions/AssetMetadataExtractionException.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AssetMetadataExtractionException",
+          "kind": "method",
+          "signature": "AssetMetadataExtractionException(string extractorName, string sourceContentType, Exception innerException)",
+          "returnType": "string ExtractorName { get; } public string SourceContentType { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Extensions/ServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadata",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadata(this IServiceCollection services, Action<GranitAssetMetadataOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataExtractor",
+      "fqn": "Granit.Documents.AssetMetadata.Extractors.IAssetMetadataExtractor",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Extractors/IAssetMetadataExtractor.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string sourceContentType)",
+          "returnType": "string Name { get; } bool"
+        },
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Stream source, string sourceContentType, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AssetMetadataResult>"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataModule",
+      "fqn": "Granit.Documents.AssetMetadata.GranitDocumentsAssetMetadataModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/GranitDocumentsAssetMetadataModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataService",
+      "fqn": "Granit.Documents.AssetMetadata.IAssetMetadataService",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/IAssetMetadataService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "GetForCurrentVersionAsync",
+          "kind": "method",
+          "signature": "GetForCurrentVersionAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentAssetMetadata?>"
+        },
+        {
+          "name": "GetForVersionAsync",
+          "kind": "method",
+          "signature": "GetForVersionAsync(Guid documentId, Guid documentVersionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentAssetMetadata?>"
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataStore",
+      "fqn": "Granit.Documents.AssetMetadata.IAssetMetadataStore",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/IAssetMetadataStore.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(DocumentAssetMetadata metadata, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(DocumentAssetMetadata metadata, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetByVersionAsync",
+          "kind": "method",
+          "signature": "GetByVersionAsync(Guid documentVersionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentAssetMetadata?>"
+        },
+        {
+          "name": "ListForDocumentAsync",
+          "kind": "method",
+          "signature": "ListForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DocumentAssetMetadata>>"
+        },
+        {
+          "name": "DeleteForDocumentAsync",
+          "kind": "method",
+          "signature": "DeleteForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.Imaging.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Imaging",
+      "file": "src/Granit.Documents.AssetMetadata.Imaging/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataImaging",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataImaging(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataImagingModule",
+      "fqn": "Granit.Documents.AssetMetadata.Imaging.GranitDocumentsAssetMetadataImagingModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Imaging",
+      "file": "src/Granit.Documents.AssetMetadata.Imaging/GranitDocumentsAssetMetadataImagingModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.Office.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Office",
+      "file": "src/Granit.Documents.AssetMetadata.Office/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataOffice",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataOffice(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataOfficeModule",
+      "fqn": "Granit.Documents.AssetMetadata.Office.GranitDocumentsAssetMetadataOfficeModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Office",
+      "file": "src/Granit.Documents.AssetMetadata.Office/GranitDocumentsAssetMetadataOfficeModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitAssetMetadataOptions",
+      "fqn": "Granit.Documents.AssetMetadata.Options.GranitAssetMetadataOptions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Options/GranitAssetMetadataOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "StripGpsOnUpload",
+          "kind": "property",
+          "signature": "bool StripGpsOnUpload",
+          "returnType": "bool"
+        },
+        {
+          "name": "MaxConcurrentExtractions",
+          "kind": "property",
+          "signature": "int MaxConcurrentExtractions",
+          "returnType": "int"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan ExtractionTimeout { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.Pdf.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Pdf",
+      "file": "src/Granit.Documents.AssetMetadata.Pdf/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataPdf",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataPdf(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataPdfModule",
+      "fqn": "Granit.Documents.AssetMetadata.Pdf.GranitDocumentsAssetMetadataPdfModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Pdf",
+      "file": "src/Granit.Documents.AssetMetadata.Pdf/GranitDocumentsAssetMetadataPdfModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataPipeline",
+      "fqn": "Granit.Documents.AssetMetadata.Pipeline.IAssetMetadataPipeline",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Pipeline/IAssetMetadataPipeline.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Stream source, string sourceContentType, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<AssetMetadataResult>>"
         }
       ]
     },
@@ -19528,6 +21299,15 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "DocumentBlobContainers",
+      "fqn": "Granit.Documents.DocumentBlobContainers",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/DocumentBlobContainers.cs",
+      "line": 9,
+      "members": []
     },
     {
       "name": "DocumentVersionPage",
@@ -19839,7 +21619,7 @@
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Extensions/DocumentsEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "MapGranitDocuments",
@@ -20071,7 +21851,7 @@
       "kind": "class",
       "project": "Granit.Documents.EntityFrameworkCore",
       "file": "src/Granit.Documents.EntityFrameworkCore/Extensions/DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitDocumentsEntityFrameworkCore",
@@ -20633,6 +22413,18 @@
           "kind": "method",
           "signature": "TryReserveAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
+        },
+        {
+          "name": "IncrementRenditionAsync",
+          "kind": "method",
+          "signature": "IncrementRenditionAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DecrementRenditionAsync",
+          "kind": "method",
+          "signature": "DecrementRenditionAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -21063,6 +22855,748 @@
           "returnType": "Type? LocalizationResourceType =>"
         }
       ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsBackgroundJobs",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsBackgroundJobs(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsBackgroundJobsModule",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.GranitDocumentsRenditionsBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/GranitDocumentsRenditionsBackgroundJobsModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DocumentVersionAddedRenditionsHandler",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Handlers.DocumentVersionAddedRenditionsHandler",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Handlers/DocumentVersionAddedRenditionsHandler.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentVersionAddedEvent evt, IRenditionTypePolicy policy, IRenditionGenerationService generationService, ILogger<DocumentVersionAddedRenditionsHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionGenerationService",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.IRenditionGenerationService",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/IRenditionGenerationService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "GenerateAsync",
+          "kind": "method",
+          "signature": "GenerateAsync(Guid documentId, Guid? tenantId, Guid versionId, Guid blobDescriptorId, string sourceContentType, RenditionTarget target, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionResultUploader",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.IRenditionResultUploader",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/IRenditionResultUploader.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "UploadAsync",
+          "kind": "method",
+          "signature": "UploadAsync(RenditionResult result, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Guid>"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionSourceFetcher",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.IRenditionSourceFetcher",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/IRenditionSourceFetcher.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "OpenSourceAsync",
+          "kind": "method",
+          "signature": "OpenSourceAsync(Guid blobDescriptorId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Stream>"
+        }
+      ]
+    },
+    {
+      "name": "DefaultRenditionTypePolicy",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Policies.DefaultRenditionTypePolicy",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Policies/DefaultRenditionTypePolicy.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ResolveTargets",
+          "kind": "method",
+          "signature": "ResolveTargets(string sourceContentType)",
+          "returnType": "IReadOnlyList<RenditionTarget>"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionTypePolicy",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Policies.IRenditionTypePolicy",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Policies/IRenditionTypePolicy.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ResolveTargets",
+          "kind": "method",
+          "signature": "ResolveTargets(string sourceContentType)",
+          "returnType": "IReadOnlyList<RenditionTarget>"
+        }
+      ]
+    },
+    {
+      "name": "RenditionsActivitySource",
+      "fqn": "Granit.Documents.Renditions.Diagnostics.RenditionsActivitySource",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Diagnostics/RenditionsActivitySource.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Name)",
+          "returnType": "ActivitySource Source ="
+        }
+      ]
+    },
+    {
+      "name": "RenditionsMetrics",
+      "fqn": "Granit.Documents.Renditions.Diagnostics.RenditionsMetrics",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Diagnostics/RenditionsMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordFailed",
+          "kind": "method",
+          "signature": "RecordFailed(string? tenantId, string sourceContentType, string targetContentType, string errorType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordOnDemandServed",
+          "kind": "method",
+          "signature": "RecordOnDemandServed(string? tenantId, string targetContentType, string renditionType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordGenerationDuration",
+          "kind": "method",
+          "signature": "RecordGenerationDuration(string sourceContentType, string targetContentType, string provider, TimeSpan duration)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DocumentRenditionContainers",
+      "fqn": "Granit.Documents.Renditions.DocumentRenditionContainers",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/DocumentRenditionContainers.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "DocumentRendition",
+      "fqn": "Granit.Documents.Renditions.Domain.DocumentRendition",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Domain/DocumentRendition.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, Guid documentId, Guid documentVersionId, RenditionType type, string format, DateTimeOffset now)",
+          "returnType": "DocumentRendition"
+        },
+        {
+          "name": "MarkGenerating",
+          "kind": "method",
+          "signature": "MarkGenerating()",
+          "returnType": "RenditionStatus Status { get; private set; } public Guid? BlobDescriptorId { get; private set; } public long? SizeBytes { get; private set; } public int? Width { get; private set; } public int? Height { get; private set; } public DateTimeOffset CreatedAt { get; private set; } public DateTimeOffset? CompletedAt { get; private set; } public string? FailureReason { get; private set; } public void"
+        }
+      ]
+    },
+    {
+      "name": "RenditionStatus",
+      "fqn": "Granit.Documents.Renditions.Domain.RenditionStatus",
+      "kind": "enum",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Domain/RenditionStatus.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "RenditionType",
+      "fqn": "Granit.Documents.Renditions.Domain.RenditionType",
+      "kind": "enum",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Domain/RenditionType.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "ListRenditionsResponse",
+      "fqn": "Granit.Documents.Renditions.Endpoints.Dtos.ListRenditionsResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/Dtos/RenditionResponse.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "RenditionDownloadUrlResponse",
+      "fqn": "Granit.Documents.Renditions.Endpoints.Dtos.RenditionDownloadUrlResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/Dtos/RenditionResponse.cs",
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "RenditionResponse",
+      "fqn": "Granit.Documents.Renditions.Endpoints.Dtos.RenditionResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/Dtos/RenditionResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "RenditionsEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Documents.Renditions.Endpoints.Extensions.RenditionsEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/Extensions/RenditionsEndpointRouteBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "MapGranitDocumentsRenditions",
+          "kind": "method",
+          "signature": "MapGranitDocumentsRenditions(this RouteGroupBuilder group)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsEndpointsModule",
+      "fqn": "Granit.Documents.Renditions.Endpoints.GranitDocumentsRenditionsEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/GranitDocumentsRenditionsEndpointsModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "RenditionsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Documents.Renditions.EntityFrameworkCore.Extensions.RenditionsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/Extensions/RenditionsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "RenditionsModelBuilderExtensions",
+      "fqn": "Granit.Documents.Renditions.EntityFrameworkCore.Extensions.RenditionsModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/Extensions/RenditionsModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureRenditionsModule",
+          "kind": "method",
+          "signature": "ConfigureRenditionsModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsEntityFrameworkCoreModule",
+      "fqn": "Granit.Documents.Renditions.EntityFrameworkCore.GranitDocumentsRenditionsEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/GranitDocumentsRenditionsEntityFrameworkCoreModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "GranitRenditionsDbProperties",
+      "fqn": "Granit.Documents.Renditions.EntityFrameworkCore.GranitRenditionsDbProperties",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/GranitRenditionsDbProperties.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "DocumentPermanentlyDeletedRenditionHandler",
+      "fqn": "Granit.Documents.Renditions.EntityFrameworkCore.Internal.DocumentPermanentlyDeletedRenditionHandler",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/Internal/DocumentPermanentlyDeletedRenditionHandler.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentPermanentlyDeletedEvent evt, IRenditionStore renditionStore, IBlobStorage blobStorage, ITenantQuotaService quotas, ILogger<DocumentPermanentlyDeletedRenditionHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "RenditionFailedEvent",
+      "fqn": "Granit.Documents.Renditions.Events.RenditionFailedEvent",
+      "kind": "record",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Events/RenditionFailedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "RenditionGeneratedEvent",
+      "fqn": "Granit.Documents.Renditions.Events.RenditionGeneratedEvent",
+      "kind": "record",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Events/RenditionGeneratedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "RenditionPipelineException",
+      "fqn": "Granit.Documents.Renditions.Exceptions.RenditionPipelineException",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Exceptions/RenditionPipelineException.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Renditions.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Extensions/ServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditions",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditions(this IServiceCollection services, Action<GranitRenditionsOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsModule",
+      "fqn": "Granit.Documents.Renditions.GranitDocumentsRenditionsModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/GranitDocumentsRenditionsModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionService",
+      "fqn": "Granit.Documents.Renditions.IRenditionService",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/IRenditionService.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DocumentRendition>?>"
+        },
+        {
+          "name": "GetDownloadUrlAsync",
+          "kind": "method",
+          "signature": "GetDownloadUrlAsync(Guid documentId, RenditionType type, string? format, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PresignedDownloadUrl?>"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionStore",
+      "fqn": "Granit.Documents.Renditions.IRenditionStore",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/IRenditionStore.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ListForVersionAsync",
+          "kind": "method",
+          "signature": "ListForVersionAsync(Guid documentVersionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DocumentRendition>>"
+        },
+        {
+          "name": "ListForDocumentAsync",
+          "kind": "method",
+          "signature": "ListForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DocumentRendition>>"
+        },
+        {
+          "name": "FindAsync",
+          "kind": "method",
+          "signature": "FindAsync(Guid documentVersionId, RenditionType type, string format, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentRendition?>"
+        },
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(DocumentRendition rendition, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(DocumentRendition rendition, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DeleteForDocumentAsync",
+          "kind": "method",
+          "signature": "DeleteForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Renditions.Imaging.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Imaging",
+      "file": "src/Granit.Documents.Renditions.Imaging/Extensions/ServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsImaging",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsImaging(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsImagingModule",
+      "fqn": "Granit.Documents.Renditions.Imaging.GranitDocumentsRenditionsImagingModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Imaging",
+      "file": "src/Granit.Documents.Renditions.Imaging/GranitDocumentsRenditionsImagingModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Renditions.Office.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Office",
+      "file": "src/Granit.Documents.Renditions.Office/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsOffice",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsOffice(this IServiceCollection services, Action<OfficeRenditionOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsOfficeModule",
+      "fqn": "Granit.Documents.Renditions.Office.GranitDocumentsRenditionsOfficeModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Office",
+      "file": "src/Granit.Documents.Renditions.Office/GranitDocumentsRenditionsOfficeModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "OfficeRenditionOptions",
+      "fqn": "Granit.Documents.Renditions.Office.Options.OfficeRenditionOptions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Office",
+      "file": "src/Granit.Documents.Renditions.Office/Options/OfficeRenditionOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "SofficeBinary",
+          "kind": "property",
+          "signature": "string SofficeBinary",
+          "returnType": "string"
+        },
+        {
+          "name": "MaxConcurrentConversions",
+          "kind": "property",
+          "signature": "int MaxConcurrentConversions",
+          "returnType": "int"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(60)",
+          "returnType": "TimeSpan ConversionTimeout { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "GranitRenditionsOptions",
+      "fqn": "Granit.Documents.Renditions.Options.GranitRenditionsOptions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Options/GranitRenditionsOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "MaxChainLength",
+          "kind": "property",
+          "signature": "int MaxChainLength",
+          "returnType": "int"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ThumbnailDefaults Thumbnail { get; set; } ="
+        },
+        {
+          "name": "InlineThumbnailMaxBytes",
+          "kind": "property",
+          "signature": "long InlineThumbnailMaxBytes",
+          "returnType": "long"
+        },
+        {
+          "name": "MaxConcurrentGenerations",
+          "kind": "property",
+          "signature": "int MaxConcurrentGenerations",
+          "returnType": "int"
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(24)",
+          "returnType": "TimeSpan OnDemandStaleness { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "ThumbnailDefaults",
+      "fqn": "Granit.Documents.Renditions.Options.ThumbnailDefaults",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Options/GranitRenditionsOptions.cs",
+      "line": 46,
+      "members": [
+        {
+          "name": "Width",
+          "kind": "property",
+          "signature": "int Width",
+          "returnType": "int"
+        },
+        {
+          "name": "Height",
+          "kind": "property",
+          "signature": "int Height",
+          "returnType": "int"
+        },
+        {
+          "name": "Format",
+          "kind": "property",
+          "signature": "string Format",
+          "returnType": "string"
+        },
+        {
+          "name": "Quality",
+          "kind": "property",
+          "signature": "int Quality",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Renditions.Pdf.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Pdf",
+      "file": "src/Granit.Documents.Renditions.Pdf/Extensions/ServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsPdf",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsPdf(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsPdfModule",
+      "fqn": "Granit.Documents.Renditions.Pdf.GranitDocumentsRenditionsPdfModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Pdf",
+      "file": "src/Granit.Documents.Renditions.Pdf/GranitDocumentsRenditionsPdfModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionPipeline",
+      "fqn": "Granit.Documents.Renditions.Pipeline.IRenditionPipeline",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Pipeline/IRenditionPipeline.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(Stream source, string sourceContentType, RenditionTarget target, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RenditionResult>"
+        },
+        {
+          "name": "CanBridge",
+          "kind": "method",
+          "signature": "CanBridge(string sourceContentType, string targetContentType)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionProvider",
+      "fqn": "Granit.Documents.Renditions.Providers.IRenditionProvider",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/Providers/IRenditionProvider.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string sourceContentType)",
+          "returnType": "string Name { get; } bool"
+        },
+        {
+          "name": "GenerateAsync",
+          "kind": "method",
+          "signature": "GenerateAsync(Stream source, string sourceContentType, RenditionTarget target, CancellationToken cancellationToken = default)",
+          "returnType": "string OutputContentType { get; } Task<RenditionResult>"
+        }
+      ]
+    },
+    {
+      "name": "RenditionDimensions",
+      "fqn": "Granit.Documents.Renditions.RenditionDimensions",
+      "kind": "record",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/RenditionTarget.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "RenditionResult",
+      "fqn": "Granit.Documents.Renditions.RenditionResult",
+      "kind": "record",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/RenditionResult.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "RenditionTarget",
+      "fqn": "Granit.Documents.Renditions.RenditionTarget",
+      "kind": "record",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/RenditionTarget.cs",
+      "line": 14,
+      "members": []
     },
     {
       "name": "AggregateRoot",
@@ -27079,6 +29613,187 @@
       ]
     },
     {
+      "name": "UrlSafetyServiceCollectionExtensions",
+      "fqn": "Granit.Http.Security.Extensions.UrlSafetyServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/Extensions/UrlSafetyServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitUrlSafety",
+          "kind": "method",
+          "signature": "AddGranitUrlSafety(this IServiceCollection services, Action<UrlSafetyOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpSecurityModule",
+      "fqn": "Granit.Http.Security.GranitHttpSecurityModule",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/GranitHttpSecurityModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IUrlSafetyValidator",
+      "fqn": "Granit.Http.Security.IUrlSafetyValidator",
+      "kind": "interface",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/IUrlSafetyValidator.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(Uri url, CancellationToken ct = default)",
+          "returnType": "ValueTask<UrlSafetyResult>"
+        },
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(Uri url, UrlSafetyOptions optionOverrides, CancellationToken ct = default)",
+          "returnType": "ValueTask<UrlSafetyResult>"
+        }
+      ]
+    },
+    {
+      "name": "HttpSecurityLocalizationResource",
+      "fqn": "Granit.Http.Security.Localization.HttpSecurityLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/Localization/HttpSecurityLocalizationResource.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "UrlSafetyOptions",
+      "fqn": "Granit.Http.Security.Options.UrlSafetyOptions",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/Options/UrlSafetyOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AllowedSchemes",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> AllowedSchemes",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "AllowPrivateNetworks",
+          "kind": "property",
+          "signature": "bool AllowPrivateNetworks",
+          "returnType": "bool"
+        },
+        {
+          "name": "AllowedHostPatterns",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> AllowedHostPatterns",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "DeniedHostPatterns",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> DeniedHostPatterns",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "MaxUrlLength",
+          "kind": "property",
+          "signature": "int MaxUrlLength",
+          "returnType": "int"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(1)",
+          "returnType": "TimeSpan DnsResolveTimeout { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "PrivateNetworkClassifier",
+      "fqn": "Granit.Http.Security.PrivateNetworkClassifier",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/PrivateNetworkClassifier.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "IsBlocked",
+          "kind": "method",
+          "signature": "IsBlocked(IPAddress ip)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ReservedTldClassifier",
+      "fqn": "Granit.Http.Security.ReservedTldClassifier",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/ReservedTldClassifier.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "IsReserved",
+          "kind": "method",
+          "signature": "IsReserved(string host, out string tld)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "UrlSafetyViolation",
+      "fqn": "Granit.Http.Security.UrlSafetyViolation",
+      "kind": "record",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/UrlSafetyViolation.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "UrlSafetyViolationKind",
+      "fqn": "Granit.Http.Security.UrlSafetyViolationKind",
+      "kind": "enum",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/UrlSafetyViolationKind.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Http.Security.struct",
+      "kind": "record",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/UrlSafetyResult.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Valid",
+          "kind": "method",
+          "signature": "Valid(IReadOnlyList<IPAddress> ips)",
+          "returnType": "UrlSafetyResult"
+        },
+        {
+          "name": "Invalid",
+          "kind": "method",
+          "signature": "Invalid(UrlSafetyViolation v)",
+          "returnType": "UrlSafetyResult"
+        }
+      ]
+    },
+    {
       "name": "RouteHandlerBuilderNoStoreExtensions",
       "fqn": "Granit.Http.SecurityHeaders.Extensions.RouteHandlerBuilderNoStoreExtensions",
       "kind": "class",
@@ -27143,11 +29858,11 @@
       ]
     },
     {
-      "name": "GranitHttpSecurityModule",
-      "fqn": "Granit.Http.SecurityHeaders.GranitHttpSecurityModule",
+      "name": "GranitHttpSecurityHeadersModule",
+      "fqn": "Granit.Http.SecurityHeaders.GranitHttpSecurityHeadersModule",
       "kind": "class",
       "project": "Granit.Http.SecurityHeaders",
-      "file": "src/Granit.Http.SecurityHeaders/GranitHttpSecurityModule.cs",
+      "file": "src/Granit.Http.SecurityHeaders/GranitHttpSecurityHeadersModule.cs",
       "line": 32,
       "members": [
         {
@@ -27248,6 +29963,146 @@
       "file": "src/Granit.Http.Abstractions/Timing/MinimumResponseTimeGuard.cs",
       "line": 26,
       "members": []
+    },
+    {
+      "name": "IoMetrics",
+      "fqn": "Granit.IO.Diagnostics.IoMetrics",
+      "kind": "class",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/Diagnostics/IoMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordDeleted",
+          "kind": "method",
+          "signature": "RecordDeleted(string category, string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordBytes",
+          "kind": "method",
+          "signature": "RecordBytes(string category, string? tenantId, long bytes)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordJanitorPurged",
+          "kind": "method",
+          "signature": "RecordJanitorPurged(string reason)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IoServiceCollectionExtensions",
+      "fqn": "Granit.IO.Extensions.IoServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/Extensions/IoServiceCollectionExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitTempFiles",
+          "kind": "method",
+          "signature": "AddGranitTempFiles(this IServiceCollection services, Action<TempFileOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIOModule",
+      "fqn": "Granit.IO.GranitIOModule",
+      "kind": "class",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/GranitIOModule.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ITempFile",
+      "fqn": "Granit.IO.ITempFile",
+      "kind": "interface",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/ITempFile.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "ITempFileFactory",
+      "fqn": "Granit.IO.ITempFileFactory",
+      "kind": "interface",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/ITempFileFactory.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(string category, string extension, CancellationToken ct = default)",
+          "returnType": "ValueTask<ITempFile>"
+        }
+      ]
+    },
+    {
+      "name": "IoLocalizationResource",
+      "fqn": "Granit.IO.IoLocalizationResource",
+      "kind": "class",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/IoLocalizationResource.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TempFileOptions",
+      "fqn": "Granit.IO.Options.TempFileOptions",
+      "kind": "class",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/Options/TempFileOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RootDirectory",
+          "kind": "property",
+          "signature": "string? RootDirectory",
+          "returnType": "string?"
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(1)",
+          "returnType": "TimeSpan MaxLifetime { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxSizeBytes",
+          "kind": "property",
+          "signature": "long MaxSizeBytes",
+          "returnType": "long"
+        },
+        {
+          "name": "TenantPartition",
+          "kind": "property",
+          "signature": "bool TenantPartition",
+          "returnType": "bool"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan JanitorInterval { get; set; } = TimeSpan."
+        },
+        {
+          "name": "RunJanitor",
+          "kind": "property",
+          "signature": "bool RunJanitor",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "IdentityMetrics",
@@ -27695,8 +30550,15 @@
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentityDbProperties.cs",
-      "line": 8,
-      "members": []
+      "line": 15,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "GranitIdentityEntityFrameworkCoreModule",
@@ -48526,7 +51388,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportArchiveAssemblyHandler.cs",
-      "line": 45,
+      "line": 46,
       "members": [
         {
           "name": "HandleAsync",
@@ -48592,7 +51454,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/GranitPrivacyBlobStorageModule.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -62538,7 +65400,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/Validators/WebhookTargetUrlValidatorExtensions.cs",
-      "line": 13,
+      "line": 21,
       "members": []
     },
     {
@@ -62756,7 +65618,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/GranitWebhooksModule.cs",
-      "line": 33,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",

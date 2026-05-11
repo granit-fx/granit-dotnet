@@ -4,6 +4,8 @@ using System.Text.Json;
 using Granit.BlobStorage;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Options;
+using Granit.IO;
+using Granit.IO.Extensions;
 using Granit.Privacy.BlobStorage.DataExport;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
@@ -32,19 +34,38 @@ public sealed class ExportArchiveAssemblyHandlerTests : IDisposable
     private readonly FakeTimeProvider _timeProvider = new(Now);
     private readonly ServiceProvider _sp;
     private readonly PrivacyMetrics _metrics;
+    private readonly ITempFileFactory _tempFileFactory;
+    private readonly string _tempRoot = Path.Combine(
+        Path.GetTempPath(), $"granit-privacy-test-{Guid.CreateVersion7():N}");
 
     public ExportArchiveAssemblyHandlerTests()
     {
         ServiceCollection services = new();
         services.AddMetrics();
+        services.AddLogging();
+        services.AddSingleton<Microsoft.Extensions.Configuration.IConfiguration>(
+            new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build());
+        services.AddSingleton<TimeProvider>(_timeProvider);
+        services.AddGranitTempFiles(o =>
+        {
+            o.RootDirectory = _tempRoot;
+            o.RunJanitor = false;
+            o.TenantPartition = false;
+        });
         _sp = services.BuildServiceProvider();
         _metrics = new PrivacyMetrics(_sp.GetRequiredService<IMeterFactory>());
+        _tempFileFactory = _sp.GetRequiredService<ITempFileFactory>();
     }
 
     public void Dispose()
     {
         _http.Dispose();
         _sp.Dispose();
+        if (Directory.Exists(_tempRoot))
+        {
+            try { Directory.Delete(_tempRoot, recursive: true); }
+            catch (IOException) { /* best-effort */ }
+        }
     }
 
     private ExportArchiveAssemblyHandler CreateHandler(GranitPrivacyOptions? opts = null) =>
@@ -55,6 +76,7 @@ public sealed class ExportArchiveAssemblyHandlerTests : IDisposable
             Microsoft.Extensions.Options.Options.Create(opts ?? new GranitPrivacyOptions()),
             _timeProvider,
             _metrics,
+            _tempFileFactory,
             NullLogger<ExportArchiveAssemblyHandler>.Instance);
 
     private void SetupFragmentDownload(Guid blobId, string fileName, string contentType, byte[] payload)

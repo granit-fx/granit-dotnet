@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Documents.AssetMetadata</PackageId>
+    <Description>Asset metadata extraction abstraction for Granit.Documents (F17). Provider pattern over EXIF/IPTC/XMP, PDF info, OOXML core properties, and ID3/Vorbis/MP4 container metadata. Stores typed columns + raw JSONB archive.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.BackgroundJobs" />
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Imaging" />
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Pdf" />
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Office" />
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Media" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Documents\Granit.Documents.csproj" />
+  </ItemGroup>
+
+</Project>

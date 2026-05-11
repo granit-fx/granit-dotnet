@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
     <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
+    <ProjectReference Include="..\Granit.IO\Granit.IO.csproj" />
   </ItemGroup>
 
 </Project>

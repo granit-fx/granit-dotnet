@@ -1,0 +1,18 @@
+{
+  "culture": "es",
+  "texts": {
+    "UrlSafety:SchemeNotAllowed": "El esquema de URL '{0}' no está permitido.",
+    "UrlSafety:HostBlocked": "El host '{0}' está bloqueado.",
+    "UrlSafety:PrivateNetwork": "El host '{0}' se resuelve a una dirección de red privada.",
+    "UrlSafety:Loopback": "El host '{0}' se resuelve a una dirección de loopback.",
+    "UrlSafety:LinkLocal": "El host '{0}' se resuelve a una dirección link-local.",
+    "UrlSafety:MetadataEndpoint": "El host '{0}' se resuelve a un endpoint de metadatos cloud.",
+    "UrlSafety:IPv6UniqueLocal": "El host '{0}' se resuelve a una dirección IPv6 unique-local.",
+    "UrlSafety:ReservedTld": "El host '{0}' usa el TLD reservado '{1}'.",
+    "UrlSafety:MalformedUrl": "La URL está mal formada.",
+    "UrlSafety:UrlTooLong": "La URL supera la longitud máxima de {0}.",
+    "UrlSafety:HostPatternDenied": "El host '{0}' coincide con un patrón denegado.",
+    "UrlSafety:HostPatternNotAllowed": "El host '{0}' no está en la lista de patrones permitidos.",
+    "UrlSafety:DnsResolutionFailed": "Falló la resolución DNS para el host '{0}'."
+  }
+}

@@ -1,4 +1,5 @@
 using Granit.Auditing.Domain;
+using Granit.Auditing.Dtos;
 using Granit.QueryEngine;
 
 namespace Granit.Auditing.Queries;
@@ -22,6 +23,13 @@ public sealed class AuditEntityChangeQueryDefinition : QueryDefinition<AuditEnti
             .Column(e => e.ChangeType, c => c.Label("Change Type").LabelKey("Auditing.Columns.ChangeType").Filterable().Sortable())
             .GlobalSearch(e => e.EntityType, e => e.EntityId)
             .DefaultSort("-auditEntryId")
-            .DefaultPageSize(25);
+            .DefaultPageSize(25)
+            .ProjectTo(e => new AuditEntityChangeSummaryResponse(
+                e.Id,
+                e.AuditEntryId,
+                e.EntityType,
+                e.EntityId,
+                e.ChangeType,
+                e.PropertyChanges.Count));
     }
 }

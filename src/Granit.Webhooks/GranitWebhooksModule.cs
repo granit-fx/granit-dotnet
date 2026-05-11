@@ -2,6 +2,7 @@ using System.Reflection;
 using Granit.Encryption;
 using Granit.Guids;
 using Granit.Http.Resilience;
+using Granit.Http.Security;
 using Granit.Modularity;
 using Granit.Timing;
 using Granit.Webhooks.Definitions;
@@ -29,6 +30,7 @@ namespace Granit.Webhooks;
     typeof(GranitEncryptionModule),
     typeof(GranitGuidsModule),
     typeof(GranitHttpResilienceModule),
+    typeof(GranitHttpSecurityModule),
     typeof(GranitTimingModule))]
 public sealed class GranitWebhooksModule : GranitModule
 {

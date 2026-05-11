@@ -178,6 +178,18 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
+      "granit.io": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
       "granit.localization": {
         "type": "Project",
         "dependencies": {
@@ -188,6 +200,14 @@
           "Microsoft.Extensions.Localization": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "SmartFormat": "[3.*, )"
+        }
+      },
+      "granit.multitenancy": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.notifications": {
@@ -226,6 +246,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.IO": "[0.1.0-dev, )",
           "Granit.Privacy": "[0.1.0-dev, )"
         }
       },

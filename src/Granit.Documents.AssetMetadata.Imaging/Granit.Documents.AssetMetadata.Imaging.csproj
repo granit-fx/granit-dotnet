@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Documents.AssetMetadata.Imaging</PackageId>
+    <Description>Image EXIF / IPTC / XMP extractor for Granit.Documents.AssetMetadata (F17.5). Built on top of the MetadataExtractor NuGet (Apache-2.0).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Imaging.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MetadataExtractor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Documents.AssetMetadata\Granit.Documents.AssetMetadata.csproj" />
+  </ItemGroup>
+
+</Project>

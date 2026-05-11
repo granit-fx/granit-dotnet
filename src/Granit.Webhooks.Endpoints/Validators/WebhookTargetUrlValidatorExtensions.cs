@@ -1,6 +1,6 @@
 using System.Net;
-using System.Net.Sockets;
 using FluentValidation;
+using Granit.Http.Security;
 using Granit.Validation.Extensions;
 
 namespace Granit.Webhooks.Endpoints.Validators;
@@ -10,12 +10,17 @@ namespace Granit.Webhooks.Endpoints.Validators;
 /// Enforces HTTPS, blocks private/local addresses (SSRF protection),
 /// and rejects internal TLDs.
 /// </summary>
+/// <remarks>
+/// IP-range, TLD, and metadata-endpoint classification is delegated to
+/// <see cref="PrivateNetworkClassifier"/> / <see cref="ReservedTldClassifier"/> in
+/// <c>Granit.Http.Security</c>. Webhook validation keeps a thin, sync-only wrapper here
+/// so FluentValidation rule chains stay synchronous; the full DNS-rebinding-resistant
+/// pipeline (<see cref="IUrlSafetyValidator"/>) is applied at delivery time by
+/// <c>WebhookSsrfConnectCallback</c>.
+/// </remarks>
 public static class WebhookTargetUrlValidatorExtensions
 {
     internal const int MaxUrlLength = 2048;
-
-    private static readonly string[] BlockedTlds =
-        [".local", ".internal", ".localhost", ".onion"];
 
     /// <summary>
     /// Adds target URL validation rules: HTTPS only, no private/local IPs, no blocked TLDs.
@@ -34,11 +39,9 @@ public static class WebhookTargetUrlValidatorExtensions
                 .WithErrorCodeAndMessage("Granit:Validation:WebhookUrlBlockedTld");
     }
 
-    private static bool BeAValidHttpsUrl(string url)
-    {
-        return Uri.TryCreate(url, UriKind.Absolute, out Uri? uri)
-               && uri.Scheme == Uri.UriSchemeHttps;
-    }
+    private static bool BeAValidHttpsUrl(string url) =>
+        Uri.TryCreate(url, UriKind.Absolute, out Uri? uri)
+        && uri.Scheme == Uri.UriSchemeHttps;
 
     private static bool NotTargetPrivateOrLocalAddress(string url)
     {
@@ -54,44 +57,9 @@ public static class WebhookTargetUrlValidatorExtensions
             return false;
         }
 
-        if (IPAddress.TryParse(host, out IPAddress? ip))
-        {
-            return !IsBlockedIpAddress(ip);
-        }
-
-        return true;
+        return !IPAddress.TryParse(host, out IPAddress? ip)
+            || !PrivateNetworkClassifier.IsBlocked(ip);
     }
-
-    private static bool IsBlockedIpAddress(IPAddress ip)
-    {
-        if (ip.IsIPv4MappedToIPv6)
-        {
-            ip = ip.MapToIPv4();
-        }
-
-        if (IPAddress.IsLoopback(ip))
-        {
-            return true;
-        }
-
-        return ip.AddressFamily switch
-        {
-            AddressFamily.InterNetwork => IsBlockedIPv4(ip.GetAddressBytes()),
-            AddressFamily.InterNetworkV6 => IsBlockedIPv6(ip.GetAddressBytes()),
-            _ => false,
-        };
-    }
-
-    private static bool IsBlockedIPv4(byte[] bytes) =>
-        bytes[0] == 0                                         // 0.0.0.0
-        || bytes[0] == 10                                     // 10.0.0.0/8
-        || (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31) // 172.16.0.0/12
-        || (bytes[0] == 192 && bytes[1] == 168)               // 192.168.0.0/16
-        || (bytes[0] == 169 && bytes[1] == 254);              // 169.254.0.0/16 (link-local / cloud metadata)
-
-    private static bool IsBlockedIPv6(byte[] bytes) =>
-        (bytes[0] == 0xfe && (bytes[1] & 0xc0) == 0x80)      // fe80::/10 (link-local)
-        || ((bytes[0] & 0xfe) == 0xfc);                       // fc00::/7 (unique local)
 
     private static bool NotUseBlockedTld(string url)
     {
@@ -100,7 +68,6 @@ public static class WebhookTargetUrlValidatorExtensions
             return false;
         }
 
-        string host = uri.Host;
-        return !BlockedTlds.Any(tld => host.EndsWith(tld, StringComparison.OrdinalIgnoreCase));
+        return !ReservedTldClassifier.IsReserved(uri.Host, out _);
     }
 }

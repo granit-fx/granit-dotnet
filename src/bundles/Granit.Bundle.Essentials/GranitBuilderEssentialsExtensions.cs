@@ -26,7 +26,7 @@ public static class GranitBuilderEssentialsExtensions
         builder.AddModule<GranitPersistenceEntityFrameworkCoreModule>();
         builder.AddModule<GranitObservabilityModule>();
         builder.AddModule<GranitHttpExceptionHandlingModule>();
-        builder.AddModule<GranitHttpSecurityModule>();
+        builder.AddModule<GranitHttpSecurityHeadersModule>();
         builder.AddModule<GranitDiagnosticsModule>();
         return builder;
     }

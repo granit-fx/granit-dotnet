@@ -39,7 +39,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)docs-site/public/granit-icon-64.png" Pack="true" PackagePath="granit-icon.png" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)assets/granit-icon-64.png" Pack="true" PackagePath="granit-icon.png" Visible="false" />
     <None Include="$(MSBuildProjectDirectory)/README.md" Pack="true" PackagePath="" Visible="false" />
   </ItemGroup>
 

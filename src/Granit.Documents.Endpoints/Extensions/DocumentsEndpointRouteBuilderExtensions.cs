@@ -1,8 +1,10 @@
+using Granit.Documents.Domain;
 using Granit.Documents.Endpoints.Documents.Endpoints;
 using Granit.Documents.Endpoints.Folders.Endpoints;
 using Granit.Documents.Endpoints.Options;
 using Granit.Documents.Endpoints.Quotas.Endpoints;
 using Granit.Documents.Endpoints.Shares.Endpoints;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -45,6 +47,12 @@ public static class DocumentsEndpointRouteBuilderExtensions
         group.MapDocumentTagProxyEndpoints();
         group.MapShareEndpoints();
         group.MapQuotaEndpoints();
+
+        // Query engine endpoint — paginated, filterable, sortable listing exposed
+        // under /documents/query. Front-ends targeting folder-scoped views call
+        // `?filter=folderId eq <guid> and status eq Active&sort=name asc`.
+        // The tenant filter is applied by the underlying DbContext / IQueryableSource.
+        group.MapGranitGroup("documents/query").MapGranitQuery<Document>();
 
         return group;
     }

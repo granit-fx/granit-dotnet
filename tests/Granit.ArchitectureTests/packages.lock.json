@@ -160,14 +160,6 @@
           "Npgsql": "8.0.6"
         }
       },
-      "DocumentFormat.OpenXml": {
-        "type": "Transitive",
-        "resolved": "3.1.1",
-        "contentHash": "2z9QBzeTLNNKWM9SaOSDMegfQk/7hDuElOsmF77pKZMkFRP/GHA/W/4yOAQD9kn15N/FsFxHn3QVYkatuZghiA==",
-        "dependencies": {
-          "DocumentFormat.OpenXml.Framework": "3.1.1"
-        }
-      },
       "DocumentFormat.OpenXml.Framework": {
         "type": "Transitive",
         "resolved": "3.1.1",
@@ -1207,8 +1199,8 @@
       },
       "System.ComponentModel.Annotations": {
         "type": "Transitive",
-        "resolved": "4.6.0",
-        "contentHash": "pOd+UhZ3X8xfwKDlgAzowUJNjp8VYVmOHZm++vCd0kq1HZ0zK3mNo2yRXjYgv7Ik/Xi43fmJfND2PLEsQSALCg=="
+        "resolved": "5.0.0",
+        "contentHash": "dMkqfy2el8A8/I76n2Hi1oBFEbG1SfxD2l5nhwXV3XjlnOmwxJlQbYpJH4W51odnU9sARCSAgv7S3CyAFMkpYg=="
       },
       "System.Composition": {
         "type": "Transitive",
@@ -1999,6 +1991,38 @@
           "Granit.BlobStorage": "[0.1.0-dev, )"
         }
       },
+      "granit.browsing": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.Security": "[0.1.0-dev, )",
+          "Granit.IO": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.browsing.playwright": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Browsing": "[0.1.0-dev, )",
+          "Granit.Http.Security": "[0.1.0-dev, )",
+          "Granit.IO": "[0.1.0-dev, )",
+          "Microsoft.Playwright": "[1.*, )",
+          "PdfPig": "[0.1.*, )"
+        }
+      },
+      "granit.browsing.puppeteersharp": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Browsing": "[0.1.0-dev, )",
+          "Granit.Http.Security": "[0.1.0-dev, )",
+          "Granit.IO": "[0.1.0-dev, )",
+          "PdfPig": "[0.1.*, )",
+          "PuppeteerSharp": "[24.*, )"
+        }
+      },
       "granit.caching": {
         "type": "Project",
         "dependencies": {
@@ -2297,8 +2321,8 @@
       "granit.documentgeneration.pdf": {
         "type": "Project",
         "dependencies": {
-          "Granit.DocumentGeneration": "[0.1.0-dev, )",
-          "PuppeteerSharp": "[24.*, )"
+          "Granit.Browsing": "[0.1.0-dev, )",
+          "Granit.DocumentGeneration": "[0.1.0-dev, )"
         }
       },
       "granit.documents": {
@@ -2313,12 +2337,20 @@
           "Granit.Taxonomy": "[0.1.0-dev, )"
         }
       },
+      "granit.documents.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Documents": "[0.1.0-dev, )"
+        }
+      },
       "granit.documents.endpoints": {
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Documents": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.Taxonomy": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
@@ -2330,6 +2362,21 @@
           "Granit.Documents": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
+      "granit.documents.notifications": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Documents": "[0.1.0-dev, )",
+          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
+          "Granit.Templating": "[0.1.0-dev, )"
+        }
+      },
+      "granit.documents.renditions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Documents": "[0.1.0-dev, )"
         }
       },
       "granit.encryption": {
@@ -2369,6 +2416,37 @@
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Workflow.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.entities.customization": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Entities": "[0.1.0-dev, )",
+          "Granit.Entities.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.entities.customization.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Auditing": "[0.1.0-dev, )",
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Entities": "[0.1.0-dev, )",
+          "Granit.Entities.Abstractions": "[0.1.0-dev, )",
+          "Granit.Entities.Customization": "[0.1.0-dev, )",
+          "Granit.Entities.Endpoints": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.entities.customization.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Entities.Customization": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
       "granit.entities.endpoints": {
@@ -2572,6 +2650,12 @@
         }
       },
       "granit.http.responsecompression": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.security": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
@@ -2857,6 +2941,13 @@
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Invoicing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.io": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )"
         }
       },
       "granit.localization": {
@@ -3643,6 +3734,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.IO": "[0.1.0-dev, )",
           "Granit.Privacy": "[0.1.0-dev, )"
         }
       },
@@ -3978,6 +4070,30 @@
           "Granit.Persistence": "[0.1.0-dev, )"
         }
       },
+      "granit.taxonomy.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Taxonomy": "[0.1.0-dev, )"
+        }
+      },
+      "granit.taxonomy.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Taxonomy": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.taxonomy.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Taxonomy": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
       "granit.templating": {
         "type": "Project",
         "dependencies": {
@@ -4199,6 +4315,7 @@
           "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.Resilience": "[0.1.0-dev, )",
+          "Granit.Http.Security": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -4253,6 +4370,14 @@
           "Granit.Validation": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )",
           "WolverineFx.FluentValidation": "[5.*, )"
+        }
+      },
+      "granit.wolverine.encryption": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Encryption": "[0.1.0-dev, )",
+          "Granit.Wolverine": "[0.1.0-dev, )",
+          "WolverineFx": "[5.*, )"
         }
       },
       "granit.wolverine.postgresql": {
@@ -4523,6 +4648,15 @@
         "requested": "[0.12.*, )",
         "resolved": "0.12.0",
         "contentHash": "rOBW2cimLtkRoyLIZWZx1uM300cNI2wUKOUbLbGLnNQRly5R/YK3VdC1mk3Wvt24J4k9PY5j+9WL4smv0RIZvA=="
+      },
+      "DocumentFormat.OpenXml": {
+        "type": "CentralTransitive",
+        "requested": "[3.*, )",
+        "resolved": "3.1.1",
+        "contentHash": "2z9QBzeTLNNKWM9SaOSDMegfQk/7hDuElOsmF77pKZMkFRP/GHA/W/4yOAQD9kn15N/FsFxHn3QVYkatuZghiA==",
+        "dependencies": {
+          "DocumentFormat.OpenXml.Framework": "3.1.1"
+        }
       },
       "Fido2.AspNet": {
         "type": "CentralTransitive",
@@ -4863,6 +4997,16 @@
         "resolved": "3.0.1",
         "contentHash": "s/s20YTVY9r9TPfTrN5g8zPF1YhwxyqO6PxUkrYTGI2B+OGPe9AdajWZrLhFqXIvqIW23fnUE4+ztrUWNU1+9g=="
       },
+      "Microsoft.Playwright": {
+        "type": "CentralTransitive",
+        "requested": "[1.*, )",
+        "resolved": "1.59.0",
+        "contentHash": "igqHbZMmXI6cYNPg1X1o5/51U3CQp83lvvov/d/zmus2wlG1LjvpEL6i1Jx51pRahPtSyppvwq+ZoBfxeSjiew==",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
+          "System.ComponentModel.Annotations": "5.0.0"
+        }
+      },
       "MimeKit": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
@@ -5052,6 +5196,12 @@
         "dependencies": {
           "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.3, 2.0.0)"
         }
+      },
+      "PdfPig": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.*, )",
+        "resolved": "0.1.14",
+        "contentHash": "V2Anq0Yvyn3bGGG8WCQxqEAshG0KHIehB0QOotCz14vTkEk1PR3ErPOSmbnEsyOewhdF3G5XpQHywK2L50Xu+A=="
       },
       "PuppeteerSharp": {
         "type": "CentralTransitive",

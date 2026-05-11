@@ -15,8 +15,10 @@
   </ItemGroup>
   <ItemGroup Label="Templating">
     <PackageVersion Include="ClosedXML" Version="0.105.*" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.*" />
     <PackageVersion Include="Mjml.Net" Version="4.*" />
     <PackageVersion Include="PuppeteerSharp" Version="24.*" />
+    <PackageVersion Include="PdfPig" Version="0.1.*" />
     <PackageVersion Include="Scriban" Version="7.*" />
   </ItemGroup>
   <ItemGroup Label="AI">
@@ -41,6 +43,7 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.*" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.*" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.*" />
+    <PackageVersion Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.*" />
   </ItemGroup>
   <ItemGroup Label="API Versioning &amp; Documentation">
     <PackageVersion Include="Asp.Versioning.Mvc" Version="10.0.0-preview.*" />
@@ -89,6 +92,13 @@
   </ItemGroup>
   <ItemGroup Label="Imaging">
     <PackageVersion Include="Magick.NET-Q8-AnyCPU" Version="14.*" />
+    <PackageVersion Include="MetadataExtractor" Version="2.*" />
+  </ItemGroup>
+  <ItemGroup Label="Office">
+    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.*" />
+  </ItemGroup>
+  <ItemGroup Label="AudioVideo">
+    <PackageVersion Include="TagLibSharp" Version="2.*" />
   </ItemGroup>
   <ItemGroup Label="OpenIddict">
     <PackageVersion Include="OpenIddict" Version="7.*" />

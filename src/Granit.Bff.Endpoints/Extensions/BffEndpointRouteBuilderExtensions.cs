@@ -77,7 +77,7 @@ public static class BffEndpointRouteBuilderExtensions
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(groupPrefix)
-            .WithTags($"BFF - {frontend.Name}");
+            .WithTags($"BFF - {ToTagSuffix(frontend.Name)}");
 
         group.MapLoginEndpoints(frontend);
         group.MapLogoutEndpoints(frontend);
@@ -145,6 +145,11 @@ public static class BffEndpointRouteBuilderExtensions
         .ExcludeFromDescription()
         .AllowAnonymous();
     }
+
+    private static string ToTagSuffix(string name) =>
+        string.IsNullOrEmpty(name)
+            ? name
+            : char.ToUpperInvariant(name[0]) + name[1..];
 
     internal static string GetContentType(string path) =>
         Path.GetExtension(path).ToLowerInvariant() switch

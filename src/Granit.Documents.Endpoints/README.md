@@ -46,6 +46,25 @@ app.MapGranitDocuments(o =>
 | --- | --- |
 | `Documents.Folders.Read` | List folders, get one, breadcrumb. |
 | `Documents.Folders.Manage` | Create / rename / move / trash folders. |
+| `Documents.Documents.Read` | Read documents, list metadata, query documents grid. |
+
+## Query endpoint
+
+`GET /documents/query` is wired through the standard Granit query engine
+(`MapGranitQuery<Document>()`) and is the canonical way to list documents with
+filtering, sorting, and pagination. The `DocumentQueryDefinition` exposes
+columns (`folderId`, `status`, `name`, `description`, `currentVersionId`,
+`trashedAt`, …) with global search on `name` + `description`.
+
+Folder-scoped listing for a file-explorer UI:
+
+```http
+GET /documents/query?filter=folderId eq <guid> and status eq Active&sort=name asc&take=50
+```
+
+Permission gate: `Documents.Documents.Read`. The tenant filter is applied at
+the EF Core layer — when no tenant context is active (host admin), all
+documents are returned cross-tenant.
 
 ## Documentation
 

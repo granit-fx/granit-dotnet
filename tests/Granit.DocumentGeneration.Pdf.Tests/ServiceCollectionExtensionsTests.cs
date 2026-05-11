@@ -1,10 +1,13 @@
+using System;
+using Granit.Browsing;
+using Granit.Browsing.Capabilities;
 using Granit.DocumentGeneration.Pdf.Extensions;
 using Granit.DocumentGeneration.Pdf.Options;
 using Granit.DocumentGeneration.Pipeline;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -13,59 +16,54 @@ namespace Granit.DocumentGeneration.Pdf.Tests;
 public sealed class ServiceCollectionExtensionsTests
 {
     [Fact]
-    public void AddGranitDocumentGenerationPdf_Registers_IDocumentRenderer()
+    public void AddGranitDocumentGenerationPdf_WithBrowsingProvider_RegistersRenderer()
     {
-        ServiceCollection services = CreateServices();
+        ServiceCollection services = CreateServicesWithBrowsing();
+
         services.AddGranitDocumentGenerationPdf();
 
         ServiceProvider provider = services.BuildServiceProvider();
-
         IDocumentRenderer? renderer = provider.GetService<IDocumentRenderer>();
         renderer.ShouldNotBeNull();
     }
 
     [Fact]
-    public void AddGranitDocumentGenerationPdf_Registers_HostedService()
+    public void AddGranitDocumentGenerationPdf_WithoutBrowsingProvider_ThrowsAtRegistration()
     {
         ServiceCollection services = CreateServices();
-        services.AddGranitDocumentGenerationPdf();
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
+            services.AddGranitDocumentGenerationPdf());
 
-        IEnumerable<IHostedService> hostedServices = provider.GetServices<IHostedService>();
-        hostedServices.Count().ShouldBe(1);
+        ex.Message.ShouldContain("Granit.Browsing");
+        ex.Message.ShouldContain("AddGranitBrowsingPuppeteerSharp");
+        ex.Message.ShouldContain("AddGranitBrowsingPlaywright");
     }
 
     [Fact]
-    public void AddGranitDocumentGenerationPdf_Registers_PdfRenderOptions()
+    public void AddGranitDocumentGenerationPdf_BindsPdfRenderOptions()
     {
-        ServiceCollection services = CreateServices();
+        ServiceCollection services = CreateServicesWithBrowsing();
         services.AddGranitDocumentGenerationPdf();
 
         ServiceProvider provider = services.BuildServiceProvider();
-
-        IOptions<PdfRenderOptions>? options = provider.GetService<IOptions<PdfRenderOptions>>();
-        options.ShouldNotBeNull();
-        options!.Value.PaperFormat.ShouldBe("A4");
-    }
-
-    [Fact]
-    public void AddGranitDocumentGenerationPdf_Renderer_IsSingleton()
-    {
-        ServiceCollection services = CreateServices();
-        services.AddGranitDocumentGenerationPdf();
-
-        ServiceDescriptor? descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IDocumentRenderer));
-        descriptor.ShouldNotBeNull();
-        descriptor!.Lifetime.ShouldBe(ServiceLifetime.Singleton);
+        IOptions<PdfRenderOptions> opts = provider.GetRequiredService<IOptions<PdfRenderOptions>>();
+        opts.Value.PaperFormat.ShouldBe("A4");
     }
 
     private static ServiceCollection CreateServices()
     {
         ServiceCollection services = new();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging();
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-        services.AddSingleton(configuration);
+        return services;
+    }
+
+    private static ServiceCollection CreateServicesWithBrowsing()
+    {
+        ServiceCollection services = CreateServices();
+        services.AddSingleton(Substitute.For<IHeadlessBrowser>());
+        services.AddSingleton(Substitute.For<IPdfCapability>());
         return services;
     }
 }

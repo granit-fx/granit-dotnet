@@ -42,25 +42,11 @@ public sealed class PdfRenderOptionsTests
     }
 
     [Fact]
-    public void Defaults_MaxConcurrentPages_Is4()
-    {
-        PdfRenderOptions options = new();
-        options.MaxConcurrentPages.ShouldBe(4);
-    }
-
-    [Fact]
     public void Defaults_HeaderIsNull_FooterHasPageNumbers()
     {
         PdfRenderOptions options = new();
         options.HeaderTemplate.ShouldBeNull();
         options.FooterTemplate.ShouldNotBeNullOrEmpty();
         options.FooterTemplate.ShouldContain("pageNumber");
-    }
-
-    [Fact]
-    public void Defaults_ChromiumExecutablePath_IsNull()
-    {
-        PdfRenderOptions options = new();
-        options.ChromiumExecutablePath.ShouldBeNull();
     }
 }

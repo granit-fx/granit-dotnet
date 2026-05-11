@@ -1,0 +1,19 @@
+{
+  "culture": "ko",
+  "texts": {
+    "UrlSafety:SchemeNotAllowed": "URL scheme '{0}' is not allowed.",
+    "UrlSafety:HostBlocked": "Host '{0}' is blocked.",
+    "UrlSafety:PrivateNetwork": "Host '{0}' resolves to a private network address.",
+    "UrlSafety:Loopback": "Host '{0}' resolves to a loopback address.",
+    "UrlSafety:LinkLocal": "Host '{0}' resolves to a link-local address.",
+    "UrlSafety:MetadataEndpoint": "Host '{0}' resolves to a cloud metadata endpoint.",
+    "UrlSafety:IPv6UniqueLocal": "Host '{0}' resolves to an IPv6 unique-local address.",
+    "UrlSafety:ReservedTld": "Host '{0}' uses the reserved TLD '{1}'.",
+    "UrlSafety:MalformedUrl": "URL is malformed.",
+    "UrlSafety:UrlTooLong": "URL exceeds the maximum length of {0}.",
+    "UrlSafety:HostPatternDenied": "Host '{0}' matches a denied pattern.",
+    "UrlSafety:HostPatternNotAllowed": "Host '{0}' is not in the allowed pattern list.",
+    "UrlSafety:DnsResolutionFailed": "DNS resolution failed for host '{0}'."
+  },
+  "_meta": "EN fallback — pending translation"
+}

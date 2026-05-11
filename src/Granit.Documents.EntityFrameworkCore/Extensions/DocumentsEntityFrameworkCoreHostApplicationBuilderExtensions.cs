@@ -1,8 +1,10 @@
 using Granit.Documents.Authorization;
+using Granit.Documents.Domain;
 using Granit.Documents.EntityFrameworkCore.Authorization;
 using Granit.Documents.EntityFrameworkCore.Internal;
 using Granit.Documents.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -73,6 +75,9 @@ public static class DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions
         // is registered first so the cache decorator can delegate to it; the public
         // IEffectivePermissionResolver registration depends on whether the FusionCache layer
         // is enabled (DocumentsOptions.AclCacheEnabled — default true).
+        // Query engine source — powers the generic /documents/query endpoint.
+        builder.Services.AddScoped<IQueryableSource<Document>, EfDocumentQueryableSource>();
+
         builder.Services.AddScoped<EffectivePermissionResolver>();
         builder.Services.AddScoped<IEffectivePermissionResolver>(sp =>
         {

@@ -86,14 +86,6 @@
           "System.Management": "6.0.1"
         }
       },
-      "DocumentFormat.OpenXml": {
-        "type": "Transitive",
-        "resolved": "3.1.1",
-        "contentHash": "2z9QBzeTLNNKWM9SaOSDMegfQk/7hDuElOsmF77pKZMkFRP/GHA/W/4yOAQD9kn15N/FsFxHn3QVYkatuZghiA==",
-        "dependencies": {
-          "DocumentFormat.OpenXml.Framework": "3.1.1"
-        }
-      },
       "DocumentFormat.OpenXml.Framework": {
         "type": "Transitive",
         "resolved": "3.1.1",
@@ -358,6 +350,15 @@
           "ExcelNumberFormat": "1.1.0",
           "RBush.Signed": "4.0.0",
           "SixLabors.Fonts": "1.0.0"
+        }
+      },
+      "DocumentFormat.OpenXml": {
+        "type": "CentralTransitive",
+        "requested": "[3.*, )",
+        "resolved": "3.1.1",
+        "contentHash": "2z9QBzeTLNNKWM9SaOSDMegfQk/7hDuElOsmF77pKZMkFRP/GHA/W/4yOAQD9kn15N/FsFxHn3QVYkatuZghiA==",
+        "dependencies": {
+          "DocumentFormat.OpenXml.Framework": "3.1.1"
         }
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {

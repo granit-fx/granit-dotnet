@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-04-29
+Dernière mise à jour : 2026-05-11
 
 ---
 
@@ -12,11 +12,12 @@ Dernière mise à jour : 2026-04-29
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 89                 |
+| MIT          | 90                 |
 | Apache-2.0   | 36                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
 | PostgreSQL   | 1                  |
+| LGPL-2.1     | 1                  |
 
 ---
 
@@ -38,6 +39,7 @@ Dernière mise à jour : 2026-04-29
 | Azure.Storage.Blobs | 12.27.0 | (c) Microsoft Corporation |
 | ClosedXML | 0.105.0 | ClosedXML Contributors |
 | Cronos | 0.12.0 | Copyright (c) 2016-2025 Hangfire OU |
+| DocumentFormat.OpenXml | 3.5.1 | Copyright (c) Microsoft Corporation |
 | FuzzySharp | 2.0.2 | Copyright (c) Jacob Bayer |
 | Lib.Net.Http.WebPush | 3.3.1 | Copyright (c) Tomasz Pęczek |
 | MailKit | 4.16.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
@@ -75,6 +77,7 @@ Dernière mise à jour : 2026-04-29
 | MimeKit | 4.16.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
 | Mollie.Api | 4.19.0 | Copyright (c) 2023 Vincent Kok |
 | OllamaSharp | 5.4.25 | Copyright (c) 2023-2026 Awalon |
+| PdfPig | 0.1.14 | Copyright (c) Eliot Jones |
 | PuppeteerSharp | 24.40.0 | PuppeteerSharp Contributors |
 | Scalar.AspNetCore | 2.14.6 | Scalar Contributors |
 | Sep | 0.13.0 | Copyright (c) 2023 nietras |
@@ -119,6 +122,7 @@ Dernière mise à jour : 2026-04-29
 | Google.Cloud.Storage.V1 | 4.14.0 | Copyright (c) Google LLC |
 | libphonenumber-csharp | 9.0.29 | Copyright (c) Patrick Mézard, Thomas Clegg, Google, libphonenumber contributors |
 | Magick.NET-Q8-AnyCPU | 14.13.0 | Copyright 2013-2026 Dirk Lemstra |
+| MetadataExtractor | 2.9.3 | Copyright (c) Drew Noakes |
 | ModelContextProtocol | 1.2.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | ModelContextProtocol.AspNetCore | 1.2.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | OpenIddict | 7.5.0 | Copyright (c) Kévin Chalet |
@@ -164,6 +168,17 @@ Dernière mise à jour : 2026-04-29
 | Npgsql.EntityFrameworkCore.PostgreSQL | 10.0.1 | Copyright 2025 The Npgsql Development Team |
 | Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite | 10.0.1 | Copyright 2025 The Npgsql Development Team |
 
+### LGPL-2.1
+
+Licence non permissive utilisée en lien dynamique uniquement (NuGet
+ship un assembly distinct, jamais lié statiquement). L'obligation
+copyleft ne se propage pas au framework Granit (Apache-2.0) ni au code
+applicatif consommant le NuGet `Granit.Documents.AssetMetadata.AudioVideo`.
+
+| Package | Version | Copyright |
+| ------- | ------- | --------- |
+| TagLibSharp | 2.3.0 | Copyright (c) Brian Nickel, Gabriel Burt, Stephen Shaw, and contributors |
+
 ---
 
 ## Dépendances de test uniquement
@@ -204,6 +219,27 @@ Dernière mise à jour : 2026-04-29
 | ----------- | ------- | ---------------------------------------- |
 | NSubstitute | 5.3.0   | NSubstitute Contributors                 |
 | Shouldly    | 4.3.0   | Copyright (c) 2017 Shouldly Contributors |
+
+---
+
+## Dépendances binaires externes (runtime)
+
+### LibreOffice
+
+| Champ | Valeur |
+| --- | --- |
+| Nom | LibreOffice |
+| Version | 7.x+ (recommandée) |
+| Licence | MPL-2.0 (binaire) + LGPL-3.0 (composants) |
+| Copyright | © The Document Foundation |
+| Date d'ajout | 2026-05-11 |
+
+Binaire `soffice` invoqué par `Granit.Documents.Renditions.Office` via
+`Process.Start` (mode `--headless --convert-to pdf`). Aucun code LibreOffice
+n'est compilé, lié ou redistribué avec le framework — l'hôte installe la
+dépendance sur son image runtime (`apt-get install libreoffice` /
+`apk add libreoffice` / `brew install --cask libreoffice`). Le framework reste
+sous Apache-2.0.
 
 ---
 

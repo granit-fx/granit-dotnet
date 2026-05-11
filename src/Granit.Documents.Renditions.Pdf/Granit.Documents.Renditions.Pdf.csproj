@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Documents.Renditions.Pdf</PackageId>
+    <Description>application/pdf → image/png rendition provider for Granit.Documents.Renditions (F16.6). Renders pages via Granit.Browsing.IPdfViewerCapability; chains with the Imaging provider for JPEG/WebP/AVIF targets.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Documents.Renditions.Pdf.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Browsing\Granit.Browsing.csproj" />
+    <ProjectReference Include="..\Granit.Documents.Renditions\Granit.Documents.Renditions.csproj" />
+  </ItemGroup>
+
+</Project>

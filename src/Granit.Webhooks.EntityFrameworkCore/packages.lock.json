@@ -367,6 +367,15 @@
           "Microsoft.Extensions.Http.Resilience": "[10.*, )"
         }
       },
+      "granit.http.security": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
       "granit.localization": {
         "type": "Project",
         "dependencies": {
@@ -424,6 +433,7 @@
           "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.Resilience": "[0.1.0-dev, )",
+          "Granit.Http.Security": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"

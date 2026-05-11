@@ -1,0 +1,9 @@
+{
+  "culture": "de",
+  "texts": {
+    "TempFile:CategoryInvalid": "Kategorie der temporären Datei muss [a-z0-9-]{1,32} entsprechen; erhalten '{0}'.",
+    "TempFile:ExtensionInvalid": "Erweiterung der temporären Datei muss alphanumerisch sein, 1..16 Zeichen; erhalten '{0}'.",
+    "TempFile:SizeExceeded": "Temporäre Datei überschritt die maximale Größe von {0} Bytes.",
+    "TempFile:RootInvalid": "Stammverzeichnis für temporäre Dateien ist ungültig oder nicht zugänglich: '{0}'."
+  }
+}

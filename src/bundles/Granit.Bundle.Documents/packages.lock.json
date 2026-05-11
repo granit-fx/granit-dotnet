@@ -13,14 +13,6 @@
         "resolved": "2.0.0",
         "contentHash": "ngTqjYreDYNytG1W5d3ewHsw0ukmmrgV7EKnS4/40rXoYZGt07jrBvo+N+GxT49rcageUMUiprV0jYT4nwVBHQ=="
       },
-      "DocumentFormat.OpenXml": {
-        "type": "Transitive",
-        "resolved": "3.1.1",
-        "contentHash": "2z9QBzeTLNNKWM9SaOSDMegfQk/7hDuElOsmF77pKZMkFRP/GHA/W/4yOAQD9kn15N/FsFxHn3QVYkatuZghiA==",
-        "dependencies": {
-          "DocumentFormat.OpenXml.Framework": "3.1.1"
-        }
-      },
       "DocumentFormat.OpenXml.Framework": {
         "type": "Transitive",
         "resolved": "3.1.1",
@@ -121,13 +113,64 @@
         "resolved": "8.0.1",
         "contentHash": "KYkIOAvPexQOLDxPO2g0BVoWInnQhPpkFzRqvNrNrMhVT6kqhVr0zEb6KCHlptLFukxnZrjuMVAnxK7pOGUYrw=="
       },
-      "WebDriverBiDi": {
-        "type": "Transitive",
-        "resolved": "0.0.49",
-        "contentHash": "KXTJjGny4f4yO+HJGMMgX+qaWqweQvcrtMQPkUw+lw2nUQpJV0VfE3oW4t25bgXOq62cdE9yVEVSjssKRBa98A=="
-      },
       "granit": {
         "type": "Project"
+      },
+      "granit.analytics.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.authorization": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.Entities.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.browsing": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.Security": "[0.1.0-dev, )",
+          "Granit.IO": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.FileSystemGlobbing": "[10.*, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
+      "granit.caching": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Caching.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Caching.Memory": "[10.*, )",
+          "Microsoft.Extensions.Configuration.Binder": "[10.*, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
+          "OpenTelemetry.Api": "[1.15.*, )",
+          "ZiggyCreatures.FusionCache": "[2.*, )",
+          "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
+          "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
+        }
+      },
+      "granit.dashboards.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
       },
       "granit.dataexchange.abstractions": {
         "type": "Project",
@@ -158,12 +201,23 @@
       "granit.documentgeneration.pdf": {
         "type": "Project",
         "dependencies": {
+          "Granit.Browsing": "[0.1.0-dev, )",
           "Granit.DocumentGeneration": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
-          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
-          "PuppeteerSharp": "[24.*, )"
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
+      "granit.entities.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
+          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Workflow.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.guids": {
@@ -178,6 +232,35 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.security": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
+      "granit.io": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
+      "granit.multitenancy": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.persistence": {
@@ -280,6 +363,15 @@
           "SixLabors.Fonts": "1.0.0"
         }
       },
+      "DocumentFormat.OpenXml": {
+        "type": "CentralTransitive",
+        "requested": "[3.*, )",
+        "resolved": "3.1.1",
+        "contentHash": "2z9QBzeTLNNKWM9SaOSDMegfQk/7hDuElOsmF77pKZMkFRP/GHA/W/4yOAQD9kn15N/FsFxHn3QVYkatuZghiA==",
+        "dependencies": {
+          "DocumentFormat.OpenXml.Framework": "3.1.1"
+        }
+      },
       "Microsoft.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
@@ -377,6 +469,12 @@
           "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions": "10.0.7"
         }
       },
+      "Microsoft.Extensions.FileSystemGlobbing": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.7",
+        "contentHash": "NTUspqB+vH9g4wAD6KPOBx01xqYuKXR/cHXm449zpbq1GqfjdAxBmg7eJXrNsPw7SKwIdT2cJ05GxYVvc+lvsA=="
+      },
       "Microsoft.Extensions.Hosting.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
@@ -422,28 +520,45 @@
           "Microsoft.Extensions.Primitives": "10.0.7"
         }
       },
-      "Microsoft.IO.RecyclableMemoryStream": {
+      "OpenTelemetry.Api": {
         "type": "CentralTransitive",
-        "requested": "[3.*, )",
-        "resolved": "3.0.1",
-        "contentHash": "s/s20YTVY9r9TPfTrN5g8zPF1YhwxyqO6PxUkrYTGI2B+OGPe9AdajWZrLhFqXIvqIW23fnUE4+ztrUWNU1+9g=="
-      },
-      "PuppeteerSharp": {
-        "type": "CentralTransitive",
-        "requested": "[24.*, )",
-        "resolved": "24.42.0",
-        "contentHash": "t019+FnCRx4aH9bTRqwcDrhjqcuJ3+Da3ijmYw/dmH/3UzPbcdhjRxESG725Kz6o1W0sL5AjPRQwwo0n/cX1Uw==",
-        "dependencies": {
-          "Microsoft.Extensions.Logging": "10.0.0",
-          "Microsoft.IO.RecyclableMemoryStream": "3.0.1",
-          "WebDriverBiDi": "0.0.49"
-        }
+        "requested": "[1.15.*, )",
+        "resolved": "1.15.3",
+        "contentHash": "fX+fkCysfPut+qCcT3bKqyX4QN9Saf4CgX8HLOHywEVD+Xr7sULtfuypITpoDysjx8R59dn/3mWhgimMH8cm/g=="
       },
       "Scriban": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
         "resolved": "7.1.0",
         "contentHash": "8paijHmWYO7zxSRNLlbDzzaFT7By827wIgdOrAg9q64+XasUYK8RCT3Y4mbISxeQ3iNdaK7wGeDmT2GWRtqRBQ=="
+      },
+      "ZiggyCreatures.FusionCache": {
+        "type": "CentralTransitive",
+        "requested": "[2.*, )",
+        "resolved": "2.6.0",
+        "contentHash": "BCe+/SkwQZfaMpq2ZGDZB2pyx6BdGnP+zxqjMM/5K+4PBuH6hljZeIqH4KVzQ26khSbPsQ7IiYZl0Fve4OZOog==",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Memory": "10.0.1"
+        }
+      },
+      "ZiggyCreatures.FusionCache.OpenTelemetry": {
+        "type": "CentralTransitive",
+        "requested": "[2.*, )",
+        "resolved": "2.6.0",
+        "contentHash": "q917DogvL6Y9GamCLz6n/diC56sWUI3rvIuoZsqW7fyw7toWjcVDtSs/5mN8Weafbaj86RQSV5Q5Ysrm1ueJKQ==",
+        "dependencies": {
+          "OpenTelemetry.Api": "1.14.0",
+          "ZiggyCreatures.FusionCache": "2.6.0"
+        }
+      },
+      "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": {
+        "type": "CentralTransitive",
+        "requested": "[2.*, )",
+        "resolved": "2.6.0",
+        "contentHash": "A00mNC7xrkC8LUAQMkeB3OtVTfGzyTyHxTgAOwfqaFdazO/54d3fT8LFoekpgSslkvDjKAIPlyafqsFBPLgQIw==",
+        "dependencies": {
+          "ZiggyCreatures.FusionCache": "2.6.0"
+        }
       }
     }
   }

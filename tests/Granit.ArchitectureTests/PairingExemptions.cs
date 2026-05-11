@@ -48,6 +48,7 @@ internal static class PairingExemptions
         "Granit.BackgroundJobs.Domain.BackgroundJobDefinition",                           // [INFRA] job config
         "Granit.DataExchange.Export.Domain.ExportJob",                                    // [INFRA] transient export job
         "Granit.DataExchange.Import.Domain.ImportJob",                                    // [INFRA] transient import job
+        "Granit.Documents.Renditions.Domain.DocumentRendition",                           // [INFRA] derived rendition row, surfaced via the documents view, no admin grid / KPI of its own
         "Granit.Identity.Federated.Domain.FederatedIdentity",                                // [INFRA] internal user cache
         "Granit.Identity.Local.Domain.GranitRole",                                        // [INFRA] RBAC config
         "Granit.Identity.Local.Domain.GranitUserGroup",                                   // [INFRA] RBAC config
