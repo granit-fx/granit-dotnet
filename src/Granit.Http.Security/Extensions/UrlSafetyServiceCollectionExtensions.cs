@@ -1,4 +1,5 @@
 using Granit.Http.Security.Internal;
+using Granit.Http.Security.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

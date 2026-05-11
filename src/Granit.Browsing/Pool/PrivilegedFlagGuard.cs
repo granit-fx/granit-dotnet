@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Granit.Browsing.Exceptions;
 using Granit.Browsing.Sandbox;
 using Microsoft.Extensions.Logging;
 

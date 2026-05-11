@@ -24,7 +24,7 @@ namespace Granit.IO;
 /// </para>
 /// </remarks>
 [DependsOn(typeof(GranitMultiTenancyModule))]
-public sealed class GranitIoModule : GranitModule
+public sealed class GranitIOModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)

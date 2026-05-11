@@ -32,7 +32,7 @@ public sealed class DocumentRendition : AggregateRoot, IMultiTenant
     /// <c>BlobDescriptorId</c> / <c>SizeBytes</c> / <c>Width</c> / <c>Height</c> columns
     /// stay <c>null</c> until <see cref="MarkReady"/> is called by the generation flow.
     /// </summary>
-    public static DocumentRendition CreatePending(
+    public static DocumentRendition Create(
         Guid id,
         Guid? tenantId,
         Guid documentId,

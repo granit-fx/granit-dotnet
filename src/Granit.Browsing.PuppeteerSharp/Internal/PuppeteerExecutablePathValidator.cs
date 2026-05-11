@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Granit.Browsing.Exceptions;
 using Granit.Browsing.Sandbox;
 
 namespace Granit.Browsing.PuppeteerSharp.Internal;

@@ -75,7 +75,9 @@ public sealed class RenditionsArchitectureTests
                     continue;
                 }
                 string content = File.ReadAllText(csFile);
-                if (content.Contains("soffice", StringComparison.OrdinalIgnoreCase))
+                // Match `soffice` as a process-binary invocation, not the substring inside
+                // identifiers like `RenditionsOffice`. Word-boundary regex + case-sensitive.
+                if (System.Text.RegularExpressions.Regex.IsMatch(content, @"\bsoffice\b"))
                 {
                     violators.Add(Path.GetRelativePath(RepoRoot, csFile));
                 }
@@ -178,6 +180,11 @@ public sealed class RenditionsArchitectureTests
             {
                 if (csFile.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.Ordinal) ||
                     csFile.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+                // Skip the interface contract itself — only concrete *RenditionProvider classes are gated.
+                if (Path.GetFileName(csFile).StartsWith("IRendition", StringComparison.Ordinal))
                 {
                     continue;
                 }

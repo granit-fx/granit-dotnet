@@ -40,7 +40,7 @@ public sealed class RenditionStoreSqliteTests : IAsyncLifetime
     [Fact]
     public async Task AddAsync_then_FindAsync_should_round_trip()
     {
-        var r = DocumentRendition.CreatePending(
+        var r = DocumentRendition.Create(
             Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(),
             RenditionType.Thumbnail, "image/webp", Now);
 
@@ -61,11 +61,11 @@ public sealed class RenditionStoreSqliteTests : IAsyncLifetime
         var versionId = Guid.NewGuid();
         var documentId = Guid.NewGuid();
 
-        var webJpg = DocumentRendition.CreatePending(
+        var webJpg = DocumentRendition.Create(
             Guid.NewGuid(), null, documentId, versionId, RenditionType.Web, "image/jpeg", Now);
-        var thumbPng = DocumentRendition.CreatePending(
+        var thumbPng = DocumentRendition.Create(
             Guid.NewGuid(), null, documentId, versionId, RenditionType.Thumbnail, "image/png", Now);
-        var thumbWebp = DocumentRendition.CreatePending(
+        var thumbWebp = DocumentRendition.Create(
             Guid.NewGuid(), null, documentId, versionId, RenditionType.Thumbnail, "image/webp", Now);
 
         await _sut.AddAsync(webJpg, TestContext.Current.CancellationToken);
@@ -90,10 +90,10 @@ public sealed class RenditionStoreSqliteTests : IAsyncLifetime
         var v1 = Guid.NewGuid();
         var v2 = Guid.NewGuid();
 
-        await _sut.AddAsync(DocumentRendition.CreatePending(
+        await _sut.AddAsync(DocumentRendition.Create(
             Guid.NewGuid(), null, documentId, v1, RenditionType.Thumbnail, "image/png", Now),
             TestContext.Current.CancellationToken);
-        await _sut.AddAsync(DocumentRendition.CreatePending(
+        await _sut.AddAsync(DocumentRendition.Create(
             Guid.NewGuid(), null, documentId, v2, RenditionType.Thumbnail, "image/png", Now),
             TestContext.Current.CancellationToken);
 
@@ -105,7 +105,7 @@ public sealed class RenditionStoreSqliteTests : IAsyncLifetime
     [Fact]
     public async Task UpdateAsync_should_persist_status_transition()
     {
-        var r = DocumentRendition.CreatePending(
+        var r = DocumentRendition.Create(
             Guid.NewGuid(), null, Guid.NewGuid(), Guid.NewGuid(),
             RenditionType.Thumbnail, "image/png", Now);
         await _sut.AddAsync(r, TestContext.Current.CancellationToken);
@@ -125,11 +125,11 @@ public sealed class RenditionStoreSqliteTests : IAsyncLifetime
     public async Task DeleteForDocumentAsync_should_remove_all_rows_for_document()
     {
         var documentId = Guid.NewGuid();
-        await _sut.AddAsync(DocumentRendition.CreatePending(
+        await _sut.AddAsync(DocumentRendition.Create(
             Guid.NewGuid(), null, documentId, Guid.NewGuid(),
             RenditionType.Thumbnail, "image/png", Now),
             TestContext.Current.CancellationToken);
-        await _sut.AddAsync(DocumentRendition.CreatePending(
+        await _sut.AddAsync(DocumentRendition.Create(
             Guid.NewGuid(), null, documentId, Guid.NewGuid(),
             RenditionType.Web, "image/webp", Now),
             TestContext.Current.CancellationToken);

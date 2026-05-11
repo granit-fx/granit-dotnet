@@ -13456,7 +13456,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 113,
+      "line": 114,
       "members": []
     },
     {
@@ -13543,6 +13543,31 @@
       ]
     },
     {
+      "name": "SandboxViolationException",
+      "fqn": "Granit.Browsing.Exceptions.SandboxViolationException",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Exceptions/SandboxViolationException.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "SandboxViolationException",
+          "kind": "method",
+          "signature": "SandboxViolationException(SandboxViolationKind kind, string message)",
+          "returnType": "SandboxViolationKind Kind { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "SandboxViolationKind",
+      "fqn": "Granit.Browsing.Exceptions.SandboxViolationKind",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Exceptions/SandboxViolationException.cs",
+      "line": 29,
+      "members": []
+    },
+    {
       "name": "GranitBrowsingModule",
       "fqn": "Granit.Browsing.GranitBrowsingModule",
       "kind": "class",
@@ -13564,7 +13589,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "NavigateAsync",
@@ -13687,7 +13712,7 @@
       "kind": "enum",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 98,
+      "line": 99,
       "members": []
     },
     {
@@ -13854,7 +13879,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 118,
+      "line": 119,
       "members": []
     },
     {
@@ -14006,7 +14031,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 120,
+      "line": 121,
       "members": [
         {
           "name": "new",
@@ -14034,7 +14059,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 107,
+      "line": 108,
       "members": [
         {
           "name": "GetEnvironmentVariable",
@@ -14062,7 +14087,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 29,
+      "line": 30,
       "members": [
         {
           "name": "EnsureSafe",
@@ -14196,31 +14221,6 @@
           "returnType": "TimeSpan? MaxRenderDuration { get; init; } = TimeSpan."
         }
       ]
-    },
-    {
-      "name": "SandboxViolationException",
-      "fqn": "Granit.Browsing.Sandbox.SandboxViolationException",
-      "kind": "class",
-      "project": "Granit.Browsing",
-      "file": "src/Granit.Browsing/Sandbox/SandboxViolationException.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "SandboxViolationException",
-          "kind": "method",
-          "signature": "SandboxViolationException(SandboxViolationKind kind, string message)",
-          "returnType": "SandboxViolationKind Kind { get; } public"
-        }
-      ]
-    },
-    {
-      "name": "SandboxViolationKind",
-      "fqn": "Granit.Browsing.Sandbox.SandboxViolationKind",
-      "kind": "enum",
-      "project": "Granit.Browsing",
-      "file": "src/Granit.Browsing/Sandbox/SandboxViolationException.cs",
-      "line": 29,
-      "members": []
     },
     {
       "name": "AesCacheValueEncryptor",
@@ -22374,9 +22374,9 @@
       "line": 25,
       "members": [
         {
-          "name": "CreatePending",
+          "name": "Create",
           "kind": "method",
-          "signature": "CreatePending(Guid id, Guid? tenantId, Guid documentId, Guid documentVersionId, RenditionType type, string format, DateTimeOffset now)",
+          "signature": "Create(Guid id, Guid? tenantId, Guid documentId, Guid documentVersionId, RenditionType type, string format, DateTimeOffset now)",
           "returnType": "DocumentRendition"
         },
         {
@@ -28946,7 +28946,7 @@
       "kind": "class",
       "project": "Granit.Http.Security",
       "file": "src/Granit.Http.Security/Extensions/UrlSafetyServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitUrlSafety",
@@ -28978,7 +28978,7 @@
       "kind": "interface",
       "project": "Granit.Http.Security",
       "file": "src/Granit.Http.Security/IUrlSafetyValidator.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "ValidateAsync",
@@ -29004,43 +29004,11 @@
       "members": []
     },
     {
-      "name": "PrivateNetworkClassifier",
-      "fqn": "Granit.Http.Security.PrivateNetworkClassifier",
-      "kind": "class",
-      "project": "Granit.Http.Security",
-      "file": "src/Granit.Http.Security/PrivateNetworkClassifier.cs",
-      "line": 23,
-      "members": [
-        {
-          "name": "IsBlocked",
-          "kind": "method",
-          "signature": "IsBlocked(IPAddress ip)",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
-      "name": "ReservedTldClassifier",
-      "fqn": "Granit.Http.Security.ReservedTldClassifier",
-      "kind": "class",
-      "project": "Granit.Http.Security",
-      "file": "src/Granit.Http.Security/ReservedTldClassifier.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "IsReserved",
-          "kind": "method",
-          "signature": "IsReserved(string host, out string tld)",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
       "name": "UrlSafetyOptions",
-      "fqn": "Granit.Http.Security.UrlSafetyOptions",
+      "fqn": "Granit.Http.Security.Options.UrlSafetyOptions",
       "kind": "class",
       "project": "Granit.Http.Security",
-      "file": "src/Granit.Http.Security/UrlSafetyOptions.cs",
+      "file": "src/Granit.Http.Security/Options/UrlSafetyOptions.cs",
       "line": 6,
       "members": [
         {
@@ -29082,6 +29050,38 @@
       ]
     },
     {
+      "name": "PrivateNetworkClassifier",
+      "fqn": "Granit.Http.Security.PrivateNetworkClassifier",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/PrivateNetworkClassifier.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "IsBlocked",
+          "kind": "method",
+          "signature": "IsBlocked(IPAddress ip)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ReservedTldClassifier",
+      "fqn": "Granit.Http.Security.ReservedTldClassifier",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/ReservedTldClassifier.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "IsReserved",
+          "kind": "method",
+          "signature": "IsReserved(string host, out string tld)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
       "name": "UrlSafetyViolation",
       "fqn": "Granit.Http.Security.UrlSafetyViolation",
       "kind": "record",
@@ -29096,7 +29096,7 @@
       "kind": "enum",
       "project": "Granit.Http.Security",
       "file": "src/Granit.Http.Security/UrlSafetyViolationKind.cs",
-      "line": 6,
+      "line": 8,
       "members": []
     },
     {
@@ -29337,11 +29337,11 @@
       ]
     },
     {
-      "name": "GranitIoModule",
-      "fqn": "Granit.IO.GranitIoModule",
+      "name": "GranitIOModule",
+      "fqn": "Granit.IO.GranitIOModule",
       "kind": "class",
       "project": "Granit.IO",
-      "file": "src/Granit.IO/GranitIoModule.cs",
+      "file": "src/Granit.IO/GranitIOModule.cs",
       "line": 27,
       "members": [
         {

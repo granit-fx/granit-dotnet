@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing;
 using Granit.Browsing.Capabilities;
+using Granit.Browsing.Pages;
 using Granit.DocumentGeneration.Pdf.Options;
 using Granit.DocumentGeneration.Pipeline;
 using Granit.Templating.Keys;
@@ -53,7 +54,10 @@ internal sealed partial class BrowsingPdfRenderer(
         // outbound request needed. Block any request the document might still emit
         // (referenced fonts, images served from foreign hosts, …) by aborting every
         // intercepted route.
-        await page.RouteAsync("**/*", static (ctx, ct) => ctx.AbortAsync(cancellationToken: ct), cancellationToken).ConfigureAwait(false);
+        await page.RouteAsync(
+            RoutePattern.Parse("**/*"),
+            static (_, _) => ValueTask.FromResult(RouteDecision.Abort("blocked")),
+            cancellationToken).ConfigureAwait(false);
 
         await page.SetContentAsync(html, new BrowsingNavigationOptions
         {

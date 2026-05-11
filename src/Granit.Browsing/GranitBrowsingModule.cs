@@ -27,7 +27,7 @@ namespace Granit.Browsing;
     typeof(GranitAuthorizationModule),
     typeof(GranitGuidsModule),
     typeof(GranitHttpSecurityModule),
-    typeof(GranitIoModule),
+    typeof(GranitIOModule),
     typeof(GranitTimingModule))]
 public sealed class GranitBrowsingModule : GranitModule
 {

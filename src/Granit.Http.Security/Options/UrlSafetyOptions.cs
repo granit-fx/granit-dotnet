@@ -1,4 +1,4 @@
-namespace Granit.Http.Security;
+namespace Granit.Http.Security.Options;
 
 /// <summary>
 /// Configuration for <see cref="IUrlSafetyValidator"/>.

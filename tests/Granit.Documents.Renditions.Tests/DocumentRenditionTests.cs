@@ -14,7 +14,7 @@ public sealed class DocumentRenditionTests
     [Fact]
     public void CreatePending_should_initialise_status_and_timestamps()
     {
-        var r = DocumentRendition.CreatePending(
+        var r = DocumentRendition.Create(
             id: Guid.NewGuid(),
             tenantId: Guid.NewGuid(),
             documentId: Guid.NewGuid(),
@@ -33,7 +33,7 @@ public sealed class DocumentRenditionTests
     [Fact]
     public void CreatePending_should_reject_non_mime_format()
     {
-        Should.Throw<ArgumentException>(() => DocumentRendition.CreatePending(
+        Should.Throw<ArgumentException>(() => DocumentRendition.Create(
             Guid.NewGuid(), null, Guid.NewGuid(), Guid.NewGuid(),
             RenditionType.Thumbnail, format: "webp", now: Now));
     }
@@ -93,7 +93,7 @@ public sealed class DocumentRenditionTests
         r.FailureReason.ShouldBeNull();
     }
 
-    private static DocumentRendition NewPending() => DocumentRendition.CreatePending(
+    private static DocumentRendition NewPending() => DocumentRendition.Create(
         Guid.NewGuid(), null, Guid.NewGuid(), Guid.NewGuid(),
         RenditionType.Thumbnail, "image/png", Now);
 }

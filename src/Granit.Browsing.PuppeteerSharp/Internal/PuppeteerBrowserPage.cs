@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing.Diagnostics;
+using Granit.Browsing.Exceptions;
 using Granit.Browsing.Internal;
 using Granit.Browsing.Options;
 using Granit.Browsing.Pages;
