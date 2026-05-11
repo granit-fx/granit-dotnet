@@ -99,7 +99,7 @@ public class InvoicingDbContext : DbContext
     public DbSet<InvoicingEntity> Invoices => Set<InvoicingEntity>();
 }
 
-public sealed class ArchiveInvoiceExecutor
+public sealed class ArchiveInvoiceExecutor : IEntityActionExecutor<InvoicingEntity>
 {
     private readonly InvoicingDbContext _db;
     private readonly ILogger<ArchiveInvoiceExecutor> _logger;
@@ -125,7 +125,7 @@ public sealed class ArchiveInvoiceExecutor
     }
 }
 
-public sealed class BulkArchiveInvoicesExecutor
+public sealed class BulkArchiveInvoicesExecutor : IBulkActionExecutor<InvoicingEntity>
 {
     private readonly InvoicingDbContext _db;
     private readonly ILogger<BulkArchiveInvoicesExecutor> _logger;

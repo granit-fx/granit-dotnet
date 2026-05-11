@@ -12,6 +12,25 @@ namespace Granit.Entities.Internal.BulkActions;
 /// EF Core-backed orchestrator for bulk action execution. Materializes target entities,
 /// dispatches to the appropriate executor (bulk or per-row), and collects results.
 /// </summary>
+/// <remarks>
+/// <para>
+/// The caller is responsible for managing the DbContext transaction lifecycle.
+/// For atomic operations, wrap the orchestrator call in a transaction:
+/// </para>
+/// <code>
+/// using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+/// try
+/// {
+///     var result = await orchestrator.ExecuteAsync(descriptor, dbContext, entityIds, payload, cancellationToken);
+///     await transaction.CommitAsync(cancellationToken);
+/// }
+/// catch
+/// {
+///     await transaction.RollbackAsync(cancellationToken);
+///     throw;
+/// }
+/// </code>
+/// </remarks>
 public sealed class BulkActionExecutionOrchestrator
 {
     private readonly IServiceProvider _serviceProvider;
@@ -84,22 +103,16 @@ public sealed class BulkActionExecutionOrchestrator
         CancellationToken cancellationToken)
         where TEntity : class
     {
-        var bulkExecutor = _serviceProvider.GetService(bulkExecutorType)
-            ?? throw new InvalidOperationException(
-                $"Bulk executor '{bulkExecutorType.Name}' is not registered in the DI container.");
-
-        var method = bulkExecutorType.GetMethod(
-            nameof(IBulkActionExecutor<TEntity>.ExecuteBulkAsync),
-            new[] { typeof(IReadOnlyList<TEntity>), typeof(JsonElement), typeof(CancellationToken) });
-
-        if (method is null)
+        var bulkExecutor = _serviceProvider.GetService(bulkExecutorType);
+        if (bulkExecutor is null)
         {
             throw new InvalidOperationException(
-                $"Bulk executor '{bulkExecutorType.Name}' does not have an ExecuteBulkAsync method.");
+                $"Bulk executor '{bulkExecutorType.Name}' is not registered in the DI container.");
         }
 
-        var result = await (Task<BulkActionResult>)method.Invoke(bulkExecutor, new object[] { entities, payload, cancellationToken })!;
-        return result;
+        // Cast directly to the interface for type safety and performance
+        var typedExecutor = (IBulkActionExecutor<TEntity>)bulkExecutor;
+        return await typedExecutor.ExecuteBulkAsync(entities, payload, cancellationToken);
     }
 
     private async Task<BulkActionResult> ExecutePerRowAsync<TEntity>(
@@ -109,19 +122,15 @@ public sealed class BulkActionExecutionOrchestrator
         CancellationToken cancellationToken)
         where TEntity : class
     {
-        var executor = _serviceProvider.GetService(executorType)
-            ?? throw new InvalidOperationException(
-                $"Executor '{executorType.Name}' is not registered in the DI container.");
-
-        var method = executorType.GetMethod(
-            nameof(IEntityActionExecutor<TEntity>.ExecuteAsync),
-            new[] { typeof(TEntity), typeof(JsonElement), typeof(CancellationToken) });
-
-        if (method is null)
+        var executor = _serviceProvider.GetService(executorType);
+        if (executor is null)
         {
             throw new InvalidOperationException(
-                $"Executor '{executorType.Name}' does not have an ExecuteAsync method.");
+                $"Executor '{executorType.Name}' is not registered in the DI container.");
         }
+
+        // Cast directly to the interface for type safety and performance
+        var typedExecutor = (IEntityActionExecutor<TEntity>)executor;
 
         var failures = new List<BulkFailure>();
         int affectedCount = 0;
@@ -130,25 +139,27 @@ public sealed class BulkActionExecutionOrchestrator
         {
             try
             {
-                var invokedTask = (Task)method.Invoke(executor, new object[] { entity, payload, cancellationToken })!;
-                await invokedTask.ConfigureAwait(false);
+                ActionResult result = await typedExecutor.ExecuteAsync(entity, payload, cancellationToken);
 
-                var resultProperty = invokedTask.GetType().GetProperty("Result");
-                ActionResult? result = (ActionResult?)resultProperty?.GetValue(invokedTask);
-
-                if (result is not null && result.IsSuccess)
+                if (result.IsSuccess)
                 {
                     affectedCount++;
                 }
-                else if (result is not null && result.ErrorMessage is not null)
+                else if (result.ErrorMessage is not null)
                 {
                     string entityId = GetEntityId(entity) ?? "unknown";
                     failures.Add(new BulkFailure(entityId, result.ErrorMessage));
                 }
             }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                // Timeout or external cancellation — re-throw, don't swallow
+                throw;
+            }
             catch (Exception ex)
             {
                 string entityId = GetEntityId(entity) ?? "unknown";
+                // Capture business logic exceptions; system exceptions will propagate
                 failures.Add(new BulkFailure(entityId, ex.Message));
             }
         }
@@ -160,13 +171,21 @@ public sealed class BulkActionExecutionOrchestrator
         where TEntity : class
     {
         var idProperty = typeof(TEntity).GetProperty("Id");
-        if (idProperty is null)
+        if (idProperty is not null)
         {
-            return null;
+            var value = idProperty.GetValue(entity);
+            return value?.ToString();
         }
 
-        var value = idProperty.GetValue(entity);
-        return value?.ToString();
+        // Fallback: check for "Key" or "Guid" properties
+        idProperty = typeof(TEntity).GetProperty("Key") ?? typeof(TEntity).GetProperty("Guid");
+        if (idProperty is not null)
+        {
+            var value = idProperty.GetValue(entity);
+            return value?.ToString();
+        }
+
+        return null;
     }
 }
 
