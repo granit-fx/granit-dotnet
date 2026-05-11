@@ -39,8 +39,18 @@ public interface IDocumentPublicLinkService
     /// success, or <c>null</c> on any business validation failure — callers MUST treat
     /// <c>null</c> as 404 (no info disclosure).
     /// </summary>
+    /// <param name="token">Bearer token (raw, as supplied by the anonymous caller).</param>
+    /// <param name="clientIpMasked">
+    /// Optional anonymised client IP (/24 v4 or /48 v6) propagated onto the
+    /// distributed audit event (F18.4). The raw IP MUST be masked by the caller before
+    /// reaching this method.
+    /// </param>
+    /// <param name="userAgent">Optional <c>User-Agent</c> string from the inbound request.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task<DocumentPublicLink?> ResolveAndConsumeAsync(
         string token,
+        string? clientIpMasked = null,
+        string? userAgent = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>

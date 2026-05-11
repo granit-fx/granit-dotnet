@@ -4,7 +4,9 @@ using Granit.Documents;
 using Granit.Documents.Domain;
 using Granit.Documents.PublicLinks.Domain;
 using Granit.Documents.PublicLinks.EntityFrameworkCore.Internal;
+using Granit.Documents.PublicLinks.Events;
 using Granit.Documents.PublicLinks.Options;
+using Granit.Events;
 using Granit.Guids;
 using Granit.Users;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +32,7 @@ public sealed class DocumentPublicLinkServicePostgresTests :
     private EfDocumentPublicLinkStore _store = null!;
     private DocumentPublicLinkService _sut = null!;
     private IDocumentService _documents = null!;
+    private CapturingEventBus _eventBus = null!;
 
     public DocumentPublicLinkServicePostgresTests(PostgresFixture postgres) => _postgres = postgres;
 
@@ -49,6 +52,7 @@ public sealed class DocumentPublicLinkServicePostgresTests :
         _store = new EfDocumentPublicLinkStore(_factory);
 
         _documents = Substitute.For<IDocumentService>();
+        _eventBus = new CapturingEventBus();
         _sut = BuildService();
     }
 
@@ -72,7 +76,8 @@ public sealed class DocumentPublicLinkServicePostgresTests :
             _store, _documents, guids,
             new FixedTime(Now),
             monitor,
-            user);
+            distributedEventBus: _eventBus,
+            currentUser: user);
     }
 
     [Fact]
@@ -165,6 +170,52 @@ public sealed class DocumentPublicLinkServicePostgresTests :
     }
 
     [Fact]
+    public async Task ResolveAndConsumeAsync_PublishesIntegrationEvent()
+    {
+        var docId = Guid.NewGuid();
+        var tenantId = Guid.NewGuid();
+        _documents.GetByIdAsync(docId, Arg.Any<CancellationToken>())
+            .Returns(BuildDocument(docId, tenantId));
+
+        DocumentPublicLinkCreationResult result = await _sut.CreateAsync(
+            docId, PublicLinkScope.Download, TimeSpan.FromHours(2), maxUses: 5,
+            TestContext.Current.CancellationToken);
+
+        _eventBus.Captured.Clear();
+
+        DocumentPublicLink? consumed = await _sut.ResolveAndConsumeAsync(
+            result.Token.Value, clientIpMasked: "203.0.113.0", userAgent: "TestAgent/1.0",
+            TestContext.Current.CancellationToken);
+
+        consumed.ShouldNotBeNull();
+        consumed.CurrentUses.ShouldBe(1);
+
+        DocumentPublicLinkConsumedEto eto = _eventBus.Captured
+            .OfType<DocumentPublicLinkConsumedEto>()
+            .ShouldHaveSingleItem();
+        eto.LinkId.ShouldBe(result.Link.Id);
+        eto.DocumentId.ShouldBe(docId);
+        eto.TenantId.ShouldBe(tenantId);
+        eto.Scope.ShouldBe(PublicLinkScope.Download);
+        eto.CurrentUses.ShouldBe(1);
+        eto.ConsumedAt.ShouldBe(Now);
+        eto.ClientIpMasked.ShouldBe("203.0.113.0");
+        eto.UserAgent.ShouldBe("TestAgent/1.0");
+    }
+
+    [Fact]
+    public async Task ResolveAndConsumeAsync_DoesNotPublishWhenLinkUnknown()
+    {
+        _eventBus.Captured.Clear();
+
+        DocumentPublicLink? consumed = await _sut.ResolveAndConsumeAsync(
+            "not-a-real-token", cancellationToken: TestContext.Current.CancellationToken);
+
+        consumed.ShouldBeNull();
+        _eventBus.Captured.ShouldBeEmpty();
+    }
+
+    [Fact]
     public async Task CreateAsync_ThrowsWhenSigningKeyEmpty()
     {
         DocumentPublicLinkService sut = BuildService(new GranitDocumentsPublicLinksOptions
@@ -223,5 +274,17 @@ public sealed class DocumentPublicLinkServicePostgresTests :
     private sealed class FixedTime(DateTimeOffset now) : TimeProvider
     {
         public override DateTimeOffset GetUtcNow() => now;
+    }
+
+    private sealed class CapturingEventBus : IDistributedEventBus
+    {
+        public List<IIntegrationEvent> Captured { get; } = [];
+
+        public Task PublishAsync<TEvent>(TEvent integrationEvent, CancellationToken cancellationToken = default)
+            where TEvent : class, IIntegrationEvent
+        {
+            Captured.Add(integrationEvent);
+            return Task.CompletedTask;
+        }
     }
 }

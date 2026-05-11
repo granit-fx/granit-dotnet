@@ -36,7 +36,7 @@ public sealed class DocumentPublicLinkServiceTests
         IOptionsMonitor<GranitDocumentsPublicLinksOptions> monitor = Substitute.For<IOptionsMonitor<GranitDocumentsPublicLinksOptions>>();
         monitor.CurrentValue.Returns(_options);
         _guids.Create().Returns(_ => Guid.NewGuid());
-        return new DocumentPublicLinkService(_store, _documents, _guids, _time, monitor, user);
+        return new DocumentPublicLinkService(_store, _documents, _guids, _time, monitor, distributedEventBus: null, currentUser: user);
     }
 
     [Fact]

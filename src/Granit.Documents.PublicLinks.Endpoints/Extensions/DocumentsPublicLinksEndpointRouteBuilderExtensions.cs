@@ -3,6 +3,7 @@ using Granit.Documents.PublicLinks.Endpoints.Options;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Documents.PublicLinks.Endpoints.Extensions;
@@ -37,7 +38,11 @@ public static class DocumentsPublicLinksEndpointRouteBuilderExtensions
 
         RouteGroupBuilder anonymousGroup = endpoints
             .MapGranitGroup(options.AnonymousRoutePrefix)
-            .WithTags(options.TagName);
+            .WithTags(options.TagName)
+            // F18.4 — rate-limit metadata is harmless without UseRateLimiter() / a
+            // registered policy: ASP.NET Core treats unknown policies as no-op.
+            // Hosts opt in by calling AddGranitDocumentsPublicLinksRateLimiter().
+            .RequireRateLimiting(DocumentsPublicLinksRateLimiterServiceCollectionExtensions.PolicyName);
         anonymousGroup.MapAnonymousEndpoints();
 
         return endpoints;

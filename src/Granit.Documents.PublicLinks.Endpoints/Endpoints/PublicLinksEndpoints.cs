@@ -2,6 +2,7 @@ using Granit.BlobStorage;
 using Granit.Documents.PublicLinks.Diagnostics;
 using Granit.Documents.PublicLinks.Domain;
 using Granit.Documents.PublicLinks.Endpoints.Dtos;
+using Granit.Documents.PublicLinks.Endpoints.Internal;
 using Granit.Documents.PublicLinks.Endpoints.Options;
 using Granit.Documents.PublicLinks.Permissions;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 
 namespace Granit.Documents.PublicLinks.Endpoints.Endpoints;
 
@@ -206,10 +208,11 @@ internal static partial class PublicLinksEndpoints
         [FromServices] IDocumentPublicLinkService service,
         [FromServices] DocumentsPublicLinksMetrics metrics,
         [FromServices] ILoggerFactory loggerFactory,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         ILogger logger = loggerFactory.CreateLogger(typeof(PublicLinksEndpoints).FullName!);
-        return await RedeemAsync(token, forceAttachment: true, service, metrics, logger, cancellationToken)
+        return await RedeemAsync(token, forceAttachment: true, service, metrics, logger, httpContext, cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -218,10 +221,11 @@ internal static partial class PublicLinksEndpoints
         [FromServices] IDocumentPublicLinkService service,
         [FromServices] DocumentsPublicLinksMetrics metrics,
         [FromServices] ILoggerFactory loggerFactory,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         ILogger logger = loggerFactory.CreateLogger(typeof(PublicLinksEndpoints).FullName!);
-        return await RedeemAsync(token, forceAttachment: false, service, metrics, logger, cancellationToken)
+        return await RedeemAsync(token, forceAttachment: false, service, metrics, logger, httpContext, cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -231,10 +235,19 @@ internal static partial class PublicLinksEndpoints
         [FromServices] IDocumentPublicLinkService service,
         [FromServices] DocumentsPublicLinksMetrics metrics,
         [FromServices] ILogger logger,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
+        // F18.4 — capture masked client IP + UA for the distributed audit event.
+        // The raw IP NEVER leaves this method; the anonymiser collapses it to /24
+        // (v4) or /48 (v6) before it crosses any module boundary.
+        string? clientIpMasked = IpAddressAnonymizer.Mask(httpContext.Connection.RemoteIpAddress);
+        string? userAgent = httpContext.Request.Headers.UserAgent is StringValues ua && ua.Count > 0
+            ? ua.ToString()
+            : null;
+
         DocumentPublicLink? link = await service
-            .ResolveAndConsumeAsync(token, cancellationToken)
+            .ResolveAndConsumeAsync(token, clientIpMasked, userAgent, cancellationToken)
             .ConfigureAwait(false);
         if (link is null)
         {

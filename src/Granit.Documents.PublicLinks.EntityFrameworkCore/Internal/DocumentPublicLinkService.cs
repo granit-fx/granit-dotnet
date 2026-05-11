@@ -2,7 +2,9 @@ using Granit.BlobStorage;
 using Granit.BlobStorage.Options;
 using Granit.Documents.Domain;
 using Granit.Documents.PublicLinks.Domain;
+using Granit.Documents.PublicLinks.Events;
 using Granit.Documents.PublicLinks.Options;
+using Granit.Events;
 using Granit.Guids;
 using Granit.Users;
 using Microsoft.Extensions.Options;
@@ -25,6 +27,7 @@ internal sealed class DocumentPublicLinkService(
     IGuidGenerator guidGenerator,
     TimeProvider timeProvider,
     IOptionsMonitor<GranitDocumentsPublicLinksOptions> optionsMonitor,
+    IDistributedEventBus? distributedEventBus = null,
     ICurrentUserService? currentUser = null) : IDocumentPublicLinkService
 {
     /// <inheritdoc/>
@@ -98,7 +101,10 @@ internal sealed class DocumentPublicLinkService(
 
     /// <inheritdoc/>
     public async Task<DocumentPublicLink?> ResolveAndConsumeAsync(
-        string token, CancellationToken cancellationToken = default)
+        string token,
+        string? clientIpMasked = null,
+        string? userAgent = null,
+        CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(token))
         {
@@ -141,6 +147,24 @@ internal sealed class DocumentPublicLinkService(
         }
 
         await store.UpdateAsync(link, cancellationToken).ConfigureAwait(false);
+
+        // F18.4 — publish the distributed audit event AFTER the consumption is durably
+        // persisted (outbox semantics: never advertise a side-effect that isn't recorded).
+        // Bus is optional — hosts without a distributed event provider get no-op behaviour.
+        if (distributedEventBus is not null)
+        {
+            var eto = new DocumentPublicLinkConsumedEto(
+                LinkId: link.Id,
+                TenantId: link.TenantId,
+                DocumentId: link.DocumentId,
+                Scope: link.Scope,
+                CurrentUses: link.CurrentUses,
+                ConsumedAt: now,
+                ClientIpMasked: clientIpMasked,
+                UserAgent: userAgent);
+            await distributedEventBus.PublishAsync(eto, cancellationToken).ConfigureAwait(false);
+        }
+
         return link;
     }
 

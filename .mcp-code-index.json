@@ -22896,7 +22896,7 @@
       "kind": "record",
       "project": "Granit.Documents.PublicLinks",
       "file": "src/Granit.Documents.PublicLinks/IDocumentPublicLinkService.cs",
-      "line": 69,
+      "line": 79,
       "members": []
     },
     {
@@ -23010,13 +23010,29 @@
       "kind": "class",
       "project": "Granit.Documents.PublicLinks.Endpoints",
       "file": "src/Granit.Documents.PublicLinks.Endpoints/Extensions/DocumentsPublicLinksEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitDocumentsPublicLinks",
           "kind": "method",
           "signature": "MapGranitDocumentsPublicLinks(this IEndpointRouteBuilder endpoints, Action<DocumentsPublicLinksEndpointsOptions>? configure = null)",
           "returnType": "IEndpointRouteBuilder"
+        }
+      ]
+    },
+    {
+      "name": "DocumentsPublicLinksRateLimiterServiceCollectionExtensions",
+      "fqn": "Granit.Documents.PublicLinks.Endpoints.Extensions.DocumentsPublicLinksRateLimiterServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks.Endpoints",
+      "file": "src/Granit.Documents.PublicLinks.Endpoints/Extensions/DocumentsPublicLinksRateLimiterServiceCollectionExtensions.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "AddGranitDocumentsPublicLinksRateLimiter",
+          "kind": "method",
+          "signature": "AddGranitDocumentsPublicLinksRateLimiter(this IServiceCollection services, IConfiguration? configuration = null)",
+          "returnType": "IServiceCollection"
         }
       ]
     },
@@ -23120,7 +23136,7 @@
       "kind": "record",
       "project": "Granit.Documents.PublicLinks",
       "file": "src/Granit.Documents.PublicLinks/Events/DocumentPublicLinkConsumedEto.cs",
-      "line": 7,
+      "line": 23,
       "members": []
     },
     {
@@ -23229,7 +23245,7 @@
         {
           "name": "ResolveAndConsumeAsync",
           "kind": "method",
-          "signature": "ResolveAndConsumeAsync(string token, CancellationToken cancellationToken = default)",
+          "signature": "ResolveAndConsumeAsync(string token, string? clientIpMasked = null, string? userAgent = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<DocumentPublicLink?>"
         },
         {
