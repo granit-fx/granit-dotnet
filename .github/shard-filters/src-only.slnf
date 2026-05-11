@@ -112,6 +112,7 @@
       "src/Granit.Documents.Renditions.Endpoints/Granit.Documents.Renditions.Endpoints.csproj",
       "src/Granit.Documents.Renditions.EntityFrameworkCore/Granit.Documents.Renditions.EntityFrameworkCore.csproj",
       "src/Granit.Documents.Renditions.Imaging/Granit.Documents.Renditions.Imaging.csproj",
+      "src/Granit.Documents.Renditions.Office/Granit.Documents.Renditions.Office.csproj",
       "src/Granit.Documents.Renditions.Pdf/Granit.Documents.Renditions.Pdf.csproj",
       "src/Granit.Documents.Renditions/Granit.Documents.Renditions.csproj",
       "src/Granit.Documents/Granit.Documents.csproj",

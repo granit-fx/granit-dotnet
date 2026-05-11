@@ -44,6 +44,7 @@
       "src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj",
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
       "src/Granit.Http.Resilience/Granit.Http.Resilience.csproj",
+      "src/Granit.Http.Security/Granit.Http.Security.csproj",
       "src/Granit.Identity.EntityFrameworkCore/Granit.Identity.EntityFrameworkCore.csproj",
       "src/Granit.Identity/Granit.Identity.csproj",
       "src/Granit.Imaging.AI/Granit.Imaging.AI.csproj",

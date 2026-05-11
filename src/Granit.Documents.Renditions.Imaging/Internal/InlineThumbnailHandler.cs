@@ -69,7 +69,7 @@ internal sealed partial class InlineThumbnailHandler(
             Guid renditionBlobId = await UploadAsync(bytes, thumb.Format, cancellationToken)
                 .ConfigureAwait(false);
 
-            DocumentRendition row = DocumentRendition.CreatePending(
+            var row = DocumentRendition.CreatePending(
                 guidGenerator.Create(),
                 evt.TenantId,
                 evt.DocumentId,

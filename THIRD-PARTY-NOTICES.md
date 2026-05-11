@@ -207,6 +207,27 @@ Dernière mise à jour : 2026-04-29
 
 ---
 
+## Dépendances binaires externes (runtime)
+
+### LibreOffice
+
+| Champ | Valeur |
+| --- | --- |
+| Nom | LibreOffice |
+| Version | 7.x+ (recommandée) |
+| Licence | MPL-2.0 (binaire) + LGPL-3.0 (composants) |
+| Copyright | © The Document Foundation |
+| Date d'ajout | 2026-05-11 |
+
+Binaire `soffice` invoqué par `Granit.Documents.Renditions.Office` via
+`Process.Start` (mode `--headless --convert-to pdf`). Aucun code LibreOffice
+n'est compilé, lié ou redistribué avec le framework — l'hôte installe la
+dépendance sur son image runtime (`apt-get install libreoffice` /
+`apk add libreoffice` / `brew install --cask libreoffice`). Le framework reste
+sous Apache-2.0.
+
+---
+
 ## Notes de conformité
 
 ### AWSSDK.S3

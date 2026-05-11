@@ -2003,20 +2003,31 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.MultiTenancy": "[0.1.0-dev, )"
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.Security": "[0.1.0-dev, )",
+          "Granit.IO": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
         }
       },
       "granit.browsing.playwright": {
         "type": "Project",
         "dependencies": {
           "Granit.Browsing": "[0.1.0-dev, )",
-          "Microsoft.Playwright": "[1.*, )"
+          "Granit.Http.Security": "[0.1.0-dev, )",
+          "Granit.IO": "[0.1.0-dev, )",
+          "Microsoft.Playwright": "[1.*, )",
+          "PdfPig": "[0.1.*, )"
         }
       },
       "granit.browsing.puppeteersharp": {
         "type": "Project",
         "dependencies": {
           "Granit.Browsing": "[0.1.0-dev, )",
+          "Granit.Http.Security": "[0.1.0-dev, )",
+          "Granit.IO": "[0.1.0-dev, )",
+          "PdfPig": "[0.1.*, )",
           "PuppeteerSharp": "[24.*, )"
         }
       },
@@ -2932,6 +2943,13 @@
           "Granit.Invoicing": "[0.1.0-dev, )"
         }
       },
+      "granit.io": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )"
+        }
+      },
       "granit.localization": {
         "type": "Project",
         "dependencies": {
@@ -3716,6 +3734,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.IO": "[0.1.0-dev, )",
           "Granit.Privacy": "[0.1.0-dev, )"
         }
       },
@@ -5168,6 +5187,12 @@
         "dependencies": {
           "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.3, 2.0.0)"
         }
+      },
+      "PdfPig": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.*, )",
+        "resolved": "0.1.14",
+        "contentHash": "V2Anq0Yvyn3bGGG8WCQxqEAshG0KHIehB0QOotCz14vTkEk1PR3ErPOSmbnEsyOewhdF3G5XpQHywK2L50Xu+A=="
       },
       "PuppeteerSharp": {
         "type": "CentralTransitive",

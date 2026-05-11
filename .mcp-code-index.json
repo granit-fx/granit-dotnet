@@ -1029,6 +1029,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.Renditions.Office",
+      "deps": [
+        "Granit.Documents.Renditions",
+        "Granit.IO"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.Renditions.Pdf",
       "deps": [
         "Granit.Browsing",
@@ -22678,6 +22686,66 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Renditions.Office.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Office",
+      "file": "src/Granit.Documents.Renditions.Office/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsOffice",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsOffice(this IServiceCollection services, Action<OfficeRenditionOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsOfficeModule",
+      "fqn": "Granit.Documents.Renditions.Office.GranitDocumentsRenditionsOfficeModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Office",
+      "file": "src/Granit.Documents.Renditions.Office/GranitDocumentsRenditionsOfficeModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "OfficeRenditionOptions",
+      "fqn": "Granit.Documents.Renditions.Office.Options.OfficeRenditionOptions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Office",
+      "file": "src/Granit.Documents.Renditions.Office/Options/OfficeRenditionOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "SofficeBinary",
+          "kind": "property",
+          "signature": "string SofficeBinary",
+          "returnType": "string"
+        },
+        {
+          "name": "MaxConcurrentConversions",
+          "kind": "property",
+          "signature": "int MaxConcurrentConversions",
+          "returnType": "int"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(60)",
+          "returnType": "TimeSpan ConversionTimeout { get; set; } = TimeSpan."
         }
       ]
     },

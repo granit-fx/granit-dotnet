@@ -125,7 +125,7 @@ internal sealed partial class RenditionGenerationService(
             return existing;
         }
 
-        DocumentRendition created = DocumentRendition.CreatePending(
+        var created = DocumentRendition.CreatePending(
             guidGenerator.Create(),
             tenantId,
             documentId,

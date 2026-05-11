@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Documents.Renditions.Office</PackageId>
+    <Description>Office (docx/xlsx/pptx + legacy doc/xls/ppt) → application/pdf rendition provider for Granit.Documents.Renditions (F16.7). Drives LibreOffice headless (soffice --headless --convert-to pdf) through a serialised process pool.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Documents.Renditions.Office.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Documents.Renditions\Granit.Documents.Renditions.csproj" />
+    <ProjectReference Include="..\Granit.IO\Granit.IO.csproj" />
+  </ItemGroup>
+
+</Project>

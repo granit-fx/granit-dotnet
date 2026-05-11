@@ -288,11 +288,6 @@
           "Microsoft.Extensions.Primitives": "10.0.7"
         }
       },
-      "Microsoft.Extensions.FileSystemGlobbing": {
-        "type": "Transitive",
-        "resolved": "10.0.7",
-        "contentHash": "NTUspqB+vH9g4wAD6KPOBx01xqYuKXR/cHXm449zpbq1GqfjdAxBmg7eJXrNsPw7SKwIdT2cJ05GxYVvc+lvsA=="
-      },
       "Microsoft.Extensions.Hosting": {
         "type": "Transitive",
         "resolved": "10.0.7",
@@ -882,6 +877,12 @@
           "Microsoft.Extensions.Diagnostics.HealthChecks": "10.0.7",
           "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions": "10.0.7"
         }
+      },
+      "Microsoft.Extensions.FileSystemGlobbing": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.7",
+        "contentHash": "NTUspqB+vH9g4wAD6KPOBx01xqYuKXR/cHXm449zpbq1GqfjdAxBmg7eJXrNsPw7SKwIdT2cJ05GxYVvc+lvsA=="
       },
       "Microsoft.Extensions.Hosting.Abstractions": {
         "type": "CentralTransitive",
