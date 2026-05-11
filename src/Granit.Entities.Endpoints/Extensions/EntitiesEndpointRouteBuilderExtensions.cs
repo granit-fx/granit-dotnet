@@ -93,7 +93,7 @@ public static class EntitiesEndpointRouteBuilderExtensions
         foreach (IEntityDefinitionDescriptor descriptorRef in registry.All)
         {
             EntityDefinitionDescriptor descriptor = descriptorRef.Descriptor;
-            IReadOnlyList<EntityActionDescriptor> serverSelectionActions = descriptor.Actions
+            var serverSelectionActions = descriptor.Actions
                 .Where(a => a.ShowOnSelection && a.RequiresServerExecution && a.ServerExecutorType is not null)
                 .ToList();
 

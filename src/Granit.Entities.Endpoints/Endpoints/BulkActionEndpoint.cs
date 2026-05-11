@@ -1,10 +1,12 @@
 using Granit.Entities.Actions;
+using Granit.Entities.Actions.Execution;
 using Granit.Entities.Endpoints.Dtos.BulkActions;
 using Granit.Entities.Internal.BulkActions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq;
@@ -35,7 +37,7 @@ internal static class BulkActionEndpoint
             return;
         }
 
-        group.MapPost(
+        RouteHandlerBuilder endpoint = group.MapPost(
             $"/{entityName}/bulk/{descriptor.Name}",
             BulkActionHandler<TEntity>)
             .WithName($"BulkExecuteAction{entityName}{descriptor.Name}")
@@ -47,18 +49,26 @@ internal static class BulkActionEndpoint
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .WithTags(entityName)
-            .RequireAuthorization(descriptor.RequiresPermission);
+            .WithTags(entityName);
+
+        if (descriptor.RequiresPermission is { Length: > 0 } permission)
+        {
+            endpoint.RequireAuthorization(permission);
+        }
+        else
+        {
+            endpoint.RequireAuthorization();
+        }
     }
 
     private static async Task<Results<Ok<BulkActionResponse>, ProblemHttpResult>> BulkActionHandler<TEntity>(
         [FromBody] BulkActionRequest request,
         [FromRoute] string name,
         [FromRoute] string action,
-        BulkActionExecutionOrchestrator orchestrator,
-        IEntityDefinitionRegistry registry,
-        IDbContextFactory<DbContext> dbContextFactory,
-        ILoggerFactory loggerFactory,
+        [FromServices] BulkActionExecutionOrchestrator orchestrator,
+        [FromServices] IEntityDefinitionRegistry registry,
+        [FromServices] IDbContextFactory<DbContext> dbContextFactory,
+        [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
         where TEntity : class
     {
@@ -93,9 +103,9 @@ internal static class BulkActionEndpoint
 
         try
         {
-            await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+            await using DbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
 
-            var result = await orchestrator.ExecuteAsync(
+            BulkActionResult result = await orchestrator.ExecuteAsync<TEntity>(
                 descriptor,
                 dbContext,
                 request.Ids,
