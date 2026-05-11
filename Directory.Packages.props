@@ -94,6 +94,9 @@
     <PackageVersion Include="Magick.NET-Q8-AnyCPU" Version="14.*" />
     <PackageVersion Include="MetadataExtractor" Version="2.*" />
   </ItemGroup>
+  <ItemGroup Label="Office">
+    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.*" />
+  </ItemGroup>
   <ItemGroup Label="OpenIddict">
     <PackageVersion Include="OpenIddict" Version="7.*" />
     <PackageVersion Include="OpenIddict.EntityFrameworkCore" Version="7.*" />
