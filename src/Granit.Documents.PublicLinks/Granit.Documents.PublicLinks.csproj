@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Documents.PublicLinks</PackageId>
+    <Description>Public sharing links for Granit.Documents (F18). HMAC-hashed tokens, scope-bound (download / view), TTL- and use-bounded, revocable. Base contracts: aggregate, options, permissions, diagnostics. Storage (EF Core), HTTP surface, and Wolverine handlers ship in companion packages.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Documents.PublicLinks.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.PublicLinks.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Documents.PublicLinks.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.PublicLinks.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Documents.PublicLinks.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.PublicLinks.BackgroundJobs" />
+    <InternalsVisibleTo Include="Granit.Documents.PublicLinks.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Documents\Granit.Documents.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+</Project>

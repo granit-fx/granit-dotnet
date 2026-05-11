@@ -1,0 +1,9 @@
+{
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:DocumentsPublicLinks": "Linki publiczne dokumentów",
+    "Permission:DocumentsPublicLinks.PublicLinks.Create": "Utwórz publiczny link udostępniania dla dokumentu",
+    "Permission:DocumentsPublicLinks.PublicLinks.Revoke": "Unieważnij istniejący publiczny link dokumentu",
+    "Permission:DocumentsPublicLinks.PublicLinks.Read": "Wyświetl publiczne linki powiązane z dokumentem"
+  }
+}

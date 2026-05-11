@@ -1,0 +1,9 @@
+{
+  "culture": "tr",
+  "texts": {
+    "PermissionGroup:DocumentsPublicLinks": "Belge genel bağlantıları",
+    "Permission:DocumentsPublicLinks.PublicLinks.Create": "Bir belge için genel paylaşım bağlantısı oluştur",
+    "Permission:DocumentsPublicLinks.PublicLinks.Revoke": "Mevcut bir belge genel bağlantısını iptal et",
+    "Permission:DocumentsPublicLinks.PublicLinks.Read": "Bir belgeye bağlı genel bağlantıları listele"
+  }
+}

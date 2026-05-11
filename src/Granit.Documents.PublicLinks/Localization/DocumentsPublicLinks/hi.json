@@ -1,0 +1,9 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:DocumentsPublicLinks": "दस्तावेज़ के सार्वजनिक लिंक",
+    "Permission:DocumentsPublicLinks.PublicLinks.Create": "किसी दस्तावेज़ के लिए सार्वजनिक साझाकरण लिंक बनाएँ",
+    "Permission:DocumentsPublicLinks.PublicLinks.Revoke": "किसी मौजूदा दस्तावेज़ के सार्वजनिक लिंक को रद्द करें",
+    "Permission:DocumentsPublicLinks.PublicLinks.Read": "किसी दस्तावेज़ से जुड़े सार्वजनिक लिंक की सूची देखें"
+  }
+}

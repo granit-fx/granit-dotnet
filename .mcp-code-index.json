@@ -1052,6 +1052,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.PublicLinks",
+      "deps": [
+        "Granit.Documents"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.Renditions",
       "deps": [
         "Granit",
@@ -22821,6 +22828,288 @@
       ]
     },
     {
+      "name": "DocumentsPublicLinksActivitySource",
+      "fqn": "Granit.Documents.PublicLinks.Diagnostics.DocumentsPublicLinksActivitySource",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Diagnostics/DocumentsPublicLinksActivitySource.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Name)",
+          "returnType": "ActivitySource Source ="
+        }
+      ]
+    },
+    {
+      "name": "DocumentsPublicLinksMetrics",
+      "fqn": "Granit.Documents.PublicLinks.Diagnostics.DocumentsPublicLinksMetrics",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Diagnostics/DocumentsPublicLinksMetrics.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "RecordRevoked",
+          "kind": "method",
+          "signature": "RecordRevoked(string? tenantId, string reason)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordConsumed",
+          "kind": "method",
+          "signature": "RecordConsumed(string? tenantId, string scope)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DocumentPublicLinkCreationResult",
+      "fqn": "Granit.Documents.PublicLinks.DocumentPublicLinkCreationResult",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/IDocumentPublicLinkService.cs",
+      "line": 37,
+      "members": []
+    },
+    {
+      "name": "DocumentPublicLink",
+      "fqn": "Granit.Documents.PublicLinks.Domain.DocumentPublicLink",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Domain/DocumentPublicLink.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid documentId, Guid? tenantId, byte[] tokenHash, PublicLinkScope scope, DateTimeOffset expiresAt, int? maxUses, TimeProvider timeProvider)",
+          "returnType": "DocumentPublicLink"
+        },
+        {
+          "name": "IsActive",
+          "kind": "method",
+          "signature": "IsActive(DateTimeOffset now)",
+          "returnType": "PublicLinkScope Scope { get; private set; } public DateTimeOffset ExpiresAt { get; private set; } public int? MaxUses { get; private set; } public int CurrentUses { get; private set; } public DateTimeOffset CreatedAt { get; private set; } public DateTimeOffset? RevokedAt { get; private set; } public Guid? RevokedBy { get; private set; } public string? RevocationReason { get; private set; } public bool"
+        },
+        {
+          "name": "Revoke",
+          "kind": "method",
+          "signature": "Revoke(Guid? revokedBy, string? reason, TimeProvider timeProvider)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PublicLinkScope",
+      "fqn": "Granit.Documents.PublicLinks.Domain.PublicLinkScope",
+      "kind": "enum",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Domain/PublicLinkScope.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "PublicLinkToken",
+      "fqn": "Granit.Documents.PublicLinks.Domain.PublicLinkToken",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Domain/PublicLinkToken.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string value)",
+          "returnType": "required string Value { get; init; } public PublicLinkToken"
+        }
+      ]
+    },
+    {
+      "name": "PublicLinkTokenFactory",
+      "fqn": "Granit.Documents.PublicLinks.Domain.PublicLinkTokenFactory",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Domain/PublicLinkToken.cs",
+      "line": 43,
+      "members": [
+        {
+          "name": "GenerateRandom",
+          "kind": "method",
+          "signature": "GenerateRandom()",
+          "returnType": "PublicLinkToken"
+        }
+      ]
+    },
+    {
+      "name": "DocumentPublicLinkConsumedEto",
+      "fqn": "Granit.Documents.PublicLinks.Events.DocumentPublicLinkConsumedEto",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Events/DocumentPublicLinkConsumedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "DocumentPublicLinkConsumedEvent",
+      "fqn": "Granit.Documents.PublicLinks.Events.DocumentPublicLinkConsumedEvent",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Events/DocumentPublicLinkConsumedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "DocumentPublicLinkCreatedEto",
+      "fqn": "Granit.Documents.PublicLinks.Events.DocumentPublicLinkCreatedEto",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Events/DocumentPublicLinkCreatedEto.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "DocumentPublicLinkCreatedEvent",
+      "fqn": "Granit.Documents.PublicLinks.Events.DocumentPublicLinkCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Events/DocumentPublicLinkCreatedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "DocumentPublicLinkRevokedEto",
+      "fqn": "Granit.Documents.PublicLinks.Events.DocumentPublicLinkRevokedEto",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Events/DocumentPublicLinkRevokedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "DocumentPublicLinkRevokedEvent",
+      "fqn": "Granit.Documents.PublicLinks.Events.DocumentPublicLinkRevokedEvent",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Events/DocumentPublicLinkRevokedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.PublicLinks.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Extensions/ServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitDocumentsPublicLinks",
+          "kind": "method",
+          "signature": "AddGranitDocumentsPublicLinks(this IServiceCollection services, Action<GranitDocumentsPublicLinksOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsPublicLinksModule",
+      "fqn": "Granit.Documents.PublicLinks.GranitDocumentsPublicLinksModule",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/GranitDocumentsPublicLinksModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IDocumentPublicLinkService",
+      "fqn": "Granit.Documents.PublicLinks.IDocumentPublicLinkService",
+      "kind": "interface",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/IDocumentPublicLinkService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(Guid documentId, PublicLinkScope scope, TimeSpan ttl, int? maxUses, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentPublicLinkCreationResult>"
+        },
+        {
+          "name": "RevokeAsync",
+          "kind": "method",
+          "signature": "RevokeAsync(Guid linkId, string? reason, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ListForDocumentAsync",
+          "kind": "method",
+          "signature": "ListForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DocumentPublicLink>>"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsPublicLinksOptions",
+      "fqn": "Granit.Documents.PublicLinks.Options.GranitDocumentsPublicLinksOptions",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Options/GranitDocumentsPublicLinksOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(7)",
+          "returnType": "TimeSpan DefaultTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(90)",
+          "returnType": "TimeSpan MaxTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "SigningKey",
+          "kind": "property",
+          "signature": "byte[] SigningKey",
+          "returnType": "byte[]"
+        },
+        {
+          "name": "RateLimitPerMinute",
+          "kind": "property",
+          "signature": "int RateLimitPerMinute",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "DocumentsPublicLinksPermissions",
+      "fqn": "Granit.Documents.PublicLinks.Permissions.DocumentsPublicLinksPermissions",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Permissions/DocumentsPublicLinksPermissions.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PublicLinks",
+      "fqn": "Granit.Documents.PublicLinks.Permissions.PublicLinks",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Permissions/DocumentsPublicLinksPermissions.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "DocumentQueryDefinition",
       "fqn": "Granit.Documents.Queries.DocumentQueryDefinition",
       "kind": "class",
@@ -24573,7 +24862,7 @@
       "kind": "class",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionBuilder.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "Put",
@@ -24629,7 +24918,7 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionDescriptor.cs",
-      "line": 25,
+      "line": 27,
       "members": []
     },
     {
@@ -24649,6 +24938,90 @@
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionServiceCollectionExtensions.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "BulkActionDispatchResult",
+      "fqn": "Granit.Entities.Actions.Execution.BulkActionDispatchResult",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Actions/Execution/BulkActionExecutionOrchestrator.cs",
+      "line": 167,
+      "members": []
+    },
+    {
+      "name": "BulkActionExecutionOrchestrator",
+      "fqn": "Granit.Entities.Actions.Execution.BulkActionExecutionOrchestrator",
+      "kind": "class",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Actions/Execution/BulkActionExecutionOrchestrator.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "DispatchAsync",
+          "kind": "method",
+          "signature": "DispatchAsync(Type entityType, Type serverExecutorType, IReadOnlyList<Guid> ids, JsonElement payload, IServiceProvider scopedServices, CancellationToken cancellationToken)",
+          "returnType": "Task<BulkActionDispatchResult>"
+        }
+      ]
+    },
+    {
+      "name": "BulkActionExecutionResult",
+      "fqn": "Granit.Entities.Actions.Execution.BulkActionExecutionResult",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/Execution/BulkActionExecutionResult.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "BulkActionFailure",
+      "fqn": "Granit.Entities.Actions.Execution.BulkActionFailure",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/Execution/BulkActionFailure.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "EntityActionExecutionResult",
+      "fqn": "Granit.Entities.Actions.Execution.EntityActionExecutionResult",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/Execution/EntityActionExecutionResult.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "IBulkActionExecutor",
+      "fqn": "Granit.Entities.Actions.Execution.IBulkActionExecutor",
+      "kind": "interface",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/Execution/IBulkActionExecutor.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ExecuteBulkAsync",
+          "kind": "method",
+          "signature": "ExecuteBulkAsync(IReadOnlyList<Guid> ids, JsonElement payload, CancellationToken cancellationToken)",
+          "returnType": "Task<BulkActionExecutionResult<TEntity>>"
+        }
+      ]
+    },
+    {
+      "name": "IEntityActionExecutor",
+      "fqn": "Granit.Entities.Actions.Execution.IEntityActionExecutor",
+      "kind": "interface",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/Execution/IEntityActionExecutor.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(Guid id, JsonElement payload, CancellationToken cancellationToken)",
+          "returnType": "Task<EntityActionExecutionResult<TEntity>>"
+        }
+      ]
     },
     {
       "name": "IEntityActionContributionContext",
@@ -25123,6 +25496,24 @@
       ]
     },
     {
+      "name": "BulkActionRequest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.BulkActionRequest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/BulkActionRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "BulkActionResponse",
+      "fqn": "Granit.Entities.Endpoints.Dtos.BulkActionResponse",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/BulkActionResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "CalendarRangeRequest",
       "fqn": "Granit.Entities.Endpoints.Dtos.CalendarRangeRequest",
       "kind": "record",
@@ -25272,6 +25663,12 @@
           "kind": "method",
           "signature": "FromMinutes(1)",
           "returnType": "TimeSpan CalendarRangeCacheTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "BulkActionMaxIds",
+          "kind": "property",
+          "signature": "int BulkActionMaxIds",
+          "returnType": "int"
         }
       ]
     },
@@ -25373,7 +25770,7 @@
       "kind": "class",
       "project": "Granit.Entities",
       "file": "src/Granit.Entities/Extensions/EntitiesServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitEntities",

@@ -1,0 +1,9 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:DocumentsPublicLinks": "Openbare documentkoppelingen",
+    "Permission:DocumentsPublicLinks.PublicLinks.Create": "Een openbare deelkoppeling voor een document aanmaken",
+    "Permission:DocumentsPublicLinks.PublicLinks.Revoke": "Een bestaande openbare documentkoppeling intrekken",
+    "Permission:DocumentsPublicLinks.PublicLinks.Read": "De openbare koppelingen van een document opvragen"
+  }
+}

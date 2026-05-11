@@ -1,0 +1,9 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:DocumentsPublicLinks": "문서 공개 링크",
+    "Permission:DocumentsPublicLinks.PublicLinks.Create": "문서에 대한 공개 공유 링크 생성",
+    "Permission:DocumentsPublicLinks.PublicLinks.Revoke": "기존 문서 공개 링크 취소",
+    "Permission:DocumentsPublicLinks.PublicLinks.Read": "문서에 연결된 공개 링크 목록 조회"
+  }
+}

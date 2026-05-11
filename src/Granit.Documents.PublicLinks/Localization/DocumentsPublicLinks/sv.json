@@ -1,0 +1,9 @@
+{
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:DocumentsPublicLinks": "Offentliga dokumentlänkar",
+    "Permission:DocumentsPublicLinks.PublicLinks.Create": "Skapa en offentlig delningslänk för ett dokument",
+    "Permission:DocumentsPublicLinks.PublicLinks.Revoke": "Återkalla en befintlig offentlig dokumentlänk",
+    "Permission:DocumentsPublicLinks.PublicLinks.Read": "Lista de offentliga länkar som är kopplade till ett dokument"
+  }
+}
