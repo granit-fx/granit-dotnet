@@ -1,0 +1,157 @@
+# =============================================================================
+# Block PRs that disable analyzers without justification
+# =============================================================================
+# Inspects the PR diff for newly added analyzer suppressions:
+#   - #pragma warning disable
+#   - <NoWarn>...</NoWarn>
+#   - dotnet_diagnostic.*.severity = none|silent  (in .editorconfig / .globalconfig)
+#   - [SuppressMessage(...)]
+#
+# A suppression is allowed only if the SAME hunk introduces a
+# `// justification:` (or `<!-- justification: -->`) comment.
+#
+# Fails the check with a comment listing the offending hunks.
+# =============================================================================
+
+name: No Analyzer Suppressions
+
+on:
+  pull_request:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  scan:
+    name: Scan PR diff for analyzer suppressions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Detect newly added suppressions
+        id: scan
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+
+          # Diff restricted to source files we actually care about.
+          mapfile -t files < <(git diff --name-only --diff-filter=AM "$base" "$head" \
+            | grep -E '\.(cs|csproj|props|targets|editorconfig|globalconfig)$' || true)
+
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "no relevant files changed"
+            echo "violations=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          violations_file="$(mktemp)"
+          : > "$violations_file"
+
+          # Patterns that indicate a new suppression on an added line ('+' prefix,
+          # not '+++' header).
+          patterns='^\+[^+].*(#pragma\s+warning\s+disable|<NoWarn>|dotnet_diagnostic\.[^=]+\=\s*(none|silent)|SuppressMessage\()'
+
+          for f in "${files[@]}"; do
+            # Hunks added by this PR for the file.
+            hunks="$(git diff "$base" "$head" -- "$f" || true)"
+            [ -z "$hunks" ] && continue
+
+            # Walk added lines; for each suspect added line, check whether the
+            # same hunk also contains an added 'justification:' line.
+            current_hunk=""
+            while IFS= read -r line; do
+              if [[ "$line" =~ ^@@ ]]; then
+                # New hunk — evaluate the previous one
+                if [[ -n "$current_hunk" ]]; then
+                  if echo "$current_hunk" | grep -Eq "$patterns"; then
+                    if ! echo "$current_hunk" | grep -Eq '^\+[^+].*justification:'; then
+                      {
+                        echo "── $f ──"
+                        echo "$current_hunk" | grep -E "$patterns" || true
+                        echo
+                      } >> "$violations_file"
+                    fi
+                  fi
+                fi
+                current_hunk="$line"$'\n'
+              else
+                current_hunk+="$line"$'\n'
+              fi
+            done <<< "$hunks"
+
+            # Tail hunk
+            if [[ -n "$current_hunk" ]]; then
+              if echo "$current_hunk" | grep -Eq "$patterns"; then
+                if ! echo "$current_hunk" | grep -Eq '^\+[^+].*justification:'; then
+                  {
+                    echo "── $f ──"
+                    echo "$current_hunk" | grep -E "$patterns" || true
+                    echo
+                  } >> "$violations_file"
+                fi
+              fi
+            fi
+          done
+
+          if [ -s "$violations_file" ]; then
+            {
+              echo "violations<<EOF"
+              cat "$violations_file"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            echo "count=$(wc -l < "$violations_file")" >> "$GITHUB_OUTPUT"
+          else
+            echo "count=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Comment on PR if violations
+        if: steps.scan.outputs.count != '0'
+        uses: actions/github-script@v7
+        env:
+          VIOLATIONS: ${{ steps.scan.outputs.violations }}
+        with:
+          script: |
+            const body = [
+              '## Analyzer suppressions added without justification',
+              '',
+              'This PR adds one or more analyzer suppressions',
+              '(`#pragma warning disable`, `<NoWarn>`, `dotnet_diagnostic.*.severity = none`,',
+              'or `[SuppressMessage]`) on lines that do **not** carry a `justification:` comment.',
+              '',
+              'Per `CONTRIBUTING.md`, suppressions must either be fixed at the source or',
+              'documented inline. Example:',
+              '',
+              '```csharp',
+              '// justification: false positive — handler is discovered by Wolverine via',
+              '// Assembly.ExportedTypes and requires a public ctor (see CLAUDE.md).',
+              '#pragma warning disable S1118',
+              '```',
+              '',
+              'Offending hunks:',
+              '',
+              '```diff',
+              process.env.VIOLATIONS || '(empty)',
+              '```',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });
+
+      - name: Fail if violations
+        if: steps.scan.outputs.count != '0'
+        run: |
+          echo "::error::This PR adds analyzer suppressions without a 'justification:' comment. See PR comment."
+          exit 1
