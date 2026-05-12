@@ -5,7 +5,10 @@
     <IsPackable>false</IsPackable>
     <!-- Granit analyzers target production code — test projects legitimately use
          Guid.NewGuid(), DateTimeOffset.UtcNow, and test secrets for setup/assertions. -->
-    <NoWarn>$(NoWarn);GRSEC001;GRSEC002;GRSEC003;GRSEC004;GREF001;RS0030</NoWarn>
+    <!-- CA1305/CA1848/CA1873 are enforced in src/ but relaxed in tests:
+         test code intentionally uses culture-sensitive ToString and inline log calls
+         for readability — perf and locale concerns don't apply to test setup. -->
+    <NoWarn>$(NoWarn);GRSEC001;GRSEC002;GRSEC003;GRSEC004;GREF001;RS0030;CA1305;CA1848;CA1873</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
