@@ -1,7 +1,0 @@
-{
-  "culture": "cs",
-  "texts": {
-    "PermissionGroup:Analytics": "Analýza",
-    "Permission:Analytics.Metrics.Read": "Vyhodnocovat definice analytických metrik prostřednictvím HTTP API"
-  }
-}

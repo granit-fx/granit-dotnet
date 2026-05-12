@@ -1,9 +1,0 @@
-{
-  "culture": "fr",
-  "texts": {
-    "PermissionGroup:CustomerBalance": "Solde client",
-    "Permission:CustomerBalance.Accounts.Read": "Consulter les comptes de solde",
-    "Permission:CustomerBalance.Transactions.Read": "Consulter l'historique des transactions",
-    "Permission:CustomerBalance.Credits.Manage": "Gérer les crédits (ajout, ajustement)"
-  }
-}

@@ -1,8 +1,0 @@
-{
-  "culture": "cs",
-  "texts": {
-    "Metric:Granit.Parties.ActivePartyCountMetric": "Aktivní strany",
-    "Metric:Granit.Parties.MergedPartyCountMetric": "Sloučené strany",
-    "Metric:Granit.Parties.PartyCountMetric": "Celkem stran"
-  }
-}

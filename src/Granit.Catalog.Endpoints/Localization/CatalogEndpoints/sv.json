@@ -1,8 +1,0 @@
-{
-  "culture": "sv",
-  "texts": {
-    "PermissionGroup:Catalog": "Katalog",
-    "Permission:Catalog.Products.Read": "Visa katalogprodukter",
-    "Permission:Catalog.Products.Manage": "Hantera katalogprodukter (skapa, uppdatera, publicera, arkivera, externa kopplingar)"
-  }
-}

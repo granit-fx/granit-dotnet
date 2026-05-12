@@ -1,8 +1,0 @@
-<p>您好，</p>
-<p>已为发票 <strong>{{ model.parent_invoice_number | html.escape }}</strong> 开具了一张贷项通知单：</p>
-<ul>
-  <li><strong>贷项通知单：</strong>{{ model.credit_note_number | html.escape }}</li>
-  <li><strong>金额：</strong>{{ model.amount }} {{ model.currency }}</li>
-  <li><strong>原因：</strong>{{ model.reason | html.escape }}</li>
-</ul>
-<p>该贷项已记入您的账户。</p>

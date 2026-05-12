@@ -1,8 +1,0 @@
-<p>Salve,</p>
-<p>È stata emessa una nota di credito per la fattura <strong>{{ model.parent_invoice_number | html.escape }}</strong>:</p>
-<ul>
-  <li><strong>Nota di credito:</strong> {{ model.credit_note_number | html.escape }}</li>
-  <li><strong>Importo:</strong> {{ model.amount }} {{ model.currency }}</li>
-  <li><strong>Motivo:</strong> {{ model.reason | html.escape }}</li>
-</ul>
-<p>Il credito è stato applicato al suo conto.</p>

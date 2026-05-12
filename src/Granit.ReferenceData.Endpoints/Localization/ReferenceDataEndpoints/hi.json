@@ -1,8 +1,0 @@
-{
-  "culture": "hi",
-  "texts": {
-    "PermissionGroup:ReferenceData": "संदर्भ डेटा",
-    "Permission:ReferenceData.Entries.Read": "संदर्भ डेटा प्रविष्टियाँ देखें",
-    "Permission:ReferenceData.Entries.Manage": "संदर्भ डेटा प्रविष्टियाँ प्रबंधित करें (बनाएँ, अपडेट, निष्क्रिय करें)"
-  }
-}

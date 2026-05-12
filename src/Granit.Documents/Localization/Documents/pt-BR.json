@@ -1,9 +1,0 @@
-{
-  "culture": "pt-BR",
-  "texts": {
-    "Permission:Documents.Documents.Manage": "Carregar, renomear, mover e enviar documentos para a lixeira",
-    "Permission:Documents.Folders.Manage": "Criar, renomear, mover e enviar pastas para a lixeira",
-    "Permission:Documents.Shares.Manage": "Conceder e revogar compartilhamentos em pastas e documentos",
-    "Permission:Documents.Shares.Read": "Ver os compartilhamentos em pastas e documentos"
-  }
-}

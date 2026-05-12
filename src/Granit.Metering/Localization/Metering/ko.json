@@ -1,7 +1,0 @@
-{
-  "culture": "ko",
-  "texts": {
-    "Metric:Granit.Metering.UsageAggregateCountMetric": "사용량 롤업 행",
-    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "총 계측 사용량"
-  }
-}

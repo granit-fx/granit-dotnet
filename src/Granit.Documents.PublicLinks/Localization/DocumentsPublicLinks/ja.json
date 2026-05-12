@@ -1,9 +1,0 @@
-{
-  "culture": "ja",
-  "texts": {
-    "PermissionGroup:DocumentsPublicLinks": "ドキュメント公開リンク",
-    "Permission:DocumentsPublicLinks.PublicLinks.Create": "ドキュメントの公開共有リンクを作成する",
-    "Permission:DocumentsPublicLinks.PublicLinks.Revoke": "既存のドキュメント公開リンクを失効させる",
-    "Permission:DocumentsPublicLinks.PublicLinks.Read": "ドキュメントに紐づく公開リンクを一覧表示する"
-  }
-}

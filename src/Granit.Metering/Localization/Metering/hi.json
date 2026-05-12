@@ -1,7 +1,0 @@
-{
-  "culture": "hi",
-  "texts": {
-    "Metric:Granit.Metering.UsageAggregateCountMetric": "उपयोग सारांश पंक्तियाँ",
-    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "कुल मापा गया उपयोग"
-  }
-}

@@ -1,7 +1,0 @@
-{
-  "culture": "cs",
-  "texts": {
-    "Metric:Granit.Metering.UsageAggregateCountMetric": "Řádky agregace využití",
-    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "Celkové měřené využití"
-  }
-}

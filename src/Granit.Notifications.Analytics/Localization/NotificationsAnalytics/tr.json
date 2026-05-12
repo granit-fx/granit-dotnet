@@ -1,8 +1,0 @@
-{
-  "culture": "tr",
-  "texts": {
-    "Metric:Granit.Notifications.ReadUserNotificationCountMetric": "Okunan bildirimler",
-    "Metric:Granit.Notifications.UnreadUserNotificationCountMetric": "Okunmamış bildirimler",
-    "Metric:Granit.Notifications.UserNotificationCountMetric": "Toplam bildirim"
-  }
-}

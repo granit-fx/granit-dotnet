@@ -1,8 +1,0 @@
-{
-  "culture": "zh",
-  "texts": {
-    "PermissionGroup:ReferenceData": "参考数据",
-    "Permission:ReferenceData.Entries.Read": "查看参考数据条目",
-    "Permission:ReferenceData.Entries.Manage": "管理参考数据条目（创建、更新、停用）"
-  }
-}

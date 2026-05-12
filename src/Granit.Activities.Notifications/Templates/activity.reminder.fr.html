@@ -1,4 +1,0 @@
-<title>Rappel : activité {{ model.type }} due demain</title>
-<p>Bonjour,</p>
-<p>Ceci est un rappel : votre activité <strong>{{ model.type }}</strong> est due demain, le <strong>{{ model.due_at | date.to_string '%d %B %Y à %H:%M UTC' }}</strong>.</p>
-<p>Référence : <code>{{ model.activity_id }}</code> sur <code>{{ model.entity_type }}</code> #<code>{{ model.entity_id }}</code>.</p>

@@ -1,7 +1,0 @@
-<title>Un document a été partagé avec vous</title>
-<p>Bonjour,</p>
-<p>L'accès <strong>{{ model.permission }}</strong> vous a été accordé sur le {{ if model.target_type == "Folder" }}dossier{{ else }}document{{ end }}{{ if model.target_name }} <strong>{{ model.target_name }}</strong>{{ end }}.</p>
-{{ if model.expires_at }}
-<p>Ce partage expire le <strong>{{ model.expires_at | date.to_string '%d/%m/%Y' }}</strong>.</p>
-{{ end }}
-<p>Référence : <code>{{ model.share_id }}</code></p>

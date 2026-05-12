@@ -1,8 +1,0 @@
-{
-  "culture": "sv",
-  "texts": {
-    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Föräldralösa blobs",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Giltiga blobs",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Total lagring (byte)"
-  }
-}

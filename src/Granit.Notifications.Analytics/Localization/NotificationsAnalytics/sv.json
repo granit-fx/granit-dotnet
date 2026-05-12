@@ -1,8 +1,0 @@
-{
-  "culture": "sv",
-  "texts": {
-    "Metric:Granit.Notifications.ReadUserNotificationCountMetric": "Lästa aviseringar",
-    "Metric:Granit.Notifications.UnreadUserNotificationCountMetric": "Olästa aviseringar",
-    "Metric:Granit.Notifications.UserNotificationCountMetric": "Totalt aviseringar"
-  }
-}

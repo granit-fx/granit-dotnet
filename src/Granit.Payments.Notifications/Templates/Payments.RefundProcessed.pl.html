@@ -1,9 +1,0 @@
-<p>Dzień dobry,</p>
-<p>Zwrot został przetworzony na Twoim koncie:</p>
-<ul>
-  <li><strong>Kwota:</strong> {{ model.amount }} {{ model.currency }}</li>
-  {{- if model.reason }}
-  <li><strong>Powód:</strong> {{ model.reason | html.escape }}</li>
-  {{- end }}
-</ul>
-<p>Zwrot powinien pojawić się na Twoim koncie w ciągu 5–10 dni roboczych, w zależności od dostawcy płatności.</p>

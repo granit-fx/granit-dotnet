@@ -1,9 +1,0 @@
-{
-  "culture": "fr",
-  "texts": {
-    "EntitiesEndpoints:DiscoverySection": "Entités",
-    "EntitiesEndpoints:NoEntitiesAvailable": "Aucune entité n'est accessible pour votre compte.",
-    "EntitiesEndpoints:ManifestNotFound": "Aucune EntityDefinition n'est enregistrée sous le nom '{name}'.",
-    "EntitiesEndpoints:ManifestForbidden": "Vous n'avez pas la permission de consulter l'entité '{name}'."
-  }
-}

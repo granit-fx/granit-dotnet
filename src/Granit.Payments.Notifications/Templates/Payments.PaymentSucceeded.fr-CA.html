@@ -1,9 +1,0 @@
-<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
-<p>Bonjour,</p>
-<p>Votre paiement a été traité avec succès :</p>
-<ul>
-  <li><strong>Montant :</strong> {{ model.amount }} {{ model.currency }}</li>
-  <li><strong>Fournisseur :</strong> {{ model.provider_name | html.escape }}</li>
-  <li><strong>Date :</strong> {{ model.succeeded_at | to_user_time | date.to_string "%Y-%m-%d à %H:%M" }}</li>
-</ul>
-<p>Un reçu sera disponible dans votre compte sous peu.</p>

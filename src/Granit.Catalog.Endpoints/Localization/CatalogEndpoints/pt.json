@@ -1,8 +1,0 @@
-{
-  "culture": "pt",
-  "texts": {
-    "PermissionGroup:Catalog": "Catálogo",
-    "Permission:Catalog.Products.Read": "Consultar os produtos do catálogo",
-    "Permission:Catalog.Products.Manage": "Gerir os produtos do catálogo (criar, atualizar, publicar, arquivar, mapeamentos externos)"
-  }
-}

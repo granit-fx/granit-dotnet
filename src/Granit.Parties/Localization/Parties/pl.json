@@ -1,8 +1,0 @@
-{
-  "culture": "pl",
-  "texts": {
-    "Metric:Granit.Parties.ActivePartyCountMetric": "Aktywne strony",
-    "Metric:Granit.Parties.MergedPartyCountMetric": "Połączone strony",
-    "Metric:Granit.Parties.PartyCountMetric": "Łączna liczba stron"
-  }
-}

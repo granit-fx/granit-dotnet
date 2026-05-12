@@ -21,8 +21,6 @@
     <ProjectReference Include="..\..\src\bundles\Granit.Bundle.Essentials\Granit.Bundle.Essentials.csproj" />
     <ProjectReference Include="..\..\src\bundles\Granit.Bundle.Api\Granit.Bundle.Api.csproj" />
     <ProjectReference Include="..\..\src\bundles\Granit.Bundle.Notifications\Granit.Bundle.Notifications.csproj" />
-    <ProjectReference Include="..\..\src\bundles\Granit.Bundle.Documents\Granit.Bundle.Documents.csproj" />
-    <ProjectReference Include="..\..\src\bundles\Granit.Bundle.SaaS\Granit.Bundle.SaaS.csproj" />
   </ItemGroup>
 
 </Project>

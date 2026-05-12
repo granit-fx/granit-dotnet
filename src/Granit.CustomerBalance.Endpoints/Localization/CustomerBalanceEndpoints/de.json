@@ -1,9 +1,0 @@
-{
-  "culture": "de",
-  "texts": {
-    "PermissionGroup:CustomerBalance": "Kundenguthaben",
-    "Permission:CustomerBalance.Accounts.Read": "Guthabenkonten anzeigen",
-    "Permission:CustomerBalance.Transactions.Read": "Transaktionsverlauf anzeigen",
-    "Permission:CustomerBalance.Credits.Manage": "Guthaben verwalten (hinzufügen, anpassen)"
-  }
-}

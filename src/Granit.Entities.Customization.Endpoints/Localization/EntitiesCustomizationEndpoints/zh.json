@@ -1,8 +1,0 @@
-{
-  "culture": "zh",
-  "texts": {
-    "PermissionGroup:EntitiesCustomization": "实体定制",
-    "Permission:EntitiesCustomization.Customizations.Read": "查看实体定制",
-    "Permission:EntitiesCustomization.Customizations.Manage": "管理实体定制"
-  }
-}

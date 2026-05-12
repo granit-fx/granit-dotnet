@@ -1,8 +1,0 @@
-{
-  "culture": "zh",
-  "texts": {
-    "Metric:Granit.Payments.SepaDirectDebit.ActiveMandateCountMetric": "活跃 SEPA 授权",
-    "Metric:Granit.Payments.SepaDirectDebit.CancelledMandateCountMetric": "已取消的 SEPA 授权",
-    "Metric:Granit.Payments.SepaDirectDebit.PendingMandateCountMetric": "待处理 SEPA 授权"
-  }
-}

@@ -1,9 +1,0 @@
-{
-  "culture": "zh",
-  "texts": {
-    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "活跃 Webhook 订阅",
-    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "失败的 Webhook 投递",
-    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Webhook 延迟（平均毫秒）",
-    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Webhook 投递成功率"
-  }
-}

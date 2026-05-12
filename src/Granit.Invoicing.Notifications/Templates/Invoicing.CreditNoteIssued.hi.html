@@ -1,8 +1,0 @@
-<p>नमस्ते,</p>
-<p>चालान <strong>{{ model.parent_invoice_number | html.escape }}</strong> के लिए एक क्रेडिट नोट जारी किया गया है:</p>
-<ul>
-  <li><strong>क्रेडिट नोट:</strong> {{ model.credit_note_number | html.escape }}</li>
-  <li><strong>राशि:</strong> {{ model.amount }} {{ model.currency }}</li>
-  <li><strong>कारण:</strong> {{ model.reason | html.escape }}</li>
-</ul>
-<p>क्रेडिट आपके खाते में लागू कर दिया गया है।</p>

@@ -1,9 +1,0 @@
-{
-  "culture": "fr",
-  "texts": {
-    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "Abonnements webhook actifs",
-    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "Livraisons webhook échouées",
-    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Latence webhook (moyenne ms)",
-    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Taux de réussite des webhooks"
-  }
-}

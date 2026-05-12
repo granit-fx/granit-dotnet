@@ -1,8 +1,0 @@
-{
-  "culture": "nl",
-  "texts": {
-    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Verweesde blobs",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Geldige blobs",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Totale opslag (bytes)"
-  }
-}

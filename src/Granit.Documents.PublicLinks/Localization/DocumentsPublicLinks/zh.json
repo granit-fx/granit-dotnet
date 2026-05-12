@@ -1,9 +1,0 @@
-{
-  "culture": "zh",
-  "texts": {
-    "PermissionGroup:DocumentsPublicLinks": "文档公开链接",
-    "Permission:DocumentsPublicLinks.PublicLinks.Create": "为文档创建公开共享链接",
-    "Permission:DocumentsPublicLinks.PublicLinks.Revoke": "撤销现有的文档公开链接",
-    "Permission:DocumentsPublicLinks.PublicLinks.Read": "列出文档关联的公开链接"
-  }
-}

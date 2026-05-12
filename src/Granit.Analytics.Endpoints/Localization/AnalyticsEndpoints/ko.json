@@ -1,7 +1,0 @@
-{
-  "culture": "ko",
-  "texts": {
-    "PermissionGroup:Analytics": "분석",
-    "Permission:Analytics.Metrics.Read": "HTTP API를 통해 분석 지표 정의 평가"
-  }
-}

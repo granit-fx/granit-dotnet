@@ -1,8 +1,0 @@
-<p>Hallo,</p>
-<p>Für die Rechnung <strong>{{ model.parent_invoice_number | html.escape }}</strong> wurde eine Gutschrift erstellt:</p>
-<ul>
-  <li><strong>Gutschrift:</strong> {{ model.credit_note_number | html.escape }}</li>
-  <li><strong>Betrag:</strong> {{ model.amount }} {{ model.currency }}</li>
-  <li><strong>Grund:</strong> {{ model.reason | html.escape }}</li>
-</ul>
-<p>Die Gutschrift wurde Ihrem Konto gutgeschrieben.</p>

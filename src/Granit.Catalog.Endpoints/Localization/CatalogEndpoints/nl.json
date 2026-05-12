@@ -1,8 +1,0 @@
-{
-  "culture": "nl",
-  "texts": {
-    "PermissionGroup:Catalog": "Catalogus",
-    "Permission:Catalog.Products.Read": "Catalogusproducten bekijken",
-    "Permission:Catalog.Products.Manage": "Catalogusproducten beheren (aanmaken, bijwerken, publiceren, archiveren, externe koppelingen)"
-  }
-}

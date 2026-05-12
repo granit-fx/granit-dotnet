@@ -1,5 +1,0 @@
-<title>En retard : {{ model.type }} ({{ model.overdue_by_days }} jour(s) de retard)</title>
-<p>Bonjour,</p>
-<p>Votre activité <strong>{{ model.type }}</strong> est maintenant en retard de <strong>{{ model.overdue_by_days }} jour(s)</strong> — elle était initialement due le <strong>{{ model.due_at | date.to_string '%d %B %Y à %H:%M UTC' }}</strong>.</p>
-<p>Référence : <code>{{ model.activity_id }}</code> sur <code>{{ model.entity_type }}</code> #<code>{{ model.entity_id }}</code>.</p>
-<p>Veuillez ouvrir l'activité pour la terminer, la replanifier ou l'annuler.</p>

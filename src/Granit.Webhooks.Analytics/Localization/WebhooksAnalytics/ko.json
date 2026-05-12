@@ -1,9 +1,0 @@
-{
-  "culture": "ko",
-  "texts": {
-    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "활성 Webhook 구독",
-    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "실패한 Webhook 전송",
-    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Webhook 지연시간 (평균 ms)",
-    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Webhook 전송 성공률"
-  }
-}

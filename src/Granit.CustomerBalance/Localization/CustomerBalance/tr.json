@@ -1,9 +1,0 @@
-{
-  "culture": "tr",
-  "texts": {
-    "Metric:Granit.CustomerBalance.BalanceAccountCountMetric": "Bakiye hesapları",
-    "Metric:Granit.CustomerBalance.BalanceAccountTotalMetric": "Toplam müşteri bakiyesi",
-    "Metric:Granit.CustomerBalance.CreditBalanceTransactionTotalMetric": "Verilen krediler",
-    "Metric:Granit.CustomerBalance.DebitBalanceTransactionTotalMetric": "Kullanılan krediler"
-  }
-}

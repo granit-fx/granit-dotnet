@@ -1,8 +1,0 @@
-<p>नमस्ते,</p>
-<p>आपका भुगतान सफलतापूर्वक प्रोसेस किया गया है:</p>
-<ul>
-  <li><strong>राशि:</strong> {{ model.amount }} {{ model.currency }}</li>
-  <li><strong>प्रदाता:</strong> {{ model.provider_name | html.escape }}</li>
-  <li><strong>तिथि:</strong> {{ model.succeeded_at | to_user_time | date.to_string "%B %d, %Y at %H:%M" }}</li>
-</ul>
-<p>एक रसीद शीघ्र ही आपके खाते में उपलब्ध होगी।</p>

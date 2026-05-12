@@ -1,8 +1,0 @@
-{
-  "culture": "hi",
-  "texts": {
-    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "अनाथ ब्लॉब्स",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "वैध ब्लॉब्स",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "कुल भंडारण (बाइट)"
-  }
-}

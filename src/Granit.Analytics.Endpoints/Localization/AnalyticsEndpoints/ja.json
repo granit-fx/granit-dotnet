@@ -1,7 +1,0 @@
-{
-  "culture": "ja",
-  "texts": {
-    "PermissionGroup:Analytics": "アナリティクス",
-    "Permission:Analytics.Metrics.Read": "HTTP API を通じてアナリティクスのメトリック定義を評価する"
-  }
-}

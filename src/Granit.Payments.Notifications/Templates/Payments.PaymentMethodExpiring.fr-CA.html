@@ -1,7 +1,0 @@
-<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
-<p>Bonjour,</p>
-<p>Votre mode de paiement <strong>{{ model.display_label | html.escape }}</strong> expirera dans <strong>{{ model.days_remaining }} jour(s)</strong>, le {{ model.expires_at | to_user_time | date.to_string "%B %Y" }}.</p>
-<p>Veuillez mettre à jour votre mode de paiement afin d'assurer un service ininterrompu.</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/billing/methods" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Mettre à jour le mode de paiement</a>
-</p>

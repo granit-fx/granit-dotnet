@@ -1,8 +1,0 @@
-{
-  "culture": "pt",
-  "texts": {
-    "Metric:Granit.Parties.ActivePartyCountMetric": "Partes ativas",
-    "Metric:Granit.Parties.MergedPartyCountMetric": "Partes mescladas",
-    "Metric:Granit.Parties.PartyCountMetric": "Total de partes"
-  }
-}

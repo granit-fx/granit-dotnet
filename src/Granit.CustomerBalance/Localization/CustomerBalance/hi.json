@@ -1,9 +1,0 @@
-{
-  "culture": "hi",
-  "texts": {
-    "Metric:Granit.CustomerBalance.BalanceAccountCountMetric": "शेष खाते",
-    "Metric:Granit.CustomerBalance.BalanceAccountTotalMetric": "कुल ग्राहक शेष",
-    "Metric:Granit.CustomerBalance.CreditBalanceTransactionTotalMetric": "प्रदान किए गए क्रेडिट",
-    "Metric:Granit.CustomerBalance.DebitBalanceTransactionTotalMetric": "उपयोग किए गए क्रेडिट"
-  }
-}

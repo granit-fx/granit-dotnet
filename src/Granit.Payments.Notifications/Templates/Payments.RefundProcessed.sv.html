@@ -1,9 +1,0 @@
-<p>Hej,</p>
-<p>En återbetalning har behandlats för ditt konto:</p>
-<ul>
-  <li><strong>Belopp:</strong> {{ model.amount }} {{ model.currency }}</li>
-  {{- if model.reason }}
-  <li><strong>Orsak:</strong> {{ model.reason | html.escape }}</li>
-  {{- end }}
-</ul>
-<p>Återbetalningen bör synas på ditt konto inom 5–10 arbetsdagar, beroende på din betalningsleverantör.</p>

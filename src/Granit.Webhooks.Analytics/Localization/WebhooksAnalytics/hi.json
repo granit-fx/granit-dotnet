@@ -1,9 +1,0 @@
-{
-  "culture": "hi",
-  "texts": {
-    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "सक्रिय वेबहुक सदस्यताएँ",
-    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "विफल वेबहुक डिलिवरी",
-    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "वेबहुक विलंबता (औसत ms)",
-    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "वेबहुक डिलिवरी सफलता दर"
-  }
-}

@@ -1,8 +1,0 @@
-{
-  "culture": "pt",
-  "texts": {
-    "PermissionGroup:ReferenceData": "Dados de referência",
-    "Permission:ReferenceData.Entries.Read": "Consultar dados de referência",
-    "Permission:ReferenceData.Entries.Manage": "Gerir dados de referência (criar, atualizar, desativar)"
-  }
-}

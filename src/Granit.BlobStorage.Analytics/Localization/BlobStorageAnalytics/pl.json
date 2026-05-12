@@ -1,8 +1,0 @@
-{
-  "culture": "pl",
-  "texts": {
-    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Osierocone blobs",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Prawidłowe blobs",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Łączna pamięć (bajty)"
-  }
-}

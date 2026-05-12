@@ -48,24 +48,16 @@ internal static class PairingExemptions
         "Granit.BackgroundJobs.Domain.BackgroundJobDefinition",                           // [INFRA] job config
         "Granit.DataExchange.Export.Domain.ExportJob",                                    // [INFRA] transient export job
         "Granit.DataExchange.Import.Domain.ImportJob",                                    // [INFRA] transient import job
-        "Granit.Documents.AssetMetadata.Domain.DocumentAssetMetadata",                    // [INFRA] derived metadata row — no admin grid / business KPI surface, populated by F17 background extractors
-        "Granit.Documents.PublicLinks.Domain.DocumentPublicLink",                         // [INFRA] anonymous public-link entity — surfaced via dedicated admin endpoints (POST/DELETE/GET /documents/{id}/public-links), no admin grid / QueryDefinition needed; no business KPI surface justifies a MetricDefinition
-        "Granit.Documents.Renditions.Domain.DocumentRendition",                           // [INFRA] derived rendition row, surfaced via the documents view, no admin grid / KPI of its own
         "Granit.Identity.Federated.Domain.FederatedIdentity",                                // [INFRA] internal user cache
         "Granit.Identity.Local.Domain.GranitRole",                                        // [INFRA] RBAC config
         "Granit.Identity.Local.Domain.GranitUserGroup",                                   // [INFRA] RBAC config
         "Granit.Localization.Domain.LocalizationOverride",                                // [INFRA] localization config
-        "Granit.Metering.Domain.MeterDefinition",                                         // [INFRA] metering config
         "Granit.MultiTenancy.Domain.Tenant",                                              // [INFRA] platform-admin entity
         "Granit.Notifications.Domain.NotificationPreference",                             // [INFRA] user preference config
         "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication",              // [INFRA] OAuth client config
         "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictScope",                    // [INFRA] OAuth scope config
-        "Granit.Parties.EntityFrameworkCore.Entities.PartyDuplicateCandidate",            // [INFRA] deduplication queue
-        "Granit.ReferenceData.Domain.DynamicReferenceDataEntity",                         // [INFRA] reference-data config
         "Granit.Scheduling.Domain.ScheduledAction",                                       // [INFRA] scheduling state
         "Granit.Settings.Domain.SettingRecord",                                           // [INFRA] settings config
-        "Granit.Tax.Domain.TaxRateOverride",                                              // [INFRA] tax config
-        "Granit.Tax.TaxRateEntry",                                                        // [INFRA] tax config
         "Granit.Timeline.Domain.TimelineEntry",                                           // [INFRA] audit log
         "Granit.Workflow.Domain.WorkflowTransitionRecord",                                // [INFRA] workflow audit
     };

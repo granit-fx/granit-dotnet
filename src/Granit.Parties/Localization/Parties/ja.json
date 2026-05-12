@@ -1,8 +1,0 @@
-{
-  "culture": "ja",
-  "texts": {
-    "Metric:Granit.Parties.ActivePartyCountMetric": "有効な取引先",
-    "Metric:Granit.Parties.MergedPartyCountMetric": "統合された取引先",
-    "Metric:Granit.Parties.PartyCountMetric": "取引先合計"
-  }
-}

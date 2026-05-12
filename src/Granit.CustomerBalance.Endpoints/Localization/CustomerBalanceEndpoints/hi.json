@@ -1,9 +1,0 @@
-{
-  "culture": "hi",
-  "texts": {
-    "PermissionGroup:CustomerBalance": "ग्राहक शेष",
-    "Permission:CustomerBalance.Accounts.Read": "शेष खाते देखें",
-    "Permission:CustomerBalance.Transactions.Read": "लेनदेन इतिहास देखें",
-    "Permission:CustomerBalance.Credits.Manage": "क्रेडिट प्रबंधित करें (जोड़ें, समायोजित करें)"
-  }
-}

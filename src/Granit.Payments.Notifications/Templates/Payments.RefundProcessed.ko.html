@@ -1,9 +1,0 @@
-<p>안녕하세요,</p>
-<p>귀하의 계정에 대해 환불이 처리되었습니다:</p>
-<ul>
-  <li><strong>금액:</strong> {{ model.amount }} {{ model.currency }}</li>
-  {{- if model.reason }}
-  <li><strong>사유:</strong> {{ model.reason | html.escape }}</li>
-  {{- end }}
-</ul>
-<p>환불은 결제 공급자에 따라 5~10영업일 이내에 계정에 반영됩니다.</p>

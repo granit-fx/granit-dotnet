@@ -42,11 +42,20 @@ ROOTS=(
 )
 
 # Exact project directory names kept in framework (the Abstractions split).
+# Discovered during Phase 3b-3 (May 2026) that framework Endpoints (BlobStorage,
+# Webhooks, Auditing, Authentication.ApiKeys, …) depend on Workspaces.Abstractions
+# and Analytics/Entities abstractions transitively reference Dashboards.Abstractions.
+# These four contract packages stay in granit-dotnet so the framework compiles
+# without granit-business — they ARE the inter-edition contracts.
 RETAIN=(
   "src/Granit.Analytics.Abstractions"
+  "src/Granit.Dashboards.Abstractions"
   "src/Granit.Entities.Abstractions"
+  "src/Granit.Workspaces.Abstractions"
   "tests/Granit.Analytics.Abstractions.Tests"
+  "tests/Granit.Dashboards.Abstractions.Tests"
   "tests/Granit.Entities.Abstractions.Tests"
+  "tests/Granit.Workspaces.Abstractions.Tests"
 )
 
 is_retained() {

@@ -1,8 +1,0 @@
-{
-  "culture": "it",
-  "texts": {
-    "Metric:Granit.Parties.ActivePartyCountMetric": "Soggetti attivi",
-    "Metric:Granit.Parties.MergedPartyCountMetric": "Soggetti uniti",
-    "Metric:Granit.Parties.PartyCountMetric": "Totale soggetti"
-  }
-}

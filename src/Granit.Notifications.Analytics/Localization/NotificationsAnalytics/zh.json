@@ -1,8 +1,0 @@
-{
-  "culture": "zh",
-  "texts": {
-    "Metric:Granit.Notifications.ReadUserNotificationCountMetric": "已读通知",
-    "Metric:Granit.Notifications.UnreadUserNotificationCountMetric": "未读通知",
-    "Metric:Granit.Notifications.UserNotificationCountMetric": "通知总数"
-  }
-}

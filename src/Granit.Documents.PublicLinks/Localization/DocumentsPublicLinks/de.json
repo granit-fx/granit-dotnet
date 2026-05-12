@@ -1,9 +1,0 @@
-{
-  "culture": "de",
-  "texts": {
-    "PermissionGroup:DocumentsPublicLinks": "Öffentliche Dokumentlinks",
-    "Permission:DocumentsPublicLinks.PublicLinks.Create": "Einen öffentlichen Freigabelink für ein Dokument erstellen",
-    "Permission:DocumentsPublicLinks.PublicLinks.Revoke": "Einen bestehenden öffentlichen Dokumentlink widerrufen",
-    "Permission:DocumentsPublicLinks.PublicLinks.Read": "Die öffentlichen Links eines Dokuments auflisten"
-  }
-}

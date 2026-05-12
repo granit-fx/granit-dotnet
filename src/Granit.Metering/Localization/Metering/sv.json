@@ -1,7 +1,0 @@
-{
-  "culture": "sv",
-  "texts": {
-    "Metric:Granit.Metering.UsageAggregateCountMetric": "Användningssammanställningar",
-    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "Totalt uppmätt användning"
-  }
-}

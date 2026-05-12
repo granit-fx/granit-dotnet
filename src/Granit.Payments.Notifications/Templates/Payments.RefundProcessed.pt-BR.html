@@ -1,9 +1,0 @@
-<p>Olá,</p>
-<p>Um reembolso foi processado em sua conta:</p>
-<ul>
-  <li><strong>Valor:</strong> {{ model.amount }} {{ model.currency }}</li>
-  {{- if model.reason }}
-  <li><strong>Motivo:</strong> {{ model.reason | html.escape }}</li>
-  {{- end }}
-</ul>
-<p>O reembolso deverá aparecer em sua conta em 5 a 10 dias úteis, dependendo do seu provedor de pagamento.</p>

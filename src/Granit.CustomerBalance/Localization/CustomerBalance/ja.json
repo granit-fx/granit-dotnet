@@ -1,9 +1,0 @@
-{
-  "culture": "ja",
-  "texts": {
-    "Metric:Granit.CustomerBalance.BalanceAccountCountMetric": "残高アカウント",
-    "Metric:Granit.CustomerBalance.BalanceAccountTotalMetric": "顧客残高合計",
-    "Metric:Granit.CustomerBalance.CreditBalanceTransactionTotalMetric": "付与されたクレジット",
-    "Metric:Granit.CustomerBalance.DebitBalanceTransactionTotalMetric": "使用されたクレジット"
-  }
-}

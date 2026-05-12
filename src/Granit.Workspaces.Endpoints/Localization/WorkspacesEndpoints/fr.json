@@ -1,7 +1,0 @@
-{
-  "culture": "fr",
-  "texts": {
-    "WorkspacesEndpoints:DiscoverySection": "Espaces de travail",
-    "WorkspacesEndpoints:NoWorkspacesAvailable": "Aucun espace de travail n'est accessible pour votre compte."
-  }
-}

@@ -1,7 +1,0 @@
-{
-  "culture": "ja",
-  "texts": {
-    "Metric:Granit.Metering.UsageAggregateCountMetric": "使用量集計行",
-    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "計測された総使用量"
-  }
-}

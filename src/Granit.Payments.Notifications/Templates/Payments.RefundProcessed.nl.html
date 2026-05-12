@@ -1,9 +1,0 @@
-<p>Hallo,</p>
-<p>Er is een terugbetaling verwerkt voor uw account:</p>
-<ul>
-  <li><strong>Bedrag:</strong> {{ model.amount }} {{ model.currency }}</li>
-  {{- if model.reason }}
-  <li><strong>Reden:</strong> {{ model.reason | html.escape }}</li>
-  {{- end }}
-</ul>
-<p>De terugbetaling zou binnen 5 tot 10 werkdagen op uw rekening moeten verschijnen, afhankelijk van uw betalingsprovider.</p>

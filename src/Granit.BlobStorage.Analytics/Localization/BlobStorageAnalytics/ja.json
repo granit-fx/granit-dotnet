@@ -1,8 +1,0 @@
-{
-  "culture": "ja",
-  "texts": {
-    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "孤立した Blob",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "有効な Blob",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "合計ストレージ（バイト）"
-  }
-}

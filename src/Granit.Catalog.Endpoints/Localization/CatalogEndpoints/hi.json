@@ -1,8 +1,0 @@
-{
-  "culture": "hi",
-  "texts": {
-    "PermissionGroup:Catalog": "कैटलॉग",
-    "Permission:Catalog.Products.Read": "कैटलॉग उत्पाद देखें",
-    "Permission:Catalog.Products.Manage": "कैटलॉग उत्पादों का प्रबंधन करें (बनाना, अपडेट, प्रकाशित, संग्रह, बाहरी मानचित्रण)"
-  }
-}

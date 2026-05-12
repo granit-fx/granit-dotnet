@@ -84,16 +84,14 @@ jobs:
         shard:
           - name: core-ai
             label: "Core + AI"
-          - name: business
-            label: "Business Features"
+          - name: application
+            label: "Application Layer"
           - name: api-data
             label: "API & Http + Data"
           - name: infrastructure
             label: "Infrastructure"
           - name: security
             label: "Security & Compliance"
-          - name: saas
-            label: "SaaS"
           - name: integration
             label: "Integration Tests"
           - name: architecture
@@ -190,7 +188,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [core-ai, business, api-data, infrastructure, security, saas, integration, architecture]
+        shard: [core-ai, application, api-data, infrastructure, security, integration, architecture]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 

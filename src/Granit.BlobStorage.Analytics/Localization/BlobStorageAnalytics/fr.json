@@ -1,8 +1,0 @@
-{
-  "culture": "fr",
-  "texts": {
-    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Blobs orphelins",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Blobs valides",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Stockage total (octets)"
-  }
-}

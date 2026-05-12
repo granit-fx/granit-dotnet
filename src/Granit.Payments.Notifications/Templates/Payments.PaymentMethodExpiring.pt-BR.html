@@ -1,6 +1,0 @@
-<p>Olá,</p>
-<p>Seu método de pagamento <strong>{{ model.display_label | html.escape }}</strong> expira em <strong>{{ model.days_remaining }} dia(s)</strong>, em {{ model.expires_at | to_user_time | date.to_string "%m/%Y" }}.</p>
-<p>Atualize seu método de pagamento para garantir um serviço ininterrupto.</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/billing/methods" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Atualizar método de pagamento</a>
-</p>

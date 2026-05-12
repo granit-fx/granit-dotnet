@@ -1,7 +1,0 @@
-{
-  "culture": "en",
-  "texts": {
-    "Metric:Granit.Metering.UsageAggregateCountMetric": "Usage rollup rows",
-    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "Total metered usage"
-  }
-}

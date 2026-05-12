@@ -1,7 +1,0 @@
-{
-  "culture": "zh",
-  "texts": {
-    "PermissionGroup:Analytics": "分析",
-    "Permission:Analytics.Metrics.Read": "通过 HTTP API 评估分析指标定义"
-  }
-}

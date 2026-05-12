@@ -1,8 +1,0 @@
-{
-  "culture": "ja",
-  "texts": {
-    "Metric:Granit.Payments.SepaDirectDebit.ActiveMandateCountMetric": "有効な SEPA マンデート",
-    "Metric:Granit.Payments.SepaDirectDebit.CancelledMandateCountMetric": "キャンセルされた SEPA マンデート",
-    "Metric:Granit.Payments.SepaDirectDebit.PendingMandateCountMetric": "保留中の SEPA マンデート"
-  }
-}

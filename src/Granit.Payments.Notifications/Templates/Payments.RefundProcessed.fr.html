@@ -1,9 +1,0 @@
-<p>Bonjour,</p>
-<p>Un remboursement a été traité sur votre compte :</p>
-<ul>
-  <li><strong>Montant :</strong> {{ model.amount }} {{ model.currency }}</li>
-  {{- if model.reason }}
-  <li><strong>Motif :</strong> {{ model.reason | html.escape }}</li>
-  {{- end }}
-</ul>
-<p>Le remboursement devrait apparaître sur votre compte dans un délai de 5 à 10 jours ouvrables, selon votre prestataire de paiement.</p>

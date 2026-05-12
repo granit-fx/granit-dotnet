@@ -1,8 +1,0 @@
-{
-  "culture": "nl",
-  "texts": {
-    "PermissionGroup:EntitiesCustomization": "Entiteitsaanpassing",
-    "Permission:EntitiesCustomization.Customizations.Read": "Entiteitsaanpassingen lezen",
-    "Permission:EntitiesCustomization.Customizations.Manage": "Entiteitsaanpassingen beheren"
-  }
-}

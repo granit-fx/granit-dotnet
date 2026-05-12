@@ -1,8 +1,0 @@
-{
-  "culture": "es",
-  "texts": {
-    "Metric:Granit.Notifications.ReadUserNotificationCountMetric": "Notificaciones leídas",
-    "Metric:Granit.Notifications.UnreadUserNotificationCountMetric": "Notificaciones no leídas",
-    "Metric:Granit.Notifications.UserNotificationCountMetric": "Total de notificaciones"
-  }
-}

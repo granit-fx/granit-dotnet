@@ -1,7 +1,0 @@
-{
-  "culture": "nl",
-  "texts": {
-    "Metric:Granit.Identity.Federated.EnabledFederatedIdentityCountMetric": "Actieve gefedereerde gebruikers",
-    "Metric:Granit.Identity.Federated.FederatedIdentityCountMetric": "Gefedereerde gebruikers (totaal)"
-  }
-}

@@ -1,9 +1,0 @@
-<p>नमस्ते,</p>
-<p>आपके खाते के लिए धनवापसी प्रोसेस की गई है:</p>
-<ul>
-  <li><strong>राशि:</strong> {{ model.amount }} {{ model.currency }}</li>
-  {{- if model.reason }}
-  <li><strong>कारण:</strong> {{ model.reason | html.escape }}</li>
-  {{- end }}
-</ul>
-<p>आपके भुगतान प्रदाता के आधार पर, धनवापसी 5–10 कार्य दिवसों के भीतर आपके खाते में दिखाई देनी चाहिए।</p>

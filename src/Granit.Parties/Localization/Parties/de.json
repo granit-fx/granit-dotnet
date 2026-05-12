@@ -1,8 +1,0 @@
-{
-  "culture": "de",
-  "texts": {
-    "Metric:Granit.Parties.ActivePartyCountMetric": "Aktive Geschäftspartner",
-    "Metric:Granit.Parties.MergedPartyCountMetric": "Zusammengeführte Geschäftspartner",
-    "Metric:Granit.Parties.PartyCountMetric": "Geschäftspartner gesamt"
-  }
-}

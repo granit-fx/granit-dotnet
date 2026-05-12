@@ -1,8 +1,0 @@
-{
-  "culture": "zh",
-  "texts": {
-    "PermissionGroup:Catalog": "目录",
-    "Permission:Catalog.Products.Read": "查看目录产品",
-    "Permission:Catalog.Products.Manage": "管理目录产品(创建、更新、发布、归档、外部映射)"
-  }
-}

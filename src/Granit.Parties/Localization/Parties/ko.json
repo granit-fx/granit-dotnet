@@ -1,8 +1,0 @@
-{
-  "culture": "ko",
-  "texts": {
-    "Metric:Granit.Parties.ActivePartyCountMetric": "활성 거래처",
-    "Metric:Granit.Parties.MergedPartyCountMetric": "병합된 거래처",
-    "Metric:Granit.Parties.PartyCountMetric": "총 거래처"
-  }
-}

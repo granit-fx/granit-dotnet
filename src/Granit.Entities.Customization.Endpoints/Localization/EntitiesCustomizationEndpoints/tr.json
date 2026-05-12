@@ -1,8 +1,0 @@
-{
-  "culture": "tr",
-  "texts": {
-    "PermissionGroup:EntitiesCustomization": "Varlık özelleştirme",
-    "Permission:EntitiesCustomization.Customizations.Read": "Varlık özelleştirmelerini görüntüle",
-    "Permission:EntitiesCustomization.Customizations.Manage": "Varlık özelleştirmelerini yönet"
-  }
-}

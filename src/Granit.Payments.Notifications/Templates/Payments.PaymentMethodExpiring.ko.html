@@ -1,6 +1,0 @@
-<p>안녕하세요,</p>
-<p>결제 수단 <strong>{{ model.display_label | html.escape }}</strong>이(가) <strong>{{ model.days_remaining }}일</strong> 후 {{ model.expires_at | to_user_time | date.to_string "%Y년 %m월" }}에 만료됩니다.</p>
-<p>서비스 중단을 방지하려면 결제 수단을 업데이트해 주세요.</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/billing/methods" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">결제 수단 업데이트</a>
-</p>

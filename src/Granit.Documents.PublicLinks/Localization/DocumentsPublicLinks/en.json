@@ -1,9 +1,0 @@
-{
-  "culture": "en",
-  "texts": {
-    "PermissionGroup:DocumentsPublicLinks": "Document public links",
-    "Permission:DocumentsPublicLinks.PublicLinks.Create": "Create a public sharing link for a document",
-    "Permission:DocumentsPublicLinks.PublicLinks.Revoke": "Revoke an existing document public link",
-    "Permission:DocumentsPublicLinks.PublicLinks.Read": "List the public links attached to a document"
-  }
-}

@@ -1,9 +1,0 @@
-{
-  "culture": "pt",
-  "texts": {
-    "PermissionGroup:DocumentsPublicLinks": "Ligações públicas de documento",
-    "Permission:DocumentsPublicLinks.PublicLinks.Create": "Criar uma ligação pública de partilha para um documento",
-    "Permission:DocumentsPublicLinks.PublicLinks.Revoke": "Revogar uma ligação pública de documento existente",
-    "Permission:DocumentsPublicLinks.PublicLinks.Read": "Listar as ligações públicas associadas a um documento"
-  }
-}

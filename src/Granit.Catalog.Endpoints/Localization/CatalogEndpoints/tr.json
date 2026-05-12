@@ -1,8 +1,0 @@
-{
-  "culture": "tr",
-  "texts": {
-    "PermissionGroup:Catalog": "Katalog",
-    "Permission:Catalog.Products.Read": "Katalog ürünlerini görüntüle",
-    "Permission:Catalog.Products.Manage": "Katalog ürünlerini yönet (oluştur, güncelle, yayınla, arşivle, dış eşlemeler)"
-  }
-}

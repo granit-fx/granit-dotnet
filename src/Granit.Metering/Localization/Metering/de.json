@@ -1,7 +1,0 @@
-{
-  "culture": "de",
-  "texts": {
-    "Metric:Granit.Metering.UsageAggregateCountMetric": "Verbrauchsrollup-Zeilen",
-    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "Gesamter gemessener Verbrauch"
-  }
-}

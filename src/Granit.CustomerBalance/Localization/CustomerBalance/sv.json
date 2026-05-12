@@ -1,9 +1,0 @@
-{
-  "culture": "sv",
-  "texts": {
-    "Metric:Granit.CustomerBalance.BalanceAccountCountMetric": "Saldokonton",
-    "Metric:Granit.CustomerBalance.BalanceAccountTotalMetric": "Totalt kundsaldo",
-    "Metric:Granit.CustomerBalance.CreditBalanceTransactionTotalMetric": "Beviljade krediter",
-    "Metric:Granit.CustomerBalance.DebitBalanceTransactionTotalMetric": "Förbrukade krediter"
-  }
-}

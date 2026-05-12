@@ -1,7 +1,0 @@
-{
-  "culture": "de",
-  "texts": {
-    "PermissionGroup:Analytics": "Analytik",
-    "Permission:Analytics.Metrics.Read": "Analytik-Metrikdefinitionen über die HTTP-API auswerten"
-  }
-}

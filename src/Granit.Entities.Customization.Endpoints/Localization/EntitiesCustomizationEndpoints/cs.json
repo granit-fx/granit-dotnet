@@ -1,8 +1,0 @@
-{
-  "culture": "cs",
-  "texts": {
-    "PermissionGroup:EntitiesCustomization": "Přizpůsobení entit",
-    "Permission:EntitiesCustomization.Customizations.Read": "Číst přizpůsobení entit",
-    "Permission:EntitiesCustomization.Customizations.Manage": "Spravovat přizpůsobení entit"
-  }
-}

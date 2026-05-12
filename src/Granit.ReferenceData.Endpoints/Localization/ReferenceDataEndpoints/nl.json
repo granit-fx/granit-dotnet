@@ -1,8 +1,0 @@
-{
-  "culture": "nl",
-  "texts": {
-    "PermissionGroup:ReferenceData": "Referentiegegevens",
-    "Permission:ReferenceData.Entries.Read": "Referentiegegevens raadplegen",
-    "Permission:ReferenceData.Entries.Manage": "Referentiegegevens beheren (aanmaken, wijzigen, deactiveren)"
-  }
-}

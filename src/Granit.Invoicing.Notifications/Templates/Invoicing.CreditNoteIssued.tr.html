@@ -1,8 +1,0 @@
-<p>Merhaba,</p>
-<p><strong>{{ model.parent_invoice_number | html.escape }}</strong> numaralı fatura için bir alacak dekontu düzenlenmiştir:</p>
-<ul>
-  <li><strong>Alacak dekontu:</strong> {{ model.credit_note_number | html.escape }}</li>
-  <li><strong>Tutar:</strong> {{ model.amount }} {{ model.currency }}</li>
-  <li><strong>Neden:</strong> {{ model.reason | html.escape }}</li>
-</ul>
-<p>Alacak tutarı hesabınıza uygulanmıştır.</p>

@@ -1,8 +1,0 @@
-{
-  "culture": "tr",
-  "texts": {
-    "Metric:Granit.Parties.ActivePartyCountMetric": "Aktif taraflar",
-    "Metric:Granit.Parties.MergedPartyCountMetric": "Birleştirilen taraflar",
-    "Metric:Granit.Parties.PartyCountMetric": "Toplam taraf"
-  }
-}

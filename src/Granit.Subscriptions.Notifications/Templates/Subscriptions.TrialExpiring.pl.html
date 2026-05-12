@@ -1,7 +1,0 @@
-<p>Witaj,</p>
-<p>Twój okres próbny planu <strong>{{ model.plan_name | html.escape }}</strong> wygasa za <strong>{{ model.days_remaining }} dni</strong>, dnia {{ model.trial_ends_at | to_user_time | date.to_string "%d.%m.%Y o %H:%M" }}.</p>
-<p>Aby zachować dostęp do wszystkich funkcji, przejdź na płatną subskrypcję przed zakończeniem okresu próbnego.</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/subscriptions" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Przejdź na płatną wersję</a>
-</p>
-<p>W razie pytań nasz zespół wsparcia chętnie pomoże.</p>

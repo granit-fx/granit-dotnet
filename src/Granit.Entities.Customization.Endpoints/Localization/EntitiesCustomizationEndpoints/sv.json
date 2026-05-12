@@ -1,8 +1,0 @@
-{
-  "culture": "sv",
-  "texts": {
-    "PermissionGroup:EntitiesCustomization": "Anpassning av entiteter",
-    "Permission:EntitiesCustomization.Customizations.Read": "Läs entitetsanpassningar",
-    "Permission:EntitiesCustomization.Customizations.Manage": "Hantera entitetsanpassningar"
-  }
-}

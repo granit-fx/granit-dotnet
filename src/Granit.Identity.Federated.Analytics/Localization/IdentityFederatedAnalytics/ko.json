@@ -1,7 +1,0 @@
-{
-  "culture": "ko",
-  "texts": {
-    "Metric:Granit.Identity.Federated.EnabledFederatedIdentityCountMetric": "활성 연합 사용자",
-    "Metric:Granit.Identity.Federated.FederatedIdentityCountMetric": "연합 사용자 (총)"
-  }
-}
