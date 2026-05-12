@@ -113,6 +113,7 @@ public sealed class RateLimitingServiceCollectionExtensionsTests
     public void AddGranitRateLimiting_WithoutRedis_ResolvesInMemoryCounterStore()
     {
         ServiceCollection services = CreateServices();
+        services.AddLogging();
 
         services.AddGranitRateLimiting(opts =>
         {
