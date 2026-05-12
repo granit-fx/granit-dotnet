@@ -1,7 +1,8 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# dotnet format on staged .cs files — per-project instead of full solution (~3s vs ~75s)
+# dotnet format on staged .cs files — per-project, parallel (4-way) instead of
+# full solution (~3s/proj × N vs ~75s).
 STAGED_CS=$(git diff --cached --name-only --diff-filter=ACMR -- '*.cs')
 if [ -n "$STAGED_CS" ]; then
     # Find the nearest .csproj for each staged file, deduplicate, then format per project
@@ -17,17 +18,22 @@ if [ -n "$STAGED_CS" ]; then
             dir=$(dirname "$dir")
         done
     done
-    PROJECTS=$(echo "$PROJECTS" | tr ' ' '\n' | sort -u | tr '\n' ' ')
+    PROJECTS=$(echo "$PROJECTS" | tr ' ' '\n' | sort -u)
 
-    for proj in $PROJECTS; do
-        # Filter staged files that belong to this project
+    # Run per-project formats in parallel. Each project owns its own files →
+    # no inter-project file contention. Cap at 4 to avoid saturating CPU on
+    # laptops; raise via PRECOMMIT_FORMAT_JOBS env var if you want more.
+    JOBS=${PRECOMMIT_FORMAT_JOBS:-4}
+    export STAGED_CS
+    echo "$PROJECTS" | xargs -r -P "$JOBS" -I {} sh -c '
+        proj="$1"
         proj_dir=$(dirname "$proj")
-        proj_files=$(echo "$STAGED_CS" | tr ' ' '\n' | grep "^$proj_dir/" | tr '\n' ' ')
-        if [ -n "$proj_files" ]; then
-            dotnet format "$proj" --no-restore --include $proj_files
-        fi
-    done
+        proj_files=$(echo "$STAGED_CS" | tr " " "\n" | grep "^$proj_dir/" | tr "\n" " ")
+        [ -n "$proj_files" ] && dotnet format "$proj" --no-restore --include $proj_files
+    ' _ {}
+
     echo "$STAGED_CS" | xargs -r git add
+    unset STAGED_CS
 fi
 
 gitleaks git --pre-commit --staged --no-banner
