@@ -1,12 +1,14 @@
 <title>Clé d'API révoquée</title>
-<p>Bonjour,</p>
-<p>Une clé d'API vient d'être révoquée et n'est plus acceptée par la couche d'authentification. Si cette révocation n'était pas attendue, déclenchez votre procédure de réponse à incident : une révocation hors du cycle normal de rotation peut révéler une compromission ou une action administrateur non autorisée.</p>
-<table cellpadding="6" cellspacing="0" style="margin: 16px 0; font-size: 14px; border-collapse: collapse;">
-  <tr><td style="color: #4b5563;">Référence</td><td><code>{{ model.key_id }}</code></td></tr>
-</table>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/admin/api-keys/{{ model.key_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Vérifier la clé</a>
-</p>
-{{ if app.support_email }}
-<p style="font-size: 13px; color: #4b5563;">Cette révocation n'était pas prévue ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
-{{ end }}
+<mj-text>
+  <p>Bonjour,</p>
+  <p>Une clé d'API vient d'être révoquée et n'est plus acceptée par la couche d'authentification. Si cette révocation n'était pas attendue, déclenchez votre procédure de réponse à incident : une révocation hors du cycle normal de rotation peut révéler une compromission ou une action administrateur non autorisée.</p>
+</mj-text>
+<mj-table css-class="apikey-details">
+  <tr><td style="color: #4b5563; padding: 6px 12px 6px 0;">Référence</td><td style="padding: 6px 0;"><code>{{ model.key_id }}</code></td></tr>
+</mj-table>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ app.base_url }}/admin/api-keys/{{ model.key_id }}">Vérifier la clé</mj-button>
+{{- if app.support_email }}
+<mj-text font-size="13px" color="#4b5563">
+  <p>Cette révocation n'était pas prévue ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+</mj-text>
+{{- end }}

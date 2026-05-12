@@ -1,11 +1,13 @@
-<p>Bonjour,</p>
+<mj-text>
+  <p>Bonjour,</p>
 <p>Veuillez confirmer votre adresse courriel <strong>{{ model.email | html.escape }}</strong> pour activer votre compte.</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.confirm_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Confirmer mon courriel</a>
-</p>
-<p>Ce lien expire dans <strong>24 heures</strong>.</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  Si le bouton ne fonctionne pas, copiez et collez le lien suivant dans votre navigateur :<br>
-  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.confirm_link }}">Confirmer mon courriel</mj-button>
+<mj-text>
+  <p>Ce lien expire dans <strong>24 heures</strong>.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Si le bouton ne fonctionne pas, copiez et collez le lien suivant dans votre navigateur :<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a></p>
+</mj-text>

@@ -1,11 +1,13 @@
-<p>Hej,</p>
+<mj-text>
+  <p>Hej,</p>
 <p>Vänligen bekräfta att <strong>{{ model.new_email | html.escape }}</strong> är din nya e-postadress.</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.confirm_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Bekräfta ny e-post</a>
-</p>
-<p>Denna länk upphör att gälla om <strong>24 timmar</strong>. Om du inte begärde denna ändring kan du ignorera detta e-postmeddelande.</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  Om knappen inte fungerar, kopiera och klistra in följande länk i din webbläsare:<br>
-  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.confirm_link }}">Bekräfta ny e-post</mj-button>
+<mj-text>
+  <p>Denna länk upphör att gälla om <strong>24 timmar</strong>. Om du inte begärde denna ändring kan du ignorera detta e-postmeddelande.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Om knappen inte fungerar, kopiera och klistra in följande länk i din webbläsare:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a></p>
+</mj-text>

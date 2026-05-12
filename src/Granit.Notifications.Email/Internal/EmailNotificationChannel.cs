@@ -218,8 +218,8 @@ internal sealed partial class EmailNotificationChannel(
             if (rendered is TextRenderedContent textResult)
             {
                 Log.TemplateRendered(logger, templateName, context.Culture);
-                string? subject = ExtractTitleFromHtml(textResult.Html);
-                return new RenderedEmail(textResult.Html, subject);
+                (string? subject, string body) = ExtractAndStripTitle(textResult.Html);
+                return new RenderedEmail(body, subject);
             }
         }
         catch (Exception ex)
@@ -304,13 +304,23 @@ internal sealed partial class EmailNotificationChannel(
         dataDict["title"] = contentEmail.Subject
             ?? context.NotificationTypeName.Replace('.', ' ');
 
-        // Inject body as ExtraVariable for {{ body | raw }} in layout
+        // Detect MJML body fragment (starts with `<mj-`) vs plain HTML — layouts wrap HTML
+        // bodies in a default `<mj-section><mj-column><mj-text>` so author writes plain markup,
+        // and inject MJML bodies raw at the section level so authors can use `<mj-button>`,
+        // `<mj-table>`, etc.
+        bool bodyIsMjml = contentEmail.Html.AsSpan().TrimStart()
+            .StartsWith("<mj-", StringComparison.OrdinalIgnoreCase);
+
         TemplateDescriptor layoutWithBody = new()
         {
             Content = layoutDescriptor.Content,
             MimeType = layoutDescriptor.MimeType,
             RevisionId = layoutDescriptor.RevisionId,
-            ExtraVariables = new Dictionary<string, object> { ["body"] = contentEmail.Html },
+            ExtraVariables = new Dictionary<string, object>
+            {
+                ["body"] = contentEmail.Html,
+                ["body_is_mjml"] = bodyIsMjml,
+            },
         };
 
         try
@@ -325,8 +335,8 @@ internal sealed partial class EmailNotificationChannel(
 
             if (rendered is TextRenderedContent textResult)
             {
-                string? subject = ExtractTitleFromHtml(textResult.Html);
-                return new RenderedEmail(textResult.Html, subject);
+                // Subject was captured at content-render time; layout doesn't redefine it.
+                return new RenderedEmail(textResult.Html, contentEmail.Subject);
             }
         }
         catch (Exception ex)
@@ -383,26 +393,46 @@ internal sealed partial class EmailNotificationChannel(
     }
 
     /// <summary>
-    /// Extracts the content of the <c>&lt;title&gt;</c> tag from rendered HTML, if present.
-    /// Used as the email subject when a Scriban template provides it.
+    /// Extracts the content of the <c>&lt;title&gt;</c> tag from rendered HTML and returns
+    /// the body with that tag removed. Used so the title doesn't leak into the layout's
+    /// <c>&lt;mj-body&gt;</c> (where a raw <c>&lt;title&gt;</c> would either render as visible
+    /// text or be silently dropped by MJML), while the email subject is threaded explicitly.
     /// </summary>
-    private static string? ExtractTitleFromHtml(string html)
+    /// <returns>
+    /// <c>Title</c> is <see langword="null"/> when no <c>&lt;title&gt;</c> tag is present or
+    /// the tag is empty. <c>Body</c> is the input with the title tag (and the immediately
+    /// trailing newline, if any) stripped.
+    /// </returns>
+    private static (string? Title, string Body) ExtractAndStripTitle(string html)
     {
         int start = html.IndexOf("<title>", StringComparison.OrdinalIgnoreCase);
         if (start < 0)
         {
-            return null;
+            return (null, html);
         }
 
-        start += "<title>".Length;
-        int end = html.IndexOf("</title>", start, StringComparison.OrdinalIgnoreCase);
-        if (end < 0)
+        int contentStart = start + "<title>".Length;
+        int contentEnd = html.IndexOf("</title>", contentStart, StringComparison.OrdinalIgnoreCase);
+        if (contentEnd < 0)
         {
-            return null;
+            return (null, html);
         }
 
-        string title = html[start..end].Trim();
-        return string.IsNullOrEmpty(title) ? null : title;
+        string title = html[contentStart..contentEnd].Trim();
+        int after = contentEnd + "</title>".Length;
+
+        // Consume a single trailing newline so the body doesn't start with a blank line.
+        if (after < html.Length && html[after] == '\r')
+        {
+            after++;
+        }
+        if (after < html.Length && html[after] == '\n')
+        {
+            after++;
+        }
+
+        string body = html[..start] + html[after..];
+        return (string.IsNullOrEmpty(title) ? null : title, body);
     }
 
     /// <summary>

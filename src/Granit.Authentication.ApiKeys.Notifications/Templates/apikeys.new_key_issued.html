@@ -1,15 +1,17 @@
 <title>New API key issued: {{ model.key_name }}</title>
-<p>Hi,</p>
-<p>A new API key has been issued in your tenant. Confirm this provisioning is expected — out-of-band issuance can indicate a compromised admin account or an unauthorised workflow.</p>
-<table cellpadding="6" cellspacing="0" style="margin: 16px 0; font-size: 14px; border-collapse: collapse;">
-  <tr><td style="color: #4b5563;">Name</td><td><strong>{{ model.key_name }}</strong></td></tr>
-  <tr><td style="color: #4b5563;">Type</td><td><code>{{ model.key_type }}</code></td></tr>
-  <tr><td style="color: #4b5563;">Reference</td><td><code>{{ model.key_id }}</code></td></tr>
-</table>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/admin/api-keys/{{ model.key_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Review the key</a>
-</p>
-<p style="font-size: 13px; color: #4b5563;">For your security, the key value itself is never sent by email — it was shown once at creation time inside the admin panel.</p>
-{{ if app.support_email }}
-<p style="font-size: 13px; color: #4b5563;">Did not expect this? Contact <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
-{{ end }}
+<mj-text>
+  <p>Hi,</p>
+  <p>A new API key has been issued in your tenant. Confirm this provisioning is expected — out-of-band issuance can indicate a compromised admin account or an unauthorised workflow.</p>
+</mj-text>
+<mj-table css-class="apikey-details">
+  <tr><td style="color: #4b5563; padding: 6px 12px 6px 0;">Name</td><td style="padding: 6px 0;"><strong>{{ model.key_name }}</strong></td></tr>
+  <tr><td style="color: #4b5563; padding: 6px 12px 6px 0;">Type</td><td style="padding: 6px 0;"><code>{{ model.key_type }}</code></td></tr>
+  <tr><td style="color: #4b5563; padding: 6px 12px 6px 0;">Reference</td><td style="padding: 6px 0;"><code>{{ model.key_id }}</code></td></tr>
+</mj-table>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ app.base_url }}/admin/api-keys/{{ model.key_id }}">Review the key</mj-button>
+<mj-text font-size="13px" color="#4b5563">
+  <p>For your security, the key value itself is never sent by email — it was shown once at creation time inside the admin panel.</p>
+  {{- if app.support_email }}
+  <p>Did not expect this? Contact <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+  {{- end }}
+</mj-text>

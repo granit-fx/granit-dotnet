@@ -1,5 +1,6 @@
 <mjml>
   <mj-head>
+    <mj-title>{{ model.title }}</mj-title>
     <mj-attributes>
       <mj-all font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" />
       <mj-text font-size="16px" line-height="1.6" color="#374151" />
@@ -17,18 +18,27 @@
         {{- end }}
       </mj-column>
     </mj-section>
-    <!-- Body -->
+    <!-- Body — wrapped in a default section+column. Content provides either MJML children
+         (mj-text, mj-button, mj-table, mj-divider, ...) or plain HTML auto-wrapped in mj-text. -->
     <mj-section background-color="#ffffff" padding="32px">
       <mj-column>
+        {{- if body_is_mjml }}
+        {{ body }}
+        {{- else }}
         <mj-text>{{ body }}</mj-text>
-        {{- if app.base_url != "" }}
-        <mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
-        <mj-text align="center">
-          <a href="{{ app.base_url }}" style="color: #1d4ed8; text-decoration: underline; font-size: 14px;">{{ app.name }}</a>
-        </mj-text>
         {{- end }}
       </mj-column>
     </mj-section>
+    {{- if app.base_url != "" }}
+    <mj-section background-color="#ffffff" padding="0 32px 32px">
+      <mj-column>
+        <mj-divider border-color="#d1d5db" border-width="1px" padding="0 0 24px" />
+        <mj-text align="center">
+          <a href="{{ app.base_url }}" style="color: #1d4ed8; text-decoration: underline; font-size: 14px;">{{ app.name }}</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    {{- end }}
     <!-- Footer -->
     <mj-section background-color="#f3f4f6" padding="20px 32px" border-top="1px solid #d1d5db">
       <mj-column>

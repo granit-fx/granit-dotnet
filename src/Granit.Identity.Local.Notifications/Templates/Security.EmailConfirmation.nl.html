@@ -1,11 +1,13 @@
-<p>Hallo,</p>
+<mj-text>
+  <p>Hallo,</p>
 <p>Bevestig uw e-mailadres <strong>{{ model.email | html.escape }}</strong> om uw account te activeren.</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.confirm_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Mijn e-mail bevestigen</a>
-</p>
-<p>Deze link vervalt over <strong>24 uur</strong>.</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  Als de knop niet werkt, kopieer en plak de volgende link in uw browser:<br>
-  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.confirm_link }}">Mijn e-mail bevestigen</mj-button>
+<mj-text>
+  <p>Deze link vervalt over <strong>24 uur</strong>.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Als de knop niet werkt, kopieer en plak de volgende link in uw browser:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a></p>
+</mj-text>

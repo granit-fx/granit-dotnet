@@ -1,13 +1,15 @@
-<p>Dobrý den,</p>
+<mj-text>
+  <p>Dobrý den,</p>
 <p>Váš účet <strong>{{ model.email | html.escape }}</strong> byl uzamčen po <strong>{{ model.failed_attempts }}</strong> po sobě jdoucích neúspěšných pokusech o přihlášení.</p>
 <p>Jedná se o bezpečnostní opatření k ochraně vašeho účtu. Uzamčení vyprší <strong>{{ model.lockout_expires_at | date.to_string '%d.%m.%Y v %H:%M UTC' }}</strong>.</p>
 <p>Pokud tyto pokusy o přihlášení nebyly provedeny vámi, můžete si obnovit heslo a okamžitě odemknout svůj účet:</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Obnovit moje heslo</a>
-</p>
-<p>Pokud jste tyto pokusy neprovedli a nechcete podnikat žádné kroky, uzamčení vyprší automaticky.</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  Pokud tlačítko nefunguje, zkopírujte a vložte následující odkaz do svého prohlížeče:<br>
-  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.reset_link }}">Obnovit moje heslo</mj-button>
+<mj-text>
+  <p>Pokud jste tyto pokusy neprovedli a nechcete podnikat žádné kroky, uzamčení vyprší automaticky.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Pokud tlačítko nefunguje, zkopírujte a vložte následující odkaz do svého prohlížeče:<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a></p>
+</mj-text>

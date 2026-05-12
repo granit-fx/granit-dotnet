@@ -1,17 +1,19 @@
 <title>Clé d'API expirant dans {{ model.days_until_expiry }} jour(s) : {{ model.key_name }}</title>
-<p>Bonjour,</p>
-<p>Une de vos clés d'API approche de son expiration. Planifiez la rotation dès maintenant — dès qu'elle expire, tous les appelants qui l'utilisent cessent d'être authentifiés et vos intégrations en aval se cassent silencieusement.</p>
-<table cellpadding="6" cellspacing="0" style="margin: 16px 0; font-size: 14px; border-collapse: collapse;">
-  <tr><td style="color: #4b5563;">Nom</td><td><strong>{{ model.key_name }}</strong></td></tr>
-  <tr><td style="color: #4b5563;">Type</td><td><code>{{ model.key_type }}</code></td></tr>
-  <tr><td style="color: #4b5563;">Expire le</td><td><strong>{{ model.expires_at | date.to_string '%d/%m/%Y à %H:%M UTC' }}</strong></td></tr>
-  <tr><td style="color: #4b5563;">Jours restants</td><td><strong>{{ model.days_until_expiry }}</strong></td></tr>
-  <tr><td style="color: #4b5563;">Référence</td><td><code>{{ model.key_id }}</code></td></tr>
-</table>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/admin/api-keys/{{ model.key_id }}" style="display: inline-block; padding: 12px 28px; background-color: #b45309; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Faire tourner la clé</a>
-</p>
-<p style="font-size: 13px; color: #4b5563;">Pour des raisons de sécurité, la valeur de la clé n'est jamais transmise par e-mail — elle n'a été affichée qu'une seule fois, à la création, dans le panneau d'administration. La rotation produit une nouvelle valeur ; révoquez l'ancienne une fois les intégrations basculées.</p>
-{{ if app.support_email }}
-<p style="font-size: 13px; color: #4b5563;">Besoin d'aide ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
-{{ end }}
+<mj-text>
+  <p>Bonjour,</p>
+  <p>Une de vos clés d'API approche de son expiration. Planifiez la rotation dès maintenant — dès qu'elle expire, tous les appelants qui l'utilisent cessent d'être authentifiés et vos intégrations en aval se cassent silencieusement.</p>
+</mj-text>
+<mj-table css-class="apikey-details">
+  <tr><td style="color: #4b5563; padding: 6px 12px 6px 0;">Nom</td><td style="padding: 6px 0;"><strong>{{ model.key_name }}</strong></td></tr>
+  <tr><td style="color: #4b5563; padding: 6px 12px 6px 0;">Type</td><td style="padding: 6px 0;"><code>{{ model.key_type }}</code></td></tr>
+  <tr><td style="color: #4b5563; padding: 6px 12px 6px 0;">Expire le</td><td style="padding: 6px 0;"><strong>{{ model.expires_at | date.to_string '%d/%m/%Y à %H:%M UTC' }}</strong></td></tr>
+  <tr><td style="color: #4b5563; padding: 6px 12px 6px 0;">Jours restants</td><td style="padding: 6px 0;"><strong>{{ model.days_until_expiry }}</strong></td></tr>
+  <tr><td style="color: #4b5563; padding: 6px 12px 6px 0;">Référence</td><td style="padding: 6px 0;"><code>{{ model.key_id }}</code></td></tr>
+</mj-table>
+<mj-button background-color="#b45309" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ app.base_url }}/admin/api-keys/{{ model.key_id }}">Faire tourner la clé</mj-button>
+<mj-text font-size="13px" color="#4b5563">
+  <p>Pour des raisons de sécurité, la valeur de la clé n'est jamais transmise par e-mail — elle n'a été affichée qu'une seule fois, à la création, dans le panneau d'administration. La rotation produit une nouvelle valeur ; révoquez l'ancienne une fois les intégrations basculées.</p>
+  {{- if app.support_email }}
+  <p>Besoin d'aide ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+  {{- end }}
+</mj-text>

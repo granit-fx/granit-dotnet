@@ -1,11 +1,13 @@
-<p>您好，</p>
+<mj-text>
+  <p>您好，</p>
 <p>请确认您的电子邮件地址 <strong>{{ model.email | html.escape }}</strong> 以激活您的账户。</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.confirm_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">确认我的电子邮件</a>
-</p>
-<p>此链接将在 <strong>24 小时</strong>后过期。</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  如果按钮无法使用，请复制以下链接并粘贴到您的浏览器中：<br>
-  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.confirm_link }}">确认我的电子邮件</mj-button>
+<mj-text>
+  <p>此链接将在 <strong>24 小时</strong>后过期。</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>如果按钮无法使用，请复制以下链接并粘贴到您的浏览器中：<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a></p>
+</mj-text>

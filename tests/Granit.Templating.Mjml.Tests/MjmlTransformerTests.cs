@@ -154,6 +154,31 @@ public sealed class MjmlTransformerTests
     }
 
     [Fact]
+    public async Task Mjml_WithTable_RendersRows()
+    {
+        string mjml = """
+            <mjml>
+              <mj-body>
+                <mj-section>
+                  <mj-column>
+                    <mj-table>
+                      <tr><td>Name</td><td><strong>example</strong></td></tr>
+                      <tr><td>Reference</td><td><code>abc-123</code></td></tr>
+                    </mj-table>
+                  </mj-column>
+                </mj-section>
+              </mj-body>
+            </mjml>
+            """;
+
+        string result = await _sut.TransformAsync(mjml, DocumentFormat.Html, CancellationToken);
+
+        result.ShouldContain("example");
+        result.ShouldContain("abc-123");
+        result.ShouldContain("<table");
+    }
+
+    [Fact]
     public async Task Mjml_CaseInsensitive_DetectsMjmlTag()
     {
         string mjml = """

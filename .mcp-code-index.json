@@ -44317,7 +44317,7 @@
       "kind": "enum",
       "project": "Granit.Workflow",
       "file": "src/Granit.Workflow/Domain/WorkflowLifecycleStatus.cs",
-      "line": 6,
+      "line": 8,
       "members": []
     },
     {

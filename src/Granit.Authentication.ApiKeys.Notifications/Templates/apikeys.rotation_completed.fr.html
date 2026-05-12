@@ -1,14 +1,16 @@
 <title>Clé d'API renouvelée</title>
-<p>Bonjour,</p>
-<p>Une clé d'API vient d'être renouvelée. L'ancienne clé restera acceptée pendant la période de grâce configurée — assurez-vous que tous les consommateurs ont migré vers la nouvelle clé avant l'expiration de cette fenêtre.</p>
-<table cellpadding="6" cellspacing="0" style="margin: 16px 0; font-size: 14px; border-collapse: collapse;">
-  <tr><td style="color: #4b5563;">Ancienne clé</td><td><code>{{ model.old_key_id }}</code></td></tr>
-  <tr><td style="color: #4b5563;">Nouvelle clé</td><td><code>{{ model.new_key_id }}</code></td></tr>
-</table>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/admin/api-keys/{{ model.new_key_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Ouvrir la nouvelle clé</a>
-</p>
-<p style="font-size: 13px; color: #4b5563;">Pour des raisons de sécurité, la valeur de la clé n'est jamais transmise par e-mail — elle n'a été affichée qu'une seule fois, à la création, dans le panneau d'administration.</p>
-{{ if app.support_email }}
-<p style="font-size: 13px; color: #4b5563;">Cette rotation n'était pas prévue ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
-{{ end }}
+<mj-text>
+  <p>Bonjour,</p>
+  <p>Une clé d'API vient d'être renouvelée. L'ancienne clé restera acceptée pendant la période de grâce configurée — assurez-vous que tous les consommateurs ont migré vers la nouvelle clé avant l'expiration de cette fenêtre.</p>
+</mj-text>
+<mj-table css-class="apikey-details">
+  <tr><td style="color: #4b5563; padding: 6px 12px 6px 0;">Ancienne clé</td><td style="padding: 6px 0;"><code>{{ model.old_key_id }}</code></td></tr>
+  <tr><td style="color: #4b5563; padding: 6px 12px 6px 0;">Nouvelle clé</td><td style="padding: 6px 0;"><code>{{ model.new_key_id }}</code></td></tr>
+</mj-table>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ app.base_url }}/admin/api-keys/{{ model.new_key_id }}">Ouvrir la nouvelle clé</mj-button>
+<mj-text font-size="13px" color="#4b5563">
+  <p>Pour des raisons de sécurité, la valeur de la clé n'est jamais transmise par e-mail — elle n'a été affichée qu'une seule fois, à la création, dans le panneau d'administration.</p>
+  {{- if app.support_email }}
+  <p>Cette rotation n'était pas prévue ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+  {{- end }}
+</mj-text>

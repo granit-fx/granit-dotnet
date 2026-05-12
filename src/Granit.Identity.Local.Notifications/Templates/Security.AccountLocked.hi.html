@@ -1,13 +1,15 @@
-<p>नमस्ते,</p>
+<mj-text>
+  <p>नमस्ते,</p>
 <p>आपका खाता <strong>{{ model.email | html.escape }}</strong> लगातार <strong>{{ model.failed_attempts }}</strong> असफल लॉगिन प्रयासों के बाद लॉक कर दिया गया है।</p>
 <p>यह आपके खाते की सुरक्षा के लिए एक सुरक्षा उपाय है। लॉकआउट <strong>{{ model.lockout_expires_at | date.to_string '%d/%m/%Y को %H:%M UTC' }}</strong> पर समाप्त होगा।</p>
 <p>यदि ये लॉगिन प्रयास आपने नहीं किए थे, तो आप अपना पासवर्ड रीसेट करके अपने खाते को तुरंत अनलॉक कर सकते हैं:</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">मेरा पासवर्ड रीसेट करें</a>
-</p>
-<p>यदि आपने ये प्रयास नहीं किए और कोई कार्रवाई नहीं करना चाहते, तो लॉकआउट स्वचालित रूप से समाप्त हो जाएगा।</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  यदि बटन काम नहीं करता है, तो निम्नलिखित लिंक को कॉपी करके अपने ब्राउज़र में पेस्ट करें:<br>
-  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.reset_link }}">मेरा पासवर्ड रीसेट करें</mj-button>
+<mj-text>
+  <p>यदि आपने ये प्रयास नहीं किए और कोई कार्रवाई नहीं करना चाहते, तो लॉकआउट स्वचालित रूप से समाप्त हो जाएगा।</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>यदि बटन काम नहीं करता है, तो निम्नलिखित लिंक को कॉपी करके अपने ब्राउज़र में पेस्ट करें:<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a></p>
+</mj-text>

@@ -1,13 +1,15 @@
-<p>Bonjour,</p>
+<mj-text>
+  <p>Bonjour,</p>
 <p>Votre compte <strong>{{ model.email | html.escape }}</strong> a été verrouillé après <strong>{{ model.failed_attempts }}</strong> tentatives de connexion échouées consécutives.</p>
 <p>Il s'agit d'une mesure de sécurité pour protéger votre compte. Le verrouillage expirera le <strong>{{ model.lockout_expires_at | date.to_string '%d/%m/%Y à %H:%M UTC' }}</strong>.</p>
 <p>Si ces tentatives de connexion n'ont pas été effectuées par vous, vous pouvez réinitialiser votre mot de passe pour déverrouiller immédiatement votre compte :</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Réinitialiser mon mot de passe</a>
-</p>
-<p>Si vous n'avez pas effectué ces tentatives et préférez ne pas agir, le verrouillage expirera automatiquement.</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  Si le bouton ne fonctionne pas, copiez et collez le lien suivant dans votre navigateur :<br>
-  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.reset_link }}">Réinitialiser mon mot de passe</mj-button>
+<mj-text>
+  <p>Si vous n'avez pas effectué ces tentatives et préférez ne pas agir, le verrouillage expirera automatiquement.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Si le bouton ne fonctionne pas, copiez et collez le lien suivant dans votre navigateur :<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a></p>
+</mj-text>

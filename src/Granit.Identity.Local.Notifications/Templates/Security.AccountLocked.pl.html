@@ -1,13 +1,15 @@
-<p>Witaj,</p>
+<mj-text>
+  <p>Witaj,</p>
 <p>Twoje konto <strong>{{ model.email | html.escape }}</strong> zostało zablokowane po <strong>{{ model.failed_attempts }}</strong> kolejnych nieudanych próbach logowania.</p>
 <p>Jest to środek bezpieczeństwa mający na celu ochronę Twojego konta. Blokada wygaśnie <strong>{{ model.lockout_expires_at | date.to_string '%d.%m.%Y o %H:%M UTC' }}</strong>.</p>
 <p>Jeśli te próby logowania nie zostały wykonane przez Ciebie, możesz zresetować hasło, aby natychmiast odblokować swoje konto:</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Zresetuj moje hasło</a>
-</p>
-<p>Jeśli nie wykonałeś tych prób i wolisz nie podejmować działań, blokada wygaśnie automatycznie.</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  Jeśli przycisk nie działa, skopiuj i wklej poniższy link do przeglądarki:<br>
-  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.reset_link }}">Zresetuj moje hasło</mj-button>
+<mj-text>
+  <p>Jeśli nie wykonałeś tych prób i wolisz nie podejmować działań, blokada wygaśnie automatycznie.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Jeśli przycisk nie działa, skopiuj i wklej poniższy link do przeglądarki:<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a></p>
+</mj-text>

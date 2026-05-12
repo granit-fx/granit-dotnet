@@ -1,11 +1,13 @@
-<p>Merhaba,</p>
+<mj-text>
+  <p>Merhaba,</p>
 <p>Lütfen <strong>{{ model.new_email | html.escape }}</strong> adresinin yeni e-posta adresiniz olduğunu doğrulayın.</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.confirm_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Yeni e-postayı doğrula</a>
-</p>
-<p>Bu bağlantı <strong>24 saat</strong> içinde geçerliliğini yitirecektir. Bu değişikliği talep etmediyseniz bu e-postayı güvenle yok sayabilirsiniz.</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  Düğme çalışmıyorsa aşağıdaki bağlantıyı kopyalayıp tarayıcınıza yapıştırın:<br>
-  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.confirm_link }}">Yeni e-postayı doğrula</mj-button>
+<mj-text>
+  <p>Bu bağlantı <strong>24 saat</strong> içinde geçerliliğini yitirecektir. Bu değişikliği talep etmediyseniz bu e-postayı güvenle yok sayabilirsiniz.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Düğme çalışmıyorsa aşağıdaki bağlantıyı kopyalayıp tarayıcınıza yapıştırın:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a></p>
+</mj-text>

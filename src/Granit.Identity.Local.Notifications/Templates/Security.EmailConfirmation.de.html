@@ -1,11 +1,13 @@
-<p>Hallo,</p>
+<mj-text>
+  <p>Hallo,</p>
 <p>Bitte bestätigen Sie Ihre E-Mail-Adresse <strong>{{ model.email | html.escape }}</strong>, um Ihr Konto zu aktivieren.</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.confirm_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Meine E-Mail bestätigen</a>
-</p>
-<p>Dieser Link läuft in <strong>24 Stunden</strong> ab.</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  Wenn die Schaltfläche nicht funktioniert, kopieren Sie den folgenden Link und fügen Sie ihn in Ihren Browser ein:<br>
-  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.confirm_link }}">Meine E-Mail bestätigen</mj-button>
+<mj-text>
+  <p>Dieser Link läuft in <strong>24 Stunden</strong> ab.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Wenn die Schaltfläche nicht funktioniert, kopieren Sie den folgenden Link und fügen Sie ihn in Ihren Browser ein:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a></p>
+</mj-text>

@@ -1,13 +1,15 @@
-<p>こんにちは、</p>
+<mj-text>
+  <p>こんにちは、</p>
 <p>アカウント <strong>{{ model.email | html.escape }}</strong> は、連続 <strong>{{ model.failed_attempts }}</strong> 回のログイン失敗によりロックされました。</p>
 <p>これはアカウントを保護するためのセキュリティ対策です。ロックは <strong>{{ model.lockout_expires_at | date.to_string '%Y年%m月%d日 %H:%M UTC' }}</strong> に解除されます。</p>
 <p>これらのログイン試行が身に覚えのないものである場合は、パスワードをリセットしてアカウントを即座にロック解除できます：</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">パスワードをリセット</a>
-</p>
-<p>これらの試行を行っておらず、対応を希望しない場合、ロックは自動的に解除されます。</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  ボタンが機能しない場合は、以下のリンクをコピーしてブラウザに貼り付けてください：<br>
-  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.reset_link }}">パスワードをリセット</mj-button>
+<mj-text>
+  <p>これらの試行を行っておらず、対応を希望しない場合、ロックは自動的に解除されます。</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>ボタンが機能しない場合は、以下のリンクをコピーしてブラウザに貼り付けてください：<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a></p>
+</mj-text>

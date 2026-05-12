@@ -1,13 +1,15 @@
-<p>Hallo,</p>
+<mj-text>
+  <p>Hallo,</p>
 <p>Uw account <strong>{{ model.email | html.escape }}</strong> is vergrendeld na <strong>{{ model.failed_attempts }}</strong> opeenvolgende mislukte aanmeldpogingen.</p>
 <p>Dit is een beveiligingsmaatregel om uw account te beschermen. De vergrendeling verloopt op <strong>{{ model.lockout_expires_at | date.to_string '%d-%m-%Y om %H:%M UTC' }}</strong>.</p>
 <p>Als deze aanmeldpogingen niet door u zijn gedaan, kunt u uw wachtwoord opnieuw instellen om uw account onmiddellijk te ontgrendelen:</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Wachtwoord opnieuw instellen</a>
-</p>
-<p>Als u deze pogingen niet hebt gedaan en liever geen actie onderneemt, verloopt de vergrendeling automatisch.</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  Als de knop niet werkt, kopieer en plak de volgende link in uw browser:<br>
-  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.reset_link }}">Wachtwoord opnieuw instellen</mj-button>
+<mj-text>
+  <p>Als u deze pogingen niet hebt gedaan en liever geen actie onderneemt, verloopt de vergrendeling automatisch.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Als de knop niet werkt, kopieer en plak de volgende link in uw browser:<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a></p>
+</mj-text>

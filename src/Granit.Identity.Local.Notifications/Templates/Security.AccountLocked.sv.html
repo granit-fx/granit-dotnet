@@ -1,13 +1,15 @@
-<p>Hej,</p>
+<mj-text>
+  <p>Hej,</p>
 <p>Ditt konto <strong>{{ model.email | html.escape }}</strong> har låsts efter <strong>{{ model.failed_attempts }}</strong> på varandra följande misslyckade inloggningsförsök.</p>
 <p>Detta är en säkerhetsåtgärd för att skydda ditt konto. Låsningen upphör <strong>{{ model.lockout_expires_at | date.to_string '%Y-%m-%d kl. %H:%M UTC' }}</strong>.</p>
 <p>Om dessa inloggningsförsök inte gjordes av dig kan du återställa ditt lösenord för att omedelbart låsa upp ditt konto:</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Återställ mitt lösenord</a>
-</p>
-<p>Om du inte gjorde dessa försök och föredrar att inte vidta åtgärder kommer låsningen att upphöra automatiskt.</p>
-<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
-<p style="font-size: 13px; color: #4b5563;">
-  Om knappen inte fungerar, kopiera och klistra in följande länk i din webbläsare:<br>
-  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
-</p>
+</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ model.reset_link }}">Återställ mitt lösenord</mj-button>
+<mj-text>
+  <p>Om du inte gjorde dessa försök och föredrar att inte vidta åtgärder kommer låsningen att upphöra automatiskt.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Om knappen inte fungerar, kopiera och klistra in följande länk i din webbläsare:<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a></p>
+</mj-text>
