@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.Documents;
+using Granit.Documents.AssetMetadata.Diagnostics;
 using Granit.Documents.AssetMetadata.Domain;
 using Granit.Documents.AssetMetadata.Exceptions;
 using Granit.Documents.AssetMetadata.Options;
@@ -36,6 +38,7 @@ internal sealed partial class AssetMetadataGenerationService(
     IDocumentService documentService,
     IGuidGenerator guidGenerator,
     IClock clock,
+    AssetMetadataMetrics metrics,
     IOptions<GranitAssetMetadataOptions> options,
     ILogger<AssetMetadataGenerationService> logger) : IAssetMetadataGenerationService, IDisposable
 {
@@ -87,13 +90,17 @@ internal sealed partial class AssetMetadataGenerationService(
                     .OpenSourceAsync(effectiveBlobId, cancellationToken)
                     .ConfigureAwait(false);
 
+                string? tenantTag = tenantId?.ToString();
+                var sw = Stopwatch.StartNew();
                 IReadOnlyList<AssetMetadataResult> results = await pipeline
                     .ExtractAsync(source, sourceContentType, cancellationToken)
                     .ConfigureAwait(false);
+                metrics.RecordExtractionDuration(tenantTag, "pipeline", sw.Elapsed.TotalMilliseconds);
 
                 foreach (AssetMetadataResult result in results)
                 {
                     row.ApplyExtraction(result);
+                    metrics.RecordExtracted(tenantTag, sourceContentType, result.ExtractorName);
                 }
 
                 row.MarkReady(clock.Now);
@@ -105,12 +112,14 @@ internal sealed partial class AssetMetadataGenerationService(
             {
                 row.MarkFailed(ex.Message, clock.Now);
                 await store.UpdateAsync(row, cancellationToken).ConfigureAwait(false);
+                metrics.RecordFailed(tenantId?.ToString(), sourceContentType, ex.ExtractorName, nameof(AssetMetadataExtractionException));
                 LogFailed(logger, row.Id, sourceContentType, ex.Message);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 row.MarkFailed(ex.Message, clock.Now);
                 await store.UpdateAsync(row, cancellationToken).ConfigureAwait(false);
+                metrics.RecordFailed(tenantId?.ToString(), sourceContentType, extractor: "pipeline", errorType: ex.GetType().Name);
                 LogFailedUnexpected(logger, row.Id, sourceContentType, ex);
             }
         }

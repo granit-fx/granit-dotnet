@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.BlobStorage;
@@ -21,7 +22,7 @@ namespace Granit.Documents.Renditions.EntityFrameworkCore.Internal;
 /// Lives in the renditions EFC package so the parent <c>Granit.Documents</c> module
 /// stays unaware of the renditions surface (clean dependency direction).
 /// </remarks>
-public class DocumentPermanentlyDeletedRenditionHandler
+public sealed partial class DocumentPermanentlyDeletedRenditionHandler
 {
     /// <summary>Wolverine-style handler entry point. Public + static per framework convention.</summary>
     public static async Task HandleAsync(
@@ -32,7 +33,7 @@ public class DocumentPermanentlyDeletedRenditionHandler
         ILogger<DocumentPermanentlyDeletedRenditionHandler> logger,
         CancellationToken cancellationToken)
     {
-        System.Collections.Generic.IReadOnlyList<DocumentRendition> renditions = await renditionStore
+        IReadOnlyList<DocumentRendition> renditions = await renditionStore
             .ListForDocumentAsync(evt.DocumentId, cancellationToken)
             .ConfigureAwait(false);
 
@@ -68,13 +69,10 @@ public class DocumentPermanentlyDeletedRenditionHandler
         LogCascade(logger, renditions.Count, releasedBytes, evt.DocumentId);
     }
 
-    private static readonly Action<ILogger, int, long, Guid, Exception?> LogCascadeMessage =
-        LoggerMessage.Define<int, long, Guid>(
-            LogLevel.Information,
-            new EventId(1, nameof(DocumentPermanentlyDeletedRenditionHandler)),
-            "Granit.Documents.Renditions cascaded permanent-delete: dropped {Count} rendition(s) (~{ReleasedBytes} bytes) for document {DocumentId}.");
-
-    private static void LogCascade(ILogger logger, int count, long releasedBytes, Guid documentId) =>
-        LogCascadeMessage(logger, count, releasedBytes, documentId, null);
+    [LoggerMessage(
+        EventId = 1,
+        Level = LogLevel.Information,
+        Message = "Granit.Documents.Renditions cascaded permanent-delete: dropped {Count} rendition(s) (~{ReleasedBytes} bytes) for document {DocumentId}.")]
+    private static partial void LogCascade(ILogger logger, int count, long releasedBytes, Guid documentId);
 }
 

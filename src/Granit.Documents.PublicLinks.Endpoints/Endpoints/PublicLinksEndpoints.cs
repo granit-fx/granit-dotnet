@@ -54,8 +54,7 @@ internal static partial class PublicLinksEndpoints
                 + "after this response. `ttlDays` is clamped down to the configured maximum; "
                 + "`maxUses` falls back to the configured default when omitted. Returns 422 "
                 + "when the document is missing or excluded by the tenant filter.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPublicLinksPermissions.PublicLinks.Create))
+            .RequireAuthorization(DocumentsPublicLinksPermissions.PublicLinks.Create)
             .Produces<CreatePublicLinkResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem();
@@ -67,8 +66,7 @@ internal static partial class PublicLinksEndpoints
                 "Idempotency is not enforced: revoking an already-revoked link returns 422. "
                 + "The optional `reason` is persisted on the aggregate and surfaced on the "
                 + "audit trail (DocumentPublicLinkRevokedEvent / Eto).")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPublicLinksPermissions.PublicLinks.Revoke))
+            .RequireAuthorization(DocumentsPublicLinksPermissions.PublicLinks.Revoke)
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
 
@@ -80,8 +78,7 @@ internal static partial class PublicLinksEndpoints
                 + "omitted — the bearer is only ever shown at creation time. Returns an "
                 + "empty array when the document has no links (or does not exist for the "
                 + "current tenant).")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPublicLinksPermissions.PublicLinks.Read))
+            .RequireAuthorization(DocumentsPublicLinksPermissions.PublicLinks.Read)
             .Produces<IReadOnlyList<PublicLinkResponse>>();
 
         return group;
@@ -105,7 +102,8 @@ internal static partial class PublicLinksEndpoints
                 + "are indistinguishable on the wire.")
             .AllowAnonymous()
             .Produces(StatusCodes.Status302Found)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapGet("/{token}/preview", PreviewAsync)
             .WithName("RedeemDocumentPublicLinkPreview")
@@ -117,7 +115,8 @@ internal static partial class PublicLinksEndpoints
                 + "preview the bytes inline. EVERY failure path returns 404 with no body.")
             .AllowAnonymous()
             .Produces(StatusCodes.Status302Found)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         return group;
     }
@@ -170,8 +169,8 @@ internal static partial class PublicLinksEndpoints
         [FromServices] IDocumentPublicLinkService service,
         [FromServices] DocumentsPublicLinksMetrics metrics,
         [FromServices] ILoggerFactory loggerFactory,
-        CancellationToken cancellationToken,
-        RevokePublicLinkRequest? request = null)
+        RevokePublicLinkRequest? request,
+        CancellationToken cancellationToken)
     {
         ILogger logger = loggerFactory.CreateLogger(typeof(PublicLinksEndpoints).FullName!);
         try

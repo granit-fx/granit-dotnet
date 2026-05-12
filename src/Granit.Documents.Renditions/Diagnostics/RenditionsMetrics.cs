@@ -7,7 +7,7 @@ namespace Granit.Documents.Renditions.Diagnostics;
 /// <summary>
 /// OpenTelemetry metrics for the renditions module. Meter: <c>Granit.Documents.Renditions</c>.
 /// </summary>
-public sealed class RenditionsMetrics
+internal sealed class RenditionsMetrics
 {
     /// <summary>Meter name.</summary>
     public const string MeterName = "Granit.Documents.Renditions";

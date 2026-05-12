@@ -1,5 +1,6 @@
 using System;
 using Granit.Documents.Renditions.Diagnostics;
+using Granit.Documents.Renditions.Internal;
 using Granit.Documents.Renditions.Options;
 using Granit.Documents.Renditions.Pipeline;
 using Granit.Documents.Renditions.Providers;
@@ -36,6 +37,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<RenditionsMetrics>();
         services.TryAddSingleton<IRenditionPipeline, RenditionPipeline>();
+        services.TryAddScoped<IRenditionService, RenditionService>();
 
         return services;
     }

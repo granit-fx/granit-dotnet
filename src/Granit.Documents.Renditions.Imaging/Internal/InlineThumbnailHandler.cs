@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.BlobStorage;
@@ -31,7 +33,7 @@ namespace Granit.Documents.Renditions.Imaging.Internal;
 internal sealed partial class InlineThumbnailHandler(
     IImageProcessor processor,
     IBlobStorage blobStorage,
-    System.Net.Http.IHttpClientFactory httpClientFactory,
+    IHttpClientFactory httpClientFactory,
     IRenditionStore renditionStore,
     ITenantQuotaService quotas,
     IGuidGenerator guidGenerator,
@@ -102,7 +104,7 @@ internal sealed partial class InlineThumbnailHandler(
             .CreateDownloadUrlAsync(DocumentBlobContainers.Documents, sourceBlobId, options: null, cancellationToken)
             .ConfigureAwait(false);
 
-        System.Net.Http.HttpClient http = httpClientFactory.CreateClient(HttpClientName);
+        HttpClient http = httpClientFactory.CreateClient(HttpClientName);
         await using Stream source = await http.GetStreamAsync(url.Url, cancellationToken).ConfigureAwait(false);
 
         ImageFormat outputFormat = ResolveFormat(thumb.Format);
@@ -128,19 +130,19 @@ internal sealed partial class InlineThumbnailHandler(
                 MaxAllowedBytes: bytes.Length),
             cancellationToken).ConfigureAwait(false);
 
-        System.Net.Http.HttpClient http = httpClientFactory.CreateClient(HttpClientName);
-        using System.Net.Http.ByteArrayContent content = new(bytes);
-        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+        HttpClient http = httpClientFactory.CreateClient(HttpClientName);
+        using ByteArrayContent content = new(bytes);
+        content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
         foreach ((string key, string value) in ticket.RequiredHeaders)
         {
             content.Headers.TryAddWithoutValidation(key, value);
         }
-        using System.Net.Http.HttpRequestMessage request = new(
-            new System.Net.Http.HttpMethod(ticket.HttpMethod), ticket.UploadUrl)
+        using HttpRequestMessage request = new(
+            new HttpMethod(ticket.HttpMethod), ticket.UploadUrl)
         {
             Content = content,
         };
-        using System.Net.Http.HttpResponseMessage response = await http
+        using HttpResponseMessage response = await http
             .SendAsync(request, cancellationToken)
             .ConfigureAwait(false);
         response.EnsureSuccessStatusCode();

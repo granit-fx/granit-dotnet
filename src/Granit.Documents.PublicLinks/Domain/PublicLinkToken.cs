@@ -40,7 +40,7 @@ public sealed class PublicLinkToken : SingleValueObject<string>
 /// the host's signing key (a pepper, sourced from Vault and held in
 /// <c>GranitDocumentsPublicLinksOptions.SigningKey</c>).
 /// </summary>
-public static class PublicLinkTokenFactory
+internal static class PublicLinkTokenFactory
 {
     /// <summary>Mints a fresh random token (32 bytes, URL-safe base64, no padding).</summary>
     public static PublicLinkToken GenerateRandom()

@@ -2,6 +2,7 @@ using Granit.Documents.Domain;
 using Granit.Documents.Endpoints.Shares.Dtos;
 using Granit.Documents.Endpoints.Shares.Mapping;
 using Granit.Documents.Permissions;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +35,7 @@ internal static class ShareEndpoints
 
         // Folder share endpoints — nested under /folders/{folderId}/shares.
         RouteGroupBuilder folderShares = group
-            .MapGroup("/folders/{folderId:guid}/shares")
+            .MapGranitGroup("/folders/{folderId:guid}/shares")
             .WithTags(TagName);
 
         folderShares.MapGet("/", ListFolderSharesAsync)
@@ -45,7 +46,7 @@ internal static class ShareEndpoints
                 + "creation time. Expired grants are excluded. The path-based inheritance "
                 + "(F6.4) is not flattened in this listing — callers see only grants directly "
                 + "attached to this folder.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Shares.Read))
+            .RequireAuthorization(DocumentsPermissions.Shares.Read)
             .Produces<ListSharesResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -57,14 +58,14 @@ internal static class ShareEndpoints
                 + "When `isDefault` is true (the default), the grant inherits to descendants "
                 + "via the path-based effective-permission resolver introduced by F6.4 — F6.1 "
                 + "only persists the flag.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Shares.Manage))
+            .RequireAuthorization(DocumentsPermissions.Shares.Manage)
             .Produces<ShareResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesValidationProblem();
 
         // Document share endpoints — nested under /documents/{documentId}/shares.
         RouteGroupBuilder documentShares = group
-            .MapGroup("/documents/{documentId:guid}/shares")
+            .MapGranitGroup("/documents/{documentId:guid}/shares")
             .WithTags(TagName);
 
         documentShares.MapGet("/", ListDocumentSharesAsync)
@@ -75,7 +76,7 @@ internal static class ShareEndpoints
                 + "by creation time. Expired grants are excluded. Inherited grants from the "
                 + "document's parent folder are not included — see the F6.5 effective ACL "
                 + "field on document list responses for the resolved view.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Shares.Read))
+            .RequireAuthorization(DocumentsPermissions.Shares.Read)
             .Produces<ListSharesResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -85,13 +86,13 @@ internal static class ShareEndpoints
             .WithDescription(
                 "Creates a `DocumentShare` row targeting the document identified by "
                 + "`documentId`. The `isDefault` flag is ignored for document shares.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Shares.Manage))
+            .RequireAuthorization(DocumentsPermissions.Shares.Manage)
             .Produces<ShareResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesValidationProblem();
 
         // Top-level revoke endpoint — share id is globally unique inside a tenant.
-        RouteGroupBuilder shares = group.MapGroup("/shares").WithTags(TagName);
+        RouteGroupBuilder shares = group.MapGranitGroup("/shares").WithTags(TagName);
 
         shares.MapDelete("/{id:guid}", RevokeAsync)
             .WithName("RevokeShare")
@@ -100,7 +101,7 @@ internal static class ShareEndpoints
                 "Deletes the share row identified by `id` and emits `DocumentShareRevokedEvent` "
                 + "for downstream cache invalidation (F6.3). Returns 404 when the share does "
                 + "not exist or is excluded by the tenant filter.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Shares.Manage))
+            .RequireAuthorization(DocumentsPermissions.Shares.Manage)
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound);
 

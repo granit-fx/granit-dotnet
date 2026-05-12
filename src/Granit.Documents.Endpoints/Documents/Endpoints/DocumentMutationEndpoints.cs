@@ -3,6 +3,7 @@ using Granit.Documents.Domain;
 using Granit.Documents.Endpoints.Documents.Dtos;
 using Granit.Documents.Endpoints.Documents.Mapping;
 using Granit.Documents.Permissions;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -29,8 +30,7 @@ internal static class DocumentMutationEndpoints
                 "Returns the document identified by `id`, including its current version "
                 + "pointer and folder placement. 404 when the document is not found or "
                 + "excluded by the tenant filter.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Read))
+            .RequireAuthorization(DocumentsPermissions.Documents.Read)
             .Produces<DocumentResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -42,8 +42,7 @@ internal static class DocumentMutationEndpoints
                 + "to drop the description (sending an empty string sets a non-null empty "
                 + "value, which is rarely what callers want). 404 when the document is "
                 + "missing; 409 when the document is trashed.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Manage))
+            .RequireAuthorization(DocumentsPermissions.Documents.Manage)
             .Produces<DocumentResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
@@ -56,8 +55,7 @@ internal static class DocumentMutationEndpoints
                 "Moves the document identified by `id` under `newFolderId` (or under the "
                 + "tenant root when omitted). Cross-tenant moves and moves into trashed or "
                 + "missing folders surface as 409 Conflict.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Manage))
+            .RequireAuthorization(DocumentsPermissions.Documents.Manage)
             .Produces<DocumentResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
@@ -69,8 +67,7 @@ internal static class DocumentMutationEndpoints
                 "Moves the document identified by `id` to the trash. Permanent deletion "
                 + "happens after the configured retention period via the empty-trash "
                 + "background job (F8 / F9.2). Already-trashed documents surface as 409.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Manage))
+            .RequireAuthorization(DocumentsPermissions.Documents.Manage)
             .Produces<DocumentResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
@@ -82,8 +79,7 @@ internal static class DocumentMutationEndpoints
                 "Sets the document identified by `id` back to `Active`. Returns 404 when "
                 + "the document is missing or not currently trashed; 409 when the parent "
                 + "folder is itself trashed (callers must restore the folder first).")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Manage))
+            .RequireAuthorization(DocumentsPermissions.Documents.Manage)
             .Produces<DocumentResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
@@ -99,8 +95,7 @@ internal static class DocumentMutationEndpoints
                 + "the GDPR / ISO 27001 audit trail). Emits `DocumentPermanentlyDeletedEvent`. "
                 + "Returns 204 on success, 404 when the document is missing or not "
                 + "currently trashed.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Manage))
+            .RequireAuthorization(DocumentsPermissions.Documents.Manage)
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound);
 

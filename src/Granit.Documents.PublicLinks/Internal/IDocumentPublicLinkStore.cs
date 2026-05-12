@@ -1,6 +1,6 @@
 using Granit.Documents.PublicLinks.Domain;
 
-namespace Granit.Documents.PublicLinks.EntityFrameworkCore.Internal;
+namespace Granit.Documents.PublicLinks.Internal;
 
 /// <summary>Persistence surface for <see cref="DocumentPublicLink"/> rows.</summary>
 internal interface IDocumentPublicLinkStore

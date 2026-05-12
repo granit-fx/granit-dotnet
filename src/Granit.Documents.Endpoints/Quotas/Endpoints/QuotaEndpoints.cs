@@ -3,6 +3,7 @@ using Granit.Documents.Domain;
 using Granit.Documents.Endpoints.Quotas.Dtos;
 using Granit.Documents.Permissions;
 using Granit.MultiTenancy;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +24,7 @@ internal static class QuotaEndpoints
     {
         ArgumentNullException.ThrowIfNull(group);
 
-        RouteGroupBuilder quotas = group.MapGroup("/quota").WithTags(TagName);
+        RouteGroupBuilder quotas = group.MapGranitGroup("/quota").WithTags(TagName);
 
         quotas.MapGet("/", GetQuotaAsync)
             .WithName("GetTenantStorageQuota")
@@ -34,9 +35,8 @@ internal static class QuotaEndpoints
                 + "first call (mirrors the F2.2 tenant-root bootstrap), so a brand-new "
                 + "tenant always sees `UsageBytes = 0` instead of a 404. Returns 401 when "
                 + "the request carries no tenant context.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Quotas.Read))
-            .Produces<TenantStorageQuotaResponse>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized);
+            .RequireAuthorization(DocumentsPermissions.Quotas.Read)
+            .Produces<TenantStorageQuotaResponse>();
 
         return quotas;
     }

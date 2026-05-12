@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Documents.Extensions;
+namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Extensions for registering Granit.Documents module services.

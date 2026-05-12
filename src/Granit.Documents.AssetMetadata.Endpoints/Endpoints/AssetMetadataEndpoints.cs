@@ -5,6 +5,7 @@ using Granit.Documents.AssetMetadata.Domain;
 using Granit.Documents.AssetMetadata.Endpoints.Dtos;
 using Granit.Documents.AssetMetadata.Endpoints.Mapping;
 using Granit.Documents.Permissions;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -29,7 +30,7 @@ internal static class AssetMetadataEndpoints
     {
         ArgumentNullException.ThrowIfNull(group);
 
-        RouteGroupBuilder documents = group.MapGroup("/documents/{id:guid}").WithTags(TagName);
+        RouteGroupBuilder documents = group.MapGranitGroup("/documents/{id:guid}").WithTags(TagName);
 
         documents.MapGet("/metadata", GetForCurrentVersionAsync)
             .WithName("GetDocumentAssetMetadata")
@@ -39,8 +40,7 @@ internal static class AssetMetadataEndpoints
                 + "plus the verbatim extractor payload under `rawMetadata`. Returns 404 when "
                 + "the document is missing, excluded by the tenant filter, or extraction has "
                 + "not yet completed for the current version.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Read))
+            .RequireAuthorization(DocumentsPermissions.Documents.Read)
             .Produces<AssetMetadataResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -52,8 +52,7 @@ internal static class AssetMetadataEndpoints
                 + "identifier. Useful for audit trails or comparing metadata between revisions. "
                 + "Returns 404 when the document or version is missing, the version does not "
                 + "belong to the supplied document, or no metadata row has been produced yet.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Read))
+            .RequireAuthorization(DocumentsPermissions.Documents.Read)
             .Produces<AssetMetadataResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 

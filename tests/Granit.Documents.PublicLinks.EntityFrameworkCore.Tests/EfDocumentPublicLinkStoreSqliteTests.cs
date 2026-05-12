@@ -1,5 +1,6 @@
 using Granit.Documents.PublicLinks.Domain;
 using Granit.Documents.PublicLinks.EntityFrameworkCore.Internal;
+using Granit.Documents.PublicLinks.Internal;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;

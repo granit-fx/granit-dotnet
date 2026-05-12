@@ -11,7 +11,7 @@ namespace Granit.Documents.AssetMetadata.BackgroundJobs.Handlers;
 /// <see cref="IAssetMetadataGenerationService"/> — the handler stays a thin
 /// wrapper so the orchestration logic remains testable in isolation.
 /// </summary>
-public partial class DocumentVersionAddedAssetMetadataHandler
+public sealed partial class DocumentVersionAddedAssetMetadataHandler
 {
     /// <summary>Wolverine-style entry point. Public + static per framework convention.</summary>
     public static Task HandleAsync(

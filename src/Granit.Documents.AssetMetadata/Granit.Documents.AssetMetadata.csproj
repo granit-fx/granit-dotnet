@@ -17,7 +17,6 @@
     <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Imaging" />
     <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Pdf" />
     <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Office" />
-    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Media" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

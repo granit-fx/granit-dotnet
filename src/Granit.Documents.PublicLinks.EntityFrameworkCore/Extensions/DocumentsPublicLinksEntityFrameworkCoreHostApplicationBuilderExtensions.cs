@@ -1,4 +1,5 @@
 using Granit.Documents.PublicLinks.EntityFrameworkCore.Internal;
+using Granit.Documents.PublicLinks.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +51,6 @@ public static class DocumentsPublicLinksEntityFrameworkCoreHostApplicationBuilde
             configureSchemaPerTenant,
             configureTenantSchema);
         builder.Services.TryAddScoped<IDocumentPublicLinkStore, EfDocumentPublicLinkStore>();
-        builder.Services.TryAddScoped<IDocumentPublicLinkService, DocumentPublicLinkService>();
 
         return builder;
     }

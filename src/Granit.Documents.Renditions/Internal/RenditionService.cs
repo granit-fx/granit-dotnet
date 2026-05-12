@@ -8,7 +8,7 @@ using Granit.Documents;
 using Granit.Documents.Domain;
 using Granit.Documents.Renditions.Domain;
 
-namespace Granit.Documents.Renditions.EntityFrameworkCore.Internal;
+namespace Granit.Documents.Renditions.Internal;
 
 /// <summary>
 /// EF Core-backed <see cref="IRenditionService"/>. Composes <see cref="IDocumentService"/>

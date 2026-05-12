@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.BlobStorage;
@@ -7,6 +8,7 @@ using Granit.Documents.Renditions;
 using Granit.Documents.Renditions.Domain;
 using Granit.Documents.Renditions.Endpoints.Dtos;
 using Granit.Documents.Renditions.Endpoints.Mapping;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -29,7 +31,7 @@ internal static class RenditionEndpoints
     {
         ArgumentNullException.ThrowIfNull(group);
 
-        RouteGroupBuilder renditions = group.MapGroup("/documents/{id:guid}/renditions").WithTags(TagName);
+        RouteGroupBuilder renditions = group.MapGranitGroup("/documents/{id:guid}/renditions").WithTags(TagName);
 
         renditions.MapGet("", ListAsync)
             .WithName("ListDocumentRenditions")
@@ -38,8 +40,7 @@ internal static class RenditionEndpoints
                 "Returns each rendition row (any status — including Pending and Failed) so the "
                 + "UI can render placeholders or surface errors. Ordered by Type then Format. "
                 + "Returns 404 when the document is not found or has no current version.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Read))
+            .RequireAuthorization(DocumentsPermissions.Documents.Read)
             .Produces<ListRenditionsResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -54,8 +55,7 @@ internal static class RenditionEndpoints
                 + "is missing or no rendition of the requested Type / Format is yet in Ready "
                 + "status — on-demand synchronous generation is deferred to a follow-up; "
                 + "until then callers retry once the F16.4 background job completes.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Read))
+            .RequireAuthorization(DocumentsPermissions.Documents.Read)
             .Produces<RenditionDownloadUrlResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -71,7 +71,7 @@ internal static class RenditionEndpoints
         [FromServices] IRenditionService service,
         CancellationToken cancellationToken)
     {
-        System.Collections.Generic.IReadOnlyList<DocumentRendition>? rows =
+        IReadOnlyList<DocumentRendition>? rows =
             await service.ListAsync(id, cancellationToken).ConfigureAwait(false);
         if (rows is null)
         {

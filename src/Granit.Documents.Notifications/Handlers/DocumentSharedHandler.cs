@@ -11,7 +11,7 @@ namespace Granit.Documents.Notifications.Handlers;
 /// responsibility (the recipient list depends on the role/group resolution layer
 /// which is not in scope for the framework).
 /// </summary>
-public class DocumentSharedHandler
+public sealed class DocumentSharedHandler
 {
     public static async Task HandleAsync(
         DocumentShareGrantedEvent evt,

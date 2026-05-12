@@ -3,7 +3,7 @@ using System.Diagnostics;
 namespace Granit.Documents.Renditions.Diagnostics;
 
 /// <summary>Central <see cref="ActivitySource"/> for Granit.Documents.Renditions distributed tracing.</summary>
-public static class RenditionsActivitySource
+internal static class RenditionsActivitySource
 {
     /// <summary>The name of the renditions <see cref="ActivitySource"/>.</summary>
     public const string Name = "Granit.Documents.Renditions";

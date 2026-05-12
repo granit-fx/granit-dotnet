@@ -1,9 +1,7 @@
 using System.Globalization;
 using System.Security.Cryptography;
-using System.Text;
-using Granit.Documents.Authorization;
 
-namespace Granit.Documents.EntityFrameworkCore.Authorization;
+namespace Granit.Documents.Authorization;
 
 /// <summary>
 /// Centralised cache-key and tag construction for the F6.3 effective-ACL cache layer.

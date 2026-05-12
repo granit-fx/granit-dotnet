@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Granit.Documents.Renditions.Domain;
 
 namespace Granit.Documents.Renditions.Endpoints.Dtos;
@@ -25,7 +26,7 @@ public sealed record RenditionResponse(
 public sealed record ListRenditionsResponse(
     Guid DocumentId,
     Guid DocumentVersionId,
-    System.Collections.Generic.IReadOnlyList<RenditionResponse> Renditions);
+    IReadOnlyList<RenditionResponse> Renditions);
 
 /// <summary>HTTP shape returned by the rendition download endpoint.</summary>
 /// <param name="Url">Short-lived presigned URL the caller can use to fetch the rendition bytes directly from blob storage.</param>

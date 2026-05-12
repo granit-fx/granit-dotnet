@@ -1,7 +1,7 @@
 namespace Granit.Documents.BackgroundJobs.Jobs;
 
 /// <summary>Handler for <see cref="EmptyTrashJob"/> (F9.2).</summary>
-public class EmptyTrashHandler
+public sealed class EmptyTrashHandler
 {
     public static Task HandleAsync(
         EmptyTrashJob _,

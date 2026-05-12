@@ -49,7 +49,6 @@ public static class RenditionsEntityFrameworkCoreHostApplicationBuilderExtension
             configureSchemaPerTenant,
             configureTenantSchema);
         builder.Services.TryAddScoped<IRenditionStore, RenditionStore>();
-        builder.Services.TryAddScoped<IRenditionService, RenditionService>();
 
         return builder;
     }

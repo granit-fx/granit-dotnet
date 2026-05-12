@@ -17,7 +17,7 @@ namespace Granit.Documents.AssetMetadata.EntityFrameworkCore.Internal;
 /// module stays unaware of asset-metadata (clean dependency direction; mirrors
 /// the rendition handler).
 /// </remarks>
-public class DocumentPermanentlyDeletedAssetMetadataHandler
+public sealed partial class DocumentPermanentlyDeletedAssetMetadataHandler
 {
     /// <summary>Wolverine-style handler entry point. Public + static per framework convention.</summary>
     public static async Task HandleAsync(
@@ -32,12 +32,7 @@ public class DocumentPermanentlyDeletedAssetMetadataHandler
         LogCascade(logger, evt.DocumentId);
     }
 
-    private static readonly Action<ILogger, Guid, Exception?> LogCascadeMessage =
-        LoggerMessage.Define<Guid>(
-            LogLevel.Information,
-            new EventId(1, nameof(DocumentPermanentlyDeletedAssetMetadataHandler)),
-            "Granit.Documents.AssetMetadata cascaded permanent-delete: dropped rows for document {DocumentId}.");
-
-    private static void LogCascade(ILogger logger, Guid documentId) =>
-        LogCascadeMessage(logger, documentId, null);
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Granit.Documents.AssetMetadata cascaded permanent-delete: dropped rows for document {DocumentId}.")]
+    private static partial void LogCascade(ILogger logger, Guid documentId);
 }

@@ -3,6 +3,7 @@ using Granit.Documents.Domain;
 using Granit.Documents.Endpoints.Folders.Dtos;
 using Granit.Documents.Endpoints.Folders.Mapping;
 using Granit.Documents.Permissions;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +24,7 @@ internal static class FolderEndpoints
     {
         ArgumentNullException.ThrowIfNull(group);
 
-        RouteGroupBuilder folders = group.MapGroup("/folders").WithTags(TagName);
+        RouteGroupBuilder folders = group.MapGranitGroup("/folders").WithTags(TagName);
 
         folders.MapGet("/", ListChildrenAsync)
             .WithName("ListFolders")
@@ -34,7 +35,7 @@ internal static class FolderEndpoints
                 + "The tenant root itself is always filtered out of the result set. "
                 + "Pass `?status=Trashed` to read the trash listing for the same parent (F8.1); the "
                 + "default is `Active`.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Read))
+            .RequireAuthorization(DocumentsPermissions.Folders.Read)
             .Produces<ListFoldersResponse>();
 
         folders.MapGet("/{id:guid}", GetByIdAsync)
@@ -45,7 +46,7 @@ internal static class FolderEndpoints
                 + "Returns 404 when the folder does not exist or when the caller's tenant filter "
                 + "excludes it. The tenant root itself is also returned as 404 because it is not "
                 + "user-visible.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Read))
+            .RequireAuthorization(DocumentsPermissions.Folders.Read)
             .Produces<FolderResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -57,7 +58,7 @@ internal static class FolderEndpoints
                 + "tenant root) down to and including the folder identified by `id`. The invisible "
                 + "tenant root is excluded from the chain so the client never has to know about it. "
                 + "Returns 404 when the folder does not exist or is the tenant root.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Read))
+            .RequireAuthorization(DocumentsPermissions.Folders.Read)
             .Produces<FolderBreadcrumbResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -69,7 +70,7 @@ internal static class FolderEndpoints
                 + "folder is created directly under the invisible tenant root, which is auto-bootstrapped "
                 + "on first access for the tenant. The folder name is validated against length, the "
                 + "reserved path separator '/', and parent-scoped uniqueness.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Manage))
+            .RequireAuthorization(DocumentsPermissions.Folders.Manage)
             .Produces<FolderResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem();
 
@@ -80,7 +81,7 @@ internal static class FolderEndpoints
                 "Renames the folder identified by `id`. The materialised path is recomputed atomically. "
                 + "Descendant paths are updated by the move-folder endpoint (F2.4) — rename does not "
                 + "modify descendants. The tenant root cannot be renamed.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Manage))
+            .RequireAuthorization(DocumentsPermissions.Folders.Manage)
             .Produces<FolderResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesValidationProblem();
@@ -95,7 +96,7 @@ internal static class FolderEndpoints
                 + "UPDATE within the same transaction. Cycles, cross-tenant moves, and moves "
                 + "under a trashed or descendant target are rejected. The tenant root cannot "
                 + "be moved.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Manage))
+            .RequireAuthorization(DocumentsPermissions.Folders.Manage)
             .Produces<FolderResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
@@ -108,7 +109,7 @@ internal static class FolderEndpoints
                 + "active descendant folder and document in a single transaction (F8.1). "
                 + "Permanent deletion happens after the configured retention period via the "
                 + "empty-trash background job (F8/F9.2). The tenant root cannot be trashed.")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Manage))
+            .RequireAuthorization(DocumentsPermissions.Folders.Manage)
             .Produces<FolderResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -120,7 +121,7 @@ internal static class FolderEndpoints
                 + "unless restored individually (per F8.1 — restore is non-cascading by design). "
                 + "Returns 404 when the folder is missing or not currently trashed; 409 when the "
                 + "parent folder is itself trashed (callers must restore the parent first).")
-            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Manage))
+            .RequireAuthorization(DocumentsPermissions.Folders.Manage)
             .Produces<FolderResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);

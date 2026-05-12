@@ -17,7 +17,6 @@ namespace Granit.Documents.AssetMetadata.Pipeline;
 /// </summary>
 internal sealed partial class AssetMetadataPipeline(
     IEnumerable<IAssetMetadataExtractor> extractors,
-    AssetMetadataMetrics metrics,
     ILogger<AssetMetadataPipeline> logger) : IAssetMetadataPipeline
 {
     /// <inheritdoc />
@@ -49,14 +48,12 @@ internal sealed partial class AssetMetadataPipeline(
                 AssetMetadataActivitySource.ExtractorExtract);
             hopSpan?.SetTag("extractor", extractor.Name);
 
-            var sw = Stopwatch.StartNew();
             try
             {
                 AssetMetadataResult result = await extractor
                     .ExtractAsync(source, sourceContentType, cancellationToken)
                     .ConfigureAwait(false);
                 results.Add(result);
-                metrics.RecordExtractionDuration(tenantId: null, extractor.Name, sw.Elapsed.TotalMilliseconds);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {

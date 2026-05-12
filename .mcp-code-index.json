@@ -962,6 +962,7 @@
         "Granit",
         "Granit.Analytics",
         "Granit.BlobStorage",
+        "Granit.Caching",
         "Granit.DataExchange.Abstractions",
         "Granit.Localization",
         "Granit.QueryEngine.Abstractions",
@@ -21231,6 +21232,40 @@
       ]
     },
     {
+      "name": "AclCacheInvalidationHandler",
+      "fqn": "Granit.Documents.Authorization.AclCacheInvalidationHandler",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Authorization/AclCacheInvalidationHandler.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentShareGrantedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentShareRevokedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(FolderPathChangedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(FolderTreePathChangedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "DocumentPrincipal",
       "fqn": "Granit.Documents.Authorization.DocumentPrincipal",
       "kind": "record",
@@ -21894,40 +21929,6 @@
       "members": []
     },
     {
-      "name": "AclCacheInvalidationHandler",
-      "fqn": "Granit.Documents.EntityFrameworkCore.Authorization.AclCacheInvalidationHandler",
-      "kind": "class",
-      "project": "Granit.Documents.EntityFrameworkCore",
-      "file": "src/Granit.Documents.EntityFrameworkCore/Authorization/AclCacheInvalidationHandler.cs",
-      "line": 30,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(DocumentShareGrantedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        },
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(DocumentShareRevokedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        },
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(FolderPathChangedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        },
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(FolderTreePathChangedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
       "name": "DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Documents.EntityFrameworkCore.Extensions.DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -22213,28 +22214,12 @@
       ]
     },
     {
-      "name": "DocumentsServiceCollectionExtensions",
-      "fqn": "Granit.Documents.Extensions.DocumentsServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Documents",
-      "file": "src/Granit.Documents/Extensions/DocumentsServiceCollectionExtensions.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "AddGranitDocuments",
-          "kind": "method",
-          "signature": "AddGranitDocuments(this IServiceCollection services, Action<GranitDocumentsOptions>? configure = null)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
       "name": "GranitDocumentsModule",
       "fqn": "Granit.Documents.GranitDocumentsModule",
       "kind": "class",
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/GranitDocumentsModule.cs",
-      "line": 28,
+      "line": 30,
       "members": []
     },
     {
@@ -23054,22 +23039,6 @@
       ]
     },
     {
-      "name": "PublicLinkTokenFactory",
-      "fqn": "Granit.Documents.PublicLinks.Domain.PublicLinkTokenFactory",
-      "kind": "class",
-      "project": "Granit.Documents.PublicLinks",
-      "file": "src/Granit.Documents.PublicLinks/Domain/PublicLinkToken.cs",
-      "line": 43,
-      "members": [
-        {
-          "name": "GenerateRandom",
-          "kind": "method",
-          "signature": "GenerateRandom()",
-          "returnType": "PublicLinkToken"
-        }
-      ]
-    },
-    {
       "name": "CreatePublicLinkRequest",
       "fqn": "Granit.Documents.PublicLinks.Endpoints.Dtos.CreatePublicLinkRequest",
       "kind": "record",
@@ -23180,7 +23149,7 @@
       "kind": "class",
       "project": "Granit.Documents.PublicLinks.EntityFrameworkCore",
       "file": "src/Granit.Documents.PublicLinks.EntityFrameworkCore/Extensions/DocumentsPublicLinksEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitDocumentsPublicLinksEntityFrameworkCore",
@@ -23291,7 +23260,7 @@
       "kind": "class",
       "project": "Granit.Documents.PublicLinks",
       "file": "src/Granit.Documents.PublicLinks/Extensions/ServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitDocumentsPublicLinks",
@@ -23604,50 +23573,6 @@
       ]
     },
     {
-      "name": "RenditionsActivitySource",
-      "fqn": "Granit.Documents.Renditions.Diagnostics.RenditionsActivitySource",
-      "kind": "class",
-      "project": "Granit.Documents.Renditions",
-      "file": "src/Granit.Documents.Renditions/Diagnostics/RenditionsActivitySource.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new(Name)",
-          "returnType": "ActivitySource Source ="
-        }
-      ]
-    },
-    {
-      "name": "RenditionsMetrics",
-      "fqn": "Granit.Documents.Renditions.Diagnostics.RenditionsMetrics",
-      "kind": "class",
-      "project": "Granit.Documents.Renditions",
-      "file": "src/Granit.Documents.Renditions/Diagnostics/RenditionsMetrics.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "RecordFailed",
-          "kind": "method",
-          "signature": "RecordFailed(string? tenantId, string sourceContentType, string targetContentType, string errorType)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordOnDemandServed",
-          "kind": "method",
-          "signature": "RecordOnDemandServed(string? tenantId, string targetContentType, string renditionType)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordGenerationDuration",
-          "kind": "method",
-          "signature": "RecordGenerationDuration(string sourceContentType, string targetContentType, string provider, TimeSpan duration)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
       "name": "DocumentRenditionContainers",
       "fqn": "Granit.Documents.Renditions.DocumentRenditionContainers",
       "kind": "class",
@@ -23702,7 +23627,7 @@
       "kind": "record",
       "project": "Granit.Documents.Renditions.Endpoints",
       "file": "src/Granit.Documents.Renditions.Endpoints/Dtos/RenditionResponse.cs",
-      "line": 25,
+      "line": 26,
       "members": []
     },
     {
@@ -23711,7 +23636,7 @@
       "kind": "record",
       "project": "Granit.Documents.Renditions.Endpoints",
       "file": "src/Granit.Documents.Renditions.Endpoints/Dtos/RenditionResponse.cs",
-      "line": 33,
+      "line": 34,
       "members": []
     },
     {
@@ -23720,7 +23645,7 @@
       "kind": "record",
       "project": "Granit.Documents.Renditions.Endpoints",
       "file": "src/Granit.Documents.Renditions.Endpoints/Dtos/RenditionResponse.cs",
-      "line": 7,
+      "line": 8,
       "members": []
     },
     {
@@ -23811,7 +23736,7 @@
       "kind": "class",
       "project": "Granit.Documents.Renditions.EntityFrameworkCore",
       "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/Internal/DocumentPermanentlyDeletedRenditionHandler.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "HandleAsync",
@@ -23854,7 +23779,7 @@
       "kind": "class",
       "project": "Granit.Documents.Renditions",
       "file": "src/Granit.Documents.Renditions/Extensions/ServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitDocumentsRenditions",
@@ -68833,6 +68758,22 @@
       "file": "src/Granit.Workspaces.Abstractions/WorkspaceSectionDescriptor.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "DocumentsServiceCollectionExtensions",
+      "fqn": "Microsoft.Extensions.DependencyInjection.DocumentsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Extensions/DocumentsServiceCollectionExtensions.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "AddGranitDocuments",
+          "kind": "method",
+          "signature": "AddGranitDocuments(this IServiceCollection services, Action<GranitDocumentsOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
     }
   ]
 }

@@ -9,10 +9,10 @@ using Granit.Guids;
 using Granit.Users;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Documents.PublicLinks.EntityFrameworkCore.Internal;
+namespace Granit.Documents.PublicLinks.Internal;
 
 /// <summary>
-/// EF Core-backed <see cref="IDocumentPublicLinkService"/>. Composes
+/// Default <see cref="IDocumentPublicLinkService"/>. Composes
 /// <see cref="IDocumentService"/> (to honour the parent tenant filter / trash
 /// status at creation time) with <see cref="IDocumentPublicLinkStore"/>.
 /// </summary>

@@ -2,7 +2,7 @@ using Granit.Documents.Domain;
 using Granit.Documents.Events;
 using ZiggyCreatures.Caching.Fusion;
 
-namespace Granit.Documents.EntityFrameworkCore.Authorization;
+namespace Granit.Documents.Authorization;
 
 /// <summary>
 /// Wolverine message handlers that invalidate the F6.3 effective-ACL cache when share
@@ -27,7 +27,7 @@ namespace Granit.Documents.EntityFrameworkCore.Authorization;
 /// </list>
 /// </para>
 /// </remarks>
-public class AclCacheInvalidationHandler
+public sealed class AclCacheInvalidationHandler
 {
     /// <summary>Invalidates entries that depended on the share's target.</summary>
     public static Task HandleAsync(

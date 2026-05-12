@@ -10,7 +10,7 @@ namespace Granit.Documents.Notifications.Handlers;
 /// for <see cref="ShareGranteeType.User"/> grants — see
 /// <see cref="DocumentSharedHandler"/> for the role/group rationale.
 /// </summary>
-public class DocumentShareRevokedHandler
+public sealed class DocumentShareRevokedHandler
 {
     public static async Task HandleAsync(
         DocumentShareRevokedEvent evt,

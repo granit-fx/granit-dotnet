@@ -13,7 +13,7 @@ namespace Granit.Documents.Renditions.BackgroundJobs.Handlers;
 /// the rendition targets via <see cref="IRenditionTypePolicy"/> and delegates the
 /// per-rendition generation to <see cref="RenditionGenerationService"/>.
 /// </summary>
-public partial class DocumentVersionAddedRenditionsHandler
+public sealed partial class DocumentVersionAddedRenditionsHandler
 {
     /// <summary>Wolverine-style handler entry point. Public + static per framework convention.</summary>
     public static async Task HandleAsync(

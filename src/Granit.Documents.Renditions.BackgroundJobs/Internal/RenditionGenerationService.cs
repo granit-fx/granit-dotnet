@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.Documents.Renditions.BackgroundJobs.Policies;
+using Granit.Documents.Renditions.Diagnostics;
 using Granit.Documents.Renditions.Domain;
 using Granit.Documents.Renditions.Exceptions;
 using Granit.Documents.Renditions.Options;
@@ -37,6 +39,7 @@ internal sealed partial class RenditionGenerationService(
     IGuidGenerator guidGenerator,
     IClock clock,
     IOptions<GranitRenditionsOptions> options,
+    RenditionsMetrics metrics,
     ILogger<RenditionGenerationService> logger) : IRenditionGenerationService, IDisposable
 {
     private readonly SemaphoreSlim _gate = new(options.Value.MaxConcurrentGenerations);
@@ -63,6 +66,10 @@ internal sealed partial class RenditionGenerationService(
                 return;
             }
 
+            string? tenantTag = tenantId?.ToString();
+            var sw = Stopwatch.StartNew();
+            using Activity? activity = RenditionsActivitySource.Source.StartActivity(
+                RenditionsActivitySource.PipelineExecute);
             try
             {
                 row.MarkGenerating();
@@ -89,18 +96,23 @@ internal sealed partial class RenditionGenerationService(
                         .ConfigureAwait(false);
                 }
 
+                sw.Stop();
+                metrics.RecordGenerated(tenantTag, sourceContentType, target.TargetContentType, target.Type.ToString());
+                metrics.RecordGenerationDuration(sourceContentType, target.TargetContentType, "pipeline", sw.Elapsed);
                 LogGenerated(logger, row.Id, target.Type, target.TargetContentType, result.Content.Length);
             }
             catch (RenditionPipelineException ex)
             {
                 row.MarkFailed(ex.Message, clock.Now);
                 await renditionStore.UpdateAsync(row, cancellationToken).ConfigureAwait(false);
+                metrics.RecordFailed(tenantTag, sourceContentType, target.TargetContentType, nameof(RenditionPipelineException));
                 LogFailed(logger, row.Id, target.Type, target.TargetContentType, ex.Message);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 row.MarkFailed(ex.Message, clock.Now);
                 await renditionStore.UpdateAsync(row, cancellationToken).ConfigureAwait(false);
+                metrics.RecordFailed(tenantTag, sourceContentType, target.TargetContentType, ex.GetType().Name);
                 LogFailedUnexpected(logger, row.Id, target.Type, target.TargetContentType, ex);
             }
         }

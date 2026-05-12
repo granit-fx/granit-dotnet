@@ -10,6 +10,7 @@
     <InternalsVisibleTo Include="Granit.Documents.PublicLinks.Tests" />
     <InternalsVisibleTo Include="Granit.Documents.PublicLinks.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.Documents.PublicLinks.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.PublicLinks.EntityFrameworkCore.Tests.Integration" />
     <InternalsVisibleTo Include="Granit.Documents.PublicLinks.Endpoints" />
     <InternalsVisibleTo Include="Granit.Documents.PublicLinks.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.Documents.PublicLinks.BackgroundJobs" />

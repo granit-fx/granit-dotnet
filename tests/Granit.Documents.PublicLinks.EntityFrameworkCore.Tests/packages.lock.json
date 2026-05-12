@@ -482,6 +482,7 @@
           "Granit": "[0.1.0-dev, )",
           "Granit.Analytics": "[0.1.0-dev, )",
           "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
@@ -501,9 +502,7 @@
           "Granit.Documents.PublicLinks": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Options": "[10.*, )"
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
         }
       },
       "granit.entities.abstractions": {

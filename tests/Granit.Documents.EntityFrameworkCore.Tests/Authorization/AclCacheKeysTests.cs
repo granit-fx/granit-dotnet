@@ -1,5 +1,4 @@
 using Granit.Documents.Authorization;
-using Granit.Documents.EntityFrameworkCore.Authorization;
 using Shouldly;
 using Xunit;
 

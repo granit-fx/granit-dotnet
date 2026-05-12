@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Granit.BlobStorage;
 using Granit.Documents;
+using Granit.Documents.AssetMetadata.Diagnostics;
 using Granit.Documents.AssetMetadata.Options;
 using Granit.Documents.Domain;
 using Granit.Documents.Events;
@@ -56,6 +57,7 @@ internal sealed partial class StripGpsHandler(
     IDocumentService documentService,
     IHttpClientFactory httpClientFactory,
     IGuidGenerator guidGenerator,
+    AssetMetadataMetrics metrics,
     IOptions<GranitAssetMetadataOptions> options,
     ILogger<StripGpsHandler> logger) : ILocalEventHandler<DocumentVersionAddedEvent>
 {
@@ -123,6 +125,7 @@ internal sealed partial class StripGpsHandler(
                 return;
             }
 
+            metrics.RecordGpsScrubbed(evt.TenantId?.ToString(), evt.ContentType);
             LogScrubbed(logger, evt.VersionId, original.Length, scrubbed.Length);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)

@@ -4,6 +4,7 @@ using Granit.Documents.Endpoints.Documents.Dtos;
 using Granit.Documents.Permissions;
 using Granit.Taxonomy;
 using Granit.Taxonomy.Domain;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -28,7 +29,7 @@ internal static class DocumentTagProxyEndpoints
     {
         ArgumentNullException.ThrowIfNull(group);
 
-        RouteGroupBuilder tags = group.MapGroup("/documents/{id:guid}/tags").WithTags(TagName);
+        RouteGroupBuilder tags = group.MapGranitGroup("/documents/{id:guid}/tags").WithTags(TagName);
 
         tags.MapGet("/", ListTagsAsync)
             .WithName("ListDocumentTags")
@@ -38,8 +39,7 @@ internal static class DocumentTagProxyEndpoints
                 + "with TargetType = Granit.Documents.Domain.Document. The canonical store "
                 + "lives in Taxonomy; this endpoint is purely a UX shortcut on the "
                 + "Documents surface. Permission: Documents.Documents.Read.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Read))
+            .RequireAuthorization(DocumentsPermissions.Documents.Read)
             .Produces<ListDocumentTagsResponse>();
 
         tags.MapPost("/{tagId:guid}", AssignTagAsync)
@@ -49,8 +49,7 @@ internal static class DocumentTagProxyEndpoints
                 "Idempotent assignment: re-posting the same (document, tag) pair returns the "
                 + "existing row instead of creating a duplicate. Delegates to "
                 + "Granit.Taxonomy's TagAssignmentService. Permission: Documents.Documents.Manage.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Manage))
+            .RequireAuthorization(DocumentsPermissions.Documents.Manage)
             .Produces<DocumentTagAssignmentResponse>(StatusCodes.Status201Created)
             .Produces<DocumentTagAssignmentResponse>(StatusCodes.Status200OK);
 
@@ -61,8 +60,7 @@ internal static class DocumentTagProxyEndpoints
                 "Deletes the (document, tag) assignment row. Returns 404 when no row matches "
                 + "(typically because the tag was never assigned, or has already been removed). "
                 + "Permission: Documents.Documents.Manage.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Manage))
+            .RequireAuthorization(DocumentsPermissions.Documents.Manage)
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -109,7 +107,7 @@ internal static class DocumentTagProxyEndpoints
             : TypedResults.Ok(response);
     }
 
-    private static async Task<Results<NoContent, NotFound>> UnassignTagAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> UnassignTagAsync(
         Guid id,
         Guid tagId,
         [FromServices] ITagAssignmentService service,
@@ -118,7 +116,11 @@ internal static class DocumentTagProxyEndpoints
         bool deleted = await service
             .UnassignAsync(tagId, DocumentTargetType, id, cancellationToken)
             .ConfigureAwait(false);
-        return deleted ? TypedResults.NoContent() : TypedResults.NotFound();
+        return deleted
+            ? TypedResults.NoContent()
+            : TypedResults.Problem(
+                detail: $"Tag assignment '{tagId}' on document '{id}' was not found.",
+                statusCode: StatusCodes.Status404NotFound);
     }
 
     private static Guid ExtractUserId(ClaimsPrincipal user)

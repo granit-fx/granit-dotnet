@@ -24,8 +24,10 @@ public sealed class GranitDocumentsPublicLinksOptions
     /// HMAC pepper used to hash bearer tokens at rest. Sourced from Vault via
     /// <c>Granit.Configuration.Vault</c>. The empty default is intentional: hosts
     /// that fail to configure the key are rejected at startup by the
-    /// <see cref="ValidateAttribute"/>-style validator.
+    /// <see cref="ValidateAttribute"/>-style validator. Minimum length is 32 bytes
+    /// (HMAC-SHA256 block size) to reject anaemic peppers at startup.
     /// </summary>
+    [MinLength(32)]
     public byte[] SigningKey { get; set; } = [];
 
     /// <summary>

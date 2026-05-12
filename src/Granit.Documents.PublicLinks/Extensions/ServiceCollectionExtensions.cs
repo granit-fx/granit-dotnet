@@ -1,4 +1,5 @@
 using Granit.Documents.PublicLinks.Diagnostics;
+using Granit.Documents.PublicLinks.Internal;
 using Granit.Documents.PublicLinks.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -30,6 +31,7 @@ public static class ServiceCollectionExtensions
         }
 
         services.TryAddSingleton<DocumentsPublicLinksMetrics>();
+        services.TryAddScoped<IDocumentPublicLinkService, DocumentPublicLinkService>();
         return services;
     }
 }

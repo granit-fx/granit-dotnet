@@ -7,7 +7,7 @@ using Granit.Documents.Exceptions;
 using Granit.Documents.Options;
 using Granit.Documents.Permissions;
 using Granit.Timing;
-using Microsoft.AspNetCore.Authorization;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -29,7 +29,7 @@ internal static class DocumentEndpoints
     {
         ArgumentNullException.ThrowIfNull(group);
 
-        RouteGroupBuilder documents = group.MapGroup("/documents").WithTags(TagName);
+        RouteGroupBuilder documents = group.MapGranitGroup("/documents").WithTags(TagName);
 
         documents.MapPost("/upload-ticket", RequestUploadTicketAsync)
             .WithName("RequestDocumentUploadTicket")
@@ -39,8 +39,7 @@ internal static class DocumentEndpoints
                 + "bytes directly to the configured cloud provider (no proxying through the API), "
                 + "then calls POST /documents/finalize with the returned blobId. Tickets expire "
                 + "after the BlobStorage-configured TTL (default 15 minutes).")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Manage))
+            .RequireAuthorization(DocumentsPermissions.Documents.Manage)
             .Produces<UploadTicketResponse>()
             .ProducesValidationProblem();
 
@@ -53,8 +52,7 @@ internal static class DocumentEndpoints
                 + "DocumentVersion under the requested folder (or the tenant root when "
                 + "folderId is omitted). Returns 422 when the blob fails validation, 404 when "
                 + "the target folder is missing.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Manage))
+            .RequireAuthorization(DocumentsPermissions.Documents.Manage)
             .Produces<DocumentResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -72,8 +70,7 @@ internal static class DocumentEndpoints
                 + "(DocumentId, VersionNumber) protect concurrent uploaders. Returns 422 "
                 + "when the blob fails validation or the document is trashed; 404 when the "
                 + "document is missing or excluded by the tenant filter.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Manage))
+            .RequireAuthorization(DocumentsPermissions.Documents.Manage)
             .Produces<DocumentVersionResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -89,8 +86,7 @@ internal static class DocumentEndpoints
                 + "is flagged via `isCurrent: true`. Use `?skip=` and `?take=` to page; "
                 + "defaults are skip=0, take=50 (max 200). Returns 404 when the document "
                 + "is missing or excluded by the tenant filter.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Read))
+            .RequireAuthorization(DocumentsPermissions.Documents.Read)
             .Produces<ListDocumentVersionsResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -102,8 +98,7 @@ internal static class DocumentEndpoints
                 + "descending. Each row carries `daysUntilPermanentDeletion`, derived from "
                 + "the trash retention window (`GranitDocumentsOptions.TrashRetentionDays`, "
                 + "default 30 days). Defaults are `skip=0` and `take=50` (max 200).")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Read))
+            .RequireAuthorization(DocumentsPermissions.Documents.Read)
             .Produces<ListTrashedDocumentsResponse>();
 
         documents.MapDocumentMutationEndpoints();
@@ -119,8 +114,7 @@ internal static class DocumentEndpoints
                 + "the ISO 27001 audit trail and increments granit.documents.download.count. "
                 + "Returns 404 when the document or version is not found, 409 when the document "
                 + "is trashed or has no current version yet.")
-            .RequireAuthorization(p => p.RequireClaim(
-                "permission", DocumentsPermissions.Documents.Read))
+            .RequireAuthorization(DocumentsPermissions.Documents.Read)
             .Produces<DownloadUrlResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
