@@ -9,6 +9,9 @@ untrusted input. Each harness lives in its own subdirectory and uses
 | Harness | Module | Surface |
 | --- | --- | --- |
 | [`Granit.QueryEngine.Fuzz`](./Granit.QueryEngine.Fuzz/) | [`Granit.QueryEngine.AspNetCore`](../src/Granit.QueryEngine.AspNetCore/) | HTTP query-string binder (`QueryRequestBinder.BindAsync`) |
+| [`Granit.DataExchange.Csv.Fuzz`](./Granit.DataExchange.Csv.Fuzz/) | [`Granit.DataExchange.Csv`](../src/Granit.DataExchange.Csv/) | Sep-backed CSV parser (`SepCsvFileParser.ExtractHeadersAsync` + `ParseAsync`) |
+| [`Granit.DataExchange.Excel.Fuzz`](./Granit.DataExchange.Excel.Fuzz/) | [`Granit.DataExchange.Excel`](../src/Granit.DataExchange.Excel/) | Sylvan-backed Excel parser (`SylvanExcelFileParser.ExtractHeadersAsync` + `ParseAsync`) |
+| [`Granit.QueryEngine.AI.Fuzz`](./Granit.QueryEngine.AI.Fuzz/) | [`Granit.QueryEngine.AI`](../src/Granit.QueryEngine.AI/) | Post-LLM JSON deserialization (`LlmNaturalLanguageQueryTranslator.TryDeserializeAndConvert`) |
 
 The fuzz projects are deliberately **excluded from `Granit.slnx` and from
 `test-shards.json`**: the normal CI build and unit-test shards never touch them.

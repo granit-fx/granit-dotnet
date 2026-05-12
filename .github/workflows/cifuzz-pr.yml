@@ -1,9 +1,11 @@
-name: Fuzz QueryEngine (PR)
+name: Fuzz (PR)
 
 on:
   pull_request:
     paths:
       - 'src/Granit.QueryEngine**'
+      - 'src/Granit.DataExchange.Csv/**'
+      - 'src/Granit.DataExchange.Excel/**'
       - 'fuzz/**'
       - '.github/workflows/cifuzz-pr.yml'
 
@@ -14,6 +16,30 @@ jobs:
   fuzz:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - name: queryengine
+            project: fuzz/Granit.QueryEngine.Fuzz
+            assemblies: >-
+              Granit.QueryEngine.AspNetCore.dll
+              Granit.QueryEngine.Abstractions.dll
+          - name: csv
+            project: fuzz/Granit.DataExchange.Csv.Fuzz
+            assemblies: >-
+              Granit.DataExchange.Csv.dll
+              Sep.dll
+          - name: excel
+            project: fuzz/Granit.DataExchange.Excel.Fuzz
+            assemblies: >-
+              Granit.DataExchange.Excel.dll
+              Sylvan.Data.Excel.dll
+          - name: queryengine-ai
+            project: fuzz/Granit.QueryEngine.AI.Fuzz
+            assemblies: >-
+              Granit.QueryEngine.AI.dll
+              Granit.QueryEngine.Abstractions.dll
     env:
       FUZZ_SECONDS: 300
       DOTNET_NOLOGO: 'true'
@@ -34,12 +60,16 @@ jobs:
         run: dotnet tool install --global SharpFuzz.CommandLine
 
       - name: Publish harness
-        run: dotnet publish fuzz/Granit.QueryEngine.Fuzz -c Release -o fuzz/out
+        run: dotnet publish ${{ matrix.target.project }} -c Release -o fuzz/out
 
-      - name: Instrument QueryEngine assemblies
+      - name: Instrument assemblies
         run: |
-          for asm in Granit.QueryEngine.AspNetCore.dll Granit.QueryEngine.Abstractions.dll; do
-            sharpfuzz "fuzz/out/$asm"
+          for asm in ${{ matrix.target.assemblies }}; do
+            if [ -f "fuzz/out/$asm" ]; then
+              sharpfuzz "fuzz/out/$asm"
+            else
+              echo "::warning::Assembly $asm not present in publish output — skipping instrumentation."
+            fi
           done
 
       - name: Run AFL++
@@ -50,16 +80,18 @@ jobs:
           AFL_AUTORESUME: '1'
         run: |
           mkdir -p fuzz/findings
-          # AFL++ requires a non-empty seed directory; the seeds/ folder ships with the harness.
+          harness_dll=$(basename "${{ matrix.target.project }}").dll
           timeout --preserve-status --signal=INT $((FUZZ_SECONDS + 10)) \
-            afl-fuzz -V "$FUZZ_SECONDS" -i fuzz/Granit.QueryEngine.Fuzz/seeds -o fuzz/findings \
-              -- dotnet fuzz/out/Granit.QueryEngine.Fuzz.dll || true
+            afl-fuzz -V "$FUZZ_SECONDS" \
+              -i "${{ matrix.target.project }}/seeds" \
+              -o fuzz/findings \
+              -- dotnet "fuzz/out/$harness_dll" || true
 
       - name: Upload findings
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: fuzz-findings-pr
+          name: fuzz-findings-pr-${{ matrix.target.name }}
           path: fuzz/findings/
           if-no-files-found: ignore
 
@@ -68,7 +100,7 @@ jobs:
           shopt -s nullglob
           crashes=(fuzz/findings/default/crashes/id:*)
           if [ ${#crashes[@]} -gt 0 ]; then
-            echo "::error::AFL++ found ${#crashes[@]} crash(es) — see uploaded fuzz-findings-pr artifact."
+            echo "::error::AFL++ found ${#crashes[@]} crash(es) in shard ${{ matrix.target.name }} — see uploaded fuzz-findings-pr-${{ matrix.target.name }} artifact."
             exit 1
           fi
-          echo "No crashes in ${FUZZ_SECONDS}s."
+          echo "No crashes in ${FUZZ_SECONDS}s for shard ${{ matrix.target.name }}."

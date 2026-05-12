@@ -1,0 +1,1 @@
+{"page":1,"pageSize":25,"sort":"-createdAt","filter":{"status.eq":"active","amount.gte":"1000"},"quickFilters":["active"],"groupBy":"status"}

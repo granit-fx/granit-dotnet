@@ -1,0 +1,1 @@
+{"filter":{"status.eq":"active","amount.gte":"100","amount.lte":"5000","name.contains":"foo"},"sort":"-amount,name"}

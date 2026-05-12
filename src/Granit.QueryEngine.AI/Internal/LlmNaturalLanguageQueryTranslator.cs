@@ -76,8 +76,8 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
             string rawJson = response.Text ?? string.Empty;
             string json = StripMarkdownFences(rawJson);
 
-            LlmQueryPayload? dto = JsonSerializer.Deserialize<LlmQueryPayload>(json, JsonOptions);
-            if (dto is null)
+            QueryRequest? request = TryDeserializeAndConvert(json, metadata, out bool deserializedToNull);
+            if (deserializedToNull)
             {
                 LogInvalidResponse(logger, naturalLanguage.Length);
                 metrics?.RecordTranslationFailed(tenantId, "invalid_response");
@@ -85,7 +85,7 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
             }
 
             metrics?.RecordTranslationExecuted(tenantId, "success");
-            return ValidateAndConvert(dto, metadata);
+            return request;
         }
         catch (OperationCanceledException)
         {
@@ -212,6 +212,26 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
 
     internal static string StripMarkdownFences(string text) =>
         LlmResponseHelper.StripMarkdownCodeFences(text);
+
+    /// <summary>
+    /// Deserializes an LLM JSON payload into a validated <see cref="QueryRequest"/>.
+    /// Returns <c>null</c> when deserialization yields a <c>null</c> payload (signalled via
+    /// <paramref name="deserializedToNull"/> = <c>true</c>) so callers can distinguish that case
+    /// from a valid empty result. Throws <see cref="JsonException"/> on malformed JSON — the
+    /// production caller catches it; the fuzz harness intentionally swallows it.
+    /// </summary>
+    internal static QueryRequest? TryDeserializeAndConvert(string json, QueryMetadata metadata, out bool deserializedToNull)
+    {
+        LlmQueryPayload? dto = JsonSerializer.Deserialize<LlmQueryPayload>(json, JsonOptions);
+        if (dto is null)
+        {
+            deserializedToNull = true;
+            return null;
+        }
+
+        deserializedToNull = false;
+        return ValidateAndConvert(dto, metadata);
+    }
 
     private static QueryRequest? ValidateAndConvert(LlmQueryPayload dto, QueryMetadata metadata)
     {
