@@ -61,6 +61,15 @@ public sealed class QueryMetricPairingTests
         // (active-user count, last-month-signups, etc.) ship in a follow-up once
         // the EF Core companion package + IUserDirectoryQueryableSource impl land.
         "Granit.Identity.Domain.User",
+        // [BACKLOG] Framework entities whose metrics shipped in business-edition
+        // satellites (Granit.{BlobStorage,Webhooks,Notifications}.Analytics).
+        // Those satellites moved to granit-business in Phase 3b-3 so the framework
+        // queries are now unpaired. To unblock, ship framework-side metrics, or
+        // move the queries to granit-business too.
+        "Granit.BlobStorage.Domain.BlobDescriptor",
+        "Granit.Notifications.Domain.UserNotification",
+        "Granit.Webhooks.Domain.WebhookDeliveryAttempt",
+        "Granit.Webhooks.Domain.WebhookSubscription",
     };
 
     private static bool IsExempt(string fullName) =>
