@@ -232,15 +232,24 @@ jobs:
       - name: CodeQL-only NuGet config
         run: cp .github/codeql/nuget.config nuget.config
 
+      # GitHub-hosted ubuntu-latest = 4 cores / 16 GB. CodeQL defaults to 1 thread
+      # and a conservative RAM budget; on a ~380-project C# codebase the analyse
+      # phase otherwise takes ~21 min. threads: 0 = use all cores; ram leaves ~3 GB
+      # headroom for the OS and the extractor.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4
         with:
           languages: csharp
           build-mode: none
           config-file: ./.github/codeql/codeql-config.yml
+          threads: 0
+          ram: 13000
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4
+        with:
+          threads: 0
+          ram: 13000
 
   # ---------------------------------------------------------------------------
   # ANALYSIS
