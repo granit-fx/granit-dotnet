@@ -25,6 +25,6 @@ public sealed class GranitIdentityFederatedAnalyticsModuleTests
             .FirstOrDefault();
 
         attr.ShouldNotBeNull("Satellite modules must declare their framework host and analytics-abstractions dependencies.");
-        attr!.DependedModules.ShouldNotBeEmpty();
+        attr!.DependedTypes.ShouldNotBeEmpty();
     }
 }
