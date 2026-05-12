@@ -11,6 +11,26 @@
 #   - src/Granit.Entities.Abstractions    (declarative contracts: EntityDefinition, builders)
 #   - tests/Granit.Entities.Abstractions.Tests
 #
+# IMPORTANT — additional paths the extraction must include but which STAY in
+# granit-dotnet (so they are NOT emitted by this script — concatenate manually
+# when feeding `git filter-repo --paths-from-file`):
+#
+#   Root build/infra :  .claude .editorconfig .github .gitignore .gitleaks.toml
+#                       .husky .markdownlint-cli2.jsonc .markdownlint.json
+#                       .markdownlintignore .semgrepignore .slnf .vscode
+#                       BannedSymbols.txt CHANGELOG.md CLAUDE.md
+#                       CODE_OF_CONDUCT.md CONTRIBUTING.md
+#                       Directory.Build.props Directory.Packages.props
+#                       Granit.slnx LICENSE NOTICE README.md SECURITY.md
+#                       THIRD-PARTY-NOTICES.md coverage.runsettings
+#                       dotnet-tools.json global.json nuget.config scripts
+#   Tests-root config :  tests/Directory.Build.props  tests/xunit.runner.json
+#   Shared assets :      assets/granit-icon-64.png
+#
+# Discovered missing during the first extraction (May 2026) — without them,
+# the new granit-business repo can't build: tests can't resolve junit logger
+# or xunit.runner.json, pack fails on missing PackageIcon asset, etc.
+#
 # Usage:
 #   scripts/list-business-paths.sh                 # human-readable list
 #   scripts/list-business-paths.sh --filter-repo   # emit `--path X` lines
