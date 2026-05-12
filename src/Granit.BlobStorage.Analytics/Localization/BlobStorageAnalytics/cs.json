@@ -1,0 +1,8 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Osiřelé bloby",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Platné bloby",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Celkové úložiště (bajty)"
+  }
+}

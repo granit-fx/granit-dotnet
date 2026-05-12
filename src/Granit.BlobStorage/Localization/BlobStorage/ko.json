@@ -13,15 +13,6 @@
     "BlobStorage.Columns.ValidatedAt": "Validated At",
     "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
     "BlobStorage:NotFound": "요청한 파일을 찾을 수 없습니다.",
-    "BlobStorage:NotValid": "파일을 다운로드할 수 없습니다.",
-    "Dashboard:Granit.BlobStorage.StorageOperations": "Storage operations",
-    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "고아 Blob",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "유효한 Blob",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "총 저장 용량 (바이트)",
-    "Widget:Granit.BlobStorage.StorageOperations.banner.Body": "## Storage operations\nValid blob population, total footprint, and orphans waiting on the validation pipeline.",
-    "Widget:Granit.BlobStorage.StorageOperations.orphan-count": "Orphan blobs",
-    "Widget:Granit.BlobStorage.StorageOperations.storage-total": "Total storage",
-    "Widget:Granit.BlobStorage.StorageOperations.uploads-by-day": "Uploads by day",
-    "Widget:Granit.BlobStorage.StorageOperations.valid-count": "Valid blobs"
+    "BlobStorage:NotValid": "파일을 다운로드할 수 없습니다."
   }
 }

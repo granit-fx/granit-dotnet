@@ -1,0 +1,8 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "고아 Blob",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "유효한 Blob",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "총 저장 용량 (바이트)"
+  }
+}

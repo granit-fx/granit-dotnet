@@ -1,11 +1,6 @@
 {
   "culture": "de",
   "texts": {
-    "Dashboard:Granit.Webhooks.WebhookReliability": "Webhook reliability",
-    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "Aktive Webhook-Abonnements",
-    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "Fehlgeschlagene Webhook-Zustellungen",
-    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Webhook-Latenz (Ø ms)",
-    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Erfolgsrate Webhook-Zustellung",
     "Webhooks.Columns.ConsecutiveFailures": "Aufeinanderfolgende Fehler",
     "Webhooks.Columns.DurationMs": "Dauer (ms)",
     "Webhooks.Columns.ErrorMessage": "Fehlermeldung",
@@ -19,12 +14,6 @@
     "Webhooks.Columns.SuspendedAt": "Pausiert am",
     "Webhooks.Columns.SuspendedBy": "Pausiert von",
     "Webhooks.Columns.TargetUrl": "Ziel-URL",
-    "Webhooks.Columns.Tenant": "Mandant",
-    "Widget:Granit.Webhooks.WebhookReliability.active-subscriptions": "Active subscriptions",
-    "Widget:Granit.Webhooks.WebhookReliability.banner.Body": "## Webhook reliability\nActive subscriptions, delivery success rate, latency, and recent failures.",
-    "Widget:Granit.Webhooks.WebhookReliability.failed-count": "Failed deliveries",
-    "Widget:Granit.Webhooks.WebhookReliability.failures-over-time": "Failures over time",
-    "Widget:Granit.Webhooks.WebhookReliability.latency-average": "Latency (avg ms)",
-    "Widget:Granit.Webhooks.WebhookReliability.success-rate": "Success rate"
+    "Webhooks.Columns.Tenant": "Mandant"
   }
 }

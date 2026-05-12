@@ -1,8 +1,4 @@
 {
   "culture": "ja",
-  "texts": {
-    "Metric:Granit.Notifications.ReadUserNotificationCountMetric": "既読の通知",
-    "Metric:Granit.Notifications.UnreadUserNotificationCountMetric": "未読の通知",
-    "Metric:Granit.Notifications.UserNotificationCountMetric": "通知合計"
-  }
+  "texts": {}
 }

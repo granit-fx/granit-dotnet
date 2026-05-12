@@ -1,11 +1,6 @@
 {
   "culture": "ko",
   "texts": {
-    "Dashboard:Granit.Webhooks.WebhookReliability": "Webhook reliability",
-    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "활성 Webhook 구독",
-    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "실패한 Webhook 전송",
-    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Webhook 지연시간 (평균 ms)",
-    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Webhook 전송 성공률",
     "Webhooks.Columns.ConsecutiveFailures": "Consecutive Failures",
     "Webhooks.Columns.DurationMs": "Duration (ms)",
     "Webhooks.Columns.ErrorMessage": "Error Message",
@@ -19,12 +14,6 @@
     "Webhooks.Columns.SuspendedAt": "Suspended At",
     "Webhooks.Columns.SuspendedBy": "Suspended By",
     "Webhooks.Columns.TargetUrl": "Target URL",
-    "Webhooks.Columns.Tenant": "Tenant",
-    "Widget:Granit.Webhooks.WebhookReliability.active-subscriptions": "Active subscriptions",
-    "Widget:Granit.Webhooks.WebhookReliability.banner.Body": "## Webhook reliability\nActive subscriptions, delivery success rate, latency, and recent failures.",
-    "Widget:Granit.Webhooks.WebhookReliability.failed-count": "Failed deliveries",
-    "Widget:Granit.Webhooks.WebhookReliability.failures-over-time": "Failures over time",
-    "Widget:Granit.Webhooks.WebhookReliability.latency-average": "Latency (avg ms)",
-    "Widget:Granit.Webhooks.WebhookReliability.success-rate": "Success rate"
+    "Webhooks.Columns.Tenant": "Tenant"
   }
 }

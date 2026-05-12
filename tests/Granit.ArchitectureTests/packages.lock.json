@@ -1909,7 +1909,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
@@ -1921,6 +1920,15 @@
           "Granit.AI": "[0.1.0-dev, )",
           "Granit.BlobStorage": "[0.1.0-dev, )",
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.blobstorage.analytics": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
+          "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.blobstorage.azureblob": {
@@ -1936,6 +1944,15 @@
         "dependencies": {
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.BlobStorage": "[0.1.0-dev, )"
+        }
+      },
+      "granit.blobstorage.dashboards": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
+          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.blobstorage.database": {
@@ -2702,11 +2719,19 @@
       "granit.identity.federated": {
         "type": "Project",
         "dependencies": {
-          "Granit.Analytics": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Entities.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.identity.federated.analytics": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
+          "Granit.Identity.Federated": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
@@ -3133,7 +3158,6 @@
       "granit.notifications": {
         "type": "Project",
         "dependencies": {
-          "Granit.Analytics": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
@@ -3156,6 +3180,15 @@
           "Granit.AI": "[0.1.0-dev, )",
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.notifications.analytics": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Granit.Notifications": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.brevo": {
@@ -4312,7 +4345,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
@@ -4323,11 +4355,29 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.webhooks.analytics": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Webhooks": "[0.1.0-dev, )"
+        }
+      },
       "granit.webhooks.backgroundjobs": {
         "type": "Project",
         "dependencies": {
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Webhooks": "[0.1.0-dev, )"
+        }
+      },
+      "granit.webhooks.dashboards": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
+          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.webhooks.endpoints": {

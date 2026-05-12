@@ -1,8 +1,4 @@
 {
   "culture": "ko",
-  "texts": {
-    "Metric:Granit.Notifications.ReadUserNotificationCountMetric": "읽은 알림",
-    "Metric:Granit.Notifications.UnreadUserNotificationCountMetric": "읽지 않은 알림",
-    "Metric:Granit.Notifications.UserNotificationCountMetric": "총 알림"
-  }
+  "texts": {}
 }

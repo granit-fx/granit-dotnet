@@ -1,0 +1,8 @@
+{
+  "culture": "de",
+  "texts": {
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Verwaiste Blobs",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Gültige Blobs",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Gesamtspeicher (Bytes)"
+  }
+}

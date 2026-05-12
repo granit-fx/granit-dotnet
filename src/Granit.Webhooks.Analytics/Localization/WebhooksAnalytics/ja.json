@@ -1,0 +1,9 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "有効な Webhook 購読",
+    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "失敗した Webhook 送信",
+    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Webhook レイテンシ（平均ミリ秒）",
+    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Webhook 送信成功率"
+  }
+}

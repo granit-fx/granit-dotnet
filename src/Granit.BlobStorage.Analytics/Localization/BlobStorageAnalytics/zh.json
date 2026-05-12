@@ -1,0 +1,8 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "孤立 Blob",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "有效 Blob",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "总存储（字节）"
+  }
+}

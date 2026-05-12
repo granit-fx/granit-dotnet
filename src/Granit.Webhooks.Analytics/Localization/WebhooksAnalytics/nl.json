@@ -1,0 +1,9 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "Actieve webhook-abonnementen",
+    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "Mislukte webhook-leveringen",
+    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Webhook-latentie (gem. ms)",
+    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Slaagpercentage webhook-leveringen"
+  }
+}

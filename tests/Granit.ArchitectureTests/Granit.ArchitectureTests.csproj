@@ -92,8 +92,10 @@
     <ProjectReference Include="..\..\src\Granit.Bff.Yarp\Granit.Bff.Yarp.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage\Granit.BlobStorage.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.AI\Granit.BlobStorage.AI.csproj" />
+    <ProjectReference Include="..\..\src\Granit.BlobStorage.Analytics\Granit.BlobStorage.Analytics.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.AzureBlob\Granit.BlobStorage.AzureBlob.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.BackgroundJobs\Granit.BlobStorage.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\..\src\Granit.BlobStorage.Dashboards\Granit.BlobStorage.Dashboards.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.Database\Granit.BlobStorage.Database.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.Endpoints\Granit.BlobStorage.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.EntityFrameworkCore\Granit.BlobStorage.EntityFrameworkCore.csproj" />
@@ -177,6 +179,7 @@
     <ProjectReference Include="..\..\src\Granit.Identity.Endpoints\Granit.Identity.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.EntityFrameworkCore\Granit.Identity.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Federated.Analytics\Granit.Identity.Federated.Analytics.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Cognito\Granit.Identity.Federated.Cognito.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Cognito.BackgroundJobs\Granit.Identity.Federated.Cognito.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntityFrameworkCore\Granit.Identity.Federated.EntityFrameworkCore.csproj" />
@@ -221,6 +224,7 @@
     <ProjectReference Include="..\..\src\Granit.MultiTenancy.EntityFrameworkCore\Granit.MultiTenancy.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.MultiTenancy.Provisioning\Granit.MultiTenancy.Provisioning.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications\Granit.Notifications.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Notifications.Analytics\Granit.Notifications.Analytics.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.AI\Granit.Notifications.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.Brevo\Granit.Notifications.Brevo.csproj" />
@@ -357,6 +361,8 @@
     <ProjectReference Include="..\..\src\Granit.Vault.GoogleCloud\Granit.Vault.GoogleCloud.csproj" />
     <ProjectReference Include="..\..\src\Granit.Vault.HashiCorp\Granit.Vault.HashiCorp.csproj" />
     <ProjectReference Include="..\..\src\Granit.Webhooks\Granit.Webhooks.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Webhooks.Analytics\Granit.Webhooks.Analytics.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Webhooks.Dashboards\Granit.Webhooks.Dashboards.csproj" />
     <ProjectReference Include="..\..\src\Granit.Webhooks.BackgroundJobs\Granit.Webhooks.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Webhooks.Endpoints\Granit.Webhooks.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Webhooks.EntityFrameworkCore\Granit.Webhooks.EntityFrameworkCore.csproj" />

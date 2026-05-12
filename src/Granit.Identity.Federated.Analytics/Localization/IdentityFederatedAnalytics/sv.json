@@ -1,0 +1,7 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Metric:Granit.Identity.Federated.EnabledFederatedIdentityCountMetric": "Aktiva federerade användare",
+    "Metric:Granit.Identity.Federated.FederatedIdentityCountMetric": "Federerade användare (totalt)"
+  }
+}

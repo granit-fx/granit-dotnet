@@ -1,4 +1,3 @@
-using Granit.Analytics.Extensions;
 using Granit.DataExchange.Extensions;
 using Granit.Entities.Extensions;
 using Granit.Identity;
@@ -6,7 +5,6 @@ using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Entities;
 using Granit.Identity.Federated.Exports;
 using Granit.Identity.Federated.Internal;
-using Granit.Identity.Federated.Metrics;
 using Granit.Identity.Federated.Options;
 using Granit.Identity.Federated.Queries;
 using Granit.Identity.Federated.RateLimiting;
@@ -34,9 +32,6 @@ public sealed class GranitIdentityFederatedModule : GranitModule
 
         // Phase 2 EntityDefinition (ADR-050).
         context.Services.AddEntityDefinition<FederatedIdentity, FederatedIdentityEntityDefinition>();
-
-        context.Services.AddMetricDefinition<FederatedIdentity, int, EnabledFederatedIdentityCountMetricDefinition>();
-        context.Services.AddMetricDefinition<FederatedIdentity, int, FederatedIdentityCountMetricDefinition>();
 
         // Default to a no-op rate limiter on token-exchange. Hosts that wire
         // Granit.RateLimiting can replace this registration with a distributed-store

@@ -1,8 +1,4 @@
 {
   "culture": "hi",
-  "texts": {
-    "Metric:Granit.Notifications.ReadUserNotificationCountMetric": "पढ़ी गई सूचनाएँ",
-    "Metric:Granit.Notifications.UnreadUserNotificationCountMetric": "अपठित सूचनाएँ",
-    "Metric:Granit.Notifications.UserNotificationCountMetric": "कुल सूचनाएँ"
-  }
+  "texts": {}
 }

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Webhooks.Analytics</PackageId>
+    <Description>Analytics satellite for Granit.Webhooks: ships the MetricDefinitions observing webhook subscriptions and delivery attempts (active count, failure count, success rate, average latency). Optional — hosts that don't run analytics omit this package without breaking webhook dispatch.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Webhooks.Analytics.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Localization\Granit.Localization.csproj" />
+    <ProjectReference Include="..\Granit.Analytics.Abstractions\Granit.Analytics.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Webhooks\Granit.Webhooks.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+</Project>

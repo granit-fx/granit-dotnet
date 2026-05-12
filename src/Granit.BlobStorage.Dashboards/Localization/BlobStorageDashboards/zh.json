@@ -1,0 +1,11 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Dashboard:Granit.BlobStorage.StorageOperations": "Storage operations",
+    "Widget:Granit.BlobStorage.StorageOperations.banner.Body": "## Storage operations\nValid blob population, total footprint, and orphans waiting on the validation pipeline.",
+    "Widget:Granit.BlobStorage.StorageOperations.orphan-count": "Orphan blobs",
+    "Widget:Granit.BlobStorage.StorageOperations.storage-total": "Total storage",
+    "Widget:Granit.BlobStorage.StorageOperations.uploads-by-day": "Uploads by day",
+    "Widget:Granit.BlobStorage.StorageOperations.valid-count": "Valid blobs"
+  }
+}

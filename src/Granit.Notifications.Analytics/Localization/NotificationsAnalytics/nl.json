@@ -1,0 +1,8 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Metric:Granit.Notifications.ReadUserNotificationCountMetric": "Gelezen meldingen",
+    "Metric:Granit.Notifications.UnreadUserNotificationCountMetric": "Ongelezen meldingen",
+    "Metric:Granit.Notifications.UserNotificationCountMetric": "Totaal meldingen"
+  }
+}

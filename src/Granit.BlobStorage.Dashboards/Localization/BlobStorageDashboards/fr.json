@@ -1,0 +1,11 @@
+{
+  "culture": "fr",
+  "texts": {
+    "Dashboard:Granit.BlobStorage.StorageOperations": "Opérations de stockage",
+    "Widget:Granit.BlobStorage.StorageOperations.banner.Body": "## Opérations de stockage\nBlobs valides, empreinte totale et orphelins en attente du pipeline de validation.",
+    "Widget:Granit.BlobStorage.StorageOperations.orphan-count": "Blobs orphelins",
+    "Widget:Granit.BlobStorage.StorageOperations.storage-total": "Stockage total",
+    "Widget:Granit.BlobStorage.StorageOperations.uploads-by-day": "Uploads par jour",
+    "Widget:Granit.BlobStorage.StorageOperations.valid-count": "Blobs valides"
+  }
+}

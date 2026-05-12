@@ -13,15 +13,6 @@
     "BlobStorage.Columns.ValidatedAt": "Validated At",
     "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
     "BlobStorage:NotFound": "Il file richiesto non è stato trovato.",
-    "BlobStorage:NotValid": "Il file non è disponibile per il download.",
-    "Dashboard:Granit.BlobStorage.StorageOperations": "Storage operations",
-    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Blob orfani",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Blob validi",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Archiviazione totale (byte)",
-    "Widget:Granit.BlobStorage.StorageOperations.banner.Body": "## Storage operations\nValid blob population, total footprint, and orphans waiting on the validation pipeline.",
-    "Widget:Granit.BlobStorage.StorageOperations.orphan-count": "Orphan blobs",
-    "Widget:Granit.BlobStorage.StorageOperations.storage-total": "Total storage",
-    "Widget:Granit.BlobStorage.StorageOperations.uploads-by-day": "Uploads by day",
-    "Widget:Granit.BlobStorage.StorageOperations.valid-count": "Valid blobs"
+    "BlobStorage:NotValid": "Il file non è disponibile per il download."
   }
 }

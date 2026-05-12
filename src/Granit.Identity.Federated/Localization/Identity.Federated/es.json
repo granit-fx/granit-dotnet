@@ -1,7 +1,4 @@
 {
   "culture": "es",
-  "texts": {
-    "Metric:Granit.Identity.Federated.EnabledFederatedIdentityCountMetric": "Usuarios federados activos",
-    "Metric:Granit.Identity.Federated.FederatedIdentityCountMetric": "Usuarios federados (total)"
-  }
+  "texts": {}
 }

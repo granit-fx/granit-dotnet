@@ -13,15 +13,6 @@
     "BlobStorage.Columns.ValidatedAt": "Validé le",
     "BlobStorage.Columns.VerifiedContentType": "Type de contenu vérifié",
     "BlobStorage:NotFound": "Le fichier demandé est introuvable.",
-    "BlobStorage:NotValid": "Le fichier n'est pas disponible au téléchargement.",
-    "Dashboard:Granit.BlobStorage.StorageOperations": "Opérations de stockage",
-    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Blobs orphelins",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Blobs valides",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Stockage total (octets)",
-    "Widget:Granit.BlobStorage.StorageOperations.banner.Body": "## Opérations de stockage\nBlobs valides, empreinte totale et orphelins en attente du pipeline de validation.",
-    "Widget:Granit.BlobStorage.StorageOperations.orphan-count": "Blobs orphelins",
-    "Widget:Granit.BlobStorage.StorageOperations.storage-total": "Stockage total",
-    "Widget:Granit.BlobStorage.StorageOperations.uploads-by-day": "Uploads par jour",
-    "Widget:Granit.BlobStorage.StorageOperations.valid-count": "Blobs valides"
+    "BlobStorage:NotValid": "Le fichier n'est pas disponible au téléchargement."
   }
 }

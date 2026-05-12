@@ -1,0 +1,8 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Yetim bloblar",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Geçerli bloblar",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Toplam depolama (bayt)"
+  }
+}

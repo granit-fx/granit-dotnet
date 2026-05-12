@@ -1,0 +1,8 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Metric:Granit.Notifications.ReadUserNotificationCountMetric": "Przeczytane powiadomienia",
+    "Metric:Granit.Notifications.UnreadUserNotificationCountMetric": "Nieprzeczytane powiadomienia",
+    "Metric:Granit.Notifications.UserNotificationCountMetric": "Łączna liczba powiadomień"
+  }
+}

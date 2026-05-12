@@ -1,0 +1,9 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "Aktivní odběry webhooků",
+    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "Neúspěšné doručení webhooku",
+    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Latence webhooku (průměr ms)",
+    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Míra úspěšnosti doručení webhooků"
+  }
+}

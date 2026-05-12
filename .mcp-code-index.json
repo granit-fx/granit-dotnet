@@ -499,7 +499,6 @@
       "name": "Granit.BlobStorage",
       "deps": [
         "Granit",
-        "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.QueryEngine.Abstractions"
@@ -515,6 +514,16 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.BlobStorage.Analytics",
+      "deps": [
+        "Granit.Localization",
+        "Granit.Analytics.Abstractions",
+        "Granit.BlobStorage",
+        "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.BlobStorage.AzureBlob",
       "deps": [
         "Granit.BlobStorage"
@@ -526,6 +535,16 @@
       "deps": [
         "Granit.BackgroundJobs",
         "Granit.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.BlobStorage.Dashboards",
+      "deps": [
+        "Granit.Localization",
+        "Granit.Analytics.Abstractions",
+        "Granit.Dashboards.Abstractions",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1490,12 +1509,21 @@
     {
       "name": "Granit.Identity.Federated",
       "deps": [
-        "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Identity",
         "Granit.Localization",
         "Granit.Entities.Abstractions",
+        "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Identity.Federated.Analytics",
+      "deps": [
+        "Granit.Localization",
+        "Granit.Analytics.Abstractions",
+        "Granit.Identity.Federated",
         "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
@@ -1945,7 +1973,6 @@
     {
       "name": "Granit.Notifications",
       "deps": [
-        "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
         "Granit.Encryption",
         "Granit.Guids",
@@ -1968,6 +1995,16 @@
       "name": "Granit.Notifications.Abstractions",
       "deps": [
         "Granit",
+        "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.Analytics",
+      "deps": [
+        "Granit.Localization",
+        "Granit.Analytics.Abstractions",
+        "Granit.Notifications",
         "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
@@ -3166,7 +3203,6 @@
       "name": "Granit.Webhooks",
       "deps": [
         "Granit",
-        "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Http.Resilience",
@@ -3179,10 +3215,30 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Webhooks.Analytics",
+      "deps": [
+        "Granit.Localization",
+        "Granit.Analytics.Abstractions",
+        "Granit.QueryEngine.Abstractions",
+        "Granit.Webhooks"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Webhooks.BackgroundJobs",
       "deps": [
         "Granit.BackgroundJobs",
         "Granit.Webhooks"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Webhooks.Dashboards",
+      "deps": [
+        "Granit.Localization",
+        "Granit.Analytics.Abstractions",
+        "Granit.Dashboards.Abstractions",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -11887,6 +11943,175 @@
       ]
     },
     {
+      "name": "BlobStorageAnalyticsLocalizationResource",
+      "fqn": "Granit.BlobStorage.Analytics.BlobStorageAnalyticsLocalizationResource",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Analytics",
+      "file": "src/Granit.BlobStorage.Analytics/BlobStorageAnalyticsLocalizationResource.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "GranitBlobStorageAnalyticsModule",
+      "fqn": "Granit.BlobStorage.Analytics.GranitBlobStorageAnalyticsModule",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Analytics",
+      "file": "src/Granit.BlobStorage.Analytics/GranitBlobStorageAnalyticsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "OrphanBlobDescriptorCountMetricDefinition",
+      "fqn": "Granit.BlobStorage.Analytics.Metrics.OrphanBlobDescriptorCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Analytics",
+      "file": "src/Granit.BlobStorage.Analytics/Metrics/OrphanBlobDescriptorCountMetricDefinition.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, int?>>? Selector",
+          "returnType": "Expression<Func<BlobDescriptor, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, bool>>? BaseFilter",
+          "returnType": "Expression<Func<BlobDescriptor, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<BlobDescriptor, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ValidBlobDescriptorCountMetricDefinition",
+      "fqn": "Granit.BlobStorage.Analytics.Metrics.ValidBlobDescriptorCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Analytics",
+      "file": "src/Granit.BlobStorage.Analytics/Metrics/ValidBlobDescriptorCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, int?>>? Selector",
+          "returnType": "Expression<Func<BlobDescriptor, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, bool>>? BaseFilter",
+          "returnType": "Expression<Func<BlobDescriptor, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<BlobDescriptor, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "ValidBlobDescriptorSizeTotalMetricDefinition",
+      "fqn": "Granit.BlobStorage.Analytics.Metrics.ValidBlobDescriptorSizeTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Analytics",
+      "file": "src/Granit.BlobStorage.Analytics/Metrics/ValidBlobDescriptorSizeTotalMetricDefinition.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, long?>>? Selector",
+          "returnType": "Expression<Func<BlobDescriptor, long?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, bool>>? BaseFilter",
+          "returnType": "Expression<Func<BlobDescriptor, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<BlobDescriptor, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
       "name": "BlobTenantIsolation",
       "fqn": "Granit.BlobStorage.AzureBlob.BlobTenantIsolation",
       "kind": "enum",
@@ -12064,11 +12289,20 @@
       ]
     },
     {
+      "name": "BlobStorageDashboardsLocalizationResource",
+      "fqn": "Granit.BlobStorage.Dashboards.BlobStorageDashboardsLocalizationResource",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Dashboards",
+      "file": "src/Granit.BlobStorage.Dashboards/BlobStorageDashboardsLocalizationResource.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "BlobStorageOperationsDashboardDefinition",
       "fqn": "Granit.BlobStorage.Dashboards.BlobStorageOperationsDashboardDefinition",
       "kind": "class",
-      "project": "Granit.BlobStorage",
-      "file": "src/Granit.BlobStorage/Dashboards/BlobStorageOperationsDashboardDefinition.cs",
+      "project": "Granit.BlobStorage.Dashboards",
+      "file": "src/Granit.BlobStorage.Dashboards/BlobStorageOperationsDashboardDefinition.cs",
       "line": 13,
       "members": [
         {
@@ -12088,6 +12322,22 @@
           "kind": "method",
           "signature": "MarkdownWidgetDefinition(Slug: \"banner\", ContentLocalizationKey: \"Widget:Granit.BlobStorage.StorageOperations.banner.Body\", Position: 0)",
           "returnType": "IReadOnlyList<WidgetDefinition> Widgets { get; } ="
+        }
+      ]
+    },
+    {
+      "name": "GranitBlobStorageDashboardsModule",
+      "fqn": "Granit.BlobStorage.Dashboards.GranitBlobStorageDashboardsModule",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Dashboards",
+      "file": "src/Granit.BlobStorage.Dashboards/GranitBlobStorageDashboardsModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },
@@ -12671,7 +12921,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/GranitBlobStorageModule.cs",
-      "line": 34,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -12843,150 +13093,6 @@
           "kind": "method",
           "signature": "BuildAttachmentHeader(string fileName)",
           "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "OrphanBlobDescriptorCountMetricDefinition",
-      "fqn": "Granit.BlobStorage.Metrics.OrphanBlobDescriptorCountMetricDefinition",
-      "kind": "class",
-      "project": "Granit.BlobStorage",
-      "file": "src/Granit.BlobStorage/Metrics/OrphanBlobDescriptorCountMetricDefinition.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<BlobDescriptor, int?>>? Selector",
-          "returnType": "Expression<Func<BlobDescriptor, int?>>?"
-        },
-        {
-          "name": "BaseFilter",
-          "kind": "property",
-          "signature": "Expression<Func<BlobDescriptor, bool>>? BaseFilter",
-          "returnType": "Expression<Func<BlobDescriptor, bool>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<BlobDescriptor, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<BlobDescriptor, DateTimeOffset>>?"
-        },
-        {
-          "name": "IsHigherBetter",
-          "kind": "property",
-          "signature": "bool IsHigherBetter",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
-      "name": "ValidBlobDescriptorCountMetricDefinition",
-      "fqn": "Granit.BlobStorage.Metrics.ValidBlobDescriptorCountMetricDefinition",
-      "kind": "class",
-      "project": "Granit.BlobStorage",
-      "file": "src/Granit.BlobStorage/Metrics/ValidBlobDescriptorCountMetricDefinition.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<BlobDescriptor, int?>>? Selector",
-          "returnType": "Expression<Func<BlobDescriptor, int?>>?"
-        },
-        {
-          "name": "BaseFilter",
-          "kind": "property",
-          "signature": "Expression<Func<BlobDescriptor, bool>>? BaseFilter",
-          "returnType": "Expression<Func<BlobDescriptor, bool>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<BlobDescriptor, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<BlobDescriptor, DateTimeOffset>>?"
-        }
-      ]
-    },
-    {
-      "name": "ValidBlobDescriptorSizeTotalMetricDefinition",
-      "fqn": "Granit.BlobStorage.Metrics.ValidBlobDescriptorSizeTotalMetricDefinition",
-      "kind": "class",
-      "project": "Granit.BlobStorage",
-      "file": "src/Granit.BlobStorage/Metrics/ValidBlobDescriptorSizeTotalMetricDefinition.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<BlobDescriptor, long?>>? Selector",
-          "returnType": "Expression<Func<BlobDescriptor, long?>>?"
-        },
-        {
-          "name": "BaseFilter",
-          "kind": "property",
-          "signature": "Expression<Func<BlobDescriptor, bool>>? BaseFilter",
-          "returnType": "Expression<Func<BlobDescriptor, bool>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<BlobDescriptor, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<BlobDescriptor, DateTimeOffset>>?"
         }
       ]
     },
@@ -31328,6 +31434,117 @@
       ]
     },
     {
+      "name": "GranitIdentityFederatedAnalyticsModule",
+      "fqn": "Granit.Identity.Federated.Analytics.GranitIdentityFederatedAnalyticsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Analytics",
+      "file": "src/Granit.Identity.Federated.Analytics/GranitIdentityFederatedAnalyticsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IdentityFederatedAnalyticsLocalizationResource",
+      "fqn": "Granit.Identity.Federated.Analytics.IdentityFederatedAnalyticsLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Analytics",
+      "file": "src/Granit.Identity.Federated.Analytics/IdentityFederatedAnalyticsLocalizationResource.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "EnabledFederatedIdentityCountMetricDefinition",
+      "fqn": "Granit.Identity.Federated.Analytics.Metrics.EnabledFederatedIdentityCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Analytics",
+      "file": "src/Granit.Identity.Federated.Analytics/Metrics/EnabledFederatedIdentityCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<FederatedIdentity, int?>>? Selector",
+          "returnType": "Expression<Func<FederatedIdentity, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<FederatedIdentity, bool>>? BaseFilter",
+          "returnType": "Expression<Func<FederatedIdentity, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<FederatedIdentity, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<FederatedIdentity, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "FederatedIdentityCountMetricDefinition",
+      "fqn": "Granit.Identity.Federated.Analytics.Metrics.FederatedIdentityCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Analytics",
+      "file": "src/Granit.Identity.Federated.Analytics/Metrics/FederatedIdentityCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<FederatedIdentity, int?>>? Selector",
+          "returnType": "Expression<Func<FederatedIdentity, int?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<FederatedIdentity, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<FederatedIdentity, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
       "name": "GranitIdentityFederatedCognitoBackgroundJobsModule",
       "fqn": "Granit.Identity.Federated.Cognito.BackgroundJobs.GranitIdentityFederatedCognitoBackgroundJobsModule",
       "kind": "class",
@@ -31922,7 +32139,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/GranitIdentityFederatedModule.cs",
-      "line": 26,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
@@ -32119,92 +32336,6 @@
           "kind": "method",
           "signature": "SyncAsync(CancellationToken cancellationToken)",
           "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "EnabledFederatedIdentityCountMetricDefinition",
-      "fqn": "Granit.Identity.Federated.Metrics.EnabledFederatedIdentityCountMetricDefinition",
-      "kind": "class",
-      "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Metrics/EnabledFederatedIdentityCountMetricDefinition.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<FederatedIdentity, int?>>? Selector",
-          "returnType": "Expression<Func<FederatedIdentity, int?>>?"
-        },
-        {
-          "name": "BaseFilter",
-          "kind": "property",
-          "signature": "Expression<Func<FederatedIdentity, bool>>? BaseFilter",
-          "returnType": "Expression<Func<FederatedIdentity, bool>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<FederatedIdentity, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<FederatedIdentity, DateTimeOffset>>?"
-        }
-      ]
-    },
-    {
-      "name": "FederatedIdentityCountMetricDefinition",
-      "fqn": "Granit.Identity.Federated.Metrics.FederatedIdentityCountMetricDefinition",
-      "kind": "class",
-      "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Metrics/FederatedIdentityCountMetricDefinition.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<FederatedIdentity, int?>>? Selector",
-          "returnType": "Expression<Func<FederatedIdentity, int?>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<FederatedIdentity, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<FederatedIdentity, DateTimeOffset>>?"
         }
       ]
     },
@@ -41188,6 +41319,169 @@
       ]
     },
     {
+      "name": "GranitNotificationsAnalyticsModule",
+      "fqn": "Granit.Notifications.Analytics.GranitNotificationsAnalyticsModule",
+      "kind": "class",
+      "project": "Granit.Notifications.Analytics",
+      "file": "src/Granit.Notifications.Analytics/GranitNotificationsAnalyticsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ReadUserNotificationCountMetricDefinition",
+      "fqn": "Granit.Notifications.Analytics.Metrics.ReadUserNotificationCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Notifications.Analytics",
+      "file": "src/Granit.Notifications.Analytics/Metrics/ReadUserNotificationCountMetricDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, int?>>? Selector",
+          "returnType": "Expression<Func<UserNotification, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, bool>>? BaseFilter",
+          "returnType": "Expression<Func<UserNotification, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<UserNotification, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "UnreadUserNotificationCountMetricDefinition",
+      "fqn": "Granit.Notifications.Analytics.Metrics.UnreadUserNotificationCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Notifications.Analytics",
+      "file": "src/Granit.Notifications.Analytics/Metrics/UnreadUserNotificationCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, int?>>? Selector",
+          "returnType": "Expression<Func<UserNotification, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, bool>>? BaseFilter",
+          "returnType": "Expression<Func<UserNotification, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<UserNotification, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "UserNotificationCountMetricDefinition",
+      "fqn": "Granit.Notifications.Analytics.Metrics.UserNotificationCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Notifications.Analytics",
+      "file": "src/Granit.Notifications.Analytics/Metrics/UserNotificationCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, int?>>? Selector",
+          "returnType": "Expression<Func<UserNotification, int?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<UserNotification, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "NotificationsAnalyticsLocalizationResource",
+      "fqn": "Granit.Notifications.Analytics.NotificationsAnalyticsLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Notifications.Analytics",
+      "file": "src/Granit.Notifications.Analytics/NotificationsAnalyticsLocalizationResource.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "BrevoNotificationsServiceCollectionExtensions",
       "fqn": "Granit.Notifications.Brevo.Extensions.BrevoNotificationsServiceCollectionExtensions",
       "kind": "class",
@@ -42117,7 +42411,7 @@
       "kind": "class",
       "project": "Granit.Notifications",
       "file": "src/Granit.Notifications/Extensions/NotificationsHostApplicationBuilderExtensions.cs",
-      "line": 26,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitNotifications",
@@ -42228,144 +42522,6 @@
           "kind": "property",
           "signature": "required string NotificationTypeName",
           "returnType": "required string"
-        }
-      ]
-    },
-    {
-      "name": "ReadUserNotificationCountMetricDefinition",
-      "fqn": "Granit.Notifications.Metrics.ReadUserNotificationCountMetricDefinition",
-      "kind": "class",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Metrics/ReadUserNotificationCountMetricDefinition.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<UserNotification, int?>>? Selector",
-          "returnType": "Expression<Func<UserNotification, int?>>?"
-        },
-        {
-          "name": "BaseFilter",
-          "kind": "property",
-          "signature": "Expression<Func<UserNotification, bool>>? BaseFilter",
-          "returnType": "Expression<Func<UserNotification, bool>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<UserNotification, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<UserNotification, DateTimeOffset>>?"
-        }
-      ]
-    },
-    {
-      "name": "UnreadUserNotificationCountMetricDefinition",
-      "fqn": "Granit.Notifications.Metrics.UnreadUserNotificationCountMetricDefinition",
-      "kind": "class",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Metrics/UnreadUserNotificationCountMetricDefinition.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<UserNotification, int?>>? Selector",
-          "returnType": "Expression<Func<UserNotification, int?>>?"
-        },
-        {
-          "name": "BaseFilter",
-          "kind": "property",
-          "signature": "Expression<Func<UserNotification, bool>>? BaseFilter",
-          "returnType": "Expression<Func<UserNotification, bool>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<UserNotification, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<UserNotification, DateTimeOffset>>?"
-        },
-        {
-          "name": "IsHigherBetter",
-          "kind": "property",
-          "signature": "bool IsHigherBetter",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
-      "name": "UserNotificationCountMetricDefinition",
-      "fqn": "Granit.Notifications.Metrics.UserNotificationCountMetricDefinition",
-      "kind": "class",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Metrics/UserNotificationCountMetricDefinition.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<UserNotification, int?>>? Selector",
-          "returnType": "Expression<Func<UserNotification, int?>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<UserNotification, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<UserNotification, DateTimeOffset>>?"
         }
       ]
     },
@@ -65525,6 +65681,215 @@
       "members": []
     },
     {
+      "name": "GranitWebhooksAnalyticsModule",
+      "fqn": "Granit.Webhooks.Analytics.GranitWebhooksAnalyticsModule",
+      "kind": "class",
+      "project": "Granit.Webhooks.Analytics",
+      "file": "src/Granit.Webhooks.Analytics/GranitWebhooksAnalyticsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ActiveWebhookSubscriptionCountMetricDefinition",
+      "fqn": "Granit.Webhooks.Analytics.Metrics.ActiveWebhookSubscriptionCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks.Analytics",
+      "file": "src/Granit.Webhooks.Analytics/Metrics/ActiveWebhookSubscriptionCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookSubscription, int?>>? Selector",
+          "returnType": "Expression<Func<WebhookSubscription, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookSubscription, bool>>? BaseFilter",
+          "returnType": "Expression<Func<WebhookSubscription, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookSubscription, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<WebhookSubscription, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "FailedWebhookDeliveryAttemptCountMetricDefinition",
+      "fqn": "Granit.Webhooks.Analytics.Metrics.FailedWebhookDeliveryAttemptCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks.Analytics",
+      "file": "src/Granit.Webhooks.Analytics/Metrics/FailedWebhookDeliveryAttemptCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, int?>>? Selector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, bool>>? BaseFilter",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "WebhookDeliveryLatencyAverageMetricDefinition",
+      "fqn": "Granit.Webhooks.Analytics.Metrics.WebhookDeliveryLatencyAverageMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks.Analytics",
+      "file": "src/Granit.Webhooks.Analytics/Metrics/WebhookDeliveryLatencyAverageMetricDefinition.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, double?>>? Selector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, double?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "WebhookDeliverySuccessRateMetricDefinition",
+      "fqn": "Granit.Webhooks.Analytics.Metrics.WebhookDeliverySuccessRateMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks.Analytics",
+      "file": "src/Granit.Webhooks.Analytics/Metrics/WebhookDeliverySuccessRateMetricDefinition.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, double?>>? Selector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, double?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "WebhooksAnalyticsLocalizationResource",
+      "fqn": "Granit.Webhooks.Analytics.WebhooksAnalyticsLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Webhooks.Analytics",
+      "file": "src/Granit.Webhooks.Analytics/WebhooksAnalyticsLocalizationResource.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "GranitWebhooksBackgroundJobsModule",
       "fqn": "Granit.Webhooks.BackgroundJobs.GranitWebhooksBackgroundJobsModule",
       "kind": "class",
@@ -65582,11 +65947,27 @@
       ]
     },
     {
+      "name": "GranitWebhooksDashboardsModule",
+      "fqn": "Granit.Webhooks.Dashboards.GranitWebhooksDashboardsModule",
+      "kind": "class",
+      "project": "Granit.Webhooks.Dashboards",
+      "file": "src/Granit.Webhooks.Dashboards/GranitWebhooksDashboardsModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "WebhookReliabilityDashboardDefinition",
       "fqn": "Granit.Webhooks.Dashboards.WebhookReliabilityDashboardDefinition",
       "kind": "class",
-      "project": "Granit.Webhooks",
-      "file": "src/Granit.Webhooks/Dashboards/WebhookReliabilityDashboardDefinition.cs",
+      "project": "Granit.Webhooks.Dashboards",
+      "file": "src/Granit.Webhooks.Dashboards/WebhookReliabilityDashboardDefinition.cs",
       "line": 14,
       "members": [
         {
@@ -65608,6 +65989,15 @@
           "returnType": "IReadOnlyList<WidgetDefinition> Widgets { get; } ="
         }
       ]
+    },
+    {
+      "name": "WebhooksDashboardsLocalizationResource",
+      "fqn": "Granit.Webhooks.Dashboards.WebhooksDashboardsLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Webhooks.Dashboards",
+      "file": "src/Granit.Webhooks.Dashboards/WebhooksDashboardsLocalizationResource.cs",
+      "line": 11,
+      "members": []
     },
     {
       "name": "IWebhookEventTypeDefinitionContext",
@@ -66248,7 +66638,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Extensions/WebhooksHostApplicationBuilderExtensions.cs",
-      "line": 32,
+      "line": 28,
       "members": [
         {
           "name": "AddGranitWebhooks",
@@ -66371,190 +66761,6 @@
           "kind": "method",
           "signature": "NewGuid()",
           "returnType": "Guid EventId { get; init; } = Guid."
-        }
-      ]
-    },
-    {
-      "name": "ActiveWebhookSubscriptionCountMetricDefinition",
-      "fqn": "Granit.Webhooks.Metrics.ActiveWebhookSubscriptionCountMetricDefinition",
-      "kind": "class",
-      "project": "Granit.Webhooks",
-      "file": "src/Granit.Webhooks/Metrics/ActiveWebhookSubscriptionCountMetricDefinition.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<WebhookSubscription, int?>>? Selector",
-          "returnType": "Expression<Func<WebhookSubscription, int?>>?"
-        },
-        {
-          "name": "BaseFilter",
-          "kind": "property",
-          "signature": "Expression<Func<WebhookSubscription, bool>>? BaseFilter",
-          "returnType": "Expression<Func<WebhookSubscription, bool>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<WebhookSubscription, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<WebhookSubscription, DateTimeOffset>>?"
-        }
-      ]
-    },
-    {
-      "name": "FailedWebhookDeliveryAttemptCountMetricDefinition",
-      "fqn": "Granit.Webhooks.Metrics.FailedWebhookDeliveryAttemptCountMetricDefinition",
-      "kind": "class",
-      "project": "Granit.Webhooks",
-      "file": "src/Granit.Webhooks/Metrics/FailedWebhookDeliveryAttemptCountMetricDefinition.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<WebhookDeliveryAttempt, int?>>? Selector",
-          "returnType": "Expression<Func<WebhookDeliveryAttempt, int?>>?"
-        },
-        {
-          "name": "BaseFilter",
-          "kind": "property",
-          "signature": "Expression<Func<WebhookDeliveryAttempt, bool>>? BaseFilter",
-          "returnType": "Expression<Func<WebhookDeliveryAttempt, bool>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>?"
-        },
-        {
-          "name": "IsHigherBetter",
-          "kind": "property",
-          "signature": "bool IsHigherBetter",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
-      "name": "WebhookDeliveryLatencyAverageMetricDefinition",
-      "fqn": "Granit.Webhooks.Metrics.WebhookDeliveryLatencyAverageMetricDefinition",
-      "kind": "class",
-      "project": "Granit.Webhooks",
-      "file": "src/Granit.Webhooks/Metrics/WebhookDeliveryLatencyAverageMetricDefinition.cs",
-      "line": 20,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<WebhookDeliveryAttempt, double?>>? Selector",
-          "returnType": "Expression<Func<WebhookDeliveryAttempt, double?>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>?"
-        },
-        {
-          "name": "IsHigherBetter",
-          "kind": "property",
-          "signature": "bool IsHigherBetter",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
-      "name": "WebhookDeliverySuccessRateMetricDefinition",
-      "fqn": "Granit.Webhooks.Metrics.WebhookDeliverySuccessRateMetricDefinition",
-      "kind": "class",
-      "project": "Granit.Webhooks",
-      "file": "src/Granit.Webhooks/Metrics/WebhookDeliverySuccessRateMetricDefinition.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ValueKind",
-          "kind": "property",
-          "signature": "MetricValueKind ValueKind",
-          "returnType": "MetricValueKind"
-        },
-        {
-          "name": "Aggregation",
-          "kind": "property",
-          "signature": "AggregateFunction Aggregation",
-          "returnType": "AggregateFunction"
-        },
-        {
-          "name": "Selector",
-          "kind": "property",
-          "signature": "Expression<Func<WebhookDeliveryAttempt, double?>>? Selector",
-          "returnType": "Expression<Func<WebhookDeliveryAttempt, double?>>?"
-        },
-        {
-          "name": "PeriodSelector",
-          "kind": "property",
-          "signature": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>?"
         }
       ]
     },

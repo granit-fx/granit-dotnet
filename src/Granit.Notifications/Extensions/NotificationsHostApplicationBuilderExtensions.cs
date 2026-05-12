@@ -1,5 +1,4 @@
 using System.Threading.Channels;
-using Granit.Analytics.Extensions;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Notifications.Abstractions;
@@ -9,7 +8,6 @@ using Granit.Notifications.Exports;
 using Granit.Notifications.Handlers;
 using Granit.Notifications.Internal;
 using Granit.Notifications.Messages;
-using Granit.Notifications.Metrics;
 using Granit.Notifications.Options;
 using Granit.Notifications.Queries;
 using Granit.QueryEngine.Extensions;
@@ -99,10 +97,6 @@ public static class NotificationsHostApplicationBuilderExtensions
         builder.Services.AddQueryDefinition<NotificationPreference, NotificationPreferenceQueryDefinition>();
         builder.Services.AddExportDefinition<UserNotification, UserNotificationExportDefinition>();
         builder.Services.AddExportDefinition<NotificationPreference, NotificationPreferenceExportDefinition>();
-
-        builder.Services.AddMetricDefinition<UserNotification, int, UnreadUserNotificationCountMetricDefinition>();
-        builder.Services.AddMetricDefinition<UserNotification, int, UserNotificationCountMetricDefinition>();
-        builder.Services.AddMetricDefinition<UserNotification, int, ReadUserNotificationCountMetricDefinition>();
 
         return builder;
     }

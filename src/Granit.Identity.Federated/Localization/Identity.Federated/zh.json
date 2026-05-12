@@ -1,7 +1,4 @@
 {
   "culture": "zh",
-  "texts": {
-    "Metric:Granit.Identity.Federated.EnabledFederatedIdentityCountMetric": "活跃的联合用户",
-    "Metric:Granit.Identity.Federated.FederatedIdentityCountMetric": "联合用户（总计）"
-  }
+  "texts": {}
 }

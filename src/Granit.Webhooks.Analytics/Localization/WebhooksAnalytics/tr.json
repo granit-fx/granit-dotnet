@@ -1,0 +1,9 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "Aktif webhook abonelikleri",
+    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "Başarısız webhook teslimatları",
+    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Webhook gecikmesi (ort. ms)",
+    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Webhook teslim başarı oranı"
+  }
+}

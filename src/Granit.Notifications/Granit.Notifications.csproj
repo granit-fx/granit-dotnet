@@ -18,7 +18,6 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Analytics\Granit.Analytics.csproj" />
     <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Encryption\Granit.Encryption.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />

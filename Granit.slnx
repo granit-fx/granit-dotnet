@@ -75,6 +75,7 @@
     <Project Path="src/Granit.Encryption/Granit.Encryption.csproj" />
     <Project Path="src/Granit.Identity.Endpoints/Granit.Identity.Endpoints.csproj" />
     <Project Path="src/Granit.Identity.EntityFrameworkCore/Granit.Identity.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Identity.Federated.Analytics/Granit.Identity.Federated.Analytics.csproj" />
     <Project Path="src/Granit.Identity.Federated.Cognito.BackgroundJobs/Granit.Identity.Federated.Cognito.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Identity.Federated.Cognito/Granit.Identity.Federated.Cognito.csproj" />
     <Project Path="src/Granit.Identity.Federated.EntityFrameworkCore/Granit.Identity.Federated.EntityFrameworkCore.csproj" />
@@ -218,8 +219,10 @@
     <Project Path="src/Granit.BackgroundJobs.Wolverine/Granit.BackgroundJobs.Wolverine.csproj" />
     <Project Path="src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj" />
     <Project Path="src/Granit.BlobStorage.AI/Granit.BlobStorage.AI.csproj" />
+    <Project Path="src/Granit.BlobStorage.Analytics/Granit.BlobStorage.Analytics.csproj" />
     <Project Path="src/Granit.BlobStorage.AzureBlob/Granit.BlobStorage.AzureBlob.csproj" />
     <Project Path="src/Granit.BlobStorage.BackgroundJobs/Granit.BlobStorage.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.BlobStorage.Dashboards/Granit.BlobStorage.Dashboards.csproj" />
     <Project Path="src/Granit.BlobStorage.Database/Granit.BlobStorage.Database.csproj" />
     <Project Path="src/Granit.BlobStorage.Endpoints/Granit.BlobStorage.Endpoints.csproj" />
     <Project Path="src/Granit.BlobStorage.EntityFrameworkCore/Granit.BlobStorage.EntityFrameworkCore.csproj" />
@@ -248,7 +251,9 @@
     <Project Path="src/Granit.Taxonomy.Endpoints/Granit.Taxonomy.Endpoints.csproj" />
     <Project Path="src/Granit.Taxonomy.EntityFrameworkCore/Granit.Taxonomy.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Taxonomy/Granit.Taxonomy.csproj" />
+    <Project Path="src/Granit.Webhooks.Analytics/Granit.Webhooks.Analytics.csproj" />
     <Project Path="src/Granit.Webhooks.BackgroundJobs/Granit.Webhooks.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.Webhooks.Dashboards/Granit.Webhooks.Dashboards.csproj" />
     <Project Path="src/Granit.Webhooks.Endpoints/Granit.Webhooks.Endpoints.csproj" />
     <Project Path="src/Granit.Webhooks.EntityFrameworkCore/Granit.Webhooks.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Webhooks.Notifications/Granit.Webhooks.Notifications.csproj" />
@@ -281,6 +286,7 @@
   <Folder Name="/src/Notifications/">
     <Project Path="src/Granit.Notifications.Abstractions/Granit.Notifications.Abstractions.csproj" />
     <Project Path="src/Granit.Notifications.AI/Granit.Notifications.AI.csproj" />
+    <Project Path="src/Granit.Notifications.Analytics/Granit.Notifications.Analytics.csproj" />
     <Project Path="src/Granit.Notifications.Brevo/Granit.Notifications.Brevo.csproj" />
     <Project Path="src/Granit.Notifications.Email.AwsSes/Granit.Notifications.Email.AwsSes.csproj" />
     <Project Path="src/Granit.Notifications.Email.AzureCommunicationServices/Granit.Notifications.Email.AzureCommunicationServices.csproj" />
@@ -474,6 +480,7 @@
     <Project Path="tests/Granit.Encryption.Tests/Granit.Encryption.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Endpoints.Tests/Granit.Identity.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Identity.EntityFrameworkCore.Tests/Granit.Identity.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.Federated.Analytics.Tests/Granit.Identity.Federated.Analytics.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Cognito.BackgroundJobs.Tests/Granit.Identity.Federated.Cognito.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Cognito.Tests.Integration/Granit.Identity.Federated.Cognito.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Cognito.Tests/Granit.Identity.Federated.Cognito.Tests.csproj" />
@@ -626,8 +633,10 @@
     <Project Path="tests/Granit.BackgroundJobs.Tests/Granit.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Wolverine.Tests/Granit.BackgroundJobs.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.AI.Tests/Granit.BlobStorage.AI.Tests.csproj" />
+    <Project Path="tests/Granit.BlobStorage.Analytics.Tests/Granit.BlobStorage.Analytics.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.AzureBlob.Tests/Granit.BlobStorage.AzureBlob.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.BackgroundJobs.Tests/Granit.BlobStorage.BackgroundJobs.Tests.csproj" />
+    <Project Path="tests/Granit.BlobStorage.Dashboards.Tests/Granit.BlobStorage.Dashboards.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.Database.Tests/Granit.BlobStorage.Database.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.Endpoints.Tests/Granit.BlobStorage.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.EntityFrameworkCore.Tests/Granit.BlobStorage.EntityFrameworkCore.Tests.csproj" />
@@ -659,7 +668,9 @@
     <Project Path="tests/Granit.Taxonomy.EntityFrameworkCore.Tests.Integration/Granit.Taxonomy.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Taxonomy.EntityFrameworkCore.Tests/Granit.Taxonomy.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Taxonomy.Tests/Granit.Taxonomy.Tests.csproj" />
+    <Project Path="tests/Granit.Webhooks.Analytics.Tests/Granit.Webhooks.Analytics.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.BackgroundJobs.Tests/Granit.Webhooks.BackgroundJobs.Tests.csproj" />
+    <Project Path="tests/Granit.Webhooks.Dashboards.Tests/Granit.Webhooks.Dashboards.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.Endpoints.Tests/Granit.Webhooks.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.EntityFrameworkCore.Tests/Granit.Webhooks.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.Notifications.Tests/Granit.Webhooks.Notifications.Tests.csproj" />
@@ -694,6 +705,7 @@
   <Folder Name="/tests/Notifications/">
     <Project Path="tests/Granit.Notifications.Abstractions.Tests/Granit.Notifications.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.AI.Tests/Granit.Notifications.AI.Tests.csproj" />
+    <Project Path="tests/Granit.Notifications.Analytics.Tests/Granit.Notifications.Analytics.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Brevo.Tests/Granit.Notifications.Brevo.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Email.AwsSes.Tests/Granit.Notifications.Email.AwsSes.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Email.AzureCommunicationServices.Tests/Granit.Notifications.Email.AzureCommunicationServices.Tests.csproj" />
