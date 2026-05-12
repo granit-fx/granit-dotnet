@@ -1,0 +1,32 @@
+name: ClusterFuzzLite batch fuzzing
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build fuzzers
+        uses: google/clusterfuzzlite/actions/build_fuzzers@v1
+        with:
+          language: csharp
+          sanitizer: address
+
+      - name: Run fuzzers
+        uses: google/clusterfuzzlite/actions/run_fuzzers@v1
+        with:
+          language: csharp
+          fuzz-seconds: 3600
+          mode: batch
+          sanitizer: address
+          output-sarif: true

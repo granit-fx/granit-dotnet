@@ -1,0 +1,36 @@
+name: ClusterFuzzLite PR fuzzing
+
+on:
+  pull_request:
+    paths:
+      - 'src/Granit.QueryEngine**'
+      - 'fuzz/**'
+      - '.clusterfuzzlite/**'
+      - '.github/workflows/cifuzz-pr.yml'
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build fuzzers
+        id: build
+        uses: google/clusterfuzzlite/actions/build_fuzzers@v1
+        with:
+          language: csharp
+          sanitizer: address
+
+      - name: Run fuzzers
+        uses: google/clusterfuzzlite/actions/run_fuzzers@v1
+        with:
+          language: csharp
+          fuzz-seconds: 300
+          mode: code-change
+          sanitizer: address
+          output-sarif: true
