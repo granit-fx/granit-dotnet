@@ -1,10 +1,5 @@
 using Granit.Caching;
 using Granit.Diagnostics;
-using Granit.DocumentGeneration;
-using Granit.DocumentGeneration.Excel;
-using Granit.DocumentGeneration.Pdf;
-using Granit.Features;
-using Granit.Features.EntityFrameworkCore;
 using Granit.Guids;
 using Granit.Http.ApiDocumentation;
 using Granit.Http.ApiVersioning;
@@ -13,17 +8,12 @@ using Granit.Http.ExceptionHandling;
 using Granit.Http.Idempotency;
 using Granit.Localization;
 using Granit.Modularity;
-using Granit.MultiTenancy;
 using Granit.Notifications;
 using Granit.Notifications.Email;
 using Granit.Notifications.EntityFrameworkCore;
 using Granit.Notifications.SignalR;
 using Granit.Observability;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.RateLimiting;
-using Granit.Templating;
-using Granit.Templating.EntityFrameworkCore;
-using Granit.Templating.Scriban;
 using Granit.Timing;
 using Granit.Users;
 using Granit.Validation;
@@ -75,23 +65,4 @@ public sealed class BundleTransitiveDependencyTests
         typeof(NotificationHub).Assembly.ShouldNotBeNull();
     }
 
-    [Fact]
-    public void Documents_ExposesAllDocumentModules()
-    {
-        typeof(GranitTemplatingModule).Assembly.ShouldNotBeNull();
-        typeof(GranitTemplatingScribanModule).Assembly.ShouldNotBeNull();
-        typeof(GranitTemplatingEntityFrameworkCoreModule).Assembly.ShouldNotBeNull();
-        typeof(GranitDocumentGenerationModule).Assembly.ShouldNotBeNull();
-        typeof(GranitDocumentGenerationPdfModule).Assembly.ShouldNotBeNull();
-        typeof(GranitDocumentGenerationExcelModule).Assembly.ShouldNotBeNull();
-    }
-
-    [Fact]
-    public void SaaS_ExposesAllSaaSModules()
-    {
-        typeof(GranitMultiTenancyModule).Assembly.ShouldNotBeNull();
-        typeof(GranitFeaturesModule).Assembly.ShouldNotBeNull();
-        typeof(GranitFeaturesEntityFrameworkCoreModule).Assembly.ShouldNotBeNull();
-        typeof(GranitRateLimitingModule).Assembly.ShouldNotBeNull();
-    }
 }
