@@ -834,7 +834,11 @@ internal sealed partial class KeycloakIdentityProvider(
                 .ConfigureAwait(false);
         }
 
-        LogUserCreated(LogRedaction.Username(user.Username), createdUserId);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedUsername = LogRedaction.Username(user.Username);
+            LogUserCreated(redactedUsername, createdUserId);
+        }
 
         metrics.RecordOperationCompleted(null, "create_user", ProviderName, "created");
         metrics.RecordOperationDuration(null, "create_user", ProviderName, Stopwatch.GetElapsedTime(startTimestamp));
@@ -1104,11 +1108,19 @@ internal sealed partial class KeycloakIdentityProvider(
 
         if (response.IsSuccessStatusCode)
         {
-            LogCredentialVerificationSucceeded(LogRedaction.Username(username));
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                string redactedUsername = LogRedaction.Username(username);
+                LogCredentialVerificationSucceeded(redactedUsername);
+            }
             return true;
         }
 
-        LogCredentialVerificationFailed(LogRedaction.Username(username), (int)response.StatusCode);
+        if (logger.IsEnabled(LogLevel.Debug))
+        {
+            string redactedUsername = LogRedaction.Username(username);
+            LogCredentialVerificationFailed(redactedUsername, (int)response.StatusCode);
+        }
         return false;
     }
 

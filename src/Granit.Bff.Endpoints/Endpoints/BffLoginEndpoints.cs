@@ -163,7 +163,11 @@ internal static partial class BffLoginEndpoints
         }
 #pragma warning restore GRSEC003
 
-        LogLoginRedirect(logger, bffOptions.Authority.ToString(), frontend.Name);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string authority = bffOptions.Authority.ToString();
+            LogLoginRedirect(logger, authority, frontend.Name);
+        }
 
         return TypedResults.Redirect(authorizeUrl);
     }
@@ -268,7 +272,11 @@ internal static partial class BffLoginEndpoints
             .ConfigureAwait(false);
 
         metrics.RecordLogin(null);
-        LogLoginSuccess(logger, BffSessionEndpoints.MaskSessionId(sessionId), frontend.Name);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string maskedSessionId = BffSessionEndpoints.MaskSessionId(sessionId);
+            LogLoginSuccess(logger, maskedSessionId, frontend.Name);
+        }
 
         // Redirect to the original URL the user requested, or fall back to the configured post-login path
         string redirectUrl = !string.IsNullOrEmpty(pkceState.ReturnUrl)

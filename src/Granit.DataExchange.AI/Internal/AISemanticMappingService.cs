@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using Granit.AI;
@@ -150,7 +151,7 @@ internal sealed partial class AISemanticMappingService(
         sb.AppendLine("""- "target": exact target property path""");
         sb.AppendLine("""- "score": confidence score 0.0 to 1.0""");
         sb.AppendLine();
-        sb.Append($"Only include confident matches (score >= {minConfidenceScore:F1}). ");
+        sb.Append(CultureInfo.InvariantCulture, $"Only include confident matches (score >= {minConfidenceScore:F1}). ");
         sb.AppendLine("Return [] if no good matches found.");
         sb.AppendLine("Return ONLY the JSON array, no markdown fences or extra text.");
 

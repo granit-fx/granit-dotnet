@@ -117,7 +117,11 @@ internal sealed partial class AwsSecretsCredentialProvider(
         _store.Apply(username, password);
         _versionId = response.VersionId;
 
-        LogCredentialsObtained(LogRedaction.Username(username), _versionId);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedUsername = LogRedaction.Username(username);
+            LogCredentialsObtained(redactedUsername, _versionId);
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Starting AWS Secrets Manager credential manager")]

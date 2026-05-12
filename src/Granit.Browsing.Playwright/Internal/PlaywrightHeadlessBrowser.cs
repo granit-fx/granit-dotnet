@@ -378,9 +378,9 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
                 _ => _playwright.Chromium,
             };
 
-            LogStartingBrowser(opts.Engine.ToString());
+            LogStartingBrowser(opts.Engine);
             _browser = await type.LaunchAsync(launch).ConfigureAwait(false);
-            LogBrowserStarted(opts.Engine.ToString());
+            LogBrowserStarted(opts.Engine);
         }
         finally
         {
@@ -435,10 +435,10 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Granit.Browsing.Playwright launching {Engine} (headless)...")]
-    private partial void LogStartingBrowser(string engine);
+    private partial void LogStartingBrowser(BrowserEngine engine);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Granit.Browsing.Playwright {Engine} launched.")]
-    private partial void LogBrowserStarted(string engine);
+    private partial void LogBrowserStarted(BrowserEngine engine);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.Playwright failed to dispose a stale browser handle.")]
     private partial void LogDisposeFailure(Exception exception);

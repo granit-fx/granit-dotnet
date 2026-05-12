@@ -1,3 +1,4 @@
+using System.Globalization;
 using Granit.Diagnostics;
 using Granit.Observability.Options;
 using Microsoft.Extensions.Configuration;
@@ -83,7 +84,8 @@ public static class ObservabilityServiceCollectionExtensions
                 .Enrich.WithProperty("ServiceVersion", options.ServiceVersion)
                 .Enrich.WithProperty("Environment", options.Environment)
                 .WriteTo.Console(
-                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}")
+                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}",
+                    formatProvider: CultureInfo.InvariantCulture)
                 .WriteTo.OpenTelemetry(otel =>
                 {
                     otel.Endpoint = options.OtlpEndpoint;

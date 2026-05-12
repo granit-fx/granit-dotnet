@@ -138,7 +138,11 @@ internal sealed partial class GranitRoleOrchestrator(
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            LogAtomicPathUnavailable(logger, $"host factory failed: {ex.GetType().Name}");
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                string reason = $"host factory failed: {ex.GetType().Name}";
+                LogAtomicPathUnavailable(logger, reason);
+            }
             return AtomicResolution.NotAtomic;
         }
 

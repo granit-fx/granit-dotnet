@@ -12,7 +12,7 @@ namespace Granit.Browsing.Internal;
 /// Extensions. Subscriber exceptions are logged (or swallowed when no logger is wired)
 /// and never propagate to other subscribers or the producer.
 /// </summary>
-internal sealed class SimpleObservable<T> : IObservable<T>
+internal sealed partial class SimpleObservable<T> : IObservable<T>
 {
     private ImmutableList<IObserver<T>> _observers = ImmutableList<IObserver<T>>.Empty;
     private readonly ILogger? _logger;
@@ -47,10 +47,17 @@ internal sealed class SimpleObservable<T> : IObservable<T>
             }
             catch (Exception ex)
             {
-                _logger?.LogDebug(ex, "Subscriber threw while handling observable value.");
+                if (_logger is not null)
+                {
+                    LogSubscriberThrew(_logger, ex);
+                }
             }
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug,
+        Message = "Subscriber threw while handling observable value.")]
+    private static partial void LogSubscriberThrew(ILogger logger, Exception ex);
 
     private sealed class Subscription : IDisposable
     {

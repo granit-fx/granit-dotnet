@@ -70,7 +70,11 @@ internal sealed partial class AwsSesEmailSender(
         using IAwsSesTransport transport = _transportFactory();
         await transport.SendEmailAsync(request, cancellationToken).ConfigureAwait(false);
 
-        LogEmailSent(LogRedaction.Email(message.To), ses.Region);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedRecipient = LogRedaction.Email(message.To);
+            LogEmailSent(redactedRecipient, ses.Region);
+        }
     }
 
     private static List<MessageHeader>? BuildMessageHeaders(IReadOnlyDictionary<string, string>? headers)

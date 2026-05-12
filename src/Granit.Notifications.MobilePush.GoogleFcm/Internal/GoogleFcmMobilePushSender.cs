@@ -98,7 +98,11 @@ internal sealed partial class GoogleFcmMobilePushSender(
             response.EnsureSuccessStatusCode();
         }
 
-        LogMessageSent(LogRedaction.Token(token), projectId);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedToken = LogRedaction.Token(token);
+            LogMessageSent(redactedToken, projectId);
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "FCM push sent to token {RedactedToken} for project {ProjectId}")]

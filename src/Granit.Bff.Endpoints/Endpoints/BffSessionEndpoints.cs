@@ -147,7 +147,11 @@ internal static partial class BffSessionEndpoints
         }
 
         await tokenStore.RemoveAsync(frontend.Name, targetSessionId, cancellationToken).ConfigureAwait(false);
-        LogSessionRevoked(logger, MaskSessionId(targetSessionId), frontend.Name);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string maskedSessionId = MaskSessionId(targetSessionId);
+            LogSessionRevoked(logger, maskedSessionId, frontend.Name);
+        }
 
         return TypedResults.NoContent();
     }

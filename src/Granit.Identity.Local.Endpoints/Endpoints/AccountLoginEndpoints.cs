@@ -150,7 +150,7 @@ internal static partial class AccountLoginEndpoints
 
         if (result.Succeeded)
         {
-            LogLoginSuccess(logger, user.Id.ToString());
+            LogLoginSuccess(logger, user.Id);
             metrics?.RecordAuthenticationSuccess(null, "password");
 
             return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
@@ -158,14 +158,14 @@ internal static partial class AccountLoginEndpoints
 
         if (result.RequiresTwoFactor)
         {
-            LogLoginTwoFactor(logger, user.Id.ToString());
+            LogLoginTwoFactor(logger, user.Id);
             return TypedResults.Ok(new AccountLoginResponse(
                 Succeeded: false, RequiresTwoFactor: true));
         }
 
         if (result.IsLockedOut)
         {
-            LogLoginLockedOut(logger, user.Id.ToString());
+            LogLoginLockedOut(logger, user.Id);
             metrics?.RecordAuthenticationFailure(null, "account_locked");
 
             await PublishAccountLockedAsync(httpContext, userManager, user, cancellationToken)
@@ -180,7 +180,7 @@ internal static partial class AccountLoginEndpoints
 
         if (result.IsNotAllowed)
         {
-            LogLoginNotAllowed(logger, user.Id.ToString());
+            LogLoginNotAllowed(logger, user.Id);
             metrics?.RecordAuthenticationFailure(null, "email_not_confirmed");
 
             return TypedResults.Problem(
@@ -272,7 +272,7 @@ internal static partial class AccountLoginEndpoints
             LocalIdentity? lockedUser = await signInManager.GetTwoFactorAuthenticationUserAsync()
                 .ConfigureAwait(false);
 
-            LogLoginLockedOut(logger, lockedUser?.Id.ToString() ?? "two-factor-user");
+            LogLoginLockedOut(logger, lockedUser?.Id ?? Guid.Empty);
             metrics?.RecordAuthenticationFailure(null, "account_locked");
 
             if (lockedUser is not null)
@@ -394,16 +394,16 @@ internal static partial class AccountLoginEndpoints
     // ──── Source-generated log messages ────
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Headless login: user {UserId} authenticated successfully")]
-    private static partial void LogLoginSuccess(ILogger logger, string userId);
+    private static partial void LogLoginSuccess(ILogger logger, Guid userId);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Headless login: user {UserId} requires two-factor authentication")]
-    private static partial void LogLoginTwoFactor(ILogger logger, string userId);
+    private static partial void LogLoginTwoFactor(ILogger logger, Guid userId);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Headless login: user {UserId} is locked out")]
-    private static partial void LogLoginLockedOut(ILogger logger, string userId);
+    private static partial void LogLoginLockedOut(ILogger logger, Guid userId);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Headless login: user {UserId} sign-in not allowed")]
-    private static partial void LogLoginNotAllowed(ILogger logger, string userId);
+    private static partial void LogLoginNotAllowed(ILogger logger, Guid userId);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Headless login: failed for '{Login}' — {Reason}")]
     private static partial void LogLoginFailed(ILogger logger, string login, string reason);

@@ -59,7 +59,11 @@ internal sealed partial class ScalewayEmailSender(
             "emails", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
         await EnsureSuccessAsync(response, cancellationToken).ConfigureAwait(false);
 
-        LogEmailSent(LogRedaction.Email(message.To));
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedRecipient = LogRedaction.Email(message.To);
+            LogEmailSent(redactedRecipient);
+        }
     }
 
     /// <summary>

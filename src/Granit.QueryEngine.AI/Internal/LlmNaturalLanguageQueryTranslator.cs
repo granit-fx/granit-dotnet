@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using Granit.AI;
@@ -138,7 +139,7 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
             foreach (FilterableField field in metadata.FilterableFields)
             {
                 string operators = string.Join(", ", field.Operators.Select(static op => op.ToString().ToLowerInvariant()));
-                sb.AppendLine($"  - {field.Name} (type: {field.Type}, operators: {operators})");
+                sb.AppendLine(CultureInfo.InvariantCulture, $"  - {field.Name} (type: {field.Type}, operators: {operators})");
             }
 
             sb.AppendLine();
@@ -151,7 +152,7 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
 
             foreach (SortableField field in metadata.SortableFields)
             {
-                sb.AppendLine($"  - {field.Name}");
+                sb.AppendLine(CultureInfo.InvariantCulture, $"  - {field.Name}");
             }
 
             sb.AppendLine("Sort format: comma-separated field names. Prefix with - for descending (e.g. \"-createdAt,lastName\").");
@@ -165,7 +166,7 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
 
             foreach (QuickFilterMeta qf in metadata.QuickFilters)
             {
-                sb.AppendLine($"  - \"{qf.Name}\" (label: {qf.Label})");
+                sb.AppendLine(CultureInfo.InvariantCulture, $"  - \"{qf.Name}\" (label: {qf.Label})");
             }
 
             sb.AppendLine();
@@ -179,7 +180,7 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
             foreach (DateFilterMeta df in metadata.DateFilters)
             {
                 string periods = string.Join(", ", df.AvailablePeriods.Select(static p => p.ToString()));
-                sb.AppendLine($"  - {df.Name} (periods: {periods})");
+                sb.AppendLine(CultureInfo.InvariantCulture, $"  - {df.Name} (periods: {periods})");
             }
 
             sb.AppendLine();
@@ -192,14 +193,14 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
 
             foreach (GroupByField field in metadata.GroupByFields)
             {
-                sb.AppendLine($"  - {field.Name}");
+                sb.AppendLine(CultureInfo.InvariantCulture, $"  - {field.Name}");
             }
 
             sb.AppendLine();
         }
 
         sb.AppendLine("Filter key format: \"fieldName.operator\" (e.g. \"status.eq\", \"amount.gte\", \"name.contains\").");
-        sb.AppendLine($"Current date: {clock.Now:yyyy-MM-dd}. Use this for relative date references (\"this week\", \"last month\").");
+        sb.AppendLine(CultureInfo.InvariantCulture, $"Current date: {clock.Now:yyyy-MM-dd}. Use this for relative date references (\"this week\", \"last month\").");
         sb.AppendLine();
         sb.AppendLine("Rules:");
         sb.AppendLine("- Return ONLY valid JSON, no explanation.");

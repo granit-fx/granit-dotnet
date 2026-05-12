@@ -32,7 +32,7 @@ namespace Granit.Browsing.Pages;
 /// request. Sandbox rules ALWAYS evaluate first — no user code can widen them.
 /// </para>
 /// </remarks>
-internal sealed class RequestRouter : IRequestRouter
+internal sealed partial class RequestRouter : IRequestRouter
 {
     private readonly IBrowserSandboxProfile _sandbox;
     private readonly IUrlSafetyValidator _urlSafety;
@@ -143,7 +143,7 @@ internal sealed class RequestRouter : IRequestRouter
             }
             catch (Exception ex)
             {
-                _logger.LogDebug(ex, "User route handler threw; defaulting to Continue.");
+                LogUserHandlerThrew(_logger, ex);
             }
         }
 
@@ -195,10 +195,18 @@ internal sealed class RequestRouter : IRequestRouter
             }
             catch (Exception ex)
             {
-                _logger.LogDebug(ex, "Failed to publish BrowserUrlNavigatedEvent on sandbox block.");
+                LogPublishFailed(_logger, ex);
             }
         }
 
         return RouteDecision.Abort(errorCode: reason);
     }
+
+    [LoggerMessage(Level = LogLevel.Debug,
+        Message = "User route handler threw; defaulting to Continue.")]
+    private static partial void LogUserHandlerThrew(ILogger logger, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Debug,
+        Message = "Failed to publish BrowserUrlNavigatedEvent on sandbox block.")]
+    private static partial void LogPublishFailed(ILogger logger, Exception ex);
 }

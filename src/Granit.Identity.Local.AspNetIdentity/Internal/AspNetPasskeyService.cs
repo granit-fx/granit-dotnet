@@ -289,7 +289,7 @@ internal sealed partial class AspNetPasskeyService(
 
             await userManager.AddOrUpdatePasskeyAsync(user, updated).ConfigureAwait(false);
 
-            Log.AssertionCompleted(logger, user.Id.ToString());
+            Log.AssertionCompleted(logger, user.Id);
             return new GranitPasskeyAssertionResult(Succeeded: true, UserId: user.Id.ToString());
         }
         catch (Fido2VerificationException ex)
@@ -418,7 +418,7 @@ internal sealed partial class AspNetPasskeyService(
         public static partial void PasskeyDeleted(ILogger logger, string userId, Guid passkeyId);
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Passkey assertion completed for user {UserId}")]
-        public static partial void AssertionCompleted(ILogger logger, string userId);
+        public static partial void AssertionCompleted(ILogger logger, Guid userId);
 
         [LoggerMessage(Level = LogLevel.Warning, Message = "Passkey assertion failed: {Reason}")]
         public static partial void AssertionFailed(ILogger logger, string reason);

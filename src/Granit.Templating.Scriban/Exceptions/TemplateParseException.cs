@@ -1,3 +1,4 @@
+using System.Globalization;
 using Scriban.Parsing;
 
 namespace Granit.Templating.Scriban.Exceptions;
@@ -26,7 +27,7 @@ public sealed class TemplateParseException : Exception
         sb.AppendLine("Failed to parse Scriban template. Errors:");
         foreach (LogMessage error in errors)
         {
-            sb.AppendLine($"  [{error.Type}] {error.Span}: {error.Message}");
+            sb.AppendLine(CultureInfo.InvariantCulture, $"  [{error.Type}] {error.Span}: {error.Message}");
         }
         return sb.ToString();
     }

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Globalization;
 
 namespace Granit.Http.Idempotency.Diagnostics;
 
@@ -56,7 +57,7 @@ public sealed class IdempotencyMetrics
         _responsesReplayed.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "status_code", statusCode.ToString() },
+            { "status_code", statusCode.ToString(CultureInfo.InvariantCulture) },
         });
 
     public void RecordHashMismatch(string? tenantId) =>

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Events;
@@ -50,7 +51,7 @@ internal sealed class LegalDocumentPublicationService(
         // Archive the old version (dispatches LegalAgreementObsoleteEto via domain event).
         if (currentPublished is not null)
         {
-            currentPublished.Archive(draft.Version.ToString());
+            currentPublished.Archive(draft.Version.ToString(CultureInfo.InvariantCulture));
         }
 
         // Publish the new version.

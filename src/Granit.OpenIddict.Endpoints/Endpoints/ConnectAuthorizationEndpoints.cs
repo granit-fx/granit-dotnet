@@ -189,7 +189,7 @@ internal static partial class ConnectAuthorizationEndpoints
             .ConfigureAwait(false);
         principal.SetAuthorizationId(authorizationId);
 
-        LogAuthorizationGranted(logger, user.Id.ToString(), request.ClientId!);
+        LogAuthorizationGranted(logger, user.Id, request.ClientId!);
 
         string? tenantId = requestTenant is { IsAvailable: true } ? requestTenant.Id?.ToString() : null;
         OpenIddictMetrics metrics = context.RequestServices.GetRequiredService<OpenIddictMetrics>();
@@ -214,5 +214,5 @@ internal static partial class ConnectAuthorizationEndpoints
     private static partial void LogUserNotFound(ILogger logger);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Authorization granted for subject '{Subject}' to client '{ClientId}'")]
-    private static partial void LogAuthorizationGranted(ILogger logger, string subject, string clientId);
+    private static partial void LogAuthorizationGranted(ILogger logger, Guid subject, string clientId);
 }

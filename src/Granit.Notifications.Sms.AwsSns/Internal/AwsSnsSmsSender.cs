@@ -67,7 +67,11 @@ internal sealed partial class AwsSnsSmsSender(
             .PublishAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
-        LogSmsSent(LogRedaction.Phone(message.To), response.MessageId);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedRecipient = LogRedaction.Phone(message.To);
+            LogSmsSent(redactedRecipient, response.MessageId);
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "SNS SMS sent to {RedactedRecipient}, messageId={MessageId}")]

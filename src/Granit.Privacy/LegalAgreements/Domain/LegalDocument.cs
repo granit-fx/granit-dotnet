@@ -1,3 +1,4 @@
+using System.Globalization;
 using Granit.Domain;
 using Granit.Privacy.LegalAgreements.Events;
 using Granit.Workflow.Domain;
@@ -125,7 +126,7 @@ public sealed class LegalDocument : VersionedWorkflowEntity, IMultiTenant, IWork
         SetLifecycleStatus(WorkflowLifecycleStatus.Archived);
 
         AddDistributedEvent(new LegalAgreementObsoleteEto(
-            DocumentId, Version.ToString(), newVersion));
+            DocumentId, Version.ToString(CultureInfo.InvariantCulture), newVersion));
     }
 
     private void EnsureDraft()

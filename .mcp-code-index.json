@@ -17360,7 +17360,7 @@
       "kind": "class",
       "project": "Granit.Features",
       "file": "src/Granit.Features/Definitions/FeatureGroupDefinition.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "Name",
@@ -19232,7 +19232,7 @@
       "kind": "class",
       "project": "Granit.Http.Idempotency",
       "file": "src/Granit.Http.Idempotency/Diagnostics/IdempotencyMetrics.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "RecordLockConflict",
@@ -19722,7 +19722,7 @@
       "kind": "class",
       "project": "Granit.Http.Resilience",
       "file": "src/Granit.Http.Resilience/Diagnostics/HttpResilienceMetrics.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "RecordCircuitBreakerStateChanged",
@@ -30382,7 +30382,7 @@
       "kind": "class",
       "project": "Granit.Observability",
       "file": "src/Granit.Observability/Extensions/ObservabilityServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitObservability",
@@ -34700,7 +34700,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/LegalAgreements/Domain/LegalDocument.cs",
-      "line": 27,
+      "line": 28,
       "members": [
         {
           "name": "Create",
@@ -36791,7 +36791,7 @@
       "kind": "class",
       "project": "Granit.RateLimiting",
       "file": "src/Granit.RateLimiting/AspNetCore/RateLimitEndpointExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": []
     },
     {
@@ -39147,7 +39147,7 @@
       "kind": "class",
       "project": "Granit.Templating.Scriban",
       "file": "src/Granit.Templating.Scriban/Exceptions/TemplateParseException.cs",
-      "line": 8,
+      "line": 9,
       "members": [
         {
           "name": "TemplateParseException",
@@ -42816,7 +42816,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Diagnostics/WebhooksMetrics.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "RecordDeliverySucceeded",

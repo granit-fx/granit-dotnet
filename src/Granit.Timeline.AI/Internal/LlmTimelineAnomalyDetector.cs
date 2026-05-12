@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using Granit.AI;
@@ -180,7 +181,7 @@ internal sealed partial class LlmTimelineAnomalyDetector(
         {
             // VULN-002: Pseudonymize PII — never send AuthorName ([SensitiveData]) to external LLM
             string author = entry.AuthorId is { Length: >= 8 } id ? $"User-{id[..8]}" : "System";
-            sb.AppendLine($"- [{entry.OccurredAt:u}] ({entry.EntryType}) {author}: {entry.Body}");
+            sb.AppendLine(CultureInfo.InvariantCulture, $"- [{entry.OccurredAt:u}] ({entry.EntryType}) {author}: {entry.Body}");
         }
 
         pb.AppendUserTextBlock("Timeline entries (newest first)", sb.ToString());

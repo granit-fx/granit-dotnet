@@ -36,11 +36,19 @@ internal sealed partial class AcsSmsSender(
 
         if (result.Successful)
         {
-            LogSmsSent(LogRedaction.Phone(message.To), result.MessageId);
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                string redactedRecipient = LogRedaction.Phone(message.To);
+                LogSmsSent(redactedRecipient, result.MessageId);
+            }
         }
         else
         {
-            LogSmsFailed(LogRedaction.Phone(message.To), result.ErrorMessage);
+            if (logger.IsEnabled(LogLevel.Warning))
+            {
+                string redactedRecipient = LogRedaction.Phone(message.To);
+                LogSmsFailed(redactedRecipient, result.ErrorMessage);
+            }
         }
     }
 

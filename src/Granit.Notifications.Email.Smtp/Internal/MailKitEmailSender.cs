@@ -76,7 +76,11 @@ internal sealed partial class MailKitEmailSender(
         await client.SendAsync(mimeMessage, cancellationToken).ConfigureAwait(false);
         await client.DisconnectAsync(quit: true, cancellationToken).ConfigureAwait(false);
 
-        LogEmailSent(LogRedaction.Email(message.To), smtp.Host, smtp.Port);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedRecipient = LogRedaction.Email(message.To);
+            LogEmailSent(redactedRecipient, smtp.Host, smtp.Port);
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "SMTP email sent to {RedactedRecipient} via {Host}:{Port}")]

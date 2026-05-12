@@ -74,7 +74,7 @@ internal sealed partial class AuditingCleanupWorker(
                 metrics.RecordPurged(totalPurged, category.ToString(), tenantId: null);
             }
 
-            LogCategoryPurged(category.ToString(), totalPurged, cutoff);
+            LogCategoryPurged(category, totalPurged, cutoff);
         }
     }
 
@@ -84,7 +84,7 @@ internal sealed partial class AuditingCleanupWorker(
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Audit log cleanup '{Category}': purged {Count} entries (cutoff: {Cutoff})")]
-    private partial void LogCategoryPurged(string category, long count, DateTimeOffset cutoff);
+    private partial void LogCategoryPurged(AuditCategory category, long count, DateTimeOffset cutoff);
 
     [LoggerMessage(Level = LogLevel.Error,
         Message = "Audit log cleanup failed")]

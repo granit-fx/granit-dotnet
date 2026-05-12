@@ -64,7 +64,11 @@ internal sealed partial class ClientCredentialsTokenHandler(
         // On 401 Unauthorized, invalidate the cached token and retry once
         if (response.StatusCode is HttpStatusCode.Unauthorized)
         {
-            LogUnauthorizedRetry(ClientName, request.RequestUri?.ToString() ?? "unknown");
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                string requestUri = request.RequestUri?.ToString() ?? "unknown";
+                LogUnauthorizedRetry(ClientName, requestUri);
+            }
 
             await tokenCache.RemoveTokenAsync(ClientName, cancellationToken).ConfigureAwait(false);
             accessToken = await AcquireTokenAsync(options, cancellationToken).ConfigureAwait(false);

@@ -37,7 +37,7 @@ namespace Granit.Persistence.EntityFrameworkCore;
 /// </remarks>
 /// <typeparam name="TEntity">The entity type (must inherit <see cref="Entity"/>).</typeparam>
 /// <typeparam name="TContext">The isolated <see cref="DbContext"/> type.</typeparam>
-public abstract class EfStoreBase<TEntity, TContext>
+public abstract partial class EfStoreBase<TEntity, TContext>
     where TEntity : Entity
     where TContext : DbContext
 {
@@ -170,23 +170,27 @@ public abstract class EfStoreBase<TEntity, TContext>
     }
 
     private void LogUnsignaledCrossTenantQuery(string entity) =>
-        _logger.LogWarning(
-            "Unsignaled cross-tenant query on {Entity}: ICurrentTenant.IsAvailable=false and "
-            + "no host-access signal was set on the request. This signals a tenant-context "
-            + "loss between request entry and the data layer. Investigate the call-site or "
-            + "mark the endpoint with .AllowHostAccess() if the bypass is intentional.",
-            entity);
+        LogUnsignaledCrossTenantQueryCore(_logger, entity);
 
     private void LogHostEndpointCrossTenantQuery(string entity) =>
-        _logger.LogInformation(
-            "Host-endpoint cross-tenant query on {Entity}: served via .AllowHostAccess() route.",
-            entity);
+        LogHostEndpointCrossTenantQueryCore(_logger, entity);
 
     private void LogExplicitCrossTenantQuery(
         string entity, string callerMember, string callerFile, int callerLine) =>
-        _logger.LogInformation(
-            "Explicit cross-tenant query on {Entity} from {CallerMember} ({CallerFile}:{CallerLine}).",
-            entity, callerMember, callerFile, callerLine);
+        LogExplicitCrossTenantQueryCore(_logger, entity, callerMember, callerFile, callerLine);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Unsignaled cross-tenant query on {Entity}: ICurrentTenant.IsAvailable=false and no host-access signal was set on the request. This signals a tenant-context loss between request entry and the data layer. Investigate the call-site or mark the endpoint with .AllowHostAccess() if the bypass is intentional.")]
+    private static partial void LogUnsignaledCrossTenantQueryCore(ILogger logger, string entity);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Host-endpoint cross-tenant query on {Entity}: served via .AllowHostAccess() route.")]
+    private static partial void LogHostEndpointCrossTenantQueryCore(ILogger logger, string entity);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Explicit cross-tenant query on {Entity} from {CallerMember} ({CallerFile}:{CallerLine}).")]
+    private static partial void LogExplicitCrossTenantQueryCore(
+        ILogger logger, string entity, string callerMember, string callerFile, int callerLine);
 
     // ── Read helpers ────────────────────────────────────────────────────
 

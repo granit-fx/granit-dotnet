@@ -925,7 +925,11 @@ internal sealed partial class EntraIdIdentityProvider(
             ?? throw new InvalidOperationException("Entra ID did not return a user ID after creation.");
 
         activity?.SetTag(IdentityEntraIdActivitySource.TagUserId, createdUserId);
-        LogUserCreated(LogRedaction.Username(user.Username), createdUserId);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedUsername = LogRedaction.Username(user.Username);
+            LogUserCreated(redactedUsername, createdUserId);
+        }
 
         var createdIdentityUser = new FederatedIdentityUser(
             createdUserId,
@@ -1090,11 +1094,19 @@ internal sealed partial class EntraIdIdentityProvider(
 
         if (response.IsSuccessStatusCode)
         {
-            LogCredentialVerificationSucceeded(LogRedaction.Username(username));
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                string redactedUsername = LogRedaction.Username(username);
+                LogCredentialVerificationSucceeded(redactedUsername);
+            }
             return true;
         }
 
-        LogCredentialVerificationFailed(LogRedaction.Username(username), (int)response.StatusCode);
+        if (logger.IsEnabled(LogLevel.Debug))
+        {
+            string redactedUsername = LogRedaction.Username(username);
+            LogCredentialVerificationFailed(redactedUsername, (int)response.StatusCode);
+        }
         return false;
     }
 

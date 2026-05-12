@@ -1,3 +1,4 @@
+using System.Globalization;
 using Granit.Features.ValueTypes;
 
 namespace Granit.Features.Definitions;
@@ -71,7 +72,7 @@ public sealed class FeatureGroupDefinition
     {
         _features.Add(new FeatureDefinition(
             name,
-            defaultValue.ToString(),
+            defaultValue.ToString(CultureInfo.InvariantCulture),
             FeatureValueType.Numeric)
         {
             DisplayName = displayName,

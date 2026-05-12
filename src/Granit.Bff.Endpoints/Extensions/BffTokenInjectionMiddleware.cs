@@ -128,7 +128,11 @@ public sealed partial class BffTokenInjectionMiddleware
                 await tokenStore.StoreAsync(frontend.Name, sessionId, tokens, context.RequestAborted)
                     .ConfigureAwait(false);
                 metrics.RecordTokenRefresh(null);
-                LogTokenRefreshed(logger, MaskSessionId(sessionId), frontend.Name);
+                if (logger.IsEnabled(LogLevel.Information))
+                {
+                    string maskedSessionId = MaskSessionId(sessionId);
+                    LogTokenRefreshed(logger, maskedSessionId, frontend.Name);
+                }
                 context.Response.Headers["X-Bff-Session-Refreshed"] = "true";
             }
             else

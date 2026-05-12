@@ -97,7 +97,11 @@ internal sealed partial class BffTokenInjectionTransform(
                     .ConfigureAwait(false);
 
                 metrics.RecordTokenRefresh(null);
-                LogTokenRefreshed(logger, MaskSessionId(sessionId), frontend.Name);
+                if (logger.IsEnabled(LogLevel.Information))
+                {
+                    string maskedSessionId = MaskSessionId(sessionId);
+                    LogTokenRefreshed(logger, maskedSessionId, frontend.Name);
+                }
 
                 // Signal to the SPA that the session was refreshed
                 httpContext.Response.Headers["X-Bff-Session-Refreshed"] = "true";

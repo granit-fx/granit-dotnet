@@ -53,7 +53,11 @@ internal sealed partial class BrevoNotificationProvider(
             "smtp/email", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
         await EnsureSuccessAsync("smtp/email", response, cancellationToken).ConfigureAwait(false);
 
-        LogEmailSent(LogRedaction.Email(message.To));
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedRecipient = LogRedaction.Email(message.To);
+            LogEmailSent(redactedRecipient);
+        }
     }
 
     /// <inheritdoc />
@@ -74,7 +78,11 @@ internal sealed partial class BrevoNotificationProvider(
             "transactionalSMS/sms", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
         await EnsureSuccessAsync("transactionalSMS/sms", response, cancellationToken).ConfigureAwait(false);
 
-        LogSmsSent(LogRedaction.Phone(message.To));
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedRecipient = LogRedaction.Phone(message.To);
+            LogSmsSent(redactedRecipient);
+        }
     }
 
     /// <inheritdoc />
@@ -95,7 +103,11 @@ internal sealed partial class BrevoNotificationProvider(
             "whatsapp/sendTemplate", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
         await EnsureSuccessAsync("whatsapp/sendTemplate", response, cancellationToken).ConfigureAwait(false);
 
-        LogWhatsAppSent(LogRedaction.Phone(message.To), message.TemplateName);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedRecipient = LogRedaction.Phone(message.To);
+            LogWhatsAppSent(redactedRecipient, message.TemplateName);
+        }
     }
 
     /// <summary>

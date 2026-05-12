@@ -1,3 +1,4 @@
+using System.Globalization;
 using Granit.Templating.GlobalContext;
 using Granit.Timing;
 
@@ -35,13 +36,13 @@ internal sealed class NowGlobalContext(IClock clock) : ITemplateGlobalContext
         DateTimeOffset now = _clock.Now;
         return new
         {
-            date = now.ToString("dd/MM/yyyy"),
-            datetime = now.ToString("dd/MM/yyyy HH:mm"),
-            iso = now.ToString("O"),
-            year = now.Year.ToString("D4"),
-            month = now.Month.ToString("D2"),
-            day = now.Day.ToString("D2"),
-            time = now.ToString("HH:mm"),
+            date = now.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+            datetime = now.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture),
+            iso = now.ToString("O", CultureInfo.InvariantCulture),
+            year = now.Year.ToString("D4", CultureInfo.InvariantCulture),
+            month = now.Month.ToString("D2", CultureInfo.InvariantCulture),
+            day = now.Day.ToString("D2", CultureInfo.InvariantCulture),
+            time = now.ToString("HH:mm", CultureInfo.InvariantCulture),
         };
     }
 }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Granit.RateLimiting.Abstractions;
 using Granit.RateLimiting.Exceptions;
 using Microsoft.AspNetCore.Builder;
@@ -34,7 +35,7 @@ public static class RateLimitEndpointExtensions
 
             if (result is { IsAllowed: false })
             {
-                context.HttpContext.Response.Headers[HeaderNames.RetryAfter] = ((int)Math.Ceiling(result.RetryAfter.TotalSeconds)).ToString();
+                context.HttpContext.Response.Headers[HeaderNames.RetryAfter] = ((int)Math.Ceiling(result.RetryAfter.TotalSeconds)).ToString(CultureInfo.InvariantCulture);
 
                 return TypedResults.Problem(
                     detail: "Too many requests. Please retry later.",
@@ -52,8 +53,8 @@ public static class RateLimitEndpointExtensions
             {
                 context.HttpContext.Response.OnStarting(() =>
                 {
-                    context.HttpContext.Response.Headers["X-RateLimit-Limit"] = result.Limit.ToString();
-                    context.HttpContext.Response.Headers["X-RateLimit-Remaining"] = result.Remaining.ToString();
+                    context.HttpContext.Response.Headers["X-RateLimit-Limit"] = result.Limit.ToString(CultureInfo.InvariantCulture);
+                    context.HttpContext.Response.Headers["X-RateLimit-Remaining"] = result.Remaining.ToString(CultureInfo.InvariantCulture);
                     return Task.CompletedTask;
                 });
             }

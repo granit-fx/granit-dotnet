@@ -104,15 +104,20 @@ public sealed partial class GranitApplication
 
     private void LogModuleList(ServiceConfigurationContext context)
     {
+        int enabledCount = 0;
         foreach (ModuleDescriptor module in _modules)
         {
             bool enabled = module.Instance.IsEnabled(context);
             module.IsEnabled = enabled;
+            if (enabled)
+            {
+                enabledCount++;
+            }
             string status = enabled ? "OK" : "DISABLED";
             LogModuleLoaded(module.ModuleType.Name, status);
         }
 
-        LogModuleSummary(_modules.Count, _modules.Count(m => m.IsEnabled));
+        LogModuleSummary(_modules.Count, enabledCount);
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Granit module {ModuleName} [{Status}]")]

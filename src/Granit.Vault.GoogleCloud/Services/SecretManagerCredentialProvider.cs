@@ -65,7 +65,11 @@ internal sealed partial class SecretManagerCredentialProvider(
         SecretVersionName secretVersionName = new(
             _options.ProjectId, _options.DatabaseSecretName, "latest");
 
-        LogObtainingCredentials(secretVersionName.ToString());
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string secretName = secretVersionName.ToString();
+            LogObtainingCredentials(secretName);
+        }
 
         using System.Diagnostics.Activity? activity = VaultGoogleCloudActivitySource.Source.StartActivity(
             VaultGoogleCloudActivitySource.Operations.SecretsObtain);
@@ -115,7 +119,11 @@ internal sealed partial class SecretManagerCredentialProvider(
         _store.Apply(username, password);
         _versionName = response.Name;
 
-        LogCredentialsObtained(LogRedaction.Username(username), _versionName);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedUsername = LogRedaction.Username(username);
+            LogCredentialsObtained(redactedUsername, _versionName);
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Starting Secret Manager credential manager")]

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Globalization;
 
 namespace Granit.Webhooks.Diagnostics;
 
@@ -66,14 +67,14 @@ public sealed class WebhooksMetrics
         {
             { TagTenantId, tenantId ?? DefaultTenant },
             { TagEventType, eventType },
-            { "http_status", httpStatus?.ToString() ?? "timeout" },
+            { "http_status", httpStatus?.ToString(CultureInfo.InvariantCulture) ?? "timeout" },
         });
 
     public void RecordSubscriptionSuspended(string? tenantId, int httpStatus) =>
         _subscriptionsSuspended.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "http_status", httpStatus.ToString() },
+            { "http_status", httpStatus.ToString(CultureInfo.InvariantCulture) },
         });
 
     public void RecordDeliveryDuration(string? tenantId, string eventType, string status, TimeSpan duration) =>

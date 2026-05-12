@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Globalization;
 
 namespace Granit.Http.Resilience.Diagnostics;
 
@@ -37,7 +38,7 @@ public sealed class HttpResilienceMetrics
         {
             { "tenant_id", tenantId ?? "global" },
             { "client_name", clientName },
-            { "attempt_number", attemptNumber.ToString() },
+            { "attempt_number", attemptNumber.ToString(CultureInfo.InvariantCulture) },
         });
 
     public void RecordCircuitBreakerStateChanged(string? tenantId, string clientName, string state) =>

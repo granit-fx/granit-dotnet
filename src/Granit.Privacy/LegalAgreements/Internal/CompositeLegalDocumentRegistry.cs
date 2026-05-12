@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using Granit.Privacy.LegalAgreements.Domain;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -69,7 +70,7 @@ internal sealed class CompositeLegalDocumentRegistry(
         {
             _cache[doc.DocumentId] = new LegalDocumentDefinition(
                 doc.DocumentId,
-                doc.Version.ToString(),
+                doc.Version.ToString(CultureInfo.InvariantCulture),
                 doc.DisplayName);
         }
 

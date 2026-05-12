@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using Granit.Identity.Local.Services;
@@ -93,7 +94,7 @@ internal sealed class TotpService(
                        | (hash[offset + 3] & 0xFF);
 
         int otp = binaryCode % CodeModulus;
-        return otp.ToString().PadLeft(CodeDigits, '0');
+        return otp.ToString(CultureInfo.InvariantCulture).PadLeft(CodeDigits, '0');
     }
 #pragma warning restore CA5350
 

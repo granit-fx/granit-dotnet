@@ -37,7 +37,11 @@ internal sealed partial class TwilioNotificationProvider(
             endpoint, content, cancellationToken).ConfigureAwait(false);
         await EnsureSuccessAsync(endpoint, response, cancellationToken).ConfigureAwait(false);
 
-        LogSmsSent(LogRedaction.Phone(message.To));
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedRecipient = LogRedaction.Phone(message.To);
+            LogSmsSent(redactedRecipient);
+        }
     }
 
     /// <inheritdoc />
@@ -62,7 +66,11 @@ internal sealed partial class TwilioNotificationProvider(
             endpoint, content, cancellationToken).ConfigureAwait(false);
         await EnsureSuccessAsync(endpoint, response, cancellationToken).ConfigureAwait(false);
 
-        LogWhatsAppSent(LogRedaction.Phone(message.To), message.TemplateName);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedRecipient = LogRedaction.Phone(message.To);
+            LogWhatsAppSent(redactedRecipient, message.TemplateName);
+        }
     }
 
     /// <summary>

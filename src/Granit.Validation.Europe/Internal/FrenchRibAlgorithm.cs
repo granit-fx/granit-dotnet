@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Granit.Validation.Europe.Internal;
 
 /// <summary>
@@ -66,10 +68,10 @@ internal static class FrenchRibAlgorithm
             return false;
         }
 
-        long bank = long.Parse(bankStr);
-        long branch = long.Parse(branchStr);
-        long account = long.Parse(accountDigits);
-        int providedKey = int.Parse(keyStr);
+        long bank = long.Parse(bankStr, CultureInfo.InvariantCulture);
+        long branch = long.Parse(branchStr, CultureInfo.InvariantCulture);
+        long account = long.Parse(accountDigits, CultureInfo.InvariantCulture);
+        int providedKey = int.Parse(keyStr, CultureInfo.InvariantCulture);
 
         long remainder = (89L * bank + 15L * branch + 3L * account) % 97;
         int expectedKey = remainder == 0 ? 97 : (int)(97 - remainder);

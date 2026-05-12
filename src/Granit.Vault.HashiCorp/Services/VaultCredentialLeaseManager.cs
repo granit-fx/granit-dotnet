@@ -74,7 +74,11 @@ internal sealed partial class VaultCredentialLeaseManager(
         _leaseId = secret.LeaseId;
         _leaseDurationSeconds = secret.LeaseDurationSeconds;
 
-        LogCredentialsObtained(logger, LogRedaction.Username(secret.Data.Username), _leaseDurationSeconds);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedUsername = LogRedaction.Username(secret.Data.Username);
+            LogCredentialsObtained(logger, redactedUsername, _leaseDurationSeconds);
+        }
     }
 
     private async Task RenewLeaseAsync(CancellationToken cancellationToken)

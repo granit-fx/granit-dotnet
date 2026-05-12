@@ -63,7 +63,11 @@ internal sealed partial class AcsEmailSender(
 
         await transport.SendAsync(acsMessage, cancellationToken).ConfigureAwait(false);
 
-        LogEmailSent(LogRedaction.Email(message.To));
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedRecipient = LogRedaction.Email(message.To);
+            LogEmailSent(redactedRecipient);
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "ACS email sent to {RedactedRecipient}")]

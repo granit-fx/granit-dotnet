@@ -111,7 +111,11 @@ internal sealed partial class AzureSecretsCredentialProvider(
         _store.Apply(username, password);
         _version = secret.Properties.Version ?? string.Empty;
 
-        LogCredentialsObtained(LogRedaction.Username(username), _version);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            string redactedUsername = LogRedaction.Username(username);
+            LogCredentialsObtained(redactedUsername, _version);
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Starting Azure Key Vault Secrets credential manager")]

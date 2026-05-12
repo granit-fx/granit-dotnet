@@ -29,7 +29,7 @@ namespace Granit.Browsing.Pool;
 /// <see cref="IHeadlessBrowserPool"/> in F8 / F9.
 /// </para>
 /// </remarks>
-public sealed class TenantAwareHeadlessBrowser : IHeadlessBrowser
+public sealed partial class TenantAwareHeadlessBrowser : IHeadlessBrowser
 {
     private readonly IHeadlessBrowser _inner;
     private readonly ICurrentTenant _currentTenant;
@@ -102,10 +102,14 @@ public sealed class TenantAwareHeadlessBrowser : IHeadlessBrowser
             }
             catch (Exception ex)
             {
-                _logger.LogDebug(ex, "Failed to publish BrowserPageAcquiredEvent.");
+                LogPublishFailed(_logger, ex);
             }
         }
 
         return page;
     }
+
+    [LoggerMessage(Level = LogLevel.Debug,
+        Message = "Failed to publish BrowserPageAcquiredEvent.")]
+    private static partial void LogPublishFailed(ILogger logger, Exception ex);
 }

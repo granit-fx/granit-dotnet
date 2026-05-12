@@ -10,7 +10,7 @@ namespace Granit.Browsing.Pool;
 /// Bounds <see cref="IHeadlessBrowserPool.DrainAsync"/> so a misbehaving page handle can
 /// never block a graceful shutdown indefinitely. Closes VULN-200.
 /// </summary>
-internal sealed class HeadlessBrowserDrainCoordinator
+internal sealed partial class HeadlessBrowserDrainCoordinator
 {
     private readonly BrowsingMetrics _metrics;
     private readonly ILogger<HeadlessBrowserDrainCoordinator> _logger;
@@ -48,10 +48,7 @@ internal sealed class HeadlessBrowserDrainCoordinator
         catch (TimeoutException)
         {
             _metrics.RecordPoolDrainTimeout(browser.EngineName);
-            _logger.LogWarning(
-                "Headless browser pool drain timed out after {Timeout}; forcing disposal of {Engine}.",
-                timeout,
-                browser.EngineName);
+            LogDrainTimeout(_logger, timeout, browser.EngineName);
 
             if (browser is IAsyncDisposable disposable)
             {
@@ -59,4 +56,8 @@ internal sealed class HeadlessBrowserDrainCoordinator
             }
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Headless browser pool drain timed out after {Timeout}; forcing disposal of {Engine}.")]
+    private static partial void LogDrainTimeout(ILogger logger, TimeSpan timeout, string engine);
 }

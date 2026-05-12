@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -127,7 +128,7 @@ internal sealed partial class IdempotencyMiddleware(
             // return 409 + Retry-After so the client retries in a window where
             // we can re-acquire cleanly. Preserves the at-most-once guarantee.
             int retryAfter = (int)_opts.InProgressTtl.TotalSeconds;
-            context.Response.Headers.RetryAfter = retryAfter.ToString();
+            context.Response.Headers.RetryAfter = retryAfter.ToString(CultureInfo.InvariantCulture);
             LogRaceCondition(_logger, redisKey);
             await WriteProblemAsync(context, StatusCodes.Status409Conflict,
                 "Idempotency Race",
@@ -153,7 +154,7 @@ internal sealed partial class IdempotencyMiddleware(
         if (entry.State == IdempotencyState.InProgress)
         {
             int retryAfter = (int)_opts.InProgressTtl.TotalSeconds;
-            context.Response.Headers.RetryAfter = retryAfter.ToString();
+            context.Response.Headers.RetryAfter = retryAfter.ToString(CultureInfo.InvariantCulture);
             await WriteProblemAsync(context, StatusCodes.Status409Conflict,
                 "Request In Progress",
                 $"A request with this idempotency key is already being processed. Retry after {retryAfter}s.").ConfigureAwait(false);

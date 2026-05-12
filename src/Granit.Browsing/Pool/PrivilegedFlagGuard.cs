@@ -27,7 +27,7 @@ namespace Granit.Browsing.Pool;
 /// <c>USER=app</c>, but that is outside our threat model.
 /// </para>
 /// </remarks>
-public static class PrivilegedFlagGuard
+public static partial class PrivilegedFlagGuard
 {
     /// <summary>Environment variable that must be set to <c>"1"</c> to opt in.</summary>
     public const string OptInEnvVar = "GRANIT_BROWSING_ALLOW_NO_SANDBOX";
@@ -89,12 +89,7 @@ public static class PrivilegedFlagGuard
 
         if (optedIn && inContainer && nonRoot)
         {
-            logger.LogWarning(
-                "Privileged browser flag '{Flag}' permitted: container={Container}, nonRoot={NonRoot}, optIn={OptIn}.",
-                offendingArg ?? "DisableSandbox",
-                inContainer,
-                nonRoot,
-                optedIn);
+            LogPrivilegedFlagPermitted(logger, offendingArg ?? "DisableSandbox", inContainer, nonRoot, optedIn);
             return;
         }
 
@@ -102,6 +97,11 @@ public static class PrivilegedFlagGuard
             SandboxViolationKind.PrivilegedFlagRefused,
             $"Privileged browser flag '{offendingArg ?? "DisableSandbox"}' refused (container={inContainer}, nonRoot={nonRoot}, optIn={optedIn}). Set {OptInEnvVar}=1 in a non-root container to allow.");
     }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Privileged browser flag '{Flag}' permitted: container={Container}, nonRoot={NonRoot}, optIn={OptIn}.")]
+    private static partial void LogPrivilegedFlagPermitted(
+        ILogger logger, string flag, bool container, bool nonRoot, bool optIn);
 }
 
 /// <summary>Pluggable probe for container / privilege detection — enables unit tests.</summary>

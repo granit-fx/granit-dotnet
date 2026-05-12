@@ -131,7 +131,11 @@ internal static partial class ConnectTokenEndpoints
             string grantType = request.GrantType!;
             metrics.RecordTokenIssued(tenantId, grantType);
             metrics.RecordAuthenticationSuccess(tenantId, grantType);
-            LogTokenIssued(logger, user.Id.ToString(), grantType);
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                string userSubject = user.Id.ToString();
+                LogTokenIssued(logger, userSubject, grantType);
+            }
 
             return Results.SignIn(principal,
                 authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
