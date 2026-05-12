@@ -1,0 +1,5 @@
+<Project>
+  <!-- Shadow the repo-root Directory.Build.props so fuzz harnesses do not inherit
+       framework-wide settings (BannedApiAnalyzers, Granit.Analyzers, NuGet packaging,
+       lockfile enforcement, CPM). Each fuzz csproj is self-contained. -->
+</Project>

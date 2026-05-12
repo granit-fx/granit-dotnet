@@ -72,3 +72,8 @@ __pycache__/
 tmp/
 temp/
 *.tmp
+
+# --- Fuzzing artifacts (SharpFuzz / libFuzzer / AFL) ---
+fuzz/**/corpus/
+fuzz/**/findings/
+fuzz/**/crashes/

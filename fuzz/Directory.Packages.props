@@ -1,0 +1,7 @@
+<Project>
+  <!-- Shadow the repo-root Directory.Packages.props: fuzz harnesses pin versions
+       inline so adding a new harness never forces a CPM manifest change. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>

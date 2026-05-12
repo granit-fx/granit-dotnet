@@ -1,0 +1,74 @@
+name: Fuzz QueryEngine (PR)
+
+on:
+  pull_request:
+    paths:
+      - 'src/Granit.QueryEngine**'
+      - 'fuzz/**'
+      - '.github/workflows/cifuzz-pr.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      FUZZ_SECONDS: 300
+      DOTNET_NOLOGO: 'true'
+      DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install AFL++
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y afl++
+
+      - name: Install SharpFuzz CLI
+        run: dotnet tool install --global SharpFuzz.CommandLine
+
+      - name: Publish harness
+        run: dotnet publish fuzz/Granit.QueryEngine.Fuzz -c Release -o fuzz/out
+
+      - name: Instrument QueryEngine assemblies
+        run: |
+          for asm in Granit.QueryEngine.AspNetCore.dll Granit.QueryEngine.Abstractions.dll; do
+            sharpfuzz "fuzz/out/$asm"
+          done
+
+      - name: Run AFL++
+        env:
+          AFL_SKIP_CPUFREQ: '1'
+          AFL_NO_AFFINITY: '1'
+          AFL_FAST_CAL: '1'
+          AFL_AUTORESUME: '1'
+        run: |
+          mkdir -p fuzz/findings
+          # AFL++ requires a non-empty seed directory; the seeds/ folder ships with the harness.
+          timeout --preserve-status --signal=INT $((FUZZ_SECONDS + 10)) \
+            afl-fuzz -V "$FUZZ_SECONDS" -i fuzz/Granit.QueryEngine.Fuzz/seeds -o fuzz/findings \
+              -- dotnet fuzz/out/Granit.QueryEngine.Fuzz.dll || true
+
+      - name: Upload findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-findings-pr
+          path: fuzz/findings/
+          if-no-files-found: ignore
+
+      - name: Fail on crashes
+        run: |
+          shopt -s nullglob
+          crashes=(fuzz/findings/default/crashes/id:*)
+          if [ ${#crashes[@]} -gt 0 ]; then
+            echo "::error::AFL++ found ${#crashes[@]} crash(es) — see uploaded fuzz-findings-pr artifact."
+            exit 1
+          fi
+          echo "No crashes in ${FUZZ_SECONDS}s."
