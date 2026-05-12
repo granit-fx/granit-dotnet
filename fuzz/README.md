@@ -2,7 +2,7 @@
 
 Granit ships continuous fuzzing harnesses against components that parse
 untrusted input. Each harness lives in its own subdirectory and uses
-[SharpFuzz](https://github.com/Metalnem/sharpfuzz) on top of libFuzzer.
+[SharpFuzz](https://github.com/Metalnem/sharpfuzz) driven by [AFL++](https://aflplus.plus/).
 
 ## Current targets
 
@@ -12,30 +12,32 @@ untrusted input. Each harness lives in its own subdirectory and uses
 
 The fuzz projects are deliberately **excluded from `Granit.slnx` and from
 `test-shards.json`**: the normal CI build and unit-test shards never touch them.
-They are built and exercised exclusively by ClusterFuzzLite (see
-[`.clusterfuzzlite/`](../.clusterfuzzlite/) and the `cifuzz-*` workflows).
+They are built and exercised exclusively by the `cifuzz-*` GitHub workflows.
 
 ## Running a harness locally
 
 ```bash
-dotnet publish fuzz/Granit.QueryEngine.Fuzz -c Release -o ./out/queryengine_fuzz
+sudo apt-get install -y afl++
 dotnet tool install -g SharpFuzz.CommandLine   # one-time
+dotnet publish fuzz/Granit.QueryEngine.Fuzz -c Release -o ./out/queryengine_fuzz
 sharpfuzz ./out/queryengine_fuzz/Granit.QueryEngine.AspNetCore.dll
-afl-fuzz -i fuzz/Granit.QueryEngine.Fuzz/seeds \
-         -o fuzz/Granit.QueryEngine.Fuzz/findings \
-         ./out/queryengine_fuzz/Granit.QueryEngine.Fuzz
+sharpfuzz ./out/queryengine_fuzz/Granit.QueryEngine.Abstractions.dll
+AFL_SKIP_CPUFREQ=1 afl-fuzz \
+  -i fuzz/Granit.QueryEngine.Fuzz/seeds \
+  -o fuzz/Granit.QueryEngine.Fuzz/findings \
+  -- dotnet ./out/queryengine_fuzz/Granit.QueryEngine.Fuzz.dll
 ```
 
 Full instructions: <https://github.com/Metalnem/sharpfuzz>.
 
 ## CI
 
-- `cifuzz-pr.yml` runs the `code-change` mode on every PR touching the fuzzed
-  modules or the harness itself (5 minutes per fuzzer).
-- `cifuzz-batch.yml` runs the `batch` mode nightly at 03:00 UTC (1 hour per
-  fuzzer) and can be triggered manually via `workflow_dispatch`.
+- `cifuzz-pr.yml` runs the harness on every PR touching the fuzzed modules or
+  the harness itself (5 minutes per fuzzer). Job fails if AFL++ finds a crash.
+- `cifuzz-batch.yml` runs nightly at 03:00 UTC (1 hour per fuzzer) and is
+  triggerable manually via `workflow_dispatch`.
 
-Findings are uploaded as SARIF to the repository's Security tab.
+Findings (corpus, crashes, hangs) are uploaded as workflow artifacts.
 
 ## Motivation
 

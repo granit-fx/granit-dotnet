@@ -1,10 +1,10 @@
-using System.Text;
 using Granit.QueryEngine.AspNetCore.Binding;
 using Microsoft.AspNetCore.Http;
 using SharpFuzz;
 
-// libFuzzer hands us a byte buffer per iteration. We treat it as a query string body
-// (without the leading '?') and feed it through the production binder.
+// AFL++ persistent-mode harness. SharpFuzz instruments the QueryEngine assembly so
+// AFL gets coverage feedback across iterations. We treat the input as a query string
+// body (no leading '?') and feed it through the production binder.
 //
 // Any unhandled exception escaping BindAsync is a finding. We swallow the
 // ArgumentException thrown by the QueryString constructor itself because malformed
@@ -12,14 +12,13 @@ using SharpFuzz;
 
 const int MaxInputChars = 8192;
 
-Fuzzer.LibFuzzer.Run(static span =>
+Fuzzer.Run((string raw) =>
 {
-    if (span.IsEmpty)
+    if (raw.Length == 0)
     {
         return;
     }
 
-    string raw = Encoding.UTF8.GetString(span);
     if (raw.Length > MaxInputChars)
     {
         raw = raw[..MaxInputChars];
