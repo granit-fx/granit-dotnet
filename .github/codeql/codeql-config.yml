@@ -1,0 +1,14 @@
+name: Granit CodeQL config
+
+# Granit's threat model targets production code only. Test projects produce
+# high-noise findings (fixture credentials, "injectable" SQL in helpers,
+# unsafe deserialization in stubs) with no security value, so we exclude
+# them from analysis. Build is also restricted to src-only.slnf to halve
+# tracer/compile time.
+paths-ignore:
+  - tests/**
+  - '**/*.Tests/**'
+  - '**/*.Tests.Integration/**'
+  - '**/*.ArchitectureTests/**'
+  - scripts/**
+  - docs/**
