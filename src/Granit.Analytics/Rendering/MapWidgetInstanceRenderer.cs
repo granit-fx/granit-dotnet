@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Granit.Analytics.Dashboards.Widgets;
 using Granit.Analytics.Internal;
 using Granit.Analytics.Metrics;
+using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Rendering;
 using Granit.Timing;

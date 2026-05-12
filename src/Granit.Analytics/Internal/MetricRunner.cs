@@ -1,6 +1,8 @@
 using System.Globalization;
 using Granit.Analytics.Metrics;
+using Granit.Dashboards;
 using Granit.QueryEngine;
+using Granit.Timing;
 
 namespace Granit.Analytics.Internal;
 

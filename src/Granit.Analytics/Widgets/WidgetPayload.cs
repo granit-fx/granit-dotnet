@@ -1,4 +1,5 @@
 using Granit.Analytics.Metrics;
+using Granit.Dashboards;
 
 namespace Granit.Analytics.Widgets;
 

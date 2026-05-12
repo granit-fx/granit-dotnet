@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Threading.Channels;
 using Granit.Authorization;
+using Granit.Dashboards;
 using Granit.Dashboards.Push.Internal;
 using Granit.Dashboards.Push.Options;
 using Granit.Dashboards.Rendering;

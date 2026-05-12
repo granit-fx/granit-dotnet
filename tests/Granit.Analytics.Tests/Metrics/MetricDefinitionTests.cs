@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Granit.Analytics.Metrics;
+using Granit.Dashboards;
 using Granit.QueryEngine.Filtering;
 using Shouldly;
 using Xunit;

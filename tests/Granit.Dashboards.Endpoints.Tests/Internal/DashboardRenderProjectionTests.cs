@@ -7,6 +7,7 @@ using Granit.Dashboards.Endpoints.Dtos;
 using Granit.Dashboards.Endpoints.Internal;
 using Granit.Dashboards.Rendering;
 using Granit.Dashboards.Widgets;
+using Granit.Timing;
 using NSubstitute;
 using Shouldly;
 using Xunit;

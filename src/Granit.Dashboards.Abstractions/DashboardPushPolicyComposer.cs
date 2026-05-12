@@ -1,4 +1,3 @@
-using Granit.Analytics.Metrics;
 
 namespace Granit.Dashboards;
 

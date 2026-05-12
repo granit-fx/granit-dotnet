@@ -148,7 +148,9 @@
     {
       "name": "Granit.Analytics.Abstractions",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.Dashboards.Abstractions",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -733,8 +735,8 @@
       "name": "Granit.Dashboards.Abstractions",
       "deps": [
         "Granit",
-        "Granit.Analytics.Abstractions",
-        "Granit.QueryEngine.Abstractions"
+        "Granit.QueryEngine.Abstractions",
+        "Granit.Timing"
       ],
       "framework": "net10.0"
     },
@@ -5895,8 +5897,8 @@
       "name": "AnalyticsWidgetSerialization",
       "fqn": "Granit.Analytics.Dashboards.Json.AnalyticsWidgetSerialization",
       "kind": "class",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Json/AnalyticsWidgetSerialization.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Json/AnalyticsWidgetSerialization.cs",
       "line": 21,
       "members": [
         {
@@ -5911,8 +5913,8 @@
       "name": "ChartType",
       "fqn": "Granit.Analytics.Dashboards.Widgets.ChartType",
       "kind": "enum",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/ChartWidgetDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/ChartWidgetDefinition.cs",
       "line": 37,
       "members": []
     },
@@ -5920,8 +5922,8 @@
       "name": "ChartWidgetDefinition",
       "fqn": "Granit.Analytics.Dashboards.Widgets.ChartWidgetDefinition",
       "kind": "record",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/ChartWidgetDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/ChartWidgetDefinition.cs",
       "line": 22,
       "members": []
     },
@@ -5929,8 +5931,8 @@
       "name": "Geography",
       "fqn": "Granit.Analytics.Dashboards.Widgets.Geography",
       "kind": "record",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/MapWidgetDefinition.cs",
       "line": 30,
       "members": []
     },
@@ -5938,8 +5940,8 @@
       "name": "IGeographyPointProjector",
       "fqn": "Granit.Analytics.Dashboards.Widgets.IGeographyPointProjector",
       "kind": "interface",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/IGeographyPointProjector.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/IGeographyPointProjector.cs",
       "line": 26,
       "members": []
     },
@@ -5947,8 +5949,8 @@
       "name": "KpiWidgetDefinition",
       "fqn": "Granit.Analytics.Dashboards.Widgets.KpiWidgetDefinition",
       "kind": "record",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/KpiWidgetDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/KpiWidgetDefinition.cs",
       "line": 26,
       "members": []
     },
@@ -5956,8 +5958,8 @@
       "name": "LatLng",
       "fqn": "Granit.Analytics.Dashboards.Widgets.LatLng",
       "kind": "record",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/MapWidgetDefinition.cs",
       "line": 27,
       "members": []
     },
@@ -5965,8 +5967,8 @@
       "name": "MapCenter",
       "fqn": "Granit.Analytics.Dashboards.Widgets.MapCenter",
       "kind": "record",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/MapWidgetDefinition.cs",
       "line": 91,
       "members": [
         {
@@ -5981,8 +5983,8 @@
       "name": "MapPointSource",
       "fqn": "Granit.Analytics.Dashboards.Widgets.MapPointSource",
       "kind": "record",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/MapWidgetDefinition.cs",
       "line": 22,
       "members": [
         {
@@ -6003,8 +6005,8 @@
       "name": "MapTileLayerKind",
       "fqn": "Granit.Analytics.Dashboards.Widgets.MapTileLayerKind",
       "kind": "enum",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/MapTileLayerKind.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/MapTileLayerKind.cs",
       "line": 24,
       "members": []
     },
@@ -6012,8 +6014,8 @@
       "name": "MapWidgetDefinition",
       "fqn": "Granit.Analytics.Dashboards.Widgets.MapWidgetDefinition",
       "kind": "record",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/MapWidgetDefinition.cs",
       "line": 69,
       "members": [
         {
@@ -6028,8 +6030,8 @@
       "name": "PivotWidgetDefinition",
       "fqn": "Granit.Analytics.Dashboards.Widgets.PivotWidgetDefinition",
       "kind": "record",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/PivotWidgetDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/PivotWidgetDefinition.cs",
       "line": 20,
       "members": []
     },
@@ -6037,8 +6039,8 @@
       "name": "TableWidgetDefinition",
       "fqn": "Granit.Analytics.Dashboards.Widgets.TableWidgetDefinition",
       "kind": "record",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Dashboards/Widgets/TableWidgetDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Dashboards/Widgets/TableWidgetDefinition.cs",
       "line": 18,
       "members": []
     },
@@ -6066,7 +6068,7 @@
       "kind": "record",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Dtos/MetricRequest.cs",
-      "line": 13,
+      "line": 15,
       "members": []
     },
     {
@@ -6075,7 +6077,7 @@
       "kind": "record",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Dtos/MetricResponse.cs",
-      "line": 20,
+      "line": 21,
       "members": []
     },
     {
@@ -6202,7 +6204,7 @@
       "kind": "class",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Options/AnalyticsEndpointsOptions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "RoutePrefix",
@@ -6293,6 +6295,15 @@
       ]
     },
     {
+      "name": "AnalyticsAbstractionsServiceCollectionExtensions",
+      "fqn": "Granit.Analytics.Extensions.AnalyticsAbstractionsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Extensions/AnalyticsAbstractionsServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "AnalyticsServiceCollectionExtensions",
       "fqn": "Granit.Analytics.Extensions.AnalyticsServiceCollectionExtensions",
       "kind": "class",
@@ -6314,7 +6325,7 @@
       "kind": "class",
       "project": "Granit.Analytics.Abstractions",
       "file": "src/Granit.Analytics.Abstractions/GranitAnalyticsAbstractionsModule.cs",
-      "line": 16,
+      "line": 17,
       "members": []
     },
     {
@@ -6337,8 +6348,8 @@
       "name": "IJoinedMetricProjector",
       "fqn": "Granit.Analytics.Metrics.IJoinedMetricProjector",
       "kind": "interface",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Metrics/JoinedMetricDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Metrics/JoinedMetricDefinition.cs",
       "line": 103,
       "members": [
         {
@@ -6353,9 +6364,9 @@
       "name": "IMetricDefinitionDescriptor",
       "fqn": "Granit.Analytics.Metrics.IMetricDefinitionDescriptor",
       "kind": "interface",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Metrics/IMetricDefinitionDescriptor.cs",
-      "line": 12,
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Metrics/IMetricDefinitionDescriptor.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -6378,8 +6389,8 @@
       "name": "JoinedMetricDefinition",
       "fqn": "Granit.Analytics.Metrics.JoinedMetricDefinition",
       "kind": "class",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Metrics/JoinedMetricDefinition.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Metrics/JoinedMetricDefinition.cs",
       "line": 37,
       "members": [
         {
@@ -6400,9 +6411,9 @@
       "name": "MetricDefinition",
       "fqn": "Granit.Analytics.Metrics.MetricDefinition",
       "kind": "class",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Metrics/MetricDefinition.cs",
-      "line": 46,
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Metrics/MetricDefinition.cs",
+      "line": 47,
       "members": [
         {
           "name": "Name",
@@ -6440,35 +6451,10 @@
       "name": "MetricValueKind",
       "fqn": "Granit.Analytics.Metrics.MetricValueKind",
       "kind": "enum",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Metrics/MetricValueKind.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Metrics/MetricValueKind.cs",
       "line": 7,
       "members": []
-    },
-    {
-      "name": "RefreshHint",
-      "fqn": "Granit.Analytics.Metrics.RefreshHint",
-      "kind": "enum",
-      "project": "Granit.Analytics.Abstractions",
-      "file": "src/Granit.Analytics.Abstractions/Metrics/RefreshHint.cs",
-      "line": 19,
-      "members": []
-    },
-    {
-      "name": "PeriodSpec",
-      "fqn": "Granit.Analytics.PeriodSpec",
-      "kind": "record",
-      "project": "Granit.Analytics.Abstractions",
-      "file": "src/Granit.Analytics.Abstractions/PeriodSpec.cs",
-      "line": 22,
-      "members": [
-        {
-          "name": "FromToken",
-          "kind": "method",
-          "signature": "FromToken(string token)",
-          "returnType": "PeriodSpec"
-        }
-      ]
     },
     {
       "name": "GranitAnalyticsPostGISServiceCollectionExtensions",
@@ -6542,7 +6528,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Rendering/KpiEvaluation.cs",
-      "line": 26,
+      "line": 27,
       "members": [
         {
           "name": "Snapshot",
@@ -6661,16 +6647,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Widgets/WidgetPayload.cs",
-      "line": 24,
-      "members": []
-    },
-    {
-      "name": "struct",
-      "fqn": "Granit.Analytics.struct",
-      "kind": "record",
-      "project": "Granit.Analytics.Abstractions",
-      "file": "src/Granit.Analytics.Abstractions/ResolvedPeriod.cs",
-      "line": 12,
+      "line": 25,
       "members": []
     },
     {
@@ -16419,7 +16396,7 @@
       "kind": "class",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/DashboardPushPolicyComposer.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "Compose",
@@ -16536,7 +16513,7 @@
       "kind": "class",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Domain/Dashboard.cs",
-      "line": 27,
+      "line": 28,
       "members": [
         {
           "name": "Create",
@@ -17039,6 +17016,15 @@
       "members": []
     },
     {
+      "name": "DashboardsAbstractionsServiceCollectionExtensions",
+      "fqn": "Granit.Dashboards.Extensions.DashboardsAbstractionsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Extensions/DashboardsAbstractionsServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "DashboardsServiceCollectionExtensions",
       "fqn": "Granit.Dashboards.Extensions.DashboardsServiceCollectionExtensions",
       "kind": "class",
@@ -17191,7 +17177,7 @@
       "kind": "interface",
       "project": "Granit.Dashboards.Push",
       "file": "src/Granit.Dashboards.Push/IWidgetPushPublisher.cs",
-      "line": 27,
+      "line": 28,
       "members": [
         {
           "name": "PublishSnapshotAsync",
@@ -17327,12 +17313,21 @@
       "members": []
     },
     {
+      "name": "RefreshHint",
+      "fqn": "Granit.Dashboards.RefreshHint",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/RefreshHint.cs",
+      "line": 19,
+      "members": []
+    },
+    {
       "name": "DashboardRenderResult",
       "fqn": "Granit.Dashboards.Rendering.DashboardRenderResult",
       "kind": "record",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Rendering/IDashboardRenderer.cs",
-      "line": 69,
+      "line": 70,
       "members": []
     },
     {
@@ -17350,7 +17345,7 @@
       "kind": "interface",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Rendering/IDashboardRenderer.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "RenderAsync",
@@ -17406,7 +17401,7 @@
       "kind": "record",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Rendering/IDashboardRenderer.cs",
-      "line": 82,
+      "line": 83,
       "members": []
     },
     {
@@ -17424,7 +17419,7 @@
       "kind": "record",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Rendering/WidgetRenderContext.cs",
-      "line": 20,
+      "line": 21,
       "members": []
     },
     {
@@ -17433,7 +17428,7 @@
       "kind": "record",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Rendering/WidgetSnapshotEnvelope.cs",
-      "line": 28,
+      "line": 29,
       "members": [
         {
           "name": "ForSnapshot",
@@ -63600,6 +63595,31 @@
       "project": "Granit.Timing",
       "file": "src/Granit.Timing/Options/ClockOptions.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "PeriodSpec",
+      "fqn": "Granit.Timing.PeriodSpec",
+      "kind": "record",
+      "project": "Granit.Timing",
+      "file": "src/Granit.Timing/PeriodSpec.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "FromToken",
+          "kind": "method",
+          "signature": "FromToken(string token)",
+          "returnType": "PeriodSpec"
+        }
+      ]
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Timing.struct",
+      "kind": "record",
+      "project": "Granit.Timing",
+      "file": "src/Granit.Timing/ResolvedPeriod.cs",
+      "line": 12,
       "members": []
     },
     {

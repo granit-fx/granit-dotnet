@@ -4,6 +4,7 @@ using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Endpoints.Dtos;
 using Granit.Dashboards.Rendering;
+using Granit.Timing;
 
 namespace Granit.Dashboards.Endpoints.Internal;
 

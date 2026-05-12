@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Granit.Timing;
 
 namespace Granit.Analytics.Internal;
 

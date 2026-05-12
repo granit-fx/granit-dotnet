@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Threading.Channels;
 using Granit.Analytics.Metrics;
+using Granit.Dashboards;
 using Granit.Dashboards.Push.Internal;
 using Granit.Dashboards.Push.Options;
 using Granit.Dashboards.Rendering;

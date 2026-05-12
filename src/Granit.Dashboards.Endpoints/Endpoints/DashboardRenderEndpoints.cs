@@ -7,6 +7,7 @@ using Granit.Dashboards.Endpoints.Internal;
 using Granit.Dashboards.EntityFrameworkCore.Internal;
 using Granit.Dashboards.Rendering;
 using Granit.MultiTenancy;
+using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

@@ -3,10 +3,11 @@ using Granit.Modularity;
 namespace Granit.Analytics;
 
 /// <summary>
-/// Granit module for the analytics contracts shared between modules. Hosts only the
-/// declarative primitives that need to be reused across the framework — currently
-/// <see cref="PeriodSpec"/>; future analytics abstractions land here as they get
-/// extracted from the runtime package.
+/// Granit module for the analytics contracts shared between modules. Hosts the
+/// declarative primitives (<c>MetricDefinition</c>, <c>JoinedMetricDefinition</c>,
+/// <c>IMetricDefinitionDescriptor</c>, the analytics-flavoured <c>*WidgetDefinition</c>
+/// records, and the <c>AddMetricDefinition&lt;&gt;</c> DI helper) so any module can
+/// declare metrics or analytics widgets without pulling the full runtime.
 /// </summary>
 /// <remarks>
 /// This module has no service registrations — it exists so consumer modules can

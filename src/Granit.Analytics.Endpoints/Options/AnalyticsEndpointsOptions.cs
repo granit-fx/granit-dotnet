@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Granit.Dashboards;
 
 namespace Granit.Analytics.Endpoints.Options;
 

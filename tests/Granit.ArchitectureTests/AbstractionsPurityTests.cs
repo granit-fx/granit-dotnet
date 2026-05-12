@@ -6,15 +6,27 @@ namespace Granit.ArchitectureTests;
 
 /// <summary>
 /// Validates that <c>*.Abstractions</c> packages stay lightweight: they may only
-/// reference the foundational <c>Granit</c> modularity package and other
-/// <c>*.Abstractions</c> packages — never a runtime sibling. This guarantees
-/// that any base module pulling an <c>*.Abstractions</c> package does not
-/// transitively drag in the runtime engine, EF Core, hosting infrastructure,
-/// or DI container concretions.
+/// reference the foundational <c>Granit</c> modularity package, other
+/// <c>*.Abstractions</c> packages, or known runtime-agnostic primitives — never
+/// a runtime sibling. This guarantees that any base module pulling an
+/// <c>*.Abstractions</c> package does not transitively drag in the runtime
+/// engine, EF Core, hosting infrastructure, or DI container concretions.
 /// </summary>
 public sealed partial class AbstractionsPurityTests
 {
     private static readonly string RepoRoot = FindRepoRoot();
+
+    /// <summary>
+    /// Allow-list of foundational packages that are runtime-agnostic primitives
+    /// even though they do not carry the <c>.Abstractions</c> suffix. Each entry
+    /// must itself be free of AspNetCore / EFCore / Hosting dependencies (enforced
+    /// by <see cref="Abstractions_csproj_should_not_reference_aspnetcore_efcore_or_hosting"/>
+    /// transitively via the original module's own purity tests).
+    /// </summary>
+    private static readonly HashSet<string> AllowedPrimitives = new(StringComparer.Ordinal)
+    {
+        "Granit.Timing",
+    };
 
     [Theory]
     [InlineData("Granit.Workflow.Abstractions")]
@@ -37,7 +49,8 @@ public sealed partial class AbstractionsPurityTests
             string refName = Path.GetFileNameWithoutExtension(refPath);
 
             bool allowed = refName == "Granit"
-                || refName.EndsWith(".Abstractions", StringComparison.Ordinal);
+                || refName.EndsWith(".Abstractions", StringComparison.Ordinal)
+                || AllowedPrimitives.Contains(refName);
 
             if (!allowed)
             {

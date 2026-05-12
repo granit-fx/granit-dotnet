@@ -5,6 +5,7 @@ using Granit.Analytics.Endpoints.Options;
 using Granit.Analytics.Internal;
 using Granit.Analytics.Metrics;
 using Granit.Analytics.Rendering;
+using Granit.Dashboards;
 using Granit.Exceptions;
 using Granit.MultiTenancy;
 using Granit.Timing;

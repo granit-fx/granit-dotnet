@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Granit.Dashboards;
 using Granit.QueryEngine.Filtering;
 
 namespace Granit.Analytics.Metrics;

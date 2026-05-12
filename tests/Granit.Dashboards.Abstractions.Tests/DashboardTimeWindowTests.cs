@@ -1,4 +1,4 @@
-using Granit.Analytics;
+using Granit.Timing;
 using Shouldly;
 using Xunit;
 

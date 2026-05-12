@@ -1,5 +1,6 @@
 using Granit.Analytics.Metrics;
 using Granit.Analytics.Rendering;
+using Granit.Dashboards;
 
 namespace Granit.Analytics.Endpoints.Dtos;
 

@@ -5,6 +5,7 @@ using Granit.Analytics.Rendering;
 using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Rendering;
+using Granit.Timing;
 
 namespace Granit.Analytics.Endpoints.Rendering;
 

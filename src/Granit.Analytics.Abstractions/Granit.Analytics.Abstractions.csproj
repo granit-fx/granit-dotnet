@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Analytics.Abstractions</PackageId>
-    <Description>Inter-module contracts for Granit.Analytics: PeriodSpec (token-or-absolute time window) shared between metric requests and dashboard time windows. Reference this package from any module that needs to describe a time window without pulling the full analytics runtime.</Description>
+    <Description>Inter-module contracts for Granit.Analytics: declarative MetricDefinition / JoinedMetricDefinition base classes, analytics-flavoured WidgetDefinition records (KPI, chart, table, pivot, map), and the AddMetricDefinition&lt;&gt; DI helper. Reference this package from any module that declares metrics or analytics widgets; reference Granit.Analytics only from hosts that execute, cache, or expose them.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -19,6 +19,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Dashboards.Abstractions\Granit.Dashboards.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

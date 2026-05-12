@@ -1,3 +1,5 @@
+using Granit.Timing;
+
 namespace Granit.Analytics.Endpoints.Dtos;
 
 /// <summary>

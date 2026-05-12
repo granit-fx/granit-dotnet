@@ -3,6 +3,7 @@ using System.Text.Json;
 using Granit.Analytics;
 using Granit.Analytics.Metrics;
 using Granit.Authorization;
+using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Internal;
 using Granit.Dashboards.Rendering;

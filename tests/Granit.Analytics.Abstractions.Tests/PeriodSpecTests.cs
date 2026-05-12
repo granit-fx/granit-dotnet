@@ -1,5 +1,6 @@
 using Granit.Analytics;
 using Granit.Modularity;
+using Granit.Timing;
 using Shouldly;
 using Xunit;
 

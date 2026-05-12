@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Granit.Authorization;
+using Granit.Dashboards;
 using Granit.Dashboards.Rendering;
 
 namespace Granit.Dashboards.Push.Internal;

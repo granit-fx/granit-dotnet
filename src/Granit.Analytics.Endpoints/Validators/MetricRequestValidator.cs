@@ -1,5 +1,6 @@
 using FluentValidation;
 using Granit.Analytics.Endpoints.Dtos;
+using Granit.Timing;
 using Granit.Validation;
 using Granit.Validation.Extensions;
 

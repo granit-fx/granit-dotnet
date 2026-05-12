@@ -1,4 +1,5 @@
 using Granit.Dashboards.Domain;
+using Granit.Timing;
 
 namespace Granit.Dashboards.Rendering;
 
@@ -69,7 +70,7 @@ public interface IDashboardRenderer
 public sealed record DashboardRenderResult(
     Guid DashboardId,
     DateTimeOffset RenderedAt,
-    Granit.Analytics.ResolvedPeriod? Period,
+    Granit.Timing.ResolvedPeriod? Period,
     IReadOnlyList<RenderedWidget> Widgets);
 
 /// <summary>

@@ -1,4 +1,4 @@
-namespace Granit.Analytics;
+namespace Granit.Timing;
 
 /// <summary>
 /// A time window — either explicit (<see cref="From"/> / <see cref="To"/>) or named
@@ -14,10 +14,9 @@ namespace Granit.Analytics;
 /// window — refers to the period of equal length immediately preceding the main one).
 /// </param>
 /// <remarks>
-/// Lives in <c>Granit.Analytics.Abstractions</c> rather than the HTTP DTOs package so
-/// modules outside the analytics HTTP surface (notably <c>Granit.Dashboards.Abstractions</c>
-/// for the upcoming <c>DashboardTimeWindow</c> primitive in P1.3) can reuse the same
-/// time-window model without taking a dependency on the analytics HTTP layer.
+/// Lives in <c>Granit.Timing</c> so any module needing a time-window primitive
+/// (analytics, dashboards, IoT, audit, reporting) can reuse it without taking a
+/// dependency on a domain-specific package.
 /// </remarks>
 public sealed record PeriodSpec(
     DateTimeOffset? From = null,

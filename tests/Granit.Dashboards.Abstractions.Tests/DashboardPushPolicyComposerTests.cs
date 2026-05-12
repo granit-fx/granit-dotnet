@@ -1,4 +1,3 @@
-using Granit.Analytics.Metrics;
 using Granit.Dashboards;
 using Shouldly;
 using Xunit;

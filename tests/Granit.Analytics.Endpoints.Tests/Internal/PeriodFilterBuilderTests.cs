@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Granit.Analytics.Internal;
+using Granit.Timing;
 using Shouldly;
 using Xunit;
 

@@ -1,4 +1,4 @@
-namespace Granit.Analytics.Metrics;
+namespace Granit.Dashboards;
 
 /// <summary>
 /// Indicates how often a metric's underlying data is expected to change. Drives the

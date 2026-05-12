@@ -1,5 +1,7 @@
 using Granit.Analytics.Metrics;
 using Granit.Analytics.Rendering;
+using Granit.Dashboards;
+using Granit.Timing;
 
 namespace Granit.Analytics.Internal;
 

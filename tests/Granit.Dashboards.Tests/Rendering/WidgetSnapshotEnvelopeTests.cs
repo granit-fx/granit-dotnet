@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Granit.Analytics.Metrics;
+using Granit.Dashboards;
 using Granit.Dashboards.Rendering;
 using Shouldly;
 using Xunit;

@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using Granit.Analytics.Metrics;
 using Granit.Authorization;
+using Granit.Dashboards;
 using Granit.Dashboards.Push.Internal;
 using Granit.Dashboards.Rendering;
 using NSubstitute;

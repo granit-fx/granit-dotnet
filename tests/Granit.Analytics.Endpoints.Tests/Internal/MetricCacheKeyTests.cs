@@ -1,4 +1,5 @@
 using Granit.Analytics.Endpoints.Internal;
+using Granit.Timing;
 using Shouldly;
 using Xunit;
 

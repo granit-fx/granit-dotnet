@@ -1,3 +1,4 @@
+using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Domain.Events;
 using Shouldly;

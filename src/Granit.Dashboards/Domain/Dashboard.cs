@@ -1,3 +1,4 @@
+using Granit.Dashboards;
 using Granit.Dashboards.Domain.Events;
 using Granit.Dashboards.Domain.ValueObjects;
 using Granit.Domain;

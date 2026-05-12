@@ -1,4 +1,5 @@
 using System.Globalization;
+using Granit.Timing;
 
 namespace Granit.Analytics.Endpoints.Internal;
 
