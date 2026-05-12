@@ -1421,7 +1421,8 @@
         "Granit.Entities.Abstractions",
         "Granit.Http.Abstractions",
         "Granit.QueryEngine.Abstractions",
-        "Granit.RateLimiting"
+        "Granit.RateLimiting",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -1838,7 +1839,8 @@
       "name": "Granit.Mcp.Server",
       "deps": [
         "Granit.Authorization",
-        "Granit.Mcp"
+        "Granit.Mcp",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -2600,7 +2602,8 @@
       "deps": [
         "Granit.Privacy",
         "Granit.BlobStorage",
-        "Granit.IO"
+        "Granit.IO",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -29831,7 +29834,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Extensions/ODataExposureEndpointRouteBuilderExtensions.cs",
-      "line": 30,
+      "line": 31,
       "members": [
         {
           "name": "MapGranitODataEndpoints",
@@ -38173,8 +38176,8 @@
       "fqn": "Granit.Mcp.Server.Endpoints.McpScopeMappingResponse",
       "kind": "record",
       "project": "Granit.Mcp.Server",
-      "file": "src/Granit.Mcp.Server/Endpoints/McpAdminEndpoints.cs",
-      "line": 73,
+      "file": "src/Granit.Mcp.Server/Endpoints/McpDiagnosticsEndpoints.cs",
+      "line": 75,
       "members": []
     },
     {
@@ -38182,8 +38185,8 @@
       "fqn": "Granit.Mcp.Server.Endpoints.McpToolInfoResponse",
       "kind": "record",
       "project": "Granit.Mcp.Server",
-      "file": "src/Granit.Mcp.Server/Endpoints/McpAdminEndpoints.cs",
-      "line": 68,
+      "file": "src/Granit.Mcp.Server/Endpoints/McpDiagnosticsEndpoints.cs",
+      "line": 70,
       "members": []
     },
     {
@@ -38192,7 +38195,7 @@
       "kind": "class",
       "project": "Granit.Mcp.Server",
       "file": "src/Granit.Mcp.Server/Extensions/McpServerEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "MapGranitMcpServer",
@@ -38257,15 +38260,21 @@
           "returnType": "bool"
         },
         {
-          "name": "MapAdminEndpoints",
+          "name": "MapDiagnosticsEndpoints",
           "kind": "property",
-          "signature": "bool MapAdminEndpoints",
+          "signature": "bool MapDiagnosticsEndpoints",
           "returnType": "bool"
         },
         {
-          "name": "AdminTagName",
+          "name": "DiagnosticsRoutePrefix",
           "kind": "property",
-          "signature": "string AdminTagName",
+          "signature": "string DiagnosticsRoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "DiagnosticsTagName",
+          "kind": "property",
+          "signature": "string DiagnosticsTagName",
           "returnType": "string"
         },
         {
@@ -52124,7 +52133,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/Extensions/PrivacyBlobStorageEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "MapGranitPrivacyExportDownload",

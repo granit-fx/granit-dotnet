@@ -1,5 +1,6 @@
 using Granit.BlobStorage;
 using Granit.Privacy.DataExport;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -36,7 +37,7 @@ public static class PrivacyBlobStorageEndpointRouteBuilderExtensions
         ArgumentException.ThrowIfNullOrWhiteSpace(tagName);
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(routePrefix)
+            .MapGranitGroup(routePrefix)
             .RequireAuthorization()
             .WithTags(tagName);
 

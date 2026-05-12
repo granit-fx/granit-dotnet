@@ -15,11 +15,21 @@ public sealed class GranitMcpServerOptions
     /// <summary>Whether to require authentication for MCP requests. Default: <see langword="true"/>.</summary>
     public bool RequireAuthentication { get; set; } = true;
 
-    /// <summary>Whether to map admin endpoints (tool listing). Default: <see langword="true"/>.</summary>
-    public bool MapAdminEndpoints { get; set; } = true;
+    /// <summary>
+    /// Whether to map diagnostics endpoints (tool registry inspection, OAuth scope mapping).
+    /// Default: <see langword="true"/>.
+    /// </summary>
+    public bool MapDiagnosticsEndpoints { get; set; } = true;
 
-    /// <summary>OpenAPI tag name for admin endpoints.</summary>
-    public string AdminTagName { get; set; } = "MCP Admin";
+    /// <summary>
+    /// Route prefix for diagnostics endpoints. Default: <c>"/mcp/diagnostics"</c>.
+    /// Kept disjoint from <see cref="RoutePrefix"/> to avoid colliding with the MCP SDK's
+    /// child-route handling on the MapMcp prefix.
+    /// </summary>
+    public string DiagnosticsRoutePrefix { get; set; } = "/mcp/diagnostics";
+
+    /// <summary>OpenAPI tag name for diagnostics endpoints.</summary>
+    public string DiagnosticsTagName { get; set; } = "MCP - Diagnostics";
 
     /// <summary>
     /// Only expose tools from these module namespaces.

@@ -9,14 +9,16 @@ using Microsoft.AspNetCore.Routing;
 namespace Granit.Mcp.Server.Endpoints;
 
 /// <summary>
-/// Admin endpoints for inspecting registered MCP tools and OAuth scope mappings.
+/// Diagnostics endpoints for inspecting the registered MCP tool registry and the
+/// OAuth scope ↔ permission mapping. Read-only introspection — no administrative
+/// mutations are performed here.
 /// </summary>
-internal static class McpAdminEndpoints
+internal static class McpDiagnosticsEndpoints
 {
     /// <summary>
-    /// Maps admin GET endpoints onto the given route group.
+    /// Maps the diagnostics GET endpoints onto the given route group.
     /// </summary>
-    internal static RouteGroupBuilder MapAdminEndpoints(this RouteGroupBuilder group)
+    internal static RouteGroupBuilder MapDiagnosticsEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/tools", ListTools)
             .WithName("ListMcpTools")
@@ -62,7 +64,7 @@ internal static class McpAdminEndpoints
     }
 }
 
-/// <summary>MCP tool information for admin endpoints.</summary>
+/// <summary>MCP tool information returned by the diagnostics endpoints.</summary>
 /// <param name="ToolName">The registered MCP tool name.</param>
 /// <param name="ClrType">The fully qualified CLR type name.</param>
 public sealed record McpToolInfoResponse(string ToolName, string ClrType);

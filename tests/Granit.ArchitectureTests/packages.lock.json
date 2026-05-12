@@ -2350,6 +2350,7 @@
           "Granit": "[0.1.0-dev, )",
           "Granit.Analytics": "[0.1.0-dev, )",
           "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
@@ -2643,6 +2644,7 @@
           "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.RateLimiting": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.OData": "[9.4.*, )"
         }
       },
@@ -3033,6 +3035,7 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Mcp": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )",
           "ModelContextProtocol.AspNetCore": "[1.2.*, )"
         }
       },
@@ -3770,7 +3773,8 @@
         "dependencies": {
           "Granit.BlobStorage": "[0.1.0-dev, )",
           "Granit.IO": "[0.1.0-dev, )",
-          "Granit.Privacy": "[0.1.0-dev, )"
+          "Granit.Privacy": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.privacy.endpoints": {

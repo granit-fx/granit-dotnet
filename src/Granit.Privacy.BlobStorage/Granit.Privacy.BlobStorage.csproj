@@ -19,6 +19,7 @@
     <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
     <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
     <ProjectReference Include="..\Granit.IO\Granit.IO.csproj" />
+    <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
   </ItemGroup>
 
 </Project>

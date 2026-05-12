@@ -15,7 +15,7 @@ public static class McpPermissions
 
     public static class Tools
     {
-        /// <summary>Grants read access to tool listing (admin endpoints).</summary>
+        /// <summary>Grants read access to the tool registry (diagnostics endpoints).</summary>
         public const string Read = "Mcp.Tools.Read";
 
         /// <summary>Grants execution access to MCP tools.</summary>

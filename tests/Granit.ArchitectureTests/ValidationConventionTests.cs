@@ -206,15 +206,18 @@ public sealed partial class ValidationConventionTests
                 continue;
             }
 
-            string relativePath = Path.GetRelativePath(srcDir, csFile);
-            string moduleName = relativePath.Split(Path.DirectorySeparatorChar)[0];
+            // Scan any file that defines route groups, regardless of module folder name.
+            // Route mapping is not exclusive to *.Endpoints packages: infrastructure adapters
+            // (e.g. Granit.Mcp.Server, Granit.Http.ODataExposure, Granit.Privacy.BlobStorage)
+            // also publish IEndpointRouteBuilder extensions.
 
-            if (!moduleName.Contains("Endpoints", StringComparison.Ordinal))
+            // Skip the file that *defines* MapGranitGroup — its body legitimately
+            // calls endpoints.MapGroup(prefix) as the underlying implementation.
+            if (Path.GetFileName(csFile) == "GranitEndpointRouteBuilderExtensions.cs")
             {
                 continue;
             }
 
-            // Only scan files that define route groups
             if (!csFile.Contains("EndpointRouteBuilder", StringComparison.Ordinal)
                 && !csFile.Contains("Endpoints" + Path.DirectorySeparatorChar + "Endpoints", StringComparison.Ordinal)
                 && !Path.GetFileName(csFile).EndsWith("Endpoints.cs", StringComparison.Ordinal))

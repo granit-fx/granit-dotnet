@@ -1,6 +1,7 @@
 using Granit.Mcp.Server.Endpoints;
 using Granit.Mcp.Server.Options;
 using Granit.Mcp.Server.Permissions;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -16,7 +17,7 @@ namespace Granit.Mcp.Server.Extensions;
 public static class McpServerEndpointRouteBuilderExtensions
 {
     /// <summary>
-    /// Maps the MCP Streamable HTTP endpoint and optional admin endpoints.
+    /// Maps the MCP Streamable HTTP endpoint and optional diagnostics endpoints.
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional configuration callback (overrides appsettings values).</param>
@@ -41,15 +42,15 @@ public static class McpServerEndpointRouteBuilderExtensions
             mcpEndpoint.RequireAuthorization(McpPermissions.Server.Access);
         }
 
-        // Admin endpoints: tool listing and scope mapping
-        if (options.MapAdminEndpoints)
+        // Diagnostics endpoints: tool registry inspection and OAuth scope mapping
+        if (options.MapDiagnosticsEndpoints)
         {
-            RouteGroupBuilder adminGroup = endpoints
-                .MapGroup($"{options.RoutePrefix}/admin")
-                .WithTags(options.AdminTagName)
+            RouteGroupBuilder diagnosticsGroup = endpoints
+                .MapGranitGroup(options.DiagnosticsRoutePrefix)
+                .WithTags(options.DiagnosticsTagName)
                 .RequireAuthorization(McpPermissions.Tools.Read);
 
-            adminGroup.MapAdminEndpoints();
+            diagnosticsGroup.MapDiagnosticsEndpoints();
         }
 
         return endpoints;

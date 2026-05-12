@@ -9,6 +9,7 @@ using Granit.Http.ODataExposure.Options;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.RateLimiting.AspNetCore;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -165,7 +166,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         string serviceDocOpName = feedKind == ODataFeedKind.Host ? "ODataHostServiceDocument" : "ODataServiceDocument";
         string metadataOpName = feedKind == ODataFeedKind.Host ? "ODataHostMetadata" : "ODataMetadata";
 
-        RouteGroupBuilder root = endpoints.MapGroup(prefix)
+        RouteGroupBuilder root = endpoints.MapGranitGroup(prefix)
             .WithTags(tagSuffix)
             .RequireGranitRateLimiting(rateLimitPolicy);
 
