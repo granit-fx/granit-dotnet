@@ -290,14 +290,18 @@ public static class PersistenceTenantExtensions
     {
         ArgumentNullException.ThrowIfNull(configureShared);
 
+        // Explicit lambda parameter types disambiguate overload resolution: an untyped
+        // `opts => configureShared(opts)` re-binds to *this* non-generic overload
+        // (DbContextOptionsBuilder matches) instead of the generic one we want, causing
+        // infinite recursion → stack overflow → SIGABRT.
         return services.AddGranitIsolatedDbContext<TContext>(
-            configureShared: opts => configureShared(opts),
+            configureShared: (DbContextOptionsBuilder<TContext> opts) => configureShared(opts),
             configureDatabasePerTenant: configureDatabasePerTenant is null
                 ? null
-                : (opts, cs) => configureDatabasePerTenant(opts, cs),
+                : (DbContextOptionsBuilder<TContext> opts, string cs) => configureDatabasePerTenant(opts, cs),
             configureSchemaPerTenant: configureSchemaPerTenant is null
                 ? null
-                : opts => configureSchemaPerTenant(opts),
+                : (DbContextOptionsBuilder<TContext> opts) => configureSchemaPerTenant(opts),
             configureTenantSchema: configureTenantSchema);
     }
 }
