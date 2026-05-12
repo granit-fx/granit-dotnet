@@ -5247,12 +5247,12 @@
       "kind": "class",
       "project": "Granit.Activities.EntityFrameworkCore",
       "file": "src/Granit.Activities.EntityFrameworkCore/Extensions/ActivitiesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitActivitiesEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitActivitiesEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitActivitiesEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configureShared, Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null, Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null, Action<TenantSchemaOptions>? configureTenantSchema = null)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -12677,12 +12677,12 @@
       "kind": "class",
       "project": "Granit.BlobStorage.EntityFrameworkCore",
       "file": "src/Granit.BlobStorage.EntityFrameworkCore/Extensions/BlobStorageEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitBlobStorageEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitBlobStorageEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitBlobStorageEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configureShared, Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null, Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null, Action<TenantSchemaOptions>? configureTenantSchema = null)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -18142,7 +18142,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.EntityFrameworkCore",
       "file": "src/Granit.DataExchange.EntityFrameworkCore/GranitDataExchangeDbProperties.cs",
-      "line": 13,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -20873,12 +20873,12 @@
       "kind": "class",
       "project": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
       "file": "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/Extensions/AssetMetadataEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitDocumentsAssetMetadataEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitDocumentsAssetMetadataEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitDocumentsAssetMetadataEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configureShared, Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null, Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null, Action<TenantSchemaOptions>? configureTenantSchema = null)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -21933,12 +21933,12 @@
       "kind": "class",
       "project": "Granit.Documents.EntityFrameworkCore",
       "file": "src/Granit.Documents.EntityFrameworkCore/Extensions/DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitDocumentsEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitDocumentsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitDocumentsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configureShared, Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null, Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null, Action<TenantSchemaOptions>? configureTenantSchema = null)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -23180,12 +23180,12 @@
       "kind": "class",
       "project": "Granit.Documents.PublicLinks.EntityFrameworkCore",
       "file": "src/Granit.Documents.PublicLinks.EntityFrameworkCore/Extensions/DocumentsPublicLinksEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitDocumentsPublicLinksEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitDocumentsPublicLinksEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitDocumentsPublicLinksEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configureShared, Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null, Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null, Action<TenantSchemaOptions>? configureTenantSchema = null)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -23754,12 +23754,12 @@
       "kind": "class",
       "project": "Granit.Documents.Renditions.EntityFrameworkCore",
       "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/Extensions/RenditionsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitDocumentsRenditionsEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitDocumentsRenditionsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitDocumentsRenditionsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configureShared, Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null, Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null, Action<TenantSchemaOptions>? configureTenantSchema = null)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -42318,7 +42318,7 @@
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
       "file": "src/Granit.Notifications.EntityFrameworkCore/GranitNotificationsDbProperties.cs",
-      "line": 21,
+      "line": 27,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -46894,7 +46894,7 @@
       "kind": "class",
       "project": "Granit.Parties.EntityFrameworkCore",
       "file": "src/Granit.Parties.EntityFrameworkCore/GranitPartiesDbProperties.cs",
-      "line": 6,
+      "line": 12,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -60999,12 +60999,12 @@
       "kind": "class",
       "project": "Granit.Taxonomy.EntityFrameworkCore",
       "file": "src/Granit.Taxonomy.EntityFrameworkCore/Extensions/TaxonomyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitTaxonomyEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitTaxonomyEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitTaxonomyEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configureShared, Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null, Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null, Action<TenantSchemaOptions>? configureTenantSchema = null)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -61818,7 +61818,7 @@
       "kind": "class",
       "project": "Granit.Templating.EntityFrameworkCore",
       "file": "src/Granit.Templating.EntityFrameworkCore/GranitTemplatingDbProperties.cs",
-      "line": 13,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -63345,7 +63345,7 @@
       "kind": "class",
       "project": "Granit.Timeline.EntityFrameworkCore",
       "file": "src/Granit.Timeline.EntityFrameworkCore/GranitTimelineDbProperties.cs",
-      "line": 13,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -66509,7 +66509,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/GranitWebhooksDbProperties.cs",
-      "line": 21,
+      "line": 27,
       "members": [
         {
           "name": "DbTablePrefix",

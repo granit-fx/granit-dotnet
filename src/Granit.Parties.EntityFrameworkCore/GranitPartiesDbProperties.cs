@@ -3,6 +3,12 @@ using Granit.Persistence.EntityFrameworkCore;
 namespace Granit.Parties.EntityFrameworkCore;
 
 /// <summary>Table-naming properties for the Parties EF Core module.</summary>
+/// <remarks>
+/// Parties is a <b>dual-scope</b> module: it backs SaaS billing (the tenant itself is a
+/// <c>Party</c> referenced by <c>Subscription.PartyId</c>) and tenant-scoped CRM data.
+/// Tables live in the <b>host schema</b> and tenant isolation is enforced via the
+/// <c>TenantId</c> row-level query filter (with <c>EfStoreBase</c> bypass for host context).
+/// </remarks>
 public static class GranitPartiesDbProperties
 {
     /// <summary>Table prefix. Default: <c>"parties_"</c>.</summary>

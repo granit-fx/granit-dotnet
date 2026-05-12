@@ -1,4 +1,5 @@
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.Taxonomy.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,19 +16,34 @@ public static class TaxonomyEntityFrameworkCoreHostApplicationBuilderExtensions
     /// Registers EF Core persistence for <c>Granit.Taxonomy</c>.
     /// </summary>
     /// <remarks>
-    /// Wires the isolated <see cref="TaxonomyDbContext"/> via <c>AddGranitDbContext</c>
-    /// (interceptor DI for audit / soft-delete) and registers the EF Core-backed
-    /// <c>ITagService</c>. Must be called after
-    /// <c>services.AddGranitTaxonomy()</c>.
+    /// <para>
+    /// Wires <see cref="TaxonomyDbContext"/> via <c>AddGranitIsolatedDbContext</c>
+    /// — Taxonomy is tenant-only and inherits the active multi-tenancy isolation strategy
+    /// (audit + soft-delete interceptors wired automatically).
+    /// </para>
+    /// <para>Must be called after <c>services.AddGranitTaxonomy()</c>.</para>
     /// </remarks>
+    /// <param name="builder">The host application builder.</param>
+    /// <param name="configureShared">EF Core options for the shared-database strategy.</param>
+    /// <param name="configureDatabasePerTenant">Optional database-per-tenant configuration.</param>
+    /// <param name="configureSchemaPerTenant">Optional schema-per-tenant configuration.</param>
+    /// <param name="configureTenantSchema">Optional <see cref="TenantSchemaOptions"/> tuning.</param>
+    /// <returns>The builder for chaining.</returns>
     public static IHostApplicationBuilder AddGranitTaxonomyEntityFrameworkCore(
         this IHostApplicationBuilder builder,
-        Action<DbContextOptionsBuilder> configure)
+        Action<DbContextOptionsBuilder> configureShared,
+        Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null,
+        Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null,
+        Action<TenantSchemaOptions>? configureTenantSchema = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(configure);
+        ArgumentNullException.ThrowIfNull(configureShared);
 
-        builder.Services.AddGranitDbContext<TaxonomyDbContext>(configure);
+        builder.Services.AddGranitIsolatedDbContext<TaxonomyDbContext>(
+            configureShared,
+            configureDatabasePerTenant,
+            configureSchemaPerTenant,
+            configureTenantSchema);
         builder.Services.AddScoped<ITagService, TagService>();
         builder.Services.AddScoped<ITagAssignmentService, TagAssignmentService>();
         builder.Services.AddScoped<ITagSearchService, TagSearchService>();

@@ -4,6 +4,7 @@ using Granit.Documents.EntityFrameworkCore.Authorization;
 using Granit.Documents.EntityFrameworkCore.Internal;
 using Granit.Documents.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,27 +23,43 @@ public static class DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Registers the isolated <c>DocumentsDbContext</c> via <c>AddGranitDbContext</c>
-    /// (<see cref="Microsoft.EntityFrameworkCore.IDbContextFactory{TContext}"/> with interceptor
-    /// DI), which automatically wires <c>AuditedEntityInterceptor</c> and
-    /// <c>SoftDeleteInterceptor</c> when <c>Granit.Persistence</c> is configured, enabling the
-    /// ISO 27001 3-year audit trail and GDPR-compatible soft-delete out of the box.
+    /// Registers <see cref="DocumentsDbContext"/> via <c>AddGranitIsolatedDbContext</c>, which
+    /// wires the active <c>TenantIsolationStrategy</c> (<c>SharedDatabase</c>,
+    /// <c>DatabasePerTenant</c>, <c>SchemaPerTenant</c>) and the
+    /// <see cref="TenantSchemaConnectionInterceptor"/> for per-tenant schema routing. Audit
+    /// (<c>AuditedEntityInterceptor</c>) and soft-delete (<c>SoftDeleteInterceptor</c>)
+    /// interceptors are wired automatically.
+    /// </para>
+    /// <para>
+    /// Documents is a tenant-only module: all entities are <c>IMultiTenant</c> and isolated
+    /// per tenant. Provide <paramref name="configureSchemaPerTenant"/> when the host runs in
+    /// <c>SchemaPerTenant</c> mode.
     /// </para>
     /// <para>
     /// Must be called after <see cref="DocumentsServiceCollectionExtensions.AddGranitDocuments"/>.
     /// </para>
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
-    /// <param name="configure">EF Core <see cref="DbContextOptionsBuilder"/> configuration (provider + connection string).</param>
+    /// <param name="configureShared">EF Core options for the shared-database strategy (provider + connection string).</param>
+    /// <param name="configureDatabasePerTenant">Optional EF Core options for the database-per-tenant strategy.</param>
+    /// <param name="configureSchemaPerTenant">Optional EF Core options for the schema-per-tenant strategy.</param>
+    /// <param name="configureTenantSchema">Optional <see cref="TenantSchemaOptions"/> tuning (prefix, naming).</param>
     /// <returns>The builder for chaining.</returns>
     public static IHostApplicationBuilder AddGranitDocumentsEntityFrameworkCore(
         this IHostApplicationBuilder builder,
-        Action<DbContextOptionsBuilder> configure)
+        Action<DbContextOptionsBuilder> configureShared,
+        Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null,
+        Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null,
+        Action<TenantSchemaOptions>? configureTenantSchema = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(configure);
+        ArgumentNullException.ThrowIfNull(configureShared);
 
-        builder.Services.AddGranitDbContext<DocumentsDbContext>(configure);
+        builder.Services.AddGranitIsolatedDbContext<DocumentsDbContext>(
+            configureShared,
+            configureDatabasePerTenant,
+            configureSchemaPerTenant,
+            configureTenantSchema);
 
         // Tenant-root bootstrap (F2.2): scoped so the per-instance memoisation cache lives
         // for the duration of one request only. Concurrency-safe via the partial unique

@@ -7,6 +7,12 @@ namespace Granit.Webhooks.EntityFrameworkCore;
 /// </summary>
 /// <remarks>
 /// <para>
+/// Webhooks is a <b>dual-scope</b> module: platform subscriptions (host admins observing
+/// tenant events) coexist with tenant-defined webhooks. Tables live in the <b>host schema</b>
+/// and tenant isolation is enforced via the <c>TenantId</c> row-level query filter (with
+/// <c>EfStoreBase</c> bypass for host context).
+/// </para>
+/// <para>
 /// These properties control the table prefix and schema used by all entity configurations
 /// in <c>Granit.Webhooks.EntityFrameworkCore</c>. Both the internal
 /// <c>WebhooksDbContext</c> and the host's <c>Configure*Module()</c> call read
@@ -29,12 +35,14 @@ public static class GranitWebhooksDbProperties
     private static bool _dbSchemaExplicitlySet;
 
     /// <summary>
-    /// Database schema for tenant-level tables.
-    /// Falls back to <see cref="GranitDbDefaults.DbSchema"/> when not explicitly set.
+    /// Database schema for Webhooks tables. Falls back to
+    /// <see cref="GranitDbDefaults.HostDbSchema"/>, then <see cref="GranitDbDefaults.DbSchema"/>
+    /// when not explicitly set — Webhooks tables intentionally live in the host schema
+    /// (row-level multi-tenancy via <c>TenantId</c> filter).
     /// </summary>
     public static string? DbSchema
     {
-        get => _dbSchemaExplicitlySet ? _dbSchema : GranitDbDefaults.DbSchema;
+        get => _dbSchemaExplicitlySet ? _dbSchema : GranitDbDefaults.HostDbSchema ?? GranitDbDefaults.DbSchema;
         set { _dbSchema = value; _dbSchemaExplicitlySet = true; }
     }
 }

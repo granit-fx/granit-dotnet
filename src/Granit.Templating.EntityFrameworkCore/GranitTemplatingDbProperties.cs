@@ -6,9 +6,17 @@ namespace Granit.Templating.EntityFrameworkCore;
 /// Provides configurable table-naming properties for the Templating EF Core module.
 /// </summary>
 /// <remarks>
+/// <para>
+/// Templating is a <b>dual-scope</b> module: system templates shipped by the host coexist
+/// with tenant-defined overrides. Tables live in the <b>host schema</b> and tenant
+/// isolation is enforced via the <c>TenantId</c> row-level query filter (with
+/// <c>EfStoreBase</c> bypass for host context).
+/// </para>
+/// <para>
 /// <b>Important:</b> Set these properties at application startup, before
 /// <c>ConfigureServices</c> completes. EF Core caches the compiled model
 /// after first use — later mutations have no effect.
+/// </para>
 /// </remarks>
 public static class GranitTemplatingDbProperties
 {

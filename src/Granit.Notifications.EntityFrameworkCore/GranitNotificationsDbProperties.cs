@@ -7,6 +7,12 @@ namespace Granit.Notifications.EntityFrameworkCore;
 /// </summary>
 /// <remarks>
 /// <para>
+/// Notifications is a <b>dual-scope</b> module: host-defined notification channels and
+/// templates coexist with tenant-scoped subscriptions, preferences, and delivery logs.
+/// Tables live in the <b>host schema</b> and tenant isolation is enforced via the
+/// <c>TenantId</c> row-level query filter (with <c>EfStoreBase</c> bypass for host context).
+/// </para>
+/// <para>
 /// These properties control the table prefix and schema used by all entity configurations
 /// in <c>Granit.Notifications.EntityFrameworkCore</c>. Both the internal
 /// <c>NotificationsDbContext</c> and the host's <c>Configure*Module()</c> call read

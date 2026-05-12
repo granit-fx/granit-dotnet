@@ -212,6 +212,15 @@ public sealed partial class IsolatedDbContextTests
                     continue;
                 }
 
+                // Skip matches inside single-line comments (// ...). XML doc (///) is
+                // already excluded by the regex lookbehind.
+                int lineStart = content.LastIndexOf('\n', Math.Max(0, match.Index - 1)) + 1;
+                string lineUpToMatch = content[lineStart..match.Index];
+                if (lineUpToMatch.Contains("//", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
                 // The DbContext's project must contain a Configure*Module() ModelBuilder
                 // extension method so that host applications can include the module's
                 // entity configurations in their own DbContext and generate migrations.
@@ -278,9 +287,10 @@ public sealed partial class IsolatedDbContextTests
     private static partial Regex OnModelCreatingOverride();
 
     /// <summary>
-    /// Captures the type argument from <c>AddGranitDbContext&lt;SomeDbContext&gt;</c>.
+    /// Captures the type argument from <c>AddGranitDbContext&lt;SomeDbContext&gt;</c>
+    /// or <c>AddGranitIsolatedDbContext&lt;SomeDbContext&gt;</c>.
     /// Excludes XML doc / comment lines (starts with whitespace + "///").
     /// </summary>
-    [GeneratedRegex(@"(?<!///.*)\bAddGranitDbContext<(\w+)>")]
+    [GeneratedRegex(@"(?<!///.*)\bAddGranit(?:Isolated)?DbContext<(\w+)>")]
     private static partial Regex AddGranitDbContextCall();
 }

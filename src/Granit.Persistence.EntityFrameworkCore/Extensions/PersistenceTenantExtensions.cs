@@ -266,4 +266,38 @@ public static class PersistenceTenantExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Non-generic overload of <see cref="AddGranitIsolatedDbContext{TContext}(IServiceCollection, Action{DbContextOptionsBuilder{TContext}}, Action{DbContextOptionsBuilder{TContext}, string}?, Action{DbContextOptionsBuilder{TContext}}?, Action{TenantSchemaOptions}?)"/>
+    /// for use with <c>internal</c> <see cref="DbContext"/> types, whose generic
+    /// <see cref="DbContextOptionsBuilder{TContext}"/> would otherwise leak into the public
+    /// extension method signature.
+    /// </summary>
+    /// <typeparam name="TContext">The <see cref="DbContext"/> to register (may be internal).</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configureShared">EF Core options for the shared-database strategy.</param>
+    /// <param name="configureDatabasePerTenant">Optional database-per-tenant configuration.</param>
+    /// <param name="configureSchemaPerTenant">Optional schema-per-tenant configuration.</param>
+    /// <param name="configureTenantSchema">Optional <see cref="TenantSchemaOptions"/> tuning.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddGranitIsolatedDbContext<TContext>(
+        this IServiceCollection services,
+        Action<DbContextOptionsBuilder> configureShared,
+        Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null,
+        Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null,
+        Action<TenantSchemaOptions>? configureTenantSchema = null)
+        where TContext : DbContext
+    {
+        ArgumentNullException.ThrowIfNull(configureShared);
+
+        return services.AddGranitIsolatedDbContext<TContext>(
+            configureShared: opts => configureShared(opts),
+            configureDatabasePerTenant: configureDatabasePerTenant is null
+                ? null
+                : (opts, cs) => configureDatabasePerTenant(opts, cs),
+            configureSchemaPerTenant: configureSchemaPerTenant is null
+                ? null
+                : opts => configureSchemaPerTenant(opts),
+            configureTenantSchema: configureTenantSchema);
+    }
 }

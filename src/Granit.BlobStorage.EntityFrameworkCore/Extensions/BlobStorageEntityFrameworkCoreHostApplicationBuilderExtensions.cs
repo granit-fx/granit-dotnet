@@ -1,6 +1,7 @@
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,9 +18,12 @@ public static class BlobStorageEntityFrameworkCoreHostApplicationBuilderExtensio
     /// Registers EF Core persistence for Granit blob storage.
     /// </summary>
     /// <remarks>
-    /// Registers <see cref="BlobStorageDbContext"/> via
-    /// <c>AddGranitDbContext</c> (<c>IDbContextFactory</c> with interceptor DI)
+    /// <para>
+    /// Registers <see cref="BlobStorageDbContext"/> via <c>AddGranitIsolatedDbContext</c>
     /// and binds <see cref="IBlobDescriptorStore"/> to <c>EfBlobDescriptorStore</c>.
+    /// BlobStorage is tenant-only: descriptors are isolated per tenant through the active
+    /// <c>TenantIsolationStrategy</c>.
+    /// </para>
     /// <para>
     /// <see cref="AuditedEntityInterceptor"/> is added automatically when
     /// <c>Granit.Persistence</c> is configured, enabling the ISO 27001 3-year audit trail.
@@ -29,13 +33,26 @@ public static class BlobStorageEntityFrameworkCoreHostApplicationBuilderExtensio
     /// </para>
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
-    /// <param name="configure">EF Core <see cref="DbContextOptionsBuilder"/> configuration (provider + connection string).</param>
+    /// <param name="configureShared">EF Core options for the shared-database strategy.</param>
+    /// <param name="configureDatabasePerTenant">Optional database-per-tenant configuration.</param>
+    /// <param name="configureSchemaPerTenant">Optional schema-per-tenant configuration.</param>
+    /// <param name="configureTenantSchema">Optional <see cref="TenantSchemaOptions"/> tuning.</param>
     /// <returns>The builder for chaining.</returns>
     public static IHostApplicationBuilder AddGranitBlobStorageEntityFrameworkCore(
         this IHostApplicationBuilder builder,
-        Action<DbContextOptionsBuilder> configure)
+        Action<DbContextOptionsBuilder> configureShared,
+        Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null,
+        Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null,
+        Action<TenantSchemaOptions>? configureTenantSchema = null)
     {
-        builder.Services.AddGranitDbContext<BlobStorageDbContext>(configure);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configureShared);
+
+        builder.Services.AddGranitIsolatedDbContext<BlobStorageDbContext>(
+            configureShared,
+            configureDatabasePerTenant,
+            configureSchemaPerTenant,
+            configureTenantSchema);
 
         builder.Services.AddScoped<EfBlobDescriptorStore>();
         builder.Services.AddScoped<IBlobDescriptorStore>(sp => sp.GetRequiredService<EfBlobDescriptorStore>());
