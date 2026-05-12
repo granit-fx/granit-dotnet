@@ -217,30 +217,9 @@ jobs:
             exit 1
           fi
 
-  codeql:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      # Shadow the repo nuget.config with a CodeQL-only variant that drops the
-      # auth-gated `Granit GitHub` feed. All Granit.* packages are ProjectReferences
-      # in this repo, so no resolution is lost — and we silence the "unreachable
-      # NuGet feed" warning emitted by build-mode: none.
-      - name: CodeQL-only NuGet config
-        run: cp .github/codeql/nuget.config nuget.config
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4
-        with:
-          languages: csharp
-          build-mode: none
-          config-file: ./.github/codeql/codeql-config.yml
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4
+  # CodeQL runs in its own workflow (.github/workflows/codeql.yml) on a weekly
+  # schedule + post-merge push, not on every PR — the suite is too slow (~10-20
+  # min) for per-PR feedback and security queries evolve weekly, not per-commit.
 
   # ---------------------------------------------------------------------------
   # ANALYSIS

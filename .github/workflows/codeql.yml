@@ -1,0 +1,68 @@
+# =============================================================================
+# CodeQL - Granit
+# =============================================================================
+# Static security analysis. Decoupled from the main CI workflow because
+# CodeQL is slow (10-20 min) and does not need to run on every PR — security
+# query suites evolve weekly, not per-commit. Findings appear under the
+# repository's Security tab.
+#
+# Triggers:
+#   - schedule       Weekly scan on develop (catches new query versions)
+#   - push           Post-merge scan on develop / main
+#   - workflow_dispatch  Manual re-run
+# =============================================================================
+
+name: CodeQL
+
+on:
+  push:
+    branches: [develop, main]
+  schedule:
+    # Mondays at 06:00 UTC — outside business hours, picks up CodeQL pack
+    # updates released over the weekend.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: read-all
+
+jobs:
+  analyze:
+    name: Analyze (csharp)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      # Shadow the repo nuget.config with a CodeQL-only variant that drops the
+      # auth-gated `Granit GitHub` feed. All Granit.* packages are ProjectReferences
+      # in this repo, so no resolution is lost — and we silence the "unreachable
+      # NuGet feed" warning emitted by build-mode: none.
+      - name: CodeQL-only NuGet config
+        run: cp .github/codeql/nuget.config nuget.config
+
+      # GitHub-hosted ubuntu-latest = 4 cores / 16 GB. CodeQL defaults to 1 thread
+      # and a conservative RAM budget; on a ~380-project C# codebase the analyse
+      # phase otherwise takes ~21 min. threads: 0 = use all cores; ram leaves ~3 GB
+      # headroom for the OS and the extractor.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4
+        with:
+          languages: csharp
+          build-mode: none
+          config-file: ./.github/codeql/codeql-config.yml
+          threads: 0
+          ram: 13000
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4
+        with:
+          threads: 0
+          ram: 13000
