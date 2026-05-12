@@ -12,8 +12,8 @@
     <InternalsVisibleTo Include="Granit.Documents.Renditions.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="Granit.Documents.Renditions.Endpoints" />
     <InternalsVisibleTo Include="Granit.Documents.Renditions.Endpoints.Tests" />
-    <InternalsVisibleTo Include="Granit.Documents.Renditions.BackgroundJobs" />
-    <InternalsVisibleTo Include="Granit.Documents.Renditions.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.Renditions.Wolverine" />
+    <InternalsVisibleTo Include="Granit.Documents.Renditions.Wolverine.Tests" />
     <InternalsVisibleTo Include="Granit.Documents.Renditions.Imaging" />
     <InternalsVisibleTo Include="Granit.Documents.Renditions.Imaging.Tests" />
     <InternalsVisibleTo Include="Granit.Documents.Renditions.Pdf" />

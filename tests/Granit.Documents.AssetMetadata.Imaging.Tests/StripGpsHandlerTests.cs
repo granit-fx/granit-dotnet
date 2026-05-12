@@ -11,6 +11,7 @@ using Granit.BlobStorage;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Options;
 using Granit.Documents;
+using Granit.Documents.AssetMetadata.Diagnostics;
 using Granit.Documents.AssetMetadata.Imaging.Internal;
 using Granit.Documents.AssetMetadata.Options;
 using Granit.Documents.Domain;
@@ -162,13 +163,36 @@ public sealed class StripGpsHandlerTests
         guids.Create().Returns(_ => Guid.NewGuid());
         IOptions<GranitAssetMetadataOptions> options = Microsoft.Extensions.Options.Options.Create(
             new GranitAssetMetadataOptions { StripGpsOnUpload = stripGpsOnUpload });
+        AssetMetadataMetrics metrics = new(new TestMeterFactory());
         return new StripGpsHandler(
             storage,
             documentService,
             factory,
             guids,
+            metrics,
             options,
             NullLogger<StripGpsHandler>.Instance);
+    }
+
+    private sealed class TestMeterFactory : System.Diagnostics.Metrics.IMeterFactory
+    {
+        private readonly List<System.Diagnostics.Metrics.Meter> _meters = [];
+
+        public System.Diagnostics.Metrics.Meter Create(System.Diagnostics.Metrics.MeterOptions options)
+        {
+            System.Diagnostics.Metrics.Meter meter = new(options);
+            _meters.Add(meter);
+            return meter;
+        }
+
+        public void Dispose()
+        {
+            foreach (System.Diagnostics.Metrics.Meter meter in _meters)
+            {
+                meter.Dispose();
+            }
+            _meters.Clear();
+        }
     }
 
     private static DocumentVersionAddedEvent NewEvent(Guid blobId, string ct, long size) =>

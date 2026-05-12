@@ -35,7 +35,7 @@ dotnet add package Granit.Imaging.MagickNet
 builder.AddGranitDocuments();
 builder.AddGranitDocumentsRenditions();
 builder.AddGranitDocumentsRenditionsEntityFrameworkCore(opts => opts.UseNpgsql(conn));
-builder.AddGranitDocumentsRenditionsBackgroundJobs();
+builder.AddGranitDocumentsRenditionsWolverine();
 builder.AddGranitImagingMagickNet();
 builder.AddGranitDocumentsRenditionsImaging();
 ```

@@ -43,4 +43,29 @@ public sealed class GranitDocumentsPublicLinksOptions
     /// </summary>
     [Range(1, int.MaxValue)]
     public int? DefaultMaxUses { get; set; }
+
+    /// <summary>
+    /// Pruning configuration for the daily expired-link cleanup job
+    /// (<c>Granit.Documents.PublicLinks.BackgroundJobs</c>).
+    /// </summary>
+    public PruningOptions Pruning { get; set; } = new();
+}
+
+/// <summary>
+/// Pruning configuration for the expired public-link cleanup job.
+/// </summary>
+public sealed class PruningOptions
+{
+    /// <summary>
+    /// Whether the recurring prune job is allowed to delete rows. Defaults to <c>true</c>.
+    /// Hosts that own their retention strategy can disable the job entirely.
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// Grace period kept after a link is revoked or has expired before the row is
+    /// physically deleted. Default 90 days — preserves audit evidence for incident
+    /// response while keeping the table from growing unbounded.
+    /// </summary>
+    public TimeSpan RetentionAfterRevocation { get; set; } = TimeSpan.FromDays(90);
 }

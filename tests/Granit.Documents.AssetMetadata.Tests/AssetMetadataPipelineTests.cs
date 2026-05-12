@@ -8,8 +8,10 @@ using Granit.Documents.AssetMetadata;
 using Granit.Documents.AssetMetadata.Diagnostics;
 using Granit.Documents.AssetMetadata.Exceptions;
 using Granit.Documents.AssetMetadata.Extractors;
+using Granit.Documents.AssetMetadata.Options;
 using Granit.Documents.AssetMetadata.Pipeline;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -102,6 +104,93 @@ public sealed class AssetMetadataPipelineTests
         ex.ExtractorName.ShouldBe("exif");
         ex.SourceContentType.ShouldBe("image/jpeg");
         ex.InnerException?.Message.ShouldBe("boom");
+    }
+
+    private static IOptions<GranitAssetMetadataOptions> Opts(GranitAssetMetadataOptions? o = null) =>
+        Microsoft.Extensions.Options.Options.Create(o ?? new GranitAssetMetadataOptions());
+
+    [Fact]
+    public async Task ExtractAsync_strips_PII_keys_and_typed_columns_when_option_on()
+    {
+        Dictionary<string, string?> raw = new()
+        {
+            ["exif:Author"] = "Alice",
+            ["exif:Make"] = "Canon",
+            ["xmp:CreditLine"] = "Acme",
+        };
+        var result = new AssetMetadataResult("exif", raw)
+        {
+            Author = "Alice",
+            Artist = "Alice",
+            LastModifiedBy = "Bob",
+            CameraMake = "Canon",
+        };
+        IAssetMetadataExtractor exif = Extractor("exif", "image/", result);
+
+        var pipeline = new AssetMetadataPipeline(
+            [exif], BuildMetrics(), NullLogger<AssetMetadataPipeline>.Instance,
+            Opts(new GranitAssetMetadataOptions { StripPersonalDataOnUpload = true }));
+
+        using MemoryStream src = new(new byte[] { 0xFF });
+        IReadOnlyList<AssetMetadataResult> results = await pipeline.ExtractAsync(
+            src, "image/jpeg", CancellationToken.None);
+
+        results.Count.ShouldBe(1);
+        AssetMetadataResult r = results[0];
+        r.Author.ShouldBeNull();
+        r.Artist.ShouldBeNull();
+        r.LastModifiedBy.ShouldBeNull();
+        r.CameraMake.ShouldBe("Canon");
+        r.RawMetadata.ShouldNotContainKey("exif:Author");
+        r.RawMetadata.ShouldNotContainKey("xmp:CreditLine");
+        r.RawMetadata["exif:Make"].ShouldBe("Canon");
+    }
+
+    [Fact]
+    public async Task ExtractAsync_preserves_PII_when_option_off()
+    {
+        Dictionary<string, string?> raw = new()
+        {
+            ["exif:Author"] = "Alice",
+            ["exif:Make"] = "Canon",
+        };
+        var result = new AssetMetadataResult("exif", raw) { Author = "Alice" };
+        IAssetMetadataExtractor exif = Extractor("exif", "image/", result);
+
+        var pipeline = new AssetMetadataPipeline(
+            [exif], BuildMetrics(), NullLogger<AssetMetadataPipeline>.Instance,
+            Opts(new GranitAssetMetadataOptions { StripPersonalDataOnUpload = false }));
+
+        using MemoryStream src = new(new byte[] { 0xFF });
+        IReadOnlyList<AssetMetadataResult> results = await pipeline.ExtractAsync(
+            src, "image/jpeg", CancellationToken.None);
+
+        results[0].Author.ShouldBe("Alice");
+        results[0].RawMetadata["exif:Author"].ShouldBe("Alice");
+    }
+
+    [Fact]
+    public async Task ExtractAsync_throws_AssetMetadataExtractionTimeoutException_on_timeout()
+    {
+        // Extractor that blocks until cancellation is requested.
+        IAssetMetadataExtractor slow = Substitute.For<IAssetMetadataExtractor>();
+        slow.Name.Returns("slow");
+        slow.CanHandle(Arg.Any<string>()).Returns(true);
+        slow.ExtractAsync(Arg.Any<Stream>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(async ci =>
+            {
+                var token = (CancellationToken)ci[2];
+                await Task.Delay(TimeSpan.FromSeconds(5), token).ConfigureAwait(false);
+                return new AssetMetadataResult("slow", new Dictionary<string, string?>());
+            });
+
+        var pipeline = new AssetMetadataPipeline(
+            [slow], BuildMetrics(), NullLogger<AssetMetadataPipeline>.Instance,
+            Opts(new GranitAssetMetadataOptions { ExtractionTimeout = TimeSpan.FromMilliseconds(50) }));
+
+        using MemoryStream src = new(new byte[] { 0xFF });
+        await Should.ThrowAsync<Exceptions.AssetMetadataExtractionTimeoutException>(() =>
+            pipeline.ExtractAsync(src, "image/jpeg", CancellationToken.None));
     }
 
     [Fact]

@@ -19,6 +19,36 @@ public sealed class DocumentAssetMetadataTests
             mime, Now);
 
     [Fact]
+    public void StripPersonalData_drops_PII_columns_and_raw_keys_and_returns_removed_count()
+    {
+        DocumentAssetMetadata m = NewPending();
+        m.MarkExtracting();
+        m.ApplyExtraction(new AssetMetadataResult("exif", new Dictionary<string, string?>
+        {
+            ["exif:Author"] = "Alice",
+            ["exif:Make"] = "Canon",
+            ["xmp:CreditLine"] = "Acme Press",
+        })
+        {
+            Author = "Alice",
+            Artist = "Alice",
+            LastModifiedBy = "Bob",
+            CameraMake = "Canon",
+        });
+
+        int removed = m.StripPersonalData();
+
+        removed.ShouldBe(2);
+        m.Author.ShouldBeNull();
+        m.Artist.ShouldBeNull();
+        m.LastModifiedBy.ShouldBeNull();
+        m.CameraMake.ShouldBe("Canon");
+        m.RawMetadata.ShouldNotContainKey("exif:exif:Author");
+        m.RawMetadata.ShouldNotContainKey("exif:xmp:CreditLine");
+        m.RawMetadata.ShouldContainKey("exif:exif:Make");
+    }
+
+    [Fact]
     public void Create_initialises_status_and_typed_columns_as_null()
     {
         DocumentAssetMetadata m = NewPending();

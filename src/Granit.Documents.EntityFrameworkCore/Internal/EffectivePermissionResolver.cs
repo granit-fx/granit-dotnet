@@ -44,8 +44,8 @@ internal sealed class EffectivePermissionResolver(
         DocumentPrincipal principal,
         CancellationToken cancellationToken = default)
     {
-        DocumentResolutionResult result = await ResolveDocumentAsync(documentId, principal, cancellationToken)
-            .ConfigureAwait(false);
+        DocumentPermissionResolution result = await ResolveDocumentWithAncestorsAsync(
+            documentId, principal, cancellationToken).ConfigureAwait(false);
         return result.Permission;
     }
 
@@ -55,11 +55,11 @@ internal sealed class EffectivePermissionResolver(
         DocumentPrincipal principal,
         CancellationToken cancellationToken = default)
     {
-        IReadOnlyDictionary<Guid, DocumentResolutionResult> resolved = await ResolveDocumentsAsync(
+        IReadOnlyDictionary<Guid, DocumentPermissionResolution> resolved = await ResolveDocumentsWithAncestorsAsync(
             documentIds, principal, cancellationToken).ConfigureAwait(false);
 
         Dictionary<Guid, EffectivePermissionLevel> result = new(resolved.Count);
-        foreach ((Guid id, DocumentResolutionResult r) in resolved)
+        foreach ((Guid id, DocumentPermissionResolution r) in resolved)
         {
             result[id] = r.Permission;
         }
@@ -72,9 +72,9 @@ internal sealed class EffectivePermissionResolver(
         DocumentPrincipal principal,
         CancellationToken cancellationToken = default)
     {
-        IReadOnlyDictionary<Guid, DocumentResolutionResult> resolved = await ResolveFoldersAsync(
+        IReadOnlyDictionary<Guid, FolderPermissionResolution> resolved = await ResolveFoldersWithAncestorsAsync(
             [folderId], principal, cancellationToken).ConfigureAwait(false);
-        return resolved.TryGetValue(folderId, out DocumentResolutionResult r)
+        return resolved.TryGetValue(folderId, out FolderPermissionResolution r)
             ? r.Permission
             : EffectivePermissionLevel.None;
     }
@@ -85,27 +85,19 @@ internal sealed class EffectivePermissionResolver(
         DocumentPrincipal principal,
         CancellationToken cancellationToken = default)
     {
-        IReadOnlyDictionary<Guid, DocumentResolutionResult> resolved = await ResolveFoldersAsync(
+        IReadOnlyDictionary<Guid, FolderPermissionResolution> resolved = await ResolveFoldersWithAncestorsAsync(
             folderIds, principal, cancellationToken).ConfigureAwait(false);
 
         Dictionary<Guid, EffectivePermissionLevel> result = new(resolved.Count);
-        foreach ((Guid id, DocumentResolutionResult r) in resolved)
+        foreach ((Guid id, FolderPermissionResolution r) in resolved)
         {
             result[id] = r.Permission;
         }
         return result;
     }
 
-    /// <summary>
-    /// Resolves the effective permission AND returns the ancestor folder ids visited during
-    /// resolution. The cache decorator (F6.3) uses the folder ids to tag the cached entry,
-    /// so a folder share change invalidates exactly the entries that depended on it.
-    /// </summary>
-    /// <remarks>
-    /// Internal contract — the public <see cref="IEffectivePermissionResolver"/> stays a
-    /// single-value API.
-    /// </remarks>
-    internal async Task<DocumentResolutionResult> ResolveDocumentAsync(
+    /// <inheritdoc />
+    public async Task<DocumentPermissionResolution> ResolveDocumentWithAncestorsAsync(
         Guid documentId,
         DocumentPrincipal principal,
         CancellationToken cancellationToken = default)
@@ -118,7 +110,7 @@ internal sealed class EffectivePermissionResolver(
         List<Guid> granteeIds = [.. principal.AllGranteeIds];
         if (granteeIds.Count == 0)
         {
-            return new DocumentResolutionResult(EffectivePermissionLevel.None, []);
+            return new DocumentPermissionResolution(EffectivePermissionLevel.None, []);
         }
 
         await using DocumentsDbContext context = await contextFactory
@@ -137,7 +129,7 @@ internal sealed class EffectivePermissionResolver(
             .ConfigureAwait(false);
         if (docInfo is null)
         {
-            return new DocumentResolutionResult(EffectivePermissionLevel.None, []);
+            return new DocumentPermissionResolution(EffectivePermissionLevel.None, []);
         }
 
         // Build the ancestor-path set in C# (cheap string ops on a materialised path) and
@@ -212,21 +204,11 @@ internal sealed class EffectivePermissionResolver(
                 _ => EffectivePermissionLevel.None,
             };
 
-        return new DocumentResolutionResult(level, ancestorFolderIds);
+        return new DocumentPermissionResolution(level, ancestorFolderIds);
     }
 
-    /// <summary>
-    /// Batched counterpart of <see cref="ResolveDocumentAsync"/>. Issues at most three
-    /// queries (doc/folder lookup, ancestor folder ids, share rows) regardless of page size
-    /// and computes the per-document effective permission in C# so the SQL stays
-    /// translatable across every EF Core provider.
-    /// </summary>
-    /// <remarks>
-    /// Returned dictionary contains an entry for every id in <paramref name="documentIds"/>.
-    /// Documents missing from the database (or excluded by the tenant filter) resolve to
-    /// <c>None</c> with an empty ancestor list, matching the single-target behaviour.
-    /// </remarks>
-    internal async Task<IReadOnlyDictionary<Guid, DocumentResolutionResult>> ResolveDocumentsAsync(
+    /// <inheritdoc />
+    public async Task<IReadOnlyDictionary<Guid, DocumentPermissionResolution>> ResolveDocumentsWithAncestorsAsync(
         IReadOnlyCollection<Guid> documentIds,
         DocumentPrincipal principal,
         CancellationToken cancellationToken = default)
@@ -234,13 +216,13 @@ internal sealed class EffectivePermissionResolver(
         ArgumentNullException.ThrowIfNull(documentIds);
         ArgumentNullException.ThrowIfNull(principal);
 
-        Dictionary<Guid, DocumentResolutionResult> output = new(documentIds.Count);
+        Dictionary<Guid, DocumentPermissionResolution> output = new(documentIds.Count);
         if (documentIds.Count == 0)
         {
             return output;
         }
 
-        DocumentResolutionResult empty = new(EffectivePermissionLevel.None, []);
+        DocumentPermissionResolution empty = new(EffectivePermissionLevel.None, []);
         foreach (Guid id in documentIds)
         {
             output[id] = empty;
@@ -396,24 +378,14 @@ internal sealed class EffectivePermissionResolver(
                     SharePermissionLevel.Read => EffectivePermissionLevel.Read,
                     _ => EffectivePermissionLevel.None,
                 };
-            output[info.Id] = new DocumentResolutionResult(level, ancestorFolderIds);
+            output[info.Id] = new DocumentPermissionResolution(level, ancestorFolderIds);
         }
 
         return output;
     }
 
-    /// <summary>
-    /// Folder counterpart of <see cref="ResolveDocumentsAsync"/> — same path-prefix scan,
-    /// minus the direct-document-share branch (folders never receive document shares). Used
-    /// by the F6.5b folder list endpoint to populate the <c>permission</c> field in batch.
-    /// </summary>
-    /// <remarks>
-    /// The result type <see cref="DocumentResolutionResult"/> is reused as a generic
-    /// "(permission, contributing folder ids)" carrier — the cache decorator tags each
-    /// entry with the contributing folder ids so a folder share change invalidates exactly
-    /// the entries that depended on it.
-    /// </remarks>
-    internal async Task<IReadOnlyDictionary<Guid, DocumentResolutionResult>> ResolveFoldersAsync(
+    /// <inheritdoc />
+    public async Task<IReadOnlyDictionary<Guid, FolderPermissionResolution>> ResolveFoldersWithAncestorsAsync(
         IReadOnlyCollection<Guid> folderIds,
         DocumentPrincipal principal,
         CancellationToken cancellationToken = default)
@@ -421,13 +393,13 @@ internal sealed class EffectivePermissionResolver(
         ArgumentNullException.ThrowIfNull(folderIds);
         ArgumentNullException.ThrowIfNull(principal);
 
-        Dictionary<Guid, DocumentResolutionResult> output = new(folderIds.Count);
+        Dictionary<Guid, FolderPermissionResolution> output = new(folderIds.Count);
         if (folderIds.Count == 0)
         {
             return output;
         }
 
-        DocumentResolutionResult empty = new(EffectivePermissionLevel.None, []);
+        FolderPermissionResolution empty = new(EffectivePermissionLevel.None, []);
         foreach (Guid id in folderIds)
         {
             output[id] = empty;
@@ -543,7 +515,7 @@ internal sealed class EffectivePermissionResolver(
                     SharePermissionLevel.Read => EffectivePermissionLevel.Read,
                     _ => EffectivePermissionLevel.None,
                 };
-            output[info.Id] = new DocumentResolutionResult(level, contributingFolderIds);
+            output[info.Id] = new FolderPermissionResolution(level, contributingFolderIds);
         }
 
         return output;

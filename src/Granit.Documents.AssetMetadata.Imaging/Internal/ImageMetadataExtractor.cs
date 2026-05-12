@@ -42,7 +42,14 @@ internal sealed class ImageMetadataExtractor(
         Stream source, string sourceContentType, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(source);
+        cancellationToken.ThrowIfCancellationRequested();
 
+        return Task.Run(() => ExtractCore(source, cancellationToken), cancellationToken);
+    }
+
+    private AssetMetadataResult ExtractCore(Stream source, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
         if (source.CanSeek)
         {
             source.Position = 0;
@@ -65,7 +72,7 @@ internal sealed class ImageMetadataExtractor(
             ScrubGps(raw);
         }
 
-        return Task.FromResult(projection with { RawMetadata = raw });
+        return projection with { RawMetadata = raw };
     }
 
     private static AssetMetadataResult ProjectDirectories(

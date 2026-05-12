@@ -1,6 +1,7 @@
 using Granit.Documents.Endpoints;
 using Granit.Documents.Renditions;
 using Granit.Modularity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Documents.Renditions.Endpoints;
 
@@ -13,4 +14,11 @@ namespace Granit.Documents.Renditions.Endpoints;
 [DependsOn(
     typeof(GranitDocumentsRenditionsModule),
     typeof(GranitDocumentsEndpointsModule))]
-public sealed class GranitDocumentsRenditionsEndpointsModule : GranitModule;
+public sealed class GranitDocumentsRenditionsEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.AddGranitDocumentsRenditionsEndpoints();
+    }
+}

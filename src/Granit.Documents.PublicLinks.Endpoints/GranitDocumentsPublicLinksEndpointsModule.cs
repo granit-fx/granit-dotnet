@@ -1,5 +1,6 @@
 using Granit.Documents.Endpoints;
 using Granit.Modularity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Documents.PublicLinks.Endpoints;
 
@@ -11,4 +12,11 @@ namespace Granit.Documents.PublicLinks.Endpoints;
 [DependsOn(
     typeof(GranitDocumentsPublicLinksModule),
     typeof(GranitDocumentsEndpointsModule))]
-public sealed class GranitDocumentsPublicLinksEndpointsModule : GranitModule;
+public sealed class GranitDocumentsPublicLinksEndpointsModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.AddGranitDocumentsPublicLinksEndpoints();
+    }
+}

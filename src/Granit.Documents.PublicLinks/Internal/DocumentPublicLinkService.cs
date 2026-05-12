@@ -1,6 +1,7 @@
 using Granit.BlobStorage;
 using Granit.BlobStorage.Options;
 using Granit.Documents.Domain;
+using Granit.Documents.PublicLinks.Diagnostics;
 using Granit.Documents.PublicLinks.Domain;
 using Granit.Documents.PublicLinks.Events;
 using Granit.Documents.PublicLinks.Options;
@@ -27,6 +28,7 @@ internal sealed class DocumentPublicLinkService(
     IGuidGenerator guidGenerator,
     TimeProvider timeProvider,
     IOptionsMonitor<GranitDocumentsPublicLinksOptions> optionsMonitor,
+    DocumentsPublicLinksMetrics metrics,
     IDistributedEventBus? distributedEventBus = null,
     ICurrentUserService? currentUser = null) : IDocumentPublicLinkService
 {
@@ -146,7 +148,18 @@ internal sealed class DocumentPublicLinkService(
             return null;
         }
 
-        await store.UpdateAsync(link, cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await store.UpdateAsync(link, cancellationToken).ConfigureAwait(false);
+        }
+        catch (PublicLinkConcurrencyConflictException)
+        {
+            // Two concurrent consumers raced past the IsActive check; the loser
+            // surfaces 404 so the MaxUses cap holds. Caller cannot distinguish
+            // race from any other failure path — by design (information hiding).
+            metrics.RecordConcurrencyConflict(link.TenantId?.ToString());
+            return null;
+        }
 
         // F18.4 — publish the distributed audit event AFTER the consumption is durably
         // persisted (outbox semantics: never advertise a side-effect that isn't recorded).

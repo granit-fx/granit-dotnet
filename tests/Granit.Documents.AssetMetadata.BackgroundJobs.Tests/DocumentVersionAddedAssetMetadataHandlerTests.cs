@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Granit.Documents.AssetMetadata;
 using Granit.Documents.AssetMetadata.BackgroundJobs;
 using Granit.Documents.AssetMetadata.BackgroundJobs.Handlers;
 using Granit.Documents.AssetMetadata.BackgroundJobs.Internal;
+using Granit.Documents.AssetMetadata.Diagnostics;
 using Granit.Documents.AssetMetadata.Domain;
 using Granit.Documents.AssetMetadata.Exceptions;
 using Granit.Documents.AssetMetadata.Options;
@@ -61,6 +63,7 @@ public sealed class DocumentVersionAddedAssetMetadataHandlerTests
             documentService ?? Substitute.For<IDocumentService>(),
             GuidGen(),
             FixedClock(Now),
+            new AssetMetadataMetrics(new TestMeterFactory()),
             Microsoft.Extensions.Options.Options.Create(new GranitAssetMetadataOptions()),
             NullLogger<AssetMetadataGenerationService>.Instance);
 
@@ -197,5 +200,26 @@ public sealed class DocumentVersionAddedAssetMetadataHandlerTests
         await store.DidNotReceiveWithAnyArgs().UpdateAsync(default!, Arg.Any<CancellationToken>());
         await pipeline.DidNotReceiveWithAnyArgs().ExtractAsync(default!, default!, Arg.Any<CancellationToken>());
         await fetcher.DidNotReceiveWithAnyArgs().OpenSourceAsync(default, Arg.Any<CancellationToken>());
+    }
+
+    private sealed class TestMeterFactory : IMeterFactory
+    {
+        private readonly List<Meter> _meters = [];
+
+        public Meter Create(MeterOptions options)
+        {
+            Meter meter = new(options);
+            _meters.Add(meter);
+            return meter;
+        }
+
+        public void Dispose()
+        {
+            foreach (Meter meter in _meters)
+            {
+                meter.Dispose();
+            }
+            _meters.Clear();
+        }
     }
 }

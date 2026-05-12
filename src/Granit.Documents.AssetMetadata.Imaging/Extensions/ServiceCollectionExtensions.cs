@@ -5,6 +5,7 @@ using Granit.Documents.Events;
 using Granit.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Http.Resilience;
 
 namespace Granit.Documents.AssetMetadata.Imaging.Extensions;
 
@@ -25,7 +26,8 @@ public static class ServiceCollectionExtensions
             ServiceDescriptor.Singleton<IAssetMetadataExtractor, ImageMetadataExtractor>());
         services.TryAddEnumerable(
             ServiceDescriptor.Scoped<ILocalEventHandler<DocumentVersionAddedEvent>, StripGpsHandler>());
-        services.AddHttpClient(StripGpsHandler.HttpClientName);
+        services.AddHttpClient(StripGpsHandler.HttpClientName)
+            .AddStandardResilienceHandler();
         return services;
     }
 }

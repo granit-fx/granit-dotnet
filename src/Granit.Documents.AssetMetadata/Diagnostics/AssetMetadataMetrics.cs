@@ -20,6 +20,8 @@ public sealed class AssetMetadataMetrics
     private readonly Counter<long> _extracted;
     private readonly Counter<long> _failed;
     private readonly Counter<long> _gpsScrubbed;
+    private readonly Counter<long> _personalDataStripped;
+    private readonly Counter<long> _timeouts;
     private readonly Histogram<double> _extractionDuration;
 
     /// <summary>Initialises the meter and instruments.</summary>
@@ -37,6 +39,12 @@ public sealed class AssetMetadataMetrics
         _gpsScrubbed = meter.CreateCounter<long>(
             "granit.documents.asset_metadata.gps_scrubbed.count",
             description: "Number of uploads whose GPS coordinates were stripped on ingest.");
+        _personalDataStripped = meter.CreateCounter<long>(
+            "granit.documents.asset_metadata.personal_data_stripped.count",
+            description: "Number of raw-metadata keys dropped by the GDPR Art. 5(c) PII-strip pass.");
+        _timeouts = meter.CreateCounter<long>(
+            "granit.documents.asset_metadata.timeout.count",
+            description: "Number of per-extractor invocations cancelled by the ExtractionTimeout cap.");
         _extractionDuration = meter.CreateHistogram<double>(
             "granit.documents.asset_metadata.extraction.duration",
             unit: "ms",
@@ -63,6 +71,19 @@ public sealed class AssetMetadataMetrics
         _gpsScrubbed.Add(1,
             new KeyValuePair<string, object?>(TagTenantId, tenantId ?? DefaultTenant),
             new KeyValuePair<string, object?>(TagSourceContentType, sourceContentType));
+
+    /// <summary>Records a PII-strip pass — <paramref name="fieldCount"/> raw keys were dropped.</summary>
+    public void RecordPersonalDataStripped(string? tenantId, string sourceContentType, int fieldCount) =>
+        _personalDataStripped.Add(fieldCount,
+            new KeyValuePair<string, object?>(TagTenantId, tenantId ?? DefaultTenant),
+            new KeyValuePair<string, object?>(TagSourceContentType, sourceContentType));
+
+    /// <summary>Records an extractor invocation that exceeded <c>ExtractionTimeout</c>.</summary>
+    public void RecordTimeout(string? tenantId, string sourceContentType, string extractor) =>
+        _timeouts.Add(1,
+            new KeyValuePair<string, object?>(TagTenantId, tenantId ?? DefaultTenant),
+            new KeyValuePair<string, object?>(TagSourceContentType, sourceContentType),
+            new KeyValuePair<string, object?>(TagExtractor, extractor));
 
     /// <summary>Records the wall-clock duration of a single extractor run (ms).</summary>
     public void RecordExtractionDuration(string? tenantId, string extractor, double durationMs) =>

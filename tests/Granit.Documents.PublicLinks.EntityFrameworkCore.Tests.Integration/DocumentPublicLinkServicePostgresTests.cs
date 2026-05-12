@@ -1,7 +1,9 @@
+using System.Diagnostics.Metrics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Granit.Documents;
 using Granit.Documents.Domain;
+using Granit.Documents.PublicLinks.Diagnostics;
 using Granit.Documents.PublicLinks.Domain;
 using Granit.Documents.PublicLinks.EntityFrameworkCore.Internal;
 using Granit.Documents.PublicLinks.Events;
@@ -73,12 +75,20 @@ public sealed class DocumentPublicLinkServicePostgresTests :
         });
         IGuidGenerator guids = Substitute.For<IGuidGenerator>();
         guids.Create().Returns(_ => Guid.NewGuid());
+        DocumentsPublicLinksMetrics metrics = new(new StubMeterFactory());
         return new DocumentPublicLinkService(
             _store, _documents, guids,
             new FixedTime(Now),
             monitor,
+            metrics,
             distributedEventBus: _eventBus,
             currentUser: user);
+    }
+
+    private sealed class StubMeterFactory : IMeterFactory
+    {
+        public Meter Create(MeterOptions options) => new(options);
+        public void Dispose() { }
     }
 
     [Fact]

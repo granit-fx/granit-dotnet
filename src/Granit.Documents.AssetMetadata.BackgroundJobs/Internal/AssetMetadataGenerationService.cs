@@ -108,6 +108,14 @@ internal sealed partial class AssetMetadataGenerationService(
 
                 LogExtracted(logger, row.Id, sourceContentType, row.ExtractorCount);
             }
+            catch (AssetMetadataExtractionTimeoutException ex)
+            {
+                row.MarkFailed(ex.Message, clock.Now);
+                await store.UpdateAsync(row, cancellationToken).ConfigureAwait(false);
+                metrics.RecordTimeout(tenantId?.ToString(), sourceContentType, ex.ExtractorName);
+                metrics.RecordFailed(tenantId?.ToString(), sourceContentType, ex.ExtractorName, nameof(AssetMetadataExtractionTimeoutException));
+                LogFailed(logger, row.Id, sourceContentType, ex.Message);
+            }
             catch (AssetMetadataExtractionException ex)
             {
                 row.MarkFailed(ex.Message, clock.Now);

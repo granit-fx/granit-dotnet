@@ -8,6 +8,7 @@ using Granit.Documents.Renditions;
 using Granit.Documents.Renditions.Domain;
 using Granit.Documents.Renditions.Endpoints.Dtos;
 using Granit.Documents.Renditions.Endpoints.Mapping;
+using Granit.Documents.Renditions.Endpoints.Options;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -25,13 +26,12 @@ namespace Granit.Documents.Renditions.Endpoints.Endpoints;
 /// </summary>
 internal static class RenditionEndpoints
 {
-    private const string TagName = "Documents - Renditions";
-
-    public static RouteGroupBuilder MapRenditionEndpoints(this RouteGroupBuilder group)
+    public static RouteGroupBuilder MapRenditionEndpoints(this RouteGroupBuilder group, RenditionsEndpointsOptions options)
     {
         ArgumentNullException.ThrowIfNull(group);
+        ArgumentNullException.ThrowIfNull(options);
 
-        RouteGroupBuilder renditions = group.MapGranitGroup("/documents/{id:guid}/renditions").WithTags(TagName);
+        RouteGroupBuilder renditions = group.MapGranitGroup(options.RoutePrefix).WithTags(options.TagName);
 
         renditions.MapGet("", ListAsync)
             .WithName("ListDocumentRenditions")

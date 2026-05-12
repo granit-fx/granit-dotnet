@@ -266,6 +266,41 @@ public sealed class DocumentAssetMetadata : AggregateRoot, IMultiTenant
         RawMetadata = trimmed;
     }
 
+    /// <summary>
+    /// Drops PII-bearing typed columns (<see cref="Author"/>, <see cref="Artist"/>,
+    /// <see cref="LastModifiedBy"/>) and removes any <see cref="RawMetadata"/>
+    /// keys whose tag matches the curated personal-data substring allow-list
+    /// (called by the pipeline when <c>StripPersonalDataOnUpload</c> is enabled).
+    /// Returns the number of raw keys removed so the caller can record the
+    /// outcome on the metrics counter.
+    /// </summary>
+    public int StripPersonalData()
+    {
+        Author = null;
+        Artist = null;
+        LastModifiedBy = null;
+        if (RawMetadata.Count == 0)
+        {
+            return 0;
+        }
+        var trimmed = new Dictionary<string, string?>(StringComparer.Ordinal);
+        int removed = 0;
+        foreach ((string key, string? value) in RawMetadata)
+        {
+            if (Internal.PersonalDataKeyMatcher.IsPersonalData(key))
+            {
+                removed++;
+                continue;
+            }
+            trimmed[key] = value;
+        }
+        if (removed > 0)
+        {
+            RawMetadata = trimmed;
+        }
+        return removed;
+    }
+
     /// <summary>Transitions to <see cref="AssetMetadataStatus.Ready"/> and emits <see cref="AssetMetadataExtractedEvent"/>.</summary>
     public void MarkReady(DateTimeOffset now)
     {

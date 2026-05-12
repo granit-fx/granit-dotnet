@@ -5,8 +5,8 @@ namespace Granit.Documents.PublicLinks.Endpoints.Options;
 /// </summary>
 public sealed class DocumentsPublicLinksEndpointsOptions
 {
-    /// <summary>Section key in the configuration (<c>"DocumentsPublicLinksEndpoints"</c>).</summary>
-    public const string SectionName = "DocumentsPublicLinksEndpoints";
+    /// <summary>Section key in the configuration (<c>"Documents:PublicLinks:Endpoints"</c>).</summary>
+    public const string SectionName = "Documents:PublicLinks:Endpoints";
 
     /// <summary>
     /// Route prefix for the authenticated admin endpoints (list / create / revoke).
