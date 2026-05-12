@@ -19,7 +19,7 @@ public sealed class RenditionsArchitectureTests
     private static readonly string[] RenditionPackages =
     [
         "Granit.Documents.Renditions",
-        "Granit.Documents.Renditions.BackgroundJobs",
+        "Granit.Documents.Renditions.Wolverine",
         "Granit.Documents.Renditions.EntityFrameworkCore",
         "Granit.Documents.Renditions.Endpoints",
         "Granit.Documents.Renditions.Imaging",
@@ -112,7 +112,7 @@ public sealed class RenditionsArchitectureTests
             "Granit.Documents.Renditions.Imaging.csproj",
             "Granit.Documents.Renditions.Pdf.csproj",
             "Granit.Documents.Renditions.Office.csproj",
-            "Granit.Documents.Renditions.BackgroundJobs.csproj",
+            "Granit.Documents.Renditions.Wolverine.csproj",
             "Granit.Documents.Renditions.EntityFrameworkCore.csproj",
             "Granit.Documents.Renditions.Endpoints.csproj",
         ];
@@ -131,7 +131,7 @@ public sealed class RenditionsArchitectureTests
     /// the base contract — otherwise it would be implementing a parallel surface.
     /// </summary>
     [Theory]
-    [InlineData("Granit.Documents.Renditions.BackgroundJobs")]
+    [InlineData("Granit.Documents.Renditions.Wolverine")]
     [InlineData("Granit.Documents.Renditions.EntityFrameworkCore")]
     [InlineData("Granit.Documents.Renditions.Endpoints")]
     [InlineData("Granit.Documents.Renditions.Imaging")]
@@ -146,7 +146,7 @@ public sealed class RenditionsArchitectureTests
         bool referencesBase = doc.Descendants("ProjectReference")
             .Select(e => e.Attribute("Include")?.Value ?? string.Empty)
             .Any(r => r.EndsWith("Granit.Documents.Renditions.csproj", StringComparison.Ordinal) &&
-                      !r.Contains(".BackgroundJobs", StringComparison.Ordinal) &&
+                      !r.Contains(".Wolverine", StringComparison.Ordinal) &&
                       !r.Contains(".EntityFrameworkCore", StringComparison.Ordinal) &&
                       !r.Contains(".Endpoints", StringComparison.Ordinal) &&
                       !r.Contains(".Imaging", StringComparison.Ordinal) &&

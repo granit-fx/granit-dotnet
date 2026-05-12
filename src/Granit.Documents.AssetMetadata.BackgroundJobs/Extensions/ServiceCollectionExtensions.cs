@@ -2,6 +2,7 @@ using System;
 using Granit.Documents.AssetMetadata.BackgroundJobs.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Http.Resilience;
 
 namespace Granit.Documents.AssetMetadata.BackgroundJobs.Extensions;
 
@@ -21,7 +22,8 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddHttpClient(HttpAssetMetadataSourceFetcher.HttpClientName);
+        services.AddHttpClient(HttpAssetMetadataSourceFetcher.HttpClientName)
+            .AddStandardResilienceHandler();
 
         services.TryAddSingleton<IAssetMetadataSourceFetcher, HttpAssetMetadataSourceFetcher>();
         services.TryAddSingleton<IAssetMetadataGenerationService, AssetMetadataGenerationService>();

@@ -19,6 +19,7 @@ public sealed class DocumentsPublicLinksMetrics
     private readonly Counter<long> _created;
     private readonly Counter<long> _revoked;
     private readonly Counter<long> _consumed;
+    private readonly Counter<long> _concurrencyConflicts;
 
     /// <summary>Initialises the meter and instruments.</summary>
     public DocumentsPublicLinksMetrics(IMeterFactory meterFactory)
@@ -35,6 +36,9 @@ public sealed class DocumentsPublicLinksMetrics
         _consumed = meter.CreateCounter<long>(
             "granit.documents.public_links.consumed.count",
             description: "Number of successful public-link redemptions.");
+        _concurrencyConflicts = meter.CreateCounter<long>(
+            "granit.documents.public_links.concurrency_conflicts.count",
+            description: "Number of public-link redemptions that lost the optimistic concurrency race.");
     }
 
     /// <summary>Records a freshly minted link.</summary>
@@ -54,4 +58,9 @@ public sealed class DocumentsPublicLinksMetrics
         _consumed.Add(1,
             new KeyValuePair<string, object?>(TagTenantId, tenantId ?? DefaultTenant),
             new KeyValuePair<string, object?>(TagScope, scope));
+
+    /// <summary>Records a redemption that lost the optimistic concurrency race against another consumer.</summary>
+    public void RecordConcurrencyConflict(string? tenantId) =>
+        _concurrencyConflicts.Add(1,
+            new KeyValuePair<string, object?>(TagTenantId, tenantId ?? DefaultTenant));
 }

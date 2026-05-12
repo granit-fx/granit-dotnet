@@ -1,7 +1,9 @@
+using System.Diagnostics.Metrics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Granit.Documents;
 using Granit.Documents.Domain;
+using Granit.Documents.PublicLinks.Diagnostics;
 using Granit.Documents.PublicLinks.Domain;
 using Granit.Documents.PublicLinks.EntityFrameworkCore.Internal;
 using Granit.Documents.PublicLinks.Internal;
@@ -37,7 +39,14 @@ public sealed class DocumentPublicLinkServiceTests
         IOptionsMonitor<GranitDocumentsPublicLinksOptions> monitor = Substitute.For<IOptionsMonitor<GranitDocumentsPublicLinksOptions>>();
         monitor.CurrentValue.Returns(_options);
         _guids.Create().Returns(_ => Guid.NewGuid());
-        return new DocumentPublicLinkService(_store, _documents, _guids, _time, monitor, distributedEventBus: null, currentUser: user);
+        DocumentsPublicLinksMetrics metrics = new(new StubMeterFactory());
+        return new DocumentPublicLinkService(_store, _documents, _guids, _time, monitor, metrics, distributedEventBus: null, currentUser: user);
+    }
+
+    private sealed class StubMeterFactory : IMeterFactory
+    {
+        public Meter Create(MeterOptions options) => new(options);
+        public void Dispose() { }
     }
 
     [Fact]

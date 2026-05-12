@@ -22,10 +22,19 @@ namespace Granit.Documents.PublicLinks.Domain;
 /// integration land in companion packages (F18.2 / .3 / .4).
 /// </para>
 /// </remarks>
-public sealed class DocumentPublicLink : AggregateRoot, IMultiTenant
+public sealed class DocumentPublicLink : AggregateRoot, IMultiTenant, IConcurrencyAware
 {
     /// <summary>Parameterless constructor required by the EF Core materialiser.</summary>
     private DocumentPublicLink() { }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Auto-regenerated on every save by <c>ConcurrencyStampInterceptor</c> and configured as an
+    /// EF Core concurrency token via <c>ApplyGranitConventions</c>. Hardens the <c>MaxUses</c>
+    /// cap against concurrent redemption races: two simultaneous calls to
+    /// <c>ResolveAndConsumeAsync</c> cannot both increment <c>CurrentUses</c> past the cap.
+    /// </remarks>
+    public string ConcurrencyStamp { get; set; } = string.Empty;
 
     /// <summary>
     /// Creates a new active public link. The caller is responsible for hashing the

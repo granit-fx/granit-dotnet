@@ -3,7 +3,6 @@ using Granit.Caching.Extensions;
 using Granit.Documents.Authorization;
 using Granit.Documents.Diagnostics;
 using Granit.Documents.Domain;
-using Granit.Documents.EntityFrameworkCore.Authorization;
 using Granit.Documents.EntityFrameworkCore.Internal;
 using Granit.Documents.Options;
 using Granit.MultiTenancy;

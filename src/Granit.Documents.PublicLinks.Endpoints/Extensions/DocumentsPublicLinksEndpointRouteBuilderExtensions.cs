@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Documents.PublicLinks.Endpoints.Extensions;
 
@@ -27,7 +29,13 @@ public static class DocumentsPublicLinksEndpointRouteBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(endpoints);
 
-        DocumentsPublicLinksEndpointsOptions options = new();
+        // Resolve from IOptionsMonitor when the host registered the options through
+        // AddGranitDocumentsPublicLinksEndpoints() / configuration binding. Falls
+        // back to a fresh default instance when neither monitor nor configure are
+        // present (backwards compatible with the original Action<>-only surface).
+        IOptionsMonitor<DocumentsPublicLinksEndpointsOptions>? monitor =
+            endpoints.ServiceProvider.GetService<IOptionsMonitor<DocumentsPublicLinksEndpointsOptions>>();
+        DocumentsPublicLinksEndpointsOptions options = monitor?.CurrentValue ?? new DocumentsPublicLinksEndpointsOptions();
         configure?.Invoke(options);
 
         RouteGroupBuilder adminGroup = endpoints

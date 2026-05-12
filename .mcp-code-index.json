@@ -1081,6 +1081,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.PublicLinks.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Documents.PublicLinks",
+        "Granit.Documents.PublicLinks.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.PublicLinks.Endpoints",
       "deps": [
         "Granit.Documents",
@@ -1104,14 +1113,6 @@
       "deps": [
         "Granit",
         "Granit.Documents"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Documents.Renditions.BackgroundJobs",
-      "deps": [
-        "Granit.BackgroundJobs",
-        "Granit.Documents.Renditions"
       ],
       "framework": "net10.0"
     },
@@ -1154,6 +1155,14 @@
       "name": "Granit.Documents.Renditions.Pdf",
       "deps": [
         "Granit.Browsing",
+        "Granit.Documents.Renditions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.Renditions.Wolverine",
+      "deps": [
+        "Granit.Wolverine",
         "Granit.Documents.Renditions"
       ],
       "framework": "net10.0"
@@ -20682,7 +20691,7 @@
       "kind": "class",
       "project": "Granit.Documents.AssetMetadata.BackgroundJobs",
       "file": "src/Granit.Documents.AssetMetadata.BackgroundJobs/Extensions/ServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitDocumentsAssetMetadataBackgroundJobs",
@@ -20790,6 +20799,18 @@
           "name": "RecordGpsScrubbed",
           "kind": "method",
           "signature": "RecordGpsScrubbed(string? tenantId, string sourceContentType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordPersonalDataStripped",
+          "kind": "method",
+          "signature": "RecordPersonalDataStripped(string? tenantId, string sourceContentType, int fieldCount)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordTimeout",
+          "kind": "method",
+          "signature": "RecordTimeout(string? tenantId, string sourceContentType, string extractor)",
           "returnType": "void"
         },
         {
@@ -20979,6 +21000,22 @@
       ]
     },
     {
+      "name": "AssetMetadataExtractionTimeoutException",
+      "fqn": "Granit.Documents.AssetMetadata.Exceptions.AssetMetadataExtractionTimeoutException",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Exceptions/AssetMetadataExtractionTimeoutException.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AssetMetadataExtractionTimeoutException",
+          "kind": "method",
+          "signature": "AssetMetadataExtractionTimeoutException(string extractorName, string sourceContentType, TimeSpan timeout)",
+          "returnType": "string ExtractorName { get; } public string SourceContentType { get; } public TimeSpan Timeout { get; } public"
+        }
+      ]
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.Documents.AssetMetadata.Extensions.ServiceCollectionExtensions",
       "kind": "class",
@@ -21100,7 +21137,7 @@
       "kind": "class",
       "project": "Granit.Documents.AssetMetadata.Imaging",
       "file": "src/Granit.Documents.AssetMetadata.Imaging/Extensions/ServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitDocumentsAssetMetadataImaging",
@@ -21170,6 +21207,12 @@
           "name": "StripGpsOnUpload",
           "kind": "property",
           "signature": "bool StripGpsOnUpload",
+          "returnType": "bool"
+        },
+        {
+          "name": "StripPersonalDataOnUpload",
+          "kind": "property",
+          "signature": "bool StripPersonalDataOnUpload",
           "returnType": "bool"
         },
         {
@@ -21340,8 +21383,35 @@
           "kind": "method",
           "signature": "GetFolderPermissionsAsync(IReadOnlyCollection<Guid> folderIds, DocumentPrincipal principal, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyDictionary<Guid, EffectivePermissionLevel>>"
+        },
+        {
+          "name": "ResolveDocumentWithAncestorsAsync",
+          "kind": "method",
+          "signature": "ResolveDocumentWithAncestorsAsync(Guid documentId, DocumentPrincipal principal, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentPermissionResolution>"
+        },
+        {
+          "name": "ResolveDocumentsWithAncestorsAsync",
+          "kind": "method",
+          "signature": "ResolveDocumentsWithAncestorsAsync(IReadOnlyCollection<Guid> documentIds, DocumentPrincipal principal, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<Guid, DocumentPermissionResolution>>"
+        },
+        {
+          "name": "ResolveFoldersWithAncestorsAsync",
+          "kind": "method",
+          "signature": "ResolveFoldersWithAncestorsAsync(IReadOnlyCollection<Guid> folderIds, DocumentPrincipal principal, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<Guid, FolderPermissionResolution>>"
         }
       ]
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Documents.Authorization.struct",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Authorization/IEffectivePermissionResolver.cs",
+      "line": 115,
+      "members": []
     },
     {
       "name": "GranitDocumentsBackgroundJobsModule",
@@ -21937,7 +22007,7 @@
       "kind": "class",
       "project": "Granit.Documents.EntityFrameworkCore",
       "file": "src/Granit.Documents.EntityFrameworkCore/Extensions/DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitDocumentsEntityFrameworkCore",
@@ -22942,6 +23012,40 @@
       "members": []
     },
     {
+      "name": "GranitDocumentsPublicLinksBackgroundJobsModule",
+      "fqn": "Granit.Documents.PublicLinks.BackgroundJobs.GranitDocumentsPublicLinksBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks.BackgroundJobs",
+      "file": "src/Granit.Documents.PublicLinks.BackgroundJobs/GranitDocumentsPublicLinksBackgroundJobsModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "PruneExpiredPublicLinksHandler",
+      "fqn": "Granit.Documents.PublicLinks.BackgroundJobs.Jobs.PruneExpiredPublicLinksHandler",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks.BackgroundJobs",
+      "file": "src/Granit.Documents.PublicLinks.BackgroundJobs/Jobs/PruneExpiredPublicLinksHandler.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PruneExpiredPublicLinksJob job, IServiceProvider serviceProvider, IClock clock, IOptionsMonitor<GranitDocumentsPublicLinksOptions> optionsMonitor, ILogger<PruneExpiredPublicLinksJob> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PruneExpiredPublicLinksJob",
+      "fqn": "Granit.Documents.PublicLinks.BackgroundJobs.Jobs.PruneExpiredPublicLinksJob",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks.BackgroundJobs",
+      "file": "src/Granit.Documents.PublicLinks.BackgroundJobs/Jobs/PruneExpiredPublicLinksJob.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "DocumentsPublicLinksActivitySource",
       "fqn": "Granit.Documents.PublicLinks.Diagnostics.DocumentsPublicLinksActivitySource",
       "kind": "class",
@@ -22976,6 +23080,12 @@
           "kind": "method",
           "signature": "RecordConsumed(string? tenantId, string scope)",
           "returnType": "void"
+        },
+        {
+          "name": "RecordConcurrencyConflict",
+          "kind": "method",
+          "signature": "RecordConcurrencyConflict(string? tenantId)",
+          "returnType": "void"
         }
       ]
     },
@@ -22996,6 +23106,12 @@
       "file": "src/Granit.Documents.PublicLinks/Domain/DocumentPublicLink.cs",
       "line": 25,
       "members": [
+        {
+          "name": "ConcurrencyStamp",
+          "kind": "property",
+          "signature": "string ConcurrencyStamp",
+          "returnType": "string"
+        },
         {
           "name": "Create",
           "kind": "method",
@@ -23083,7 +23199,7 @@
       "kind": "class",
       "project": "Granit.Documents.PublicLinks.Endpoints",
       "file": "src/Granit.Documents.PublicLinks.Endpoints/Extensions/DocumentsPublicLinksEndpointRouteBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitDocumentsPublicLinks",
@@ -23115,8 +23231,15 @@
       "kind": "class",
       "project": "Granit.Documents.PublicLinks.Endpoints",
       "file": "src/Granit.Documents.PublicLinks.Endpoints/GranitDocumentsPublicLinksEndpointsModule.cs",
-      "line": 14,
-      "members": []
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "DocumentsPublicLinksEndpointsOptions",
@@ -23360,6 +23483,34 @@
           "kind": "property",
           "signature": "int RateLimitPerMinute",
           "returnType": "int"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "int? DefaultMaxUses { get; set; } public PruningOptions Pruning { get; set; } ="
+        }
+      ]
+    },
+    {
+      "name": "PruningOptions",
+      "fqn": "Granit.Documents.PublicLinks.Options.PruningOptions",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks",
+      "file": "src/Granit.Documents.PublicLinks/Options/GranitDocumentsPublicLinksOptions.cs",
+      "line": 57,
+      "members": [
+        {
+          "name": "Enabled",
+          "kind": "property",
+          "signature": "bool Enabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(90)",
+          "returnType": "TimeSpan RetentionAfterRevocation { get; set; } = TimeSpan."
         }
       ]
     },
@@ -23448,134 +23599,6 @@
       ]
     },
     {
-      "name": "ServiceCollectionExtensions",
-      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Extensions.ServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Documents.Renditions.BackgroundJobs",
-      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Extensions/ServiceCollectionExtensions.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "AddGranitDocumentsRenditionsBackgroundJobs",
-          "kind": "method",
-          "signature": "AddGranitDocumentsRenditionsBackgroundJobs(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitDocumentsRenditionsBackgroundJobsModule",
-      "fqn": "Granit.Documents.Renditions.BackgroundJobs.GranitDocumentsRenditionsBackgroundJobsModule",
-      "kind": "class",
-      "project": "Granit.Documents.Renditions.BackgroundJobs",
-      "file": "src/Granit.Documents.Renditions.BackgroundJobs/GranitDocumentsRenditionsBackgroundJobsModule.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "DocumentVersionAddedRenditionsHandler",
-      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Handlers.DocumentVersionAddedRenditionsHandler",
-      "kind": "class",
-      "project": "Granit.Documents.Renditions.BackgroundJobs",
-      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Handlers/DocumentVersionAddedRenditionsHandler.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(DocumentVersionAddedEvent evt, IRenditionTypePolicy policy, IRenditionGenerationService generationService, ILogger<DocumentVersionAddedRenditionsHandler> logger, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IRenditionGenerationService",
-      "fqn": "Granit.Documents.Renditions.BackgroundJobs.IRenditionGenerationService",
-      "kind": "interface",
-      "project": "Granit.Documents.Renditions.BackgroundJobs",
-      "file": "src/Granit.Documents.Renditions.BackgroundJobs/IRenditionGenerationService.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "GenerateAsync",
-          "kind": "method",
-          "signature": "GenerateAsync(Guid documentId, Guid? tenantId, Guid versionId, Guid blobDescriptorId, string sourceContentType, RenditionTarget target, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IRenditionResultUploader",
-      "fqn": "Granit.Documents.Renditions.BackgroundJobs.IRenditionResultUploader",
-      "kind": "interface",
-      "project": "Granit.Documents.Renditions.BackgroundJobs",
-      "file": "src/Granit.Documents.Renditions.BackgroundJobs/IRenditionResultUploader.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "UploadAsync",
-          "kind": "method",
-          "signature": "UploadAsync(RenditionResult result, CancellationToken cancellationToken = default)",
-          "returnType": "Task<Guid>"
-        }
-      ]
-    },
-    {
-      "name": "IRenditionSourceFetcher",
-      "fqn": "Granit.Documents.Renditions.BackgroundJobs.IRenditionSourceFetcher",
-      "kind": "interface",
-      "project": "Granit.Documents.Renditions.BackgroundJobs",
-      "file": "src/Granit.Documents.Renditions.BackgroundJobs/IRenditionSourceFetcher.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "OpenSourceAsync",
-          "kind": "method",
-          "signature": "OpenSourceAsync(Guid blobDescriptorId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<Stream>"
-        }
-      ]
-    },
-    {
-      "name": "DefaultRenditionTypePolicy",
-      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Policies.DefaultRenditionTypePolicy",
-      "kind": "class",
-      "project": "Granit.Documents.Renditions.BackgroundJobs",
-      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Policies/DefaultRenditionTypePolicy.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "ResolveTargets",
-          "kind": "method",
-          "signature": "ResolveTargets(string sourceContentType)",
-          "returnType": "IReadOnlyList<RenditionTarget>"
-        }
-      ]
-    },
-    {
-      "name": "IRenditionTypePolicy",
-      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Policies.IRenditionTypePolicy",
-      "kind": "interface",
-      "project": "Granit.Documents.Renditions.BackgroundJobs",
-      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Policies/IRenditionTypePolicy.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "ResolveTargets",
-          "kind": "method",
-          "signature": "ResolveTargets(string sourceContentType)",
-          "returnType": "IReadOnlyList<RenditionTarget>"
-        }
-      ]
-    },
-    {
       "name": "DocumentRenditionContainers",
       "fqn": "Granit.Documents.Renditions.DocumentRenditionContainers",
       "kind": "class",
@@ -23657,7 +23680,7 @@
       "kind": "class",
       "project": "Granit.Documents.Renditions.Endpoints",
       "file": "src/Granit.Documents.Renditions.Endpoints/Extensions/RenditionsEndpointRouteBuilderExtensions.cs",
-      "line": 9,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitDocumentsRenditions",
@@ -23673,8 +23696,37 @@
       "kind": "class",
       "project": "Granit.Documents.Renditions.Endpoints",
       "file": "src/Granit.Documents.Renditions.Endpoints/GranitDocumentsRenditionsEndpointsModule.cs",
-      "line": 16,
-      "members": []
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "RenditionsEndpointsOptions",
+      "fqn": "Granit.Documents.Renditions.Endpoints.Options.RenditionsEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/Options/RenditionsEndpointsOptions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "RenditionsEntityFrameworkCoreHostApplicationBuilderExtensions",
@@ -24144,6 +24196,134 @@
       "file": "src/Granit.Documents.Renditions/RenditionTarget.cs",
       "line": 14,
       "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Renditions.Wolverine.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Wolverine",
+      "file": "src/Granit.Documents.Renditions.Wolverine/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsWolverine",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsWolverine(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsWolverineModule",
+      "fqn": "Granit.Documents.Renditions.Wolverine.GranitDocumentsRenditionsWolverineModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Wolverine",
+      "file": "src/Granit.Documents.Renditions.Wolverine/GranitDocumentsRenditionsWolverineModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DocumentVersionAddedRenditionsHandler",
+      "fqn": "Granit.Documents.Renditions.Wolverine.Handlers.DocumentVersionAddedRenditionsHandler",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Wolverine",
+      "file": "src/Granit.Documents.Renditions.Wolverine/Handlers/DocumentVersionAddedRenditionsHandler.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentVersionAddedEvent evt, IRenditionTypePolicy policy, IRenditionGenerationService generationService, ILogger<DocumentVersionAddedRenditionsHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionGenerationService",
+      "fqn": "Granit.Documents.Renditions.Wolverine.IRenditionGenerationService",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.Wolverine",
+      "file": "src/Granit.Documents.Renditions.Wolverine/IRenditionGenerationService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "GenerateAsync",
+          "kind": "method",
+          "signature": "GenerateAsync(Guid documentId, Guid? tenantId, Guid versionId, Guid blobDescriptorId, string sourceContentType, RenditionTarget target, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionResultUploader",
+      "fqn": "Granit.Documents.Renditions.Wolverine.IRenditionResultUploader",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.Wolverine",
+      "file": "src/Granit.Documents.Renditions.Wolverine/IRenditionResultUploader.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "UploadAsync",
+          "kind": "method",
+          "signature": "UploadAsync(RenditionResult result, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Guid>"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionSourceFetcher",
+      "fqn": "Granit.Documents.Renditions.Wolverine.IRenditionSourceFetcher",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.Wolverine",
+      "file": "src/Granit.Documents.Renditions.Wolverine/IRenditionSourceFetcher.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "OpenSourceAsync",
+          "kind": "method",
+          "signature": "OpenSourceAsync(Guid blobDescriptorId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Stream>"
+        }
+      ]
+    },
+    {
+      "name": "DefaultRenditionTypePolicy",
+      "fqn": "Granit.Documents.Renditions.Wolverine.Policies.DefaultRenditionTypePolicy",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Wolverine",
+      "file": "src/Granit.Documents.Renditions.Wolverine/Policies/DefaultRenditionTypePolicy.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ResolveTargets",
+          "kind": "method",
+          "signature": "ResolveTargets(string sourceContentType)",
+          "returnType": "IReadOnlyList<RenditionTarget>"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionTypePolicy",
+      "fqn": "Granit.Documents.Renditions.Wolverine.Policies.IRenditionTypePolicy",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.Wolverine",
+      "file": "src/Granit.Documents.Renditions.Wolverine/Policies/IRenditionTypePolicy.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ResolveTargets",
+          "kind": "method",
+          "signature": "ResolveTargets(string sourceContentType)",
+          "returnType": "IReadOnlyList<RenditionTarget>"
+        }
+      ]
     },
     {
       "name": "AggregateRoot",
@@ -68769,6 +68949,22 @@
       "members": []
     },
     {
+      "name": "DocumentsPublicLinksEndpointsServiceCollectionExtensions",
+      "fqn": "Microsoft.Extensions.DependencyInjection.DocumentsPublicLinksEndpointsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks.Endpoints",
+      "file": "src/Granit.Documents.PublicLinks.Endpoints/Extensions/DocumentsPublicLinksEndpointsServiceCollectionExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "AddGranitDocumentsPublicLinksEndpoints",
+          "kind": "method",
+          "signature": "AddGranitDocumentsPublicLinksEndpoints(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "DocumentsServiceCollectionExtensions",
       "fqn": "Microsoft.Extensions.DependencyInjection.DocumentsServiceCollectionExtensions",
       "kind": "class",
@@ -68780,6 +68976,22 @@
           "name": "AddGranitDocuments",
           "kind": "method",
           "signature": "AddGranitDocuments(this IServiceCollection services, Action<GranitDocumentsOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "RenditionsEndpointsServiceCollectionExtensions",
+      "fqn": "Microsoft.Extensions.DependencyInjection.RenditionsEndpointsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/Extensions/RenditionsEndpointsServiceCollectionExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsEndpoints",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsEndpoints(this IServiceCollection services)",
           "returnType": "IServiceCollection"
         }
       ]

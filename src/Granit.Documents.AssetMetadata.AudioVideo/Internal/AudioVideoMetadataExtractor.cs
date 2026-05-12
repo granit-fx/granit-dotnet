@@ -45,7 +45,15 @@ internal sealed class AudioVideoMetadataExtractor : IAssetMetadataExtractor
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentException.ThrowIfNullOrWhiteSpace(sourceContentType);
+        cancellationToken.ThrowIfCancellationRequested();
 
+        return Task.Run(() => ExtractCore(source, sourceContentType, cancellationToken), cancellationToken);
+    }
+
+    private static AssetMetadataResult ExtractCore(
+        Stream source, string sourceContentType, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
         Stream readable = source;
         MemoryStream? buffered = null;
         try
@@ -168,7 +176,7 @@ internal sealed class AudioVideoMetadataExtractor : IAssetMetadataExtractor
                 TakenAt = takenAt,
             };
 
-            return Task.FromResult(result with { RawMetadata = raw });
+            return result with { RawMetadata = raw };
         }
         finally
         {

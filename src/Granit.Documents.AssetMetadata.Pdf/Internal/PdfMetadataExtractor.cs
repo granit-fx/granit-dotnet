@@ -32,7 +32,14 @@ internal sealed class PdfMetadataExtractor : IAssetMetadataExtractor
         Stream source, string sourceContentType, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(source);
+        cancellationToken.ThrowIfCancellationRequested();
 
+        return Task.Run(() => ExtractCore(source, cancellationToken), cancellationToken);
+    }
+
+    private static AssetMetadataResult ExtractCore(Stream source, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
         Stream readable = source;
         MemoryStream? buffered = null;
         try
@@ -90,7 +97,7 @@ internal sealed class PdfMetadataExtractor : IAssetMetadataExtractor
                 Producer = producer,
             };
 
-            return Task.FromResult(result with { RawMetadata = raw });
+            return result with { RawMetadata = raw };
         }
         finally
         {

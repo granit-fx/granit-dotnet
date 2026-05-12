@@ -39,7 +39,7 @@ dotnet add package Granit.Browsing.PuppeteerSharp
 builder.AddGranitDocuments();
 builder.AddGranitDocumentsRenditions();
 builder.AddGranitDocumentsRenditionsEntityFrameworkCore(opts => opts.UseNpgsql(conn));
-builder.AddGranitDocumentsRenditionsBackgroundJobs();
+builder.AddGranitDocumentsRenditionsWolverine();
 builder.AddGranitImagingMagickNet();
 builder.AddGranitDocumentsRenditionsImaging();
 builder.AddGranitBrowsingPlaywright(o => o.Engine = BrowserEngine.Chromium);

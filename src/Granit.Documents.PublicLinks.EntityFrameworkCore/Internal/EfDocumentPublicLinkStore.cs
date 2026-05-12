@@ -79,6 +79,17 @@ internal sealed class EfDocumentPublicLinkStore(IDbContextFactory<DocumentsPubli
             .ConfigureAwait(false);
 
         context.DocumentPublicLinks.Update(link);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            // Surface as a domain-level conflict so DocumentPublicLinkService (layer-pure)
+            // can react without taking a hard EF Core dependency.
+            throw new PublicLinkConcurrencyConflictException(
+                $"DocumentPublicLink {link.Id} update lost the optimistic concurrency race.",
+                ex);
+        }
     }
 }
