@@ -52,7 +52,11 @@ public static class WebhookTargetUrlValidatorExtensions
 
         string host = uri.Host;
 
-        if (host.Equals("localhost", StringComparison.OrdinalIgnoreCase))
+        // Reject any reserved / internal-only hostname (localhost, *.local, *.internal, *.corp, …).
+        // Catches `localhost`, `ip6-localhost`, `*.home.arpa`, etc. — anything that NotUseBlockedTld
+        // would also reject, but applied here pre-IP so that hostnames pointing at private
+        // addresses via /etc/hosts trip on the literal name too.
+        if (ReservedTldClassifier.IsReserved(host, out _))
         {
             return false;
         }

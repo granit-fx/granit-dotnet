@@ -15,12 +15,22 @@ internal static class WebhookSsrfConnectCallback
         SocketsHttpConnectionContext context,
         CancellationToken cancellationToken)
     {
-        IPHostEntry entry = await Dns.GetHostEntryAsync(
-            context.DnsEndPoint.Host, cancellationToken).ConfigureAwait(false);
+        // Forward-only A/AAAA lookup — never GetHostEntryAsync, which also triggers a reverse-PTR
+        // lookup (slow, can hang on broken reverse zones, leaks internal hostnames over DNS).
+        IPAddress[] addresses = await Dns
+            .GetHostAddressesAsync(context.DnsEndPoint.Host, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (addresses.Length == 0)
+        {
+            throw new HttpRequestException(
+                $"Webhook delivery blocked: DNS returned no addresses for " +
+                $"'{context.DnsEndPoint.Host}'.");
+        }
 
         // Validate ALL resolved IPs before connecting — a multi-homed host might mix
         // public and private addresses.
-        IPAddress? blocked = Array.Find(entry.AddressList, PrivateNetworkClassifier.IsBlocked);
+        IPAddress? blocked = Array.Find(addresses, PrivateNetworkClassifier.IsBlocked);
         if (blocked is not null)
         {
             throw new HttpRequestException(
@@ -29,7 +39,7 @@ internal static class WebhookSsrfConnectCallback
                 "are not permitted for webhook target URLs (SSRF protection).");
         }
 
-        // Connect to the first available address.
+        // Connect to one of the validated addresses (no further DNS).
         var socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
         {
             NoDelay = true,
@@ -37,7 +47,7 @@ internal static class WebhookSsrfConnectCallback
 
         try
         {
-            await socket.ConnectAsync(entry.AddressList, context.DnsEndPoint.Port, cancellationToken)
+            await socket.ConnectAsync(addresses, context.DnsEndPoint.Port, cancellationToken)
                 .ConfigureAwait(false);
             return new NetworkStream(socket, ownsSocket: true);
         }
