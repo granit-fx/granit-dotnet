@@ -62,6 +62,60 @@ public sealed class PrivilegedFlagGuardTests
             probe));
     }
 
+    [Theory]
+    [InlineData("--disable-web-security")]
+    [InlineData("--allow-file-access-from-files")]
+    [InlineData("--disable-features=IsolateOrigins")]
+    [InlineData("--disable-site-isolation-trials")]
+    [InlineData("--remote-debugging-port=9222")]
+    [InlineData("--remote-debugging-address=0.0.0.0")]
+    [InlineData("--proxy-server=http://attacker.example/")]
+    [InlineData("--proxy-bypass-list=*")]
+    [InlineData("--ignore-certificate-errors")]
+    [InlineData("--user-data-dir=/tmp/x")]
+    public void EnsureSafe_should_refuse_always_forbidden_flag_unconditionally(string arg)
+    {
+        // Even with a fully-vetted container + opt-in + non-root environment, the
+        // always-forbidden flags must be refused — they widen the renderer attack
+        // surface in ways that no opt-in mitigates.
+        FakeProbe probe = new(optIn: true, container: true, root: false);
+
+        Should.Throw<SandboxViolationException>(() => PrivilegedFlagGuard.EnsureSafe(
+            disableSandbox: false,
+            extraArgs: [arg],
+            NullLogger.Instance,
+            probe))
+            .Kind.ShouldBe(SandboxViolationKind.PrivilegedFlagRefused);
+    }
+
+    [Fact]
+    public void EnsureSafe_should_not_match_substring_inside_other_flag()
+    {
+        // --js-flags=--no-sandbox is a Node-only knob; the OUTER flag is --js-flags
+        // and the inner --no-sandbox is an argument to V8, not to Chromium. Exact-token
+        // match must NOT confuse it with the sandbox-disable flag.
+        FakeProbe probe = new(optIn: false, container: false, root: false);
+
+        Should.NotThrow(() => PrivilegedFlagGuard.EnsureSafe(
+            disableSandbox: false,
+            extraArgs: ["--js-flags=--no-sandbox"],
+            NullLogger.Instance,
+            probe));
+    }
+
+    [Fact]
+    public void EnsureSafe_should_match_no_sandbox_with_trailing_equals_value()
+    {
+        // Bare --no-sandbox and --no-sandbox=true both refer to the sandbox knob.
+        FakeProbe probe = new(optIn: false, container: false, root: false);
+
+        Should.Throw<SandboxViolationException>(() => PrivilegedFlagGuard.EnsureSafe(
+            disableSandbox: false,
+            extraArgs: ["--no-sandbox=true"],
+            NullLogger.Instance,
+            probe));
+    }
+
     private sealed class FakeProbe(bool optIn, bool container, bool root) : IEnvironmentProbe
     {
         public string? GetEnvironmentVariable(string name) =>

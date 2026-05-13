@@ -12,7 +12,6 @@ using Granit.Browsing.Sandbox;
 using Granit.Events;
 using Granit.Guids;
 using Granit.Http.Security;
-using Granit.MultiTenancy;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -39,7 +38,6 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
     private readonly IHostEnvironment _hostEnvironment;
     private readonly IClock _clock;
     private readonly IGuidGenerator _guidGenerator;
-    private readonly ICurrentTenant? _currentTenant;
     private readonly ILocalEventBus? _eventBus;
 
     private readonly SemaphoreSlim _initLock = new(1, 1);
@@ -64,7 +62,6 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
         IHostEnvironment hostEnvironment,
         IClock clock,
         IGuidGenerator guidGenerator,
-        ICurrentTenant? currentTenant = null,
         ILocalEventBus? eventBus = null)
     {
         ArgumentNullException.ThrowIfNull(browsingOptions);
@@ -88,7 +85,6 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
         _hostEnvironment = hostEnvironment;
         _clock = clock;
         _guidGenerator = guidGenerator;
-        _currentTenant = currentTenant;
         _eventBus = eventBus;
 
         int permits = _browsingOptions.Value.MaxBrowsers * _browsingOptions.Value.MaxPagesPerBrowser;
@@ -120,9 +116,6 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
         }
         _capabilities = caps;
     }
-
-    private string? CurrentTenantId =>
-        _currentTenant is { IsAvailable: true } t ? t.Id?.ToString("N") : null;
 
     /// <inheritdoc/>
     public string EngineName => _engineName;
@@ -173,7 +166,7 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
             }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
             {
-                _metrics.RecordError(EngineName, CurrentTenantId, "acquire_timeout");
+                _metrics.RecordError(EngineName, tenantId: null, "acquire_timeout");
                 throw new TimeoutException(
                     $"Acquiring a Granit.Browsing page exceeded {_browsingOptions.Value.AcquireTimeout}.");
             }
@@ -279,7 +272,7 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
 
             Interlocked.Increment(ref _activePages);
             Interlocked.Increment(ref _totalAcquisitions);
-            string? tenantId = CurrentTenantId;
+            string? tenantId = null;
             _metrics.RecordPageAcquired(EngineName, tenantId);
             _metrics.RecordAcquireDuration(EngineName, tenantId, sw.Elapsed);
 
@@ -317,7 +310,7 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
     {
         Interlocked.Decrement(ref _activePages);
         _pageSemaphore.Release();
-        _metrics.RecordPageReleased(EngineName, CurrentTenantId);
+        _metrics.RecordPageReleased(EngineName, tenantId: null);
     }
 
     private async Task EnsureBrowserStartedAsync(CancellationToken cancellationToken)
@@ -349,18 +342,20 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
 
             PlaywrightOptions opts = _playwrightOptions.Value;
 
-            // Refuse privileged flags outside a vetted container. Playwright doesn't
-            // expose a DisableSandbox option, but a caller could smuggle --no-sandbox
-            // through ExtraArgs — PrivilegedFlagGuard scans for it.
+            // Refuse privileged flags outside a vetted container. Playwright
+            // doesn't expose a DisableSandbox option, but a caller could smuggle
+            // --no-sandbox through ExtraArgs — PrivilegedFlagGuard scans for it.
             PrivilegedFlagGuard.EnsureSafe(disableSandbox: false, opts.ExtraArgs, _logger);
 
             // Refuse to start when production hosts have not pre-provisioned browsers.
             PlaywrightInstallGuard.EnsureBrowsersProvisioned(opts, _hostEnvironment);
 
-            // Refuse a browser binary outside the sandbox-allowed prefix.
+            // Refuse a browser binary outside the sandbox-allowed prefix, and refuse a
+            // production deploy that overrides the executable without an allowlist prefix.
             string? executablePath = PlaywrightExecutablePathValidator.Validate(
                 opts.ExecutablePath,
-                _sandbox.AllowedExecutablePathPrefix);
+                _sandbox.AllowedExecutablePathPrefix,
+                _hostEnvironment);
 
             _playwright ??= await Microsoft.Playwright.Playwright.CreateAsync().ConfigureAwait(false);
 

@@ -37,4 +37,13 @@ public sealed class PuppeteerSharpOptions
     /// Useful for tuning <c>--disk-cache-size</c>, locale flags, or proxy settings.
     /// </summary>
     public string[] ExtraArgs { get; set; } = [];
+
+    /// <summary>
+    /// Optional SHA-256 digest of the resolved Chromium executable (hex-encoded; <c>-</c>
+    /// separators tolerated). When set, the provisioning service verifies the binary
+    /// before launch and refuses to start on mismatch. When <c>null</c>, integrity relies
+    /// on the upstream HTTPS download — an Information-level message recommending the pin
+    /// is emitted once at startup.
+    /// </summary>
+    public string? ExpectedSha256 { get; set; }
 }

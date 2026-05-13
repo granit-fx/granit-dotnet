@@ -32,6 +32,22 @@ public sealed class PlaywrightOptions
 
     /// <summary>Extra command-line arguments forwarded to the underlying browser process.</summary>
     public string[] ExtraArgs { get; set; } = [];
+
+    /// <summary>
+    /// Optional SHA-256 digest of the resolved browser executable (hex-encoded; <c>-</c>
+    /// separators tolerated). When set, the provisioning service verifies the binary
+    /// before launch and refuses to start on mismatch. When <c>null</c>, integrity relies
+    /// on the upstream HTTPS download — an Information-level message recommending the pin
+    /// is emitted once at startup.
+    /// </summary>
+    public string? ExpectedSha256 { get; set; }
+
+    /// <summary>
+    /// Maximum time the bundled <c>playwright install</c> CLI is allowed to run on boot
+    /// before being cancelled. Default 5 minutes. Bounds an otherwise-unbounded blocking
+    /// call in <see cref="Microsoft.Extensions.Hosting.IHostedService.StartAsync"/>.
+    /// </summary>
+    public System.TimeSpan InstallTimeout { get; set; } = System.TimeSpan.FromMinutes(5);
 }
 
 /// <summary>Browser engines supported by Playwright.</summary>

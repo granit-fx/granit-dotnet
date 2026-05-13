@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing.Pages;
@@ -18,16 +18,22 @@ namespace Granit.Browsing.PuppeteerSharp.Internal;
 /// without racing.
 /// </summary>
 /// <remarks>
-/// Avoids the race that occurs when several <c>page.Request +=</c> subscribers compete
-/// to call <c>ContinueAsync</c>/<c>AbortAsync</c>, by guaranteeing a single subscription
-/// that hand-rolls dispatch under the router's policy chain.
+/// Eliminates the provider-specific race when several <c>page.Request +=</c>
+/// subscribers compete to call <c>ContinueAsync</c>/<c>AbortAsync</c> by guaranteeing a
+/// single subscription that hand-rolls dispatch under the router's policy chain.
 /// </remarks>
 internal sealed partial class PuppeteerRequestRouter : IAsyncDisposable
 {
+    private static readonly object Sentinel = new();
+
     private readonly IPuppeteerPage _page;
     private readonly RequestRouter _router;
     private readonly ILogger<PuppeteerRequestRouter> _logger;
-    private readonly ConcurrentDictionary<IRequest, byte> _decided = new();
+
+    // ConditionalWeakTable lets the IRequest entries be reclaimed by the GC as soon as
+    // upstream PuppeteerSharp releases them, avoiding an unbounded growth on long-lived
+    // pages handling many requests.
+    private readonly ConditionalWeakTable<IRequest, object> _decided = [];
     private readonly EventHandler<RequestEventArgs> _handler;
     private int _subscribed;
     private int _disposed;
@@ -68,7 +74,7 @@ internal sealed partial class PuppeteerRequestRouter : IAsyncDisposable
         IRequest req = e.Request;
 
         // Guard against double-dispatch: if a request was already decided, skip.
-        if (!_decided.TryAdd(req, 0))
+        if (!_decided.TryAdd(req, Sentinel))
         {
             return;
         }

@@ -60,6 +60,7 @@ public static class ServiceCollectionExtensions
 
         // Capabilities advertised on every engine. AccessibilityTree intentionally absent —
         // Playwright .NET deprecated the tree-export API in favour of ARIA snapshots.
+        services.TryAddSingleton<Granit.Browsing.Pages.IHarScrubber, Granit.Browsing.Pages.DefaultHarScrubber>();
         services.TryAddSingleton<ITracingCapability, PlaywrightTracingCapability>();
         services.TryAddSingleton<IHarRecordingCapability, PlaywrightHarRecordingCapability>();
 

@@ -47,4 +47,19 @@ public sealed class RoutePatternTests
 
         p.ToString().ShouldBe("api.example.com/**");
     }
+
+    [Theory]
+    // Anchored host matching: the host segment of the pattern must match the URL host
+    // *exactly* (after optional leading wildcard); URLs that smuggle the pattern into the
+    // path must NOT match. This protects against host-confusion where
+    // evil.com/api.partner.com/exfil would otherwise pass a substring match against
+    // api.partner.com/**.
+    [InlineData("api.partner.com/**", "https://evil.com/api.partner.com/exfil", false)]
+    [InlineData("api.partner.com/**", "https://api.partner.com/v1/data", true)]
+    [InlineData("*.partner.com/**", "https://evil.com/api.partner.com/exfil", false)]
+    [InlineData("**.partner.com/**", "https://evil.com/api.partner.com/exfil", false)]
+    [InlineData("*.partner.com/**", "https://api.partner.com/v1/data", true)]
+    [InlineData("*.partner.com/**", "https://partner.com/v1/data", true)]
+    public void IsMatch_should_anchor_host(string glob, string url, bool expected) =>
+        RoutePattern.Parse(glob).IsMatch(new Uri(url)).ShouldBe(expected);
 }

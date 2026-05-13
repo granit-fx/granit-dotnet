@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using Granit.Http.Security.Diagnostics;
 using Granit.Http.Security.Options;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -21,13 +22,15 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
     private readonly TimeProvider _timeProvider;
     private readonly HttpSecurityMetrics _metrics;
     private readonly ILogger<DefaultUrlSafetyValidator> _logger;
+    private readonly ICurrentTenant? _currentTenant;
 
     public DefaultUrlSafetyValidator(
         IOptions<UrlSafetyOptions> options,
         IDnsResolver resolver,
         TimeProvider timeProvider,
         HttpSecurityMetrics metrics,
-        ILogger<DefaultUrlSafetyValidator> logger)
+        ILogger<DefaultUrlSafetyValidator> logger,
+        ICurrentTenant? currentTenant = null)
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(resolver);
@@ -39,7 +42,11 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
         _timeProvider = timeProvider;
         _metrics = metrics;
         _logger = logger;
+        _currentTenant = currentTenant;
     }
+
+    private string? CurrentTenantId =>
+        _currentTenant is { IsAvailable: true } t ? t.Id?.ToString("N") : null;
 
     public ValueTask<UrlSafetyResult> ValidateAsync(Uri url, CancellationToken ct = default) =>
         ValidateAsync(url, _options.Value, ct);
@@ -86,7 +93,7 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
         // (file://server/share) — only opt in for trusted, local-only contexts.
         if (string.Equals(url.Scheme, Uri.UriSchemeFile, StringComparison.OrdinalIgnoreCase))
         {
-            _metrics.RecordValid(tenantId: null);
+            _metrics.RecordValid(CurrentTenantId);
             activity?.SetTag("url_safety.outcome", "valid");
             return UrlSafetyResult.Valid([]);
         }
@@ -196,14 +203,14 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
             }
         }
 
-        _metrics.RecordValid(tenantId: null);
+        _metrics.RecordValid(CurrentTenantId);
         activity?.SetTag("url_safety.outcome", "valid");
         return UrlSafetyResult.Valid(addresses);
     }
 
     private UrlSafetyResult Block(Activity? activity, UrlSafetyViolation violation)
     {
-        _metrics.RecordBlocked(tenantId: null, violation.Kind);
+        _metrics.RecordBlocked(CurrentTenantId, violation.Kind);
         HttpSecurityLog.UrlBlocked(_logger, ExtractHost(violation), violation.Kind, violation.Reason);
         activity?.SetTag("url_safety.outcome", "blocked");
         activity?.SetTag("url_safety.violation_kind", violation.Kind.ToString());

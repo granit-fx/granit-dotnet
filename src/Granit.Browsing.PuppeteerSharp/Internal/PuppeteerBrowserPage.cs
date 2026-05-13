@@ -35,6 +35,7 @@ namespace Granit.Browsing.PuppeteerSharp.Internal;
 internal sealed partial class PuppeteerBrowserPage : IBrowserPage
 {
     private readonly IPuppeteerPage _page;
+    private readonly IBrowserContext? _context;
     private readonly Action _onReleased;
     private readonly PuppeteerRequestRouter _router;
     private readonly IBrowserSandboxProfile _sandbox;
@@ -51,6 +52,7 @@ internal sealed partial class PuppeteerBrowserPage : IBrowserPage
 
     public PuppeteerBrowserPage(
         IPuppeteerPage page,
+        IBrowserContext? context,
         Action onReleased,
         PuppeteerRequestRouter router,
         IBrowserSandboxProfile sandbox,
@@ -70,6 +72,7 @@ internal sealed partial class PuppeteerBrowserPage : IBrowserPage
         ArgumentNullException.ThrowIfNull(logger);
 
         _page = page;
+        _context = context;
         _onReleased = onReleased;
         _router = router;
         _sandbox = sandbox;
@@ -355,6 +358,18 @@ internal sealed partial class PuppeteerBrowserPage : IBrowserPage
             LogPageCloseFailure(ex);
         }
 
+        if (_context is not null)
+        {
+            try
+            {
+                await _context.CloseAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                LogContextCloseFailure(ex);
+            }
+        }
+
         _onReleased();
     }
 
@@ -430,6 +445,9 @@ internal sealed partial class PuppeteerBrowserPage : IBrowserPage
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.PuppeteerSharp failed to close page on dispose.")]
     private partial void LogPageCloseFailure(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.PuppeteerSharp failed to close browser context on dispose.")]
+    private partial void LogContextCloseFailure(Exception exception);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.PuppeteerSharp failed to publish BrowserScriptInjectedEvent.")]
     private partial void LogScriptInjectedPublishFailure(Exception exception);

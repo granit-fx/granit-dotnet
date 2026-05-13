@@ -1,8 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Granit.Authorization;
 using Granit.Browsing.Diagnostics;
 using Granit.Browsing.Options;
+using Granit.Browsing.Pages;
+using Granit.Browsing.Permissions;
 using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
@@ -15,7 +18,11 @@ namespace Granit.Browsing.Pool;
 /// Singleton decorator that wraps the provider-supplied <see cref="IHeadlessBrowser"/>
 /// to resolve the current tenant at every <see cref="AcquirePageAsync"/> call, emit
 /// <see cref="BrowserPageAcquiredEvent"/>, and tag the page-acquired metric with the
-/// correct <c>tenant_id</c> for accurate per-tenant attribution.
+/// correct <c>tenant_id</c>, guaranteeing per-tenant attribution on every acquisition.
+/// When an <see cref="IPermissionChecker"/> is registered, also enforces
+/// <see cref="BrowsingPermissions.Pages.Acquire"/> at acquisition time and wraps the
+/// returned page with a <see cref="PermissionAwareBrowserPage"/> that gates Navigate /
+/// InjectScript / SetContent through the same checker.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -36,6 +43,7 @@ public sealed class TenantAwareHeadlessBrowser : IHeadlessBrowser
     private readonly BrowsingMetrics _metrics;
     private readonly IGuidGenerator _guidGenerator;
     private readonly ILocalEventBus? _eventBus;
+    private readonly IPermissionChecker? _permissionChecker;
     private readonly IClock _clock;
     private readonly ILogger<TenantAwareHeadlessBrowser> _logger;
 
@@ -47,7 +55,8 @@ public sealed class TenantAwareHeadlessBrowser : IHeadlessBrowser
         IGuidGenerator guidGenerator,
         IClock clock,
         ILogger<TenantAwareHeadlessBrowser> logger,
-        ILocalEventBus? eventBus = null)
+        ILocalEventBus? eventBus = null,
+        IPermissionChecker? permissionChecker = null)
     {
         ArgumentNullException.ThrowIfNull(inner);
         ArgumentNullException.ThrowIfNull(currentTenant);
@@ -63,6 +72,7 @@ public sealed class TenantAwareHeadlessBrowser : IHeadlessBrowser
         _clock = clock;
         _logger = logger;
         _eventBus = eventBus;
+        _permissionChecker = permissionChecker;
     }
 
     /// <inheritdoc/>
@@ -79,6 +89,18 @@ public sealed class TenantAwareHeadlessBrowser : IHeadlessBrowser
         BrowserPageOptions? options = null,
         CancellationToken cancellationToken = default)
     {
+        if (_permissionChecker is not null)
+        {
+            bool granted = await _permissionChecker
+                .IsGrantedAsync(BrowsingPermissions.Pages.Acquire, cancellationToken)
+                .ConfigureAwait(false);
+            if (!granted)
+            {
+                throw new UnauthorizedAccessException(
+                    $"Permission '{BrowsingPermissions.Pages.Acquire}' is required to acquire a browser page.");
+            }
+        }
+
         string? tenantId = _currentTenant.IsAvailable
             ? _currentTenant.Id!.Value.ToString("N")
             : null;
@@ -106,6 +128,8 @@ public sealed class TenantAwareHeadlessBrowser : IHeadlessBrowser
             }
         }
 
-        return page;
+        return _permissionChecker is not null
+            ? new PermissionAwareBrowserPage(page, _permissionChecker)
+            : page;
     }
 }

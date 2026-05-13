@@ -34,6 +34,13 @@ public sealed record BrowserPageOptions
 
     /// <summary>Media type emulation: <c>"screen"</c> or <c>"print"</c>. Drives <c>@media print</c> styles.</summary>
     public string? MediaType { get; init; }
+
+    /// <summary>
+    /// Policy applied when a user-registered request-router handler throws. Default
+    /// <see cref="Pages.RouterErrorPolicy.AbortOnError"/> — the request is aborted and the
+    /// handler error is counted via <c>granit.browsing.router.handler_error</c>.
+    /// </summary>
+    public Pages.RouterErrorPolicy RouterErrorPolicy { get; init; } = Pages.RouterErrorPolicy.AbortOnError;
 }
 
 /// <summary>Viewport dimensions in CSS pixels.</summary>

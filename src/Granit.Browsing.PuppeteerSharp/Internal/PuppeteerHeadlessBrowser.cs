@@ -12,7 +12,6 @@ using Granit.Browsing.Sandbox;
 using Granit.Events;
 using Granit.Guids;
 using Granit.Http.Security;
-using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -44,7 +43,6 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
     private readonly IHostEnvironment _hostEnvironment;
     private readonly IClock _clock;
     private readonly IGuidGenerator _guidGenerator;
-    private readonly ICurrentTenant? _currentTenant;
     private readonly ILocalEventBus? _eventBus;
 
     private readonly SemaphoreSlim _initLock = new(1, 1);
@@ -66,7 +64,6 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
         IHostEnvironment hostEnvironment,
         IClock clock,
         IGuidGenerator guidGenerator,
-        ICurrentTenant? currentTenant = null,
         ILocalEventBus? eventBus = null)
     {
         ArgumentNullException.ThrowIfNull(browsingOptions);
@@ -90,15 +87,11 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
         _hostEnvironment = hostEnvironment;
         _clock = clock;
         _guidGenerator = guidGenerator;
-        _currentTenant = currentTenant;
         _eventBus = eventBus;
 
         int permits = browsingOptions.Value.MaxBrowsers * browsingOptions.Value.MaxPagesPerBrowser;
         _pageSemaphore = new SemaphoreSlim(permits, permits);
     }
-
-    private string? CurrentTenantId =>
-        _currentTenant is { IsAvailable: true } t ? t.Id?.ToString("N") : null;
 
     /// <inheritdoc/>
     public string EngineName => Engine;
@@ -158,7 +151,7 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
             }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
             {
-                _metrics.RecordError(Engine, CurrentTenantId, "acquire_timeout");
+                _metrics.RecordError(Engine, tenantId: null, "acquire_timeout");
                 throw new TimeoutException(
                     $"Acquiring a Granit.Browsing page exceeded {_browsingOptions.Value.AcquireTimeout}.");
             }
@@ -172,9 +165,30 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
         {
             await EnsureBrowserStartedAsync(cancellationToken).ConfigureAwait(false);
 
-            IPuppeteerPage puppeteerPage = await _browser!.NewPageAsync().ConfigureAwait(false);
+            // Isolate every page in its own incognito BrowserContext so cookies, storage,
+            // and service workers cannot leak across tenants — the default shared browser
+            // context shares state across all pages of the browser. The context is closed
+            // alongside the page by PuppeteerBrowserPage.DisposeAsync.
+            IBrowserContext puppeteerContext = await _browser!.CreateBrowserContextAsync().ConfigureAwait(false);
+            IPuppeteerPage puppeteerPage;
+            try
+            {
+                puppeteerPage = await puppeteerContext.NewPageAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                try
+                {
+                    await puppeteerContext.CloseAsync().ConfigureAwait(false);
+                }
+                catch (Exception ctxEx)
+                {
+                    LogDisposeFailure(ctxEx);
+                }
+                throw;
+            }
 
-            // Disable JS before navigation when sandbox/options require it.
+            // Disable JS before navigation when the sandbox or per-page options require it.
             await PuppeteerJsContextGuard.ApplyAsync(
                 puppeteerPage,
                 pageJsEnabled: options?.JavaScriptEnabled ?? true,
@@ -210,12 +224,13 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
 
             Interlocked.Increment(ref _activePages);
             Interlocked.Increment(ref _totalAcquisitions);
-            string? tenantId = CurrentTenantId;
+            string? tenantId = null;
             _metrics.RecordPageAcquired(Engine, tenantId);
             _metrics.RecordAcquireDuration(Engine, tenantId, stopwatch.Elapsed);
 
             return new PuppeteerBrowserPage(
                 puppeteerPage,
+                puppeteerContext,
                 OnPageReleased,
                 puppeteerRouter,
                 _sandbox,
@@ -246,7 +261,7 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
     {
         Interlocked.Decrement(ref _activePages);
         _pageSemaphore.Release();
-        _metrics.RecordPageReleased(Engine, CurrentTenantId);
+        _metrics.RecordPageReleased(Engine, tenantId: null);
     }
 
     private async Task EnsureBrowserStartedAsync(CancellationToken cancellationToken)
@@ -296,10 +311,12 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
             }
             args.AddRange(opts.ExtraArgs);
 
-            // Refuse a Chromium binary outside the sandbox-allowed prefix.
+            // Refuse a Chromium binary outside the sandbox-allowed prefix, and refuse a
+            // production deploy that overrides the executable without an allowlist prefix.
             string? executablePath = PuppeteerExecutablePathValidator.Validate(
                 opts.ChromiumExecutablePath,
-                _sandbox.AllowedExecutablePathPrefix);
+                _sandbox.AllowedExecutablePathPrefix,
+                _hostEnvironment);
 
             PuppeteerLaunchOptions launch = new()
             {

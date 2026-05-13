@@ -4,8 +4,8 @@ namespace Granit.Browsing.Diagnostics;
 
 /// <summary>
 /// Best-effort redaction of well-known secret shapes in console output before it crosses
-/// the trust boundary into application logs. Targets bearer tokens, Set-Cookie headers
-/// and AWS access keys that page scripts might print.
+/// the trust boundary into application logs. Closes the bearer-token / Set-Cookie /
+/// AWS-key leak from browser console messages into application logs.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -14,10 +14,13 @@ namespace Granit.Browsing.Diagnostics;
 /// <c>***</c>.
 /// </para>
 /// <para>
-/// Recognised patterns: HTTP <c>Bearer</c> tokens, <c>Set-Cookie</c> lines, AWS access
-/// key IDs (<c>AKIA…</c>), AWS secret-key style assignments
-/// (<c>aws_secret_access_key=…</c>), GCP API keys (<c>AIza…</c>), and basic-auth credentials
-/// in URLs.
+/// Recognised patterns: HTTP <c>Bearer</c> tokens, JWT tokens, <c>Cookie</c> and
+/// <c>Set-Cookie</c> headers, AWS access key IDs (<c>AKIA…</c>), AWS secret-key style
+/// assignments (<c>aws_secret_access_key=…</c>), GCP API keys (<c>AIza…</c>), vendor
+/// tokens (GitHub <c>ghp_</c>/<c>ghs_</c>/<c>gho_</c>/<c>ghu_</c>/<c>ghr_</c>, OpenAI
+/// <c>sk-</c>, Slack <c>xox[abprs]-</c>, GitLab <c>glpat-</c>), generic credential
+/// assignments (<c>password=…</c>, <c>token=…</c>, <c>api_key=…</c>, <c>secret=…</c>,
+/// <c>access_token=…</c>), and basic-auth credentials in URLs.
 /// </para>
 /// </remarks>
 public static partial class ConsoleRedactor
@@ -34,12 +37,24 @@ public static partial class ConsoleRedactor
         }
 
         string redacted = BearerTokenRegex().Replace(input, "Bearer " + RedactionMarker);
+        redacted = JwtRegex().Replace(redacted, RedactionMarker);
         redacted = SetCookieRegex().Replace(redacted, "Set-Cookie: " + RedactionMarker);
+        redacted = CookieHeaderRegex().Replace(redacted, "Cookie: " + RedactionMarker);
         redacted = AwsAccessKeyRegex().Replace(redacted, RedactionMarker);
         redacted = AwsSecretAssignmentRegex().Replace(redacted, "aws_secret_access_key=" + RedactionMarker);
         redacted = GcpApiKeyRegex().Replace(redacted, RedactionMarker);
+        redacted = VendorTokenRegex().Replace(redacted, RedactionMarker);
+        redacted = CredentialAssignmentRegex().Replace(redacted, m => RedactCredentialAssignment(m.Value));
         redacted = BasicAuthInUrlRegex().Replace(redacted, "$1" + RedactionMarker + "@");
         return redacted;
+    }
+
+    private static string RedactCredentialAssignment(string match)
+    {
+        // Preserve the key portion (everything up to and including the = / :) and replace
+        // the value with the redaction marker. Match is guaranteed to contain a = or :.
+        int eq = match.IndexOfAny(['=', ':']);
+        return eq < 0 ? RedactionMarker : match[..(eq + 1)] + RedactionMarker;
     }
 
     [GeneratedRegex(@"Bearer\s+[A-Za-z0-9._\-+/=]+", RegexOptions.IgnoreCase)]
@@ -59,4 +74,16 @@ public static partial class ConsoleRedactor
 
     [GeneratedRegex(@"(https?://)[^:/@\s]+:[^@\s]+@")]
     private static partial Regex BasicAuthInUrlRegex();
+
+    [GeneratedRegex(@"eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}")]
+    private static partial Regex JwtRegex();
+
+    [GeneratedRegex(@"Cookie:\s*[^\r\n]+", RegexOptions.IgnoreCase)]
+    private static partial Regex CookieHeaderRegex();
+
+    [GeneratedRegex(@"\b(gh[pousr]_[A-Za-z0-9]{36,}|sk-[A-Za-z0-9]{20,}|xox[abprs]-[A-Za-z0-9-]{10,}|glpat-[A-Za-z0-9_\-]{20,})\b")]
+    private static partial Regex VendorTokenRegex();
+
+    [GeneratedRegex(@"\b(password|token|api[_-]?key|secret|access[_-]?token)\s*[=:]\s*[""']?[^""'\s,&]+", RegexOptions.IgnoreCase)]
+    private static partial Regex CredentialAssignmentRegex();
 }

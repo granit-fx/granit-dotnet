@@ -28,11 +28,10 @@ public sealed class BrowsingMetrics
     private readonly Histogram<double> _renderDuration;
     private readonly Counter<long> _errors;
     private readonly Counter<long> _poolDrainTimeouts;
+    private readonly Counter<long> _routerHandlerErrors;
 
     public BrowsingMetrics(IMeterFactory meterFactory)
     {
-        ArgumentNullException.ThrowIfNull(meterFactory);
-
         Meter meter = meterFactory.Create(MeterName);
 
         _pagesAcquired = meter.CreateCounter<long>(
@@ -44,22 +43,26 @@ public sealed class BrowsingMetrics
             description: "Number of browser pages returned to the pool.");
 
         _acquireDuration = meter.CreateHistogram<double>(
-            "granit.browsing.page.acquire_duration",
+            "granit.browsing.pool.acquire.duration",
             unit: "s",
             description: "Time spent waiting for a free page on AcquirePageAsync.");
 
         _renderDuration = meter.CreateHistogram<double>(
-            "granit.browsing.page.render_duration",
+            "granit.browsing.render.duration",
             unit: "s",
             description: "Duration of a render operation (screenshot, PDF, navigate).");
 
         _errors = meter.CreateCounter<long>(
-            "granit.browsing.page.error",
+            "granit.browsing.error",
             description: "Number of provider-surfaced errors (timeouts, navigation failures, capability mismatches).");
 
         _poolDrainTimeouts = meter.CreateCounter<long>(
-            "granit.browsing.pool.drain_timeout",
+            "granit.browsing.pool.drain.timeout",
             description: "Number of pool DrainAsync operations that exceeded the configured DrainTimeout (force-disposed).");
+
+        _routerHandlerErrors = meter.CreateCounter<long>(
+            "granit.browsing.router.handler_error",
+            description: "Number of user-registered request-router handlers that threw during evaluation.");
     }
 
     /// <summary>Records a page acquisition.</summary>
@@ -109,6 +112,13 @@ public sealed class BrowsingMetrics
         _poolDrainTimeouts.Add(1, new TagList
         {
             { TagEngine, engine },
-            { TagTenantId, DefaultTenant },
+        });
+
+    /// <summary>Records a user-registered request-router handler that threw during evaluation.</summary>
+    public void RecordRouterHandlerError(string engine, string? tenantId) =>
+        _routerHandlerErrors.Add(1, new TagList
+        {
+            { TagEngine, engine },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 }

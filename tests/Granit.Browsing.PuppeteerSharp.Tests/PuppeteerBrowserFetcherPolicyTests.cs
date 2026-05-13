@@ -10,13 +10,13 @@ using Xunit;
 
 namespace Granit.Browsing.PuppeteerSharp.Tests;
 
-public sealed class PuppeteerBrowserFetcherIntegrityTests
+public sealed class PuppeteerBrowserFetcherPolicyTests
 {
     [Fact]
     public async Task Production_without_pinned_executable_refuses_download()
     {
         TestHostEnvironment env = new() { EnvironmentName = Environments.Production };
-        PuppeteerBrowserFetcherIntegrity integrity = new(env, NullLogger<PuppeteerBrowserFetcherIntegrity>.Instance);
+        PuppeteerBrowserFetcherPolicy integrity = new(env, NullLogger<PuppeteerBrowserFetcherPolicy>.Instance);
 
         await Should.ThrowAsync<InvalidOperationException>(
             () => integrity.DownloadAsync(new PuppeteerSharpOptions()));
@@ -30,7 +30,7 @@ public sealed class PuppeteerBrowserFetcherIntegrityTests
         // production-safe so long as the caller honours the contract. We assert
         // ArgumentNullException stays the only ctor-enforced failure.
         TestHostEnvironment env = new() { EnvironmentName = Environments.Production };
-        PuppeteerBrowserFetcherIntegrity integrity = new(env, NullLogger<PuppeteerBrowserFetcherIntegrity>.Instance);
+        PuppeteerBrowserFetcherPolicy integrity = new(env, NullLogger<PuppeteerBrowserFetcherPolicy>.Instance);
 
         await Should.ThrowAsync<ArgumentNullException>(() => integrity.DownloadAsync(null!));
     }

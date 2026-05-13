@@ -10,12 +10,12 @@ namespace Granit.Browsing.Pages;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Avoids the provider-specific race between several <c>page.Request +=</c> subscribers
-/// by funnelling every request through one router.
+/// Eliminates the provider-specific race between several <c>page.Request +=</c>
+/// subscribers by funnelling every request through one router.
 /// </para>
 /// <para>
-/// Defends against SSRF at request time (and DNS rebinding) by re-validating the
-/// host via <c>Granit.Http.Security.IUrlSafetyValidator</c> on every intercepted request.
+/// Re-validates the host via <c>Granit.Http.Security.IUrlSafetyValidator</c> on every
+/// intercepted request, defeating DNS-rebinding SSRF between navigation and fetch time.
 /// </para>
 /// </remarks>
 internal interface IRequestRouter
@@ -23,6 +23,13 @@ internal interface IRequestRouter
     /// <summary>Evaluates <paramref name="request"/> against sandbox rules and user handlers.</summary>
     ValueTask<RouteDecision> EvaluateAsync(RouteRequest request, CancellationToken cancellationToken);
 
-    /// <summary>Registers a user-supplied handler for requests matching <paramref name="pattern"/>.</summary>
-    void Register(RoutePattern pattern, Func<RouteRequest, CancellationToken, ValueTask<RouteDecision>> handler);
+    /// <summary>
+    /// Registers a user-supplied handler for requests matching <paramref name="pattern"/>.
+    /// Disposing the returned token removes the handler — keep the token alive for the
+    /// lifetime of the subscription.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the per-page registration cap has been reached.
+    /// </exception>
+    IDisposable Register(RoutePattern pattern, Func<RouteRequest, CancellationToken, ValueTask<RouteDecision>> handler);
 }

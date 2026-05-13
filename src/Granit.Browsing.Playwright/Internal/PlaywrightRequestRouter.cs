@@ -15,8 +15,8 @@ namespace Granit.Browsing.Playwright.Internal;
 /// and user handlers compose without racing.
 /// </summary>
 /// <remarks>
-/// Avoids the provider-specific race that occurs when several inline
-/// <c>page.RouteAsync</c> handlers compete to call <c>ContinueAsync</c>/<c>AbortAsync</c>.
+/// Eliminates the provider-specific race when several inline <c>page.RouteAsync</c>
+/// handlers compete to call <c>ContinueAsync</c>/<c>AbortAsync</c>.
 /// </remarks>
 internal sealed partial class PlaywrightRequestRouter : IAsyncDisposable
 {

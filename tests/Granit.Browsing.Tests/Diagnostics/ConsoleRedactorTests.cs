@@ -83,4 +83,52 @@ public sealed class ConsoleRedactorTests
 
         ConsoleRedactor.Redact(Innocuous).ShouldBe(Innocuous);
     }
+
+    [Fact]
+    public void Standalone_jwt_should_be_redacted()
+    {
+        const string Jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NSJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+
+        string output = ConsoleRedactor.Redact($"saw token={Jwt} in logs");
+
+        output.ShouldNotContain(Jwt);
+        output.ShouldContain("***");
+    }
+
+    [Fact]
+    public void Cookie_header_should_be_redacted()
+    {
+        string output = ConsoleRedactor.Redact("Cookie: session=verysecret; csrf=abcd1234");
+
+        output.ShouldNotContain("verysecret");
+        output.ShouldContain("Cookie: ***");
+    }
+
+    [Theory]
+    [InlineData("ghp_abcdefghijklmnopqrstuvwxyz0123456789AB")]
+    [InlineData("sk-abcdefghijklmnopqrstuvwxyz0123456789")]
+    [InlineData("xoxb-1234567890-abcdef-ghijkl")]
+    [InlineData("glpat-abcdefghijklmnopqrst")]
+    public void Vendor_tokens_should_be_redacted(string token)
+    {
+        string output = ConsoleRedactor.Redact($"found token: {token} in env");
+
+        output.ShouldNotContain(token);
+        output.ShouldContain("***");
+    }
+
+    [Theory]
+    [InlineData("password=hunter2", "hunter2")]
+    [InlineData("api_key=secretkeyvalue", "secretkeyvalue")]
+    [InlineData("api-key=secretkeyvalue", "secretkeyvalue")]
+    [InlineData("secret=topsecretvalue", "topsecretvalue")]
+    [InlineData("access_token=xyz789abc", "xyz789abc")]
+    [InlineData("access-token=xyz789abc", "xyz789abc")]
+    public void Credential_assignments_should_be_redacted(string assignment, string secretValue)
+    {
+        string output = ConsoleRedactor.Redact($"config: {assignment}, rest=ok");
+
+        output.ShouldContain("***");
+        output.ShouldNotContain(secretValue);
+    }
 }

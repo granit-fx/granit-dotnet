@@ -7,7 +7,7 @@ namespace Granit.Browsing.Pool;
 /// <summary>
 /// Wraps a provider operation with an optional render-duration cap. Lifted into a shared
 /// helper so every <see cref="IBrowserPage"/> method in every provider applies the same
-/// sandbox-aware timeout semantics.
+/// sandbox-aware timeout semantics across every provider.
 /// </summary>
 /// <remarks>
 /// The wrapper links the caller's cancellation token to a fresh

@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing.Capabilities;
+using Granit.Browsing.Pages;
 using Granit.IO;
 using Microsoft.Playwright;
 
@@ -14,7 +15,9 @@ namespace Granit.Browsing.Playwright.Internal;
 /// network activity through a per-page <c>RouteFromHARAsync</c> session staged to a
 /// securely-created temp file and serialises it to a JSON HAR document on stop.
 /// </summary>
-internal sealed class PlaywrightHarRecordingCapability(ITempFileFactory tempFileFactory) : IHarRecordingCapability
+internal sealed class PlaywrightHarRecordingCapability(
+    ITempFileFactory tempFileFactory,
+    IHarScrubber harScrubber) : IHarRecordingCapability
 {
     private readonly Dictionary<IBrowserPage, ITempFile> _activeRecordings = [];
     private readonly object _gate = new();
@@ -68,7 +71,7 @@ internal sealed class PlaywrightHarRecordingCapability(ITempFileFactory tempFile
             {
                 return "{\"log\":{\"version\":\"1.2\",\"entries\":[]}}";
             }
-            return content;
+            return harScrubber.Scrub(content);
         }
         finally
         {

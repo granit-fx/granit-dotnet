@@ -3,9 +3,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Granit.Authorization;
 using Granit.Browsing.Capabilities;
 using Granit.Browsing.Diagnostics;
 using Granit.Browsing.Exceptions;
+using Granit.Browsing.Permissions;
 using Granit.Browsing.Sandbox;
 using Granit.IO;
 using Granit.IO.Options;
@@ -21,7 +23,7 @@ namespace Granit.Browsing.Playwright.Internal;
 /// <summary>
 /// Microsoft.Playwright implementation of <see cref="IPdfViewerCapability"/>
 /// (Chromium-only). Loads the PDF in Chromium's built-in PDF viewer via a <c>file://</c>
-/// URL pointing at a securely-staged temp file, and counts pages with PdfPig
+/// URL pointing at a securely-staged temp file (under the temp-file root) and counts pages with PdfPig
 /// instead of the fragile substring heuristic.
 /// </summary>
 internal sealed partial class PlaywrightPdfViewerCapability(
@@ -30,7 +32,8 @@ internal sealed partial class PlaywrightPdfViewerCapability(
     IOptions<TempFileOptions> tempFileOptions,
     IBrowserSandboxProfile sandbox,
     ILogger<PlaywrightPdfViewerCapability> logger,
-    ICurrentTenant? currentTenant = null) : IPdfViewerCapability
+    ICurrentTenant? currentTenant = null,
+    IPermissionChecker? permissionChecker = null) : IPdfViewerCapability
 {
     /// <inheritdoc/>
     public async Task<IPdfDocumentPage> OpenPdfAsync(IBrowserPage page, Stream pdf, CancellationToken cancellationToken = default)
@@ -82,9 +85,32 @@ internal sealed partial class PlaywrightPdfViewerCapability(
                     $"Temp PDF path '{resolvedPath}' is outside the temp-file root '{root}'.");
             }
 
+            // Authorize the privileged file:// navigation when an IPermissionChecker is
+            // wired. The framework permission `Granit.Browsing.Pages.UseFileScheme`
+            // explicitly gates this capability — the PDF viewer is the only path inside
+            // the framework that opens a local file in a browser context.
+            if (permissionChecker is not null)
+            {
+                bool granted = await permissionChecker
+                    .IsGrantedAsync(BrowsingPermissions.Pages.UseFileScheme, cancellationToken)
+                    .ConfigureAwait(false);
+                if (!granted)
+                {
+                    throw new UnauthorizedAccessException(
+                        $"Permission '{BrowsingPermissions.Pages.UseFileScheme}' is required to open the native PDF viewer.");
+                }
+            }
+
             Uri fileUri = new(resolvedPath);
 
-            await playwrightPage.NavigateAsync(fileUri, options: null, cancellationToken).ConfigureAwait(false);
+            // Bypass IUrlSafetyValidator for this specific file:// navigation: the path
+            // was just resolved against the configured temp-file root above (upstream
+            // bound check), the file was created by ITempFileFactory with restrictive
+            // permissions, and the global sandbox AllowedSchemes list typically excludes
+            // file://. Routing through the validator would either fail closed (breaking
+            // the viewer) or require opening file:// globally — both worse than this
+            // narrowly-scoped, audited bypass.
+            await playwrightPage.UnderlyingPage.GotoAsync(fileUri.ToString()).ConfigureAwait(false);
             await playwrightPage.WaitForLoadStateAsync(LoadState.Load, timeout: TimeSpan.FromSeconds(15),
                 cancellationToken).ConfigureAwait(false);
 

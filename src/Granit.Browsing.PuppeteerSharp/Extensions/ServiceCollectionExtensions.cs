@@ -64,7 +64,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IPdfViewerCapability, PuppeteerPdfViewerCapability>();
         services.TryAddSingleton<IAccessibilityCapability, PuppeteerAccessibilityCapability>();
 
-        services.TryAddSingleton<PuppeteerBrowserFetcherIntegrity>();
+        services.TryAddSingleton<PuppeteerBrowserFetcherPolicy>();
         services.AddHostedService<PuppeteerChromiumProvisionService>();
 
         return services;

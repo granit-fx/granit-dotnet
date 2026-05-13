@@ -159,8 +159,9 @@ public sealed class RequestRouterTests
     }
 
     [Fact]
-    public async Task Throwing_user_handler_should_default_to_continue()
+    public async Task Throwing_user_handler_should_abort_under_default_policy()
     {
+        // Default RouterErrorPolicy is AbortOnError — a throwing handler fails closed.
         RequestRouter router = CreateRouter(new SandboxProfile { BlockPrivateNetworks = false });
 
         router.Register(RoutePattern.Parse("**/*"), (req, ct) =>
@@ -168,7 +169,8 @@ public sealed class RequestRouterTests
 
         RouteDecision decision = await router.EvaluateAsync(Request("https://api.example.com/"), CancellationToken.None);
 
-        decision.Kind.ShouldBe(RouteDecisionKind.Continue);
+        decision.Kind.ShouldBe(RouteDecisionKind.Abort);
+        decision.ErrorCode.ShouldBe("handler_error");
     }
 
     [Fact]

@@ -502,18 +502,14 @@
     {
       "name": "Granit.Browsing.Playwright",
       "deps": [
-        "Granit.Browsing",
-        "Granit.Http.Security",
-        "Granit.IO"
+        "Granit.Browsing"
       ],
       "framework": "net10.0"
     },
     {
       "name": "Granit.Browsing.PuppeteerSharp",
       "deps": [
-        "Granit.Browsing",
-        "Granit.Http.Security",
-        "Granit.IO"
+        "Granit.Browsing"
       ],
       "framework": "net10.0"
     },
@@ -4096,7 +4092,7 @@
       "kind": "class",
       "project": "Granit.Analyzers",
       "file": "src/Granit.Analyzers/EvaluateAsyncStringInterpolationAnalyzer.cs",
-      "line": 36,
+      "line": 35,
       "members": [
         {
           "name": "SupportedDiagnostics",
@@ -10676,7 +10672,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/GranitBrowsingModule.cs",
-      "line": 32,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -10992,6 +10988,38 @@
       "members": []
     },
     {
+      "name": "DefaultHarScrubber",
+      "fqn": "Granit.Browsing.Pages.DefaultHarScrubber",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pages/DefaultHarScrubber.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Scrub",
+          "kind": "method",
+          "signature": "Scrub(string harJson)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "IHarScrubber",
+      "fqn": "Granit.Browsing.Pages.IHarScrubber",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pages/IHarScrubber.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Scrub",
+          "kind": "method",
+          "signature": "Scrub(string harJson)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "RouteDecision",
       "fqn": "Granit.Browsing.Pages.RouteDecision",
       "kind": "record",
@@ -11063,6 +11091,22 @@
       "members": []
     },
     {
+      "name": "BrowsingPermissionDefinitionProvider",
+      "fqn": "Granit.Browsing.Permissions.BrowsingPermissionDefinitionProvider",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Permissions/BrowsingPermissionDefinitionProvider.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "DefinePermissions",
+          "kind": "method",
+          "signature": "DefinePermissions(IPermissionDefinitionContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "BrowsingPermissions",
       "fqn": "Granit.Browsing.Permissions.BrowsingPermissions",
       "kind": "class",
@@ -11118,7 +11162,7 @@
       "kind": "enum",
       "project": "Granit.Browsing.Playwright",
       "file": "src/Granit.Browsing.Playwright/Options/PlaywrightOptions.cs",
-      "line": 38,
+      "line": 54,
       "members": []
     },
     {
@@ -11140,6 +11184,12 @@
           "kind": "property",
           "signature": "string? ExecutablePath",
           "returnType": "string?"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "string? ExpectedSha256 { get; set; } public System.TimeSpan InstallTimeout { get; set; } = System.TimeSpan."
         }
       ]
     },
@@ -11149,7 +11199,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 177,
+      "line": 184,
       "members": [
         {
           "name": "new",
@@ -11177,7 +11227,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 164,
+      "line": 171,
       "members": [
         {
           "name": "GetEnvironmentVariable",
@@ -11221,7 +11271,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/TenantAwareHeadlessBrowser.cs",
-      "line": 32,
+      "line": 39,
       "members": [
         {
           "name": "Capabilities",
