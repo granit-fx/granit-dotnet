@@ -6,7 +6,7 @@ namespace Granit.BackgroundJobs;
 /// <remarks>
 /// <para>
 /// Apply this attribute to a plain message class to declare it as a recurring background job.
-<c>Granit.BackgroundJobs.Wolverine.RecurringJobPolicy</c> detects decorated message types
+/// <c>Granit.BackgroundJobs.Wolverine.RecurringJobPolicy</c> detects decorated message types
 /// at startup and automatically injects
 /// <c>Granit.BackgroundJobs.Wolverine.RecurringJobSchedulingMiddleware</c> into their Wolverine
 /// handler chains. The rescheduling is performed atomically inside the Outbox transaction, preventing
