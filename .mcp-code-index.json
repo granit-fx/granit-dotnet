@@ -502,18 +502,14 @@
     {
       "name": "Granit.Browsing.Playwright",
       "deps": [
-        "Granit.Browsing",
-        "Granit.Http.Security",
-        "Granit.IO"
+        "Granit.Browsing"
       ],
       "framework": "net10.0"
     },
     {
       "name": "Granit.Browsing.PuppeteerSharp",
       "deps": [
-        "Granit.Browsing",
-        "Granit.Http.Security",
-        "Granit.IO"
+        "Granit.Browsing"
       ],
       "framework": "net10.0"
     },
@@ -4095,7 +4091,7 @@
       "kind": "class",
       "project": "Granit.Analyzers",
       "file": "src/Granit.Analyzers/EvaluateAsyncStringInterpolationAnalyzer.cs",
-      "line": 36,
+      "line": 35,
       "members": [
         {
           "name": "SupportedDiagnostics",
@@ -11039,6 +11035,22 @@
       "file": "src/Granit.Browsing/Pages/RouteRequest.cs",
       "line": 13,
       "members": []
+    },
+    {
+      "name": "BrowsingPermissionDefinitionProvider",
+      "fqn": "Granit.Browsing.Permissions.BrowsingPermissionDefinitionProvider",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Permissions/BrowsingPermissionDefinitionProvider.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "DefinePermissions",
+          "kind": "method",
+          "signature": "DefinePermissions(IPermissionDefinitionContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "BrowsingPermissions",

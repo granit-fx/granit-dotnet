@@ -14,7 +14,7 @@ public static class ReEncryptionServiceCollectionExtensions
     /// <typeparam name="TContext">
     /// The <see cref="DbContext"/> that owns the entities to re-encrypt.
     /// An <see cref="IDbContextFactory{TContext}"/> must already be registered
-    /// (via <c>AddDbContextFactory&lt;TContext&gt;()</c>).
+    /// by the consuming module.
     /// </typeparam>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
