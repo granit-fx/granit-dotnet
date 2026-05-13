@@ -458,7 +458,9 @@
         "type": "Project",
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Observability": "[0.1.0-dev, )",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "[10.*, )",
+          "OpenTelemetry.Instrumentation.StackExchangeRedis": "[1.15.0-beta.*, )",
           "StackExchange.Redis": "[2.*, )",
           "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )"
         }
@@ -915,6 +917,16 @@
         "contentHash": "vFO4Fj/dXkoVNGo/nhoGpO2zYQmZwr4jTID7oRGo+XlQ8LqksyZjUXQ4p39RfUvTID7IzzL8Qe71tW7CcAFymA==",
         "dependencies": {
           "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.3, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Instrumentation.StackExchangeRedis": {
+        "type": "CentralTransitive",
+        "requested": "[1.15.0-beta.*, )",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "Igg/3MlBZZ9lZCTzMcvoFKav263+zOcKx9s4LVIdq96YmBHCuPmDiyygAIPdeIVzwN08VwD3RG1nXHDuRF1Ssg==",
+        "dependencies": {
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.0, 2.0.0)",
+          "StackExchange.Redis": "2.6.122"
         }
       },
       "Scalar.AspNetCore": {

@@ -11,7 +11,7 @@ namespace Granit.Mergeable.BackgroundJobs;
 /// <summary>
 /// Granit module that registers the recurring sweepers for <c>Granit.Mergeable</c>:
 /// <list type="bullet">
-///   <item><c>MergeIdempotencyCleanupJob</c> — daily delete of <c>granit.merge_idempotency</c>
+///   <item><c>MergeIdempotencyCleanupJob</c> — daily delete of <c>merge_idempotency</c>
 ///   rows older than <c>MergeableOptions.IdempotencyRetention</c> so cached PII never lingers
 ///   past the configured retention window.</item>
 /// </list>

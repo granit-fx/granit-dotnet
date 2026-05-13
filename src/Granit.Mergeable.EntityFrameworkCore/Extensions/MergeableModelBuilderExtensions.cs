@@ -1,14 +1,19 @@
 using Granit.Mergeable.EntityFrameworkCore.Internal;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Mergeable.EntityFrameworkCore.Extensions;
 
 /// <summary>
 /// ModelBuilder extension exposing the Mergeable-orchestrator entity configurations so host
-/// applications can include the <c>granit.merge_idempotency</c> table in their own DbContext
-/// (and migrations) when they prefer a single shared database over the isolated module
-/// DbContext.
+/// applications can include the merge-idempotency table in their own DbContext (and
+/// migrations) when they prefer a single shared database over the isolated module DbContext.
 /// </summary>
+/// <remarks>
+/// Table and schema are configurable via <see cref="GranitMergeableDbProperties"/>; the
+/// schema defaults to <see cref="GranitDbDefaults.HostDbSchema"/> (the orchestrator state is
+/// host-level, never tenant-scoped).
+/// </remarks>
 public static class MergeableModelBuilderExtensions
 {
     /// <summary>
@@ -20,7 +25,9 @@ public static class MergeableModelBuilderExtensions
 
         modelBuilder.Entity<MergeIdempotencyEntry>(b =>
         {
-            b.ToTable("merge_idempotency", "granit");
+            b.ToTable(
+                GranitMergeableDbProperties.DbTablePrefix + "idempotency",
+                GranitMergeableDbProperties.DbSchema);
             b.HasKey(e => e.Id);
             b.Property(e => e.TenantId);
             b.Property(e => e.Key).IsRequired().HasMaxLength(128);

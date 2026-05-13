@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 namespace Granit.Mergeable.BackgroundJobs.Services;
 
 /// <summary>
-/// Sweeps the <c>granit.merge_idempotency</c> cache by deleting rows older than the
+/// Sweeps the <c>merge_idempotency</c> cache by deleting rows older than the
 /// configured <see cref="MergeableOptions.IdempotencyRetention"/> window. Runs as a single
 /// bulk SQL <c>ExecuteDeleteAsync</c> — no rows are loaded into the change tracker, no
 /// interceptor side-effects fire (the cache table is bookkeeping, not domain data; it has

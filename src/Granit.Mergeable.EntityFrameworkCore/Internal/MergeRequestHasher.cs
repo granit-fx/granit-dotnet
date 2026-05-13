@@ -11,7 +11,7 @@ namespace Granit.Mergeable.EntityFrameworkCore.Internal;
 /// </summary>
 /// <remarks>
 /// The hash is keyed (HMAC-SHA-256, RFC 2104) rather than a plain digest so an attacker who
-/// gains <c>INSERT</c> rights to <c>granit.merge_idempotency</c> cannot pre-compute a
+/// gains <c>INSERT</c> rights to <c>merge_idempotency</c> cannot pre-compute a
 /// matching <c>RequestHash</c> for a future legitimate request and poison the replay cache.
 /// The MAC key is derived from <see cref="IMergeableSecretProvider"/> (deployment-bound,
 /// non-recoverable from the DB).
