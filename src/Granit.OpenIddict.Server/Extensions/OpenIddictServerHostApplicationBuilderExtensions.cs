@@ -197,15 +197,31 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
         // Normalize OIDC short-name "role" claims emitted by OpenIddict.Validation into
         // ClaimTypes.Role so PermissionChecker.AdminRoles bypass and ICurrentUserService
         // .GetRoles() agree with ClaimsPrincipal.IsInRole(). Mirrors what JwtBearer does
-        // implicitly via TokenValidationParameters.RoleClaimType. Scheme name kept as a
-        // string literal so this package does not depend on
+        // implicitly via TokenValidationParameters.RoleClaimType. Scheme names kept as
+        // string literals so this package does not depend on
         // OpenIddict.Validation.AspNetCore solely to reference its constant.
+        //
+        // Two schemes are registered because UseLocalServer() (self-hosted: server and
+        // validation co-located, the configuration this method always produces) returns
+        // a ClaimsPrincipal whose ClaimsIdentity.AuthenticationType is the default
+        // "AuthenticationTypes.Federation" rather than the validation handler's scheme
+        // name. Without "AuthenticationTypes.Federation" in the scheme list, the
+        // transformation gates out, the short "role" claim is never copied to
+        // ClaimTypes.Role, ICurrentUserService.GetRoles() returns empty, and every
+        // role-gated permission check returns 403.
         builder.Services.AddGranitRoleClaimNormalization(o =>
         {
             const string openIddictValidationScheme = "OpenIddict.Validation.AspNetCore";
+            const string federationScheme = "AuthenticationTypes.Federation";
+
             if (!o.Schemes.Contains(openIddictValidationScheme))
             {
                 o.Schemes.Add(openIddictValidationScheme);
+            }
+
+            if (!o.Schemes.Contains(federationScheme))
+            {
+                o.Schemes.Add(federationScheme);
             }
         });
 
