@@ -881,7 +881,8 @@
     {
       "name": "Granit.Http.Security",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.MultiTenancy"
       ],
       "framework": "net10.0"
     },
@@ -10619,6 +10620,12 @@
           "kind": "method",
           "signature": "RecordPoolDrainTimeout(string engine)",
           "returnType": "void"
+        },
+        {
+          "name": "RecordRouterHandlerError",
+          "kind": "method",
+          "signature": "RecordRouterHandlerError(string engine, string? tenantId)",
+          "returnType": "void"
         }
       ]
     },
@@ -10628,7 +10635,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Diagnostics/ConsoleRedactor.cs",
-      "line": 23,
+      "line": 26,
       "members": [
         {
           "name": "Redact",
@@ -10830,6 +10837,12 @@
           "kind": "property",
           "signature": "string? UserAgent",
           "returnType": "string?"
+        },
+        {
+          "name": "ExtraHeaders",
+          "kind": "property",
+          "signature": "IReadOnlyDictionary<string, string>? ExtraHeaders",
+          "returnType": "IReadOnlyDictionary<string, string>?"
         }
       ]
     },
@@ -10839,7 +10852,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
-      "line": 54,
+      "line": 61,
       "members": []
     },
     {
@@ -10966,7 +10979,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
-      "line": 42,
+      "line": 49,
       "members": []
     },
     {
@@ -11021,7 +11034,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pages/RoutePattern.cs",
-      "line": 24,
+      "line": 37,
       "members": [
         {
           "name": "Parse",
@@ -11038,6 +11051,15 @@
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pages/RouteRequest.cs",
       "line": 13,
+      "members": []
+    },
+    {
+      "name": "RouterErrorPolicy",
+      "fqn": "Granit.Browsing.Pages.RouterErrorPolicy",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pages/RouterErrorPolicy.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -11127,7 +11149,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 121,
+      "line": 177,
       "members": [
         {
           "name": "new",
@@ -11155,7 +11177,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 108,
+      "line": 164,
       "members": [
         {
           "name": "GetEnvironmentVariable",

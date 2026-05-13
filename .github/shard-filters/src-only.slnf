@@ -63,6 +63,7 @@
       "src/Granit.Browsing/Granit.Browsing.csproj",
       "src/Granit.Caching.StackExchangeRedis/Granit.Caching.StackExchangeRedis.csproj",
       "src/Granit.Caching/Granit.Caching.csproj",
+      "src/Granit.Dashboards.Abstractions/Granit.Dashboards.Abstractions.csproj",
       "src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj",
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj",

@@ -9,6 +9,7 @@
       "src/Granit.Authorization/Granit.Authorization.csproj",
       "src/Granit.BlobStorage/Granit.BlobStorage.csproj",
       "src/Granit.Caching/Granit.Caching.csproj",
+      "src/Granit.Dashboards.Abstractions/Granit.Dashboards.Abstractions.csproj",
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.DataLookup.Abstractions/Granit.DataLookup.Abstractions.csproj",
       "src/Granit.Diagnostics/Granit.Diagnostics.csproj",
