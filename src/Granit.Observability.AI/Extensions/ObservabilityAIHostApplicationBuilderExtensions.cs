@@ -32,7 +32,9 @@ public static class ObservabilityAIHostApplicationBuilderExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        builder.Services.TryAddSingleton<IAILogAnalyzer, LlmLogAnalyzer>();
+        // Scoped because LlmLogAnalyzer depends on IAIChatClientFactory (scoped).
+        // The analyzer carries no singleton-justifying state.
+        builder.Services.TryAddScoped<IAILogAnalyzer, LlmLogAnalyzer>();
 
         // Diagnostics
         builder.Services.TryAddSingleton<ObservabilityAIMetrics>();
