@@ -92,6 +92,7 @@
       "src/Granit.Wolverine/Granit.Wolverine.csproj",
       "src/Granit.Workflow.Abstractions/Granit.Workflow.Abstractions.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
+      "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
       "src/bundles/Granit.Bundle.Api/Granit.Bundle.Api.csproj",
       "src/bundles/Granit.Bundle.Essentials/Granit.Bundle.Essentials.csproj",
@@ -155,7 +156,8 @@
       "tests/Granit.Validation.Europe.Tests/Granit.Validation.Europe.Tests.csproj",
       "tests/Granit.Validation.NorthAmerica.Tests/Granit.Validation.NorthAmerica.Tests.csproj",
       "tests/Granit.Validation.Tests/Granit.Validation.Tests.csproj",
-      "tests/Granit.Validation.UnitedKingdom.Tests/Granit.Validation.UnitedKingdom.Tests.csproj"
+      "tests/Granit.Validation.UnitedKingdom.Tests/Granit.Validation.UnitedKingdom.Tests.csproj",
+      "tests/Granit.Workspaces.Abstractions.Tests/Granit.Workspaces.Abstractions.Tests.csproj"
     ]
   }
 }

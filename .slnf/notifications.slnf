@@ -64,6 +64,7 @@
       "src/Granit.Wolverine/Granit.Wolverine.csproj",
       "src/Granit.Workflow.Abstractions/Granit.Workflow.Abstractions.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
+      "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.Notifications.AI.Tests/Granit.Notifications.AI.Tests.csproj",
       "tests/Granit.Notifications.Abstractions.Tests/Granit.Notifications.Abstractions.Tests.csproj",

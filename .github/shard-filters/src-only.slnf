@@ -253,6 +253,7 @@
       "src/Granit.Workflow.EntityFrameworkCore/Granit.Workflow.EntityFrameworkCore.csproj",
       "src/Granit.Workflow.Notifications/Granit.Workflow.Notifications.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
+      "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
       "src/bundles/Granit.Bundle.Api/Granit.Bundle.Api.csproj",
       "src/bundles/Granit.Bundle.Essentials/Granit.Bundle.Essentials.csproj",

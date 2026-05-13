@@ -164,6 +164,7 @@
     <Project Path="src/Granit.Workflow.EntityFrameworkCore/Granit.Workflow.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Workflow.Notifications/Granit.Workflow.Notifications.csproj" />
     <Project Path="src/Granit.Workflow/Granit.Workflow.csproj" />
+    <Project Path="src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj" />
   </Folder>
   <Folder Name="/src/Infrastructure/">
     <Project Path="src/Granit.BackgroundJobs.Endpoints/Granit.BackgroundJobs.Endpoints.csproj" />
@@ -448,6 +449,7 @@
     <Project Path="tests/Granit.Workflow.EntityFrameworkCore.Tests/Granit.Workflow.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Workflow.Notifications.Tests/Granit.Workflow.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Workflow.Tests/Granit.Workflow.Tests.csproj" />
+    <Project Path="tests/Granit.Workspaces.Abstractions.Tests/Granit.Workspaces.Abstractions.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/Infrastructure/">
     <Project Path="tests/Granit.BackgroundJobs.Endpoints.Tests/Granit.BackgroundJobs.Endpoints.Tests.csproj" />

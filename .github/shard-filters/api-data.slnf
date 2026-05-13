@@ -86,6 +86,7 @@
       "src/Granit.Wolverine/Granit.Wolverine.csproj",
       "src/Granit.Workflow.Abstractions/Granit.Workflow.Abstractions.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
+      "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.Bff.Endpoints.Tests/Granit.Bff.Endpoints.Tests.csproj",
       "tests/Granit.Bff.Tests/Granit.Bff.Tests.csproj",

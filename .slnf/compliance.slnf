@@ -55,6 +55,7 @@
       "src/Granit.Validation/Granit.Validation.csproj",
       "src/Granit.Workflow.Abstractions/Granit.Workflow.Abstractions.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
+      "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.Auditing.ConfigurationChanges.Tests/Granit.Auditing.ConfigurationChanges.Tests.csproj",
       "tests/Granit.Auditing.Endpoints.Tests/Granit.Auditing.Endpoints.Tests.csproj",
