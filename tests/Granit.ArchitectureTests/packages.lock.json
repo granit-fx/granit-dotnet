@@ -110,11 +110,11 @@
       },
       "Azure.Storage.Common": {
         "type": "Transitive",
-        "resolved": "12.26.0",
-        "contentHash": "XaT6CDcSshZb7KaCTwc6m4EouZbLBg7ciOEpsJSdJCvkNsZJQCvPKw7V5TtXno19AA1NpwtsZriYque8mzbQVg==",
+        "resolved": "12.27.0",
+        "contentHash": "PBucMNzot6cYyN0isdte50iPCefJ4Ylg0B+KP4kxmqsc3ciOiDYh1MwVV6fPZPjoPnPvNRLN9TI6J5hgNf4huA==",
         "dependencies": {
-          "Azure.Core": "1.50.0",
-          "System.IO.Hashing": "10.0.1"
+          "Azure.Core": "1.51.1",
+          "System.IO.Hashing": "10.0.3"
         }
       },
       "BouncyCastle.Cryptography": {
@@ -426,8 +426,8 @@
       },
       "Microsoft.AspNetCore.TestHost": {
         "type": "Transitive",
-        "resolved": "10.0.7",
-        "contentHash": "2UM9EtTmX6yF6Efa6WOO7wmHz2kPksmnzPmMwveuOGJQwbtNg5wKGj7usGLr8Ve3AMhIAc2yqyRXt1xNsed3hg=="
+        "resolved": "10.0.8",
+        "contentHash": "HRH/XAke90wkHv9ykCsrvpVqvKOUt53jQzvHHIXrPIPZWAjyPq6B5/InCmPYWvme+WKMXD10rplMAitzNMtC3w=="
       },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
@@ -579,21 +579,21 @@
       },
       "Microsoft.Data.Sqlite.Core": {
         "type": "Transitive",
-        "resolved": "10.0.7",
-        "contentHash": "xVrtBg3M1wJlBDkoT0dXEYB/wSc8bIHJPYtw/bu1AqpWgF79uPSs87DAhERR/Ilumre6TKZa1cjMg3VUUObVLA==",
+        "resolved": "10.0.8",
+        "contentHash": "26t7WDiEjjAls/sFpWvVEFDxt+7Q5VPt6+blU2Lafuj9L8PzAv/GtGV4cqVPtrhWbfD2BX/z2v8hD1qXYtK6Aw==",
         "dependencies": {
           "SQLitePCLRaw.core": "2.1.11"
         }
       },
       "Microsoft.EntityFrameworkCore.Abstractions": {
         "type": "Transitive",
-        "resolved": "10.0.7",
-        "contentHash": "TuxExnfIS/bSq3z2CbH0LwZH1oyj9iHhSGneU4fpxl3ikjZGZdSae9gcfnImV1rufH8f/ab1NnHwyL2BLyeZOg=="
+        "resolved": "10.0.8",
+        "contentHash": "jbKDXWPZQhuPHygMnwzNOqxBADVcpRVytcKYZsA++QqhPkpF93Ta8o5mbJQGrARSjlkr9WtOaADV97EDMOZ7DA=="
       },
       "Microsoft.EntityFrameworkCore.Analyzers": {
         "type": "Transitive",
-        "resolved": "10.0.7",
-        "contentHash": "eZnMyiJzo249Ejg5CaFScvJS0u7neQfS9DXknAHTO6FHVMM99gO0byNXHGZmA/BOkZ13ngeVziQLHTMOtgescg=="
+        "resolved": "10.0.8",
+        "contentHash": "M3BZ8JH8rB6BE7dO2g9iVbrHLnEz9wMXT6q+tDR6Nq3gyP3KmBj5OTiZGxyF3vesjOQNKanYoPGSNBR4kR2llg=="
       },
       "Microsoft.EntityFrameworkCore.Design": {
         "type": "Transitive",
@@ -613,46 +613,46 @@
       },
       "Microsoft.EntityFrameworkCore.Sqlite.Core": {
         "type": "Transitive",
-        "resolved": "10.0.7",
-        "contentHash": "XVjGSW98Z/f3nFZsZILL/tntgM8i2hxUDUB4Nzt7ZvJ63MczC/VG4zjQh+m+q88SU+IJBUDipJJpkYBU57YWXg==",
+        "resolved": "10.0.8",
+        "contentHash": "cFRBlY3sCoVX5JFDrRHQQHcbSms7CwBjjeuVEgQ4KP8WzPopgwNk3sJ0k7xKkIl0b9eUFJ0IR0aZwElT9154Ag==",
         "dependencies": {
-          "Microsoft.Data.Sqlite.Core": "10.0.7",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.7",
-          "Microsoft.Extensions.DependencyModel": "10.0.7",
+          "Microsoft.Data.Sqlite.Core": "10.0.8",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.8",
+          "Microsoft.Extensions.DependencyModel": "10.0.8",
           "SQLitePCLRaw.core": "2.1.11"
         }
       },
       "Microsoft.Extensions.AmbientMetadata.Application": {
         "type": "Transitive",
-        "resolved": "10.5.0",
-        "contentHash": "lCJjEDknSYeTXB133DwLNwXYA6q9nzJiJFjQb1KO1n3sS6wHfROm6zqG6y3UthQP5oPnNbE1a7M15LpjSf5yBg=="
+        "resolved": "10.6.0",
+        "contentHash": "MPAI1c5QqkDgEyEvsSj7KPPWHlTCqvXxtfp7JISul4P54GfDkSs+S7Vyq7tmS7MzpEjuH/6xrsFlUqAPlLyTUA=="
       },
       "Microsoft.Extensions.Compliance.Abstractions": {
         "type": "Transitive",
-        "resolved": "10.5.0",
-        "contentHash": "xbWZji13Vb2jDJNtwVrKpI09jd8x3n3fL+GzhiLK+8O5Wc2A+GyqCZalST2fV46Pf0QfCwkXf83y+3/rDkCd7A=="
+        "resolved": "10.6.0",
+        "contentHash": "L8zTKn8e2LCQbsDFLWFm6fZQ54F/1FisLx43nkEof4HmmsO2HaZHshV85+qF8HXO48MlGJdrWUg+uVBj/WDmmw=="
       },
       "Microsoft.Extensions.DependencyInjection.AutoActivation": {
         "type": "Transitive",
-        "resolved": "10.5.0",
-        "contentHash": "vby/PzPScy9pX3r3f5UuHutxSr4Q8SXqyIiH6+JEK7SVpTCL6f8R9mp04OUVsZLlsME2rBjA9PHXf9L9aG7wbg=="
+        "resolved": "10.6.0",
+        "contentHash": "FoX/prFoqjogPV1DleOnakFM9yzu8m4dK8Z0d9f8pPTf00PkEvd2Vulncijd/rykUX3aXERMMxsX6c/9QSAOaA=="
       },
       "Microsoft.Extensions.DependencyModel": {
         "type": "Transitive",
-        "resolved": "10.0.7",
-        "contentHash": "gCglFg/9Chu3lyJNytRuQAYM3mXQKNs1i01Cz2bc545QaHQ+LbBb4O5UCfu968Gro3ZVSOZ/ktilmPcaUSGSZA=="
+        "resolved": "10.0.8",
+        "contentHash": "vLyZVpxmduO2jx+76ggqnsA3m81kwMY3NkWciNTj5E+Nvqb0VihqCvQP89QsGONWp0AJwMZG+u9GzaCjDdFGNw=="
       },
       "Microsoft.Extensions.Diagnostics.ExceptionSummarization": {
         "type": "Transitive",
-        "resolved": "10.5.0",
-        "contentHash": "+jdC9YUfMkX9/Yb3Pi8Kovt1nFVGGB2UqSHZgLapo63d+WAhYf9KiuNA3jiaaRINhVyCgWuKFoMtjWKET5oXEQ=="
+        "resolved": "10.6.0",
+        "contentHash": "dpkWVFSg8JT1BBL33+lF3pY52En3y8qoHvtc5esMx8TVrxRXuzqIjca6MqyODpGfg5/NK4bpOYZDYBOAr8PSrA=="
       },
       "Microsoft.Extensions.Http.Diagnostics": {
         "type": "Transitive",
-        "resolved": "10.5.0",
-        "contentHash": "HoWdJKvBt7vkLlclRbjDTXcCp3s9hwFf1CY4ovlmMKFAbKSI7zKl0fUQ4LMvUI3sHIhpEtMjp7Mxjaf/yEmVvQ==",
+        "resolved": "10.6.0",
+        "contentHash": "p7nJYUYk5M0k1bWeRYQr/6k5KO2XpmUIIHgmlFZGirZJxXEShSz66Q5OX2Y8Yfaz9bIhSNqAbnn5B3zhNR2Sxg==",
         "dependencies": {
-          "Microsoft.Extensions.Telemetry": "10.5.0"
+          "Microsoft.Extensions.Telemetry": "10.6.0"
         }
       },
       "Microsoft.Extensions.Http.Polly": {
@@ -666,31 +666,31 @@
       },
       "Microsoft.Extensions.Resilience": {
         "type": "Transitive",
-        "resolved": "10.5.0",
-        "contentHash": "yjbGQkSqLkP8/lKZLfaUcdkNUpWUqMafCsm56kw9uzznhJb/uJiIRy5/zG9D0SFsBzJkz2AcvWU2J/MJydPxoA==",
+        "resolved": "10.6.0",
+        "contentHash": "n3ARODKBYCZAJEaDiWqXQnrjh9FXBs1yTwmWUUNgvLdJmLo/MTtz60M2t1By1jIt+I3u82/W4L5xJy8abzPUyw==",
         "dependencies": {
-          "Microsoft.Extensions.Diagnostics.ExceptionSummarization": "10.5.0",
-          "Microsoft.Extensions.Telemetry.Abstractions": "10.5.0",
+          "Microsoft.Extensions.Diagnostics.ExceptionSummarization": "10.6.0",
+          "Microsoft.Extensions.Telemetry.Abstractions": "10.6.0",
           "Polly.Extensions": "8.4.2",
           "Polly.RateLimiting": "8.4.2"
         }
       },
       "Microsoft.Extensions.Telemetry": {
         "type": "Transitive",
-        "resolved": "10.5.0",
-        "contentHash": "jI7b9rkfoz06ZEQols6WG3D0iQMIbtRDHkx1F7QvQOSDmzyXLwUIBbJEO8ftr7aD/2tvsHplqycp+WXFvMfujg==",
+        "resolved": "10.6.0",
+        "contentHash": "wbcC4zPaEGG53znXd4VDw3ZGITX352q80oW1iyK8rOGaJNof1zimVfZjn6E/Glw0ttZoiyHN0wf8b4KRk/rMAw==",
         "dependencies": {
-          "Microsoft.Extensions.AmbientMetadata.Application": "10.5.0",
-          "Microsoft.Extensions.DependencyInjection.AutoActivation": "10.5.0",
-          "Microsoft.Extensions.Telemetry.Abstractions": "10.5.0"
+          "Microsoft.Extensions.AmbientMetadata.Application": "10.6.0",
+          "Microsoft.Extensions.DependencyInjection.AutoActivation": "10.6.0",
+          "Microsoft.Extensions.Telemetry.Abstractions": "10.6.0"
         }
       },
       "Microsoft.Extensions.Telemetry.Abstractions": {
         "type": "Transitive",
-        "resolved": "10.5.0",
-        "contentHash": "VmU7e6xHqoubWKl7y9MtWyQAjlDpvbds3gY8ZKMS/1GxY2+U1/aMNnMj09aOXAa3p5qhHSSkBzDJvyokCjVkPg==",
+        "resolved": "10.6.0",
+        "contentHash": "aNQEJu5DD2YVQEWWmC/ALEiV1Qt400BaDO+SExtfAaGqYaNu/r2sW9xGLuc71fcjbrmzqX8LzNgK5mzjjMW9RQ==",
         "dependencies": {
-          "Microsoft.Extensions.Compliance.Abstractions": "10.5.0"
+          "Microsoft.Extensions.Compliance.Abstractions": "10.6.0"
         }
       },
       "Microsoft.Identity.Client": {
@@ -1034,8 +1034,8 @@
       },
       "Pipelines.Sockets.Unofficial": {
         "type": "Transitive",
-        "resolved": "2.2.8",
-        "contentHash": "zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ=="
+        "resolved": "2.2.16",
+        "contentHash": "nonu9l0YrZH6krVYbskBjE7uG0VMAnvOQ9PU+RmzUsy+++vHkqzzCkHRoP877OiA3iRTxJyNDLfpcU8hrJ3/YQ=="
       },
       "Polly": {
         "type": "Transitive",
@@ -1264,8 +1264,8 @@
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "10.0.2",
-        "contentHash": "AKJknIFi9O3+rGExxTry188JPvUoZAPcCtS2qdqyFhIzsxQ1Ap94BeGDG0VzVEHakhmRxmJtVih6TsHoghIt/g=="
+        "resolved": "10.0.3",
+        "contentHash": "La6ICwsdTKhVX+LKN+pvFjQRR3LhLwq3uKdi2knjLzRyPYBSydF4cjXidYxIiTcDD6XVYdsBWQEI8ZxiZ/OdIg=="
       },
       "System.IO.Packaging": {
         "type": "Transitive",
@@ -1434,57 +1434,6 @@
       "granit": {
         "type": "Project"
       },
-      "granit.activities": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Activities.Abstractions": "[0.1.0-dev, )",
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.activities.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.activities.backgroundjobs": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Activities": "[0.1.0-dev, )",
-          "Granit.BackgroundJobs": "[0.1.0-dev, )"
-        }
-      },
-      "granit.activities.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Activities": "[0.1.0-dev, )",
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.activities.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Activities": "[0.1.0-dev, )",
-          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.activities.notifications": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Activities": "[0.1.0-dev, )",
-          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
-          "Granit.Templating": "[0.1.0-dev, )"
-        }
-      },
       "granit.ai": {
         "type": "Project",
         "dependencies": {
@@ -1556,54 +1505,12 @@
           "Microsoft.Extensions.VectorData.Abstractions": "[10.*, )"
         }
       },
-      "granit.analytics": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.Dashboards": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )"
-        }
-      },
       "granit.analytics.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.analytics.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.Analytics.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Dashboards": "[0.1.0-dev, )",
-          "Granit.Dashboards.Endpoints": "[0.1.0-dev, )",
-          "Granit.Dashboards.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
-          "Granit.MultiTenancy": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.analytics.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.QueryEngine.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore": "[10.*, )"
-        }
-      },
-      "granit.analytics.postgis": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "NetTopologySuite": "[2.*, )"
         }
       },
       "granit.architecturetests.abstractions": {
@@ -1922,15 +1829,6 @@
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
         }
       },
-      "granit.blobstorage.analytics": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.BlobStorage": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
-        }
-      },
       "granit.blobstorage.azureblob": {
         "type": "Project",
         "dependencies": {
@@ -1944,15 +1842,6 @@
         "dependencies": {
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.BlobStorage": "[0.1.0-dev, )"
-        }
-      },
-      "granit.blobstorage.dashboards": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.blobstorage.database": {
@@ -2062,154 +1951,12 @@
           "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )"
         }
       },
-      "granit.catalog": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )"
-        }
-      },
-      "granit.catalog.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Catalog": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
-          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.catalog.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Catalog": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.customerbalance": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Parties.Abstractions": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )"
-        }
-      },
-      "granit.customerbalance.backgroundjobs": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.BackgroundJobs": "[0.1.0-dev, )",
-          "Granit.CustomerBalance": "[0.1.0-dev, )"
-        }
-      },
-      "granit.customerbalance.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.CustomerBalance": "[0.1.0-dev, )",
-          "Granit.Entities.Abstractions": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.customerbalance.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.CustomerBalance": "[0.1.0-dev, )",
-          "Granit.Mergeable": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.customerbalance.notifications": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.CustomerBalance": "[0.1.0-dev, )",
-          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
-          "Granit.Templating": "[0.1.0-dev, )"
-        }
-      },
-      "granit.dashboards": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )"
-        }
-      },
       "granit.dashboards.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
-        }
-      },
-      "granit.dashboards.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Dashboards": "[0.1.0-dev, )",
-          "Granit.Dashboards.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.dashboards.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.Dashboards": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.MultiTenancy": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.dashboards.push": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Dashboards": "[0.1.0-dev, )",
-          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
-          "Granit.MultiTenancy": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.dashboards.push.websockets": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Dashboards": "[0.1.0-dev, )",
-          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
-          "Granit.Dashboards.Push": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
-          "Granit.MultiTenancy": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.dataexchange": {
@@ -2344,72 +2091,10 @@
           "Granit.DocumentGeneration": "[0.1.0-dev, )"
         }
       },
-      "granit.documents": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.BlobStorage": "[0.1.0-dev, )",
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Taxonomy": "[0.1.0-dev, )"
-        }
-      },
-      "granit.documents.backgroundjobs": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.BackgroundJobs": "[0.1.0-dev, )",
-          "Granit.Documents": "[0.1.0-dev, )"
-        }
-      },
-      "granit.documents.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Documents": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Taxonomy": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.documents.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Documents": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.documents.notifications": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Documents": "[0.1.0-dev, )",
-          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
-          "Granit.Templating": "[0.1.0-dev, )"
-        }
-      },
-      "granit.documents.renditions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Documents": "[0.1.0-dev, )"
-        }
-      },
       "granit.encryption": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.encryption.backgroundjobs": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore": "[10.*, )"
         }
       },
       "granit.encryption.entityframeworkcore": {
@@ -2421,12 +2106,6 @@
           "Microsoft.EntityFrameworkCore": "[10.*, )"
         }
       },
-      "granit.entities": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Entities.Abstractions": "[0.1.0-dev, )"
-        }
-      },
       "granit.entities.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -2436,89 +2115,6 @@
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Workflow.Abstractions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.entities.customization": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Entities": "[0.1.0-dev, )",
-          "Granit.Entities.Abstractions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.entities.customization.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Auditing": "[0.1.0-dev, )",
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Entities": "[0.1.0-dev, )",
-          "Granit.Entities.Abstractions": "[0.1.0-dev, )",
-          "Granit.Entities.Customization": "[0.1.0-dev, )",
-          "Granit.Entities.Endpoints": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.entities.customization.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Entities.Customization": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.entities.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Activities.Abstractions": "[0.1.0-dev, )",
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Entities": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.entities.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Entities.Endpoints": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore": "[10.*, )"
-        }
-      },
-      "granit.entities.views": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Entities.Views.Abstractions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.entities.views.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Entities.Abstractions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.entities.views.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Entities.Views": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.entities.views.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Entities.Views": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
       "granit.events": {
@@ -2729,15 +2325,6 @@
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
-      "granit.identity.federated.analytics": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.Identity.Federated": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
-        }
-      },
       "granit.identity.federated.cognito": {
         "type": "Project",
         "dependencies": {
@@ -2899,79 +2486,6 @@
           "Magick.NET-Q8-AnyCPU": "[14.*, )"
         }
       },
-      "granit.invoicing": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )"
-        }
-      },
-      "granit.invoicing.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.invoicing.backgroundjobs": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.BackgroundJobs": "[0.1.0-dev, )",
-          "Granit.Invoicing": "[0.1.0-dev, )"
-        }
-      },
-      "granit.invoicing.builtin": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.DocumentGeneration": "[0.1.0-dev, )",
-          "Granit.Invoicing": "[0.1.0-dev, )",
-          "Granit.Templating": "[0.1.0-dev, )"
-        }
-      },
-      "granit.invoicing.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Entities.Abstractions": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
-          "Granit.Invoicing": "[0.1.0-dev, )",
-          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.invoicing.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Invoicing": "[0.1.0-dev, )",
-          "Granit.Mergeable": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.invoicing.notifications": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Invoicing": "[0.1.0-dev, )",
-          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
-          "Granit.Templating": "[0.1.0-dev, )"
-        }
-      },
-      "granit.invoicing.odoo": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Http.Resilience": "[0.1.0-dev, )",
-          "Granit.Invoicing": "[0.1.0-dev, )"
-        }
-      },
       "granit.io": {
         "type": "Project",
         "dependencies": {
@@ -3065,60 +2579,6 @@
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
-      "granit.metering": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Metering.Abstractions": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )"
-        }
-      },
-      "granit.metering.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.metering.backgroundjobs": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.BackgroundJobs": "[0.1.0-dev, )",
-          "Granit.Metering": "[0.1.0-dev, )"
-        }
-      },
-      "granit.metering.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
-          "Granit.Metering": "[0.1.0-dev, )",
-          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.metering.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.DataLookup.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Metering": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.metering.notifications": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Metering": "[0.1.0-dev, )",
-          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
-          "Granit.Templating": "[0.1.0-dev, )"
-        }
-      },
       "granit.multitenancy": {
         "type": "Project",
         "dependencies": {
@@ -3183,15 +2643,6 @@
           "Granit.AI": "[0.1.0-dev, )",
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
-        }
-      },
-      "granit.notifications.analytics": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Notifications": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.brevo": {
@@ -3485,220 +2936,6 @@
           "OpenIddict.Validation.AspNetCore": "[7.*, )"
         }
       },
-      "granit.parties": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Entities.Abstractions": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Mergeable": "[0.1.0-dev, )",
-          "Granit.Parties.Abstractions": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )"
-        }
-      },
-      "granit.parties.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.parties.deduplication": {
-        "type": "Project",
-        "dependencies": {
-          "FuzzySharp": "[2.*, )",
-          "Granit": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.Parties.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
-          "SoftWx.Match": "[2.*, )"
-        }
-      },
-      "granit.parties.deduplication.backgroundjobs": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.BackgroundJobs": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.Parties.Deduplication": "[0.1.0-dev, )",
-          "Granit.Parties.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore.Migrations": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.parties.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Auditing": "[0.1.0-dev, )",
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Mergeable": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.Parties.Deduplication": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.parties.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
-          "libphonenumber-csharp": "[9.*, )"
-        }
-      },
-      "granit.parties.identity": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Identity": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )"
-        }
-      },
-      "granit.parties.mergeable": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Mergeable": "[0.1.0-dev, )",
-          "Granit.Mergeable.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.Parties.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.parties.multitenancy": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.MultiTenancy": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )"
-        }
-      },
-      "granit.parties.privacy": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.Privacy.BlobStorage": "[0.1.0-dev, )"
-        }
-      },
-      "granit.payments": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Payments.Abstractions": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )"
-        }
-      },
-      "granit.payments.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.payments.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Entities.Abstractions": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.Payments": "[0.1.0-dev, )",
-          "Granit.RateLimiting": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.payments.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Payments": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.payments.mollie": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Payments": "[0.1.0-dev, )",
-          "Mollie.Api": "[4.*, )"
-        }
-      },
-      "granit.payments.notifications": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
-          "Granit.Payments": "[0.1.0-dev, )",
-          "Granit.Templating": "[0.1.0-dev, )"
-        }
-      },
-      "granit.payments.sepadirectdebit": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Payments": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )"
-        }
-      },
-      "granit.payments.sepadirectdebit.builtin": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Payments.SepaDirectDebit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.payments.sepadirectdebit.gocardless": {
-        "type": "Project",
-        "dependencies": {
-          "GoCardless": "[9.*, )",
-          "Granit.Payments.SepaDirectDebit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.payments.sepadirectdebit.twikey": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Payments.SepaDirectDebit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.payments.sepatransfer": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Payments": "[0.1.0-dev, )"
-        }
-      },
-      "granit.payments.stripe": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Http.Resilience": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.Payments": "[0.1.0-dev, )",
-          "Stripe.net": "[51.*, )"
-        }
-      },
       "granit.persistence": {
         "type": "Project",
         "dependencies": {
@@ -3870,36 +3107,6 @@
           "StackExchange.Redis": "[2.*, )"
         }
       },
-      "granit.referencedata": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.DataLookup": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )"
-        }
-      },
-      "granit.referencedata.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.ReferenceData": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.referencedata.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
-          "Granit.ReferenceData": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
       "granit.scheduling": {
         "type": "Project",
         "dependencies": {
@@ -3981,155 +3188,6 @@
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.subscriptions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Analytics": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Metering": "[0.1.0-dev, )",
-          "Granit.Parties.Abstractions": "[0.1.0-dev, )",
-          "Granit.Payments.Abstractions": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Scheduling": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore": "[10.*, )"
-        }
-      },
-      "granit.subscriptions.backgroundjobs": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.BackgroundJobs": "[0.1.0-dev, )",
-          "Granit.Subscriptions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.subscriptions.builtin": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Subscriptions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.subscriptions.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Entities.Abstractions": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Subscriptions": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.subscriptions.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Mergeable": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Subscriptions": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.subscriptions.features": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Features": "[0.1.0-dev, )",
-          "Granit.Subscriptions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.subscriptions.notifications": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
-          "Granit.Subscriptions": "[0.1.0-dev, )",
-          "Granit.Templating": "[0.1.0-dev, )"
-        }
-      },
-      "granit.tax": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Parties.Abstractions": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )"
-        }
-      },
-      "granit.tax.builtin": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Http.Resilience": "[0.1.0-dev, )",
-          "Granit.Invoicing": "[0.1.0-dev, )",
-          "Granit.Tax": "[0.1.0-dev, )",
-          "Granit.Validation.Europe": "[0.1.0-dev, )"
-        }
-      },
-      "granit.tax.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Tax": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.tax.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Parties": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Tax": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.tax.stripe": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Http.Resilience": "[0.1.0-dev, )",
-          "Granit.Invoicing": "[0.1.0-dev, )",
-          "Granit.Tax": "[0.1.0-dev, )",
-          "Stripe.net": "[51.*, )"
-        }
-      },
-      "granit.taxonomy": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Persistence": "[0.1.0-dev, )"
-        }
-      },
-      "granit.taxonomy.backgroundjobs": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.BackgroundJobs": "[0.1.0-dev, )",
-          "Granit.Taxonomy": "[0.1.0-dev, )"
-        }
-      },
-      "granit.taxonomy.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Taxonomy": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
-        }
-      },
-      "granit.taxonomy.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Taxonomy": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
@@ -4359,29 +3417,11 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.webhooks.analytics": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Webhooks": "[0.1.0-dev, )"
-        }
-      },
       "granit.webhooks.backgroundjobs": {
         "type": "Project",
         "dependencies": {
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Webhooks": "[0.1.0-dev, )"
-        }
-      },
-      "granit.webhooks.dashboards": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.webhooks.endpoints": {
@@ -4505,36 +3545,11 @@
           "Granit.Workflow": "[0.1.0-dev, )"
         }
       },
-      "granit.workspaces": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
-        }
-      },
       "granit.workspaces.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Entities.Abstractions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.workspaces.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )",
-          "Granit.Workspaces": "[0.1.0-dev, )"
-        }
-      },
-      "granit.workspaces.framework": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "AngleSharp": {
@@ -4673,11 +3688,11 @@
       "Azure.Storage.Blobs": {
         "type": "CentralTransitive",
         "requested": "[12.*, )",
-        "resolved": "12.27.0",
-        "contentHash": "zI5rg1tTtnA8T2g2/21l+1iIUdDjpEQQ0FI1BabJVEQJ1JUyTQKrc41eNabAHs0SBHprl6pu/6OqIMK9Ve+4tQ==",
+        "resolved": "12.28.0",
+        "contentHash": "OK6slT3Hq3Yp2HWA0e23YHheHzKNbYjBZOwdT4fQ1iMH6I/8e6X8kAJLuKqVUeFBy160QSwhsynA3HxhVSHEcg==",
         "dependencies": {
-          "Azure.Core": "1.50.0",
-          "Azure.Storage.Common": "12.26.0"
+          "Azure.Core": "1.51.1",
+          "Azure.Storage.Common": "12.27.0"
         }
       },
       "Bogus": {
@@ -4749,22 +3764,6 @@
           "FluentValidation": "12.1.1"
         }
       },
-      "FuzzySharp": {
-        "type": "CentralTransitive",
-        "requested": "[2.*, )",
-        "resolved": "2.0.2",
-        "contentHash": "sBKqWxw3g//peYxDZ8JipRlyPbIyBtgzqBVA5GqwHVeqtIrw75maGXAllztf+1aJhchD+drcQIgf2mFho8ZV8A=="
-      },
-      "GoCardless": {
-        "type": "CentralTransitive",
-        "requested": "[9.*, )",
-        "resolved": "9.5.0",
-        "contentHash": "8GDtfOgWV4QGE9XFVvPuURpUEX5c43GA7GkpIu2T2ZCFixUItnFsQ9KPGEBuML3rPegP+CpslF8ubWu+7ku25A==",
-        "dependencies": {
-          "BouncyCastle.Cryptography": "2.6.1",
-          "Newtonsoft.Json": "13.0.3"
-        }
-      },
       "Google.Cloud.Kms.V1": {
         "type": "CentralTransitive",
         "requested": "[3.*, )",
@@ -4807,12 +3806,6 @@
           "Lib.Net.Http.EncryptedContentEncoding": "2.1.1"
         }
       },
-      "libphonenumber-csharp": {
-        "type": "CentralTransitive",
-        "requested": "[9.*, )",
-        "resolved": "9.0.30",
-        "contentHash": "jnGz07XEj63MHtKv6s4U0DC8bGHhnsCtwYRTAjlu5MmzqFSxkss5HBEEdU55Rg0l72HTU518kiLaQM9dcJYVjw=="
-      },
       "Magick.NET-Q8-AnyCPU": {
         "type": "CentralTransitive",
         "requested": "[14.*, )",
@@ -4834,8 +3827,8 @@
       "Microsoft.AspNetCore.Authentication.JwtBearer": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "g8klpd7OFJfJOq1EJKcBO8C8I8Dp0QUWoKDPUvvJYe+xunVyBHq6YxfF2CAc6+rkniV25iaWl+6RK87c25n4lA==",
+        "resolved": "10.0.8",
+        "contentHash": "oGnE+X/SN6jdqao9WOkOIfyZ5+a0AtluJWy1Mxndq+kcWG6sx5k6l6tucu8/wJ7o9fHfLgVCzm/c4v/KVgVk6w==",
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.0.1"
         }
@@ -4843,20 +3836,20 @@
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "WAMNMV7m019wBaem9YAyK+nsR6r5ixBL/kOPybO9QhEkwG4dOeVG3vvTTkI5I6q6fp5+MN6IuYxxV/2HYiI9vw==",
+        "resolved": "10.0.8",
+        "contentHash": "GvUGVaFpAihzb0MEUVunhwFNVI/s9wCtOidbaz4JucM3W/YiMtccki9Gm+qcoxlPxQyGpAxX11bvEghL87TMGA==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.7"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.8"
         }
       },
       "Microsoft.AspNetCore.Mvc.Testing": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "lWyzApi1g8/r0eXqZBbl5bA8zewS8koxOir83/+OvJcyn2HazdUzPFd4MWc9uMdVzCRX6Z5aY4tNK+N0pWXMLg==",
+        "resolved": "10.0.8",
+        "contentHash": "C9kMpUciPgx7ObqoO6W+eXEf3zHFWb7XpQgFJBzdO8GsmmVYrgcErTLMuki6e3EihycGpHbcJECYHDgM7XRMkg==",
         "dependencies": {
-          "Microsoft.AspNetCore.TestHost": "10.0.7",
-          "Microsoft.Extensions.DependencyModel": "10.0.7"
+          "Microsoft.AspNetCore.TestHost": "10.0.8",
+          "Microsoft.Extensions.DependencyModel": "10.0.8"
         }
       },
       "Microsoft.AspNetCore.OData": {
@@ -4874,8 +3867,8 @@
       "Microsoft.AspNetCore.OpenApi": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "vKiAcGXG0BwNVw3bOjjWRLnp9tR18dR7MiwpvC94h0yFS+zfnzGHzS/JmmgwUdRixrGxrlIMRAWrVc+2DfAGlg==",
+        "resolved": "10.0.8",
+        "contentHash": "cw24xHE2QaWwyEG9GQwFbjboyabub6Vd80DIItUGENzcQOa/BEnTrXsg2GADqWTmY/3ycqk9ToLGjgvF/VRlGA==",
         "dependencies": {
           "Microsoft.OpenApi": "2.0.0"
         }
@@ -4883,8 +3876,8 @@
       "Microsoft.AspNetCore.OutputCaching.StackExchangeRedis": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "+Cf0YGN/0NW5T5sciooAsXN/13wmakw26Y1CWC7Kv9Ls8qMhywpqMf178PqQFOZW+jc/doT5QPoAO3eqfNkV2w==",
+        "resolved": "10.0.8",
+        "contentHash": "+7a3KjrMIBvHpf/KlG1F9tjQzw7EL2MO9prFYi4nfHKeVT+JPdhuRUMIL2wS95cV0meB06BI4WCwoWXVSokkwQ==",
         "dependencies": {
           "StackExchange.Redis": "2.7.27"
         }
@@ -4892,8 +3885,8 @@
       "Microsoft.AspNetCore.SignalR.StackExchangeRedis": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "b+Gazwfx+rQKRwUnPBAsuXnsg8T6hMSriIATAQ3AqR6HJP0UJZw0+Lcr2dFTDul0SSNnskK+UEkqZO78EMHSHw==",
+        "resolved": "10.0.8",
+        "contentHash": "12QE45J4nR04PIyof9hsKar4U3fyp64MaBkN/g35cLtLjII3NmA5x/1a8cAgLL3EM0AV/jT8l+UiFijvtuKx/Q==",
         "dependencies": {
           "MessagePack": "2.5.187",
           "StackExchange.Redis": "2.7.27"
@@ -4941,39 +3934,39 @@
       "Microsoft.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "G6yclVO5/csPzzsymV0SemY2NDqE31CP5M3jprF5IuO9wJsh4aUOfYD8HCLuDmM1D1CfReegVic48O2r79d46Q==",
+        "resolved": "10.0.8",
+        "contentHash": "EJx+fIBMgBlgD+ublKCn+GTOJkw3UqV7xOjYWBRVdUYyIm8UfvAsmSOPFiIInsWTHyMEYUJ9gCJY1jwX+6UB7w==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.7",
-          "Microsoft.EntityFrameworkCore.Analyzers": "10.0.7"
+          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.8",
+          "Microsoft.EntityFrameworkCore.Analyzers": "10.0.8"
         }
       },
       "Microsoft.EntityFrameworkCore.InMemory": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "RAns8RTPymM9GsIdY5Y8wWdpdMEXputTl24+95WhYzqF4HhT0i+jFmNgDxBTy386vU9ruoUC5gcPAiuJr8SZxg==",
+        "resolved": "10.0.8",
+        "contentHash": "C3T9khx1oiLPrS6ehoSnZptiEuTOIaX60it9SGvCkWTeF5i6+IceK6p7mtx+mkFwWB5qx+v3IhgG51iUEtLq9w==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.7"
+          "Microsoft.EntityFrameworkCore": "10.0.8"
         }
       },
       "Microsoft.EntityFrameworkCore.Relational": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "midwPufIwXhOJcVhaZpCZGNbjy2QoPfHI+70nw2dGcoULEW9DybMvMPYkRjOJV0eI46a1oVFhU4lFYDEx6YUbg==",
+        "resolved": "10.0.8",
+        "contentHash": "UU3diAD2wwZveye2rnrwaF/wvJ9tm5iL2fuY9TTap6/iGQK1OO29M1BzXZRlRPVH/dByt5w/pISBSFtyR7hTqw==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.7"
+          "Microsoft.EntityFrameworkCore": "10.0.8"
         }
       },
       "Microsoft.EntityFrameworkCore.Sqlite": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "0cnk9Chkuz2Jc6pbXRqdjy2CMAi62q4dJhvJzG25iCIvbavUYLxk/5ukwM+mzOl7ADN88WPmY1Lx1cAH2g8QSA==",
+        "resolved": "10.0.8",
+        "contentHash": "8BGSSKBDDBC8s6ye1Y2Ar1BToeZHLHOzUn0nAOng4Z+8dJ4KQKC/1qYFPgRYchDCOMQh98REHco8SrrMYsHuMQ==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Sqlite.Core": "10.0.7",
-          "Microsoft.Extensions.DependencyModel": "10.0.7",
+          "Microsoft.EntityFrameworkCore.Sqlite.Core": "10.0.8",
+          "Microsoft.Extensions.DependencyModel": "10.0.8",
           "SQLitePCLRaw.bundle_e_sqlite3": "2.1.11",
           "SQLitePCLRaw.core": "2.1.11"
         }
@@ -4981,40 +3974,40 @@
       "Microsoft.EntityFrameworkCore.SqlServer": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "jci/dpjLIZyrp0Kbt0kr1lh+7BXbJ3wNk+vTwS/Se65grEJSBC+eE2UAQsi/xSNB5lHP2dysyOMHugkpFwQwNA==",
+        "resolved": "10.0.8",
+        "contentHash": "A+FLIsTH9l5DG2iD6QW6Mfwlvr+BjWme/jJ2hvwmmENTr7lR1UWmgCtKCjDYcHxqdAD15bb4PgQnSzw12DV/pw==",
         "dependencies": {
           "Microsoft.Data.SqlClient": "6.1.1",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.7"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.8"
         }
       },
       "Microsoft.Extensions.AI.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.5.2",
-        "contentHash": "Ei+YWV9Ybnps7pR1dgjlG29gelXEwZkhLVAcWmKe6HvXS6LNBYgSdWiY3Hk9OZXYtK34rv/NtLWBQYQGOBQYPQ=="
+        "resolved": "10.6.0",
+        "contentHash": "JCkVoyqBqi9r3Vs5Qo5PfZobT0+CWeOx+9y9yggBxtW9s/X5CAoa7Iw/tP/rfUdz+nxRKMSBmrytYgwmu60lgA=="
       },
       "Microsoft.Extensions.AI.OpenAI": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.5.2",
-        "contentHash": "0LEhySZtEs/PlL6O4dDY2Oz2TNGFU7V2U55j+e+YxjOfXx/N1rKJ6fqrx+C/Z44XuKbPHRQw5yTQOF5IVfuV7g==",
+        "resolved": "10.6.0",
+        "contentHash": "LtqD8u5fqljZ+0Y6EsKOo+4YouNb0t+jU5J3rfOadMR1RCM5a36+2SB4tEuJpCTiqC31GeeJscyzFmIuwCZx+Q==",
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.5.2",
+          "Microsoft.Extensions.AI.Abstractions": "10.6.0",
           "OpenAI": "2.10.0"
         }
       },
       "Microsoft.Extensions.Caching.Hybrid": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.5.0",
-        "contentHash": "INkOmE/6q6txxCS45A9HfY8dCqqjTMJfGzr3cNoMwuZpHVSr0JhMfgr/QNm9BvtvyzsyiK+q7yhCn57fBmoy9Q=="
+        "resolved": "10.6.0",
+        "contentHash": "OSiffOH19rIk+elwjgDvUm7x2ZXl2+SnJAlEMPwDNc3zBRWbB8pJn4X9QX6UFXsGlRltVjkHBTUtVI5P8YLA9g=="
       },
       "Microsoft.Extensions.Caching.StackExchangeRedis": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "TvD0totA8qeyrZ2YeY/qRNgYBy4BvO6dG59ziJDLVnLH4s2jeLUFEFcgA3xzqPhCMMbuz9bJTRwHxkZ/7c87jQ==",
+        "resolved": "10.0.8",
+        "contentHash": "fle9ns3q2kk63vt/wHFtLw1U9kiEbM42vTk2Sar8VBjiGJFkXAgm0QEKFx15YMHkJIPRVdknWaovpvgGEgn10g==",
         "dependencies": {
           "StackExchange.Redis": "2.7.27"
         }
@@ -5022,29 +4015,29 @@
       "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "jB9/rxTI0c1n7ynagvyJCLVcY1yA47Ngu8Ef9YBEDQ/3O/fNTgGMRd9aRK9tthtMZ40W9P7ih8423ePsyZc/2g==",
+        "resolved": "10.0.8",
+        "contentHash": "VyjlpOHGpT9xoNFKNd/27FBF4eBimMcCCIfMxkeju/8uUnugwsxHfzZX2iP+ilYeoYB4HeT5gAoswTIKD6SYJw==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.7"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.8"
         }
       },
       "Microsoft.Extensions.Http.Resilience": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.5.0",
-        "contentHash": "81rw+wjFFP5jREOERb1PHIPvBNFtE6NXO8bsLTSCET2UZWxj7cwrpzcI3l07tOpHEprYmruZAF3kZEar7uG4Iw==",
+        "resolved": "10.6.0",
+        "contentHash": "Diw9HdFABHx0EQTjfanXKuV6zSEyHEEH11ZGdsNxNf/3gsLEiBPXUximDG0EwYt1iIalH0JFlI1DXqpE4VjDpQ==",
         "dependencies": {
-          "Microsoft.Extensions.Http.Diagnostics": "10.5.0",
-          "Microsoft.Extensions.Resilience": "10.5.0"
+          "Microsoft.Extensions.Http.Diagnostics": "10.6.0",
+          "Microsoft.Extensions.Resilience": "10.6.0"
         }
       },
       "Microsoft.Extensions.VectorData.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.5.2",
-        "contentHash": "yDAXNuIO0zXl6zkDqUvTN3rynut0m1bBoWo3ylZQ/B510hGjnRO7cQIs/iGvT3tuxyOL1oKAAONidXH495hZzQ==",
+        "resolved": "10.6.0",
+        "contentHash": "RfLyumg1eUymiqdHRTenr7g+aAaWfBj1v0wJgxwpuasNPCGSCCaenRUJdFJs7hM7RBgP5Rv3tdg/SM73oDwcwA==",
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.5.2"
+          "Microsoft.Extensions.AI.Abstractions": "10.6.0"
         }
       },
       "Microsoft.IO.RecyclableMemoryStream": {
@@ -5100,20 +4093,11 @@
           "ModelContextProtocol": "1.2.0"
         }
       },
-      "Mollie.Api": {
-        "type": "CentralTransitive",
-        "requested": "[4.*, )",
-        "resolved": "4.19.0",
-        "contentHash": "3Txwx0HpXYEPsOIsYespasdutHvyGJb35/Ds1FxpgCNCVK5eHOEebEkuSMDRA2nqAJLAGBj6cxNutq1dSddIXg==",
-        "dependencies": {
-          "Microsoft.Extensions.Http.Polly": "8.0.19"
-        }
-      },
       "NetTopologySuite": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.6.0",
-        "contentHash": "1B1OTacTd4QtFyBeuIOcThwSSLUdRZU3bSFIwM8vk36XiZlBMi3K36u74e4OqwwHRHUuJC1PhbDx4hyI266X1Q=="
+        "resolved": "2.5.0",
+        "contentHash": "5/+2O2ADomEdUn09mlSigACdqvAf0m/pVPGtIPEPQWnyrVykYY0NlfXLIdkMgi41kvH9kNrPqYaFBTZtHYH7Xw=="
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL": {
         "type": "CentralTransitive",
@@ -5278,8 +4262,8 @@
       "Scriban": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.1.0",
-        "contentHash": "8paijHmWYO7zxSRNLlbDzzaFT7By827wIgdOrAg9q64+XasUYK8RCT3Y4mbISxeQ3iNdaK7wGeDmT2GWRtqRBQ=="
+        "resolved": "7.2.0",
+        "contentHash": "GiAuu6bCPVWJeMMK8AkJMCNX+wyqt2qgiKjVAPLvRWxzBwpDJjLhJltVP034tsZUHOkBtdfA/Otrny+n3NelBw=="
       },
       "Sep": {
         "type": "CentralTransitive",
@@ -5325,33 +4309,14 @@
           "ZString": "2.6.0"
         }
       },
-      "SoftWx.Match": {
-        "type": "CentralTransitive",
-        "requested": "[2.*, )",
-        "resolved": "2.0.3",
-        "contentHash": "dTYfATuLtFwV6GFsEahznQWZZ9ciuWux2ehxlFg5Go2gcwq2Zrj05TNlXS2FTp8wXo6FG9TgJjKcZjoM7BThGQ==",
-        "dependencies": {
-          "NETStandard.Library": "1.6.1"
-        }
-      },
       "StackExchange.Redis": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.12.14",
-        "contentHash": "QiAQg40OP4Owem6/PjIbjEKq2+uIeQYeZ1TCMUnx/QvKugOPxOfC96wjlnBjWHi4Wq9pv9+fDlXGT06XkRZ6Ig==",
+        "resolved": "2.13.1",
+        "contentHash": "jC5wkRe8K6HPoDENUws+fl2d7+GKz+ky8SWEDzYzPx6hHt2EwxWm01gmYPWLzlT49jfYYap0guB5bExtyX9aIQ==",
         "dependencies": {
-          "Pipelines.Sockets.Unofficial": "2.2.8",
+          "Pipelines.Sockets.Unofficial": "2.2.16",
           "System.IO.Hashing": "10.0.2"
-        }
-      },
-      "Stripe.net": {
-        "type": "CentralTransitive",
-        "requested": "[51.*, )",
-        "resolved": "51.1.0",
-        "contentHash": "q4Kj14NP0jaGKRkeuCTL2Mwn7BVgVUHowBiGJAX2fGiEIOVbdhpCERlNRTuvirN/5IGae6cCToS0+H/oSX395A==",
-        "dependencies": {
-          "Newtonsoft.Json": "13.0.3",
-          "System.Configuration.ConfigurationManager": "9.0.0"
         }
       },
       "Sylvan.Data.Excel": {

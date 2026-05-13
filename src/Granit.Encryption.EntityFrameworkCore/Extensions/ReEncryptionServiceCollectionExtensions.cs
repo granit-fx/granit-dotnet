@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Granit.Encryption.BackgroundJobs.Extensions;
+namespace Granit.Encryption.EntityFrameworkCore.Extensions;
 
 /// <summary>
 /// <see cref="IServiceCollection"/> extensions for Granit re-encryption.
@@ -9,7 +9,7 @@ namespace Granit.Encryption.BackgroundJobs.Extensions;
 public static class ReEncryptionServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers <see cref="IReEncryptionJob"/> backed by <see cref="DefaultReEncryptionJob{TContext}"/>.
+    /// Registers <see cref="IReEncryptionService"/> backed by <see cref="DefaultReEncryptionService{TContext}"/>.
     /// </summary>
     /// <typeparam name="TContext">
     /// The <see cref="DbContext"/> that owns the entities to re-encrypt.
@@ -22,7 +22,7 @@ public static class ReEncryptionServiceCollectionExtensions
         this IServiceCollection services)
         where TContext : DbContext
     {
-        services.AddScoped<IReEncryptionJob, DefaultReEncryptionJob<TContext>>();
+        services.AddScoped<IReEncryptionService, DefaultReEncryptionService<TContext>>();
         return services;
     }
 }

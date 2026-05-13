@@ -1,16 +1,15 @@
 using System.Reflection;
-using Granit.Encryption.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Granit.Encryption.BackgroundJobs;
+namespace Granit.Encryption.EntityFrameworkCore;
 
 /// <summary>
-/// Default implementation of <see cref="IReEncryptionJob"/> backed by EF Core.
+/// Default implementation of <see cref="IReEncryptionService"/> backed by EF Core.
 /// </summary>
 /// <remarks>
 /// <para>
-/// The job loads entities in batches, marks each <see cref="EncryptedAttribute"/>
+/// The service loads entities in batches, marks each <see cref="EncryptedAttribute"/>
 /// property as modified, and saves. On save, the EF Core value converter runs
 /// <see cref="Granit.Encryption.IStringEncryptionService.Encrypt"/> — producing
 /// ciphertext with the current key version.
@@ -30,8 +29,8 @@ namespace Granit.Encryption.BackgroundJobs;
 /// </para>
 /// </remarks>
 /// <typeparam name="TContext">The <see cref="DbContext"/> type that owns the entities.</typeparam>
-public sealed class DefaultReEncryptionJob<TContext>(IDbContextFactory<TContext> contextFactory)
-    : IReEncryptionJob
+public sealed class DefaultReEncryptionService<TContext>(IDbContextFactory<TContext> contextFactory)
+    : IReEncryptionService
     where TContext : DbContext
 {
     /// <inheritdoc />

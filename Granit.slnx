@@ -85,7 +85,6 @@
     <Project Path="src/Granit.Bff.EntityFrameworkCore/Granit.Bff.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Bff.Yarp/Granit.Bff.Yarp.csproj" />
     <Project Path="src/Granit.Bff/Granit.Bff.csproj" />
-    <Project Path="src/Granit.Encryption.BackgroundJobs/Granit.Encryption.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Encryption/Granit.Encryption.csproj" />
     <Project Path="src/Granit.Identity.Endpoints/Granit.Identity.Endpoints.csproj" />
@@ -363,7 +362,6 @@
     <Project Path="tests/Granit.Bff.EntityFrameworkCore.Tests/Granit.Bff.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Bff.Tests/Granit.Bff.Tests.csproj" />
     <Project Path="tests/Granit.Bff.Yarp.Tests/Granit.Bff.Yarp.Tests.csproj" />
-    <Project Path="tests/Granit.Encryption.BackgroundJobs.Tests/Granit.Encryption.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Encryption.EntityFrameworkCore.Tests/Granit.Encryption.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Encryption.Tests/Granit.Encryption.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Endpoints.Tests/Granit.Identity.Endpoints.Tests.csproj" />

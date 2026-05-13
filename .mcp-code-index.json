@@ -692,13 +692,6 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Encryption.BackgroundJobs",
-      "deps": [
-        "Granit.Encryption.EntityFrameworkCore"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.Encryption.EntityFrameworkCore",
       "deps": [
         "Granit",
@@ -15586,42 +15579,6 @@
       ]
     },
     {
-      "name": "DefaultReEncryptionJob",
-      "fqn": "Granit.Encryption.BackgroundJobs.DefaultReEncryptionJob",
-      "kind": "class",
-      "project": "Granit.Encryption.BackgroundJobs",
-      "file": "src/Granit.Encryption.BackgroundJobs/DefaultReEncryptionJob.cs",
-      "line": 33,
-      "members": []
-    },
-    {
-      "name": "ReEncryptionServiceCollectionExtensions",
-      "fqn": "Granit.Encryption.BackgroundJobs.Extensions.ReEncryptionServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Encryption.BackgroundJobs",
-      "file": "src/Granit.Encryption.BackgroundJobs/Extensions/ReEncryptionServiceCollectionExtensions.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "GranitEncryptionBackgroundJobsModule",
-      "fqn": "Granit.Encryption.BackgroundJobs.GranitEncryptionBackgroundJobsModule",
-      "kind": "class",
-      "project": "Granit.Encryption.BackgroundJobs",
-      "file": "src/Granit.Encryption.BackgroundJobs/GranitEncryptionBackgroundJobsModule.cs",
-      "line": 8,
-      "members": []
-    },
-    {
-      "name": "IReEncryptionJob",
-      "fqn": "Granit.Encryption.BackgroundJobs.IReEncryptionJob",
-      "kind": "interface",
-      "project": "Granit.Encryption.BackgroundJobs",
-      "file": "src/Granit.Encryption.BackgroundJobs/IReEncryptionJob.cs",
-      "line": 12,
-      "members": []
-    },
-    {
       "name": "ICryptoShreddingAuditRecorder",
       "fqn": "Granit.Encryption.CryptoShredding.ICryptoShreddingAuditRecorder",
       "kind": "interface",
@@ -15669,6 +15626,15 @@
       "members": []
     },
     {
+      "name": "DefaultReEncryptionService",
+      "fqn": "Granit.Encryption.EntityFrameworkCore.DefaultReEncryptionService",
+      "kind": "class",
+      "project": "Granit.Encryption.EntityFrameworkCore",
+      "file": "src/Granit.Encryption.EntityFrameworkCore/DefaultReEncryptionService.cs",
+      "line": 32,
+      "members": []
+    },
+    {
       "name": "EncryptedStringConverter",
       "fqn": "Granit.Encryption.EntityFrameworkCore.EncryptedStringConverter",
       "kind": "class",
@@ -15710,6 +15676,15 @@
       ]
     },
     {
+      "name": "ReEncryptionServiceCollectionExtensions",
+      "fqn": "Granit.Encryption.EntityFrameworkCore.Extensions.ReEncryptionServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Encryption.EntityFrameworkCore",
+      "file": "src/Granit.Encryption.EntityFrameworkCore/Extensions/ReEncryptionServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "GranitEncryptionEntityFrameworkCoreModule",
       "fqn": "Granit.Encryption.EntityFrameworkCore.GranitEncryptionEntityFrameworkCoreModule",
       "kind": "class",
@@ -15724,6 +15699,15 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "IReEncryptionService",
+      "fqn": "Granit.Encryption.EntityFrameworkCore.IReEncryptionService",
+      "kind": "interface",
+      "project": "Granit.Encryption.EntityFrameworkCore",
+      "file": "src/Granit.Encryption.EntityFrameworkCore/IReEncryptionService.cs",
+      "line": 13,
+      "members": []
     },
     {
       "name": "EncryptionIsolationMaterializationInterceptor",

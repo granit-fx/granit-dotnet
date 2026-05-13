@@ -1,4 +1,3 @@
-using Granit.Encryption.BackgroundJobs;
 using Granit.Encryption.EntityFrameworkCore;
 using Granit.Encryption.EntityFrameworkCore.Extensions;
 using Microsoft.Data.Sqlite;
@@ -7,13 +6,13 @@ using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Encryption.BackgroundJobs.Tests;
+namespace Granit.Encryption.EntityFrameworkCore.Tests;
 
-public sealed class DefaultReEncryptionJobTests
+public sealed class DefaultReEncryptionServiceTests
 {
     private readonly IStringEncryptionService _encryption = Substitute.For<IStringEncryptionService>();
 
-    public DefaultReEncryptionJobTests()
+    public DefaultReEncryptionServiceTests()
     {
         // Each encrypt call produces a ciphertext with a simple prefix so tests can verify re-encryption.
         _encryption.Encrypt(Arg.Any<string>()).Returns(ci => $"ENC:{ci.Arg<string>()}");
@@ -48,9 +47,9 @@ public sealed class DefaultReEncryptionJobTests
         string? initialRaw = cmd.ExecuteScalar() as string;
         initialRaw.ShouldBe("ENC:123-45-6789");
 
-        // Run re-encryption job
+        // Run re-encryption
         IDbContextFactory<TestDbContext> factory = new InlineDbContextFactory(options, _encryption);
-        DefaultReEncryptionJob<TestDbContext> sut = new(factory);
+        DefaultReEncryptionService<TestDbContext> sut = new(factory);
 
         await sut.ReEncryptAsync<PatientEntity>(cancellationToken: TestContext.Current.CancellationToken);
 
@@ -80,7 +79,7 @@ public sealed class DefaultReEncryptionJobTests
         _encryption.ClearReceivedCalls();
 
         IDbContextFactory<TestDbContext> factory = new InlineDbContextFactory(options, _encryption);
-        DefaultReEncryptionJob<TestDbContext> sut = new(factory);
+        DefaultReEncryptionService<TestDbContext> sut = new(factory);
 
         await sut.ReEncryptAsync<PatientEntity>(cancellationToken: TestContext.Current.CancellationToken);
 
@@ -106,7 +105,7 @@ public sealed class DefaultReEncryptionJobTests
         _encryption.ClearReceivedCalls();
 
         IDbContextFactory<TestDbContext> factory = new InlineDbContextFactory(options, _encryption);
-        DefaultReEncryptionJob<TestDbContext> sut = new(factory);
+        DefaultReEncryptionService<TestDbContext> sut = new(factory);
 
         // PlainEntity has no [Encrypted] properties — should complete without calling Encrypt
         await sut.ReEncryptAsync<PlainEntity>(cancellationToken: TestContext.Current.CancellationToken);
@@ -136,7 +135,7 @@ public sealed class DefaultReEncryptionJobTests
         }
 
         IDbContextFactory<TestDbContext> factory = new InlineDbContextFactory(options, _encryption);
-        DefaultReEncryptionJob<TestDbContext> sut = new(factory);
+        DefaultReEncryptionService<TestDbContext> sut = new(factory);
 
         // batchSize=2 forces multiple iterations (5 rows / 2 = 3 batches: 2+2+1)
         await sut.ReEncryptAsync<PatientEntity>(batchSize: 2, cancellationToken: TestContext.Current.CancellationToken);
@@ -170,7 +169,7 @@ public sealed class DefaultReEncryptionJobTests
         _encryption.ClearReceivedCalls();
 
         IDbContextFactory<TestDbContext> factory = new InlineDbContextFactory(options, _encryption);
-        DefaultReEncryptionJob<TestDbContext> sut = new(factory);
+        DefaultReEncryptionService<TestDbContext> sut = new(factory);
 
         // Should complete without errors on an empty table
         await sut.ReEncryptAsync<PatientEntity>(cancellationToken: TestContext.Current.CancellationToken);
@@ -200,7 +199,7 @@ public sealed class DefaultReEncryptionJobTests
         }
 
         IDbContextFactory<TestDbContext> factory = new InlineDbContextFactory(options, _encryption);
-        DefaultReEncryptionJob<TestDbContext> sut = new(factory);
+        DefaultReEncryptionService<TestDbContext> sut = new(factory);
 
         // batchSize=500 (default) > 3 rows — single batch
         await sut.ReEncryptAsync<PatientEntity>(cancellationToken: TestContext.Current.CancellationToken);
@@ -236,7 +235,7 @@ public sealed class DefaultReEncryptionJobTests
         }
 
         IDbContextFactory<TestDbContext> factory = new InlineDbContextFactory(options, _encryption);
-        DefaultReEncryptionJob<TestDbContext> sut = new(factory);
+        DefaultReEncryptionService<TestDbContext> sut = new(factory);
 
         // batchSize == row count — triggers the do-while boundary condition
         await sut.ReEncryptAsync<PatientEntity>(batchSize: 3, cancellationToken: TestContext.Current.CancellationToken);

@@ -1,25 +1,25 @@
-using Granit.Encryption.BackgroundJobs;
-using Granit.Encryption.BackgroundJobs.Extensions;
+using Granit.Encryption.EntityFrameworkCore;
+using Granit.Encryption.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Encryption.BackgroundJobs.Tests;
+namespace Granit.Encryption.EntityFrameworkCore.Tests;
 
 public sealed class ReEncryptionServiceCollectionExtensionsTests
 {
     [Fact]
-    public void AddGranitEncryptionReEncryption_Registers_ReEncryptionJob()
+    public void AddGranitEncryptionReEncryption_Registers_ReEncryptionService()
     {
         ServiceCollection services = new();
         services.AddGranitEncryptionReEncryption<FakeDbContext>();
 
         ServiceDescriptor? descriptor = services.FirstOrDefault(
-            d => d.ServiceType == typeof(IReEncryptionJob));
+            d => d.ServiceType == typeof(IReEncryptionService));
 
         descriptor.ShouldNotBeNull();
-        descriptor.ImplementationType.ShouldBe(typeof(DefaultReEncryptionJob<FakeDbContext>));
+        descriptor.ImplementationType.ShouldBe(typeof(DefaultReEncryptionService<FakeDbContext>));
         descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
     }
 

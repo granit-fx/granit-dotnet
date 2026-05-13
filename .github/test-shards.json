@@ -249,7 +249,6 @@
         "tests/Granit.Authorization.Tests",
         "tests/Granit.Bff.BackgroundJobs.Tests",
         "tests/Granit.Bff.EntityFrameworkCore.Tests",
-        "tests/Granit.Encryption.BackgroundJobs.Tests",
         "tests/Granit.Encryption.EntityFrameworkCore.Tests",
         "tests/Granit.Encryption.Tests",
         "tests/Granit.Identity.Endpoints.Tests",
