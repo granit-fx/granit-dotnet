@@ -34,7 +34,9 @@ public static class ImagingAIHostApplicationBuilderExtensions
             .BindConfiguration(ImagingAIOptions.SectionName);
 
         builder.Services.TryAddSingleton<ImagingAIMetrics>();
-        builder.Services.TryAddSingleton<IAIImageAnalyzer, LlmImageAnalyzer>();
+        // Scoped because LlmImageAnalyzer depends on IAIChatClientFactory (scoped).
+        // The analyzer carries no singleton-justifying state.
+        builder.Services.TryAddScoped<IAIImageAnalyzer, LlmImageAnalyzer>();
 
         return builder;
     }
