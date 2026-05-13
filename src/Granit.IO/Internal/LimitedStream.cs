@@ -7,12 +7,18 @@ namespace Granit.IO.Internal;
 /// Throws <see cref="IOException"/> when a write or <see cref="SetLength"/> call
 /// would push the underlying stream beyond <c>MaxSizeBytes</c>.
 /// </remarks>
-internal sealed class LimitedStream(Stream inner, long maxSizeBytes) : Stream
+internal sealed class LimitedStream : Stream
 {
-    private readonly Stream _inner = inner ?? throw new ArgumentNullException(nameof(inner));
-    private readonly long _maxSizeBytes = maxSizeBytes >= 0
-        ? maxSizeBytes
-        : throw new ArgumentOutOfRangeException(nameof(maxSizeBytes), "must be non-negative");
+    private readonly Stream _inner;
+    private readonly long _maxSizeBytes;
+
+    public LimitedStream(Stream inner, long maxSizeBytes)
+    {
+        ArgumentNullException.ThrowIfNull(inner);
+        ArgumentOutOfRangeException.ThrowIfNegative(maxSizeBytes);
+        _inner = inner;
+        _maxSizeBytes = maxSizeBytes;
+    }
 
     public long MaxSizeBytes => _maxSizeBytes;
 

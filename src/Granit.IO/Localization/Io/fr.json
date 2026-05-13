@@ -1,9 +1,0 @@
-{
-  "culture": "fr",
-  "texts": {
-    "TempFile:CategoryInvalid": "La catégorie du fichier temporaire doit correspondre à [a-z0-9-]{1,32} ; reçu '{0}'.",
-    "TempFile:ExtensionInvalid": "L'extension du fichier temporaire doit être alphanumérique, 1 à 16 caractères ; reçu '{0}'.",
-    "TempFile:SizeExceeded": "Le fichier temporaire a dépassé la taille maximale de {0} octets.",
-    "TempFile:RootInvalid": "Le répertoire racine des fichiers temporaires est invalide ou inaccessible : '{0}'."
-  }
-}

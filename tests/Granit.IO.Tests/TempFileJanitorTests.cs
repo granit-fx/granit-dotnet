@@ -14,12 +14,12 @@ public sealed class TempFileJanitorTests : IDisposable
 {
     private readonly string _root;
     private readonly TestMeterFactory _meterFactory = new();
-    private readonly IoMetrics _metrics;
+    private readonly IOMetrics _metrics;
 
     public TempFileJanitorTests()
     {
         _root = Path.Combine(Path.GetTempPath(), "granit-io-janitor-" + Guid.NewGuid().ToString("N"));
-        _metrics = new IoMetrics(_meterFactory);
+        _metrics = new IOMetrics(_meterFactory);
         Directory.CreateDirectory(_root);
     }
 

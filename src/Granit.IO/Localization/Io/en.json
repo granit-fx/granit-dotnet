@@ -1,9 +1,0 @@
-{
-  "culture": "en",
-  "texts": {
-    "TempFile:CategoryInvalid": "Temp file category must match [a-z0-9-]{1,32}; got '{0}'.",
-    "TempFile:ExtensionInvalid": "Temp file extension must be alphanumeric, 1..16 chars; got '{0}'.",
-    "TempFile:SizeExceeded": "Temp file exceeded max size of {0} bytes.",
-    "TempFile:RootInvalid": "Temp file root directory is invalid or inaccessible: '{0}'."
-  }
-}

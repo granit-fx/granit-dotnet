@@ -5,18 +5,18 @@ using Xunit;
 namespace Granit.IO.Tests;
 
 [Collection("GranitIoMeter")]
-public sealed class IoMetricsTests
+public sealed class IOMetricsTests
 {
     [Fact]
     public void Constructor_NullFactory_Throws() =>
-        Should.Throw<ArgumentNullException>(() => new IoMetrics(null!));
+        Should.Throw<ArgumentNullException>(() => new IOMetrics(null!));
 
     [Fact]
     public void RecordBytes_Histogram_DoesNotThrow()
     {
         using TestMeterFactory factory = new();
-        IoMetrics metrics = new(factory);
-        using MeterListenerHarness harness = new(IoMetrics.MeterName);
+        IOMetrics metrics = new(factory);
+        using MeterListenerHarness harness = new(IOMetrics.MeterName);
 
         metrics.RecordBytes("har", "abc", 1234);
 
@@ -28,8 +28,8 @@ public sealed class IoMetricsTests
     public void RecordJanitorPurged_Increments()
     {
         using TestMeterFactory factory = new();
-        IoMetrics metrics = new(factory);
-        using MeterListenerHarness harness = new(IoMetrics.MeterName);
+        IOMetrics metrics = new(factory);
+        using MeterListenerHarness harness = new(IOMetrics.MeterName);
 
         metrics.RecordJanitorPurged("age");
 
@@ -40,8 +40,8 @@ public sealed class IoMetricsTests
     public void RecordCreated_Deleted_Increments()
     {
         using TestMeterFactory factory = new();
-        IoMetrics metrics = new(factory);
-        using MeterListenerHarness harness = new(IoMetrics.MeterName);
+        IOMetrics metrics = new(factory);
+        using MeterListenerHarness harness = new(IOMetrics.MeterName);
 
         metrics.RecordCreated("har", null);
         metrics.RecordCreated("har", "tenant-1");

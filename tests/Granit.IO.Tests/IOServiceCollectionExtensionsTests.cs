@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Granit.IO.Tests;
 
-public sealed class IoServiceCollectionExtensionsTests
+public sealed class IOServiceCollectionExtensionsTests
 {
     [Fact]
     public void AddGranitTempFiles_RegistersFactory()
@@ -26,7 +26,7 @@ public sealed class IoServiceCollectionExtensionsTests
         using ServiceProvider sp = services.BuildServiceProvider();
 
         sp.GetRequiredService<ITempFileFactory>().ShouldNotBeNull();
-        sp.GetRequiredService<IoMetrics>().ShouldNotBeNull();
+        sp.GetRequiredService<IOMetrics>().ShouldNotBeNull();
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public sealed class IoServiceCollectionExtensionsTests
     [Fact]
     public void AddGranitTempFiles_NullServices_Throws() =>
         Should.Throw<ArgumentNullException>(() =>
-            IoServiceCollectionExtensions.AddGranitTempFiles(null!));
+            IOServiceCollectionExtensions.AddGranitTempFiles(null!));
 
     [Fact]
     public void AddGranitTempFiles_RegistersActivitySource()

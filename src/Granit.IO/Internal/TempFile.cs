@@ -6,27 +6,44 @@ namespace Granit.IO.Internal;
 /// <summary>
 /// Default <see cref="ITempFile"/> implementation.
 /// </summary>
-internal sealed partial class TempFile(
-    string path,
-    LimitedStream stream,
-    long maxSizeBytes,
-    IoMetrics metrics,
-    string category,
-    string? tenantId,
-    ILogger logger) : ITempFile
+internal sealed partial class TempFile : ITempFile
 {
-    private readonly LimitedStream _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-    private readonly IoMetrics _metrics = metrics ?? throw new ArgumentNullException(nameof(metrics));
-    private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    private readonly string _category = category ?? throw new ArgumentNullException(nameof(category));
-    private readonly string? _tenantId = tenantId;
+    private readonly LimitedStream _stream;
+    private readonly IOMetrics _metrics;
+    private readonly ILogger _logger;
+    private readonly string _category;
+    private readonly string? _tenantId;
     private bool _disposed;
 
-    public string Path { get; } = path ?? throw new ArgumentNullException(nameof(path));
+    public TempFile(
+        string path,
+        LimitedStream stream,
+        long maxSizeBytes,
+        IOMetrics metrics,
+        string category,
+        string? tenantId,
+        ILogger logger)
+    {
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(stream);
+        ArgumentNullException.ThrowIfNull(metrics);
+        ArgumentNullException.ThrowIfNull(category);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        Path = path;
+        _stream = stream;
+        MaxSizeBytes = maxSizeBytes;
+        _metrics = metrics;
+        _category = category;
+        _tenantId = tenantId;
+        _logger = logger;
+    }
+
+    public string Path { get; }
 
     public Stream Stream => _stream;
 
-    public long MaxSizeBytes { get; } = maxSizeBytes;
+    public long MaxSizeBytes { get; }
 
     public async ValueTask DisposeAsync()
     {

@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.IO.Options;
 
 /// <summary>
@@ -5,12 +7,15 @@ namespace Granit.IO.Options;
 /// </summary>
 public sealed class TempFileOptions
 {
-    /// <summary>Configuration section name: <c>Io:Temp</c>.</summary>
-    public const string SectionName = "Io:Temp";
+    /// <summary>Configuration section name: <c>Granit:IO:TempFiles</c>.</summary>
+    public const string SectionName = "Granit:IO:TempFiles";
+
+    /// <summary>Default root directory: <c>{Path.GetTempPath()}/granit</c>.</summary>
+    public static string DefaultRootDirectory { get; } = Path.Combine(Path.GetTempPath(), "granit");
 
     /// <summary>
     /// Root directory under which temp files are created.
-    /// Defaults to <c>{Path.GetTempPath()}/granit</c> when <c>null</c>.
+    /// Defaults to <see cref="DefaultRootDirectory"/> when <c>null</c>.
     /// </summary>
     public string? RootDirectory { get; set; }
 
@@ -22,14 +27,15 @@ public sealed class TempFileOptions
 
     /// <summary>
     /// Maximum lifetime of a temp file before the janitor purges it.
-    /// Defaults to <c>1 hour</c>.
+    /// Defaults to <c>30 minutes</c>.
     /// </summary>
-    public TimeSpan MaxLifetime { get; set; } = TimeSpan.FromHours(1);
+    public TimeSpan MaxLifetime { get; set; } = TimeSpan.FromMinutes(30);
 
     /// <summary>
-    /// Maximum size (bytes) writeable to a single temp file. Defaults to <c>256 MiB</c>.
+    /// Maximum size (bytes) writeable to a single temp file. Defaults to <c>100 MiB</c>.
     /// </summary>
-    public long MaxSizeBytes { get; set; } = 256L * 1024 * 1024;
+    [Range(1, long.MaxValue)]
+    public long MaxSizeBytes { get; set; } = 100L * 1024 * 1024;
 
     /// <summary>
     /// When <c>true</c> (default), files are placed under a per-tenant sub-directory.
@@ -46,4 +52,8 @@ public sealed class TempFileOptions
     /// in the background. Set to <c>false</c> in tests or short-lived hosts.
     /// </summary>
     public bool RunJanitor { get; set; } = true;
+
+    /// <summary>Effective root directory, resolving the default when <see cref="RootDirectory"/> is null/empty.</summary>
+    public string EffectiveRootDirectory =>
+        string.IsNullOrWhiteSpace(RootDirectory) ? DefaultRootDirectory : RootDirectory;
 }
