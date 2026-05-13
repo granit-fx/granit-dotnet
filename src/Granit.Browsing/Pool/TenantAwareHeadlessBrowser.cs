@@ -15,7 +15,7 @@ namespace Granit.Browsing.Pool;
 /// Singleton decorator that wraps the provider-supplied <see cref="IHeadlessBrowser"/>
 /// to resolve the current tenant at every <see cref="AcquirePageAsync"/> call, emit
 /// <see cref="BrowserPageAcquiredEvent"/>, and tag the page-acquired metric with the
-/// correct <c>tenant_id</c>. Closes VULN-106 (tenant attribution).
+/// correct <c>tenant_id</c> for accurate per-tenant attribution.
 /// </summary>
 /// <remarks>
 /// <para>

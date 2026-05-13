@@ -7,8 +7,8 @@ namespace Granit.Browsing.Playwright.Internal;
 
 /// <summary>
 /// Validates the configured <c>ExecutablePath</c> against
-/// <see cref="IBrowserSandboxProfile.AllowedExecutablePathPrefix"/>. Closes VULN-205
-/// (provider spawning a weaponised browser binary from a writable location).
+/// <see cref="IBrowserSandboxProfile.AllowedExecutablePathPrefix"/> to prevent the
+/// provider from spawning a weaponised browser binary located in a writable directory.
 /// </summary>
 internal static class PlaywrightExecutablePathValidator
 {

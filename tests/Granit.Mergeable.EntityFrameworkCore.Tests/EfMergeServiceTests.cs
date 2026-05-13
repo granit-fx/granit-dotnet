@@ -96,7 +96,7 @@ public sealed class EfMergeServiceTests
         adapter.AppliedTombstoneAt.ShouldBe(Now);
         adapter.PersistCalls.ShouldBe(1);
         adapter.ChainCollapseCalls.ShouldBe(1);
-        adapter.RaiseMergedEventsCalls.ShouldBe(1, "orchestrator must invoke the adapter's merged-event hook (VULN-101)");
+        adapter.RaiseMergedEventsCalls.ShouldBe(1, "orchestrator must invoke the adapter's merged-event hook");
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public sealed class EfMergeServiceTests
 
         MergeException ex = await Should.ThrowAsync<MergeException>(() =>
             sut.MergeAsync(new MergeRequest(SurvivorId, LoserId, MergeFieldChoices.Empty), TestContext.Current.CancellationToken));
-        // VULN-300: must not embed the chain pointer in the user-visible message.
+        // Must not embed the chain pointer in the user-visible message (info disclosure).
         ex.Message.ShouldNotContain(chainTarget.ToString());
     }
 
@@ -153,7 +153,7 @@ public sealed class EfMergeServiceTests
     [Fact]
     public async Task MergeAsync_TenantMismatch_Throws()
     {
-        // VULN-400: explicit tenant guard for IMultiTenant aggregates — even if a future
+        // Explicit tenant guard for IMultiTenant aggregates — even if a future
         // change disabled the IMultiTenant filter, the orchestrator never participates in
         // a cross-tenant merge.
         var survivor = new TenantedAggregate(SurvivorId, "Survivor", TenantA);
@@ -215,7 +215,7 @@ public sealed class EfMergeServiceTests
     [Fact]
     public async Task MergeAsync_IdempotencyKey_IsTenantScoped_NoCrossTenantOracle()
     {
-        // VULN-200: Tenant B reusing a literal idempotency key already used by Tenant A
+        // Tenant B reusing a literal idempotency key already used by Tenant A
         // with a different body must NOT throw the "key reused" 409 — that error message
         // would otherwise function as a cross-tenant existence oracle. Cache lookups are
         // partitioned on TenantId.
@@ -254,7 +254,7 @@ public sealed class EfMergeServiceTests
     [Fact]
     public async Task MergeAsync_TamperedCacheRow_FallsThroughToFreshMerge()
     {
-        // VULN-301: the encrypt-then-MAC integrity check rejects a row whose ResultJson
+        // The encrypt-then-MAC integrity check rejects a row whose ResultJson
         // ciphertext was modified after insertion. The orchestrator must NOT replay a
         // tampered row — the test corrupts the ResultMac and verifies the next call
         // re-executes the merge instead.
@@ -314,7 +314,7 @@ public sealed class EfMergeServiceTests
     [Fact]
     public async Task MergeAsync_CachedPayload_OmitsFieldConflictValues()
     {
-        // VULN-100: the on-disk ResultJson must not contain the survivor/loser scalar
+        // The on-disk ResultJson must not contain the survivor/loser scalar
         // values — they round-trip as null after decryption.
         FakeAggregate survivor = new(SurvivorId, "Acme — sensitive name");
         FakeAggregate loser = new(LoserId, "Loser — also sensitive");

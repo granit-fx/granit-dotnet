@@ -41,13 +41,13 @@ public sealed class PermissionCacheInvalidationHandlerTests
     }
 
     // =========================================================================
-    // VULN-204: Grant vs Revoke invalidation strategy
+    // Grant vs Revoke invalidation strategy
     // =========================================================================
 
     [Fact]
     public async Task HandleAsync_GrantCreated_CallsExpireAsync()
     {
-        // VULN-204: grants use soft-expire (stale "denied" is safe)
+        // Grants use soft-expire (stale "denied" is safe).
         IFusionCache cache = Substitute.For<IFusionCache>();
         var @event = new PermissionGrantChangedEvent("Orders.Create", R, "editor", TenantId, IsGranted: true);
 
@@ -61,7 +61,7 @@ public sealed class PermissionCacheInvalidationHandlerTests
     [Fact]
     public async Task HandleAsync_GrantRevoked_CallsRemoveAsync()
     {
-        // VULN-204: revocations use hard-remove to prevent stale-while-revalidate
+        // Revocations use hard-remove to prevent stale-while-revalidate.
         IFusionCache cache = Substitute.For<IFusionCache>();
         var @event = new PermissionGrantChangedEvent("Orders.Create", R, "editor", TenantId, IsGranted: false);
 

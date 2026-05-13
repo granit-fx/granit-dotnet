@@ -943,7 +943,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            // Do not leak internal error details (VULN-300). Log the full exception
+            // Do not leak internal error details. Log the full exception
             // via structured logging in the engine; return a generic message to the client.
             return TypedResults.Problem(
                 detail: "Template rendering failed. Check the template syntax and data model.",

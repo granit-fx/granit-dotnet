@@ -34,7 +34,7 @@ namespace Granit.Persistence;
 /// <para>
 /// No <c>IgnoreFilter</c> API is provided. Query filter bypass (tenant, soft-delete, GDPR)
 /// requires explicit DbContext access via <c>ReadAsync</c> delegate — visible, auditable,
-/// and guarded by architecture tests. See VULN-200 in ADR-019 security review.
+/// and guarded by architecture tests. See the query-filter bypass discussion in the ADR-019 security review.
 /// </para>
 /// </remarks>
 public abstract class Specification<T> where T : class

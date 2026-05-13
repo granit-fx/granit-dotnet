@@ -283,7 +283,7 @@ public sealed partial class SourceCodeAntiPatternTests
 
     /// <summary>
     /// Parameterless <c>IgnoreQueryFilters()</c> disables ALL query filters — including the
-    /// multi-tenant filter — creating a cross-tenant data leak risk (VULN-202).
+    /// multi-tenant filter — creating a cross-tenant data leak risk.
     /// Use named filters instead: <c>.IgnoreQueryFilters([GranitFilterNames.SoftDelete])</c>.
     /// Only <c>DbContextPurgeExtensions.cs</c> is exempt (intentional global archival).
     /// </summary>

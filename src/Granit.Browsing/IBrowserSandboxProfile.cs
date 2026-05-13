@@ -73,7 +73,7 @@ public interface IBrowserSandboxProfile
     /// <summary>
     /// When <c>true</c>, the provider MUST refuse any caller request to bypass the page's
     /// Content-Security-Policy and MUST require the
-    /// <c>Granit.Browsing.Pages.BypassCsp</c> permission for any opt-in. Default
+    /// <c>Browsing.Pages.BypassCsp</c> permission for any opt-in. Default
     /// <c>true</c>. Overrides any historical per-page bypass flag.
     /// </summary>
     bool ForceCsp { get; }
@@ -81,8 +81,7 @@ public interface IBrowserSandboxProfile
     /// <summary>
     /// When <c>true</c>, the provider runs every console message through
     /// <c>ConsoleRedactor</c> before surfacing it via <see cref="IBrowserPage.ConsoleMessages"/>.
-    /// Default <c>true</c>. Closes the bearer-token / Set-Cookie leak in
-    /// VULN-201.
+    /// Default <c>true</c>. Closes bearer-token and Set-Cookie leaks from page console output.
     /// </summary>
     bool RedactConsoleMessages { get; }
 

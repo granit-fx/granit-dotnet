@@ -1,12 +1,12 @@
 {
   "culture": "es",
   "texts": {
-    "PermissionGroup:Granit.Browsing": "Navegación headless",
-    "Permission:Granit.Browsing.Pages.Acquire": "Adquirir una página del pool del navegador",
-    "Permission:Granit.Browsing.Pages.Navigate": "Navegar una página a una URL",
-    "Permission:Granit.Browsing.Pages.InjectScript": "Inyectar scripts o evaluar JavaScript en una página",
-    "Permission:Granit.Browsing.Pages.BypassCsp": "Eludir las cabeceras Content-Security-Policy de una página",
-    "Permission:Granit.Browsing.Pages.UseFileScheme": "Usar el esquema file:// para la navegación",
+    "PermissionGroup:Browsing": "Navegación headless",
+    "Permission:Browsing.Pages.Acquire": "Adquirir una página del pool del navegador",
+    "Permission:Browsing.Pages.Navigate": "Navegar una página a una URL",
+    "Permission:Browsing.Pages.InjectScript": "Inyectar scripts o evaluar JavaScript en una página",
+    "Permission:Browsing.Pages.BypassCsp": "Eludir las cabeceras Content-Security-Policy de una página",
+    "Permission:Browsing.Pages.UseFileScheme": "Usar el esquema file:// para la navegación",
     "Sandbox:CspBypassDenied": "Elusión de Content-Security-Policy rechazada por el perfil sandbox activo.",
     "Sandbox:ScriptInjectionDenied": "Inyección de script rechazada por el perfil sandbox activo.",
     "Sandbox:ExecutablePathRejected": "La ruta del ejecutable del navegador '{0}' está fuera del prefijo permitido '{1}'.",

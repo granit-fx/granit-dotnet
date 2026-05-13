@@ -22,8 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Browsing\Granit.Browsing.csproj" />
-    <ProjectReference Include="..\Granit.Http.Security\Granit.Http.Security.csproj" />
-    <ProjectReference Include="..\Granit.IO\Granit.IO.csproj" />
   </ItemGroup>
 
 </Project>

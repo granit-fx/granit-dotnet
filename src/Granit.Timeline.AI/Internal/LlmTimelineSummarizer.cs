@@ -27,7 +27,7 @@ internal sealed partial class LlmTimelineSummarizer(
     ILogger<LlmTimelineSummarizer> logger) : ITimelineSummarizer
 #pragma warning restore CA1001
 {
-    // VULN-103: Concurrency limiter to prevent denial-of-wallet via unbounded LLM calls
+    // Concurrency limiter to prevent denial-of-wallet via unbounded LLM calls.
     private readonly SemaphoreSlim _concurrencyLimiter = new(
         options.Value.MaxConcurrentRequests, options.Value.MaxConcurrentRequests);
 
@@ -57,7 +57,7 @@ internal sealed partial class LlmTimelineSummarizer(
             return EmptySummary;
         }
 
-        // VULN-103: Concurrency limiter to prevent denial-of-wallet
+        // Concurrency limiter to prevent denial-of-wallet.
         await _concurrencyLimiter.WaitAsync(ct).ConfigureAwait(false);
         try
         {
@@ -169,7 +169,7 @@ internal sealed partial class LlmTimelineSummarizer(
                 return false;
             }
 
-            // VULN-102: Exclude staff-only InternalNote entries from LLM prompts
+            // Exclude staff-only InternalNote entries from LLM prompts.
             if (entry.EntryType == TimelineStreamEntryType.InternalNote)
             {
                 continue;
@@ -199,7 +199,7 @@ internal sealed partial class LlmTimelineSummarizer(
         var sb = new StringBuilder();
         foreach (TimelineStreamEntry entry in entries)
         {
-            // VULN-002: Pseudonymize PII — never send AuthorName ([SensitiveData]) to external LLM
+            // Pseudonymize PII — never send AuthorName ([SensitiveData]) to external LLM.
             string author = entry.AuthorId is { Length: >= 8 } id ? $"User-{id[..8]}" : "System";
             sb.AppendLine($"- [{entry.OccurredAt:u}] ({entry.EntryType}) {author}: {entry.Body}");
         }

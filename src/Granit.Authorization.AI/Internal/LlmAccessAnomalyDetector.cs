@@ -81,13 +81,13 @@ internal sealed partial class LlmAccessAnomalyDetector(
         pb.AppendInstruction("Analyze the following access request for anomalies and suspicious behavior.");
         pb.AppendInstruction(string.Empty);
 
-        // VULN-101 fix: pseudonymize userId to prevent PII leakage to external AI services.
+        // Pseudonymize userId to prevent PII leakage to external AI services.
         pb.AppendUserData("User ID", LlmInputSanitizer.PseudonymizeUserId(userId));
         pb.AppendUserData("Permission requested", permission);
 
         if (context is not null)
         {
-            // VULN-200: control character stripping is now handled by PromptBuilder.SanitizeInput().
+            // Control character stripping is now handled by PromptBuilder.SanitizeInput().
             pb.AppendUserData("Additional context", context);
         }
 

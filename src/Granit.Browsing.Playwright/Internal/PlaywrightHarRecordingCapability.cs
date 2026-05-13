@@ -12,7 +12,7 @@ namespace Granit.Browsing.Playwright.Internal;
 /// <summary>
 /// Microsoft.Playwright implementation of <see cref="IHarRecordingCapability"/>. Records
 /// network activity through a per-page <c>RouteFromHARAsync</c> session staged to a
-/// securely-created temp file (VULN-105) and serialises it to a JSON HAR document on stop.
+/// securely-created temp file and serialises it to a JSON HAR document on stop.
 /// </summary>
 internal sealed class PlaywrightHarRecordingCapability(ITempFileFactory tempFileFactory) : IHarRecordingCapability
 {

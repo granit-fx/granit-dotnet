@@ -16,7 +16,7 @@ namespace Granit.Authorization.Cache;
 /// No WolverineFx package reference is required in this project.
 /// </para>
 /// <para>
-/// VULN-204 fix: revocations use <see cref="IFusionCache.RemoveAsync"/> (hard delete)
+/// Revocations use <see cref="IFusionCache.RemoveAsync"/> (hard delete)
 /// to prevent stale-while-revalidate from serving a revoked grant. Grants use
 /// <see cref="IFusionCache.ExpireAsync"/> (soft expire) for resilience — a stale
 /// "denied" entry is safe if the factory fails.

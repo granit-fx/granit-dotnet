@@ -11,7 +11,7 @@ namespace Granit.Browsing.Playwright.Internal;
 
 /// <summary>
 /// Microsoft.Playwright implementation of <see cref="ITracingCapability"/>. Stages the
-/// trace zip into a securely-created temp file (VULN-105) — note that Playwright writes
+/// trace zip into a securely-created temp file — note that Playwright writes
 /// the zip via its own driver process; the file inherits this process's user / ACLs,
 /// so the 0600 perms set by <see cref="ITempFileFactory"/> remain effective.
 /// </summary>

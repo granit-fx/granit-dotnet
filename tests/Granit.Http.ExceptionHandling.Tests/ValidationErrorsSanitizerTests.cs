@@ -1,5 +1,5 @@
 // =============================================================================
-// Tests - ValidationErrorsSanitizer (VULN-203)
+// Tests - ValidationErrorsSanitizer
 // =============================================================================
 // Verifies that ProblemDetails.Extensions["errors"] redacts messages for
 // fields marked [SensitiveData(Level >= Confidential)]. Property paths

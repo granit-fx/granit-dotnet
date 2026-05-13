@@ -469,7 +469,7 @@ public sealed class GranitExceptionHandlerTests
     }
 
     // -------------------------------------------------------------------------
-    // 4xx non-user-friendly: title is masked in production (VULN-202)
+    // 4xx non-user-friendly: title is masked in production
     // -------------------------------------------------------------------------
     // Exception messages from non-IUserFriendlyException exceptions may carry
     // internal context (user ids, tenant ids, SQL fragments, internal paths).

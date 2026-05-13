@@ -1,5 +1,5 @@
 // =============================================================================
-// Tests - GranitCookiesOptionsValidator (VULN-208)
+// Tests - GranitCookiesOptionsValidator
 // =============================================================================
 
 using Granit.Http.Cookies.Options;

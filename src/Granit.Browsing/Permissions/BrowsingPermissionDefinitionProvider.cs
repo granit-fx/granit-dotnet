@@ -7,7 +7,7 @@ using Granit.MultiTenancy;
 namespace Granit.Browsing.Permissions;
 
 /// <summary>
-/// Declares the <c>Granit.Browsing.Pages.*</c> permissions in the Granit RBAC system.
+/// Declares the <c>Browsing.Pages.*</c> permissions in the Granit RBAC system.
 /// Auto-discovered by <c>GranitAuthorizationModule</c> — no manual registration needed.
 /// </summary>
 /// <remarks>
@@ -15,7 +15,7 @@ namespace Granit.Browsing.Permissions;
 /// package because <c>Granit.Browsing</c> has no HTTP surface — it is a framework
 /// primitive consumed by providers and other modules.
 /// </remarks>
-internal sealed class BrowsingPermissionDefinitionProvider : IPermissionDefinitionProvider
+public sealed class BrowsingPermissionDefinitionProvider : IPermissionDefinitionProvider
 {
     /// <inheritdoc />
     public void DefinePermissions(IPermissionDefinitionContext context)
@@ -25,36 +25,36 @@ internal sealed class BrowsingPermissionDefinitionProvider : IPermissionDefiniti
         PermissionGroup group = context.AddGroup(
             BrowsingPermissions.GroupName,
             LocalizableString.Create<BrowsingLocalizationResource>(
-                "PermissionGroup:Granit.Browsing"));
+                "PermissionGroup:Browsing"));
 
         group.AddPermission(
             BrowsingPermissions.Pages.Acquire,
             LocalizableString.Create<BrowsingLocalizationResource>(
-                "Permission:Granit.Browsing.Pages.Acquire"),
+                "Permission:Browsing.Pages.Acquire"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             BrowsingPermissions.Pages.Navigate,
             LocalizableString.Create<BrowsingLocalizationResource>(
-                "Permission:Granit.Browsing.Pages.Navigate"),
+                "Permission:Browsing.Pages.Navigate"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             BrowsingPermissions.Pages.InjectScript,
             LocalizableString.Create<BrowsingLocalizationResource>(
-                "Permission:Granit.Browsing.Pages.InjectScript"),
+                "Permission:Browsing.Pages.InjectScript"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             BrowsingPermissions.Pages.BypassCsp,
             LocalizableString.Create<BrowsingLocalizationResource>(
-                "Permission:Granit.Browsing.Pages.BypassCsp"),
+                "Permission:Browsing.Pages.BypassCsp"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             BrowsingPermissions.Pages.UseFileScheme,
             LocalizableString.Create<BrowsingLocalizationResource>(
-                "Permission:Granit.Browsing.Pages.UseFileScheme"),
+                "Permission:Browsing.Pages.UseFileScheme"),
             MultiTenancySides.Both);
     }
 }

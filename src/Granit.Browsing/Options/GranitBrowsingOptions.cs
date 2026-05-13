@@ -53,7 +53,7 @@ public sealed class GranitBrowsingOptions
     /// <summary>
     /// Maximum time <see cref="IHeadlessBrowserPool.DrainAsync"/> may wait for in-flight
     /// pages to be released before force-disposing the underlying browsers. Default 30
-    /// seconds. Closes VULN-200 (unbounded shutdown).
+    /// seconds. Bounds shutdown duration so a stuck page cannot block host termination.
     /// </summary>
     [Range(typeof(TimeSpan), "00:00:05", "00:05:00")]
     public TimeSpan DrainTimeout { get; set; } = TimeSpan.FromSeconds(30);

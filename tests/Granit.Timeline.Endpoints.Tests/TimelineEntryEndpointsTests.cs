@@ -213,7 +213,7 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-        // Verify auto-follow was NOT triggered (VULN-205: removed auto-subscribe)
+        // Verify auto-follow was NOT triggered (removed auto-subscribe).
         await _followerService.DidNotReceive().FollowAsync(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
 

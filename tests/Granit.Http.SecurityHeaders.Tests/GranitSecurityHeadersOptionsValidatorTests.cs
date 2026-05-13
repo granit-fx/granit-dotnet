@@ -158,7 +158,7 @@ public sealed class GranitSecurityHeadersOptionsValidatorTests
     // HSTS max-age
     // -------------------------------------------------------------------------
 
-    // VULN-206 — when HSTS is enabled, reject values below the OWASP
+    // When HSTS is enabled, reject values below the OWASP
     // 6-month minimum. A `max-age=0` with EnableHsts=true silently
     // instructs browsers to forget HSTS, which is a downgrade a misconfig
     // must not be able to cause.

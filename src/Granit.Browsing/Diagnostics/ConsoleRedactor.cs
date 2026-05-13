@@ -4,8 +4,8 @@ namespace Granit.Browsing.Diagnostics;
 
 /// <summary>
 /// Best-effort redaction of well-known secret shapes in console output before it crosses
-/// the trust boundary into application logs. Closes the bearer-token / Set-Cookie /
-/// AWS-key leak documented in VULN-201.
+/// the trust boundary into application logs. Targets bearer tokens, Set-Cookie headers
+/// and AWS access keys that page scripts might print.
 /// </summary>
 /// <remarks>
 /// <para>

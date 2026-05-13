@@ -179,7 +179,7 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
 
-        // VULN-204: verify user-controlled data is NOT reflected in the response
+        // Verify user-controlled data is NOT reflected in the response.
         string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         body.ShouldNotContain("unknown_event");
         body.ShouldContain("Unsupported event type.");
@@ -197,7 +197,7 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
-    // ──── VULN-101: Oversized payload ────
+    // ──── Oversized payload ────
 
     [Fact]
     public async Task Webhook_oversized_payload_returns_413()
@@ -266,7 +266,7 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
 }
 
 /// <summary>
-/// Tests for the fail-closed behavior when the webhook secret is not configured (VULN-001).
+/// Tests for the fail-closed behavior when the webhook secret is not configured.
 /// Uses a separate <see cref="WebApplication"/> without a configured secret.
 /// </summary>
 public sealed class IdentityWebhookEndpointsNoSecretTests : IAsyncDisposable

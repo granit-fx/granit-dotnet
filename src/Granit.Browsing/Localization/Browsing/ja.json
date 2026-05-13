@@ -1,12 +1,12 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Granit.Browsing": "Headless browsing",
-    "Permission:Granit.Browsing.Pages.Acquire": "Acquire a browser page from the pool",
-    "Permission:Granit.Browsing.Pages.Navigate": "Navigate a browser page to a URL",
-    "Permission:Granit.Browsing.Pages.InjectScript": "Inject scripts or evaluate JavaScript in a browser page",
-    "Permission:Granit.Browsing.Pages.BypassCsp": "Bypass Content-Security-Policy headers on a browser page",
-    "Permission:Granit.Browsing.Pages.UseFileScheme": "Use the file:// scheme for browser navigation",
+    "PermissionGroup:Browsing": "Headless browsing",
+    "Permission:Browsing.Pages.Acquire": "Acquire a browser page from the pool",
+    "Permission:Browsing.Pages.Navigate": "Navigate a browser page to a URL",
+    "Permission:Browsing.Pages.InjectScript": "Inject scripts or evaluate JavaScript in a browser page",
+    "Permission:Browsing.Pages.BypassCsp": "Bypass Content-Security-Policy headers on a browser page",
+    "Permission:Browsing.Pages.UseFileScheme": "Use the file:// scheme for browser navigation",
     "Sandbox:CspBypassDenied": "Content-Security-Policy bypass refused by the active sandbox profile.",
     "Sandbox:ScriptInjectionDenied": "Script injection refused by the active sandbox profile.",
     "Sandbox:ExecutablePathRejected": "Browser executable path '{0}' is outside the allowed prefix '{1}'.",

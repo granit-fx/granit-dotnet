@@ -196,7 +196,7 @@ public abstract class EfStoreBase<TEntity, TContext>
     /// processing restriction) are applied.
     /// </summary>
     /// <remarks>
-    /// SECURITY (VULN-100): <c>DbSet.FindAsync()</c> bypasses all query filters.
+    /// SECURITY: <c>DbSet.FindAsync()</c> bypasses all query filters.
     /// This method intentionally uses <c>FirstOrDefaultAsync(e =&gt; e.Id == id)</c>
     /// which preserves tenant isolation, soft-delete, and GDPR filters.
     /// </remarks>
@@ -267,7 +267,7 @@ public abstract class EfStoreBase<TEntity, TContext>
 
     /// <summary>Executes a read query with full DbContext access.</summary>
     /// <remarks>
-    /// SECURITY (VULN-300): Query filters (tenant, soft-delete, GDPR) apply to LINQ
+    /// SECURITY: Query filters (tenant, soft-delete, GDPR) apply to LINQ
     /// queries but can be bypassed via <c>IgnoreQueryFilters()</c>. Any filter bypass
     /// must be justified and reviewed. Prefer typed helpers (<see cref="FindByIdAsync"/>,
     /// <see cref="ListAsync"/>) when possible.
@@ -316,7 +316,7 @@ public abstract class EfStoreBase<TEntity, TContext>
 
     /// <summary>Executes a write mutation with full DbContext access.</summary>
     /// <remarks>
-    /// SECURITY (VULN-300): Provides unrestricted DbContext access. Query filters still
+    /// SECURITY: Provides unrestricted DbContext access. Query filters still
     /// apply to LINQ queries but can be bypassed. Any filter bypass must be justified.
     /// Prefer typed helpers (<see cref="AddAsync"/>, <see cref="UpdateAsync"/>,
     /// <see cref="DeleteAsync"/>) when possible.

@@ -115,7 +115,7 @@ public sealed class MergeRequestHasherTests
     [Fact]
     public void Hash_DiffersAcrossMacKeys()
     {
-        // VULN-301 defence: a different MAC key produces a different digest. An attacker
+        // Defence: a different MAC key produces a different digest. An attacker
         // who lacks the deployment key cannot pre-compute a matching RequestHash for a
         // future legitimate body.
         byte[] otherKey = new byte[32];

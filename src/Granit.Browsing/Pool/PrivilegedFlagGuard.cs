@@ -10,7 +10,7 @@ namespace Granit.Browsing.Pool;
 /// <summary>
 /// Refuses provider flags that disable the Chromium / Firefox sandbox unless the host
 /// is running in an authorised container context as a non-root user with the explicit
-/// opt-in environment variable set. Closes VULN-103.
+/// opt-in environment variable set.
 /// </summary>
 /// <remarks>
 /// <para>

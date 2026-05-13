@@ -1,5 +1,5 @@
 // =============================================================================
-// Tests - OnBehalfOfTokenHandler (VULN-100)
+// Tests - OnBehalfOfTokenHandler
 // =============================================================================
 // Replacement for the deleted AuthTokenPropagationHandler. Uses OAuth 2.0
 // Token Exchange (RFC 8693) to swap the caller's inbound access token for
@@ -307,7 +307,7 @@ public sealed class OnBehalfOfTokenHandlerTests : IDisposable
     }
 
     // -------------------------------------------------------------------------
-    // Multi-tenant cache partitioning (VULN-100 ajustement Gemini)
+    // Multi-tenant cache partitioning
     // -------------------------------------------------------------------------
 
     [Fact]

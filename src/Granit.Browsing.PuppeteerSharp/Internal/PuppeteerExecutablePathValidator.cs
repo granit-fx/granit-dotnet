@@ -7,8 +7,8 @@ namespace Granit.Browsing.PuppeteerSharp.Internal;
 
 /// <summary>
 /// Validates the configured <c>ChromiumExecutablePath</c> against
-/// <see cref="IBrowserSandboxProfile.AllowedExecutablePathPrefix"/>. Closes VULN-205
-/// (provider spawning a weaponised Chromium binary from a writable location).
+/// <see cref="IBrowserSandboxProfile.AllowedExecutablePathPrefix"/> to prevent the
+/// provider from spawning a weaponised Chromium binary located in a writable directory.
 /// </summary>
 internal static class PuppeteerExecutablePathValidator
 {

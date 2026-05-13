@@ -8,7 +8,7 @@ namespace Granit.Browsing.Pool;
 
 /// <summary>
 /// Bounds <see cref="IHeadlessBrowserPool.DrainAsync"/> so a misbehaving page handle can
-/// never block a graceful shutdown indefinitely. Closes VULN-200.
+/// never block a graceful shutdown indefinitely.
 /// </summary>
 internal sealed class HeadlessBrowserDrainCoordinator
 {
@@ -28,7 +28,7 @@ internal sealed class HeadlessBrowserDrainCoordinator
 
     /// <summary>
     /// Drains <paramref name="pool"/>, bounded by <paramref name="timeout"/>. On timeout,
-    /// emits the <c>granit.browsing.pool.drain.timeout</c> counter, logs a warning, and
+    /// emits the <c>granit.browsing.pool.drain_timeout</c> counter, logs a warning, and
     /// force-disposes <paramref name="browser"/> when it implements
     /// <see cref="IAsyncDisposable"/>.
     /// </summary>

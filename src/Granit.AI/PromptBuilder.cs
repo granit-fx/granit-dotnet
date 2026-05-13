@@ -101,7 +101,7 @@ public sealed partial class PromptBuilder
 
     /// <summary>
     /// Sanitizes user input to prevent prompt injection.
-    /// Strips Unicode control characters (VULN-200), XML-like tags that could confuse
+    /// Strips Unicode control characters, XML-like tags that could confuse
     /// delimiters, and truncates to the configured maximum length.
     /// </summary>
     internal string SanitizeInput(string input)
@@ -126,7 +126,7 @@ public sealed partial class PromptBuilder
 
     /// <summary>
     /// Strips Unicode control characters, zero-width chars, and bidirectional overrides
-    /// that could be used to obfuscate prompt injection payloads (VULN-200).
+    /// that could be used to obfuscate prompt injection payloads.
     /// Preserves tab (0x09), LF (0x0A), and CR (0x0D).
     /// </summary>
     internal static string StripControlCharacters(string input) =>

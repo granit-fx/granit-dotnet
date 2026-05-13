@@ -174,7 +174,7 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
 
             IPuppeteerPage puppeteerPage = await _browser!.NewPageAsync().ConfigureAwait(false);
 
-            // Disable JS before navigation when sandbox/options require it (VULN-202).
+            // Disable JS before navigation when sandbox/options require it.
             await PuppeteerJsContextGuard.ApplyAsync(
                 puppeteerPage,
                 pageJsEnabled: options?.JavaScriptEnabled ?? true,
@@ -279,7 +279,7 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
 
             PuppeteerSharpOptions opts = _puppeteerOptions.Value;
 
-            // VULN-103: refuse privileged flags outside a vetted container.
+            // Refuse privileged flags outside a vetted container.
             PrivilegedFlagGuard.EnsureSafe(opts.DisableSandbox, opts.ExtraArgs, _logger);
 
             List<string> args =
@@ -296,7 +296,7 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
             }
             args.AddRange(opts.ExtraArgs);
 
-            // VULN-205: refuse a Chromium binary outside the sandbox-allowed prefix.
+            // Refuse a Chromium binary outside the sandbox-allowed prefix.
             string? executablePath = PuppeteerExecutablePathValidator.Validate(
                 opts.ChromiumExecutablePath,
                 _sandbox.AllowedExecutablePathPrefix);

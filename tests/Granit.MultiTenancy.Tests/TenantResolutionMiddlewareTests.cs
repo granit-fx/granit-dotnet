@@ -141,7 +141,7 @@ public sealed class TenantResolutionMiddlewareTests
         nextCalled.ShouldBeTrue();
     }
 
-    // ── Phantom tenant validation (VULN-201) ──────────────────────────
+    // ── Phantom tenant validation ────────────────────────────────────
 
     [Fact]
     public async Task ValidateTenantExistence_Enabled_ExistingTenant_Passes()

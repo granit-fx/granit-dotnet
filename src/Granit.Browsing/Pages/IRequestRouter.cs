@@ -10,11 +10,11 @@ namespace Granit.Browsing.Pages;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Closes VULN-101 (provider-specific race between several <c>page.Request +=</c>
-/// subscribers) by funnelling every request through one router.
+/// Avoids the provider-specific race between several <c>page.Request +=</c> subscribers
+/// by funnelling every request through one router.
 /// </para>
 /// <para>
-/// Closes VULN-001 (SSRF at request time, defeating DNS rebinding) by re-validating the
+/// Defends against SSRF at request time (and DNS rebinding) by re-validating the
 /// host via <c>Granit.Http.Security.IUrlSafetyValidator</c> on every intercepted request.
 /// </para>
 /// </remarks>

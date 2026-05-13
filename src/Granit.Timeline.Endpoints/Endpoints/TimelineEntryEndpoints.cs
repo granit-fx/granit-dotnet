@@ -56,7 +56,7 @@ internal static class TimelineEntryEndpoints
             entityType, entityId, request.EntryType, request.Body,
             request.ParentEntryId, cancellationToken).ConfigureAwait(false);
 
-        // VULN-205: Parse @mentions with cap — send one-time notification only, no auto-follow
+        // Parse @mentions with cap — send one-time notification only, no auto-follow.
         IReadOnlyList<string> mentionedUserIds = MentionParser.ExtractMentionedUserIds(entry.Body);
         if (mentionedUserIds.Count > MaxMentionsPerEntry)
         {
@@ -104,7 +104,7 @@ internal static class TimelineEntryEndpoints
         CancellationToken cancellationToken)
 #pragma warning restore S1172
     {
-        // VULN-100: Ownership check — only author or admin can delete
+        // Ownership check — only author or admin can delete.
         bool isAdmin = await permissionChecker.IsGrantedAsync(TimelinePermissions.Entries.Manage, cancellationToken).ConfigureAwait(false);
 
         if (!isAdmin)
