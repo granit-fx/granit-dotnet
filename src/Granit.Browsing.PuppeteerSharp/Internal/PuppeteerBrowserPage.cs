@@ -138,6 +138,15 @@ internal sealed partial class PuppeteerBrowserPage : IBrowserPage
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Defense-in-depth chain (VULN-101): the URL is validated pre-navigation by
+    /// <see cref="IUrlSafetyValidator"/>; sub-resource requests are intercepted by the
+    /// <see cref="RequestRouter"/> when <see cref="IBrowserSandboxProfile.BlockPrivateNetworks"/>
+    /// is set; the final URL is re-validated after navigation to defeat redirect chains
+    /// that land on a private address. Residual TOCTOU: Chromium's network stack re-resolves
+    /// DNS independently of the validator. For high-assurance scenarios, launch the engine
+    /// with <c>--host-resolver-rules=MAP &lt;host&gt; &lt;ip&gt;</c> via custom args.
+    /// </remarks>
     public async Task NavigateAsync(Uri url, BrowsingNavigationOptions? options = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(url);
@@ -163,8 +172,28 @@ internal sealed partial class PuppeteerBrowserPage : IBrowserPage
             _maxRenderDuration,
             cancellationToken).ConfigureAwait(false);
 
+        // VULN-101 — re-validate the final URL (after redirects). Catches redirect chains
+        // landing on a hostname that resolves to a private IP at fetch time.
+        if (_sandbox.BlockPrivateNetworks
+            && Uri.TryCreate(_page.Url, UriKind.Absolute, out Uri? finalUrl)
+            && !UriEquals(finalUrl, url))
+        {
+            UrlSafetyResult finalSafety = await _urlValidator
+                .ValidateAsync(finalUrl, cancellationToken)
+                .ConfigureAwait(false);
+            if (!finalSafety.IsValid)
+            {
+                string reason = finalSafety.Violation?.Reason ?? "url_safety_violation_post_redirect";
+                await PublishNavigatedAsync(finalUrl, blocked: true, reason, cancellationToken).ConfigureAwait(false);
+                throw new SandboxViolationException(SandboxViolationKind.UrlSafetyViolation, reason);
+            }
+        }
+
         await PublishNavigatedAsync(url, blocked: false, reason: null, cancellationToken).ConfigureAwait(false);
     }
+
+    private static bool UriEquals(Uri a, Uri b) =>
+        string.Equals(a.AbsoluteUri, b.AbsoluteUri, StringComparison.OrdinalIgnoreCase);
 
     /// <inheritdoc/>
     public Task SetContentAsync(string html, BrowsingNavigationOptions? options = null, CancellationToken cancellationToken = default)
