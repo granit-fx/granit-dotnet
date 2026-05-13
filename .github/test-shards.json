@@ -54,8 +54,6 @@
       "name": "application",
       "label": "Application Layer",
       "projects": [
-        "tests/Granit.Analytics.Abstractions.Tests",
-        "tests/Granit.Dashboards.Abstractions.Tests",
         "tests/Granit.DataExchange.Abstractions.Tests",
         "tests/Granit.DataExchange.BlobStorage.Tests",
         "tests/Granit.DataExchange.Csv.Tests",

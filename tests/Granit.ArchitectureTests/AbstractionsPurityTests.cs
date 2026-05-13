@@ -30,9 +30,7 @@ public sealed partial class AbstractionsPurityTests
 
     [Theory]
     [InlineData("Granit.Workflow.Abstractions")]
-    [InlineData("Granit.Dashboards.Abstractions")]
     [InlineData("Granit.Entities.Abstractions")]
-    [InlineData("Granit.Analytics.Abstractions")]
     [InlineData("Granit.Workspaces.Abstractions")]
     public void Abstractions_csproj_should_only_reference_other_abstractions_or_Granit_root(string packageName)
     {
@@ -66,9 +64,7 @@ public sealed partial class AbstractionsPurityTests
 
     [Theory]
     [InlineData("Granit.Workflow.Abstractions")]
-    [InlineData("Granit.Dashboards.Abstractions")]
     [InlineData("Granit.Entities.Abstractions")]
-    [InlineData("Granit.Analytics.Abstractions")]
     [InlineData("Granit.Workspaces.Abstractions")]
     public void Abstractions_csproj_should_not_reference_aspnetcore_efcore_or_hosting(string packageName)
     {

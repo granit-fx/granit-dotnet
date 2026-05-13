@@ -5,11 +5,9 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/src/Platform/">
-    <Project Path="src/Granit.Analytics.Abstractions/Granit.Analytics.Abstractions.csproj" />
     <Project Path="src/Granit.Browsing.Playwright/Granit.Browsing.Playwright.csproj" />
     <Project Path="src/Granit.Browsing.PuppeteerSharp/Granit.Browsing.PuppeteerSharp.csproj" />
     <Project Path="src/Granit.Browsing/Granit.Browsing.csproj" />
-    <Project Path="src/Granit.Dashboards.Abstractions/Granit.Dashboards.Abstractions.csproj" />
     <Project Path="src/Granit.DataLookup.Abstractions/Granit.DataLookup.Abstractions.csproj" />
     <Project Path="src/Granit.DataLookup.Endpoints/Granit.DataLookup.Endpoints.csproj" />
     <Project Path="src/Granit.DataLookup.EntityFrameworkCore/Granit.DataLookup.EntityFrameworkCore.csproj" />
@@ -280,12 +278,10 @@
     <Project Path="src/bundles/Granit.Bundle.OpenIddict/Granit.Bundle.OpenIddict.csproj" />
   </Folder>
   <Folder Name="/tests/Platform/">
-    <Project Path="tests/Granit.Analytics.Abstractions.Tests/Granit.Analytics.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Browsing.Playwright.Tests/Granit.Browsing.Playwright.Tests.csproj" />
     <Project Path="tests/Granit.Browsing.PuppeteerSharp.Tests/Granit.Browsing.PuppeteerSharp.Tests.csproj" />
     <Project Path="tests/Granit.Browsing.Tests/Granit.Browsing.Tests.csproj" />
     <Project Path="tests/Granit.Bundle.Tests/Granit.Bundle.Tests.csproj" />
-    <Project Path="tests/Granit.Dashboards.Abstractions.Tests/Granit.Dashboards.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.DataLookup.Abstractions.Tests/Granit.DataLookup.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.DataLookup.Endpoints.Tests/Granit.DataLookup.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.DataLookup.EntityFrameworkCore.Tests/Granit.DataLookup.EntityFrameworkCore.Tests.csproj" />

@@ -1,35 +1,15 @@
 namespace Granit.ArchitectureTests;
 
 /// <summary>
-/// Canonical list of entities exempted from the cross-primitive pairing rules
-/// — Query ↔ Export (ADR-020) and Query ↔ Metric (EPIC #1366 / story #1396).
+/// Canonical list of entities exempted from the Query ↔ Export pairing rule
+/// (ADR-020). Consumed by <c>QueryExportPairingTests</c> and
+/// <c>PermissionLocalizationCompletenessTests</c>.
 /// </summary>
 /// <remarks>
-/// <para>
-/// Two categories live here:
-/// </para>
-/// <list type="bullet">
-///   <item>
-///     <c>[INFRA]</c> — pure infrastructure / audit / config / internal cache
-///     entities. They surface in neither admin grids nor business KPIs and
-///     are exempted permanently from <see cref="Infrastructure"/>.
-///     Both <c>QueryMetricPairingTests</c> and <c>QueryExportPairingTests</c>
-///     consume this single list so additions stay in lockstep.
-///   </item>
-///   <item>
-///     <c>[BACKLOG]</c> — admin-visible entities that should ship at least one
-///     <c>MetricDefinition</c> but haven't yet. They live in
-///     <c>QueryMetricPairingTests</c> only — backlog is metric-specific. Once
-///     a module ships its first <c>MetricDefinition</c> for the entity, the
-///     entry is removed and the rule starts enforcing.
-///   </item>
-/// </list>
-/// <para>
-/// Adding a new <c>[INFRA]</c> entry MUST come with a one-line justification
-/// (inline comment) and must apply to <i>both</i> pairings. If an entity needs
-/// only a metric exemption (e.g. it has a real export but no useful KPI), put
-/// it in the local <c>QueryMetricPairingTests</c> backlog list, not here.
-/// </para>
+/// Entries are <c>[INFRA]</c> only — pure infrastructure / audit / config /
+/// internal cache entities that surface in neither admin grids nor business
+/// KPIs. Adding a new entry requires a one-line justification (inline comment).
+/// The previous metric-backlog category moved out with the analytics contracts.
 /// </remarks>
 internal static class PairingExemptions
 {

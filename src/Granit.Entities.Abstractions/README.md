@@ -20,8 +20,6 @@ dotnet add package Granit.Entities.Abstractions
 ## Dependencies
 
 - `Granit`
-- `Granit.Analytics.Abstractions`
-- `Granit.Dashboards.Abstractions`
 - `Granit.DataExchange.Abstractions`
 - `Granit.QueryEngine.Abstractions`
 - `Granit.Workflow.Abstractions`
