@@ -18,9 +18,11 @@ public sealed class PdfRenderOptions
     public const string SectionName = "DocumentGeneration:Pdf";
 
     /// <summary>
-    /// Paper format (e.g. <c>"A4"</c>, <c>"A5"</c>, <c>"Letter"</c>). Default <c>"A4"</c>.
+    /// Paper format. Default <c>"A4"</c>. Accepted values (case-sensitive):
+    /// <c>"A3"</c>, <c>"A4"</c>, <c>"A5"</c>, <c>"Letter"</c>, <c>"Legal"</c>, <c>"Tabloid"</c>.
     /// </summary>
     [Required]
+    [AllowedValues("A3", "A4", "A5", "Letter", "Legal", "Tabloid")]
     public string PaperFormat { get; set; } = "A4";
 
     /// <summary>Whether to use landscape orientation. Default <see langword="false"/> (portrait).</summary>
@@ -60,4 +62,11 @@ public sealed class PdfRenderOptions
     /// </summary>
     [Range(1_000, 300_000)]
     public int RenderTimeoutMs { get; set; } = 30_000;
+
+    /// <summary>
+    /// Maximum size of the HTML payload (in bytes, UTF-8) accepted by the renderer.
+    /// Default <c>16 MiB</c>. Guards against Chromium-renderer-process OOM via oversized payloads.
+    /// </summary>
+    [Range(1_024, 256 * 1024 * 1024)]
+    public int MaxHtmlBytes { get; set; } = 16 * 1024 * 1024;
 }
