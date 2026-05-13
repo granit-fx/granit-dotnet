@@ -1,0 +1,6 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Bulkhead:Rejected": "Bulkhead pro zásadu '{0}' je plný. Limit souběhu ({1}) a fronty ({2}) byl vyčerpán. Zkuste to prosím za chvíli znovu."
+  }
+}

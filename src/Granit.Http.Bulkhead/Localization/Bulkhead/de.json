@@ -1,0 +1,6 @@
+{
+  "culture": "de",
+  "texts": {
+    "Bulkhead:Rejected": "Bulkhead für Richtlinie '{0}' ausgelastet. Parallelitätslimit ({1}) und Warteschlangenlimit ({2}) erschöpft. Bitte versuchen Sie es in Kürze erneut."
+  }
+}

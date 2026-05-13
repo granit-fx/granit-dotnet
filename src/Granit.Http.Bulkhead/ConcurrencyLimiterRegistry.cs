@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Threading.RateLimiting;
+using Granit.Http.Bulkhead.Diagnostics;
 using Granit.Http.Bulkhead.Options;
 using Microsoft.Extensions.Options;
 
@@ -27,7 +28,8 @@ namespace Granit.Http.Bulkhead;
 /// </remarks>
 public sealed class ConcurrencyLimiterRegistry(
     TimeProvider timeProvider,
-    IOptions<GranitBulkheadOptions> options) : IDisposable
+    IOptions<GranitBulkheadOptions> options,
+    BulkheadMetrics metrics) : IDisposable
 {
     private readonly ConcurrentDictionary<string, RegistryEntry> _limiters = new(StringComparer.Ordinal);
     private readonly int _maxLimiters = Math.Max(1, options.Value.MaxLimiters);
@@ -66,7 +68,7 @@ public sealed class ConcurrencyLimiterRegistry(
                     PermitLimit = permitLimit,
                     QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                     QueueLimit = queueLimit,
-                }), timeProvider));
+                }), permitLimit, timeProvider));
         }
 
         entry.MarkUsed(timeProvider);
@@ -94,6 +96,15 @@ public sealed class ConcurrencyLimiterRegistry(
                 continue;
             }
 
+            // Idle by timestamp is not the same as inactive: a long-running operation acquired
+            // before the threshold may still hold a permit. Disposing the limiter here would
+            // throw ObjectDisposedException on the eventual lease release and skew the
+            // active-counter. Skip the entry; the next sweep will retry once it has truly drained.
+            if (entry.HasOutstandingWork())
+            {
+                continue;
+            }
+
             if (_limiters.TryRemove(key, out RegistryEntry? removed))
             {
                 removed.Limiter.Dispose();
@@ -101,6 +112,7 @@ public sealed class ConcurrencyLimiterRegistry(
             }
         }
 
+        metrics.RecordEvicted("idle", evicted);
         return evicted;
     }
 
@@ -122,30 +134,57 @@ public sealed class ConcurrencyLimiterRegistry(
     {
         // Linear scan — acceptable at _maxLimiters = 10_000 (microseconds).
         // Upgrading to a real LRU data structure is only warranted if the cap
-        // grows by an order of magnitude.
+        // grows by an order of magnitude. We pick the oldest entry that has no
+        // permits in use or waiters queued — disposing a limiter with active
+        // work would orphan the in-flight leases (CWE-672).
         string? lruKey = null;
         DateTimeOffset lruTimestamp = DateTimeOffset.MaxValue;
 
         foreach (KeyValuePair<string, RegistryEntry> kvp in _limiters)
         {
-            if (kvp.Value.LastUsed < lruTimestamp)
+            if (kvp.Value.LastUsed >= lruTimestamp)
             {
-                lruTimestamp = kvp.Value.LastUsed;
-                lruKey = kvp.Key;
+                continue;
             }
+
+            if (kvp.Value.HasOutstandingWork())
+            {
+                continue;
+            }
+
+            lruTimestamp = kvp.Value.LastUsed;
+            lruKey = kvp.Key;
         }
 
         if (lruKey is not null && _limiters.TryRemove(lruKey, out RegistryEntry? evicted))
         {
             evicted.Limiter.Dispose();
+            metrics.RecordEvicted("lru", 1);
         }
+        // If every entry has outstanding work we deliberately do not evict and let the
+        // new limiter push registry size to _maxLimiters + 1 transiently. The next idle
+        // sweep will reclaim space; growing unboundedly is prevented by the lock-bounded
+        // slow path.
     }
 
-    private sealed class RegistryEntry(ConcurrencyLimiter limiter, TimeProvider timeProvider)
+    private sealed class RegistryEntry(ConcurrencyLimiter limiter, int permitLimit, TimeProvider timeProvider)
     {
         public ConcurrencyLimiter Limiter { get; } = limiter;
         public DateTimeOffset LastUsed { get; private set; } = timeProvider.GetUtcNow();
 
         public void MarkUsed(TimeProvider tp) => LastUsed = tp.GetUtcNow();
+
+        public bool HasOutstandingWork()
+        {
+            RateLimiterStatistics? stats = Limiter.GetStatistics();
+            if (stats is null)
+            {
+                // Statistics unavailable — be conservative and treat the limiter as busy.
+                return true;
+            }
+
+            return stats.CurrentQueuedCount > 0
+                || stats.CurrentAvailablePermits < permitLimit;
+        }
     }
 }

@@ -1,0 +1,6 @@
+{
+  "culture": "es",
+  "texts": {
+    "Bulkhead:Rejected": "Bulkhead lleno para la política '{0}'. Límite de concurrencia ({1}) y de cola ({2}) agotados. Por favor, vuelva a intentarlo en breve."
+  }
+}

@@ -1,3 +1,5 @@
+using Granit.Features;
+using Granit.Features.Exceptions;
 using Granit.Http.Bulkhead.Abstractions;
 using Granit.Http.Bulkhead.Options;
 using Microsoft.Extensions.Logging;
@@ -13,8 +15,8 @@ namespace Granit.Http.Bulkhead.Internal;
 /// </summary>
 internal sealed class FeatureBasedBulkheadQuotaProvider(
     IOptionsMonitor<GranitBulkheadOptions> options,
-    IServiceProvider serviceProvider,
-    ILogger<FeatureBasedBulkheadQuotaProvider> logger) : IBulkheadQuotaProvider
+    ILogger<FeatureBasedBulkheadQuotaProvider> logger,
+    IFeatureChecker? featureChecker = null) : IBulkheadQuotaProvider
 {
     private volatile bool _warnedFeatureCheckerMissing;
 
@@ -25,9 +27,6 @@ internal sealed class FeatureBasedBulkheadQuotaProvider(
         {
             return null;
         }
-
-        // Resolve IFeatureChecker without compile-time coupling to the concrete type.
-        var featureChecker = serviceProvider.GetService(typeof(Features.IFeatureChecker)) as Features.IFeatureChecker;
 
         if (featureChecker is not null)
         {
@@ -41,7 +40,7 @@ internal sealed class FeatureBasedBulkheadQuotaProvider(
                     return (int)value;
                 }
             }
-            catch (Features.Exceptions.FeatureNotFoundException)
+            catch (FeatureNotFoundException)
             {
                 // Feature not defined — fall through to static config.
             }

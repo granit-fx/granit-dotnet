@@ -12,6 +12,7 @@ namespace Granit.Http.Bulkhead.Internal;
 internal sealed class BulkheadCleanupService(
     ConcurrencyLimiterRegistry registry,
     IOptionsMonitor<GranitBulkheadOptions> options,
+    TimeProvider timeProvider,
     ILogger<BulkheadCleanupService> logger) : BackgroundService
 {
     /// <inheritdoc/>
@@ -21,7 +22,14 @@ internal sealed class BulkheadCleanupService(
         {
             GranitBulkheadOptions opts = options.CurrentValue;
 
-            await Task.Delay(opts.CleanupInterval, stoppingToken).ConfigureAwait(false);
+            try
+            {
+                await Task.Delay(opts.CleanupInterval, timeProvider, stoppingToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
 
             int evicted = registry.EvictIdle(opts.IdleTimeout);
 

@@ -1,0 +1,6 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Bulkhead:Rejected": "Bulkhead full för policyn '{0}'. Samtidighetsgränsen ({1}) och kögränsen ({2}) är uttömda. Försök igen om en liten stund."
+  }
+}

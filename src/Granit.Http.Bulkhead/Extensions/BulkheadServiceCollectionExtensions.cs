@@ -72,10 +72,7 @@ public static class BulkheadServiceCollectionExtensions
 
             if (opts.UseFeatureBasedQuotas)
             {
-                return new FeatureBasedBulkheadQuotaProvider(
-                    sp.GetRequiredService<IOptionsMonitor<GranitBulkheadOptions>>(),
-                    sp,
-                    sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<FeatureBasedBulkheadQuotaProvider>>());
+                return ActivatorUtilities.CreateInstance<FeatureBasedBulkheadQuotaProvider>(sp);
             }
 
             return new OptionsBulkheadQuotaProvider(

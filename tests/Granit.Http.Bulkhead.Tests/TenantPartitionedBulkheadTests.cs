@@ -34,12 +34,14 @@ public sealed class TenantPartitionedBulkheadTests : IDisposable
 
     public TenantPartitionedBulkheadTests()
     {
-        _registry = new ConcurrencyLimiterRegistry(
-            TimeProvider.System, MsOptions.Create(new GranitBulkheadOptions()));
         ServiceCollection services = new();
         services.AddMetrics();
         ServiceProvider sp = services.BuildServiceProvider();
         _meterFactory = sp.GetRequiredService<IMeterFactory>();
+        _registry = new ConcurrencyLimiterRegistry(
+            TimeProvider.System,
+            MsOptions.Create(new GranitBulkheadOptions()),
+            new BulkheadMetrics(_meterFactory));
     }
 
     public void Dispose()

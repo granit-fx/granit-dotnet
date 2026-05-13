@@ -1,7 +1,10 @@
+using System.Diagnostics.Metrics;
 using System.Threading.RateLimiting;
 using Granit.Http.Bulkhead.Abstractions;
+using Granit.Http.Bulkhead.Diagnostics;
 using Granit.Http.Bulkhead.Internal;
 using Granit.Http.Bulkhead.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Shouldly;
@@ -15,9 +18,12 @@ public sealed class BulkheadLeaseTests : IDisposable
 
     public BulkheadLeaseTests()
     {
+        ServiceProvider sp = new ServiceCollection().AddMetrics().BuildServiceProvider();
+        BulkheadMetrics metrics = new(sp.GetRequiredService<IMeterFactory>());
         _registry = new ConcurrencyLimiterRegistry(
             TimeProvider.System,
-            Microsoft.Extensions.Options.Options.Create(new GranitBulkheadOptions()));
+            Microsoft.Extensions.Options.Options.Create(new GranitBulkheadOptions()),
+            metrics);
     }
 
     public void Dispose() => _registry.Dispose();

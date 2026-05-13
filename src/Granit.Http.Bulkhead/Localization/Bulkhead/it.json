@@ -1,0 +1,6 @@
+{
+  "culture": "it",
+  "texts": {
+    "Bulkhead:Rejected": "Bulkhead pieno per la policy '{0}'. Limite di concorrenza ({1}) e coda ({2}) esauriti. Riprovare a breve."
+  }
+}

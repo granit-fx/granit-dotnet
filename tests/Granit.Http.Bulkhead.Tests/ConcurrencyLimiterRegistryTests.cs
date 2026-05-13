@@ -1,6 +1,9 @@
+using System.Diagnostics.Metrics;
 using System.Threading.RateLimiting;
+using Granit.Http.Bulkhead.Diagnostics;
 using Granit.Http.Bulkhead.Internal;
 using Granit.Http.Bulkhead.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Shouldly;
@@ -12,12 +15,16 @@ public sealed class ConcurrencyLimiterRegistryTests : IDisposable
 {
     private readonly FakeTimeProvider _timeProvider = new();
     private readonly ConcurrencyLimiterRegistry _registry;
+    private readonly BulkheadMetrics _metrics;
 
     public ConcurrencyLimiterRegistryTests()
     {
+        ServiceProvider sp = new ServiceCollection().AddMetrics().BuildServiceProvider();
+        _metrics = new BulkheadMetrics(sp.GetRequiredService<IMeterFactory>());
         _registry = new ConcurrencyLimiterRegistry(
             _timeProvider,
-            Microsoft.Extensions.Options.Options.Create(new GranitBulkheadOptions()));
+            Microsoft.Extensions.Options.Options.Create(new GranitBulkheadOptions()),
+            _metrics);
     }
 
     public void Dispose() => _registry.Dispose();
@@ -178,7 +185,8 @@ public sealed class ConcurrencyLimiterRegistryTests : IDisposable
         // Purpose-built tiny-cap registry to exercise the LRU path deterministically.
         using ConcurrencyLimiterRegistry tinyRegistry = new(
             _timeProvider,
-            Microsoft.Extensions.Options.Options.Create(new GranitBulkheadOptions { MaxLimiters = 3 }));
+            Microsoft.Extensions.Options.Options.Create(new GranitBulkheadOptions { MaxLimiters = 3 }),
+            _metrics);
 
         // Fill the registry — timestamps advance so "oldest" is unambiguous.
         (await tinyRegistry.AcquireAsync("k1", 5, 0, TestContext.Current.CancellationToken)).Dispose();

@@ -1,0 +1,6 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Bulkhead:Rejected": "Bulkhead pełny dla polityki '{0}'. Limit współbieżności ({1}) i limit kolejki ({2}) wyczerpane. Spróbuj ponownie za chwilę."
+  }
+}

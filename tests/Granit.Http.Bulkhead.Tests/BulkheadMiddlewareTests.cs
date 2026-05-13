@@ -26,14 +26,16 @@ public sealed class BulkheadMiddlewareTests : IDisposable
 
     public BulkheadMiddlewareTests()
     {
-        _registry = new ConcurrencyLimiterRegistry(
-            TimeProvider.System, MsOptions.Create(new GranitBulkheadOptions()));
         _currentTenant.IsAvailable.Returns(false);
         _quotaProvider.GetPermitLimitAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((int?)null);
         ServiceCollection services = new();
         services.AddMetrics();
         ServiceProvider sp = services.BuildServiceProvider();
         _meterFactory = sp.GetRequiredService<IMeterFactory>();
+        _registry = new ConcurrencyLimiterRegistry(
+            TimeProvider.System,
+            MsOptions.Create(new GranitBulkheadOptions()),
+            new BulkheadMetrics(_meterFactory));
     }
 
     public void Dispose()

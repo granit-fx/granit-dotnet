@@ -1,0 +1,6 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Bulkhead:Rejected": "Bulkhead vol voor beleid '{0}'. Gelijktijdigheidslimiet ({1}) en wachtrijlimiet ({2}) uitgeput. Probeer het binnenkort opnieuw."
+  }
+}

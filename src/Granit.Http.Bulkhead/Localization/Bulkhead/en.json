@@ -1,0 +1,6 @@
+{
+  "culture": "en",
+  "texts": {
+    "Bulkhead:Rejected": "Bulkhead full for policy '{0}'. Concurrent permit limit ({1}) and queue limit ({2}) exhausted. Please retry shortly."
+  }
+}

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Threading.RateLimiting;
 using Granit.Http.Bulkhead.Abstractions;
 using Granit.Http.Bulkhead.Diagnostics;
@@ -44,6 +45,11 @@ public sealed class TenantPartitionedBulkhead(
 
         if (!_options.Policies.TryGetValue(policyName, out BulkheadPolicyOptions? policy))
         {
+            // Fail-loud: the caller referenced a policy that is not configured. We still return
+            // NoOp (the caller cannot infer protection from a non-existent policy), but operators
+            // get a warning + counter so misconfiguration is detected before it matters under load.
+            BulkheadLog.LogUnknownPolicy(logger, policyName);
+            metrics.RecordUnknownPolicy(policyName);
             return BulkheadLease.NoOp;
         }
 
@@ -55,8 +61,16 @@ public sealed class TenantPartitionedBulkhead(
         string? tenantId = currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
         string key = BuildKey(policyName, tenantId);
 
+        using Activity? activity = BulkheadActivitySource.Source.StartActivity(
+            "Granit.Http.Bulkhead.Acquire",
+            ActivityKind.Internal);
+        activity?.SetTag("bulkhead.policy", policyName);
+        activity?.SetTag("bulkhead.tenant_id", tenantId ?? "global");
+
         int permitLimit = await quotaProvider.GetPermitLimitAsync(policyName, cancellationToken).ConfigureAwait(false)
                           ?? policy.PermitLimit;
+        activity?.SetTag("bulkhead.permit_limit", permitLimit);
+        activity?.SetTag("bulkhead.queue_limit", policy.QueueLimit);
 
         // Create a linked token with queue timeout when queuing is enabled.
         using CancellationTokenSource? timeoutCts = policy.QueueLimit > 0
@@ -79,19 +93,31 @@ public sealed class TenantPartitionedBulkhead(
         catch (OperationCanceledException) when (timeoutCts is not null && timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
         {
             // Queue timeout expired — treat as rejection.
+            activity?.SetStatus(ActivityStatusCode.Error, "queue_timeout");
             metrics.RecordRejected(policyName, tenantId);
             BulkheadLog.LogBulkheadRejected(logger, policyName, tenantId, permitLimit, policy.QueueLimit);
             throw new BulkheadRejectedException(policyName, permitLimit, policy.QueueLimit);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // Caller abandoned (client disconnect or upstream cancellation) — not a bulkhead rejection.
+            // Record separately so operators can distinguish saturation from client churn.
+            activity?.SetStatus(ActivityStatusCode.Error, "caller_cancelled");
+            metrics.RecordAbandoned(policyName, tenantId);
+            BulkheadLog.LogAcquireAbandoned(logger, policyName, tenantId);
+            throw;
         }
 
         if (!innerLease.IsAcquired)
         {
             innerLease.Dispose();
+            activity?.SetStatus(ActivityStatusCode.Error, "rejected");
             metrics.RecordRejected(policyName, tenantId);
             BulkheadLog.LogBulkheadRejected(logger, policyName, tenantId, permitLimit, policy.QueueLimit);
             throw new BulkheadRejectedException(policyName, permitLimit, policy.QueueLimit);
         }
 
+        activity?.SetStatus(ActivityStatusCode.Ok);
         metrics.RecordAcquired(policyName, tenantId);
         BulkheadLog.LogLeaseAcquired(logger, policyName, tenantId);
 
@@ -107,6 +133,7 @@ public sealed class TenantPartitionedBulkhead(
         // Machine actors (System, ExternalSystem) always bypass.
         if (currentUser.IsMachine)
         {
+            metrics.RecordBypassed(policyName, "machine");
             BulkheadLog.LogBypassApplied(logger, policyName, "IsMachine", currentUser.UserId);
             return true;
         }
@@ -119,6 +146,9 @@ public sealed class TenantPartitionedBulkhead(
         string? matchedRole = _options.BypassRoles.FirstOrDefault(currentUser.IsInRole);
         if (matchedRole is not null)
         {
+            // Reason tag is the fixed enum "role" — never the role name (unbounded operator config
+            // would expand metric cardinality). The role name remains in the log for forensics.
+            metrics.RecordBypassed(policyName, "role");
             BulkheadLog.LogBypassApplied(logger, policyName, $"Role:{matchedRole}", currentUser.UserId);
             return true;
         }

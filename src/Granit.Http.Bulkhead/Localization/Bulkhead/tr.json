@@ -1,0 +1,6 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Bulkhead:Rejected": "'{0}' politikası için bulkhead dolu. Eşzamanlılık limiti ({1}) ve kuyruk limiti ({2}) tükendi. Lütfen kısa süre sonra tekrar deneyin."
+  }
+}

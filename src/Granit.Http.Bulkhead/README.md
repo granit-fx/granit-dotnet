@@ -72,10 +72,9 @@ opts.Policies.AddMiddleware<BulkheadMiddleware>(
 
 ## Dependencies
 
-- `Granit`
+- `Granit` (transitively provides `Granit.Users` and `Granit.MultiTenancy` abstractions)
 - `Granit.Http.ExceptionHandling`
 - `Granit.Features`
-- `Granit.Users`
 
 ## Documentation
 
