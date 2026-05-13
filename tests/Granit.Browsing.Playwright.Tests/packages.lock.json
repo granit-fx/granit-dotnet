@@ -324,8 +324,6 @@
         "type": "Project",
         "dependencies": {
           "Granit.Browsing": "[0.1.0-dev, )",
-          "Granit.Http.Security": "[0.1.0-dev, )",
-          "Granit.IO": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Logging.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",

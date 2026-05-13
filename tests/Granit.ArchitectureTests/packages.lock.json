@@ -2281,7 +2281,8 @@
       "granit.http.security": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )"
         }
       },
       "granit.http.securityheaders": {
