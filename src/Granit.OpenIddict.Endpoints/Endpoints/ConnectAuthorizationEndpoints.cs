@@ -126,9 +126,18 @@ internal static partial class ConnectAuthorizationEndpoints
 
         if (user is null)
         {
+            // Stale Identity cookie referencing a user that no longer exists (deletion,
+            // DB reseed, schema drop). Clear the cookie so the browser can recover —
+            // otherwise every refresh re-presents the same cookie and loops on 403.
             LogUserNotFound(logger);
-            return Results.Forbid(
-                authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
+            await context.SignOutAsync(IdentityConstants.ApplicationScheme).ConfigureAwait(false);
+
+            string returnUrl = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
+            string effectiveLoginPath = request.ClientId is not null
+                && options.ClientLoginPaths.TryGetValue(request.ClientId, out string? clientPath)
+                ? clientPath
+                : options.LoginPath;
+            return Results.Redirect($"{effectiveLoginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}");
         }
 
         // Align the tenant context with the resolved user for the rest of the flow
