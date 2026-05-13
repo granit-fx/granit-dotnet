@@ -97,10 +97,12 @@ public static class PrivateNetworkClassifier
         return Miss(out kind);
     }
 
+    private static readonly byte[] IPv6LoopbackBytes = IPAddress.IPv6Loopback.GetAddressBytes();
+
     private static bool ClassifyIPv6(byte[] b, out UrlSafetyViolationKind kind)
     {
         // ::1 — loopback.
-        if (IsAllZerosExceptLast(b))
+        if (b.AsSpan().SequenceEqual(IPv6LoopbackBytes))
         {
             kind = UrlSafetyViolationKind.Loopback;
             return true;
@@ -128,23 +130,6 @@ public static class PrivateNetworkClassifier
         }
 
         return Miss(out kind);
-    }
-
-    private static bool IsAllZerosExceptLast(byte[] b)
-    {
-        if (b[15] != 1)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < 15; i++)
-        {
-            if (b[i] != 0)
-            {
-                return false;
-            }
-        }
-        return true;
     }
 
     private static bool Miss(out UrlSafetyViolationKind kind)

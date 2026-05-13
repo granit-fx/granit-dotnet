@@ -132,6 +132,7 @@
     <ProjectReference Include="..\..\src\Granit.Http.OutputCaching.StackExchangeRedis\Granit.Http.OutputCaching.StackExchangeRedis.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Resilience\Granit.Http.Resilience.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ResponseCompression\Granit.Http.ResponseCompression.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.Security\Granit.Http.Security.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.SecurityHeaders\Granit.Http.SecurityHeaders.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity\Granit.Identity.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Endpoints\Granit.Identity.Endpoints.csproj" />

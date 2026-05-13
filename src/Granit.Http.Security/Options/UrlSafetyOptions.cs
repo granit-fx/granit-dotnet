@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.Http.Security.Options;
 
 /// <summary>
@@ -12,6 +14,10 @@ public sealed class UrlSafetyOptions
     /// Schemes accepted for validation. Compared case-insensitively against <see cref="Uri.Scheme"/>.
     /// Defaults to <c>["https"]</c>.
     /// </summary>
+    /// <remarks>
+    /// Enabling <c>"file"</c> bypasses the DNS / IP-classification pipeline and on Windows lets
+    /// through UNC paths (<c>file://server/share</c>) — only opt in for trusted, local-only callers.
+    /// </remarks>
     public IReadOnlyList<string> AllowedSchemes { get; set; } = ["https"];
 
     /// <summary>
@@ -28,7 +34,7 @@ public sealed class UrlSafetyOptions
 
     /// <summary>
     /// When <c>true</c>, IDN hostnames are normalized to Punycode before validation.
-    /// Defaults to <c>true</c>.
+    /// Defaults to <c>true</c>. Set to <c>false</c> only if upstream code has already normalized.
     /// </summary>
     public bool AllowIdn { get; set; } = true;
 
@@ -42,6 +48,7 @@ public sealed class UrlSafetyOptions
     public IReadOnlyList<string> DeniedHostPatterns { get; set; } = [];
 
     /// <summary>Maximum permitted URL length in characters. Defaults to <c>2048</c>.</summary>
+    [Range(1, int.MaxValue)]
     public int MaxUrlLength { get; set; } = 2048;
 
     /// <summary>Hard timeout applied to <see cref="System.Net.Dns.GetHostAddressesAsync(string, System.Threading.CancellationToken)"/>.</summary>

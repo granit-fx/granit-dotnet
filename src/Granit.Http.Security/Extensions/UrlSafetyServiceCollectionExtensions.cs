@@ -1,3 +1,5 @@
+using Granit.Diagnostics;
+using Granit.Http.Security.Diagnostics;
 using Granit.Http.Security.Internal;
 using Granit.Http.Security.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +24,13 @@ public static class UrlSafetyServiceCollectionExtensions
 
         services.AddOptions<UrlSafetyOptions>()
             .BindConfiguration(UrlSafetyOptions.SectionName)
+            .ValidateDataAnnotations()
+            .Validate(
+                o => o.DnsResolveTimeout > TimeSpan.Zero,
+                $"{nameof(UrlSafetyOptions.DnsResolveTimeout)} must be greater than zero.")
+            .Validate(
+                o => o.AllowedSchemes.Count > 0,
+                $"{nameof(UrlSafetyOptions.AllowedSchemes)} must contain at least one entry.")
             .ValidateOnStart();
 
         if (configure is not null)
@@ -31,7 +40,10 @@ public static class UrlSafetyServiceCollectionExtensions
 
         services.TryAddSingleton<IDnsResolver, SystemDnsResolver>();
         services.TryAddSingleton(TimeProvider.System);
+        services.TryAddSingleton<HttpSecurityMetrics>();
         services.TryAddSingleton<IUrlSafetyValidator, DefaultUrlSafetyValidator>();
+
+        GranitActivitySourceRegistry.Register(HttpSecurityActivitySource.Name);
         return services;
     }
 }

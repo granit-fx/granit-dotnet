@@ -502,14 +502,18 @@
     {
       "name": "Granit.Browsing.Playwright",
       "deps": [
-        "Granit.Browsing"
+        "Granit.Browsing",
+        "Granit.Http.Security",
+        "Granit.IO"
       ],
       "framework": "net10.0"
     },
     {
       "name": "Granit.Browsing.PuppeteerSharp",
       "deps": [
-        "Granit.Browsing"
+        "Granit.Browsing",
+        "Granit.Http.Security",
+        "Granit.IO"
       ],
       "framework": "net10.0"
     },
@@ -4091,7 +4095,7 @@
       "kind": "class",
       "project": "Granit.Analyzers",
       "file": "src/Granit.Analyzers/EvaluateAsyncStringInterpolationAnalyzer.cs",
-      "line": 35,
+      "line": 36,
       "members": [
         {
           "name": "SupportedDiagnostics",
@@ -11035,22 +11039,6 @@
       "file": "src/Granit.Browsing/Pages/RouteRequest.cs",
       "line": 13,
       "members": []
-    },
-    {
-      "name": "BrowsingPermissionDefinitionProvider",
-      "fqn": "Granit.Browsing.Permissions.BrowsingPermissionDefinitionProvider",
-      "kind": "class",
-      "project": "Granit.Browsing",
-      "file": "src/Granit.Browsing/Permissions/BrowsingPermissionDefinitionProvider.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "DefinePermissions",
-          "kind": "method",
-          "signature": "DefinePermissions(IPermissionDefinitionContext context)",
-          "returnType": "void"
-        }
-      ]
     },
     {
       "name": "BrowsingPermissions",
@@ -19857,12 +19845,21 @@
       ]
     },
     {
+      "name": "HttpSecurityMetrics",
+      "fqn": "Granit.Http.Security.Diagnostics.HttpSecurityMetrics",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/Diagnostics/HttpSecurityMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "UrlSafetyServiceCollectionExtensions",
       "fqn": "Granit.Http.Security.Extensions.UrlSafetyServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Http.Security",
       "file": "src/Granit.Http.Security/Extensions/UrlSafetyServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitUrlSafety",
@@ -19925,7 +19922,7 @@
       "kind": "class",
       "project": "Granit.Http.Security",
       "file": "src/Granit.Http.Security/Options/UrlSafetyOptions.cs",
-      "line": 6,
+      "line": 8,
       "members": [
         {
           "name": "AllowedSchemes",
@@ -20003,7 +20000,7 @@
       "kind": "record",
       "project": "Granit.Http.Security",
       "file": "src/Granit.Http.Security/UrlSafetyViolation.cs",
-      "line": 11,
+      "line": 17,
       "members": []
     },
     {
@@ -20021,14 +20018,8 @@
       "kind": "record",
       "project": "Granit.Http.Security",
       "file": "src/Granit.Http.Security/UrlSafetyResult.cs",
-      "line": 14,
+      "line": 11,
       "members": [
-        {
-          "name": "Valid",
-          "kind": "method",
-          "signature": "Valid(IReadOnlyList<IPAddress> ips)",
-          "returnType": "UrlSafetyResult"
-        },
         {
           "name": "Invalid",
           "kind": "method",

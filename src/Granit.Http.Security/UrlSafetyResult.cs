@@ -3,19 +3,32 @@ using System.Net;
 namespace Granit.Http.Security;
 
 /// <summary>
-/// Result of an <see cref="IUrlSafetyValidator"/> check.
+/// Result of an <see cref="IUrlSafetyValidator"/> check. Construct via
+/// <see cref="Valid"/> or <see cref="Invalid"/> — those factories guarantee that
+/// <see cref="IsValid"/>, <see cref="Violation"/>, and <see cref="ResolvedAddresses"/>
+/// are mutually consistent.
 /// </summary>
-/// <param name="IsValid"><c>true</c> when the URL passed every rule.</param>
-/// <param name="Violation">The first violation encountered, or <c>null</c> when valid.</param>
-/// <param name="ResolvedAddresses">
-/// Addresses resolved for the host. Callers SHOULD pin the connecting socket to one of these
-/// (or re-validate) to defeat DNS rebinding between validation and use.
-/// </param>
-public readonly record struct UrlSafetyResult(
-    bool IsValid,
-    UrlSafetyViolation? Violation,
-    IReadOnlyList<IPAddress> ResolvedAddresses)
+public readonly record struct UrlSafetyResult
 {
+    private UrlSafetyResult(bool isValid, UrlSafetyViolation? violation, IReadOnlyList<IPAddress> resolvedAddresses)
+    {
+        IsValid = isValid;
+        Violation = violation;
+        ResolvedAddresses = resolvedAddresses;
+    }
+
+    /// <summary><c>true</c> when the URL passed every rule.</summary>
+    public bool IsValid { get; }
+
+    /// <summary>The first violation encountered, or <c>null</c> when valid.</summary>
+    public UrlSafetyViolation? Violation { get; }
+
+    /// <summary>
+    /// Addresses resolved for the host. Callers SHOULD pin the connecting socket to one of
+    /// these (or re-validate) to defeat DNS rebinding between validation and use.
+    /// </summary>
+    public IReadOnlyList<IPAddress> ResolvedAddresses { get; }
+
     /// <summary>Creates a successful result with the resolved addresses.</summary>
     public static UrlSafetyResult Valid(IReadOnlyList<IPAddress> ips) =>
         new(true, null, ips);

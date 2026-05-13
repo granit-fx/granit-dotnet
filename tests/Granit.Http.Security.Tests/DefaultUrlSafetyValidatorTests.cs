@@ -1,7 +1,10 @@
+using System.Diagnostics.Metrics;
 using System.Net;
 using Granit.Http.Security;
+using Granit.Http.Security.Diagnostics;
 using Granit.Http.Security.Internal;
 using Granit.Http.Security.Options;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
@@ -21,7 +24,19 @@ public sealed class DefaultUrlSafetyValidatorTests
             DnsResolveTimeout = TimeSpan.FromSeconds(2),
         };
         resolver ??= FakeDnsResolver.Returning("8.8.8.8");
-        return new DefaultUrlSafetyValidator(Microsoft.Extensions.Options.Options.Create(options), resolver, clock ?? TimeProvider.System);
+        HttpSecurityMetrics metrics = new(new DummyMeterFactory());
+        return new DefaultUrlSafetyValidator(
+            Microsoft.Extensions.Options.Options.Create(options),
+            resolver,
+            clock ?? TimeProvider.System,
+            metrics,
+            NullLogger<DefaultUrlSafetyValidator>.Instance);
+    }
+
+    private sealed class DummyMeterFactory : IMeterFactory
+    {
+        public Meter Create(MeterOptions options) => new(options);
+        public void Dispose() { }
     }
 
     // -------------------------------------------------------------------------
