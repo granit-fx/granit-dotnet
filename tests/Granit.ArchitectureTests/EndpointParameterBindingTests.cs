@@ -21,7 +21,7 @@ namespace Granit.ArchitectureTests;
 /// interface parameters, regardless of whether service inference would work.
 /// </para>
 /// </remarks>
-/// <seealso cref="Granit.Analyzers.MinimalApiServiceParameterAnalyzer"/>
+/// <para>See <c>Granit.Analyzers.MinimalApiServiceParameterAnalyzer</c>.</para>
 public sealed partial class EndpointParameterBindingTests
 {
     private static readonly string RepoRoot = FindRepoRoot();

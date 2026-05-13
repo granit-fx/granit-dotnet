@@ -6,8 +6,8 @@ using Xunit;
 namespace Granit.ArchitectureTests;
 
 /// <summary>
-/// Companion to <see cref="MetricLocalizationCompletenessTests"/> and
-/// <see cref="DashboardLocalizationCompletenessTests"/> — extends the same
+/// Companion to <c>MetricLocalizationCompletenessTests</c> and
+/// <c>DashboardLocalizationCompletenessTests</c> — extends the same
 /// 15-base-cultures completeness rule to permission constants. Every
 /// <c>public const string Name = "Group.Resource.Action";</c> in a module's
 /// <c>*Permissions.cs</c> file MUST have a <c>Permission:{value}</c> resource

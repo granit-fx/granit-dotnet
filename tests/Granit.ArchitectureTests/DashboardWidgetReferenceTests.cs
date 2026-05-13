@@ -11,7 +11,7 @@ namespace Granit.ArchitectureTests;
 /// <summary>
 /// Enforces story #1382 (B1): every widget reference inside a shipped
 /// <see cref="DashboardDefinition"/> MUST resolve at composition time.
-/// <see cref="KpiWidgetDefinition.MetricName"/> must match a registered
+/// <c>KpiWidgetDefinition.MetricName</c> must match a registered
 /// <see cref="MetricDefinition{TEntity, TValue}"/>; the <c>QueryName</c> on
 /// chart / table / pivot widgets must match a registered
 /// <see cref="QueryDefinition{TEntity}"/>. Presentation-only widgets

@@ -244,13 +244,13 @@ public sealed class VersionedWorkflowEntityTests
         public static string StatusPropertyName => nameof(LifecycleStatus);
         public static string WorkflowEntityType => "TestDocument";
 
-        /// <summary>Exposes <see cref="AddDomainEvent"/> for testing.</summary>
+        /// <summary>Exposes <c>AddDomainEvent</c> for testing.</summary>
         public void RaiseDomainEvent(IDomainEvent domainEvent) => AddDomainEvent(domainEvent);
 
-        /// <summary>Exposes <see cref="AddDistributedEvent"/> for testing.</summary>
+        /// <summary>Exposes <c>AddDistributedEvent</c> for testing.</summary>
         public void RaiseIntegrationEvent(IIntegrationEvent integrationEvent) => AddDistributedEvent(integrationEvent);
 
-        /// <summary>Exposes <see cref="SetLifecycleStatus"/> for testing.</summary>
+        /// <summary>Exposes <c>SetLifecycleStatus</c> for testing.</summary>
         public void TransitionTo(WorkflowLifecycleStatus status) => SetLifecycleStatus(status);
     }
 

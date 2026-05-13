@@ -20,7 +20,7 @@ namespace Granit.BackgroundJobs.Wolverine;
 /// </para>
 /// <para>
 /// <b>Anti-doublon guarantee:</b> <see cref="AfterAsync"/> calls
-/// <see cref="IMessageContext.ScheduleAsync"/> inside the same database transaction as
+/// <c>IMessageContext.ScheduleAsync</c> inside the same database transaction as
 /// the handler. If the node crashes before the transaction commits, Wolverine redelivers
 /// the current message — the "next" message was never inserted, so no duplicate is created.
 /// </para>
