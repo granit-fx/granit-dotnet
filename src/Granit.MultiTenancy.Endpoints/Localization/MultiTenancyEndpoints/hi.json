@@ -1,10 +1,12 @@
 {
   "culture": "hi",
   "texts": {
-    "PermissionGroup:MultiTenancy": "मल्टी-टेनेंसी",
-    "Permission:MultiTenancy.Tenants.Read": "किरायेदार जानकारी देखें",
+    "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
     "Permission:MultiTenancy.Tenants.Create": "नए किरायेदार बनाएँ",
+    "Permission:MultiTenancy.Tenants.Manage": "किरायेदार जीवनचक्र प्रबंधित करें (सक्रिय, निष्क्रिय)",
+    "Permission:MultiTenancy.Tenants.Read": "किरायेदार जानकारी देखें",
     "Permission:MultiTenancy.Tenants.Update": "किरायेदार विवरण अपडेट करें",
-    "Permission:MultiTenancy.Tenants.Manage": "किरायेदार जीवनचक्र प्रबंधित करें (सक्रिय, निष्क्रिय)"
+    "PermissionGroup:MultiTenancy": "मल्टी-टेनेंसी"
   }
 }

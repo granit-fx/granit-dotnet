@@ -29,7 +29,8 @@
         "Granit.AI",
         "Granit.Authorization",
         "Granit.QueryEngine.AspNetCore",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -568,7 +569,8 @@
         "Granit.Authorization",
         "Granit.DataExchange",
         "Granit.Guids",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -636,7 +638,8 @@
         "Granit.Authorization",
         "Granit.Diagnostics",
         "Granit.Http.ApiDocumentation",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -895,7 +898,8 @@
         "Granit.Identity",
         "Granit.QueryEngine",
         "Granit.QueryEngine.AspNetCore",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1049,7 +1053,8 @@
         "Granit.Http.SecurityHeaders",
         "Granit.Identity.Local",
         "Granit.Settings",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1198,7 +1203,8 @@
         "Granit.Guids",
         "Granit.Http.ApiDocumentation",
         "Granit.MultiTenancy",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1517,7 +1523,8 @@
         "Granit.OpenIddict",
         "Granit.OpenIddict.Server",
         "Granit.QueryEngine.Abstractions",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1751,7 +1758,8 @@
         "Granit.Authorization",
         "Granit.Scheduling",
         "Granit.QueryEngine.AspNetCore",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1836,7 +1844,8 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.Templating",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1915,7 +1924,8 @@
         "Granit.Authorization",
         "Granit.Http.ApiDocumentation",
         "Granit.Timeline",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -2154,7 +2164,8 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.Workflow",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -2507,8 +2518,15 @@
       "kind": "class",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/GranitAIEndpointsModule.cs",
-      "line": 14,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "AIEndpointsOptions",
@@ -11679,8 +11697,15 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/GranitDataExchangeEndpointsModule.cs",
-      "line": 21,
-      "members": []
+      "line": 25,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "DataExchangeEndpointsOptions",
@@ -13777,8 +13802,15 @@
       "kind": "class",
       "project": "Granit.Diagnostics.Endpoints",
       "file": "src/Granit.Diagnostics.Endpoints/GranitDiagnosticsEndpointsModule.cs",
-      "line": 17,
-      "members": []
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "DiagnosticsEndpointsOptions",
@@ -19794,8 +19826,15 @@
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/GranitIdentityEndpointsModule.cs",
-      "line": 29,
-      "members": []
+      "line": 33,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IdentityEndpointsOptions",
@@ -22225,7 +22264,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/GranitIdentityLocalEndpointsModule.cs",
-      "line": 26,
+      "line": 30,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25961,8 +26000,15 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.Endpoints",
       "file": "src/Granit.MultiTenancy.Endpoints/GranitMultiTenancyEndpointsModule.cs",
-      "line": 23,
-      "members": []
+      "line": 27,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "MultiTenancyEndpointsOptions",
@@ -30591,7 +30637,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/GranitOpenIddictEndpointsModule.cs",
-      "line": 34,
+      "line": 38,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36396,8 +36442,15 @@
       "kind": "class",
       "project": "Granit.Scheduling.Endpoints",
       "file": "src/Granit.Scheduling.Endpoints/GranitSchedulingEndpointsModule.cs",
-      "line": 22,
-      "members": []
+      "line": 26,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "SchedulingEndpointsOptions",
@@ -37895,8 +37948,15 @@
       "kind": "class",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/GranitTemplatingEndpointsModule.cs",
-      "line": 27,
-      "members": []
+      "line": 31,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "TemplatingEndpointsOptions",
@@ -39420,8 +39480,15 @@
       "kind": "class",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/GranitTimelineEndpointsModule.cs",
-      "line": 24,
-      "members": []
+      "line": 28,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "TimelineEndpointsOptions",
@@ -43634,7 +43701,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Endpoints",
       "file": "src/Granit.Workflow.Endpoints/GranitWorkflowEndpointsModule.cs",
-      "line": 33,
+      "line": 37,
       "members": [
         {
           "name": "ConfigureServices",

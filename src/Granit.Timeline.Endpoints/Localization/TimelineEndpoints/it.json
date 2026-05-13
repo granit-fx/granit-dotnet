@@ -1,19 +1,20 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:Timeline": "Cronologia",
-    "Permission:Timeline.Entries.Read": "Visualizzare i flussi di attività e la cronologia di audit",
+    "Granit:Validation:TooManyAttachments": "Non è possibile allegare più di 20 file.",
     "Permission:Timeline.Entries.Create": "Pubblicare commenti e seguire/smettere di seguire entità",
     "Permission:Timeline.Entries.Manage": "Gestire (eliminare) qualsiasi voce della timeline indipendentemente dal proprietario",
-    "Permission:Timeline.InternalNotes.Read": "Visualizzare le note interne riservate al personale nei feed di attività",
+    "Permission:Timeline.Entries.Read": "Visualizzare i flussi di attività e la cronologia di audit",
     "Permission:Timeline.Followers.Manage": "Seguire e smettere di seguire entità nei feed di attività",
+    "Permission:Timeline.InternalNotes.Read": "Visualizzare le note interne riservate al personale nei feed di attività",
     "Permission:Timeline.Reactions.React": "Reagire alle voci della timeline con gli emoji del catalogo",
-    "Granit:Validation:TooManyAttachments": "Non è possibile allegare più di 20 file.",
-
-    "Reaction:thumbs_up": "Pollice in su",
+    "PermissionGroup:Timeline": "Cronologia",
+    "Reaction:eyes": "Occhi",
     "Reaction:heart": "Cuore",
-    "Reaction:tada": "Festeggiare",
     "Reaction:joy": "Risata",
-    "Reaction:eyes": "Occhi"
+    "Reaction:tada": "Festeggiare",
+    "Reaction:thumbs_up": "Pollice in su",
+    "TimelineEndpoints:Workspace.Item": "Activity feed",
+    "TimelineEndpoints:Workspace.Section": "Timeline"
   }
 }

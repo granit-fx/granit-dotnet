@@ -1,7 +1,9 @@
 {
   "culture": "tr",
   "texts": {
-    "PermissionGroup:Diagnostics": "Tanılama",
-    "Permission:Diagnostics.Monitoring.Read": "Sistem sağlık izleme panosunu görüntüle"
+    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
+    "Permission:Diagnostics.Monitoring.Read": "Sistem sağlık izleme panosunu görüntüle",
+    "PermissionGroup:Diagnostics": "Tanılama"
   }
 }

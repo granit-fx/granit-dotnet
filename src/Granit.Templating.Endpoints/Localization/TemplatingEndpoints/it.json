@@ -1,10 +1,13 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:Templating": "Gestione modelli",
-    "Permission:Templating.Templates.Read": "Visualizzare i template (elenco, dettaglio, cronologia)",
-    "Permission:Templating.Templates.Manage": "Gestire i modelli (visualizzare, creare, modificare, eliminare, pubblicare)",
+    "Permission:Templating.Categories.Manage": "Gestisci categorie di modelli (crea, modifica, elimina)",
     "Permission:Templating.Categories.Read": "Visualizza categorie di modelli",
-    "Permission:Templating.Categories.Manage": "Gestisci categorie di modelli (crea, modifica, elimina)"
+    "Permission:Templating.Templates.Manage": "Gestire i modelli (visualizzare, creare, modificare, eliminare, pubblicare)",
+    "Permission:Templating.Templates.Read": "Visualizzare i template (elenco, dettaglio, cronologia)",
+    "PermissionGroup:Templating": "Gestione modelli",
+    "TemplatingEndpoints:Workspace.Categories": "Categories",
+    "TemplatingEndpoints:Workspace.Section": "Templating",
+    "TemplatingEndpoints:Workspace.Templates": "Templates"
   }
 }

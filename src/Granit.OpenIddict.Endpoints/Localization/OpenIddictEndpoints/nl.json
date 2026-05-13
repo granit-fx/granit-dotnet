@@ -1,13 +1,17 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:OpenIddict": "OpenIddict Identiteit",
-    "Permission:OpenIddict.Applications.Read": "OIDC-applicaties raadplegen",
+    "OpenIddictEndpoints:Workspace.Applications": "Applications",
+    "OpenIddictEndpoints:Workspace.Authorizations": "Authorizations",
+    "OpenIddictEndpoints:Workspace.Scopes": "Scopes",
+    "OpenIddictEndpoints:Workspace.Section": "OpenID Connect",
     "Permission:OpenIddict.Applications.Manage": "OIDC-applicaties beheren (raadplegen, wijzigen)",
+    "Permission:OpenIddict.Applications.Read": "OIDC-applicaties raadplegen",
     "Permission:OpenIddict.Applications.Rotate": "Applicatiegeheimen roteren",
-    "Permission:OpenIddict.Scopes.Read": "OIDC-scopes raadplegen",
-    "Permission:OpenIddict.Scopes.Manage": "OIDC-scopes beheren (raadplegen, wijzigen)",
     "Permission:OpenIddict.Authorizations.Read": "OIDC-autorisaties raadplegen",
-    "Permission:OpenIddict.Authorizations.Revoke": "OIDC-autorisaties intrekken"
+    "Permission:OpenIddict.Authorizations.Revoke": "OIDC-autorisaties intrekken",
+    "Permission:OpenIddict.Scopes.Manage": "OIDC-scopes beheren (raadplegen, wijzigen)",
+    "Permission:OpenIddict.Scopes.Read": "OIDC-scopes raadplegen",
+    "PermissionGroup:OpenIddict": "OpenIddict Identiteit"
   }
 }

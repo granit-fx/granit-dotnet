@@ -1,8 +1,10 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:Scheduling": "Planowanie",
+    "Permission:Scheduling.Actions.Manage": "Zarządzanie zaplanowanymi akcjami (anulowanie, przeplanowanie)",
     "Permission:Scheduling.Actions.Read": "Wyświetlanie zaplanowanych akcji (lista, szczegóły)",
-    "Permission:Scheduling.Actions.Manage": "Zarządzanie zaplanowanymi akcjami (anulowanie, przeplanowanie)"
+    "PermissionGroup:Scheduling": "Planowanie",
+    "SchedulingEndpoints:Workspace.Item": "Scheduled actions",
+    "SchedulingEndpoints:Workspace.Section": "Scheduling"
   }
 }

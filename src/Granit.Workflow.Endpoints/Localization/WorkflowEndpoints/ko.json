@@ -1,9 +1,11 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:Workflow": "워크플로",
     "Permission:Workflow.History.Read": "워크플로 전환 이력 보기 (감사 추적)",
+    "Permission:Workflow.Transitions.Execute": "워크플로 상태 전환 실행",
     "Permission:Workflow.Transitions.Read": "사용 가능한 워크플로 전환 보기",
-    "Permission:Workflow.Transitions.Execute": "워크플로 상태 전환 실행"
+    "PermissionGroup:Workflow": "워크플로",
+    "WorkflowEndpoints:Workspace.History": "Transition history",
+    "WorkflowEndpoints:Workspace.Section": "Workflow"
   }
 }

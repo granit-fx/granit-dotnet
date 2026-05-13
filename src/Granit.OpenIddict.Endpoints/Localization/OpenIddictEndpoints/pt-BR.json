@@ -1,13 +1,17 @@
 {
   "culture": "pt-BR",
   "texts": {
-    "PermissionGroup:OpenIddict": "OpenIddict — Provedor de Identidade",
-    "Permission:OpenIddict.Applications.Read": "Consultar aplicações OIDC",
+    "OpenIddictEndpoints:Workspace.Applications": "Applications",
+    "OpenIddictEndpoints:Workspace.Authorizations": "Authorizations",
+    "OpenIddictEndpoints:Workspace.Scopes": "Scopes",
+    "OpenIddictEndpoints:Workspace.Section": "OpenID Connect",
     "Permission:OpenIddict.Applications.Manage": "Gerenciar aplicações OIDC (consultar, modificar)",
+    "Permission:OpenIddict.Applications.Read": "Consultar aplicações OIDC",
     "Permission:OpenIddict.Applications.Rotate": "Rotacionar segredos de aplicação",
-    "Permission:OpenIddict.Scopes.Read": "Consultar escopos OIDC",
-    "Permission:OpenIddict.Scopes.Manage": "Gerenciar escopos OIDC (consultar, modificar)",
     "Permission:OpenIddict.Authorizations.Read": "Consultar autorizações OIDC",
-    "Permission:OpenIddict.Authorizations.Revoke": "Revogar autorizações OIDC"
+    "Permission:OpenIddict.Authorizations.Revoke": "Revogar autorizações OIDC",
+    "Permission:OpenIddict.Scopes.Manage": "Gerenciar escopos OIDC (consultar, modificar)",
+    "Permission:OpenIddict.Scopes.Read": "Consultar escopos OIDC",
+    "PermissionGroup:OpenIddict": "OpenIddict — Provedor de Identidade"
   }
 }

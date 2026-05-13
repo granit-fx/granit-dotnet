@@ -1,10 +1,13 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:Templating": "Szablony",
-    "Permission:Templating.Templates.Read": "Przeglądanie szablonów (lista, szczegóły, historia)",
-    "Permission:Templating.Templates.Manage": "Zarządzanie szablonami (wyświetlanie, tworzenie, edycja, usuwanie, publikowanie)",
+    "Permission:Templating.Categories.Manage": "Zarządzanie kategoriami szablonów (tworzenie, edycja, usuwanie)",
     "Permission:Templating.Categories.Read": "Przeglądanie kategorii szablonów",
-    "Permission:Templating.Categories.Manage": "Zarządzanie kategoriami szablonów (tworzenie, edycja, usuwanie)"
+    "Permission:Templating.Templates.Manage": "Zarządzanie szablonami (wyświetlanie, tworzenie, edycja, usuwanie, publikowanie)",
+    "Permission:Templating.Templates.Read": "Przeglądanie szablonów (lista, szczegóły, historia)",
+    "PermissionGroup:Templating": "Szablony",
+    "TemplatingEndpoints:Workspace.Categories": "Categories",
+    "TemplatingEndpoints:Workspace.Section": "Templating",
+    "TemplatingEndpoints:Workspace.Templates": "Templates"
   }
 }

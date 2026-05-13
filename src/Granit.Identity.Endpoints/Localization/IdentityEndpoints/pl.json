@@ -1,17 +1,22 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:Identity": "Tożsamość",
-    "Permission:Identity.Users.Read": "Wyświetlanie użytkowników (lista, wyszukiwanie, wsadowe, statystyki)",
-    "Permission:Identity.Users.Sync": "Wymuszenie synchronizacji użytkowników z dostawcy tożsamości",
+    "IdentityEndpoints:Workspace.Groups": "Groups",
+    "IdentityEndpoints:Workspace.Roles": "Roles",
+    "IdentityEndpoints:Workspace.Section": "Identity",
+    "IdentityEndpoints:Workspace.Sessions": "Sessions",
+    "IdentityEndpoints:Workspace.Users": "Users",
+    "Permission:Identity.Groups.Manage": "Dodawanie lub usuwanie użytkowników z grup",
+    "Permission:Identity.Groups.Read": "Przeglądanie grup i przynależności do grup",
+    "Permission:Identity.Passwords.Manage": "Zarządzanie hasłami użytkowników (resetowanie, hasło tymczasowe)",
+    "Permission:Identity.Roles.Manage": "Przypisywanie lub usuwanie ról użytkowników",
+    "Permission:Identity.Roles.Read": "Przeglądanie ról, przypisań ról i członków",
+    "Permission:Identity.Sessions.Manage": "Kończenie sesji użytkowników",
+    "Permission:Identity.Sessions.Read": "Przeglądanie sesji użytkowników i aktywności urządzeń",
     "Permission:Identity.Users.Delete": "Usuwanie lub pseudonimizacja użytkowników (RODO)",
     "Permission:Identity.Users.Manage": "Tworzenie, aktualizowanie i włączanie/wyłączanie użytkowników w dostawcy tożsamości",
-    "Permission:Identity.Roles.Read": "Przeglądanie ról, przypisań ról i członków",
-    "Permission:Identity.Roles.Manage": "Przypisywanie lub usuwanie ról użytkowników",
-    "Permission:Identity.Groups.Read": "Przeglądanie grup i przynależności do grup",
-    "Permission:Identity.Groups.Manage": "Dodawanie lub usuwanie użytkowników z grup",
-    "Permission:Identity.Sessions.Read": "Przeglądanie sesji użytkowników i aktywności urządzeń",
-    "Permission:Identity.Sessions.Manage": "Kończenie sesji użytkowników",
-    "Permission:Identity.Passwords.Manage": "Zarządzanie hasłami użytkowników (resetowanie, hasło tymczasowe)"
+    "Permission:Identity.Users.Read": "Wyświetlanie użytkowników (lista, wyszukiwanie, wsadowe, statystyki)",
+    "Permission:Identity.Users.Sync": "Wymuszenie synchronizacji użytkowników z dostawcy tożsamości",
+    "PermissionGroup:Identity": "Tożsamość"
   }
 }

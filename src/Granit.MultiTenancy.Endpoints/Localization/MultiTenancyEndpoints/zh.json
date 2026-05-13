@@ -1,10 +1,12 @@
 {
   "culture": "zh",
   "texts": {
-    "PermissionGroup:MultiTenancy": "多租户",
-    "Permission:MultiTenancy.Tenants.Read": "查看租户信息",
+    "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
     "Permission:MultiTenancy.Tenants.Create": "创建新租户",
+    "Permission:MultiTenancy.Tenants.Manage": "管理租户生命周期（激活、停用）",
+    "Permission:MultiTenancy.Tenants.Read": "查看租户信息",
     "Permission:MultiTenancy.Tenants.Update": "更新租户详情",
-    "Permission:MultiTenancy.Tenants.Manage": "管理租户生命周期（激活、停用）"
+    "PermissionGroup:MultiTenancy": "多租户"
   }
 }

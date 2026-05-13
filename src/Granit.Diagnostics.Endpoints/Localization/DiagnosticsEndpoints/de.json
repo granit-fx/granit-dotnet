@@ -1,7 +1,9 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:Diagnostics": "Diagnose",
-    "Permission:Diagnostics.Monitoring.Read": "Systemzustands-Dashboard anzeigen"
+    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
+    "Permission:Diagnostics.Monitoring.Read": "Systemzustands-Dashboard anzeigen",
+    "PermissionGroup:Diagnostics": "Diagnose"
   }
 }

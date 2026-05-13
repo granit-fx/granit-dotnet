@@ -22,6 +22,7 @@
     <ProjectReference Include="..\Granit.DataExchange\Granit.DataExchange.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
+    <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

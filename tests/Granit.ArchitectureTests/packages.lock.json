@@ -1469,7 +1469,8 @@
           "Granit.AI": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.ai.entityframeworkcore": {
@@ -1994,7 +1995,8 @@
           "Granit.DataExchange": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.dataexchange.entityframeworkcore": {
@@ -2058,7 +2060,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Diagnostics": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.documentgeneration": {
@@ -2290,7 +2293,8 @@
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.identity.entityframeworkcore": {
@@ -2436,7 +2440,8 @@
           "Granit.Http.SecurityHeaders": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.identity.local.notifications": {
@@ -2583,7 +2588,8 @@
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.multitenancy.entityframeworkcore": {
@@ -2896,7 +2902,8 @@
           "Granit.OpenIddict": "[0.1.0-dev, )",
           "Granit.OpenIddict.Server": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.openiddict.entityframeworkcore": {
@@ -3121,7 +3128,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.Scheduling": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.scheduling.entityframeworkcore": {
@@ -3200,7 +3208,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Templating": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.templating.entityframeworkcore": {
@@ -3279,7 +3288,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Timeline": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.timeline.entityframeworkcore": {
@@ -3514,7 +3524,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )"
+          "Granit.Workflow": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.workflow.entityframeworkcore": {

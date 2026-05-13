@@ -601,7 +601,8 @@
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.localization": {
@@ -658,6 +659,12 @@
         }
       },
       "granit.workflow.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.workspaces.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

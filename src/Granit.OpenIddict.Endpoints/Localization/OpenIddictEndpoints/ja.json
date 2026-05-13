@@ -1,13 +1,17 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:OpenIddict": "OpenIddict ID管理",
-    "Permission:OpenIddict.Applications.Read": "OIDCアプリケーションの閲覧",
+    "OpenIddictEndpoints:Workspace.Applications": "Applications",
+    "OpenIddictEndpoints:Workspace.Authorizations": "Authorizations",
+    "OpenIddictEndpoints:Workspace.Scopes": "Scopes",
+    "OpenIddictEndpoints:Workspace.Section": "OpenID Connect",
     "Permission:OpenIddict.Applications.Manage": "OIDCアプリケーションの管理（閲覧、編集）",
+    "Permission:OpenIddict.Applications.Read": "OIDCアプリケーションの閲覧",
     "Permission:OpenIddict.Applications.Rotate": "アプリケーションシークレットのローテーション",
-    "Permission:OpenIddict.Scopes.Read": "OIDCスコープの閲覧",
-    "Permission:OpenIddict.Scopes.Manage": "OIDCスコープの管理（閲覧、編集）",
     "Permission:OpenIddict.Authorizations.Read": "OIDC認可の閲覧",
-    "Permission:OpenIddict.Authorizations.Revoke": "OIDC認可の取り消し"
+    "Permission:OpenIddict.Authorizations.Revoke": "OIDC認可の取り消し",
+    "Permission:OpenIddict.Scopes.Manage": "OIDCスコープの管理（閲覧、編集）",
+    "Permission:OpenIddict.Scopes.Read": "OIDCスコープの閲覧",
+    "PermissionGroup:OpenIddict": "OpenIddict ID管理"
   }
 }

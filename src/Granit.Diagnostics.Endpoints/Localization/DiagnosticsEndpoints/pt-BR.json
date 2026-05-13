@@ -1,4 +1,7 @@
 {
   "culture": "pt-BR",
-  "texts": {}
+  "texts": {
+    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Section": "Diagnostics"
+  }
 }

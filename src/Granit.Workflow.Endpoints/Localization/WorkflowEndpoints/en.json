@@ -1,9 +1,11 @@
 {
   "culture": "en",
   "texts": {
-    "PermissionGroup:Workflow": "Workflow",
     "Permission:Workflow.History.Read": "View workflow transition history (Audit trail)",
+    "Permission:Workflow.Transitions.Execute": "Execute workflow state transitions",
     "Permission:Workflow.Transitions.Read": "View available workflow transitions",
-    "Permission:Workflow.Transitions.Execute": "Execute workflow state transitions"
+    "PermissionGroup:Workflow": "Workflow",
+    "WorkflowEndpoints:Workspace.History": "Transition history",
+    "WorkflowEndpoints:Workspace.Section": "Workflow"
   }
 }

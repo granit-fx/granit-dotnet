@@ -1,10 +1,13 @@
 {
   "culture": "es",
   "texts": {
-    "PermissionGroup:Templating": "Gestión de plantillas",
-    "Permission:Templating.Templates.Read": "Ver plantillas (lista, detalle, historial)",
-    "Permission:Templating.Templates.Manage": "Gestionar plantillas (ver, crear, editar, eliminar, publicar)",
+    "Permission:Templating.Categories.Manage": "Gestionar categorías de plantillas (crear, editar, eliminar)",
     "Permission:Templating.Categories.Read": "Ver categorías de plantillas",
-    "Permission:Templating.Categories.Manage": "Gestionar categorías de plantillas (crear, editar, eliminar)"
+    "Permission:Templating.Templates.Manage": "Gestionar plantillas (ver, crear, editar, eliminar, publicar)",
+    "Permission:Templating.Templates.Read": "Ver plantillas (lista, detalle, historial)",
+    "PermissionGroup:Templating": "Gestión de plantillas",
+    "TemplatingEndpoints:Workspace.Categories": "Categories",
+    "TemplatingEndpoints:Workspace.Section": "Templating",
+    "TemplatingEndpoints:Workspace.Templates": "Templates"
   }
 }

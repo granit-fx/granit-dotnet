@@ -1,9 +1,11 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Workflow": "ワークフロー",
     "Permission:Workflow.History.Read": "ワークフロー遷移履歴を表示（監査証跡）",
+    "Permission:Workflow.Transitions.Execute": "ワークフロー状態遷移を実行",
     "Permission:Workflow.Transitions.Read": "利用可能なワークフロー遷移を表示",
-    "Permission:Workflow.Transitions.Execute": "ワークフロー状態遷移を実行"
+    "PermissionGroup:Workflow": "ワークフロー",
+    "WorkflowEndpoints:Workspace.History": "Transition history",
+    "WorkflowEndpoints:Workspace.Section": "Workflow"
   }
 }

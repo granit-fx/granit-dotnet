@@ -1,7 +1,11 @@
 {
   "culture": "en-GB",
   "texts": {
-    "Permission:OpenIddict.Authorizations.Revoke": "Revoke OIDC authorisations",
-    "Permission:OpenIddict.Authorizations.Read": "Read OIDC authorisations"
+    "OpenIddictEndpoints:Workspace.Applications": "Applications",
+    "OpenIddictEndpoints:Workspace.Authorizations": "Authorizations",
+    "OpenIddictEndpoints:Workspace.Scopes": "Scopes",
+    "OpenIddictEndpoints:Workspace.Section": "OpenID Connect",
+    "Permission:OpenIddict.Authorizations.Read": "Read OIDC authorisations",
+    "Permission:OpenIddict.Authorizations.Revoke": "Revoke OIDC authorisations"
   }
 }

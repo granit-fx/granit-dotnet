@@ -1,10 +1,12 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:MultiTenancy": "マルチテナンシー",
-    "Permission:MultiTenancy.Tenants.Read": "テナント情報の表示",
+    "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
     "Permission:MultiTenancy.Tenants.Create": "新規テナントの作成",
+    "Permission:MultiTenancy.Tenants.Manage": "テナントライフサイクルの管理（有効化、無効化）",
+    "Permission:MultiTenancy.Tenants.Read": "テナント情報の表示",
     "Permission:MultiTenancy.Tenants.Update": "テナント詳細の更新",
-    "Permission:MultiTenancy.Tenants.Manage": "テナントライフサイクルの管理（有効化、無効化）"
+    "PermissionGroup:MultiTenancy": "マルチテナンシー"
   }
 }

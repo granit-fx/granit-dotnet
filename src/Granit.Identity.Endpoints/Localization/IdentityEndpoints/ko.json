@@ -1,17 +1,22 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:Identity": "신원",
-    "Permission:Identity.Users.Read": "사용자 보기 (목록, 검색, 일괄, 통계)",
-    "Permission:Identity.Users.Sync": "ID 공급자에서 사용자 강제 동기화",
+    "IdentityEndpoints:Workspace.Groups": "Groups",
+    "IdentityEndpoints:Workspace.Roles": "Roles",
+    "IdentityEndpoints:Workspace.Section": "Identity",
+    "IdentityEndpoints:Workspace.Sessions": "Sessions",
+    "IdentityEndpoints:Workspace.Users": "Users",
+    "Permission:Identity.Groups.Manage": "그룹에 사용자 추가 또는 제거",
+    "Permission:Identity.Groups.Read": "그룹 및 그룹 구성원 조회",
+    "Permission:Identity.Passwords.Manage": "사용자 비밀번호 관리 (재설정, 임시 비밀번호)",
+    "Permission:Identity.Roles.Manage": "사용자에게 역할 할당 또는 제거",
+    "Permission:Identity.Roles.Read": "역할, 역할 할당 및 역할 구성원 조회",
+    "Permission:Identity.Sessions.Manage": "사용자 세션 종료",
+    "Permission:Identity.Sessions.Read": "사용자 세션 및 장치 활동 조회",
     "Permission:Identity.Users.Delete": "사용자 삭제 또는 가명화 (GDPR)",
     "Permission:Identity.Users.Manage": "ID 공급자에서 사용자 생성, 수정 및 활성화/비활성화",
-    "Permission:Identity.Roles.Read": "역할, 역할 할당 및 역할 구성원 조회",
-    "Permission:Identity.Roles.Manage": "사용자에게 역할 할당 또는 제거",
-    "Permission:Identity.Groups.Read": "그룹 및 그룹 구성원 조회",
-    "Permission:Identity.Groups.Manage": "그룹에 사용자 추가 또는 제거",
-    "Permission:Identity.Sessions.Read": "사용자 세션 및 장치 활동 조회",
-    "Permission:Identity.Sessions.Manage": "사용자 세션 종료",
-    "Permission:Identity.Passwords.Manage": "사용자 비밀번호 관리 (재설정, 임시 비밀번호)"
+    "Permission:Identity.Users.Read": "사용자 보기 (목록, 검색, 일괄, 통계)",
+    "Permission:Identity.Users.Sync": "ID 공급자에서 사용자 강제 동기화",
+    "PermissionGroup:Identity": "신원"
   }
 }

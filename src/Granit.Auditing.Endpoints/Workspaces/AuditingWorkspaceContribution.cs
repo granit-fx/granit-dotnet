@@ -15,7 +15,7 @@ internal sealed class AuditingWorkspaceContribution : IWorkspaceContributor
             .Section("auditing", s => s
                 .DisplayKey("AuditingEndpoints:Workspace.Section")
                 .Order(0)
-                .Link("/admin/audit-log", i => i
+                .Link("/audit-log", i => i
                     .DisplayKey("AuditingEndpoints:Workspace.Item")
                     .Icon("clipboard-list")
                     .Order(0)

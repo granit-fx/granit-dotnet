@@ -1,7 +1,9 @@
 {
   "culture": "hi",
   "texts": {
-    "PermissionGroup:Diagnostics": "डायग्नोस्टिक्स",
-    "Permission:Diagnostics.Monitoring.Read": "सिस्टम स्वास्थ्य मॉनिटरिंग डैशबोर्ड देखें"
+    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
+    "Permission:Diagnostics.Monitoring.Read": "सिस्टम स्वास्थ्य मॉनिटरिंग डैशबोर्ड देखें",
+    "PermissionGroup:Diagnostics": "डायग्नोस्टिक्स"
   }
 }

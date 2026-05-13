@@ -1,10 +1,12 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:MultiTenancy": "Multi-Tenancy",
-    "Permission:MultiTenancy.Tenants.Read": "Visa hyresgästinformation",
+    "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
     "Permission:MultiTenancy.Tenants.Create": "Skapa nya hyresgäster",
+    "Permission:MultiTenancy.Tenants.Manage": "Hantera hyresgästlivscykel (aktivera, inaktivera)",
+    "Permission:MultiTenancy.Tenants.Read": "Visa hyresgästinformation",
     "Permission:MultiTenancy.Tenants.Update": "Uppdatera hyresgästdetaljer",
-    "Permission:MultiTenancy.Tenants.Manage": "Hantera hyresgästlivscykel (aktivera, inaktivera)"
+    "PermissionGroup:MultiTenancy": "Multi-Tenancy"
   }
 }

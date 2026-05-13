@@ -1,10 +1,13 @@
 {
   "culture": "en",
   "texts": {
-    "PermissionGroup:Templating": "Templating",
-    "Permission:Templating.Templates.Read": "View templates (list, detail, history)",
-    "Permission:Templating.Templates.Manage": "Manage templates (view, create, edit, delete, publish)",
+    "Permission:Templating.Categories.Manage": "Manage template categories (create, edit, delete)",
     "Permission:Templating.Categories.Read": "View template categories",
-    "Permission:Templating.Categories.Manage": "Manage template categories (create, edit, delete)"
+    "Permission:Templating.Templates.Manage": "Manage templates (view, create, edit, delete, publish)",
+    "Permission:Templating.Templates.Read": "View templates (list, detail, history)",
+    "PermissionGroup:Templating": "Templating",
+    "TemplatingEndpoints:Workspace.Categories": "Categories",
+    "TemplatingEndpoints:Workspace.Section": "Templating",
+    "TemplatingEndpoints:Workspace.Templates": "Templates"
   }
 }

@@ -15,7 +15,7 @@ internal sealed class FeaturesWorkspaceContribution : IWorkspaceContributor
             .Section("features", s => s
                 .DisplayKey("FeaturesEndpoints:Workspace.Section")
                 .Order(10)
-                .Link("/admin/features", i => i
+                .Link("/features", i => i
                     .DisplayKey("FeaturesEndpoints:Workspace.Item")
                     .Icon("flag")
                     .Order(0)

@@ -1,19 +1,20 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:Timeline": "Časová osa",
-    "Permission:Timeline.Entries.Read": "Zobrazit aktivity a historii auditu",
+    "Granit:Validation:TooManyAttachments": "Nelze připojit více než 20 souborů.",
     "Permission:Timeline.Entries.Create": "Přidávat komentáře a sledovat/přestat sledovat entity",
     "Permission:Timeline.Entries.Manage": "Spravovat (mazat) libovolnou položku časové osy bez ohledu na vlastníka",
-    "Permission:Timeline.InternalNotes.Read": "Zobrazit interní poznámky pouze pro zaměstnance v kanálech aktivity",
+    "Permission:Timeline.Entries.Read": "Zobrazit aktivity a historii auditu",
     "Permission:Timeline.Followers.Manage": "Sledovat a přestat sledovat entity v kanálech aktivity",
+    "Permission:Timeline.InternalNotes.Read": "Zobrazit interní poznámky pouze pro zaměstnance v kanálech aktivity",
     "Permission:Timeline.Reactions.React": "Reagovat na položky časové osy emoji z katalogu",
-    "Granit:Validation:TooManyAttachments": "Nelze připojit více než 20 souborů.",
-
-    "Reaction:thumbs_up": "Palec nahoru",
+    "PermissionGroup:Timeline": "Časová osa",
+    "Reaction:eyes": "Oči",
     "Reaction:heart": "Srdce",
-    "Reaction:tada": "Oslava",
     "Reaction:joy": "Smích",
-    "Reaction:eyes": "Oči"
+    "Reaction:tada": "Oslava",
+    "Reaction:thumbs_up": "Palec nahoru",
+    "TimelineEndpoints:Workspace.Item": "Activity feed",
+    "TimelineEndpoints:Workspace.Section": "Timeline"
   }
 }

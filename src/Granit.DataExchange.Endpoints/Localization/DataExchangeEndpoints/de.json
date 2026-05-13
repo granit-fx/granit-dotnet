@@ -1,10 +1,13 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:DataExchange": "Datenaustausch",
-    "Permission:DataExchange.Imports.Read": "Importverlauf und Status anzeigen",
-    "Permission:DataExchange.Imports.Execute": "Datenimporte ausführen (Upload, Zuordnung, Ausführung, Berichte)",
+    "DataExchangeEndpoints:Workspace.Exports": "Exports",
+    "DataExchangeEndpoints:Workspace.Imports": "Imports",
+    "DataExchangeEndpoints:Workspace.Section": "Data exchange",
+    "Permission:DataExchange.Exports.Execute": "Datenexporte ausführen (Definitionen, Ausführung, Download, Voreinstellungen)",
     "Permission:DataExchange.Exports.Read": "Exportdefinitionen und Verlauf anzeigen",
-    "Permission:DataExchange.Exports.Execute": "Datenexporte ausführen (Definitionen, Ausführung, Download, Voreinstellungen)"
+    "Permission:DataExchange.Imports.Execute": "Datenimporte ausführen (Upload, Zuordnung, Ausführung, Berichte)",
+    "Permission:DataExchange.Imports.Read": "Importverlauf und Status anzeigen",
+    "PermissionGroup:DataExchange": "Datenaustausch"
   }
 }

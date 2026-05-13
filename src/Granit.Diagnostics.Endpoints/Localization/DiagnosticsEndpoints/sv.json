@@ -1,7 +1,9 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Diagnostics": "Diagnostik",
-    "Permission:Diagnostics.Monitoring.Read": "Visa systemhälsoövervakningens instrumentpanel"
+    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
+    "Permission:Diagnostics.Monitoring.Read": "Visa systemhälsoövervakningens instrumentpanel",
+    "PermissionGroup:Diagnostics": "Diagnostik"
   }
 }

@@ -1,7 +1,10 @@
 {
   "culture": "en-GB",
   "texts": {
+    "Permission:Templating.Categories.Manage": "Manage template categories (create, edit, delete)",
     "Permission:Templating.Categories.Read": "View template categories",
-    "Permission:Templating.Categories.Manage": "Manage template categories (create, edit, delete)"
+    "TemplatingEndpoints:Workspace.Categories": "Categories",
+    "TemplatingEndpoints:Workspace.Section": "Templating",
+    "TemplatingEndpoints:Workspace.Templates": "Templates"
   }
 }

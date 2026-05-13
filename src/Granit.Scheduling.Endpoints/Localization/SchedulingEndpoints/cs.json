@@ -1,8 +1,10 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:Scheduling": "Plánování",
+    "Permission:Scheduling.Actions.Manage": "Spravovat naplánované akce (zrušit, přeplánovat)",
     "Permission:Scheduling.Actions.Read": "Zobrazit naplánované akce (seznam, detail)",
-    "Permission:Scheduling.Actions.Manage": "Spravovat naplánované akce (zrušit, přeplánovat)"
+    "PermissionGroup:Scheduling": "Plánování",
+    "SchedulingEndpoints:Workspace.Item": "Scheduled actions",
+    "SchedulingEndpoints:Workspace.Section": "Scheduling"
   }
 }

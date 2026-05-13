@@ -1,7 +1,10 @@
 {
   "culture": "pt-BR",
   "texts": {
+    "Permission:Templating.Categories.Manage": "Gerenciar categorias de modelos (criar, editar, excluir)",
     "Permission:Templating.Categories.Read": "Ver categorias de modelos",
-    "Permission:Templating.Categories.Manage": "Gerenciar categorias de modelos (criar, editar, excluir)"
+    "TemplatingEndpoints:Workspace.Categories": "Categories",
+    "TemplatingEndpoints:Workspace.Section": "Templating",
+    "TemplatingEndpoints:Workspace.Templates": "Templates"
   }
 }

@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "DiagnosticsEndpoints:Workspace.Item": "Surveillance santé",
+    "DiagnosticsEndpoints:Workspace.Section": "Diagnostics"
+  }
 }

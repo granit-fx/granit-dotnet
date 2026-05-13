@@ -1,7 +1,10 @@
 {
   "culture": "fr-CA",
   "texts": {
+    "Permission:Templating.Categories.Manage": "Gérer les catégories de templates (créer, modifier, supprimer)",
     "Permission:Templating.Categories.Read": "Consulter les catégories de templates",
-    "Permission:Templating.Categories.Manage": "Gérer les catégories de templates (créer, modifier, supprimer)"
+    "TemplatingEndpoints:Workspace.Categories": "Catégories",
+    "TemplatingEndpoints:Workspace.Section": "Modèles",
+    "TemplatingEndpoints:Workspace.Templates": "Modèles"
   }
 }

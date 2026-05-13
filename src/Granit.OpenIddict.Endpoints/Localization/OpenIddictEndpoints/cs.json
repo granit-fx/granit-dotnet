@@ -1,13 +1,17 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:OpenIddict": "OpenIddict Identita",
-    "Permission:OpenIddict.Applications.Read": "Zobrazit OIDC aplikace",
+    "OpenIddictEndpoints:Workspace.Applications": "Applications",
+    "OpenIddictEndpoints:Workspace.Authorizations": "Authorizations",
+    "OpenIddictEndpoints:Workspace.Scopes": "Scopes",
+    "OpenIddictEndpoints:Workspace.Section": "OpenID Connect",
     "Permission:OpenIddict.Applications.Manage": "Spravovat OIDC aplikace (zobrazit, upravit)",
+    "Permission:OpenIddict.Applications.Read": "Zobrazit OIDC aplikace",
     "Permission:OpenIddict.Applications.Rotate": "Rotovat tajné klíče aplikací",
-    "Permission:OpenIddict.Scopes.Read": "Zobrazit OIDC scopy",
-    "Permission:OpenIddict.Scopes.Manage": "Spravovat OIDC scopy (zobrazit, upravit)",
     "Permission:OpenIddict.Authorizations.Read": "Zobrazit OIDC autorizace",
-    "Permission:OpenIddict.Authorizations.Revoke": "Odvolat OIDC autorizace"
+    "Permission:OpenIddict.Authorizations.Revoke": "Odvolat OIDC autorizace",
+    "Permission:OpenIddict.Scopes.Manage": "Spravovat OIDC scopy (zobrazit, upravit)",
+    "Permission:OpenIddict.Scopes.Read": "Zobrazit OIDC scopy",
+    "PermissionGroup:OpenIddict": "OpenIddict Identita"
   }
 }

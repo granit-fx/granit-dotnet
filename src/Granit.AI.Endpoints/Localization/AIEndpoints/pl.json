@@ -1,16 +1,19 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:AI": "AI",
-    "Permission:AI.Workspaces.Read": "View AI workspaces",
-    "Permission:AI.Workspaces.Manage": "Manage AI workspaces (create, update, delete)",
-    "Permission:AI.Usage.Read": "View AI usage records",
-    "Permission:AI.Chat.Execute": "Execute AI chat completions",
-    "Permission:AI.Embeddings.Execute": "Generate AI embeddings",
-    "AIEndpoints:Workspace:SystemImmutable": "System workspace '{0}' cannot be modified or deleted.",
-    "AIEndpoints:Workspace:DuplicateName": "Przestrzeń robocza o nazwie '{0}' już istnieje.",
     "AI.Workspaces.Kind.Dynamic": "Dynamiczny",
     "AI.Workspaces.Kind.System": "Systemowy",
-    "AI.Workspaces.Kind.System:Hint": "Systemowe przestrzenie robocze są tylko do odczytu i nie mogą być modyfikowane ani usuwane."
+    "AI.Workspaces.Kind.System:Hint": "Systemowe przestrzenie robocze są tylko do odczytu i nie mogą być modyfikowane ani usuwane.",
+    "AIEndpoints:Workspace.Section": "AI",
+    "AIEndpoints:Workspace.Usage": "Usage",
+    "AIEndpoints:Workspace.Workspaces": "AI workspaces",
+    "AIEndpoints:Workspace:DuplicateName": "Przestrzeń robocza o nazwie '{0}' już istnieje.",
+    "AIEndpoints:Workspace:SystemImmutable": "System workspace '{0}' cannot be modified or deleted.",
+    "Permission:AI.Chat.Execute": "Execute AI chat completions",
+    "Permission:AI.Embeddings.Execute": "Generate AI embeddings",
+    "Permission:AI.Usage.Read": "View AI usage records",
+    "Permission:AI.Workspaces.Manage": "Manage AI workspaces (create, update, delete)",
+    "Permission:AI.Workspaces.Read": "View AI workspaces",
+    "PermissionGroup:AI": "AI"
   }
 }

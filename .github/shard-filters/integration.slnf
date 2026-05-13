@@ -59,6 +59,7 @@
       "src/Granit.Wolverine.SqlServer/Granit.Wolverine.SqlServer.csproj",
       "src/Granit.Wolverine/Granit.Wolverine.csproj",
       "src/Granit.Workflow.Abstractions/Granit.Workflow.Abstractions.csproj",
+      "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.Authorization.EntityFrameworkCore.Tests.Integration/Granit.Authorization.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.BackgroundJobs.Tests.Integration/Granit.BackgroundJobs.Tests.Integration.csproj",

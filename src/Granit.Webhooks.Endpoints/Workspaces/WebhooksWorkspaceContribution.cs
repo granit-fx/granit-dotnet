@@ -15,7 +15,7 @@ internal sealed class WebhooksWorkspaceContribution : IWorkspaceContributor
             .Section("webhooks", s => s
                 .DisplayKey("WebhooksEndpoints:Workspace.Section")
                 .Order(0)
-                .Link("/admin/webhooks", i => i
+                .Link("/webhooks", i => i
                     .DisplayKey("WebhooksEndpoints:Workspace.Item")
                     .Icon("webhook")
                     .Order(0)

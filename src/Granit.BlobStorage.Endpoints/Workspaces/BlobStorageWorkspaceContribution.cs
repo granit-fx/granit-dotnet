@@ -17,7 +17,7 @@ internal sealed class BlobStorageWorkspaceContribution : IWorkspaceContributor
             .Section("blob-storage", s => s
                 .DisplayKey("BlobStorageEndpoints:Workspace.Section")
                 .Order(0)
-                .Link("/admin/blob-storage", i => i
+                .Link("/blob-storage", i => i
                     .DisplayKey("BlobStorageEndpoints:Workspace.Item")
                     .Icon("file")
                     .Order(0)

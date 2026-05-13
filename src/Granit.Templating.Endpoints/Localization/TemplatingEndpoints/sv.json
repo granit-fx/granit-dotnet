@@ -1,10 +1,13 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Templating": "Mallar",
-    "Permission:Templating.Templates.Read": "Visa mallar (lista, detalj, historik)",
-    "Permission:Templating.Templates.Manage": "Hantera mallar (visa, skapa, redigera, radera, publicera)",
+    "Permission:Templating.Categories.Manage": "Hantera mallkategorier (skapa, redigera, ta bort)",
     "Permission:Templating.Categories.Read": "Visa mallkategorier",
-    "Permission:Templating.Categories.Manage": "Hantera mallkategorier (skapa, redigera, ta bort)"
+    "Permission:Templating.Templates.Manage": "Hantera mallar (visa, skapa, redigera, radera, publicera)",
+    "Permission:Templating.Templates.Read": "Visa mallar (lista, detalj, historik)",
+    "PermissionGroup:Templating": "Mallar",
+    "TemplatingEndpoints:Workspace.Categories": "Categories",
+    "TemplatingEndpoints:Workspace.Section": "Templating",
+    "TemplatingEndpoints:Workspace.Templates": "Templates"
   }
 }

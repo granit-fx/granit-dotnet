@@ -1,9 +1,11 @@
 {
   "culture": "es",
   "texts": {
-    "PermissionGroup:Workflow": "Flujo de trabajo",
     "Permission:Workflow.History.Read": "Ver el historial de transiciones del flujo de trabajo (Pista de auditoría)",
+    "Permission:Workflow.Transitions.Execute": "Ejecutar transiciones de estado del flujo de trabajo",
     "Permission:Workflow.Transitions.Read": "Ver transiciones de flujo de trabajo disponibles",
-    "Permission:Workflow.Transitions.Execute": "Ejecutar transiciones de estado del flujo de trabajo"
+    "PermissionGroup:Workflow": "Flujo de trabajo",
+    "WorkflowEndpoints:Workspace.History": "Transition history",
+    "WorkflowEndpoints:Workspace.Section": "Workflow"
   }
 }

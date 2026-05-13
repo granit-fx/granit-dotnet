@@ -15,12 +15,12 @@ internal sealed class SettingsWorkspaceContribution : IWorkspaceContributor
             .Section("settings", s => s
                 .DisplayKey("SettingsEndpoints:Workspace.Section")
                 .Order(0)
-                .Link("/admin/settings/global", i => i
+                .Link("/settings/global", i => i
                     .DisplayKey("SettingsEndpoints:Workspace.Global")
                     .Icon("settings-2")
                     .Order(0)
                     .RequiresPermission(SettingsPermissions.Global.Read))
-                .Link("/admin/settings/tenant", i => i
+                .Link("/settings/tenant", i => i
                     .DisplayKey("SettingsEndpoints:Workspace.Tenant")
                     .Icon("building")
                     .Order(1)

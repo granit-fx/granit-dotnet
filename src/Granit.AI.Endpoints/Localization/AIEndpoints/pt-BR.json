@@ -1,16 +1,19 @@
 {
   "culture": "pt-BR",
   "texts": {
-    "PermissionGroup:AI": "AI",
-    "Permission:AI.Workspaces.Read": "View AI workspaces",
-    "Permission:AI.Workspaces.Manage": "Manage AI workspaces (create, update, delete)",
-    "Permission:AI.Usage.Read": "View AI usage records",
-    "Permission:AI.Chat.Execute": "Execute AI chat completions",
-    "Permission:AI.Embeddings.Execute": "Generate AI embeddings",
-    "AIEndpoints:Workspace:SystemImmutable": "System workspace '{0}' cannot be modified or deleted.",
-    "AIEndpoints:Workspace:DuplicateName": "Já existe um workspace com o nome '{0}'.",
     "AI.Workspaces.Kind.Dynamic": "Dinâmico",
     "AI.Workspaces.Kind.System": "Sistema",
-    "AI.Workspaces.Kind.System:Hint": "Os workspaces de sistema são somente leitura e não podem ser modificados ou excluídos."
+    "AI.Workspaces.Kind.System:Hint": "Os workspaces de sistema são somente leitura e não podem ser modificados ou excluídos.",
+    "AIEndpoints:Workspace.Section": "AI",
+    "AIEndpoints:Workspace.Usage": "Usage",
+    "AIEndpoints:Workspace.Workspaces": "AI workspaces",
+    "AIEndpoints:Workspace:DuplicateName": "Já existe um workspace com o nome '{0}'.",
+    "AIEndpoints:Workspace:SystemImmutable": "System workspace '{0}' cannot be modified or deleted.",
+    "Permission:AI.Chat.Execute": "Execute AI chat completions",
+    "Permission:AI.Embeddings.Execute": "Generate AI embeddings",
+    "Permission:AI.Usage.Read": "View AI usage records",
+    "Permission:AI.Workspaces.Manage": "Manage AI workspaces (create, update, delete)",
+    "Permission:AI.Workspaces.Read": "View AI workspaces",
+    "PermissionGroup:AI": "AI"
   }
 }

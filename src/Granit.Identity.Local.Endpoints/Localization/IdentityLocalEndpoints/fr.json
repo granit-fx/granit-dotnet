@@ -1,17 +1,19 @@
 {
   "culture": "fr",
   "texts": {
-    "PermissionGroup:IdentityLocal": "Identité locale",
-    "Permission:IdentityLocal.Users.Impersonate": "Se faire passer pour un utilisateur",
-    "Permission:IdentityLocal.Roles.Read": "Lire les rôles",
-    "Permission:IdentityLocal.Roles.Manage": "Créer et renommer les rôles",
-    "Permission:IdentityLocal.Roles.Delete": "Supprimer les rôles",
-    "Granit:Identity:Role:TenantIdRequired": "Les rôles de tenant requièrent un TenantId non nul.",
-    "Granit:Identity:Role:TenantIdForbidden": "Les rôles Host et Both doivent avoir un TenantId nul.",
     "Granit:Identity:Role:CannotDeleteSystem": "Les rôles système ne peuvent pas être supprimés.",
     "Granit:Identity:Role:CannotRenameSystem": "Les rôles système ne peuvent pas être renommés.",
+    "Granit:Identity:Role:CrossTenantForbidden": "Les administrateurs de tenant ne peuvent gérer que les rôles de leur propre tenant.",
     "Granit:Identity:Role:NameAlreadyExists": "Un rôle portant ce nom existe déjà dans cette portée.",
+    "Granit:Identity:Role:TenantIdForbidden": "Les rôles Host et Both doivent avoir un TenantId nul.",
+    "Granit:Identity:Role:TenantIdRequired": "Les rôles de tenant requièrent un TenantId non nul.",
     "Granit:Identity:Role:TenantRolesDisabled": "La création de rôles de tenant est désactivée dans ce déploiement.",
-    "Granit:Identity:Role:CrossTenantForbidden": "Les administrateurs de tenant ne peuvent gérer que les rôles de leur propre tenant."
+    "IdentityLocalEndpoints:Workspace.Roles": "Rôles locaux",
+    "IdentityLocalEndpoints:Workspace.Section": "Comptes locaux",
+    "Permission:IdentityLocal.Roles.Delete": "Supprimer les rôles",
+    "Permission:IdentityLocal.Roles.Manage": "Créer et renommer les rôles",
+    "Permission:IdentityLocal.Roles.Read": "Lire les rôles",
+    "Permission:IdentityLocal.Users.Impersonate": "Se faire passer pour un utilisateur",
+    "PermissionGroup:IdentityLocal": "Identité locale"
   }
 }

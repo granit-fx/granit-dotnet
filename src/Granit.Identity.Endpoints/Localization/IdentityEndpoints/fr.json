@@ -1,17 +1,22 @@
 {
   "culture": "fr",
   "texts": {
-    "PermissionGroup:Identity": "Identité",
-    "Permission:Identity.Users.Read": "Consulter les utilisateurs (liste, recherche, batch, stats)",
-    "Permission:Identity.Users.Sync": "Forcer la synchronisation depuis le fournisseur d'identité",
+    "IdentityEndpoints:Workspace.Groups": "Groupes",
+    "IdentityEndpoints:Workspace.Roles": "Rôles",
+    "IdentityEndpoints:Workspace.Section": "Identité",
+    "IdentityEndpoints:Workspace.Sessions": "Sessions",
+    "IdentityEndpoints:Workspace.Users": "Utilisateurs",
+    "Permission:Identity.Groups.Manage": "Ajouter ou retirer des utilisateurs de groupes",
+    "Permission:Identity.Groups.Read": "Consulter les groupes et les appartenances",
+    "Permission:Identity.Passwords.Manage": "Gérer les mots de passe (réinitialisation, mot de passe temporaire)",
+    "Permission:Identity.Roles.Manage": "Attribuer ou retirer des rôles aux utilisateurs",
+    "Permission:Identity.Roles.Read": "Consulter les rôles, les attributions et les membres",
+    "Permission:Identity.Sessions.Manage": "Terminer les sessions utilisateurs",
+    "Permission:Identity.Sessions.Read": "Consulter les sessions utilisateurs et l'activité des appareils",
     "Permission:Identity.Users.Delete": "Supprimer ou pseudonymiser des utilisateurs (RGPD)",
     "Permission:Identity.Users.Manage": "Créer, modifier et activer/désactiver les utilisateurs du fournisseur d'identité",
-    "Permission:Identity.Roles.Read": "Consulter les rôles, les attributions et les membres",
-    "Permission:Identity.Roles.Manage": "Attribuer ou retirer des rôles aux utilisateurs",
-    "Permission:Identity.Groups.Read": "Consulter les groupes et les appartenances",
-    "Permission:Identity.Groups.Manage": "Ajouter ou retirer des utilisateurs de groupes",
-    "Permission:Identity.Sessions.Read": "Consulter les sessions utilisateurs et l'activité des appareils",
-    "Permission:Identity.Sessions.Manage": "Terminer les sessions utilisateurs",
-    "Permission:Identity.Passwords.Manage": "Gérer les mots de passe (réinitialisation, mot de passe temporaire)"
+    "Permission:Identity.Users.Read": "Consulter les utilisateurs (liste, recherche, batch, stats)",
+    "Permission:Identity.Users.Sync": "Forcer la synchronisation depuis le fournisseur d'identité",
+    "PermissionGroup:Identity": "Identité"
   }
 }

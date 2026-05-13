@@ -1,4 +1,8 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "DataExchangeEndpoints:Workspace.Exports": "Exports",
+    "DataExchangeEndpoints:Workspace.Imports": "Imports",
+    "DataExchangeEndpoints:Workspace.Section": "Échange de données"
+  }
 }

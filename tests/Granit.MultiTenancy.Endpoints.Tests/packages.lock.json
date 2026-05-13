@@ -338,7 +338,8 @@
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.queryengine.abstractions": {
@@ -365,6 +366,12 @@
         }
       },
       "granit.workflow.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.workspaces.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

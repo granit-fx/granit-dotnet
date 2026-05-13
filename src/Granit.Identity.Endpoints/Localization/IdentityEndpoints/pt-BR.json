@@ -1,4 +1,10 @@
 {
   "culture": "pt-BR",
-  "texts": {}
+  "texts": {
+    "IdentityEndpoints:Workspace.Groups": "Groups",
+    "IdentityEndpoints:Workspace.Roles": "Roles",
+    "IdentityEndpoints:Workspace.Section": "Identity",
+    "IdentityEndpoints:Workspace.Sessions": "Sessions",
+    "IdentityEndpoints:Workspace.Users": "Users"
+  }
 }

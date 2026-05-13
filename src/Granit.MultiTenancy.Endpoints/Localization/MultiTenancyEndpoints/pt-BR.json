@@ -1,10 +1,12 @@
 {
   "culture": "pt-BR",
   "texts": {
-    "PermissionGroup:MultiTenancy": "Multi-Tenancy",
-    "Permission:MultiTenancy.Tenants.Read": "Ver informações de inquilinos",
+    "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
     "Permission:MultiTenancy.Tenants.Create": "Criar novos inquilinos",
+    "Permission:MultiTenancy.Tenants.Manage": "Gerenciar ciclo de vida de inquilinos (ativar, desativar)",
+    "Permission:MultiTenancy.Tenants.Read": "Ver informações de inquilinos",
     "Permission:MultiTenancy.Tenants.Update": "Atualizar detalhes de inquilinos",
-    "Permission:MultiTenancy.Tenants.Manage": "Gerenciar ciclo de vida de inquilinos (ativar, desativar)"
+    "PermissionGroup:MultiTenancy": "Multi-Tenancy"
   }
 }

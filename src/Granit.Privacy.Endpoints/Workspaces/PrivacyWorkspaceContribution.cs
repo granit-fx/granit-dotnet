@@ -15,12 +15,12 @@ internal sealed class PrivacyWorkspaceContribution : IWorkspaceContributor
             .Section("privacy", s => s
                 .DisplayKey("PrivacyEndpoints:Workspace.Section")
                 .Order(0)
-                .Link("/admin/privacy/purposes", i => i
+                .Link("/privacy/purposes", i => i
                     .DisplayKey("PrivacyEndpoints:Workspace.Purposes")
                     .Icon("shield-check")
                     .Order(0)
                     .RequiresPermission(PrivacyPermissions.Purposes.Read))
-                .Link("/admin/privacy/agreements", i => i
+                .Link("/privacy/agreements", i => i
                     .DisplayKey("PrivacyEndpoints:Workspace.Agreements")
                     .Icon("file-signature")
                     .Order(1)

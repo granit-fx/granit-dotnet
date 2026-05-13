@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "MultiTenancyEndpoints:Workspace.Section": "Multi-tenant",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants"
+  }
 }

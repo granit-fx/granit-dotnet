@@ -1,17 +1,22 @@
 {
   "culture": "en",
   "texts": {
-    "PermissionGroup:Identity": "Identity",
-    "Permission:Identity.Users.Read": "View users (list, search, batch, stats)",
-    "Permission:Identity.Users.Sync": "Force user synchronization from the identity provider",
+    "IdentityEndpoints:Workspace.Groups": "Groups",
+    "IdentityEndpoints:Workspace.Roles": "Roles",
+    "IdentityEndpoints:Workspace.Section": "Identity",
+    "IdentityEndpoints:Workspace.Sessions": "Sessions",
+    "IdentityEndpoints:Workspace.Users": "Users",
+    "Permission:Identity.Groups.Manage": "Add or remove users from groups",
+    "Permission:Identity.Groups.Read": "View groups and user group memberships",
+    "Permission:Identity.Passwords.Manage": "Manage user passwords (reset email, temporary password)",
+    "Permission:Identity.Roles.Manage": "Assign or remove roles from users",
+    "Permission:Identity.Roles.Read": "View roles, user role assignments, and role members",
+    "Permission:Identity.Sessions.Manage": "Terminate user sessions",
+    "Permission:Identity.Sessions.Read": "View user sessions and device activity",
     "Permission:Identity.Users.Delete": "Delete or pseudonymize users (GDPR)",
     "Permission:Identity.Users.Manage": "Create, update, and enable/disable users in the identity provider",
-    "Permission:Identity.Roles.Read": "View roles, user role assignments, and role members",
-    "Permission:Identity.Roles.Manage": "Assign or remove roles from users",
-    "Permission:Identity.Groups.Read": "View groups and user group memberships",
-    "Permission:Identity.Groups.Manage": "Add or remove users from groups",
-    "Permission:Identity.Sessions.Read": "View user sessions and device activity",
-    "Permission:Identity.Sessions.Manage": "Terminate user sessions",
-    "Permission:Identity.Passwords.Manage": "Manage user passwords (reset email, temporary password)"
+    "Permission:Identity.Users.Read": "View users (list, search, batch, stats)",
+    "Permission:Identity.Users.Sync": "Force user synchronization from the identity provider",
+    "PermissionGroup:Identity": "Identity"
   }
 }

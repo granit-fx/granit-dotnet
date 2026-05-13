@@ -559,7 +559,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Diagnostics": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.entities.abstractions": {
@@ -631,6 +632,12 @@
         }
       },
       "granit.workflow.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.workspaces.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

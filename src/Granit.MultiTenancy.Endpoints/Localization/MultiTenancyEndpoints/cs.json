@@ -1,10 +1,12 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:MultiTenancy": "Multi-Tenancy",
-    "Permission:MultiTenancy.Tenants.Read": "Zobrazit informace o nájemcích",
+    "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
     "Permission:MultiTenancy.Tenants.Create": "Vytvořit nové nájemce",
+    "Permission:MultiTenancy.Tenants.Manage": "Spravovat životní cyklus nájemců (aktivovat, deaktivovat)",
+    "Permission:MultiTenancy.Tenants.Read": "Zobrazit informace o nájemcích",
     "Permission:MultiTenancy.Tenants.Update": "Aktualizovat údaje nájemců",
-    "Permission:MultiTenancy.Tenants.Manage": "Spravovat životní cyklus nájemců (aktivovat, deaktivovat)"
+    "PermissionGroup:MultiTenancy": "Multi-Tenancy"
   }
 }

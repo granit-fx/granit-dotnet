@@ -1,8 +1,10 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:Scheduling": "Planning",
+    "Permission:Scheduling.Actions.Manage": "Geplande acties beheren (annuleren, herplannen)",
     "Permission:Scheduling.Actions.Read": "Geplande acties bekijken (lijst, detail)",
-    "Permission:Scheduling.Actions.Manage": "Geplande acties beheren (annuleren, herplannen)"
+    "PermissionGroup:Scheduling": "Planning",
+    "SchedulingEndpoints:Workspace.Item": "Scheduled actions",
+    "SchedulingEndpoints:Workspace.Section": "Scheduling"
   }
 }

@@ -1,8 +1,10 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:Scheduling": "Planung",
+    "Permission:Scheduling.Actions.Manage": "Geplante Aktionen verwalten (abbrechen, neu planen)",
     "Permission:Scheduling.Actions.Read": "Geplante Aktionen anzeigen (Liste, Detail)",
-    "Permission:Scheduling.Actions.Manage": "Geplante Aktionen verwalten (abbrechen, neu planen)"
+    "PermissionGroup:Scheduling": "Planung",
+    "SchedulingEndpoints:Workspace.Item": "Scheduled actions",
+    "SchedulingEndpoints:Workspace.Section": "Scheduling"
   }
 }

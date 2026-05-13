@@ -1,8 +1,10 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:Scheduling": "Pianificazione",
+    "Permission:Scheduling.Actions.Manage": "Gestire le azioni pianificate (annullare, ripianificare)",
     "Permission:Scheduling.Actions.Read": "Visualizzare le azioni pianificate (elenco, dettaglio)",
-    "Permission:Scheduling.Actions.Manage": "Gestire le azioni pianificate (annullare, ripianificare)"
+    "PermissionGroup:Scheduling": "Pianificazione",
+    "SchedulingEndpoints:Workspace.Item": "Scheduled actions",
+    "SchedulingEndpoints:Workspace.Section": "Scheduling"
   }
 }

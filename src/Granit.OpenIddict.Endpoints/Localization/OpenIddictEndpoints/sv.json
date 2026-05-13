@@ -1,13 +1,17 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:OpenIddict": "OpenIddict Identitet",
-    "Permission:OpenIddict.Applications.Read": "Visa OIDC-applikationer",
+    "OpenIddictEndpoints:Workspace.Applications": "Applications",
+    "OpenIddictEndpoints:Workspace.Authorizations": "Authorizations",
+    "OpenIddictEndpoints:Workspace.Scopes": "Scopes",
+    "OpenIddictEndpoints:Workspace.Section": "OpenID Connect",
     "Permission:OpenIddict.Applications.Manage": "Hantera OIDC-applikationer (visa, redigera)",
+    "Permission:OpenIddict.Applications.Read": "Visa OIDC-applikationer",
     "Permission:OpenIddict.Applications.Rotate": "Rotera applikationshemligheter",
-    "Permission:OpenIddict.Scopes.Read": "Visa OIDC-scopes",
-    "Permission:OpenIddict.Scopes.Manage": "Hantera OIDC-scopes (visa, redigera)",
     "Permission:OpenIddict.Authorizations.Read": "Visa OIDC-auktoriseringar",
-    "Permission:OpenIddict.Authorizations.Revoke": "Återkalla OIDC-auktoriseringar"
+    "Permission:OpenIddict.Authorizations.Revoke": "Återkalla OIDC-auktoriseringar",
+    "Permission:OpenIddict.Scopes.Manage": "Hantera OIDC-scopes (visa, redigera)",
+    "Permission:OpenIddict.Scopes.Read": "Visa OIDC-scopes",
+    "PermissionGroup:OpenIddict": "OpenIddict Identitet"
   }
 }

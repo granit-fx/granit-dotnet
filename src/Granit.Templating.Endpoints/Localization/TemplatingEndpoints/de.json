@@ -1,10 +1,13 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:Templating": "Vorlagenverwaltung",
-    "Permission:Templating.Templates.Read": "Vorlagen anzeigen (Liste, Detail, Verlauf)",
-    "Permission:Templating.Templates.Manage": "Vorlagen verwalten (anzeigen, erstellen, bearbeiten, löschen, veröffentlichen)",
+    "Permission:Templating.Categories.Manage": "Vorlagenkategorien verwalten (erstellen, bearbeiten, löschen)",
     "Permission:Templating.Categories.Read": "Vorlagenkategorien anzeigen",
-    "Permission:Templating.Categories.Manage": "Vorlagenkategorien verwalten (erstellen, bearbeiten, löschen)"
+    "Permission:Templating.Templates.Manage": "Vorlagen verwalten (anzeigen, erstellen, bearbeiten, löschen, veröffentlichen)",
+    "Permission:Templating.Templates.Read": "Vorlagen anzeigen (Liste, Detail, Verlauf)",
+    "PermissionGroup:Templating": "Vorlagenverwaltung",
+    "TemplatingEndpoints:Workspace.Categories": "Categories",
+    "TemplatingEndpoints:Workspace.Section": "Templating",
+    "TemplatingEndpoints:Workspace.Templates": "Templates"
   }
 }

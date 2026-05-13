@@ -1,13 +1,17 @@
 {
   "culture": "tr",
   "texts": {
-    "PermissionGroup:OpenIddict": "OpenIddict Kimlik",
-    "Permission:OpenIddict.Applications.Read": "OIDC uygulamalarını görüntüle",
+    "OpenIddictEndpoints:Workspace.Applications": "Applications",
+    "OpenIddictEndpoints:Workspace.Authorizations": "Authorizations",
+    "OpenIddictEndpoints:Workspace.Scopes": "Scopes",
+    "OpenIddictEndpoints:Workspace.Section": "OpenID Connect",
     "Permission:OpenIddict.Applications.Manage": "OIDC uygulamalarını yönet (görüntüle, düzenle)",
+    "Permission:OpenIddict.Applications.Read": "OIDC uygulamalarını görüntüle",
     "Permission:OpenIddict.Applications.Rotate": "Uygulama gizli anahtarlarını döndür",
-    "Permission:OpenIddict.Scopes.Read": "OIDC kapsamlarını görüntüle",
-    "Permission:OpenIddict.Scopes.Manage": "OIDC kapsamlarını yönet (görüntüle, düzenle)",
     "Permission:OpenIddict.Authorizations.Read": "OIDC yetkilendirmelerini görüntüle",
-    "Permission:OpenIddict.Authorizations.Revoke": "OIDC yetkilendirmelerini iptal et"
+    "Permission:OpenIddict.Authorizations.Revoke": "OIDC yetkilendirmelerini iptal et",
+    "Permission:OpenIddict.Scopes.Manage": "OIDC kapsamlarını yönet (görüntüle, düzenle)",
+    "Permission:OpenIddict.Scopes.Read": "OIDC kapsamlarını görüntüle",
+    "PermissionGroup:OpenIddict": "OpenIddict Kimlik"
   }
 }

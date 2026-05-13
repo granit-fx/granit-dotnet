@@ -1,17 +1,22 @@
 {
   "culture": "es",
   "texts": {
-    "PermissionGroup:Identity": "Identidad",
-    "Permission:Identity.Users.Read": "Consultar usuarios (lista, búsqueda, lote, estadísticas)",
-    "Permission:Identity.Users.Sync": "Forzar la sincronización de usuarios desde el proveedor de identidad",
+    "IdentityEndpoints:Workspace.Groups": "Groups",
+    "IdentityEndpoints:Workspace.Roles": "Roles",
+    "IdentityEndpoints:Workspace.Section": "Identity",
+    "IdentityEndpoints:Workspace.Sessions": "Sessions",
+    "IdentityEndpoints:Workspace.Users": "Users",
+    "Permission:Identity.Groups.Manage": "Agregar o quitar usuarios de grupos",
+    "Permission:Identity.Groups.Read": "Ver grupos y membresías de grupos",
+    "Permission:Identity.Passwords.Manage": "Gestionar contraseñas de usuario (restablecimiento, contraseña temporal)",
+    "Permission:Identity.Roles.Manage": "Asignar o quitar roles de usuarios",
+    "Permission:Identity.Roles.Read": "Ver roles, asignaciones de roles y miembros",
+    "Permission:Identity.Sessions.Manage": "Terminar sesiones de usuario",
+    "Permission:Identity.Sessions.Read": "Ver sesiones de usuario y actividad de dispositivos",
     "Permission:Identity.Users.Delete": "Eliminar o seudonimizar usuarios (RGPD)",
     "Permission:Identity.Users.Manage": "Crear, actualizar y activar/desactivar usuarios en el proveedor de identidad",
-    "Permission:Identity.Roles.Read": "Ver roles, asignaciones de roles y miembros",
-    "Permission:Identity.Roles.Manage": "Asignar o quitar roles de usuarios",
-    "Permission:Identity.Groups.Read": "Ver grupos y membresías de grupos",
-    "Permission:Identity.Groups.Manage": "Agregar o quitar usuarios de grupos",
-    "Permission:Identity.Sessions.Read": "Ver sesiones de usuario y actividad de dispositivos",
-    "Permission:Identity.Sessions.Manage": "Terminar sesiones de usuario",
-    "Permission:Identity.Passwords.Manage": "Gestionar contraseñas de usuario (restablecimiento, contraseña temporal)"
+    "Permission:Identity.Users.Read": "Consultar usuarios (lista, búsqueda, lote, estadísticas)",
+    "Permission:Identity.Users.Sync": "Forzar la sincronización de usuarios desde el proveedor de identidad",
+    "PermissionGroup:Identity": "Identidad"
   }
 }

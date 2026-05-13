@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "SchedulingEndpoints:Workspace.Item": "Actions planifiées",
+    "SchedulingEndpoints:Workspace.Section": "Planification"
+  }
 }

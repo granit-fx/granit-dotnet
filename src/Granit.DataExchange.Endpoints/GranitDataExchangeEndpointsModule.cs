@@ -1,6 +1,9 @@
 using Granit.Authorization;
+using Granit.DataExchange.Endpoints.Workspaces;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 
 namespace Granit.DataExchange.Endpoints;
 
@@ -17,7 +20,11 @@ namespace Granit.DataExchange.Endpoints;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitDataExchangeModule),
-    typeof(GranitHttpApiDocumentationModule))]
+    typeof(GranitHttpApiDocumentationModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
 public sealed class GranitDataExchangeEndpointsModule : GranitModule
 {
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddWorkspaceContribution<DataExchangeWorkspaceContribution>();
 }

@@ -1,4 +1,7 @@
 {
   "culture": "en-GB",
-  "texts": {}
+  "texts": {
+    "SchedulingEndpoints:Workspace.Item": "Scheduled actions",
+    "SchedulingEndpoints:Workspace.Section": "Scheduling"
+  }
 }

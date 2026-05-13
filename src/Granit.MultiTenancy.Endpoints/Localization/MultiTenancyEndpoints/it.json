@@ -1,10 +1,12 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:MultiTenancy": "Multi-Tenancy",
-    "Permission:MultiTenancy.Tenants.Read": "Visualizzare le informazioni dei tenant",
+    "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
     "Permission:MultiTenancy.Tenants.Create": "Creare nuovi tenant",
+    "Permission:MultiTenancy.Tenants.Manage": "Gestire il ciclo di vita dei tenant (attivare, disattivare)",
+    "Permission:MultiTenancy.Tenants.Read": "Visualizzare le informazioni dei tenant",
     "Permission:MultiTenancy.Tenants.Update": "Aggiornare i dettagli dei tenant",
-    "Permission:MultiTenancy.Tenants.Manage": "Gestire il ciclo di vita dei tenant (attivare, disattivare)"
+    "PermissionGroup:MultiTenancy": "Multi-Tenancy"
   }
 }

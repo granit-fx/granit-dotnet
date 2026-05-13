@@ -3,9 +3,12 @@ using Granit.Caching;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
 using Granit.OpenIddict.Endpoints.Internal;
+using Granit.OpenIddict.Endpoints.Workspaces;
 using Granit.OpenIddict.Server;
 using Granit.QueryEngine;
 using Granit.Validation;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -30,10 +33,14 @@ namespace Granit.OpenIddict.Endpoints;
     typeof(GranitOpenIddictModule),
     typeof(GranitOpenIddictServerModule),
     typeof(GranitQueryEngineAbstractionsModule),
-    typeof(GranitValidationModule))]
+    typeof(GranitValidationModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
 public sealed class GranitOpenIddictEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.TryAddScoped<OidcPrincipalFactory>();
+        context.Services.AddWorkspaceContribution<OpenIddictWorkspaceContribution>();
+    }
 }

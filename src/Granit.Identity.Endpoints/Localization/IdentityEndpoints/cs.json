@@ -1,17 +1,22 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:Identity": "Identita",
-    "Permission:Identity.Users.Read": "Zobrazit uživatele (seznam, hledání, dávkově, statistiky)",
-    "Permission:Identity.Users.Sync": "Vynutit synchronizaci uživatelů od poskytovatele identity",
+    "IdentityEndpoints:Workspace.Groups": "Groups",
+    "IdentityEndpoints:Workspace.Roles": "Roles",
+    "IdentityEndpoints:Workspace.Section": "Identity",
+    "IdentityEndpoints:Workspace.Sessions": "Sessions",
+    "IdentityEndpoints:Workspace.Users": "Users",
+    "Permission:Identity.Groups.Manage": "Přidat nebo odebrat uživatele ze skupin",
+    "Permission:Identity.Groups.Read": "Zobrazit skupiny a členství ve skupinách",
+    "Permission:Identity.Passwords.Manage": "Spravovat uživatelská hesla (resetování, dočasné heslo)",
+    "Permission:Identity.Roles.Manage": "Přiřadit nebo odebrat role uživatelům",
+    "Permission:Identity.Roles.Read": "Zobrazit role, přiřazení rolí a členy rolí",
+    "Permission:Identity.Sessions.Manage": "Ukončit uživatelské relace",
+    "Permission:Identity.Sessions.Read": "Zobrazit uživatelské relace a aktivitu zařízení",
     "Permission:Identity.Users.Delete": "Smazat nebo pseudonymizovat uživatele (GDPR)",
     "Permission:Identity.Users.Manage": "Vytvářet, aktualizovat a aktivovat/deaktivovat uživatele u poskytovatele identity",
-    "Permission:Identity.Roles.Read": "Zobrazit role, přiřazení rolí a členy rolí",
-    "Permission:Identity.Roles.Manage": "Přiřadit nebo odebrat role uživatelům",
-    "Permission:Identity.Groups.Read": "Zobrazit skupiny a členství ve skupinách",
-    "Permission:Identity.Groups.Manage": "Přidat nebo odebrat uživatele ze skupin",
-    "Permission:Identity.Sessions.Read": "Zobrazit uživatelské relace a aktivitu zařízení",
-    "Permission:Identity.Sessions.Manage": "Ukončit uživatelské relace",
-    "Permission:Identity.Passwords.Manage": "Spravovat uživatelská hesla (resetování, dočasné heslo)"
+    "Permission:Identity.Users.Read": "Zobrazit uživatele (seznam, hledání, dávkově, statistiky)",
+    "Permission:Identity.Users.Sync": "Vynutit synchronizaci uživatelů od poskytovatele identity",
+    "PermissionGroup:Identity": "Identita"
   }
 }

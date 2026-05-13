@@ -15,7 +15,7 @@ internal sealed class BackgroundJobsWorkspaceContribution : IWorkspaceContributo
             .Section("background-jobs", s => s
                 .DisplayKey("BackgroundJobsEndpoints:Workspace.Section")
                 .Order(0)
-                .Link("/admin/background-jobs", i => i
+                .Link("/background-jobs", i => i
                     .DisplayKey("BackgroundJobsEndpoints:Workspace.Item")
                     .Icon("clock")
                     .Order(0)

@@ -1,13 +1,17 @@
 {
   "culture": "zh",
   "texts": {
-    "PermissionGroup:OpenIddict": "OpenIddict 身份认证",
-    "Permission:OpenIddict.Applications.Read": "查看 OIDC 应用",
+    "OpenIddictEndpoints:Workspace.Applications": "Applications",
+    "OpenIddictEndpoints:Workspace.Authorizations": "Authorizations",
+    "OpenIddictEndpoints:Workspace.Scopes": "Scopes",
+    "OpenIddictEndpoints:Workspace.Section": "OpenID Connect",
     "Permission:OpenIddict.Applications.Manage": "管理 OIDC 应用（查看、修改）",
+    "Permission:OpenIddict.Applications.Read": "查看 OIDC 应用",
     "Permission:OpenIddict.Applications.Rotate": "轮换应用密钥",
-    "Permission:OpenIddict.Scopes.Read": "查看 OIDC 作用域",
-    "Permission:OpenIddict.Scopes.Manage": "管理 OIDC 作用域（查看、修改）",
     "Permission:OpenIddict.Authorizations.Read": "查看 OIDC 授权",
-    "Permission:OpenIddict.Authorizations.Revoke": "撤销 OIDC 授权"
+    "Permission:OpenIddict.Authorizations.Revoke": "撤销 OIDC 授权",
+    "Permission:OpenIddict.Scopes.Manage": "管理 OIDC 作用域（查看、修改）",
+    "Permission:OpenIddict.Scopes.Read": "查看 OIDC 作用域",
+    "PermissionGroup:OpenIddict": "OpenIddict 身份认证"
   }
 }

@@ -197,6 +197,12 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.workspaces.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "Asp.Versioning.Mvc": {
         "type": "CentralTransitive",
         "requested": "[10.0.0-preview.*, )",

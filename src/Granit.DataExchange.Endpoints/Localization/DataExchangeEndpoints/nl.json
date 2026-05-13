@@ -1,10 +1,13 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:DataExchange": "Gegevensuitwisseling",
-    "Permission:DataExchange.Imports.Read": "Importgeschiedenis en status bekijken",
-    "Permission:DataExchange.Imports.Execute": "Gegevensimports uitvoeren (upload, mapping, uitvoering, rapporten)",
+    "DataExchangeEndpoints:Workspace.Exports": "Exports",
+    "DataExchangeEndpoints:Workspace.Imports": "Imports",
+    "DataExchangeEndpoints:Workspace.Section": "Data exchange",
+    "Permission:DataExchange.Exports.Execute": "Gegevensexports uitvoeren (definities, uitvoering, download, presets)",
     "Permission:DataExchange.Exports.Read": "Exportdefinities en geschiedenis bekijken",
-    "Permission:DataExchange.Exports.Execute": "Gegevensexports uitvoeren (definities, uitvoering, download, presets)"
+    "Permission:DataExchange.Imports.Execute": "Gegevensimports uitvoeren (upload, mapping, uitvoering, rapporten)",
+    "Permission:DataExchange.Imports.Read": "Importgeschiedenis en status bekijken",
+    "PermissionGroup:DataExchange": "Gegevensuitwisseling"
   }
 }

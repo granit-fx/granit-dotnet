@@ -1,7 +1,10 @@
 using Granit.Authorization;
 using Granit.Modularity;
 using Granit.QueryEngine.AspNetCore;
+using Granit.Scheduling.Endpoints.Workspaces;
 using Granit.Validation;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 
 namespace Granit.Scheduling.Endpoints;
 
@@ -18,5 +21,11 @@ namespace Granit.Scheduling.Endpoints;
     typeof(GranitAuthorizationModule),
     typeof(GranitQueryEngineAspNetCoreModule),
     typeof(GranitSchedulingModule),
-    typeof(GranitValidationModule))]
-public sealed class GranitSchedulingEndpointsModule : GranitModule;
+    typeof(GranitValidationModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
+public sealed class GranitSchedulingEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddWorkspaceContribution<SchedulingWorkspaceContribution>();
+}

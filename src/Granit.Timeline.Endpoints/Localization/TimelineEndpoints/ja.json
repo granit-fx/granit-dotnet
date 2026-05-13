@@ -1,19 +1,20 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Timeline": "タイムライン",
-    "Permission:Timeline.Entries.Read": "アクティビティフィードと監査履歴を表示",
+    "Granit:Validation:TooManyAttachments": "添付ファイルは20個までです。",
     "Permission:Timeline.Entries.Create": "コメントの投稿とエンティティのフォロー/フォロー解除",
     "Permission:Timeline.Entries.Manage": "所有者に関係なくタイムラインエントリを管理（削除）",
-    "Permission:Timeline.InternalNotes.Read": "アクティビティフィードでスタッフ限定の内部メモを表示",
+    "Permission:Timeline.Entries.Read": "アクティビティフィードと監査履歴を表示",
     "Permission:Timeline.Followers.Manage": "アクティビティフィードでエンティティのフォロー・フォロー解除",
+    "Permission:Timeline.InternalNotes.Read": "アクティビティフィードでスタッフ限定の内部メモを表示",
     "Permission:Timeline.Reactions.React": "カタログの絵文字でタイムラインエントリにリアクションを付ける",
-    "Granit:Validation:TooManyAttachments": "添付ファイルは20個までです。",
-
-    "Reaction:thumbs_up": "いいね",
+    "PermissionGroup:Timeline": "タイムライン",
+    "Reaction:eyes": "目",
     "Reaction:heart": "ハート",
-    "Reaction:tada": "お祝い",
     "Reaction:joy": "笑い",
-    "Reaction:eyes": "目"
+    "Reaction:tada": "お祝い",
+    "Reaction:thumbs_up": "いいね",
+    "TimelineEndpoints:Workspace.Item": "Activity feed",
+    "TimelineEndpoints:Workspace.Section": "Timeline"
   }
 }

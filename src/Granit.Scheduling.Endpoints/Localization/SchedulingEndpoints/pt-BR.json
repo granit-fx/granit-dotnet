@@ -1,8 +1,10 @@
 {
   "culture": "pt-BR",
   "texts": {
-    "PermissionGroup:Scheduling": "Agendamento",
+    "Permission:Scheduling.Actions.Manage": "Gerenciar ações agendadas (cancelar, reagendar)",
     "Permission:Scheduling.Actions.Read": "Visualizar ações agendadas (lista, detalhe)",
-    "Permission:Scheduling.Actions.Manage": "Gerenciar ações agendadas (cancelar, reagendar)"
+    "PermissionGroup:Scheduling": "Agendamento",
+    "SchedulingEndpoints:Workspace.Item": "Scheduled actions",
+    "SchedulingEndpoints:Workspace.Section": "Scheduling"
   }
 }

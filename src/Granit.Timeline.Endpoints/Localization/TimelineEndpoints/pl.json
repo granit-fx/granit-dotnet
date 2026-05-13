@@ -1,19 +1,20 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:Timeline": "Oś czasu",
-    "Permission:Timeline.Entries.Read": "Wyświetlanie kanałów aktywności i historii audytu",
+    "Granit:Validation:TooManyAttachments": "Nie można dołączyć więcej niż 20 plików.",
     "Permission:Timeline.Entries.Create": "Dodawanie komentarzy i śledzenie/zaprzestanie śledzenia encji",
     "Permission:Timeline.Entries.Manage": "Zarządzanie (usuwanie) wpisów osi czasu niezależnie od właściciela",
-    "Permission:Timeline.InternalNotes.Read": "Przeglądanie wewnętrznych notatek dostępnych tylko dla personelu",
+    "Permission:Timeline.Entries.Read": "Wyświetlanie kanałów aktywności i historii audytu",
     "Permission:Timeline.Followers.Manage": "Obserwowanie i rezygnacja z obserwowania podmiotów w kanałach aktywności",
+    "Permission:Timeline.InternalNotes.Read": "Przeglądanie wewnętrznych notatek dostępnych tylko dla personelu",
     "Permission:Timeline.Reactions.React": "Reaguj na wpisy osi czasu emoji z katalogu",
-    "Granit:Validation:TooManyAttachments": "Nie można dołączyć więcej niż 20 plików.",
-
-    "Reaction:thumbs_up": "Kciuk w górę",
+    "PermissionGroup:Timeline": "Oś czasu",
+    "Reaction:eyes": "Oczy",
     "Reaction:heart": "Serce",
-    "Reaction:tada": "Świętowanie",
     "Reaction:joy": "Śmiech",
-    "Reaction:eyes": "Oczy"
+    "Reaction:tada": "Świętowanie",
+    "Reaction:thumbs_up": "Kciuk w górę",
+    "TimelineEndpoints:Workspace.Item": "Activity feed",
+    "TimelineEndpoints:Workspace.Section": "Timeline"
   }
 }

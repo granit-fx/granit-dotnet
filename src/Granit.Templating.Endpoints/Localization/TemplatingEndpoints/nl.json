@@ -1,10 +1,13 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:Templating": "Sjabloonbeheer",
-    "Permission:Templating.Templates.Read": "Templates bekijken (lijst, detail, geschiedenis)",
-    "Permission:Templating.Templates.Manage": "Sjablonen beheren (bekijken, aanmaken, bewerken, verwijderen, publiceren)",
+    "Permission:Templating.Categories.Manage": "Templatecategorieën beheren (aanmaken, bewerken, verwijderen)",
     "Permission:Templating.Categories.Read": "Templatecategorieën bekijken",
-    "Permission:Templating.Categories.Manage": "Templatecategorieën beheren (aanmaken, bewerken, verwijderen)"
+    "Permission:Templating.Templates.Manage": "Sjablonen beheren (bekijken, aanmaken, bewerken, verwijderen, publiceren)",
+    "Permission:Templating.Templates.Read": "Templates bekijken (lijst, detail, geschiedenis)",
+    "PermissionGroup:Templating": "Sjabloonbeheer",
+    "TemplatingEndpoints:Workspace.Categories": "Categories",
+    "TemplatingEndpoints:Workspace.Section": "Templating",
+    "TemplatingEndpoints:Workspace.Templates": "Templates"
   }
 }

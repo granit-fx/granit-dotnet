@@ -1,5 +1,7 @@
 {
   "culture": "en-GB",
   "texts": {
+    "IdentityLocalEndpoints:Workspace.Roles": "Local roles",
+    "IdentityLocalEndpoints:Workspace.Section": "Local accounts"
   }
 }

@@ -1,9 +1,11 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:Workflow": "Workflow",
     "Permission:Workflow.History.Read": "Workflow-Übergangsverlauf anzeigen (Audit-Prüfpfad)",
+    "Permission:Workflow.Transitions.Execute": "Workflow-Statusübergänge ausführen",
     "Permission:Workflow.Transitions.Read": "Verfügbare Workflow-Übergänge anzeigen",
-    "Permission:Workflow.Transitions.Execute": "Workflow-Statusübergänge ausführen"
+    "PermissionGroup:Workflow": "Workflow",
+    "WorkflowEndpoints:Workspace.History": "Transition history",
+    "WorkflowEndpoints:Workspace.Section": "Workflow"
   }
 }

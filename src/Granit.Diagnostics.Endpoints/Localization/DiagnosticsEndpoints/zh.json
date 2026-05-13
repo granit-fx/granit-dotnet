@@ -1,7 +1,9 @@
 {
   "culture": "zh",
   "texts": {
-    "PermissionGroup:Diagnostics": "诊断",
-    "Permission:Diagnostics.Monitoring.Read": "查看系统健康监控仪表板"
+    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
+    "Permission:Diagnostics.Monitoring.Read": "查看系统健康监控仪表板",
+    "PermissionGroup:Diagnostics": "诊断"
   }
 }

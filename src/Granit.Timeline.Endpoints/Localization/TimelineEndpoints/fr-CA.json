@@ -1,9 +1,11 @@
 {
   "culture": "fr-CA",
   "texts": {
+    "Granit:Validation:TooManyAttachments": "Impossible de joindre plus de 20 fichiers.",
     "Permission:Timeline.Entries.Manage": "Gérer (supprimer) toute entrée de fil d'activité quel que soit le propriétaire",
-    "Permission:Timeline.InternalNotes.Read": "Consulter les notes internes réservées au personnel",
     "Permission:Timeline.Followers.Manage": "Suivre et ne plus suivre des entités dans les fils d'activité",
-    "Granit:Validation:TooManyAttachments": "Impossible de joindre plus de 20 fichiers."
+    "Permission:Timeline.InternalNotes.Read": "Consulter les notes internes réservées au personnel",
+    "TimelineEndpoints:Workspace.Item": "Flux d'activité",
+    "TimelineEndpoints:Workspace.Section": "Timeline"
   }
 }

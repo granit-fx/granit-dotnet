@@ -3,6 +3,9 @@ using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
 using Granit.Validation;
 using Granit.Workflow.Endpoints.Extensions;
+using Granit.Workflow.Endpoints.Workspaces;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 
 namespace Granit.Workflow.Endpoints;
 
@@ -29,10 +32,14 @@ namespace Granit.Workflow.Endpoints;
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitValidationModule),
-    typeof(GranitWorkflowModule))]
+    typeof(GranitWorkflowModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
 public sealed class GranitWorkflowEndpointsModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddGranitWorkflowEndpoints();
+        context.Services.AddWorkspaceContribution<WorkflowWorkspaceContribution>();
+    }
 }

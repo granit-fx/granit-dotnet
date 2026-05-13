@@ -15,7 +15,7 @@ internal sealed class ApiKeysWorkspaceContribution : IWorkspaceContributor
             .Section("api-keys", s => s
                 .DisplayKey("AuthenticationApiKeysEndpoints:Workspace.Section")
                 .Order(10)
-                .Link("/admin/api-keys", i => i
+                .Link("/api-keys", i => i
                     .DisplayKey("AuthenticationApiKeysEndpoints:Workspace.Item")
                     .Icon("key-round")
                     .Order(0)

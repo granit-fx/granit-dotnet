@@ -1,16 +1,19 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:AI": "AI",
-    "Permission:AI.Workspaces.Read": "View AI workspaces",
-    "Permission:AI.Workspaces.Manage": "Manage AI workspaces (create, update, delete)",
-    "Permission:AI.Usage.Read": "View AI usage records",
-    "Permission:AI.Chat.Execute": "Execute AI chat completions",
-    "Permission:AI.Embeddings.Execute": "Generate AI embeddings",
-    "AIEndpoints:Workspace:SystemImmutable": "System workspace '{0}' cannot be modified or deleted.",
-    "AIEndpoints:Workspace:DuplicateName": "'{0}' 이름의 워크스페이스가 이미 존재합니다.",
     "AI.Workspaces.Kind.Dynamic": "동적",
     "AI.Workspaces.Kind.System": "시스템",
-    "AI.Workspaces.Kind.System:Hint": "시스템 워크스페이스는 읽기 전용이며 수정하거나 삭제할 수 없습니다."
+    "AI.Workspaces.Kind.System:Hint": "시스템 워크스페이스는 읽기 전용이며 수정하거나 삭제할 수 없습니다.",
+    "AIEndpoints:Workspace.Section": "AI",
+    "AIEndpoints:Workspace.Usage": "Usage",
+    "AIEndpoints:Workspace.Workspaces": "AI workspaces",
+    "AIEndpoints:Workspace:DuplicateName": "'{0}' 이름의 워크스페이스가 이미 존재합니다.",
+    "AIEndpoints:Workspace:SystemImmutable": "System workspace '{0}' cannot be modified or deleted.",
+    "Permission:AI.Chat.Execute": "Execute AI chat completions",
+    "Permission:AI.Embeddings.Execute": "Generate AI embeddings",
+    "Permission:AI.Usage.Read": "View AI usage records",
+    "Permission:AI.Workspaces.Manage": "Manage AI workspaces (create, update, delete)",
+    "Permission:AI.Workspaces.Read": "View AI workspaces",
+    "PermissionGroup:AI": "AI"
   }
 }

@@ -1,10 +1,13 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:Templating": "Šablony",
-    "Permission:Templating.Templates.Read": "Zobrazit šablony (seznam, detail, historie)",
-    "Permission:Templating.Templates.Manage": "Správa šablon (zobrazení, vytvoření, úprava, smazání, publikování)",
+    "Permission:Templating.Categories.Manage": "Spravovat kategorie šablon (vytvořit, upravit, smazat)",
     "Permission:Templating.Categories.Read": "Zobrazit kategorie šablon",
-    "Permission:Templating.Categories.Manage": "Spravovat kategorie šablon (vytvořit, upravit, smazat)"
+    "Permission:Templating.Templates.Manage": "Správa šablon (zobrazení, vytvoření, úprava, smazání, publikování)",
+    "Permission:Templating.Templates.Read": "Zobrazit šablony (seznam, detail, historie)",
+    "PermissionGroup:Templating": "Šablony",
+    "TemplatingEndpoints:Workspace.Categories": "Categories",
+    "TemplatingEndpoints:Workspace.Section": "Templating",
+    "TemplatingEndpoints:Workspace.Templates": "Templates"
   }
 }

@@ -1,19 +1,20 @@
 {
   "culture": "tr",
   "texts": {
-    "PermissionGroup:Timeline": "Zaman Çizelgesi",
-    "Permission:Timeline.Entries.Read": "Etkinlik akışlarını ve denetim geçmişini görüntüle",
+    "Granit:Validation:TooManyAttachments": "20'den fazla dosya eklenemez.",
     "Permission:Timeline.Entries.Create": "Yorum yap ve varlıkları takip et/takipten çık",
     "Permission:Timeline.Entries.Manage": "Sahibinden bağımsız olarak herhangi bir zaman çizelgesi girişini yönetin (silin)",
-    "Permission:Timeline.InternalNotes.Read": "Etkinlik akışlarında yalnızca personele özel dahili notları görüntüleyin",
+    "Permission:Timeline.Entries.Read": "Etkinlik akışlarını ve denetim geçmişini görüntüle",
     "Permission:Timeline.Followers.Manage": "Etkinlik akışlarında varlıkları takip edin ve takipten çıkın",
+    "Permission:Timeline.InternalNotes.Read": "Etkinlik akışlarında yalnızca personele özel dahili notları görüntüleyin",
     "Permission:Timeline.Reactions.React": "Zaman çizelgesi girişlerine katalog emojileriyle tepki verin",
-    "Granit:Validation:TooManyAttachments": "20'den fazla dosya eklenemez.",
-
-    "Reaction:thumbs_up": "Beğeni",
+    "PermissionGroup:Timeline": "Zaman Çizelgesi",
+    "Reaction:eyes": "Gözler",
     "Reaction:heart": "Kalp",
-    "Reaction:tada": "Kutlama",
     "Reaction:joy": "Gülme",
-    "Reaction:eyes": "Gözler"
+    "Reaction:tada": "Kutlama",
+    "Reaction:thumbs_up": "Beğeni",
+    "TimelineEndpoints:Workspace.Item": "Activity feed",
+    "TimelineEndpoints:Workspace.Section": "Timeline"
   }
 }

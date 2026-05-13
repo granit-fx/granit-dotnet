@@ -1,10 +1,12 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:MultiTenancy": "Mandantenfähigkeit",
-    "Permission:MultiTenancy.Tenants.Read": "Mandanteninformationen anzeigen",
+    "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
     "Permission:MultiTenancy.Tenants.Create": "Neue Mandanten erstellen",
+    "Permission:MultiTenancy.Tenants.Manage": "Mandantenlebenszyklus verwalten (aktivieren, deaktivieren)",
+    "Permission:MultiTenancy.Tenants.Read": "Mandanteninformationen anzeigen",
     "Permission:MultiTenancy.Tenants.Update": "Mandantendetails aktualisieren",
-    "Permission:MultiTenancy.Tenants.Manage": "Mandantenlebenszyklus verwalten (aktivieren, deaktivieren)"
+    "PermissionGroup:MultiTenancy": "Mandantenfähigkeit"
   }
 }

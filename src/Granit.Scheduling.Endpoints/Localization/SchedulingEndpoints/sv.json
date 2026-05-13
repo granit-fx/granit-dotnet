@@ -1,8 +1,10 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Scheduling": "Schemaläggning",
+    "Permission:Scheduling.Actions.Manage": "Hantera schemalagda åtgärder (avbryt, omplanera)",
     "Permission:Scheduling.Actions.Read": "Visa schemalagda åtgärder (lista, detalj)",
-    "Permission:Scheduling.Actions.Manage": "Hantera schemalagda åtgärder (avbryt, omplanera)"
+    "PermissionGroup:Scheduling": "Schemaläggning",
+    "SchedulingEndpoints:Workspace.Item": "Scheduled actions",
+    "SchedulingEndpoints:Workspace.Section": "Scheduling"
   }
 }

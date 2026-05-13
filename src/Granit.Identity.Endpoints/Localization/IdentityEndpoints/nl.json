@@ -1,17 +1,22 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:Identity": "Identiteit",
-    "Permission:Identity.Users.Read": "Gebruikers bekijken (lijst, zoeken, batch, statistieken)",
-    "Permission:Identity.Users.Sync": "Synchronisatie van gebruikers forceren vanuit de identiteitsprovider",
+    "IdentityEndpoints:Workspace.Groups": "Groups",
+    "IdentityEndpoints:Workspace.Roles": "Roles",
+    "IdentityEndpoints:Workspace.Section": "Identity",
+    "IdentityEndpoints:Workspace.Sessions": "Sessions",
+    "IdentityEndpoints:Workspace.Users": "Users",
+    "Permission:Identity.Groups.Manage": "Gebruikers toevoegen aan of verwijderen uit groepen",
+    "Permission:Identity.Groups.Read": "Groepen en groepslidmaatschappen bekijken",
+    "Permission:Identity.Passwords.Manage": "Gebruikerswachtwoorden beheren (reset, tijdelijk wachtwoord)",
+    "Permission:Identity.Roles.Manage": "Rollen toewijzen aan of verwijderen van gebruikers",
+    "Permission:Identity.Roles.Read": "Rollen, roltoewijzingen en rolleden bekijken",
+    "Permission:Identity.Sessions.Manage": "Gebruikerssessies beëindigen",
+    "Permission:Identity.Sessions.Read": "Gebruikerssessies en apparaatactiviteit bekijken",
     "Permission:Identity.Users.Delete": "Gebruikers verwijderen of pseudonimiseren (AVG)",
     "Permission:Identity.Users.Manage": "Gebruikers aanmaken, bijwerken en in-/uitschakelen in de identiteitsprovider",
-    "Permission:Identity.Roles.Read": "Rollen, roltoewijzingen en rolleden bekijken",
-    "Permission:Identity.Roles.Manage": "Rollen toewijzen aan of verwijderen van gebruikers",
-    "Permission:Identity.Groups.Read": "Groepen en groepslidmaatschappen bekijken",
-    "Permission:Identity.Groups.Manage": "Gebruikers toevoegen aan of verwijderen uit groepen",
-    "Permission:Identity.Sessions.Read": "Gebruikerssessies en apparaatactiviteit bekijken",
-    "Permission:Identity.Sessions.Manage": "Gebruikerssessies beëindigen",
-    "Permission:Identity.Passwords.Manage": "Gebruikerswachtwoorden beheren (reset, tijdelijk wachtwoord)"
+    "Permission:Identity.Users.Read": "Gebruikers bekijken (lijst, zoeken, batch, statistieken)",
+    "Permission:Identity.Users.Sync": "Synchronisatie van gebruikers forceren vanuit de identiteitsprovider",
+    "PermissionGroup:Identity": "Identiteit"
   }
 }

@@ -1,7 +1,12 @@
 {
   "culture": "en-GB",
   "texts": {
-    "Permission:Identity.Users.Sync": "Force user synchronisation from the identity provider",
-    "Permission:Identity.Users.Delete": "Delete or pseudonymise users (GDPR)"
+    "IdentityEndpoints:Workspace.Groups": "Groups",
+    "IdentityEndpoints:Workspace.Roles": "Roles",
+    "IdentityEndpoints:Workspace.Section": "Identity",
+    "IdentityEndpoints:Workspace.Sessions": "Sessions",
+    "IdentityEndpoints:Workspace.Users": "Users",
+    "Permission:Identity.Users.Delete": "Delete or pseudonymise users (GDPR)",
+    "Permission:Identity.Users.Sync": "Force user synchronisation from the identity provider"
   }
 }

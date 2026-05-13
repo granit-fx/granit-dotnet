@@ -15,7 +15,7 @@ internal sealed class NotificationsWorkspaceContribution : IWorkspaceContributor
             .Section("notifications", s => s
                 .DisplayKey("NotificationsEndpoints:Workspace.Section")
                 .Order(0)
-                .Link("/admin/notifications", i => i
+                .Link("/notifications", i => i
                     .DisplayKey("NotificationsEndpoints:Workspace.Item")
                     .Icon("bell")
                     .Order(0)

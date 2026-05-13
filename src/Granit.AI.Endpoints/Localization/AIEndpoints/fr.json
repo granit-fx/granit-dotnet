@@ -1,16 +1,19 @@
 {
   "culture": "fr",
   "texts": {
-    "PermissionGroup:AI": "IA",
-    "Permission:AI.Workspaces.Read": "Voir les espaces de travail IA",
-    "Permission:AI.Workspaces.Manage": "Gérer les espaces de travail IA (créer, modifier, supprimer)",
-    "Permission:AI.Usage.Read": "Voir les enregistrements d'utilisation IA",
-    "Permission:AI.Chat.Execute": "Exécuter des complétions de chat IA",
-    "Permission:AI.Embeddings.Execute": "Générer des embeddings IA",
-    "AIEndpoints:Workspace:SystemImmutable": "L'espace de travail système « {0} » ne peut pas être modifié ou supprimé.",
-    "AIEndpoints:Workspace:DuplicateName": "Un espace de travail nommé « {0} » existe déjà.",
     "AI.Workspaces.Kind.Dynamic": "Dynamique",
     "AI.Workspaces.Kind.System": "Système",
-    "AI.Workspaces.Kind.System:Hint": "Les espaces de travail système sont en lecture seule et ne peuvent pas être modifiés ou supprimés."
+    "AI.Workspaces.Kind.System:Hint": "Les espaces de travail système sont en lecture seule et ne peuvent pas être modifiés ou supprimés.",
+    "AIEndpoints:Workspace.Section": "IA",
+    "AIEndpoints:Workspace.Usage": "Consommation",
+    "AIEndpoints:Workspace.Workspaces": "Workspaces IA",
+    "AIEndpoints:Workspace:DuplicateName": "Un espace de travail nommé « {0} » existe déjà.",
+    "AIEndpoints:Workspace:SystemImmutable": "L'espace de travail système « {0} » ne peut pas être modifié ou supprimé.",
+    "Permission:AI.Chat.Execute": "Exécuter des complétions de chat IA",
+    "Permission:AI.Embeddings.Execute": "Générer des embeddings IA",
+    "Permission:AI.Usage.Read": "Voir les enregistrements d'utilisation IA",
+    "Permission:AI.Workspaces.Manage": "Gérer les espaces de travail IA (créer, modifier, supprimer)",
+    "Permission:AI.Workspaces.Read": "Voir les espaces de travail IA",
+    "PermissionGroup:AI": "IA"
   }
 }

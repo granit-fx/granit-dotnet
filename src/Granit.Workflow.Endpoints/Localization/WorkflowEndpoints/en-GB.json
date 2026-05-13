@@ -1,4 +1,7 @@
 {
   "culture": "en-GB",
-  "texts": {}
+  "texts": {
+    "WorkflowEndpoints:Workspace.History": "Transition history",
+    "WorkflowEndpoints:Workspace.Section": "Workflow"
+  }
 }

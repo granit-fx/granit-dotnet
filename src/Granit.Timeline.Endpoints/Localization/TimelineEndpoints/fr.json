@@ -1,19 +1,20 @@
 {
   "culture": "fr",
   "texts": {
-    "PermissionGroup:Timeline": "Fil d'activité",
-    "Permission:Timeline.Entries.Read": "Consulter les flux d'activité et l'historique d'audit",
+    "Granit:Validation:TooManyAttachments": "Impossible de joindre plus de 20 fichiers.",
     "Permission:Timeline.Entries.Create": "Poster des commentaires et suivre/ne plus suivre des entités",
     "Permission:Timeline.Entries.Manage": "Gérer (supprimer) toute entrée de fil d'activité quel que soit le propriétaire",
-    "Permission:Timeline.InternalNotes.Read": "Consulter les notes internes réservées au personnel",
+    "Permission:Timeline.Entries.Read": "Consulter les flux d'activité et l'historique d'audit",
     "Permission:Timeline.Followers.Manage": "Suivre et ne plus suivre des entités dans les fils d'activité",
+    "Permission:Timeline.InternalNotes.Read": "Consulter les notes internes réservées au personnel",
     "Permission:Timeline.Reactions.React": "Réagir aux entrées du fil d'activité avec les emojis du catalogue",
-    "Granit:Validation:TooManyAttachments": "Impossible de joindre plus de 20 fichiers.",
-
-    "Reaction:thumbs_up": "Pouce levé",
+    "PermissionGroup:Timeline": "Fil d'activité",
+    "Reaction:eyes": "Yeux",
     "Reaction:heart": "Cœur",
-    "Reaction:tada": "Bravo",
     "Reaction:joy": "Rire",
-    "Reaction:eyes": "Yeux"
+    "Reaction:tada": "Bravo",
+    "Reaction:thumbs_up": "Pouce levé",
+    "TimelineEndpoints:Workspace.Item": "Flux d'activité",
+    "TimelineEndpoints:Workspace.Section": "Timeline"
   }
 }

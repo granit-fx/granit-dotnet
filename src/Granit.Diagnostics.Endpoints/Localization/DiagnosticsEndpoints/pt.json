@@ -1,7 +1,9 @@
 {
   "culture": "pt",
   "texts": {
-    "PermissionGroup:Diagnostics": "Diagnósticos",
-    "Permission:Diagnostics.Monitoring.Read": "Ver painel de monitorização do sistema"
+    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
+    "Permission:Diagnostics.Monitoring.Read": "Ver painel de monitorização do sistema",
+    "PermissionGroup:Diagnostics": "Diagnósticos"
   }
 }

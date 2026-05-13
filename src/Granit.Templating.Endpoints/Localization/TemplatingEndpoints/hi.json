@@ -1,10 +1,13 @@
 {
   "culture": "hi",
   "texts": {
-    "PermissionGroup:Templating": "टेम्पलेटिंग",
-    "Permission:Templating.Templates.Read": "टेम्पलेट देखें (सूची, विवरण, इतिहास)",
-    "Permission:Templating.Templates.Manage": "टेम्पलेट प्रबंधित करें (देखें, बनाएँ, संपादित करें, हटाएँ, प्रकाशित करें)",
+    "Permission:Templating.Categories.Manage": "टेम्पलेट श्रेणियाँ प्रबंधित करें (बनाएँ, संपादित करें, हटाएँ)",
     "Permission:Templating.Categories.Read": "टेम्पलेट श्रेणियाँ देखें",
-    "Permission:Templating.Categories.Manage": "टेम्पलेट श्रेणियाँ प्रबंधित करें (बनाएँ, संपादित करें, हटाएँ)"
+    "Permission:Templating.Templates.Manage": "टेम्पलेट प्रबंधित करें (देखें, बनाएँ, संपादित करें, हटाएँ, प्रकाशित करें)",
+    "Permission:Templating.Templates.Read": "टेम्पलेट देखें (सूची, विवरण, इतिहास)",
+    "PermissionGroup:Templating": "टेम्पलेटिंग",
+    "TemplatingEndpoints:Workspace.Categories": "Categories",
+    "TemplatingEndpoints:Workspace.Section": "Templating",
+    "TemplatingEndpoints:Workspace.Templates": "Templates"
   }
 }

@@ -15,7 +15,7 @@ internal sealed class LocalizationWorkspaceContribution : IWorkspaceContributor
             .Section("localization", s => s
                 .DisplayKey("LocalizationEndpoints:Workspace.Section")
                 .Order(20)
-                .Link("/admin/localization/overrides", i => i
+                .Link("/localization/overrides", i => i
                     .DisplayKey("LocalizationEndpoints:Workspace.Item")
                     .Icon("languages")
                     .Order(0)

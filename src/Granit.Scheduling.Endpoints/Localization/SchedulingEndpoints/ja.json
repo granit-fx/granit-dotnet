@@ -1,8 +1,10 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Scheduling": "スケジュール",
+    "Permission:Scheduling.Actions.Manage": "スケジュール済みアクションの管理（キャンセル、再スケジュール）",
     "Permission:Scheduling.Actions.Read": "スケジュール済みアクションの表示（一覧、詳細）",
-    "Permission:Scheduling.Actions.Manage": "スケジュール済みアクションの管理（キャンセル、再スケジュール）"
+    "PermissionGroup:Scheduling": "スケジュール",
+    "SchedulingEndpoints:Workspace.Item": "Scheduled actions",
+    "SchedulingEndpoints:Workspace.Section": "Scheduling"
   }
 }

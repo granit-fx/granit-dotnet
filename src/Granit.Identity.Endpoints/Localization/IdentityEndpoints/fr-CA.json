@@ -1,6 +1,11 @@
 {
   "culture": "fr-CA",
   "texts": {
+    "IdentityEndpoints:Workspace.Groups": "Groupes",
+    "IdentityEndpoints:Workspace.Roles": "Rôles",
+    "IdentityEndpoints:Workspace.Section": "Identité",
+    "IdentityEndpoints:Workspace.Sessions": "Sessions",
+    "IdentityEndpoints:Workspace.Users": "Utilisateurs",
     "Permission:Identity.Users.Delete": "Supprimer ou pseudonymiser des utilisateurs (LPRPDE)"
   }
 }

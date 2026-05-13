@@ -1,17 +1,22 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Identity": "アイデンティティ",
-    "Permission:Identity.Users.Read": "ユーザーの表示（一覧、検索、一括、統計）",
-    "Permission:Identity.Users.Sync": "IDプロバイダーからユーザーを強制同期",
+    "IdentityEndpoints:Workspace.Groups": "Groups",
+    "IdentityEndpoints:Workspace.Roles": "Roles",
+    "IdentityEndpoints:Workspace.Section": "Identity",
+    "IdentityEndpoints:Workspace.Sessions": "Sessions",
+    "IdentityEndpoints:Workspace.Users": "Users",
+    "Permission:Identity.Groups.Manage": "グループにユーザーを追加または削除",
+    "Permission:Identity.Groups.Read": "グループとグループメンバーシップを表示",
+    "Permission:Identity.Passwords.Manage": "ユーザーパスワードの管理（リセット、一時パスワード）",
+    "Permission:Identity.Roles.Manage": "ユーザーにロールを割り当てまたは削除",
+    "Permission:Identity.Roles.Read": "ロール、ロール割り当て、ロールメンバーを表示",
+    "Permission:Identity.Sessions.Manage": "ユーザーセッションを終了",
+    "Permission:Identity.Sessions.Read": "ユーザーセッションとデバイスアクティビティを表示",
     "Permission:Identity.Users.Delete": "ユーザーの削除または仮名化（GDPR）",
     "Permission:Identity.Users.Manage": "IDプロバイダーでユーザーの作成・更新・有効化/無効化",
-    "Permission:Identity.Roles.Read": "ロール、ロール割り当て、ロールメンバーを表示",
-    "Permission:Identity.Roles.Manage": "ユーザーにロールを割り当てまたは削除",
-    "Permission:Identity.Groups.Read": "グループとグループメンバーシップを表示",
-    "Permission:Identity.Groups.Manage": "グループにユーザーを追加または削除",
-    "Permission:Identity.Sessions.Read": "ユーザーセッションとデバイスアクティビティを表示",
-    "Permission:Identity.Sessions.Manage": "ユーザーセッションを終了",
-    "Permission:Identity.Passwords.Manage": "ユーザーパスワードの管理（リセット、一時パスワード）"
+    "Permission:Identity.Users.Read": "ユーザーの表示（一覧、検索、一括、統計）",
+    "Permission:Identity.Users.Sync": "IDプロバイダーからユーザーを強制同期",
+    "PermissionGroup:Identity": "アイデンティティ"
   }
 }

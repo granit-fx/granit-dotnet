@@ -1,7 +1,9 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:Diagnostics": "Diagnostiek",
-    "Permission:Diagnostics.Monitoring.Read": "Systeemgezondheidsmonitoring bekijken"
+    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
+    "Permission:Diagnostics.Monitoring.Read": "Systeemgezondheidsmonitoring bekijken",
+    "PermissionGroup:Diagnostics": "Diagnostiek"
   }
 }

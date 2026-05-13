@@ -2,7 +2,10 @@ using Granit.Authorization;
 using Granit.Guids;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
+using Granit.MultiTenancy.Endpoints.Workspaces;
 using Granit.Validation;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 
 namespace Granit.MultiTenancy.Endpoints;
 
@@ -19,5 +22,11 @@ namespace Granit.MultiTenancy.Endpoints;
     typeof(GranitGuidsModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitMultiTenancyModule),
-    typeof(GranitValidationModule))]
-public sealed class GranitMultiTenancyEndpointsModule : GranitModule;
+    typeof(GranitValidationModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
+public sealed class GranitMultiTenancyEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddWorkspaceContribution<MultiTenancyWorkspaceContribution>();
+}

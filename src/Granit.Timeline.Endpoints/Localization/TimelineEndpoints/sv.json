@@ -1,19 +1,20 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Timeline": "Tidslinje",
-    "Permission:Timeline.Entries.Read": "Visa aktivitetsflöden och revisionshistorik",
+    "Granit:Validation:TooManyAttachments": "Det går inte att bifoga fler än 20 filer.",
     "Permission:Timeline.Entries.Create": "Publicera kommentarer och följa/sluta följa entiteter",
     "Permission:Timeline.Entries.Manage": "Hantera (ta bort) tidslinjepost oavsett ägare",
-    "Permission:Timeline.InternalNotes.Read": "Visa personalens interna anteckningar i aktivitetsflöden",
+    "Permission:Timeline.Entries.Read": "Visa aktivitetsflöden och revisionshistorik",
     "Permission:Timeline.Followers.Manage": "Följa och sluta följa entiteter i aktivitetsflöden",
+    "Permission:Timeline.InternalNotes.Read": "Visa personalens interna anteckningar i aktivitetsflöden",
     "Permission:Timeline.Reactions.React": "Reagera på tidslinjeposter med katalogens emojier",
-    "Granit:Validation:TooManyAttachments": "Det går inte att bifoga fler än 20 filer.",
-
-    "Reaction:thumbs_up": "Tummen upp",
+    "PermissionGroup:Timeline": "Tidslinje",
+    "Reaction:eyes": "Ögon",
     "Reaction:heart": "Hjärta",
-    "Reaction:tada": "Fira",
     "Reaction:joy": "Skratt",
-    "Reaction:eyes": "Ögon"
+    "Reaction:tada": "Fira",
+    "Reaction:thumbs_up": "Tummen upp",
+    "TimelineEndpoints:Workspace.Item": "Activity feed",
+    "TimelineEndpoints:Workspace.Section": "Timeline"
   }
 }

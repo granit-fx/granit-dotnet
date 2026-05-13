@@ -15,7 +15,7 @@ internal sealed class AuthorizationWorkspaceContribution : IWorkspaceContributor
             .Section("authorization", s => s
                 .DisplayKey("AuthorizationEndpoints:Workspace.Section")
                 .Order(0)
-                .Link("/admin/authorization/permissions", i => i
+                .Link("/authorization/permissions", i => i
                     .DisplayKey("AuthorizationEndpoints:Workspace.Definitions")
                     .Icon("key")
                     .Order(0)

@@ -1,10 +1,13 @@
 {
   "culture": "fr",
   "texts": {
-    "PermissionGroup:Templating": "Gestion des templates",
-    "Permission:Templating.Templates.Read": "Consulter les templates (liste, détail, historique)",
-    "Permission:Templating.Templates.Manage": "Gérer les templates (consulter, créer, modifier, supprimer, publier)",
+    "Permission:Templating.Categories.Manage": "Gérer les catégories de templates (créer, modifier, supprimer)",
     "Permission:Templating.Categories.Read": "Consulter les catégories de templates",
-    "Permission:Templating.Categories.Manage": "Gérer les catégories de templates (créer, modifier, supprimer)"
+    "Permission:Templating.Templates.Manage": "Gérer les templates (consulter, créer, modifier, supprimer, publier)",
+    "Permission:Templating.Templates.Read": "Consulter les templates (liste, détail, historique)",
+    "PermissionGroup:Templating": "Gestion des templates",
+    "TemplatingEndpoints:Workspace.Categories": "Catégories",
+    "TemplatingEndpoints:Workspace.Section": "Modèles",
+    "TemplatingEndpoints:Workspace.Templates": "Modèles"
   }
 }

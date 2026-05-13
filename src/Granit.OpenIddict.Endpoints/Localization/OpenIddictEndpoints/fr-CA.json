@@ -1,4 +1,9 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "OpenIddictEndpoints:Workspace.Applications": "Applications",
+    "OpenIddictEndpoints:Workspace.Authorizations": "Autorisations",
+    "OpenIddictEndpoints:Workspace.Scopes": "Scopes",
+    "OpenIddictEndpoints:Workspace.Section": "OpenID Connect"
+  }
 }
