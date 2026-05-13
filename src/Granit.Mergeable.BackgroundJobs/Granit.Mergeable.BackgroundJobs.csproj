@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Mergeable.BackgroundJobs</PackageId>
-    <Description>Recurring background jobs for the Granit.Mergeable orchestrator. Ships MergeIdempotencyCleanupJob — a cron-driven sweeper that deletes granit.merge_idempotency rows older than MergeableOptions.IdempotencyRetention so the cache cannot grow unbounded and PII does not linger past the configured retention window (GDPR Art. 5(1)(e)).</Description>
+    <Description>Recurring background jobs for the Granit.Mergeable orchestrator. Ships MergeIdempotencyCleanupJob — a cron-driven sweeper that deletes merge_idempotency rows older than MergeableOptions.IdempotencyRetention so the cache cannot grow unbounded and PII does not linger past the configured retention window (GDPR Art. 5(1)(e)).</Description>
     <IsPackable>true</IsPackable>
     <!-- EF1001: false positive — this assembly is an authorised internal consumer of MergeableDbContext via InternalsVisibleTo. -->
     <NoWarn>$(NoWarn);EF1001</NoWarn>
@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Mergeable.BackgroundJobs.Tests" />
-    <InternalsVisibleTo Include="Granit.Parties.Mergeable.Tests.Integration" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

@@ -7,11 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.Workspaces" />
     <InternalsVisibleTo Include="Granit.Workspaces.Abstractions.Tests" />
-    <InternalsVisibleTo Include="Granit.Workspaces.Tests" />
-    <InternalsVisibleTo Include="Granit.Workspaces.Endpoints" />
-    <InternalsVisibleTo Include="Granit.Workspaces.Endpoints.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

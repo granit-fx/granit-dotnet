@@ -10,8 +10,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.AI.VectorData.Tests" />
-    <InternalsVisibleTo Include="Granit.AI.VectorData.PgVector" />
-    <InternalsVisibleTo Include="Granit.AI.VectorData.PgVector.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

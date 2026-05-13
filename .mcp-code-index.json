@@ -25479,29 +25479,13 @@
       "kind": "class",
       "project": "Granit.Mergeable.EntityFrameworkCore",
       "file": "src/Granit.Mergeable.EntityFrameworkCore/Extensions/MergeableModelBuilderExtensions.cs",
-      "line": 17,
+      "line": 12,
       "members": [
         {
           "name": "ConfigureMergeableModule",
           "kind": "method",
           "signature": "ConfigureMergeableModule(this ModelBuilder modelBuilder)",
           "returnType": "ModelBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitMergeableDbProperties",
-      "fqn": "Granit.Mergeable.EntityFrameworkCore.GranitMergeableDbProperties",
-      "kind": "class",
-      "project": "Granit.Mergeable.EntityFrameworkCore",
-      "file": "src/Granit.Mergeable.EntityFrameworkCore/GranitMergeableDbProperties.cs",
-      "line": 22,
-      "members": [
-        {
-          "name": "DbTablePrefix",
-          "kind": "property",
-          "signature": "string DbTablePrefix",
-          "returnType": "string"
         }
       ]
     },

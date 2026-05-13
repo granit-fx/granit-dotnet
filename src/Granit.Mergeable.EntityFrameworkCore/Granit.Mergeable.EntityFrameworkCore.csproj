@@ -10,7 +10,6 @@
     <InternalsVisibleTo Include="Granit.Mergeable.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="Granit.Mergeable.BackgroundJobs" />
     <InternalsVisibleTo Include="Granit.Mergeable.BackgroundJobs.Tests" />
-    <InternalsVisibleTo Include="Granit.Parties.Mergeable.Tests.Integration" />
   </ItemGroup>
 
   <ItemGroup>
