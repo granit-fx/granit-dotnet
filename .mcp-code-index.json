@@ -19779,34 +19779,12 @@
       ]
     },
     {
-      "name": "HttpResilienceMetrics",
-      "fqn": "Granit.Http.Resilience.Diagnostics.HttpResilienceMetrics",
-      "kind": "class",
-      "project": "Granit.Http.Resilience",
-      "file": "src/Granit.Http.Resilience/Diagnostics/HttpResilienceMetrics.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "RecordCircuitBreakerStateChanged",
-          "kind": "method",
-          "signature": "RecordCircuitBreakerStateChanged(string? tenantId, string clientName, string state)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordTimeoutOccurred",
-          "kind": "method",
-          "signature": "RecordTimeoutOccurred(string? tenantId, string clientName)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
       "name": "HttpResilienceServiceCollectionExtensions",
       "fqn": "Granit.Http.Resilience.Extensions.HttpResilienceServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Http.Resilience",
       "file": "src/Granit.Http.Resilience/Extensions/HttpResilienceServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitHttpClient",
@@ -19822,7 +19800,7 @@
       "kind": "class",
       "project": "Granit.Http.Resilience",
       "file": "src/Granit.Http.Resilience/GranitHttpResilienceModule.cs",
-      "line": 16,
+      "line": 17,
       "members": []
     },
     {

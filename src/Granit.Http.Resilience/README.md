@@ -14,8 +14,6 @@ dotnet add package Granit.Http.Resilience
 
 ## Usage
 
-### Resilient HTTP client
-
 ```csharp
 services.AddGranitHttpClient("catalog-service",
     client => client.BaseAddress = new Uri("https://catalog-api"));
@@ -35,19 +33,20 @@ and per-request timeout. Override per-client via `appsettings.json`:
 }
 ```
 
-### Auth token propagation
+## Telemetry
 
-For microservice architectures where the incoming JWT token must be forwarded to
-downstream services:
+Retry, circuit-breaker, and timeout events are emitted by the upstream `Polly` meter
+shipped with `Microsoft.Extensions.Http.Resilience`. Enable it in OpenTelemetry by
+adding the meter name `"Polly"` to your `MeterProviderBuilder`.
 
-```csharp
-services.AddGranitHttpClient("catalog-service")
-    .AddAuthTokenPropagation();
-```
+## Inter-service authorization
 
-The handler reads the `Authorization` header from the current `HttpContext` and sets it
-on every outgoing request. If the outgoing request already has an `Authorization` header,
-it is left untouched (explicit overrides are respected).
+For forwarding caller identity to downstream services, do **not** propagate the inbound
+`Authorization` header (confused-deputy vulnerability). Use
+`AddOnBehalfOfHttpClient` from `Granit.Oidc.TokenManagement`, which performs
+[RFC 8693](https://datatracker.ietf.org/doc/html/rfc8693) token exchange to a narrowed
+audience and optionally binds the exchanged token with
+[DPoP](https://datatracker.ietf.org/doc/html/rfc9449).
 
 ## Dependencies
 

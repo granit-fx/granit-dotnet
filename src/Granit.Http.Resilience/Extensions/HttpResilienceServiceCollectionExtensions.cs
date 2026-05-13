@@ -1,10 +1,6 @@
-using Granit.Http.Resilience.Diagnostics;
 using Granit.Http.Resilience.Options;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http.Resilience;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Http.Resilience.Extensions;
 
@@ -25,7 +21,10 @@ public static class HttpResilienceServiceCollectionExtensions
     /// Per-client pipeline settings are read at runtime from the
     /// <c>HttpResilience:{name}</c> configuration section, allowing operators to tune
     /// retry counts, circuit-breaker thresholds, and timeouts per named client via
-    /// <c>appsettings.json</c> without redeploying.
+    /// <c>appsettings.json</c> without redeploying. Runtime telemetry (retry / circuit-breaker /
+    /// timeout events) is emitted by the upstream <c>Polly</c> meter shipped with
+    /// <c>Microsoft.Extensions.Http.Resilience</c>; enable it in OpenTelemetry by adding
+    /// the meter name <c>"Polly"</c>.
     /// </remarks>
     public static IHttpClientBuilder AddGranitHttpClient(
         this IServiceCollection services,
@@ -36,23 +35,14 @@ public static class HttpResilienceServiceCollectionExtensions
             ? services.AddHttpClient(name)
             : services.AddHttpClient(name, configure);
 
-        services.TryAddSingleton<HttpResilienceMetrics>();
-
         clientBuilder.AddStandardResilienceHandler();
 
-        // Per-client override: HttpResilience:{name}:* → HttpStandardResilienceOptions.
-        // AddStandardResilienceHandler uses named options key "{name}-standard".
-        // IPostConfigureOptions runs after all IConfigureOptions, guaranteeing user
-        // settings override the pipeline defaults.
-        services.AddTransient<IPostConfigureOptions<HttpStandardResilienceOptions>>(sp =>
-        {
-            IConfiguration config = sp.GetRequiredService<IConfiguration>();
-            return new PostConfigureOptions<HttpStandardResilienceOptions>(
-                $"{name}-standard",
-                opts => config
-                    .GetSection($"{HttpResilienceOptions.SectionName}:{name}")
-                    .Bind(opts));
-        });
+        // AddStandardResilienceHandler registers its defaults under the named options key
+        // "{name}-standard". Binding from configuration AFTER that registration ensures
+        // user-supplied values in HttpResilience:{name} override the framework defaults.
+        services
+            .AddOptions<HttpStandardResilienceOptions>($"{name}-standard")
+            .BindConfiguration($"{HttpResilienceOptions.SectionName}:{name}");
 
         return clientBuilder;
     }

@@ -55,13 +55,15 @@ public sealed class HttpResilienceServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitHttpClient_RegistersPostConfigureOptions()
+    public void AddGranitHttpClient_RegistersConfigurationBinding()
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         builder.Services.AddGranitHttpClient("my-client");
 
+        // BindConfiguration registers an IConfigureOptions<HttpStandardResilienceOptions>
+        // for the "my-client-standard" named options key.
         builder.Services.ShouldContain(d =>
-            d.ServiceType == typeof(IPostConfigureOptions<HttpStandardResilienceOptions>));
+            d.ServiceType == typeof(IConfigureOptions<HttpStandardResilienceOptions>));
     }
 
     [Fact]
