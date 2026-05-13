@@ -252,6 +252,7 @@
       "src/Granit.Workflow.EntityFrameworkCore/Granit.Workflow.EntityFrameworkCore.csproj",
       "src/Granit.Workflow.Notifications/Granit.Workflow.Notifications.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
+      "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.ArchitectureTests.Abstractions/Granit.ArchitectureTests.Abstractions.csproj",
       "tests/Granit.ArchitectureTests/Granit.ArchitectureTests.csproj"

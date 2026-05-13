@@ -157,6 +157,7 @@
     <ProjectReference Include="..\..\src\Granit.Imaging\Granit.Imaging.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging.AI\Granit.Imaging.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging.MagickNet\Granit.Imaging.MagickNet.csproj" />
+    <ProjectReference Include="..\..\src\Granit.IO\Granit.IO.csproj" />
     <ProjectReference Include="..\..\src\Granit.Localization\Granit.Localization.csproj" />
     <ProjectReference Include="..\..\src\Granit.Localization.AI\Granit.Localization.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Localization.Endpoints\Granit.Localization.Endpoints.csproj" />

@@ -61,6 +61,7 @@
       "src/Granit.Workflow.EntityFrameworkCore/Granit.Workflow.EntityFrameworkCore.csproj",
       "src/Granit.Workflow.Notifications/Granit.Workflow.Notifications.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
+      "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.Analytics.Abstractions.Tests/Granit.Analytics.Abstractions.Tests.csproj",
       "tests/Granit.Dashboards.Abstractions.Tests/Granit.Dashboards.Abstractions.Tests.csproj",
@@ -97,7 +98,8 @@
       "tests/Granit.Workflow.Endpoints.Tests/Granit.Workflow.Endpoints.Tests.csproj",
       "tests/Granit.Workflow.EntityFrameworkCore.Tests/Granit.Workflow.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Workflow.Notifications.Tests/Granit.Workflow.Notifications.Tests.csproj",
-      "tests/Granit.Workflow.Tests/Granit.Workflow.Tests.csproj"
+      "tests/Granit.Workflow.Tests/Granit.Workflow.Tests.csproj",
+      "tests/Granit.Workspaces.Abstractions.Tests/Granit.Workspaces.Abstractions.Tests.csproj"
     ]
   }
 }
