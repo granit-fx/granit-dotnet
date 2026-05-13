@@ -2,7 +2,6 @@
   "solution": {
     "path": "../../Granit.slnx",
     "projects": [
-      "src/Granit.Analytics.Abstractions/Granit.Analytics.Abstractions.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
       "src/Granit.Authorization/Granit.Authorization.csproj",
@@ -26,7 +25,6 @@
       "src/Granit.Browsing/Granit.Browsing.csproj",
       "src/Granit.Caching.StackExchangeRedis/Granit.Caching.StackExchangeRedis.csproj",
       "src/Granit.Caching/Granit.Caching.csproj",
-      "src/Granit.Dashboards.Abstractions/Granit.Dashboards.Abstractions.csproj",
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.DataLookup.Abstractions/Granit.DataLookup.Abstractions.csproj",
       "src/Granit.DataLookup.EntityFrameworkCore/Granit.DataLookup.EntityFrameworkCore.csproj",

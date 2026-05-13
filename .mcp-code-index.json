@@ -700,8 +700,6 @@
       "name": "Granit.Entities.Abstractions",
       "deps": [
         "Granit",
-        "Granit.Analytics.Abstractions",
-        "Granit.Dashboards.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Workflow.Abstractions"
@@ -2200,8 +2198,7 @@
     {
       "name": "Granit.Workspaces.Abstractions",
       "deps": [
-        "Granit",
-        "Granit.Entities.Abstractions"
+        "Granit"
       ],
       "framework": "net10.0"
     }
