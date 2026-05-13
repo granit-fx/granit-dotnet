@@ -53,4 +53,16 @@ public sealed class UrlSafetyOptions
 
     /// <summary>Hard timeout applied to <see cref="System.Net.Dns.GetHostAddressesAsync(string, System.Threading.CancellationToken)"/>.</summary>
     public TimeSpan DnsResolveTimeout { get; set; } = TimeSpan.FromSeconds(1);
+
+    /// <summary>
+    /// When <c>true</c>, the <c>file</c> scheme is accepted (in addition to being listed in
+    /// <see cref="AllowedSchemes"/>). Defaults to <c>false</c>.
+    /// </summary>
+    /// <remarks>
+    /// Defense-in-depth: listing <c>"file"</c> in <see cref="AllowedSchemes"/> is not enough on its own;
+    /// callers must also flip this toggle. Configuration drift on a list is more likely than on a
+    /// typed boolean. When enabled, hosts on <c>file://</c> URIs (Windows UNC paths) are still rejected
+    /// to prevent NTLM-relay / SMB egress via <c>file://attacker/share</c>.
+    /// </remarks>
+    public bool AllowFileScheme { get; set; }
 }

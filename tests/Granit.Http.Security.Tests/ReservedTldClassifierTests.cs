@@ -15,6 +15,15 @@ public sealed class ReservedTldClassifierTests
     [InlineData("foo.test", "test")]
     [InlineData("example.com.example", "example")]
     [InlineData("missing.invalid", "invalid")]
+    // VULN-300 — newly added reserved TLDs
+    [InlineData("home.arpa", "arpa")]
+    [InlineData("0.0.127.in-addr.arpa", "arpa")]
+    [InlineData("foo.alt", "alt")]
+    [InlineData("svc.intranet", "intranet")]
+    [InlineData("dc1.corp", "corp")]
+    [InlineData("printer.home", "home")]
+    [InlineData("router.lan", "lan")]
+    [InlineData("ns.private", "private")]
     // Case-insensitive matching.
     [InlineData("PRINTER.LOCAL", "local")]
     [InlineData("Some.Internal", "internal")]

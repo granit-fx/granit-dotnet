@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using Granit.Http.Security.Diagnostics;
 using Granit.Http.Security.Options;
 using Granit.MultiTenancy;
@@ -21,8 +22,8 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
     private readonly IDnsResolver _resolver;
     private readonly TimeProvider _timeProvider;
     private readonly HttpSecurityMetrics _metrics;
-    private readonly ILogger<DefaultUrlSafetyValidator> _logger;
     private readonly ICurrentTenant? _currentTenant;
+    private readonly ILogger<DefaultUrlSafetyValidator> _logger;
 
     public DefaultUrlSafetyValidator(
         IOptions<UrlSafetyOptions> options,
@@ -41,12 +42,9 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
         _resolver = resolver;
         _timeProvider = timeProvider;
         _metrics = metrics;
-        _logger = logger;
         _currentTenant = currentTenant;
+        _logger = logger;
     }
-
-    private string? CurrentTenantId =>
-        _currentTenant is { IsAvailable: true } t ? t.Id?.ToString("N") : null;
 
     public ValueTask<UrlSafetyResult> ValidateAsync(Uri url, CancellationToken ct = default) =>
         ValidateAsync(url, _options.Value, ct);
@@ -88,12 +86,29 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
                 [url.Scheme]));
         }
 
-        // (4) file:// short-circuit — no DNS / no IP classification.
-        // Note: enabling "file" in AllowedSchemes also lets through UNC paths on Windows
-        // (file://server/share) — only opt in for trusted, local-only contexts.
+        // (4) file:// — gated by AllowFileScheme AND empty authority (no UNC).
         if (string.Equals(url.Scheme, Uri.UriSchemeFile, StringComparison.OrdinalIgnoreCase))
         {
-            _metrics.RecordValid(CurrentTenantId);
+            if (!optionOverrides.AllowFileScheme)
+            {
+                return Block(activity, new UrlSafetyViolation(
+                    UrlSafetyViolationKind.SchemeNotAllowed,
+                    "The file scheme is disabled. Set UrlSafetyOptions.AllowFileScheme=true to opt in.",
+                    "UrlSafety:SchemeNotAllowed",
+                    [url.Scheme]));
+            }
+
+            if (!string.IsNullOrEmpty(url.Host))
+            {
+                // file://server/share — UNC path, triggers SMB egress and NTLM-relay on Windows.
+                return Block(activity, new UrlSafetyViolation(
+                    UrlSafetyViolationKind.SchemeNotAllowed,
+                    "UNC file:// paths are not allowed.",
+                    "UrlSafety:SchemeNotAllowed",
+                    [url.Scheme]));
+            }
+
+            RecordValid();
             activity?.SetTag("url_safety.outcome", "valid");
             return UrlSafetyResult.Valid([]);
         }
@@ -117,7 +132,7 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
         {
             return Block(activity, new UrlSafetyViolation(
                 UrlSafetyViolationKind.ReservedTld,
-                $"Host '{asciiHost}' uses the reserved TLD '{tld}'.",
+                $"Host '{SanitizeForDisplay(asciiHost)}' uses the reserved TLD '{tld}'.",
                 "UrlSafety:ReservedTld",
                 [asciiHost, tld]));
         }
@@ -127,7 +142,7 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
         {
             return Block(activity, new UrlSafetyViolation(
                 UrlSafetyViolationKind.HostPatternDenied,
-                $"Host '{asciiHost}' matches a denied pattern.",
+                $"Host '{SanitizeForDisplay(asciiHost)}' matches a denied pattern.",
                 "UrlSafety:HostPatternDenied",
                 [asciiHost]));
         }
@@ -137,7 +152,7 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
         {
             return Block(activity, new UrlSafetyViolation(
                 UrlSafetyViolationKind.HostPatternNotAllowed,
-                $"Host '{asciiHost}' is not in the allowed pattern list.",
+                $"Host '{SanitizeForDisplay(asciiHost)}' is not in the allowed pattern list.",
                 "UrlSafety:HostPatternNotAllowed",
                 [asciiHost]));
         }
@@ -158,29 +173,29 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
             }
             catch (OperationCanceledException) when (!ct.IsCancellationRequested)
             {
-                HttpSecurityLog.DnsResolutionFailed(_logger, asciiHost, "timeout");
+                HttpSecurityLog.DnsResolutionFailed(_logger, SanitizeForDisplay(asciiHost), "timeout");
                 return Block(activity, new UrlSafetyViolation(
                     UrlSafetyViolationKind.DnsResolutionFailed,
-                    $"DNS resolution timed out for host '{asciiHost}'.",
+                    $"DNS resolution timed out for host '{SanitizeForDisplay(asciiHost)}'.",
                     "UrlSafety:DnsResolutionFailed",
                     [asciiHost]));
             }
             catch (SocketException)
             {
-                HttpSecurityLog.DnsResolutionFailed(_logger, asciiHost, "socket_error");
+                HttpSecurityLog.DnsResolutionFailed(_logger, SanitizeForDisplay(asciiHost), "socket_error");
                 return Block(activity, new UrlSafetyViolation(
                     UrlSafetyViolationKind.DnsResolutionFailed,
-                    $"DNS resolution failed for host '{asciiHost}'.",
+                    $"DNS resolution failed for host '{SanitizeForDisplay(asciiHost)}'.",
                     "UrlSafety:DnsResolutionFailed",
                     [asciiHost]));
             }
 
             if (addresses.Length == 0)
             {
-                HttpSecurityLog.DnsResolutionFailed(_logger, asciiHost, "no_addresses");
+                HttpSecurityLog.DnsResolutionFailed(_logger, SanitizeForDisplay(asciiHost), "no_addresses");
                 return Block(activity, new UrlSafetyViolation(
                     UrlSafetyViolationKind.DnsResolutionFailed,
-                    $"DNS resolution returned no addresses for host '{asciiHost}'.",
+                    $"DNS resolution returned no addresses for host '{SanitizeForDisplay(asciiHost)}'.",
                     "UrlSafety:DnsResolutionFailed",
                     [asciiHost]));
             }
@@ -197,21 +212,26 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
 
                 return Block(activity, new UrlSafetyViolation(
                     kind,
-                    BuildReason(kind, asciiHost),
+                    BuildReason(kind, SanitizeForDisplay(asciiHost)),
                     LocalizationKeyFor(kind),
                     [asciiHost]));
             }
         }
 
-        _metrics.RecordValid(CurrentTenantId);
+        RecordValid();
         activity?.SetTag("url_safety.outcome", "valid");
         return UrlSafetyResult.Valid(addresses);
     }
 
+    private string? CurrentTenantId() =>
+        _currentTenant is { IsAvailable: true, Id: { } id } ? id.ToString() : null;
+
+    private void RecordValid() => _metrics.RecordValid(CurrentTenantId());
+
     private UrlSafetyResult Block(Activity? activity, UrlSafetyViolation violation)
     {
-        _metrics.RecordBlocked(CurrentTenantId, violation.Kind);
-        HttpSecurityLog.UrlBlocked(_logger, ExtractHost(violation), violation.Kind, violation.Reason);
+        _metrics.RecordBlocked(CurrentTenantId(), violation.Kind);
+        HttpSecurityLog.UrlBlocked(_logger, SanitizeForDisplay(ExtractHost(violation)), violation.Kind, violation.Reason);
         activity?.SetTag("url_safety.outcome", "blocked");
         activity?.SetTag("url_safety.violation_kind", violation.Kind.ToString());
         return UrlSafetyResult.Invalid(violation);
@@ -246,6 +266,40 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
     private static string StripBrackets(string host) =>
         host.Length >= 2 && host[0] == '[' && host[^1] == ']' ? host[1..^1] : host;
 
+    /// <summary>
+    /// Strips Unicode control / format code points (e.g. U+202E RTL override) that could spoof
+    /// log entries. Replaces them with <c>?</c>.
+    /// </summary>
+    private static string SanitizeForDisplay(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+
+        StringBuilder? sb = null;
+        for (int i = 0; i < value.Length; i++)
+        {
+            char c = value[i];
+            UnicodeCategory cat = CharUnicodeInfo.GetUnicodeCategory(c);
+            bool unsafeChar = char.IsControl(c)
+                || cat == UnicodeCategory.Format
+                || cat == UnicodeCategory.LineSeparator
+                || cat == UnicodeCategory.ParagraphSeparator;
+            if (unsafeChar)
+            {
+                sb ??= new StringBuilder(value.Length).Append(value, 0, i);
+                sb.Append('?');
+            }
+            else
+            {
+                sb?.Append(c);
+            }
+        }
+
+        return sb?.ToString() ?? value;
+    }
+
     private static bool IsAllowedByPolicy(UrlSafetyViolationKind kind, UrlSafetyOptions opts) =>
         kind switch
         {
@@ -261,6 +315,8 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
         UrlSafetyViolationKind.LinkLocal => $"Host '{host}' resolves to a link-local address.",
         UrlSafetyViolationKind.MetadataEndpoint => $"Host '{host}' resolves to a cloud metadata endpoint.",
         UrlSafetyViolationKind.IPv6UniqueLocal => $"Host '{host}' resolves to an IPv6 unique-local address.",
+        UrlSafetyViolationKind.ReservedAddress => $"Host '{host}' resolves to a reserved (multicast / broadcast / future-use) address.",
+        UrlSafetyViolationKind.IPv6EmbeddedIPv4 => $"Host '{host}' resolves to an IPv6 transition address whose embedded IPv4 is sensitive.",
         _ => $"Host '{host}' is blocked.",
     };
 
@@ -271,6 +327,8 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
         UrlSafetyViolationKind.LinkLocal => "UrlSafety:LinkLocal",
         UrlSafetyViolationKind.MetadataEndpoint => "UrlSafety:MetadataEndpoint",
         UrlSafetyViolationKind.IPv6UniqueLocal => "UrlSafety:IPv6UniqueLocal",
+        UrlSafetyViolationKind.ReservedAddress => "UrlSafety:ReservedAddress",
+        UrlSafetyViolationKind.IPv6EmbeddedIPv4 => "UrlSafety:IPv6EmbeddedIPv4",
         _ => "UrlSafety:HostBlocked",
     };
 }

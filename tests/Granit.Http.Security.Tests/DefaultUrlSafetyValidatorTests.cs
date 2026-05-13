@@ -118,9 +118,9 @@ public sealed class DefaultUrlSafetyValidatorTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task FileScheme_AllowedWhenInAllowlist_NoDnsCall()
+    public async Task FileScheme_AllowedWhenInAllowlistAndOptIn_NoDnsCall()
     {
-        UrlSafetyOptions opts = new() { AllowedSchemes = ["file"] };
+        UrlSafetyOptions opts = new() { AllowedSchemes = ["file"], AllowFileScheme = true };
         var resolver = FakeDnsResolver.Throws();
         DefaultUrlSafetyValidator v = Create(resolver, opts);
 
@@ -137,6 +137,32 @@ public sealed class DefaultUrlSafetyValidatorTests
         DefaultUrlSafetyValidator v = Create(options: opts);
 
         UrlSafetyResult result = await v.ValidateAsync(new Uri("file:///etc/passwd"), TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Violation!.Kind.ShouldBe(UrlSafetyViolationKind.SchemeNotAllowed);
+    }
+
+    // VULN-202 — defense in depth: listing "file" in AllowedSchemes is not enough on its own.
+    [Fact]
+    public async Task FileScheme_InAllowlistButOptOutFalse_StillRejected()
+    {
+        UrlSafetyOptions opts = new() { AllowedSchemes = ["file"], AllowFileScheme = false };
+        DefaultUrlSafetyValidator v = Create(options: opts);
+
+        UrlSafetyResult result = await v.ValidateAsync(new Uri("file:///etc/passwd"), TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Violation!.Kind.ShouldBe(UrlSafetyViolationKind.SchemeNotAllowed);
+    }
+
+    // VULN-202 — UNC file:// path triggers SMB egress on Windows; reject even when opted in.
+    [Fact]
+    public async Task FileScheme_UncPath_Rejected()
+    {
+        UrlSafetyOptions opts = new() { AllowedSchemes = ["file"], AllowFileScheme = true };
+        DefaultUrlSafetyValidator v = Create(options: opts);
+
+        UrlSafetyResult result = await v.ValidateAsync(new Uri("file://attacker.example.com/share"), TestContext.Current.CancellationToken);
 
         result.IsValid.ShouldBeFalse();
         result.Violation!.Kind.ShouldBe(UrlSafetyViolationKind.SchemeNotAllowed);

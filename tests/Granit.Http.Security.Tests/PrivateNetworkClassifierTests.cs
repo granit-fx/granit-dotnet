@@ -104,4 +104,68 @@ public sealed class PrivateNetworkClassifierTests
     public void Classify_NullArgument_Throws() =>
         Should.Throw<ArgumentNullException>(() =>
             PrivateNetworkClassifier.Classify(null!, out _));
+
+    [Theory]
+    // VULN-200 — reserved ranges
+    [InlineData("224.0.0.1", UrlSafetyViolationKind.ReservedAddress)]          // multicast
+    [InlineData("239.255.255.255", UrlSafetyViolationKind.ReservedAddress)]    // multicast
+    [InlineData("240.0.0.0", UrlSafetyViolationKind.ReservedAddress)]          // reserved future
+    [InlineData("255.255.255.255", UrlSafetyViolationKind.ReservedAddress)]    // limited broadcast
+    [InlineData("192.0.0.1", UrlSafetyViolationKind.PrivateNetwork)]           // IETF assignments
+    [InlineData("192.0.2.1", UrlSafetyViolationKind.PrivateNetwork)]           // TEST-NET-1
+    [InlineData("198.51.100.1", UrlSafetyViolationKind.PrivateNetwork)]        // TEST-NET-2
+    [InlineData("203.0.113.1", UrlSafetyViolationKind.PrivateNetwork)]         // TEST-NET-3
+    [InlineData("198.18.0.1", UrlSafetyViolationKind.PrivateNetwork)]          // benchmark
+    [InlineData("198.19.255.254", UrlSafetyViolationKind.PrivateNetwork)]      // benchmark
+    [InlineData("::", UrlSafetyViolationKind.Loopback)]                        // unspecified
+    [InlineData("ff00::1", UrlSafetyViolationKind.ReservedAddress)]            // IPv6 multicast
+    [InlineData("ff02::1", UrlSafetyViolationKind.ReservedAddress)]            // all-nodes multicast
+    [InlineData("2001:db8::1", UrlSafetyViolationKind.ReservedAddress)]        // documentation
+    public void Classify_NewReservedRanges_Blocked(string ipText, UrlSafetyViolationKind expected)
+    {
+        var ip = IPAddress.Parse(ipText);
+
+        bool blocked = PrivateNetworkClassifier.Classify(ip, out UrlSafetyViolationKind kind);
+
+        blocked.ShouldBeTrue();
+        kind.ShouldBe(expected);
+    }
+
+    [Theory]
+    // VULN-100 — IPv6 transitional / embedded-IPv4 bypass primitives
+    // NAT64 64:ff9b::/96 wrapping loopback / IMDS / RFC1918
+    [InlineData("64:ff9b::7f00:1", UrlSafetyViolationKind.IPv6EmbeddedIPv4)]      // → 127.0.0.1
+    [InlineData("64:ff9b::a9fe:a9fe", UrlSafetyViolationKind.MetadataEndpoint)]   // → 169.254.169.254
+    [InlineData("64:ff9b::a00:1", UrlSafetyViolationKind.IPv6EmbeddedIPv4)]       // → 10.0.0.1
+    // 6to4 2002::/16 — bytes 2..5 encode the IPv4
+    [InlineData("2002:7f00:1::", UrlSafetyViolationKind.IPv6EmbeddedIPv4)]        // → 127.0.0.1
+    [InlineData("2002:a9fe:a9fe::", UrlSafetyViolationKind.MetadataEndpoint)]     // → 169.254.169.254
+    // Teredo 2001::/32 — last 4 bytes XOR 0xff = client IPv4
+    // 0x80 0x00 0xff 0xfe ^ 0xff = 0x7f 0xff 0x00 0x01 = 127.255.0.1 (loopback /8)
+    [InlineData("2001:0:0:0:0:0:8000:fffe", UrlSafetyViolationKind.IPv6EmbeddedIPv4)]
+    // IPv4-compatible IPv6 ::a.b.c.d
+    [InlineData("::127.0.0.1", UrlSafetyViolationKind.IPv6EmbeddedIPv4)]
+    [InlineData("::169.254.169.254", UrlSafetyViolationKind.MetadataEndpoint)]
+    public void Classify_IPv6TransitionalEmbeddedIPv4_Blocked(string ipText, UrlSafetyViolationKind expected)
+    {
+        var ip = IPAddress.Parse(ipText);
+
+        bool blocked = PrivateNetworkClassifier.Classify(ip, out UrlSafetyViolationKind kind);
+
+        blocked.ShouldBeTrue();
+        kind.ShouldBe(expected);
+    }
+
+    [Theory]
+    // 6to4 / NAT64 to a PUBLIC IPv4 — must remain unblocked
+    [InlineData("64:ff9b::808:808")]   // NAT64 → 8.8.8.8
+    [InlineData("2002:808:808::")]      // 6to4 → 8.8.8.8
+    public void Classify_IPv6TransitionalEmbeddedPublicIPv4_Allowed(string ipText)
+    {
+        var ip = IPAddress.Parse(ipText);
+
+        bool blocked = PrivateNetworkClassifier.Classify(ip, out _);
+
+        blocked.ShouldBeFalse();
+    }
 }

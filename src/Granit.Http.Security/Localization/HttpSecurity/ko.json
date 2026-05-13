@@ -13,7 +13,9 @@
     "UrlSafety:UrlTooLong": "URL exceeds the maximum length of {0}.",
     "UrlSafety:HostPatternDenied": "Host '{0}' matches a denied pattern.",
     "UrlSafety:HostPatternNotAllowed": "Host '{0}' is not in the allowed pattern list.",
-    "UrlSafety:DnsResolutionFailed": "DNS resolution failed for host '{0}'."
+    "UrlSafety:DnsResolutionFailed": "DNS resolution failed for host '{0}'.",
+    "UrlSafety:ReservedAddress": "Host '{0}' resolves to a reserved (multicast / broadcast / future-use) address.",
+    "UrlSafety:IPv6EmbeddedIPv4": "Host '{0}' resolves to an IPv6 transition address whose embedded IPv4 is sensitive."
   },
   "_meta": "EN fallback — pending translation"
 }

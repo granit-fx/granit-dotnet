@@ -13,6 +13,8 @@
     "UrlSafety:UrlTooLong": "La URL supera la longitud máxima de {0}.",
     "UrlSafety:HostPatternDenied": "El host '{0}' coincide con un patrón denegado.",
     "UrlSafety:HostPatternNotAllowed": "El host '{0}' no está en la lista de patrones permitidos.",
-    "UrlSafety:DnsResolutionFailed": "Falló la resolución DNS para el host '{0}'."
+    "UrlSafety:DnsResolutionFailed": "Falló la resolución DNS para el host '{0}'.",
+    "UrlSafety:ReservedAddress": "El host '{0}' se resuelve a una dirección reservada (multicast / broadcast / uso futuro).",
+    "UrlSafety:IPv6EmbeddedIPv4": "El host '{0}' se resuelve a una dirección IPv6 de transición con IPv4 embebida sensible."
   }
 }

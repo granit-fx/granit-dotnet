@@ -13,6 +13,8 @@
     "UrlSafety:UrlTooLong": "Die URL überschreitet die maximale Länge von {0}.",
     "UrlSafety:HostPatternDenied": "Host '{0}' entspricht einem verweigerten Muster.",
     "UrlSafety:HostPatternNotAllowed": "Host '{0}' steht nicht auf der Liste erlaubter Muster.",
-    "UrlSafety:DnsResolutionFailed": "DNS-Auflösung für Host '{0}' fehlgeschlagen."
+    "UrlSafety:DnsResolutionFailed": "DNS-Auflösung für Host '{0}' fehlgeschlagen.",
+    "UrlSafety:ReservedAddress": "Host '{0}' wird zu einer reservierten Adresse (Multicast / Broadcast / zukünftige Nutzung) aufgelöst.",
+    "UrlSafety:IPv6EmbeddedIPv4": "Host '{0}' wird zu einer IPv6-Übergangsadresse mit sensibler eingebetteter IPv4 aufgelöst."
   }
 }

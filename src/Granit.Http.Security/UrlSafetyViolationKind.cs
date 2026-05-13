@@ -51,4 +51,17 @@ public enum UrlSafetyViolationKind
 
     /// <summary>DNS resolution failed or timed out.</summary>
     DnsResolutionFailed,
+
+    /// <summary>
+    /// The host resolves to a multicast / broadcast / reserved-for-future-use range that must never
+    /// originate outbound traffic (224.0.0.0/4, 240.0.0.0/4, 255.255.255.255, ff00::/8).
+    /// </summary>
+    ReservedAddress,
+
+    /// <summary>
+    /// The host resolves to an IPv6 transition / embedding form (NAT64 64:ff9b::/96, 6to4 2002::/16,
+    /// Teredo 2001::/32, or the deprecated IPv4-compatible <c>::a.b.c.d</c>) whose embedded IPv4 falls
+    /// in a sensitive range.
+    /// </summary>
+    IPv6EmbeddedIPv4,
 }

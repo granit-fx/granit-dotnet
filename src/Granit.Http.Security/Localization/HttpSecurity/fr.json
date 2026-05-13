@@ -13,6 +13,8 @@
     "UrlSafety:UrlTooLong": "L'URL dépasse la longueur maximale de {0}.",
     "UrlSafety:HostPatternDenied": "L'hôte '{0}' correspond à un motif refusé.",
     "UrlSafety:HostPatternNotAllowed": "L'hôte '{0}' n'est pas dans la liste des motifs autorisés.",
-    "UrlSafety:DnsResolutionFailed": "Échec de la résolution DNS pour l'hôte '{0}'."
+    "UrlSafety:DnsResolutionFailed": "Échec de la résolution DNS pour l'hôte '{0}'.",
+    "UrlSafety:ReservedAddress": "L'hôte '{0}' se résout vers une adresse réservée (multicast / broadcast / usage futur).",
+    "UrlSafety:IPv6EmbeddedIPv4": "L'hôte '{0}' se résout vers une adresse de transition IPv6 dont l'IPv4 embarquée est sensible."
   }
 }

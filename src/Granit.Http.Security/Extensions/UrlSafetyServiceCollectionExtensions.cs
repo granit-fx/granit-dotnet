@@ -26,8 +26,8 @@ public static class UrlSafetyServiceCollectionExtensions
             .BindConfiguration(UrlSafetyOptions.SectionName)
             .ValidateDataAnnotations()
             .Validate(
-                o => o.DnsResolveTimeout > TimeSpan.Zero,
-                $"{nameof(UrlSafetyOptions.DnsResolveTimeout)} must be greater than zero.")
+                o => o.DnsResolveTimeout > TimeSpan.Zero && o.DnsResolveTimeout <= TimeSpan.FromSeconds(30),
+                $"{nameof(UrlSafetyOptions.DnsResolveTimeout)} must be in (0, 30s].")
             .Validate(
                 o => o.AllowedSchemes.Count > 0,
                 $"{nameof(UrlSafetyOptions.AllowedSchemes)} must contain at least one entry.")

@@ -14,6 +14,13 @@ public static class ReservedTldClassifier
         "test",       // RFC 6761
         "example",    // RFC 6761
         "invalid",    // RFC 6761
+        "arpa",       // infrastructure TLD (RFC 3172, includes home.arpa per RFC 8375)
+        "alt",        // unmanaged alternative-namespace TLD (RFC 9476)
+        "intranet",   // ICANN SAC 113 — never delegated
+        "corp",       // ICANN SAC 113 — never delegated
+        "home",       // ICANN SAC 113 — never delegated
+        "lan",        // ICANN SAC 113 — never delegated
+        "private",    // ICANN SAC 113 — never delegated
     ];
 
     /// <summary>

@@ -13,6 +13,8 @@
     "UrlSafety:UrlTooLong": "URL overschrijdt de maximumlengte van {0}.",
     "UrlSafety:HostPatternDenied": "Host '{0}' komt overeen met een geweigerd patroon.",
     "UrlSafety:HostPatternNotAllowed": "Host '{0}' staat niet in de lijst met toegestane patronen.",
-    "UrlSafety:DnsResolutionFailed": "DNS-resolutie mislukt voor host '{0}'."
+    "UrlSafety:DnsResolutionFailed": "DNS-resolutie mislukt voor host '{0}'.",
+    "UrlSafety:ReservedAddress": "Host '{0}' wordt herleid naar een gereserveerd adres (multicast / broadcast / toekomstig gebruik).",
+    "UrlSafety:IPv6EmbeddedIPv4": "Host '{0}' wordt herleid naar een IPv6-overgangsadres met een gevoelige ingebedde IPv4."
   }
 }

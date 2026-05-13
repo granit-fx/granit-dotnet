@@ -14974,7 +14974,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration.Pdf",
       "file": "src/Granit.DocumentGeneration.Pdf/Extensions/ServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitDocumentGenerationPdf",
@@ -15054,6 +15054,12 @@
           "name": "RenderTimeoutMs",
           "kind": "property",
           "signature": "int RenderTimeoutMs",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxHtmlBytes",
+          "kind": "property",
+          "signature": "int MaxHtmlBytes",
           "returnType": "int"
         }
       ]
@@ -20040,7 +20046,7 @@
       "kind": "class",
       "project": "Granit.Http.Security",
       "file": "src/Granit.Http.Security/PrivateNetworkClassifier.cs",
-      "line": 23,
+      "line": 26,
       "members": [
         {
           "name": "IsBlocked",

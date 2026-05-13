@@ -51,7 +51,6 @@ public sealed class HttpSecurityMetrics
             new("outcome", "blocked"),
             new("violation_kind", kind.ToString()),
         ];
-        _validations.Add(1, tags);
         _blocks.Add(1, tags);
     }
 }
