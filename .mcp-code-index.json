@@ -6650,6 +6650,22 @@
       ]
     },
     {
+      "name": "PermissionsCacheKeyHash",
+      "fqn": "Granit.Authorization.Caching.PermissionsCacheKeyHash",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Caching/PermissionsCacheKeyHash.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Compute",
+          "kind": "method",
+          "signature": "Compute(ClaimsPrincipal user)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "AuthorizationMetrics",
       "fqn": "Granit.Authorization.Diagnostics.AuthorizationMetrics",
       "kind": "class",
