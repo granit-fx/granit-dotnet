@@ -56,14 +56,16 @@ internal sealed partial class BrowsingPermissionAdvisoryService(
     ILogger<BrowsingPermissionAdvisoryService> logger) : IHostedService
 {
     /// <inheritdoc/>
-    public System.Threading.Tasks.Task StartAsync(System.Threading.CancellationToken cancellationToken)
+    public async System.Threading.Tasks.Task StartAsync(System.Threading.CancellationToken cancellationToken)
     {
-        var checker = services.GetService(typeof(IPermissionChecker)) as IPermissionChecker;
+        // IPermissionChecker is scoped; resolve it through a transient scope so the
+        // captured root provider doesn't trip ValidateScopes.
+        await using AsyncServiceScope scope = services.CreateAsyncScope();
+        var checker = scope.ServiceProvider.GetService(typeof(IPermissionChecker)) as IPermissionChecker;
         if (checker is null)
         {
             LogAdvisory();
         }
-        return System.Threading.Tasks.Task.CompletedTask;
     }
 
     /// <inheritdoc/>
