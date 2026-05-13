@@ -24,8 +24,4 @@
     <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Localization\**\*.json" />
-  </ItemGroup>
-
 </Project>

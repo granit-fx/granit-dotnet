@@ -10,10 +10,10 @@ namespace Granit.IO.Extensions;
 /// <summary>
 /// DI extensions for <c>Granit.IO</c>.
 /// </summary>
-public static class IoServiceCollectionExtensions
+public static class IOServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers <see cref="ITempFileFactory"/>, <see cref="IoMetrics"/>, and the
+    /// Registers <see cref="ITempFileFactory"/>, <see cref="IOMetrics"/>, and the
     /// temp-file janitor hosted service.
     /// </summary>
     /// <param name="services">DI container.</param>
@@ -26,6 +26,10 @@ public static class IoServiceCollectionExtensions
 
         services.AddOptions<TempFileOptions>()
             .BindConfiguration(TempFileOptions.SectionName)
+            .ValidateDataAnnotations()
+            .Validate(
+                o => o.MaxLifetime > TimeSpan.Zero && o.JanitorInterval > TimeSpan.Zero,
+                "MaxLifetime and JanitorInterval must be strictly positive.")
             .ValidateOnStart();
 
         if (configure is not null)
@@ -34,11 +38,11 @@ public static class IoServiceCollectionExtensions
         }
 
         services.TryAddSingleton(TimeProvider.System);
-        services.TryAddSingleton<IoMetrics>();
+        services.TryAddSingleton<IOMetrics>();
         services.TryAddSingleton<ITempFileFactory, DefaultTempFileFactory>();
         services.AddHostedService<TempFileJanitor>();
 
-        GranitActivitySourceRegistry.Register(IoActivitySource.Name);
+        GranitActivitySourceRegistry.Register(IOActivitySource.Name);
 
         return services;
     }

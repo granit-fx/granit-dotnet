@@ -13,8 +13,8 @@ public sealed class TempFileOptionsTests
 
         options.RootDirectory.ShouldBeNull();
         options.ChmodOwnerOnly.ShouldBeTrue();
-        options.MaxLifetime.ShouldBe(TimeSpan.FromHours(1));
-        options.MaxSizeBytes.ShouldBe(256L * 1024 * 1024);
+        options.MaxLifetime.ShouldBe(TimeSpan.FromMinutes(30));
+        options.MaxSizeBytes.ShouldBe(100L * 1024 * 1024);
         options.TenantPartition.ShouldBeTrue();
         options.JanitorInterval.ShouldBe(TimeSpan.FromMinutes(5));
         options.RunJanitor.ShouldBeTrue();
@@ -22,5 +22,19 @@ public sealed class TempFileOptionsTests
 
     [Fact]
     public void SectionName_IsCorrect() =>
-        TempFileOptions.SectionName.ShouldBe("Io:Temp");
+        TempFileOptions.SectionName.ShouldBe("Granit:IO:TempFiles");
+
+    [Fact]
+    public void EffectiveRootDirectory_FallsBackToDefault_WhenUnset()
+    {
+        TempFileOptions options = new();
+        options.EffectiveRootDirectory.ShouldBe(TempFileOptions.DefaultRootDirectory);
+    }
+
+    [Fact]
+    public void EffectiveRootDirectory_HonorsExplicitValue()
+    {
+        TempFileOptions options = new() { RootDirectory = "/var/tmp/x" };
+        options.EffectiveRootDirectory.ShouldBe("/var/tmp/x");
+    }
 }

@@ -1,9 +1,0 @@
-{
-  "culture": "es",
-  "texts": {
-    "TempFile:CategoryInvalid": "La categoría del archivo temporal debe coincidir con [a-z0-9-]{1,32}; se recibió '{0}'.",
-    "TempFile:ExtensionInvalid": "La extensión del archivo temporal debe ser alfanumérica, 1..16 caracteres; se recibió '{0}'.",
-    "TempFile:SizeExceeded": "El archivo temporal excedió el tamaño máximo de {0} bytes.",
-    "TempFile:RootInvalid": "El directorio raíz para archivos temporales no es válido o no es accesible: '{0}'."
-  }
-}

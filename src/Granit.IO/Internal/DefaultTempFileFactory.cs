@@ -23,24 +23,25 @@ internal sealed partial class DefaultTempFileFactory : ITempFileFactory
 
     private readonly TempFileOptions _options;
     private readonly ICurrentTenant? _currentTenant;
-    private readonly IoMetrics _metrics;
+    private readonly IOMetrics _metrics;
     private readonly ILogger<DefaultTempFileFactory> _logger;
     private readonly string _rootDirectory;
 
     public DefaultTempFileFactory(
         IOptions<TempFileOptions> options,
-        IoMetrics metrics,
+        IOMetrics metrics,
         ILogger<DefaultTempFileFactory> logger,
         ICurrentTenant? currentTenant = null)
     {
         ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(metrics);
+        ArgumentNullException.ThrowIfNull(logger);
+
         _options = options.Value;
         _currentTenant = currentTenant;
-        _metrics = metrics ?? throw new ArgumentNullException(nameof(metrics));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _rootDirectory = string.IsNullOrWhiteSpace(_options.RootDirectory)
-            ? Path.Combine(Path.GetTempPath(), "granit")
-            : _options.RootDirectory!;
+        _metrics = metrics;
+        _logger = logger;
+        _rootDirectory = _options.EffectiveRootDirectory;
     }
 
     /// <summary>Root directory in use by the factory (resolved at construction time).</summary>

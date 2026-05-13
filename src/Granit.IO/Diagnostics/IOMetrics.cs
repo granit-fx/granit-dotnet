@@ -7,7 +7,7 @@ namespace Granit.IO.Diagnostics;
 /// OpenTelemetry metrics for the IO module.
 /// Meter: <c>Granit.IO</c>.
 /// </summary>
-public sealed class IoMetrics
+public sealed class IOMetrics
 {
     /// <summary>Meter name (<c>Granit.IO</c>).</summary>
     public const string MeterName = "Granit.IO";
@@ -22,8 +22,8 @@ public sealed class IoMetrics
     private readonly Histogram<long> _tempBytes;
     private readonly Counter<long> _janitorPurged;
 
-    /// <summary>Creates a new instance of <see cref="IoMetrics"/>.</summary>
-    public IoMetrics(IMeterFactory meterFactory)
+    /// <summary>Creates a new instance of <see cref="IOMetrics"/>.</summary>
+    public IOMetrics(IMeterFactory meterFactory)
     {
         ArgumentNullException.ThrowIfNull(meterFactory);
         Meter meter = meterFactory.Create(MeterName);
@@ -48,29 +48,24 @@ public sealed class IoMetrics
 
     /// <summary>Records that a temp file was created.</summary>
     public void RecordCreated(string category, string? tenantId) =>
-        _tempCreated.Add(1, new TagList
-        {
-            { TagCategory, category },
-            { TagTenantId, tenantId ?? DefaultTenant },
-        });
+        _tempCreated.Add(1, TempFileTags(category, tenantId));
 
     /// <summary>Records that a temp file was deleted (disposed).</summary>
     public void RecordDeleted(string category, string? tenantId) =>
-        _tempDeleted.Add(1, new TagList
-        {
-            { TagCategory, category },
-            { TagTenantId, tenantId ?? DefaultTenant },
-        });
+        _tempDeleted.Add(1, TempFileTags(category, tenantId));
 
     /// <summary>Records the final size of a temp file at disposal time.</summary>
     public void RecordBytes(string category, string? tenantId, long bytes) =>
-        _tempBytes.Record(bytes, new TagList
-        {
-            { TagCategory, category },
-            { TagTenantId, tenantId ?? DefaultTenant },
-        });
+        _tempBytes.Record(bytes, TempFileTags(category, tenantId));
 
     /// <summary>Records a janitor-driven purge.</summary>
     public void RecordJanitorPurged(string reason) =>
         _janitorPurged.Add(1, new TagList { { TagReason, reason } });
+
+    private static TagList TempFileTags(string category, string? tenantId) =>
+        new()
+        {
+            { TagCategory, category },
+            { TagTenantId, tenantId ?? DefaultTenant },
+        };
 }

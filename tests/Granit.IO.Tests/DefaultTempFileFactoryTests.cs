@@ -15,7 +15,7 @@ public sealed class DefaultTempFileFactoryTests : IDisposable
     private readonly string _root;
     private readonly TempFileOptions _options;
     private readonly TestMeterFactory _meterFactory = new();
-    private readonly IoMetrics _metrics;
+    private readonly IOMetrics _metrics;
     private readonly DefaultTempFileFactory _factory;
     private readonly FakeCurrentTenant _tenant = new();
 
@@ -28,7 +28,7 @@ public sealed class DefaultTempFileFactoryTests : IDisposable
             RunJanitor = false,
             MaxSizeBytes = 1024,
         };
-        _metrics = new IoMetrics(_meterFactory);
+        _metrics = new IOMetrics(_meterFactory);
         _factory = new DefaultTempFileFactory(
             OptionsFactory.Create(_options),
             _metrics,

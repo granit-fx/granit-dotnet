@@ -4,13 +4,13 @@ using Xunit;
 
 namespace Granit.IO.Tests;
 
-public sealed class IoActivitySourceTests
+public sealed class IOActivitySourceTests
 {
     [Fact]
     public void Name_Matches_MeterName() =>
-        IoActivitySource.Name.ShouldBe("Granit.IO");
+        IOActivitySource.Name.ShouldBe("Granit.IO");
 
     [Fact]
     public void Instance_HasMatchingName() =>
-        IoActivitySource.Instance.Name.ShouldBe(IoActivitySource.Name);
+        IOActivitySource.Instance.Name.ShouldBe(IOActivitySource.Name);
 }

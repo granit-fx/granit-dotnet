@@ -13,25 +13,27 @@ namespace Granit.IO.Internal;
 internal sealed partial class TempFileJanitor : BackgroundService
 {
     private readonly TempFileOptions _options;
-    private readonly IoMetrics _metrics;
+    private readonly IOMetrics _metrics;
     private readonly TimeProvider _timeProvider;
     private readonly ILogger<TempFileJanitor> _logger;
     private readonly string _rootDirectory;
 
     public TempFileJanitor(
         IOptions<TempFileOptions> options,
-        IoMetrics metrics,
+        IOMetrics metrics,
         TimeProvider timeProvider,
         ILogger<TempFileJanitor> logger)
     {
         ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(metrics);
+        ArgumentNullException.ThrowIfNull(timeProvider);
+        ArgumentNullException.ThrowIfNull(logger);
+
         _options = options.Value;
-        _metrics = metrics ?? throw new ArgumentNullException(nameof(metrics));
-        _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _rootDirectory = string.IsNullOrWhiteSpace(_options.RootDirectory)
-            ? Path.Combine(Path.GetTempPath(), "granit")
-            : _options.RootDirectory!;
+        _metrics = metrics;
+        _timeProvider = timeProvider;
+        _logger = logger;
+        _rootDirectory = _options.EffectiveRootDirectory;
     }
 
     /// <summary>Root directory swept by the janitor.</summary>
