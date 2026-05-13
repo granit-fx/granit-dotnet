@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Reflection;
 using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
@@ -16,14 +17,22 @@ namespace Granit.Templating.Resolvers;
 /// <list type="table">
 ///   <listheader><term>Culture</term><description>Resource name</description></listheader>
 ///   <item>
-///     <term>Specific (<c>"fr"</c>)</term>
-///     <description><c>{AssemblyName}.Templates.{TemplateName}.fr.html</c></description>
+///     <term>Regional (<c>"pt-BR"</c>)</term>
+///     <description><c>{AssemblyName}.Templates.{TemplateName}.pt-BR.html</c></description>
+///   </item>
+///   <item>
+///     <term>Parent culture (<c>"pt"</c>)</term>
+///     <description><c>{AssemblyName}.Templates.{TemplateName}.pt.html</c></description>
 ///   </item>
 ///   <item>
 ///     <term>Neutral (any / fallback)</term>
 ///     <description><c>{AssemblyName}.Templates.{TemplateName}.html</c></description>
 ///   </item>
 /// </list>
+/// Lookup walks the requested culture, then each parent culture, then the neutral
+/// resource — mirroring the <c>{culture} → {parent} → neutral</c> strategy used by the
+/// JSON localization files. This lets regional template files ship only when they
+/// differ from their parent culture.
 /// </para>
 /// <para>
 /// Register via:
@@ -62,12 +71,24 @@ internal sealed class EmbeddedTemplateResolver(IReadOnlyList<Assembly> assemblie
     private TemplateDescriptor? TryLoadFromAssembly(Assembly assembly, TemplateKey key)
     {
         string assemblyName = assembly.GetName().Name ?? string.Empty;
+        string neutralResource = $"{assemblyName}.Templates.{key.Name}.html";
 
-        // Culture-specific resource first, then neutral fallback
-        string? resourceName = key.Culture is not null
-            ? FindResource(assembly, $"{assemblyName}.Templates.{key.Name}.{key.Culture}.html")
-                ?? FindResource(assembly, $"{assemblyName}.Templates.{key.Name}.html")
-            : FindResource(assembly, $"{assemblyName}.Templates.{key.Name}.html");
+        // Walk requested culture → parent → neutral. Mirrors the JSON locale fallback so
+        // regional template files (pt-BR, en-GB...) can omit keys identical to their parent.
+        string? resourceName = null;
+        if (key.Culture is not null)
+        {
+            foreach (string culture in EnumerateCultureChain(key.Culture))
+            {
+                resourceName = FindResource(assembly, $"{assemblyName}.Templates.{key.Name}.{culture}.html");
+                if (resourceName is not null)
+                {
+                    break;
+                }
+            }
+        }
+
+        resourceName ??= FindResource(assembly, neutralResource);
 
         if (resourceName is null)
         {
@@ -84,6 +105,38 @@ internal sealed class EmbeddedTemplateResolver(IReadOnlyList<Assembly> assemblie
             MimeType = "text/html",
             RevisionId = null,
         };
+    }
+
+    private static IEnumerable<string> EnumerateCultureChain(string culture)
+    {
+        CultureInfo? current = null;
+        try
+        {
+            current = CultureInfo.GetCultureInfo(culture);
+        }
+        catch (CultureNotFoundException)
+        {
+            // ignored — fall through to literal-tag yield below
+        }
+
+        if (current is null)
+        {
+            // Unknown / malformed culture: yield the raw tag once (caller may still have
+            // shipped a file under that literal name) then fall through to neutral.
+            yield return culture;
+            yield break;
+        }
+
+        while (!string.IsNullOrEmpty(current.Name))
+        {
+            yield return current.Name;
+            CultureInfo parent = current.Parent;
+            if (parent.Equals(current))
+            {
+                yield break;
+            }
+            current = parent;
+        }
     }
 
     private string? FindResource(Assembly assembly, string resourceName)
