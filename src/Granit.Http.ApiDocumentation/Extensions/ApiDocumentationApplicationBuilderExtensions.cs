@@ -31,7 +31,7 @@ public static partial class ApiDocumentationApplicationBuilderExtensions
             return app;
         }
 
-        // VULN-204 — OpenAPI enumeration is a reconnaissance aid for attackers.
+        // OpenAPI enumeration is a reconnaissance aid for attackers.
         // If the app explicitly opted into production exposure but left the
         // access policy unset, the endpoints inherit the host's default auth
         // behaviour — which, absent a FallbackPolicy, is anonymous access.

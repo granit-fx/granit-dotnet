@@ -122,7 +122,7 @@ public sealed class GranitCorsOptionsValidatorTests
         result.Failures.Count().ShouldBeGreaterThanOrEqualTo(2);
     }
 
-    // VULN-207 — origin format validation with auto-trim for trailing slash
+    // Origin format validation with auto-trim for trailing slash
 
     [Theory]
     [InlineData("https://app.example.com")]

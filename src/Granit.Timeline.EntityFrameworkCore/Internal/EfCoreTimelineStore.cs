@@ -77,7 +77,7 @@ internal sealed class EfCoreTimelineStore(
         WriteAsync(
             async db =>
             {
-                // VULN-209: Do not bypass soft-delete filter — reject attachments on deleted entries
+                // Do not bypass soft-delete filter — reject attachments on deleted entries.
                 bool entryExists = await db.TimelineEntries
                     .AnyAsync(e => e.Id == entryId, cancellationToken).ConfigureAwait(false);
 

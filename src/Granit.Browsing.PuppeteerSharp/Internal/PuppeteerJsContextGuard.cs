@@ -5,8 +5,8 @@ namespace Granit.Browsing.PuppeteerSharp.Internal;
 
 /// <summary>
 /// Applies JavaScript-disabled semantics to a freshly-acquired Puppeteer page before any
-/// navigation runs. Closes VULN-202 (script execution prior to a follow-up
-/// <c>SetJavaScriptEnabledAsync(false)</c>).
+/// navigation runs, preventing script execution that could occur prior to a follow-up
+/// <c>SetJavaScriptEnabledAsync(false)</c>.
 /// </summary>
 /// <remarks>
 /// PuppeteerSharp does not expose a context-level JS-disable knob at launch — the engine

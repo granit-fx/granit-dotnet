@@ -445,7 +445,7 @@ public sealed class IdempotencyMiddlewareTests
     }
 
     // =========================================================================
-    // Scenario 8: Race condition — TryAcquire fails, re-read returns null (VULN-301)
+    // Scenario 8: Race condition — TryAcquire fails, re-read returns null
     // =========================================================================
 
     [Fact]
@@ -869,7 +869,7 @@ public sealed class IdempotencyMiddlewareTests
     }
 
     // =========================================================================
-    // Scenario 16: Set-Cookie NOT replayed (VULN-200)
+    // Scenario 16: Set-Cookie NOT replayed
     // =========================================================================
 
     [Fact]
@@ -936,7 +936,7 @@ public sealed class IdempotencyMiddlewareTests
     }
 
     // =========================================================================
-    // Scenario 17: Oversized response → tombstone + replay returns 413 (VULN-201)
+    // Scenario 17: Oversized response → tombstone + replay returns 413
     // =========================================================================
 
     [Fact]
@@ -1064,7 +1064,7 @@ public sealed class IdempotencyMiddlewareTests
     }
 
     // =========================================================================
-    // Scenario 18: Oversized idempotency key → 400 (VULN-300)
+    // Scenario 18: Oversized idempotency key → 400
     // =========================================================================
 
     [Fact]

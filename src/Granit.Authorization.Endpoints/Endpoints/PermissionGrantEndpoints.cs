@@ -128,7 +128,7 @@ internal static partial class PermissionGrantEndpoints
                 });
         }
 
-        // VULN-100 fix: prevent privilege escalation — callers can only grant
+        // Prevent privilege escalation — callers can only grant
         // permissions they themselves hold (or are in an AdminRole).
         if (!await permissionChecker.IsGrantedAsync(permissionName, cancellationToken).ConfigureAwait(false))
         {
@@ -187,7 +187,7 @@ internal static partial class PermissionGrantEndpoints
                 });
         }
 
-        // VULN-101 fix: prevent privilege escalation — callers can only revoke
+        // Prevent privilege escalation — callers can only revoke
         // permissions they themselves hold (symmetric with GrantPermissionAsync).
         if (!await permissionChecker.IsGrantedAsync(permissionName, cancellationToken).ConfigureAwait(false))
         {

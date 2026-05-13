@@ -165,11 +165,11 @@ internal sealed class ScribanTemplateEngine(
             // Sandboxing: no bypass of member visibility restrictions
             EnableRelaxedMemberAccess = false,
 
-            // Explicit resource limits to prevent CPU/memory exhaustion (VULN-200)
+            // Explicit resource limits to prevent CPU/memory exhaustion.
             LoopLimit = MaxLoopIterations,
             RecursiveLimit = MaxRecursionDepth,
 
-            // Block access to regex builtins to prevent ReDoS (VULN-207 / CWE-1333)
+            // Block access to regex builtins to prevent ReDoS (CWE-1333).
             MemberFilter = MemberFilterDelegate,
 
             // Propagate cancellation to the Scriban render loop

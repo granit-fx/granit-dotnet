@@ -79,7 +79,7 @@ public sealed class GranitHttpSecurityHeadersModuleTests
     public void AddGranitHttpSecurity_ConfiguresHsts_CustomValues()
     {
         // Use 2 years — above the 6-month minimum enforced by the validator
-        // (VULN-206) and distinct from the 1-year default so the test still
+        // and distinct from the 1-year default so the test still
         // proves the override applied.
         const int TwoYearsSeconds = 63_072_000;
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();

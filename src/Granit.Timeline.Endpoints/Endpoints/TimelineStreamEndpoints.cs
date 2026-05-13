@@ -45,7 +45,7 @@ internal static class TimelineStreamEndpoints
     {
         PagedResult<TimelineStreamEntry> result = await reader.GetStreamAsync(entityType, entityId, page, pageSize, cancellationToken).ConfigureAwait(false);
 
-        // VULN-101: Filter InternalNote entries unless user has staff permission
+        // Filter InternalNote entries unless user has staff permission.
         bool canReadInternalNotes = await permissionChecker.IsGrantedAsync(
             TimelinePermissions.InternalNotes.Read, cancellationToken).ConfigureAwait(false);
 

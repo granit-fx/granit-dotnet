@@ -169,7 +169,7 @@ public sealed class ConcurrencyLimiterRegistryTests : IDisposable
     }
 
     // =========================================================================
-    // LRU eviction at MaxLimiters (VULN-302)
+    // LRU eviction at MaxLimiters
     // =========================================================================
 
     [Fact]

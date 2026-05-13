@@ -70,7 +70,7 @@ public static class HttpResilienceServiceCollectionExtensions
         Action<HttpClient> configure)
         => services.AddGranitHttpClient(name, (_, client) => configure(client));
 
-    // NOTE — AddAuthTokenPropagation removed in the VULN-100 fix.
+    // NOTE — AddAuthTokenPropagation was removed as part of the confused-deputy hardening.
     // The handler blindly copied the inbound Authorization header to every
     // outbound host, which is a confused-deputy vulnerability (OAuth2 Security
     // BCP §4.8). Use `AddOnBehalfOfHttpClient` from Granit.Oidc.TokenManagement

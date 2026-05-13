@@ -21,7 +21,7 @@ public sealed class RegistrationTests(OpenIddictTestApplication app)
             "New",
             "User");
 
-        // Anti-enumeration: always 202 regardless of outcome (VULN-201)
+        // Anti-enumeration: always 202 regardless of outcome.
         response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
     }
 

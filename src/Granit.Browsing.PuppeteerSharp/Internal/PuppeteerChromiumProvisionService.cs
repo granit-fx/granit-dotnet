@@ -12,7 +12,7 @@ namespace Granit.Browsing.PuppeteerSharp.Internal;
 /// Hosted service that downloads the bundled Chromium build on the first start when no
 /// executable path is configured. Idempotent — subsequent boots find the binary on
 /// disk and skip the download. Production safety is enforced by
-/// <see cref="PuppeteerBrowserFetcherIntegrity"/> (VULN-302).
+/// <see cref="PuppeteerBrowserFetcherIntegrity"/>.
 /// </summary>
 internal sealed partial class PuppeteerChromiumProvisionService(
     IOptions<PuppeteerSharpOptions> options,

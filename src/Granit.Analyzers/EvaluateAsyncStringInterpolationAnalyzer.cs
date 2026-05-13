@@ -15,7 +15,6 @@ namespace Granit.Analyzers;
 /// <para>
 /// Building JavaScript / CSS strings via string interpolation, concatenation, or <c>string.Format</c>
 /// can introduce script injection. Validate inputs at the boundary or use a typed builder.
-/// See VULN-203.
 /// </para>
 /// <para>
 /// The analyzer triggers on:
@@ -27,7 +26,7 @@ namespace Granit.Analyzers;
 /// String literals and fully-constant interpolations (e.g. <c>$"page={1}"</c>, <c>nameof(Foo)</c>) do NOT trigger.
 /// </para>
 /// <para>
-/// The public-facing name of this rule is <c>GRANIT-BROWSING-001</c> (used in docs and VULN-203
+/// The public-facing name of this rule is <c>GRANIT-BROWSING-001</c> (used in docs and security
 /// references). Roslyn diagnostic identifiers must be valid C# identifiers, so the on-the-wire ID
 /// is <c>GRBROWSING001</c>.
 /// </para>
@@ -49,11 +48,11 @@ public sealed class EvaluateAsyncStringInterpolationAnalyzer : DiagnosticAnalyze
     private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         title: "JS expression argument mixes user-controllable data",
-        messageFormat: "JS/CSS argument to '{0}' is built via {1}; verify inputs are validated at the boundary or use a typed builder (VULN-203)",
+        messageFormat: "JS/CSS argument to '{0}' is built via {1}; verify inputs are validated at the boundary or use a typed builder",
         category: "Security",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Building JavaScript / CSS strings via string interpolation, concatenation, or string.Format can introduce script injection. Validate inputs at the boundary or use a typed builder. See VULN-203.",
+        description: "Building JavaScript / CSS strings via string interpolation, concatenation, or string.Format can introduce script injection. Validate inputs at the boundary or use a typed builder.",
         helpLinkUri: "https://github.com/granit-fx/granit-dotnet/blob/develop/docs-site/src/content/docs/dotnet/browsing/security.mdx#granit-browsing-001");
 
     /// <inheritdoc/>

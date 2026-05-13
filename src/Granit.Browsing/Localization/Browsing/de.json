@@ -1,12 +1,12 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:Granit.Browsing": "Headless-Browsing",
-    "Permission:Granit.Browsing.Pages.Acquire": "Eine Browserseite aus dem Pool anfordern",
-    "Permission:Granit.Browsing.Pages.Navigate": "Eine Browserseite zu einer URL navigieren",
-    "Permission:Granit.Browsing.Pages.InjectScript": "Skripte einfügen oder JavaScript in einer Browserseite ausführen",
-    "Permission:Granit.Browsing.Pages.BypassCsp": "Content-Security-Policy-Header einer Browserseite umgehen",
-    "Permission:Granit.Browsing.Pages.UseFileScheme": "Das file://-Schema für die Browser-Navigation verwenden",
+    "PermissionGroup:Browsing": "Headless-Browsing",
+    "Permission:Browsing.Pages.Acquire": "Eine Browserseite aus dem Pool anfordern",
+    "Permission:Browsing.Pages.Navigate": "Eine Browserseite zu einer URL navigieren",
+    "Permission:Browsing.Pages.InjectScript": "Skripte einfügen oder JavaScript in einer Browserseite ausführen",
+    "Permission:Browsing.Pages.BypassCsp": "Content-Security-Policy-Header einer Browserseite umgehen",
+    "Permission:Browsing.Pages.UseFileScheme": "Das file://-Schema für die Browser-Navigation verwenden",
     "Sandbox:CspBypassDenied": "Content-Security-Policy-Umgehung vom aktiven Sandbox-Profil abgelehnt.",
     "Sandbox:ScriptInjectionDenied": "Script-Injection vom aktiven Sandbox-Profil abgelehnt.",
     "Sandbox:ExecutablePathRejected": "Browser-Pfad '{0}' liegt außerhalb des erlaubten Präfix '{1}'.",

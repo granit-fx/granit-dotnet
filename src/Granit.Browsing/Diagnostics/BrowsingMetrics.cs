@@ -31,6 +31,8 @@ public sealed class BrowsingMetrics
 
     public BrowsingMetrics(IMeterFactory meterFactory)
     {
+        ArgumentNullException.ThrowIfNull(meterFactory);
+
         Meter meter = meterFactory.Create(MeterName);
 
         _pagesAcquired = meter.CreateCounter<long>(
@@ -42,22 +44,22 @@ public sealed class BrowsingMetrics
             description: "Number of browser pages returned to the pool.");
 
         _acquireDuration = meter.CreateHistogram<double>(
-            "granit.browsing.pool.acquire.duration",
+            "granit.browsing.page.acquire_duration",
             unit: "s",
             description: "Time spent waiting for a free page on AcquirePageAsync.");
 
         _renderDuration = meter.CreateHistogram<double>(
-            "granit.browsing.render.duration",
+            "granit.browsing.page.render_duration",
             unit: "s",
             description: "Duration of a render operation (screenshot, PDF, navigate).");
 
         _errors = meter.CreateCounter<long>(
-            "granit.browsing.error",
+            "granit.browsing.page.error",
             description: "Number of provider-surfaced errors (timeouts, navigation failures, capability mismatches).");
 
         _poolDrainTimeouts = meter.CreateCounter<long>(
-            "granit.browsing.pool.drain.timeout",
-            description: "Number of pool DrainAsync operations that exceeded the configured DrainTimeout (force-disposed). VULN-200.");
+            "granit.browsing.pool.drain_timeout",
+            description: "Number of pool DrainAsync operations that exceeded the configured DrainTimeout (force-disposed).");
     }
 
     /// <summary>Records a page acquisition.</summary>
@@ -107,5 +109,6 @@ public sealed class BrowsingMetrics
         _poolDrainTimeouts.Add(1, new TagList
         {
             { TagEngine, engine },
+            { TagTenantId, DefaultTenant },
         });
 }

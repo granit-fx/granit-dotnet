@@ -1,12 +1,12 @@
 {
   "culture": "fr",
   "texts": {
-    "PermissionGroup:Granit.Browsing": "Navigation headless",
-    "Permission:Granit.Browsing.Pages.Acquire": "Acquérir une page du pool de navigateurs",
-    "Permission:Granit.Browsing.Pages.Navigate": "Naviguer une page vers une URL",
-    "Permission:Granit.Browsing.Pages.InjectScript": "Injecter des scripts ou évaluer du JavaScript dans une page",
-    "Permission:Granit.Browsing.Pages.BypassCsp": "Contourner les en-têtes Content-Security-Policy d'une page",
-    "Permission:Granit.Browsing.Pages.UseFileScheme": "Utiliser le schéma file:// pour la navigation",
+    "PermissionGroup:Browsing": "Navigation headless",
+    "Permission:Browsing.Pages.Acquire": "Acquérir une page du pool de navigateurs",
+    "Permission:Browsing.Pages.Navigate": "Naviguer une page vers une URL",
+    "Permission:Browsing.Pages.InjectScript": "Injecter des scripts ou évaluer du JavaScript dans une page",
+    "Permission:Browsing.Pages.BypassCsp": "Contourner les en-têtes Content-Security-Policy d'une page",
+    "Permission:Browsing.Pages.UseFileScheme": "Utiliser le schéma file:// pour la navigation",
     "Sandbox:CspBypassDenied": "Contournement de Content-Security-Policy refusé par le profil sandbox actif.",
     "Sandbox:ScriptInjectionDenied": "Injection de script refusée par le profil sandbox actif.",
     "Sandbox:ExecutablePathRejected": "Le chemin de l'exécutable du navigateur '{0}' est en dehors du préfixe autorisé '{1}'.",

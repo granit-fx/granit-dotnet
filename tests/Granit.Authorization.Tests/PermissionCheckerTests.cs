@@ -263,7 +263,7 @@ public sealed class PermissionCheckerTests
     [Fact]
     public async Task IsGrantedAsync_AlwaysAllowButNotAuthenticated_ReturnsFalse()
     {
-        // Arrange — VULN-001: AlwaysAllow must NOT bypass authentication check
+        // Arrange — AlwaysAllow must NOT bypass authentication check.
         PermissionChecker checker = BuildChecker(
             alwaysAllow: true,
             isAuthenticated: false);

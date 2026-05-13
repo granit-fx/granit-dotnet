@@ -147,7 +147,7 @@ public sealed class LlmTimelineSummarizerTests
         prompt.ShouldContain(TestEntityId.ToString());
         prompt.ShouldContain("Entry body 0");
         prompt.ShouldContain("Entry body 1");
-        // VULN-002: AuthorName is pseudonymized — prompt contains "User-{first8chars}" not the real name
+        // AuthorName is pseudonymized — prompt contains "User-{first8chars}" not the real name.
         prompt.ShouldContain("User-aaaaaaaa");
         prompt.ShouldNotContain("User 0");
     }

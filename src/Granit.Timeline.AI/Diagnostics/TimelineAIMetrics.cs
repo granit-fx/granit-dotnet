@@ -119,7 +119,7 @@ public sealed class TimelineAIMetrics(IMeterFactory meterFactory)
         });
 
     /// <summary>
-    /// Sanitizes entity type to prevent metrics cardinality explosion (VULN-211).
+    /// Sanitizes entity type to prevent metrics cardinality explosion.
     /// Rejects values that are too long or contain non-alphanumeric characters.
     /// </summary>
     private static string SanitizeEntityType(string entityType)

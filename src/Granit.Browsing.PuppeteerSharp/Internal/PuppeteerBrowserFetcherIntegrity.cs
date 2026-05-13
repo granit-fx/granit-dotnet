@@ -11,7 +11,7 @@ namespace Granit.Browsing.PuppeteerSharp.Internal;
 /// Gates <c>BrowserFetcher.DownloadAsync</c>: refuses the network download in
 /// production unless a host explicitly opts-in (<c>SkipChromiumDownload = true</c> with
 /// <c>ChromiumExecutablePath</c> set), and logs a structured warning whenever the
-/// download path is exercised. Closes VULN-302.
+/// download path is exercised.
 /// </summary>
 internal sealed partial class PuppeteerBrowserFetcherIntegrity(
     IHostEnvironment hostEnvironment,

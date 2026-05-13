@@ -81,7 +81,7 @@ public sealed class HttpResilienceServiceCollectionExtensionsTests
         client.ShouldNotBeNull();
     }
 
-    // AddAuthTokenPropagation tests removed in the VULN-100 fix — the handler
+    // AddAuthTokenPropagation tests were removed when the handler was — the handler
     // it registered was a confused-deputy vulnerability. Its replacement lives
     // in Granit.Oidc.TokenManagement (AddOnBehalfOfHttpClient) and has its own
     // test suite there.

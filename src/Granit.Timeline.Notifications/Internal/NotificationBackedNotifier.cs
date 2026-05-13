@@ -35,7 +35,7 @@ internal sealed class NotificationBackedNotifier(
             return;
         }
 
-        // VULN-206: Truncate body and use AuthorId only (AuthorName is PII / [SensitiveData])
+        // Truncate body and use AuthorId only (AuthorName is PII / [SensitiveData]).
         TimelineCommentNotificationData data = new(
             entry.EntityType,
             entry.EntityId,
@@ -75,7 +75,7 @@ internal sealed class NotificationBackedNotifier(
             return;
         }
 
-        // VULN-206: Truncate body and use AuthorId only
+        // Truncate body and use AuthorId only.
         TimelineMentionNotificationData data = new(
             entry.EntityType,
             entry.EntityId,

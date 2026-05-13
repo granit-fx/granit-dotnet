@@ -18,9 +18,9 @@ namespace Granit.Browsing.PuppeteerSharp.Internal;
 /// without racing.
 /// </summary>
 /// <remarks>
-/// Closes VULN-101 (provider-specific race when several <c>page.Request +=</c>
-/// subscribers compete to call <c>ContinueAsync</c>/<c>AbortAsync</c>) by guaranteeing a
-/// single subscription that hand-rolls dispatch under the router's policy chain.
+/// Avoids the race that occurs when several <c>page.Request +=</c> subscribers compete
+/// to call <c>ContinueAsync</c>/<c>AbortAsync</c>, by guaranteeing a single subscription
+/// that hand-rolls dispatch under the router's policy chain.
 /// </remarks>
 internal sealed partial class PuppeteerRequestRouter : IAsyncDisposable
 {

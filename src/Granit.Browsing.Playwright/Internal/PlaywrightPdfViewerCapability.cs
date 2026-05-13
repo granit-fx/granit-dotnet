@@ -21,7 +21,7 @@ namespace Granit.Browsing.Playwright.Internal;
 /// <summary>
 /// Microsoft.Playwright implementation of <see cref="IPdfViewerCapability"/>
 /// (Chromium-only). Loads the PDF in Chromium's built-in PDF viewer via a <c>file://</c>
-/// URL pointing at a securely-staged temp file (VULN-102) and counts pages with PdfPig
+/// URL pointing at a securely-staged temp file, and counts pages with PdfPig
 /// instead of the fragile substring heuristic.
 /// </summary>
 internal sealed partial class PlaywrightPdfViewerCapability(
@@ -161,7 +161,7 @@ internal sealed partial class PlaywrightPdfDocumentPage(
         await page.UnderlyingPage.SetViewportSizeAsync(dimensions.Width, dimensions.Height).ConfigureAwait(false);
         // pageIndex is a server-validated int (ArgumentOutOfRangeException above) — no
         // user-controllable script payload reaches EvaluateAsync. Suppress GRBROWSING001
-        // (VULN-203) which can't see the upstream bound check.
+        // which can't see the upstream bound check.
         string pageHashScript = "(async () => { try { window.location.hash = '#page=" +
             (pageIndex + 1).ToString(System.Globalization.CultureInfo.InvariantCulture) +
             "'; return true; } catch { return false; } })()";

@@ -9,7 +9,7 @@ namespace Granit.Authorization.EntityFrameworkCore.Stores;
 /// <summary>
 /// EF Core implementation of <see cref="IPermissionGrantStore"/>.
 /// Read queries use <c>AsNoTracking</c> for performance.
-/// Write operations handle TOCTOU races via unique-index catch (VULN-205).
+/// Write operations handle TOCTOU races via unique-index catch.
 /// </summary>
 internal sealed class EfCorePermissionGrantStore<TContext>(
     TContext context,
@@ -111,7 +111,7 @@ internal sealed class EfCorePermissionGrantStore<TContext>(
         }
         catch (DbUpdateException)
         {
-            // VULN-205 fix: TOCTOU race — concurrent grant for the same tuple hit
+            // TOCTOU race — concurrent grant for the same tuple hit
             // the unique index. Treat as idempotent no-op (grant already exists).
             return false;
         }

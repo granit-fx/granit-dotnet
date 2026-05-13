@@ -148,38 +148,121 @@ public sealed partial class IsolatedDbContextTests
     [Fact]
     public void EfCore_extension_methods_should_use_interceptor_DI_pattern()
     {
+        // Why Roslyn instead of grep: the previous plain-text scan tripped on any
+        // file that *mentioned* "AddDbContextFactory" anywhere — xmldoc, comments,
+        // string literals — and only required "ServiceLifetime.Scoped" to appear
+        // somewhere in the same file, with no link between the two. False positives
+        // (doc strings) and false negatives (a separate Scoped registration in the
+        // same file masking a 1-arg overload call) were both possible. Parsing the
+        // syntax tree lets us look at actual invocations only, and inspect their
+        // arguments directly.
         string srcDir = Path.Join(RepoRoot, "src");
+
+        // MigrationProgressDbContext bootstraps the migration runner before tenant
+        // interceptors are available; intentionally registered without them.
+        // Same exemption as the AddGranitDbContext / Configure*Module pairing test below.
+        HashSet<string> exemptedContexts = ["MigrationProgressDbContext"];
 
         List<string> violations = [];
 
-        foreach (string efProject in GetEfCoreProjectDirs(srcDir))
+        foreach (string csFile in Directory.GetFiles(srcDir, "*.cs", SearchOption.AllDirectories))
         {
-            string extensionsDir = Path.Join(efProject, "Extensions");
-            if (!Directory.Exists(extensionsDir))
+            if (csFile.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar, StringComparison.Ordinal) ||
+                csFile.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar, StringComparison.Ordinal))
             {
                 continue;
             }
 
-            foreach (string csFile in Directory.GetFiles(extensionsDir, "*.cs", SearchOption.AllDirectories))
-            {
-                string content = File.ReadAllText(csFile);
+            CancellationToken ct = TestContext.Current.CancellationToken;
+            Microsoft.CodeAnalysis.SyntaxTree tree =
+                Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(File.ReadAllText(csFile), path: csFile, cancellationToken: ct);
+            Microsoft.CodeAnalysis.SyntaxNode root = tree.GetRoot(ct);
 
-                if (!content.Contains("AddDbContextFactory", StringComparison.Ordinal))
+            foreach (Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax invocation
+                in root.DescendantNodes().OfType<Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax>())
+            {
+                if (!IsAddDbContextFactoryCall(invocation))
                 {
                     continue;
                 }
 
-                if (!content.Contains("ServiceLifetime.Scoped", StringComparison.Ordinal))
+                if (TryGetTypeArgumentName(invocation) is string typeArg && exemptedContexts.Contains(typeArg))
                 {
-                    violations.Add(Path.GetRelativePath(RepoRoot, csFile));
+                    continue;
+                }
+
+                if (!UsesInterceptorAwareOverload(invocation))
+                {
+                    Microsoft.CodeAnalysis.FileLinePositionSpan loc = invocation.GetLocation().GetLineSpan();
+                    violations.Add(
+                        $"{Path.GetRelativePath(RepoRoot, csFile)}:{loc.StartLinePosition.Line + 1}");
                 }
             }
         }
 
         violations.ShouldBeEmpty(
-            "AddDbContextFactory must use the (sp, options) overload with ServiceLifetime.Scoped " +
-            "to resolve AuditedEntityInterceptor / SoftDeleteInterceptor. " +
-            $"Violators: {string.Join(", ", violations)}");
+            "AddDbContextFactory<TContext> must use the (IServiceProvider sp, DbContextOptionsBuilder opts) " +
+            "configure overload so that AuditedEntityInterceptor / SoftDeleteInterceptor are resolved " +
+            "from DI. Violators: " + string.Join(", ", violations));
+    }
+
+    /// <summary>
+    /// True when the invocation is a call to <c>AddDbContextFactory</c> (with or without
+    /// an explicit type argument list, on a member-access or a direct identifier).
+    /// </summary>
+    private static bool IsAddDbContextFactoryCall(Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax invocation)
+    {
+        Microsoft.CodeAnalysis.CSharp.Syntax.SimpleNameSyntax? name = invocation.Expression switch
+        {
+            Microsoft.CodeAnalysis.CSharp.Syntax.MemberAccessExpressionSyntax m => m.Name,
+            Microsoft.CodeAnalysis.CSharp.Syntax.SimpleNameSyntax s => s,
+            _ => null,
+        };
+        return name?.Identifier.ValueText == "AddDbContextFactory";
+    }
+
+    /// <summary>
+    /// Returns the bare type argument name (e.g. <c>"MigrationProgressDbContext"</c>) for
+    /// invocations of the form <c>AddDbContextFactory&lt;TContext&gt;(...)</c>, or
+    /// <see langword="null"/> when the type argument can't be statically read.
+    /// </summary>
+    private static string? TryGetTypeArgumentName(Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax invocation)
+    {
+        Microsoft.CodeAnalysis.CSharp.Syntax.SimpleNameSyntax? name = invocation.Expression switch
+        {
+            Microsoft.CodeAnalysis.CSharp.Syntax.MemberAccessExpressionSyntax m => m.Name,
+            Microsoft.CodeAnalysis.CSharp.Syntax.SimpleNameSyntax s => s,
+            _ => null,
+        };
+        if (name is Microsoft.CodeAnalysis.CSharp.Syntax.GenericNameSyntax g && g.TypeArgumentList.Arguments.Count == 1)
+        {
+            return g.TypeArgumentList.Arguments[0].ToString();
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// True when at least one argument is a lambda with two parameters
+    /// (the <c>(sp, options) =&gt;</c> form). The other overloads accept either no configure
+    /// callback at all or a single-parameter <c>options =&gt;</c> lambda — neither of which
+    /// can resolve interceptors from DI.
+    /// </summary>
+    private static bool UsesInterceptorAwareOverload(Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax invocation)
+    {
+        foreach (Microsoft.CodeAnalysis.CSharp.Syntax.ArgumentSyntax arg in invocation.ArgumentList.Arguments)
+        {
+            int paramCount = arg.Expression switch
+            {
+                Microsoft.CodeAnalysis.CSharp.Syntax.ParenthesizedLambdaExpressionSyntax p => p.ParameterList.Parameters.Count,
+                Microsoft.CodeAnalysis.CSharp.Syntax.SimpleLambdaExpressionSyntax => 1,
+                _ => -1,
+            };
+            if (paramCount == 2)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     [Fact]

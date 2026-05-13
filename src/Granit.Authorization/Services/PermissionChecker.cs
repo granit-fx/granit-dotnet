@@ -36,7 +36,7 @@ internal sealed class PermissionChecker(
     {
         GranitAuthorizationOptions opts = options.Value;
 
-        // VULN-001 fix: authentication MUST be checked before AlwaysAllow to prevent
+        // Authentication MUST be checked before AlwaysAllow to prevent
         // a configuration error from granting access to anonymous users.
         if (!currentUserService.IsAuthenticated)
         {
@@ -50,7 +50,7 @@ internal sealed class PermissionChecker(
 
         IReadOnlyList<string> roles = currentUserService.GetRoles();
 
-        // VULN-301 fix: case-insensitive comparison prevents mismatch with IdP role casing.
+        // Case-insensitive comparison prevents mismatch with IdP role casing.
         if (opts.AdminRoles.Any(adminRole => roles.Any(
             r => string.Equals(r, adminRole, StringComparison.OrdinalIgnoreCase))))
         {

@@ -60,7 +60,7 @@ internal sealed partial class LlmTemplateAssistant(
                 return null;
             }
 
-            // Strip potentially dangerous HTML elements from LLM output (VULN-100).
+            // Strip potentially dangerous HTML elements from LLM output.
             // Full Scriban syntax validation is deferred to the template engine at render time.
             template = SanitizeHtmlOutput(template);
 

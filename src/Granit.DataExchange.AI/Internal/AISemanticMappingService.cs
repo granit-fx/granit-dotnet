@@ -56,7 +56,7 @@ internal sealed partial class AISemanticMappingService(
         DataExchangeAIOptions opts = options.Value;
 
         // Only include preview rows if the option is explicitly enabled (GDPR opt-in)
-        // Truncate to configured limit to prevent unbounded prompt size (VULN-209)
+        // Truncate to configured limit to prevent unbounded prompt size.
         IReadOnlyList<string[]>? effectivePreview = GetEffectivePreview(opts, previewRows);
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(opts.TimeoutSeconds));
@@ -80,7 +80,7 @@ internal sealed partial class AISemanticMappingService(
 
             IReadOnlyList<SemanticMappingSuggestion> suggestions = ParseSuggestions(responseText);
 
-            // Validate LLM output against known properties and headers (VULN-105)
+            // Validate LLM output against known properties and headers.
             HashSet<string> validTargets = new(targetFields.Select(f => f.PropertyPath), StringComparer.OrdinalIgnoreCase);
             HashSet<string> validSources = new(headers, StringComparer.OrdinalIgnoreCase);
 

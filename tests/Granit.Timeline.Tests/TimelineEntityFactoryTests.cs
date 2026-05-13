@@ -79,7 +79,7 @@ public sealed class TimelineEntityFactoryTests
         _currentUser.UserName.Returns((string?)null);
         AuditContext context = BuildContext();
 
-        // VULN-302: Domain guards now reject empty authorId
+        // Domain guards now reject empty authorId.
         Should.Throw<ArgumentException>(() =>
             TimelineEntityFactory.CreateEntry(
                 "Patient", "p-1", TimelineEntryType.Comment, "Hello", null, context));

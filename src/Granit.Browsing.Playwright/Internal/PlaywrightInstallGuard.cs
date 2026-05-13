@@ -7,8 +7,8 @@ namespace Granit.Browsing.Playwright.Internal;
 /// <summary>
 /// Decides whether the bundled <c>Microsoft.Playwright.Program.Main(["install"])</c>
 /// auto-install may run, and refuses to start the browser when a production host has
-/// not pre-provisioned the binaries. Closes VULN-401 (unauthenticated browser-binary
-/// fetch on first request in a production host).
+/// not pre-provisioned the binaries, preventing an unauthenticated browser-binary
+/// fetch on first request in a production host.
 /// </summary>
 internal static class PlaywrightInstallGuard
 {

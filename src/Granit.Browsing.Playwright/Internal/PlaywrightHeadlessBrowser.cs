@@ -349,15 +349,15 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
 
             PlaywrightOptions opts = _playwrightOptions.Value;
 
-            // VULN-103: refuse privileged flags outside a vetted container. Playwright
-            // doesn't expose a DisableSandbox option, but a caller could smuggle
-            // --no-sandbox through ExtraArgs — PrivilegedFlagGuard scans for it.
+            // Refuse privileged flags outside a vetted container. Playwright doesn't
+            // expose a DisableSandbox option, but a caller could smuggle --no-sandbox
+            // through ExtraArgs — PrivilegedFlagGuard scans for it.
             PrivilegedFlagGuard.EnsureSafe(disableSandbox: false, opts.ExtraArgs, _logger);
 
-            // VULN-401: refuse to start when production hosts have not pre-provisioned browsers.
+            // Refuse to start when production hosts have not pre-provisioned browsers.
             PlaywrightInstallGuard.EnsureBrowsersProvisioned(opts, _hostEnvironment);
 
-            // VULN-205: refuse a browser binary outside the sandbox-allowed prefix.
+            // Refuse a browser binary outside the sandbox-allowed prefix.
             string? executablePath = PlaywrightExecutablePathValidator.Validate(
                 opts.ExecutablePath,
                 _sandbox.AllowedExecutablePathPrefix);
