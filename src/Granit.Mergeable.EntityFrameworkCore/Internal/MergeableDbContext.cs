@@ -1,5 +1,4 @@
 using Granit.DataFiltering;
-using Granit.Mergeable.EntityFrameworkCore.Domain;
 using Granit.Mergeable.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;

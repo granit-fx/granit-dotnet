@@ -1,4 +1,4 @@
-namespace Granit.Mergeable.EntityFrameworkCore.Domain;
+namespace Granit.Mergeable.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Cached merge result keyed by an idempotency key. A second call with the same key + same

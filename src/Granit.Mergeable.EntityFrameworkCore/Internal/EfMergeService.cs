@@ -5,7 +5,6 @@ using Granit.Domain;
 using Granit.Encryption;
 using Granit.Guids;
 using Granit.Mergeable.Domain;
-using Granit.Mergeable.EntityFrameworkCore.Domain;
 using Granit.Mergeable.Exceptions;
 using Granit.MultiTenancy;
 using Granit.Timing;

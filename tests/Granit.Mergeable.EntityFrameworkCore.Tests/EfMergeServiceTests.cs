@@ -3,7 +3,6 @@ using Granit.Encryption;
 using Granit.Guids;
 using Granit.Mergeable;
 using Granit.Mergeable.Domain;
-using Granit.Mergeable.EntityFrameworkCore;
 using Granit.Mergeable.EntityFrameworkCore.Internal;
 using Granit.Mergeable.EntityFrameworkCore.Options;
 using Granit.Mergeable.Exceptions;
@@ -273,7 +272,7 @@ public sealed class EfMergeServiceTests
         // InMemory provider does not support ExecuteUpdateAsync).
         await using (MergeableDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken))
         {
-            Domain.MergeIdempotencyEntry row = await db.MergeIdempotencyEntries
+            MergeIdempotencyEntry row = await db.MergeIdempotencyEntries
                 .FirstAsync(TestContext.Current.CancellationToken);
             db.Entry(row).Property(e => e.ResultMac).CurrentValue = new string('0', 64);
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -327,7 +326,7 @@ public sealed class EfMergeServiceTests
 
         // Confirm the encrypted payload, once decoded, contains neither name.
         await using MergeableDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
-        Domain.MergeIdempotencyEntry entry = await db.MergeIdempotencyEntries
+        MergeIdempotencyEntry entry = await db.MergeIdempotencyEntries
             .FirstAsync(TestContext.Current.CancellationToken);
         string? decrypted = _encryption.Decrypt(entry.ResultJson);
         decrypted.ShouldNotBeNull();

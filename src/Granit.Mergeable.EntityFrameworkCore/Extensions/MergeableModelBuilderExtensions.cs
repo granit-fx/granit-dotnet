@@ -1,4 +1,4 @@
-using Granit.Mergeable.EntityFrameworkCore.Domain;
+using Granit.Mergeable.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Mergeable.EntityFrameworkCore.Extensions;
