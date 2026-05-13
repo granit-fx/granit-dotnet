@@ -1,7 +1,9 @@
 using Granit.Caching.StackExchangeRedis.Extensions;
 using Granit.Caching.StackExchangeRedis.Options;
 using Granit.Modularity;
+using Granit.Observability;
 using Microsoft.Extensions.Configuration;
+using OpenTelemetry.Trace;
 
 namespace Granit.Caching.StackExchangeRedis;
 
@@ -40,6 +42,13 @@ public sealed class GranitCachingStackExchangeRedisModule : GranitModule
     }
 
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddGranitCachingRedis();
+
+        // Auto-wire StackExchange.Redis OTel instrumentation when Granit.Observability
+        // is hosted. AddRedisInstrumentation() with no argument resolves the
+        // IConnectionMultiplexer registered above from the service provider.
+        GranitOpenTelemetryRegistry.RegisterTracing(t => t.AddRedisInstrumentation());
+    }
 }

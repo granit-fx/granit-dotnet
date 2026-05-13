@@ -1,6 +1,10 @@
 using Granit.Modularity;
+using Granit.Observability;
 using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Persistence.EntityFrameworkCore.Postgres.Extensions;
+using Npgsql;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 
 namespace Granit.Persistence.EntityFrameworkCore.Postgres;
 
@@ -22,6 +26,14 @@ namespace Granit.Persistence.EntityFrameworkCore.Postgres;
 public sealed class GranitPersistenceEntityFrameworkCorePostgresModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Builder.AddGranitPostgres();
+
+        // Auto-wire Npgsql OTel instrumentation (traces + metrics) when
+        // Granit.Observability is hosted. Adds the "Npgsql" ActivitySource and the
+        // Npgsql Meter to the tracer/meter provider.
+        GranitOpenTelemetryRegistry.RegisterTracing(t => t.AddNpgsql());
+        GranitOpenTelemetryRegistry.RegisterMetrics(m => m.AddNpgsqlInstrumentation());
+    }
 }

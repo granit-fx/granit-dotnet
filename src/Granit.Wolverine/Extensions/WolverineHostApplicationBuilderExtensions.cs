@@ -57,6 +57,10 @@ public static class WolverineHostApplicationBuilderExtensions
         Action<WolverineOptions>? configure = null)
     {
         GranitActivitySourceRegistry.Register(Diagnostics.WolverineActivitySource.Name);
+        // Register the native Wolverine ActivitySource so wolverine.publish /
+        // wolverine.handler spans surface in Tempo (Granit.Wolverine.Diagnostics
+        // only exposes the bridge spans).
+        GranitActivitySourceRegistry.Register("Wolverine");
 
         // Metrics: IMeterFactory-backed counters for message throughput, retries, claim checks.
         builder.Services.TryAddSingleton<WolverineMetrics>();

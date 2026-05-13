@@ -17,10 +17,12 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AWS" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
+    <ProjectReference Include="..\Granit.Observability\Granit.Observability.csproj" />
   </ItemGroup>
 
 </Project>

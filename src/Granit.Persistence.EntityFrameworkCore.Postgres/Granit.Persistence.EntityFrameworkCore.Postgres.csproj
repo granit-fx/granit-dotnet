@@ -14,10 +14,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Npgsql.OpenTelemetry" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore.Hosting\Granit.Persistence.EntityFrameworkCore.Hosting.csproj" />
+    <ProjectReference Include="..\Granit.Observability\Granit.Observability.csproj" />
   </ItemGroup>
 
 </Project>

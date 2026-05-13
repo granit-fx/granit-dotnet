@@ -474,7 +474,8 @@
     {
       "name": "Granit.BlobStorage.S3",
       "deps": [
-        "Granit.BlobStorage"
+        "Granit.BlobStorage",
+        "Granit.Observability"
       ],
       "framework": "net10.0"
     },
@@ -516,7 +517,8 @@
     {
       "name": "Granit.Caching.StackExchangeRedis",
       "deps": [
-        "Granit.Caching"
+        "Granit.Caching",
+        "Granit.Observability"
       ],
       "framework": "net10.0"
     },
@@ -1584,7 +1586,8 @@
     {
       "name": "Granit.Persistence.EntityFrameworkCore.Postgres",
       "deps": [
-        "Granit.Persistence.EntityFrameworkCore.Hosting"
+        "Granit.Persistence.EntityFrameworkCore.Hosting",
+        "Granit.Observability"
       ],
       "framework": "net10.0"
     },
@@ -9945,8 +9948,15 @@
       "kind": "class",
       "project": "Granit.BlobStorage.S3",
       "file": "src/Granit.BlobStorage.S3/GranitBlobStorageS3Module.cs",
-      "line": 14,
-      "members": []
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "S3BlobOptions",
@@ -11394,7 +11404,7 @@
       "kind": "class",
       "project": "Granit.Caching.StackExchangeRedis",
       "file": "src/Granit.Caching.StackExchangeRedis/GranitCachingStackExchangeRedisModule.cs",
-      "line": 30,
+      "line": 32,
       "members": [
         {
           "name": "IsEnabled",
@@ -25469,13 +25479,29 @@
       "kind": "class",
       "project": "Granit.Mergeable.EntityFrameworkCore",
       "file": "src/Granit.Mergeable.EntityFrameworkCore/Extensions/MergeableModelBuilderExtensions.cs",
-      "line": 12,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureMergeableModule",
           "kind": "method",
           "signature": "ConfigureMergeableModule(this ModelBuilder modelBuilder)",
           "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitMergeableDbProperties",
+      "fqn": "Granit.Mergeable.EntityFrameworkCore.GranitMergeableDbProperties",
+      "kind": "class",
+      "project": "Granit.Mergeable.EntityFrameworkCore",
+      "file": "src/Granit.Mergeable.EntityFrameworkCore/GranitMergeableDbProperties.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
         }
       ]
     },
@@ -29656,6 +29682,22 @@
       ]
     },
     {
+      "name": "GranitOpenTelemetryRegistry",
+      "fqn": "Granit.Observability.GranitOpenTelemetryRegistry",
+      "kind": "class",
+      "project": "Granit.Observability",
+      "file": "src/Granit.Observability/GranitOpenTelemetryRegistry.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "RegisterTracing",
+          "kind": "method",
+          "signature": "RegisterTracing(Action<TracerProviderBuilder> configure)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "ObservabilityOptions",
       "fqn": "Granit.Observability.Options.ObservabilityOptions",
       "kind": "class",
@@ -32516,7 +32558,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Postgres",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Postgres/GranitPersistenceEntityFrameworkCorePostgresModule.cs",
-      "line": 22,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",

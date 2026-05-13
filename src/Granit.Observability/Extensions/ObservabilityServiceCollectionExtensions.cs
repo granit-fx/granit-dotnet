@@ -141,6 +141,14 @@ public static class ObservabilityServiceCollectionExtensions
                     .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation();
 
+                // Apply tracing contributors declared by SDK-embedding modules
+                // (Redis, Npgsql, AWS, ...). See GranitOpenTelemetryRegistry.
+                foreach (Action<TracerProviderBuilder> contributor in
+                    GranitOpenTelemetryRegistry.GetTracingContributors())
+                {
+                    contributor(tracing);
+                }
+
                 if (!crossCuttingOtlpActive)
                 {
                     tracing.AddOtlpExporter(otlp => otlp.Endpoint = new Uri(options.OtlpEndpoint));
@@ -156,6 +164,13 @@ public static class ObservabilityServiceCollectionExtensions
                 metrics
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation();
+
+                // Apply metrics contributors declared by SDK-embedding modules.
+                foreach (Action<MeterProviderBuilder> contributor in
+                    GranitOpenTelemetryRegistry.GetMetricsContributors())
+                {
+                    contributor(metrics);
+                }
 
                 if (!crossCuttingOtlpActive)
                 {

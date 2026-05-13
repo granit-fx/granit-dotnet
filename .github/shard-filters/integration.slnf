@@ -38,6 +38,7 @@
       "src/Granit.Identity/Granit.Identity.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
       "src/Granit.MultiTenancy/Granit.MultiTenancy.csproj",
+      "src/Granit.Observability/Granit.Observability.csproj",
       "src/Granit.OpenIddict.Endpoints/Granit.OpenIddict.Endpoints.csproj",
       "src/Granit.OpenIddict.EntityFrameworkCore/Granit.OpenIddict.EntityFrameworkCore.csproj",
       "src/Granit.OpenIddict.Server/Granit.OpenIddict.Server.csproj",

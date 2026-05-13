@@ -1,4 +1,6 @@
 using Granit.Modularity;
+using Granit.Observability;
+using OpenTelemetry.Trace;
 
 namespace Granit.BlobStorage.S3;
 
@@ -8,7 +10,13 @@ namespace Granit.BlobStorage.S3;
 /// <remarks>
 /// Registers <c>S3BlobClient</c> as both <c>IBlobStoreProvider</c> and
 /// <c>IPresignedUrlProvider</c> when <see cref="Extensions.BlobStorageS3HostApplicationBuilderExtensions.AddGranitBlobStorageS3"/>
-/// is called.
+/// is called. Also contributes AWS SDK OTel tracing to <see cref="GranitOpenTelemetryRegistry"/>
+/// so S3 calls appear as spans when <c>Granit.Observability</c> is hosted.
 /// </remarks>
 [DependsOn(typeof(GranitBlobStorageModule))]
-public sealed class GranitBlobStorageS3Module : GranitModule;
+public sealed class GranitBlobStorageS3Module : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        GranitOpenTelemetryRegistry.RegisterTracing(t => t.AddAWSInstrumentation());
+}
