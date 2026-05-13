@@ -20283,11 +20283,11 @@
       "members": []
     },
     {
-      "name": "IOMetrics",
-      "fqn": "Granit.IO.Diagnostics.IOMetrics",
+      "name": "IoMetrics",
+      "fqn": "Granit.IO.Diagnostics.IoMetrics",
       "kind": "class",
       "project": "Granit.IO",
-      "file": "src/Granit.IO/Diagnostics/IOMetrics.cs",
+      "file": "src/Granit.IO/Diagnostics/IoMetrics.cs",
       "line": 10,
       "members": [
         {
@@ -20311,11 +20311,11 @@
       ]
     },
     {
-      "name": "IOServiceCollectionExtensions",
-      "fqn": "Granit.IO.Extensions.IOServiceCollectionExtensions",
+      "name": "IoServiceCollectionExtensions",
+      "fqn": "Granit.IO.Extensions.IoServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.IO",
-      "file": "src/Granit.IO/Extensions/IOServiceCollectionExtensions.cs",
+      "file": "src/Granit.IO/Extensions/IoServiceCollectionExtensions.cs",
       "line": 13,
       "members": [
         {
@@ -20368,19 +20368,22 @@
       ]
     },
     {
+      "name": "IoLocalizationResource",
+      "fqn": "Granit.IO.IoLocalizationResource",
+      "kind": "class",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/IoLocalizationResource.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "TempFileOptions",
       "fqn": "Granit.IO.Options.TempFileOptions",
       "kind": "class",
       "project": "Granit.IO",
       "file": "src/Granit.IO/Options/TempFileOptions.cs",
-      "line": 8,
+      "line": 6,
       "members": [
-        {
-          "name": "Combine",
-          "kind": "method",
-          "signature": "Combine(Path.GetTempPath()",
-          "returnType": "string DefaultRootDirectory { get; } = Path."
-        },
         {
           "name": "RootDirectory",
           "kind": "property",
@@ -20388,9 +20391,9 @@
           "returnType": "string?"
         },
         {
-          "name": "FromMinutes",
+          "name": "FromHours",
           "kind": "method",
-          "signature": "FromMinutes(30)",
+          "signature": "FromHours(1)",
           "returnType": "TimeSpan MaxLifetime { get; set; } = TimeSpan."
         },
         {
@@ -20416,12 +20419,6 @@
           "kind": "property",
           "signature": "bool RunJanitor",
           "returnType": "bool"
-        },
-        {
-          "name": "EffectiveRootDirectory",
-          "kind": "property",
-          "signature": "string EffectiveRootDirectory",
-          "returnType": "string"
         }
       ]
     },

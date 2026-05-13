@@ -25,6 +25,13 @@ public static class HttpResilienceServiceCollectionExtensions
     /// timeout events) is emitted by the upstream <c>Polly</c> meter shipped with
     /// <c>Microsoft.Extensions.Http.Resilience</c>; enable it in OpenTelemetry by adding
     /// the meter name <c>"Polly"</c>.
+    /// <para>
+    /// <b>SSRF posture.</b> This pipeline does <i>not</i> validate outbound destinations:
+    /// it will faithfully retry whatever <c>RequestUri</c> the caller supplies. When the
+    /// request URI is influenced by untrusted input, compose this client with
+    /// <c>Granit.Http.Security</c>'s SSRF protections (allowlist resolver + private-network
+    /// guard) so retries cannot amplify probes against internal infrastructure.
+    /// </para>
     /// </remarks>
     public static IHttpClientBuilder AddGranitHttpClient(
         this IServiceCollection services,
