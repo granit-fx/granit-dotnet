@@ -20,6 +20,19 @@
     <EmbeddedResource Include="Templates/Billing.Invoice.fr.html"
         LogicalName="Granit.Templating.Tests.Templates.Billing.Invoice.fr.html"
         WithCulture="false" />
+    <EmbeddedResource Include="Templates/Region.Greeting.html"
+        LogicalName="Granit.Templating.Tests.Templates.Region.Greeting.html" />
+    <EmbeddedResource Include="Templates/Region.Greeting.pt.html"
+        LogicalName="Granit.Templating.Tests.Templates.Region.Greeting.pt.html"
+        WithCulture="false" />
+    <EmbeddedResource Include="Templates/Region.Greeting.pt-BR.html"
+        LogicalName="Granit.Templating.Tests.Templates.Region.Greeting.pt-BR.html"
+        WithCulture="false" />
+    <EmbeddedResource Include="Templates/Region.Onboarding.html"
+        LogicalName="Granit.Templating.Tests.Templates.Region.Onboarding.html" />
+    <EmbeddedResource Include="Templates/Region.Onboarding.pt.html"
+        LogicalName="Granit.Templating.Tests.Templates.Region.Onboarding.pt.html"
+        WithCulture="false" />
   </ItemGroup>
 
   <ItemGroup>
