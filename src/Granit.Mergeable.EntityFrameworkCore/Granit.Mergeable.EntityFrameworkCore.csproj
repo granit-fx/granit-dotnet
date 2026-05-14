@@ -10,6 +10,9 @@
     <InternalsVisibleTo Include="Granit.Mergeable.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="Granit.Mergeable.BackgroundJobs" />
     <InternalsVisibleTo Include="Granit.Mergeable.BackgroundJobs.Tests" />
+    <!-- granit-business: Parties merge integration tests wire EfMergeService<Party>
+         + MergeableDbContext directly against a Postgres testcontainer. -->
+    <InternalsVisibleTo Include="Granit.Parties.Mergeable.Tests.Integration" />
   </ItemGroup>
 
   <ItemGroup>
