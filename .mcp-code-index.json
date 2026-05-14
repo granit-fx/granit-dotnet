@@ -1712,6 +1712,7 @@
       "deps": [
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
+        "Granit.Entities.Abstractions",
         "Granit.QueryEngine",
         "Granit.Validation"
       ],
@@ -15608,6 +15609,24 @@
       ]
     },
     {
+      "name": "EntityEndpointKind",
+      "fqn": "Granit.Entities.EntityEndpointKind",
+      "kind": "enum",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/EntityEndpointMetadata.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "EntityEndpointMetadata",
+      "fqn": "Granit.Entities.EntityEndpointMetadata",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/EntityEndpointMetadata.cs",
+      "line": 50,
+      "members": []
+    },
+    {
       "name": "EntityDefinitionServiceCollectionExtensions",
       "fqn": "Granit.Entities.Extensions.EntityDefinitionServiceCollectionExtensions",
       "kind": "class",
@@ -15694,7 +15713,7 @@
       "kind": "class",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/GranitEntitiesAbstractionsModule.cs",
-      "line": 17,
+      "line": 15,
       "members": []
     },
     {
@@ -35414,7 +35433,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.AspNetCore",
       "file": "src/Granit.QueryEngine.AspNetCore/Extensions/QueryEndpointRouteBuilderExtensions.cs",
-      "line": 22,
+      "line": 23,
       "members": []
     },
     {

@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
+using Granit.Entities;
 using Granit.QueryEngine.AspNetCore.Dtos;
 using Granit.QueryEngine.AspNetCore.Internal;
 using Granit.QueryEngine.AspNetCore.Options;
@@ -109,18 +110,26 @@ public static class QueryEndpointRouteBuilderExtensions
         Type? projectionType = definitionForProjection?.GetProjectionType();
         LambdaExpression? projectionExpression = definitionForProjection?.GetProjectionExpression();
 
+        IEndpointConventionBuilder listBuilder;
         if (projectionType is not null && projectionExpression is not null)
         {
             MethodInfo dispatch = typeof(QueryEndpointRouteBuilderExtensions)
                 .GetMethod(nameof(MapProjectedGetEndpoint), BindingFlags.NonPublic | BindingFlags.Static)!
                 .MakeGenericMethod(typeof(TEntity), projectionType);
 
-            dispatch.Invoke(null, [group, sourceProvider, projectionExpression, entityName]);
+            listBuilder = (IEndpointConventionBuilder)dispatch.Invoke(
+                null, [group, sourceProvider, projectionExpression, entityName])!;
         }
         else
         {
-            MapNonProjectedGetEndpoint<TEntity>(group, sourceProvider, entityName);
+            listBuilder = MapNonProjectedGetEndpoint<TEntity>(group, sourceProvider, entityName);
         }
+
+        // Tag the endpoint so entity-discovery surfaces (Granit.Entities.Endpoints)
+        // can read RoutePattern.RawText off EndpointDataSource and expose the real
+        // route on EntityDiscoveryLinks.List — same mechanism ASP.NET's own OpenAPI
+        // generator uses for operation/tag/produces lookups.
+        listBuilder.WithMetadata(new EntityEndpointMetadata(typeof(TEntity), EntityEndpointKind.List));
 
         // GET /meta — query metadata
         if (options.IncludeMetaEndpoint)
@@ -137,7 +146,7 @@ public static class QueryEndpointRouteBuilderExtensions
         return group;
     }
 
-    private static void MapNonProjectedGetEndpoint<TEntity>(
+    private static RouteHandlerBuilder MapNonProjectedGetEndpoint<TEntity>(
         RouteGroupBuilder group,
         Func<IServiceProvider, IQueryable<TEntity>> sourceProvider,
         string entityName)
@@ -146,7 +155,7 @@ public static class QueryEndpointRouteBuilderExtensions
         // Lambda returns different typed results (Ok<GroupedResult<T>> / Ok<PagedResult<T>>)
         // depending on the query mode — IResult is the only common type.
 #pragma warning disable GRAPI001 // Results.Ok is needed here for polymorphic return
-        group.MapGet("/", async (
+        return group.MapGet("/", async (
             [FromServices] IQueryEngine<TEntity> engine,
             BindableQueryRequest request,
             HttpContext httpContext,
@@ -178,7 +187,7 @@ public static class QueryEndpointRouteBuilderExtensions
             DescribeQueryEndpointAsync(op, ctx, typeof(PagedResult<TEntity>), typeof(GroupedResult<TEntity>), ct));
     }
 
-    private static void MapProjectedGetEndpoint<TEntity, TDto>(
+    private static RouteHandlerBuilder MapProjectedGetEndpoint<TEntity, TDto>(
         RouteGroupBuilder group,
         Func<IServiceProvider, IQueryable<TEntity>> sourceProvider,
         LambdaExpression projectionLambda,
@@ -192,7 +201,7 @@ public static class QueryEndpointRouteBuilderExtensions
         // ExecuteAsync<TDto>); grouped applies the same projection in-memory after entity
         // materialization so GroupedResult.Items[] surfaces TDto, never the raw entity.
 #pragma warning disable GRAPI001 // Results.Ok is needed here for polymorphic return
-        group.MapGet("/", async (
+        return group.MapGet("/", async (
             [FromServices] IQueryEngine<TEntity> engine,
             BindableQueryRequest request,
             HttpContext httpContext,
