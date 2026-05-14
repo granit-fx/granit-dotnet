@@ -10,6 +10,9 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Mergeable.BackgroundJobs.Tests" />
+    <!-- granit-business: Parties merge integration tests assert the cleanup
+         service's retention sweep against a real Postgres testcontainer. -->
+    <InternalsVisibleTo Include="Granit.Parties.Mergeable.Tests.Integration" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
