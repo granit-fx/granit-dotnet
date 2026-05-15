@@ -56,7 +56,6 @@ public sealed class TwoSqlServerContainersFixture : IAsyncLifetime
     public string ConnectionStringA { get; private set; } = string.Empty;
     public string ConnectionStringB { get; private set; } = string.Empty;
 
-    [Obsolete("Required by xUnit IAsyncLifetime")]
     public async ValueTask InitializeAsync()
     {
         string? ciHost = Environment.GetEnvironmentVariable("MSSQL_HOST");
@@ -81,11 +80,11 @@ public sealed class TwoSqlServerContainersFixture : IAsyncLifetime
         else
         {
             // Local mode: use Testcontainers (requires Docker).
-            _containerA = new MsSqlBuilder()
+            _containerA = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
                 .WithPassword("Test_Password1!")
                 .Build();
 
-            _containerB = new MsSqlBuilder()
+            _containerB = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
                 .WithPassword("Test_Password1!")
                 .Build();
 
