@@ -28,6 +28,9 @@ namespace Granit.Authorization.Endpoints;
 public sealed class GranitAuthorizationEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddWorkspaceContribution<AuthorizationWorkspaceContribution>();
+        context.Services.AddFeatureProvider<AuthorizationFeatureProvider>();
+    }
 }
