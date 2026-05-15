@@ -1,5 +1,6 @@
 using Amazon.S3;
 using Amazon.S3.Model;
+using Granit.BlobStorage.S3.Internal;
 using Granit.BlobStorage.S3.Options;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -58,13 +59,7 @@ internal sealed class S3HealthCheck(
 
     private static AmazonS3Client CreateClient(S3BlobOptions opts)
     {
-        AmazonS3Config config = new()
-        {
-            ServiceURL = opts.ServiceUrl,
-            ForcePathStyle = opts.ForcePathStyle,
-            AuthenticationRegion = opts.Region,
-        };
-
+        AmazonS3Config config = S3ConfigFactory.Create(opts);
         Amazon.Runtime.BasicAWSCredentials credentials = new(opts.AccessKey, opts.SecretKey);
         return new AmazonS3Client(credentials, config);
     }

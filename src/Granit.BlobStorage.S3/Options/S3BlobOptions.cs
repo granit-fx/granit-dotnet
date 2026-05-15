@@ -28,6 +28,11 @@ public sealed class S3BlobOptions : BlobStorageOptions
     /// S3-compatible endpoint URL.
     /// Examples: <c>https://s3.eu-west-1.amazonaws.com</c>, <c>http://localhost:9000</c>.
     /// </summary>
+    /// <remarks>
+    /// The scheme drives <c>AmazonS3Config.UseHttp</c>: an <c>http://</c> value emits presigned URLs
+    /// in cleartext (required for MinIO dev), <c>https://</c> emits TLS presigned URLs. HTTP is only
+    /// accepted for <c>localhost</c> / <c>127.0.0.1</c>; all other hosts must use HTTPS.
+    /// </remarks>
     public string ServiceUrl { get; set; } = string.Empty;
 
     /// <summary>S3 access key. Inject from Granit.Vault; never hardcode.</summary>

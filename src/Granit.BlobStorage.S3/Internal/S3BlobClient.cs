@@ -26,15 +26,7 @@ internal sealed class S3BlobClient : IBlobStoreProvider, IPresignedUrlProvider, 
     {
         S3BlobOptions opts = options.Value;
 
-        AmazonS3Config config = new()
-        {
-            ServiceURL = opts.ServiceUrl,
-            ForcePathStyle = opts.ForcePathStyle,
-            AuthenticationRegion = opts.Region,
-            // Disable AWS SDK telemetry — we are consuming the S3 protocol, not AWS infrastructure.
-            LogResponse = false,
-            LogMetrics = false,
-        };
+        AmazonS3Config config = S3ConfigFactory.Create(opts);
 
         Amazon.Runtime.BasicAWSCredentials credentials = new(opts.AccessKey, opts.SecretKey);
         _s3 = new AmazonS3Client(credentials, config);
