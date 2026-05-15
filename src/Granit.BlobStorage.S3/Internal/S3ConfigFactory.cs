@@ -17,8 +17,5 @@ internal static class S3ConfigFactory
             ForcePathStyle = opts.ForcePathStyle,
             AuthenticationRegion = opts.Region,
             UseHttp = opts.ServiceUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase),
-            // Disable AWS SDK telemetry — we are consuming the S3 protocol, not AWS infrastructure.
-            LogResponse = false,
-            LogMetrics = false,
         };
 }
