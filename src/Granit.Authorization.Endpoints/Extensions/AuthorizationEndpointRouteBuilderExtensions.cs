@@ -1,6 +1,9 @@
 using Granit.Authorization;
+using Granit.Authorization.Domain;
 using Granit.Authorization.Endpoints.Endpoints;
 using Granit.Authorization.Endpoints.Options;
+using Granit.Authorization.Endpoints.Permissions;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -53,6 +56,19 @@ public static class AuthorizationEndpointRouteBuilderExtensions
         permissionsGroup.MapMyPermissionsEndpoints();
         permissionsGroup.MapPermissionDefinitionsEndpoints();
         group.MapPermissionGrantEndpoints();
+
+        // Admin query surfaces — paginated/filterable lists for the entity discovery.
+        // Routed under their own subgroups so they coexist with the bespoke grant
+        // management endpoints under "/roles/{roleName}" without colliding.
+        group.MapGranitGroup("grants").MapGranitQuery<PermissionGrant>(configure: opts =>
+        {
+            opts.AuthorizationPolicy = AuthorizationEndpointsPermissions.Grants.Manage;
+        });
+
+        group.MapGranitGroup("role-metadata").MapGranitQuery<RoleMetadata>(configure: opts =>
+        {
+            opts.AuthorizationPolicy = AuthorizationEndpointsPermissions.Definitions.Read;
+        });
 
         return group;
     }

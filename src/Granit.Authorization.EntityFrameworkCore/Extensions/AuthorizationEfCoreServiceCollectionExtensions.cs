@@ -1,8 +1,10 @@
 using Granit.Authorization;
+using Granit.Authorization.Domain;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
 using Granit.Authorization.EntityFrameworkCore.Internal;
 using Granit.Authorization.EntityFrameworkCore.Stores;
 using Granit.Persistence.EntityFrameworkCore.SharedConnection;
+using Granit.QueryEngine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -41,6 +43,13 @@ public static class AuthorizationEfCoreServiceCollectionExtensions
         // TryAdd so host apps can override with a custom accessor if needed.
         services.TryAddScoped<IAuthorizationHostDbContextAccessor,
             AuthorizationHostDbContextAccessor<TContext>>();
+
+        // Queryable sources for MapGranitQuery (host bypasses tenant filter for
+        // cross-tenant authorization review).
+        services.TryAddScoped<IQueryableSource<PermissionGrant>,
+            EfPermissionGrantQueryableSource<TContext>>();
+        services.TryAddScoped<IQueryableSource<RoleMetadata>,
+            EfRoleMetadataQueryableSource<TContext>>();
 
         return services;
     }

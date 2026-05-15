@@ -275,6 +275,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Http.ApiDocumentation",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -6801,7 +6802,7 @@
       "kind": "class",
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/Extensions/AuthorizationEndpointRouteBuilderExtensions.cs",
-      "line": 14,
+      "line": 17,
       "members": [
         {
           "name": "MapGranitAuthorization",
@@ -6962,7 +6963,7 @@
       "kind": "class",
       "project": "Granit.Authorization.EntityFrameworkCore",
       "file": "src/Granit.Authorization.EntityFrameworkCore/Extensions/AuthorizationEfCoreServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": []
     },
     {
