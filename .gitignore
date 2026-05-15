@@ -10,6 +10,7 @@ out/
 *.user
 *.suo
 *.DotSettings.user
+*.lscache
 nupkgs/
 TestResults/
 

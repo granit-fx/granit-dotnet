@@ -1,6 +1,8 @@
 using Granit.Authorization;
 using Granit.Authorization.Domain;
+using Granit.Entities;
 using Granit.Http.Idempotency.Attributes;
+using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Options;
 using Granit.Identity.Local.Endpoints.Permissions;
@@ -32,6 +34,7 @@ internal static class GranitRoleEndpoints
     internal static RouteGroupBuilder MapGranitRoleEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/", ListAsync)
+            .WithMetadata(new EntityEndpointMetadata(typeof(GranitRole), EntityEndpointKind.List))
             .WithName("ListRoles")
             .WithSummary("Lists roles visible in the caller's context.")
             .WithDescription(

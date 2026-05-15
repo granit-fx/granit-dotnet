@@ -1,3 +1,4 @@
+using Granit.Entities;
 using Granit.Identity.Endpoints.Dtos;
 using Granit.Identity.Endpoints.Internal;
 using Granit.QueryEngine;
@@ -18,6 +19,7 @@ internal static class IdentityUserCacheReadEndpoints
     internal static RouteGroupBuilder MapReadEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/", SearchAsync)
+            .WithMetadata(new EntityEndpointMetadata(typeof(Granit.Identity.Domain.User), EntityEndpointKind.List))
             .WithName("SearchIdentityUserCache")
             .WithSummary("Searches the user cache by free-text term with pagination.")
             .WithDescription("Performs a free-text search across cached user fields (name, email, etc.) with pagination and sorting. Only searches the local cache — does not query the identity provider. Use sync endpoints to refresh stale data.")

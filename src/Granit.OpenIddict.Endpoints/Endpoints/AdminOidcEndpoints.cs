@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using Granit.Entities;
 using Granit.Http.Idempotency.Attributes;
 using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Entities.OpenIddict;
@@ -21,6 +22,7 @@ internal static class AdminOidcEndpoints
         RouteGroupBuilder apps = group.MapGranitGroup("/oidc/applications");
 
         apps.MapGet("/", ListApplicationsAsync)
+            .WithMetadata(new EntityEndpointMetadata(typeof(GranitOpenIddictApplication), EntityEndpointKind.List))
             .WithName("ListOidcApplications")
             .WithSummary("Returns all OIDC applications.")
             .WithDescription("Returns all registered OIDC client applications with their client ID, display name, type, and tenant association. Applications are either public (SPA, mobile) or confidential (server-side). Use this list to manage the registered clients in the admin panel.")
@@ -62,6 +64,7 @@ internal static class AdminOidcEndpoints
         RouteGroupBuilder scopes = group.MapGranitGroup("/oidc/scopes");
 
         scopes.MapGet("/", ListScopesAsync)
+            .WithMetadata(new EntityEndpointMetadata(typeof(GranitOpenIddictScope), EntityEndpointKind.List))
             .WithName("ListOidcScopes")
             .WithSummary("Returns all OIDC scopes.")
             .WithDescription("Returns all registered OIDC scopes with their name, display name, and associated resources. Scopes define the claims and resources that tokens can grant access to. Use this endpoint to audit which scopes are available for client configuration.")
