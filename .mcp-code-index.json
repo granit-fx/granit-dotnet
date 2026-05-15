@@ -5212,6 +5212,15 @@
       "members": []
     },
     {
+      "name": "ApiKeysFeatures",
+      "fqn": "Granit.Authentication.ApiKeys.Endpoints.Workspaces.ApiKeysFeatures",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.Endpoints",
+      "file": "src/Granit.Authentication.ApiKeys.Endpoints/Workspaces/ApiKeysFeatures.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "ApiKeysEntityFrameworkCoreServiceCollectionExtensions",
       "fqn": "Granit.Authentication.ApiKeys.EntityFrameworkCore.Extensions.ApiKeysEntityFrameworkCoreServiceCollectionExtensions",
       "kind": "class",
@@ -6875,6 +6884,15 @@
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/Permissions/AuthorizationEndpointsPermissions.cs",
       "line": 19,
+      "members": []
+    },
+    {
+      "name": "AuthorizationFeatures",
+      "fqn": "Granit.Authorization.Endpoints.Workspaces.AuthorizationFeatures",
+      "kind": "class",
+      "project": "Granit.Authorization.Endpoints",
+      "file": "src/Granit.Authorization.Endpoints/Workspaces/AuthorizationFeatures.cs",
+      "line": 6,
       "members": []
     },
     {
@@ -20058,6 +20076,15 @@
       "members": []
     },
     {
+      "name": "IdentityFeatures",
+      "fqn": "Granit.Identity.Endpoints.Workspaces.IdentityFeatures",
+      "kind": "class",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Workspaces/IdentityFeatures.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "UserEntityDefinition",
       "fqn": "Granit.Identity.Entities.UserEntityDefinition",
       "kind": "class",
@@ -30823,6 +30850,15 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "OpenIddictFeatures",
+      "fqn": "Granit.OpenIddict.Endpoints.Workspaces.OpenIddictFeatures",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Workspaces/OpenIddictFeatures.cs",
+      "line": 6,
+      "members": []
     },
     {
       "name": "GranitOpenIddictApplicationEntityDefinition",

@@ -42,5 +42,6 @@ public sealed class GranitOpenIddictEndpointsModule : GranitModule
     {
         context.Services.TryAddScoped<OidcPrincipalFactory>();
         context.Services.AddWorkspaceContribution<OpenIddictWorkspaceContribution>();
+        context.Services.AddFeatureProvider<OpenIddictFeatureProvider>();
     }
 }

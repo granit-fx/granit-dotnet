@@ -33,6 +33,9 @@ namespace Granit.Identity.Endpoints;
 public sealed class GranitIdentityEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddWorkspaceContribution<IdentityWorkspaceContribution>();
+        context.Services.AddFeatureProvider<IdentityFeatureProvider>();
+    }
 }

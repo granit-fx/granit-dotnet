@@ -21,6 +21,9 @@ namespace Granit.Authentication.ApiKeys.Endpoints;
 public sealed class GranitAuthenticationApiKeysEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddWorkspaceContribution<ApiKeysWorkspaceContribution>();
+        context.Services.AddFeatureProvider<ApiKeysFeatureProvider>();
+    }
 }
