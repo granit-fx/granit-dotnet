@@ -6,12 +6,12 @@ namespace Granit.Notifications.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts notifications admin entries onto the
-/// <c>Granit.Framework.Email</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.Communication</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class NotificationsWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.Email)
+        context.ForWorkspace(FrameworkWorkspaceNames.Communication)
             .Section("notifications", s => s
                 .DisplayKey("NotificationsEndpoints:Workspace.Section")
                 .Order(0)

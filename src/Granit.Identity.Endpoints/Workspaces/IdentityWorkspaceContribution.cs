@@ -6,12 +6,12 @@ namespace Granit.Identity.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts identity admin entries onto the
-/// <c>Granit.Framework.Users</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.IdentityAccess</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class IdentityWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.Users)
+        context.ForWorkspace(FrameworkWorkspaceNames.IdentityAccess)
             .Section("identity", s => s
                 .DisplayKey("IdentityEndpoints:Workspace.Section")
                 .Order(0)

@@ -6,12 +6,12 @@ namespace Granit.Auditing.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts auditing admin entries onto the
-/// <c>Granit.Framework.Monitoring</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.Observability</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class AuditingWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.Monitoring)
+        context.ForWorkspace(FrameworkWorkspaceNames.Observability)
             .Section("auditing", s => s
                 .DisplayKey("AuditingEndpoints:Workspace.Section")
                 .Order(0)

@@ -6,15 +6,15 @@ namespace Granit.Templating.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts templating admin entries onto the
-/// <c>Granit.Framework.System</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.Communication</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class TemplatingWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.System)
+        context.ForWorkspace(FrameworkWorkspaceNames.Communication)
             .Section("templating", s => s
                 .DisplayKey("TemplatingEndpoints:Workspace.Section")
-                .Order(40)
+                .Order(10)
                 .Link("/templating/templates", i => i
                     .DisplayKey("TemplatingEndpoints:Workspace.Templates")
                     .Icon("layout-template")

@@ -3,11 +3,8 @@ using Granit.Caching;
 using Granit.Http.ApiDocumentation;
 using Granit.Identity.Local;
 using Granit.Identity.Local.Endpoints.Endpoints;
-using Granit.Identity.Local.Endpoints.Workspaces;
 using Granit.Modularity;
 using Granit.Validation;
-using Granit.Workspaces;
-using Granit.Workspaces.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Identity.Local.Endpoints;
@@ -25,14 +22,10 @@ namespace Granit.Identity.Local.Endpoints;
     typeof(GranitCachingModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitIdentityLocalModule),
-    typeof(GranitValidationModule),
-    typeof(GranitWorkspacesAbstractionsModule))]
+    typeof(GranitValidationModule))]
 public sealed class GranitIdentityLocalEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddScoped<IdentityLocalConfigProvider>();
-        context.Services.AddWorkspaceContribution<IdentityLocalWorkspaceContribution>();
-    }
 }

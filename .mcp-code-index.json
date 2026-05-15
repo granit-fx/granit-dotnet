@@ -22344,7 +22344,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/GranitIdentityLocalEndpointsModule.cs",
-      "line": 30,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",

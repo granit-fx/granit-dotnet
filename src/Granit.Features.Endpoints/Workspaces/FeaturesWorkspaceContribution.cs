@@ -6,12 +6,12 @@ namespace Granit.Features.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts feature-flags admin entries onto the
-/// <c>Granit.Framework.System</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.Platform</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class FeaturesWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.System)
+        context.ForWorkspace(FrameworkWorkspaceNames.Platform)
             .Section("features", s => s
                 .DisplayKey("FeaturesEndpoints:Workspace.Section")
                 .Order(10)

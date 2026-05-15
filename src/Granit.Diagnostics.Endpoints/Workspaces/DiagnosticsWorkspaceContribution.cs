@@ -6,12 +6,12 @@ namespace Granit.Diagnostics.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts diagnostics admin entries onto the
-/// <c>Granit.Framework.Monitoring</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.Observability</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class DiagnosticsWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.Monitoring)
+        context.ForWorkspace(FrameworkWorkspaceNames.Observability)
             .Section("diagnostics", s => s
                 .DisplayKey("DiagnosticsEndpoints:Workspace.Section")
                 .Order(20)

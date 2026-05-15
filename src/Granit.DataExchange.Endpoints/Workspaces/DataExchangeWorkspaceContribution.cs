@@ -6,12 +6,12 @@ namespace Granit.DataExchange.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts data-exchange admin entries onto the
-/// <c>Granit.Framework.Data</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.Storage</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class DataExchangeWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.Data)
+        context.ForWorkspace(FrameworkWorkspaceNames.Storage)
             .Section("data-exchange", s => s
                 .DisplayKey("DataExchangeEndpoints:Workspace.Section")
                 .Order(10)

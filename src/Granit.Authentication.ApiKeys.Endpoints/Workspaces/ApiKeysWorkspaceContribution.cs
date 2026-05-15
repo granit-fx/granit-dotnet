@@ -6,12 +6,12 @@ namespace Granit.Authentication.ApiKeys.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts API-key admin entries onto the
-/// <c>Granit.Framework.Users</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.IdentityAccess</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class ApiKeysWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.Users)
+        context.ForWorkspace(FrameworkWorkspaceNames.IdentityAccess)
             .Section("api-keys", s => s
                 .DisplayKey("AuthenticationApiKeysEndpoints:Workspace.Section")
                 .Order(10)

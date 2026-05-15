@@ -6,12 +6,12 @@ namespace Granit.Settings.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts settings admin entries onto the
-/// <c>Granit.Framework.System</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.Platform</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class SettingsWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.System)
+        context.ForWorkspace(FrameworkWorkspaceNames.Platform)
             .Section("settings", s => s
                 .DisplayKey("SettingsEndpoints:Workspace.Section")
                 .Order(0)

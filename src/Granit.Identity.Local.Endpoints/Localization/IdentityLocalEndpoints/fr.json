@@ -8,8 +8,6 @@
     "Granit:Identity:Role:TenantIdForbidden": "Les rôles Host et Both doivent avoir un TenantId nul.",
     "Granit:Identity:Role:TenantIdRequired": "Les rôles de tenant requièrent un TenantId non nul.",
     "Granit:Identity:Role:TenantRolesDisabled": "La création de rôles de tenant est désactivée dans ce déploiement.",
-    "IdentityLocalEndpoints:Workspace.Roles": "Rôles locaux",
-    "IdentityLocalEndpoints:Workspace.Section": "Comptes locaux",
     "Permission:IdentityLocal.Roles.Delete": "Supprimer les rôles",
     "Permission:IdentityLocal.Roles.Manage": "Créer et renommer les rôles",
     "Permission:IdentityLocal.Roles.Read": "Lire les rôles",

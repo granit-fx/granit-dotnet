@@ -6,14 +6,14 @@ namespace Granit.BlobStorage.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts blob-storage admin entries onto the
-/// <c>Granit.Framework.Data</c> shell (per ADR-040 §IoC). Permission gate
+/// <c>Granit.Framework.Storage</c> shell (per ADR-040 §IoC). Permission gate
 /// drops the link from the manifest payload when the caller cannot read
 /// blob storage.
 /// </summary>
 internal sealed class BlobStorageWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.Data)
+        context.ForWorkspace(FrameworkWorkspaceNames.Storage)
             .Section("blob-storage", s => s
                 .DisplayKey("BlobStorageEndpoints:Workspace.Section")
                 .Order(0)

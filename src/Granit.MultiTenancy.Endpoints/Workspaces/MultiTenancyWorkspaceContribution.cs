@@ -6,12 +6,12 @@ namespace Granit.MultiTenancy.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts multi-tenancy admin entries onto the
-/// <c>Granit.Framework.System</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.Platform</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class MultiTenancyWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.System)
+        context.ForWorkspace(FrameworkWorkspaceNames.Platform)
             .Section("multi-tenancy", s => s
                 .DisplayKey("MultiTenancyEndpoints:Workspace.Section")
                 .Order(30)

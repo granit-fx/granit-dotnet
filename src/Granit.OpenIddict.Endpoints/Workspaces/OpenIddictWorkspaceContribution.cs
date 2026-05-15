@@ -6,12 +6,12 @@ namespace Granit.OpenIddict.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts OpenID Connect (OIDC) admin entries onto the
-/// <c>Granit.Framework.Users</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.IdentityAccess</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class OpenIddictWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.Users)
+        context.ForWorkspace(FrameworkWorkspaceNames.IdentityAccess)
             .Section("openiddict", s => s
                 .DisplayKey("OpenIddictEndpoints:Workspace.Section")
                 .Order(30)

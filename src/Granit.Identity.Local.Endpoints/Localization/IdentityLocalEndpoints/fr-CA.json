@@ -1,7 +1,4 @@
 {
   "culture": "fr-CA",
-  "texts": {
-    "IdentityLocalEndpoints:Workspace.Roles": "Rôles locaux",
-    "IdentityLocalEndpoints:Workspace.Section": "Comptes locaux"
-  }
+  "texts": {}
 }

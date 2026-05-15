@@ -6,12 +6,12 @@ namespace Granit.Privacy.Endpoints.Workspaces;
 
 /// <summary>
 /// Grafts privacy admin entries onto the
-/// <c>Granit.Framework.Privacy</c> shell (per ADR-040 §IoC).
+/// <c>Granit.Framework.Compliance</c> shell (per ADR-040 §IoC).
 /// </summary>
 internal sealed class PrivacyWorkspaceContribution : IWorkspaceContributor
 {
     public void Contribute(IWorkspaceContributionContext context) =>
-        context.ForWorkspace(FrameworkWorkspaceNames.Privacy)
+        context.ForWorkspace(FrameworkWorkspaceNames.Compliance)
             .Section("privacy", s => s
                 .DisplayKey("PrivacyEndpoints:Workspace.Section")
                 .Order(0)

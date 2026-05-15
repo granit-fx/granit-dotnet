@@ -8,8 +8,6 @@
     "Granit:Identity:Role:TenantIdForbidden": "Host and Both roles must have a null TenantId.",
     "Granit:Identity:Role:TenantIdRequired": "Tenant-scoped roles require a non-null TenantId.",
     "Granit:Identity:Role:TenantRolesDisabled": "Tenant-scoped role creation is disabled in this deployment.",
-    "IdentityLocalEndpoints:Workspace.Roles": "Local roles",
-    "IdentityLocalEndpoints:Workspace.Section": "Local accounts",
     "Permission:IdentityLocal.Roles.Delete": "Delete roles",
     "Permission:IdentityLocal.Roles.Manage": "Create and rename roles",
     "Permission:IdentityLocal.Roles.Read": "Read roles",

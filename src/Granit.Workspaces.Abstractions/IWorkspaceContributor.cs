@@ -9,7 +9,7 @@ namespace Granit.Workspaces;
 /// </summary>
 /// <remarks>
 /// Used so that, for example, <c>Granit.BlobStorage.Endpoints</c> can graft
-/// its admin entries onto the <c>Granit.Framework.Data</c> shell without
+/// its admin entries onto the <c>Granit.Framework.Storage</c> shell without
 /// either side taking a runtime dependency on the other — both pull only
 /// <c>Granit.Workspaces.Abstractions</c>.
 /// </remarks>
