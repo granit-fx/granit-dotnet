@@ -41,7 +41,6 @@ public sealed class GranitOpenIddictEndpointsModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.TryAddScoped<OidcPrincipalFactory>();
-        context.Services.AddWorkspaceContribution<OpenIddictWorkspaceContribution>();
         context.Services.AddFeatureProvider<OpenIddictFeatureProvider>();
     }
 }

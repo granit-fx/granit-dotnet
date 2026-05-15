@@ -30,7 +30,6 @@ public sealed class GranitTimelineEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.AddWorkspaceContribution<TimelineWorkspaceContribution>();
         context.Services.AddFeatureProvider<TimelineFeatureProvider>();
     }
 }

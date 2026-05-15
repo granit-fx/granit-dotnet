@@ -29,7 +29,6 @@ public sealed class GranitBackgroundJobsEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.AddWorkspaceContribution<BackgroundJobsWorkspaceContribution>();
         context.Services.AddFeatureProvider<BackgroundJobsFeatureProvider>();
     }
 }

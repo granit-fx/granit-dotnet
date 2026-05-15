@@ -9,11 +9,10 @@ namespace Granit.Identity.Endpoints.Workspaces;
 /// each gated by its existing <see cref="IdentityPermissions"/> entry.
 /// </summary>
 /// <remarks>
-/// Ships alongside the legacy <see cref="IdentityWorkspaceContribution"/>
-/// during the phase 3 migration window. Default placement on the
-/// <c>Granit.Framework.IdentityAccess</c> shell is provided by the
-/// framework Defaults bundle (phase 2); the legacy contribution is
-/// removed in phase 5.
+/// Replaced the legacy <c>IdentityWorkspaceContribution</c> — the
+/// framework workspace shells (per ADR-057 §4) now compose features
+/// directly, so the auto-contributor mechanism is no longer needed for
+/// this module.
 /// </remarks>
 internal sealed class IdentityFeatureProvider : IFeatureProvider
 {

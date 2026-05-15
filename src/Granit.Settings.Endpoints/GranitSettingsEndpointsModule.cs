@@ -38,7 +38,6 @@ public sealed class GranitSettingsEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.AddWorkspaceContribution<SettingsWorkspaceContribution>();
         context.Services.AddFeatureProvider<SettingsFeatureProvider>();
     }
 }

@@ -12,10 +12,10 @@ namespace Granit.Diagnostics.Endpoints.Workspaces;
 /// composing its workspace tree (e.g. <c>section.Feature(DiagnosticsFeatures.Monitoring)</c>).
 /// </summary>
 /// <remarks>
-/// Ships alongside the legacy <see cref="DiagnosticsWorkspaceContribution"/>
-/// during the phase 3 migration window — both surfaces work, both produce
-/// the same UI entry. Defaults bundles (phase 2) consume the feature; the
-/// legacy contribution is removed in phase 5.
+/// Replaced the legacy <c>DiagnosticsWorkspaceContribution</c> — the
+/// framework workspace shells (per ADR-057 §4) now compose features
+/// directly, so the auto-contributor mechanism is no longer needed for
+/// this module.
 /// </remarks>
 internal sealed class DiagnosticsFeatureProvider : IFeatureProvider
 {

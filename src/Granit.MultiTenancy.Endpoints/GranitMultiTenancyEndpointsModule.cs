@@ -29,7 +29,6 @@ public sealed class GranitMultiTenancyEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.AddWorkspaceContribution<MultiTenancyWorkspaceContribution>();
         context.Services.AddFeatureProvider<MultiTenancyFeatureProvider>();
     }
 }
