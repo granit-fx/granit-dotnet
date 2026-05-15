@@ -220,7 +220,9 @@ public sealed class RetryWebhookHandlerTests
 
     private static WebhookSubscription BuildSubscription(Guid id, WebhookSubscriptionStatus status)
     {
-        var sub = WebhookSubscription.Create(id, "https://example.com/webhook", "test.event", "test-secret");
+        var sub = WebhookSubscription.Create(
+            id, "https://example.com/webhook", "test.event",
+            signingKeyId: Guid.NewGuid(), protectedSecret: "test-secret", createdAt: DateTimeOffset.UtcNow);
 
         switch (status)
         {

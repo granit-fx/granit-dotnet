@@ -60,7 +60,8 @@ public sealed class WebhookTestPingServiceTests : IDisposable
     private void SetupSubscription(string targetUrl = "https://example.com/webhook", string secret = "test-secret")
     {
         var subscription = WebhookSubscription.Create(
-            _subscriptionId, targetUrl, "webhook.test", secret);
+            _subscriptionId, targetUrl, "webhook.test",
+            signingKeyId: Guid.NewGuid(), protectedSecret: secret, createdAt: DateTimeOffset.UtcNow);
 
         _subscriptionReader.FindByIdAsync(_subscriptionId, Arg.Any<CancellationToken>())
             .Returns(subscription);

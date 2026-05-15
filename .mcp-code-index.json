@@ -13370,6 +13370,40 @@
       "members": []
     },
     {
+      "name": "NullDataFilter",
+      "fqn": "Granit.DataFiltering.NullDataFilter",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/DataFiltering/NullDataFilter.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "NullDataFilter Instance ="
+        },
+        {
+          "name": "class",
+          "kind": "property",
+          "signature": "IDisposable Disable<TFilter>() where TFilter : class",
+          "returnType": "IDisposable Disable<TFilter>() where TFilter :"
+        },
+        {
+          "name": "class",
+          "kind": "property",
+          "signature": "IDisposable Enable<TFilter>() where TFilter : class",
+          "returnType": "IDisposable Enable<TFilter>() where TFilter :"
+        },
+        {
+          "name": "class",
+          "kind": "property",
+          "signature": "bool IsEnabled<TFilter>() where TFilter : class",
+          "returnType": "bool IsEnabled<TFilter>() where TFilter :"
+        }
+      ]
+    },
+    {
       "name": "LookupDescriptor",
       "fqn": "Granit.DataLookup.Descriptors.LookupDescriptor",
       "kind": "record",
@@ -31740,6 +31774,28 @@
       "members": []
     },
     {
+      "name": "GranitDesignTime",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.GranitDesignTime",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/GranitDesignTime.cs",
+      "line": 34,
+      "members": [
+        {
+          "name": "CurrentTenant",
+          "kind": "property",
+          "signature": "ICurrentTenant CurrentTenant",
+          "returnType": "ICurrentTenant"
+        },
+        {
+          "name": "DataFilter",
+          "kind": "property",
+          "signature": "IDataFilter DataFilter",
+          "returnType": "IDataFilter"
+        }
+      ]
+    },
+    {
       "name": "GranitFilterNames",
       "fqn": "Granit.Persistence.EntityFrameworkCore.GranitFilterNames",
       "kind": "class",
@@ -41947,12 +42003,6 @@
           "kind": "method",
           "signature": "DeleteAsync(Guid subscriptionId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
-        },
-        {
-          "name": "RotateSecretAsync",
-          "kind": "method",
-          "signature": "RotateSecretAsync(Guid subscriptionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<string>"
         }
       ]
     },
@@ -41978,7 +42028,7 @@
       "kind": "record",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Abstractions/IWebhookSigningKeyWriter.cs",
-      "line": 73,
+      "line": 69,
       "members": []
     },
     {
@@ -42230,7 +42280,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Domain/WebhookSigningKey.cs",
-      "line": 25,
+      "line": 24,
       "members": [
         {
           "name": "Create",
@@ -42267,12 +42317,12 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Domain/WebhookSubscription.cs",
-      "line": 23,
+      "line": 21,
       "members": [
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, HttpsUrl targetUrl, string eventType, string signingSecret, Guid? tenantId = null)",
+          "signature": "Create(Guid id, HttpsUrl targetUrl, string eventType, Guid signingKeyId, string protectedSecret, DateTimeOffset createdAt, Guid? tenantId = null)",
           "returnType": "WebhookSubscription"
         },
         {
@@ -42285,7 +42335,7 @@
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "string? SigningSecret { get; private set; } public IReadOnlyList<WebhookSigningKey> SigningKeys => _signingKeys."
+          "returnType": "IReadOnlyList<WebhookSigningKey> SigningKeys => _signingKeys."
         },
         {
           "name": "TenantId",
@@ -42386,15 +42436,6 @@
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/Dtos/WebhookSubscriptionResponse.cs",
       "line": 8,
-      "members": []
-    },
-    {
-      "name": "WebhookSubscriptionRotateSecretResponse",
-      "fqn": "Granit.Webhooks.Endpoints.Dtos.WebhookSubscriptionRotateSecretResponse",
-      "kind": "record",
-      "project": "Granit.Webhooks.Endpoints",
-      "file": "src/Granit.Webhooks.Endpoints/Dtos/WebhookSubscriptionRotateSecretResponse.cs",
-      "line": 6,
       "members": []
     },
     {

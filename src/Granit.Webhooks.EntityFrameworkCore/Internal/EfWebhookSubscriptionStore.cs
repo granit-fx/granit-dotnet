@@ -95,7 +95,7 @@ internal sealed class EfWebhookSubscriptionStore(
             .ProtectAsync(plainSecret, cancellationToken)
             .ConfigureAwait(false);
 
-        var subscription = WebhookSubscription.CreateWithSigningKey(
+        var subscription = WebhookSubscription.Create(
             guidGenerator.Create(),
             targetUrl,
             eventType,
@@ -158,15 +158,6 @@ internal sealed class EfWebhookSubscriptionStore(
             WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
             db.WebhookSubscriptions.Remove(subscription);
         }, cancellationToken);
-
-    /// <inheritdoc/>
-    public async Task<string> RotateSecretAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
-    {
-        WebhookSigningKeyRotatedResult result = await RotateSigningKeyAsync(
-            subscriptionId, retiredKeyGracePeriod: null, cancellationToken).ConfigureAwait(false);
-
-        return result.PlainSecret;
-    }
 
     /// <inheritdoc/>
     public async Task<WebhookSigningKeyRotatedResult> RotateSigningKeyAsync(

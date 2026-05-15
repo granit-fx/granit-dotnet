@@ -70,7 +70,7 @@ internal sealed class InMemoryWebhookSubscriptionStore(
             .ProtectAsync(plainSecret, cancellationToken)
             .ConfigureAwait(false);
 
-        var subscription = WebhookSubscription.CreateWithSigningKey(
+        var subscription = WebhookSubscription.Create(
             _guidGenerator.Create(),
             targetUrl,
             eventType,
@@ -157,15 +157,6 @@ internal sealed class InMemoryWebhookSubscriptionStore(
         }
 
         return Task.CompletedTask;
-    }
-
-    public async Task<string> RotateSecretAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
-    {
-        WebhookSigningKeyRotatedResult result = await ((IWebhookSigningKeyWriter)this)
-            .RotateSigningKeyAsync(subscriptionId, retiredKeyGracePeriod: null, cancellationToken)
-            .ConfigureAwait(false);
-
-        return result.PlainSecret;
     }
 
     public async Task<WebhookSigningKeyRotatedResult> RotateSigningKeyAsync(

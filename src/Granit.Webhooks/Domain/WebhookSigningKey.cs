@@ -8,8 +8,7 @@ namespace Granit.Webhooks.Domain;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Replaces the legacy single-<see cref="WebhookSubscription.SigningSecret"/> field with a
-/// proper key history, enabling overlap rotation: a previously-<see cref="WebhookSigningKeyStatus.Active"/>
+/// Per-subscription key history enabling overlap rotation: a previously-<see cref="WebhookSigningKeyStatus.Active"/>
 /// key transitions to <see cref="WebhookSigningKeyStatus.Retired"/> with an
 /// <see cref="ExpiresAt"/> in the (configurable) future and is still accepted in
 /// verification until that grace period elapses, while the new key takes over signing.

@@ -59,7 +59,8 @@ public sealed class SendWebhookHandlerTests : IDisposable
 
         _subscriptionReader.FindByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(ci => WebhookSubscription.Create(
-                ci.ArgAt<Guid>(0), "https://example.com/webhook", "test.event", "test-secret"));
+                ci.ArgAt<Guid>(0), "https://example.com/webhook", "test.event",
+                signingKeyId: Guid.NewGuid(), protectedSecret: "test-secret", createdAt: DateTimeOffset.UtcNow));
     }
 
     public void Dispose()

@@ -1,4 +1,3 @@
-using Granit.Http.Idempotency.Attributes;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Endpoints.Dtos;
@@ -14,17 +13,6 @@ internal static class WebhookSubscriptionOperationEndpoints
 {
     internal static RouteGroupBuilder MapOperationEndpoints(this RouteGroupBuilder group)
     {
-        group.MapPost("/subscriptions/{id:guid}/rotate-secret", RotateSecret)
-            .WithName("RotateWebhookSecret")
-            .WithSummary("Rotates a subscription's signing secret.")
-            .WithDescription(
-                "Generates a new HMAC signing secret for the subscription. "
-                + "The previous secret is invalidated immediately. "
-                + "The new plain-text secret is returned once and cannot be retrieved later.")
-            .WithMetadata(new IdempotentAttribute { Required = false })
-            .Produces<WebhookSubscriptionRotateSecretResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound);
-
         group.MapPost("/subscriptions/{id:guid}/test-ping", TestPing)
             .WithName("TestWebhookPing")
             .WithSummary("Sends a test ping to the subscription's target URL.")
@@ -44,22 +32,6 @@ internal static class WebhookSubscriptionOperationEndpoints
             .Produces<WebhookSubscriptionStatsResponse>();
 
         return group;
-    }
-
-    private static async Task<Results<Ok<WebhookSubscriptionRotateSecretResponse>, ProblemHttpResult>> RotateSecret(
-        Guid id,
-        [FromServices] IWebhookSubscriptionReader reader,
-        [FromServices] IWebhookSubscriptionWriter writer,
-        CancellationToken cancellationToken)
-    {
-        WebhookSubscription? subscription = await reader.FindByIdAsync(id, cancellationToken).ConfigureAwait(false);
-        if (subscription is null)
-        {
-            return TypedResults.Problem(detail: "Webhook subscription not found.", statusCode: StatusCodes.Status404NotFound);
-        }
-
-        string plainSecret = await writer.RotateSecretAsync(id, cancellationToken).ConfigureAwait(false);
-        return TypedResults.Ok(new WebhookSubscriptionRotateSecretResponse(plainSecret));
     }
 
     private static async Task<Results<Ok<WebhookSubscriptionTestPingResponse>, ProblemHttpResult>> TestPing(

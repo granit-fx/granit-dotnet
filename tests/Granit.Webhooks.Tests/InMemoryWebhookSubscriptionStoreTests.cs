@@ -285,45 +285,11 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
     }
 
     // -------------------------------------------------------------------------
-    // RotateSecretAsync
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public async Task RotateSecretAsync_ReturnsNewPlainSecret()
-    {
-        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
-        _store.Add(sub);
-
-        string newSecret = await _store.RotateSecretAsync(sub.Id, TestContext.Current.CancellationToken);
-
-        newSecret.ShouldStartWith("whsec_");
-    }
-
-    // -------------------------------------------------------------------------
     // RotateSigningKeyAsync — dual-key delivery model (FU-1a)
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task RotateSigningKeyAsync_OnLegacySubscription_AddsActiveKeyAndClearsLegacyField()
-    {
-        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
-        _store.Add(sub);
-
-        WebhookSigningKeyRotatedResult result = await ((IWebhookSigningKeyWriter)_store)
-            .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
-
-        result.PlainSecret.ShouldStartWith("whsec_");
-        WebhookSubscription? updated = await _store.FindByIdAsync(sub.Id, TestContext.Current.CancellationToken);
-        updated.ShouldNotBeNull();
-        updated!.SigningKeys.Count.ShouldBe(1);
-        updated.SigningKeys[0].Status.ShouldBe(WebhookSigningKeyStatus.Active);
-#pragma warning disable CS0618 // Verifying back-compat behavior.
-        updated.SigningSecret.ShouldBeNull();
-#pragma warning restore CS0618
-    }
-
-    [Fact]
-    public async Task RotateSigningKeyAsync_TwoRotations_RetiresFirstKey()
+    public async Task RotateSigningKeyAsync_TwoRotations_RetiresPreviousActives()
     {
         WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
         _store.Add(sub);
@@ -334,8 +300,10 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         await ((IWebhookSigningKeyWriter)_store)
             .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
 
+        // Initial seeded key + 2 rotation keys = 3 total. Exactly one is Active;
+        // the other two are Retired with a grace-period ExpiresAt.
         WebhookSubscription? updated = await _store.FindByIdAsync(sub.Id, TestContext.Current.CancellationToken);
-        updated!.SigningKeys.Count.ShouldBe(2);
+        updated!.SigningKeys.Count.ShouldBe(3);
         updated.SigningKeys.Count(k => k.Status == WebhookSigningKeyStatus.Active).ShouldBe(1);
         WebhookSigningKey retired = updated.SigningKeys.Single(k => k.Id == first.KeyId);
         retired.Status.ShouldBe(WebhookSigningKeyStatus.Retired);
@@ -371,7 +339,8 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         IReadOnlyList<WebhookSigningKey> keys = await ((IWebhookSigningKeyReader)_store)
             .GetForSubscriptionAsync(sub.Id, TestContext.Current.CancellationToken);
 
-        keys.Count.ShouldBe(2);
+        // Initial seeded key + 2 rotation keys.
+        keys.Count.ShouldBe(3);
     }
 
     // -------------------------------------------------------------------------
@@ -399,7 +368,9 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         Guid? tenantId,
         WebhookSubscriptionStatus status)
     {
-        var sub = WebhookSubscription.Create(Guid.NewGuid(), "https://example.com/webhook", eventType, "protected-secret", tenantId);
+        var sub = WebhookSubscription.Create(
+            Guid.NewGuid(), "https://example.com/webhook", eventType,
+            signingKeyId: Guid.NewGuid(), protectedSecret: "protected-secret", createdAt: DateTimeOffset.UtcNow, tenantId: tenantId);
 
         switch (status)
         {

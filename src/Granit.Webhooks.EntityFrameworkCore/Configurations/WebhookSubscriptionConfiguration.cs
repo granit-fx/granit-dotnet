@@ -27,13 +27,6 @@ internal sealed class WebhookSubscriptionConfiguration : IEntityTypeConfiguratio
             .HasMaxLength(200)
             .IsRequired();
 
-        // Legacy protected signing secret — kept nullable for back-compat. New subscriptions
-        // ship with WebhookSigningKey rows instead. Cleared on first RotateSigningKey.
-#pragma warning disable CS0618 // SigningSecret is intentionally retained for back-compat.
-        builder.Property(e => e.SigningSecret)
-            .HasMaxLength(1000);
-#pragma warning restore CS0618
-
         // Aggregate child collection — cascade delete keeps keys tied to their subscription.
         builder.HasMany(e => e.SigningKeys)
             .WithOne()

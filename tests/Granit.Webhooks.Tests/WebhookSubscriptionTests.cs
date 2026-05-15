@@ -149,5 +149,7 @@ public sealed class WebhookSubscriptionTests
     }
 
     private static WebhookSubscription BuildSubscription() =>
-        WebhookSubscription.Create(Guid.NewGuid(), "https://example.com/webhook", "test.event", "protected-secret");
+        WebhookSubscription.Create(
+            Guid.NewGuid(), "https://example.com/webhook", "test.event",
+            signingKeyId: Guid.NewGuid(), protectedSecret: "protected-secret", createdAt: DateTimeOffset.UtcNow);
 }

@@ -187,8 +187,10 @@ public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
             Guid.NewGuid(),
             $"https://example.com/{Guid.NewGuid()}",
             eventType,
-            "protected-secret",
-            tenantId);
+            signingKeyId: Guid.NewGuid(),
+            protectedSecret: "protected-secret",
+            createdAt: DateTimeOffset.UtcNow,
+            tenantId: tenantId);
 
         switch (status)
         {

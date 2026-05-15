@@ -14,10 +14,6 @@ public interface IWebhookSigningKeyWriter
     /// verification for <paramref name="retiredKeyGracePeriod"/>. A new active key is created
     /// and returned (plain-text — only once).
     /// </para>
-    /// <para>
-    /// On the first rotation after upgrade, the legacy
-    /// <see cref="Domain.WebhookSubscription.SigningSecret"/> field is cleared.
-    /// </para>
     /// </remarks>
     /// <param name="subscriptionId">Target subscription identifier.</param>
     /// <param name="retiredKeyGracePeriod">

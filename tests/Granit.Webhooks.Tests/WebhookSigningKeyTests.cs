@@ -2,8 +2,7 @@
 // Tests - WebhookSigningKey + WebhookSubscription dual-key delivery model (FU-1a)
 // =============================================================================
 // Verifies overlap rotation: previous Active key transitions to Retired, the new
-// Active key takes over, IsAcceptableAt rules, last-active revocation guard, and
-// legacy SigningSecret clearing on first rotation.
+// Active key takes over, IsAcceptableAt rules, and last-active revocation guard.
 // =============================================================================
 
 using Granit.Webhooks.Domain;
@@ -16,29 +15,6 @@ public sealed class WebhookSigningKeyTests
 {
     private static readonly DateTimeOffset Now = new(2026, 4, 1, 12, 0, 0, TimeSpan.Zero);
     private static readonly TimeSpan Grace = TimeSpan.FromHours(24);
-
-    [Fact]
-    public void RotateSigningKey_FromLegacySecret_AddsActiveKey_ClearsLegacyField()
-    {
-        WebhookSubscription subscription = LegacySubscription();
-
-#pragma warning disable CS0618 // Asserting legacy back-compat field is intentionally read.
-        subscription.SigningSecret.ShouldBe("legacy-protected");
-#pragma warning restore CS0618
-
-        subscription.RotateSigningKey(Guid.NewGuid(), "new-protected", Now, Grace);
-
-        subscription.SigningKeys.Count.ShouldBe(1);
-        WebhookSigningKey active = subscription.SigningKeys[0];
-        active.Status.ShouldBe(WebhookSigningKeyStatus.Active);
-        active.ProtectedSecret.ShouldBe("new-protected");
-        active.CreatedAt.ShouldBe(Now);
-        active.ExpiresAt.ShouldBeNull();
-
-#pragma warning disable CS0618 // Verifying the legacy field is cleared after first rotation.
-        subscription.SigningSecret.ShouldBeNull();
-#pragma warning restore CS0618
-    }
 
     [Fact]
     public void RotateSigningKey_RetiresPreviousActive_WithGracePeriod()
@@ -141,17 +117,10 @@ public sealed class WebhookSigningKeyTests
         // Architectural justification: the scanner (FU-1b) lives in the same assembly.
     }
 
-    private static WebhookSubscription LegacySubscription() =>
-        WebhookSubscription.Create(
-            Guid.NewGuid(),
-            "https://example.com/webhook",
-            "test.event",
-            "legacy-protected");
-
     private static WebhookSubscription WithSigningKey(out Guid initialKeyId)
     {
         initialKeyId = Guid.NewGuid();
-        return WebhookSubscription.CreateWithSigningKey(
+        return WebhookSubscription.Create(
             Guid.NewGuid(),
             "https://example.com/webhook",
             "test.event",

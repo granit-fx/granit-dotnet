@@ -220,7 +220,9 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
 
     private async Task SeedSubscriptionAsync(Guid subscriptionId, int consecutiveFailures = 0)
     {
-        var sub = WebhookSubscription.Create(subscriptionId, "https://example.com/hook", "test.event", "protected-secret");
+        var sub = WebhookSubscription.Create(
+            subscriptionId, "https://example.com/hook", "test.event",
+            signingKeyId: Guid.NewGuid(), protectedSecret: "protected-secret", createdAt: DateTimeOffset.UtcNow);
 
         for (int i = 0; i < consecutiveFailures; i++)
         {

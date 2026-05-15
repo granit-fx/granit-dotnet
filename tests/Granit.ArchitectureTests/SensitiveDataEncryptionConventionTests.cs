@@ -57,8 +57,6 @@ public sealed class SensitiveDataEncryptionConventionTests
         "Granit.Authentication.ApiKeys.Domain.ApiKeyEntry.HashedKey",       // HMAC-SHA256 hash of the issued key; reversal infeasible. The hash itself is the lookup index.
         "Granit.OpenIddict.Domain.SigningKey.EncryptedKeyMaterial",         // ciphertext produced by IDataProtectionProvider before persistence.
         "Granit.Webhooks.Domain.WebhookSigningKey.ProtectedSecret",         // opaque protected value; format owned by IWebhookSecretProtector (rotates independently).
-        "Granit.Webhooks.Domain.WebhookSubscription.SigningSecret",         // legacy column populated only via the same protector path as ProtectedSecret.
-
     };
 
     [Fact]

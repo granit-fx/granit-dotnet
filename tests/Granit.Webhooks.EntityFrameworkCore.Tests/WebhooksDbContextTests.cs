@@ -31,7 +31,9 @@ public sealed class WebhooksDbContextTests : IAsyncDisposable
         await using (WebhooksDbContext context = new(_options))
         {
             context.WebhookSubscriptions.Add(
-                WebhookSubscription.Create(id, "https://example.com/hook", "test.event", "secret"));
+                WebhookSubscription.Create(
+                    id, "https://example.com/hook", "test.event",
+                    signingKeyId: Guid.NewGuid(), protectedSecret: "secret", createdAt: DateTimeOffset.UtcNow));
             await context.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 

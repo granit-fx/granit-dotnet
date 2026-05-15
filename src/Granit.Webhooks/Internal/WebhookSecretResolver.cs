@@ -5,23 +5,11 @@ namespace Granit.Webhooks.Internal;
 
 /// <summary>
 /// Resolves the signing material that should be used for an outbound webhook delivery.
+/// Returns the unprotected plaintext of the subscription's
+/// <see cref="WebhookSigningKeyStatus.Active"/> key — throws
+/// <see cref="InvalidOperationException"/> when no active key is present (malformed
+/// subscription).
 /// </summary>
-/// <remarks>
-/// <para>
-/// Selection rule (FU-1a — dual-key delivery):
-/// </para>
-/// <list type="number">
-///   <item>If the subscription has a <see cref="WebhookSigningKeyStatus.Active"/> key,
-///     unprotect and return its <see cref="WebhookSigningKey.ProtectedSecret"/>.</item>
-///   <item>Otherwise (no active key — typically a legacy subscription created before the
-///     dual-key model and never rotated), fall back to the legacy
-///     <see cref="WebhookSubscription.SigningSecret"/> if it is non-null.</item>
-/// </list>
-/// <para>
-/// Throws <see cref="InvalidOperationException"/> if neither source is available — that
-/// would indicate a malformed subscription (no active key AND no legacy secret).
-/// </para>
-/// </remarks>
 internal static class WebhookSecretResolver
 {
     public static async Task<string> ResolvePlainSecretAsync(
@@ -41,26 +29,15 @@ internal static class WebhookSecretResolver
             }
         }
 
-        if (activeKey is not null)
+        if (activeKey is null)
         {
-            return await secretProtector
-                .UnprotectAsync(activeKey.ProtectedSecret, cancellationToken)
-                .ConfigureAwait(false);
+            throw new InvalidOperationException(
+                $"Subscription '{subscription.Id}' has no active signing key. "
+              + "Rotate the key to introduce a new active key.");
         }
 
-#pragma warning disable CS0618 // Legacy fallback for subscriptions never rotated since the upgrade.
-        string? legacy = subscription.SigningSecret;
-#pragma warning restore CS0618
-
-        if (!string.IsNullOrEmpty(legacy))
-        {
-            return await secretProtector
-                .UnprotectAsync(legacy, cancellationToken)
-                .ConfigureAwait(false);
-        }
-
-        throw new InvalidOperationException(
-            $"Subscription '{subscription.Id}' has no active signing key and no legacy SigningSecret. "
-          + "Rotate the key to seed the dual-key model.");
+        return await secretProtector
+            .UnprotectAsync(activeKey.ProtectedSecret, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

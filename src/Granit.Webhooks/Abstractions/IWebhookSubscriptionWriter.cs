@@ -52,9 +52,4 @@ public interface IWebhookSubscriptionWriter
     /// Hard-deletes a subscription.
     /// </summary>
     Task DeleteAsync(Guid subscriptionId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Rotates the signing secret and returns the new plain-text secret (returned once).
-    /// </summary>
-    Task<string> RotateSecretAsync(Guid subscriptionId, CancellationToken cancellationToken = default);
 }
