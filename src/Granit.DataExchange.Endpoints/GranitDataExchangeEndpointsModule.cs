@@ -25,6 +25,9 @@ namespace Granit.DataExchange.Endpoints;
 public sealed class GranitDataExchangeEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddWorkspaceContribution<DataExchangeWorkspaceContribution>();
+        context.Services.AddFeatureProvider<DataExchangeFeatureProvider>();
+    }
 }

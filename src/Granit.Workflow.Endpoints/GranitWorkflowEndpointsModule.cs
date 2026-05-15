@@ -41,5 +41,6 @@ public sealed class GranitWorkflowEndpointsModule : GranitModule
     {
         context.Services.AddGranitWorkflowEndpoints();
         context.Services.AddWorkspaceContribution<WorkflowWorkspaceContribution>();
+        context.Services.AddFeatureProvider<WorkflowFeatureProvider>();
     }
 }

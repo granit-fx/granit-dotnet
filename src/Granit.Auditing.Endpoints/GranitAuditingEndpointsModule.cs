@@ -25,6 +25,9 @@ namespace Granit.Auditing.Endpoints;
 public sealed class GranitAuditingEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddWorkspaceContribution<AuditingWorkspaceContribution>();
+        context.Services.AddFeatureProvider<AuditingFeatureProvider>();
+    }
 }

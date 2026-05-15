@@ -30,6 +30,9 @@ namespace Granit.Features.Endpoints;
 public sealed class GranitFeaturesEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddWorkspaceContribution<FeaturesWorkspaceContribution>();
+        context.Services.AddFeatureProvider<FeaturesFeatureProvider>();
+    }
 }

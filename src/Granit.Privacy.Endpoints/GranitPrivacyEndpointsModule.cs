@@ -47,6 +47,7 @@ public sealed class GranitPrivacyEndpointsModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddWorkspaceContribution<PrivacyWorkspaceContribution>();
+        context.Services.AddFeatureProvider<PrivacyFeatureProvider>();
 
         context.Services
             .AddOptions<GpcDiscoveryOptions>()

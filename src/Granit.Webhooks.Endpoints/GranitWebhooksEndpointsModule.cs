@@ -19,6 +19,9 @@ namespace Granit.Webhooks.Endpoints;
 public sealed class GranitWebhooksEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddWorkspaceContribution<WebhooksWorkspaceContribution>();
+        context.Services.AddFeatureProvider<WebhooksFeatureProvider>();
+    }
 }

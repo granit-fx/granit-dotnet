@@ -2631,6 +2631,15 @@
       "members": []
     },
     {
+      "name": "AIFeatures",
+      "fqn": "Granit.AI.Endpoints.Workspaces.AIFeatures",
+      "kind": "class",
+      "project": "Granit.AI.Endpoints",
+      "file": "src/Granit.AI.Endpoints/Workspaces/AIFeatures.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "AIEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.AI.EntityFrameworkCore.Extensions.AIEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -4280,6 +4289,15 @@
       "project": "Granit.Auditing.Endpoints",
       "file": "src/Granit.Auditing.Endpoints/Permissions/AuditingPermissions.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "AuditingFeatures",
+      "fqn": "Granit.Auditing.Endpoints.Workspaces.AuditingFeatures",
+      "kind": "class",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Workspaces/AuditingFeatures.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -7772,6 +7790,15 @@
       "members": []
     },
     {
+      "name": "BackgroundJobsFeatures",
+      "fqn": "Granit.BackgroundJobs.Endpoints.Workspaces.BackgroundJobsFeatures",
+      "kind": "class",
+      "project": "Granit.BackgroundJobs.Endpoints",
+      "file": "src/Granit.BackgroundJobs.Endpoints/Workspaces/BackgroundJobsFeatures.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "BackgroundJobsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.BackgroundJobs.EntityFrameworkCore.Extensions.BackgroundJobsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -9331,6 +9358,15 @@
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/Permissions/BlobStorageRateLimitPolicies.cs",
       "line": 18,
+      "members": []
+    },
+    {
+      "name": "BlobStorageFeatures",
+      "fqn": "Granit.BlobStorage.Endpoints.Workspaces.BlobStorageFeatures",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Endpoints",
+      "file": "src/Granit.BlobStorage.Endpoints/Workspaces/BlobStorageFeatures.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -11782,6 +11818,15 @@
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Permissions/DataExchangePermissions.cs",
       "line": 18,
+      "members": []
+    },
+    {
+      "name": "DataExchangeFeatures",
+      "fqn": "Granit.DataExchange.Endpoints.Workspaces.DataExchangeFeatures",
+      "kind": "class",
+      "project": "Granit.DataExchange.Endpoints",
+      "file": "src/Granit.DataExchange.Endpoints/Workspaces/DataExchangeFeatures.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -16855,6 +16900,15 @@
       "project": "Granit.Features.Endpoints",
       "file": "src/Granit.Features.Endpoints/Permissions/FeaturesPermissions.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "FeaturesFeatures",
+      "fqn": "Granit.Features.Endpoints.Workspaces.FeaturesFeatures",
+      "kind": "class",
+      "project": "Granit.Features.Endpoints",
+      "file": "src/Granit.Features.Endpoints/Workspaces/FeaturesFeatures.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -24599,6 +24653,15 @@
       "members": []
     },
     {
+      "name": "LocalizationFeatures",
+      "fqn": "Granit.Localization.Endpoints.Workspaces.LocalizationFeatures",
+      "kind": "class",
+      "project": "Granit.Localization.Endpoints",
+      "file": "src/Granit.Localization.Endpoints/Workspaces/LocalizationFeatures.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "LocalizationEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Localization.EntityFrameworkCore.Extensions.LocalizationEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -26153,6 +26216,15 @@
       "project": "Granit.MultiTenancy.Endpoints",
       "file": "src/Granit.MultiTenancy.Endpoints/Permissions/MultiTenancyPermissions.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "MultiTenancyFeatures",
+      "fqn": "Granit.MultiTenancy.Endpoints.Workspaces.MultiTenancyFeatures",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Endpoints",
+      "file": "src/Granit.MultiTenancy.Endpoints/Workspaces/MultiTenancyFeatures.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -28010,6 +28082,15 @@
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/Permissions/NotificationPermissions.cs",
       "line": 14,
+      "members": []
+    },
+    {
+      "name": "NotificationsFeatures",
+      "fqn": "Granit.Notifications.Endpoints.Workspaces.NotificationsFeatures",
+      "kind": "class",
+      "project": "Granit.Notifications.Endpoints",
+      "file": "src/Granit.Notifications.Endpoints/Workspaces/NotificationsFeatures.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -33879,6 +33960,15 @@
       "members": []
     },
     {
+      "name": "PrivacyFeatures",
+      "fqn": "Granit.Privacy.Endpoints.Workspaces.PrivacyFeatures",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Workspaces/PrivacyFeatures.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "LegalAgreementBaseConfiguration",
       "fqn": "Granit.Privacy.EntityFrameworkCore.Configurations.LegalAgreementBaseConfiguration",
       "kind": "class",
@@ -36636,6 +36726,15 @@
       "members": []
     },
     {
+      "name": "SchedulingFeatures",
+      "fqn": "Granit.Scheduling.Endpoints.Workspaces.SchedulingFeatures",
+      "kind": "class",
+      "project": "Granit.Scheduling.Endpoints",
+      "file": "src/Granit.Scheduling.Endpoints/Workspaces/SchedulingFeatures.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "SchedulingEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Scheduling.EntityFrameworkCore.Extensions.SchedulingEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -37340,6 +37439,15 @@
       "project": "Granit.Settings.Endpoints",
       "file": "src/Granit.Settings.Endpoints/Permissions/SettingsPermissions.cs",
       "line": 24,
+      "members": []
+    },
+    {
+      "name": "SettingsFeatures",
+      "fqn": "Granit.Settings.Endpoints.Workspaces.SettingsFeatures",
+      "kind": "class",
+      "project": "Granit.Settings.Endpoints",
+      "file": "src/Granit.Settings.Endpoints/Workspaces/SettingsFeatures.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -38148,6 +38256,15 @@
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Permissions/TemplatingPermissions.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "TemplatingFeatures",
+      "fqn": "Granit.Templating.Endpoints.Workspaces.TemplatingFeatures",
+      "kind": "class",
+      "project": "Granit.Templating.Endpoints",
+      "file": "src/Granit.Templating.Endpoints/Workspaces/TemplatingFeatures.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -39698,6 +39815,15 @@
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Permissions/TimelinePermissions.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "TimelineFeatures",
+      "fqn": "Granit.Timeline.Endpoints.Workspaces.TimelineFeatures",
+      "kind": "class",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Workspaces/TimelineFeatures.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -42588,6 +42714,15 @@
       ]
     },
     {
+      "name": "WebhooksFeatures",
+      "fqn": "Granit.Webhooks.Endpoints.Workspaces.WebhooksFeatures",
+      "kind": "class",
+      "project": "Granit.Webhooks.Endpoints",
+      "file": "src/Granit.Webhooks.Endpoints/Workspaces/WebhooksFeatures.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Webhooks.EntityFrameworkCore.Extensions.WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -43886,6 +44021,15 @@
       "project": "Granit.Workflow.Endpoints",
       "file": "src/Granit.Workflow.Endpoints/Permissions/WorkflowPermissions.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "WorkflowFeatures",
+      "fqn": "Granit.Workflow.Endpoints.Workspaces.WorkflowFeatures",
+      "kind": "class",
+      "project": "Granit.Workflow.Endpoints",
+      "file": "src/Granit.Workflow.Endpoints/Workspaces/WorkflowFeatures.cs",
+      "line": 4,
       "members": []
     },
     {

@@ -18,6 +18,9 @@ namespace Granit.AI.Endpoints;
 public sealed class GranitAIEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddWorkspaceContribution<AIWorkspaceContribution>();
+        context.Services.AddFeatureProvider<AIFeatureProvider>();
+    }
 }
