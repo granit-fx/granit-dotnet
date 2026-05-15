@@ -108,9 +108,9 @@ public static class CachingServiceCollectionExtensions
         });
 
         // Ensure ICurrentTenant is available for the tenant-aware decorator.
-        // In full app startup, Granit base module registers NullTenantContext.
-        // This fallback covers standalone AddGranitCaching() usage (tests, tooling).
-        services.TryAddSingleton<ICurrentTenant>(new NullCurrentTenant());
+        // In full app startup, Granit base module already registers NullTenantContext;
+        // this TryAdd is a fallback for standalone AddGranitCaching() usage (tests, tooling).
+        services.TryAddSingleton<ICurrentTenant>(NullTenantContext.Instance);
 
         // Tenant-aware cache key isolation: move the raw IFusionCache singleton to a
         // keyed service and register the decorator as the default IFusionCache.

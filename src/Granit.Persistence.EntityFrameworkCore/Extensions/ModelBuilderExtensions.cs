@@ -60,6 +60,19 @@ public static class ModelBuilderExtensions
     /// When provided, each filter can be individually bypassed via <c>IDataFilter.Disable&lt;TFilter&gt;()</c>.
     /// For single-query bypass, use <c>query.IgnoreQueryFilters([GranitFilterNames.SoftDelete])</c> instead.
     /// </param>
+    /// <example>
+    /// At runtime, both services come from DI. From an
+    /// <see cref="Microsoft.EntityFrameworkCore.Design.IDesignTimeDbContextFactory{TContext}"/>
+    /// — where there is no container — pass the framework-provided stubs so that the model
+    /// snapshot encodes the same named query filters as the runtime model and EF Core 10 does
+    /// not raise <c>PendingModelChangesWarning</c>:
+    /// <code>
+    /// return new MyDbContext(
+    ///     options,
+    ///     GranitDesignTime.CurrentTenant,
+    ///     GranitDesignTime.DataFilter);
+    /// </code>
+    /// </example>
     public static ModelBuilder ApplyGranitConventions(
         this ModelBuilder modelBuilder,
         ICurrentTenant? currentTenant = null,
