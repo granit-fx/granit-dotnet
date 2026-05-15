@@ -44726,54 +44726,6 @@
       ]
     },
     {
-      "name": "IWorkspaceContributionBuilder",
-      "fqn": "Granit.Workspaces.IWorkspaceContributionBuilder",
-      "kind": "interface",
-      "project": "Granit.Workspaces.Abstractions",
-      "file": "src/Granit.Workspaces.Abstractions/IWorkspaceContributor.cs",
-      "line": 45,
-      "members": [
-        {
-          "name": "Section",
-          "kind": "method",
-          "signature": "Section(string key, Action<WorkspaceSectionBuilder> configure)",
-          "returnType": "IWorkspaceContributionBuilder"
-        }
-      ]
-    },
-    {
-      "name": "IWorkspaceContributionContext",
-      "fqn": "Granit.Workspaces.IWorkspaceContributionContext",
-      "kind": "interface",
-      "project": "Granit.Workspaces.Abstractions",
-      "file": "src/Granit.Workspaces.Abstractions/IWorkspaceContributor.cs",
-      "line": 31,
-      "members": [
-        {
-          "name": "ForWorkspace",
-          "kind": "method",
-          "signature": "ForWorkspace(string workspaceName)",
-          "returnType": "IWorkspaceContributionBuilder"
-        }
-      ]
-    },
-    {
-      "name": "IWorkspaceContributor",
-      "fqn": "Granit.Workspaces.IWorkspaceContributor",
-      "kind": "interface",
-      "project": "Granit.Workspaces.Abstractions",
-      "file": "src/Granit.Workspaces.Abstractions/IWorkspaceContributor.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "Contribute",
-          "kind": "method",
-          "signature": "Contribute(IWorkspaceContributionContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
       "name": "IWorkspaceDescriptor",
       "fqn": "Granit.Workspaces.IWorkspaceDescriptor",
       "kind": "interface",

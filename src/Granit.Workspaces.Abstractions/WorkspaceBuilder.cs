@@ -50,7 +50,7 @@ public sealed class WorkspaceBuilder
 
     /// <summary>
     /// Marks the workspace as a "shell" — declared by name only, intended to be
-    /// populated by <see cref="IWorkspaceContributor"/> implementations from
+    /// populated by <see cref="IFeatureProvider"/> implementations from
     /// other modules. Empty shells are auto-filtered from the rendered tree.
     /// </summary>
     public WorkspaceBuilder Shell()

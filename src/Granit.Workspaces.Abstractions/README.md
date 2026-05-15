@@ -1,12 +1,12 @@
 # Granit.Workspaces.Abstractions
 
 Inter-module contracts for the Granit workspace surface
-([ADR-040](https://granit-fx.dev/dotnet/architecture/adr/040-entity-definition/)) —
+([ADR-057](https://granit-fx.dev/dotnet/architecture/adr/057-workspace-composition-belongs-to-the-application/)) —
 declarative `WorkspaceDefinition` base class, fluent builder, section / item
-descriptors, and the `IWorkspaceContributor` cross-module grafting hook.
+descriptors, and the `IFeatureProvider` module-side feature catalog hook.
 
-Pure abstractions, no runtime — pull this from any base module that declares
-a `WorkspaceDefinition` or contributes to one. Pull `Granit.Workspaces` only
+Pure abstractions, no runtime — pull this from any base module that exposes
+features or declares a `WorkspaceDefinition`. Pull `Granit.Workspaces` only
 from hosts that resolve and serve the tree.
 
 Part of the [granit](https://granit-fx.dev) framework.

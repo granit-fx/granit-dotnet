@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Workspaces.Abstractions</PackageId>
-    <Description>Inter-module contracts for Granit.Workspaces (ADR-040 navigation tree): declarative WorkspaceDefinition base class, fluent builder, section / item descriptors, IWorkspaceContributor for cross-module grafting, and the typed reference helpers used by base modules to declare a workspace's section / item layout without taking a runtime dependency on Granit.Workspaces. Pull this package from any base module that declares a WorkspaceDefinition or contributes to one; pull Granit.Workspaces only from hosts that resolve and serve the tree.</Description>
+    <Description>Inter-module contracts for Granit.Workspaces (ADR-057 navigation tree): declarative WorkspaceDefinition base class, fluent builder, section / item descriptors, IFeatureProvider for module-side feature catalog declarations, and the typed reference helpers used by hosts to compose workspaces. Pull this package from any base module that exposes features or declares a WorkspaceDefinition; pull Granit.Workspaces only from hosts that resolve and serve the tree.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

@@ -1,10 +1,10 @@
 namespace Granit.Workspaces;
 
 /// <summary>
-/// Module-supplied feature catalog contributor (per ADR-057). A
-/// <see cref="IWorkspaceContributor"/> declares *where* something appears in
-/// the UI; an <see cref="IFeatureProvider"/> declares *what exists* and
-/// nothing else (capability + permission + route name + display hints).
+/// Module-supplied feature catalog contributor (per ADR-057). A workspace
+/// declaration says *where* something appears in the UI; an
+/// <see cref="IFeatureProvider"/> declares *what exists* and nothing else
+/// (capability + permission + route name + display hints).
 /// </summary>
 /// <remarks>
 /// <para>

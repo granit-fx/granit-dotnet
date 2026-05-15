@@ -4,7 +4,7 @@ namespace Granit.Workspaces.Extensions;
 
 /// <summary>
 /// Service-collection extensions for registering workspace definitions and
-/// cross-module contributions.
+/// feature providers.
 /// </summary>
 public static class WorkspaceServiceCollectionExtensions
 {
@@ -21,19 +21,6 @@ public static class WorkspaceServiceCollectionExtensions
         services.AddSingleton<TWorkspaceDefinition>();
         services.AddSingleton<WorkspaceDefinition>(sp => sp.GetRequiredService<TWorkspaceDefinition>());
         services.AddSingleton<IWorkspaceDescriptor>(sp => sp.GetRequiredService<TWorkspaceDefinition>());
-        return services;
-    }
-
-    /// <summary>
-    /// Registers <typeparamref name="TContributor"/> as a singleton implementing
-    /// <see cref="IWorkspaceContributor"/>. Multiple contributors per host are
-    /// expected — invocation order at boot is registration order.
-    /// </summary>
-    public static IServiceCollection AddWorkspaceContribution<TContributor>(this IServiceCollection services)
-        where TContributor : class, IWorkspaceContributor
-    {
-        ArgumentNullException.ThrowIfNull(services);
-        services.AddSingleton<IWorkspaceContributor, TContributor>();
         return services;
     }
 

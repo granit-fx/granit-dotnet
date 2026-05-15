@@ -34,7 +34,7 @@ public sealed record WorkspaceDescriptor
 
     /// <summary>
     /// True when the workspace is a "shell" — declared by name only, intended to be
-    /// populated by <see cref="IWorkspaceContributor"/> implementations. Empty shells
+    /// populated by <see cref="IFeatureProvider"/> implementations. Empty shells
     /// are auto-filtered from the final tree (ADR-040 §7).
     /// </summary>
     public bool IsShell { get; init; }
