@@ -94,6 +94,25 @@ public sealed class WorkspaceSectionBuilder
         return this;
     }
 
+    /// <summary>
+    /// Adds a feature reference by catalog name (per ADR-057). The composer
+    /// resolves the feature at filter time, lifting the feature's permission,
+    /// route name, display key, and default icon into the payload. The optional
+    /// <paramref name="configure"/> callback applies per-placement overrides
+    /// (icon, order, route name, displayed-as label) without mutating the
+    /// catalog entry. The feature must be declared by an
+    /// <see cref="IFeatureProvider"/> registered at boot time; missing features
+    /// cause startup to fail fast (no silent drop).
+    /// </summary>
+    public WorkspaceSectionBuilder Feature(string featureName, Action<WorkspaceItemBuilder>? configure = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(featureName);
+        WorkspaceItemBuilder builder = new(WorkspaceItemKind.Feature, featureName: featureName);
+        configure?.Invoke(builder);
+        _itemFactories.Add(builder.Build);
+        return this;
+    }
+
     internal WorkspaceSectionDescriptor Build()
     {
         IReadOnlyList<WorkspaceItemDescriptor> items =

@@ -16,6 +16,13 @@ public enum WorkspaceItemKind
 
     /// <summary>Sub-workspace — recurses into a child <see cref="WorkspaceDescriptor"/>.</summary>
     SubWorkspace,
+
+    /// <summary>
+    /// Reference to a feature declared in the <see cref="IFeatureCatalog"/> (per ADR-057).
+    /// The composer resolves the feature at filter time and emits a payload carrying the
+    /// feature's route name + display key + default icon, with optional per-placement overrides.
+    /// </summary>
+    Feature,
 }
 
 /// <summary>
@@ -31,7 +38,9 @@ public enum WorkspaceItemKind
 /// <param name="DashboardName">Wire identifier of the referenced <c>DashboardDefinition</c> when <see cref="Kind"/> is <see cref="WorkspaceItemKind.Dashboard"/>.</param>
 /// <param name="LinkUrl">Internal route or absolute URL when <see cref="Kind"/> is <see cref="WorkspaceItemKind.Link"/>.</param>
 /// <param name="SubWorkspaceName">Wire identifier of the referenced <see cref="WorkspaceDescriptor"/> when <see cref="Kind"/> is <see cref="WorkspaceItemKind.SubWorkspace"/>.</param>
-/// <param name="RequiresPermission">Optional permission gate — drops the item from the manifest payload when the user does not hold the permission. Defense-in-depth (ADR-040).</param>
+/// <param name="FeatureName">Wire identifier of the referenced feature (catalog entry) when <see cref="Kind"/> is <see cref="WorkspaceItemKind.Feature"/>. Composer resolves it at filter time and lifts the feature's metadata into the payload (per ADR-057).</param>
+/// <param name="RouteName">Logical frontend route identifier resolved against the host's React route table (per ADR-057 §5). Populated by the composer for <see cref="WorkspaceItemKind.Feature"/> items; <see langword="null"/> otherwise.</param>
+/// <param name="RequiresPermission">Optional permission gate — drops the item from the manifest payload when the user does not hold the permission. Defense in depth (ADR-040).</param>
 public sealed record WorkspaceItemDescriptor(
     WorkspaceItemKind Kind,
     int Order,
@@ -43,4 +52,6 @@ public sealed record WorkspaceItemDescriptor(
     string? DashboardName,
     string? LinkUrl,
     string? SubWorkspaceName,
+    string? FeatureName,
+    string? RouteName,
     string? RequiresPermission);

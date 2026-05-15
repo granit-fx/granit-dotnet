@@ -44453,6 +44453,24 @@
       "members": []
     },
     {
+      "name": "FeatureBuilder",
+      "fqn": "Granit.Workspaces.FeatureBuilder",
+      "kind": "class",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/FeatureBuilder.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "FeatureDescriptor",
+      "fqn": "Granit.Workspaces.FeatureDescriptor",
+      "kind": "record",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/FeatureDescriptor.cs",
+      "line": 36,
+      "members": []
+    },
+    {
       "name": "FrameworkWorkspaceNames",
       "fqn": "Granit.Workspaces.Framework.FrameworkWorkspaceNames",
       "kind": "class",
@@ -44469,6 +44487,54 @@
       "file": "src/Granit.Workspaces.Abstractions/GranitWorkspacesAbstractionsModule.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "IFeatureCatalog",
+      "fqn": "Granit.Workspaces.IFeatureCatalog",
+      "kind": "interface",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/IFeatureCatalog.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Find",
+          "kind": "method",
+          "signature": "Find(string name)",
+          "returnType": "IReadOnlyList<FeatureDescriptor> All { get; } FeatureDescriptor?"
+        }
+      ]
+    },
+    {
+      "name": "IFeatureCatalogBuilder",
+      "fqn": "Granit.Workspaces.IFeatureCatalogBuilder",
+      "kind": "interface",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/IFeatureCatalog.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Add",
+          "kind": "method",
+          "signature": "Add(string name, Action<FeatureBuilder> configure)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IFeatureProvider",
+      "fqn": "Granit.Workspaces.IFeatureProvider",
+      "kind": "interface",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/IFeatureProvider.cs",
+      "line": 38,
+      "members": [
+        {
+          "name": "DefineFeatures",
+          "kind": "method",
+          "signature": "DefineFeatures(IFeatureCatalogBuilder catalog)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IWorkspaceContributionBuilder",
@@ -44576,7 +44642,7 @@
       "kind": "record",
       "project": "Granit.Workspaces.Abstractions",
       "file": "src/Granit.Workspaces.Abstractions/WorkspaceItemDescriptor.cs",
-      "line": 35,
+      "line": 44,
       "members": []
     },
     {

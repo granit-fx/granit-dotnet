@@ -50,6 +50,25 @@ public sealed class WorkspaceBuilderTests
         Should.Throw<InvalidOperationException>(() => new InvalidViewOnLink().Descriptor);
     }
 
+    [Fact]
+    public void Feature_item_carries_feature_name_and_optional_route_override()
+    {
+        FeatureDefinition def = new();
+        WorkspaceItemDescriptor item = def.Descriptor.Sections.Single().Items.Single();
+
+        item.Kind.ShouldBe(WorkspaceItemKind.Feature);
+        item.FeatureName.ShouldBe("invoicing.invoices.list");
+        item.RouteName.ShouldBe("invoicing.invoices.list.tenant-view");
+        item.DisplayKey.ShouldBe("Showcase:Workspace.Erp.InvoiceList");
+        item.Icon.ShouldBe("chart-bar");
+    }
+
+    [Fact]
+    public void RouteName_can_only_be_called_on_feature_items()
+    {
+        Should.Throw<InvalidOperationException>(() => new InvalidRouteNameOnLink().Descriptor);
+    }
+
     private sealed class SampleDefinition : WorkspaceDefinition
     {
         public override string Name => "Sample";
@@ -87,5 +106,77 @@ public sealed class WorkspaceBuilderTests
 
         protected override void Configure(WorkspaceBuilder b) =>
             b.Section("s", s => s.Link("/x", i => i.View("any")));
+    }
+
+    private sealed class FeatureDefinition : WorkspaceDefinition
+    {
+        public override string Name => "Showcase.Erp";
+
+        protected override void Configure(WorkspaceBuilder b) =>
+            b.Section("billing", s => s
+                .Feature("invoicing.invoices.list", i => i
+                    .DisplayKey("Showcase:Workspace.Erp.InvoiceList")
+                    .Icon("chart-bar")
+                    .RouteName("invoicing.invoices.list.tenant-view")));
+    }
+
+    private sealed class InvalidRouteNameOnLink : WorkspaceDefinition
+    {
+        public override string Name => "Invalid";
+
+        protected override void Configure(WorkspaceBuilder b) =>
+            b.Section("s", s => s.Link("/x", i => i.RouteName("any.route")));
+    }
+}
+
+public sealed class FeatureBuilderTests
+{
+    [Fact]
+    public void Build_assembles_a_descriptor()
+    {
+        FeatureBuilder builder = new("invoicing.invoices.list");
+        builder
+            .Permission("Invoicing.Invoices.Read")
+            .RouteName("invoicing.invoices.list")
+            .DefaultIcon("receipt")
+            .DisplayKey("InvoicingEndpoints:Invoices.List");
+
+        FeatureDescriptor descriptor = builder.Build();
+
+        descriptor.Name.ShouldBe("invoicing.invoices.list");
+        descriptor.Permission.ShouldBe("Invoicing.Invoices.Read");
+        descriptor.RouteName.ShouldBe("invoicing.invoices.list");
+        descriptor.DefaultIcon.ShouldBe("receipt");
+        descriptor.DisplayKey.ShouldBe("InvoicingEndpoints:Invoices.List");
+    }
+
+    [Fact]
+    public void RouteName_defaults_to_feature_name_when_omitted()
+    {
+        FeatureBuilder builder = new("identity.users.list");
+        builder
+            .Permission("Identity.Users.Read")
+            .DisplayKey("IdentityEndpoints:Users.List");
+
+        FeatureDescriptor descriptor = builder.Build();
+        descriptor.RouteName.ShouldBe("identity.users.list");
+    }
+
+    [Fact]
+    public void Build_throws_when_permission_missing()
+    {
+        FeatureBuilder builder = new("x.y.z");
+        builder.DisplayKey("X:Y.Z");
+        Should.Throw<InvalidOperationException>(() => builder.Build())
+            .Message.ShouldContain("permission");
+    }
+
+    [Fact]
+    public void Build_throws_when_display_key_missing()
+    {
+        FeatureBuilder builder = new("x.y.z");
+        builder.Permission("X.Y.Read");
+        Should.Throw<InvalidOperationException>(() => builder.Build())
+            .Message.ShouldContain("display key");
     }
 }

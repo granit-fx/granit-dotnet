@@ -10,12 +10,14 @@ public sealed class WorkspaceItemBuilder
     private readonly string? _dashboardName;
     private readonly string? _linkUrl;
     private readonly string? _subWorkspaceName;
+    private readonly string? _featureName;
 
     private string? _entityViewName;
     private IReadOnlyDictionary<string, object?>? _entityPresetOverlay;
     private string? _displayKey;
     private string? _icon;
     private int _order;
+    private string? _routeName;
     private string? _requiresPermission;
 
     internal WorkspaceItemBuilder(
@@ -23,13 +25,15 @@ public sealed class WorkspaceItemBuilder
         string? entityName = null,
         string? dashboardName = null,
         string? linkUrl = null,
-        string? subWorkspaceName = null)
+        string? subWorkspaceName = null,
+        string? featureName = null)
     {
         _kind = kind;
         _entityName = entityName;
         _dashboardName = dashboardName;
         _linkUrl = linkUrl;
         _subWorkspaceName = subWorkspaceName;
+        _featureName = featureName;
     }
 
     /// <summary>i18n key for the item label.</summary>
@@ -90,6 +94,19 @@ public sealed class WorkspaceItemBuilder
         return this;
     }
 
+    /// <summary>
+    /// Overrides the route name resolved against the host's React route table
+    /// for a <see cref="WorkspaceItemKind.Feature"/> item (per ADR-057 §5).
+    /// When unset, the composer falls back to the feature's catalog-declared route name.
+    /// </summary>
+    public WorkspaceItemBuilder RouteName(string routeName)
+    {
+        EnsureKind(WorkspaceItemKind.Feature);
+        ArgumentException.ThrowIfNullOrWhiteSpace(routeName);
+        _routeName = routeName;
+        return this;
+    }
+
     internal WorkspaceItemDescriptor Build() =>
         new(
             _kind,
@@ -102,6 +119,8 @@ public sealed class WorkspaceItemBuilder
             _dashboardName,
             _linkUrl,
             _subWorkspaceName,
+            _featureName,
+            _routeName,
             _requiresPermission);
 
     private void EnsureKind(WorkspaceItemKind expected)
