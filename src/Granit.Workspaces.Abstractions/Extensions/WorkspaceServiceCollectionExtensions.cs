@@ -36,4 +36,18 @@ public static class WorkspaceServiceCollectionExtensions
         services.AddSingleton<IWorkspaceContributor, TContributor>();
         return services;
     }
+
+    /// <summary>
+    /// Registers <typeparamref name="TProvider"/> as a singleton implementing
+    /// <see cref="IFeatureProvider"/> (per ADR-057). Every registered provider
+    /// is invoked once when the <see cref="IFeatureCatalog"/> is first
+    /// resolved; the result is frozen for the lifetime of the host.
+    /// </summary>
+    public static IServiceCollection AddFeatureProvider<TProvider>(this IServiceCollection services)
+        where TProvider : class, IFeatureProvider
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        services.AddSingleton<IFeatureProvider, TProvider>();
+        return services;
+    }
 }

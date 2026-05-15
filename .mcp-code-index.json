@@ -13915,6 +13915,15 @@
       "members": []
     },
     {
+      "name": "DiagnosticsFeatures",
+      "fqn": "Granit.Diagnostics.Endpoints.Workspaces.DiagnosticsFeatures",
+      "kind": "class",
+      "project": "Granit.Diagnostics.Endpoints",
+      "file": "src/Granit.Diagnostics.Endpoints/Workspaces/DiagnosticsFeatures.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "DiagnosticsEndpointRouteBuilderExtensions",
       "fqn": "Granit.Diagnostics.Extensions.DiagnosticsEndpointRouteBuilderExtensions",
       "kind": "class",

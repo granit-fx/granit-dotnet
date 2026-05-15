@@ -13,7 +13,13 @@ public sealed class FeatureBuilder
     private string? _defaultIcon;
     private string? _displayKey;
 
-    internal FeatureBuilder(string name)
+    /// <summary>
+    /// Constructs a new builder for the supplied feature name. Public so
+    /// tests and tooling can capture provider invocations without going
+    /// through <see cref="IFeatureCatalogBuilder"/>; production code rarely
+    /// needs to instantiate one directly.
+    /// </summary>
+    public FeatureBuilder(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         _name = name;
@@ -61,7 +67,12 @@ public sealed class FeatureBuilder
         return this;
     }
 
-    internal FeatureDescriptor Build()
+    /// <summary>
+    /// Materialises the configured fields into an immutable
+    /// <see cref="FeatureDescriptor"/>. Throws when permission or display key
+    /// are missing — those two are non-optional per the framework convention.
+    /// </summary>
+    public FeatureDescriptor Build()
     {
         if (string.IsNullOrWhiteSpace(_permission))
         {
