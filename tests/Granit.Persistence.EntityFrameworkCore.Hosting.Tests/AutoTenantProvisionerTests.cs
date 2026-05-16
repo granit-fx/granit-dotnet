@@ -175,7 +175,9 @@ public sealed class AutoTenantProvisionerTests : IDisposable
         services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
 
         // Register a test DbContext as isolated — uses SQLite in-memory so MigrateAsync works.
-        services.AddSingleton(new IsolatedDbContextMarker(typeof(TestTenantDbContext)));
+        services.AddSingleton(new IsolatedDbContextMarker(
+            typeof(TestTenantDbContext),
+            new HashSet<TenantIsolationStrategy> { TenantIsolationStrategy.SharedDatabase }));
         DbConnection connection = _connection;
         services.AddDbContext<TestTenantDbContext>(opts => opts.UseSqlite(connection));
 

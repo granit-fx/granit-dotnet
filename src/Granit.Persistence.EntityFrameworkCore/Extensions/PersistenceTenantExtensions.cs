@@ -172,7 +172,8 @@ public static class PersistenceTenantExtensions
         Action<TenantSchemaOptions>? configureTenantSchema = null)
         where TContext : DbContext
     {
-        // Isolation options — fail-fast on invalid appsettings value.
+        // Isolation options — fail-fast on invalid appsettings value AND on a missing
+        // factory delegate for the active strategy (see TenantIsolationFactoryRegistrationValidator).
         services.AddOptions<TenantIsolationOptions>()
             .BindConfiguration("TenantIsolation")
             .Validate(
@@ -181,12 +182,20 @@ public static class PersistenceTenantExtensions
                 "Valid values: SharedDatabase, DatabasePerTenant, SchemaPerTenant.")
             .ValidateOnStart();
 
+        // Idempotent — only one validator instance is needed; subsequent calls add
+        // duplicates which are harmless (every marker is still observed via IEnumerable<>).
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<
+            IValidateOptions<TenantIsolationOptions>,
+            TenantIsolationFactoryRegistrationValidator>());
+
         // HostDbSchema is set eagerly by GranitPersistenceEntityFrameworkCoreModule
         // via GranitDbDefaults.EnsureFromConfiguration(). No need to read config here —
         // the module runs before any downstream module registers DbContexts.
 
         services.TryAddSingleton<ITenantIsolationStrategyProvider,
             ConfigurationTenantIsolationStrategyProvider>();
+
+        HashSet<TenantIsolationStrategy> registeredStrategies = new();
 
         // SharedDatabase — always registered; the default fallback strategy.
         SharedDatabaseDbContextOptions<TContext> sharedOpts = new()
@@ -196,6 +205,7 @@ public static class PersistenceTenantExtensions
         services.AddKeyedScoped<IDbContextFactory<TContext>>(
             TenantIsolationStrategy.SharedDatabase,
             (sp, _) => new SharedDatabaseDbContextFactory<TContext>(sp, sharedOpts));
+        registeredStrategies.Add(TenantIsolationStrategy.SharedDatabase);
 
         // DatabasePerTenant — registered only when a configure delegate is provided.
         if (configureDatabasePerTenant is not null)
@@ -211,6 +221,7 @@ public static class PersistenceTenantExtensions
                     sp.GetRequiredService<ITenantConnectionStringProvider>(),
                     sp,
                     perDbOpts));
+            registeredStrategies.Add(TenantIsolationStrategy.DatabasePerTenant);
         }
 
         // SchemaPerTenant — registered only when a configure delegate is provided.
@@ -235,13 +246,17 @@ public static class PersistenceTenantExtensions
                     sp.GetRequiredService<ITenantSchemaActivator>(),
                     sp,
                     perSchemaOpts));
+            registeredStrategies.Add(TenantIsolationStrategy.SchemaPerTenant);
         }
 
         // Facade — dispatches to the keyed factory resolved at runtime.
         services.TryAddScoped<IDbContextFactory<TContext>, IsolatedDbContextFactory<TContext>>();
 
         // Marker for migration runner: this DbContext is tenant-isolated, skip on cold start.
-        services.AddSingleton(new IsolatedDbContextMarker(typeof(TContext)));
+        // Also carries the set of strategies for which a keyed factory was registered, so
+        // TenantIsolationFactoryRegistrationValidator can fail-fast at startup when the
+        // active strategy has no matching factory.
+        services.AddSingleton(new IsolatedDbContextMarker(typeof(TContext), registeredStrategies));
 
         // Scoped TContext: tries the isolated factory first, falls back to the
         // SharedDatabase keyed factory when no tenant is active. This fallback is
