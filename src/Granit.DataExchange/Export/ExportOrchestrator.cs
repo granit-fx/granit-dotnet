@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Granit.DataExchange.Export.Internal;
+namespace Granit.DataExchange.Export;
 
 /// <summary>
 /// Default <see cref="IExportOrchestrator"/> implementation.

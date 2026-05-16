@@ -12125,6 +12125,28 @@
       ]
     },
     {
+      "name": "ExportOrchestrator",
+      "fqn": "Granit.DataExchange.Export.ExportOrchestrator",
+      "kind": "class",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Export/ExportOrchestrator.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "ExportAsync",
+          "kind": "method",
+          "signature": "ExportAsync(ExportRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ExportJobResult>"
+        },
+        {
+          "name": "GetDownloadAsync",
+          "kind": "method",
+          "signature": "GetDownloadAsync(Guid jobId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ExportDownload?>"
+        }
+      ]
+    },
+    {
       "name": "ExportPreset",
       "fqn": "Granit.DataExchange.Export.ExportPreset",
       "kind": "record",
@@ -12397,28 +12419,6 @@
           "kind": "method",
           "signature": "GetExtraFields(Type entityType)",
           "returnType": "IReadOnlyList<ExportFieldDescriptor>"
-        }
-      ]
-    },
-    {
-      "name": "ExportOrchestrator",
-      "fqn": "Granit.DataExchange.Export.Internal.ExportOrchestrator",
-      "kind": "class",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/Internal/ExportOrchestrator.cs",
-      "line": 27,
-      "members": [
-        {
-          "name": "ExportAsync",
-          "kind": "method",
-          "signature": "ExportAsync(ExportRequest request, CancellationToken cancellationToken = default)",
-          "returnType": "Task<ExportJobResult>"
-        },
-        {
-          "name": "GetDownloadAsync",
-          "kind": "method",
-          "signature": "GetDownloadAsync(Guid jobId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<ExportDownload?>"
         }
       ]
     },
