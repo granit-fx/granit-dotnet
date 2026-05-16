@@ -46,14 +46,24 @@ public sealed class EndpointModuleLocalizationRegistrationTests
 
         foreach ((Assembly assembly, Type resourceType, Type moduleType) in candidates)
         {
-            bool registered = TryRunModuleAndCheckRegistration(moduleType, resourceType);
+            (bool registered, string? failureReason) =
+                TryRunModuleAndCheckRegistration(moduleType, resourceType);
             if (!registered)
             {
-                failures.Add(
-                    $"{moduleType.FullName} (assembly {assembly.GetName().Name}) does not register "
-                    + $"{resourceType.FullName}. Add "
-                    + $"`context.Services.AddLocalizationResource<{resourceType.Name}>();` at the top "
-                    + $"of ConfigureServices in {moduleType.Name}.");
+                if (failureReason is not null)
+                {
+                    failures.Add(
+                        $"{moduleType.FullName} (assembly {assembly.GetName().Name}) threw while "
+                        + $"running ConfigureServices in isolation: {failureReason}");
+                }
+                else
+                {
+                    failures.Add(
+                        $"{moduleType.FullName} (assembly {assembly.GetName().Name}) does not register "
+                        + $"{resourceType.FullName}. Add "
+                        + $"`context.Services.AddLocalizationResource<{resourceType.Name}>();` at the top "
+                        + $"of ConfigureServices in {moduleType.Name}.");
+                }
             }
         }
 
@@ -136,11 +146,12 @@ public sealed class EndpointModuleLocalizationRegistrationTests
         return result;
     }
 
-    private static bool TryRunModuleAndCheckRegistration(Type moduleType, Type resourceType)
+    private static (bool Registered, string? FailureReason) TryRunModuleAndCheckRegistration(
+        Type moduleType, Type resourceType)
     {
         if (moduleType == typeof(MissingEndpointsModuleMarker))
         {
-            return false;
+            return (false, null);
         }
 
         try
@@ -160,14 +171,16 @@ public sealed class EndpointModuleLocalizationRegistrationTests
             GranitLocalizationOptions options =
                 sp.GetRequiredService<IOptions<GranitLocalizationOptions>>().Value;
 
-            return options.Resources.TryGetValue(resourceType, out _);
+            return (options.Resources.TryGetValue(resourceType, out _), null);
         }
-        catch
+        catch (Exception ex)
         {
             // If the module fails to ConfigureServices in isolation (e.g. it transitively
             // requires services not registered here), surface it as a violation rather than
-            // a green-by-default — but include the original message via the failures list.
-            return false;
+            // a green-by-default — and include the original exception type + message so CI
+            // logs expose the actual cause instead of a misleading "does not register" line.
+            Exception root = ex.GetBaseException();
+            return (false, $"{root.GetType().Name}: {root.Message}");
         }
     }
 
