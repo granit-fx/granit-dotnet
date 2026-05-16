@@ -35650,6 +35650,12 @@
           "kind": "property",
           "signature": "string? TagName",
           "returnType": "string?"
+        },
+        {
+          "name": "IncludeListEndpoint",
+          "kind": "property",
+          "signature": "bool IncludeListEndpoint",
+          "returnType": "bool"
         }
       ]
     },

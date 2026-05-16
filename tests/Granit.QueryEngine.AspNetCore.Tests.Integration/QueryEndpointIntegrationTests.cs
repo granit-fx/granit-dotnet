@@ -5,6 +5,8 @@ using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.QueryEngine.Meta;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -152,6 +154,126 @@ public sealed class QueryEndpointIntegrationTests : IAsyncDisposable
         result.ShouldNotBeNull();
         result.Columns.Count.ShouldBe(1);
         result.DefaultSort.ShouldBe("-Price");
+    }
+
+    [Fact]
+    public async Task MapGranitQuery_without_list_registers_meta_only()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
+        builder.Services
+            .AddAuthentication(TestAuthHandler.SchemeName)
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                TestAuthHandler.SchemeName, _ => { });
+        builder.Services.AddAuthorization();
+        builder.Services.AddSingleton(_engine);
+        builder.Services.AddSingleton<QueryDefinition<TestProduct>, TestProductQueryDefinition>();
+        builder.Services.AddSingleton<ICurrentTenant>(Substitute.For<ICurrentTenant>());
+
+        _engine.GetMetadata().Returns(new QueryMetadata
+        {
+            Columns = [],
+            FilterableFields = [],
+            SortableFields = [],
+            PresetFilterGroups = [],
+            QuickFilters = [],
+            DateFilters = [],
+            GroupByFields = [],
+            Pagination = new PaginationMeta(20, 100, QueryEngineDefaults.MaxStreamSize, false),
+            DefaultSort = null,
+        });
+
+        await using WebApplication customApp = builder.Build();
+        customApp.MapGranitQuery<TestProduct>(
+            _ => Array.Empty<TestProduct>().AsQueryable(),
+            "/api/items",
+            opts => opts.IncludeListEndpoint = false);
+        await customApp.StartAsync(TestContext.Current.CancellationToken);
+
+        using HttpClient client = customApp.GetTestClient();
+        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, "user");
+
+        HttpResponseMessage listResponse = await client.GetAsync(
+            "/api/items", TestContext.Current.CancellationToken);
+        listResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+
+        HttpResponseMessage metaResponse = await client.GetAsync(
+            "/api/items/meta", TestContext.Current.CancellationToken);
+        metaResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task MapGranitQuery_without_list_or_meta_registers_no_endpoints()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
+        builder.Services
+            .AddAuthentication(TestAuthHandler.SchemeName)
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                TestAuthHandler.SchemeName, _ => { });
+        builder.Services.AddAuthorization();
+        builder.Services.AddSingleton(_engine);
+        builder.Services.AddSingleton<QueryDefinition<TestProduct>, TestProductQueryDefinition>();
+        builder.Services.AddSingleton<ICurrentTenant>(Substitute.For<ICurrentTenant>());
+
+        await using WebApplication customApp = builder.Build();
+        Should.NotThrow(() => customApp.MapGranitQuery<TestProduct>(
+            _ => Array.Empty<TestProduct>().AsQueryable(),
+            "/api/empty",
+            opts =>
+            {
+                opts.IncludeListEndpoint = false;
+                opts.IncludeMetaEndpoint = false;
+            }));
+        await customApp.StartAsync(TestContext.Current.CancellationToken);
+
+        using HttpClient client = customApp.GetTestClient();
+        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, "user");
+
+        (await client.GetAsync("/api/empty", TestContext.Current.CancellationToken))
+            .StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        (await client.GetAsync("/api/empty/meta", TestContext.Current.CancellationToken))
+            .StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task MapGranitQuery_without_list_allows_bespoke_GET_on_same_group()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
+        builder.Services
+            .AddAuthentication(TestAuthHandler.SchemeName)
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                TestAuthHandler.SchemeName, _ => { });
+        builder.Services.AddAuthorization();
+        builder.Services.AddSingleton(_engine);
+        builder.Services.AddSingleton<QueryDefinition<TestProduct>, TestProductQueryDefinition>();
+        builder.Services.AddSingleton<ICurrentTenant>(Substitute.For<ICurrentTenant>());
+
+        await using WebApplication customApp = builder.Build();
+
+        RouteGroupBuilder group = customApp.MapGranitQuery<TestProduct>(
+            _ => Array.Empty<TestProduct>().AsQueryable(),
+            "/api/bespoke",
+            opts =>
+            {
+                opts.IncludeListEndpoint = false;
+                opts.IncludeMetaEndpoint = false;
+                opts.AllowAnonymous = true;
+            });
+        group.MapGet("/", () => TypedResults.Ok(new[] { "bespoke" }));
+
+        await customApp.StartAsync(TestContext.Current.CancellationToken);
+
+        using HttpClient client = customApp.GetTestClient();
+
+        HttpResponseMessage response = await client.GetAsync(
+            "/api/bespoke", TestContext.Current.CancellationToken);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        string[]? body = await response.Content
+            .ReadFromJsonAsync<string[]>(TestContext.Current.CancellationToken);
+        body.ShouldBe(["bespoke"]);
     }
 
     [Fact]

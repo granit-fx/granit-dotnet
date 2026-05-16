@@ -53,4 +53,20 @@ public sealed class QueryEndpointOptionsTests
 
         options.IncludeMetaEndpoint.ShouldBeFalse();
     }
+
+    [Fact]
+    public void IncludeListEndpoint_defaults_to_true()
+    {
+        QueryEndpointOptions options = new();
+
+        options.IncludeListEndpoint.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void IncludeListEndpoint_can_be_disabled()
+    {
+        QueryEndpointOptions options = new() { IncludeListEndpoint = false };
+
+        options.IncludeListEndpoint.ShouldBeFalse();
+    }
 }

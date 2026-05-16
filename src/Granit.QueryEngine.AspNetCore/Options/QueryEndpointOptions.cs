@@ -30,4 +30,12 @@ public sealed class QueryEndpointOptions
     /// Defaults to <c>true</c>.
     /// </summary>
     public bool IncludeMetaEndpoint { get; set; } = true;
+
+    /// <summary>
+    /// Whether to register the list endpoint (<c>GET /</c>).
+    /// Defaults to <c>true</c>. Set to <c>false</c> when the host provides its own
+    /// bespoke list endpoint on the same route group and only wants <c>/meta</c> from
+    /// the query engine (avoids route collision on <c>GET /</c>).
+    /// </summary>
+    public bool IncludeListEndpoint { get; set; } = true;
 }
