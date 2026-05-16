@@ -59,8 +59,8 @@ public static class QueryEndpointRouteBuilderExtensions
     /// <remarks>
     /// <para>Registers the following endpoints:</para>
     /// <list type="bullet">
-    ///   <item><c>GET /</c> — paginated or grouped query</item>
-    ///   <item><c>GET /meta</c> — query metadata (columns, filters, sorts, etc.)</item>
+    ///   <item><c>GET /</c> — paginated or grouped query (skipped when <see cref="QueryEndpointOptions.IncludeListEndpoint"/> is <c>false</c>)</item>
+    ///   <item><c>GET /meta</c> — query metadata (skipped when <see cref="QueryEndpointOptions.IncludeMetaEndpoint"/> is <c>false</c>)</item>
     /// </list>
     /// <para>
     /// Saved-view persistence has moved to <c>Granit.Entities.Views.Endpoints</c> /
@@ -101,35 +101,38 @@ public static class QueryEndpointRouteBuilderExtensions
             group.RequireAuthorization();
         }
 
-        // Resolve the query definition once at setup time. When it declares a projection,
-        // dispatch to a generic helper that wires GET / to the typed ExecuteAsync<TDto>
-        // overload. Reflection is used exclusively here (setup) — never per request.
-        QueryDefinition<TEntity>? definitionForProjection = endpoints.ServiceProvider
-            .GetService<QueryDefinition<TEntity>>();
-
-        Type? projectionType = definitionForProjection?.GetProjectionType();
-        LambdaExpression? projectionExpression = definitionForProjection?.GetProjectionExpression();
-
-        IEndpointConventionBuilder listBuilder;
-        if (projectionType is not null && projectionExpression is not null)
+        if (options.IncludeListEndpoint)
         {
-            MethodInfo dispatch = typeof(QueryEndpointRouteBuilderExtensions)
-                .GetMethod(nameof(MapProjectedGetEndpoint), BindingFlags.NonPublic | BindingFlags.Static)!
-                .MakeGenericMethod(typeof(TEntity), projectionType);
+            // Resolve the query definition once at setup time. When it declares a projection,
+            // dispatch to a generic helper that wires GET / to the typed ExecuteAsync<TDto>
+            // overload. Reflection is used exclusively here (setup) — never per request.
+            QueryDefinition<TEntity>? definitionForProjection = endpoints.ServiceProvider
+                .GetService<QueryDefinition<TEntity>>();
 
-            listBuilder = (IEndpointConventionBuilder)dispatch.Invoke(
-                null, [group, sourceProvider, projectionExpression, entityName])!;
-        }
-        else
-        {
-            listBuilder = MapNonProjectedGetEndpoint<TEntity>(group, sourceProvider, entityName);
-        }
+            Type? projectionType = definitionForProjection?.GetProjectionType();
+            LambdaExpression? projectionExpression = definitionForProjection?.GetProjectionExpression();
 
-        // Tag the endpoint so entity-discovery surfaces (Granit.Entities.Endpoints)
-        // can read RoutePattern.RawText off EndpointDataSource and expose the real
-        // route on EntityDiscoveryLinks.List — same mechanism ASP.NET's own OpenAPI
-        // generator uses for operation/tag/produces lookups.
-        listBuilder.WithMetadata(new EntityEndpointMetadata(typeof(TEntity), EntityEndpointKind.List));
+            IEndpointConventionBuilder listBuilder;
+            if (projectionType is not null && projectionExpression is not null)
+            {
+                MethodInfo dispatch = typeof(QueryEndpointRouteBuilderExtensions)
+                    .GetMethod(nameof(MapProjectedGetEndpoint), BindingFlags.NonPublic | BindingFlags.Static)!
+                    .MakeGenericMethod(typeof(TEntity), projectionType);
+
+                listBuilder = (IEndpointConventionBuilder)dispatch.Invoke(
+                    null, [group, sourceProvider, projectionExpression, entityName])!;
+            }
+            else
+            {
+                listBuilder = MapNonProjectedGetEndpoint<TEntity>(group, sourceProvider, entityName);
+            }
+
+            // Tag the endpoint so entity-discovery surfaces (Granit.Entities.Endpoints)
+            // can read RoutePattern.RawText off EndpointDataSource and expose the real
+            // route on EntityDiscoveryLinks.List — same mechanism ASP.NET's own OpenAPI
+            // generator uses for operation/tag/produces lookups.
+            listBuilder.WithMetadata(new EntityEndpointMetadata(typeof(TEntity), EntityEndpointKind.List));
+        }
 
         // GET /meta — query metadata
         if (options.IncludeMetaEndpoint)
