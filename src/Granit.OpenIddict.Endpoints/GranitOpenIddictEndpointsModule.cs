@@ -1,6 +1,7 @@
 using Granit.Authorization;
 using Granit.Caching;
 using Granit.Http.ApiDocumentation;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.OpenIddict.Endpoints.Internal;
 using Granit.OpenIddict.Endpoints.Workspaces;
@@ -40,6 +41,7 @@ public sealed class GranitOpenIddictEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<OpenIddictEndpointsLocalizationResource>();
         context.Services.TryAddScoped<OidcPrincipalFactory>();
         context.Services.AddFeatureProvider<OpenIddictFeatureProvider>();
     }

@@ -1,8 +1,10 @@
 using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Validation;
 using Granit.Workflow.Endpoints.Extensions;
+using Granit.Workflow.Endpoints.Internal;
 using Granit.Workflow.Endpoints.Workspaces;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
@@ -39,6 +41,7 @@ public sealed class GranitWorkflowEndpointsModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<WorkflowEndpointsLocalizationResource>();
         context.Services.AddGranitWorkflowEndpoints();
         context.Services.AddFeatureProvider<WorkflowFeatureProvider>();
     }

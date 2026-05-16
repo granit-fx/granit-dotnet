@@ -1,6 +1,8 @@
 using Granit.Authorization;
+using Granit.Authorization.Endpoints.Internal;
 using Granit.Authorization.Endpoints.Workspaces;
 using Granit.Http.ApiDocumentation;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Validation;
 using Granit.Workspaces;
@@ -30,6 +32,7 @@ public sealed class GranitAuthorizationEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<AuthorizationEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<AuthorizationFeatureProvider>();
     }
 }

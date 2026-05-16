@@ -1,6 +1,8 @@
 using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
+using Granit.Timeline.Endpoints.Internal;
 using Granit.Timeline.Endpoints.Workspaces;
 using Granit.Validation;
 using Granit.Workspaces;
@@ -30,6 +32,7 @@ public sealed class GranitTimelineEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<TimelineEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<TimelineFeatureProvider>();
     }
 }

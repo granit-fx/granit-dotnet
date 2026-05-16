@@ -1,6 +1,8 @@
 using Granit.Auditing;
+using Granit.Auditing.Endpoints.Internal;
 using Granit.Auditing.Endpoints.Workspaces;
 using Granit.Http.ApiDocumentation;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Validation;
 using Granit.Workspaces;
@@ -27,6 +29,7 @@ public sealed class GranitAuditingEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<AuditingEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<AuditingFeatureProvider>();
     }
 }

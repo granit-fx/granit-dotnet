@@ -1,5 +1,7 @@
 using Granit.Authorization;
+using Granit.BackgroundJobs.Endpoints.Internal;
 using Granit.BackgroundJobs.Endpoints.Workspaces;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.QueryEngine;
 using Granit.Validation;
@@ -29,6 +31,7 @@ public sealed class GranitBackgroundJobsEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<BackgroundJobsEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<BackgroundJobsFeatureProvider>();
     }
 }

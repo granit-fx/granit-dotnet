@@ -1,6 +1,8 @@
 using Granit.Authorization;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.QueryEngine.AspNetCore;
+using Granit.Scheduling.Endpoints.Internal;
 using Granit.Scheduling.Endpoints.Workspaces;
 using Granit.Validation;
 using Granit.Workspaces;
@@ -28,6 +30,7 @@ public sealed class GranitSchedulingEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<SchedulingEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<SchedulingFeatureProvider>();
     }
 }

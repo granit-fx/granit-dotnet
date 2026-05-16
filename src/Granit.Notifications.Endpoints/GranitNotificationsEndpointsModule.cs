@@ -1,6 +1,8 @@
 using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
+using Granit.Notifications.Endpoints.Internal;
 using Granit.Notifications.Endpoints.Workspaces;
 using Granit.Notifications.MobilePush;
 using Granit.Validation;
@@ -29,6 +31,7 @@ public sealed class GranitNotificationsEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<NotificationsEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<NotificationsFeatureProvider>();
     }
 }

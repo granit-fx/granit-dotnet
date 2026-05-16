@@ -1,5 +1,7 @@
 using Granit.Authorization;
 using Granit.DataLookup;
+using Granit.DataLookup.Endpoints.Internal;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Validation;
 
@@ -19,4 +21,11 @@ namespace Granit.DataLookup.Endpoints;
     typeof(GranitAuthorizationModule),
     typeof(GranitDataLookupModule),
     typeof(GranitValidationModule))]
-public sealed class GranitDataLookupEndpointsModule : GranitModule;
+public sealed class GranitDataLookupEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.AddLocalizationResource<DataLookupEndpointsLocalizationResource>();
+    }
+}

@@ -1,6 +1,8 @@
+using Granit.Authentication.ApiKeys.Endpoints.Internal;
 using Granit.Authentication.ApiKeys.Endpoints.Workspaces;
 using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Validation;
 using Granit.Workspaces;
@@ -23,6 +25,7 @@ public sealed class GranitAuthenticationApiKeysEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<ApiKeysEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<ApiKeysFeatureProvider>();
     }
 }

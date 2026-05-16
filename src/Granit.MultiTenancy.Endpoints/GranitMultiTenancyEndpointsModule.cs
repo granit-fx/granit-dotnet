@@ -1,7 +1,9 @@
 using Granit.Authorization;
 using Granit.Guids;
 using Granit.Http.ApiDocumentation;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
+using Granit.MultiTenancy.Endpoints.Internal;
 using Granit.MultiTenancy.Endpoints.Workspaces;
 using Granit.Validation;
 using Granit.Workspaces;
@@ -29,6 +31,7 @@ public sealed class GranitMultiTenancyEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<MultiTenancyEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<MultiTenancyFeatureProvider>();
     }
 }

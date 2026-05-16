@@ -1,6 +1,8 @@
 using Granit.Authorization;
+using Granit.DataExchange.Endpoints.Internal;
 using Granit.DataExchange.Endpoints.Workspaces;
 using Granit.Http.ApiDocumentation;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
@@ -27,6 +29,7 @@ public sealed class GranitDataExchangeEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<DataExchangeEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<DataExchangeFeatureProvider>();
     }
 }

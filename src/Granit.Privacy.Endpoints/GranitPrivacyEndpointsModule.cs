@@ -2,6 +2,7 @@ using Granit.Authorization;
 using Granit.Guids;
 using Granit.Http.ApiDocumentation;
 using Granit.Http.Cookies;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Privacy.Endpoints.Discovery;
 using Granit.Privacy.Endpoints.Internal;
@@ -46,6 +47,7 @@ public sealed class GranitPrivacyEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<PrivacyEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<PrivacyFeatureProvider>();
 
         context.Services

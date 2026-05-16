@@ -1,5 +1,7 @@
 using Granit.Authorization;
+using Granit.BlobStorage.Endpoints.Internal;
 using Granit.BlobStorage.Endpoints.Workspaces;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.QueryEngine.AspNetCore;
 using Granit.RateLimiting;
@@ -24,6 +26,7 @@ public sealed class GranitBlobStorageEndpointsModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddLocalizationResource<BlobStorageEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<BlobStorageFeatureProvider>();
     }
 }
