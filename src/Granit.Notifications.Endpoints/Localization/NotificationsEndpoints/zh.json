@@ -1,7 +1,7 @@
 {
     "culture": "zh",
     "texts": {
-        "NotificationsEndpoints:Workspace.Item": "收件箱",
+        "NotificationsEndpoints:Workspace.Item": "通知",
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "管理通知（偏好设置、订阅、推送令牌）",
         "Permission:Notifications.UserNotifications.Read": "查看通知（收件箱、活动动态）",

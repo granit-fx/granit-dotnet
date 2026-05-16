@@ -2,7 +2,7 @@
   "culture": "tr",
   "texts": {
     "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
-    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Kiracılar",
     "Permission:MultiTenancy.Tenants.Create": "Yeni kiracılar oluşturma",
     "Permission:MultiTenancy.Tenants.Manage": "Kiracı yaşam döngüsünü yönetme (etkinleştirme, devre dışı bırakma)",
     "Permission:MultiTenancy.Tenants.Read": "Kiracı bilgilerini görüntüleme",

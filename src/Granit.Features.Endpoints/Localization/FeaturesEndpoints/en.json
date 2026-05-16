@@ -1,7 +1,7 @@
 {
   "culture": "en",
   "texts": {
-    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Item": "Features",
     "FeaturesEndpoints:Workspace.Section": "Feature flags",
     "Permission:Features.Flags.Manage": "Manage feature overrides (set, delete)",
     "Permission:Features.Flags.Read": "Read feature definitions",

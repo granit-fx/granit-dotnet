@@ -9,7 +9,7 @@
     "Permission:Settings.Tenant.Manage": "테넌트 설정 관리 (보기, 생성, 편집)",
     "Permission:Settings.Tenant.Read": "테넌트 설정 보기",
     "PermissionGroup:Settings": "설정",
-    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Global": "설정",
     "SettingsEndpoints:Workspace.Section": "Settings",
     "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }

@@ -2,7 +2,7 @@
   "culture": "sv",
   "texts": {
     "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
-    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Hyresgäster",
     "Permission:MultiTenancy.Tenants.Create": "Skapa nya hyresgäster",
     "Permission:MultiTenancy.Tenants.Manage": "Hantera hyresgästlivscykel (aktivera, inaktivera)",
     "Permission:MultiTenancy.Tenants.Read": "Visa hyresgästinformation",

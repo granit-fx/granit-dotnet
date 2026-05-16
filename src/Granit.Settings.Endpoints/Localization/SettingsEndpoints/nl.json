@@ -9,7 +9,7 @@
     "Permission:Settings.Tenant.Manage": "Tenantinstellingen beheren (bekijken, aanmaken, bewerken)",
     "Permission:Settings.Tenant.Read": "Tenantinstellingen bekijken",
     "PermissionGroup:Settings": "Instellingen",
-    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Global": "Instellingen",
     "SettingsEndpoints:Workspace.Section": "Settings",
     "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }

@@ -1,7 +1,7 @@
 {
   "culture": "tr",
   "texts": {
-    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Item": "Zamanlanmış görevler",
     "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
     "Permission:BackgroundJobs.Jobs.Manage": "Arka plan görevlerini yönet (liste, duraklat, devam ettir, manuel tetikle)",
     "Permission:BackgroundJobs.Jobs.Read": "Arka plan görevlerini görüntüle (liste, detay)",

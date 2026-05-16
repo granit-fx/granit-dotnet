@@ -1,7 +1,7 @@
 {
   "culture": "nl",
   "texts": {
-    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Item": "Geplande taken",
     "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
     "Permission:BackgroundJobs.Jobs.Manage": "Achtergrondtaken beheren (lijst, pauzeren, hervatten, handmatig starten)",
     "Permission:BackgroundJobs.Jobs.Read": "Achtergrondtaken bekijken (lijst, detail)",

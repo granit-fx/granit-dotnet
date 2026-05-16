@@ -2,7 +2,7 @@
   "culture": "pl",
   "texts": {
     "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
-    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Najemcy",
     "Permission:MultiTenancy.Tenants.Create": "Tworzenie nowych najemców",
     "Permission:MultiTenancy.Tenants.Manage": "Zarządzanie cyklem życia najemców (aktywacja, dezaktywacja)",
     "Permission:MultiTenancy.Tenants.Read": "Przeglądanie informacji o najemcach",

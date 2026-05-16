@@ -1,7 +1,7 @@
 {
     "culture": "fr",
     "texts": {
-        "NotificationsEndpoints:Workspace.Item": "Boîte de réception",
+        "NotificationsEndpoints:Workspace.Item": "Notifications",
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Gérer les notifications (préférences, abonnements, jetons push)",
         "Permission:Notifications.UserNotifications.Read": "Consulter les notifications (boîte de réception, fil d'activité)",

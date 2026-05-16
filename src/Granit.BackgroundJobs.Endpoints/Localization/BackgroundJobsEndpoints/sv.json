@@ -1,7 +1,7 @@
 {
   "culture": "sv",
   "texts": {
-    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Item": "Schemalagda uppgifter",
     "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
     "Permission:BackgroundJobs.Jobs.Manage": "Hantera bakgrundsjobb (lista, pausa, återuppta, manuell körning)",
     "Permission:BackgroundJobs.Jobs.Read": "Visa bakgrundsjobb (lista, detalj)",

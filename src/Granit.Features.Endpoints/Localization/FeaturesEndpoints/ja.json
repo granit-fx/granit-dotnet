@@ -1,7 +1,7 @@
 {
   "culture": "ja",
   "texts": {
-    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Item": "機能",
     "FeaturesEndpoints:Workspace.Section": "Feature flags",
     "Permission:Features.Flags.Manage": "機能オーバーライドを管理する（設定、削除）",
     "Permission:Features.Flags.Read": "機能定義を読み取る",

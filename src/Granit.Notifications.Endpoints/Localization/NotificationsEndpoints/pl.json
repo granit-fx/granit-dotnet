@@ -1,7 +1,7 @@
 {
     "culture": "pl",
     "texts": {
-        "NotificationsEndpoints:Workspace.Item": "Skrzynka odbiorcza",
+        "NotificationsEndpoints:Workspace.Item": "Powiadomienia",
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Zarządzanie powiadomieniami (preferencje, subskrypcje, tokeny push)",
         "Permission:Notifications.UserNotifications.Read": "Przeglądanie powiadomień (skrzynka odbiorcza, aktywność)",

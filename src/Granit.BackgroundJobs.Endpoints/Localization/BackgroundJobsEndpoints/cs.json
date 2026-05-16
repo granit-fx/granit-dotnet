@@ -1,7 +1,7 @@
 {
   "culture": "cs",
   "texts": {
-    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Item": "Naplánované úlohy",
     "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
     "Permission:BackgroundJobs.Jobs.Manage": "Správa úloh na pozadí (seznam, pozastavení, obnovení, ruční spuštění)",
     "Permission:BackgroundJobs.Jobs.Read": "Zobrazit úlohy na pozadí (seznam, detail)",

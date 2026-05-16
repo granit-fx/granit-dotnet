@@ -1,7 +1,7 @@
 {
   "culture": "de",
   "texts": {
-    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Item": "Geplante Aufgaben",
     "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
     "Permission:BackgroundJobs.Jobs.Manage": "Hintergrundaufgaben verwalten (Liste, Pause, Fortsetzen, manuelles Auslösen)",
     "Permission:BackgroundJobs.Jobs.Read": "Hintergrundaufgaben anzeigen (Liste, Detail)",

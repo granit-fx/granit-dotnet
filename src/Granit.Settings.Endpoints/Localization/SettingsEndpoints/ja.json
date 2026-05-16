@@ -9,7 +9,7 @@
     "Permission:Settings.Tenant.Manage": "テナント設定の管理（表示、作成、編集）",
     "Permission:Settings.Tenant.Read": "テナント設定の表示",
     "PermissionGroup:Settings": "設定",
-    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Global": "設定",
     "SettingsEndpoints:Workspace.Section": "Settings",
     "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }

@@ -1,7 +1,7 @@
 {
   "culture": "pt-BR",
   "texts": {
-    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Item": "Tarefas agendadas",
     "BackgroundJobsEndpoints:Workspace.Section": "Background jobs"
   }
 }

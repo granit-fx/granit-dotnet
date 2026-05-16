@@ -1,7 +1,7 @@
 {
     "culture": "ja",
     "texts": {
-        "NotificationsEndpoints:Workspace.Item": "受信トレイ",
+        "NotificationsEndpoints:Workspace.Item": "通知",
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "通知の管理（設定、サブスクリプション、プッシュトークン）",
         "Permission:Notifications.UserNotifications.Read": "通知の閲覧（受信トレイ、アクティビティフィード）",

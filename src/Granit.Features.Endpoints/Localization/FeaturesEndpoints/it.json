@@ -1,7 +1,7 @@
 {
   "culture": "it",
   "texts": {
-    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Item": "Funzionalità",
     "FeaturesEndpoints:Workspace.Section": "Feature flags",
     "Permission:Features.Flags.Manage": "Gestire le sostituzioni delle funzionalità (impostare, eliminare)",
     "Permission:Features.Flags.Read": "Leggere le definizioni delle funzionalità",

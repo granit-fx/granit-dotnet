@@ -9,7 +9,7 @@
     "Permission:Settings.Tenant.Manage": "Spravovat nastavení nájemce (zobrazit, vytvořit, upravit)",
     "Permission:Settings.Tenant.Read": "Zobrazit nastavení nájemce",
     "PermissionGroup:Settings": "Nastavení",
-    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Global": "Nastavení",
     "SettingsEndpoints:Workspace.Section": "Settings",
     "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }

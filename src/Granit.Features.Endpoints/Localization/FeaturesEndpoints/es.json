@@ -1,7 +1,7 @@
 {
   "culture": "es",
   "texts": {
-    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Item": "Funcionalidades",
     "FeaturesEndpoints:Workspace.Section": "Feature flags",
     "Permission:Features.Flags.Manage": "Gestionar anulaciones de funcionalidades (establecer, eliminar)",
     "Permission:Features.Flags.Read": "Leer definiciones de funcionalidades",

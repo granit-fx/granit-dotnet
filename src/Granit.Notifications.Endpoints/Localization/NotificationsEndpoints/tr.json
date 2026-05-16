@@ -1,7 +1,7 @@
 {
     "culture": "tr",
     "texts": {
-        "NotificationsEndpoints:Workspace.Item": "Gelen kutusu",
+        "NotificationsEndpoints:Workspace.Item": "Bildirimler",
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Bildirimleri yönet (tercihler, abonelikler, push tokenları)",
         "Permission:Notifications.UserNotifications.Read": "Bildirimleri görüntüle (gelen kutusu, etkinlik akışı)",

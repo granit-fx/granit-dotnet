@@ -1,7 +1,7 @@
 {
   "culture": "zh",
   "texts": {
-    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Item": "功能",
     "FeaturesEndpoints:Workspace.Section": "Feature flags",
     "Permission:Features.Flags.Manage": "管理功能覆盖（设置、删除）",
     "Permission:Features.Flags.Read": "读取功能定义",

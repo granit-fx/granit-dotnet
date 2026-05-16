@@ -1,7 +1,7 @@
 {
   "culture": "ko",
   "texts": {
-    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Item": "예약된 작업",
     "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
     "Permission:BackgroundJobs.Jobs.Manage": "백그라운드 작업 관리 (목록, 일시중지, 재개, 수동 실행)",
     "Permission:BackgroundJobs.Jobs.Read": "백그라운드 작업 조회 (목록, 상세)",

@@ -1,7 +1,7 @@
 {
     "culture": "de",
     "texts": {
-        "NotificationsEndpoints:Workspace.Item": "Posteingang",
+        "NotificationsEndpoints:Workspace.Item": "Benachrichtigungen",
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Benachrichtigungen verwalten (Einstellungen, Abonnements, Push-Token)",
         "Permission:Notifications.UserNotifications.Read": "Benachrichtigungen anzeigen (Posteingang, Aktivitätsfeed)",

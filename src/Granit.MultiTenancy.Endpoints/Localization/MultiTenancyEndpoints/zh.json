@@ -2,7 +2,7 @@
   "culture": "zh",
   "texts": {
     "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
-    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
+    "MultiTenancyEndpoints:Workspace.Tenants": "租户",
     "Permission:MultiTenancy.Tenants.Create": "创建新租户",
     "Permission:MultiTenancy.Tenants.Manage": "管理租户生命周期（激活、停用）",
     "Permission:MultiTenancy.Tenants.Read": "查看租户信息",

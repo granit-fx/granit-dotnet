@@ -2,7 +2,7 @@
   "culture": "fr",
   "texts": {
     "MultiTenancyEndpoints:Workspace.Section": "Multi-tenant",
-    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Locataires",
     "Permission:MultiTenancy.Tenants.Create": "Créer de nouveaux locataires",
     "Permission:MultiTenancy.Tenants.Manage": "Gérer le cycle de vie des locataires (activer, désactiver)",
     "Permission:MultiTenancy.Tenants.Read": "Consulter les informations des locataires",

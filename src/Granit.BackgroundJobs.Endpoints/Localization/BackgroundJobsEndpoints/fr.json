@@ -1,7 +1,7 @@
 {
   "culture": "fr",
   "texts": {
-    "BackgroundJobsEndpoints:Workspace.Item": "Exécutions de tâches",
+    "BackgroundJobsEndpoints:Workspace.Item": "Tâches planifiées",
     "BackgroundJobsEndpoints:Workspace.Section": "Tâches d'arrière-plan",
     "Permission:BackgroundJobs.Jobs.Manage": "Administrer les tâches en arrière-plan (liste, pause, reprise, déclenchement manuel)",
     "Permission:BackgroundJobs.Jobs.Read": "Consulter les tâches en arrière-plan (liste, détail)",

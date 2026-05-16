@@ -2,7 +2,7 @@
   "culture": "de",
   "texts": {
     "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
-    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Mandanten",
     "Permission:MultiTenancy.Tenants.Create": "Neue Mandanten erstellen",
     "Permission:MultiTenancy.Tenants.Manage": "Mandantenlebenszyklus verwalten (aktivieren, deaktivieren)",
     "Permission:MultiTenancy.Tenants.Read": "Mandanteninformationen anzeigen",

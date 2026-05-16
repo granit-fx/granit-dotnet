@@ -9,7 +9,7 @@
     "Permission:Settings.Tenant.Manage": "Mandanteneinstellungen verwalten (anzeigen, erstellen, bearbeiten)",
     "Permission:Settings.Tenant.Read": "Mandanteneinstellungen anzeigen",
     "PermissionGroup:Settings": "Einstellungen",
-    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Global": "Einstellungen",
     "SettingsEndpoints:Workspace.Section": "Settings",
     "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }

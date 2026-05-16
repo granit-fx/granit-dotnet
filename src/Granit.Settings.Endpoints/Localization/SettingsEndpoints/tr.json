@@ -9,7 +9,7 @@
     "Permission:Settings.Tenant.Manage": "Kiracı ayarlarını yönet (görüntüle, oluştur, düzenle)",
     "Permission:Settings.Tenant.Read": "Kiracı ayarlarını görüntüle",
     "PermissionGroup:Settings": "Ayarlar",
-    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Global": "Ayarlar",
     "SettingsEndpoints:Workspace.Section": "Settings",
     "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }

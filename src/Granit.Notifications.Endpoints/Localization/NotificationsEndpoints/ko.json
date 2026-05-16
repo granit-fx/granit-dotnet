@@ -1,7 +1,7 @@
 {
     "culture": "ko",
     "texts": {
-        "NotificationsEndpoints:Workspace.Item": "받은편지함",
+        "NotificationsEndpoints:Workspace.Item": "알림",
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "알림 관리 (설정, 구독, 푸시 토큰)",
         "Permission:Notifications.UserNotifications.Read": "알림 조회 (수신함, 활동 피드)",

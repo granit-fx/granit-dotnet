@@ -1,7 +1,7 @@
 {
     "culture": "es",
     "texts": {
-        "NotificationsEndpoints:Workspace.Item": "Bandeja de entrada",
+        "NotificationsEndpoints:Workspace.Item": "Notificaciones",
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Gestionar notificaciones (preferencias, suscripciones, tokens push)",
         "Permission:Notifications.UserNotifications.Read": "Ver notificaciones (bandeja de entrada, actividad)",

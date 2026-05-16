@@ -1,7 +1,7 @@
 {
   "culture": "it",
   "texts": {
-    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Item": "Attività pianificate",
     "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
     "Permission:BackgroundJobs.Jobs.Manage": "Gestire le attività in background (elenco, pausa, ripresa, avvio manuale)",
     "Permission:BackgroundJobs.Jobs.Read": "Visualizzare le attività in background (elenco, dettaglio)",

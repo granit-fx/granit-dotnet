@@ -1,7 +1,7 @@
 {
   "culture": "tr",
   "texts": {
-    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Item": "Özellikler",
     "FeaturesEndpoints:Workspace.Section": "Feature flags",
     "Permission:Features.Flags.Manage": "Özellik geçersiz kılmalarını yönet (ayarla, sil)",
     "Permission:Features.Flags.Read": "Özellik tanımlarını oku",

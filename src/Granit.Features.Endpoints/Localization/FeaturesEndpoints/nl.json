@@ -1,7 +1,7 @@
 {
   "culture": "nl",
   "texts": {
-    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Item": "Functies",
     "FeaturesEndpoints:Workspace.Section": "Feature flags",
     "Permission:Features.Flags.Manage": "Functie-overschrijvingen beheren (instellen, verwijderen)",
     "Permission:Features.Flags.Read": "Functiedefinities lezen",

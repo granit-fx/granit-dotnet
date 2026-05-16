@@ -1,7 +1,7 @@
 {
   "culture": "es",
   "texts": {
-    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Item": "Tareas programadas",
     "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
     "Permission:BackgroundJobs.Jobs.Manage": "Administrar tareas en segundo plano (lista, pausa, reanudación, ejecución manual)",
     "Permission:BackgroundJobs.Jobs.Read": "Ver tareas en segundo plano (lista, detalle)",

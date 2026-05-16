@@ -2,7 +2,7 @@
   "culture": "ja",
   "texts": {
     "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
-    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
+    "MultiTenancyEndpoints:Workspace.Tenants": "テナント",
     "Permission:MultiTenancy.Tenants.Create": "新規テナントの作成",
     "Permission:MultiTenancy.Tenants.Manage": "テナントライフサイクルの管理（有効化、無効化）",
     "Permission:MultiTenancy.Tenants.Read": "テナント情報の表示",

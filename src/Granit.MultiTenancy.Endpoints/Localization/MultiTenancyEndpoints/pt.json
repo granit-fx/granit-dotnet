@@ -2,7 +2,7 @@
   "culture": "pt",
   "texts": {
     "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
-    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
+    "MultiTenancyEndpoints:Workspace.Tenants": "Inquilinos",
     "Permission:MultiTenancy.Tenants.Create": "Criar novos inquilinos",
     "Permission:MultiTenancy.Tenants.Manage": "Gerir ciclo de vida de inquilinos (ativar, desativar)",
     "Permission:MultiTenancy.Tenants.Read": "Ver informações de inquilinos",

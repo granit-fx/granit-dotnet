@@ -2,7 +2,7 @@
   "culture": "ko",
   "texts": {
     "MultiTenancyEndpoints:Workspace.Section": "Multi-tenancy",
-    "MultiTenancyEndpoints:Workspace.Tenants": "Tenants",
+    "MultiTenancyEndpoints:Workspace.Tenants": "테넌트",
     "Permission:MultiTenancy.Tenants.Create": "새 테넌트 생성",
     "Permission:MultiTenancy.Tenants.Manage": "테넌트 수명 주기 관리 (활성화, 비활성화)",
     "Permission:MultiTenancy.Tenants.Read": "테넌트 정보 조회",

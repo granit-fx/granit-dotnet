@@ -1,7 +1,7 @@
 {
   "culture": "hi",
   "texts": {
-    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Item": "अनुसूचित कार्य",
     "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
     "Permission:BackgroundJobs.Jobs.Manage": "पृष्ठभूमि कार्य प्रबंधित करें (सूची, रोकें, फिर से शुरू करें, मैन्युअल ट्रिगर)",
     "Permission:BackgroundJobs.Jobs.Read": "पृष्ठभूमि कार्य देखें (सूची, विवरण)",
