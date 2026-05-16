@@ -43,6 +43,29 @@ internal static class TimelineEntityFactory
             context.CurrentTenant.IsAvailable ? context.CurrentTenant.Id : null,
             parentEntryId);
 
+    internal static TimelineEntry CreateShadow(
+        string entityType,
+        string entityId,
+        string sourceKey,
+        string sourceId,
+        TimelineStreamEntry projection,
+        AuditContext context)
+    {
+        Guid? tenantId = context.CurrentTenant.IsAvailable ? context.CurrentTenant.Id : null;
+        Guid id = TimelineAnchor.ComputeShadowId(tenantId, entityType, entityId, sourceKey, sourceId);
+
+        return TimelineEntry.CreateShadow(
+            id,
+            new EntityReference(entityType, entityId),
+            projection.Body,
+            new AuthorInfo(projection.AuthorId ?? string.Empty, projection.AuthorName ?? string.Empty),
+            projection.OccurredAt,
+            context.CurrentUser.UserId ?? string.Empty,
+            sourceKey,
+            sourceId,
+            tenantId);
+    }
+
     internal static TimelineAttachment CreateAttachment(
         Guid entryId,
         Guid blobId,

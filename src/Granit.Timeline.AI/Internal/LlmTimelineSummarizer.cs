@@ -50,7 +50,7 @@ internal sealed partial class LlmTimelineSummarizer(
         TimelineAIOptions config = options.Value;
 
         List<TimelineStreamEntry> entries = await FetchEntriesAsync(
-            entityType, entityId, config.MaxEntriesToAnalyze, since, ct).ConfigureAwait(false);
+            entityType, entityId, config.SummarizerMaxEntries, since, ct).ConfigureAwait(false);
 
         if (entries.Count == 0)
         {
@@ -127,9 +127,10 @@ internal sealed partial class LlmTimelineSummarizer(
 
         while (allEntries.Count < maxEntries)
         {
-            PagedResult<TimelineStreamEntry> result = await timelineReader
+            TimelineStreamResult streamResult = await timelineReader
                 .GetStreamAsync(entityType, entityId.ToString(), page, pageSize, ct)
                 .ConfigureAwait(false);
+            PagedResult<TimelineStreamEntry> result = streamResult.Page;
 
             if (result.Items.Count == 0)
             {

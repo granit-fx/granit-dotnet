@@ -1,42 +1,48 @@
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
+using Granit.Timeline.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Timeline.Internal;
 
 /// <summary>
 /// In-memory implementation of <see cref="ITimelineReader"/> for development and tests.
 /// </summary>
-internal sealed class InMemoryTimelineQuery(InMemoryTimelineStore store) : ITimelineReader
+internal sealed class InMemoryTimelineQuery(
+    InMemoryTimelineStore store,
+    IEnumerable<ITimelineSource> sources,
+    IOptions<TimelineOptions> options,
+    ILogger<InMemoryTimelineQuery>? logger = null) : ITimelineReader
 {
+    private readonly ILogger _logger = logger ?? NullLogger<InMemoryTimelineQuery>.Instance;
+
     /// <inheritdoc/>
-    public Task<PagedResult<TimelineStreamEntry>> GetStreamAsync(
+    public Task<TimelineStreamResult> GetStreamAsync(
         string entityType,
         string entityId,
         int page = 1,
         int pageSize = QueryEngineDefaults.DefaultPageSize,
-        CancellationToken cancellationToken = default)
-    {
-        (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
-
-        var entries = store.Entries.Values
-            .Where(e => e.EntityType == entityType
-                        && e.EntityId == entityId
-                        && !e.IsDeleted)
-            .OrderByDescending(e => e.CreatedAt)
-            .ToList();
-
-        int totalCount = entries.Count;
-
-        var items = entries
-            .Skip((clampedPage - 1) * clampedPageSize)
-            .Take(clampedPageSize)
-            .Select(MapToStreamEntry)
-            .ToList();
-
-        int skip = (clampedPage - 1) * clampedPageSize;
-        return Task.FromResult(new PagedResult<TimelineStreamEntry>(items, totalCount, HasMore: skip + items.Count < totalCount));
-    }
+        CancellationToken cancellationToken = default) =>
+        TimelineStreamMerger.MergeAsync(
+            entityType,
+            entityId,
+            page,
+            pageSize,
+            options.Value,
+            sources,
+            fetchNativeTopAsync: (limit, _) => Task.FromResult<IReadOnlyList<TimelineStreamEntry>>([..
+                store.Entries.Values
+                    .Where(e => e.EntityType == entityType && e.EntityId == entityId && !e.IsDeleted)
+                    .OrderByDescending(e => e.CreatedAt)
+                    .Take(limit)
+                    .Select(MapToStreamEntry)]),
+            countNativeAsync: _ => Task.FromResult(
+                store.Entries.Values.Count(e => e.EntityType == entityType && e.EntityId == entityId && !e.IsDeleted)),
+            _logger,
+            cancellationToken);
 
     private TimelineStreamEntry MapToStreamEntry(TimelineEntry entry) =>
         new()
@@ -54,9 +60,13 @@ internal sealed class InMemoryTimelineQuery(InMemoryTimelineStore store) : ITime
             AuthorName = entry.AuthorName,
             Body = entry.Body,
             ParentEntryId = entry.ParentEntryId,
-            Attachments = store.Attachments.Values
-                .Where(a => a.EntryId == entry.Id)
-                .Select(a => new TimelineAttachmentInfo(a.Id, a.BlobId, a.FileName, a.ContentType, a.SizeBytes))
-                .ToList(),
+            Origin = entry.SourceKey is null ? TimelineEntryOrigin.Native : TimelineEntryOrigin.External,
+            SourceKey = entry.SourceKey ?? TimelineSourceKeys.Native,
+            SourceId = entry.SourceId,
+            EditedAt = entry.EditedAt,
+            Attachments = [..
+                store.Attachments.Values
+                    .Where(a => a.EntryId == entry.Id)
+                    .Select(a => new TimelineAttachmentInfo(a.Id, a.BlobId, a.FileName, a.ContentType, a.SizeBytes))],
         };
 }

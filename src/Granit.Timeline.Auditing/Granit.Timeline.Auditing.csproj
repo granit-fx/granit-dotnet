@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Granit.Timeline.Auditing</PackageId>
+    <Description>Bridge package: projects Granit.Auditing entries into the unified Granit.Timeline activity stream as External-origin entries. Register both modules and audit-emitted changes appear in the timeline of the affected entity (User profile updates, role changes, etc.) without explicit per-module wiring.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Timeline.Auditing.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Auditing\Granit.Auditing.csproj" />
+    <ProjectReference Include="..\Granit.Timeline\Granit.Timeline.csproj" />
+  </ItemGroup>
+</Project>

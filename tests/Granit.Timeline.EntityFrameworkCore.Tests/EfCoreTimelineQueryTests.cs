@@ -11,8 +11,11 @@ using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.EntityFrameworkCore.Internal;
+using Granit.Timeline.Options;
 using Granit.Timing;
 using Granit.Users;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -42,8 +45,9 @@ public sealed class EfCoreTimelineQueryTests : IDisposable
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(false);
 
-        _store = new EfCoreTimelineStore(_factory, _clock, userService, guidGenerator, tenant);
-        _query = new EfCoreTimelineQuery(_factory);
+        IOptions<TimelineOptions> options = Microsoft.Extensions.Options.Options.Create(new TimelineOptions());
+        _store = new EfCoreTimelineStore(_factory, _clock, userService, guidGenerator, tenant, options);
+        _query = new EfCoreTimelineQuery(_factory, [], options, NullLogger<EfCoreTimelineQuery>.Instance);
     }
 
     public void Dispose() => _factory.Dispose();
@@ -51,8 +55,8 @@ public sealed class EfCoreTimelineQueryTests : IDisposable
     [Fact]
     public async Task GetStreamAsync_EmptyStream_ReturnsEmptyPage()
     {
-        PagedResult<TimelineStreamEntry> page = await _query.GetStreamAsync(
-            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken);
+        PagedResult<TimelineStreamEntry> page = (await _query.GetStreamAsync(
+            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken)).Page;
 
         page.Items.ShouldBeEmpty();
         page.TotalCount.ShouldBe(0);
@@ -65,8 +69,8 @@ public sealed class EfCoreTimelineQueryTests : IDisposable
         await _store.PostEntryAsync("Patient", "p-1", TimelineEntryType.Comment, "Second", cancellationToken: TestContext.Current.CancellationToken);
         await _store.PostEntryAsync("Patient", "p-1", TimelineEntryType.Comment, "Third", cancellationToken: TestContext.Current.CancellationToken);
 
-        PagedResult<TimelineStreamEntry> page = await _query.GetStreamAsync(
-            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken);
+        PagedResult<TimelineStreamEntry> page = (await _query.GetStreamAsync(
+            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken)).Page;
 
         page.TotalCount.ShouldBe(3);
         page.Items[0].Body.ShouldBe("Third");
@@ -82,8 +86,8 @@ public sealed class EfCoreTimelineQueryTests : IDisposable
             await _store.PostEntryAsync("Patient", "p-1", TimelineEntryType.Comment, $"Entry {i}", cancellationToken: TestContext.Current.CancellationToken);
         }
 
-        PagedResult<TimelineStreamEntry> page = await _query.GetStreamAsync(
-            "Patient", "p-1", page: 2, pageSize: 2, cancellationToken: TestContext.Current.CancellationToken);
+        PagedResult<TimelineStreamEntry> page = (await _query.GetStreamAsync(
+            "Patient", "p-1", page: 2, pageSize: 2, cancellationToken: TestContext.Current.CancellationToken)).Page;
 
         page.TotalCount.ShouldBe(10);
         page.Items.Count.ShouldBe(2);
@@ -97,8 +101,8 @@ public sealed class EfCoreTimelineQueryTests : IDisposable
         await _store.PostEntryAsync("Patient", "p-1", TimelineEntryType.Comment, "Visible", cancellationToken: TestContext.Current.CancellationToken);
         await _store.DeleteEntryAsync(entry.Id, TestContext.Current.CancellationToken);
 
-        PagedResult<TimelineStreamEntry> page = await _query.GetStreamAsync(
-            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken);
+        PagedResult<TimelineStreamEntry> page = (await _query.GetStreamAsync(
+            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken)).Page;
 
         page.TotalCount.ShouldBe(1);
         page.Items[0].Body.ShouldBe("Visible");
@@ -110,8 +114,8 @@ public sealed class EfCoreTimelineQueryTests : IDisposable
         await _store.PostEntryAsync("Patient", "p-1", TimelineEntryType.Comment, "Patient entry", cancellationToken: TestContext.Current.CancellationToken);
         await _store.PostEntryAsync("Invoice", "inv-1", TimelineEntryType.Comment, "Invoice entry", cancellationToken: TestContext.Current.CancellationToken);
 
-        PagedResult<TimelineStreamEntry> page = await _query.GetStreamAsync(
-            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken);
+        PagedResult<TimelineStreamEntry> page = (await _query.GetStreamAsync(
+            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken)).Page;
 
         page.TotalCount.ShouldBe(1);
         page.Items[0].Body.ShouldBe("Patient entry");
@@ -125,8 +129,8 @@ public sealed class EfCoreTimelineQueryTests : IDisposable
         var blobId = Guid.NewGuid();
         await _store.AddAttachmentAsync(entry.Id, blobId, "report.pdf", "application/pdf", 2048, cancellationToken: TestContext.Current.CancellationToken);
 
-        PagedResult<TimelineStreamEntry> page = await _query.GetStreamAsync(
-            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken);
+        PagedResult<TimelineStreamEntry> page = (await _query.GetStreamAsync(
+            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken)).Page;
 
         page.Items[0].Attachments.Count.ShouldBe(1);
         page.Items[0].Attachments[0].FileName.ShouldBe("report.pdf");
@@ -140,8 +144,8 @@ public sealed class EfCoreTimelineQueryTests : IDisposable
         await _store.PostEntryAsync("Patient", "p-1", TimelineEntryType.SystemLog, "Log", cancellationToken: TestContext.Current.CancellationToken);
         await _store.PostEntryAsync("Patient", "p-1", TimelineEntryType.InternalNote, "Note", cancellationToken: TestContext.Current.CancellationToken);
 
-        PagedResult<TimelineStreamEntry> page = await _query.GetStreamAsync(
-            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken);
+        PagedResult<TimelineStreamEntry> page = (await _query.GetStreamAsync(
+            "Patient", "p-1", cancellationToken: TestContext.Current.CancellationToken)).Page;
 
         page.Items.ShouldContain(e => e.EntryType == TimelineStreamEntryType.Comment);
         page.Items.ShouldContain(e => e.EntryType == TimelineStreamEntryType.SystemLog);

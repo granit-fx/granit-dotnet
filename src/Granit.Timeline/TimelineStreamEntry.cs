@@ -32,4 +32,32 @@ public sealed record TimelineStreamEntry
 
     /// <summary>Parent entry ID for threaded replies.</summary>
     public Guid? ParentEntryId { get; init; }
+
+    /// <summary>
+    /// Origin of this entry. <see cref="TimelineEntryOrigin.Native"/> for rows
+    /// stored in the Timeline table directly; <see cref="TimelineEntryOrigin.External"/>
+    /// for entries projected from an <see cref="Abstractions.ITimelineSource"/>.
+    /// </summary>
+    public TimelineEntryOrigin Origin { get; init; } = TimelineEntryOrigin.Native;
+
+    /// <summary>
+    /// Contributor key for <see cref="TimelineEntryOrigin.External"/> entries
+    /// (e.g. <c>"auditing"</c>); <see cref="Abstractions.TimelineSourceKeys.Native"/>
+    /// for native rows.
+    /// </summary>
+    public string SourceKey { get; init; } = Abstractions.TimelineSourceKeys.Native;
+
+    /// <summary>
+    /// External primary key in the contributor's store (string-encoded), or
+    /// <see langword="null"/> for native rows.
+    /// </summary>
+    public string? SourceId { get; init; }
+
+    /// <summary>
+    /// Timestamp of the last body edit, or <see langword="null"/> if the entry
+    /// has never been edited. Always <see langword="null"/> for
+    /// <see cref="TimelineEntryOrigin.External"/> entries — those reflect
+    /// upstream changes through a fresh projection, not this field.
+    /// </summary>
+    public DateTimeOffset? EditedAt { get; init; }
 }

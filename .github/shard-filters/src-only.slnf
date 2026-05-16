@@ -219,6 +219,7 @@
       "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timeline.AI/Granit.Timeline.AI.csproj",
+      "src/Granit.Timeline.Auditing/Granit.Timeline.Auditing.csproj",
       "src/Granit.Timeline.Endpoints/Granit.Timeline.Endpoints.csproj",
       "src/Granit.Timeline.EntityFrameworkCore/Granit.Timeline.EntityFrameworkCore.csproj",
       "src/Granit.Timeline.Notifications/Granit.Timeline.Notifications.csproj",

@@ -9,6 +9,7 @@ using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timeline.Domain;
 using Granit.Timeline.EntityFrameworkCore.Internal;
+using Granit.Timeline.Options;
 using Granit.Timing;
 using Granit.Users;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,9 @@ public sealed class EfCoreTimelineStoreTests : IDisposable
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(false);
 
-        _store = new EfCoreTimelineStore(_factory, _clock, userService, guidGenerator, tenant);
+        _store = new EfCoreTimelineStore(
+            _factory, _clock, userService, guidGenerator, tenant,
+            Microsoft.Extensions.Options.Options.Create(new TimelineOptions()));
     }
 
     public void Dispose() => _factory.Dispose();

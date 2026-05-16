@@ -9,8 +9,10 @@ using Granit.MultiTenancy;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Events;
 using Granit.Timeline.Internal;
+using Granit.Timeline.Options;
 using Granit.Timing;
 using Granit.Users;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -37,7 +39,9 @@ public sealed class InMemoryTimelineStoreTests
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(false);
 
-        _store = new InMemoryTimelineStore(_clock, userService, guidGenerator, tenant);
+        _store = new InMemoryTimelineStore(
+            _clock, userService, guidGenerator, tenant,
+            Microsoft.Extensions.Options.Options.Create(new TimelineOptions()));
     }
 
     [Fact]

@@ -73,7 +73,7 @@ public sealed class LlmTimelineSummarizerTests
 
         _timelineReader
             .GetStreamAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TimelineStreamEntry>([], 0, false, null));
+            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>([], 0, false, null), []));
 
         TimelineSummary result = await sut.SummarizeAsync(
             "Order", TestEntityId, ct: TestContext.Current.CancellationToken);
@@ -92,7 +92,7 @@ public sealed class LlmTimelineSummarizerTests
 
         _timelineReader
             .GetStreamAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TimelineStreamEntry>(entries, 3, false, null));
+            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>(entries, 3, false, null), []));
 
         _chatClient
             .GetResponseAsync(
@@ -120,7 +120,7 @@ public sealed class LlmTimelineSummarizerTests
 
         _timelineReader
             .GetStreamAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TimelineStreamEntry>(entries, 2, false, null));
+            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>(entries, 2, false, null), []));
 
         _chatClient
             .GetResponseAsync(

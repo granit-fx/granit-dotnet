@@ -82,6 +82,7 @@
         "tests/Granit.Templating.Scriban.Tests",
         "tests/Granit.Templating.Tests",
         "tests/Granit.Templating.Workflow.Tests",
+        "tests/Granit.Timeline.Auditing.Tests",
         "tests/Granit.Timeline.Endpoints.Tests",
         "tests/Granit.Timeline.EntityFrameworkCore.Tests",
         "tests/Granit.Timeline.Notifications.Tests",

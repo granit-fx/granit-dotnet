@@ -72,7 +72,7 @@ public sealed class LlmTimelineAnomalyDetectorTests
 
         _timelineReader
             .GetStreamAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TimelineStreamEntry>([], 0, false, null));
+            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>([], 0, false, null), []));
 
         AnomalyReport result = await sut.DetectAnomaliesAsync(
             "Order", TestEntityId, TestContext.Current.CancellationToken);
@@ -89,7 +89,7 @@ public sealed class LlmTimelineAnomalyDetectorTests
 
         _timelineReader
             .GetStreamAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TimelineStreamEntry>(entries, 5, false, null));
+            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>(entries, 5, false, null), []));
 
         string json = """{"anomalies": [{"description": "Bulk edits detected: 5 entries in 4 hours", "severity": "Medium"}, {"description": "Off-hours activity at 03:00 UTC", "severity": "Low"}]}""";
 
@@ -119,7 +119,7 @@ public sealed class LlmTimelineAnomalyDetectorTests
 
         _timelineReader
             .GetStreamAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TimelineStreamEntry>(entries, 2, false, null));
+            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>(entries, 2, false, null), []));
 
         _chatClient
             .GetResponseAsync(

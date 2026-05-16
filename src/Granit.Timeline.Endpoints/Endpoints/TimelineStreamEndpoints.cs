@@ -1,6 +1,7 @@
 using Granit.Authorization;
 using Granit.Authorization.Extensions;
 using Granit.QueryEngine;
+using Granit.Timeline;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Endpoints.Dtos;
@@ -27,14 +28,16 @@ internal static class TimelineStreamEndpoints
             .WithSummary("Returns the paginated activity stream for an entity, newest first.")
             .WithDescription("Returns comments, internal notes (staff-only, requires Timeline.InternalNotes.Read), and system log entries. Supports pagination. Soft-deleted entries are excluded.")
             .Produces<PagedResult<TimelineStreamEntryResponse>>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .AllowHostAccess();
 
         return group;
     }
 
-    private static async Task<Ok<PagedResult<TimelineStreamEntryResponse>>> GetStreamAsync(
+    private static async Task<Results<Ok<PagedResult<TimelineStreamEntryResponse>>, ProblemHttpResult>> GetStreamAsync(
         string entityType,
         string entityId,
+        HttpContext http,
         [FromServices] ITimelineReader reader,
         [FromServices] IReactionReader reactionReader,
         [FromServices] ICurrentUserService currentUser,
@@ -43,7 +46,30 @@ internal static class TimelineStreamEndpoints
         [FromQuery] int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
-        PagedResult<TimelineStreamEntry> result = await reader.GetStreamAsync(entityType, entityId, page, pageSize, cancellationToken).ConfigureAwait(false);
+        TimelineStreamResult streamResult;
+        try
+        {
+            streamResult = await reader.GetStreamAsync(entityType, entityId, page, pageSize, cancellationToken).ConfigureAwait(false);
+        }
+        catch (TimelineDepthExceededException ex)
+        {
+            return TypedResults.Problem(
+                detail: ex.Message,
+                statusCode: StatusCodes.Status400BadRequest,
+                type: "timeline-depth-exceeded",
+                extensions: new Dictionary<string, object?>(StringComparer.Ordinal)
+                {
+                    ["requestedPage"] = ex.RequestedPage,
+                    ["maxPage"] = ex.MaxPage,
+                });
+        }
+
+        if (streamResult.DegradedSources.Count > 0)
+        {
+            http.Response.Headers["X-Timeline-Degraded-Sources"] = string.Join(",", streamResult.DegradedSources);
+        }
+
+        PagedResult<TimelineStreamEntry> result = streamResult.Page;
 
         // Filter InternalNote entries unless user has staff permission.
         bool canReadInternalNotes = await permissionChecker.IsGrantedAsync(

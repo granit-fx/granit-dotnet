@@ -1924,6 +1924,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Timeline.Auditing",
+      "deps": [
+        "Granit.Auditing",
+        "Granit.Timeline"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Timeline.Endpoints",
       "deps": [
         "Granit.Authorization",
@@ -2523,7 +2531,7 @@
       "kind": "class",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/GranitAIEndpointsModule.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -4241,7 +4249,7 @@
       "kind": "class",
       "project": "Granit.Auditing.Endpoints",
       "file": "src/Granit.Auditing.Endpoints/GranitAuditingEndpointsModule.cs",
-      "line": 25,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
@@ -5173,7 +5181,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.Endpoints",
       "file": "src/Granit.Authentication.ApiKeys.Endpoints/GranitAuthenticationApiKeysEndpointsModule.cs",
-      "line": 21,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6845,7 +6853,7 @@
       "kind": "class",
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/GranitAuthorizationEndpointsModule.cs",
-      "line": 28,
+      "line": 30,
       "members": [
         {
           "name": "ConfigureServices",
@@ -7757,7 +7765,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs.Endpoints",
       "file": "src/Granit.BackgroundJobs.Endpoints/GranitBackgroundJobsEndpointsModule.cs",
-      "line": 27,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -9319,7 +9327,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/GranitBlobStorageEndpointsModule.cs",
-      "line": 22,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
@@ -11779,7 +11787,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/GranitDataExchangeEndpointsModule.cs",
-      "line": 25,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
@@ -12389,6 +12397,28 @@
           "kind": "method",
           "signature": "GetExtraFields(Type entityType)",
           "returnType": "IReadOnlyList<ExportFieldDescriptor>"
+        }
+      ]
+    },
+    {
+      "name": "ExportOrchestrator",
+      "fqn": "Granit.DataExchange.Export.Internal.ExportOrchestrator",
+      "kind": "class",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Export/Internal/ExportOrchestrator.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "ExportAsync",
+          "kind": "method",
+          "signature": "ExportAsync(ExportRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ExportJobResult>"
+        },
+        {
+          "name": "GetDownloadAsync",
+          "kind": "method",
+          "signature": "GetDownloadAsync(Guid jobId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ExportDownload?>"
         }
       ]
     },
@@ -13587,8 +13617,15 @@
       "kind": "class",
       "project": "Granit.DataLookup.Endpoints",
       "file": "src/Granit.DataLookup.Endpoints/GranitDataLookupEndpointsModule.cs",
-      "line": 22,
-      "members": []
+      "line": 24,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "DataLookupEndpointsOptions",
@@ -13927,7 +13964,7 @@
       "kind": "class",
       "project": "Granit.Diagnostics.Endpoints",
       "file": "src/Granit.Diagnostics.Endpoints/GranitDiagnosticsEndpointsModule.cs",
-      "line": 21,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -16870,7 +16907,7 @@
       "kind": "class",
       "project": "Granit.Features.Endpoints",
       "file": "src/Granit.Features.Endpoints/GranitFeaturesEndpointsModule.cs",
-      "line": 30,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -19987,7 +20024,7 @@
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/GranitIdentityEndpointsModule.cs",
-      "line": 33,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -22434,7 +22471,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/GranitIdentityLocalEndpointsModule.cs",
-      "line": 26,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
@@ -24629,7 +24666,7 @@
       "kind": "class",
       "project": "Granit.Localization.Endpoints",
       "file": "src/Granit.Localization.Endpoints/GranitLocalizationEndpointsModule.cs",
-      "line": 31,
+      "line": 33,
       "members": [
         {
           "name": "ConfigureServices",
@@ -24767,7 +24804,7 @@
       "kind": "class",
       "project": "Granit.Localization",
       "file": "src/Granit.Localization/Extensions/LocalizationServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitLocalization",
@@ -26195,7 +26232,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.Endpoints",
       "file": "src/Granit.MultiTenancy.Endpoints/GranitMultiTenancyEndpointsModule.cs",
-      "line": 27,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -28055,7 +28092,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/GranitNotificationsEndpointsModule.cs",
-      "line": 27,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -30866,7 +30903,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/GranitOpenIddictEndpointsModule.cs",
-      "line": 38,
+      "line": 39,
       "members": [
         {
           "name": "ConfigureServices",
@@ -32640,15 +32677,8 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/MultiTenancy/IsolatedDbContextMarker.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "DbContextType",
-          "kind": "property",
-          "signature": "Type DbContextType",
-          "returnType": "Type"
-        }
-      ]
+      "line": 14,
+      "members": []
     },
     {
       "name": "TenantIsolationOptions",
@@ -33909,7 +33939,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/GranitPrivacyEndpointsModule.cs",
-      "line": 44,
+      "line": 45,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36717,7 +36747,7 @@
       "kind": "class",
       "project": "Granit.Scheduling.Endpoints",
       "file": "src/Granit.Scheduling.Endpoints/GranitSchedulingEndpointsModule.cs",
-      "line": 26,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
@@ -37375,7 +37405,7 @@
       "kind": "class",
       "project": "Granit.Settings.Endpoints",
       "file": "src/Granit.Settings.Endpoints/GranitSettingsEndpointsModule.cs",
-      "line": 36,
+      "line": 38,
       "members": [
         {
           "name": "ConfigureServices",
@@ -38241,7 +38271,7 @@
       "kind": "class",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/GranitTemplatingEndpointsModule.cs",
-      "line": 31,
+      "line": 33,
       "members": [
         {
           "name": "ConfigureServices",
@@ -39404,9 +39434,15 @@
           "returnType": "string?"
         },
         {
-          "name": "MaxEntriesToAnalyze",
+          "name": "SummarizerMaxEntries",
           "kind": "property",
-          "signature": "int MaxEntriesToAnalyze",
+          "signature": "int SummarizerMaxEntries",
+          "returnType": "int"
+        },
+        {
+          "name": "AnomalyDetectorMaxEntries",
+          "kind": "property",
+          "signature": "int AnomalyDetectorMaxEntries",
           "returnType": "int"
         },
         {
@@ -39547,13 +39583,35 @@
       "kind": "interface",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Abstractions/ITimelineReader.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "GetStreamAsync",
           "kind": "method",
           "signature": "GetStreamAsync(string entityType, string entityId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PagedResult<TimelineStreamEntry>>"
+          "returnType": "Task<TimelineStreamResult>"
+        }
+      ]
+    },
+    {
+      "name": "ITimelineSource",
+      "fqn": "Granit.Timeline.Abstractions.ITimelineSource",
+      "kind": "interface",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Abstractions/ITimelineSource.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "GetEntriesAsync",
+          "kind": "method",
+          "signature": "GetEntriesAsync(string entityType, string entityId, int limit, CancellationToken cancellationToken = default)",
+          "returnType": "string SourceKey { get; } Task<IReadOnlyList<TimelineStreamEntry>>"
+        },
+        {
+          "name": "GetEntryAsync",
+          "kind": "method",
+          "signature": "GetEntryAsync(string entityType, string entityId, string sourceId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TimelineStreamEntry?>"
         }
       ]
     },
@@ -39578,10 +39636,120 @@
           "returnType": "Task"
         },
         {
+          "name": "UpdateEntryBodyAsync",
+          "kind": "method",
+          "signature": "UpdateEntryBodyAsync(Guid entryId, string newBody, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "AnchorExternalAsync",
+          "kind": "method",
+          "signature": "AnchorExternalAsync(string entityType, string entityId, string sourceKey, string sourceId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Guid>"
+        },
+        {
           "name": "AddAttachmentAsync",
           "kind": "method",
           "signature": "AddAttachmentAsync(Guid entryId, Guid blobId, string fileName, string contentType, long sizeBytes, CancellationToken cancellationToken = default)",
           "returnType": "Task<TimelineAttachment>"
+        }
+      ]
+    },
+    {
+      "name": "TimelineDepthExceededException",
+      "fqn": "Granit.Timeline.Abstractions.TimelineDepthExceededException",
+      "kind": "class",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Abstractions/TimelineDepthExceededException.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TimelineEntryNotEditableException",
+      "fqn": "Granit.Timeline.Abstractions.TimelineEntryNotEditableException",
+      "kind": "class",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Abstractions/TimelineEntryNotEditableException.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Reason",
+          "kind": "property",
+          "signature": "TimelineEntryNotEditableReason Reason",
+          "returnType": "TimelineEntryNotEditableReason"
+        }
+      ]
+    },
+    {
+      "name": "TimelineEntryNotEditableReason",
+      "fqn": "Granit.Timeline.Abstractions.TimelineEntryNotEditableReason",
+      "kind": "enum",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Abstractions/TimelineEntryNotEditableException.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "TimelineGuidNamespaces",
+      "fqn": "Granit.Timeline.Abstractions.TimelineGuidNamespaces",
+      "kind": "class",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Abstractions/TimelineGuidNamespaces.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(\"e2c4b3d2-5a8f-5b6e-9c3a-2c8d7f1e4b90\")",
+          "returnType": "Guid Shadow ="
+        }
+      ]
+    },
+    {
+      "name": "TimelineSourceKeys",
+      "fqn": "Granit.Timeline.Abstractions.TimelineSourceKeys",
+      "kind": "class",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Abstractions/TimelineSourceKeys.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "IsValid",
+          "kind": "method",
+          "signature": "IsValid(string sourceKey)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "TimelineAuditingServiceCollectionExtensions",
+      "fqn": "Granit.Timeline.Auditing.Extensions.TimelineAuditingServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Timeline.Auditing",
+      "file": "src/Granit.Timeline.Auditing/Extensions/TimelineAuditingServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitTimelineAuditing",
+          "kind": "method",
+          "signature": "AddGranitTimelineAuditing(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTimelineAuditingModule",
+      "fqn": "Granit.Timeline.Auditing.GranitTimelineAuditingModule",
+      "kind": "class",
+      "project": "Granit.Timeline.Auditing",
+      "file": "src/Granit.Timeline.Auditing/GranitTimelineAuditingModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },
@@ -39707,6 +39875,24 @@
       "members": []
     },
     {
+      "name": "AnchorTimelineEntryRequest",
+      "fqn": "Granit.Timeline.Endpoints.Dtos.AnchorTimelineEntryRequest",
+      "kind": "record",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Dtos/AnchorTimelineEntryRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "AnchorTimelineEntryResponse",
+      "fqn": "Granit.Timeline.Endpoints.Dtos.AnchorTimelineEntryResponse",
+      "kind": "record",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Dtos/AnchorTimelineEntryRequest.cs",
+      "line": 19,
+      "members": []
+    },
+    {
       "name": "PostTimelineEntryRequest",
       "fqn": "Granit.Timeline.Endpoints.Dtos.PostTimelineEntryRequest",
       "kind": "record",
@@ -39761,6 +39947,15 @@
       "members": []
     },
     {
+      "name": "UpdateTimelineEntryBodyRequest",
+      "fqn": "Granit.Timeline.Endpoints.Dtos.UpdateTimelineEntryBodyRequest",
+      "kind": "record",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Dtos/UpdateTimelineEntryBodyRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "TimelineEndpointRouteBuilderExtensions",
       "fqn": "Granit.Timeline.Endpoints.Extensions.TimelineEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -39782,7 +39977,7 @@
       "kind": "class",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/GranitTimelineEndpointsModule.cs",
-      "line": 28,
+      "line": 30,
       "members": [
         {
           "name": "ConfigureServices",
@@ -39944,6 +40139,15 @@
       "members": []
     },
     {
+      "name": "TimelineEntryEditedEvent",
+      "fqn": "Granit.Timeline.Events.TimelineEntryEditedEvent",
+      "kind": "record",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Events/TimelineEntryEditedEvent.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "TimelineEntryPostedEvent",
       "fqn": "Granit.Timeline.Events.TimelineEntryPostedEvent",
       "kind": "record",
@@ -39983,7 +40187,7 @@
       "kind": "class",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Extensions/TimelineServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitTimeline",
@@ -40113,6 +40317,49 @@
       ]
     },
     {
+      "name": "SourceFailurePolicy",
+      "fqn": "Granit.Timeline.Options.SourceFailurePolicy",
+      "kind": "enum",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Options/TimelineOptions.cs",
+      "line": 44,
+      "members": []
+    },
+    {
+      "name": "TimelineOptions",
+      "fqn": "Granit.Timeline.Options.TimelineOptions",
+      "kind": "class",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Options/TimelineOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "MaxPage",
+          "kind": "property",
+          "signature": "int MaxPage",
+          "returnType": "int"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(2)",
+          "returnType": "TimeSpan SourceTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "OnSourceFailure",
+          "kind": "property",
+          "signature": "SourceFailurePolicy OnSourceFailure",
+          "returnType": "SourceFailurePolicy"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(15)",
+          "returnType": "TimeSpan EditWindow { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
       "name": "TimelineEntryQueryDefinition",
       "fqn": "Granit.Timeline.Queries.TimelineEntryQueryDefinition",
       "kind": "class",
@@ -40138,6 +40385,15 @@
       "members": []
     },
     {
+      "name": "TimelineEntryOrigin",
+      "fqn": "Granit.Timeline.TimelineEntryOrigin",
+      "kind": "enum",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/TimelineEntryOrigin.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "TimelineStreamEntry",
       "fqn": "Granit.Timeline.TimelineStreamEntry",
       "kind": "record",
@@ -40156,6 +40412,18 @@
           "kind": "property",
           "signature": "IReadOnlyList<TimelineAttachmentInfo> Attachments",
           "returnType": "IReadOnlyList<TimelineAttachmentInfo>"
+        },
+        {
+          "name": "ParentEntryId",
+          "kind": "property",
+          "signature": "Guid? ParentEntryId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "SourceKey",
+          "kind": "property",
+          "signature": "string SourceKey",
+          "returnType": "string"
         }
       ]
     },
@@ -40166,6 +40434,15 @@
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/TimelineStreamEntryType.cs",
       "line": 7,
+      "members": []
+    },
+    {
+      "name": "TimelineStreamResult",
+      "fqn": "Granit.Timeline.TimelineStreamResult",
+      "kind": "record",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/TimelineStreamResult.cs",
+      "line": 18,
       "members": []
     },
     {
@@ -42664,7 +42941,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/GranitWebhooksEndpointsModule.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -44006,7 +44283,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Endpoints",
       "file": "src/Granit.Workflow.Endpoints/GranitWorkflowEndpointsModule.cs",
-      "line": 37,
+      "line": 39,
       "members": [
         {
           "name": "ConfigureServices",

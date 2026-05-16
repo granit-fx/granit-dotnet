@@ -25,10 +25,20 @@ public sealed class TimelineAIOptions
     public int TimeoutSeconds { get; set; } = 15;
 
     /// <summary>
-    /// Maximum number of timeline entries to include in a single LLM analysis request.
-    /// Older entries are truncated when the stream exceeds this limit.
+    /// Maximum number of timeline entries fed to the summarizer LLM. Capped low
+    /// because summarization is token-budget bound — beyond ~200 entries the
+    /// LLM context window becomes the bottleneck, not the input completeness.
     /// </summary>
-    public int MaxEntriesToAnalyze { get; set; } = 100;
+    public int SummarizerMaxEntries { get; set; } = 200;
+
+    /// <summary>
+    /// Maximum number of timeline entries fed to the anomaly-detection LLM.
+    /// Higher than the summarizer cap because anomaly signal improves with
+    /// volume — needles in haystacks. Stays well below
+    /// <c>TimelineOptions.MaxPage × pageSize</c> so the federated reader cap
+    /// is not hit.
+    /// </summary>
+    public int AnomalyDetectorMaxEntries { get; set; } = 500;
 
     /// <summary>
     /// Maximum number of concurrent LLM requests for timeline AI operations per scope.

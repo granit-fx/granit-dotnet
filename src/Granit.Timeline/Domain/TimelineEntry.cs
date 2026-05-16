@@ -64,6 +64,59 @@ public sealed class TimelineEntry : CreationAuditedAggregateRoot, ISoftDeletable
         };
     }
 
+    /// <summary>
+    /// Creates a shadow row anchoring an external <c>ITimelineSource</c> entry.
+    /// The <paramref name="id"/> is expected to be deterministically derived
+    /// via <c>DeterministicGuid.CreateV5(TimelineGuidNamespaces.Shadow, …)</c>
+    /// so concurrent anchor calls collide on the primary key (idempotent).
+    /// Always a <see cref="TimelineEntryType.SystemLog"/> — shadows are
+    /// projections of immutable audit-style events.
+    /// </summary>
+    /// <param name="id">Deterministic v5 GUID.</param>
+    /// <param name="entity">Polymorphic reference to the parent entity.</param>
+    /// <param name="body">Snapshotted body at anchor time.</param>
+    /// <param name="author">Snapshotted author identity at anchor time.</param>
+    /// <param name="occurredAt">Source-side timestamp (preserves chronology in the merged stream).</param>
+    /// <param name="createdBy">Identifier of the user who triggered the anchor.</param>
+    /// <param name="sourceKey">Contributor key (e.g. <c>"auditing"</c>).</param>
+    /// <param name="sourceId">External primary key (string-encoded).</param>
+    /// <param name="tenantId">Owning tenant identifier.</param>
+    public static TimelineEntry CreateShadow(
+        Guid id,
+        EntityReference entity,
+        string body,
+        AuthorInfo author,
+        DateTimeOffset occurredAt,
+        string createdBy,
+        string sourceKey,
+        string sourceId,
+        Guid? tenantId = null)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+        ArgumentNullException.ThrowIfNull(author);
+        ArgumentException.ThrowIfNullOrEmpty(entity.EntityType);
+        ArgumentException.ThrowIfNullOrEmpty(entity.EntityId);
+        ArgumentException.ThrowIfNullOrEmpty(sourceKey);
+        ArgumentException.ThrowIfNullOrEmpty(sourceId);
+        ArgumentException.ThrowIfNullOrEmpty(createdBy);
+
+        return new()
+        {
+            Id = id,
+            EntityType = entity.EntityType,
+            EntityId = entity.EntityId,
+            EntryType = TimelineEntryType.SystemLog,
+            Body = body ?? string.Empty,
+            AuthorId = author.Id ?? string.Empty,
+            AuthorName = author.Name ?? string.Empty,
+            SourceKey = sourceKey,
+            SourceId = sourceId,
+            CreatedAt = occurredAt,
+            CreatedBy = createdBy,
+            TenantId = tenantId,
+        };
+    }
+
     /// <summary>Entity type name (e.g. "Patient", "Invoice").</summary>
     public string EntityType { get; private set; } = string.Empty;
 
@@ -89,6 +142,28 @@ public sealed class TimelineEntry : CreationAuditedAggregateRoot, ISoftDeletable
 
     /// <summary>Optional parent entry ID for threaded replies.</summary>
     public Guid? ParentEntryId { get; private set; }
+
+    /// <summary>
+    /// Contributor key when this row is a shadow anchoring an external
+    /// <c>ITimelineSource</c> entry (e.g. <c>"auditing"</c>), or
+    /// <see langword="null"/> for native rows. Paired with <see cref="SourceId"/>
+    /// under a unique partial index so the anchor operation is idempotent.
+    /// </summary>
+    public string? SourceKey { get; private set; }
+
+    /// <summary>
+    /// External primary key (string-encoded) when this row anchors an external
+    /// entry; <see langword="null"/> for native rows.
+    /// </summary>
+    public string? SourceId { get; private set; }
+
+    /// <summary>
+    /// Timestamp of the most recent body edit, or <see langword="null"/> if the
+    /// entry has never been edited. Set by <c>UpdateBody</c>; surfaced through
+    /// <see cref="TimelineStreamEntry.EditedAt"/> so clients can render an
+    /// "edited" badge.
+    /// </summary>
+    public DateTimeOffset? EditedAt { get; private set; }
 
     /// <inheritdoc/>
     public Guid? TenantId { get; private set; }
@@ -136,6 +211,21 @@ public sealed class TimelineEntry : CreationAuditedAggregateRoot, ISoftDeletable
     /// </summary>
     internal void RaisePostedEvent() =>
         AddDomainEvent(new TimelineEntryPostedEvent(Id, EntityType, EntityId, EntryType, AuthorId));
+
+    /// <summary>
+    /// Replaces the body of this entry and stamps <see cref="EditedAt"/>.
+    /// The four edit gates (origin, type, authorship, window) are enforced by
+    /// the writer before this method is called — it is the unit of state
+    /// change, not the policy check.
+    /// </summary>
+    internal void UpdateBody(string newBody, DateTimeOffset editedAt)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(newBody);
+
+        Body = newBody;
+        EditedAt = editedAt;
+        AddDomainEvent(new TimelineEntryEditedEvent(Id, EntityType, EntityId, AuthorId, editedAt));
+    }
 
     /// <summary>
     /// Marks this entry as soft-deleted and raises a <see cref="TimelineEntrySoftDeletedEvent"/> domain event.

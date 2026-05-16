@@ -24,10 +24,17 @@ public sealed class TimelineAIOptionsTests
     }
 
     [Fact]
-    public void Default_MaxEntriesToAnalyze_Is100()
+    public void Default_SummarizerMaxEntries_Is200()
     {
         TimelineAIOptions options = new();
-        options.MaxEntriesToAnalyze.ShouldBe(100);
+        options.SummarizerMaxEntries.ShouldBe(200);
+    }
+
+    [Fact]
+    public void Default_AnomalyDetectorMaxEntries_Is500()
+    {
+        TimelineAIOptions options = new();
+        options.AnomalyDetectorMaxEntries.ShouldBe(500);
     }
 
     [Fact]
@@ -37,11 +44,13 @@ public sealed class TimelineAIOptionsTests
         {
             WorkspaceName = "custom-workspace",
             TimeoutSeconds = 30,
-            MaxEntriesToAnalyze = 50,
+            SummarizerMaxEntries = 50,
+            AnomalyDetectorMaxEntries = 1000,
         };
 
         options.WorkspaceName.ShouldBe("custom-workspace");
         options.TimeoutSeconds.ShouldBe(30);
-        options.MaxEntriesToAnalyze.ShouldBe(50);
+        options.SummarizerMaxEntries.ShouldBe(50);
+        options.AnomalyDetectorMaxEntries.ShouldBe(1000);
     }
 }

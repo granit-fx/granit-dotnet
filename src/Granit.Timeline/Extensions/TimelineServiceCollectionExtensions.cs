@@ -4,6 +4,7 @@ using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Exports;
 using Granit.Timeline.Internal;
+using Granit.Timeline.Options;
 using Granit.Timeline.Queries;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -22,6 +23,8 @@ public static class TimelineServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddGranitTimeline(this IServiceCollection services)
     {
+        services.AddOptions<TimelineOptions>();
+
         // Core stores (default: in-memory, replaced by EF Core package).
         // Scoped: depends on ICurrentUserService (scoped per-request).
         services.TryAddScoped<InMemoryTimelineStore>();

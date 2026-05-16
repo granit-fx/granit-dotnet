@@ -32,6 +32,23 @@ internal static class TimelineEntryEndpoints
             .Produces<TimelineStreamEntryResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem();
 
+        group.MapPost("/{entityType}/{entityId}/anchor", AnchorExternalAsync)
+            .RequireAuthorization(TimelinePermissions.Entries.Create)
+            .WithName("AnchorExternalTimelineEntry")
+            .WithSummary("Materializes (or returns) the shadow row for an external timeline source entry.")
+            .WithDescription("Idempotent: returns the deterministic v5 GUID of the native anchor row so subsequent reactions/replies can target a stable id. The endpoint snapshots the source's body/author/occurred-at at anchor time; if the source later evolves, the shadow keeps its snapshot (audit retention independence).")
+            .Produces<AnchorTimelineEntryResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapPatch("/{entityType}/{entityId}/entries/{entryId:guid}", UpdateEntryBodyAsync)
+            .RequireAuthorization(TimelinePermissions.Entries.Create)
+            .WithName("UpdateTimelineEntryBody")
+            .WithSummary("Edits the body of an entry the caller authored within the edit window.")
+            .WithDescription("Replaces the Markdown body of a Comment or InternalNote authored by the current user, provided the configured edit window (TimelineOptions.EditWindow, default 15 min) has not elapsed. Origin must be Native; SystemLog and external-origin entries are immutable. Returns 403 with reason in extensions when a gate rejects the request.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         group.MapDelete("/{entityType}/{entityId}/entries/{entryId:guid}", DeleteEntryAsync)
             .RequireAuthorization(TimelinePermissions.Entries.Manage)
             .WithName("DeleteTimelineEntry")
@@ -92,7 +109,59 @@ internal static class TimelineEntryEndpoints
         return TypedResults.Created($"/api/timeline/{entityType}/{entityId}/entries/{entry.Id}", result);
     }
 
+    private static async Task<Results<Ok<AnchorTimelineEntryResponse>, ProblemHttpResult>> AnchorExternalAsync(
+        string entityType,
+        string entityId,
+        AnchorTimelineEntryRequest request,
+        [FromServices] ITimelineWriter writer,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            Guid entryId = await writer
+                .AnchorExternalAsync(entityType, entityId, request.SourceKey, request.SourceId, cancellationToken)
+                .ConfigureAwait(false);
+            return TypedResults.Ok(new AnchorTimelineEntryResponse(entryId));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return TypedResults.Problem(
+                detail: ex.Message,
+                statusCode: StatusCodes.Status404NotFound);
+        }
+    }
+
 #pragma warning disable S1172 // Route parameters bound by ASP.NET Core minimal API
+    private static async Task<Results<NoContent, ProblemHttpResult>> UpdateEntryBodyAsync(
+        string entityType,
+        string entityId,
+        Guid entryId,
+        UpdateTimelineEntryBodyRequest request,
+        [FromServices] ITimelineWriter writer,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await writer.UpdateEntryBodyAsync(entryId, request.Body, cancellationToken).ConfigureAwait(false);
+            return TypedResults.NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+        }
+        catch (TimelineEntryNotEditableException ex)
+        {
+            return TypedResults.Problem(
+                detail: ex.Message,
+                statusCode: StatusCodes.Status403Forbidden,
+                type: "timeline-entry-not-editable",
+                extensions: new Dictionary<string, object?>(StringComparer.Ordinal)
+                {
+                    ["reason"] = ex.Reason.ToString(),
+                });
+        }
+    }
+
     private static async Task<Results<NoContent, ProblemHttpResult>> DeleteEntryAsync(
         string entityType,
         string entityId,
@@ -109,8 +178,8 @@ internal static class TimelineEntryEndpoints
 
         if (!isAdmin)
         {
-            PagedResult<TimelineStreamEntry> stream = await reader.GetStreamAsync(entityType, entityId, 1, 1000, cancellationToken).ConfigureAwait(false);
-            TimelineStreamEntry? target = stream.Items.FirstOrDefault(e => e.Id == entryId);
+            TimelineStreamResult stream = await reader.GetStreamAsync(entityType, entityId, 1, 1000, cancellationToken).ConfigureAwait(false);
+            TimelineStreamEntry? target = stream.Page.Items.FirstOrDefault(e => e.Id == entryId);
 
             if (target is null)
             {

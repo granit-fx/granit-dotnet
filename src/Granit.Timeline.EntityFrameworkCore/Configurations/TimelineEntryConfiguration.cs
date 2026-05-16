@@ -25,6 +25,9 @@ internal sealed class TimelineEntryConfiguration : IEntityTypeConfiguration<Time
         builder.Property(x => x.AuthorName).HasMaxLength(512).IsRequired();
         builder.Property(x => x.CreatedBy).HasMaxLength(256).IsRequired();
         builder.Property(x => x.DeletedBy).HasMaxLength(256);
+        builder.Property(x => x.SourceKey).HasMaxLength(64);
+        builder.Property(x => x.SourceId).HasMaxLength(128);
+        builder.Property(x => x.EditedAt);
 
         // Primary stream query: all entries for an entity, newest first
         builder.HasIndex(x => new { x.EntityType, x.EntityId, x.TenantId, x.CreatedAt })
@@ -34,5 +37,13 @@ internal sealed class TimelineEntryConfiguration : IEntityTypeConfiguration<Time
         // Self-referencing for threaded replies (no navigation property)
         builder.HasIndex(x => x.ParentEntryId)
             .HasDatabaseName($"ix_{GranitTimelineDbProperties.DbTablePrefix}entries_parent");
+
+        // Shadow rows: idempotent anchor — one row per (tenant, entity, source).
+        // Partial index keeps the cost zero for the dominant case (native rows
+        // where SourceKey IS NULL).
+        builder.HasIndex(x => new { x.TenantId, x.EntityType, x.EntityId, x.SourceKey, x.SourceId })
+            .IsUnique()
+            .HasFilter("\"SourceKey\" IS NOT NULL")
+            .HasDatabaseName($"ux_{GranitTimelineDbProperties.DbTablePrefix}entries_shadow");
     }
 }
