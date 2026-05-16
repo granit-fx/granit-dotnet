@@ -1,10 +1,10 @@
 {
-  "culture": "it",
-  "texts": {
-    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
-    "NotificationsEndpoints:Workspace.Section": "Notifications",
-    "Permission:Notifications.UserNotifications.Manage": "Gestire le notifiche (preferenze, iscrizioni, token push)",
-    "Permission:Notifications.UserNotifications.Read": "Visualizzare le notifiche (posta in arrivo, attività)",
-    "PermissionGroup:Notifications": "Notifiche"
-  }
+    "culture": "it",
+    "texts": {
+        "NotificationsEndpoints:Workspace.Item": "Posta in arrivo",
+        "NotificationsEndpoints:Workspace.Section": "Notifications",
+        "Permission:Notifications.UserNotifications.Manage": "Gestire le notifiche (preferenze, iscrizioni, token push)",
+        "Permission:Notifications.UserNotifications.Read": "Visualizzare le notifiche (posta in arrivo, attività)",
+        "PermissionGroup:Notifications": "Notifiche"
+    }
 }

@@ -1,10 +1,10 @@
 {
-  "culture": "fr",
-  "texts": {
-    "LocalizationEndpoints:Workspace.Item": "Surcharges de traduction",
-    "LocalizationEndpoints:Workspace.Section": "Localisation",
-    "Permission:Localization.Overrides.Manage": "Gérer les surcharges de traduction (consulter, créer, modifier, supprimer)",
-    "Permission:Localization.Overrides.Read": "Consulter les surcharges de traduction",
-    "PermissionGroup:Localization": "Localisation"
-  }
+    "culture": "fr",
+    "texts": {
+        "LocalizationEndpoints:Workspace.Item": "Traductions",
+        "LocalizationEndpoints:Workspace.Section": "Localisation",
+        "Permission:Localization.Overrides.Manage": "Gérer les surcharges de traduction (consulter, créer, modifier, supprimer)",
+        "Permission:Localization.Overrides.Read": "Consulter les surcharges de traduction",
+        "PermissionGroup:Localization": "Localisation"
+    }
 }

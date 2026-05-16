@@ -1,11 +1,11 @@
 {
-  "culture": "zh",
-  "texts": {
-    "Permission:Workflow.History.Read": "查看工作流转换历史（审计跟踪）",
-    "Permission:Workflow.Transitions.Execute": "执行工作流状态转换",
-    "Permission:Workflow.Transitions.Read": "查看可用的工作流转换",
-    "PermissionGroup:Workflow": "工作流",
-    "WorkflowEndpoints:Workspace.History": "Transition history",
-    "WorkflowEndpoints:Workspace.Section": "Workflow"
-  }
+    "culture": "zh",
+    "texts": {
+        "Permission:Workflow.History.Read": "查看工作流转换历史（审计跟踪）",
+        "Permission:Workflow.Transitions.Execute": "执行工作流状态转换",
+        "Permission:Workflow.Transitions.Read": "查看可用的工作流转换",
+        "PermissionGroup:Workflow": "工作流",
+        "WorkflowEndpoints:Workspace.History": "历史",
+        "WorkflowEndpoints:Workspace.Section": "Workflow"
+    }
 }

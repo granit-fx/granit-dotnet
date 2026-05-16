@@ -1,11 +1,11 @@
 {
-  "culture": "nl",
-  "texts": {
-    "Permission:Workflow.History.Read": "Workflow-transitiegeschiedenis bekijken (Auditspoor)",
-    "Permission:Workflow.Transitions.Execute": "Workflowstatustransities uitvoeren",
-    "Permission:Workflow.Transitions.Read": "Beschikbare workflowtransities bekijken",
-    "PermissionGroup:Workflow": "Workflow",
-    "WorkflowEndpoints:Workspace.History": "Transition history",
-    "WorkflowEndpoints:Workspace.Section": "Workflow"
-  }
+    "culture": "nl",
+    "texts": {
+        "Permission:Workflow.History.Read": "Workflow-transitiegeschiedenis bekijken (Auditspoor)",
+        "Permission:Workflow.Transitions.Execute": "Workflowstatustransities uitvoeren",
+        "Permission:Workflow.Transitions.Read": "Beschikbare workflowtransities bekijken",
+        "PermissionGroup:Workflow": "Workflow",
+        "WorkflowEndpoints:Workspace.History": "Geschiedenis",
+        "WorkflowEndpoints:Workspace.Section": "Workflow"
+    }
 }

@@ -1,8 +1,8 @@
 {
-  "culture": "en-GB",
-  "texts": {
-    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
-    "LocalizationEndpoints:Workspace.Section": "Localization",
-    "PermissionGroup:Localization": "Localisation"
-  }
+    "culture": "en-GB",
+    "texts": {
+        "LocalizationEndpoints:Workspace.Item": "Translations",
+        "LocalizationEndpoints:Workspace.Section": "Localization",
+        "PermissionGroup:Localization": "Localisation"
+    }
 }

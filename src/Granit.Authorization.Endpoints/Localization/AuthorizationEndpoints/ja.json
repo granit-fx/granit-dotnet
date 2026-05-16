@@ -1,7 +1,7 @@
 {
   "culture": "ja",
   "texts": {
-    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Definitions": "権限",
     "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "登録済みの権限定義とグループをすべて表示",
     "Permission:Authorization.Grants.Manage": "ロールの権限を表示、付与、取消",

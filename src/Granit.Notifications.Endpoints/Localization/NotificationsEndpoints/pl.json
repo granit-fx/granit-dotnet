@@ -1,10 +1,10 @@
 {
-  "culture": "pl",
-  "texts": {
-    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
-    "NotificationsEndpoints:Workspace.Section": "Notifications",
-    "Permission:Notifications.UserNotifications.Manage": "Zarządzanie powiadomieniami (preferencje, subskrypcje, tokeny push)",
-    "Permission:Notifications.UserNotifications.Read": "Przeglądanie powiadomień (skrzynka odbiorcza, aktywność)",
-    "PermissionGroup:Notifications": "Powiadomienia"
-  }
+    "culture": "pl",
+    "texts": {
+        "NotificationsEndpoints:Workspace.Item": "Skrzynka odbiorcza",
+        "NotificationsEndpoints:Workspace.Section": "Notifications",
+        "Permission:Notifications.UserNotifications.Manage": "Zarządzanie powiadomieniami (preferencje, subskrypcje, tokeny push)",
+        "Permission:Notifications.UserNotifications.Read": "Przeglądanie powiadomień (skrzynka odbiorcza, aktywność)",
+        "PermissionGroup:Notifications": "Powiadomienia"
+    }
 }

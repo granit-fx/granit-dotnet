@@ -1,7 +1,7 @@
 {
-  "culture": "en-GB",
-  "texts": {
-    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
-    "BlobStorageEndpoints:Workspace.Section": "Blob storage"
-  }
+    "culture": "en-GB",
+    "texts": {
+        "BlobStorageEndpoints:Workspace.Item": "Blobs",
+        "BlobStorageEndpoints:Workspace.Section": "Blob storage"
+    }
 }

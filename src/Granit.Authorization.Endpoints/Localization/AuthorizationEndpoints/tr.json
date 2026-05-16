@@ -1,7 +1,7 @@
 {
   "culture": "tr",
   "texts": {
-    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Definitions": "İzinler",
     "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "Tüm kayıtlı izin tanımlarını ve grupları görüntüle",
     "Permission:Authorization.Grants.Manage": "Roller için izinleri görüntüle, ver ve iptal et",

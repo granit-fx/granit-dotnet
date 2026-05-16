@@ -1,10 +1,10 @@
 {
-  "culture": "cs",
-  "texts": {
-    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
-    "NotificationsEndpoints:Workspace.Section": "Notifications",
-    "Permission:Notifications.UserNotifications.Manage": "Spravovat oznámení (předvolby, odběry, push tokeny)",
-    "Permission:Notifications.UserNotifications.Read": "Zobrazit oznámení (doručená pošta, přehled aktivit)",
-    "PermissionGroup:Notifications": "Oznámení"
-  }
+    "culture": "cs",
+    "texts": {
+        "NotificationsEndpoints:Workspace.Item": "Doručená pošta",
+        "NotificationsEndpoints:Workspace.Section": "Notifications",
+        "Permission:Notifications.UserNotifications.Manage": "Spravovat oznámení (předvolby, odběry, push tokeny)",
+        "Permission:Notifications.UserNotifications.Read": "Zobrazit oznámení (doručená pošta, přehled aktivit)",
+        "PermissionGroup:Notifications": "Oznámení"
+    }
 }

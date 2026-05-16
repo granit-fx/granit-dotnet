@@ -1,10 +1,10 @@
 {
-  "culture": "en",
-  "texts": {
-    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
-    "NotificationsEndpoints:Workspace.Section": "Notifications",
-    "Permission:Notifications.UserNotifications.Manage": "Manage notifications (preferences, subscriptions, push tokens)",
-    "Permission:Notifications.UserNotifications.Read": "View notifications (inbox, activity feed)",
-    "PermissionGroup:Notifications": "Notifications"
-  }
+    "culture": "en",
+    "texts": {
+        "NotificationsEndpoints:Workspace.Item": "Inbox",
+        "NotificationsEndpoints:Workspace.Section": "Notifications",
+        "Permission:Notifications.UserNotifications.Manage": "Manage notifications (preferences, subscriptions, push tokens)",
+        "Permission:Notifications.UserNotifications.Read": "View notifications (inbox, activity feed)",
+        "PermissionGroup:Notifications": "Notifications"
+    }
 }

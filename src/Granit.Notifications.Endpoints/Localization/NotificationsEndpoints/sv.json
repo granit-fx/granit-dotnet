@@ -1,10 +1,10 @@
 {
-  "culture": "sv",
-  "texts": {
-    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
-    "NotificationsEndpoints:Workspace.Section": "Notifications",
-    "Permission:Notifications.UserNotifications.Manage": "Hantera aviseringar (inställningar, prenumerationer, pushtoken)",
-    "Permission:Notifications.UserNotifications.Read": "Visa aviseringar (inkorg, aktivitetsflöde)",
-    "PermissionGroup:Notifications": "Aviseringar"
-  }
+    "culture": "sv",
+    "texts": {
+        "NotificationsEndpoints:Workspace.Item": "Inkorg",
+        "NotificationsEndpoints:Workspace.Section": "Notifications",
+        "Permission:Notifications.UserNotifications.Manage": "Hantera aviseringar (inställningar, prenumerationer, pushtoken)",
+        "Permission:Notifications.UserNotifications.Read": "Visa aviseringar (inkorg, aktivitetsflöde)",
+        "PermissionGroup:Notifications": "Aviseringar"
+    }
 }

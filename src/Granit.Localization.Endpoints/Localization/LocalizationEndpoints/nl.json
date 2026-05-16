@@ -1,10 +1,10 @@
 {
-  "culture": "nl",
-  "texts": {
-    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
-    "LocalizationEndpoints:Workspace.Section": "Localization",
-    "Permission:Localization.Overrides.Manage": "Vertaaloverschrijvingen beheren (bekijken, aanmaken, bewerken, verwijderen)",
-    "Permission:Localization.Overrides.Read": "Vertaaloverschrijvingen bekijken",
-    "PermissionGroup:Localization": "Lokalisatie"
-  }
+    "culture": "nl",
+    "texts": {
+        "LocalizationEndpoints:Workspace.Item": "Vertalingen",
+        "LocalizationEndpoints:Workspace.Section": "Localization",
+        "Permission:Localization.Overrides.Manage": "Vertaaloverschrijvingen beheren (bekijken, aanmaken, bewerken, verwijderen)",
+        "Permission:Localization.Overrides.Read": "Vertaaloverschrijvingen bekijken",
+        "PermissionGroup:Localization": "Lokalisatie"
+    }
 }

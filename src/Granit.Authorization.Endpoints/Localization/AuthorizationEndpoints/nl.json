@@ -1,7 +1,7 @@
 {
   "culture": "nl",
   "texts": {
-    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Definitions": "Machtigingen",
     "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "Alle geregistreerde machtigingsdefinities en groepen bekijken",
     "Permission:Authorization.Grants.Manage": "Machtigingen voor rollen bekijken, toekennen en intrekken",

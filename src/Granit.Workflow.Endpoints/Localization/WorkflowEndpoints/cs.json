@@ -1,11 +1,11 @@
 {
-  "culture": "cs",
-  "texts": {
-    "Permission:Workflow.History.Read": "Zobrazit historii přechodů pracovního postupu (auditní stopa)",
-    "Permission:Workflow.Transitions.Execute": "Provést přechody stavů workflow",
-    "Permission:Workflow.Transitions.Read": "Zobrazit dostupné přechody workflow",
-    "PermissionGroup:Workflow": "Pracovní postup",
-    "WorkflowEndpoints:Workspace.History": "Transition history",
-    "WorkflowEndpoints:Workspace.Section": "Workflow"
-  }
+    "culture": "cs",
+    "texts": {
+        "Permission:Workflow.History.Read": "Zobrazit historii přechodů pracovního postupu (auditní stopa)",
+        "Permission:Workflow.Transitions.Execute": "Provést přechody stavů workflow",
+        "Permission:Workflow.Transitions.Read": "Zobrazit dostupné přechody workflow",
+        "PermissionGroup:Workflow": "Pracovní postup",
+        "WorkflowEndpoints:Workspace.History": "Historie",
+        "WorkflowEndpoints:Workspace.Section": "Workflow"
+    }
 }

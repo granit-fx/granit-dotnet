@@ -1,11 +1,11 @@
 {
-  "culture": "sv",
-  "texts": {
-    "Permission:Workflow.History.Read": "Visa arbetsflödets övergångshistorik (revisionsspår)",
-    "Permission:Workflow.Transitions.Execute": "Utför arbetsflödesstatusövergångar",
-    "Permission:Workflow.Transitions.Read": "Visa tillgängliga arbetsflödesövergångar",
-    "PermissionGroup:Workflow": "Arbetsflöde",
-    "WorkflowEndpoints:Workspace.History": "Transition history",
-    "WorkflowEndpoints:Workspace.Section": "Workflow"
-  }
+    "culture": "sv",
+    "texts": {
+        "Permission:Workflow.History.Read": "Visa arbetsflödets övergångshistorik (revisionsspår)",
+        "Permission:Workflow.Transitions.Execute": "Utför arbetsflödesstatusövergångar",
+        "Permission:Workflow.Transitions.Read": "Visa tillgängliga arbetsflödesövergångar",
+        "PermissionGroup:Workflow": "Arbetsflöde",
+        "WorkflowEndpoints:Workspace.History": "Historik",
+        "WorkflowEndpoints:Workspace.Section": "Workflow"
+    }
 }

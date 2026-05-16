@@ -1,7 +1,7 @@
 {
   "culture": "de",
   "texts": {
-    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Definitions": "Berechtigungen",
     "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "Alle registrierten Berechtigungsdefinitionen und Gruppen anzeigen",
     "Permission:Authorization.Grants.Manage": "Berechtigungen für Rollen anzeigen, erteilen und widerrufen",

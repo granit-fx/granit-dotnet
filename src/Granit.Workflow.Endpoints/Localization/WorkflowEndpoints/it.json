@@ -1,11 +1,11 @@
 {
-  "culture": "it",
-  "texts": {
-    "Permission:Workflow.History.Read": "Visualizzare la cronologia delle transizioni del flusso di lavoro (Pista di audit)",
-    "Permission:Workflow.Transitions.Execute": "Eseguire le transizioni di stato del workflow",
-    "Permission:Workflow.Transitions.Read": "Visualizzare le transizioni workflow disponibili",
-    "PermissionGroup:Workflow": "Flusso di lavoro",
-    "WorkflowEndpoints:Workspace.History": "Transition history",
-    "WorkflowEndpoints:Workspace.Section": "Workflow"
-  }
+    "culture": "it",
+    "texts": {
+        "Permission:Workflow.History.Read": "Visualizzare la cronologia delle transizioni del flusso di lavoro (Pista di audit)",
+        "Permission:Workflow.Transitions.Execute": "Eseguire le transizioni di stato del workflow",
+        "Permission:Workflow.Transitions.Read": "Visualizzare le transizioni workflow disponibili",
+        "PermissionGroup:Workflow": "Flusso di lavoro",
+        "WorkflowEndpoints:Workspace.History": "Cronologia",
+        "WorkflowEndpoints:Workspace.Section": "Workflow"
+    }
 }

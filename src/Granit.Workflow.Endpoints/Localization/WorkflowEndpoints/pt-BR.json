@@ -1,7 +1,7 @@
 {
-  "culture": "pt-BR",
-  "texts": {
-    "WorkflowEndpoints:Workspace.History": "Transition history",
-    "WorkflowEndpoints:Workspace.Section": "Workflow"
-  }
+    "culture": "pt-BR",
+    "texts": {
+        "WorkflowEndpoints:Workspace.History": "Histórico",
+        "WorkflowEndpoints:Workspace.Section": "Workflow"
+    }
 }

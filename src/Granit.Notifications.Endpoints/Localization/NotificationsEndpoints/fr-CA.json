@@ -1,7 +1,7 @@
 {
-  "culture": "fr-CA",
-  "texts": {
-    "NotificationsEndpoints:Workspace.Item": "Boîte de réception et abonnements",
-    "NotificationsEndpoints:Workspace.Section": "Notifications"
-  }
+    "culture": "fr-CA",
+    "texts": {
+        "NotificationsEndpoints:Workspace.Item": "Boîte de réception",
+        "NotificationsEndpoints:Workspace.Section": "Notifications"
+    }
 }

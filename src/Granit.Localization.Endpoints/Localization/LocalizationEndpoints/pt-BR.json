@@ -1,7 +1,7 @@
 {
-  "culture": "pt-BR",
-  "texts": {
-    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
-    "LocalizationEndpoints:Workspace.Section": "Localization"
-  }
+    "culture": "pt-BR",
+    "texts": {
+        "LocalizationEndpoints:Workspace.Item": "Traduções",
+        "LocalizationEndpoints:Workspace.Section": "Localization"
+    }
 }

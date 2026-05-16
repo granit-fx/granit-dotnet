@@ -1,7 +1,7 @@
 {
   "culture": "zh",
   "texts": {
-    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Definitions": "权限",
     "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "查看所有已注册的权限定义和组",
     "Permission:Authorization.Grants.Manage": "查看、授予和撤销角色权限",

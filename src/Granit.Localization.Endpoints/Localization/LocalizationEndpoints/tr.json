@@ -1,10 +1,10 @@
 {
-  "culture": "tr",
-  "texts": {
-    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
-    "LocalizationEndpoints:Workspace.Section": "Localization",
-    "Permission:Localization.Overrides.Manage": "Çeviri geçersiz kılmalarını yönet (görüntüle, oluştur, düzenle, sil)",
-    "Permission:Localization.Overrides.Read": "Çeviri geçersiz kılmalarını görüntüle",
-    "PermissionGroup:Localization": "Yerelleştirme"
-  }
+    "culture": "tr",
+    "texts": {
+        "LocalizationEndpoints:Workspace.Item": "Çeviriler",
+        "LocalizationEndpoints:Workspace.Section": "Localization",
+        "Permission:Localization.Overrides.Manage": "Çeviri geçersiz kılmalarını yönet (görüntüle, oluştur, düzenle, sil)",
+        "Permission:Localization.Overrides.Read": "Çeviri geçersiz kılmalarını görüntüle",
+        "PermissionGroup:Localization": "Yerelleştirme"
+    }
 }

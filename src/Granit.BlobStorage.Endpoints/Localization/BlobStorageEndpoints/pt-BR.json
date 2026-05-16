@@ -1,10 +1,10 @@
 {
-  "culture": "pt-BR",
-  "texts": {
-    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
-    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
-    "Permission:BlobStorage.Administration.Manage": "Gerenciar armazenamento de arquivos (enviar, baixar, excluir, confirmar, limpar)",
-    "Permission:BlobStorage.Administration.Read": "Ver administração do armazenamento de arquivos (lista, descritores, consulta)",
-    "PermissionGroup:BlobStorage": "Armazenamento de arquivos"
-  }
+    "culture": "pt-BR",
+    "texts": {
+        "BlobStorageEndpoints:Workspace.Item": "Blobs",
+        "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+        "Permission:BlobStorage.Administration.Manage": "Gerenciar armazenamento de arquivos (enviar, baixar, excluir, confirmar, limpar)",
+        "Permission:BlobStorage.Administration.Read": "Ver administração do armazenamento de arquivos (lista, descritores, consulta)",
+        "PermissionGroup:BlobStorage": "Armazenamento de arquivos"
+    }
 }

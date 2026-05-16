@@ -1,7 +1,7 @@
 {
   "culture": "hi",
   "texts": {
-    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Definitions": "अनुमतियाँ",
     "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "सभी पंजीकृत अनुमति परिभाषाएँ और समूह देखें",
     "Permission:Authorization.Grants.Manage": "भूमिकाओं के लिए अनुमतियाँ देखें, प्रदान करें और निरस्त करें",

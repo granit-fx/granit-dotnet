@@ -1,10 +1,10 @@
 {
-  "culture": "ja",
-  "texts": {
-    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
-    "LocalizationEndpoints:Workspace.Section": "Localization",
-    "Permission:Localization.Overrides.Manage": "翻訳オーバーライドの管理（表示、作成、編集、削除）",
-    "Permission:Localization.Overrides.Read": "翻訳オーバーライドの閲覧",
-    "PermissionGroup:Localization": "ローカライゼーション"
-  }
+    "culture": "ja",
+    "texts": {
+        "LocalizationEndpoints:Workspace.Item": "翻訳",
+        "LocalizationEndpoints:Workspace.Section": "Localization",
+        "Permission:Localization.Overrides.Manage": "翻訳オーバーライドの管理（表示、作成、編集、削除）",
+        "Permission:Localization.Overrides.Read": "翻訳オーバーライドの閲覧",
+        "PermissionGroup:Localization": "ローカライゼーション"
+    }
 }

@@ -1,11 +1,11 @@
 {
-  "culture": "tr",
-  "texts": {
-    "Permission:Workflow.History.Read": "İş akışı geçiş geçmişini görüntüle (denetim izi)",
-    "Permission:Workflow.Transitions.Execute": "İş akışı durum geçişlerini yürüt",
-    "Permission:Workflow.Transitions.Read": "Mevcut iş akışı geçişlerini görüntüle",
-    "PermissionGroup:Workflow": "İş Akışı",
-    "WorkflowEndpoints:Workspace.History": "Transition history",
-    "WorkflowEndpoints:Workspace.Section": "Workflow"
-  }
+    "culture": "tr",
+    "texts": {
+        "Permission:Workflow.History.Read": "İş akışı geçiş geçmişini görüntüle (denetim izi)",
+        "Permission:Workflow.Transitions.Execute": "İş akışı durum geçişlerini yürüt",
+        "Permission:Workflow.Transitions.Read": "Mevcut iş akışı geçişlerini görüntüle",
+        "PermissionGroup:Workflow": "İş Akışı",
+        "WorkflowEndpoints:Workspace.History": "Geçmiş",
+        "WorkflowEndpoints:Workspace.Section": "Workflow"
+    }
 }

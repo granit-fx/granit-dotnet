@@ -1,7 +1,7 @@
 {
   "culture": "sv",
   "texts": {
-    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Definitions": "Behörigheter",
     "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "Visa alla registrerade behörighetsdefinitioner och grupper",
     "Permission:Authorization.Grants.Manage": "Visa, bevilja och återkalla behörigheter för roller",

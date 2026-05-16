@@ -1,10 +1,10 @@
 {
-  "culture": "en",
-  "texts": {
-    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
-    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
-    "Permission:BlobStorage.Administration.Manage": "Manage blob storage (upload, download, delete, confirm, cleanup)",
-    "Permission:BlobStorage.Administration.Read": "View blob storage administration (list, descriptors, query)",
-    "PermissionGroup:BlobStorage": "Blob Storage"
-  }
+    "culture": "en",
+    "texts": {
+        "BlobStorageEndpoints:Workspace.Item": "Blobs",
+        "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+        "Permission:BlobStorage.Administration.Manage": "Manage blob storage (upload, download, delete, confirm, cleanup)",
+        "Permission:BlobStorage.Administration.Read": "View blob storage administration (list, descriptors, query)",
+        "PermissionGroup:BlobStorage": "Blob Storage"
+    }
 }

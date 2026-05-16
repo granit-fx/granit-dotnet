@@ -1,10 +1,10 @@
 {
-  "culture": "zh",
-  "texts": {
-    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
-    "LocalizationEndpoints:Workspace.Section": "Localization",
-    "Permission:Localization.Overrides.Manage": "管理翻译覆盖（查看、创建、编辑、删除）",
-    "Permission:Localization.Overrides.Read": "查看翻译覆盖",
-    "PermissionGroup:Localization": "本地化"
-  }
+    "culture": "zh",
+    "texts": {
+        "LocalizationEndpoints:Workspace.Item": "翻译",
+        "LocalizationEndpoints:Workspace.Section": "Localization",
+        "Permission:Localization.Overrides.Manage": "管理翻译覆盖（查看、创建、编辑、删除）",
+        "Permission:Localization.Overrides.Read": "查看翻译覆盖",
+        "PermissionGroup:Localization": "本地化"
+    }
 }

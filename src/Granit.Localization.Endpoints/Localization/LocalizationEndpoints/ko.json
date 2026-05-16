@@ -1,10 +1,10 @@
 {
-  "culture": "ko",
-  "texts": {
-    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
-    "LocalizationEndpoints:Workspace.Section": "Localization",
-    "Permission:Localization.Overrides.Manage": "번역 재정의 관리 (보기, 생성, 편집, 삭제)",
-    "Permission:Localization.Overrides.Read": "번역 재정의 조회",
-    "PermissionGroup:Localization": "현지화"
-  }
+    "culture": "ko",
+    "texts": {
+        "LocalizationEndpoints:Workspace.Item": "번역",
+        "LocalizationEndpoints:Workspace.Section": "Localization",
+        "Permission:Localization.Overrides.Manage": "번역 재정의 관리 (보기, 생성, 편집, 삭제)",
+        "Permission:Localization.Overrides.Read": "번역 재정의 조회",
+        "PermissionGroup:Localization": "현지화"
+    }
 }

@@ -1,7 +1,7 @@
 {
   "culture": "cs",
   "texts": {
-    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Definitions": "Oprávnění",
     "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "Zobrazit všechny registrované definice oprávnění a skupiny",
     "Permission:Authorization.Grants.Manage": "Zobrazit, udělit a odvolat oprávnění pro role",

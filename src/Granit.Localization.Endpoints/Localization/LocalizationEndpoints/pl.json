@@ -1,10 +1,10 @@
 {
-  "culture": "pl",
-  "texts": {
-    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
-    "LocalizationEndpoints:Workspace.Section": "Localization",
-    "Permission:Localization.Overrides.Manage": "Zarządzanie nadpisaniami tłumaczeń (wyświetlanie, tworzenie, edycja, usuwanie)",
-    "Permission:Localization.Overrides.Read": "Przeglądanie nadpisań tłumaczeń",
-    "PermissionGroup:Localization": "Lokalizacja"
-  }
+    "culture": "pl",
+    "texts": {
+        "LocalizationEndpoints:Workspace.Item": "Tłumaczenia",
+        "LocalizationEndpoints:Workspace.Section": "Localization",
+        "Permission:Localization.Overrides.Manage": "Zarządzanie nadpisaniami tłumaczeń (wyświetlanie, tworzenie, edycja, usuwanie)",
+        "Permission:Localization.Overrides.Read": "Przeglądanie nadpisań tłumaczeń",
+        "PermissionGroup:Localization": "Lokalizacja"
+    }
 }

@@ -1,7 +1,7 @@
 {
-  "culture": "en-GB",
-  "texts": {
-    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
-    "NotificationsEndpoints:Workspace.Section": "Notifications"
-  }
+    "culture": "en-GB",
+    "texts": {
+        "NotificationsEndpoints:Workspace.Item": "Inbox",
+        "NotificationsEndpoints:Workspace.Section": "Notifications"
+    }
 }

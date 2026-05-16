@@ -1,10 +1,10 @@
 {
-  "culture": "de",
-  "texts": {
-    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
-    "LocalizationEndpoints:Workspace.Section": "Localization",
-    "Permission:Localization.Overrides.Manage": "Übersetzungsüberschreibungen verwalten (anzeigen, erstellen, bearbeiten, löschen)",
-    "Permission:Localization.Overrides.Read": "Übersetzungsüberschreibungen anzeigen",
-    "PermissionGroup:Localization": "Lokalisierung"
-  }
+    "culture": "de",
+    "texts": {
+        "LocalizationEndpoints:Workspace.Item": "Übersetzungen",
+        "LocalizationEndpoints:Workspace.Section": "Localization",
+        "Permission:Localization.Overrides.Manage": "Übersetzungsüberschreibungen verwalten (anzeigen, erstellen, bearbeiten, löschen)",
+        "Permission:Localization.Overrides.Read": "Übersetzungsüberschreibungen anzeigen",
+        "PermissionGroup:Localization": "Lokalisierung"
+    }
 }
