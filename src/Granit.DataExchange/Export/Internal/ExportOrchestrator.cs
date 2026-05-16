@@ -24,7 +24,7 @@ namespace Granit.DataExchange.Export.Internal;
 /// <see cref="IExportDataSource{TEntity}"/> + optional <see cref="IQueryEngine{TEntity}"/>,
 /// extracts field values, and writes the output via the matching <see cref="IExportWriter"/>.
 /// </summary>
-internal sealed partial class ExportOrchestrator(
+public sealed partial class ExportOrchestrator(
     IServiceProvider serviceProvider,
     IEnumerable<IExportWriter> writers,
     IExportJobReader jobReader,
@@ -90,7 +90,7 @@ internal sealed partial class ExportOrchestrator(
             ExportRequest request = JsonSerializer.Deserialize<ExportRequest>(job.RequestJson)!;
             IExportDefinitionDescriptor definition = ResolveDefinition(request.DefinitionName);
             IExportWriter writer = ResolveWriter(request.Format);
-            IReadOnlyList<ExportFieldDescriptor> fields = ResolveFields(definition, request.SelectedFields);
+            IReadOnlyList<ExportFieldDescriptor> fields = ResolveFields(definition, request.SelectedFields, request.IncludeIdForImport);
 
             // Project entity rows to flat dictionaries
             int rowCount = 0;
@@ -209,7 +209,8 @@ internal sealed partial class ExportOrchestrator(
 
     private IReadOnlyList<ExportFieldDescriptor> ResolveFields(
         IExportDefinitionDescriptor definition,
-        IReadOnlyList<string>? selectedFields)
+        IReadOnlyList<string>? selectedFields,
+        bool includeIdForImport)
     {
         IReadOnlyList<ExportFieldDescriptor> definitionFields = definition.GetFields();
 
@@ -235,7 +236,7 @@ internal sealed partial class ExportOrchestrator(
 
         if (selectedFields is null or { Count: 0 })
         {
-            return allFields;
+            return PrependIdField(allFields, allFields, includeIdForImport);
         }
 
         // Filter and reorder based on user selection
@@ -251,7 +252,34 @@ internal sealed partial class ExportOrchestrator(
             }
         }
 
-        return result.AsReadOnly();
+        return PrependIdField(result, allFields, includeIdForImport);
+    }
+
+    private static IReadOnlyList<ExportFieldDescriptor> PrependIdField(
+        IReadOnlyList<ExportFieldDescriptor> fields,
+        IReadOnlyList<ExportFieldDescriptor> allFields,
+        bool includeIdForImport)
+    {
+        if (!includeIdForImport)
+        {
+            return fields is List<ExportFieldDescriptor> list ? list.AsReadOnly() : fields;
+        }
+
+        if (fields.Any(f => string.Equals(f.PropertyPath, "Id", StringComparison.OrdinalIgnoreCase)))
+        {
+            return fields is List<ExportFieldDescriptor> list ? list.AsReadOnly() : fields;
+        }
+
+        ExportFieldDescriptor? idField = allFields.FirstOrDefault(
+            f => string.Equals(f.PropertyPath, "Id", StringComparison.OrdinalIgnoreCase));
+
+        if (idField is null)
+        {
+            return fields is List<ExportFieldDescriptor> list ? list.AsReadOnly() : fields;
+        }
+
+        List<ExportFieldDescriptor> withId = [idField, .. fields];
+        return withId.AsReadOnly();
     }
 
     private async IAsyncEnumerable<IReadOnlyDictionary<string, object?>> GetProjectedRows(

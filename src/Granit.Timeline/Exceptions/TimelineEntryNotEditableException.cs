@@ -1,4 +1,6 @@
-namespace Granit.Timeline.Abstractions;
+using Granit.Timeline.Abstractions;
+
+namespace Granit.Timeline.Exceptions;
 
 /// <summary>
 /// Thrown by <see cref="ITimelineWriter.UpdateEntryBodyAsync"/> when one of the

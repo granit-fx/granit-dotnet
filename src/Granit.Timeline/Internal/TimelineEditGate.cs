@@ -1,5 +1,6 @@
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
+using Granit.Timeline.Exceptions;
 
 namespace Granit.Timeline.Internal;
 

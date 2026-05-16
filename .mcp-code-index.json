@@ -39583,7 +39583,7 @@
       "kind": "interface",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Abstractions/ITimelineReader.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "GetStreamAsync",
@@ -39621,7 +39621,7 @@
       "kind": "interface",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Abstractions/ITimelineWriter.cs",
-      "line": 8,
+      "line": 9,
       "members": [
         {
           "name": "PostEntryAsync",
@@ -39654,40 +39654,6 @@
           "returnType": "Task<TimelineAttachment>"
         }
       ]
-    },
-    {
-      "name": "TimelineDepthExceededException",
-      "fqn": "Granit.Timeline.Abstractions.TimelineDepthExceededException",
-      "kind": "class",
-      "project": "Granit.Timeline",
-      "file": "src/Granit.Timeline/Abstractions/TimelineDepthExceededException.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "TimelineEntryNotEditableException",
-      "fqn": "Granit.Timeline.Abstractions.TimelineEntryNotEditableException",
-      "kind": "class",
-      "project": "Granit.Timeline",
-      "file": "src/Granit.Timeline/Abstractions/TimelineEntryNotEditableException.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "Reason",
-          "kind": "property",
-          "signature": "TimelineEntryNotEditableReason Reason",
-          "returnType": "TimelineEntryNotEditableReason"
-        }
-      ]
-    },
-    {
-      "name": "TimelineEntryNotEditableReason",
-      "fqn": "Granit.Timeline.Abstractions.TimelineEntryNotEditableReason",
-      "kind": "enum",
-      "project": "Granit.Timeline",
-      "file": "src/Granit.Timeline/Abstractions/TimelineEntryNotEditableException.cs",
-      "line": 17,
-      "members": []
     },
     {
       "name": "TimelineGuidNamespaces",
@@ -40163,6 +40129,40 @@
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Events/TimelineEntrySoftDeletedEvent.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "TimelineDepthExceededException",
+      "fqn": "Granit.Timeline.Exceptions.TimelineDepthExceededException",
+      "kind": "class",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Exceptions/TimelineDepthExceededException.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "TimelineEntryNotEditableException",
+      "fqn": "Granit.Timeline.Exceptions.TimelineEntryNotEditableException",
+      "kind": "class",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Exceptions/TimelineEntryNotEditableException.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Reason",
+          "kind": "property",
+          "signature": "TimelineEntryNotEditableReason Reason",
+          "returnType": "TimelineEntryNotEditableReason"
+        }
+      ]
+    },
+    {
+      "name": "TimelineEntryNotEditableReason",
+      "fqn": "Granit.Timeline.Exceptions.TimelineEntryNotEditableReason",
+      "kind": "enum",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Exceptions/TimelineEntryNotEditableException.cs",
+      "line": 19,
       "members": []
     },
     {

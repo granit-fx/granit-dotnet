@@ -5,6 +5,7 @@ using Granit.Timeline.Domain;
 using Granit.Timeline.Endpoints.Dtos;
 using Granit.Timeline.Endpoints.Internal;
 using Granit.Timeline.Endpoints.Permissions;
+using Granit.Timeline.Exceptions;
 using Granit.Timeline.Internal;
 using Granit.Users;
 using Microsoft.AspNetCore.Builder;

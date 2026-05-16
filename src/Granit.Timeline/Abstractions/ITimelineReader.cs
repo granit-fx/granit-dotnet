@@ -1,4 +1,5 @@
 using Granit.QueryEngine;
+using Granit.Timeline.Exceptions;
 
 namespace Granit.Timeline.Abstractions;
 

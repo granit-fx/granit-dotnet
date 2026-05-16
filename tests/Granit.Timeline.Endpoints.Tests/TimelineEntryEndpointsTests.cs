@@ -313,7 +313,7 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         };
 
         _reader.GetStreamAsync("Patient", "42", 1, 1000, Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TimelineStreamEntry>([streamEntry], 1, HasMore: false));
+            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>([streamEntry], 1, HasMore: false), []));
 
         // Act
         HttpResponseMessage response = await _authClient.DeleteAsync(
@@ -343,7 +343,7 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         };
 
         _reader.GetStreamAsync("Patient", "42", 1, 1000, Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TimelineStreamEntry>([streamEntry], 1, HasMore: false));
+            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>([streamEntry], 1, HasMore: false), []));
 
         // Act
         HttpResponseMessage response = await _authClient.DeleteAsync(
@@ -362,7 +362,7 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
             .Returns(false);
 
         _reader.GetStreamAsync("Patient", "42", 1, 1000, Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TimelineStreamEntry>([], 0, HasMore: false));
+            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>([], 0, HasMore: false), []));
 
         // Act
         HttpResponseMessage response = await _authClient.DeleteAsync(
