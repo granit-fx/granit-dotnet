@@ -460,7 +460,8 @@
     {
       "name": "Granit.BlobStorage.GoogleCloud",
       "deps": [
-        "Granit.BlobStorage"
+        "Granit.BlobStorage",
+        "Granit.Diagnostics"
       ],
       "framework": "net10.0"
     },
@@ -476,6 +477,7 @@
       "name": "Granit.BlobStorage.S3",
       "deps": [
         "Granit.BlobStorage",
+        "Granit.Diagnostics",
         "Granit.Observability"
       ],
       "framework": "net10.0"
@@ -8822,7 +8824,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.AI",
       "file": "src/Granit.BlobStorage.AI/Extensions/BlobStorageAIHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitBlobStorageAI",
@@ -8894,7 +8896,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.AzureBlob",
       "file": "src/Granit.BlobStorage.AzureBlob/Extensions/BlobStorageAzureBlobHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitBlobStorageAzureBlob",
@@ -8919,7 +8921,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.AzureBlob",
       "file": "src/Granit.BlobStorage.AzureBlob/Options/AzureBlobOptions.cs",
-      "line": 25,
+      "line": 24,
       "members": [
         {
           "name": "ConnectionString",
@@ -9062,19 +9064,25 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Database",
       "file": "src/Granit.BlobStorage.Database/Entities/DatabaseBlobContent.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
-          "name": "Id",
+          "name": "TenantId",
           "kind": "property",
-          "signature": "Guid Id",
-          "returnType": "Guid"
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
         },
         {
           "name": "Content",
           "kind": "property",
           "signature": "byte[] Content",
           "returnType": "byte[]"
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string objectKey, byte[] content)",
+          "returnType": "DatabaseBlobContent"
         }
       ]
     },
@@ -9084,7 +9092,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Database",
       "file": "src/Granit.BlobStorage.Database/Extensions/BlobStorageDatabaseHostApplicationBuilderExtensions.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitBlobStorageDatabase",
@@ -9211,7 +9219,7 @@
           "name": "MarkAsUploading",
           "kind": "method",
           "signature": "MarkAsUploading()",
-          "returnType": "long MaxAllowedBytes { get; private set; } public string? VerifiedContentType { get; private set; } public long? SizeBytes { get; private set; } public BlobStatus Status { get; private set; } public DateTimeOffset CreatedAt { get; private set; } public DateTimeOffset? ValidatedAt { get; private set; } public DateTimeOffset? DeletedAt { get; private set; } public string? RejectionReason { get; private set; } public string? DeletionReason { get; private set; } public void"
+          "returnType": "long MaxAllowedBytes { get; private set; } public string? VerifiedContentType { get; private set; } public long? SizeBytes { get; private set; } public BlobStatus Status { get; private set; } public DateTimeOffset? ValidatedAt { get; private set; } public DateTimeOffset? DeletedAt { get; private set; } public string? RejectionReason { get; private set; } public string? DeletionReason { get; private set; } public void"
         }
       ]
     },
@@ -9311,13 +9319,29 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/Extensions/BlobStorageEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "MapGranitBlobStorage",
           "kind": "method",
           "signature": "MapGranitBlobStorage(this IEndpointRouteBuilder endpoints, Action<BlobStorageEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "BlobStorageEndpointsHostApplicationBuilderExtensions",
+      "fqn": "Granit.BlobStorage.Endpoints.Extensions.BlobStorageEndpointsHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Endpoints",
+      "file": "src/Granit.BlobStorage.Endpoints/Extensions/BlobStorageEndpointsHostApplicationBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitBlobStorageEndpoints",
+          "kind": "method",
+          "signature": "AddGranitBlobStorageEndpoints(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
         }
       ]
     },
@@ -9401,7 +9425,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.EntityFrameworkCore",
       "file": "src/Granit.BlobStorage.EntityFrameworkCore/Extensions/BlobStorageEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitBlobStorageEntityFrameworkCore",
@@ -9542,7 +9566,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.FileSystem",
       "file": "src/Granit.BlobStorage.FileSystem/Extensions/BlobStorageFileSystemHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitBlobStorageFileSystem",
@@ -9567,7 +9591,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.FileSystem",
       "file": "src/Granit.BlobStorage.FileSystem/Options/FileSystemBlobOptions.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "BasePath",
@@ -9592,7 +9616,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.GoogleCloud",
       "file": "src/Granit.BlobStorage.GoogleCloud/Extensions/BlobStorageGoogleCloudHostApplicationBuilderExtensions.cs",
-      "line": 21,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitBlobStorageGoogleCloud",
@@ -9617,7 +9641,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.GoogleCloud",
       "file": "src/Granit.BlobStorage.GoogleCloud/Options/GoogleCloudStorageOptions.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "ProjectId",
@@ -9645,7 +9669,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/GranitBlobStorageModule.cs",
-      "line": 32,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",
@@ -9893,9 +9917,9 @@
       "line": 17,
       "members": [
         {
-          "name": "MapGranitBlobProxy",
+          "name": "MapGranitBlobStorageProxy",
           "kind": "method",
-          "signature": "MapGranitBlobProxy(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitBlobStorageProxy(this IEndpointRouteBuilder endpoints)",
           "returnType": "IEndpointRouteBuilder"
         }
       ]
@@ -9906,7 +9930,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Proxy",
       "file": "src/Granit.BlobStorage.Proxy/Extensions/BlobStorageProxyHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitBlobStorageProxy",
@@ -9996,7 +10020,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.S3",
       "file": "src/Granit.BlobStorage.S3/Extensions/BlobStorageS3HostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitBlobStorageS3",
@@ -10028,7 +10052,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.S3",
       "file": "src/Granit.BlobStorage.S3/Options/S3BlobOptions.cs",
-      "line": 25,
+      "line": 24,
       "members": [
         {
           "name": "ServiceUrl",

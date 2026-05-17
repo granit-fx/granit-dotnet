@@ -5,6 +5,7 @@ using Granit.BlobStorage.Proxy.Internal;
 using Granit.BlobStorage.Proxy.Options;
 using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -47,9 +48,9 @@ public static class BlobStorageProxyHostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<IValidateOptions<ProxyBlobOptions>, ProxyBlobOptionsValidator>();
 
-        builder.Services.AddSingleton<IBlobProxyTokenStore, DistributedBlobProxyTokenStore>();
-        builder.Services.AddScoped<IPresignedUrlProvider, ProxyPresignedUrlProvider>();
-        builder.Services.AddScoped<IBlobStorage, DefaultBlobStorage>();
+        builder.Services.TryAddSingleton<IBlobProxyTokenStore, DistributedBlobProxyTokenStore>();
+        builder.Services.TryAddScoped<IPresignedUrlProvider, ProxyPresignedUrlProvider>();
+        builder.Services.TryAddScoped<IBlobStorage, DefaultBlobStorage>();
 
         return builder;
     }

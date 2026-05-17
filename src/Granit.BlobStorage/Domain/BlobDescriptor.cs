@@ -21,7 +21,7 @@ namespace Granit.BlobStorage.Domain;
 /// <see cref="BlobStatus.Deleted"/> means the S3 bytes are gone; the audit row remains for 3 years.
 /// </para>
 /// </remarks>
-public sealed class BlobDescriptor : AggregateRoot, IMultiTenant
+public sealed class BlobDescriptor : CreationAuditedAggregateRoot, IMultiTenant
 {
     // Parameterless constructor required by EF Core materializer.
     private BlobDescriptor() { }
@@ -86,9 +86,6 @@ public sealed class BlobDescriptor : AggregateRoot, IMultiTenant
 
     /// <summary>Current lifecycle status.</summary>
     public BlobStatus Status { get; private set; }
-
-    /// <summary>UTC instant when the upload ticket was issued.</summary>
-    public DateTimeOffset CreatedAt { get; private set; }
 
     /// <summary>UTC instant when the blob passed all validators; null until <see cref="BlobStatus.Valid"/>.</summary>
     public DateTimeOffset? ValidatedAt { get; private set; }

@@ -8,50 +8,47 @@ namespace Granit.BlobStorage.Database.Tests.Entities;
 public sealed class DatabaseBlobContentTests
 {
     [Fact]
-    public void Id_DefaultsToEmpty() =>
-        new DatabaseBlobContent().Id.ShouldBe(Guid.Empty);
+    public void Create_AssignsIdAndObjectKeyAndContent()
+    {
+        var id = Guid.NewGuid();
+        byte[] content = [1, 2, 3];
+
+        var entity = DatabaseBlobContent.Create(id, "tenant/container/2026/01/blob-id", content);
+
+        entity.Id.ShouldBe(id);
+        entity.ObjectKey.ShouldBe("tenant/container/2026/01/blob-id");
+        entity.Content.ShouldBe(content);
+    }
 
     [Fact]
-    public void TenantId_DefaultsToNull() =>
-        new DatabaseBlobContent().TenantId.ShouldBeNull();
+    public void Create_DefaultsTenantIdToNull()
+    {
+        var entity = DatabaseBlobContent.Create(Guid.NewGuid(), "key", []);
+
+        entity.TenantId.ShouldBeNull();
+    }
 
     [Fact]
-    public void ObjectKey_DefaultsToEmpty() =>
-        new DatabaseBlobContent().ObjectKey.ShouldBe(string.Empty);
+    public void Create_DefaultsCreatedAtToMinValue()
+    {
+        var entity = DatabaseBlobContent.Create(Guid.NewGuid(), "key", []);
 
-    [Fact]
-    public void Content_DefaultsToEmptyArray() =>
-        new DatabaseBlobContent().Content.ShouldBeEmpty();
-
-    [Fact]
-    public void CreatedAt_DefaultsToMinValue() =>
-        new DatabaseBlobContent().CreatedAt.ShouldBe(default);
+        // CreatedAt is populated by the AuditedEntityInterceptor at SaveChanges time.
+        entity.CreatedAt.ShouldBe(default);
+    }
 
     [Fact]
     public void Implements_IMultiTenant() =>
         typeof(DatabaseBlobContent).GetInterfaces().ShouldContain(typeof(IMultiTenant));
 
     [Fact]
-    public void AllProperties_CanBeSet()
+    public void IMultiTenantTenantId_SetterIsAccessible()
     {
-        var id = Guid.NewGuid();
+        var entity = DatabaseBlobContent.Create(Guid.NewGuid(), "key", []);
         var tenantId = Guid.NewGuid();
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        byte[] content = [1, 2, 3];
 
-        DatabaseBlobContent entity = new()
-        {
-            Id = id,
-            TenantId = tenantId,
-            ObjectKey = "tenant/container/2026/01/blob-id",
-            Content = content,
-            CreatedAt = now,
-        };
+        ((IMultiTenant)entity).TenantId = tenantId;
 
-        entity.Id.ShouldBe(id);
         entity.TenantId.ShouldBe(tenantId);
-        entity.ObjectKey.ShouldBe("tenant/container/2026/01/blob-id");
-        entity.Content.ShouldBe(content);
-        entity.CreatedAt.ShouldBe(now);
     }
 }

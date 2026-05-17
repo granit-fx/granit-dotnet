@@ -364,6 +364,7 @@
         "dependencies": {
           "Google.Cloud.Storage.V1": "[4.*, )",
           "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.Diagnostics": "[0.1.0-dev, )",
           "Microsoft.Extensions.Diagnostics.HealthChecks": "[10.*, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
@@ -380,6 +381,12 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.diagnostics": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )"
         }
       },
       "granit.guids": {

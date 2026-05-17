@@ -2,11 +2,9 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Granit.BlobStorage.Database.Diagnostics;
 using Granit.BlobStorage.Database.Entities;
-using Granit.BlobStorage.Database.Internal;
 using Granit.BlobStorage.Database.Options;
 using Granit.BlobStorage.Internal;
 using Granit.Guids;
-using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -25,7 +23,6 @@ namespace Granit.BlobStorage.Database.Internal;
 internal sealed class DatabaseBlobClient(
     IDbContextFactory<BlobStorageDatabaseDbContext> contextFactory,
     IOptions<DatabaseBlobOptions> options,
-    IClock clock,
     IGuidGenerator guidGenerator) : IBlobStoreProvider
 {
     /// <inheritdoc/>
@@ -40,26 +37,40 @@ internal sealed class DatabaseBlobClient(
         activity?.SetTag(BlobStorageDatabaseActivitySource.TagObjectKey, objectKey);
         activity?.SetTag(BlobStorageDatabaseActivitySource.TagContentType, contentType);
 
-        using MemoryStream ms = new();
-        await content.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
-        byte[] bytes = ms.ToArray();
+        long maxBytes = options.Value.MaxBlobSizeBytes;
 
-        if (bytes.Length > options.Value.MaxBlobSizeBytes)
+        // Pre-flight size check when the stream is seekable; cheaper than buffering an oversized payload.
+        if (content.CanSeek && content.Length > maxBytes)
         {
             throw new InvalidOperationException(
-                $"Blob size ({bytes.Length} bytes) exceeds the maximum allowed size ({options.Value.MaxBlobSizeBytes} bytes).");
+                $"Blob size ({content.Length} bytes) exceeds the maximum allowed size ({maxBytes} bytes).");
+        }
+
+        // EF Core maps the column as `byte[]`, which requires full materialization before SaveChanges;
+        // we still cap the read at MaxBlobSizeBytes + 1 to fail fast on oversize unseekable streams.
+        using MemoryStream ms = new();
+        byte[] buffer = new byte[81920];
+        long totalRead = 0;
+        int read;
+        while ((read = await content.ReadAsync(buffer.AsMemory(), cancellationToken).ConfigureAwait(false)) > 0)
+        {
+            totalRead += read;
+            if (totalRead > maxBytes)
+            {
+                throw new InvalidOperationException(
+                    $"Blob size exceeds the maximum allowed size ({maxBytes} bytes).");
+            }
+
+            ms.Write(buffer, 0, read);
         }
 
         await using BlobStorageDatabaseDbContext context =
             await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        DatabaseBlobContent entity = new()
-        {
-            Id = guidGenerator.Create(),
-            ObjectKey = objectKey,
-            Content = bytes,
-            CreatedAt = clock.Now,
-        };
+        var entity = DatabaseBlobContent.Create(
+            guidGenerator.Create(),
+            objectKey,
+            ms.ToArray());
 
         context.BlobContents.Add(entity);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

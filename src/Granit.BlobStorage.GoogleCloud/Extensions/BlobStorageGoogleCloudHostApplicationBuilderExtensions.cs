@@ -6,7 +6,10 @@ using Granit.BlobStorage.GoogleCloud.Options;
 using Granit.BlobStorage.Internal;
 using Granit.BlobStorage.Options;
 using Granit.Diagnostics;
+using Granit.Diagnostics.Caching;
+using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -45,12 +48,12 @@ public static class BlobStorageGoogleCloudHostApplicationBuilderExtensions
 
         // GoogleCloudBlobClient implements IBlobStoreProvider + IPresignedUrlProvider.
         // Registered as Singleton: StorageClient is thread-safe and intended for reuse.
-        builder.Services.AddSingleton<GoogleCloudBlobClient>();
-        builder.Services.AddSingleton<IBlobStoreProvider>(sp => sp.GetRequiredService<GoogleCloudBlobClient>());
-        builder.Services.AddSingleton<IPresignedUrlProvider>(sp => sp.GetRequiredService<GoogleCloudBlobClient>());
+        builder.Services.TryAddSingleton<GoogleCloudBlobClient>();
+        builder.Services.TryAddSingleton<IBlobStoreProvider>(sp => sp.GetRequiredService<GoogleCloudBlobClient>());
+        builder.Services.TryAddSingleton<IPresignedUrlProvider>(sp => sp.GetRequiredService<GoogleCloudBlobClient>());
 
-        builder.Services.AddScoped<IBlobKeyStrategy, GoogleCloudBlobKeyStrategy>();
-        builder.Services.AddScoped<IBlobStorage, DefaultBlobStorage>();
+        builder.Services.TryAddScoped<IBlobKeyStrategy, GoogleCloudBlobKeyStrategy>();
+        builder.Services.TryAddScoped<IBlobStorage, DefaultBlobStorage>();
 
         return builder;
     }
@@ -73,7 +76,10 @@ public static class BlobStorageGoogleCloudHostApplicationBuilderExtensions
 
         return builder.Add(new HealthCheckRegistration(
             name,
-            sp => sp.GetRequiredService<GoogleCloudStorageHealthCheck>(),
+            sp => new CachedHealthCheck(
+                sp.GetRequiredService<GoogleCloudStorageHealthCheck>(),
+                TimeSpan.FromSeconds(30),
+                sp.GetRequiredService<IClock>()),
             failureStatus,
             ["readiness", "startup"],
             timeout ?? TimeSpan.FromSeconds(10)));

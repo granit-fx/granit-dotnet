@@ -6,6 +6,7 @@ using Granit.BlobStorage.Internal;
 using Granit.BlobStorage.Options;
 using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -43,12 +44,12 @@ public static class BlobStorageAzureBlobHostApplicationBuilderExtensions
 
         // AzureBlobClient implements IBlobStoreProvider + IPresignedUrlProvider.
         // Registered as Singleton: BlobServiceClient is thread-safe and intended for reuse.
-        builder.Services.AddSingleton<AzureBlobClient>();
-        builder.Services.AddSingleton<IBlobStoreProvider>(sp => sp.GetRequiredService<AzureBlobClient>());
-        builder.Services.AddSingleton<IPresignedUrlProvider>(sp => sp.GetRequiredService<AzureBlobClient>());
+        builder.Services.TryAddSingleton<AzureBlobClient>();
+        builder.Services.TryAddSingleton<IBlobStoreProvider>(sp => sp.GetRequiredService<AzureBlobClient>());
+        builder.Services.TryAddSingleton<IPresignedUrlProvider>(sp => sp.GetRequiredService<AzureBlobClient>());
 
-        builder.Services.AddScoped<IBlobKeyStrategy, AzureBlobKeyStrategy>();
-        builder.Services.AddScoped<IBlobStorage, DefaultBlobStorage>();
+        builder.Services.TryAddScoped<IBlobKeyStrategy, AzureBlobKeyStrategy>();
+        builder.Services.TryAddScoped<IBlobStorage, DefaultBlobStorage>();
 
         return builder;
     }

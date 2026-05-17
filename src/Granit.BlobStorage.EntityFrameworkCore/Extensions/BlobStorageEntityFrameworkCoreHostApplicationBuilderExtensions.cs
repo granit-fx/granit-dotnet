@@ -5,6 +5,7 @@ using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.BlobStorage.EntityFrameworkCore.Extensions;
@@ -54,12 +55,12 @@ public static class BlobStorageEntityFrameworkCoreHostApplicationBuilderExtensio
             configureSchemaPerTenant,
             configureTenantSchema);
 
-        builder.Services.AddScoped<EfBlobDescriptorStore>();
-        builder.Services.AddScoped<IBlobDescriptorStore>(sp => sp.GetRequiredService<EfBlobDescriptorStore>());
-        builder.Services.AddScoped<IBlobDescriptorReader>(sp => sp.GetRequiredService<EfBlobDescriptorStore>());
-        builder.Services.AddScoped<IBlobDescriptorWriter>(sp => sp.GetRequiredService<EfBlobDescriptorStore>());
+        builder.Services.TryAddScoped<EfBlobDescriptorStore>();
+        builder.Services.TryAddScoped<IBlobDescriptorStore>(sp => sp.GetRequiredService<EfBlobDescriptorStore>());
+        builder.Services.TryAddScoped<IBlobDescriptorReader>(sp => sp.GetRequiredService<EfBlobDescriptorStore>());
+        builder.Services.TryAddScoped<IBlobDescriptorWriter>(sp => sp.GetRequiredService<EfBlobDescriptorStore>());
 
-        builder.Services.AddScoped<IQueryableSource<BlobDescriptor>, EfBlobQueryableSource>();
+        builder.Services.TryAddScoped<IQueryableSource<BlobDescriptor>, EfBlobQueryableSource>();
 
         return builder;
     }

@@ -7,5 +7,5 @@ namespace Granit.BlobStorage;
 /// JSON files: <c>Localization/BlobStorage/{culture}.json</c>, embedded in this assembly.
 /// Auto-discovered by <see cref="LocalizationResourceNameAttribute"/>.
 /// </summary>
-[LocalizationResourceName("BlobStorage", DefaultCulture = "fr")]
+[LocalizationResourceName("BlobStorage", DefaultCulture = "en")]
 public sealed class BlobStorageLocalizationResource;

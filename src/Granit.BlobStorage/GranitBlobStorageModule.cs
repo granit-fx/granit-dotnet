@@ -4,6 +4,7 @@ using Granit.BlobStorage.Exports;
 using Granit.BlobStorage.Queries;
 using Granit.BlobStorage.Validators;
 using Granit.DataExchange.Extensions;
+using Granit.Diagnostics;
 using Granit.Guids;
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
@@ -20,8 +21,6 @@ namespace Granit.BlobStorage;
 /// <see cref="IBlobKeyStrategy"/>, and <see cref="IBlobValidator"/> abstractions.
 /// Register a concrete provider (e.g. <c>Granit.BlobStorage.S3</c>) and a
 /// persistence adapter (e.g. <c>Granit.BlobStorage.EntityFrameworkCore</c>) alongside this module.
-/// Add the optional <c>Granit.BlobStorage.Analytics</c> + <c>Granit.BlobStorage.Dashboards</c>
-/// satellites to surface storage metrics and the operations dashboard.
 /// <para>
 /// Localization resources (<c>Localization/BlobStorage/{culture}.json</c>) are embedded in this
 /// assembly and auto-discovered by <c>GranitLocalizationModule</c> via
@@ -33,6 +32,8 @@ public sealed class GranitBlobStorageModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        GranitActivitySourceRegistry.Register(BlobStorageActivitySource.Name);
+
         context.Services.TryAddSingleton<BlobStorageMetrics>();
 
         context.Services.AddSingleton<IBlobValidator, ContentTypeAllowlistValidator>();

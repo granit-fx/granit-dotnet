@@ -3,6 +3,7 @@ using Granit.BlobStorage.AI.Internal;
 using Granit.BlobStorage.AI.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Granit.BlobStorage.AI.Extensions;
 
@@ -31,7 +32,10 @@ public static class BlobStorageAIHostApplicationBuilderExtensions
     {
         builder.Services
             .AddOptions<BlobStorageAIOptions>()
-            .BindConfiguration(BlobStorageAIOptions.SectionName);
+            .BindConfiguration(BlobStorageAIOptions.SectionName)
+            .ValidateOnStart();
+
+        builder.Services.AddSingleton<IValidateOptions<BlobStorageAIOptions>, BlobStorageAIOptionsValidator>();
 
         // Single instance serves both IAIBlobClassifier and IBlobValidator.
         builder.Services.AddSingleton<AIBlobClassifierService>();

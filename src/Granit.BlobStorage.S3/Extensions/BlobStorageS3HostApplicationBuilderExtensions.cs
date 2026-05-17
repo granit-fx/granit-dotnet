@@ -5,7 +5,10 @@ using Granit.BlobStorage.S3.HealthChecks;
 using Granit.BlobStorage.S3.Internal;
 using Granit.BlobStorage.S3.Options;
 using Granit.Diagnostics;
+using Granit.Diagnostics.Caching;
+using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -44,12 +47,12 @@ public static class BlobStorageS3HostApplicationBuilderExtensions
 
         // S3BlobClient implements IBlobStoreProvider + IPresignedUrlProvider.
         // Registered as Singleton: AmazonS3Client is thread-safe and intended for reuse.
-        builder.Services.AddSingleton<S3BlobClient>();
-        builder.Services.AddSingleton<IBlobStoreProvider>(sp => sp.GetRequiredService<S3BlobClient>());
-        builder.Services.AddSingleton<IPresignedUrlProvider>(sp => sp.GetRequiredService<S3BlobClient>());
+        builder.Services.TryAddSingleton<S3BlobClient>();
+        builder.Services.TryAddSingleton<IBlobStoreProvider>(sp => sp.GetRequiredService<S3BlobClient>());
+        builder.Services.TryAddSingleton<IPresignedUrlProvider>(sp => sp.GetRequiredService<S3BlobClient>());
 
-        builder.Services.AddScoped<IBlobKeyStrategy, PrefixBlobKeyStrategy>();
-        builder.Services.AddScoped<IBlobStorage, DefaultBlobStorage>();
+        builder.Services.TryAddScoped<IBlobKeyStrategy, PrefixBlobKeyStrategy>();
+        builder.Services.TryAddScoped<IBlobStorage, DefaultBlobStorage>();
 
         return builder;
     }
@@ -72,7 +75,10 @@ public static class BlobStorageS3HostApplicationBuilderExtensions
 
         return builder.Add(new HealthCheckRegistration(
             name,
-            sp => sp.GetRequiredService<S3HealthCheck>(),
+            sp => new CachedHealthCheck(
+                sp.GetRequiredService<S3HealthCheck>(),
+                TimeSpan.FromSeconds(30),
+                sp.GetRequiredService<IClock>()),
             failureStatus,
             ["readiness", "startup"],
             timeout ?? TimeSpan.FromSeconds(10)));

@@ -1,4 +1,4 @@
-using Granit.BlobStorage.Database.Configurations;
+using Granit.BlobStorage.Database.EntityTypeConfiguration;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.BlobStorage.Database.Extensions;

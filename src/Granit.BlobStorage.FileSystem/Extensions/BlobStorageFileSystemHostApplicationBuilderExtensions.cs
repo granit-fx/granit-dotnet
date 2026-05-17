@@ -6,6 +6,7 @@ using Granit.BlobStorage.Internal;
 using Granit.BlobStorage.Options;
 using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -45,9 +46,9 @@ public static class BlobStorageFileSystemHostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<IValidateOptions<FileSystemBlobOptions>, FileSystemBlobOptionsValidator>();
 
-        builder.Services.AddSingleton<IBlobStoreProvider, FileSystemBlobClient>();
-        builder.Services.AddScoped<IBlobKeyStrategy, FileSystemBlobKeyStrategy>();
-        builder.Services.AddScoped<IBlobStorage, DefaultBlobStorage>();
+        builder.Services.TryAddSingleton<IBlobStoreProvider, FileSystemBlobClient>();
+        builder.Services.TryAddScoped<IBlobKeyStrategy, FileSystemBlobKeyStrategy>();
+        builder.Services.TryAddScoped<IBlobStorage, DefaultBlobStorage>();
 
         return builder;
     }

@@ -14,16 +14,30 @@ namespace Granit.BlobStorage.EntityFrameworkCore.Internal;
 internal sealed class EfBlobQueryableSource(
     IDbContextFactory<BlobStorageDbContext> contextFactory,
     ICurrentTenant currentTenant)
-    : IQueryableSource<BlobDescriptor>
+    : IQueryableSource<BlobDescriptor>, IAsyncDisposable, IDisposable
 {
-    private readonly BlobStorageDbContext _context = contextFactory.CreateDbContext();
     private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
+    private BlobStorageDbContext? _context;
 
     public IQueryable<BlobDescriptor> GetQueryable()
     {
+        _context ??= contextFactory.CreateDbContext();
         IQueryable<BlobDescriptor> query = _context.Blobs.AsNoTracking();
         return _bypassTenantFilter
             ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             : query;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        BlobStorageDbContext? context = _context;
+        _context = null;
+        return context?.DisposeAsync() ?? ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _context?.Dispose();
+        _context = null;
     }
 }

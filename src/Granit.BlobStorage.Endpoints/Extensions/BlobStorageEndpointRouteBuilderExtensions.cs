@@ -7,6 +7,8 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.BlobStorage.Endpoints.Extensions;
 
@@ -37,7 +39,9 @@ public static class BlobStorageEndpointRouteBuilderExtensions
         this IEndpointRouteBuilder endpoints,
         Action<BlobStorageEndpointsOptions>? configure = null)
     {
-        BlobStorageEndpointsOptions options = new();
+        BlobStorageEndpointsOptions options = endpoints.ServiceProvider
+            .GetService<IOptions<BlobStorageEndpointsOptions>>()?.Value
+            ?? new BlobStorageEndpointsOptions();
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints

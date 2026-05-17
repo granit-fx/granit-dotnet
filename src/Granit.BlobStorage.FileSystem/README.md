@@ -26,7 +26,7 @@ builder.AddGranitBlobStorageFileSystem();
 builder.AddGranitBlobStorageProxy();       // required for pre-signed URLs
 
 var app = builder.Build();
-app.MapGranitBlobProxy();
+app.MapGranitBlobStorageProxy();
 ```
 
 ## Configuration

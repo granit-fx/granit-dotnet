@@ -8,6 +8,7 @@ using Granit.Diagnostics;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -49,11 +50,11 @@ public static class BlobStorageDatabaseHostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<IValidateOptions<DatabaseBlobOptions>, DatabaseBlobOptionsValidator>();
 
-        builder.Services.AddGranitDbContext<BlobStorageDatabaseDbContext>(configure);
+        builder.Services.AddGranitIsolatedDbContext<BlobStorageDatabaseDbContext>(configure);
 
-        builder.Services.AddScoped<IBlobStoreProvider, DatabaseBlobClient>();
-        builder.Services.AddScoped<IBlobKeyStrategy, DatabaseBlobKeyStrategy>();
-        builder.Services.AddScoped<IBlobStorage, DefaultBlobStorage>();
+        builder.Services.TryAddScoped<IBlobStoreProvider, DatabaseBlobClient>();
+        builder.Services.TryAddScoped<IBlobKeyStrategy, DatabaseBlobKeyStrategy>();
+        builder.Services.TryAddScoped<IBlobStorage, DefaultBlobStorage>();
 
         return builder;
     }

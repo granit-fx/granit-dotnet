@@ -72,8 +72,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.7",
-        "contentHash": "Uz3Yznhx3OOprM7I9Xhqd2a8qd0EAppFGw/4g9Iw/Vu4MlDCpYKEyD5Lkffcdv9VeP9HOJQiOVkaV/YOH3+yrA=="
+        "resolved": "4.0.7.1",
+        "contentHash": "XA0GHLwEMkoVu3u8neKnLEDD9ViXpn26ie9UhKXZXYRzCRfSFrLWpBOhupWlf+cJEFBYCC5mx2NsN8h59Y+M2Q=="
       },
       "AWSSDK.SQS": {
         "type": "Transitive",
@@ -473,6 +473,7 @@
         "dependencies": {
           "AWSSDK.S3": "[4.*, )",
           "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.Diagnostics": "[0.1.0-dev, )",
           "Granit.Observability": "[0.1.0-dev, )",
           "Microsoft.Extensions.Diagnostics.HealthChecks": "[10.*, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
@@ -491,6 +492,12 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.diagnostics": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )"
         }
       },
       "granit.guids": {
@@ -534,10 +541,10 @@
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.23.2",
-        "contentHash": "Zx9sQ8ksze0M34Wv+4uuHBOfYBHa3ACHL3pganelIjn9FWI8qtVrvdxYZmVzlvGm5sbeVLAEwdWkbH8BofEB0A==",
+        "resolved": "4.0.23.3",
+        "contentHash": "ASgWIoX8j6gG4plWXc22vGx0vVwDuqtjBwl3I2ICa2g6kqneSk47eYlGtRg61M/I8gvvtP8uDpIN73FsmlwqHg==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.1, 5.0.0)"
         }
       },
       "AWSSDK.SimpleNotificationService": {

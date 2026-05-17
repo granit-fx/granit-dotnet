@@ -2,7 +2,7 @@ using Granit.BlobStorage.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Granit.BlobStorage.Database.Configurations;
+namespace Granit.BlobStorage.Database.EntityTypeConfiguration;
 
 /// <summary>
 /// EF Core configuration for <see cref="DatabaseBlobContent"/>.
