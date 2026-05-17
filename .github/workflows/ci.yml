@@ -428,6 +428,45 @@ jobs:
           --api-key "$NUGET_AUTH_TOKEN"
           --skip-duplicate
 
+  # GitLab Package Registry (granit-business project, id 11) — fallback feed
+  # for downstream repos when GitHub Packages is rate-limited or unavailable.
+  # Uses a deploy token (write_package_registry scope) to avoid PAT churn.
+  publish-gitlab:
+    needs: [pack, sbom]
+    runs-on: ubuntu-latest
+    if: |
+      always()
+      && needs.pack.result == 'success'
+      && (needs.sbom.result == 'success' || needs.sbom.result == 'skipped')
+      && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Download packages
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: nupkgs
+          path: nupkgs
+
+      - name: Push to GitLab Package Registry
+        # Credentials provided via NuGetPackageSourceCredentials_* env var rather
+        # than `dotnet nuget add source --store-password-in-clear-text`, which
+        # would write the deploy token to nuget.config on disk.
+        env:
+          NuGetPackageSourceCredentials_gitlab_granit_business: Username=${{ secrets.GITLAB_NUGET_USER }};Password=${{ secrets.GITLAB_NUGET_TOKEN }}
+          GITLAB_NUGET_TOKEN: ${{ secrets.GITLAB_NUGET_TOKEN }}
+        run: |
+          dotnet nuget add source \
+            "https://gitlab.digitaldynamics.be/api/v4/projects/11/packages/nuget/index.json" \
+            --name gitlab_granit_business
+          dotnet nuget push "nupkgs/*.nupkg" \
+            --source gitlab_granit_business \
+            --api-key "$GITLAB_NUGET_TOKEN" \
+            --skip-duplicate
+
   # nuget.org — release packages on version tags
   publish-nuget:
     needs: [pack, sbom]
