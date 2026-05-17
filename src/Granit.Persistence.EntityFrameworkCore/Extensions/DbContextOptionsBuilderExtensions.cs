@@ -58,6 +58,16 @@ public static class DbContextOptionsBuilderExtensions
         // since this is by design (modular architecture with isolated persistence).
         options.ConfigureWarnings(w => w.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning));
 
+        // Bridge the EF Core internal SP to the application SP so interceptors that
+        // resolve scoped services at SaveChanges time (e.g. AuditingChangeTrackingInterceptor
+        // → ChangeTrackingCaptureService) can reach them via
+        // ((IInfrastructure<IServiceProvider>)context).Instance.GetService<T>().
+        // EF Core's own AddDbContextFactory wires this automatically; the Granit
+        // custom factories (SharedDatabase / TenantPerSchema / TenantPerDatabase)
+        // build options manually, so without this call the lookup returns null and
+        // audit capture is silently skipped on every isolated DbContext.
+        options.UseApplicationServiceProvider(serviceProvider);
+
         // Order matters: Audit → Versioning → ConcurrencyStamp → DomainEvents → SoftDelete.
         // SoftDelete must be last because it converts Deleted → Modified,
         // which would prevent other interceptors from seeing the original state.
