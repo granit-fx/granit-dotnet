@@ -161,7 +161,10 @@ public sealed partial class SourceCodeAntiPatternTests
     /// <list type="bullet">
     /// <item><c>internal sealed class</c> (not <c>public</c>)</item>
     /// <item>Primary constructor with <c>DbContextOptions</c>, <c>ICurrentTenant?</c>, and <c>IDataFilter?</c></item>
-    /// <item>Call <c>ApplyGranitConventions</c> in <c>OnModelCreating</c></item>
+    /// <item>Either inherits from <c>GranitDbContext</c> (preferred — gives the
+    /// parameterised IMultiTenant filter) OR calls <c>ApplyGranitConventions</c>
+    /// in <c>OnModelCreating</c> (legacy — only acceptable for DbContexts with
+    /// no IMultiTenant entities).</item>
     /// </list>
     /// </summary>
     [Fact]
@@ -186,6 +189,12 @@ public sealed partial class SourceCodeAntiPatternTests
                 || fileName.Contains("Factory", StringComparison.Ordinal)
                 || fileName.Contains("Options", StringComparison.Ordinal)
                 || fileName.Contains("Extensions", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            // GranitDbContext itself is the public base class — exempt from canonical-pattern rules.
+            if (string.Equals(fileName, "GranitDbContext.cs", StringComparison.Ordinal))
             {
                 continue;
             }
@@ -215,16 +224,21 @@ public sealed partial class SourceCodeAntiPatternTests
                 violations.Add($"{relPath} (use primary constructor instead of private fields for ICurrentTenant/IDataFilter)");
             }
 
-            // Must call ApplyGranitConventions
-            if (!content.Contains("ApplyGranitConventions", StringComparison.Ordinal))
+            // Must wire Granit conventions — either by inheriting from GranitDbContext
+            // (base class registers conventions + parameterised IMultiTenant filter) or
+            // by calling ApplyGranitConventions directly (legacy).
+            bool inheritsGranitDbContext = content.Contains(": GranitDbContext", StringComparison.Ordinal);
+            bool callsApplyGranitConventions = content.Contains("ApplyGranitConventions", StringComparison.Ordinal);
+            if (!inheritsGranitDbContext && !callsApplyGranitConventions)
             {
-                violations.Add($"{relPath} (must call modelBuilder.ApplyGranitConventions in OnModelCreating)");
+                violations.Add($"{relPath} (must inherit from GranitDbContext or call modelBuilder.ApplyGranitConventions in OnModelCreating)");
             }
         }
 
         violations.ShouldBeEmpty(
             "Isolated DbContext classes must follow the canonical pattern: " +
-            "internal sealed class, primary constructor with ICurrentTenant?/IDataFilter?, ApplyGranitConventions. " +
+            "internal sealed class, primary constructor with ICurrentTenant/IDataFilter?, " +
+            "inheriting from GranitDbContext (preferred) or calling ApplyGranitConventions. " +
             $"Violators: {string.Join("; ", violations)}");
     }
 

@@ -531,7 +531,8 @@ public sealed partial class FileOrganizationTests
     /// <summary>
     /// In <c>*.EntityFrameworkCore</c> packages, <c>DbContext</c> classes must reside
     /// in an <c>Internal/</c> subfolder (they are implementation details).
-    /// <c>I*DbContext</c> interfaces (host contracts) are exempt.
+    /// <c>I*DbContext</c> interfaces (host contracts) and <c>GranitDbContext</c>
+    /// (public base class for multi-tenant aware contexts) are exempt.
     /// </summary>
     [Fact]
     public void DbContext_classes_should_reside_in_Internal_folder()
@@ -542,9 +543,13 @@ public sealed partial class FileOrganizationTests
         {
             string fileName = Path.GetFileName(csFile);
 
-            // Only check *DbContext.cs files (not I*DbContext.cs interfaces)
+            // Only check *DbContext.cs files (not I*DbContext.cs interfaces).
+            // GranitDbContext is the public abstract base class — by contract it
+            // ships from Granit.Persistence.EntityFrameworkCore's public surface,
+            // not from an Internal/ folder.
             if (!fileName.EndsWith("DbContext.cs", StringComparison.Ordinal)
-                || fileName.StartsWith('I'))
+                || fileName.StartsWith('I')
+                || string.Equals(fileName, "GranitDbContext.cs", StringComparison.Ordinal))
             {
                 continue;
             }

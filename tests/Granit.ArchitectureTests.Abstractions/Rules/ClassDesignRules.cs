@@ -14,15 +14,18 @@ namespace Granit.ArchitectureTests.Abstractions.Rules;
 public static class ClassDesignRules
 {
     /// <summary>
-    /// All DbContext subclasses must be sealed (isolated DbContext pattern).
+    /// Concrete DbContext subclasses must be sealed (isolated DbContext pattern).
+    /// Abstract base classes (e.g. <c>GranitDbContext</c>) are exempt — they exist
+    /// precisely to be inherited.
     /// </summary>
     public static void DbContextClassesShouldBeSealed(ArchUnitNET.Domain.Architecture architecture)
     {
         IArchRule rule = Classes()
             .That().AreAssignableTo(typeof(DbContext))
             .And().AreNot(typeof(DbContext))
+            .And().AreNotAbstract()
             .Should().BeSealed()
-            .Because("isolated DbContext pattern requires sealed DbContexts");
+            .Because("isolated DbContext pattern requires sealed concrete DbContexts (abstract base classes are exempt)");
 
         rule.Check(architecture);
     }
