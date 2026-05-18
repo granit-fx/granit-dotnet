@@ -195,7 +195,7 @@ public static class PersistenceTenantExtensions
         services.TryAddSingleton<ITenantIsolationStrategyProvider,
             ConfigurationTenantIsolationStrategyProvider>();
 
-        HashSet<TenantIsolationStrategy> registeredStrategies = new();
+        HashSet<TenantIsolationStrategy> registeredStrategies = [];
 
         // SharedDatabase — always registered; the default fallback strategy.
         SharedDatabaseDbContextOptions<TContext> sharedOpts = new()

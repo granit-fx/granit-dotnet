@@ -25,7 +25,5 @@ public sealed class GranitDataLookupEndpointsModule : GranitModule
 {
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
-    {
-        context.Services.AddLocalizationResource<DataLookupEndpointsLocalizationResource>();
-    }
+        => context.Services.AddLocalizationResource<DataLookupEndpointsLocalizationResource>();
 }

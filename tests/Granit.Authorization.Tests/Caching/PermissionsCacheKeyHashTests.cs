@@ -20,9 +20,7 @@ public sealed class PermissionsCacheKeyHashTests
 
     [Fact]
     public void Compute_NullUser_Throws()
-    {
-        Should.Throw<ArgumentNullException>(() => PermissionsCacheKeyHash.Compute(null!));
-    }
+        => Should.Throw<ArgumentNullException>(() => PermissionsCacheKeyHash.Compute(null!));
 
     [Fact]
     public void Compute_ShapeIs16LowercaseHexChars()

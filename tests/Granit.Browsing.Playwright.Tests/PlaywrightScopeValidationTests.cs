@@ -28,7 +28,7 @@ public sealed class PlaywrightScopeValidationTests
         // and previously captured the scoped ILocalEventBus directly — failing
         // ValidateScopes (default in Development). The fix routes events through a
         // singleton-safe wrapper backed by IServiceScopeFactory.
-        ServiceCollection services = new();
+        ServiceCollection services = [];
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging();
         services.AddMetrics();

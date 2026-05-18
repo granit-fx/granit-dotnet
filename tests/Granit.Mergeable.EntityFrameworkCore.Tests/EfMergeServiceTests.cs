@@ -344,9 +344,7 @@ public sealed class EfMergeServiceTests
         public new Guid Id { get; init; } = id;
 
         public IReadOnlyList<FieldConflict> GetConflicts(FakeAggregate loser)
-        {
-            return [new FieldConflict("Name", Name, loser.Name, WinnerSide.Survivor)];
-        }
+            => [new FieldConflict("Name", Name, loser.Name, WinnerSide.Survivor)];
 
         public void MergeFrom(FakeAggregate loser, MergeFieldChoices choices)
         {
@@ -401,9 +399,7 @@ public sealed class EfMergeServiceTests
             MergeRequest request,
             IReadOnlyDictionary<string, int> rewriteCounts,
             DateTimeOffset mergedAt)
-        {
-            RaiseMergedEventsCalls++;
-        }
+            => RaiseMergedEventsCalls++;
     }
 
     private sealed class TenantedAggregate(Guid id, string name, Guid? tenantId) : AggregateRoot, IMergeable<TenantedAggregate>, IMultiTenant
