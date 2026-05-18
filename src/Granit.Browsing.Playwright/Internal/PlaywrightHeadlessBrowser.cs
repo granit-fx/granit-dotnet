@@ -183,59 +183,12 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
         {
             await EnsureBrowserStartedAsync(cancellationToken).ConfigureAwait(false);
 
-            var contextOptions = new BrowserNewContextOptions();
-            if (options?.Viewport is { } vp)
-            {
-                contextOptions.ViewportSize = new Microsoft.Playwright.ViewportSize { Width = vp.Width, Height = vp.Height };
-            }
-            contextOptions.DeviceScaleFactor = (float?)options?.DeviceScaleFactor;
-            contextOptions.UserAgent = options?.UserAgent;
-            contextOptions.Locale = options?.Locale;
-            contextOptions.TimezoneId = options?.TimezoneId;
-            // Sandbox profile takes precedence over per-call BrowserPageOptions for JS enablement.
-            bool jsEnabled = options?.JavaScriptEnabled ?? true;
-            if (_sandbox.DisableJavaScript)
-            {
-                jsEnabled = false;
-            }
-            contextOptions.JavaScriptEnabled = jsEnabled;
-            contextOptions.ColorScheme = options?.ColorScheme switch
-            {
-                "light" => ColorScheme.Light,
-                "dark" => ColorScheme.Dark,
-                "no-preference" => ColorScheme.NoPreference,
-                _ => null,
-            };
-            if (options?.ExtraHeaders is { Count: > 0 } headers)
-            {
-                Dictionary<string, string> dict = new(headers);
-                contextOptions.ExtraHTTPHeaders = dict;
-            }
-
+            BrowserNewContextOptions contextOptions = BuildContextOptions(options, _sandbox);
             IBrowserContext context = await _browser!.NewContextAsync(contextOptions).ConfigureAwait(false);
 
             if (options?.Cookies is { Count: > 0 } cookies)
             {
-                List<Cookie> mapped = new(cookies.Count);
-                foreach (CookieParam c in cookies)
-                {
-                    Cookie cookie = new() { Name = c.Name, Value = c.Value, Domain = c.Domain, Path = c.Path, Url = c.Url };
-                    if (c.Expires is { } exp)
-                    {
-                        cookie.Expires = exp;
-                    }
-                    cookie.HttpOnly = c.HttpOnly;
-                    cookie.Secure = c.Secure;
-                    cookie.SameSite = c.SameSite switch
-                    {
-                        "Strict" => SameSiteAttribute.Strict,
-                        "Lax" => SameSiteAttribute.Lax,
-                        "None" => SameSiteAttribute.None,
-                        _ => null,
-                    };
-                    mapped.Add(cookie);
-                }
-                await context.AddCookiesAsync(mapped).ConfigureAwait(false);
+                await context.AddCookiesAsync(MapCookies(cookies)).ConfigureAwait(false);
             }
 
             IPage playwrightPage = await context.NewPageAsync().ConfigureAwait(false);
@@ -298,6 +251,78 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
             _pageSemaphore.Release();
             throw;
         }
+    }
+
+    /// <summary>
+    /// Maps <see cref="BrowserPageOptions"/> + sandbox profile to Playwright's
+    /// <see cref="BrowserNewContextOptions"/>. Pure mapping — extracted from the
+    /// acquire hot path so its cognitive complexity stays focused on lifecycle.
+    /// </summary>
+    private static BrowserNewContextOptions BuildContextOptions(BrowserPageOptions? options, IBrowserSandboxProfile sandbox)
+    {
+        var contextOptions = new BrowserNewContextOptions
+        {
+            DeviceScaleFactor = (float?)options?.DeviceScaleFactor,
+            UserAgent = options?.UserAgent,
+            Locale = options?.Locale,
+            TimezoneId = options?.TimezoneId,
+            // Sandbox profile takes precedence over per-call BrowserPageOptions for JS enablement.
+            JavaScriptEnabled = !sandbox.DisableJavaScript && (options?.JavaScriptEnabled ?? true),
+            ColorScheme = options?.ColorScheme switch
+            {
+                "light" => ColorScheme.Light,
+                "dark" => ColorScheme.Dark,
+                "no-preference" => ColorScheme.NoPreference,
+                _ => null,
+            },
+        };
+
+        if (options?.Viewport is { } vp)
+        {
+            contextOptions.ViewportSize = new Microsoft.Playwright.ViewportSize { Width = vp.Width, Height = vp.Height };
+        }
+
+        if (options?.ExtraHeaders is { Count: > 0 } headers)
+        {
+            contextOptions.ExtraHTTPHeaders = new Dictionary<string, string>(headers);
+        }
+
+        return contextOptions;
+    }
+
+    /// <summary>
+    /// Maps the Granit <see cref="CookieParam"/> list to Playwright's <see cref="Cookie"/>
+    /// list. Pure mapping — extracted from the acquire hot path.
+    /// </summary>
+    private static List<Cookie> MapCookies(IReadOnlyList<CookieParam> cookies)
+    {
+        List<Cookie> mapped = new(cookies.Count);
+        foreach (CookieParam c in cookies)
+        {
+            Cookie cookie = new()
+            {
+                Name = c.Name,
+                Value = c.Value,
+                Domain = c.Domain,
+                Path = c.Path,
+                Url = c.Url,
+                HttpOnly = c.HttpOnly,
+                Secure = c.Secure,
+                SameSite = c.SameSite switch
+                {
+                    "Strict" => SameSiteAttribute.Strict,
+                    "Lax" => SameSiteAttribute.Lax,
+                    "None" => SameSiteAttribute.None,
+                    _ => null,
+                },
+            };
+            if (c.Expires is { } exp)
+            {
+                cookie.Expires = exp;
+            }
+            mapped.Add(cookie);
+        }
+        return mapped;
     }
 
     private static bool RequiresEagerInterception(IBrowserSandboxProfile sandbox) =>

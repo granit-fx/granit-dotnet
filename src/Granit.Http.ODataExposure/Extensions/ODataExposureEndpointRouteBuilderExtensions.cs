@@ -240,61 +240,12 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
         foreach (ODataEntitySetDescriptor descriptor in descriptors)
         {
-            // Tenant-feed (default) and host-feed share the permission +
-            // expand intent gates. Host-feed adds two extra checks below.
-            if (descriptor.RequiredPermission is null && !descriptor.AnonymousAccessAcknowledged)
-            {
-                errors.Add(
-                    $"EntitySet '{descriptor.EntitySetName}' must call either RequirePermission(string) or AllowAnonymousAccess() — implicit anonymous OData access is rejected by the strict-config validator (C6 #1395). Convention: {RequiredPermissionConvention(descriptor)}.");
-            }
+            ValidateSharedGates(descriptor, permissionDefinitions, errors);
 
-            if (!descriptor.ExpandConfigurationAcknowledged)
+            if (ResolveExportFields(descriptor, entityDefinitions, exportDefinitions, errors) is { } fields)
             {
-                errors.Add(
-                    $"EntitySet '{descriptor.EntitySetName}' must call either ExpandWhitelist(...) or DisableExpand() — implicit \"$expand disabled\" is rejected by the strict-config validator (C6 #1395). Use DisableExpand() to declare the intent, or ExpandWhitelist(\"NavProp1\", ...) to allow specific navigations.");
+                whitelistByEntity[descriptor.EntityType] = fields;
             }
-
-            if (descriptor.FeedKind == ODataFeedKind.Host)
-            {
-                ValidateHostFeedGates(descriptor, permissionDefinitions, errors);
-            }
-
-            // ADR-050 gate #1: every EntitySet's entity MUST have a registered EntityDefinition.
-            IEntityDefinitionDescriptor? entityDefinition = entityDefinitions
-                .FirstOrDefault(e => e.EntityType == descriptor.EntityType);
-            if (entityDefinition is null)
-            {
-                errors.Add(
-                    $"EntitySet '{descriptor.EntitySetName}' targets entity '{descriptor.EntityType.Name}' which has no registered EntityDefinition. Per ADR-050, every OData EntitySet requires an EntityDefinition gate — register one via services.AddEntityDefinition<{descriptor.EntityType.Name}, {descriptor.EntityType.Name}EntityDefinition>() before mounting this set.");
-                continue;
-            }
-
-            // ADR-050 gate #2: the EntityDefinition MUST reference an ExportDefinition via b.Export<T>().
-            if (entityDefinition.Descriptor.ExportDefinitionType is null)
-            {
-                errors.Add(
-                    $"EntitySet '{descriptor.EntitySetName}' uses EntityDefinition '{entityDefinition.Name}' which does not declare a b.Export<T>() reference. Per ADR-050, the OData EDM whitelist is derived from the referenced ExportDefinition — add b.Export<{descriptor.EntityType.Name}ExportDefinition>() to the EntityDefinition's Configure method.");
-                continue;
-            }
-
-            // ADR-050 gate #3: the referenced Export must be DI-registered as IExportDefinitionDescriptor.
-            IExportDefinitionDescriptor? export = exportDefinitions
-                .FirstOrDefault(e => e.EntityType == descriptor.EntityType);
-            if (export is null)
-            {
-                errors.Add(
-                    $"EntitySet '{descriptor.EntitySetName}' references Export '{entityDefinition.Descriptor.ExportDefinitionType.Name}' but no IExportDefinitionDescriptor is registered for entity type '{descriptor.EntityType.Name}'. Did you forget services.AddExportDefinition<{descriptor.EntityType.Name}, {entityDefinition.Descriptor.ExportDefinitionType.Name}>()?");
-                continue;
-            }
-
-            // Resolved field set: scalars only (flat paths, IsNavigation == false).
-            // Flat paths (no dot) keep v1 simple — nested navigation paths
-            // ("Customer.Name") will be lifted to OData NavigationProperty in
-            // a follow-up PR derived from EntityDefinition.Relations.
-            whitelistByEntity[descriptor.EntityType] =
-                [.. export.GetFields()
-                    .Where(f => !f.IsNavigation && !f.PropertyPath.Contains('.', StringComparison.Ordinal))
-                    .Select(f => f.PropertyPath)];
         }
 
         if (errors.Count > 0)
@@ -305,6 +256,79 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         }
 
         return whitelistByEntity;
+    }
+
+    /// <summary>
+    /// Tenant- and host-feed shared gates: permission/anonymous intent, $expand intent,
+    /// and host-feed-specific gates when applicable. Errors are appended in place.
+    /// </summary>
+    private static void ValidateSharedGates(
+        ODataEntitySetDescriptor descriptor,
+        IPermissionDefinitionManager? permissionDefinitions,
+        List<string> errors)
+    {
+        if (descriptor.RequiredPermission is null && !descriptor.AnonymousAccessAcknowledged)
+        {
+            errors.Add(
+                $"EntitySet '{descriptor.EntitySetName}' must call either RequirePermission(string) or AllowAnonymousAccess() — implicit anonymous OData access is rejected by the strict-config validator (C6 #1395). Convention: {RequiredPermissionConvention(descriptor)}.");
+        }
+
+        if (!descriptor.ExpandConfigurationAcknowledged)
+        {
+            errors.Add(
+                $"EntitySet '{descriptor.EntitySetName}' must call either ExpandWhitelist(...) or DisableExpand() — implicit \"$expand disabled\" is rejected by the strict-config validator (C6 #1395). Use DisableExpand() to declare the intent, or ExpandWhitelist(\"NavProp1\", ...) to allow specific navigations.");
+        }
+
+        if (descriptor.FeedKind == ODataFeedKind.Host)
+        {
+            ValidateHostFeedGates(descriptor, permissionDefinitions, errors);
+        }
+    }
+
+    /// <summary>
+    /// ADR-050 gates #1, #2, #3: every EntitySet's entity must have a registered
+    /// EntityDefinition, the EntityDefinition must reference an ExportDefinition via
+    /// <c>b.Export&lt;T&gt;()</c>, and that Export must be DI-registered as
+    /// <see cref="IExportDefinitionDescriptor"/>. Returns the resolved scalar field list,
+    /// or <see langword="null"/> when any gate failed (error appended, descriptor skipped).
+    /// </summary>
+    private static IReadOnlyList<string>? ResolveExportFields(
+        ODataEntitySetDescriptor descriptor,
+        IReadOnlyList<IEntityDefinitionDescriptor> entityDefinitions,
+        IReadOnlyList<IExportDefinitionDescriptor> exportDefinitions,
+        List<string> errors)
+    {
+        IEntityDefinitionDescriptor? entityDefinition = entityDefinitions
+            .FirstOrDefault(e => e.EntityType == descriptor.EntityType);
+        if (entityDefinition is null)
+        {
+            errors.Add(
+                $"EntitySet '{descriptor.EntitySetName}' targets entity '{descriptor.EntityType.Name}' which has no registered EntityDefinition. Per ADR-050, every OData EntitySet requires an EntityDefinition gate — register one via services.AddEntityDefinition<{descriptor.EntityType.Name}, {descriptor.EntityType.Name}EntityDefinition>() before mounting this set.");
+            return null;
+        }
+
+        if (entityDefinition.Descriptor.ExportDefinitionType is null)
+        {
+            errors.Add(
+                $"EntitySet '{descriptor.EntitySetName}' uses EntityDefinition '{entityDefinition.Name}' which does not declare a b.Export<T>() reference. Per ADR-050, the OData EDM whitelist is derived from the referenced ExportDefinition — add b.Export<{descriptor.EntityType.Name}ExportDefinition>() to the EntityDefinition's Configure method.");
+            return null;
+        }
+
+        IExportDefinitionDescriptor? export = exportDefinitions
+            .FirstOrDefault(e => e.EntityType == descriptor.EntityType);
+        if (export is null)
+        {
+            errors.Add(
+                $"EntitySet '{descriptor.EntitySetName}' references Export '{entityDefinition.Descriptor.ExportDefinitionType.Name}' but no IExportDefinitionDescriptor is registered for entity type '{descriptor.EntityType.Name}'. Did you forget services.AddExportDefinition<{descriptor.EntityType.Name}, {entityDefinition.Descriptor.ExportDefinitionType.Name}>()?");
+            return null;
+        }
+
+        // Scalars only (flat paths, IsNavigation == false). Flat paths (no dot) keep v1
+        // simple — nested navigation paths ("Customer.Name") will be lifted to OData
+        // NavigationProperty in a follow-up PR derived from EntityDefinition.Relations.
+        return [.. export.GetFields()
+            .Where(f => !f.IsNavigation && !f.PropertyPath.Contains('.', StringComparison.Ordinal))
+            .Select(f => f.PropertyPath)];
     }
 
     /// <summary>
@@ -372,61 +396,17 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                 [FromServices] IPermissionChecker permissionChecker,
                 [FromServices] ODataExposureMetrics metrics,
                 [FromServices] ICurrentTenant? currentTenant,
-                CancellationToken cancellationToken) =>
-            {
-                if (descriptor.RequiredPermission is { } perm
-                    && !await permissionChecker.IsGrantedAsync(perm, cancellationToken).ConfigureAwait(false))
-                {
-                    return TypedResults.Forbid();
-                }
-
-                // Host-feed: there is no ambient tenant. Coalesce to "global"
-                // upstream of the metric tag so the dimension is never null
-                // (no confusion with "tenant not yet resolved").
-                string? tenantTag = descriptor.FeedKind == ODataFeedKind.Host
-                    ? "global"
-                    : currentTenant is { IsAvailable: true, Id: { } tid } ? tid.ToString() : null;
-
-                string feedKindTag = descriptor.FeedKind == ODataFeedKind.Host ? "host" : "tenant";
-
-                if (RejectIfCountDisallowed(httpContext, descriptor) is { } countRejection)
-                {
-                    metrics.RecordRejectedQuery(descriptor.EntitySetName, "count_disabled", tenantTag, feedKindTag);
-                    return countRejection;
-                }
-
-                if (RejectIfExpandUnauthorised(httpContext, descriptor) is { } expandRejection)
-                {
-                    metrics.RecordRejectedQuery(descriptor.EntitySetName, "expand_not_whitelisted", tenantTag, feedKindTag);
-                    return expandRejection;
-                }
-
-                ApplyMaxTopAppliedHeader(httpContext, descriptor, metrics, tenantTag, feedKindTag);
-
-                IQueryable<TEntity> baseQueryable = source.GetQueryable();
-
-                // Host-feed: apply the host-supplied per-query bypass BEFORE
-                // the QueryEngine pipeline runs, so the QueryEngine sees an
-                // already-untenanted queryable. Tenant-feed: no bypass; the
-                // QueryEngine receives the source as-is.
-                if (crossTenantBypass is not null)
-                {
-                    baseQueryable = crossTenantBypass(baseQueryable);
-                }
-
-                IQueryable<TEntity> filtered = engine.BuildFilteredQuery(
-                    baseQueryable, new QueryRequest());
-
-                ODataQuerySettings querySettings = new() { PageSize = descriptor.PageSize };
-                IQueryable applied = options.ApplyTo(filtered, querySettings);
-
-                // Return the raw IQueryable so the WithODataResult filter wraps it
-                // in an ODataResult ({ "@odata.context": "...", "value": [...] }).
-                // TypedResults.Ok would short-circuit the filter — its IResult-check
-                // returns the inner Ok<IQueryable> unwrapped, which serializes as a
-                // bare JSON array and breaks every BI-tool consumer expecting v4.
-                return applied;
-            })
+                CancellationToken cancellationToken) => await HandleEntitySetRequestAsync(
+                    descriptor,
+                    crossTenantBypass,
+                    options,
+                    httpContext,
+                    source,
+                    engine,
+                    permissionChecker,
+                    metrics,
+                    currentTenant,
+                    cancellationToken).ConfigureAwait(false))
             .WithODataModel(edmModel)
             .WithODataResult()
             .WithODataOptions(opts => opts.SetMaxTop(descriptor.MaxTop));
@@ -448,6 +428,105 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         {
             route.RequireAuthorization();
         }
+    }
+
+    /// <summary>
+    /// Executes one OData EntitySet GET: permission gate, $count / $expand rejection
+    /// gates, MaxTop header emission, and finally the filtered queryable returned to
+    /// the <c>WithODataResult</c> filter. Extracted from the route lambda to keep both
+    /// the parameter list and the cognitive complexity tractable.
+    /// </summary>
+    private static async Task<object?> HandleEntitySetRequestAsync<TEntity>(
+        ODataEntitySetDescriptor descriptor,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? crossTenantBypass,
+        ODataQueryOptions<TEntity> options,
+        HttpContext httpContext,
+        IQueryableSource<TEntity> source,
+        IQueryEngine<TEntity> engine,
+        IPermissionChecker permissionChecker,
+        ODataExposureMetrics metrics,
+        ICurrentTenant? currentTenant,
+        CancellationToken cancellationToken)
+        where TEntity : class
+    {
+        if (descriptor.RequiredPermission is { } perm
+            && !await permissionChecker.IsGrantedAsync(perm, cancellationToken).ConfigureAwait(false))
+        {
+            return TypedResults.Forbid();
+        }
+
+        (string? tenantTag, string feedKindTag) = ResolveMetricsTags(descriptor, currentTenant);
+
+        if (TryRejectQueryShape(httpContext, descriptor, metrics, tenantTag, feedKindTag) is { } rejection)
+        {
+            return rejection;
+        }
+
+        ApplyMaxTopAppliedHeader(httpContext, descriptor, metrics, tenantTag, feedKindTag);
+
+        // Host-feed: apply the host-supplied per-query bypass BEFORE the QueryEngine
+        // pipeline runs, so the QueryEngine sees an already-untenanted queryable.
+        // Tenant-feed: no bypass; the QueryEngine receives the source as-is.
+        IQueryable<TEntity> baseQueryable = source.GetQueryable();
+        if (crossTenantBypass is not null)
+        {
+            baseQueryable = crossTenantBypass(baseQueryable);
+        }
+
+        IQueryable<TEntity> filtered = engine.BuildFilteredQuery(baseQueryable, new QueryRequest());
+
+        ODataQuerySettings querySettings = new() { PageSize = descriptor.PageSize };
+
+        // Return the raw IQueryable so the WithODataResult filter wraps it in an
+        // ODataResult ({ "@odata.context": "...", "value": [...] }). TypedResults.Ok
+        // would short-circuit the filter — its IResult-check returns the inner
+        // Ok<IQueryable> unwrapped, which serializes as a bare JSON array and breaks
+        // every BI-tool consumer expecting v4.
+        return options.ApplyTo(filtered, querySettings);
+    }
+
+    /// <summary>
+    /// Host-feed coalesces the tenant tag to <c>"global"</c> upstream so the metric
+    /// dimension is never null. Tenant-feed reads the ambient
+    /// <see cref="ICurrentTenant"/> (null when no tenant is resolved yet).
+    /// </summary>
+    private static (string? TenantTag, string FeedKindTag) ResolveMetricsTags(
+        ODataEntitySetDescriptor descriptor,
+        ICurrentTenant? currentTenant)
+    {
+        if (descriptor.FeedKind == ODataFeedKind.Host)
+        {
+            return ("global", "host");
+        }
+
+        string? tenantTag = currentTenant is { IsAvailable: true, Id: { } tid } ? tid.ToString() : null;
+        return (tenantTag, "tenant");
+    }
+
+    /// <summary>
+    /// Combines the $count and $expand gates into one rejection probe — keeps the
+    /// route handler flat and records the matching metric reason on rejection.
+    /// </summary>
+    private static ProblemHttpResult? TryRejectQueryShape(
+        HttpContext httpContext,
+        ODataEntitySetDescriptor descriptor,
+        ODataExposureMetrics metrics,
+        string? tenantTag,
+        string feedKindTag)
+    {
+        if (RejectIfCountDisallowed(httpContext, descriptor) is { } countRejection)
+        {
+            metrics.RecordRejectedQuery(descriptor.EntitySetName, "count_disabled", tenantTag, feedKindTag);
+            return countRejection;
+        }
+
+        if (RejectIfExpandUnauthorised(httpContext, descriptor) is { } expandRejection)
+        {
+            metrics.RecordRejectedQuery(descriptor.EntitySetName, "expand_not_whitelisted", tenantTag, feedKindTag);
+            return expandRejection;
+        }
+
+        return null;
     }
 
     /// <summary>
