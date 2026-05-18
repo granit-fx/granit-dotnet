@@ -39091,6 +39091,37 @@
       ]
     },
     {
+      "name": "GranitEndpointTestHost",
+      "fqn": "Granit.Testing.Endpoints.GranitEndpointTestHost",
+      "kind": "class",
+      "project": "Granit.Testing",
+      "file": "src/Granit.Testing/Endpoints/GranitEndpointTestHost.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "StartAsync",
+          "kind": "method",
+          "signature": "StartAsync(Action<IServiceCollection>? configureServices = null, Action<WebApplication>? configureEndpoints = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<GranitEndpointTestHost>"
+        },
+        {
+          "name": "CreateAuthenticatedClient",
+          "kind": "method",
+          "signature": "CreateAuthenticatedClient(params string[] roles)",
+          "returnType": "HttpClient"
+        }
+      ]
+    },
+    {
+      "name": "TestAuthHandler",
+      "fqn": "Granit.Testing.Endpoints.TestAuthHandler",
+      "kind": "class",
+      "project": "Granit.Testing",
+      "file": "src/Granit.Testing/Endpoints/TestAuthHandler.cs",
+      "line": 20,
+      "members": []
+    },
+    {
       "name": "DbContextOptionsBuilderTestExtensions",
       "fqn": "Granit.Testing.EntityFrameworkCore.Extensions.DbContextOptionsBuilderTestExtensions",
       "kind": "class",

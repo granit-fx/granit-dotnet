@@ -3,18 +3,25 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 
-namespace Granit.Diagnostics.Endpoints.Tests;
+namespace Granit.Testing.Endpoints;
 
 /// <summary>
-/// Fake authentication handler that resolves authentication from the
-/// <c>X-Test-Roles</c> header. When the header is present, the user is
-/// considered authenticated with a fixed <c>sub</c> claim.
+/// Authentication handler for endpoint tests. Resolves identity from the
+/// <c>X-Test-Roles</c> header. When the header is absent, returns
+/// <see cref="AuthenticateResult.NoResult"/> (the user is anonymous).
 /// </summary>
-internal sealed class TestAuthHandler(
+/// <remarks>
+/// Roles are comma-separated. Each value becomes a <see cref="ClaimTypes.Role"/>
+/// claim. A fixed <c>sub</c> and <c>name</c> claim are also added so policies
+/// requiring an authenticated user pass.
+/// </remarks>
+public sealed class TestAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
-    UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
+    UrlEncoder encoder)
+    : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
     public const string SchemeName = "Test";
     public const string RolesHeader = "X-Test-Roles";
@@ -22,7 +29,7 @@ internal sealed class TestAuthHandler(
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader))
+        if (!Request.Headers.TryGetValue(RolesHeader, out StringValues rolesHeader))
         {
             return Task.FromResult(AuthenticateResult.NoResult());
         }
