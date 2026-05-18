@@ -45076,6 +45076,15 @@
       "members": []
     },
     {
+      "name": "WorkspaceIncludeSpec",
+      "fqn": "Granit.Workspaces.WorkspaceIncludeSpec",
+      "kind": "record",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/WorkspaceSectionDescriptor.cs",
+      "line": 37,
+      "members": []
+    },
+    {
       "name": "WorkspaceItemBuilder",
       "fqn": "Granit.Workspaces.WorkspaceItemBuilder",
       "kind": "class",
@@ -45124,7 +45133,7 @@
       "kind": "record",
       "project": "Granit.Workspaces.Abstractions",
       "file": "src/Granit.Workspaces.Abstractions/WorkspaceSectionDescriptor.cs",
-      "line": 12,
+      "line": 20,
       "members": []
     }
   ]

@@ -10,6 +10,7 @@ public sealed class WorkspaceSectionBuilder
     private int _order;
     private bool _collapsedByDefault;
     private readonly List<Func<WorkspaceItemDescriptor>> _itemFactories = [];
+    private WorkspaceIncludeSpec? _dynamicInclude;
 
     internal WorkspaceSectionBuilder(string key)
     {
@@ -113,6 +114,29 @@ public sealed class WorkspaceSectionBuilder
         return this;
     }
 
+    /// <summary>
+    /// Dynamically absorbs every registered workspace whose name satisfies
+    /// <paramref name="namePredicate"/> as a <see cref="WorkspaceItemKind.SubWorkspace"/>
+    /// item (per ADR-057 §3). The composer resolves the predicate at boot
+    /// against the workspace registry and synthesises one item per matching
+    /// workspace, lifting the target workspace's icon / display key / order —
+    /// no duplication between the including section and the included shell.
+    /// A workspace dropped as an empty shell produces no item; dangling
+    /// sub-workspace references are therefore impossible by construction.
+    /// </summary>
+    public WorkspaceSectionBuilder IncludeWorkspacesMatching(Predicate<string> namePredicate)
+    {
+        ArgumentNullException.ThrowIfNull(namePredicate);
+        if (_dynamicInclude is not null)
+        {
+            throw new InvalidOperationException(
+                $"Section '{_key}' already declared a dynamic include — only one " +
+                "IncludeWorkspacesMatching call per section is supported (per ADR-057 §3).");
+        }
+        _dynamicInclude = new WorkspaceIncludeSpec(namePredicate);
+        return this;
+    }
+
     internal WorkspaceSectionDescriptor Build()
     {
         IReadOnlyList<WorkspaceItemDescriptor> items =
@@ -123,6 +147,7 @@ public sealed class WorkspaceSectionBuilder
             _displayKey,
             _order,
             _collapsedByDefault,
-            items);
+            items,
+            _dynamicInclude);
     }
 }
