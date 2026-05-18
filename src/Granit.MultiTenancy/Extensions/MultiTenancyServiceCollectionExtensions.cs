@@ -1,4 +1,5 @@
 using Granit.DataExchange.Extensions;
+using Granit.MultiTenancy.Authorization;
 using Granit.MultiTenancy.Diagnostics;
 using Granit.MultiTenancy.Domain;
 using Granit.MultiTenancy.Exports;
@@ -65,6 +66,12 @@ public static class MultiTenancyServiceCollectionExtensions
 
         services.TryAddScoped<TenantResolverPipeline>();
         services.TryAddSingleton<MultiTenancyMetrics>();
+
+        // Secure-by-default host-impersonation gate. Apps that want permission-based
+        // gating reference Granit.MultiTenancy.Authorization and call
+        // AddGranitHostImpersonationWithPermissions() — that replaces this default
+        // with a gate that delegates to IPermissionChecker.
+        services.TryAddScoped<IHostImpersonationGate, DenyAllHostImpersonationGate>();
 
         // Outbound URL resolution (scoped: depends on ICurrentTenant + ITenantReader)
         services.TryAddScoped<ITenantUrlResolver, TenantUrlResolver>();

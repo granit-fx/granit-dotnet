@@ -1202,6 +1202,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.MultiTenancy.Authorization",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Localization",
+        "Granit.MultiTenancy"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.MultiTenancy.Endpoints",
       "deps": [
         "Granit.Authorization",
@@ -26102,6 +26111,104 @@
       "members": []
     },
     {
+      "name": "MultiTenancyAuthorizationServiceCollectionExtensions",
+      "fqn": "Granit.MultiTenancy.Authorization.Extensions.MultiTenancyAuthorizationServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Authorization",
+      "file": "src/Granit.MultiTenancy.Authorization/Extensions/MultiTenancyAuthorizationServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitHostImpersonationWithPermissions",
+          "kind": "method",
+          "signature": "AddGranitHostImpersonationWithPermissions(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitMultiTenancyAuthorizationModule",
+      "fqn": "Granit.MultiTenancy.Authorization.GranitMultiTenancyAuthorizationModule",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Authorization",
+      "file": "src/Granit.MultiTenancy.Authorization/GranitMultiTenancyAuthorizationModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "Host",
+      "fqn": "Granit.MultiTenancy.Authorization.Host",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Authorization",
+      "file": "src/Granit.MultiTenancy.Authorization/MultiTenancyAuthorizationPermissions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "HostImpersonationDecision",
+      "fqn": "Granit.MultiTenancy.Authorization.HostImpersonationDecision",
+      "kind": "record",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Authorization/IHostImpersonationGate.cs",
+      "line": 46,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(true, null)",
+          "returnType": "HostImpersonationDecision Allow ="
+        }
+      ]
+    },
+    {
+      "name": "IHostImpersonationGate",
+      "fqn": "Granit.MultiTenancy.Authorization.IHostImpersonationGate",
+      "kind": "interface",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Authorization/IHostImpersonationGate.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "CanImpersonateAsync",
+          "kind": "method",
+          "signature": "CanImpersonateAsync(ClaimsPrincipal principal, Guid targetTenantId, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<HostImpersonationDecision>"
+        }
+      ]
+    },
+    {
+      "name": "MultiTenancyAuthorizationPermissions",
+      "fqn": "Granit.MultiTenancy.Authorization.MultiTenancyAuthorizationPermissions",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Authorization",
+      "file": "src/Granit.MultiTenancy.Authorization/MultiTenancyAuthorizationPermissions.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PermissionBasedHostImpersonationGate",
+      "fqn": "Granit.MultiTenancy.Authorization.PermissionBasedHostImpersonationGate",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Authorization",
+      "file": "src/Granit.MultiTenancy.Authorization/PermissionBasedHostImpersonationGate.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "CanImpersonateAsync",
+          "kind": "method",
+          "signature": "CanImpersonateAsync(ClaimsPrincipal principal, Guid targetTenantId, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<HostImpersonationDecision>"
+        }
+      ]
+    },
+    {
       "name": "CurrentTenant",
       "fqn": "Granit.MultiTenancy.CurrentTenant",
       "kind": "class",
@@ -26163,6 +26270,18 @@
           "name": "RecordContextSwitched",
           "kind": "method",
           "signature": "RecordContextSwitched(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordHostImpersonationAllowed",
+          "kind": "method",
+          "signature": "RecordHostImpersonationAllowed(string tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordHostImpersonationDenied",
+          "kind": "method",
+          "signature": "RecordHostImpersonationDenied(string tenantId, string denyReason)",
           "returnType": "void"
         }
       ]
@@ -26455,7 +26574,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Extensions/MultiTenancyServiceCollectionExtensions.cs",
-      "line": 23,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitMultiTenancy",
@@ -26562,7 +26681,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Middleware/TenantResolutionMiddleware.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "InvokeAsync",
@@ -26688,7 +26807,7 @@
       "kind": "record",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Pipeline/TenantResolverPipeline.cs",
-      "line": 11,
+      "line": 16,
       "members": [
         {
           "name": "ResolveAsync",
@@ -26704,7 +26823,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Pipeline/TenantResolverPipeline.cs",
-      "line": 17,
+      "line": 22,
       "members": [
         {
           "name": "ResolveAsync",
@@ -26830,10 +26949,16 @@
       "line": 9,
       "members": [
         {
+          "name": "Order",
+          "kind": "property",
+          "signature": "int Order",
+          "returnType": "int"
+        },
+        {
           "name": "ResolveAsync",
           "kind": "method",
           "signature": "ResolveAsync(HttpContext context, CancellationToken cancellationToken = default)",
-          "returnType": "int Order { get; } Task<TenantInfo?>"
+          "returnType": "Task<TenantInfo?>"
         }
       ]
     },
@@ -26850,6 +26975,12 @@
           "kind": "property",
           "signature": "int Order",
           "returnType": "int"
+        },
+        {
+          "name": "IsAuthoritative",
+          "kind": "property",
+          "signature": "bool IsAuthoritative",
+          "returnType": "bool"
         },
         {
           "name": "ResolveAsync",

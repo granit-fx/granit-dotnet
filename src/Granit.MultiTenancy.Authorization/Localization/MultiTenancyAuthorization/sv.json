@@ -1,0 +1,7 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Permission:MultiTenancy.Host.Impersonate": "Imitera valfri tenant från host-omfånget",
+    "PermissionGroup:MultiTenancyHost": "Multi-tenancy — Host"
+  }
+}

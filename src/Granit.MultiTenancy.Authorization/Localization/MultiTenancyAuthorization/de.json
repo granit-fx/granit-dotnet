@@ -1,0 +1,7 @@
+{
+  "culture": "de",
+  "texts": {
+    "Permission:MultiTenancy.Host.Impersonate": "Beliebigen Mandanten aus dem Host-Kontext nachahmen",
+    "PermissionGroup:MultiTenancyHost": "Mandantenfähigkeit — Host"
+  }
+}

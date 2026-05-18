@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Granit.MultiTenancy.Authorization;
 using Granit.MultiTenancy.Diagnostics;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;
@@ -22,6 +23,7 @@ public sealed partial class TenantResolutionMiddleware(
     ICurrentTenant currentTenant,
     TenantResolverPipeline pipeline,
     ITenantReader tenantReader,
+    IHostImpersonationGate hostImpersonationGate,
     MultiTenancyMetrics metrics,
     IOptions<MultiTenancyOptions> options,
     ILogger<TenantResolutionMiddleware> logger) : IMiddleware
@@ -29,6 +31,7 @@ public sealed partial class TenantResolutionMiddleware(
     private readonly ICurrentTenant _currentTenant = currentTenant;
     private readonly TenantResolverPipeline _pipeline = pipeline;
     private readonly ITenantReader _tenantReader = tenantReader;
+    private readonly IHostImpersonationGate _hostImpersonationGate = hostImpersonationGate;
     private readonly MultiTenancyMetrics _metrics = metrics;
     private readonly MultiTenancyOptions _options = options.Value;
     private readonly ILogger _logger = logger;
@@ -50,14 +53,43 @@ public sealed partial class TenantResolutionMiddleware(
                 && context.User.Identity?.IsAuthenticated == true)
             {
                 string? jwtClaim = context.User.FindFirstValue(_options.TenantIdClaimType);
-                if (!string.IsNullOrEmpty(jwtClaim)
-                    && Guid.TryParse(jwtClaim, out Guid jwtTenantId)
-                    && jwtTenantId != result.Tenant.Id)
+
+                if (!string.IsNullOrEmpty(jwtClaim))
                 {
-                    _metrics.RecordResolutionFailed();
-                    LogTenantMismatch(result.Tenant.Id!.Value, result.ResolverType, jwtTenantId);
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    return;
+                    // Tenant user: header (or any non-JWT resolver) must match the JWT claim.
+                    if (Guid.TryParse(jwtClaim, out Guid jwtTenantId)
+                        && jwtTenantId != result.Tenant.Id)
+                    {
+                        _metrics.RecordResolutionFailed();
+                        LogTenantMismatch(result.Tenant.Id!.Value, result.ResolverType, jwtTenantId);
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        return;
+                    }
+                }
+                else if (!result.IsAuthoritative && result.Tenant.Id.HasValue)
+                {
+                    // Host user (no tenant_id claim) attempting tenant impersonation via a
+                    // non-JWT resolver (header, query, domain). Gate it through
+                    // IHostImpersonationGate — secure-by-default refuses unless wired up
+                    // by Granit.MultiTenancy.Authorization.
+                    HostImpersonationDecision decision = await _hostImpersonationGate
+                        .CanImpersonateAsync(context.User, result.Tenant.Id.Value, context.RequestAborted)
+                        .ConfigureAwait(false);
+
+                    if (!decision.Allowed)
+                    {
+                        _metrics.RecordHostImpersonationDenied(
+                            result.Tenant.Id.Value.ToString(),
+                            decision.DenyReasonCode ?? "unspecified");
+                        LogHostImpersonationDenied(
+                            result.Tenant.Id.Value,
+                            result.ResolverType,
+                            decision.DenyReasonCode ?? "unspecified");
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        return;
+                    }
+
+                    _metrics.RecordHostImpersonationAllowed(result.Tenant.Id.Value.ToString());
                 }
             }
 
@@ -93,4 +125,7 @@ public sealed partial class TenantResolutionMiddleware(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Phantom tenant rejected: resolved tenant {TenantId} via {ResolverType} does not exist in the tenant store.")]
     private partial void LogPhantomTenant(Guid tenantId, string resolverType);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Host impersonation denied: principal attempting to impersonate {TenantId} via {ResolverType} — deny reason: {DenyReason}.")]
+    private partial void LogHostImpersonationDenied(Guid tenantId, string resolverType, string denyReason);
 }

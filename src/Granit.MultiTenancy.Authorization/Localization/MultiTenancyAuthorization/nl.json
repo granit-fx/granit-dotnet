@@ -1,0 +1,7 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Permission:MultiTenancy.Host.Impersonate": "Een willekeurige tenant nabootsen vanuit het host-bereik",
+    "PermissionGroup:MultiTenancyHost": "Multi-Tenancy — Host"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Permission:MultiTenancy.Host.Impersonate": "होस्ट दायरे से किसी भी टेनेंट का प्रतिरूपण करें",
+    "PermissionGroup:MultiTenancyHost": "मल्टी-टेनेंसी — होस्ट"
+  }
+}

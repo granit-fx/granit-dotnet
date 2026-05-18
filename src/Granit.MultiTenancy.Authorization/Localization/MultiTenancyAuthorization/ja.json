@@ -1,0 +1,7 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Permission:MultiTenancy.Host.Impersonate": "ホストスコープから任意のテナントになりすます",
+    "PermissionGroup:MultiTenancyHost": "マルチテナンシー — ホスト"
+  }
+}

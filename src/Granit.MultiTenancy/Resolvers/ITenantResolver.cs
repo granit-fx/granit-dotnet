@@ -15,6 +15,15 @@ public interface ITenantResolver
     int Order { get; }
 
     /// <summary>
+    /// When <c>true</c>, this resolver's output is treated as authoritative —
+    /// it derives the tenant from a server-validated artefact (e.g. a signed JWT
+    /// claim) and is not subject to host-impersonation gating. Default <c>false</c>
+    /// — header, query, and domain resolvers must pass through
+    /// <c>IHostImpersonationGate</c> when the principal is a Host user.
+    /// </summary>
+    bool IsAuthoritative => false;
+
+    /// <summary>
     /// Attempts to resolve the tenant from the HTTP context.
     /// </summary>
     /// <param name="context">HTTP context of the request.</param>

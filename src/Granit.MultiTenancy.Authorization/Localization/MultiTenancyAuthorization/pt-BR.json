@@ -1,0 +1,6 @@
+{
+  "culture": "pt-BR",
+  "texts": {
+    "Permission:MultiTenancy.Host.Impersonate": "Personificar qualquer inquilino a partir do escopo host"
+  }
+}

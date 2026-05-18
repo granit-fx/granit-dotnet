@@ -13,6 +13,27 @@ public sealed partial class ProjectDependencyTests
     private static readonly string RepoRoot = FindRepoRoot();
 
     [Fact]
+    public void Granit_MultiTenancy_must_not_reference_Granit_Authorization()
+    {
+        // Multi-tenancy is infrastructure (routing, claims, headers). Authorization is
+        // application domain (permissions, RBAC). Infra must not depend on domain.
+        // The permission-based host-impersonation gate lives in the glue package
+        // Granit.MultiTenancy.Authorization, which references both.
+        string csproj = Path.Join(RepoRoot, "src", "Granit.MultiTenancy", "Granit.MultiTenancy.csproj");
+        File.Exists(csproj).ShouldBeTrue($"Expected csproj at {csproj}");
+
+        string content = File.ReadAllText(csproj);
+        IEnumerable<string> refs = ProjectReferenceInclude().Matches(content)
+            .Select(m => Path.GetFileNameWithoutExtension(m.Groups[1].Value));
+
+        refs.ShouldNotContain(
+            "Granit.Authorization",
+            "Granit.MultiTenancy.csproj must not reference Granit.Authorization. " +
+            "Permission-based gating belongs in Granit.MultiTenancy.Authorization (glue package). " +
+            "See IHostImpersonationGate.");
+    }
+
+    [Fact]
     public void No_circular_project_references()
     {
         string srcDir = Path.Join(RepoRoot, "src");

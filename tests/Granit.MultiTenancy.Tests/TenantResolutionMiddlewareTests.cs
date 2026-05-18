@@ -3,7 +3,9 @@
 // =============================================================================
 
 using System.Diagnostics.Metrics;
+using System.Security.Claims;
 using Granit.MultiTenancy;
+using Granit.MultiTenancy.Authorization;
 using Granit.MultiTenancy.Diagnostics;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Options;
@@ -33,7 +35,8 @@ public sealed class TenantResolutionMiddlewareTests
         TenantResolverPipeline pipeline,
         bool isEnabled = true,
         TenantHeaderTrustMode headerTrustMode = TenantHeaderTrustMode.Unrestricted,
-        bool validateTenantExistence = false)
+        bool validateTenantExistence = false,
+        IHostImpersonationGate? hostImpersonationGate = null)
     {
         IOptions<MultiTenancyOptions> options = Microsoft.Extensions.Options.Options.Create(new MultiTenancyOptions
         {
@@ -44,13 +47,29 @@ public sealed class TenantResolutionMiddlewareTests
         ITenantReader tenantReader = Substitute.For<ITenantReader>();
         tenantReader.ExistsAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(true));
+
+        // Default gate for tests that don't care: allow everything. The dedicated
+        // host-impersonation tests below pass their own substitute.
+        IHostImpersonationGate gate = hostImpersonationGate ?? AllowAllGate();
+
         return new TenantResolutionMiddleware(
             currentTenant,
             pipeline,
             tenantReader,
+            gate,
             CreateMetrics(),
             options,
             NullLogger<TenantResolutionMiddleware>.Instance);
+    }
+
+    private static IHostImpersonationGate AllowAllGate()
+    {
+        IHostImpersonationGate gate = Substitute.For<IHostImpersonationGate>();
+#pragma warning disable CA2012 // NSubstitute Returns(...) idiom for ValueTask-returning methods
+        gate.CanImpersonateAsync(Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(_ => ValueTask.FromResult(HostImpersonationDecision.Allow));
+#pragma warning restore CA2012
+        return gate;
     }
 
     private static TenantResolverPipeline PipelineReturning(TenantInfo? tenant)
@@ -208,8 +227,221 @@ public sealed class TenantResolutionMiddlewareTests
             currentTenant,
             pipeline,
             tenantReader,
+            AllowAllGate(),
             CreateMetrics(),
             options,
             NullLogger<TenantResolutionMiddleware>.Instance);
+    }
+
+    // ── Host impersonation gate ─────────────────────────────────────
+
+    private static TenantResolverPipeline PipelineWithResolver(string resolverTypeName, TenantInfo? tenant)
+    {
+        // The middleware identifies the resolver via `GetType().Name`. Use concrete
+        // fakes whose simple name matches the production resolvers verbatim.
+        ITenantResolver resolver = resolverTypeName switch
+        {
+            nameof(HeaderTenantResolver) => new HeaderTenantResolverFake(tenant),
+            nameof(JwtClaimTenantResolver) => new JwtClaimTenantResolverFake(tenant),
+            _ => throw new ArgumentException($"Unknown resolver type {resolverTypeName}"),
+        };
+        return new TenantResolverPipeline([resolver]);
+    }
+
+    private sealed class HeaderTenantResolverFake(TenantInfo? tenant) : ITenantResolver
+    {
+        public int Order => 100;
+
+        public bool IsAuthoritative => false;
+
+        public Task<TenantInfo?> ResolveAsync(HttpContext context, CancellationToken cancellationToken = default) =>
+            Task.FromResult(tenant);
+    }
+
+    private sealed class JwtClaimTenantResolverFake(TenantInfo? tenant) : ITenantResolver
+    {
+        public int Order => 200;
+
+        public bool IsAuthoritative => true;
+
+        public Task<TenantInfo?> ResolveAsync(HttpContext context, CancellationToken cancellationToken = default) =>
+            Task.FromResult(tenant);
+    }
+
+    private static DefaultHttpContext AuthenticatedContext(string? tenantIdClaim = null)
+    {
+        DefaultHttpContext context = new();
+        List<Claim> claims = [new Claim(ClaimTypes.NameIdentifier, "user-1")];
+        if (tenantIdClaim is not null)
+        {
+            claims.Add(new Claim("tenant_id", tenantIdClaim));
+        }
+
+        context.User = new ClaimsPrincipal(new ClaimsIdentity(claims, authenticationType: "test"));
+        return context;
+    }
+
+    [Fact]
+    public async Task HostUser_HeaderResolution_GateDenies_Returns403()
+    {
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        var targetTenantId = Guid.NewGuid();
+        TenantResolverPipeline pipeline = PipelineWithResolver(
+            nameof(HeaderTenantResolver), new TenantInfo(targetTenantId));
+
+        IHostImpersonationGate gate = Substitute.For<IHostImpersonationGate>();
+#pragma warning disable CA2012 // NSubstitute Returns(...) idiom for ValueTask-returning methods
+        gate.CanImpersonateAsync(Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(_ => ValueTask.FromResult(new HostImpersonationDecision(false, "test.denied")));
+#pragma warning restore CA2012
+
+        TenantResolutionMiddleware middleware = CreateMiddleware(
+            currentTenant, pipeline,
+            headerTrustMode: TenantHeaderTrustMode.CrossValidate,
+            hostImpersonationGate: gate);
+
+        DefaultHttpContext context = AuthenticatedContext(tenantIdClaim: null);
+
+        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
+
+        context.Response.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
+        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>());
+        await gate.Received(1).CanImpersonateAsync(
+            Arg.Any<ClaimsPrincipal>(), targetTenantId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HostUser_HeaderResolution_GateAllows_Returns200()
+    {
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        IDisposable scope = Substitute.For<IDisposable>();
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        var targetTenantId = Guid.NewGuid();
+        TenantResolverPipeline pipeline = PipelineWithResolver(
+            nameof(HeaderTenantResolver), new TenantInfo(targetTenantId));
+
+        IHostImpersonationGate gate = Substitute.For<IHostImpersonationGate>();
+#pragma warning disable CA2012 // NSubstitute Returns(...) idiom for ValueTask-returning methods
+        gate.CanImpersonateAsync(Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(_ => ValueTask.FromResult(HostImpersonationDecision.Allow));
+#pragma warning restore CA2012
+
+        TenantResolutionMiddleware middleware = CreateMiddleware(
+            currentTenant, pipeline,
+            headerTrustMode: TenantHeaderTrustMode.CrossValidate,
+            hostImpersonationGate: gate);
+
+        DefaultHttpContext context = AuthenticatedContext(tenantIdClaim: null);
+
+        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
+
+        context.Response.StatusCode.ShouldNotBe(StatusCodes.Status403Forbidden);
+        currentTenant.Received(1).Change(targetTenantId, Arg.Any<string?>());
+    }
+
+    [Fact]
+    public async Task HostUser_JwtResolverResolution_GateNotInvoked()
+    {
+        // JWT-only resolution is authoritative — no impersonation is taking place.
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        IDisposable scope = Substitute.For<IDisposable>();
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        var tenantId = Guid.NewGuid();
+        TenantResolverPipeline pipeline = PipelineWithResolver(
+            nameof(JwtClaimTenantResolver), new TenantInfo(tenantId));
+
+        IHostImpersonationGate gate = Substitute.For<IHostImpersonationGate>();
+
+        TenantResolutionMiddleware middleware = CreateMiddleware(
+            currentTenant, pipeline,
+            headerTrustMode: TenantHeaderTrustMode.CrossValidate,
+            hostImpersonationGate: gate);
+
+        // Host user — no tenant_id claim. JwtClaimTenantResolver wouldn't produce a tenant
+        // for a real host principal, but the test substitute does; we verify that even with
+        // a JWT resolver producing a tenant, the gate is not consulted.
+        DefaultHttpContext context = AuthenticatedContext(tenantIdClaim: null);
+
+        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
+
+        await gate.DidNotReceive().CanImpersonateAsync(
+            Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task TenantUser_HeaderMatchesClaim_GateNotInvoked()
+    {
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        IDisposable scope = Substitute.For<IDisposable>();
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        var tenantId = Guid.NewGuid();
+        TenantResolverPipeline pipeline = PipelineWithResolver(
+            nameof(HeaderTenantResolver), new TenantInfo(tenantId));
+
+        IHostImpersonationGate gate = Substitute.For<IHostImpersonationGate>();
+
+        TenantResolutionMiddleware middleware = CreateMiddleware(
+            currentTenant, pipeline,
+            headerTrustMode: TenantHeaderTrustMode.CrossValidate,
+            hostImpersonationGate: gate);
+
+        DefaultHttpContext context = AuthenticatedContext(tenantIdClaim: tenantId.ToString());
+
+        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
+
+        await gate.DidNotReceive().CanImpersonateAsync(
+            Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        currentTenant.Received(1).Change(tenantId, Arg.Any<string?>());
+    }
+
+    [Fact]
+    public async Task TenantUser_HeaderMismatchesClaim_Returns403_GateNotInvoked()
+    {
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        var headerTenantId = Guid.NewGuid();
+        var claimTenantId = Guid.NewGuid();
+        TenantResolverPipeline pipeline = PipelineWithResolver(
+            nameof(HeaderTenantResolver), new TenantInfo(headerTenantId));
+
+        IHostImpersonationGate gate = Substitute.For<IHostImpersonationGate>();
+
+        TenantResolutionMiddleware middleware = CreateMiddleware(
+            currentTenant, pipeline,
+            headerTrustMode: TenantHeaderTrustMode.CrossValidate,
+            hostImpersonationGate: gate);
+
+        DefaultHttpContext context = AuthenticatedContext(tenantIdClaim: claimTenantId.ToString());
+
+        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
+
+        context.Response.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
+        await gate.DidNotReceive().CanImpersonateAsync(
+            Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task UnauthenticatedRequest_HostGateNotInvoked()
+    {
+        // The gate is only consulted for authenticated principals with no tenant_id claim.
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        IDisposable scope = Substitute.For<IDisposable>();
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        var tenantId = Guid.NewGuid();
+        TenantResolverPipeline pipeline = PipelineWithResolver(
+            nameof(HeaderTenantResolver), new TenantInfo(tenantId));
+
+        IHostImpersonationGate gate = Substitute.For<IHostImpersonationGate>();
+
+        TenantResolutionMiddleware middleware = CreateMiddleware(
+            currentTenant, pipeline,
+            headerTrustMode: TenantHeaderTrustMode.CrossValidate,
+            hostImpersonationGate: gate);
+
+        DefaultHttpContext context = new(); // unauthenticated
+
+        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
+
+        await gate.DidNotReceive().CanImpersonateAsync(
+            Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 }

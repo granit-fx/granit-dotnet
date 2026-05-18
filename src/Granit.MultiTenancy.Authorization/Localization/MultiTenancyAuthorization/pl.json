@@ -1,0 +1,7 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Permission:MultiTenancy.Host.Impersonate": "Podszywanie się pod dowolnego najemcę z poziomu hosta",
+    "PermissionGroup:MultiTenancyHost": "Wielodostępowość — Host"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Permission:MultiTenancy.Host.Impersonate": "Vydávat se za libovolného nájemce z host kontextu",
+    "PermissionGroup:MultiTenancyHost": "Multi-tenancy — Host"
+  }
+}

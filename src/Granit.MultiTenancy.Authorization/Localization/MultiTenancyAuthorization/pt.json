@@ -1,0 +1,7 @@
+{
+  "culture": "pt",
+  "texts": {
+    "Permission:MultiTenancy.Host.Impersonate": "Personificar qualquer inquilino a partir do âmbito host",
+    "PermissionGroup:MultiTenancyHost": "Multi-Tenancy — Host"
+  }
+}

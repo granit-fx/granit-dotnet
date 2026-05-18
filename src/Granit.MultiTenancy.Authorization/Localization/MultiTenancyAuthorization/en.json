@@ -1,0 +1,7 @@
+{
+  "culture": "en",
+  "texts": {
+    "Permission:MultiTenancy.Host.Impersonate": "Impersonate any tenant from the host scope",
+    "PermissionGroup:MultiTenancyHost": "Multi-Tenancy — Host"
+  }
+}

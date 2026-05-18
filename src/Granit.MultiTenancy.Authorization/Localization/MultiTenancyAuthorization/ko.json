@@ -1,0 +1,7 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Permission:MultiTenancy.Host.Impersonate": "호스트 범위에서 임의의 테넌트로 가장",
+    "PermissionGroup:MultiTenancyHost": "멀티테넌시 — 호스트"
+  }
+}

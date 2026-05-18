@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.MultiTenancy.Authorization</PackageId>
+    <Description>Glue package wiring Granit.MultiTenancy's IHostImpersonationGate to Granit.Authorization's permission system. Adds the MultiTenancy.Host.Impersonate permission so Host operators can be explicitly authorized to impersonate a tenant via X-Tenant-Id (or any non-JWT resolver).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.MultiTenancy.Authorization.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\Granit.Localization\Granit.Localization.csproj" />
+    <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
+  </ItemGroup>
+
+</Project>
