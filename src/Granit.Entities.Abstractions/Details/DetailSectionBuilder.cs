@@ -11,8 +11,9 @@ public sealed class DetailSectionBuilder<TEntity>
 {
     private readonly string _key;
 
+    private readonly int _order;
+
     private string? _labelKey;
-    private int _order;
     private string? _inheritsFromFormVariant;
     private List<string>? _fields;
 

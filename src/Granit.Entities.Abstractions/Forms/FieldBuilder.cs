@@ -15,13 +15,13 @@ public sealed class FieldBuilder<TEntity, TProperty>
 {
     private readonly string _propertyName;
     private readonly Type _clrType;
+    private readonly int _order;
 
     private string _component;
     private Dictionary<string, object?>? _config;
     private string? _labelKey;
     private string? _helpKey;
     private string? _requiresPermission;
-    private int _order;
     private bool _readOnly;
     private VisibilityCondition? _visibleIf;
 

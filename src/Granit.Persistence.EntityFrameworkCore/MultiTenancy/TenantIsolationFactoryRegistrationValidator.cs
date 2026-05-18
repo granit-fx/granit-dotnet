@@ -61,9 +61,9 @@ internal sealed class TenantIsolationFactoryRegistrationValidator(
           .Append("' but no ").Append(delegateName)
           .AppendLine(" delegate was passed for the following DbContexts:");
 
-        foreach (IsolatedDbContextMarker m in missing)
+        foreach (Type dbContextType in missing.Select(m => m.DbContextType))
         {
-            sb.Append("  - ").AppendLine(m.DbContextType.FullName ?? m.DbContextType.Name);
+            sb.Append("  - ").AppendLine(dbContextType.FullName ?? dbContextType.Name);
         }
 
         sb.Append("Either pass the delegate in AddGranit{X}EntityFrameworkCore(...) ")

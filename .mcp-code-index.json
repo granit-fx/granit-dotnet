@@ -11045,7 +11045,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 184,
+      "line": 177,
       "members": [
         {
           "name": "new",
@@ -11073,7 +11073,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 171,
+      "line": 164,
       "members": [
         {
           "name": "GetEnvironmentVariable",

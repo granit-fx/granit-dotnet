@@ -255,14 +255,6 @@ public sealed class EvaluateAsyncStringInterpolationAnalyzer : DiagnosticAnalyze
             return true;
         }
 
-        foreach (INamedTypeSymbol iface in type.AllInterfaces)
-        {
-            if (SymbolEqualityComparer.Default.Equals(iface, interfaceType))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return type.AllInterfaces.Any(iface => SymbolEqualityComparer.Default.Equals(iface, interfaceType));
     }
 }

@@ -172,7 +172,7 @@ public sealed class LimitedStreamTests
         using MemoryStream inner = new();
         using LimitedStream stream = new(inner, 100);
 
-        await stream.FlushAsync(CancellationToken.None);
+        await Should.NotThrowAsync(() => stream.FlushAsync(CancellationToken.None));
     }
 
     [Fact]

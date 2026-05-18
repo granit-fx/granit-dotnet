@@ -45,10 +45,11 @@ internal sealed class HeadlessBrowserDrainCoordinator
         {
             await pool.DrainAsync(cancellationToken).WaitAsync(timeout, cancellationToken).ConfigureAwait(false);
         }
-        catch (TimeoutException)
+        catch (TimeoutException ex)
         {
             _metrics.RecordPoolDrainTimeout(browser.EngineName);
             _logger.LogWarning(
+                ex,
                 "Headless browser pool drain timed out after {Timeout}; forcing disposal of {Engine}.",
                 timeout,
                 browser.EngineName);

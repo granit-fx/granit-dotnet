@@ -61,7 +61,7 @@ internal sealed class DatabaseBlobClient(
                     $"Blob size exceeds the maximum allowed size ({maxBytes} bytes).");
             }
 
-            ms.Write(buffer, 0, read);
+            await ms.WriteAsync(buffer.AsMemory(0, read), cancellationToken).ConfigureAwait(false);
         }
 
         await using BlobStorageDatabaseDbContext context =
