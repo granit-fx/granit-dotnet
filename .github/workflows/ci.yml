@@ -177,6 +177,10 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: 1
           format: table
+          # Resolved NuGet versions are read from packages.lock.json, which is
+          # authoritative. Skip *.csproj and Directory.Packages.props to silence
+          # "malformed version: 1.*" warnings on floating central-package ranges.
+          skip-files: "**/*.csproj,**/Directory.Packages.props"
 
   # NuGet audit feed: complements Trivy (different CVE source, also catches
   # transitive dependencies disclosed AFTER lockfile generation).
