@@ -9060,10 +9060,10 @@
     },
     {
       "name": "DatabaseBlobContent",
-      "fqn": "Granit.BlobStorage.Database.Entities.DatabaseBlobContent",
+      "fqn": "Granit.BlobStorage.Database.Domain.DatabaseBlobContent",
       "kind": "class",
       "project": "Granit.BlobStorage.Database",
-      "file": "src/Granit.BlobStorage.Database/Entities/DatabaseBlobContent.cs",
+      "file": "src/Granit.BlobStorage.Database/Domain/DatabaseBlobContent.cs",
       "line": 13,
       "members": [
         {

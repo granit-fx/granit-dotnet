@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Granit.BlobStorage.Database.Diagnostics;
-using Granit.BlobStorage.Database.Entities;
+using Granit.BlobStorage.Database.Domain;
 using Granit.BlobStorage.Database.Options;
 using Granit.BlobStorage.Internal;
 using Granit.Guids;

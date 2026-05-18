@@ -1,4 +1,4 @@
-using Granit.BlobStorage.Database.Entities;
+using Granit.BlobStorage.Database.Domain;
 using Granit.Domain;
 using Shouldly;
 using Xunit;
