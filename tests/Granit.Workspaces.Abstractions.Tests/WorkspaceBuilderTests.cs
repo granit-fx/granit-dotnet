@@ -45,10 +45,8 @@ public sealed class WorkspaceBuilderTests
     }
 
     [Fact]
-    public void View_can_only_be_called_on_entity_items()
-    {
+    public void View_can_only_be_called_on_entity_items() =>
         Should.Throw<InvalidOperationException>(() => new InvalidViewOnLink().Descriptor);
-    }
 
     [Fact]
     public void Feature_item_carries_feature_name_and_optional_route_override()
@@ -64,10 +62,8 @@ public sealed class WorkspaceBuilderTests
     }
 
     [Fact]
-    public void RouteName_can_only_be_called_on_feature_items()
-    {
+    public void RouteName_can_only_be_called_on_feature_items() =>
         Should.Throw<InvalidOperationException>(() => new InvalidRouteNameOnLink().Descriptor);
-    }
 
     private sealed class SampleDefinition : WorkspaceDefinition
     {
