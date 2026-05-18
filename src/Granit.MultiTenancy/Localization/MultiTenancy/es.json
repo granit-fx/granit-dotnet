@@ -1,0 +1,10 @@
+{
+  "culture": "es",
+  "texts": {
+    "Problem:HostImpersonation.Title": "Suplantación host denegada",
+    "Problem:HostImpersonation.NotConfigured.Detail": "La suplantación de inquilino en modo host no está configurada en este servidor. Añada una referencia al proyecto Granit.MultiTenancy.Authorization y llame a AddGranitHostImpersonationWithPermissions() para habilitarla.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "El operador host autenticado no tiene el permiso MultiTenancy.Host.Impersonate necesario para actuar en un ámbito de inquilino.",
+    "Problem:TenantMismatch.Title": "Contexto de inquilino incoherente",
+    "Problem:TenantMismatch.Detail": "El inquilino resuelto desde la solicitud (cabecera o cadena de consulta) no coincide con el claim de inquilino del token de acceso."
+  }
+}

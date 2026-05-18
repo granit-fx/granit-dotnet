@@ -37,6 +37,7 @@
     <Project Path="src/Granit.Mergeable.BackgroundJobs/Granit.Mergeable.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Mergeable.EntityFrameworkCore/Granit.Mergeable.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Mergeable/Granit.Mergeable.csproj" />
+    <Project Path="src/Granit.MultiTenancy.Auditing/Granit.MultiTenancy.Auditing.csproj" />
     <Project Path="src/Granit.MultiTenancy.Authorization/Granit.MultiTenancy.Authorization.csproj" />
     <Project Path="src/Granit.MultiTenancy.Endpoints/Granit.MultiTenancy.Endpoints.csproj" />
     <Project Path="src/Granit.MultiTenancy.EntityFrameworkCore/Granit.MultiTenancy.EntityFrameworkCore.csproj" />
@@ -314,6 +315,7 @@
     <Project Path="tests/Granit.Mergeable.BackgroundJobs.Tests/Granit.Mergeable.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Mergeable.EntityFrameworkCore.Tests/Granit.Mergeable.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Mergeable.Tests/Granit.Mergeable.Tests.csproj" />
+    <Project Path="tests/Granit.MultiTenancy.Auditing.Tests/Granit.MultiTenancy.Auditing.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Authorization.Tests/Granit.MultiTenancy.Authorization.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Endpoints.Tests/Granit.MultiTenancy.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.EntityFrameworkCore.Tests/Granit.MultiTenancy.EntityFrameworkCore.Tests.csproj" />

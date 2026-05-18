@@ -1197,7 +1197,17 @@
       "deps": [
         "Granit",
         "Granit.DataExchange.Abstractions",
+        "Granit.Localization",
         "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.MultiTenancy.Auditing",
+      "deps": [
+        "Granit.Auditing",
+        "Granit.MultiTenancy",
+        "Granit.Timing"
       ],
       "framework": "net10.0"
     },
@@ -26111,6 +26121,54 @@
       "members": []
     },
     {
+      "name": "AuditingHostImpersonationAuditWriter",
+      "fqn": "Granit.MultiTenancy.Auditing.AuditingHostImpersonationAuditWriter",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Auditing",
+      "file": "src/Granit.MultiTenancy.Auditing/AuditingHostImpersonationAuditWriter.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "WriteAsync",
+          "kind": "method",
+          "signature": "WriteAsync(ClaimsPrincipal principal, Guid targetTenantId, HostImpersonationDecision decision, string resolverType, string? ipAddress, string? userAgent, string? correlationId, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask"
+        }
+      ]
+    },
+    {
+      "name": "MultiTenancyAuditingServiceCollectionExtensions",
+      "fqn": "Granit.MultiTenancy.Auditing.Extensions.MultiTenancyAuditingServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Auditing",
+      "file": "src/Granit.MultiTenancy.Auditing/Extensions/MultiTenancyAuditingServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitHostImpersonationAuditing",
+          "kind": "method",
+          "signature": "AddGranitHostImpersonationAuditing(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitMultiTenancyAuditingModule",
+      "fqn": "Granit.MultiTenancy.Auditing.GranitMultiTenancyAuditingModule",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Auditing",
+      "file": "src/Granit.MultiTenancy.Auditing/GranitMultiTenancyAuditingModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "MultiTenancyAuthorizationServiceCollectionExtensions",
       "fqn": "Granit.MultiTenancy.Authorization.Extensions.MultiTenancyAuthorizationServiceCollectionExtensions",
       "kind": "class",
@@ -26164,6 +26222,22 @@
           "kind": "method",
           "signature": "new(true, null)",
           "returnType": "HostImpersonationDecision Allow ="
+        }
+      ]
+    },
+    {
+      "name": "IHostImpersonationAuditWriter",
+      "fqn": "Granit.MultiTenancy.Authorization.IHostImpersonationAuditWriter",
+      "kind": "interface",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Authorization/IHostImpersonationAuditWriter.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "WriteAsync",
+          "kind": "method",
+          "signature": "WriteAsync(ClaimsPrincipal principal, Guid targetTenantId, HostImpersonationDecision decision, string resolverType, string? ipAddress, string? userAgent, string? correlationId, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask"
         }
       ]
     },
@@ -26574,7 +26648,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Extensions/MultiTenancyServiceCollectionExtensions.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "AddGranitMultiTenancy",
@@ -26590,7 +26664,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/GranitMultiTenancyModule.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -26676,12 +26750,21 @@
       ]
     },
     {
+      "name": "MultiTenancyLocalizationResource",
+      "fqn": "Granit.MultiTenancy.Internal.MultiTenancyLocalizationResource",
+      "kind": "class",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Internal/MultiTenancyLocalizationResource.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "TenantResolutionMiddleware",
       "fqn": "Granit.MultiTenancy.Middleware.TenantResolutionMiddleware",
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Middleware/TenantResolutionMiddleware.cs",
-      "line": 22,
+      "line": 24,
       "members": [
         {
           "name": "InvokeAsync",

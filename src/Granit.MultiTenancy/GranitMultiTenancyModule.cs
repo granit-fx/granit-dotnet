@@ -1,4 +1,5 @@
 using Granit.DataExchange;
+using Granit.Localization;
 using Granit.Modularity;
 using Granit.MultiTenancy.Extensions;
 using Granit.QueryEngine;
@@ -11,6 +12,7 @@ namespace Granit.MultiTenancy;
 /// Compatible with any identity provider (Keycloak, Auth0, Azure AD, etc.).
 /// </summary>
 [DependsOn(typeof(GranitDataExchangeAbstractionsModule))]
+[DependsOn(typeof(GranitLocalizationModule))]
 [DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitMultiTenancyModule : GranitModule
 {

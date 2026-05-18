@@ -1,0 +1,10 @@
+{
+  "culture": "it",
+  "texts": {
+    "Problem:HostImpersonation.Title": "Impersonificazione host negata",
+    "Problem:HostImpersonation.NotConfigured.Detail": "L'impersonificazione del tenant in modalità host non è configurata su questo server. Aggiungi un riferimento al progetto Granit.MultiTenancy.Authorization e chiama AddGranitHostImpersonationWithPermissions() per abilitarla.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "L'operatore host autenticato non dispone dell'autorizzazione MultiTenancy.Host.Impersonate necessaria per agire in un ambito tenant.",
+    "Problem:TenantMismatch.Title": "Contesto tenant incoerente",
+    "Problem:TenantMismatch.Detail": "Il tenant risolto dalla richiesta (intestazione o querystring) non corrisponde al claim tenant del token di accesso."
+  }
+}

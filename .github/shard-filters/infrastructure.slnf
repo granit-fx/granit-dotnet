@@ -4,6 +4,7 @@
     "projects": [
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
+      "src/Granit.Auditing/Granit.Auditing.csproj",
       "src/Granit.Authorization/Granit.Authorization.csproj",
       "src/Granit.BackgroundJobs.Endpoints/Granit.BackgroundJobs.Endpoints.csproj",
       "src/Granit.BackgroundJobs.EntityFrameworkCore/Granit.BackgroundJobs.EntityFrameworkCore.csproj",
@@ -35,6 +36,7 @@
       "src/Granit.Localization.EntityFrameworkCore/Granit.Localization.EntityFrameworkCore.csproj",
       "src/Granit.Localization.SourceGenerator/Granit.Localization.SourceGenerator.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
+      "src/Granit.MultiTenancy.Auditing/Granit.MultiTenancy.Auditing.csproj",
       "src/Granit.MultiTenancy.Authorization/Granit.MultiTenancy.Authorization.csproj",
       "src/Granit.MultiTenancy.Endpoints/Granit.MultiTenancy.Endpoints.csproj",
       "src/Granit.MultiTenancy.EntityFrameworkCore/Granit.MultiTenancy.EntityFrameworkCore.csproj",
@@ -109,6 +111,7 @@
       "tests/Granit.Localization.EntityFrameworkCore.Tests/Granit.Localization.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Localization.SourceGenerator.Tests/Granit.Localization.SourceGenerator.Tests.csproj",
       "tests/Granit.Localization.Tests/Granit.Localization.Tests.csproj",
+      "tests/Granit.MultiTenancy.Auditing.Tests/Granit.MultiTenancy.Auditing.Tests.csproj",
       "tests/Granit.MultiTenancy.Authorization.Tests/Granit.MultiTenancy.Authorization.Tests.csproj",
       "tests/Granit.MultiTenancy.Endpoints.Tests/Granit.MultiTenancy.Endpoints.Tests.csproj",
       "tests/Granit.MultiTenancy.EntityFrameworkCore.Tests/Granit.MultiTenancy.EntityFrameworkCore.Tests.csproj",

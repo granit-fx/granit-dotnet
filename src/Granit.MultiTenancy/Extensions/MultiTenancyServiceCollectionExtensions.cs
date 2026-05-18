@@ -1,4 +1,5 @@
 using Granit.DataExchange.Extensions;
+using Granit.Localization.Extensions;
 using Granit.MultiTenancy.Authorization;
 using Granit.MultiTenancy.Diagnostics;
 using Granit.MultiTenancy.Domain;
@@ -34,6 +35,12 @@ public static class MultiTenancyServiceCollectionExtensions
             .BindConfiguration(MultiTenancyOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        // Localization is required by the middleware for ProblemDetails responses.
+        // GranitMultiTenancyModule declares [DependsOn(typeof(GranitLocalizationModule))]
+        // so the bootstrap activates AddGranitLocalization() before this extension runs.
+        // Direct callers of AddGranitMultiTenancy() (test fixtures) must add it themselves.
+        services.AddLocalizationResource<MultiTenancyLocalizationResource>();
 
         services.TryAddSingleton<IValidateOptions<MultiTenancyOptions>, MultiTenancyOptionsValidator>();
 
@@ -72,6 +79,11 @@ public static class MultiTenancyServiceCollectionExtensions
         // AddGranitHostImpersonationWithPermissions() — that replaces this default
         // with a gate that delegates to IPermissionChecker.
         services.TryAddScoped<IHostImpersonationGate, DenyAllHostImpersonationGate>();
+
+        // No-op audit writer by default. Apps requiring an ISO 27001 trail reference
+        // Granit.MultiTenancy.Auditing and call AddGranitHostImpersonationAuditing()
+        // — that replaces this with a writer that persists to IAuditingWriter.
+        services.TryAddScoped<IHostImpersonationAuditWriter, NullHostImpersonationAuditWriter>();
 
         // Outbound URL resolution (scoped: depends on ICurrentTenant + ITenantReader)
         services.TryAddScoped<ITenantUrlResolver, TenantUrlResolver>();

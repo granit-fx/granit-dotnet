@@ -3,16 +3,19 @@
 // =============================================================================
 
 using System.Diagnostics.Metrics;
+using System.Globalization;
 using System.Security.Claims;
 using Granit.MultiTenancy;
 using Granit.MultiTenancy.Authorization;
 using Granit.MultiTenancy.Diagnostics;
+using Granit.MultiTenancy.Internal;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;
 using Granit.MultiTenancy.Resolvers;
 using Granit.MultiTenancy.Stores;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -57,7 +60,9 @@ public sealed class TenantResolutionMiddlewareTests
             pipeline,
             tenantReader,
             gate,
+            Substitute.For<IHostImpersonationAuditWriter>(),
             CreateMetrics(),
+            new TestLocalizer(),
             options,
             NullLogger<TenantResolutionMiddleware>.Instance);
     }
@@ -228,7 +233,9 @@ public sealed class TenantResolutionMiddlewareTests
             pipeline,
             tenantReader,
             AllowAllGate(),
+            Substitute.For<IHostImpersonationAuditWriter>(),
             CreateMetrics(),
+            new TestLocalizer(),
             options,
             NullLogger<TenantResolutionMiddleware>.Instance);
     }
@@ -443,5 +450,227 @@ public sealed class TenantResolutionMiddlewareTests
 
         await gate.DidNotReceive().CanImpersonateAsync(
             Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+    }
+
+    // ── ProblemDetails body + audit hooks ────────────────────────────
+
+    [Fact]
+    public async Task HostUser_HeaderResolution_GateDenies_WritesProblemDetailsBody()
+    {
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        var targetTenantId = Guid.NewGuid();
+        TenantResolverPipeline pipeline = PipelineWithResolver(
+            nameof(HeaderTenantResolver), new TenantInfo(targetTenantId));
+
+        IHostImpersonationGate gate = Substitute.For<IHostImpersonationGate>();
+#pragma warning disable CA2012
+        gate.CanImpersonateAsync(Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(_ => ValueTask.FromResult(new HostImpersonationDecision(false, "HostImpersonation.PermissionDenied")));
+#pragma warning restore CA2012
+
+        TenantResolutionMiddleware middleware = CreateMiddleware(
+            currentTenant, pipeline,
+            headerTrustMode: TenantHeaderTrustMode.CrossValidate,
+            hostImpersonationGate: gate);
+
+        DefaultHttpContext context = AuthenticatedContext(tenantIdClaim: null);
+        var responseStream = new System.IO.MemoryStream();
+        context.Response.Body = responseStream;
+
+        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
+
+        context.Response.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
+        context.Response.ContentType.ShouldBe("application/problem+json");
+
+        responseStream.Position = 0;
+        using var doc = System.Text.Json.JsonDocument.Parse(responseStream);
+        doc.RootElement.GetProperty("type").GetString()
+            .ShouldBe("https://granit-fx.dev/errors/host-impersonation-denied");
+        doc.RootElement.GetProperty("status").GetInt32().ShouldBe(403);
+        doc.RootElement.GetProperty("denyReasonCode").GetString()
+            .ShouldBe("HostImpersonation.PermissionDenied");
+        doc.RootElement.GetProperty("tenantId").GetGuid().ShouldBe(targetTenantId);
+        doc.RootElement.GetProperty("title").GetString().ShouldBe("Problem:HostImpersonation.Title");
+        doc.RootElement.GetProperty("detail").GetString()
+            .ShouldBe("Problem:HostImpersonation.PermissionDenied.Detail");
+    }
+
+    [Fact]
+    public async Task TenantUser_HeaderMismatchesClaim_WritesProblemDetailsBody()
+    {
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        var headerTenantId = Guid.NewGuid();
+        var claimTenantId = Guid.NewGuid();
+        TenantResolverPipeline pipeline = PipelineWithResolver(
+            nameof(HeaderTenantResolver), new TenantInfo(headerTenantId));
+
+        TenantResolutionMiddleware middleware = CreateMiddleware(
+            currentTenant, pipeline,
+            headerTrustMode: TenantHeaderTrustMode.CrossValidate);
+
+        DefaultHttpContext context = AuthenticatedContext(tenantIdClaim: claimTenantId.ToString());
+        var responseStream = new System.IO.MemoryStream();
+        context.Response.Body = responseStream;
+
+        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
+
+        context.Response.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
+        context.Response.ContentType.ShouldBe("application/problem+json");
+
+        responseStream.Position = 0;
+        using var doc = System.Text.Json.JsonDocument.Parse(responseStream);
+        doc.RootElement.GetProperty("type").GetString()
+            .ShouldBe("https://granit-fx.dev/errors/tenant-context-mismatch");
+        doc.RootElement.GetProperty("resolvedTenantId").GetGuid().ShouldBe(headerTenantId);
+        doc.RootElement.GetProperty("claimTenantId").GetGuid().ShouldBe(claimTenantId);
+    }
+
+    [Fact]
+    public async Task HostImpersonation_AuditWriter_InvokedForAllowedDecision()
+    {
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        IDisposable scope = Substitute.For<IDisposable>();
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        var tenantId = Guid.NewGuid();
+        TenantResolverPipeline pipeline = PipelineWithResolver(
+            nameof(HeaderTenantResolver), new TenantInfo(tenantId));
+
+        IHostImpersonationGate gate = Substitute.For<IHostImpersonationGate>();
+#pragma warning disable CA2012
+        gate.CanImpersonateAsync(Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(_ => ValueTask.FromResult(HostImpersonationDecision.Allow));
+#pragma warning restore CA2012
+
+        IHostImpersonationAuditWriter audit = Substitute.For<IHostImpersonationAuditWriter>();
+
+        TenantResolutionMiddleware middleware = CreateMiddlewareWithAudit(
+            currentTenant, pipeline, gate, audit);
+
+        DefaultHttpContext context = AuthenticatedContext(tenantIdClaim: null);
+
+        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
+
+        await audit.Received(1).WriteAsync(
+            Arg.Any<ClaimsPrincipal>(),
+            tenantId,
+            Arg.Is<HostImpersonationDecision>(d => d.Allowed),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HostImpersonation_AuditWriter_InvokedForDeniedDecision()
+    {
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        var tenantId = Guid.NewGuid();
+        TenantResolverPipeline pipeline = PipelineWithResolver(
+            nameof(HeaderTenantResolver), new TenantInfo(tenantId));
+
+        IHostImpersonationGate gate = Substitute.For<IHostImpersonationGate>();
+#pragma warning disable CA2012
+        gate.CanImpersonateAsync(Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(_ => ValueTask.FromResult(new HostImpersonationDecision(false, "HostImpersonation.PermissionDenied")));
+#pragma warning restore CA2012
+
+        IHostImpersonationAuditWriter audit = Substitute.For<IHostImpersonationAuditWriter>();
+
+        TenantResolutionMiddleware middleware = CreateMiddlewareWithAudit(
+            currentTenant, pipeline, gate, audit);
+
+        DefaultHttpContext context = AuthenticatedContext(tenantIdClaim: null);
+        context.Response.Body = new System.IO.MemoryStream();
+
+        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
+
+        await audit.Received(1).WriteAsync(
+            Arg.Any<ClaimsPrincipal>(),
+            tenantId,
+            Arg.Is<HostImpersonationDecision>(d => !d.Allowed && d.DenyReasonCode == "HostImpersonation.PermissionDenied"),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HostImpersonation_AuditWriterThrows_DoesNotBreakRequest()
+    {
+        // Audit failure must NOT propagate. Request still proceeds (gate said allow).
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        IDisposable scope = Substitute.For<IDisposable>();
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        var tenantId = Guid.NewGuid();
+        TenantResolverPipeline pipeline = PipelineWithResolver(
+            nameof(HeaderTenantResolver), new TenantInfo(tenantId));
+
+        IHostImpersonationGate gate = Substitute.For<IHostImpersonationGate>();
+#pragma warning disable CA2012
+        gate.CanImpersonateAsync(Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(_ => ValueTask.FromResult(HostImpersonationDecision.Allow));
+#pragma warning restore CA2012
+
+        IHostImpersonationAuditWriter audit = Substitute.For<IHostImpersonationAuditWriter>();
+#pragma warning disable CA2012
+        audit.WriteAsync(
+                Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<HostImpersonationDecision>(),
+                Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(_ => throw new InvalidOperationException("audit sink down"));
+#pragma warning restore CA2012
+
+        TenantResolutionMiddleware middleware = CreateMiddlewareWithAudit(
+            currentTenant, pipeline, gate, audit);
+
+        DefaultHttpContext context = AuthenticatedContext(tenantIdClaim: null);
+        bool nextCalled = false;
+
+        await middleware.InvokeAsync(context, _ => { nextCalled = true; return Task.CompletedTask; });
+
+        nextCalled.ShouldBeTrue();
+        currentTenant.Received(1).Change(tenantId, Arg.Any<string?>());
+    }
+
+    private static TenantResolutionMiddleware CreateMiddlewareWithAudit(
+        ICurrentTenant currentTenant,
+        TenantResolverPipeline pipeline,
+        IHostImpersonationGate gate,
+        IHostImpersonationAuditWriter audit)
+    {
+        IOptions<MultiTenancyOptions> options = Microsoft.Extensions.Options.Options.Create(new MultiTenancyOptions
+        {
+            HeaderTrustMode = TenantHeaderTrustMode.CrossValidate,
+            ValidateTenantExistence = false,
+        });
+        ITenantReader tenantReader = Substitute.For<ITenantReader>();
+        tenantReader.ExistsAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(true));
+        return new TenantResolutionMiddleware(
+            currentTenant,
+            pipeline,
+            tenantReader,
+            gate,
+            audit,
+            CreateMetrics(),
+            new TestLocalizer(),
+            options,
+            NullLogger<TenantResolutionMiddleware>.Instance);
+    }
+
+    /// <summary>
+    /// Localizer test double — echoes the key as the value so middleware tests can
+    /// assert the right key was requested without depending on the JSON resource.
+    /// </summary>
+    private sealed class TestLocalizer : IStringLocalizer<MultiTenancyLocalizationResource>
+    {
+        public LocalizedString this[string name] => new(name, name, resourceNotFound: false);
+
+        public LocalizedString this[string name, params object[] arguments] =>
+            new(name, string.Format(CultureInfo.InvariantCulture, name, arguments), resourceNotFound: false);
+
+        public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) => [];
     }
 }

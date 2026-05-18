@@ -1,0 +1,10 @@
+{
+  "culture": "fr",
+  "texts": {
+    "Problem:HostImpersonation.Title": "Impersonation host refusée",
+    "Problem:HostImpersonation.NotConfigured.Detail": "L'impersonation de locataire en mode host n'est pas configurée sur ce serveur. Ajoutez une référence au projet Granit.MultiTenancy.Authorization et appelez AddGranitHostImpersonationWithPermissions() pour l'activer.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "L'opérateur host authentifié ne possède pas la permission MultiTenancy.Host.Impersonate requise pour agir dans un contexte locataire.",
+    "Problem:TenantMismatch.Title": "Contexte locataire incohérent",
+    "Problem:TenantMismatch.Detail": "Le locataire résolu depuis la requête (en-tête ou chaîne de requête) ne correspond pas au claim locataire porté par le jeton d'accès."
+  }
+}

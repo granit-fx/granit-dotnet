@@ -11,6 +11,7 @@ using Granit.MultiTenancy.Pipeline;
 using Granit.MultiTenancy.Resolvers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
@@ -28,8 +29,23 @@ public sealed class MultiTenancyServiceCollectionExtensionsTests
         services.AddSingleton(configuration);
         services.AddLogging();
         services.AddMetrics();
+        // Middleware needs IStringLocalizer<>; this fixture bypasses the module
+        // bootstrap that would activate AddGranitLocalization() via [DependsOn].
+        // The fully-wired bootstrap is exercised in GranitMultiTenancyModuleTests.
+        services.AddSingleton(typeof(IStringLocalizer<>), typeof(NullStringLocalizer<>));
         services.AddGranitMultiTenancy();
         return services.BuildServiceProvider();
+    }
+
+    /// <summary>Null IStringLocalizer used in fixtures that don't need real text.</summary>
+    private sealed class NullStringLocalizer<T> : IStringLocalizer<T>
+    {
+        public LocalizedString this[string name] => new(name, name, resourceNotFound: false);
+
+        public LocalizedString this[string name, params object[] arguments] =>
+            new(name, name, resourceNotFound: false);
+
+        public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) => [];
     }
 
     [Fact]

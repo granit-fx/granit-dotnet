@@ -1,0 +1,10 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Problem:HostImpersonation.Title": "Värd-imitering nekad",
+    "Problem:HostImpersonation.NotConfigured.Detail": "Värd-tenant-imitering är inte konfigurerad på denna server. Lägg till en projektreferens till Granit.MultiTenancy.Authorization och anropa AddGranitHostImpersonationWithPermissions() för att aktivera den.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "Den autentiserade värd-operatören saknar behörigheten MultiTenancy.Host.Impersonate som krävs för att agera i en tenant-omfattning.",
+    "Problem:TenantMismatch.Title": "Inkonsekvent tenant-kontext",
+    "Problem:TenantMismatch.Detail": "Tenanten som lösts från begäran (rubrik eller frågesträng) matchar inte tenant-anspråket i åtkomsttoken."
+  }
+}

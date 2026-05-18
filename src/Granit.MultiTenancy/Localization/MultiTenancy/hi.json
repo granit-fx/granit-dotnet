@@ -1,0 +1,10 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Problem:HostImpersonation.Title": "होस्ट प्रतिरूपण अस्वीकृत",
+    "Problem:HostImpersonation.NotConfigured.Detail": "इस सर्वर पर होस्ट टेनेंट प्रतिरूपण कॉन्फ़िगर नहीं किया गया है। इसे सक्षम करने के लिए Granit.MultiTenancy.Authorization परियोजना का संदर्भ जोड़ें और AddGranitHostImpersonationWithPermissions() कॉल करें।",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "प्रमाणित होस्ट ऑपरेटर के पास टेनेंट दायरे में कार्य करने के लिए आवश्यक MultiTenancy.Host.Impersonate अनुमति नहीं है।",
+    "Problem:TenantMismatch.Title": "टेनेंट संदर्भ बेमेल",
+    "Problem:TenantMismatch.Detail": "अनुरोध से प्राप्त टेनेंट (हेडर या क्वेरी स्ट्रिंग) एक्सेस टोकन के टेनेंट क्लेम से मेल नहीं खाता।"
+  }
+}

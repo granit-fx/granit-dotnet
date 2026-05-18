@@ -1,0 +1,10 @@
+{
+  "culture": "en",
+  "texts": {
+    "Problem:HostImpersonation.Title": "Host impersonation denied",
+    "Problem:HostImpersonation.NotConfigured.Detail": "Host tenant-impersonation is not configured on this server. Add a project reference to Granit.MultiTenancy.Authorization and call AddGranitHostImpersonationWithPermissions() to enable it.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "The authenticated host operator does not have the MultiTenancy.Host.Impersonate permission required to act in a tenant scope.",
+    "Problem:TenantMismatch.Title": "Tenant context mismatch",
+    "Problem:TenantMismatch.Detail": "The tenant resolved from the request (header or query string) does not match the tenant claim carried by the access token."
+  }
+}

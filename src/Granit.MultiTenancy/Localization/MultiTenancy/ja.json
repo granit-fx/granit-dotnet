@@ -1,0 +1,10 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Problem:HostImpersonation.Title": "ホストのなりすましが拒否されました",
+    "Problem:HostImpersonation.NotConfigured.Detail": "このサーバーではホストのテナントなりすましが構成されていません。Granit.MultiTenancy.Authorization へのプロジェクト参照を追加し、AddGranitHostImpersonationWithPermissions() を呼び出して有効化してください。",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "認証済みのホストオペレーターには、テナントスコープで操作するために必要な MultiTenancy.Host.Impersonate 権限がありません。",
+    "Problem:TenantMismatch.Title": "テナントコンテキスト不一致",
+    "Problem:TenantMismatch.Detail": "リクエスト(ヘッダーまたはクエリ文字列)から解決されたテナントが、アクセストークンに含まれるテナントクレームと一致しません。"
+  }
+}

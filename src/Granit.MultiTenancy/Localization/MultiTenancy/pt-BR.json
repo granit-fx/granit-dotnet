@@ -1,0 +1,8 @@
+{
+  "culture": "pt-BR",
+  "texts": {
+    "Problem:HostImpersonation.NotConfigured.Detail": "A personificação de inquilino em modo host não está configurada neste servidor. Adicione uma referência ao projeto Granit.MultiTenancy.Authorization e chame AddGranitHostImpersonationWithPermissions() para ativá-la.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "O operador host autenticado não possui a permissão MultiTenancy.Host.Impersonate necessária para agir em um escopo de inquilino.",
+    "Problem:TenantMismatch.Detail": "O inquilino resolvido a partir da requisição (cabeçalho ou querystring) não corresponde ao claim de inquilino do token de acesso."
+  }
+}

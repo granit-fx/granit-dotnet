@@ -1,0 +1,10 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Problem:HostImpersonation.Title": "Vydávání se za hostitele zamítnuto",
+    "Problem:HostImpersonation.NotConfigured.Detail": "Vydávání se za nájemce v režimu hostitele není na tomto serveru nakonfigurováno. Přidejte referenci na projekt Granit.MultiTenancy.Authorization a zavolejte AddGranitHostImpersonationWithPermissions() pro aktivaci.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "Ověřený hostitelský operátor nemá oprávnění MultiTenancy.Host.Impersonate vyžadované k akci v kontextu nájemce.",
+    "Problem:TenantMismatch.Title": "Nesoulad kontextu nájemce",
+    "Problem:TenantMismatch.Detail": "Nájemce odvozený z požadavku (hlavička nebo querystring) neodpovídá nároku nájemce v přístupovém tokenu."
+  }
+}

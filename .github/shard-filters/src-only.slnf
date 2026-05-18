@@ -139,6 +139,7 @@
       "src/Granit.Mergeable.BackgroundJobs/Granit.Mergeable.BackgroundJobs.csproj",
       "src/Granit.Mergeable.EntityFrameworkCore/Granit.Mergeable.EntityFrameworkCore.csproj",
       "src/Granit.Mergeable/Granit.Mergeable.csproj",
+      "src/Granit.MultiTenancy.Auditing/Granit.MultiTenancy.Auditing.csproj",
       "src/Granit.MultiTenancy.Authorization/Granit.MultiTenancy.Authorization.csproj",
       "src/Granit.MultiTenancy.Endpoints/Granit.MultiTenancy.Endpoints.csproj",
       "src/Granit.MultiTenancy.EntityFrameworkCore/Granit.MultiTenancy.EntityFrameworkCore.csproj",

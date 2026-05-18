@@ -1,0 +1,10 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Problem:HostImpersonation.Title": "호스트 가장 거부됨",
+    "Problem:HostImpersonation.NotConfigured.Detail": "이 서버에 호스트 테넌트 가장이 구성되어 있지 않습니다. 활성화하려면 Granit.MultiTenancy.Authorization 프로젝트 참조를 추가하고 AddGranitHostImpersonationWithPermissions()를 호출하세요.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "인증된 호스트 운영자에게 테넌트 범위에서 작업하는 데 필요한 MultiTenancy.Host.Impersonate 권한이 없습니다.",
+    "Problem:TenantMismatch.Title": "테넌트 컨텍스트 불일치",
+    "Problem:TenantMismatch.Detail": "요청에서 확인된 테넌트(헤더 또는 쿼리 문자열)가 액세스 토큰의 테넌트 클레임과 일치하지 않습니다."
+  }
+}

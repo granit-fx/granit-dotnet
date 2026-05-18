@@ -1,0 +1,10 @@
+{
+  "culture": "de",
+  "texts": {
+    "Problem:HostImpersonation.Title": "Host-Impersonation verweigert",
+    "Problem:HostImpersonation.NotConfigured.Detail": "Host-Mandanten-Impersonation ist auf diesem Server nicht konfiguriert. Fügen Sie einen Projektverweis auf Granit.MultiTenancy.Authorization hinzu und rufen Sie AddGranitHostImpersonationWithPermissions() auf, um sie zu aktivieren.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "Der authentifizierte Host-Operator besitzt nicht die erforderliche Berechtigung MultiTenancy.Host.Impersonate, um in einem Mandantenkontext zu handeln.",
+    "Problem:TenantMismatch.Title": "Mandantenkontext stimmt nicht überein",
+    "Problem:TenantMismatch.Detail": "Der aus der Anfrage abgeleitete Mandant (Header oder Querystring) stimmt nicht mit dem Mandanten-Claim im Zugriffstoken überein."
+  }
+}

@@ -12,13 +12,15 @@ public sealed partial class ProjectDependencyTests
 {
     private static readonly string RepoRoot = FindRepoRoot();
 
-    [Fact]
-    public void Granit_MultiTenancy_must_not_reference_Granit_Authorization()
+    [Theory]
+    [InlineData("Granit.Authorization", "Granit.MultiTenancy.Authorization", "IHostImpersonationGate")]
+    [InlineData("Granit.Auditing", "Granit.MultiTenancy.Auditing", "IHostImpersonationAuditWriter")]
+    public void Granit_MultiTenancy_must_not_reference_domain_module(string forbiddenRef, string gluePackage, string abstraction)
     {
-        // Multi-tenancy is infrastructure (routing, claims, headers). Authorization is
-        // application domain (permissions, RBAC). Infra must not depend on domain.
-        // The permission-based host-impersonation gate lives in the glue package
-        // Granit.MultiTenancy.Authorization, which references both.
+        // Granit.MultiTenancy is infrastructure (routing, claims, headers, problem details).
+        // Application-domain modules (Authorization, Auditing) must not be reachable from
+        // the base module — those concerns enter via abstractions implemented in the
+        // dedicated glue packages.
         string csproj = Path.Join(RepoRoot, "src", "Granit.MultiTenancy", "Granit.MultiTenancy.csproj");
         File.Exists(csproj).ShouldBeTrue($"Expected csproj at {csproj}");
 
@@ -27,10 +29,9 @@ public sealed partial class ProjectDependencyTests
             .Select(m => Path.GetFileNameWithoutExtension(m.Groups[1].Value));
 
         refs.ShouldNotContain(
-            "Granit.Authorization",
-            "Granit.MultiTenancy.csproj must not reference Granit.Authorization. " +
-            "Permission-based gating belongs in Granit.MultiTenancy.Authorization (glue package). " +
-            "See IHostImpersonationGate.");
+            forbiddenRef,
+            $"Granit.MultiTenancy.csproj must not reference {forbiddenRef}. " +
+            $"That concern belongs in {gluePackage} via the {abstraction} abstraction.");
     }
 
     [Fact]

@@ -1,0 +1,10 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Problem:HostImpersonation.Title": "Host-impersonatie geweigerd",
+    "Problem:HostImpersonation.NotConfigured.Detail": "Host tenant-impersonatie is niet geconfigureerd op deze server. Voeg een projectreferentie naar Granit.MultiTenancy.Authorization toe en roep AddGranitHostImpersonationWithPermissions() aan om dit in te schakelen.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "De geauthenticeerde host-operator heeft niet de MultiTenancy.Host.Impersonate machtiging die vereist is om in een tenant-bereik te handelen.",
+    "Problem:TenantMismatch.Title": "Tenant-context komt niet overeen",
+    "Problem:TenantMismatch.Detail": "De tenant die uit het verzoek is afgeleid (header of querystring) komt niet overeen met de tenant-claim in het toegangstoken."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Problem:HostImpersonation.Title": "Podszywanie się hosta odrzucone",
+    "Problem:HostImpersonation.NotConfigured.Detail": "Podszywanie się pod najemcę w trybie hosta nie jest skonfigurowane na tym serwerze. Dodaj referencję do projektu Granit.MultiTenancy.Authorization i wywołaj AddGranitHostImpersonationWithPermissions(), aby je włączyć.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "Uwierzytelniony operator hosta nie posiada uprawnienia MultiTenancy.Host.Impersonate wymaganego do działania w zakresie najemcy.",
+    "Problem:TenantMismatch.Title": "Niespójny kontekst najemcy",
+    "Problem:TenantMismatch.Detail": "Najemca wynikający z żądania (nagłówek lub ciąg zapytania) nie odpowiada deklaracji najemcy zawartej w tokenie dostępu."
+  }
+}

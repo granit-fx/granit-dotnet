@@ -1,0 +1,10 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Problem:HostImpersonation.Title": "Host kimliğine bürünme reddedildi",
+    "Problem:HostImpersonation.NotConfigured.Detail": "Bu sunucuda host kiracı kimliğine bürünme yapılandırılmamış. Etkinleştirmek için Granit.MultiTenancy.Authorization projesine bir referans ekleyin ve AddGranitHostImpersonationWithPermissions() çağırın.",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "Kimliği doğrulanmış host operatörü, kiracı kapsamında işlem yapmak için gereken MultiTenancy.Host.Impersonate iznine sahip değil.",
+    "Problem:TenantMismatch.Title": "Kiracı bağlamı uyumsuz",
+    "Problem:TenantMismatch.Detail": "İstekten çözümlenen kiracı (başlık veya sorgu dizesi), erişim belirtecindeki kiracı talebiyle eşleşmiyor."
+  }
+}

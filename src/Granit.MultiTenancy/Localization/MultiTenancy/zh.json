@@ -1,0 +1,10 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Problem:HostImpersonation.Title": "拒绝主机模拟",
+    "Problem:HostImpersonation.NotConfigured.Detail": "此服务器未配置主机租户模拟。请添加对 Granit.MultiTenancy.Authorization 项目的引用并调用 AddGranitHostImpersonationWithPermissions() 以启用。",
+    "Problem:HostImpersonation.PermissionDenied.Detail": "已认证的主机操作员未拥有在租户范围内操作所需的 MultiTenancy.Host.Impersonate 权限。",
+    "Problem:TenantMismatch.Title": "租户上下文不一致",
+    "Problem:TenantMismatch.Detail": "从请求中解析出的租户(头部或查询字符串)与访问令牌中携带的租户声明不匹配。"
+  }
+}
