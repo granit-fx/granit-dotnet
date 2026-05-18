@@ -397,36 +397,37 @@ jobs:
   # GitHub Packages — dev packages on develop/main
   # sbom is kept in needs for ordering on main, but skipped on develop.
   # The if condition uses always() so the job runs even when sbom is skipped.
-  publish-github:
-    needs: [pack, sbom]
-    runs-on: ubuntu-latest
-    if: |
-      always()
-      && needs.pack.result == 'success'
-      && (needs.sbom.result == 'success' || needs.sbom.result == 'skipped')
-      && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
-    permissions:
-      packages: write
-    steps:
-      - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Download packages
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: nupkgs
-          path: nupkgs
-
-      - name: Push to GitHub Packages
-        env:
-          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: >
-          dotnet nuget push "nupkgs/*.nupkg"
-          --source "https://nuget.pkg.github.com/granit-fx/index.json"
-          --api-key "$NUGET_AUTH_TOKEN"
-          --skip-duplicate
+  # TEMP: GitHub Packages publish disabled — using GitLab Package Registry only.
+  # publish-github:
+  #   needs: [pack, sbom]
+  #   runs-on: ubuntu-latest
+  #   if: |
+  #     always()
+  #     && needs.pack.result == 'success'
+  #     && (needs.sbom.result == 'success' || needs.sbom.result == 'skipped')
+  #     && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+  #   permissions:
+  #     packages: write
+  #   steps:
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+  #       with:
+  #         dotnet-version: ${{ env.DOTNET_VERSION }}
+  #
+  #     - name: Download packages
+  #       uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+  #       with:
+  #         name: nupkgs
+  #         path: nupkgs
+  #
+  #     - name: Push to GitHub Packages
+  #       env:
+  #         NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       run: >
+  #         dotnet nuget push "nupkgs/*.nupkg"
+  #         --source "https://nuget.pkg.github.com/granit-fx/index.json"
+  #         --api-key "$NUGET_AUTH_TOKEN"
+  #         --skip-duplicate
 
   # GitLab Package Registry (granit-business project, id 11) — fallback feed
   # for downstream repos when GitHub Packages is rate-limited or unavailable.

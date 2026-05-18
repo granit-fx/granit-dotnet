@@ -5,10 +5,10 @@
       "AWSSDK.SimpleEmailV2": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.12.15",
-        "contentHash": "epssrB1zDArC6xN3uuGXR/gw6kMtnzF22xDpkmZGqxvNSjiYt7lkJn3h2ifKXBWs+vYYVuyC+BP8dZPDSqezFA==",
+        "resolved": "4.0.12.16",
+        "contentHash": "sVvEFaV37J9uF1MPDcEqsxiYNVF+q7zTvjG0fwo2/KCf5UbHn4ZXOwARcAsxCYu/ZscZicmIOYPQpJkjhhO9Cw==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.1, 5.0.0)"
         }
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
@@ -69,8 +69,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.7",
-        "contentHash": "Uz3Yznhx3OOprM7I9Xhqd2a8qd0EAppFGw/4g9Iw/Vu4MlDCpYKEyD5Lkffcdv9VeP9HOJQiOVkaV/YOH3+yrA=="
+        "resolved": "4.0.7.1",
+        "contentHash": "XA0GHLwEMkoVu3u8neKnLEDD9ViXpn26ie9UhKXZXYRzCRfSFrLWpBOhupWlf+cJEFBYCC5mx2NsN8h59Y+M2Q=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",
