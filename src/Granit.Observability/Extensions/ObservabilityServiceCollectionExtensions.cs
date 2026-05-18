@@ -112,71 +112,8 @@ public static class ObservabilityServiceCollectionExtensions
                 serviceName: options.ServiceName,
                 serviceVersion: options.ServiceVersion,
                 serviceNamespace: options.ServiceNamespace))
-            .WithTracing(tracing =>
-            {
-                if (!options.EnableTracing)
-                {
-                    return;
-                }
-
-                // Register all Granit module ActivitySources declared via
-                // GranitActivitySourceRegistry.Register() during host configuration.
-                foreach (string source in GranitActivitySourceRegistry.GetRegisteredSources())
-                {
-                    tracing.AddSource(source);
-                }
-
-                tracing
-                    .AddAspNetCoreInstrumentation(aspnet =>
-                    {
-                        aspnet.RecordException = true;
-                        aspnet.Filter = httpContext =>
-                        {
-                            Microsoft.AspNetCore.Http.PathString path = httpContext.Request.Path;
-                            // Exclude /health/* (liveness, readiness, startup) and /healthz (legacy).
-                            // StartsWithSegments is segment-safe: /healthcare/... is NOT excluded.
-                            return !path.StartsWithSegments("/health") && path != "/healthz";
-                        };
-                    })
-                    .AddHttpClientInstrumentation()
-                    .AddEntityFrameworkCoreInstrumentation();
-
-                // Apply tracing contributors declared by SDK-embedding modules
-                // (Redis, Npgsql, AWS, ...). See GranitOpenTelemetryRegistry.
-                foreach (Action<TracerProviderBuilder> contributor in
-                    GranitOpenTelemetryRegistry.GetTracingContributors())
-                {
-                    contributor(tracing);
-                }
-
-                if (!crossCuttingOtlpActive)
-                {
-                    tracing.AddOtlpExporter(otlp => otlp.Endpoint = new Uri(options.OtlpEndpoint));
-                }
-            })
-            .WithMetrics(metrics =>
-            {
-                if (!options.EnableMetrics)
-                {
-                    return;
-                }
-
-                metrics
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation();
-
-                // Apply metrics contributors declared by SDK-embedding modules.
-                foreach (Action<MeterProviderBuilder> contributor in
-                    GranitOpenTelemetryRegistry.GetMetricsContributors())
-                {
-                    contributor(metrics);
-                }
-
-                if (!crossCuttingOtlpActive)
-                {
-                    metrics.AddOtlpExporter(otlp => otlp.Endpoint = new Uri(options.OtlpEndpoint));
-                }
-            });
+            .WithTracing(tracing => ConfigureTracing(tracing, options, crossCuttingOtlpActive))
+            .WithMetrics(metrics => ConfigureMetrics(metrics, options, crossCuttingOtlpActive));
 
         // When OTEL_EXPORTER_OTLP_ENDPOINT is set (e.g. by .NET Aspire), use the
         // cross-cutting UseOtlpExporter() which exports all signals (traces, metrics,
@@ -184,6 +121,73 @@ public static class ObservabilityServiceCollectionExtensions
         if (crossCuttingOtlpActive)
         {
             otelBuilder.UseOtlpExporter();
+        }
+    }
+
+    private static void ConfigureTracing(TracerProviderBuilder tracing, ObservabilityOptions options, bool crossCuttingOtlpActive)
+    {
+        if (!options.EnableTracing)
+        {
+            return;
+        }
+
+        // Register all Granit module ActivitySources declared via
+        // GranitActivitySourceRegistry.Register() during host configuration.
+        foreach (string source in GranitActivitySourceRegistry.GetRegisteredSources())
+        {
+            tracing.AddSource(source);
+        }
+
+        tracing
+            .AddAspNetCoreInstrumentation(aspnet =>
+            {
+                aspnet.RecordException = true;
+                aspnet.Filter = static httpContext =>
+                {
+                    Microsoft.AspNetCore.Http.PathString path = httpContext.Request.Path;
+                    // Exclude /health/* (liveness, readiness, startup) and /healthz (legacy).
+                    // StartsWithSegments is segment-safe: /healthcare/... is NOT excluded.
+                    return !path.StartsWithSegments("/health") && path != "/healthz";
+                };
+            })
+            .AddHttpClientInstrumentation()
+            .AddEntityFrameworkCoreInstrumentation();
+
+        // Apply tracing contributors declared by SDK-embedding modules
+        // (Redis, Npgsql, AWS, ...). See GranitOpenTelemetryRegistry.
+        foreach (Action<TracerProviderBuilder> contributor in
+            GranitOpenTelemetryRegistry.GetTracingContributors())
+        {
+            contributor(tracing);
+        }
+
+        if (!crossCuttingOtlpActive)
+        {
+            tracing.AddOtlpExporter(otlp => otlp.Endpoint = new Uri(options.OtlpEndpoint));
+        }
+    }
+
+    private static void ConfigureMetrics(MeterProviderBuilder metrics, ObservabilityOptions options, bool crossCuttingOtlpActive)
+    {
+        if (!options.EnableMetrics)
+        {
+            return;
+        }
+
+        metrics
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation();
+
+        // Apply metrics contributors declared by SDK-embedding modules.
+        foreach (Action<MeterProviderBuilder> contributor in
+            GranitOpenTelemetryRegistry.GetMetricsContributors())
+        {
+            contributor(metrics);
+        }
+
+        if (!crossCuttingOtlpActive)
+        {
+            metrics.AddOtlpExporter(otlp => otlp.Endpoint = new Uri(options.OtlpEndpoint));
         }
     }
 }
