@@ -80,6 +80,7 @@
       "src/Granit.Scheduling.Wolverine/Granit.Scheduling.Wolverine.csproj",
       "src/Granit.Scheduling/Granit.Scheduling.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
+      "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation.AI/Granit.Validation.AI.csproj",
       "src/Granit.Validation.Endpoints/Granit.Validation.Endpoints.csproj",
