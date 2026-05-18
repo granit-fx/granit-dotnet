@@ -1,6 +1,7 @@
 using Granit.Localization.Domain;
 using Granit.Localization.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
@@ -20,7 +21,8 @@ public sealed class EfCoreLocalizationOverrideStoreTests
         public LocalizationDbContext CreateDbContext() =>
             new(new DbContextOptionsBuilder<LocalizationDbContext>()
                 .UseInMemoryDatabase(dbName)
-                .Options);
+                .Options,
+                GranitDesignTime.CurrentTenant);
 
         public Task<LocalizationDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult(CreateDbContext());

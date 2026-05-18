@@ -1,7 +1,7 @@
 using Granit.DataFiltering;
 using Granit.Mergeable.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Mergeable.EntityFrameworkCore.Internal;
@@ -13,20 +13,18 @@ namespace Granit.Mergeable.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class MergeableDbContext(
     DbContextOptions<MergeableDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>Replay cache for Stripe-style idempotency-key support on merges.</summary>
     internal DbSet<MergeIdempotencyEntry> MergeIdempotencyEntries =>
         Set<MergeIdempotencyEntry>();
 
     /// <inheritdoc />
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
-        base.OnModelCreating(modelBuilder);
         modelBuilder.ConfigureMergeableModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

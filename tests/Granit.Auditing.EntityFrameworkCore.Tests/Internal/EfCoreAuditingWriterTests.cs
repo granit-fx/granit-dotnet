@@ -1,6 +1,7 @@
 using Granit.Auditing.Domain;
 using Granit.Auditing.EntityFrameworkCore.Internal;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
@@ -31,7 +32,7 @@ public sealed class EfCoreAuditingWriterTests
 
         await writer.WriteAsync(entry, TestContext.Current.CancellationToken);
 
-        await using AuditingDbContext verifyCtx = new(dbOptions);
+        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant);
         AuditEntry? persisted = await verifyCtx.AuditEntries.FindAsync([entry.Id], TestContext.Current.CancellationToken);
         persisted.ShouldNotBeNull();
         persisted.UserId.ShouldBe("user-1");
@@ -83,7 +84,7 @@ public sealed class EfCoreAuditingWriterTests
 
         await writer.WriteAsync(entry, TestContext.Current.CancellationToken);
 
-        await using AuditingDbContext verifyCtx = new(dbOptions);
+        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant);
         AuditEntry? persisted = await verifyCtx.AuditEntries
             .Include(e => e.EntityChanges)
             .ThenInclude(ec => ec.PropertyChanges)
@@ -111,6 +112,6 @@ public sealed class EfCoreAuditingWriterTests
     private sealed class TestDbContextFactory(DbContextOptions<AuditingDbContext> options)
         : IDbContextFactory<AuditingDbContext>
     {
-        public AuditingDbContext CreateDbContext() => new(options);
+        public AuditingDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
     }
 }

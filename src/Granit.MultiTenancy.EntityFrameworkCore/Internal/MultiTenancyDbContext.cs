@@ -1,7 +1,7 @@
 using Granit.DataFiltering;
 using Granit.MultiTenancy.Domain;
 using Granit.MultiTenancy.EntityFrameworkCore.Extensions;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.MultiTenancy.EntityFrameworkCore.Internal;
@@ -12,17 +12,13 @@ namespace Granit.MultiTenancy.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class MultiTenancyDbContext(
     DbContextOptions<MultiTenancyDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     public DbSet<Tenant> Tenants { get; set; } = null!;
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureMultiTenancyModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureMultiTenancyModule();
 }

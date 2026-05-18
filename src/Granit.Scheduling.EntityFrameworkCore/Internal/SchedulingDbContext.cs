@@ -1,6 +1,6 @@
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Scheduling.Domain;
 using Granit.Scheduling.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -16,18 +16,14 @@ namespace Granit.Scheduling.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class SchedulingDbContext(
     DbContextOptions<SchedulingDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>Scheduled actions awaiting execution, cancelled, or completed.</summary>
     public DbSet<ScheduledAction> ScheduledActions { get; set; } = null!;
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureSchedulingModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureSchedulingModule();
 }

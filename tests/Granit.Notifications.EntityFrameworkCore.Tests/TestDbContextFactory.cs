@@ -1,6 +1,9 @@
 using System.Text.Json;
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Encryption;
 using Granit.Notifications.EntityFrameworkCore.Internal;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -14,15 +17,28 @@ namespace Granit.Notifications.EntityFrameworkCore.Tests;
 /// for fast, isolated integration tests that support all relational operations
 /// (including <c>ExecuteUpdateAsync</c> / <c>ExecuteDeleteAsync</c>).
 /// </summary>
+/// <remarks>
+/// The <see cref="IMultiTenant"/> query filter is disabled via a dedicated
+/// <see cref="DataFilter"/> instance so tests can insert/read rows under
+/// arbitrary tenant ids without setting up an ambient <c>ICurrentTenant</c>.
+/// </remarks>
 internal sealed class TestDbContextFactory : IDbContextFactory<NotificationsDbContext>, IDisposable
 {
     private readonly SqliteConnection _connection;
     private readonly DbContextOptions<NotificationsDbContext> _options;
+    private readonly IDataFilter _dataFilter;
+    private readonly IDisposable _multiTenantDisabled;
 
-    private TestDbContextFactory(SqliteConnection connection, DbContextOptions<NotificationsDbContext> options)
+    private TestDbContextFactory(
+        SqliteConnection connection,
+        DbContextOptions<NotificationsDbContext> options,
+        IDataFilter dataFilter,
+        IDisposable multiTenantDisabled)
     {
         _connection = connection;
         _options = options;
+        _dataFilter = dataFilter;
+        _multiTenantDisabled = multiTenantDisabled;
     }
 
     public static TestDbContextFactory Create()
@@ -36,18 +52,25 @@ internal sealed class TestDbContextFactory : IDbContextFactory<NotificationsDbCo
 
         DbContextOptions<NotificationsDbContext> options = optionsBuilder.Options;
 
+        DataFilter dataFilter = new();
+        IDisposable multiTenantDisabled = dataFilter.Disable<IMultiTenant>();
+
         // Create the schema
-        using (NotificationsDbContext db = new(options, new PassthroughEncryption()))
+        using (NotificationsDbContext db = new(options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant, dataFilter))
         {
             db.Database.EnsureCreated();
         }
 
-        return new TestDbContextFactory(connection, options);
+        return new TestDbContextFactory(connection, options, dataFilter, multiTenantDisabled);
     }
 
-    public NotificationsDbContext CreateDbContext() => new(_options, new PassthroughEncryption());
+    public NotificationsDbContext CreateDbContext() => new(_options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant, _dataFilter);
 
-    public void Dispose() => _connection.Dispose();
+    public void Dispose()
+    {
+        _multiTenantDisabled.Dispose();
+        _connection.Dispose();
+    }
 
     private sealed class PassthroughEncryption : IStringEncryptionService
     {

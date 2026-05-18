@@ -199,6 +199,15 @@ public sealed partial class SourceCodeAntiPatternTests
                 continue;
             }
 
+            // OpenIddictDbContext cannot inherit GranitDbContext (single-inheritance is taken
+            // by IdentityDbContext<TUser,TRole,TKey>), so it inlines the parameterised
+            // IMultiTenant filter and needs the tenant / data-filter references stored as
+            // private fields for the lambda's closure. Exempt from the field-ban rule.
+            if (string.Equals(fileName, "OpenIddictDbContext.cs", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
             // Only check *.EntityFrameworkCore packages (not *.Migrations — system DbContext without domain entities)
             string relativePath = Path.GetRelativePath(srcDir, csFile);
             string moduleName = relativePath.Split(Path.DirectorySeparatorChar)[0];

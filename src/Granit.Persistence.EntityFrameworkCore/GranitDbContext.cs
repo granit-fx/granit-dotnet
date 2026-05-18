@@ -97,15 +97,20 @@ public abstract class GranitDbContext : DbContext
     /// </remarks>
     protected sealed override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Non-tenant filters (soft-delete, active, etc.). Tenant is passed as null —
-        // ApplyGranitConventions skips its IMultiTenant block in that mode, leaving the
-        // filter to this class.
-        modelBuilder.ApplyGranitConventions(currentTenant: null, DataFilter);
-
+        // 1) Derived-class configuration first. Modules call `Ignore<>()` for
+        //    entities they don't own, configure FKs, etc. — those must land
+        //    before any iteration over `Model.GetEntityTypes()`.
         OnGranitModelCreating(modelBuilder);
 
-        // Register the parameterised IMultiTenant filter AFTER user model configuration so
-        // every entity type is discoverable.
+        // 2) Non-tenant filters (soft-delete, active, processing restriction,
+        //    publishable, merge tombstone). `currentTenant: null` skips the
+        //    IMultiTenant block in this overload — this class owns that filter
+        //    separately, with parameterised SQL.
+        modelBuilder.ApplyGranitConventions(currentTenant: null, DataFilter);
+
+        // 3) Parameterised IMultiTenant filter. Built inside a member of THIS
+        //    DbContext so `CurrentTenantId` is recognised by EF Core's parameter
+        //    extractor and emitted as @ef_filter__CurrentTenantId.
         foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes()
             .Where(et => typeof(IMultiTenant).IsAssignableFrom(et.ClrType)))
         {

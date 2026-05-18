@@ -1,3 +1,4 @@
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timeline.Domain;
 using Granit.Timeline.EntityFrameworkCore;
 using Granit.Timeline.EntityFrameworkCore.Internal;
@@ -18,7 +19,7 @@ public sealed class ReactionConfigurationTests
         DbContextOptions<TimelineDbContext> options = new DbContextOptionsBuilder<TimelineDbContext>()
             .UseSqlite(connection)
             .Options;
-        using TimelineDbContext ctx = new(options);
+        using TimelineDbContext ctx = new(options, GranitDesignTime.CurrentTenant);
         return ctx.Model.FindEntityType(typeof(Reaction))
             ?? throw new InvalidOperationException("Reaction entity type missing from model");
     }

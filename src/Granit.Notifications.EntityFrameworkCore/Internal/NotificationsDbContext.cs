@@ -5,7 +5,7 @@ using Granit.MultiTenancy;
 using Granit.Notifications.Domain;
 using Granit.Notifications.EntityFrameworkCore.Extensions;
 using Granit.Notifications.MobilePush.Domain;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Notifications.EntityFrameworkCore.Internal;
@@ -16,10 +16,12 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 internal sealed class NotificationsDbContext(
     DbContextOptions<NotificationsDbContext> options,
     IStringEncryptionService encryption,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
+    private readonly IStringEncryptionService _encryption = encryption;
+
     /// <summary>In-app user notifications (inbox).</summary>
     public DbSet<UserNotification> UserNotifications => Set<UserNotification>();
 
@@ -36,11 +38,9 @@ internal sealed class NotificationsDbContext(
     public DbSet<MobilePushToken> MobilePushTokens => Set<MobilePushToken>();
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
         modelBuilder.ConfigureNotificationsModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-        modelBuilder.ApplyEncryptionConventions(encryption);
+        modelBuilder.ApplyEncryptionConventions(_encryption);
     }
 }

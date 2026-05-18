@@ -2,7 +2,7 @@ using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.EntityFrameworkCore.Extensions;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.AI.EntityFrameworkCore.Internal;
@@ -16,9 +16,9 @@ namespace Granit.AI.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class AIDbContext(
     DbContextOptions<AIDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>Dynamic AI workspace configurations.</summary>
     public DbSet<AIWorkspaceEntity> Workspaces { get; set; } = null!;
@@ -27,10 +27,6 @@ internal sealed class AIDbContext(
     public DbSet<AIUsageRecordEntity> UsageRecords { get; set; } = null!;
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureAIModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureAIModule();
 }

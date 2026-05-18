@@ -1,6 +1,6 @@
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +17,9 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class WebhooksDbContext(
     DbContextOptions<WebhooksDbContext> options,
-    ICurrentTenant? currentTenant = null,
-    IDataFilter? dataFilter = null) : DbContext(options)
+    ICurrentTenant currentTenant,
+    IDataFilter? dataFilter = null)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>Webhook subscriptions.</summary>
     public DbSet<WebhookSubscription> WebhookSubscriptions => Set<WebhookSubscription>();
@@ -35,11 +36,6 @@ internal sealed class WebhooksDbContext(
     public DbSet<WebhookDeliveryAttempt> WebhookDeliveryAttempts => Set<WebhookDeliveryAttempt>();
 
     /// <inheritdoc/>
-    /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureWebhooksModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureWebhooksModule();
 }

@@ -1,7 +1,7 @@
 using Granit.Bff.EntityFrameworkCore.Extensions;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Bff.EntityFrameworkCore.Internal;
@@ -13,18 +13,14 @@ namespace Granit.Bff.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class BffDbContext(
     DbContextOptions<BffDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>BFF sessions.</summary>
     public DbSet<BffSessionEntity> Sessions => Set<BffSessionEntity>();
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureBffModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureBffModule();
 }

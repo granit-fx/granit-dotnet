@@ -1,6 +1,7 @@
 using Granit.Auditing.Domain;
 using Granit.Auditing.EntityFrameworkCore.Internal;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -26,7 +27,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
             .UseSqlite(_connection)
             .Options;
 
-        using var ctx = new AuditingDbContext(_dbOptions);
+        using var ctx = new AuditingDbContext(_dbOptions, GranitDesignTime.CurrentTenant);
         ctx.Database.EnsureCreated();
     }
 
@@ -37,7 +38,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
     public async Task PseudonymizeByUserAsync_ReplacesPersonalData()
     {
         // Seed two entries for the target user and one for another user.
-        await using (AuditingDbContext seedCtx = new(_dbOptions))
+        await using (AuditingDbContext seedCtx = new(_dbOptions, GranitDesignTime.CurrentTenant))
         {
             seedCtx.AuditEntries.AddRange(
                 new AuditEntry
@@ -82,7 +83,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
         count.ShouldBe(2);
 
         // Verify pseudonymized entries.
-        await using AuditingDbContext verifyCtx = new(_dbOptions);
+        await using AuditingDbContext verifyCtx = new(_dbOptions, GranitDesignTime.CurrentTenant);
         string expectedHash = EfCoreAuditingCleaner.HashUserId("user-to-erase");
 
         List<AuditEntry> pseudonymized = await verifyCtx.AuditEntries
@@ -154,7 +155,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
     [Fact]
     public async Task PseudonymizeByUserAsync_IsIdempotent()
     {
-        await using (AuditingDbContext seedCtx = new(_dbOptions))
+        await using (AuditingDbContext seedCtx = new(_dbOptions, GranitDesignTime.CurrentTenant))
         {
             seedCtx.AuditEntries.Add(new AuditEntry
             {
@@ -185,6 +186,6 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
     private sealed class TestDbContextFactory(DbContextOptions<AuditingDbContext> options)
         : IDbContextFactory<AuditingDbContext>
     {
-        public AuditingDbContext CreateDbContext() => new(options);
+        public AuditingDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
     }
 }

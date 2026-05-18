@@ -3,6 +3,7 @@ using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.EntityFrameworkCore.Internal;
 using Granit.BackgroundJobs.Internal;
 using Granit.Guids;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
@@ -34,7 +35,7 @@ public sealed class EfBackgroundJobStoreTests : IDisposable
                 new DbContextOptionsBuilder<BackgroundJobsDbContext>()
                     .UseSqlite(connection)
                     .Options;
-            return new BackgroundJobsDbContext(options);
+            return new BackgroundJobsDbContext(options, GranitDesignTime.CurrentTenant);
         }
 
         public Task<BackgroundJobsDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>

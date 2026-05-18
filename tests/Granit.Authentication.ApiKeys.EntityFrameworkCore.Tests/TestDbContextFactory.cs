@@ -1,4 +1,5 @@
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -37,7 +38,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<AuthenticationApi
         DbContextOptions<AuthenticationApiKeysDbContext> options = optionsBuilder.Options;
 
         // Create the schema
-        using (AuthenticationApiKeysDbContext db = new(options))
+        using (AuthenticationApiKeysDbContext db = new(options, GranitDesignTime.CurrentTenant))
         {
             db.Database.EnsureCreated();
         }
@@ -45,7 +46,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<AuthenticationApi
         return new TestDbContextFactory(connection, options);
     }
 
-    public AuthenticationApiKeysDbContext CreateDbContext() => new(_options);
+    public AuthenticationApiKeysDbContext CreateDbContext() => new(_options, GranitDesignTime.CurrentTenant);
 
     public void Dispose() => _connection.Dispose();
 }

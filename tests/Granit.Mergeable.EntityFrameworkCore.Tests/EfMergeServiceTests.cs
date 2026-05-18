@@ -7,6 +7,7 @@ using Granit.Mergeable.EntityFrameworkCore.Internal;
 using Granit.Mergeable.EntityFrameworkCore.Options;
 using Granit.Mergeable.Exceptions;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -493,8 +494,8 @@ public sealed class EfMergeServiceTests
                     w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.InMemoryEventId.TransactionIgnoredWarning))
                 .Options;
 
-        public MergeableDbContext CreateDbContext() => new(_options);
+        public MergeableDbContext CreateDbContext() => new(_options, GranitDesignTime.CurrentTenant);
         public Task<MergeableDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-            Task.FromResult(new MergeableDbContext(_options));
+            Task.FromResult(new MergeableDbContext(_options, GranitDesignTime.CurrentTenant));
     }
 }

@@ -1,6 +1,7 @@
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
@@ -23,7 +24,7 @@ public sealed class EfBlobDescriptorStoreTests
                 new DbContextOptionsBuilder<BlobStorageDbContext>()
                     .UseInMemoryDatabase(dbName)
                     .Options;
-            return new BlobStorageDbContext(options, currentTenant);
+            return new BlobStorageDbContext(options, currentTenant ?? GranitDesignTime.CurrentTenant);
         }
 
         public Task<BlobStorageDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
