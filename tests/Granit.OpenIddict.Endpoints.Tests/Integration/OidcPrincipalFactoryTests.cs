@@ -215,6 +215,58 @@ public sealed class OidcPrincipalFactoryTests
         identity.FindFirst("tenant_id")?.Value.ShouldBe("abc-123");
     }
 
+    // ── Multi-tenancy trust boundary: tenant_id claim contract ─────────
+    // Invariant pinned: `tenant_id` claim present in principal iff user has TenantId.
+    // Host users (TenantId == null) MUST NOT emit a tenant_id claim — the front-end
+    // and tenant-resolution middleware rely on this absence to identify the Host scope.
+
+    [Fact]
+    public async Task CreateUserPrincipal_TenantUser_EmitsTenantIdClaim()
+    {
+        var tenantId = Guid.NewGuid();
+        LocalIdentity user = CreateTestUser();
+        user.TenantId = tenantId;
+        SetupUserManager(user);
+
+        ClaimsPrincipal principal = await _factory.CreateUserPrincipalAsync(
+            user, [], "TestScheme", TestContext.Current.CancellationToken);
+
+        var tenantClaims = principal.FindAll("tenant_id").ToList();
+        tenantClaims.Count.ShouldBe(1);
+        tenantClaims[0].Value.ShouldBe(tenantId.ToString());
+    }
+
+    [Fact]
+    public async Task CreateUserPrincipal_HostUser_DoesNotEmitTenantIdClaim()
+    {
+        LocalIdentity user = CreateTestUser();
+        user.TenantId = null;
+        SetupUserManager(user);
+
+        ClaimsPrincipal principal = await _factory.CreateUserPrincipalAsync(
+            user, [], "TestScheme", TestContext.Current.CancellationToken);
+
+        principal.FindAll("tenant_id").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task CreateUserPrincipal_TenantUser_TenantIdClaimDestinationProviderInvoked()
+    {
+        // Asserts the tenant_id claim is fed to the destination provider so its
+        // access_token+id_token routing (see DefaultClaimsDestinationProvider) takes effect.
+        var tenantId = Guid.NewGuid();
+        LocalIdentity user = CreateTestUser();
+        user.TenantId = tenantId;
+        SetupUserManager(user);
+
+        await _factory.CreateUserPrincipalAsync(
+            user, [], "TestScheme", TestContext.Current.CancellationToken);
+
+        _destinationProvider.Received().GetDestinations(
+            Arg.Is<Claim>(c => c.Type == "tenant_id" && c.Value == tenantId.ToString()),
+            Arg.Any<ClaimsPrincipal>());
+    }
+
     [Fact]
     public async Task CreateUserPrincipal_SetsScopes()
     {
