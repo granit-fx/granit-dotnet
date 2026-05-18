@@ -136,46 +136,74 @@ internal sealed class RequestRouter : IRequestRouter
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        // 1. Scheme.
-        if (!IsSchemeAllowed(request.Url.Scheme))
+        // 1-3. Sandbox shape checks (scheme, host allow/deny, URL pattern block) are all sync.
+        if (CheckSandboxRules(request) is { } sandboxReason)
         {
-            return await BlockAsync(request, "scheme_not_allowed", cancellationToken).ConfigureAwait(false);
+            return await BlockAsync(request, sandboxReason, cancellationToken).ConfigureAwait(false);
         }
 
-        // 2. Host allow-list.
+        // 4. Private-network re-resolution (anti-rebinding) — async because it goes through DNS.
+        if (await CheckPrivateNetworkBlockAsync(request, cancellationToken).ConfigureAwait(false) is { } pnReason)
+        {
+            return await BlockAsync(request, pnReason, cancellationToken).ConfigureAwait(false);
+        }
+
+        // 5. User handlers (registration order, copy-on-write snapshot).
+        return await RunUserHandlersAsync(request, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Synchronous sandbox-shape checks: scheme allowlist, host allow/deny patterns,
+    /// blocked URL patterns. Returns a metric reason on block, or <see langword="null"/> on pass.
+    /// </summary>
+    private string? CheckSandboxRules(RouteRequest request)
+    {
+        if (!IsSchemeAllowed(request.Url.Scheme))
+        {
+            return "scheme_not_allowed";
+        }
+
         if (_sandbox.AllowedHostPatterns is { Count: > 0 } allowed
             && !MatchesAny(allowed, request.Url))
         {
-            return await BlockAsync(request, "host_not_allowed", cancellationToken).ConfigureAwait(false);
+            return "host_not_allowed";
         }
 
-        // 3. Host deny-list.
         if (_sandbox.DeniedHostPatterns is { Count: > 0 } denied
             && MatchesAny(denied, request.Url))
         {
-            return await BlockAsync(request, "host_denied", cancellationToken).ConfigureAwait(false);
+            return "host_denied";
         }
 
         if (_sandbox.BlockedUrlPatterns is { Count: > 0 } blocked
             && MatchesAny(blocked, request.Url))
         {
-            return await BlockAsync(request, "url_pattern_blocked", cancellationToken).ConfigureAwait(false);
+            return "url_pattern_blocked";
         }
 
-        // 4. Private-network re-resolution (anti-rebinding).
-        if (_sandbox.BlockPrivateNetworks)
+        return null;
+    }
+
+    private async ValueTask<string?> CheckPrivateNetworkBlockAsync(RouteRequest request, CancellationToken cancellationToken)
+    {
+        if (!_sandbox.BlockPrivateNetworks)
         {
-            UrlSafetyResult result = await _urlSafety
-                .ValidateAsync(request.Url, cancellationToken)
-                .ConfigureAwait(false);
-            if (!result.IsValid)
-            {
-                string reason = result.Violation is { Kind: var kind } ? kind.ToString() : "url_safety_violation";
-                return await BlockAsync(request, reason, cancellationToken).ConfigureAwait(false);
-            }
+            return null;
         }
 
-        // 5. User handlers (registration order, copy-on-write snapshot).
+        UrlSafetyResult result = await _urlSafety
+            .ValidateAsync(request.Url, cancellationToken)
+            .ConfigureAwait(false);
+        if (result.IsValid)
+        {
+            return null;
+        }
+
+        return result.Violation is { Kind: var kind } ? kind.ToString() : "url_safety_violation";
+    }
+
+    private async ValueTask<RouteDecision> RunUserHandlersAsync(RouteRequest request, CancellationToken cancellationToken)
+    {
         ImmutableList<Entry> snapshot = Volatile.Read(ref _handlers);
         foreach (Entry entry in snapshot)
         {
@@ -184,28 +212,38 @@ internal sealed class RequestRouter : IRequestRouter
                 continue;
             }
 
-            try
+            RouteDecision? terminal = await InvokeHandlerAsync(entry, request, cancellationToken).ConfigureAwait(false);
+            if (terminal is not null)
             {
-                RouteDecision decision = await entry.Handler(request, cancellationToken).ConfigureAwait(false);
-                if (decision.Kind != RouteDecisionKind.Continue)
-                {
-                    return decision;
-                }
-            }
-            catch (Exception ex)
-            {
-                _metrics.RecordRouterHandlerError(_engineName, CurrentTenantId);
-                _logger.LogWarning(ex, "User route handler threw for {Url}; applying RouterErrorPolicy={Policy}.", request.Url, _errorPolicy);
-
-                if (_errorPolicy == RouterErrorPolicy.AbortOnError)
-                {
-                    return RouteDecision.Abort(errorCode: "handler_error");
-                }
-                // ContinueOnError — fall through to the next handler.
+                return terminal;
             }
         }
 
         return RouteDecision.Continue;
+    }
+
+    /// <summary>
+    /// Runs one user handler. Returns the decision when terminal (non-Continue),
+    /// <see langword="null"/> when the loop should advance. Handler exceptions are mapped
+    /// to <see cref="RouterErrorPolicy"/>: <c>AbortOnError</c> returns an Abort decision,
+    /// <c>ContinueOnError</c> returns <see langword="null"/> to advance to the next handler.
+    /// </summary>
+    private async ValueTask<RouteDecision?> InvokeHandlerAsync(Entry entry, RouteRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            RouteDecision decision = await entry.Handler(request, cancellationToken).ConfigureAwait(false);
+            return decision.Kind == RouteDecisionKind.Continue ? null : decision;
+        }
+        catch (Exception ex)
+        {
+            _metrics.RecordRouterHandlerError(_engineName, CurrentTenantId);
+            _logger.LogWarning(ex, "User route handler threw for {Url}; applying RouterErrorPolicy={Policy}.", request.Url, _errorPolicy);
+
+            return _errorPolicy == RouterErrorPolicy.AbortOnError
+                ? RouteDecision.Abort(errorCode: "handler_error")
+                : null;
+        }
     }
 
     private bool IsSchemeAllowed(string scheme) =>

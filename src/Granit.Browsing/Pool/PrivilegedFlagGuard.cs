@@ -78,62 +78,84 @@ public static class PrivilegedFlagGuard
     {
         ArgumentNullException.ThrowIfNull(logger);
 
-        // 1. Always-forbidden flags — no opt-in path exists, refuse immediately. Each
-        // entry is compared against the bare arg token first (everything before '='), and
-        // also against the full arg when the forbidden entry itself contains an '=' (so
-        // e.g. --disable-features=IsolateOrigins is matched precisely without rejecting
-        // every --disable-features=* value Chromium ships).
-        if (extraArgs is not null)
-        {
-            foreach (string arg in extraArgs)
-            {
-                string token = ExtractToken(arg);
-                foreach (string forbidden in AlwaysForbidden)
-                {
-                    bool match = forbidden.Contains('=', StringComparison.Ordinal)
-                        ? string.Equals(arg, forbidden, StringComparison.OrdinalIgnoreCase)
-                        : TokenMatches(token, forbidden);
-                    if (match)
-                    {
-                        throw new SandboxViolationException(
-                            SandboxViolationKind.PrivilegedFlagRefused,
-                            $"Privileged browser flag '{forbidden}' refused unconditionally — this flag widens the renderer attack surface and has no safe opt-in.");
-                    }
-                }
-            }
-        }
+        // 1. Always-forbidden flags — no opt-in path exists.
+        ThrowIfAlwaysForbidden(extraArgs);
 
         // 2. Container-opt-in flags (sandbox disablers).
-        string? offendingArg = null;
-        if (extraArgs is not null)
-        {
-            foreach (string arg in extraArgs)
-            {
-                string token = ExtractToken(arg);
-                offendingArg = RequiresContainerOptIn.FirstOrDefault(privileged => TokenMatches(token, privileged));
-                if (offendingArg is not null)
-                {
-                    break;
-                }
-            }
-        }
+        string? offendingArg = FindContainerOptInOffender(extraArgs);
 
         if (!disableSandbox && offendingArg is null)
         {
             return;
         }
 
-        IEnvironmentProbe p = probe ?? DefaultEnvironmentProbe.Instance;
+        // 3. Container/non-root/opt-in gating for sandbox disablers.
+        EnforceContainerOptIn(offendingArg, probe ?? DefaultEnvironmentProbe.Instance, logger);
+    }
 
-        bool optedIn = string.Equals(p.GetEnvironmentVariable(OptInEnvVar), "1", StringComparison.Ordinal);
-        bool inContainer = p.IsRunningInContainer();
-        bool nonRoot = !p.IsRunningAsRoot();
+    /// <summary>
+    /// Each entry is compared against the bare arg token (everything before <c>=</c>), and
+    /// also against the full arg when the forbidden entry itself contains an <c>=</c> (so
+    /// e.g. <c>--disable-features=IsolateOrigins</c> is matched precisely without rejecting
+    /// every <c>--disable-features=*</c> value Chromium ships).
+    /// </summary>
+    private static void ThrowIfAlwaysForbidden(IReadOnlyList<string>? extraArgs)
+    {
+        if (extraArgs is null)
+        {
+            return;
+        }
+
+        foreach (string arg in extraArgs)
+        {
+            string token = ExtractToken(arg);
+            string? hit = AlwaysForbidden.FirstOrDefault(forbidden => MatchesForbidden(arg, token, forbidden));
+            if (hit is not null)
+            {
+                throw new SandboxViolationException(
+                    SandboxViolationKind.PrivilegedFlagRefused,
+                    $"Privileged browser flag '{hit}' refused unconditionally — this flag widens the renderer attack surface and has no safe opt-in.");
+            }
+        }
+    }
+
+    private static bool MatchesForbidden(string arg, string token, string forbidden) =>
+        forbidden.Contains('=', StringComparison.Ordinal)
+            ? string.Equals(arg, forbidden, StringComparison.OrdinalIgnoreCase)
+            : TokenMatches(token, forbidden);
+
+    private static string? FindContainerOptInOffender(IReadOnlyList<string>? extraArgs)
+    {
+        if (extraArgs is null)
+        {
+            return null;
+        }
+
+        foreach (string arg in extraArgs)
+        {
+            string token = ExtractToken(arg);
+            string? hit = RequiresContainerOptIn.FirstOrDefault(privileged => TokenMatches(token, privileged));
+            if (hit is not null)
+            {
+                return hit;
+            }
+        }
+
+        return null;
+    }
+
+    private static void EnforceContainerOptIn(string? offendingArg, IEnvironmentProbe probe, ILogger logger)
+    {
+        bool optedIn = string.Equals(probe.GetEnvironmentVariable(OptInEnvVar), "1", StringComparison.Ordinal);
+        bool inContainer = probe.IsRunningInContainer();
+        bool nonRoot = !probe.IsRunningAsRoot();
+        string flag = offendingArg ?? "DisableSandbox";
 
         if (optedIn && inContainer && nonRoot)
         {
             logger.LogWarning(
                 "Privileged browser flag '{Flag}' permitted: container={Container}, nonRoot={NonRoot}, optIn={OptIn}.",
-                offendingArg ?? "DisableSandbox",
+                flag,
                 inContainer,
                 nonRoot,
                 optedIn);
@@ -142,7 +164,7 @@ public static class PrivilegedFlagGuard
 
         throw new SandboxViolationException(
             SandboxViolationKind.PrivilegedFlagRefused,
-            $"Privileged browser flag '{offendingArg ?? "DisableSandbox"}' refused (container={inContainer}, nonRoot={nonRoot}, optIn={optedIn}). Set {OptInEnvVar}=1 in a non-root container to allow.");
+            $"Privileged browser flag '{flag}' refused (container={inContainer}, nonRoot={nonRoot}, optIn={optedIn}). Set {OptInEnvVar}=1 in a non-root container to allow.");
     }
 
     /// <summary>
@@ -186,84 +208,82 @@ public sealed class DefaultEnvironmentProbe : IEnvironmentProbe
 #pragma warning restore RS0030
 
     /// <inheritdoc/>
-    public bool IsRunningInContainer()
-    {
-        // 1. Docker marker file.
-        if (File.Exists("/.dockerenv"))
-        {
-            return true;
-        }
+    public bool IsRunningInContainer() =>
+        File.Exists("/.dockerenv")                       // 1. Docker marker file.
+        || File.Exists("/run/.containerenv")             // 2. Podman marker file.
+        || HasContainerEnvVar()                          // 3. systemd "container" env var.
+        || HasCgroupV1ContainerMarker()                  // 4. cgroup v1 (Docker / kubepods / containerd / Podman).
+        || HasCgroupV2NonInitPid1();                     // 5. cgroup v2 heuristic — PID 1 is neither init nor systemd.
 
-        // 2. Podman marker file.
-        if (File.Exists("/run/.containerenv"))
-        {
-            return true;
-        }
-
-        // 3. systemd convention — every container manager sets the "container" env var.
 #pragma warning disable RS0030 // Process-environment access is intrinsic to container detection at boot.
-        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("container")))
-        {
-            return true;
-        }
+    private static bool HasContainerEnvVar() =>
+        !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("container"));
 #pragma warning restore RS0030
 
-        // 4. cgroup v1 markers (Docker, kubepods, containerd, Podman) in /proc/1/cgroup.
+    private static readonly string[] CgroupContainerMarkers =
+        ["docker", "kubepods", "containerd", "podman"];
+
+    private static bool HasCgroupV1ContainerMarker()
+    {
         try
         {
-            if (File.Exists("/proc/1/cgroup"))
+            if (!File.Exists("/proc/1/cgroup"))
             {
-                string cgroup = File.ReadAllText("/proc/1/cgroup");
-                if (cgroup.Contains("docker", StringComparison.OrdinalIgnoreCase)
-                    || cgroup.Contains("kubepods", StringComparison.OrdinalIgnoreCase)
-                    || cgroup.Contains("containerd", StringComparison.OrdinalIgnoreCase)
-                    || cgroup.Contains("podman", StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
+                return false;
             }
+
+            string cgroup = File.ReadAllText("/proc/1/cgroup");
+            return CgroupContainerMarkers.Any(m => cgroup.Contains(m, StringComparison.OrdinalIgnoreCase));
         }
         catch (IOException)
         {
-            // /proc/1/cgroup unreadable — treat as no container signal and fall through.
+            // /proc/1/cgroup unreadable — treat as no container signal.
+            return false;
         }
         catch (UnauthorizedAccessException)
         {
-            // /proc/1/cgroup denied — treat as no container signal and fall through.
+            // /proc/1/cgroup denied — treat as no container signal.
+            return false;
         }
+    }
 
-        // 5. cgroup v2 / hardened-namespace heuristic — when PID 1 is neither "init" nor
-        // "systemd" (typical bare-metal hosts), this process was started by a container
-        // runtime (Docker/Podman/k8s typically exec the app as PID 1).
+    /// <summary>
+    /// Heuristic: when PID 1 is neither <c>init</c> nor <c>systemd</c> (typical bare-metal hosts),
+    /// this process was started by a container runtime (Docker / Podman / k8s typically exec the
+    /// app as PID 1).
+    /// </summary>
+    private static bool HasCgroupV2NonInitPid1()
+    {
         try
         {
-            if (File.Exists("/proc/1/sched"))
+            if (!File.Exists("/proc/1/sched"))
             {
-                using var reader = new StreamReader("/proc/1/sched");
-                string? firstLine = reader.ReadLine();
-                if (!string.IsNullOrEmpty(firstLine))
-                {
-                    // Format: "<comm> (<pid>, #threads: <n>)" — extract comm token.
-                    int space = firstLine.IndexOf(' ');
-                    string comm = space < 0 ? firstLine : firstLine[..space];
-                    if (!string.Equals(comm, "init", StringComparison.Ordinal)
-                        && !string.Equals(comm, "systemd", StringComparison.Ordinal))
-                    {
-                        return true;
-                    }
-                }
+                return false;
             }
+
+            using var reader = new StreamReader("/proc/1/sched");
+            string? firstLine = reader.ReadLine();
+            if (string.IsNullOrEmpty(firstLine))
+            {
+                return false;
+            }
+
+            // Format: "<comm> (<pid>, #threads: <n>)" — extract comm token.
+            int space = firstLine.IndexOf(' ');
+            string comm = space < 0 ? firstLine : firstLine[..space];
+            return !string.Equals(comm, "init", StringComparison.Ordinal)
+                && !string.Equals(comm, "systemd", StringComparison.Ordinal);
         }
         catch (IOException)
         {
-            // /proc/1/sched unreadable — treat as no container signal and fall through.
+            // /proc/1/sched unreadable — treat as no container signal.
+            return false;
         }
         catch (UnauthorizedAccessException)
         {
-            // /proc/1/sched denied — treat as no container signal and fall through.
+            // /proc/1/sched denied — treat as no container signal.
+            return false;
         }
-
-        return false;
     }
 
     /// <inheritdoc/>
