@@ -258,6 +258,69 @@ public sealed class BffHelperMethodTests
         result["active"].ShouldBe("true");
     }
 
+    // ──── BuildAuthenticatedResponse (IsHost invariant) ────
+
+    [Fact]
+    public void BuildAuthenticatedResponse_TenantIdClaimPresent_IsHostIsFalse()
+    {
+        Dictionary<string, string> claims = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["sub"] = "user-1",
+            ["tenant_id"] = "11111111-1111-1111-1111-111111111111",
+        };
+
+        BffUserResponse response = BffUserEndpoints.BuildAuthenticatedResponse(claims, DateTimeOffset.UtcNow);
+
+        response.IsHost.ShouldBeFalse();
+        response.TenantId.ShouldBe("11111111-1111-1111-1111-111111111111");
+    }
+
+    [Fact]
+    public void BuildAuthenticatedResponse_TenantIdClaimAbsent_IsHostIsTrue()
+    {
+        Dictionary<string, string> claims = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["sub"] = "host-user",
+        };
+
+        BffUserResponse response = BffUserEndpoints.BuildAuthenticatedResponse(claims, DateTimeOffset.UtcNow);
+
+        response.IsHost.ShouldBeTrue();
+        response.TenantId.ShouldBeNull();
+    }
+
+    [Fact]
+    public void BuildAuthenticatedResponse_TenantIdClaimEmpty_IsHostIsTrue()
+    {
+        Dictionary<string, string> claims = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["sub"] = "host-user",
+            ["tenant_id"] = string.Empty,
+        };
+
+        BffUserResponse response = BffUserEndpoints.BuildAuthenticatedResponse(claims, DateTimeOffset.UtcNow);
+
+        response.IsHost.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void BuildAuthenticatedResponse_IsHostInvariant_HoldsForBothBranches()
+    {
+        Dictionary<string, string> host = new(StringComparer.OrdinalIgnoreCase) { ["sub"] = "h" };
+        Dictionary<string, string> tenant = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["sub"] = "t",
+            ["tenant_id"] = "22222222-2222-2222-2222-222222222222",
+        };
+
+        BffUserResponse hostResponse = BffUserEndpoints.BuildAuthenticatedResponse(host, DateTimeOffset.UtcNow);
+        BffUserResponse tenantResponse = BffUserEndpoints.BuildAuthenticatedResponse(tenant, DateTimeOffset.UtcNow);
+
+        // IsHost ⇔ TenantId is null/empty — pinned mechanically.
+        hostResponse.IsHost.ShouldBe(string.IsNullOrEmpty(hostResponse.TenantId));
+        tenantResponse.IsHost.ShouldBe(string.IsNullOrEmpty(tenantResponse.TenantId));
+    }
+
     // ──── ExtractStringArray ────
 
     [Fact]

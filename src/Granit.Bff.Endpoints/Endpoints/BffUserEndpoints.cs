@@ -27,8 +27,10 @@ internal static class BffUserEndpoints
             .WithDescription(
                 "Reads the session cookie, loads the ID token from the token store, decodes "
                 + "the JWT payload, and returns a filtered set of claims: sub, name, email, roles, "
-                + "tenantId, and sessionExpiresAt. Returns { authenticated: false } if no valid "
-                + "session exists. Tokens are never exposed to the browser.")
+                + "tenantId, isHost, and sessionExpiresAt. isHost is server-emitted (true when "
+                + "the id_token carries no tenant_id claim) so the SPA never has to infer Host "
+                + "status from the absence of TenantId. Returns { authenticated: false } if no "
+                + "valid session exists. Tokens are never exposed to the browser.")
             .Produces<BffUserResponse>()
             .Produces<BffUnauthenticatedResponse>();
 
@@ -70,18 +72,31 @@ internal static class BffUserEndpoints
 
         httpContext.Response.Headers.CacheControl = "private, no-cache, no-store";
 
-        BffUserResponse response = new(
+        BffUserResponse response = BuildAuthenticatedResponse(claims, tokens.ExpiresAt);
+        return TypedResults.Ok<object>(response);
+    }
+#pragma warning restore GRAPI003
+
+    /// <summary>
+    /// Builds the authenticated user response from decoded id-token claims.
+    /// Server-emits <c>IsHost</c> from the presence/absence of the <c>tenant_id</c>
+    /// claim so the SPA never has to infer Host status from a missing field.
+    /// </summary>
+    internal static BffUserResponse BuildAuthenticatedResponse(
+        Dictionary<string, string> claims,
+        DateTimeOffset expiresAt)
+    {
+        string? tenantId = claims.GetValueOrDefault("tenant_id");
+        return new BffUserResponse(
             Authenticated: true,
             Sub: claims.GetValueOrDefault("sub"),
             Name: claims.GetValueOrDefault("name"),
             Email: claims.GetValueOrDefault("email"),
             Roles: ExtractStringArray(claims, "roles"),
-            TenantId: claims.GetValueOrDefault("tenant_id"),
-            SessionExpiresAt: tokens.ExpiresAt);
-
-        return TypedResults.Ok<object>(response);
+            TenantId: tenantId,
+            IsHost: string.IsNullOrEmpty(tenantId),
+            SessionExpiresAt: expiresAt);
     }
-#pragma warning restore GRAPI003
 
     /// <summary>
     /// Decodes the payload of a JWT without validation (the token was already validated
@@ -174,6 +189,7 @@ internal sealed record BffUserResponse(
     string? Email,
     string[] Roles,
     string? TenantId,
+    bool IsHost,
     DateTimeOffset SessionExpiresAt);
 
 /// <summary>Response for unauthenticated sessions.</summary>
