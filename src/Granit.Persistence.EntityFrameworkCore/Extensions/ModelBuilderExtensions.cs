@@ -177,12 +177,61 @@ public static class ModelBuilderExtensions
     // the CLR type as a navigation target and adds it as an entity type — which then fails
     // validation because no primary key is defined. This step removes those phantom entities
     // so the subsequent converter step can safely map the property as a scalar column.
+    //
+    // Convention also detaches any auto-discovered foreign key whose principal is an SVO type
+    // (e.g. Party.AvatarTempId : BlobReference creates an auto-FK that EF refuses to release
+    // when we call RemoveEntityType). The underlying scalar column survives and is then wrapped
+    // by ApplySingleValueObjectConverters with the matching ValueConverter.
     private static void RemoveSingleValueObjectEntityTypes(ModelBuilder modelBuilder)
     {
         var svoEntityTypes = modelBuilder.Model.GetEntityTypes()
             .Where(et => GetSingleValueObjectBase(et.ClrType) is not null)
             .ToList();
 
+        if (svoEntityTypes.Count == 0)
+        {
+            return;
+        }
+
+        HashSet<Type> svoClrTypes = [.. svoEntityTypes.Select(et => et.ClrType)];
+
+        foreach (IMutableEntityType ownerEntityType in modelBuilder.Model.GetEntityTypes()
+            .Where(et => !svoClrTypes.Contains(et.ClrType))
+            .ToList())
+        {
+            // Capture the SVO-typed CLR properties EF auto-discovered as navigations
+            // on this owner (e.g. Party.AvatarTempId : BlobReference). We will
+            // re-attach them as scalar properties once the navigation is gone.
+            List<System.Reflection.PropertyInfo> svoClrProperties = [.. ownerEntityType
+                .GetNavigations()
+                .Where(nav => svoClrTypes.Contains(nav.TargetEntityType.ClrType))
+                .Select(nav => nav.PropertyInfo)
+                .OfType<System.Reflection.PropertyInfo>()];
+
+            if (svoClrProperties.Count == 0)
+            {
+                continue;
+            }
+
+            // Use the builder API for both steps: `Ignore(name)` strips the
+            // auto-discovered navigation (and its backing FK) cleanly, then
+            // `Property(name)` re-registers the same CLR member as a scalar.
+            // Doing this at builder level avoids the IMutable* surface's
+            // navigation/property name conflicts and lets EF Core re-validate
+            // the model after each step.
+            Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder ownerBuilder =
+                modelBuilder.Entity(ownerEntityType.ClrType);
+
+            foreach (System.Reflection.PropertyInfo clrProperty in svoClrProperties)
+            {
+                ownerBuilder.Ignore(clrProperty.Name);
+                ownerBuilder.Property(clrProperty.PropertyType, clrProperty.Name);
+            }
+        }
+
+        // Now that no FK or navigation references them, the SVO entity types can be
+        // removed. ApplySingleValueObjectConverters runs next and wraps each promoted
+        // scalar property with the matching ValueConverter.
         foreach (IMutableEntityType svoEntityType in svoEntityTypes)
         {
             modelBuilder.Model.RemoveEntityType(svoEntityType.ClrType);
