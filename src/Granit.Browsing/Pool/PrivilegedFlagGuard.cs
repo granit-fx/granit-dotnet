@@ -110,14 +110,7 @@ public static class PrivilegedFlagGuard
             foreach (string arg in extraArgs)
             {
                 string token = ExtractToken(arg);
-                foreach (string privileged in RequiresContainerOptIn)
-                {
-                    if (TokenMatches(token, privileged))
-                    {
-                        offendingArg = privileged;
-                        break;
-                    }
-                }
+                offendingArg = RequiresContainerOptIn.FirstOrDefault(privileged => TokenMatches(token, privileged));
                 if (offendingArg is not null)
                 {
                     break;
@@ -230,8 +223,14 @@ public sealed class DefaultEnvironmentProbe : IEnvironmentProbe
                 }
             }
         }
-        catch (IOException) { }
-        catch (UnauthorizedAccessException) { }
+        catch (IOException)
+        {
+            // /proc/1/cgroup unreadable — treat as no container signal and fall through.
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // /proc/1/cgroup denied — treat as no container signal and fall through.
+        }
 
         // 5. cgroup v2 / hardened-namespace heuristic — when PID 1 is neither "init" nor
         // "systemd" (typical bare-metal hosts), this process was started by a container
@@ -255,8 +254,14 @@ public sealed class DefaultEnvironmentProbe : IEnvironmentProbe
                 }
             }
         }
-        catch (IOException) { }
-        catch (UnauthorizedAccessException) { }
+        catch (IOException)
+        {
+            // /proc/1/sched unreadable — treat as no container signal and fall through.
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // /proc/1/sched denied — treat as no container signal and fall through.
+        }
 
         return false;
     }

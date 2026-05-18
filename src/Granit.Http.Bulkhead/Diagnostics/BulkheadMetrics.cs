@@ -12,6 +12,10 @@ public sealed class BulkheadMetrics
     /// <summary>Name of the OpenTelemetry meter emitted by this module.</summary>
     public const string MeterName = "Granit.Http.Bulkhead";
 
+    private const string PolicyTag = "policy";
+    private const string TenantIdTag = "tenant_id";
+    private const string GlobalTenantId = "global";
+
     private readonly UpDownCounter<long> _activeCounter;
     private readonly Counter<long> _rejectedCounter;
     private readonly Counter<long> _evictedCounter;
@@ -47,24 +51,24 @@ public sealed class BulkheadMetrics
     public void RecordAcquired(string policyName, string? tenantId) =>
         _activeCounter.Add(1, new TagList
         {
-            { "policy", policyName },
-            { "tenant_id", tenantId ?? "global" },
+            { PolicyTag, policyName },
+            { TenantIdTag, tenantId ?? GlobalTenantId },
         });
 
     /// <summary>Records that a permit was released for <paramref name="policyName"/> and <paramref name="tenantId"/>.</summary>
     public void RecordReleased(string policyName, string? tenantId) =>
         _activeCounter.Add(-1, new TagList
         {
-            { "policy", policyName },
-            { "tenant_id", tenantId ?? "global" },
+            { PolicyTag, policyName },
+            { TenantIdTag, tenantId ?? GlobalTenantId },
         });
 
     /// <summary>Records that an acquire attempt was rejected for <paramref name="policyName"/> and <paramref name="tenantId"/>.</summary>
     public void RecordRejected(string policyName, string? tenantId) =>
         _rejectedCounter.Add(1, new TagList
         {
-            { "policy", policyName },
-            { "tenant_id", tenantId ?? "global" },
+            { PolicyTag, policyName },
+            { TenantIdTag, tenantId ?? GlobalTenantId },
         });
 
     /// <summary>
@@ -85,19 +89,19 @@ public sealed class BulkheadMetrics
     public void RecordBypassed(string policyName, string reason) =>
         _bypassedCounter.Add(1, new TagList
         {
-            { "policy", policyName },
+            { PolicyTag, policyName },
             { "reason", reason },
         });
 
     /// <summary>Records a reference to a policy name not present in configuration.</summary>
     public void RecordUnknownPolicy(string policyName) =>
-        _unknownPolicyCounter.Add(1, new TagList { { "policy", policyName } });
+        _unknownPolicyCounter.Add(1, new TagList { { PolicyTag, policyName } });
 
     /// <summary>Records that an acquire call was abandoned by the caller (client cancel) before acquiring a permit.</summary>
     public void RecordAbandoned(string policyName, string? tenantId) =>
         _abandonedCounter.Add(1, new TagList
         {
-            { "policy", policyName },
-            { "tenant_id", tenantId ?? "global" },
+            { PolicyTag, policyName },
+            { TenantIdTag, tenantId ?? GlobalTenantId },
         });
 }

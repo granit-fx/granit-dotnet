@@ -60,8 +60,8 @@ public sealed class InMemoryReactionStoreTests
     public async Task Remove_non_existent_is_noop()
     {
         InMemoryReactionStore sut = new();
-        await sut.RemoveAsync(Guid.NewGuid(), Guid.NewGuid(), "heart", TestContext.Current.CancellationToken);
-        // No exception.
+        await Should.NotThrowAsync(() =>
+            sut.RemoveAsync(Guid.NewGuid(), Guid.NewGuid(), "heart", TestContext.Current.CancellationToken));
     }
 
     [Fact]

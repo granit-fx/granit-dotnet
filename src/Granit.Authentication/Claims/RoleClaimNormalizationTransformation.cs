@@ -55,23 +55,14 @@ public sealed class RoleClaimNormalizationTransformation(
         // Materialize source claims before mutating: ClaimsIdentity.FindAll returns a
         // live enumerator over the underlying claims collection — calling AddClaim
         // mid-iteration throws InvalidOperationException.
-        List<Claim> sourceClaims = [];
-        foreach (string sourceType in _options.SourceClaimTypes)
-        {
-            if (string.Equals(sourceType, ClaimTypes.Role, StringComparison.Ordinal))
-            {
-                continue;
-            }
+        List<Claim> sourceClaims = [..
+            _options.SourceClaimTypes
+                .Where(t => !string.Equals(t, ClaimTypes.Role, StringComparison.Ordinal))
+                .SelectMany(identity.FindAll)];
 
-            sourceClaims.AddRange(identity.FindAll(sourceType));
-        }
-
-        foreach (Claim claim in sourceClaims)
+        foreach (Claim claim in sourceClaims.Where(c => existing.Add(c.Value)))
         {
-            if (existing.Add(claim.Value))
-            {
-                identity.AddClaim(new Claim(ClaimTypes.Role, claim.Value));
-            }
+            identity.AddClaim(new Claim(ClaimTypes.Role, claim.Value));
         }
 
         return Task.FromResult(principal);

@@ -35,13 +35,12 @@ public static class ReservedTldClassifier
         int lastDot = host.LastIndexOf('.');
         string label = lastDot < 0 ? host : host[(lastDot + 1)..];
 
-        foreach (string r in Reserved)
+        string? match = Reserved.FirstOrDefault(
+            r => string.Equals(label, r, StringComparison.OrdinalIgnoreCase));
+        if (match is not null)
         {
-            if (string.Equals(label, r, StringComparison.OrdinalIgnoreCase))
-            {
-                tld = r;
-                return true;
-            }
+            tld = match;
+            return true;
         }
 
         tld = string.Empty;

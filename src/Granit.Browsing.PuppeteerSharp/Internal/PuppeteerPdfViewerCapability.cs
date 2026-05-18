@@ -35,8 +35,6 @@ internal sealed partial class PuppeteerPdfViewerCapability(
     ICurrentTenant? currentTenant = null,
     IPermissionChecker? permissionChecker = null) : IPdfViewerCapability
 {
-    private const string Engine = "chromium-puppeteer";
-
     /// <inheritdoc/>
     public async Task<IPdfDocumentPage> OpenPdfAsync(IBrowserPage page, Stream pdf, CancellationToken cancellationToken = default)
     {

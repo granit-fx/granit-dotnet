@@ -10,9 +10,9 @@ public sealed class SectionBuilder<TEntity>
 {
     private readonly string _key;
     private readonly List<Func<FieldDescriptor>> _fieldFactories = [];
+    private readonly int _order;
 
     private string? _labelKey;
-    private int _order;
     private bool _collapsedByDefault;
     private int _nextFieldOrder;
 

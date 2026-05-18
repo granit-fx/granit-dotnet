@@ -51,7 +51,7 @@ internal sealed partial class PuppeteerRequestRouter : IAsyncDisposable
         _router = router;
         _logger = logger;
 
-        _handler = (_, e) => _ = HandleRequestAsync(e);
+        _handler = (sender, e) => _ = HandleRequestAsync(e);
     }
 
     /// <summary>Exposes the underlying router so the page can register user handlers.</summary>

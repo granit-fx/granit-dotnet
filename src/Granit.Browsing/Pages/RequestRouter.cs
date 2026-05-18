@@ -208,18 +208,8 @@ internal sealed class RequestRouter : IRequestRouter
         return RouteDecision.Continue;
     }
 
-    private bool IsSchemeAllowed(string scheme)
-    {
-        foreach (string allowed in _sandbox.AllowedSchemes)
-        {
-            if (string.Equals(allowed, scheme, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    private bool IsSchemeAllowed(string scheme) =>
+        _sandbox.AllowedSchemes.Any(allowed => string.Equals(allowed, scheme, StringComparison.OrdinalIgnoreCase));
 
     private static bool MatchesAny(IReadOnlyList<string> patterns, Uri url)
     {
