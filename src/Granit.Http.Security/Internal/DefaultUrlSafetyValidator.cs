@@ -56,171 +56,220 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
 
         using Activity? activity = HttpSecurityActivitySource.Source.StartActivity(HttpSecurityActivitySource.ValidateUrl);
 
-        // (1) Absolute-URI gate.
-        if (!url.IsAbsoluteUri)
+        // (1)(2)(3) Cheap structural gates.
+        if (ValidateUrlShape(url, optionOverrides) is { } shapeViolation)
         {
-            return Block(activity, new UrlSafetyViolation(
-                UrlSafetyViolationKind.MalformedUrl,
-                "URL is not absolute.",
-                "UrlSafety:MalformedUrl",
-                []));
+            return Block(activity, shapeViolation);
         }
 
-        // (2) Length cap.
-        if (url.OriginalString.Length > optionOverrides.MaxUrlLength)
-        {
-            return Block(activity, new UrlSafetyViolation(
-                UrlSafetyViolationKind.UrlTooLong,
-                $"URL exceeds the maximum length of {optionOverrides.MaxUrlLength}.",
-                "UrlSafety:UrlTooLong",
-                [optionOverrides.MaxUrlLength]));
-        }
-
-        // (3) Scheme allowlist.
-        if (!IsSchemeAllowed(url.Scheme, optionOverrides.AllowedSchemes))
-        {
-            return Block(activity, new UrlSafetyViolation(
-                UrlSafetyViolationKind.SchemeNotAllowed,
-                $"URL scheme '{url.Scheme}' is not allowed.",
-                "UrlSafety:SchemeNotAllowed",
-                [url.Scheme]));
-        }
-
-        // (4) file:// — gated by AllowFileScheme AND empty authority (no UNC).
+        // (4) file:// — handled separately because it short-circuits host resolution.
         if (string.Equals(url.Scheme, Uri.UriSchemeFile, StringComparison.OrdinalIgnoreCase))
         {
-            if (!optionOverrides.AllowFileScheme)
-            {
-                return Block(activity, new UrlSafetyViolation(
-                    UrlSafetyViolationKind.SchemeNotAllowed,
-                    "The file scheme is disabled. Set UrlSafetyOptions.AllowFileScheme=true to opt in.",
-                    "UrlSafety:SchemeNotAllowed",
-                    [url.Scheme]));
-            }
-
-            if (!string.IsNullOrEmpty(url.Host))
-            {
-                // file://server/share — UNC path, triggers SMB egress and NTLM-relay on Windows.
-                return Block(activity, new UrlSafetyViolation(
-                    UrlSafetyViolationKind.SchemeNotAllowed,
-                    "UNC file:// paths are not allowed.",
-                    "UrlSafety:SchemeNotAllowed",
-                    [url.Scheme]));
-            }
-
-            RecordValid();
-            activity?.SetTag("url_safety.outcome", "valid");
-            return UrlSafetyResult.Valid([]);
+            return HandleFileScheme(activity, url, optionOverrides);
         }
 
-        string host = url.Host;
-        if (string.IsNullOrEmpty(host))
+        // (5)(6)(7)(8) Host normalization + reserved/deny/allow checks.
+        if (ValidateHost(url.Host, optionOverrides, out string asciiHost, out IPAddress? literalIp) is { } hostViolation)
         {
-            return Block(activity, new UrlSafetyViolation(
-                UrlSafetyViolationKind.MalformedUrl,
-                "URL has no host.",
-                "UrlSafety:MalformedUrl",
-                []));
+            return Block(activity, hostViolation);
         }
 
-        // (5) IDN normalization → punycode (skip when host is an IP literal or AllowIdn is off).
-        string asciiHost = optionOverrides.AllowIdn ? NormalizeHost(host) : host;
-
-        // (6) Reserved TLD check (skipped for IP literals).
-        if (!IPAddress.TryParse(StripBrackets(asciiHost), out IPAddress? literalIp)
-            && ReservedTldClassifier.IsReserved(asciiHost, out string? tld))
+        // (9) Resolve addresses (IP literal short-circuits DNS).
+        (IPAddress[]? addresses, UrlSafetyViolation? resolveViolation) =
+            await ResolveAddressesAsync(asciiHost, literalIp, optionOverrides, ct).ConfigureAwait(false);
+        if (resolveViolation is not null)
         {
-            return Block(activity, new UrlSafetyViolation(
-                UrlSafetyViolationKind.ReservedTld,
-                $"Host '{SanitizeForDisplay(asciiHost)}' uses the reserved TLD '{tld}'.",
-                "UrlSafety:ReservedTld",
-                [asciiHost, tld]));
+            return Block(activity, resolveViolation);
         }
 
-        // (7) Deny patterns.
-        if (optionOverrides.DeniedHostPatterns.Count > 0 && HostPatternMatcher.MatchesAny(asciiHost, optionOverrides.DeniedHostPatterns))
+        // (10) Classify each resolved address against the private-network policy.
+        if (ClassifyAddresses(addresses!, asciiHost, optionOverrides) is { } classifyViolation)
         {
-            return Block(activity, new UrlSafetyViolation(
-                UrlSafetyViolationKind.HostPatternDenied,
-                $"Host '{SanitizeForDisplay(asciiHost)}' matches a denied pattern.",
-                "UrlSafety:HostPatternDenied",
-                [asciiHost]));
-        }
-
-        // (8) Allow patterns (if non-empty, must match at least one).
-        if (optionOverrides.AllowedHostPatterns.Count > 0 && !HostPatternMatcher.MatchesAny(asciiHost, optionOverrides.AllowedHostPatterns))
-        {
-            return Block(activity, new UrlSafetyViolation(
-                UrlSafetyViolationKind.HostPatternNotAllowed,
-                $"Host '{SanitizeForDisplay(asciiHost)}' is not in the allowed pattern list.",
-                "UrlSafety:HostPatternNotAllowed",
-                [asciiHost]));
-        }
-
-        // (9 / 10) Resolve and classify. IP literal → classify directly.
-        IPAddress[] addresses;
-        if (literalIp is not null)
-        {
-            addresses = [literalIp];
-        }
-        else
-        {
-            try
-            {
-                using var cts = new CancellationTokenSource(optionOverrides.DnsResolveTimeout, _timeProvider);
-                using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, cts.Token);
-                addresses = await _resolver.GetHostAddressesAsync(asciiHost, linked.Token).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) when (!ct.IsCancellationRequested)
-            {
-                HttpSecurityLog.DnsResolutionFailed(_logger, SanitizeForDisplay(asciiHost), "timeout");
-                return Block(activity, new UrlSafetyViolation(
-                    UrlSafetyViolationKind.DnsResolutionFailed,
-                    $"DNS resolution timed out for host '{SanitizeForDisplay(asciiHost)}'.",
-                    "UrlSafety:DnsResolutionFailed",
-                    [asciiHost]));
-            }
-            catch (SocketException)
-            {
-                HttpSecurityLog.DnsResolutionFailed(_logger, SanitizeForDisplay(asciiHost), "socket_error");
-                return Block(activity, new UrlSafetyViolation(
-                    UrlSafetyViolationKind.DnsResolutionFailed,
-                    $"DNS resolution failed for host '{SanitizeForDisplay(asciiHost)}'.",
-                    "UrlSafety:DnsResolutionFailed",
-                    [asciiHost]));
-            }
-
-            if (addresses.Length == 0)
-            {
-                HttpSecurityLog.DnsResolutionFailed(_logger, SanitizeForDisplay(asciiHost), "no_addresses");
-                return Block(activity, new UrlSafetyViolation(
-                    UrlSafetyViolationKind.DnsResolutionFailed,
-                    $"DNS resolution returned no addresses for host '{SanitizeForDisplay(asciiHost)}'.",
-                    "UrlSafety:DnsResolutionFailed",
-                    [asciiHost]));
-            }
-        }
-
-        foreach (IPAddress ip in addresses)
-        {
-            if (PrivateNetworkClassifier.Classify(ip, out UrlSafetyViolationKind kind))
-            {
-                if (IsAllowedByPolicy(kind, optionOverrides))
-                {
-                    continue;
-                }
-
-                return Block(activity, new UrlSafetyViolation(
-                    kind,
-                    BuildReason(kind, SanitizeForDisplay(asciiHost)),
-                    LocalizationKeyFor(kind),
-                    [asciiHost]));
-            }
+            return Block(activity, classifyViolation);
         }
 
         RecordValid();
         activity?.SetTag("url_safety.outcome", "valid");
-        return UrlSafetyResult.Valid(addresses);
+        return UrlSafetyResult.Valid(addresses!);
+    }
+
+    private static UrlSafetyViolation? ValidateUrlShape(Uri url, UrlSafetyOptions opts)
+    {
+        if (!url.IsAbsoluteUri)
+        {
+            return new UrlSafetyViolation(
+                UrlSafetyViolationKind.MalformedUrl,
+                "URL is not absolute.",
+                "UrlSafety:MalformedUrl",
+                []);
+        }
+
+        if (url.OriginalString.Length > opts.MaxUrlLength)
+        {
+            return new UrlSafetyViolation(
+                UrlSafetyViolationKind.UrlTooLong,
+                $"URL exceeds the maximum length of {opts.MaxUrlLength}.",
+                "UrlSafety:UrlTooLong",
+                [opts.MaxUrlLength]);
+        }
+
+        if (!IsSchemeAllowed(url.Scheme, opts.AllowedSchemes))
+        {
+            return new UrlSafetyViolation(
+                UrlSafetyViolationKind.SchemeNotAllowed,
+                $"URL scheme '{url.Scheme}' is not allowed.",
+                "UrlSafety:SchemeNotAllowed",
+                [url.Scheme]);
+        }
+
+        return null;
+    }
+
+    private UrlSafetyResult HandleFileScheme(Activity? activity, Uri url, UrlSafetyOptions opts)
+    {
+        if (!opts.AllowFileScheme)
+        {
+            return Block(activity, new UrlSafetyViolation(
+                UrlSafetyViolationKind.SchemeNotAllowed,
+                "The file scheme is disabled. Set UrlSafetyOptions.AllowFileScheme=true to opt in.",
+                "UrlSafety:SchemeNotAllowed",
+                [url.Scheme]));
+        }
+
+        if (!string.IsNullOrEmpty(url.Host))
+        {
+            // file://server/share — UNC path, triggers SMB egress and NTLM-relay on Windows.
+            return Block(activity, new UrlSafetyViolation(
+                UrlSafetyViolationKind.SchemeNotAllowed,
+                "UNC file:// paths are not allowed.",
+                "UrlSafety:SchemeNotAllowed",
+                [url.Scheme]));
+        }
+
+        RecordValid();
+        activity?.SetTag("url_safety.outcome", "valid");
+        return UrlSafetyResult.Valid([]);
+    }
+
+    private static UrlSafetyViolation? ValidateHost(
+        string host,
+        UrlSafetyOptions opts,
+        out string asciiHost,
+        out IPAddress? literalIp)
+    {
+        asciiHost = string.Empty;
+        literalIp = null;
+
+        if (string.IsNullOrEmpty(host))
+        {
+            return new UrlSafetyViolation(
+                UrlSafetyViolationKind.MalformedUrl,
+                "URL has no host.",
+                "UrlSafety:MalformedUrl",
+                []);
+        }
+
+        asciiHost = opts.AllowIdn ? NormalizeHost(host) : host;
+
+        bool isIpLiteral = IPAddress.TryParse(StripBrackets(asciiHost), out literalIp);
+
+        if (!isIpLiteral && ReservedTldClassifier.IsReserved(asciiHost, out string? tld))
+        {
+            return new UrlSafetyViolation(
+                UrlSafetyViolationKind.ReservedTld,
+                $"Host '{SanitizeForDisplay(asciiHost)}' uses the reserved TLD '{tld}'.",
+                "UrlSafety:ReservedTld",
+                [asciiHost, tld]);
+        }
+
+        if (opts.DeniedHostPatterns.Count > 0 && HostPatternMatcher.MatchesAny(asciiHost, opts.DeniedHostPatterns))
+        {
+            return new UrlSafetyViolation(
+                UrlSafetyViolationKind.HostPatternDenied,
+                $"Host '{SanitizeForDisplay(asciiHost)}' matches a denied pattern.",
+                "UrlSafety:HostPatternDenied",
+                [asciiHost]);
+        }
+
+        if (opts.AllowedHostPatterns.Count > 0 && !HostPatternMatcher.MatchesAny(asciiHost, opts.AllowedHostPatterns))
+        {
+            return new UrlSafetyViolation(
+                UrlSafetyViolationKind.HostPatternNotAllowed,
+                $"Host '{SanitizeForDisplay(asciiHost)}' is not in the allowed pattern list.",
+                "UrlSafety:HostPatternNotAllowed",
+                [asciiHost]);
+        }
+
+        return null;
+    }
+
+    private async ValueTask<(IPAddress[]? Addresses, UrlSafetyViolation? Violation)> ResolveAddressesAsync(
+        string asciiHost,
+        IPAddress? literalIp,
+        UrlSafetyOptions opts,
+        CancellationToken ct)
+    {
+        if (literalIp is not null)
+        {
+            return ([literalIp], null);
+        }
+
+        IPAddress[] addresses;
+        try
+        {
+            using var cts = new CancellationTokenSource(opts.DnsResolveTimeout, _timeProvider);
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, cts.Token);
+            addresses = await _resolver.GetHostAddressesAsync(asciiHost, linked.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        {
+            return (null, DnsFailure(asciiHost, "timeout", "DNS resolution timed out for host"));
+        }
+        catch (SocketException)
+        {
+            return (null, DnsFailure(asciiHost, "socket_error", "DNS resolution failed for host"));
+        }
+
+        if (addresses.Length == 0)
+        {
+            return (null, DnsFailure(asciiHost, "no_addresses", "DNS resolution returned no addresses for host"));
+        }
+
+        return (addresses, null);
+    }
+
+    private UrlSafetyViolation DnsFailure(string asciiHost, string failureTag, string reasonPrefix)
+    {
+        HttpSecurityLog.DnsResolutionFailed(_logger, SanitizeForDisplay(asciiHost), failureTag);
+        return new UrlSafetyViolation(
+            UrlSafetyViolationKind.DnsResolutionFailed,
+            $"{reasonPrefix} '{SanitizeForDisplay(asciiHost)}'.",
+            "UrlSafety:DnsResolutionFailed",
+            [asciiHost]);
+    }
+
+    private static UrlSafetyViolation? ClassifyAddresses(IPAddress[] addresses, string asciiHost, UrlSafetyOptions opts)
+    {
+        foreach (IPAddress ip in addresses)
+        {
+            if (!PrivateNetworkClassifier.Classify(ip, out UrlSafetyViolationKind kind))
+            {
+                continue;
+            }
+
+            if (IsAllowedByPolicy(kind, opts))
+            {
+                continue;
+            }
+
+            return new UrlSafetyViolation(
+                kind,
+                BuildReason(kind, SanitizeForDisplay(asciiHost)),
+                LocalizationKeyFor(kind),
+                [asciiHost]);
+        }
+
+        return null;
     }
 
     private string? CurrentTenantId() =>

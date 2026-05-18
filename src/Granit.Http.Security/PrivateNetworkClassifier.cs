@@ -86,24 +86,7 @@ public static class PrivateNetworkClassifier
             return true;
         }
 
-        // 0.0.0.0/8 — "this network" / unspecified (RFC 1122).
-        // 10.0.0.0/8 — private (RFC 1918).
-        // 100.64.0.0/10 — CGNAT (RFC 6598).
-        // 172.16.0.0/12 — private (RFC 1918).
-        // 192.168.0.0/16 — private (RFC 1918).
-        // 192.0.0.0/24 — IETF protocol assignments (RFC 6890).
-        // 192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24 — TEST-NET-1/2/3 (RFC 5737).
-        // 198.18.0.0/15 — benchmarking (RFC 2544); often routed to internal taps.
-        if (b[0] == 0
-            || b[0] == 10
-            || (b[0] == 100 && b[1] >= 64 && b[1] <= 127)
-            || (b[0] == 172 && b[1] >= 16 && b[1] <= 31)
-            || (b[0] == 192 && b[1] == 168)
-            || (b[0] == 192 && b[1] == 0 && b[2] == 0)
-            || (b[0] == 192 && b[1] == 0 && b[2] == 2)
-            || (b[0] == 198 && b[1] == 51 && b[2] == 100)
-            || (b[0] == 203 && b[1] == 0 && b[2] == 113)
-            || (b[0] == 198 && (b[1] == 18 || b[1] == 19)))
+        if (IsPrivateOrReservedIPv4(b))
         {
             kind = UrlSafetyViolationKind.PrivateNetwork;
             return true;
@@ -120,61 +103,103 @@ public static class PrivateNetworkClassifier
         return Miss(out kind);
     }
 
+    /// <summary>
+    /// RFC 1918 private, RFC 6598 CGNAT, RFC 6890 IETF-reserved, RFC 5737 TEST-NETs,
+    /// RFC 2544 benchmarking, plus 0.0.0.0/8 unspecified. Grouped here so the per-range
+    /// table stays auditable against the RFC comments.
+    /// </summary>
+    private static bool IsPrivateOrReservedIPv4(byte[] b) =>
+        b[0] == 0
+        || b[0] == 10
+        || (b[0] == 100 && b[1] >= 64 && b[1] <= 127)
+        || (b[0] == 172 && b[1] >= 16 && b[1] <= 31)
+        || (b[0] == 192 && b[1] == 168)
+        || (b[0] == 192 && b[1] == 0 && (b[2] == 0 || b[2] == 2))
+        || (b[0] == 198 && b[1] == 51 && b[2] == 100)
+        || (b[0] == 203 && b[1] == 0 && b[2] == 113)
+        || (b[0] == 198 && (b[1] == 18 || b[1] == 19));
+
     private static readonly byte[] IPv6LoopbackBytes = IPAddress.IPv6Loopback.GetAddressBytes();
     private static readonly byte[] IPv6UnspecifiedBytes = IPAddress.IPv6Any.GetAddressBytes();
     private static readonly byte[] Ipv6DocumentationPrefix = [0x20, 0x01, 0x0d, 0xb8]; // 2001:db8::/32
 
     private static bool ClassifyIPv6(byte[] b, out UrlSafetyViolationKind kind)
     {
-        // ::1 — loopback.
-        if (b.AsSpan().SequenceEqual(IPv6LoopbackBytes))
+        if (TryClassifyIPv6Exact(b, out kind))
+        {
+            return true;
+        }
+
+        if (TryClassifyIPv6Range(b, out kind))
+        {
+            return true;
+        }
+
+        return TryClassifyIPv6Transition(b, out kind);
+    }
+
+    /// <summary>
+    /// Exact-bytes matches: ::1 loopback, :: unspecified, and the AWS / Azure / GCP
+    /// metadata addresses embedded in IPv6.
+    /// </summary>
+    private static bool TryClassifyIPv6Exact(byte[] b, out UrlSafetyViolationKind kind)
+    {
+        ReadOnlySpan<byte> span = b;
+
+        if (span.SequenceEqual(IPv6LoopbackBytes) || span.SequenceEqual(IPv6UnspecifiedBytes))
         {
             kind = UrlSafetyViolationKind.Loopback;
             return true;
         }
 
-        // :: — unspecified (equivalent of 0.0.0.0).
-        if (b.AsSpan().SequenceEqual(IPv6UnspecifiedBytes))
-        {
-            kind = UrlSafetyViolationKind.Loopback;
-            return true;
-        }
-
-        // fd00:ec2::254 (AWS IMDSv6) and fe80::a9fe:a9fe (Azure/GCP variant).
-        if (b.AsSpan().SequenceEqual(AwsIPv6Metadata) || b.AsSpan().SequenceEqual(LinkLocalIPv6Metadata))
+        if (span.SequenceEqual(AwsIPv6Metadata) || span.SequenceEqual(LinkLocalIPv6Metadata))
         {
             kind = UrlSafetyViolationKind.MetadataEndpoint;
             return true;
         }
 
-        // fe80::/10 — link-local (RFC 4291).
+        return Miss(out kind);
+    }
+
+    /// <summary>
+    /// Prefix-range matches: fe80::/10 link-local, fc00::/7 ULA, ff00::/8 multicast,
+    /// 2001:db8::/32 documentation.
+    /// </summary>
+    private static bool TryClassifyIPv6Range(byte[] b, out UrlSafetyViolationKind kind)
+    {
         if (b[0] == 0xfe && (b[1] & 0xc0) == 0x80)
         {
             kind = UrlSafetyViolationKind.LinkLocal;
             return true;
         }
 
-        // fc00::/7 — unique local (RFC 4193). Includes the fd00::/8 half.
         if ((b[0] & 0xfe) == 0xfc)
         {
             kind = UrlSafetyViolationKind.IPv6UniqueLocal;
             return true;
         }
 
-        // ff00::/8 — multicast (RFC 4291).
         if (b[0] == 0xff)
         {
             kind = UrlSafetyViolationKind.ReservedAddress;
             return true;
         }
 
-        // 2001:db8::/32 — documentation (RFC 3849) — must never resolve.
         if (b.AsSpan(0, 4).SequenceEqual(Ipv6DocumentationPrefix))
         {
             kind = UrlSafetyViolationKind.ReservedAddress;
             return true;
         }
 
+        return Miss(out kind);
+    }
+
+    /// <summary>
+    /// IPv6-to-IPv4 transition forms (NAT64, 6to4, Teredo, IPv4-compatible) — each
+    /// extracts the embedded IPv4 and re-classifies it through <see cref="ClassifyEmbeddedIPv4"/>.
+    /// </summary>
+    private static bool TryClassifyIPv6Transition(byte[] b, out UrlSafetyViolationKind kind)
+    {
         // NAT64 well-known prefix 64:ff9b::/96 (RFC 6052) — last 4 bytes are an embedded IPv4.
         if (b.AsSpan(0, 12).SequenceEqual(Nat64Prefix))
         {
@@ -199,8 +224,7 @@ public static class PrivateNetworkClassifier
         }
 
         // ::a.b.c.d — IPv4-compatible IPv6 (deprecated, RFC 4291 §2.5.5.1). First 12 bytes are zero,
-        // last 4 are the IPv4. We already matched ::1 and :: above, so any other ::/96 with a non-zero
-        // tail is treated as embedded IPv4.
+        // last 4 are the IPv4. ::1 and :: are already filtered by TryClassifyIPv6Exact above.
         if (IsZero(b.AsSpan(0, 12)) && !IsZero(b.AsSpan(12, 4)))
         {
             return ClassifyEmbeddedIPv4(b.AsSpan(12, 4), out kind);
