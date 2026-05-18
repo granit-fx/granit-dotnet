@@ -36,14 +36,14 @@ internal sealed class JsonSchemaWriter(IServiceScopeFactory scopeFactory) : IJso
 
         IValidatorDescriptor descriptor = validator.CreateDescriptor();
 
-        JsonObject schema = new();
-        JsonObject properties = new();
+        JsonObject schema = [];
+        JsonObject properties = [];
         JsonArray? required = null;
 
         foreach (System.Reflection.PropertyInfo prop in type.GetProperties())
         {
             string camelName = ToCamelCase(prop.Name);
-            JsonObject propertySchema = new();
+            JsonObject propertySchema = [];
             string? patternHint = null;
 
             foreach ((IPropertyValidator propertyValidator, IRuleComponent component)

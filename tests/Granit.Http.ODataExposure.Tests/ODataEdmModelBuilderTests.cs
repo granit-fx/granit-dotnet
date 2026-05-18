@@ -139,15 +139,11 @@ public sealed class ODataEdmModelBuilderTests
 
     [Fact]
     public void Build_EmptyDescriptorList_Throws()
-    {
-        Should.Throw<ArgumentException>(() => ODataEdmModelBuilder.Build([], Whitelist(typeof(Invoice))));
-    }
+        => Should.Throw<ArgumentException>(() => ODataEdmModelBuilder.Build([], Whitelist(typeof(Invoice))));
 
     [Fact]
     public void Build_NullDescriptors_Throws()
-    {
-        Should.Throw<ArgumentNullException>(() => ODataEdmModelBuilder.Build(null!, Whitelist(typeof(Invoice))));
-    }
+        => Should.Throw<ArgumentNullException>(() => ODataEdmModelBuilder.Build(null!, Whitelist(typeof(Invoice))));
 
     [Fact]
     public void Build_DefaultContainerName_IsTenantContainer()

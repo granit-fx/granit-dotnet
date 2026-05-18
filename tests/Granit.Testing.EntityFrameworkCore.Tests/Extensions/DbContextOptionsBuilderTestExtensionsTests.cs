@@ -39,9 +39,7 @@ public sealed class DbContextOptionsBuilderTestExtensionsTests : IAsyncLifetime
     }
 
     public async ValueTask DisposeAsync()
-    {
-        await _connection.DisposeAsync();
-    }
+        => await _connection.DisposeAsync();
 
     /// <summary>
     /// Two DbContexts built in the same test, with two different tenant mocks. Without

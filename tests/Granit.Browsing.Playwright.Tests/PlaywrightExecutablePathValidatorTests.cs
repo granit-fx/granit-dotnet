@@ -11,9 +11,7 @@ public sealed class PlaywrightExecutablePathValidatorTests
 {
     [Fact]
     public void Null_executable_returns_null()
-    {
-        PlaywrightExecutablePathValidator.Validate(null, "/usr/lib/chromium/").ShouldBeNull();
-    }
+        => PlaywrightExecutablePathValidator.Validate(null, "/usr/lib/chromium/").ShouldBeNull();
 
     [Fact]
     public void Null_prefix_returns_resolved_path()

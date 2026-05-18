@@ -11,9 +11,7 @@ public sealed class PuppeteerExecutablePathValidatorTests
 {
     [Fact]
     public void Null_executable_returns_null()
-    {
-        PuppeteerExecutablePathValidator.Validate(null, "/usr/lib/chromium/").ShouldBeNull();
-    }
+        => PuppeteerExecutablePathValidator.Validate(null, "/usr/lib/chromium/").ShouldBeNull();
 
     [Fact]
     public void Null_prefix_returns_resolved_path()

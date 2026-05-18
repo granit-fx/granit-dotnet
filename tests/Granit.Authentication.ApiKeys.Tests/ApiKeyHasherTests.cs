@@ -81,7 +81,5 @@ public sealed class ApiKeyHasherTests
 
     [Fact]
     public void ComputeCurrentHash_ThrowsOnEmptyInput()
-    {
-        Should.Throw<ArgumentException>(() => Create().ComputeCurrentHash(string.Empty));
-    }
+        => Should.Throw<ArgumentException>(() => Create().ComputeCurrentHash(string.Empty));
 }

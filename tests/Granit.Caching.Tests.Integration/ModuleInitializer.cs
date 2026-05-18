@@ -19,7 +19,5 @@ internal static class ModuleInitializer
 {
     [ModuleInitializer]
     public static void Initialize()
-    {
-        AppContext.SetData("REGEX_DEFAULT_MATCH_TIMEOUT", Timeout.InfiniteTimeSpan);
-    }
+        => AppContext.SetData("REGEX_DEFAULT_MATCH_TIMEOUT", Timeout.InfiniteTimeSpan);
 }

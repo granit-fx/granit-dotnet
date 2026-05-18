@@ -229,11 +229,9 @@ public sealed class JsonSchemaWriterTests
 
     [Fact]
     public void JsonSchemaWriter_Implements_IJsonSchemaWriter()
-    {
         // Sanity check — Granit.Entities and other consumers depend on the
         // interface, not the concrete implementation.
-        typeof(IJsonSchemaWriter).IsAssignableFrom(typeof(JsonSchemaWriter)).ShouldBeTrue();
-    }
+        => typeof(IJsonSchemaWriter).IsAssignableFrom(typeof(JsonSchemaWriter)).ShouldBeTrue();
 
     // -------------------------------------------------------------------------
     // Helpers
