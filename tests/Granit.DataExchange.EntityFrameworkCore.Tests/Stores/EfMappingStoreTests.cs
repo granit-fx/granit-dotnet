@@ -34,13 +34,16 @@ public sealed class EfMappingStoreTests
         return tenant;
     }
 
-    private static EfMappingStore CreateStore(string dbName, IClock? clock = null, ICurrentTenant? tenant = null) =>
-        new(
-            new InMemoryDataExchangeContextFactory(dbName),
+    private static EfMappingStore CreateStore(string dbName, IClock? clock = null, ICurrentTenant? tenant = null)
+    {
+        ICurrentTenant resolvedTenant = tenant ?? CreateTenant();
+        return new(
+            new InMemoryDataExchangeContextFactory(dbName, resolvedTenant),
             clock ?? CreateClock(),
             new SimpleGuidGenerator(),
-            tenant ?? CreateTenant(),
+            resolvedTenant,
             Substitute.For<ICurrentUserService>());
+    }
 
     // ---- LoadAsync --------------------------------------------------------
 

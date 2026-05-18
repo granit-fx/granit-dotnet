@@ -2,6 +2,7 @@ using Granit.Events;
 using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Internal;
 using Granit.Features.Events;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -10,37 +11,43 @@ using Xunit;
 
 namespace Granit.Features.EntityFrameworkCore.Tests;
 
-public sealed class EfCoreFeatureStoreTests
+public sealed class EfCoreFeatureStoreTests : IDisposable
 {
     // -------------------------------------------------------------------------
     // Test infrastructure
     // -------------------------------------------------------------------------
 
-    private sealed class InMemoryContextFactory(string dbName) : IDbContextFactory<FeaturesDbContext>
+    private readonly TestDataFilter _dataFilter = new();
+
+    public void Dispose() => _dataFilter.Dispose();
+
+    private sealed class InMemoryContextFactory(string dbName, Granit.DataFiltering.DataFilter dataFilter) : IDbContextFactory<FeaturesDbContext>
     {
         public FeaturesDbContext CreateDbContext() =>
             new(new DbContextOptionsBuilder<FeaturesDbContext>()
                 .UseInMemoryDatabase(dbName)
-                .Options);
+                .Options,
+                GranitDesignTime.CurrentTenant,
+                dataFilter);
 
         public Task<FeaturesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult(CreateDbContext());
     }
 
-    private static EfCoreFeatureStore CreateStore(string dbName, ILocalEventBus? eventBus = null) =>
-        new(new InMemoryContextFactory(dbName),
+    private EfCoreFeatureStore CreateStore(string dbName, ILocalEventBus? eventBus = null) =>
+        new(new InMemoryContextFactory(dbName, _dataFilter.Filter),
             eventBus ?? Substitute.For<ILocalEventBus>(),
             TimeProvider.System,
             NullLogger<EfCoreFeatureStore>.Instance);
 
-    private static async Task SeedAsync(
+    private async Task SeedAsync(
         string dbName,
         Guid tenantId,
         string featureName,
         string value,
         CancellationToken cancellationToken = default)
     {
-        InMemoryContextFactory factory = new(dbName);
+        InMemoryContextFactory factory = new(dbName, _dataFilter.Filter);
         await using FeaturesDbContext ctx = factory.CreateDbContext();
         ctx.FeatureOverrides.Add(new TenantFeatureOverride
         {
@@ -177,7 +184,7 @@ public sealed class EfCoreFeatureStoreTests
             "Acme.Feature", tenantId.ToString(), "true",
             TestContext.Current.CancellationToken);
 
-        InMemoryContextFactory factory = new(db);
+        InMemoryContextFactory factory = new(db, _dataFilter.Filter);
         await using FeaturesDbContext ctx = factory.CreateDbContext();
         int count = await ctx.FeatureOverrides.CountAsync(
             o => o.FeatureName == "Acme.Feature" && o.TenantId == tenantId,

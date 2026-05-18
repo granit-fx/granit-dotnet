@@ -16,6 +16,7 @@ using Granit.Auditing.EntityFrameworkCore.Internal.Services;
 using Granit.Auditing.Messages;
 using Granit.Events;
 using Granit.Guids;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -26,8 +27,11 @@ using Xunit;
 
 namespace Granit.Auditing.EntityFrameworkCore.Tests.Internal;
 
-public sealed class StrictAuditingPublisherTests
+public sealed class StrictAuditingPublisherTests : IDisposable
 {
+    private readonly TestDataFilter _dataFilter = new();
+
+    public void Dispose() => _dataFilter.Dispose();
     // -------------------------------------------------------------------------
     // PublishAsync — happy path
     // -------------------------------------------------------------------------
@@ -44,7 +48,7 @@ public sealed class StrictAuditingPublisherTests
         guidGenerator.Create().Returns(_ => Guid.NewGuid());
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions));
+        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
         services.AddSingleton(guidGenerator);
         services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
@@ -58,7 +62,7 @@ public sealed class StrictAuditingPublisherTests
         await publisher.PublishAsync(batch, TestContext.Current.CancellationToken);
 
         // Assert
-        await using AuditingDbContext verifyCtx = new(dbOptions);
+        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         int count = await verifyCtx.AuditEntries.CountAsync(TestContext.Current.CancellationToken);
         count.ShouldBe(1);
     }
@@ -75,7 +79,7 @@ public sealed class StrictAuditingPublisherTests
         guidGenerator.Create().Returns(_ => Guid.NewGuid());
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions));
+        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
         services.AddSingleton(guidGenerator);
         services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
@@ -107,7 +111,7 @@ public sealed class StrictAuditingPublisherTests
         await publisher.PublishAsync(batch, TestContext.Current.CancellationToken);
 
         // Assert
-        await using AuditingDbContext verifyCtx = new(dbOptions);
+        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         AuditEntry persisted = await verifyCtx.AuditEntries
             .Include(e => e.EntityChanges)
             .ThenInclude(ec => ec.PropertyChanges)
@@ -139,7 +143,7 @@ public sealed class StrictAuditingPublisherTests
         guidGenerator.Create().Returns(_ => Guid.NewGuid());
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions));
+        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
         services.AddSingleton(guidGenerator);
         services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
@@ -155,7 +159,7 @@ public sealed class StrictAuditingPublisherTests
         }
 
         // Assert
-        await using AuditingDbContext verifyCtx = new(dbOptions);
+        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         int count = await verifyCtx.AuditEntries.CountAsync(TestContext.Current.CancellationToken);
         count.ShouldBe(3);
     }
@@ -172,7 +176,7 @@ public sealed class StrictAuditingPublisherTests
         guidGenerator.Create().Returns(_ => Guid.NewGuid());
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions));
+        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
         services.AddSingleton(guidGenerator);
         services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
@@ -186,7 +190,7 @@ public sealed class StrictAuditingPublisherTests
         await publisher.PublishAsync(batch, TestContext.Current.CancellationToken);
 
         // Assert
-        await using AuditingDbContext verifyCtx = new(dbOptions);
+        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         AuditEntry entry = await verifyCtx.AuditEntries
             .Include(e => e.EntityChanges)
             .SingleAsync(TestContext.Current.CancellationToken);
@@ -218,10 +222,10 @@ public sealed class StrictAuditingPublisherTests
         return new AuditingMetrics(meterFactory, channel);
     }
 
-    private sealed class TestDbContextFactory(DbContextOptions<AuditingDbContext> options)
+    private sealed class TestDbContextFactory(DbContextOptions<AuditingDbContext> options, Granit.DataFiltering.DataFilter dataFilter)
         : IDbContextFactory<AuditingDbContext>
     {
-        public AuditingDbContext CreateDbContext() => new(options);
+        public AuditingDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant, dataFilter);
     }
 
     private sealed class TestMeterFactory : IMeterFactory

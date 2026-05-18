@@ -3,6 +3,7 @@ using Granit.Bff.EntityFrameworkCore.Internal;
 using Granit.Bff.Options;
 using Granit.Encryption;
 using Granit.Guids;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -43,7 +44,7 @@ public sealed class EfCoreBffTokenStoreTests : IAsyncLifetime
 
     public async ValueTask DisposeAsync()
     {
-        await using BffDbContext db = new(_dbOptions);
+        await using BffDbContext db = new(_dbOptions, GranitDesignTime.CurrentTenant);
         await db.Database.EnsureDeletedAsync();
     }
 
@@ -70,7 +71,7 @@ public sealed class EfCoreBffTokenStoreTests : IAsyncLifetime
 
         await store.StoreAsync("admin", "session-1", _tokenSet, TestContext.Current.CancellationToken);
 
-        await using BffDbContext db = new(_dbOptions);
+        await using BffDbContext db = new(_dbOptions, GranitDesignTime.CurrentTenant);
         BffSessionEntity? entity = await db.Sessions.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 
         entity.ShouldNotBeNull();
@@ -99,7 +100,7 @@ public sealed class EfCoreBffTokenStoreTests : IAsyncLifetime
 
         await store.StoreAsync("admin", "session-1", updatedTokens, TestContext.Current.CancellationToken);
 
-        await using BffDbContext db = new(_dbOptions);
+        await using BffDbContext db = new(_dbOptions, GranitDesignTime.CurrentTenant);
         List<BffSessionEntity> entities = await db.Sessions.ToListAsync(TestContext.Current.CancellationToken);
 
         entities.Count.ShouldBe(1);
@@ -114,7 +115,7 @@ public sealed class EfCoreBffTokenStoreTests : IAsyncLifetime
         await store.StoreAsync("admin", "session-1", _tokenSet, TestContext.Current.CancellationToken);
         await store.StoreAsync("patient", "session-1", _tokenSet, TestContext.Current.CancellationToken);
 
-        await using BffDbContext db = new(_dbOptions);
+        await using BffDbContext db = new(_dbOptions, GranitDesignTime.CurrentTenant);
         int count = await db.Sessions.CountAsync(TestContext.Current.CancellationToken);
 
         count.ShouldBe(2);
@@ -400,7 +401,7 @@ public sealed class EfCoreBffTokenStoreTests : IAsyncLifetime
         encryptionService.Received(1).Encrypt(Arg.Any<string>());
 
         // Verify stored value is encrypted
-        await using BffDbContext db = new(_dbOptions);
+        await using BffDbContext db = new(_dbOptions, GranitDesignTime.CurrentTenant);
         BffSessionEntity? entity = await db.Sessions.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
         entity.ShouldNotBeNull();
         entity.SerializedTokens.ShouldStartWith("ENC:");
@@ -435,7 +436,7 @@ public sealed class EfCoreBffTokenStoreTests : IAsyncLifetime
         EfCoreBffTokenStore store = CreateStore(encryptionService: null);
         await store.StoreAsync("admin", "session-1", _tokenSet, TestContext.Current.CancellationToken);
 
-        await using BffDbContext db = new(_dbOptions);
+        await using BffDbContext db = new(_dbOptions, GranitDesignTime.CurrentTenant);
         BffSessionEntity? entity = await db.Sessions.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
         entity.ShouldNotBeNull();
 
@@ -470,6 +471,6 @@ public sealed class EfCoreBffTokenStoreTests : IAsyncLifetime
     private sealed class InMemoryBffDbContextFactory(DbContextOptions<BffDbContext> options)
         : IDbContextFactory<BffDbContext>
     {
-        public BffDbContext CreateDbContext() => new(options);
+        public BffDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
     }
 }

@@ -2,7 +2,7 @@ using Granit.DataFiltering;
 using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Features.EntityFrameworkCore.Internal;
@@ -22,18 +22,14 @@ namespace Granit.Features.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class FeaturesDbContext(
     DbContextOptions<FeaturesDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>Tenant-level feature value overrides.</summary>
     public DbSet<TenantFeatureOverride> FeatureOverrides { get; set; } = null!;
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureFeaturesModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureFeaturesModule();
 }

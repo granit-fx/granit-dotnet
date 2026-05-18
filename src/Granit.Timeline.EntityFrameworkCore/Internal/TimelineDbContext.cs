@@ -1,6 +1,6 @@
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timeline.Domain;
 using Granit.Timeline.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -16,9 +16,9 @@ namespace Granit.Timeline.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class TimelineDbContext(
     DbContextOptions<TimelineDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>Activity stream entries (comments, system logs, internal notes).</summary>
     public DbSet<TimelineEntry> TimelineEntries => Set<TimelineEntry>();
@@ -30,10 +30,6 @@ internal sealed class TimelineDbContext(
     public DbSet<Reaction> Reactions => Set<Reaction>();
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureTimelineModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureTimelineModule();
 }

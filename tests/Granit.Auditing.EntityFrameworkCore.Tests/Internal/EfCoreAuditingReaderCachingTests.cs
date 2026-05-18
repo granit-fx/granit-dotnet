@@ -3,6 +3,7 @@ using Granit.Auditing.EntityFrameworkCore.Internal;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
 using Granit.Auditing.Options;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -46,7 +47,7 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
         first.ShouldNotBeNull();
 
         // Delete from DB to prove second call comes from cache
-        await using (AuditingDbContext ctx = new(_dbOptions))
+        await using (AuditingDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant))
         {
             ctx.AuditEntries.RemoveRange(ctx.AuditEntries);
             await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -93,7 +94,7 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
         first.Items.Count.ShouldBe(1);
 
         // Delete from DB to prove second call comes from cache
-        await using (AuditingDbContext ctx = new(_dbOptions))
+        await using (AuditingDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant))
         {
             ctx.AuditEntries.RemoveRange(ctx.AuditEntries);
             await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -132,7 +133,7 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
 
     private async Task SeedEntryAsync(Guid id)
     {
-        await using AuditingDbContext ctx = new(_dbOptions);
+        await using AuditingDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant);
         ctx.AuditEntries.Add(new AuditEntry
         {
             Id = id,
@@ -145,7 +146,7 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
 
     private async Task SeedEntryWithEntityChangeAsync(Guid entryId, string entityType, string entityId)
     {
-        await using AuditingDbContext ctx = new(_dbOptions);
+        await using AuditingDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant);
         var entry = new AuditEntry
         {
             Id = entryId,
@@ -171,6 +172,6 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
     private sealed class TestDbContextFactory(DbContextOptions<AuditingDbContext> options)
         : IDbContextFactory<AuditingDbContext>
     {
-        public AuditingDbContext CreateDbContext() => new(options);
+        public AuditingDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
     }
 }

@@ -2,6 +2,7 @@ using Granit.Events;
 using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Internal;
 using Granit.Features.Events;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -10,28 +11,34 @@ using Xunit;
 
 namespace Granit.Features.EntityFrameworkCore.Tests;
 
-public sealed class EfCoreFeatureStoreAdditionalTests
+public sealed class EfCoreFeatureStoreAdditionalTests : IDisposable
 {
     // -------------------------------------------------------------------------
     // Test infrastructure
     // -------------------------------------------------------------------------
 
-    private sealed class InMemoryContextFactory(string dbName) : IDbContextFactory<FeaturesDbContext>
+    private readonly TestDataFilter _dataFilter = new();
+
+    public void Dispose() => _dataFilter.Dispose();
+
+    private sealed class InMemoryContextFactory(string dbName, Granit.DataFiltering.DataFilter dataFilter) : IDbContextFactory<FeaturesDbContext>
     {
         public FeaturesDbContext CreateDbContext() =>
             new(new DbContextOptionsBuilder<FeaturesDbContext>()
                 .UseInMemoryDatabase(dbName)
-                .Options);
+                .Options,
+                GranitDesignTime.CurrentTenant,
+                dataFilter);
 
         public Task<FeaturesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult(CreateDbContext());
     }
 
-    private static EfCoreFeatureStore CreateStore(
+    private EfCoreFeatureStore CreateStore(
         string dbName,
         ILocalEventBus? eventBus = null,
         TimeProvider? timeProvider = null) =>
-        new(new InMemoryContextFactory(dbName),
+        new(new InMemoryContextFactory(dbName, _dataFilter.Filter),
             eventBus ?? Substitute.For<ILocalEventBus>(),
             timeProvider ?? TimeProvider.System,
             NullLogger<EfCoreFeatureStore>.Instance);

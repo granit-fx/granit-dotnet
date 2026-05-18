@@ -1,6 +1,7 @@
 using Granit.Bff.BackgroundJobs.Internal;
 using Granit.Bff.BackgroundJobs.Jobs;
 using Granit.Bff.EntityFrameworkCore.Internal;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -56,7 +57,7 @@ public sealed class BffExpiredSessionCleanupHandlerTests
         public BffDbContext CreateDbContext()
         {
             CreateCount++;
-            return new BffDbContext(options);
+            return new BffDbContext(options, GranitDesignTime.CurrentTenant);
         }
     }
 }

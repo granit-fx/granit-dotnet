@@ -6,7 +6,7 @@ using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal;
@@ -18,9 +18,9 @@ namespace Granit.DataExchange.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class DataExchangeDbContext(
     DbContextOptions<DataExchangeDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     public DbSet<ImportJob> ImportJobs { get; set; } = null!;
     public DbSet<SavedMappingEntity> SavedMappings { get; set; } = null!;
@@ -28,10 +28,6 @@ internal sealed class DataExchangeDbContext(
     public DbSet<ExportJob> ExportJobs { get; set; } = null!;
     public DbSet<ExportPresetEntity> ExportPresets { get; set; } = null!;
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureDataExchangeModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureDataExchangeModule();
 }

@@ -1,6 +1,7 @@
 using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Extensions;
 using Granit.Features.EntityFrameworkCore.Internal;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shouldly;
@@ -15,7 +16,7 @@ public sealed class FeaturesModelBuilderExtensionsTests
         DbContextOptionsBuilder<FeaturesDbContext> optionsBuilder = new();
         optionsBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());
 
-        using FeaturesDbContext context = new(optionsBuilder.Options);
+        using FeaturesDbContext context = new(optionsBuilder.Options, GranitDesignTime.CurrentTenant);
         return context.Model;
     }
 

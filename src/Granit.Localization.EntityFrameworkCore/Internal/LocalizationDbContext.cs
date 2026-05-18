@@ -2,7 +2,7 @@ using Granit.DataFiltering;
 using Granit.Localization.Domain;
 using Granit.Localization.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Localization.EntityFrameworkCore.Internal;
@@ -22,18 +22,14 @@ namespace Granit.Localization.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class LocalizationDbContext(
     DbContextOptions<LocalizationDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>Translation overrides indexed by resource, culture, and key.</summary>
     public DbSet<LocalizationOverride> LocalizationOverrides { get; set; } = null!;
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureLocalizationModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureLocalizationModule();
 }

@@ -1,5 +1,6 @@
 using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Internal;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shouldly;
@@ -12,7 +13,8 @@ public sealed class TenantFeatureOverrideConfigurationTests
     private static FeaturesDbContext CreateInMemory() =>
         new(new DbContextOptionsBuilder<FeaturesDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options);
+            .Options,
+            GranitDesignTime.CurrentTenant);
 
     // -------------------------------------------------------------------------
     // Audit columns constraints

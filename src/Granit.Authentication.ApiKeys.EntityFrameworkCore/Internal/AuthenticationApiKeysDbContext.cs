@@ -2,7 +2,7 @@ using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Extensions;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
@@ -12,9 +12,9 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class AuthenticationApiKeysDbContext(
     DbContextOptions<AuthenticationApiKeysDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>
     /// API keys table.
@@ -22,11 +22,9 @@ internal sealed class AuthenticationApiKeysDbContext(
     public DbSet<ApiKeyEntry> ApiKeys => Set<ApiKeyEntry>();
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
-        base.OnModelCreating(modelBuilder);
         modelBuilder.ConfigureApiKeysModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

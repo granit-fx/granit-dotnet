@@ -1,5 +1,6 @@
 using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Internal;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shouldly;
@@ -7,12 +8,18 @@ using Xunit;
 
 namespace Granit.Features.EntityFrameworkCore.Tests;
 
-public sealed class FeaturesDbContextTests
+public sealed class FeaturesDbContextTests : IDisposable
 {
-    private static FeaturesDbContext CreateInMemory() =>
+    private readonly TestDataFilter _dataFilter = new();
+
+    public void Dispose() => _dataFilter.Dispose();
+
+    private FeaturesDbContext CreateInMemory() =>
         new(new DbContextOptionsBuilder<FeaturesDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options);
+            .Options,
+            GranitDesignTime.CurrentTenant,
+            _dataFilter.Filter);
 
     // -------------------------------------------------------------------------
     // Schema creation

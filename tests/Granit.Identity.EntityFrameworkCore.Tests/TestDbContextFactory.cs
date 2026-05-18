@@ -1,5 +1,6 @@
 using Granit.Encryption;
 using Granit.Identity.EntityFrameworkCore.Internal;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -40,7 +41,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<IdentityDbContext
         DbContextOptions<IdentityDbContext> options = optionsBuilder.Options;
 
         // Create the schema once for the connection lifetime.
-        using (IdentityDbContext db = new(options, new PassthroughEncryption()))
+        using (IdentityDbContext db = new(options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant))
         {
             db.Database.EnsureCreated();
         }
@@ -48,7 +49,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<IdentityDbContext
         return new TestDbContextFactory(connection, options);
     }
 
-    public IdentityDbContext CreateDbContext() => new(_options, new PassthroughEncryption());
+    public IdentityDbContext CreateDbContext() => new(_options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant);
 
     public void Dispose() => _connection.Dispose();
 

@@ -4,6 +4,7 @@ using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.EntityFrameworkCore.Internal;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -80,9 +81,9 @@ public sealed class EfAIUsageStoreTests : IAsyncDisposable
 
     private sealed class TestDbContextFactory(DbContextOptions<AIDbContext> options) : IDbContextFactory<AIDbContext>
     {
-        public AIDbContext CreateDbContext() => new(options, dataFilter: SharedFilter);
+        public AIDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant, dataFilter: SharedFilter);
 
         public Task<AIDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-            Task.FromResult(new AIDbContext(options, dataFilter: SharedFilter));
+            Task.FromResult(new AIDbContext(options, GranitDesignTime.CurrentTenant, dataFilter: SharedFilter));
     }
 }

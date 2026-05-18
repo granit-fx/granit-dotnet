@@ -1,5 +1,6 @@
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.EntityFrameworkCore.Internal;
@@ -18,6 +19,7 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
     private readonly IDbContextFactory<WebhooksDbContext> _contextFactory;
     private readonly DbContextOptions<WebhooksDbContext> _options;
     private readonly EfWebhookDeliveryStore _sut;
+    private readonly TestDataFilter _dataFilter = new();
 
     public EfWebhookDeliveryStoreTests()
     {
@@ -28,14 +30,15 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
             .UseInMemoryDatabase(databaseName: $"webhooks-delivery-{Guid.NewGuid()}")
             .Options;
 
-        _contextFactory = new TestWebhooksDbContextFactory(_options);
+        _contextFactory = new TestWebhooksDbContextFactory(_options, _dataFilter.Filter);
         _sut = new EfWebhookDeliveryStore(_contextFactory, Substitute.For<ICurrentTenant>(), _clock, new SimpleGuidGenerator());
     }
 
     public async ValueTask DisposeAsync()
     {
-        await using WebhooksDbContext context = new(_options);
+        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         await context.Database.EnsureDeletedAsync();
+        _dataFilter.Dispose();
     }
 
     [Fact]
@@ -48,7 +51,7 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
         await _sut.RecordSuccessAsync(command, 200, 42, "abc123", null, TestContext.Current.CancellationToken);
 
         // Assert
-        await using WebhooksDbContext context = new(_options);
+        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         WebhookDeliveryAttempt attempt = await context.WebhookDeliveryAttempts.SingleAsync(TestContext.Current.CancellationToken);
         attempt.DeliveryId.ShouldBe(command.DeliveryId);
         attempt.SubscriptionId.ShouldBe(command.SubscriptionId);
@@ -72,7 +75,7 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
         await _sut.RecordSuccessAsync(command, 200, 10, "hash", null, TestContext.Current.CancellationToken);
 
         // Assert
-        await using WebhooksDbContext context = new(_options);
+        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         WebhookSubscription? subscription = await context.WebhookSubscriptions.FindAsync([subscriptionId], TestContext.Current.CancellationToken);
         subscription.ShouldNotBeNull();
         subscription!.ConsecutiveFailureCount.ShouldBe(0);
@@ -89,7 +92,7 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
         await Should.NotThrowAsync(async () =>
             await _sut.RecordSuccessAsync(command, 200, 10, "hash", null, TestContext.Current.CancellationToken));
 
-        await using WebhooksDbContext context = new(_options);
+        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         (await context.WebhookDeliveryAttempts.CountAsync(TestContext.Current.CancellationToken)).ShouldBe(1);
     }
 
@@ -103,7 +106,7 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
         await _sut.RecordFailureAsync(command, 500, 100, "Server Error", null, TestContext.Current.CancellationToken);
 
         // Assert
-        await using WebhooksDbContext context = new(_options);
+        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         WebhookDeliveryAttempt attempt = await context.WebhookDeliveryAttempts.SingleAsync(TestContext.Current.CancellationToken);
         attempt.IsSuccess.ShouldBeFalse();
         attempt.HttpStatusCode.ShouldBe(500);
@@ -123,7 +126,7 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
         await _sut.RecordFailureAsync(command, 500, 50, "Error", null, TestContext.Current.CancellationToken);
 
         // Assert
-        await using WebhooksDbContext context = new(_options);
+        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         WebhookSubscription? subscription = await context.WebhookSubscriptions.FindAsync([subscriptionId], TestContext.Current.CancellationToken);
         subscription!.ConsecutiveFailureCount.ShouldBe(3);
     }
@@ -139,7 +142,7 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
         await _sut.RecordFailureAsync(command, null, 50, longError, null, TestContext.Current.CancellationToken);
 
         // Assert
-        await using WebhooksDbContext context = new(_options);
+        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         WebhookDeliveryAttempt attempt = await context.WebhookDeliveryAttempts.SingleAsync(TestContext.Current.CancellationToken);
         attempt.ErrorMessage!.Length.ShouldBe(2000);
     }
@@ -154,7 +157,7 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
         await _sut.RecordFailureAsync(command, null, 10000, "Timeout", null, TestContext.Current.CancellationToken);
 
         // Assert
-        await using WebhooksDbContext context = new(_options);
+        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         WebhookDeliveryAttempt attempt = await context.WebhookDeliveryAttempts.SingleAsync(TestContext.Current.CancellationToken);
         attempt.HttpStatusCode.ShouldBeNull();
     }
@@ -170,7 +173,7 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
         await _sut.SuspendSubscriptionAsync(subscriptionId, "Too many failures", TestContext.Current.CancellationToken);
 
         // Assert
-        await using WebhooksDbContext context = new(_options);
+        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         WebhookSubscription? subscription = await context.WebhookSubscriptions.FindAsync([subscriptionId], TestContext.Current.CancellationToken);
         subscription!.Status.ShouldBe(WebhookSubscriptionStatus.Suspended);
         subscription.DeactivationReason.ShouldBe("Too many failures");
@@ -231,14 +234,14 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
 
         sub.ClearDomainEvents();
 
-        await using WebhooksDbContext context = new(_options);
+        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         context.WebhookSubscriptions.Add(sub);
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
     }
 
     private async Task SeedDeliveryAttemptAsync(DateTimeOffset occurredAt)
     {
-        await using WebhooksDbContext context = new(_options);
+        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         context.WebhookDeliveryAttempts.Add(new WebhookDeliveryAttempt
         {
             Id = Guid.NewGuid(),
@@ -273,13 +276,15 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
     };
 }
 
-internal sealed class TestWebhooksDbContextFactory(DbContextOptions<WebhooksDbContext> options)
+internal sealed class TestWebhooksDbContextFactory(
+    DbContextOptions<WebhooksDbContext> options,
+    Granit.DataFiltering.DataFilter dataFilter)
     : IDbContextFactory<WebhooksDbContext>
 {
-    public WebhooksDbContext CreateDbContext() => new(options);
+    public WebhooksDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant, dataFilter);
 
     public Task<WebhooksDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-        Task.FromResult(new WebhooksDbContext(options));
+        Task.FromResult(new WebhooksDbContext(options, GranitDesignTime.CurrentTenant, dataFilter));
 }
 
 // =============================================================================
@@ -389,11 +394,16 @@ internal sealed class TestWebhooksSqliteFactory : IDbContextFactory<WebhooksDbCo
 {
     private readonly Microsoft.Data.Sqlite.SqliteConnection _connection;
     private readonly DbContextOptions<WebhooksDbContext> _options;
+    private readonly TestDataFilter _dataFilter;
 
-    private TestWebhooksSqliteFactory(Microsoft.Data.Sqlite.SqliteConnection connection, DbContextOptions<WebhooksDbContext> options)
+    private TestWebhooksSqliteFactory(
+        Microsoft.Data.Sqlite.SqliteConnection connection,
+        DbContextOptions<WebhooksDbContext> options,
+        TestDataFilter dataFilter)
     {
         _connection = connection;
         _options = options;
+        _dataFilter = dataFilter;
     }
 
     public static TestWebhooksSqliteFactory Create()
@@ -407,20 +417,26 @@ internal sealed class TestWebhooksSqliteFactory : IDbContextFactory<WebhooksDbCo
 
         DbContextOptions<WebhooksDbContext> options = optionsBuilder.Options;
 
-        using (WebhooksDbContext db = new(options))
+        TestDataFilter dataFilter = new();
+
+        using (WebhooksDbContext db = new(options, GranitDesignTime.CurrentTenant, dataFilter.Filter))
         {
             db.Database.EnsureCreated();
         }
 
-        return new TestWebhooksSqliteFactory(connection, options);
+        return new TestWebhooksSqliteFactory(connection, options, dataFilter);
     }
 
-    public WebhooksDbContext CreateDbContext() => new(_options);
+    public WebhooksDbContext CreateDbContext() => new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
 
     public Task<WebhooksDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult(CreateDbContext());
 
-    public void Dispose() => _connection.Dispose();
+    public void Dispose()
+    {
+        _dataFilter.Dispose();
+        _connection.Dispose();
+    }
 }
 
 internal sealed class WebhooksSqliteModelCustomizer(

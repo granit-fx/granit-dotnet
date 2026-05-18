@@ -1,3 +1,4 @@
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timeline.EntityFrameworkCore.Internal;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<TimelineDbContext
         DbContextOptions<TimelineDbContext> options = optionsBuilder.Options;
 
         // Create the schema
-        using (TimelineDbContext db = new(options))
+        using (TimelineDbContext db = new(options, GranitDesignTime.CurrentTenant))
         {
             db.Database.EnsureCreated();
         }
@@ -43,7 +44,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<TimelineDbContext
         return new TestDbContextFactory(connection, options);
     }
 
-    public TimelineDbContext CreateDbContext() => new(_options);
+    public TimelineDbContext CreateDbContext() => new(_options, GranitDesignTime.CurrentTenant);
 
     public void Dispose() => _connection.Dispose();
 }

@@ -2,7 +2,7 @@ using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.EntityFrameworkCore.Extensions;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.BackgroundJobs.EntityFrameworkCore.Internal;
@@ -22,18 +22,14 @@ namespace Granit.BackgroundJobs.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class BackgroundJobsDbContext(
     DbContextOptions<BackgroundJobsDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>Administrative records for all registered recurring jobs.</summary>
     public DbSet<BackgroundJobDefinition> Jobs { get; set; } = null!;
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureBackgroundJobsModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureBackgroundJobsModule();
 }

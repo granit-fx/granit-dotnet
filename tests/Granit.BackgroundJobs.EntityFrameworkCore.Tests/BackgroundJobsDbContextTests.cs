@@ -1,5 +1,6 @@
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.EntityFrameworkCore.Internal;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shouldly;
@@ -16,7 +17,7 @@ public sealed class BackgroundJobsDbContextTests
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-        return new BackgroundJobsDbContext(options);
+        return new BackgroundJobsDbContext(options, GranitDesignTime.CurrentTenant);
     }
 
     // =========================================================================

@@ -2,7 +2,7 @@ using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.EntityFrameworkCore.Extensions;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.BlobStorage.EntityFrameworkCore.Internal;
@@ -21,18 +21,14 @@ namespace Granit.BlobStorage.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class BlobStorageDbContext(
     DbContextOptions<BlobStorageDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>Lifecycle records for all uploaded blobs.</summary>
     public DbSet<BlobDescriptor> Blobs { get; set; } = null!;
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureBlobStorageModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureBlobStorageModule();
 }

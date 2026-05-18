@@ -1,5 +1,6 @@
 using Granit.MultiTenancy.Domain;
 using Granit.MultiTenancy.EntityFrameworkCore.Internal;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shouldly;
@@ -12,7 +13,8 @@ public sealed class MultiTenancyDbContextTests
     private static MultiTenancyDbContext CreateInMemory() =>
         new(new DbContextOptionsBuilder<MultiTenancyDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options);
+            .Options,
+            GranitDesignTime.CurrentTenant);
 
     [Fact]
     public void Model_HasTenantEntityType()

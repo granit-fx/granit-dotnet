@@ -46,6 +46,64 @@ public sealed partial class IsolatedDbContextTests
             $"Violators: {string.Join(", ", violations)}");
     }
 
+    /// <summary>
+    /// Every concrete DbContext in <c>*.EntityFrameworkCore</c> or <c>*.Database</c> packages
+    /// must either inherit from <c>GranitDbContext</c> (preferred) or carry the inline
+    /// <c>ConfigureMultiTenantFilter</c> pattern (forced when single-inheritance already binds
+    /// the type elsewhere — currently only OpenIddictDbContext). Calling the legacy
+    /// <c>modelBuilder.ApplyGranitConventions(currentTenant, ...)</c> with a non-null tenant
+    /// re-introduces the "frozen tenant" SQL leak fixed in #2129.
+    /// </summary>
+    [Fact]
+    public void DbContext_classes_should_use_GranitDbContext_or_inline_parameterised_filter()
+    {
+        string srcDir = Path.Join(RepoRoot, "src");
+
+        // MigrationProgressDbContext is in *.EntityFrameworkCore.Migrations (different
+        // project suffix) and doesn't carry tenant entities — already skipped by the
+        // project filter, but listed here for explicit traceability.
+        HashSet<string> exempted = ["MigrationProgressDbContext.cs", "GranitDbContext.cs"];
+
+        List<string> violations = [];
+
+        foreach (string project in Directory.GetDirectories(srcDir)
+            .Where(d => Path.GetFileName(d).EndsWith(".EntityFrameworkCore", StringComparison.Ordinal)
+                || Path.GetFileName(d).EndsWith(".Database", StringComparison.Ordinal)))
+        {
+            foreach (string csFile in Directory.GetFiles(project, "*DbContext.cs", SearchOption.AllDirectories))
+            {
+                string fileName = Path.GetFileName(csFile);
+                if (fileName.StartsWith('I') || exempted.Contains(fileName))
+                {
+                    continue;
+                }
+
+                string content = File.ReadAllText(csFile);
+
+                // Skip interfaces and abstract bases (not concrete DbContext classes).
+                if (!content.Contains("sealed class", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                bool inheritsGranitDbContext = content.Contains(": GranitDbContext", StringComparison.Ordinal);
+                bool implementsInlineFilter = content.Contains("ConfigureMultiTenantFilter", StringComparison.Ordinal);
+
+                if (!inheritsGranitDbContext && !implementsInlineFilter)
+                {
+                    violations.Add(Path.GetRelativePath(RepoRoot, csFile));
+                }
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Every concrete *DbContext.cs must inherit GranitDbContext (preferred) or replicate " +
+            "its parameterised IMultiTenant filter inline (look for ConfigureMultiTenantFilter). " +
+            "The legacy ApplyGranitConventions(currentTenant, ...) call inlines the tenant id as " +
+            "a SQL literal — see PR #2129. " +
+            $"Violators: {string.Join(", ", violations)}");
+    }
+
     [Fact]
     public void No_manual_HasQueryFilter_in_entity_configurations()
     {

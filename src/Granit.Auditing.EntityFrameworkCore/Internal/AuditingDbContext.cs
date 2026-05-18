@@ -2,7 +2,7 @@ using Granit.Auditing.Domain;
 using Granit.Auditing.EntityFrameworkCore.Extensions;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Auditing.EntityFrameworkCore.Internal;
@@ -22,9 +22,9 @@ namespace Granit.Auditing.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class AuditingDbContext(
     DbContextOptions<AuditingDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     /// <summary>Root audit log entries.</summary>
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
@@ -38,10 +38,6 @@ internal sealed class AuditingDbContext(
     public DbSet<AuditPropertyChange> AuditPropertyChanges => Set<AuditPropertyChange>();
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureAuditingModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
-    }
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ConfigureAuditingModule();
 }
