@@ -1,7 +1,7 @@
 {
   "culture": "cs",
   "texts": {
-    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Item": "Stav služeb",
     "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
     "Permission:Diagnostics.Monitoring.Read": "Zobrazit panel monitorování stavu systému",
     "PermissionGroup:Diagnostics": "Diagnostika"

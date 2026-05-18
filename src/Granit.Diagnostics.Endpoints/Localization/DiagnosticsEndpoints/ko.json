@@ -1,7 +1,7 @@
 {
   "culture": "ko",
   "texts": {
-    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Item": "서비스 상태",
     "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
     "Permission:Diagnostics.Monitoring.Read": "시스템 상태 모니터링 대시보드 보기",
     "PermissionGroup:Diagnostics": "진단"

@@ -1,7 +1,7 @@
 {
   "culture": "ja",
   "texts": {
-    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Item": "サービスの稼働状況",
     "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
     "Permission:Diagnostics.Monitoring.Read": "システムヘルスモニタリングダッシュボードを表示",
     "PermissionGroup:Diagnostics": "診断"

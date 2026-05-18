@@ -1,7 +1,7 @@
 {
   "culture": "pl",
   "texts": {
-    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Item": "Stan usług",
     "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
     "Permission:Diagnostics.Monitoring.Read": "Przeglądanie panelu monitorowania systemu",
     "PermissionGroup:Diagnostics": "Diagnostyka"

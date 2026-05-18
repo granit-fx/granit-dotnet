@@ -1,7 +1,7 @@
 {
   "culture": "zh",
   "texts": {
-    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Item": "服务健康状况",
     "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
     "Permission:Diagnostics.Monitoring.Read": "查看系统健康监控仪表板",
     "PermissionGroup:Diagnostics": "诊断"

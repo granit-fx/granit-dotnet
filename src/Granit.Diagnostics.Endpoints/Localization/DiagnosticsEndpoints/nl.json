@@ -1,7 +1,7 @@
 {
   "culture": "nl",
   "texts": {
-    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Item": "Servicegezondheid",
     "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
     "Permission:Diagnostics.Monitoring.Read": "Systeemgezondheidsmonitoring bekijken",
     "PermissionGroup:Diagnostics": "Diagnostiek"

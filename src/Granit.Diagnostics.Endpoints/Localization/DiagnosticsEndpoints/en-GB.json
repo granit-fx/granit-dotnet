@@ -1,7 +1,7 @@
 {
   "culture": "en-GB",
   "texts": {
-    "DiagnosticsEndpoints:Workspace.Item": "Health monitoring",
+    "DiagnosticsEndpoints:Workspace.Item": "Service health",
     "DiagnosticsEndpoints:Workspace.Section": "Diagnostics"
   }
 }

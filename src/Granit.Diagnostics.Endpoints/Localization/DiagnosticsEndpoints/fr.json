@@ -1,7 +1,7 @@
 {
   "culture": "fr",
   "texts": {
-    "DiagnosticsEndpoints:Workspace.Item": "Surveillance santé",
+    "DiagnosticsEndpoints:Workspace.Item": "Santé des services",
     "DiagnosticsEndpoints:Workspace.Section": "Diagnostics",
     "Permission:Diagnostics.Monitoring.Read": "Consulter le tableau de bord de surveillance",
     "PermissionGroup:Diagnostics": "Diagnostics"
