@@ -1,6 +1,6 @@
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.EntityFrameworkCore.Extensions;
 using Granit.Workflow.Domain;
@@ -15,19 +15,17 @@ namespace Granit.Templating.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class TemplatingDbContext(
     DbContextOptions<TemplatingDbContext> options,
-    ICurrentTenant? currentTenant = null,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : DbContext(options), IWorkflowDbContext
+    : GranitDbContext(options, currentTenant, dataFilter), IWorkflowDbContext
 {
     public DbSet<TemplateRevisionEntity> TemplateRevisions { get; set; } = null!;
     public DbSet<TemplateCategoryEntity> TemplateCategories { get; set; } = null!;
     public DbSet<WorkflowTransitionRecord> WorkflowTransitionRecords => Set<WorkflowTransitionRecord>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
         modelBuilder.ConfigureWorkflowModule();
         modelBuilder.ConfigureTemplatingModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

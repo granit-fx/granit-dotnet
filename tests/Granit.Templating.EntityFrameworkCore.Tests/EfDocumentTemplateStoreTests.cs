@@ -30,7 +30,8 @@ public sealed class EfDocumentTemplateStoreTests
         public TemplatingDbContext CreateDbContext() =>
             new(new DbContextOptionsBuilder<TemplatingDbContext>()
                 .UseInMemoryDatabase(dbName)
-                .Options);
+                .Options,
+                GranitDesignTime.CurrentTenant);
 
         public Task<TemplatingDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult(CreateDbContext());

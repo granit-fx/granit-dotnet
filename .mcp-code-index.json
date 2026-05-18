@@ -31936,6 +31936,22 @@
       "members": []
     },
     {
+      "name": "GranitDbContext",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.GranitDbContext",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/GranitDbContext.cs",
+      "line": 45,
+      "members": [
+        {
+          "name": "IsMultiTenantFilterEnabled",
+          "kind": "property",
+          "signature": "bool IsMultiTenantFilterEnabled",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
       "name": "GranitDbDefaults",
       "fqn": "Granit.Persistence.EntityFrameworkCore.GranitDbDefaults",
       "kind": "class",

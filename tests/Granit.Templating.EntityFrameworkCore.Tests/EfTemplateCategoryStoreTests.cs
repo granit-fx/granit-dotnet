@@ -1,5 +1,6 @@
 using Granit.Exceptions;
 using Granit.Guids;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Store;
@@ -24,7 +25,8 @@ public sealed class EfTemplateCategoryStoreTests
         public TemplatingDbContext CreateDbContext() =>
             new(new DbContextOptionsBuilder<TemplatingDbContext>()
                 .UseInMemoryDatabase(dbName)
-                .Options);
+                .Options,
+                GranitDesignTime.CurrentTenant);
 
         public Task<TemplatingDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult(CreateDbContext());

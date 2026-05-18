@@ -1,29 +1,28 @@
 // =============================================================================
-// Repro — multi-tenant query filter "frozen tenant" hypothesis
+// Regression — multi-tenant query filter must remain parameterised
 // =============================================================================
-// Investigates the diagnosis recorded on the [Fact(Skip = ...)] of
-// `tests/Granit.Http.ODataExposure.Tests.Integration/TenantIsolationTests.cs`
-// (UnauthenticatedRequest_NoTenantHeader_ReturnsEmpty):
+// Locks the fix delivered by introducing the `GranitDbContext` base class.
+// The previous extension-method form built the IMultiTenant filter via
+// `Expression.Property(Expression.Constant(currentTenant), "Id")`, which EF
+// Core inlined as a literal into the compiled SQL — the model cache then
+// reused that frozen value across every subsequent request of the same
+// DbContext type, leaking tenant A's rows to tenant B (and to anonymous
+// requests). Captured SQL with the bug:
 //
-//   "EF Core inlines currentTenant.Id into the compiled SQL at first model
-//    build instead of parameterising, so subsequent requests reuse the
-//    FROZEN tenant value (captured SQL: WHERE TenantId = '<frozen-guid>')."
+//   SELECT ... FROM "Items" AS "i" WHERE "i"."TenantId" = '<guid-literal>'
 //
-// Existing tests in ModelBuilderExtensionsTests.cs verify the filter lambda
-// re-evaluates the closure, but they (a) compile the LambdaExpression directly
-// and (b) use the InMemory provider — both paths bypass relational query
-// translation, which is where the alleged "constant folding" would happen.
-//
-// These tests use SQLite (real relational translation) and capture the
-// generated SQL via `LogTo` to settle the question empirically. Each test
-// uses a DISTINCT DbContext type to defeat EF Core's per-type model cache:
-// the cache is the suspected vehicle for the "frozen tenant" leak.
+// The fix moves the filter expression inside a member of `GranitDbContext`,
+// where `this.CurrentTenantId` is recognised by EF Core's parameter
+// extractor and emitted as `@ef_filter__CurrentTenantId`. These tests
+// assert that contract end-to-end against SQLite (real query translation)
+// using DISTINCT DbContext types per test so each model is built fresh and
+// the per-type model cache cannot mask a regression.
 // =============================================================================
 
 using System.Globalization;
 using Granit.Domain;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -45,18 +44,7 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
 
     public async ValueTask DisposeAsync() => await _connection.DisposeAsync();
 
-    private const string SkipReason =
-        "Documents the known bug mirrored by " +
-        "Granit.Http.ODataExposure.Tests.Integration/TenantIsolationTests.cs:191 " +
-        "(UnauthenticatedRequest_NoTenantHeader_ReturnsEmpty). ApplyGranitConventions " +
-        "builds the multi-tenant filter via Expression.Property(Expression.Constant(currentTenant), \"Id\"), " +
-        "which EF Core inlines as a literal into the compiled SQL (verified: " +
-        "WHERE \"TenantId\" = '<guid-literal>', no parameter). The model cache then " +
-        "reuses that frozen value for every subsequent query of the same DbContext type. " +
-        "Re-enable once ModelBuilderExtensions.cs (the IMultiTenant block) is reworked " +
-        "to a form EF Core parameterises (candidate: C# lambda with closure capture).";
-
-    [Fact(Skip = SkipReason)]
+    [Fact]
     public async Task SqlFilter_ReEvaluatesTenantAcross_DifferentDbContextInstances_SameType()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
@@ -86,7 +74,7 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
         ids1[0].ShouldNotBe(ids2[0], "the two queries must see different rows");
     }
 
-    [Fact(Skip = SkipReason)]
+    [Fact]
     public async Task SqlFilter_ReEvaluatesWhenTenantBecomesNull_AfterFirstQuery()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
@@ -110,7 +98,7 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
         }
     }
 
-    [Fact(Skip = SkipReason)]
+    [Fact]
     public async Task SqlFilter_ShouldParameterize_NotInlineTenantConstant()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
@@ -132,12 +120,27 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
                               && s.Contains("Items", StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException("No SELECT against Items captured.");
 
-        bool inlined = selectSql.Contains(
-            tenantA.ToString("D", CultureInfo.InvariantCulture),
-            StringComparison.OrdinalIgnoreCase);
+        // EF Core emits the filter parameter as "@ef_filter__<DbContextProperty>"
+        // (or any "@param"-shaped placeholder) in the WHERE clause and lists the
+        // bound value in the Parameters=[...] prefix. The literal GUID appears
+        // ONLY in the Parameters list — never in the SQL body. Assert both signals
+        // independently to defeat any future change in EF's logging format.
+        bool hasParameterPlaceholder = selectSql.Contains(
+            "\"i\".\"TenantId\" = @",
+            StringComparison.Ordinal);
 
-        inlined.ShouldBeFalse(
-            $"tenant GUID is inlined into the compiled SQL (frozen value).\nSQL:\n{selectSql}");
+        hasParameterPlaceholder.ShouldBeTrue(
+            $"tenant filter must compile to a parameter, not a literal GUID.\nSQL:\n{selectSql}");
+
+        string whereLine = selectSql
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault(l => l.Contains("WHERE", StringComparison.Ordinal))
+            ?? throw new InvalidOperationException("No WHERE clause in captured SQL.");
+
+        whereLine.Contains(
+            tenantA.ToString("D", CultureInfo.InvariantCulture),
+            StringComparison.OrdinalIgnoreCase).ShouldBeFalse(
+            $"WHERE clause must not inline the tenant GUID.\nWHERE:\n{whereLine}");
     }
 
     // -------------------------------------------------------------------------
@@ -211,27 +214,24 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
         public Guid? TenantId { get; set; }
     }
 
+    // All 3 repro contexts inherit from GranitDbContext: the IMultiTenant filter is then
+    // built inside a member of the DbContext type, where `this.CurrentTenantId` is
+    // recognised by EF Core's parameter extractor.
     private sealed class ReproDbContextA(DbContextOptions<ReproDbContextA> options, ICurrentTenant tenant)
-        : DbContext(options)
+        : GranitDbContext(options, tenant)
     {
         public DbSet<TenantItem> Items => Set<TenantItem>();
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder.ApplyGranitConventions(tenant);
     }
 
     private sealed class ReproDbContextB(DbContextOptions<ReproDbContextB> options, ICurrentTenant tenant)
-        : DbContext(options)
+        : GranitDbContext(options, tenant)
     {
         public DbSet<TenantItem> Items => Set<TenantItem>();
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder.ApplyGranitConventions(tenant);
     }
 
     private sealed class ReproDbContextC(DbContextOptions<ReproDbContextC> options, ICurrentTenant tenant)
-        : DbContext(options)
+        : GranitDbContext(options, tenant)
     {
         public DbSet<TenantItem> Items => Set<TenantItem>();
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder.ApplyGranitConventions(tenant);
     }
 }
