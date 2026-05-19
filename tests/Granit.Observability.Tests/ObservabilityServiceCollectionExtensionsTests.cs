@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Shouldly;
@@ -359,9 +360,9 @@ public sealed class ObservabilityServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitObservability_CrossCuttingOtlpActive_DoesNotThrow()
+    public void AddGranitObservability_DeferOtlpToHost_DoesNotThrow()
     {
-        // Arrange — set the env var that triggers the cross-cutting OTLP path
+        // Arrange — OTEL_EXPORTER_OTLP_ENDPOINT signals the host owns OTLP exporter setup
         HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
         builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] = "http://aspire-otel:4317";
         builder.Configuration["Observability:EnableTracing"] = "true";
@@ -377,7 +378,7 @@ public sealed class ObservabilityServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitObservability_CrossCuttingOtlpActive_StillRegistersOptions()
+    public void AddGranitObservability_DeferOtlpToHost_StillRegistersOptions()
     {
         // Arrange
         HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
@@ -392,6 +393,62 @@ public sealed class ObservabilityServiceCollectionExtensionsTests
         // Assert
         ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
         options.ServiceName.ShouldBe("aspire-service");
+    }
+
+    /// <summary>
+    /// Regression: when the host (e.g. .NET Aspire's ServiceDefaults) calls
+    /// <c>UseOtlpExporter()</c> on the OpenTelemetry builder before Granit, the
+    /// resulting <see cref="TracerProvider"/>/<see cref="MeterProvider"/> must
+    /// build without throwing. OpenTelemetry SDK 1.9+ throws
+    /// <see cref="NotSupportedException"/> at build time when either
+    /// <c>UseOtlpExporter()</c> is registered twice or it is mixed with
+    /// per-signal <c>AddOtlpExporter()</c>. Granit detects the host registration
+    /// and defers entirely.
+    /// </summary>
+    [Fact]
+    public void AddGranitObservability_HostAlreadyCalledUseOtlpExporter_BuildsProviders()
+    {
+        // Arrange — mimic .NET Aspire ServiceDefaults: host wires UseOtlpExporter()
+        // (typically called via AddServiceDefaults) BEFORE Granit is added.
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] = "http://aspire-otel:4317";
+
+        builder.Services.AddOpenTelemetry().UseOtlpExporter();
+
+        // Act — Granit must NOT register a second UseOtlpExporter() nor per-signal exporters
+        Should.NotThrow(() => builder.AddGranitObservability());
+
+        // Assert — provider construction must succeed (this is where the SDK
+        // mutual-exclusion guard fires if Granit got it wrong)
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+        Should.NotThrow(() => sp.GetService<TracerProvider>().ShouldNotBeNull());
+        Should.NotThrow(() => sp.GetService<MeterProvider>().ShouldNotBeNull());
+    }
+
+    /// <summary>
+    /// k8s/Docker scenario: <c>OTEL_EXPORTER_OTLP_ENDPOINT</c> is injected by the
+    /// orchestrator but there is no Aspire-style host call to <c>UseOtlpExporter()</c>.
+    /// Granit must own the OTLP exporter registration so telemetry actually flows
+    /// to the configured endpoint.
+    /// </summary>
+    [Fact]
+    public void AddGranitObservability_EnvVarSetButNoHostUseOtlpExporter_BuildsProviders()
+    {
+        // Arrange — env var set, no host registration
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] = "http://otel-collector:4317";
+
+        // Act
+        Should.NotThrow(() => builder.AddGranitObservability());
+
+        // Assert — providers build (Granit's per-signal AddOtlpExporter() runs, no mutex error),
+        // and the env-var endpoint flowed through ApplyFallbacks into the resolved options.
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+        Should.NotThrow(() => sp.GetService<TracerProvider>().ShouldNotBeNull());
+        Should.NotThrow(() => sp.GetService<MeterProvider>().ShouldNotBeNull());
+
+        ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+        options.OtlpEndpoint.ShouldBe("http://otel-collector:4317");
     }
 
     [Fact]

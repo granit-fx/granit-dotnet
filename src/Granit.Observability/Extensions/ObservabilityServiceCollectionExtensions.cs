@@ -3,7 +3,6 @@ using Granit.Observability.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -98,33 +97,42 @@ public static class ObservabilityServiceCollectionExtensions
         });
     }
 
+    // OpenTelemetry SDK 1.9+ enforces mutual exclusion at TracerProvider/MeterProvider
+    // build time: a service collection may carry either a single cross-cutting
+    // UseOtlpExporter() registration OR per-signal AddOtlpExporter() registrations,
+    // but not both (NotSupportedException is thrown otherwise). UseOtlpExporter()
+    // marks its presence by registering this singleton — we probe for it by full
+    // type name because the type itself is internal to the SDK.
+    private const string UseOtlpExporterMarkerTypeFullName =
+        "OpenTelemetry.Exporter.UseOtlpExporterRegistration";
+
     private static void ConfigureOpenTelemetry(IHostApplicationBuilder builder, ObservabilityOptions options)
     {
-        // When OTEL_EXPORTER_OTLP_ENDPOINT is set (injected by .NET Aspire, picked up by
-        // ServiceDefaults.UseOtlpExporter()), mixing signal-specific AddOtlpExporter() on the
-        // same IServiceCollection is forbidden by OpenTelemetry SDK 1.9+.
-        // Skip the Granit-specific OTLP exporters — the cross-cutting one covers all signals.
-        bool crossCuttingOtlpActive = !string.IsNullOrWhiteSpace(
-            builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+        // Detect whether the host (e.g. .NET Aspire's ServiceDefaults) has already wired
+        // OpenTelemetry's cross-cutting UseOtlpExporter(). If so, Granit must defer
+        // entirely: registering per-signal AddOtlpExporter() in addition would trip the
+        // SDK's mutual-exclusion guard at TracerProvider build time.
+        //
+        // This relies on call ordering: AddServiceDefaults() (or any host UseOtlpExporter())
+        // MUST run before AddGranitObservability(). The microservice-template enforces
+        // this in SharedHostingExtensions.AddSharedHostingAsync.
+        //
+        // When no host registration is present, Granit owns OTLP — covering vanilla
+        // k8s/Docker/shell setups that rely on OTEL_EXPORTER_OTLP_ENDPOINT (picked up
+        // by ApplyFallbacks → options.OtlpEndpoint) without an Aspire-style host call.
+        bool deferOtlpToHost = builder.Services.Any(d =>
+            d.ServiceType.FullName == UseOtlpExporterMarkerTypeFullName);
 
-        OpenTelemetry.IOpenTelemetryBuilder otelBuilder = builder.Services.AddOpenTelemetry()
+        builder.Services.AddOpenTelemetry()
             .ConfigureResource(r => r.AddService(
                 serviceName: options.ServiceName,
                 serviceVersion: options.ServiceVersion,
                 serviceNamespace: options.ServiceNamespace))
-            .WithTracing(tracing => ConfigureTracing(tracing, options, crossCuttingOtlpActive))
-            .WithMetrics(metrics => ConfigureMetrics(metrics, options, crossCuttingOtlpActive));
-
-        // When OTEL_EXPORTER_OTLP_ENDPOINT is set (e.g. by .NET Aspire), use the
-        // cross-cutting UseOtlpExporter() which exports all signals (traces, metrics,
-        // logs) in a single call — avoiding the SDK 1.9+ conflict with per-signal exporters.
-        if (crossCuttingOtlpActive)
-        {
-            otelBuilder.UseOtlpExporter();
-        }
+            .WithTracing(tracing => ConfigureTracing(tracing, options, deferOtlpToHost))
+            .WithMetrics(metrics => ConfigureMetrics(metrics, options, deferOtlpToHost));
     }
 
-    private static void ConfigureTracing(TracerProviderBuilder tracing, ObservabilityOptions options, bool crossCuttingOtlpActive)
+    private static void ConfigureTracing(TracerProviderBuilder tracing, ObservabilityOptions options, bool deferOtlpToHost)
     {
         if (!options.EnableTracing)
         {
@@ -161,13 +169,13 @@ public static class ObservabilityServiceCollectionExtensions
             contributor(tracing);
         }
 
-        if (!crossCuttingOtlpActive)
+        if (!deferOtlpToHost)
         {
             tracing.AddOtlpExporter(otlp => otlp.Endpoint = new Uri(options.OtlpEndpoint));
         }
     }
 
-    private static void ConfigureMetrics(MeterProviderBuilder metrics, ObservabilityOptions options, bool crossCuttingOtlpActive)
+    private static void ConfigureMetrics(MeterProviderBuilder metrics, ObservabilityOptions options, bool deferOtlpToHost)
     {
         if (!options.EnableMetrics)
         {
@@ -185,7 +193,7 @@ public static class ObservabilityServiceCollectionExtensions
             contributor(metrics);
         }
 
-        if (!crossCuttingOtlpActive)
+        if (!deferOtlpToHost)
         {
             metrics.AddOtlpExporter(otlp => otlp.Endpoint = new Uri(options.OtlpEndpoint));
         }
