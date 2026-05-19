@@ -36,7 +36,10 @@ internal sealed class DefaultAIEmbeddingGeneratorFactory(
             throw new AIProviderNotRegisteredException(workspace.Provider);
         }
 
-        return providerFactory.CreateEmbeddingGenerator(workspace)
+        IEmbeddingGenerator<string, Embedding<float>>? generator =
+            await providerFactory.CreateEmbeddingGeneratorAsync(workspace, cancellationToken).ConfigureAwait(false);
+
+        return generator
             ?? throw new InvalidOperationException(
                 $"Provider '{workspace.Provider}' does not support embedding generation.");
     }

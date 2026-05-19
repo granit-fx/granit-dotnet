@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Granit.AI.Anthropic.Diagnostics;
+using Granit.AI.Tenancy;
 using Microsoft.Extensions.AI;
 
 namespace Granit.AI.Anthropic.Internal;
@@ -10,9 +11,15 @@ namespace Granit.AI.Anthropic.Internal;
 /// </summary>
 /// <remarks>
 /// One span per request — both <c>GetResponseAsync</c> and <c>GetStreamingResponseAsync</c> are wrapped.
+/// The decorator tags each span with the resolved credential's <c>Scope</c> and
+/// <c>BilledToTenantId</c> so audit and billing can attribute usage even when the Host fallback
+/// served the request (audit VULN-202 mitigation). Plaintext <c>ApiKey</c> is never recorded.
 /// Disposal is delegated to the wrapped client; the decorator owns no additional resources.
 /// </remarks>
-internal sealed class TracingAnthropicChatClient(IChatClient inner, string requestedModel) : IChatClient
+internal sealed class TracingAnthropicChatClient(
+    IChatClient inner,
+    string requestedModel,
+    AIProviderCredential credential) : IChatClient
 {
     public Task<ChatResponse> GetResponseAsync(
         IEnumerable<ChatMessage> messages,
@@ -110,6 +117,13 @@ internal sealed class TracingAnthropicChatClient(IChatClient inner, string reque
 
         activity.SetTag("gen_ai.system", AIAnthropicActivitySource.SystemTagValue);
         activity.SetTag("gen_ai.request.model", requestedModel);
+        activity.SetTag("gen_ai.credential.scope", credential.Scope.ToString());
+        if (credential.BilledToTenantId is { } tenantId)
+        {
+            string idStr = tenantId.ToString();
+            activity.SetTag("gen_ai.tenant.id", idStr);
+            activity.SetTag("gen_ai.billed_to_tenant.id", idStr);
+        }
         return activity;
     }
 

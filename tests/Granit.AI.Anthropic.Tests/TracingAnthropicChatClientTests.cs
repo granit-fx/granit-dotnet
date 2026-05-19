@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Granit.AI.Anthropic.Diagnostics;
 using Granit.AI.Anthropic.Internal;
+using Granit.AI.Tenancy;
 using Microsoft.Extensions.AI;
 using NSubstitute;
 using Shouldly;
@@ -9,6 +10,13 @@ namespace Granit.AI.Anthropic.Tests;
 
 public sealed class TracingAnthropicChatClientTests
 {
+    private static readonly AIProviderCredential TestCredential = new()
+    {
+        ApiKey = "sk-ant-test",
+        Scope = AIProviderCredentialScope.Host,
+        BilledToTenantId = null,
+    };
+
     private static (ActivityListener Listener, List<Activity> Started) ListenForSpans()
     {
         List<Activity> started = [];
@@ -36,7 +44,7 @@ public sealed class TracingAnthropicChatClientTests
         inner.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(expected));
 
-        TracingAnthropicChatClient sut = new(inner, "claude-sonnet-4-6");
+        TracingAnthropicChatClient sut = new(inner, "claude-sonnet-4-6", TestCredential);
 
         ChatResponse response = await sut.GetResponseAsync(
             [new ChatMessage(ChatRole.User, "ping")],
@@ -62,7 +70,7 @@ public sealed class TracingAnthropicChatClientTests
         inner.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
             .Returns<Task<ChatResponse>>(_ => throw new InvalidOperationException("boom"));
 
-        TracingAnthropicChatClient sut = new(inner, "claude-haiku-4-5");
+        TracingAnthropicChatClient sut = new(inner, "claude-haiku-4-5", TestCredential);
 
         await Should.ThrowAsync<InvalidOperationException>(
             async () => await sut.GetResponseAsync(
@@ -84,7 +92,7 @@ public sealed class TracingAnthropicChatClientTests
         inner.GetStreamingResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
             .Returns(ProduceStream());
 
-        TracingAnthropicChatClient sut = new(inner, "claude-sonnet-4-6");
+        TracingAnthropicChatClient sut = new(inner, "claude-sonnet-4-6", TestCredential);
 
         List<ChatResponseUpdate> received = [];
         await foreach (ChatResponseUpdate update in sut.GetStreamingResponseAsync(
@@ -119,7 +127,7 @@ public sealed class TracingAnthropicChatClientTests
         object sentinel = new();
         inner.GetService(typeof(string), "key").Returns(sentinel);
 
-        TracingAnthropicChatClient sut = new(inner, "claude-sonnet-4-6");
+        TracingAnthropicChatClient sut = new(inner, "claude-sonnet-4-6", TestCredential);
 
         sut.GetService(typeof(string), "key").ShouldBe(sentinel);
     }
@@ -128,7 +136,7 @@ public sealed class TracingAnthropicChatClientTests
     public void Dispose_DelegatesToInner()
     {
         IChatClient inner = Substitute.For<IChatClient>();
-        TracingAnthropicChatClient sut = new(inner, "claude-sonnet-4-6");
+        TracingAnthropicChatClient sut = new(inner, "claude-sonnet-4-6", TestCredential);
 
         sut.Dispose();
 

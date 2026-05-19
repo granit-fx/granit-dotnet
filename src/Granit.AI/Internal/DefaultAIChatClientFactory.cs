@@ -36,6 +36,6 @@ internal sealed class DefaultAIChatClientFactory(
             throw new AIProviderNotRegisteredException(workspace.Provider);
         }
 
-        return providerFactory.CreateChatClient(workspace);
+        return await providerFactory.CreateChatClientAsync(workspace, cancellationToken).ConfigureAwait(false);
     }
 }

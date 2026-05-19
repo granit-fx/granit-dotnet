@@ -2345,7 +2345,7 @@
       "kind": "class",
       "project": "Granit.AI.Anthropic",
       "file": "src/Granit.AI.Anthropic/Extensions/AIAnthropicHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitAIAnthropic",
@@ -3066,19 +3066,19 @@
       "kind": "interface",
       "project": "Granit.AI",
       "file": "src/Granit.AI/IAIProviderFactory.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
-          "name": "CreateChatClient",
+          "name": "CreateChatClientAsync",
           "kind": "method",
-          "signature": "CreateChatClient(AIWorkspace workspace)",
-          "returnType": "string ProviderName { get; } IChatClient"
+          "signature": "CreateChatClientAsync(AIWorkspace workspace, CancellationToken cancellationToken = default)",
+          "returnType": "string ProviderName { get; } ValueTask<IChatClient>"
         },
         {
-          "name": "CreateEmbeddingGenerator",
+          "name": "CreateEmbeddingGeneratorAsync",
           "kind": "method",
-          "signature": "CreateEmbeddingGenerator(AIWorkspace workspace)",
-          "returnType": "IEmbeddingGenerator<string, Embedding<float>>?"
+          "signature": "CreateEmbeddingGeneratorAsync(AIWorkspace workspace, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<IEmbeddingGenerator<string, Embedding<float>>?>"
         }
       ]
     },

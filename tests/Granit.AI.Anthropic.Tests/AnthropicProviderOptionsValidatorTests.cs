@@ -25,8 +25,10 @@ public sealed class AnthropicProviderOptionsValidatorTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Validate_EmptyApiKey_Fails(string? apiKey)
+    public void Validate_EmptyApiKey_Succeeds(string? apiKey)
     {
+        // An empty Host ApiKey is now acceptable: the resolver may fetch the credential from a
+        // Tenant Setting, a Global Setting, or the workspace itself.
         AnthropicProviderOptions options = new()
         {
             ApiKey = apiKey!,
@@ -34,8 +36,7 @@ public sealed class AnthropicProviderOptionsValidatorTests
 
         ValidateOptionsResult result = _validator.Validate(null, options);
 
-        result.Failed.ShouldBeTrue();
-        result.FailureMessage.ShouldContain("ApiKey");
+        result.Succeeded.ShouldBeTrue();
     }
 
     [Theory]

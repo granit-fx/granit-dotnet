@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Granit.AI.Anthropic.Diagnostics;
 using Granit.AI.Anthropic.Internal;
 using Granit.AI.Anthropic.Options;
+using Granit.AI.Tenancy;
 using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,9 +21,9 @@ public static class AIAnthropicHostApplicationBuilderExtensions
     /// </summary>
     /// <remarks>
     /// Binds <see cref="AnthropicProviderOptions"/> from the <c>AI:Anthropic</c> configuration section,
-    /// registers options validation, registers the named <see cref="HttpClient"/> consumed by the
-    /// Anthropic SDK (timeout handling is owned by the SDK itself), and registers
-    /// <see cref="AnthropicProviderFactory"/> as an <see cref="IAIProviderFactory"/> implementation.
+    /// registers options validation, the credential cascade resolver (Workspace &#8594; Tenant &#8594;
+    /// Global &#8594; Host Options), the Singleton SDK client cache, the named <see cref="HttpClient"/>,
+    /// and the factory (Scoped) as an <see cref="IAIProviderFactory"/> implementation.
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
     /// <returns>The builder for chaining.</returns>
@@ -39,13 +40,23 @@ public static class AIAnthropicHostApplicationBuilderExtensions
 
         // The Anthropic SDK enforces its own per-call Timeout; setting HttpClient.Timeout to
         // InfiniteTimeSpan prevents the inner HttpClient timeout from racing the SDK cancellation handler.
+        // AllowAutoRedirect = false closes the redirect-to-metadata SSRF path (anthropic.com does
+        // not legitimately 3xx).
         builder.Services
             .AddHttpClient(AnthropicProviderFactory.HttpClientName, client =>
             {
                 client.Timeout = Timeout.InfiniteTimeSpan;
+            })
+            .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
+            {
+                AllowAutoRedirect = false,
             });
 
-        builder.Services.AddSingleton<IAIProviderFactory, AnthropicProviderFactory>();
+        builder.Services.AddSingleton<AnthropicClientCache>();
+        builder.Services.AddScoped<AnthropicCredentialResolver>();
+        builder.Services.AddScoped<IAIProviderCredentialResolver>(sp =>
+            sp.GetRequiredService<AnthropicCredentialResolver>());
+        builder.Services.AddScoped<IAIProviderFactory, AnthropicProviderFactory>();
 
         return builder;
     }
