@@ -17,6 +17,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.AI.Anthropic",
+      "deps": [
+        "Granit.AI"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.AI.AzureOpenAI",
       "deps": [
         "Granit.AI"
@@ -2325,6 +2332,53 @@
       "file": "src/Granit.AI/AIUsageRecord.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "AIAnthropicHostApplicationBuilderExtensions",
+      "fqn": "Granit.AI.Anthropic.Extensions.AIAnthropicHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Anthropic",
+      "file": "src/Granit.AI.Anthropic/Extensions/AIAnthropicHostApplicationBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitAIAnthropic",
+          "kind": "method",
+          "signature": "AddGranitAIAnthropic(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIAnthropicModule",
+      "fqn": "Granit.AI.Anthropic.GranitAIAnthropicModule",
+      "kind": "class",
+      "project": "Granit.AI.Anthropic",
+      "file": "src/Granit.AI.Anthropic/GranitAIAnthropicModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "AnthropicProviderOptions",
+      "fqn": "Granit.AI.Anthropic.Options.AnthropicProviderOptions",
+      "kind": "class",
+      "project": "Granit.AI.Anthropic",
+      "file": "src/Granit.AI.Anthropic/Options/AnthropicProviderOptions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ApiKey",
+          "kind": "property",
+          "signature": "string ApiKey",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultModel",
+          "kind": "property",
+          "signature": "string DefaultModel",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "AIAzureOpenAIHostApplicationBuilderExtensions",
@@ -24014,6 +24068,22 @@
       "file": "src/Granit.Identity.Local/Services/IExternalLoginService.cs",
       "line": 58,
       "members": []
+    },
+    {
+      "name": "TotpServiceBase",
+      "fqn": "Granit.Identity.Local.Services.TotpServiceBase",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/TotpServiceBase.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "GetQrCodeUri",
+          "kind": "method",
+          "signature": "GetQrCodeUri(string email, string sharedKey)",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "TwoFactorStatus",

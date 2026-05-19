@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-05-11
+Dernière mise à jour : 2026-05-19
 
 ---
 
@@ -12,7 +12,7 @@ Dernière mise à jour : 2026-05-11
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 90                 |
+| MIT          | 91                 |
 | Apache-2.0   | 36                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
@@ -28,6 +28,7 @@ Dernière mise à jour : 2026-05-11
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
 | AngleSharp | 1.4.0 | Copyright (c) 2013-2025 AngleSharp Contributors |
+| Anthropic | 12.22.0 | Copyright 2026 Anthropic |
 | Asp.Versioning.Mvc | 10.0.0 | (c) .NET Foundation |
 | Asp.Versioning.Mvc.ApiExplorer | 10.0.0 | (c) .NET Foundation |
 | Azure.AI.OpenAI | 2.1.0 | (c) Microsoft Corporation |

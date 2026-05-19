@@ -258,6 +258,7 @@
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
+    <Project Path="src/Granit.AI.Anthropic/Granit.AI.Anthropic.csproj" />
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
     <Project Path="src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj" />
     <Project Path="src/Granit.AI.EntityFrameworkCore/Granit.AI.EntityFrameworkCore.csproj" />
@@ -549,6 +550,7 @@
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
+    <Project Path="tests/Granit.AI.Anthropic.Tests/Granit.AI.Anthropic.Tests.csproj" />
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />
     <Project Path="tests/Granit.AI.Endpoints.Tests/Granit.AI.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.AI.EntityFrameworkCore.Tests/Granit.AI.EntityFrameworkCore.Tests.csproj" />

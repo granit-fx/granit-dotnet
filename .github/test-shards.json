@@ -4,6 +4,7 @@
       "name": "core-ai",
       "label": "Core + AI",
       "projects": [
+        "tests/Granit.AI.Anthropic.Tests",
         "tests/Granit.AI.AzureOpenAI.Tests",
         "tests/Granit.AI.Endpoints.Tests",
         "tests/Granit.AI.EntityFrameworkCore.Tests",

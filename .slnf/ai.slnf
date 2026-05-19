@@ -2,6 +2,7 @@
   "solution": {
     "path": "Granit.slnx",
     "projects": [
+      "src/Granit.AI.Anthropic/Granit.AI.Anthropic.csproj",
       "src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj",
       "src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj",
       "src/Granit.AI.EntityFrameworkCore/Granit.AI.EntityFrameworkCore.csproj",
@@ -36,6 +37,7 @@
       "src/Granit.Workflow.Abstractions/Granit.Workflow.Abstractions.csproj",
       "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
+      "tests/Granit.AI.Anthropic.Tests/Granit.AI.Anthropic.Tests.csproj",
       "tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj",
       "tests/Granit.AI.Endpoints.Tests/Granit.AI.Endpoints.Tests.csproj",
       "tests/Granit.AI.EntityFrameworkCore.Tests/Granit.AI.EntityFrameworkCore.Tests.csproj",
