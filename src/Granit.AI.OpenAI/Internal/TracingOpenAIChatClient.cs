@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Granit.AI.OpenAI.Diagnostics;
+using Granit.AI.Tenancy;
 using Microsoft.Extensions.AI;
 
 namespace Granit.AI.OpenAI.Internal;
@@ -10,9 +11,15 @@ namespace Granit.AI.OpenAI.Internal;
 /// </summary>
 /// <remarks>
 /// One span per request — both <c>GetResponseAsync</c> and <c>GetStreamingResponseAsync</c> are wrapped.
+/// Tags each span with <c>gen_ai.tenant.id</c>, <c>gen_ai.billed_to_tenant.id</c>, and
+/// <c>gen_ai.credential.scope</c> so audit and billing can attribute usage even when the Host
+/// fallback served the request. Plaintext <c>ApiKey</c> is never recorded.
 /// Disposal is delegated to the wrapped client; the decorator owns no additional resources.
 /// </remarks>
-internal sealed class TracingOpenAIChatClient(IChatClient inner, string requestedModel) : IChatClient
+internal sealed class TracingOpenAIChatClient(
+    IChatClient inner,
+    string requestedModel,
+    AIProviderCredential credential) : IChatClient
 {
     public Task<ChatResponse> GetResponseAsync(
         IEnumerable<ChatMessage> messages,
@@ -110,6 +117,13 @@ internal sealed class TracingOpenAIChatClient(IChatClient inner, string requeste
 
         activity.SetTag("gen_ai.system", AIOpenAIActivitySource.SystemTagValue);
         activity.SetTag("gen_ai.request.model", requestedModel);
+        activity.SetTag("gen_ai.credential.scope", credential.Scope.ToString());
+        if (credential.BilledToTenantId is { } tenantId)
+        {
+            string idStr = tenantId.ToString();
+            activity.SetTag("gen_ai.tenant.id", idStr);
+            activity.SetTag("gen_ai.billed_to_tenant.id", idStr);
+        }
         return activity;
     }
 

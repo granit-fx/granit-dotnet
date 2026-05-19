@@ -3270,7 +3270,7 @@
       "kind": "class",
       "project": "Granit.AI.OpenAI",
       "file": "src/Granit.AI.OpenAI/Extensions/AIOpenAIHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitAIOpenAI",

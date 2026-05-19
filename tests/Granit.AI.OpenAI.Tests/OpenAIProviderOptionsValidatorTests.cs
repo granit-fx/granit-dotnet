@@ -21,25 +21,24 @@ public sealed class OpenAIProviderOptionsValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    public void Validate_BlankApiKey_Fails(string apiKey)
+    public void Validate_BlankApiKey_Succeeds(string apiKey)
     {
+        // Empty Host ApiKey is now acceptable: tenant settings or workspace overrides may supply it.
         OpenAIProviderOptions options = new() { ApiKey = apiKey };
 
         ValidateOptionsResult result = _validator.Validate(null, options);
 
-        result.Failed.ShouldBeTrue();
-        result.FailureMessage.ShouldContain(nameof(OpenAIProviderOptions.ApiKey));
+        result.Succeeded.ShouldBeTrue();
     }
 
     [Fact]
-    public void Validate_NullApiKey_Fails()
+    public void Validate_NullApiKey_Succeeds()
     {
         OpenAIProviderOptions options = new() { ApiKey = null! };
 
         ValidateOptionsResult result = _validator.Validate(null, options);
 
-        result.Failed.ShouldBeTrue();
-        result.FailureMessage.ShouldContain(nameof(OpenAIProviderOptions.ApiKey));
+        result.Succeeded.ShouldBeTrue();
     }
 
     [Theory]

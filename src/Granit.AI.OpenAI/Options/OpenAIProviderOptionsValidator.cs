@@ -21,14 +21,11 @@ internal sealed class OpenAIProviderOptionsValidator : IValidateOptions<OpenAIPr
     /// <inheritdoc/>
     public ValidateOptionsResult Validate(string? name, OpenAIProviderOptions options)
     {
-        if (string.IsNullOrWhiteSpace(options.ApiKey))
-        {
-            return ValidateOptionsResult.Fail(
-                $"{nameof(options.ApiKey)} must be non-empty. " +
-                "Inject it from Granit.Vault; never hardcode API keys.");
-        }
-
-        if (!options.ApiKey.StartsWith(ExpectedApiKeyPrefix, StringComparison.Ordinal))
+        // ApiKey is no longer mandatory at the Host layer: tenants may configure their own via
+        // Granit.Settings, or a workspace may carry its own credential. When set at the Host,
+        // we keep the format heuristic to reject placeholders.
+        if (!string.IsNullOrWhiteSpace(options.ApiKey) &&
+            !options.ApiKey.StartsWith(ExpectedApiKeyPrefix, StringComparison.Ordinal))
         {
             return ValidateOptionsResult.Fail(
                 $"{nameof(options.ApiKey)} does not look like an OpenAI API key " +

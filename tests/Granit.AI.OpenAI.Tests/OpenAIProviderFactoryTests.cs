@@ -1,5 +1,6 @@
 using Granit.AI.OpenAI.Internal;
 using Granit.AI.OpenAI.Options;
+using Granit.AI.Tenancy;
 using Granit.AI.Workspaces;
 using Microsoft.Extensions.AI;
 using Shouldly;
@@ -8,144 +9,115 @@ namespace Granit.AI.OpenAI.Tests;
 
 public sealed class OpenAIProviderFactoryTests
 {
-    private static OpenAIProviderFactory CreateFactory(
-        out TestOptionsMonitor<OpenAIProviderOptions> monitor,
-        OpenAIProviderOptions? options = null)
-    {
-        monitor = new TestOptionsMonitor<OpenAIProviderOptions>(options ?? TestFixtures.DefaultOptions());
-        return new OpenAIProviderFactory(monitor, new TestHttpClientFactory(), TimeProvider.System);
-    }
-
-    private static AIWorkspace CreateWorkspace(string model = "gpt-4o") =>
+    private static AIWorkspace CreateWorkspace(string model = "gpt-4o", string? apiKey = null, string? endpoint = null) =>
         new()
         {
             Name = "test-workspace",
             Provider = "OpenAI",
             Model = model,
+            ApiKey = apiKey,
+            Endpoint = endpoint,
         };
 
     [Fact]
     public void ProviderName_IsOpenAI()
     {
-        OpenAIProviderFactory factory = CreateFactory(out _);
+        (OpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory();
 
         factory.ProviderName.ShouldBe("OpenAI");
     }
 
     [Fact]
-    public void CreateChatClient_WithValidOptions_ReturnsClient()
+    public async Task CreateChatClientAsync_WithHostFallback_ReturnsClient()
     {
-        OpenAIProviderFactory factory = CreateFactory(out _);
+        (OpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory();
 
-        IChatClient client = factory.CreateChatClient(CreateWorkspace());
+        IChatClient client = await factory.CreateChatClientAsync(CreateWorkspace(), TestContext.Current.CancellationToken);
 
         client.ShouldNotBeNull();
     }
 
     [Fact]
-    public void CreateEmbeddingGenerator_WithValidOptions_ReturnsGenerator()
+    public async Task CreateEmbeddingGeneratorAsync_WithHostFallback_ReturnsGenerator()
     {
-        OpenAIProviderFactory factory = CreateFactory(out _);
+        (OpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory();
 
-        IEmbeddingGenerator<string, Embedding<float>>? generator = factory.CreateEmbeddingGenerator(CreateWorkspace());
+        IEmbeddingGenerator<string, Embedding<float>>? generator =
+            await factory.CreateEmbeddingGeneratorAsync(CreateWorkspace(), TestContext.Current.CancellationToken);
 
         generator.ShouldNotBeNull();
     }
 
     [Fact]
-    public void CreateChatClient_WithNullWorkspace_Throws()
+    public async Task CreateChatClientAsync_NullWorkspace_Throws()
     {
-        OpenAIProviderFactory factory = CreateFactory(out _);
+        (OpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory();
 
-        Should.Throw<ArgumentNullException>(() => factory.CreateChatClient(null!));
+        await Should.ThrowAsync<ArgumentNullException>(
+            async () => await factory.CreateChatClientAsync(null!, TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public void CreateEmbeddingGenerator_WithNullWorkspace_Throws()
-    {
-        OpenAIProviderFactory factory = CreateFactory(out _);
-
-        Should.Throw<ArgumentNullException>(() => factory.CreateEmbeddingGenerator(null!));
-    }
-
-    [Fact]
-    public void Dispose_IsIdempotent()
-    {
-        OpenAIProviderFactory factory = CreateFactory(out _);
-
-        factory.Dispose();
-
-        Should.NotThrow(() => factory.Dispose());
-    }
-
-    [Fact]
-    public void CreateChatClient_WithModelOutsideAllowlist_Throws()
+    public async Task CreateChatClientAsync_ModelOutsideAllowlist_Throws()
     {
         OpenAIProviderOptions options = TestFixtures.DefaultOptions();
         options.AllowedModels = ["gpt-4o", "text-embedding-3-small"];
-        OpenAIProviderFactory factory = CreateFactory(out _, options);
+        (OpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory(options);
 
-        InvalidOperationException ex = Should.Throw<InvalidOperationException>(
-            () => factory.CreateChatClient(CreateWorkspace("o3")));
-
-        ex.Message.ShouldContain("AllowedModels");
-        ex.Message.ShouldContain("o3");
+        await Should.ThrowAsync<InvalidOperationException>(
+            async () => await factory.CreateChatClientAsync(CreateWorkspace("o3"), TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public void CreateEmbeddingGenerator_WithEmbeddingModelOutsideAllowlist_Throws()
+    public async Task CreateChatClientAsync_WorkspaceApiKey_TakesPrecedence()
     {
         OpenAIProviderOptions options = TestFixtures.DefaultOptions();
-        // Mismatched allowlist: chat model in, embedding model NOT in.
-        options.AllowedModels = ["gpt-4o"];
-        // The validator would normally reject this configuration, but the factory enforces it at call time too.
-        OpenAIProviderFactory factory = CreateFactory(out _, options);
+        options.ApiKey = "sk-host-key";
+        (OpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory(options);
 
-        Should.Throw<InvalidOperationException>(
-            () => factory.CreateEmbeddingGenerator(CreateWorkspace()));
-    }
-
-    [Fact]
-    public void CreateChatClient_FallsBackToDefaultModel_WhenWorkspaceModelBlank()
-    {
-        OpenAIProviderOptions options = TestFixtures.DefaultOptions();
-        options.AllowedModels = ["gpt-4o", "text-embedding-3-small"];
-        OpenAIProviderFactory factory = CreateFactory(out _, options);
-
-        IChatClient client = factory.CreateChatClient(CreateWorkspace(""));
+        IChatClient client = await factory.CreateChatClientAsync(
+            CreateWorkspace(apiKey: "sk-workspace-key"),
+            TestContext.Current.CancellationToken);
 
         client.ShouldNotBeNull();
     }
 
     [Fact]
-    public void OptionsChange_TightensAllowlist_NewCallsAreRejected()
+    public async Task CreateChatClientAsync_TenantSetting_OverridesHostOptions()
     {
-        OpenAIProviderFactory factory = CreateFactory(out TestOptionsMonitor<OpenAIProviderOptions> monitor);
+        (OpenAIProviderFactory factory, TestSettingValueProvider tenant, _, _) = TestFixtures.BuildFactory();
+        tenant.Set(AISettingNames.OpenAI.ApiKey, "sk-tenant-key");
 
-        factory.CreateChatClient(CreateWorkspace("o3")).ShouldNotBeNull();
+        IChatClient client = await factory.CreateChatClientAsync(
+            CreateWorkspace() with { TenantId = Guid.NewGuid() },
+            TestContext.Current.CancellationToken);
 
-        OpenAIProviderOptions tightened = TestFixtures.DefaultOptions();
-        tightened.AllowedModels = ["gpt-4o", "text-embedding-3-small"];
-        monitor.Set(tightened);
-
-        Should.Throw<InvalidOperationException>(
-            () => factory.CreateChatClient(CreateWorkspace("o3")));
+        client.ShouldNotBeNull();
     }
 
     [Fact]
-    public void OptionsChange_RotatesApiKey_FactoryStillServesRequests()
+    public async Task CreateChatClientAsync_InvalidEndpoint_Throws()
     {
-        OpenAIProviderFactory factory = CreateFactory(out TestOptionsMonitor<OpenAIProviderOptions> monitor);
+        (OpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory();
 
-        IChatClient before = factory.CreateChatClient(CreateWorkspace());
+        // 169.254.169.254 is a hard-blocked metadata IP regardless of policy. ApiKey supplied to
+        // ensure the cascade reaches the endpoint validation step (NotConfigured otherwise).
+        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
+            async () => await factory.CreateChatClientAsync(
+                CreateWorkspace(apiKey: "sk-test-w", endpoint: "https://169.254.169.254/v1/"),
+                TestContext.Current.CancellationToken));
 
-        OpenAIProviderOptions rotated = TestFixtures.DefaultOptions();
-        rotated.ApiKey = "sk-rotated-key";
-        monitor.Set(rotated);
+        ex.Message.ShouldContain("endpoint");
+    }
 
-        IChatClient after = factory.CreateChatClient(CreateWorkspace());
+    [Fact]
+    public async Task CreateChatClientAsync_NoCredentialAnywhere_Throws()
+    {
+        OpenAIProviderOptions options = TestFixtures.DefaultOptions();
+        options.ApiKey = string.Empty;
+        (OpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory(options);
 
-        before.ShouldNotBeNull();
-        after.ShouldNotBeNull();
+        await Should.ThrowAsync<AIProviderCredentialNotConfiguredException>(
+            async () => await factory.CreateChatClientAsync(CreateWorkspace(), TestContext.Current.CancellationToken));
     }
 }

@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Granit.AI.OpenAI.Diagnostics;
 using Granit.AI.OpenAI.Internal;
 using Granit.AI.OpenAI.Options;
+using Granit.AI.Tenancy;
 using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -22,12 +23,12 @@ public static class AIOpenAIHostApplicationBuilderExtensions
     /// </summary>
     /// <remarks>
     /// Reads <see cref="OpenAIProviderOptions"/> from the <c>AI:OpenAI</c> configuration section.
-    /// The API key should be injected from <c>Granit.Vault</c>; never hardcode it in appsettings.
-    /// Registers the named <see cref="HttpClient"/> consumed by the OpenAI SDK (timeout handling
-    /// is owned by the SDK itself via <see cref="OpenAIProviderOptions.Timeout"/>).
+    /// The API key may be supplied at the Host (options), Tenant (Setting), or Workspace level —
+    /// the cascade is enforced by <see cref="OpenAICredentialResolver"/>. SSRF protection is
+    /// applied to any tenant-supplied <c>Endpoint</c> via <see cref="AIEndpointValidator"/> plus a
+    /// <see cref="GranitSafeConnectCallback"/> on the named <c>HttpClient</c>. Redirect follow is
+    /// disabled.
     /// </remarks>
-    /// <param name="builder">The host application builder.</param>
-    /// <returns>The builder for chaining.</returns>
     public static IHostApplicationBuilder AddGranitAIOpenAI(this IHostApplicationBuilder builder)
     {
         GranitActivitySourceRegistry.Register(AIOpenAIActivitySource.Name);
@@ -39,18 +40,24 @@ public static class AIOpenAIHostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<IValidateOptions<OpenAIProviderOptions>, OpenAIProviderOptionsValidator>();
 
-        // TimeProvider may already be registered by the host; TryAdd avoids overriding it.
         builder.Services.TryAddSingleton(TimeProvider.System);
 
-        // The OpenAI SDK enforces its own NetworkTimeout; setting HttpClient.Timeout to
-        // InfiniteTimeSpan prevents the inner HttpClient timeout from racing the SDK cancellation handler.
         builder.Services
             .AddHttpClient(OpenAIProviderFactory.HttpClientName, client =>
             {
                 client.Timeout = Timeout.InfiniteTimeSpan;
+            })
+            .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
+            {
+                AllowAutoRedirect = false,
+                ConnectCallback = GranitSafeConnectCallback.Create(AIEndpointPolicy.HostedHttps),
             });
 
-        builder.Services.AddSingleton<IAIProviderFactory, OpenAIProviderFactory>();
+        builder.Services.AddSingleton<OpenAIClientCache>();
+        builder.Services.AddScoped<OpenAICredentialResolver>();
+        builder.Services.AddScoped<IAIProviderCredentialResolver>(sp =>
+            sp.GetRequiredService<OpenAICredentialResolver>());
+        builder.Services.AddScoped<IAIProviderFactory, OpenAIProviderFactory>();
 
         return builder;
     }

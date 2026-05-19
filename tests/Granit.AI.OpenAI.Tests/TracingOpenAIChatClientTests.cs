@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Granit.AI.OpenAI.Diagnostics;
 using Granit.AI.OpenAI.Internal;
+using Granit.AI.Tenancy;
 using Microsoft.Extensions.AI;
 using NSubstitute;
 using Shouldly;
@@ -9,6 +10,13 @@ namespace Granit.AI.OpenAI.Tests;
 
 public sealed class TracingOpenAIChatClientTests
 {
+    private static readonly AIProviderCredential TestCredential = new()
+    {
+        ApiKey = "sk-test",
+        Scope = AIProviderCredentialScope.Host,
+        BilledToTenantId = null,
+    };
+
     private static (ActivityListener Listener, List<Activity> Started) ListenForSpans()
     {
         List<Activity> started = [];
@@ -36,7 +44,7 @@ public sealed class TracingOpenAIChatClientTests
         inner.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(expected));
 
-        TracingOpenAIChatClient sut = new(inner, "gpt-4o");
+        TracingOpenAIChatClient sut = new(inner, "gpt-4o", TestCredential);
 
         ChatResponse response = await sut.GetResponseAsync(
             [new ChatMessage(ChatRole.User, "ping")],
@@ -62,7 +70,7 @@ public sealed class TracingOpenAIChatClientTests
         inner.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
             .Returns<Task<ChatResponse>>(_ => throw new InvalidOperationException("boom"));
 
-        TracingOpenAIChatClient sut = new(inner, "o3");
+        TracingOpenAIChatClient sut = new(inner, "o3", TestCredential);
 
         await Should.ThrowAsync<InvalidOperationException>(
             async () => await sut.GetResponseAsync(
@@ -81,7 +89,7 @@ public sealed class TracingOpenAIChatClientTests
         object sentinel = new();
         inner.GetService(typeof(string), "key").Returns(sentinel);
 
-        TracingOpenAIChatClient sut = new(inner, "gpt-4o");
+        TracingOpenAIChatClient sut = new(inner, "gpt-4o", TestCredential);
 
         sut.GetService(typeof(string), "key").ShouldBe(sentinel);
     }
@@ -90,7 +98,7 @@ public sealed class TracingOpenAIChatClientTests
     public void Dispose_DelegatesToInner()
     {
         IChatClient inner = Substitute.For<IChatClient>();
-        TracingOpenAIChatClient sut = new(inner, "gpt-4o");
+        TracingOpenAIChatClient sut = new(inner, "gpt-4o", TestCredential);
 
         sut.Dispose();
 
