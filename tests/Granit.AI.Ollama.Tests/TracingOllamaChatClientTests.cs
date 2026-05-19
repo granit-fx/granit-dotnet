@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Granit.AI.Ollama.Diagnostics;
 using Granit.AI.Ollama.Internal;
+using Granit.AI.Tenancy;
 using Microsoft.Extensions.AI;
 using NSubstitute;
 using Shouldly;
@@ -9,6 +10,13 @@ namespace Granit.AI.Ollama.Tests;
 
 public sealed class TracingOllamaChatClientTests
 {
+    private static readonly AIProviderCredential TestCredential = new()
+    {
+        Endpoint = "http://localhost:11434",
+        Scope = AIProviderCredentialScope.Host,
+        BilledToTenantId = null,
+    };
+
     private static (ActivityListener Listener, List<Activity> Started) ListenForSpans()
     {
         List<Activity> started = [];
@@ -36,7 +44,7 @@ public sealed class TracingOllamaChatClientTests
         inner.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(expected));
 
-        TracingOllamaChatClient sut = new(inner, "llama3.2");
+        TracingOllamaChatClient sut = new(inner, "llama3.2", TestCredential);
 
         ChatResponse response = await sut.GetResponseAsync(
             [new ChatMessage(ChatRole.User, "ping")],
@@ -62,7 +70,7 @@ public sealed class TracingOllamaChatClientTests
         inner.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
             .Returns<Task<ChatResponse>>(_ => throw new InvalidOperationException("boom"));
 
-        TracingOllamaChatClient sut = new(inner, "phi3");
+        TracingOllamaChatClient sut = new(inner, "phi3", TestCredential);
 
         await Should.ThrowAsync<InvalidOperationException>(
             async () => await sut.GetResponseAsync(
@@ -78,7 +86,7 @@ public sealed class TracingOllamaChatClientTests
     public void GetService_ForOwnType_ReturnsSelf()
     {
         IChatClient inner = Substitute.For<IChatClient>();
-        TracingOllamaChatClient sut = new(inner, "llama3.2");
+        TracingOllamaChatClient sut = new(inner, "llama3.2", TestCredential);
 
         sut.GetService(typeof(TracingOllamaChatClient)).ShouldBe(sut);
     }
@@ -90,7 +98,7 @@ public sealed class TracingOllamaChatClientTests
         object sentinel = new();
         inner.GetService(typeof(string), null).Returns(sentinel);
 
-        TracingOllamaChatClient sut = new(inner, "llama3.2");
+        TracingOllamaChatClient sut = new(inner, "llama3.2", TestCredential);
 
         sut.GetService(typeof(string)).ShouldBe(sentinel);
     }
@@ -99,7 +107,7 @@ public sealed class TracingOllamaChatClientTests
     public void Dispose_DelegatesToInner()
     {
         IChatClient inner = Substitute.For<IChatClient>();
-        TracingOllamaChatClient sut = new(inner, "llama3.2");
+        TracingOllamaChatClient sut = new(inner, "llama3.2", TestCredential);
 
         sut.Dispose();
 

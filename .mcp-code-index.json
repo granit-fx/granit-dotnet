@@ -3211,7 +3211,7 @@
       "kind": "class",
       "project": "Granit.AI.Ollama",
       "file": "src/Granit.AI.Ollama/Extensions/AIOllamaHostApplicationBuilderExtensions.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitAIOllama",

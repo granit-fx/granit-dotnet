@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Granit.AI.Ollama.Diagnostics;
+using Granit.AI.Tenancy;
 using Microsoft.Extensions.AI;
 
 namespace Granit.AI.Ollama.Internal;
@@ -14,7 +15,10 @@ namespace Granit.AI.Ollama.Internal;
 /// delegates to the inner client — so callers can still retrieve the underlying <c>OllamaApiClient</c>.
 /// Disposal is delegated to the wrapped client; the decorator owns no additional resources.
 /// </remarks>
-internal sealed class TracingOllamaChatClient(IChatClient inner, string requestedModel) : IChatClient
+internal sealed class TracingOllamaChatClient(
+    IChatClient inner,
+    string requestedModel,
+    AIProviderCredential credential) : IChatClient
 {
     public Task<ChatResponse> GetResponseAsync(
         IEnumerable<ChatMessage> messages,
@@ -121,6 +125,13 @@ internal sealed class TracingOllamaChatClient(IChatClient inner, string requeste
 
         activity.SetTag("gen_ai.system", AIOllamaActivitySource.SystemTagValue);
         activity.SetTag("gen_ai.request.model", requestedModel);
+        activity.SetTag("gen_ai.credential.scope", credential.Scope.ToString());
+        if (credential.BilledToTenantId is { } tenantId)
+        {
+            string idStr = tenantId.ToString();
+            activity.SetTag("gen_ai.tenant.id", idStr);
+            activity.SetTag("gen_ai.billed_to_tenant.id", idStr);
+        }
         return activity;
     }
 

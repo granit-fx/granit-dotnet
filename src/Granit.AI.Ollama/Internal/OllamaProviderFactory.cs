@@ -1,4 +1,5 @@
 using Granit.AI.Ollama.Options;
+using Granit.AI.Tenancy;
 using Granit.AI.Workspaces;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
@@ -9,91 +10,90 @@ namespace Granit.AI.Ollama.Internal;
 
 /// <summary>
 /// Ollama implementation of <see cref="IAIProviderFactory"/> and <see cref="IAIModelCatalog"/>.
-/// Creates <see cref="OllamaApiClient"/> instances that implement both
-/// <see cref="IChatClient"/> and <see cref="IEmbeddingGenerator{TInput,TEmbedding}"/>.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <see cref="OllamaApiClient"/> natively supports the <c>Microsoft.Extensions.AI</c>
-/// abstractions. The chat client is wrapped by <see cref="TracingOllamaChatClient"/>
-/// so each call emits an OpenTelemetry GenAI span.
+/// Endpoint cascade resolved by <see cref="OllamaCredentialResolver"/>. SDK clients are reused
+/// per (endpoint, model) via the Singleton <see cref="OllamaClientCache"/>.
 /// </para>
 /// <para>
-/// The transport <see cref="HttpClient"/> is sourced from <see cref="IHttpClientFactory"/>,
-/// so connection pooling, DNS refresh, and timeout enforcement are owned by the host.
-/// Endpoint changes are picked up via <see cref="IOptionsMonitor{TOptions}"/>; consecutive
-/// calls observe the new endpoint without a process restart.
-/// </para>
-/// <para>
-/// Model catalog is fetched dynamically via <c>GET /api/tags</c> and enriched with
-/// per-model capabilities via <c>GET /api/show</c>. Cached for 30 seconds.
+/// Model catalog (<c>GET /api/tags</c>) is queried with the Host-options endpoint and cached
+/// for 30 seconds.
 /// </para>
 /// </remarks>
-internal sealed class OllamaProviderFactory : IAIProviderFactory, IAIModelCatalog
+internal sealed class OllamaProviderFactory(
+    IOptionsMonitor<OllamaProviderOptions> optionsMonitor,
+    OllamaCredentialResolver credentialResolver,
+    OllamaClientCache clientCache,
+    TimeProvider timeProvider) : IAIProviderFactory, IAIModelCatalog
 {
-    /// <summary>Named <see cref="HttpClient"/> consumed by this factory.</summary>
+    /// <summary>Named <see cref="HttpClient"/> consumed by the SDK client cache.</summary>
     internal const string HttpClientName = "Granit.AI.Ollama";
 
-    private static readonly TimeSpan CacheDuration = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan CatalogCacheDuration = TimeSpan.FromSeconds(30);
 
-    private readonly IOptionsMonitor<OllamaProviderOptions> _optionsMonitor;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly TimeProvider _timeProvider;
-    private readonly Lock _lock = new();
+    private readonly Lock _catalogLock = new();
     private IReadOnlyList<AIModelInfo>? _cachedModels;
     private DateTimeOffset _cacheExpiry;
-
-    public OllamaProviderFactory(
-        IOptionsMonitor<OllamaProviderOptions> optionsMonitor,
-        IHttpClientFactory httpClientFactory,
-        TimeProvider timeProvider)
-    {
-        _optionsMonitor = optionsMonitor;
-        _httpClientFactory = httpClientFactory;
-        _timeProvider = timeProvider;
-    }
 
     /// <inheritdoc/>
     public string ProviderName => "Ollama";
 
     /// <inheritdoc/>
-    public IChatClient CreateChatClient(AIWorkspace workspace)
+    public async ValueTask<IChatClient> CreateChatClientAsync(
+        AIWorkspace workspace,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(workspace);
 
-        OllamaProviderOptions options = _optionsMonitor.CurrentValue;
-        string model = string.IsNullOrWhiteSpace(workspace.Model) ? options.DefaultModel : workspace.Model;
-        EnforceAllowlist(options, model);
+        OllamaProviderOptions opts = optionsMonitor.CurrentValue;
+        string model = string.IsNullOrWhiteSpace(workspace.Model) ? opts.DefaultModel : workspace.Model;
+        EnforceAllowlist(opts, model);
 
-        OllamaApiClient inner = CreateOllamaApiClient(options, model);
-        return new TracingOllamaChatClient(inner, model);
+        AIProviderCredential credential = await credentialResolver
+            .ResolveAsync(workspace, cancellationToken)
+            .ConfigureAwait(false);
+
+        OllamaApiClient inner = clientCache.GetOrCreate(credential.Endpoint!, model);
+        return new TracingOllamaChatClient(inner, model, credential);
     }
 
     /// <inheritdoc/>
-    public IEmbeddingGenerator<string, Embedding<float>> CreateEmbeddingGenerator(AIWorkspace workspace)
+    public async ValueTask<IEmbeddingGenerator<string, Embedding<float>>?> CreateEmbeddingGeneratorAsync(
+        AIWorkspace workspace,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(workspace);
 
-        OllamaProviderOptions options = _optionsMonitor.CurrentValue;
-        string model = string.IsNullOrWhiteSpace(workspace.Model) ? options.DefaultModel : workspace.Model;
-        EnforceAllowlist(options, model);
+        OllamaProviderOptions opts = optionsMonitor.CurrentValue;
+        string model = string.IsNullOrWhiteSpace(workspace.Model) ? opts.DefaultModel : workspace.Model;
+        EnforceAllowlist(opts, model);
 
-        return CreateOllamaApiClient(options, model);
+        AIProviderCredential credential = await credentialResolver
+            .ResolveAsync(workspace, cancellationToken)
+            .ConfigureAwait(false);
+
+        return clientCache.GetOrCreate(credential.Endpoint!, model);
     }
 
     /// <inheritdoc/>
     public async Task<IReadOnlyList<AIModelInfo>> GetAvailableModelsAsync(CancellationToken cancellationToken = default)
     {
-        lock (_lock)
+        lock (_catalogLock)
         {
-            if (_cachedModels is not null && _timeProvider.GetUtcNow() < _cacheExpiry)
+            if (_cachedModels is not null && timeProvider.GetUtcNow() < _cacheExpiry)
             {
                 return _cachedModels;
             }
         }
 
-        OllamaProviderOptions options = _optionsMonitor.CurrentValue;
-        OllamaApiClient client = CreateOllamaApiClient(options, options.DefaultModel);
+        OllamaProviderOptions opts = optionsMonitor.CurrentValue;
+        if (string.IsNullOrWhiteSpace(opts.Endpoint))
+        {
+            return [];
+        }
+
+        OllamaApiClient client = clientCache.GetOrCreate(opts.Endpoint, opts.DefaultModel);
 
         IEnumerable<Model> localModels = await client
             .ListLocalModelsAsync(cancellationToken)
@@ -106,10 +106,10 @@ internal sealed class OllamaProviderFactory : IAIProviderFactory, IAIModelCatalo
             return new AIModelInfo(model.Name, model.Name, capabilities);
         })).ConfigureAwait(false);
 
-        lock (_lock)
+        lock (_catalogLock)
         {
             _cachedModels = models;
-            _cacheExpiry = _timeProvider.GetUtcNow().Add(CacheDuration);
+            _cacheExpiry = timeProvider.GetUtcNow().Add(CatalogCacheDuration);
         }
 
         return models;
@@ -126,18 +126,6 @@ internal sealed class OllamaProviderFactory : IAIProviderFactory, IAIModelCatalo
         }
     }
 
-    private OllamaApiClient CreateOllamaApiClient(OllamaProviderOptions options, string model)
-    {
-        HttpClient http = _httpClientFactory.CreateClient(HttpClientName);
-        http.BaseAddress = new Uri(options.Endpoint);
-        http.Timeout = options.Timeout;
-        return new OllamaApiClient(http, model);
-    }
-
-    /// <summary>
-    /// Resolves capabilities for a specific model via <c>GET /api/show</c>.
-    /// Ollama returns capabilities as a string list (e.g. <c>completion</c>, <c>vision</c>, <c>tools</c>, <c>embedding</c>).
-    /// </summary>
     private static async Task<AIModelCapabilities> ResolveCapabilitiesAsync(
         OllamaApiClient client,
         string modelName,
@@ -168,7 +156,6 @@ internal sealed class OllamaProviderFactory : IAIProviderFactory, IAIModelCatalo
         }
         catch
         {
-            // Fallback if /api/show fails (older Ollama versions)
             return new AIModelCapabilities { Embeddings = true };
         }
     }

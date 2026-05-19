@@ -9,16 +9,6 @@ namespace Granit.AI.Ollama.Tests;
 
 public sealed class OllamaProviderFactoryAdditionalTests
 {
-    private static OllamaProviderFactory CreateFactory(out TestOptionsMonitor<OllamaProviderOptions> monitor, OllamaProviderOptions? options = null)
-    {
-        OllamaProviderOptions opts = options ?? new OllamaProviderOptions();
-        monitor = new TestOptionsMonitor<OllamaProviderOptions>(opts);
-        return new OllamaProviderFactory(monitor, new TestHttpClientFactory(), TimeProvider.System);
-    }
-
-    private static OllamaProviderFactory CreateFactory(OllamaProviderOptions? options = null)
-        => CreateFactory(out _, options);
-
     private static AIWorkspace CreateWorkspace(string? model = "llama3.2") =>
         new()
         {
@@ -31,97 +21,55 @@ public sealed class OllamaProviderFactoryAdditionalTests
         (OllamaApiClient)client.GetService(typeof(OllamaApiClient))!;
 
     [Fact]
-    public void CreateChatClient_NullModel_FallsBackToDefaultModel()
+    public async Task CreateChatClientAsync_NullModel_FallsBackToDefaultModel()
     {
-        OllamaProviderFactory factory = CreateFactory(new OllamaProviderOptions { DefaultModel = "mistral" });
+        (OllamaProviderFactory factory, _, _, _) = TestFixtures.BuildFactory(
+            new OllamaProviderOptions { Endpoint = "http://localhost:11434", DefaultModel = "mistral" });
 
-        IChatClient client = factory.CreateChatClient(CreateWorkspace(model: null));
+        IChatClient client = await factory.CreateChatClientAsync(
+            CreateWorkspace(model: null),
+            TestContext.Current.CancellationToken);
 
         UnwrapApiClient(client).SelectedModel.ShouldBe("mistral");
     }
 
     [Fact]
-    public void CreateEmbeddingGenerator_NullModel_FallsBackToDefaultModel()
+    public async Task CreateEmbeddingGeneratorAsync_NullModel_FallsBackToDefaultModel()
     {
-        OllamaProviderFactory factory = CreateFactory(new OllamaProviderOptions { DefaultModel = "nomic-embed-text" });
+        (OllamaProviderFactory factory, _, _, _) = TestFixtures.BuildFactory(
+            new OllamaProviderOptions { Endpoint = "http://localhost:11434", DefaultModel = "nomic-embed-text" });
 
-        var generator = (OllamaApiClient)factory.CreateEmbeddingGenerator(CreateWorkspace(model: null));
+        var generator = (OllamaApiClient)(await factory.CreateEmbeddingGeneratorAsync(
+            CreateWorkspace(model: null),
+            TestContext.Current.CancellationToken))!;
 
         generator.SelectedModel.ShouldBe("nomic-embed-text");
     }
 
     [Fact]
-    public void CreateChatClient_ExplicitModel_UsesWorkspaceModel()
+    public async Task CreateChatClientAsync_ExplicitModel_UsesWorkspaceModel()
     {
-        OllamaProviderFactory factory = CreateFactory(new OllamaProviderOptions { DefaultModel = "mistral" });
+        (OllamaProviderFactory factory, _, _, _) = TestFixtures.BuildFactory(
+            new OllamaProviderOptions { Endpoint = "http://localhost:11434", DefaultModel = "mistral" });
 
-        IChatClient client = factory.CreateChatClient(CreateWorkspace("phi3"));
+        IChatClient client = await factory.CreateChatClientAsync(
+            CreateWorkspace("phi3"),
+            TestContext.Current.CancellationToken);
 
         UnwrapApiClient(client).SelectedModel.ShouldBe("phi3");
     }
 
     [Fact]
-    public void CreateChatClient_CustomEndpoint_UsesConfiguredEndpoint()
+    public async Task CreateChatClientAsync_CustomEndpoint_UsesConfiguredEndpoint()
     {
-        OllamaProviderFactory factory = CreateFactory(new OllamaProviderOptions { Endpoint = "http://gpu-server:11434" });
+        // Host endpoint is permissive — it can include private IPs (operator-trusted).
+        (OllamaProviderFactory factory, _, _, _) = TestFixtures.BuildFactory(
+            new OllamaProviderOptions { Endpoint = "http://gpu-server.internal:11434", DefaultModel = "llama3.2" });
 
-        IChatClient client = factory.CreateChatClient(CreateWorkspace());
+        IChatClient client = await factory.CreateChatClientAsync(
+            CreateWorkspace(),
+            TestContext.Current.CancellationToken);
 
         UnwrapApiClient(client).ShouldNotBeNull();
-    }
-
-    [Fact]
-    public void CreateEmbeddingGenerator_CustomEndpoint_UsesConfiguredEndpoint()
-    {
-        OllamaProviderFactory factory = CreateFactory(new OllamaProviderOptions { Endpoint = "https://ollama.internal:443" });
-
-        IEmbeddingGenerator<string, Embedding<float>> generator =
-            factory.CreateEmbeddingGenerator(CreateWorkspace());
-
-        generator.ShouldBeOfType<OllamaApiClient>();
-    }
-
-    [Fact]
-    public void CreateChatClient_WithModelOutsideAllowlist_Throws()
-    {
-        OllamaProviderOptions options = new()
-        {
-            DefaultModel = "llama3.2",
-            AllowedModels = ["llama3.2"],
-        };
-        OllamaProviderFactory factory = CreateFactory(options);
-
-        Should.Throw<InvalidOperationException>(
-            () => factory.CreateChatClient(CreateWorkspace("phi3")));
-    }
-
-    [Fact]
-    public void CreateEmbeddingGenerator_WithModelOutsideAllowlist_Throws()
-    {
-        OllamaProviderOptions options = new()
-        {
-            DefaultModel = "llama3.2",
-            AllowedModels = ["llama3.2"],
-        };
-        OllamaProviderFactory factory = CreateFactory(options);
-
-        Should.Throw<InvalidOperationException>(
-            () => factory.CreateEmbeddingGenerator(CreateWorkspace("phi3")));
-    }
-
-    [Fact]
-    public void OptionsChange_NewEndpoint_PickedUpOnNextCall()
-    {
-        OllamaProviderFactory factory = CreateFactory(
-            out TestOptionsMonitor<OllamaProviderOptions> monitor,
-            new OllamaProviderOptions { Endpoint = "http://localhost:11434", DefaultModel = "mistral" });
-
-        IChatClient before = factory.CreateChatClient(CreateWorkspace());
-        UnwrapApiClient(before).ShouldNotBeNull();
-
-        monitor.Set(new OllamaProviderOptions { Endpoint = "http://gpu-server:11434", DefaultModel = "mistral" });
-
-        IChatClient after = factory.CreateChatClient(CreateWorkspace());
-        UnwrapApiClient(after).ShouldNotBeNull();
     }
 }

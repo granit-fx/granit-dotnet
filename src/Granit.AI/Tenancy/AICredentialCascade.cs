@@ -33,7 +33,7 @@ internal static class AICredentialCascade
     public static async ValueTask<AIProviderCredential?> ResolveAsync(
         string? workspaceApiKey,
         string? workspaceEndpoint,
-        string apiKeySettingName,
+        string? apiKeySettingName,
         string? endpointSettingName,
         (string? ApiKey, string? Endpoint) hostFallback,
         SettingDefinitionManager definitions,
@@ -55,7 +55,8 @@ internal static class AICredentialCascade
         }
 
         // Layer 2: Tenant Setting.
-        SettingDefinition apiKeyDefinition = definitions.Get(apiKeySettingName);
+        SettingDefinition? apiKeyDefinition =
+            apiKeySettingName is null ? null : definitions.Get(apiKeySettingName);
         SettingDefinition? endpointDefinition =
             endpointSettingName is null ? null : definitions.Get(endpointSettingName);
 
@@ -107,7 +108,7 @@ internal static class AICredentialCascade
 
     private static async ValueTask<(string? ApiKey, string? Endpoint)> ReadLayerAsync(
         ISettingValueProvider? provider,
-        SettingDefinition apiKeyDefinition,
+        SettingDefinition? apiKeyDefinition,
         SettingDefinition? endpointDefinition,
         CancellationToken cancellationToken)
     {
@@ -116,9 +117,9 @@ internal static class AICredentialCascade
             return (null, null);
         }
 
-        SettingValue? apiKeyValue = await provider
-            .GetOrNullAsync(apiKeyDefinition, cancellationToken)
-            .ConfigureAwait(false);
+        SettingValue? apiKeyValue = apiKeyDefinition is null
+            ? null
+            : await provider.GetOrNullAsync(apiKeyDefinition, cancellationToken).ConfigureAwait(false);
 
         SettingValue? endpointValue = endpointDefinition is null
             ? null

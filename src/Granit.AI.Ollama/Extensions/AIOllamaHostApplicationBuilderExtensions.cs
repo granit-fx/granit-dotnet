@@ -3,6 +3,7 @@ using Granit.AI.Ollama.Diagnostics;
 using Granit.AI.Ollama.HealthChecks;
 using Granit.AI.Ollama.Internal;
 using Granit.AI.Ollama.Options;
+using Granit.AI.Tenancy;
 using Granit.Diagnostics;
 using Granit.Http.Resilience.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,17 +22,16 @@ namespace Granit.AI.Ollama.Extensions;
 public static class AIOllamaHostApplicationBuilderExtensions
 {
     /// <summary>
-    /// Adds <c>Granit.AI.Ollama</c> services: Ollama provider factory, options, and activity source.
+    /// Adds <c>Granit.AI.Ollama</c> services: Ollama provider factory, options, activity source,
+    /// credential resolver + cache.
     /// </summary>
     /// <remarks>
-    /// Reads <see cref="OllamaProviderOptions"/> from the <c>"AI:Ollama"</c> configuration section.
-    /// No API key is required — Ollama runs models locally.
-    /// Registers the named <see cref="HttpClient"/> consumed by both the SDK and the health check.
+    /// Endpoint cascade Workspace → Tenant Setting → Global Setting → Host Options enforced by
+    /// <see cref="OllamaCredentialResolver"/>. Tenant/Workspace endpoints validated against
+    /// <see cref="AIEndpointPolicy.OllamaTenant"/>; the Host Options endpoint uses
+    /// <see cref="AIEndpointPolicy.HostPermissive"/> (operator-trusted).
     /// </remarks>
-    /// <param name="builder">The host application builder.</param>
-    /// <returns>The builder for chaining.</returns>
-    public static IHostApplicationBuilder AddGranitAIOllama(
-        this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddGranitAIOllama(this IHostApplicationBuilder builder)
     {
         GranitActivitySourceRegistry.Register(AIOllamaActivitySource.Name);
 
@@ -42,13 +42,24 @@ public static class AIOllamaHostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<IValidateOptions<OllamaProviderOptions>, OllamaProviderOptionsValidator>();
 
-        // TimeProvider may already be registered by the host; TryAdd avoids overriding it.
         builder.Services.TryAddSingleton(TimeProvider.System);
 
-        // The OllamaSharp client uses the HttpClient timeout directly (no separate SDK timeout).
-        builder.Services.AddHttpClient(OllamaProviderFactory.HttpClientName);
+        // The OllamaSharp client uses the HttpClient timeout directly. AllowAutoRedirect=false +
+        // GranitSafeConnectCallback close the redirect-to-metadata SSRF path even when an
+        // operator points the host at a permissive endpoint.
+        builder.Services
+            .AddHttpClient(OllamaProviderFactory.HttpClientName)
+            .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
+            {
+                AllowAutoRedirect = false,
+                ConnectCallback = GranitSafeConnectCallback.Create(AIEndpointPolicy.OllamaTenant),
+            });
 
-        builder.Services.AddSingleton<IAIProviderFactory, OllamaProviderFactory>();
+        builder.Services.AddSingleton<OllamaClientCache>();
+        builder.Services.AddScoped<OllamaCredentialResolver>();
+        builder.Services.AddScoped<IAIProviderCredentialResolver>(sp =>
+            sp.GetRequiredService<OllamaCredentialResolver>());
+        builder.Services.AddScoped<IAIProviderFactory, OllamaProviderFactory>();
 
         builder.Services.AddGranitHttpClient("GranitAIOllamaHealthCheck");
 
@@ -57,13 +68,7 @@ public static class AIOllamaHostApplicationBuilderExtensions
 
     /// <summary>
     /// Adds an Ollama connectivity health check tagged <c>"readiness"</c> and <c>"startup"</c>.
-    /// Verifies that the Ollama server is reachable by issuing a <c>GET /api/tags</c> request.
     /// </summary>
-    /// <param name="builder">The health checks builder.</param>
-    /// <param name="name">Check name. Defaults to <c>"ollama"</c>.</param>
-    /// <param name="failureStatus">Status on failure. Defaults to <see cref="HealthStatus.Unhealthy"/>.</param>
-    /// <param name="timeout">Check timeout. Defaults to 10 seconds.</param>
-    /// <returns>The health checks builder for chaining.</returns>
     public static IHealthChecksBuilder AddGranitOllamaHealthCheck(
         this IHealthChecksBuilder builder,
         string name = "ollama",
