@@ -21,7 +21,7 @@ namespace Granit.Authentication.ApiKeys.BackgroundJobs.Services;
 /// request. Scheduling a "wake up at <c>ExpiresAt - 14 days</c>" timer per key would
 /// be possible but heavier than a daily query that scans only non-revoked keys with
 /// <c>ExpiresAt</c> set. The composite index
-/// <c>ix_*_api_keys_expiring_scan</c> keeps this O(matching keys).
+/// <c>ix_*_entries_expiring_scan</c> keeps this O(matching keys).
 /// </para>
 /// <para>
 /// <b>Order of operations.</b> The Eto is published <em>before</em> the timestamp

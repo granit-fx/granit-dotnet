@@ -30521,7 +30521,7 @@
       "kind": "class",
       "project": "Granit.Observability",
       "file": "src/Granit.Observability/Extensions/ObservabilityServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitObservability",
