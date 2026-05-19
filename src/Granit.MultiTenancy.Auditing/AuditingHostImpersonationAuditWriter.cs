@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Claims;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
@@ -8,18 +9,23 @@ namespace Granit.MultiTenancy.Auditing;
 
 /// <summary>
 /// <see cref="IHostImpersonationAuditWriter"/> implementation that persists every
-/// gate decision (allowed + denied) as a <see cref="AuditCategory.AccessDenied"/>
-/// audit entry via <see cref="IAuditingWriter"/>.
+/// gate decision via <see cref="IAuditingWriter"/>. Allowed decisions land in
+/// <see cref="AuditCategory.PrivilegedAccess"/> (ISO 27001 A.12.4.3) and denied
+/// decisions in <see cref="AuditCategory.AccessDenied"/> (A.12.4.1).
 /// </summary>
 /// <remarks>
-/// Even allowed impersonations are recorded under <c>AccessDenied</c>: from the
-/// RSSI's point of view they are privileged-access events worth keeping in the
-/// same retention bucket as denials. The <c>CorrelationId</c> carries the request's
-/// trace id so the audit row links back to OTEL traces.
+/// Decision details (allowed flag, deny reason, resolver) are persisted as a
+/// synthetic <see cref="AuditEntityChange"/> with <c>EntityType =
+/// "HostImpersonation"</c> so investigators get a self-contained audit row
+/// without needing to correlate with logs or metrics. The <c>CorrelationId</c>
+/// still carries the request's trace id for cross-store lookups.
 /// </remarks>
 public sealed class AuditingHostImpersonationAuditWriter(IAuditingWriter auditingWriter, IClock clock)
     : IHostImpersonationAuditWriter
 {
+    private const string SyntheticEntityType = "HostImpersonation";
+    private const string UnknownUserSentinel = "<unknown>";
+
     public async ValueTask WriteAsync(
         ClaimsPrincipal principal,
         Guid targetTenantId,
@@ -38,25 +44,56 @@ public sealed class AuditingHostImpersonationAuditWriter(IAuditingWriter auditin
             Timestamp = clock.Now,
             UserId = principal.FindFirst("sub")?.Value
                 ?? principal.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                ?? "unknown",
+                ?? UnknownUserSentinel,
             UserName = principal.FindFirst("name")?.Value
                 ?? principal.Identity?.Name,
-            Category = AuditCategory.AccessDenied,
+            Category = decision.Allowed
+                ? AuditCategory.PrivilegedAccess
+                : AuditCategory.AccessDenied,
             IpAddress = ipAddress,
             UserAgent = userAgent,
             TenantId = targetTenantId,
             CorrelationId = correlationId,
+            EntityChanges = [BuildDecisionChange(targetTenantId, decision, resolverType)],
         };
 
-        // No EntityChanges — host impersonation is not an entity mutation event.
-        // The actor + tenant + decision is what the auditor cares about; further
-        // detail (allowed vs denied, reason, resolver) lives in structured logs
-        // and the OTEL counter, both keyed by the same CorrelationId.
-        // Trailing context emitted via logger:
-        // - decision.Allowed = {true|false}
-        // - decision.DenyReasonCode = {NotConfigured|PermissionDenied|...}
-        // - resolverType (which non-JWT resolver matched)
-
         await auditingWriter.WriteAsync(entry, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static AuditEntityChange BuildDecisionChange(
+        Guid targetTenantId,
+        HostImpersonationDecision decision,
+        string resolverType)
+    {
+        List<AuditPropertyChange> properties =
+        [
+            new AuditPropertyChange
+            {
+                PropertyName = "Allowed",
+                NewValue = decision.Allowed ? "true" : "false",
+            },
+            new AuditPropertyChange
+            {
+                PropertyName = "ResolverType",
+                NewValue = resolverType,
+            },
+        ];
+
+        if (!string.IsNullOrEmpty(decision.DenyReasonCode))
+        {
+            properties.Add(new AuditPropertyChange
+            {
+                PropertyName = "DenyReasonCode",
+                NewValue = decision.DenyReasonCode,
+            });
+        }
+
+        return new AuditEntityChange
+        {
+            EntityType = SyntheticEntityType,
+            EntityId = targetTenantId.ToString("D", CultureInfo.InvariantCulture),
+            ChangeType = AuditChangeType.Created,
+            PropertyChanges = properties,
+        };
     }
 }

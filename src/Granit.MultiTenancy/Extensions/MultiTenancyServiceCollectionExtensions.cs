@@ -42,6 +42,11 @@ public static class MultiTenancyServiceCollectionExtensions
         // Direct callers of AddGranitMultiTenancy() (test fixtures) must add it themselves.
         services.AddLocalizationResource<MultiTenancyLocalizationResource>();
 
+        // IProblemDetailsService is used by TenantResolutionMiddleware to emit
+        // 403 problem+json bodies for tenant-mismatch and host-impersonation-denied
+        // short-circuits. AddProblemDetails() is idempotent (TryAdd-based).
+        services.AddProblemDetails();
+
         services.TryAddSingleton<IValidateOptions<MultiTenancyOptions>, MultiTenancyOptionsValidator>();
 
         // Replace the NullTenantContext registered by AddGranit<T>() with the real

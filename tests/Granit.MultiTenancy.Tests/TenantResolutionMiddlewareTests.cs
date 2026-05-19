@@ -15,6 +15,7 @@ using Granit.MultiTenancy.Pipeline;
 using Granit.MultiTenancy.Resolvers;
 using Granit.MultiTenancy.Stores;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -31,6 +32,17 @@ public sealed class TenantResolutionMiddlewareTests
         IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
         meterFactory.Create(Arg.Any<MeterOptions>()).Returns(callInfo => new Meter(callInfo.Arg<MeterOptions>().Name));
         return new MultiTenancyMetrics(meterFactory);
+    }
+
+    private static IProblemDetailsService CreateProblemDetailsService()
+    {
+        // The middleware emits 403 bodies through IProblemDetailsService — tests use
+        // the real default implementation so they can still assert the serialized body
+        // shape end-to-end.
+        ServiceCollection services = new();
+        services.AddLogging();
+        services.AddProblemDetails();
+        return services.BuildServiceProvider().GetRequiredService<IProblemDetailsService>();
     }
 
     private static TenantResolutionMiddleware CreateMiddleware(
@@ -61,6 +73,7 @@ public sealed class TenantResolutionMiddlewareTests
             tenantReader,
             gate,
             Substitute.For<IHostImpersonationAuditWriter>(),
+            CreateProblemDetailsService(),
             CreateMetrics(),
             new TestLocalizer(),
             options,
@@ -234,6 +247,7 @@ public sealed class TenantResolutionMiddlewareTests
             tenantReader,
             AllowAllGate(),
             Substitute.For<IHostImpersonationAuditWriter>(),
+            CreateProblemDetailsService(),
             CreateMetrics(),
             new TestLocalizer(),
             options,
@@ -716,6 +730,7 @@ public sealed class TenantResolutionMiddlewareTests
             tenantReader,
             gate,
             audit,
+            CreateProblemDetailsService(),
             CreateMetrics(),
             new TestLocalizer(),
             options,

@@ -11,6 +11,9 @@ public sealed class MultiTenancyMetrics
 {
     public const string MeterName = "Granit.MultiTenancy";
 
+    private const string TenantIdTag = "tenant_id";
+    private const string GlobalTenant = "global";
+
     private readonly Counter<long> _resolutionsSucceeded;
     private readonly Counter<long> _resolutionsFailed;
     private readonly Counter<long> _contextSwitches;
@@ -33,34 +36,34 @@ public sealed class MultiTenancyMetrics
             description: "Number of explicit tenant context switches.");
 
         _hostImpersonations = meter.CreateCounter<long>(
-            "granit.multi_tenancy.host_impersonation",
-            description: "Host user impersonating a tenant via a non-JWT resolver. Tagged outcome=allowed|denied with deny_reason.");
+            "granit.multi_tenancy.host_impersonation.attempted",
+            description: "Host user attempting to impersonate a tenant via a non-JWT resolver. Tagged outcome=allowed|denied with deny_reason.");
     }
 
     public void RecordResolutionSucceeded(string tenantId, string resolverType) =>
         _resolutionsSucceeded.Add(1, new TagList
         {
-            { "tenant_id", tenantId },
+            { TenantIdTag, tenantId },
             { "resolver_type", resolverType },
         });
 
     public void RecordResolutionFailed() =>
         _resolutionsFailed.Add(1, new TagList
         {
-            { "tenant_id", "global" },
+            { TenantIdTag, GlobalTenant },
         });
 
     public void RecordContextSwitched(string? tenantId) =>
         _contextSwitches.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenant },
         });
 
     public void RecordHostImpersonationAllowed(string tenantId) =>
         _hostImpersonations.Add(1, new TagList
         {
             { "outcome", "allowed" },
-            { "tenant_id", tenantId },
+            { TenantIdTag, tenantId },
             { "deny_reason", "none" },
         });
 
@@ -68,7 +71,7 @@ public sealed class MultiTenancyMetrics
         _hostImpersonations.Add(1, new TagList
         {
             { "outcome", "denied" },
-            { "tenant_id", tenantId },
+            { TenantIdTag, tenantId },
             { "deny_reason", denyReason },
         });
 }

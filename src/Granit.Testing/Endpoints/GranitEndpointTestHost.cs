@@ -75,8 +75,5 @@ public sealed class GranitEndpointTestHost : IAsyncDisposable
         return client;
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        await _app.DisposeAsync().ConfigureAwait(false);
-    }
+    public async ValueTask DisposeAsync() => await _app.DisposeAsync().ConfigureAwait(false);
 }
