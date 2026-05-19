@@ -263,7 +263,8 @@ public sealed class ValidationEndpointsHttpTests
                 services.AddScoped<IValidator<ValidationFieldValidateRequest>, ValidationFieldValidateRequestValidator>();
                 services.AddScoped<IValidator<ValidationFieldValidateBatchRequest>, ValidationFieldValidateBatchRequestValidator>();
             },
-            configureEndpoints: app => app.MapGranitValidation(opts => opts.RoutePrefix = "api/v1/validation"));
+            configureEndpoints: app => app.MapGranitValidation(opts => opts.RoutePrefix = "api/v1/validation"),
+            cancellationToken: TestContext.Current.CancellationToken);
 
         using HttpClient client = host.CreateAnonymousClient();
         HttpResponseMessage response = await client.GetAsync(
