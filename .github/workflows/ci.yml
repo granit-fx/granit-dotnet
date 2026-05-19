@@ -62,7 +62,6 @@ jobs:
         run: >
           dotnet build .github/shard-filters/src-only.slnf
           -c $CONFIGURATION -m:4
-          -p:GenerateDocumentationFile=false
 
       - name: Check formatting (src only)
         run: dotnet format .github/shard-filters/src-only.slnf --verify-no-changes --no-restore
