@@ -51,6 +51,8 @@ dotnet test  tests/Granit.BlobStorage.Tests --no-build
 dotnet pack -c Release -o ./nupkgs
 ```
 
+**Dev-package feed.** Pre-release `0.1.0-dev.*` packages publish to the **GitLab Package Registry** (`gitlab.digitaldynamics.be/api/v4/projects/11/packages/nuget/index.json`) — GitHub Packages publish is paused (#2114). Downstream repos consume from there; CI creds via env var `NuGetPackageSourceCredentials_*` (never `--store-password-in-clear-text`).
+
 Doc site lives in the [`granit-docs`](https://github.com/granit-fx/granit-docs) sibling repo (`cd ../granit-docs && npx astro build`).
 
 Shard mapping is the source of truth at [`.github/test-shards.json`](.github/test-shards.json) — match a file's directory against that map, no duplicate table here.
@@ -170,12 +172,13 @@ Every `*.Endpoints` module attaches `.WithTags(...)` on its root group. Format: 
 
 ### Isolated DbContext (each `*.EntityFrameworkCore` package)
 
-1. `<ProjectReference>` to `Granit.Persistence`.
-2. Constructor-inject `ICurrentTenant?` and `IDataFilter?` (both optional, default `null`).
-3. Call `modelBuilder.ApplyGranitConventions(currentTenant, dataFilter)` at end of `OnModelCreating` — NO manual `HasQueryFilter`.
-4. Wire interceptors via `(sp, options)` overload of `AddDbContextFactory` (Scoped) — resolve `AuditedEntityInterceptor` / `SoftDeleteInterceptor`.
-5. `[DependsOn(typeof(GranitPersistenceModule))]` on module class.
-6. `IMultiTenant` entities use `Guid? TenantId` (never `string`).
+1. `<ProjectReference>` to `Granit.Persistence` (+ `Granit.Persistence.EntityFrameworkCore`).
+2. **If the DbContext owns ≥1 `IMultiTenant` entity → inherit `GranitDbContext`** (forward `options, currentTenant, dataFilter` to base). The base class exposes `CurrentTenantId` / `IsMultiTenantFilterEnabled` as instance members so EF Core parameterises the tenant filter (`@ef_filter__CurrentTenantId`) instead of inlining a frozen constant — a closure-captured tenant leaks across requests (repro: `MultiTenantFilterParameterizationReproTests.cs`). For DbContexts with no `IMultiTenant` entity, inherit `DbContext` directly.
+3. Constructor-inject `ICurrentTenant?` and `IDataFilter?` (both optional, default `null`).
+4. Override `OnGranitModelCreating` (not `OnModelCreating`) on `GranitDbContext` derivatives. Call `modelBuilder.ApplyGranitConventions(currentTenant: null, dataFilter)` — the tenant filter is wired by the base; the other conventions (soft-delete, active, …) still come from `ApplyGranitConventions`. NO manual `HasQueryFilter`.
+5. Wire interceptors via the `(sp, options)` overload of `AddDbContextFactory` (Scoped) — resolve `AuditedEntityInterceptor` / `SoftDeleteInterceptor`.
+6. `[DependsOn(typeof(GranitPersistenceModule))]` on module class.
+7. `IMultiTenant` entities use `Guid? TenantId` (never `string`).
 
 Reference: [`docs/framework/data/persistence.md`](docs/framework/data/persistence.md).
 
@@ -201,6 +204,8 @@ Aggregate Root rules (enforced by `DomainConventionTests`):
 Direct project ref with a `*Module` → declare it. Transitive → omit. `Granit` is the implicit base — never declared. Alphabetical order. Zero-dep modules have no attribute (correct).
 
 ### Tests + CI sharding (MANDATORY)
+
+**Endpoint harness.** For `*.Endpoints` HTTP tests, use `Granit.Testing.Endpoints.GranitEndpointTestHost` — the canonical harness; replaces ~60 lines of `WebApplicationBuilder` boilerplate (reference impl: `Granit.Validation.Endpoints.Tests`, introduced in #2132).
 
 8 parallel shards (6 unit-test layers + `integration` + `architecture`). Each has a `.slnf` (auto-generated). When adding a test project: edit `.github/test-shards.json` (`*.Tests.Integration` → `integration` shard always; everything else → its domain shard), run `python3 scripts/generate-shard-filters.py`, commit both. Pre-push hook auto-regenerates and amends. **Without registration, CI silently skips the project.**
 

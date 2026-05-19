@@ -90,10 +90,13 @@ public abstract class GranitDbContext : DbContext
 
     /// <inheritdoc />
     /// <remarks>
-    /// Sealed to enforce ordering: non-tenant conventions first (via
-    /// <see cref="ModelBuilderExtensions.ApplyGranitConventions"/>), then the parameterised
-    /// multi-tenant filter, then derived-class customisation via
-    /// <see cref="OnGranitModelCreating"/>. Derived classes override the latter — not this.
+    /// Sealed to enforce ordering: derived configuration first, then the parameterised
+    /// multi-tenant filter, then <see cref="ModelBuilderExtensions.ApplyGranitConventions"/>
+    /// last. The conventions pass finishes by removing any auto-discovered
+    /// <see cref="SingleValueObject{T}"/> entity types and applying their value
+    /// converters — that cleanup must run AFTER every <c>Entity&lt;T&gt;()</c> call that
+    /// can re-fire EF Core's navigation discovery (notably the multi-tenant filter
+    /// loop below). Derived classes override <see cref="OnGranitModelCreating"/>, not this.
     /// </remarks>
     protected sealed override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -102,22 +105,28 @@ public abstract class GranitDbContext : DbContext
         //    before any iteration over `Model.GetEntityTypes()`.
         OnGranitModelCreating(modelBuilder);
 
-        // 2) Non-tenant filters (soft-delete, active, processing restriction,
-        //    publishable, merge tombstone). `currentTenant: null` skips the
-        //    IMultiTenant block in this overload — this class owns that filter
-        //    separately, with parameterised SQL.
-        modelBuilder.ApplyGranitConventions(currentTenant: null, DataFilter);
-
-        // 3) Parameterised IMultiTenant filter. Built inside a member of THIS
+        // 2) Parameterised IMultiTenant filter. Built inside a member of THIS
         //    DbContext so `CurrentTenantId` is recognised by EF Core's parameter
-        //    extractor and emitted as @ef_filter__CurrentTenantId.
+        //    extractor and emitted as @ef_filter__CurrentTenantId. Calling
+        //    `Entity<TEntity>().HasQueryFilter(...)` here re-fires navigation
+        //    discovery for TEntity, which can re-add `SingleValueObject<T>`-typed
+        //    CLR properties as phantom navigation entities — step 3 cleans that up.
         foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes()
-            .Where(et => typeof(IMultiTenant).IsAssignableFrom(et.ClrType)))
+            .Where(et => typeof(IMultiTenant).IsAssignableFrom(et.ClrType))
+            .ToList())
         {
             ConfigureMultiTenantFilterMethod
                 .MakeGenericMethod(entityType.ClrType)
                 .Invoke(this, [modelBuilder]);
         }
+
+        // 3) Non-tenant filters (soft-delete, active, processing restriction,
+        //    publishable, merge tombstone) + concurrency + merge tombstone columns
+        //    + translation FKs + SVO entity removal & converters. `currentTenant: null`
+        //    skips the IMultiTenant block in this overload — this class owns that
+        //    filter separately, with parameterised SQL. Runs LAST so the SVO cleanup
+        //    is the final pass over the model surface.
+        modelBuilder.ApplyGranitConventions(currentTenant: null, DataFilter);
     }
 
     /// <summary>

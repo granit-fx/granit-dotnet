@@ -24016,22 +24016,6 @@
       "members": []
     },
     {
-      "name": "TotpServiceBase",
-      "fqn": "Granit.Identity.Local.Services.TotpServiceBase",
-      "kind": "class",
-      "project": "Granit.Identity.Local",
-      "file": "src/Granit.Identity.Local/Services/TotpServiceBase.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "GetQrCodeUri",
-          "kind": "method",
-          "signature": "GetQrCodeUri(string email, string sharedKey)",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "TwoFactorStatus",
       "fqn": "Granit.Identity.Local.Services.TwoFactorStatus",
       "kind": "record",
