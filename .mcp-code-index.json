@@ -26750,15 +26750,6 @@
       ]
     },
     {
-      "name": "MultiTenancyLocalizationResource",
-      "fqn": "Granit.MultiTenancy.Internal.MultiTenancyLocalizationResource",
-      "kind": "class",
-      "project": "Granit.MultiTenancy",
-      "file": "src/Granit.MultiTenancy/Internal/MultiTenancyLocalizationResource.cs",
-      "line": 10,
-      "members": []
-    },
-    {
       "name": "TenantResolutionMiddleware",
       "fqn": "Granit.MultiTenancy.Middleware.TenantResolutionMiddleware",
       "kind": "class",
@@ -26773,6 +26764,15 @@
           "returnType": "Task"
         }
       ]
+    },
+    {
+      "name": "MultiTenancyLocalizationResource",
+      "fqn": "Granit.MultiTenancy.MultiTenancyLocalizationResource",
+      "kind": "class",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/MultiTenancyLocalizationResource.cs",
+      "line": 10,
+      "members": []
     },
     {
       "name": "MultiTenancySides",
