@@ -2,9 +2,12 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Granit.Auditing;
+using Granit.Auditing.Domain;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Options;
 using Granit.Http.Cookies;
+using Granit.MultiTenancy;
 using Granit.Oidc.ClientAuthentication;
 using Granit.Oidc.ClientAuthentication.Internal;
 using Granit.Oidc.DPoP;
@@ -192,11 +195,15 @@ internal static partial class BffLoginEndpoints
         {
             string safeError = KnownOidcErrors.Contains(error) ? error : "unknown_error";
             LogCallbackError(logger, safeError, frontend.Name);
+            await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
+                failureReason: safeError, cancellationToken).ConfigureAwait(false);
             return RedirectToError(frontend, safeError);
         }
 
         if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(state))
         {
+            await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
+                failureReason: "missing_code_or_state", cancellationToken).ConfigureAwait(false);
             return RedirectToError(frontend, "missing_code_or_state");
         }
 
@@ -208,12 +215,16 @@ internal static partial class BffLoginEndpoints
             if (string.IsNullOrEmpty(iss))
             {
                 LogIssuerMissing(logger, frontend.Name);
+                await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
+                    failureReason: "issuer_missing", cancellationToken).ConfigureAwait(false);
                 return RedirectToError(frontend, "issuer_missing");
             }
 
             if (!string.Equals(iss.TrimEnd('/'), expectedIssuer, StringComparison.OrdinalIgnoreCase))
             {
                 LogIssuerMismatch(logger, iss, expectedIssuer, frontend.Name);
+                await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
+                    failureReason: "issuer_mismatch", cancellationToken).ConfigureAwait(false);
                 return RedirectToError(frontend, "issuer_mismatch");
             }
         }
@@ -225,6 +236,8 @@ internal static partial class BffLoginEndpoints
 
         if (!maybePkce.HasValue)
         {
+            await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
+                failureReason: "invalid_state", cancellationToken).ConfigureAwait(false);
             return RedirectToError(frontend, "invalid_state");
         }
 
@@ -243,6 +256,8 @@ internal static partial class BffLoginEndpoints
         if (tokens is null)
         {
             LogTokenExchangeFailed(logger, frontend.Name);
+            await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
+                failureReason: "token_exchange_failed", cancellationToken).ConfigureAwait(false);
             return RedirectToError(frontend, "token_exchange_failed");
         }
 
@@ -269,6 +284,11 @@ internal static partial class BffLoginEndpoints
 
         metrics.RecordLogin(null);
         LogLoginSuccess(logger, BffSessionEndpoints.MaskSessionId(sessionId), frontend.Name);
+        await TryWriteAuthAuditAsync(httpContext, logger,
+            userId: string.IsNullOrEmpty(userId) ? AuthenticationAuditEntry.UnknownUserSentinel : userId,
+            userName: ExtractClaimFromIdToken(tokens.IdToken, "name"),
+            failureReason: null,
+            cancellationToken).ConfigureAwait(false);
 
         // Redirect to the original URL the user requested, or fall back to the configured post-login path
         string redirectUrl = !string.IsNullOrEmpty(pkceState.ReturnUrl)
@@ -518,7 +538,16 @@ internal static partial class BffLoginEndpoints
     /// Extracts the <c>sub</c> claim from an ID token JWT payload without full validation
     /// (token was already validated by the authorization server during exchange).
     /// </summary>
-    internal static string? ExtractSubFromIdToken(string? idToken)
+    internal static string? ExtractSubFromIdToken(string? idToken) =>
+        ExtractClaimFromIdToken(idToken, "sub");
+
+    /// <summary>
+    /// Extracts a single string claim from an ID token JWT payload without full
+    /// validation (token was already validated by the authorization server during
+    /// exchange). Returns <see langword="null"/> when the token is malformed or
+    /// the claim is absent.
+    /// </summary>
+    internal static string? ExtractClaimFromIdToken(string? idToken, string claimName)
     {
         if (string.IsNullOrEmpty(idToken))
         {
@@ -542,8 +571,8 @@ internal static partial class BffLoginEndpoints
 
             byte[] bytes = Convert.FromBase64String(payload);
             using var doc = JsonDocument.Parse(bytes);
-            return doc.RootElement.TryGetProperty("sub", out JsonElement sub)
-                ? sub.GetString() : null;
+            return doc.RootElement.TryGetProperty(claimName, out JsonElement claim)
+                ? claim.GetString() : null;
         }
         catch (FormatException)
         {
@@ -596,6 +625,56 @@ internal static partial class BffLoginEndpoints
             ? new PrivateKeyJwtStrategy(frontend.ClientSigningKeyJwk!, clock)
             : new ClientSecretPostStrategy(frontend.ClientSecret);
 
+    /// <summary>
+    /// Records an authentication audit row for the BFF callback. No-op when
+    /// <see cref="IAuditingWriter"/> is not registered (apps that don't opt into
+    /// auditing persistence). Audit failures are swallowed so a transient
+    /// audit-store outage never breaks the login flow.
+    /// </summary>
+    private static async Task TryWriteAuthAuditAsync(
+        HttpContext httpContext,
+        ILogger logger,
+        string? userId,
+        string? userName,
+        string? failureReason,
+        CancellationToken cancellationToken)
+    {
+        IAuditingWriter? auditingWriter = httpContext.RequestServices.GetService<IAuditingWriter>();
+        if (auditingWriter is null)
+        {
+            return;
+        }
+
+        TimeProvider timeProvider = httpContext.RequestServices.GetService<TimeProvider>()
+            ?? TimeProvider.System;
+        ICurrentTenant? currentTenant = httpContext.RequestServices.GetService<ICurrentTenant>();
+        Guid? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id : null;
+        string? ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+        string? userAgent = httpContext.Request.Headers.UserAgent.ToString();
+        if (string.IsNullOrEmpty(userAgent))
+        {
+            userAgent = null;
+        }
+        string? correlationId = Activity.Current?.Id;
+
+        AuditEntry entry = failureReason is null
+            ? AuthenticationAuditEntry.CreateSuccess(
+                timeProvider.GetUtcNow(), userId!, userName, method: "bff_session",
+                tenantId, ipAddress, userAgent, correlationId)
+            : AuthenticationAuditEntry.CreateFailure(
+                timeProvider.GetUtcNow(), userId, userName, method: "bff_session", failureReason,
+                tenantId, ipAddress, userAgent, correlationId);
+
+        try
+        {
+            await auditingWriter.WriteAsync(entry, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogAuditWriteFailed(logger, ex);
+        }
+    }
+
     // ──── Source-generated log messages ────
 
     [LoggerMessage(Level = LogLevel.Information, Message = "BFF login: redirecting to authority {Authority} for frontend {FrontendName}")]
@@ -630,4 +709,7 @@ internal static partial class BffLoginEndpoints
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "BFF callback: issuer mismatch — received '{ReceivedIssuer}', expected '{ExpectedIssuer}' for frontend {FrontendName}")]
     private static partial void LogIssuerMismatch(ILogger logger, string receivedIssuer, string expectedIssuer, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "BFF callback: failed to write authentication audit entry — login flow continues.")]
+    private static partial void LogAuditWriteFailed(ILogger logger, Exception exception);
 }

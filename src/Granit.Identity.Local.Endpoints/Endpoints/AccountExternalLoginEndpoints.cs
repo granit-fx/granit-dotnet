@@ -1,18 +1,25 @@
+using System.Diagnostics;
+using System.Security.Claims;
+using Granit.Auditing;
+using Granit.Auditing.Domain;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Services;
+using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using IdentityConstants = Microsoft.AspNetCore.Identity.IdentityConstants;
 
 namespace Granit.Identity.Local.Endpoints.Endpoints;
 
-internal static class AccountExternalLoginEndpoints
+internal static partial class AccountExternalLoginEndpoints
 {
     internal static RouteGroupBuilder MapAccountExternalLoginEndpoints(this RouteGroupBuilder group)
     {
@@ -113,6 +120,9 @@ internal static class AccountExternalLoginEndpoints
         // Identity stores the originating scheme in
         // AuthenticationProperties.Items["LoginProvider"] under the well-known
         // IdentityConstants.ExternalScheme cookie.
+        ILogger logger = httpContext.RequestServices.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.Identity.Local.Endpoints.AccountExternalLoginEndpoints");
+
         AuthenticateResult authResult = await httpContext
             .AuthenticateAsync(IdentityConstants.ExternalScheme)
             .ConfigureAwait(false);
@@ -123,31 +133,101 @@ internal static class AccountExternalLoginEndpoints
             || !authResult.Properties.Items.TryGetValue("LoginProvider", out string? provider)
             || string.IsNullOrEmpty(provider))
         {
+            await TryWriteExternalLoginAuditAsync(httpContext, logger, provider: "unknown",
+                userId: null, userName: null, failureReason: "callback_missing_scheme",
+                cancellationToken).ConfigureAwait(false);
             return TypedResults.Problem(
                 detail: "External login callback did not carry an authentication scheme.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
+
+        string? externalUserId = authResult.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        string? externalUserName = authResult.Principal.Identity?.Name;
 
         try
         {
             ProcessCallbackResult result = await externalLoginService
                 .ProcessCallbackAsync(authResult.Principal, provider, cancellationToken)
                 .ConfigureAwait(false);
+            await TryWriteExternalLoginAuditAsync(httpContext, logger, provider,
+                userId: externalUserId, userName: externalUserName, failureReason: null,
+                cancellationToken).ConfigureAwait(false);
             return TypedResults.Ok(result);
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
         {
+            await TryWriteExternalLoginAuditAsync(httpContext, logger, provider,
+                userId: externalUserId, userName: externalUserName,
+                failureReason: "account_not_found", cancellationToken).ConfigureAwait(false);
             return TypedResults.Problem(
                 detail: ex.Message,
                 statusCode: StatusCodes.Status403Forbidden);
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("DuplicateEmail", StringComparison.OrdinalIgnoreCase))
         {
+            await TryWriteExternalLoginAuditAsync(httpContext, logger, provider,
+                userId: externalUserId, userName: externalUserName,
+                failureReason: "duplicate_email", cancellationToken).ConfigureAwait(false);
             return TypedResults.Problem(
                 detail: "An account with this email already exists.",
                 statusCode: StatusCodes.Status409Conflict);
         }
     }
+
+    /// <summary>
+    /// Records an external-login callback audit row. No-op when
+    /// <see cref="IAuditingWriter"/> is not registered; audit failures are
+    /// swallowed so the login flow is never blocked by audit issues.
+    /// </summary>
+    private static async Task TryWriteExternalLoginAuditAsync(
+        HttpContext httpContext,
+        ILogger logger,
+        string provider,
+        string? userId,
+        string? userName,
+        string? failureReason,
+        CancellationToken cancellationToken)
+    {
+        IAuditingWriter? auditingWriter = httpContext.RequestServices.GetService<IAuditingWriter>();
+        if (auditingWriter is null)
+        {
+            return;
+        }
+
+        TimeProvider timeProvider = httpContext.RequestServices.GetService<TimeProvider>()
+            ?? TimeProvider.System;
+        ICurrentTenant? currentTenant = httpContext.RequestServices.GetService<ICurrentTenant>();
+        Guid? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id : null;
+        string? ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+        string? userAgent = httpContext.Request.Headers.UserAgent.ToString();
+        if (string.IsNullOrEmpty(userAgent))
+        {
+            userAgent = null;
+        }
+        string? correlationId = Activity.Current?.Id;
+        string method = $"external:{provider.ToLowerInvariant()}";
+
+        AuditEntry entry = failureReason is null
+            ? AuthenticationAuditEntry.CreateSuccess(
+                timeProvider.GetUtcNow(),
+                userId: string.IsNullOrEmpty(userId) ? AuthenticationAuditEntry.UnknownUserSentinel : userId,
+                userName, method, tenantId, ipAddress, userAgent, correlationId)
+            : AuthenticationAuditEntry.CreateFailure(
+                timeProvider.GetUtcNow(), userId, userName, method, failureReason,
+                tenantId, ipAddress, userAgent, correlationId);
+
+        try
+        {
+            await auditingWriter.WriteAsync(entry, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogAuditWriteFailed(logger, ex);
+        }
+    }
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "External login: failed to write authentication audit entry — login flow continues.")]
+    private static partial void LogAuditWriteFailed(ILogger logger, Exception exception);
 
     private static async Task<Results<NoContent, ProblemHttpResult>> UnlinkExternalLoginAsync(
         string provider,

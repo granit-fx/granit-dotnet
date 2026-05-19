@@ -368,6 +368,7 @@
     {
       "name": "Granit.Bff.Endpoints",
       "deps": [
+        "Granit.Auditing",
         "Granit.Bff",
         "Granit.Caching",
         "Granit.Http.ApiDocumentation",
@@ -1058,6 +1059,7 @@
     {
       "name": "Granit.Identity.Local.Endpoints",
       "deps": [
+        "Granit.Auditing",
         "Granit.Authorization",
         "Granit.Caching",
         "Granit.Http.Abstractions",
@@ -1548,6 +1550,7 @@
     {
       "name": "Granit.OpenIddict.Endpoints",
       "deps": [
+        "Granit.Auditing",
         "Granit.Authorization",
         "Granit.Caching",
         "Granit.Http.Abstractions",
@@ -2245,7 +2248,7 @@
       "kind": "record",
       "project": "Granit.AI",
       "file": "src/Granit.AI/IAIChatCompletionService.cs",
-      "line": 14,
+      "line": 12,
       "members": []
     },
     {
@@ -2254,7 +2257,7 @@
       "kind": "record",
       "project": "Granit.AI",
       "file": "src/Granit.AI/IAIChatCompletionService.cs",
-      "line": 27,
+      "line": 25,
       "members": []
     },
     {
@@ -2781,7 +2784,7 @@
       "kind": "class",
       "project": "Granit.AI.EntityFrameworkCore",
       "file": "src/Granit.AI.EntityFrameworkCore/Extensions/AIModelBuilderExtensions.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "ConfigureAIModule",
@@ -2928,7 +2931,7 @@
       "kind": "class",
       "project": "Granit.AI.Extraction",
       "file": "src/Granit.AI.Extraction/GranitAIExtractionModule.cs",
-      "line": 15,
+      "line": 14,
       "members": []
     },
     {
@@ -2981,7 +2984,7 @@
       "kind": "class",
       "project": "Granit.AI",
       "file": "src/Granit.AI/GranitAIModule.cs",
-      "line": 28,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
@@ -3013,7 +3016,7 @@
       "kind": "interface",
       "project": "Granit.AI",
       "file": "src/Granit.AI/IAIChatCompletionService.cs",
-      "line": 33,
+      "line": 31,
       "members": [
         {
           "name": "CompleteAsync",
@@ -3140,7 +3143,7 @@
       "kind": "class",
       "project": "Granit.AI.Mcp",
       "file": "src/Granit.AI.Mcp/GranitAIMcpModule.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -3443,7 +3446,7 @@
       "kind": "class",
       "project": "Granit.AI.VectorData",
       "file": "src/Granit.AI.VectorData/GranitAIVectorDataModule.cs",
-      "line": 15,
+      "line": 14,
       "members": []
     },
     {
@@ -3748,7 +3751,7 @@
       "kind": "class",
       "project": "Granit.Analyzers.CodeFixes",
       "file": "src/Granit.Analyzers.CodeFixes/CrossModuleReferenceCodeFixProvider.cs",
-      "line": 21,
+      "line": 18,
       "members": [
         {
           "name": "FixableDiagnosticIds",
@@ -3785,7 +3788,7 @@
       "kind": "class",
       "project": "Granit.Analyzers.CodeFixes",
       "file": "src/Granit.Analyzers.CodeFixes/DependencyInjectionCodeFixProviderBase.cs",
-      "line": 19,
+      "line": 15,
       "members": [
         {
           "name": "FixableDiagnosticIds",
@@ -3813,7 +3816,7 @@
       "kind": "class",
       "project": "Granit.Analyzers.CodeFixes",
       "file": "src/Granit.Analyzers.CodeFixes/DirectCookieAccessCodeFixProvider.cs",
-      "line": 16,
+      "line": 15,
       "members": []
     },
     {
@@ -3831,7 +3834,7 @@
       "kind": "class",
       "project": "Granit.Analyzers.CodeFixes",
       "file": "src/Granit.Analyzers.CodeFixes/MinimalApiServiceParameterCodeFixProvider.cs",
-      "line": 20,
+      "line": 17,
       "members": [
         {
           "name": "FixableDiagnosticIds",
@@ -3859,7 +3862,7 @@
       "kind": "class",
       "project": "Granit.Analyzers.CodeFixes",
       "file": "src/Granit.Analyzers.CodeFixes/SynchronousSaveChangesCodeFixProvider.cs",
-      "line": 25,
+      "line": 22,
       "members": [
         {
           "name": "FixableDiagnosticIds",
@@ -3887,7 +3890,7 @@
       "kind": "class",
       "project": "Granit.Analyzers.CodeFixes",
       "file": "src/Granit.Analyzers.CodeFixes/TypedResultsBadRequestCodeFixProvider.cs",
-      "line": 20,
+      "line": 17,
       "members": [
         {
           "name": "FixableDiagnosticIds",
@@ -3915,7 +3918,7 @@
       "kind": "class",
       "project": "Granit.Analyzers.CodeFixes",
       "file": "src/Granit.Analyzers.CodeFixes/UntypedResultsCodeFixProvider.cs",
-      "line": 23,
+      "line": 20,
       "members": [
         {
           "name": "FixableDiagnosticIds",
@@ -3943,7 +3946,7 @@
       "kind": "class",
       "project": "Granit.Analyzers",
       "file": "src/Granit.Analyzers/CrossModuleReferenceAnalyzer.cs",
-      "line": 22,
+      "line": 21,
       "members": []
     },
     {
@@ -4028,7 +4031,7 @@
       "kind": "class",
       "project": "Granit.Analyzers",
       "file": "src/Granit.Analyzers/HardcodedSecretAnalyzer.cs",
-      "line": 19,
+      "line": 18,
       "members": []
     },
     {
@@ -4037,7 +4040,7 @@
       "kind": "class",
       "project": "Granit.Analyzers",
       "file": "src/Granit.Analyzers/LoggerMessagePiiAnalyzer.cs",
-      "line": 21,
+      "line": 20,
       "members": []
     },
     {
@@ -4055,7 +4058,7 @@
       "kind": "class",
       "project": "Granit.Analyzers",
       "file": "src/Granit.Analyzers/MinimalApiServiceParameterAnalyzer.cs",
-      "line": 31,
+      "line": 28,
       "members": []
     },
     {
@@ -4107,7 +4110,7 @@
       "kind": "class",
       "project": "Granit.Analyzers",
       "file": "src/Granit.Analyzers/TagListPiiAnalyzer.cs",
-      "line": 19,
+      "line": 18,
       "members": []
     },
     {
@@ -4136,6 +4139,22 @@
       "file": "src/Granit.Auditing/Attributes/AuditIgnoreAttribute.cs",
       "line": 11,
       "members": []
+    },
+    {
+      "name": "AuthenticationAuditEntry",
+      "fqn": "Granit.Auditing.AuthenticationAuditEntry",
+      "kind": "class",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/AuthenticationAuditEntry.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "CreateSuccess",
+          "kind": "method",
+          "signature": "CreateSuccess(DateTimeOffset timestamp, string userId, string? userName, string method, Guid? tenantId, string? ipAddress, string? userAgent, string? correlationId)",
+          "returnType": "AuditEntry"
+        }
+      ]
     },
     {
       "name": "GranitAuditingConfigurationChangesModule",
@@ -4391,7 +4410,7 @@
       "kind": "class",
       "project": "Granit.Auditing.Endpoints",
       "file": "src/Granit.Auditing.Endpoints/GranitAuditingEndpointsModule.cs",
-      "line": 27,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -4520,7 +4539,7 @@
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
       "file": "src/Granit.Auditing.EntityFrameworkCore/GranitAuditingEntityFrameworkCoreModule.cs",
-      "line": 25,
+      "line": 24,
       "members": []
     },
     {
@@ -4988,7 +5007,7 @@
       "kind": "class",
       "project": "Granit.Auditing.Privacy",
       "file": "src/Granit.Auditing.Privacy/GranitAuditingPrivacyModule.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -5072,7 +5091,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.BackgroundJobs",
       "file": "src/Granit.Authentication.ApiKeys.BackgroundJobs/GranitAuthenticationApiKeysBackgroundJobsModule.cs",
-      "line": 18,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -5182,7 +5201,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/Domain/ApiKeyEntry.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "Create",
@@ -5475,7 +5494,7 @@
       "kind": "record",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyExpiringSoonEto.cs",
-      "line": 37,
+      "line": 36,
       "members": []
     },
     {
@@ -5520,7 +5539,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/Extensions/ApiKeyServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitApiKeyAuthentication",
@@ -5536,7 +5555,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/GranitAuthenticationApiKeysModule.cs",
-      "line": 18,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -5812,7 +5831,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.Notifications",
       "file": "src/Granit.Authentication.ApiKeys.Notifications/GranitAuthenticationApiKeysNotificationsModule.cs",
-      "line": 27,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -5990,7 +6009,7 @@
       "kind": "class",
       "project": "Granit.Authentication.DPoP",
       "file": "src/Granit.Authentication.DPoP/GranitAuthenticationDPoPModule.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6224,7 +6243,7 @@
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.Cognito",
       "file": "src/Granit.Authentication.JwtBearer.Cognito/GranitAuthenticationJwtBearerCognitoModule.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6300,7 +6319,7 @@
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.EntraId",
       "file": "src/Granit.Authentication.JwtBearer.EntraId/GranitAuthenticationJwtBearerEntraIdModule.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6420,7 +6439,7 @@
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.GoogleCloud",
       "file": "src/Granit.Authentication.JwtBearer.GoogleCloud/GranitAuthenticationJwtBearerGoogleCloudModule.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6470,7 +6489,7 @@
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer",
       "file": "src/Granit.Authentication.JwtBearer/GranitAuthenticationJwtBearerModule.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6518,7 +6537,7 @@
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.Keycloak",
       "file": "src/Granit.Authentication.JwtBearer.Keycloak/GranitAuthenticationJwtBearerKeycloakModule.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6724,7 +6743,7 @@
       "kind": "class",
       "project": "Granit.Authorization.AI",
       "file": "src/Granit.Authorization.AI/GranitAuthorizationAIModule.cs",
-      "line": 19,
+      "line": 18,
       "members": []
     },
     {
@@ -6958,7 +6977,7 @@
       "kind": "record",
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/Dtos/PermissionDefinitionResponse.cs",
-      "line": 16,
+      "line": 15,
       "members": []
     },
     {
@@ -6985,7 +7004,7 @@
       "kind": "class",
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/Extensions/AuthorizationEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitAuthorization",
@@ -7001,7 +7020,7 @@
       "kind": "class",
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/GranitAuthorizationEndpointsModule.cs",
-      "line": 30,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -7155,7 +7174,7 @@
       "kind": "class",
       "project": "Granit.Authorization.EntityFrameworkCore",
       "file": "src/Granit.Authorization.EntityFrameworkCore/Extensions/AuthorizationEfCoreServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 15,
       "members": []
     },
     {
@@ -7180,7 +7199,7 @@
       "kind": "class",
       "project": "Granit.Authorization.EntityFrameworkCore",
       "file": "src/Granit.Authorization.EntityFrameworkCore/GranitAuthorizationEntityFrameworkCoreModule.cs",
-      "line": 20,
+      "line": 19,
       "members": []
     },
     {
@@ -7275,7 +7294,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Extensions/AuthorizationServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitAuthorization",
@@ -7313,7 +7332,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/GranitAuthorizationModule.cs",
-      "line": 26,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",
@@ -7811,7 +7830,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs",
       "file": "src/Granit.BackgroundJobs/Domain/BackgroundJobDefinition.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "Create",
@@ -7978,7 +7997,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs.EntityFrameworkCore",
       "file": "src/Granit.BackgroundJobs.EntityFrameworkCore/Extensions/BackgroundJobsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitBackgroundJobsEntityFrameworkCore",
@@ -8112,7 +8131,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs",
       "file": "src/Granit.BackgroundJobs/GranitBackgroundJobsModule.cs",
-      "line": 29,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
@@ -8261,7 +8280,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs.Notifications",
       "file": "src/Granit.BackgroundJobs.Notifications/GranitBackgroundJobsNotificationsModule.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -8377,7 +8396,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs.Wolverine",
       "file": "src/Granit.BackgroundJobs.Wolverine/GranitBackgroundJobsWolverineModule.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -8409,7 +8428,7 @@
       "kind": "class",
       "project": "Granit.Bff.BackgroundJobs",
       "file": "src/Granit.Bff.BackgroundJobs/GranitBffBackgroundJobsModule.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureServices",
@@ -8537,7 +8556,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "MapGranitBff",
@@ -8578,7 +8597,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
-      "line": 29,
+      "line": 30,
       "members": [
         {
           "name": "ConfigureServices",
@@ -8658,7 +8677,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/GranitBffModule.cs",
-      "line": 34,
+      "line": 33,
       "members": [
         {
           "name": "ConfigureServices",
@@ -8936,7 +8955,7 @@
       "kind": "class",
       "project": "Granit.Bff.Yarp",
       "file": "src/Granit.Bff.Yarp/Extensions/BffYarpHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitBffYarp",
@@ -8986,7 +9005,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.AI",
       "file": "src/Granit.BlobStorage.AI/GranitBlobStorageAIModule.cs",
-      "line": 22,
+      "line": 21,
       "members": []
     },
     {
@@ -9095,7 +9114,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.BackgroundJobs",
       "file": "src/Granit.BlobStorage.BackgroundJobs/GranitBlobStorageBackgroundJobsModule.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -9210,7 +9229,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Database",
       "file": "src/Granit.BlobStorage.Database/Domain/DatabaseBlobContent.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "TenantId",
@@ -10347,7 +10366,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Capabilities/IAccessibilityCapability.cs",
-      "line": 24,
+      "line": 20,
       "members": []
     },
     {
@@ -10356,7 +10375,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Capabilities/IAccessibilityCapability.cs",
-      "line": 12,
+      "line": 8,
       "members": [
         {
           "name": "SnapshotTreeAsync",
@@ -10372,7 +10391,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Capabilities/IHarRecordingCapability.cs",
-      "line": 10,
+      "line": 7,
       "members": [
         {
           "name": "StartHarAsync",
@@ -10394,7 +10413,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Capabilities/IPdfCapability.cs",
-      "line": 15,
+      "line": 12,
       "members": [
         {
           "name": "RenderToPdfAsync",
@@ -10410,7 +10429,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Capabilities/IPdfViewerCapability.cs",
-      "line": 28,
+      "line": 23,
       "members": [
         {
           "name": "RenderPageToImageAsync",
@@ -10426,7 +10445,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Capabilities/IPdfViewerCapability.cs",
-      "line": 14,
+      "line": 9,
       "members": [
         {
           "name": "OpenPdfAsync",
@@ -10442,7 +10461,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Capabilities/ITracingCapability.cs",
-      "line": 10,
+      "line": 7,
       "members": [
         {
           "name": "StartTracingAsync",
@@ -10510,7 +10529,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Capabilities/IPdfViewerCapability.cs",
-      "line": 49,
+      "line": 44,
       "members": []
     },
     {
@@ -10519,7 +10538,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Capabilities/ITracingCapability.cs",
-      "line": 20,
+      "line": 17,
       "members": [
         {
           "name": "Snapshots",
@@ -10541,7 +10560,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 114,
+      "line": 110,
       "members": []
     },
     {
@@ -10550,7 +10569,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Diagnostics/BrowserPageAcquiredEvent.cs",
-      "line": 16,
+      "line": 15,
       "members": []
     },
     {
@@ -10559,7 +10578,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Diagnostics/BrowserScriptInjectedEvent.cs",
-      "line": 17,
+      "line": 16,
       "members": []
     },
     {
@@ -10568,7 +10587,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Diagnostics/BrowserUrlNavigatedEvent.cs",
-      "line": 17,
+      "line": 16,
       "members": []
     },
     {
@@ -10639,7 +10658,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Exceptions/SandboxViolationException.cs",
-      "line": 8,
+      "line": 6,
       "members": [
         {
           "name": "SandboxViolationException",
@@ -10655,7 +10674,7 @@
       "kind": "enum",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Exceptions/SandboxViolationException.cs",
-      "line": 29,
+      "line": 27,
       "members": []
     },
     {
@@ -10680,7 +10699,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 23,
+      "line": 19,
       "members": [
         {
           "name": "NavigateAsync",
@@ -10750,7 +10769,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserSandboxProfile.cs",
-      "line": 25,
+      "line": 22,
       "members": []
     },
     {
@@ -10781,7 +10800,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IHeadlessBrowserPool.cs",
-      "line": 11,
+      "line": 8,
       "members": [
         {
           "name": "GetStatsAsync",
@@ -10803,7 +10822,7 @@
       "kind": "enum",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 99,
+      "line": 95,
       "members": []
     },
     {
@@ -10812,7 +10831,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
-      "line": 6,
+      "line": 4,
       "members": [
         {
           "name": "Viewport",
@@ -10840,7 +10859,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
-      "line": 61,
+      "line": 59,
       "members": []
     },
     {
@@ -10849,7 +10868,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Options/GranitBrowsingOptions.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "MaxBrowsers",
@@ -10901,7 +10920,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Options/NavigationOptions.cs",
-      "line": 6,
+      "line": 4,
       "members": [
         {
           "name": "Timeout",
@@ -10917,7 +10936,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Options/GranitBrowsingOptions.cs",
-      "line": 66,
+      "line": 65,
       "members": [
         {
           "name": "FromSeconds",
@@ -10967,7 +10986,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
-      "line": 49,
+      "line": 47,
       "members": []
     },
     {
@@ -10976,7 +10995,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 119,
+      "line": 115,
       "members": []
     },
     {
@@ -10985,7 +11004,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pages/DefaultHarScrubber.cs",
-      "line": 13,
+      "line": 11,
       "members": [
         {
           "name": "Scrub",
@@ -11017,7 +11036,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pages/RouteDecision.cs",
-      "line": 14,
+      "line": 12,
       "members": [
         {
           "name": "new",
@@ -11045,7 +11064,7 @@
       "kind": "enum",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pages/RouteDecision.cs",
-      "line": 50,
+      "line": 48,
       "members": []
     },
     {
@@ -11054,7 +11073,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pages/RoutePattern.cs",
-      "line": 37,
+      "line": 36,
       "members": [
         {
           "name": "Parse",
@@ -11070,7 +11089,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pages/RouteRequest.cs",
-      "line": 13,
+      "line": 10,
       "members": []
     },
     {
@@ -11088,7 +11107,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Permissions/BrowsingPermissionDefinitionProvider.cs",
-      "line": 18,
+      "line": 17,
       "members": [
         {
           "name": "DefinePermissions",
@@ -11122,7 +11141,7 @@
       "kind": "class",
       "project": "Granit.Browsing.Playwright",
       "file": "src/Granit.Browsing.Playwright/Extensions/ServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitBrowsingPlaywright",
@@ -11191,7 +11210,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 199,
+      "line": 195,
       "members": [
         {
           "name": "new",
@@ -11219,7 +11238,7 @@
       "kind": "interface",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 186,
+      "line": 182,
       "members": [
         {
           "name": "GetEnvironmentVariable",
@@ -11247,7 +11266,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
-      "line": 30,
+      "line": 26,
       "members": [
         {
           "name": "EnsureSafe",
@@ -11263,7 +11282,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/TenantAwareHeadlessBrowser.cs",
-      "line": 39,
+      "line": 36,
       "members": [
         {
           "name": "Capabilities",
@@ -11300,7 +11319,7 @@
       "kind": "class",
       "project": "Granit.Browsing.PuppeteerSharp",
       "file": "src/Granit.Browsing.PuppeteerSharp/Extensions/ServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitBrowsingPuppeteerSharp",
@@ -11348,7 +11367,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Sandbox/SandboxProfile.cs",
-      "line": 21,
+      "line": 18,
       "members": [
         {
           "name": "DisableJavaScript",
@@ -11622,7 +11641,7 @@
       "kind": "class",
       "project": "Granit.Caching.StackExchangeRedis",
       "file": "src/Granit.Caching.StackExchangeRedis/Extensions/RedisCachingServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitCachingRedis",
@@ -11697,7 +11716,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.AI",
       "file": "src/Granit.DataExchange.AI/Extensions/DataExchangeAIHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitDataExchangeAI",
@@ -11713,7 +11732,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.AI",
       "file": "src/Granit.DataExchange.AI/GranitDataExchangeAIModule.cs",
-      "line": 21,
+      "line": 20,
       "members": []
     },
     {
@@ -11772,7 +11791,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.BlobStorage",
       "file": "src/Granit.DataExchange.BlobStorage/GranitDataExchangeBlobStorageModule.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -11826,7 +11845,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Csv",
       "file": "src/Granit.DataExchange.Csv/GranitDataExchangeCsvModule.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "ConfigureServices",
@@ -11995,7 +12014,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Permissions/DataExchangePermissions.cs",
-      "line": 12,
+      "line": 11,
       "members": []
     },
     {
@@ -12004,7 +12023,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Permissions/DataExchangePermissions.cs",
-      "line": 31,
+      "line": 30,
       "members": []
     },
     {
@@ -12013,7 +12032,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Permissions/DataExchangePermissions.cs",
-      "line": 18,
+      "line": 17,
       "members": []
     },
     {
@@ -12113,7 +12132,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Excel",
       "file": "src/Granit.DataExchange.Excel/GranitDataExchangeExcelModule.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "ConfigureServices",
@@ -12129,7 +12148,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/Domain/ExportJob.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "Create",
@@ -12682,7 +12701,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/GranitDataExchangeModule.cs",
-      "line": 37,
+      "line": 36,
       "members": [
         {
           "name": "ConfigureServices",
@@ -12758,7 +12777,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Import/Domain/ImportJob.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "Create",
@@ -13787,7 +13806,7 @@
       "kind": "class",
       "project": "Granit.DataLookup.Endpoints",
       "file": "src/Granit.DataLookup.Endpoints/GranitDataLookupEndpointsModule.cs",
-      "line": 24,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -13852,7 +13871,7 @@
       "kind": "class",
       "project": "Granit.DataLookup.EntityFrameworkCore",
       "file": "src/Granit.DataLookup.EntityFrameworkCore/GranitDataLookupEntityFrameworkCoreModule.cs",
-      "line": 18,
+      "line": 17,
       "members": []
     },
     {
@@ -13902,7 +13921,7 @@
       "kind": "class",
       "project": "Granit.DataLookup",
       "file": "src/Granit.DataLookup/GranitDataLookupModule.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -13958,7 +13977,7 @@
       "kind": "class",
       "project": "Granit.DataLookup",
       "file": "src/Granit.DataLookup/Sources/EnumLookupSource.cs",
-      "line": 27,
+      "line": 26,
       "members": [
         {
           "name": "SearchAsync",
@@ -14395,7 +14414,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration.Excel",
       "file": "src/Granit.DocumentGeneration.Excel/GranitDocumentGenerationExcelModule.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -14443,7 +14462,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration",
       "file": "src/Granit.DocumentGeneration/GranitDocumentGenerationModule.cs",
-      "line": 25,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
@@ -14459,7 +14478,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration.Pdf",
       "file": "src/Granit.DocumentGeneration.Pdf/Extensions/ServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitDocumentGenerationPdf",
@@ -14475,7 +14494,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration.Pdf",
       "file": "src/Granit.DocumentGeneration.Pdf/GranitDocumentGenerationPdfModule.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -15253,7 +15272,7 @@
       "kind": "class",
       "project": "Granit.Encryption.EntityFrameworkCore",
       "file": "src/Granit.Encryption.EntityFrameworkCore/GranitEncryptionEntityFrameworkCoreModule.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -15485,7 +15504,7 @@
       "kind": "class",
       "project": "Granit.Encryption",
       "file": "src/Granit.Encryption/Providers/AesStringEncryptionProvider.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "ProviderName",
@@ -15517,7 +15536,7 @@
       "kind": "class",
       "project": "Granit.Encryption",
       "file": "src/Granit.Encryption/Services/DefaultStringEncryptionService.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "Encrypt",
@@ -15557,7 +15576,7 @@
       "kind": "class",
       "project": "Granit",
       "file": "src/Granit/Endpoints/BatchResultHelper.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "statusCode",
@@ -16525,7 +16544,7 @@
       "kind": "class",
       "project": "Granit.Events",
       "file": "src/Granit.Events/Extensions/EventsServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitEvents",
@@ -16705,7 +16724,7 @@
       "kind": "class",
       "project": "Granit.Events.Wolverine",
       "file": "src/Granit.Events.Wolverine/GranitEventsWolverineModule.cs",
-      "line": 27,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -16855,7 +16874,7 @@
       "kind": "class",
       "project": "Granit",
       "file": "src/Granit/Extensions/GranitHostBuilderExtensions.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "AddGranit",
@@ -17142,7 +17161,7 @@
       "kind": "class",
       "project": "Granit.Features.EntityFrameworkCore",
       "file": "src/Granit.Features.EntityFrameworkCore/Extensions/FeaturesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitFeaturesEntityFrameworkCore",
@@ -17549,7 +17568,7 @@
       "kind": "class",
       "project": "Granit.Guids",
       "file": "src/Granit.Guids/Extensions/GuidsServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitGuids",
@@ -17738,7 +17757,7 @@
       "kind": "class",
       "project": "Granit.Http.ApiDocumentation",
       "file": "src/Granit.Http.ApiDocumentation/GranitHttpApiDocumentationModule.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -18049,7 +18068,7 @@
       "kind": "class",
       "project": "Granit.Http.Bulkhead",
       "file": "src/Granit.Http.Bulkhead/GranitHttpBulkheadModule.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureServices",
@@ -18893,7 +18912,7 @@
       "kind": "class",
       "project": "Granit.Http.Idempotency",
       "file": "src/Granit.Http.Idempotency/GranitHttpIdempotencyModule.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -19060,7 +19079,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/GranitHttpODataExposureModule.cs",
-      "line": 23,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -19965,7 +19984,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Domain/User.cs",
-      "line": 32,
+      "line": 31,
       "members": [
         {
           "name": "DisplayName",
@@ -20178,7 +20197,7 @@
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Extensions/IdentityProviderEndpointRouteBuilderExtensions.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitIdentityProvider",
@@ -20561,7 +20580,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Cognito.BackgroundJobs",
       "file": "src/Granit.Identity.Federated.Cognito.BackgroundJobs/GranitIdentityFederatedCognitoBackgroundJobsModule.cs",
-      "line": 15,
+      "line": 14,
       "members": []
     },
     {
@@ -20689,7 +20708,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Cognito",
       "file": "src/Granit.Identity.Federated.Cognito/Sync/CognitoClientRoleSyncService.cs",
-      "line": 45,
+      "line": 44,
       "members": [
         {
           "name": "SyncAsync",
@@ -20790,7 +20809,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Extensions/IdentityEfCoreServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 13,
       "members": []
     },
     {
@@ -20815,7 +20834,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityFederatedEntityFrameworkCoreModule.cs",
-      "line": 20,
+      "line": 19,
       "members": []
     },
     {
@@ -20824,7 +20843,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntraId.BackgroundJobs",
       "file": "src/Granit.Identity.Federated.EntraId.BackgroundJobs/GranitIdentityFederatedEntraIdBackgroundJobsModule.cs",
-      "line": 15,
+      "line": 14,
       "members": []
     },
     {
@@ -20995,7 +21014,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntraId",
       "file": "src/Granit.Identity.Federated.EntraId/Sync/EntraIdClientRoleSyncService.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "SyncAsync",
@@ -21150,7 +21169,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/GranitIdentityFederatedModule.cs",
-      "line": 24,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21182,7 +21201,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Keycloak.BackgroundJobs",
       "file": "src/Granit.Identity.Federated.Keycloak.BackgroundJobs/GranitIdentityFederatedKeycloakBackgroundJobsModule.cs",
-      "line": 15,
+      "line": 14,
       "members": []
     },
     {
@@ -21340,7 +21359,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Keycloak",
       "file": "src/Granit.Identity.Federated.Keycloak/Sync/KeycloakClientRoleSyncService.cs",
-      "line": 36,
+      "line": 35,
       "members": [
         {
           "name": "SyncAsync",
@@ -21356,7 +21375,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Notifications",
       "file": "src/Granit.Identity.Federated.Notifications/GranitIdentityFederatedNotificationsModule.cs",
-      "line": 31,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21657,7 +21676,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Privacy",
       "file": "src/Granit.Identity.Federated.Privacy/GranitIdentityFederatedPrivacyModule.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -22190,7 +22209,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
       "file": "src/Granit.Identity.Local.AspNetIdentity/GranitIdentityLocalAspNetIdentityModule.cs",
-      "line": 33,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",
@@ -22326,7 +22345,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Domain/LocalIdentity.cs",
-      "line": 29,
+      "line": 28,
       "members": [
         {
           "name": "UserId",
@@ -22625,7 +22644,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Extensions/RoleEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitRoles",
@@ -22641,7 +22660,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/GranitIdentityLocalEndpointsModule.cs",
-      "line": 28,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -22967,7 +22986,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/GranitIdentityLocalModule.cs",
-      "line": 37,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -23104,7 +23123,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Notifications",
       "file": "src/Granit.Identity.Local.Notifications/Handlers/UserImpersonatedHandler.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "HandleAsync",
@@ -23667,7 +23686,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Privacy",
       "file": "src/Granit.Identity.Local.Privacy/GranitIdentityLocalPrivacyModule.cs",
-      "line": 23,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -24299,7 +24318,7 @@
       "kind": "class",
       "project": "Granit.Imaging.AI",
       "file": "src/Granit.Imaging.AI/GranitImagingAIModule.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -24573,7 +24592,7 @@
       "kind": "class",
       "project": "Granit.Imaging.MagickNet",
       "file": "src/Granit.Imaging.MagickNet/GranitImagingMagickNetModule.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -24694,7 +24713,7 @@
       "kind": "class",
       "project": "Granit.Localization.AI",
       "file": "src/Granit.Localization.AI/GranitLocalizationAIModule.cs",
-      "line": 16,
+      "line": 15,
       "members": []
     },
     {
@@ -24820,7 +24839,7 @@
       "kind": "class",
       "project": "Granit.Localization.Endpoints",
       "file": "src/Granit.Localization.Endpoints/Extensions/LocalizationApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "UseGranitRequestLocalization",
@@ -24836,7 +24855,7 @@
       "kind": "class",
       "project": "Granit.Localization.Endpoints",
       "file": "src/Granit.Localization.Endpoints/Extensions/LocalizationEndpointRouteBuilderExtensions.cs",
-      "line": 37,
+      "line": 36,
       "members": [
         {
           "name": "MapGranitLocalization",
@@ -24917,7 +24936,7 @@
       "kind": "class",
       "project": "Granit.Localization.EntityFrameworkCore",
       "file": "src/Granit.Localization.EntityFrameworkCore/Extensions/LocalizationEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitLocalizationEntityFrameworkCore",
@@ -25022,7 +25041,7 @@
       "kind": "class",
       "project": "Granit.Localization",
       "file": "src/Granit.Localization/GranitLocalizationResource.cs",
-      "line": 16,
+      "line": 14,
       "members": []
     },
     {
@@ -25197,7 +25216,7 @@
       "kind": "class",
       "project": "Granit.Localization",
       "file": "src/Granit.Localization/LocalizationResourceStore.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "Add",
@@ -25285,7 +25304,7 @@
       "kind": "class",
       "project": "Granit.Localization.SourceGenerator",
       "file": "src/Granit.Localization.SourceGenerator/LocalizationKeysGenerator.cs",
-      "line": 27,
+      "line": 24,
       "members": [
         {
           "name": "Initialize",
@@ -25601,7 +25620,7 @@
       "kind": "record",
       "project": "Granit.Mcp.Server",
       "file": "src/Granit.Mcp.Server/Endpoints/McpDiagnosticsEndpoints.cs",
-      "line": 75,
+      "line": 74,
       "members": []
     },
     {
@@ -25610,7 +25629,7 @@
       "kind": "record",
       "project": "Granit.Mcp.Server",
       "file": "src/Granit.Mcp.Server/Endpoints/McpDiagnosticsEndpoints.cs",
-      "line": 70,
+      "line": 69,
       "members": []
     },
     {
@@ -25619,7 +25638,7 @@
       "kind": "class",
       "project": "Granit.Mcp.Server",
       "file": "src/Granit.Mcp.Server/Extensions/McpServerEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitMcpServer",
@@ -25760,7 +25779,7 @@
       "kind": "class",
       "project": "Granit.Mergeable.BackgroundJobs",
       "file": "src/Granit.Mergeable.BackgroundJobs/GranitMergeableBackgroundJobsModule.cs",
-      "line": 25,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25792,7 +25811,7 @@
       "kind": "record",
       "project": "Granit.Mergeable.BackgroundJobs",
       "file": "src/Granit.Mergeable.BackgroundJobs/Jobs/MergeIdempotencyCleanupJob.cs",
-      "line": 15,
+      "line": 13,
       "members": []
     },
     {
@@ -25801,7 +25820,7 @@
       "kind": "interface",
       "project": "Granit.Mergeable.BackgroundJobs",
       "file": "src/Granit.Mergeable.BackgroundJobs/Services/IMergeIdempotencySweeper.cs",
-      "line": 12,
+      "line": 10,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -25839,7 +25858,7 @@
       "kind": "class",
       "project": "Granit.Mergeable.EntityFrameworkCore",
       "file": "src/Granit.Mergeable.EntityFrameworkCore/Extensions/MergeableEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitMergeableEntityFrameworkCore",
@@ -26431,7 +26450,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/CurrentTenant.cs",
-      "line": 31,
+      "line": 30,
       "members": [
         {
           "name": "Id",
@@ -27361,7 +27380,7 @@
       "kind": "class",
       "project": "Granit.Notifications.AI",
       "file": "src/Granit.Notifications.AI/GranitNotificationsAIModule.cs",
-      "line": 21,
+      "line": 20,
       "members": []
     },
     {
@@ -27575,7 +27594,7 @@
       "kind": "interface",
       "project": "Granit.Notifications.Abstractions",
       "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationPublisher.cs",
-      "line": 9,
+      "line": 8,
       "members": []
     },
     {
@@ -28085,7 +28104,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email",
       "file": "src/Granit.Notifications.Email/Extensions/EmailNotificationsServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitNotificationsEmail",
@@ -28335,7 +28354,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email.Smtp",
       "file": "src/Granit.Notifications.Email.Smtp/GranitNotificationsEmailSmtpModule.cs",
-      "line": 14,
+      "line": 13,
       "members": []
     },
     {
@@ -28610,7 +28629,7 @@
       "kind": "record",
       "project": "Granit.Notifications.Abstractions",
       "file": "src/Granit.Notifications.Abstractions/Events/UserNotificationCreatedEvent.cs",
-      "line": 15,
+      "line": 14,
       "members": []
     },
     {
@@ -28969,7 +28988,7 @@
       "kind": "class",
       "project": "Granit.Notifications.MobilePush.GoogleFcm",
       "file": "src/Granit.Notifications.MobilePush.GoogleFcm/GranitNotificationsMobilePushGoogleFcmModule.cs",
-      "line": 17,
+      "line": 16,
       "members": []
     },
     {
@@ -29302,7 +29321,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Privacy",
       "file": "src/Granit.Notifications.Privacy/GranitNotificationsPrivacyModule.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -30163,7 +30182,7 @@
       "kind": "class",
       "project": "Granit.Observability.AI",
       "file": "src/Granit.Observability.AI/GranitObservabilityAIModule.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -30492,7 +30511,7 @@
       "kind": "class",
       "project": "Granit.Oidc",
       "file": "src/Granit.Oidc/GranitOidcModule.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -30779,7 +30798,7 @@
       "kind": "class",
       "project": "Granit.Oidc.TokenManagement",
       "file": "src/Granit.Oidc.TokenManagement/GranitOidcTokenManagementModule.cs",
-      "line": 18,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -30962,7 +30981,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.BackgroundJobs",
       "file": "src/Granit.OpenIddict.BackgroundJobs/GranitOpenIddictBackgroundJobsModule.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -31053,7 +31072,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.BackgroundJobs",
       "file": "src/Granit.OpenIddict.BackgroundJobs/Services/IdleSessionEnforcementService.cs",
-      "line": 25,
+      "line": 24,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -31284,7 +31303,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/GranitOpenIddictEndpointsModule.cs",
-      "line": 39,
+      "line": 40,
       "members": [
         {
           "name": "ConfigureServices",
@@ -31561,7 +31580,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 37,
+      "line": 36,
       "members": [
         {
           "name": "ConfigureServices",
@@ -32214,7 +32233,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/DbContextPurgeExtensions.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "PurgeSoftDeletedBeforeAsync",
@@ -32246,7 +32265,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceDbContextServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 11,
       "members": []
     },
     {
@@ -32271,7 +32290,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceTenantExtensions.cs",
-      "line": 14,
+      "line": 13,
       "members": []
     },
     {
@@ -32370,7 +32389,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/GranitPersistenceEntityFrameworkCoreModule.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -32386,7 +32405,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/Extensions/PersistenceHostingHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitMigrateSupport",
@@ -32788,7 +32807,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/GranitPersistenceEntityFrameworkCoreMigrationsModule.cs",
-      "line": 29,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
@@ -33171,7 +33190,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Postgres",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Postgres/Extensions/PersistencePostgresHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitPostgres",
@@ -33187,7 +33206,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Postgres",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Postgres/GranitPersistenceEntityFrameworkCorePostgresModule.cs",
-      "line": 26,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
@@ -33244,7 +33263,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Specification/SpecificationEvaluator.cs",
-      "line": 11,
+      "line": 10,
       "members": []
     },
     {
@@ -33253,7 +33272,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.SqlServer",
       "file": "src/Granit.Persistence.EntityFrameworkCore.SqlServer/Extensions/PersistenceSqlServerHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitSqlServer",
@@ -33456,7 +33475,7 @@
       "kind": "class",
       "project": "Granit.Privacy.AI",
       "file": "src/Granit.Privacy.AI/GranitPrivacyAIModule.cs",
-      "line": 21,
+      "line": 20,
       "members": []
     },
     {
@@ -33536,7 +33555,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BackgroundJobs",
       "file": "src/Granit.Privacy.BackgroundJobs/GranitPrivacyBackgroundJobsModule.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -33668,7 +33687,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/GranitPrivacyBlobStorageModule.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureServices",
@@ -34320,7 +34339,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Extensions/PrivacyEndpointRouteBuilderExtensions.cs",
-      "line": 37,
+      "line": 36,
       "members": [
         {
           "name": "MapGranitPrivacy",
@@ -34485,7 +34504,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyBuilderEntityFrameworkCoreExtensions.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "UseEntityFrameworkCoreTrackers",
@@ -34517,7 +34536,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyModelBuilderExtensions.cs",
-      "line": 10,
+      "line": 9,
       "members": [
         {
           "name": "ConfigurePrivacyModule",
@@ -34574,7 +34593,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/GranitPrivacyBuilder.cs",
-      "line": 17,
+      "line": 15,
       "members": [
         {
           "name": "Services",
@@ -34879,7 +34898,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/GranitPrivacyNotificationsModule.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -35560,7 +35579,7 @@
       "kind": "interface",
       "project": "Granit.Privacy.Regulations",
       "file": "src/Granit.Privacy.Regulations/IPrivacyRegulationResolver.cs",
-      "line": 9,
+      "line": 7,
       "members": [
         {
           "name": "ResolveAsync",
@@ -35960,7 +35979,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.AI",
       "file": "src/Granit.QueryEngine.AI/GranitQueryEngineAIModule.cs",
-      "line": 22,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36135,7 +36154,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.EntityFrameworkCore",
       "file": "src/Granit.QueryEngine.EntityFrameworkCore/GranitQueryEngineEntityFrameworkCoreModule.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36314,7 +36333,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine",
       "file": "src/Granit.QueryEngine/GranitQueryEngineModule.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36724,7 +36743,7 @@
       "kind": "class",
       "project": "Granit.RateLimiting",
       "file": "src/Granit.RateLimiting/AspNetCore/RateLimitEndpointExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": []
     },
     {
@@ -36806,7 +36825,7 @@
       "kind": "class",
       "project": "Granit.RateLimiting",
       "file": "src/Granit.RateLimiting/GranitRateLimitingModule.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36979,7 +36998,7 @@
       "kind": "class",
       "project": "Granit.Scheduling.BackgroundJobs",
       "file": "src/Granit.Scheduling.BackgroundJobs/GranitSchedulingBackgroundJobsModule.cs",
-      "line": 18,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -37309,7 +37328,7 @@
       "kind": "class",
       "project": "Granit.Scheduling",
       "file": "src/Granit.Scheduling/Extensions/SchedulingHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitScheduling",
@@ -37434,7 +37453,7 @@
       "kind": "class",
       "project": "Granit.Scheduling.Notifications",
       "file": "src/Granit.Scheduling.Notifications/GranitSchedulingNotificationsModule.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -38025,7 +38044,7 @@
       "kind": "class",
       "project": "Granit.Settings",
       "file": "src/Granit.Settings/GranitSettingsModule.cs",
-      "line": 26,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",
@@ -38470,7 +38489,7 @@
       "kind": "class",
       "project": "Granit.Templating.AI",
       "file": "src/Granit.Templating.AI/GranitTemplatingAIModule.cs",
-      "line": 24,
+      "line": 23,
       "members": []
     },
     {
@@ -38652,7 +38671,7 @@
       "kind": "class",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Extensions/TemplatingEndpointRouteBuilderExtensions.cs",
-      "line": 37,
+      "line": 36,
       "members": [
         {
           "name": "MapGranitTemplating",
@@ -38668,7 +38687,7 @@
       "kind": "class",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/GranitTemplatingEndpointsModule.cs",
-      "line": 33,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -38774,7 +38793,7 @@
       "kind": "class",
       "project": "Granit.Templating.EntityFrameworkCore",
       "file": "src/Granit.Templating.EntityFrameworkCore/Extensions/TemplatingModelBuilderExtensions.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "ConfigureTemplatingModule",
@@ -38885,7 +38904,7 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/GranitTemplatingModule.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "ConfigureServices",
@@ -38997,7 +39016,7 @@
       "kind": "class",
       "project": "Granit.Templating.Mjml",
       "file": "src/Granit.Templating.Mjml/GranitTemplatingMjmlModule.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -39137,7 +39156,7 @@
       "kind": "class",
       "project": "Granit.Templating.Scriban",
       "file": "src/Granit.Templating.Scriban/Extensions/ServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitTemplatingWithScriban",
@@ -39187,7 +39206,7 @@
       "kind": "class",
       "project": "Granit.Templating.Scriban",
       "file": "src/Granit.Templating.Scriban/GranitTemplatingScribanModule.cs",
-      "line": 23,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -39367,7 +39386,7 @@
       "kind": "record",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/TemplateListFilter.cs",
-      "line": 9,
+      "line": 8,
       "members": []
     },
     {
@@ -39453,7 +39472,7 @@
       "kind": "class",
       "project": "Granit.Testing",
       "file": "src/Granit.Testing/Endpoints/GranitEndpointTestHost.cs",
-      "line": 17,
+      "line": 15,
       "members": [
         {
           "name": "StartAsync",
@@ -39502,7 +39521,7 @@
       "kind": "class",
       "project": "Granit.Testing.EntityFrameworkCore",
       "file": "src/Granit.Testing.EntityFrameworkCore/GranitTestingEntityFrameworkCoreModule.cs",
-      "line": 19,
+      "line": 18,
       "members": []
     },
     {
@@ -39692,7 +39711,7 @@
       "kind": "class",
       "project": "Granit.Testing",
       "file": "src/Granit.Testing/GranitTestingModule.cs",
-      "line": 19,
+      "line": 18,
       "members": []
     },
     {
@@ -39812,7 +39831,7 @@
       "kind": "class",
       "project": "Granit.Timeline.AI",
       "file": "src/Granit.Timeline.AI/GranitTimelineAIModule.cs",
-      "line": 22,
+      "line": 21,
       "members": []
     },
     {
@@ -40328,7 +40347,7 @@
       "kind": "record",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
-      "line": 24,
+      "line": 22,
       "members": []
     },
     {
@@ -40337,7 +40356,7 @@
       "kind": "record",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
-      "line": 12,
+      "line": 10,
       "members": []
     },
     {
@@ -40631,7 +40650,7 @@
       "kind": "class",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/GranitTimelineModule.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -40672,7 +40691,7 @@
       "kind": "class",
       "project": "Granit.Timeline.Notifications",
       "file": "src/Granit.Timeline.Notifications/GranitTimelineNotificationsModule.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -40947,7 +40966,7 @@
       "kind": "class",
       "project": "Granit.Timing",
       "file": "src/Granit.Timing/Extensions/TimingServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitTiming",
@@ -41197,7 +41216,7 @@
       "kind": "class",
       "project": "Granit.Validation.AI",
       "file": "src/Granit.Validation.AI/GranitValidationAIModule.cs",
-      "line": 19,
+      "line": 18,
       "members": []
     },
     {
@@ -41363,7 +41382,7 @@
       "kind": "class",
       "project": "Granit.Validation.Endpoints",
       "file": "src/Granit.Validation.Endpoints/GranitValidationEndpointsModule.cs",
-      "line": 19,
+      "line": 18,
       "members": []
     },
     {
@@ -41502,7 +41521,7 @@
       "kind": "class",
       "project": "Granit.Validation.Europe",
       "file": "src/Granit.Validation.Europe/GranitValidationEuropeModule.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -41518,7 +41537,7 @@
       "kind": "class",
       "project": "Granit.Validation.Europe",
       "file": "src/Granit.Validation.Europe/ValidationEuropeLocalizationResource.cs",
-      "line": 17,
+      "line": 16,
       "members": []
     },
     {
@@ -41630,7 +41649,7 @@
       "kind": "class",
       "project": "Granit.Validation",
       "file": "src/Granit.Validation/Extensions/ValidationServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitValidation",
@@ -41646,7 +41665,7 @@
       "kind": "class",
       "project": "Granit.Validation",
       "file": "src/Granit.Validation/GranitValidationModule.cs",
-      "line": 35,
+      "line": 34,
       "members": [
         {
           "name": "ConfigureServices",
@@ -41723,7 +41742,7 @@
       "kind": "class",
       "project": "Granit.Validation.NorthAmerica",
       "file": "src/Granit.Validation.NorthAmerica/GranitValidationNorthAmericaModule.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -41739,7 +41758,7 @@
       "kind": "class",
       "project": "Granit.Validation.NorthAmerica",
       "file": "src/Granit.Validation.NorthAmerica/ValidationNorthAmericaLocalizationResource.cs",
-      "line": 17,
+      "line": 16,
       "members": []
     },
     {
@@ -41909,7 +41928,7 @@
       "kind": "class",
       "project": "Granit.Validation.UnitedKingdom",
       "file": "src/Granit.Validation.UnitedKingdom/GranitValidationUnitedKingdomModule.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -41925,7 +41944,7 @@
       "kind": "class",
       "project": "Granit.Validation.UnitedKingdom",
       "file": "src/Granit.Validation.UnitedKingdom/ValidationUnitedKingdomLocalizationResource.cs",
-      "line": 16,
+      "line": 15,
       "members": []
     },
     {
@@ -42946,7 +42965,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.BackgroundJobs",
       "file": "src/Granit.Webhooks.BackgroundJobs/GranitWebhooksBackgroundJobsModule.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureServices",
@@ -43369,7 +43388,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/GranitWebhooksEndpointsModule.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -43768,7 +43787,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.Notifications",
       "file": "src/Granit.Webhooks.Notifications/GranitWebhooksNotificationsModule.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -44175,7 +44194,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Extensions/WolverineHostApplicationBuilderExtensions.cs",
-      "line": 27,
+      "line": 25,
       "members": [
         {
           "name": "AddGranitWolverine",
@@ -44191,7 +44210,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Extensions/WolverineValidationServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitValidatorsFromWolverineHandlerModules",
@@ -44207,7 +44226,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/GranitWolverineModule.cs",
-      "line": 23,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -44309,7 +44328,7 @@
       "kind": "class",
       "project": "Granit.Wolverine.Postgresql",
       "file": "src/Granit.Wolverine.Postgresql/Options/WolverinePostgresqlOptions.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "TransportConnectionStringName",
@@ -44404,7 +44423,7 @@
       "kind": "class",
       "project": "Granit.Workflow.AI",
       "file": "src/Granit.Workflow.AI/GranitWorkflowAIModule.cs",
-      "line": 27,
+      "line": 26,
       "members": []
     },
     {
@@ -44695,7 +44714,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Endpoints",
       "file": "src/Granit.Workflow.Endpoints/Extensions/WorkflowEndpointsServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitWorkflowEndpoints",
@@ -45046,7 +45065,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Notifications",
       "file": "src/Granit.Workflow.Notifications/Extensions/WorkflowNotificationsServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitWorkflowNotifications",
@@ -45062,7 +45081,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Notifications",
       "file": "src/Granit.Workflow.Notifications/GranitWorkflowNotificationsModule.cs",
-      "line": 36,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -45078,7 +45097,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Notifications",
       "file": "src/Granit.Workflow.Notifications/Handlers/WorkflowApprovalRequestedHandler.cs",
-      "line": 29,
+      "line": 28,
       "members": [
         {
           "name": "HandleAsync",
@@ -45094,7 +45113,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Notifications",
       "file": "src/Granit.Workflow.Notifications/Handlers/WorkflowStateChangedHandler.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "HandleAsync",

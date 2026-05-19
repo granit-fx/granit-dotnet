@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using Granit.Auditing;
+using Granit.Auditing.Domain;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Identity.Local.Diagnostics;
@@ -5,6 +8,7 @@ using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Services;
+using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -12,10 +16,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.Identity.Local.Endpoints.Endpoints;
 
-internal static class AccountPasskeyEndpoints
+internal static partial class AccountPasskeyEndpoints
 {
     internal static RouteGroupBuilder MapAccountPasskeyEndpoints(this RouteGroupBuilder group)
     {
@@ -160,6 +165,8 @@ internal static class AccountPasskeyEndpoints
         CancellationToken cancellationToken)
     {
         IdentityLocalMetrics? metrics = httpContext.RequestServices.GetService<IdentityLocalMetrics>();
+        ILogger logger = httpContext.RequestServices.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.Identity.Local.Endpoints.AccountPasskeyEndpoints");
 
         GranitPasskeyAssertionResult assertion = await passkeyService
             .CompleteAssertionAsync(request.CredentialJson, cancellationToken)
@@ -168,6 +175,9 @@ internal static class AccountPasskeyEndpoints
         if (!assertion.Succeeded || assertion.UserId is null)
         {
             metrics?.RecordAuthenticationFailure(null, "invalid_token");
+            await TryWritePasskeyAuditAsync(httpContext, logger,
+                userId: assertion.UserId, userName: null,
+                failureReason: "invalid_token", cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Problem(
                 detail: "Passkey authentication failed.",
@@ -178,6 +188,9 @@ internal static class AccountPasskeyEndpoints
 
         if (user is null)
         {
+            await TryWritePasskeyAuditAsync(httpContext, logger,
+                userId: assertion.UserId, userName: null,
+                failureReason: "user_not_found", cancellationToken).ConfigureAwait(false);
             return TypedResults.Problem(
                 detail: "User not found.",
                 statusCode: StatusCodes.Status401Unauthorized);
@@ -185,9 +198,66 @@ internal static class AccountPasskeyEndpoints
 
         await signInManager.SignInAsync(user, isPersistent: false).ConfigureAwait(false);
         metrics?.RecordAuthenticationSuccess(null, "passkey");
+        await TryWritePasskeyAuditAsync(httpContext, logger,
+            userId: user.Id.ToString(), userName: user.UserName,
+            failureReason: null, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
     }
+
+    /// <summary>
+    /// Records a passkey assertion audit row. No-op when
+    /// <see cref="IAuditingWriter"/> is not registered; audit failures are
+    /// swallowed so the login flow is never blocked by audit issues.
+    /// </summary>
+    private static async Task TryWritePasskeyAuditAsync(
+        HttpContext httpContext,
+        ILogger logger,
+        string? userId,
+        string? userName,
+        string? failureReason,
+        CancellationToken cancellationToken)
+    {
+        IAuditingWriter? auditingWriter = httpContext.RequestServices.GetService<IAuditingWriter>();
+        if (auditingWriter is null)
+        {
+            return;
+        }
+
+        TimeProvider timeProvider = httpContext.RequestServices.GetService<TimeProvider>()
+            ?? TimeProvider.System;
+        ICurrentTenant? currentTenant = httpContext.RequestServices.GetService<ICurrentTenant>();
+        Guid? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id : null;
+        string? ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+        string? userAgent = httpContext.Request.Headers.UserAgent.ToString();
+        if (string.IsNullOrEmpty(userAgent))
+        {
+            userAgent = null;
+        }
+        string? correlationId = Activity.Current?.Id;
+
+        AuditEntry entry = failureReason is null
+            ? AuthenticationAuditEntry.CreateSuccess(
+                timeProvider.GetUtcNow(),
+                userId: string.IsNullOrEmpty(userId) ? AuthenticationAuditEntry.UnknownUserSentinel : userId,
+                userName, method: "passkey", tenantId, ipAddress, userAgent, correlationId)
+            : AuthenticationAuditEntry.CreateFailure(
+                timeProvider.GetUtcNow(), userId, userName,
+                method: "passkey", reason: failureReason,
+                tenantId, ipAddress, userAgent, correlationId);
+
+        try
+        {
+            await auditingWriter.WriteAsync(entry, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogAuditWriteFailed(logger, ex);
+        }
+    }
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Passkey login: failed to write authentication audit entry — login flow continues.")]
+    private static partial void LogAuditWriteFailed(ILogger logger, Exception exception);
 
     private static async Task<Results<NoContent, ProblemHttpResult>> RenamePasskeyAsync(
         Guid id,

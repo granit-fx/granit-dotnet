@@ -1,5 +1,8 @@
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Security.Claims;
+using Granit.Auditing;
+using Granit.Auditing.Domain;
 using Granit.Identity.Local.Domain;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.Diagnostics;
@@ -85,6 +88,9 @@ internal static partial class ConnectTokenEndpoints
         {
             LogAuthenticationFailed(logger, request.GrantType!);
             metrics.RecordAuthenticationFailure(tenantId, "invalid_token");
+            await TryWriteAuthAuditAsync(context, logger,
+                method: request.GrantType!, userId: null, userName: null,
+                failureReason: "invalid_token", tenantId).ConfigureAwait(false);
             return Results.Forbid(
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
         }
@@ -116,6 +122,9 @@ internal static partial class ConnectTokenEndpoints
             {
                 LogUserNotFound(logger, subject ?? "(null)");
                 metrics.RecordAuthenticationFailure(tenantId, "invalid_credentials");
+                await TryWriteAuthAuditAsync(context, logger,
+                    method: request.GrantType!, userId: subject, userName: null,
+                    failureReason: "invalid_credentials", tenantId).ConfigureAwait(false);
                 return Results.Forbid(
                     authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
             }
@@ -132,6 +141,13 @@ internal static partial class ConnectTokenEndpoints
             metrics.RecordTokenIssued(tenantId, grantType);
             metrics.RecordAuthenticationSuccess(tenantId, grantType);
             LogTokenIssued(logger, user.Id.ToString(), grantType);
+
+            await TryWriteAuthAuditAsync(context, logger,
+                method: grantType,
+                userId: user.Id.ToString(),
+                userName: user.UserName,
+                failureReason: null,
+                tenantId).ConfigureAwait(false);
 
             return Results.SignIn(principal,
                 authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
@@ -164,6 +180,56 @@ internal static partial class ConnectTokenEndpoints
             authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
+    /// <summary>
+    /// Records an authentication audit row for the token endpoint. No-op when
+    /// <see cref="IAuditingWriter"/> is not registered. Audit failures are
+    /// swallowed so a transient audit-store outage never breaks token issuance.
+    /// </summary>
+    private static async Task TryWriteAuthAuditAsync(
+        HttpContext context,
+        ILogger logger,
+        string method,
+        string? userId,
+        string? userName,
+        string? failureReason,
+        string? tenantId)
+    {
+        IAuditingWriter? auditingWriter = context.RequestServices.GetService<IAuditingWriter>();
+        if (auditingWriter is null)
+        {
+            return;
+        }
+
+        TimeProvider timeProvider = context.RequestServices.GetService<TimeProvider>()
+            ?? TimeProvider.System;
+        Guid? tenantGuid = !string.IsNullOrEmpty(tenantId) && Guid.TryParse(tenantId, out Guid parsed)
+            ? parsed : null;
+        string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
+        string? userAgent = context.Request.Headers.UserAgent.ToString();
+        if (string.IsNullOrEmpty(userAgent))
+        {
+            userAgent = null;
+        }
+        string? correlationId = Activity.Current?.Id;
+
+        AuditEntry entry = failureReason is null
+            ? AuthenticationAuditEntry.CreateSuccess(
+                timeProvider.GetUtcNow(), userId!, userName, method,
+                tenantGuid, ipAddress, userAgent, correlationId)
+            : AuthenticationAuditEntry.CreateFailure(
+                timeProvider.GetUtcNow(), userId, userName, method, failureReason,
+                tenantGuid, ipAddress, userAgent, correlationId);
+
+        try
+        {
+            await auditingWriter.WriteAsync(entry, context.RequestAborted).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogAuditWriteFailed(logger, ex);
+        }
+    }
+
     // ──── Source-generated log messages ────
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Token issued for subject '{Subject}' using grant type '{GrantType}'")]
@@ -177,4 +243,7 @@ internal static partial class ConnectTokenEndpoints
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Unsupported grant type '{GrantType}'")]
     private static partial void LogUnsupportedGrantType(ILogger logger, string grantType);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Token endpoint: failed to write authentication audit entry — token flow continues.")]
+    private static partial void LogAuditWriteFailed(ILogger logger, Exception exception);
 }

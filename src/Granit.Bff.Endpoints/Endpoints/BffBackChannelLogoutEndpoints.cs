@@ -1,9 +1,14 @@
+using System.Diagnostics;
+using Granit.Auditing;
+using Granit.Auditing.Domain;
 using Granit.Bff.Options;
+using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -76,6 +81,8 @@ internal static partial class BffBackChannelLogoutEndpoints
         if (claims is null)
         {
             LogInvalidLogoutToken(logger, frontend.Name);
+            await TryWriteAuditAsync(httpContext, logger, userId: null,
+                failureReason: "invalid_logout_token", cancellationToken).ConfigureAwait(false);
             return TypedResults.Problem(
                 detail: "Invalid logout token.",
                 statusCode: StatusCodes.Status400BadRequest);
@@ -91,6 +98,8 @@ internal static partial class BffBackChannelLogoutEndpoints
             if (existing.HasValue)
             {
                 LogReplayDetected(logger, claims.Jti, frontend.Name);
+                await TryWriteAuditAsync(httpContext, logger, userId: claims.Subject,
+                    failureReason: "replay_detected", cancellationToken).ConfigureAwait(false);
                 return TypedResults.Problem(
                     detail: "Logout token replay detected.",
                     statusCode: StatusCodes.Status400BadRequest);
@@ -119,9 +128,63 @@ internal static partial class BffBackChannelLogoutEndpoints
             }
 
             LogBackChannelLogout(logger, claims.Subject, revoked, frontend.Name);
+            await TryWriteAuditAsync(httpContext, logger, userId: claims.Subject,
+                failureReason: null, cancellationToken).ConfigureAwait(false);
         }
 
         return TypedResults.Ok();
+    }
+
+    /// <summary>
+    /// Records a back-channel logout audit row. No-op when
+    /// <see cref="IAuditingWriter"/> is not registered; audit failures are
+    /// swallowed so the back-channel logout response is never blocked.
+    /// </summary>
+    private static async Task TryWriteAuditAsync(
+        HttpContext httpContext,
+        ILogger logger,
+        string? userId,
+        string? failureReason,
+        CancellationToken cancellationToken)
+    {
+        IAuditingWriter? auditingWriter = httpContext.RequestServices.GetService<IAuditingWriter>();
+        if (auditingWriter is null)
+        {
+            return;
+        }
+
+        TimeProvider timeProvider = httpContext.RequestServices.GetService<TimeProvider>()
+            ?? TimeProvider.System;
+        ICurrentTenant? currentTenant = httpContext.RequestServices.GetService<ICurrentTenant>();
+        Guid? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id : null;
+        string? ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+        string? userAgent = httpContext.Request.Headers.UserAgent.ToString();
+        if (string.IsNullOrEmpty(userAgent))
+        {
+            userAgent = null;
+        }
+        string? correlationId = Activity.Current?.Id;
+        const string Method = "bff_backchannel_logout";
+
+        AuditEntry entry = failureReason is null
+            ? AuthenticationAuditEntry.CreateSuccess(
+                timeProvider.GetUtcNow(),
+                userId: string.IsNullOrEmpty(userId) ? AuthenticationAuditEntry.UnknownUserSentinel : userId,
+                userName: null, method: Method,
+                tenantId, ipAddress, userAgent, correlationId)
+            : AuthenticationAuditEntry.CreateFailure(
+                timeProvider.GetUtcNow(),
+                userId, userName: null, method: Method, reason: failureReason,
+                tenantId, ipAddress, userAgent, correlationId);
+
+        try
+        {
+            await auditingWriter.WriteAsync(entry, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogAuditWriteFailed(logger, ex);
+        }
     }
 #pragma warning restore GRAPI003
 
@@ -135,4 +198,7 @@ internal static partial class BffBackChannelLogoutEndpoints
 
     [LoggerMessage(Level = LogLevel.Information, Message = "BFF back-channel logout: revoked {Count} session(s) for subject '{Subject}' on frontend {FrontendName}")]
     private static partial void LogBackChannelLogout(ILogger logger, string subject, int count, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "BFF back-channel logout: failed to write authentication audit entry — logout flow continues.")]
+    private static partial void LogAuditWriteFailed(ILogger logger, Exception exception);
 }

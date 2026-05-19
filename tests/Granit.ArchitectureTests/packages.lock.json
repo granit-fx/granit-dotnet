@@ -1806,6 +1806,7 @@
       "granit.bff.endpoints": {
         "type": "Project",
         "dependencies": {
+          "Granit.Auditing": "[0.1.0-dev, )",
           "Granit.Bff": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
@@ -2456,6 +2457,7 @@
       "granit.identity.local.endpoints": {
         "type": "Project",
         "dependencies": {
+          "Granit.Auditing": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Http.Abstractions": "[0.1.0-dev, )",
@@ -2920,6 +2922,7 @@
       "granit.openiddict.endpoints": {
         "type": "Project",
         "dependencies": {
+          "Granit.Auditing": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Http.Abstractions": "[0.1.0-dev, )",

@@ -1,3 +1,4 @@
+using Granit.Auditing;
 using Granit.Authorization;
 using Granit.Caching;
 using Granit.Http.ApiDocumentation;
@@ -19,6 +20,7 @@ namespace Granit.Identity.Local.Endpoints;
 /// <para>Validators are auto-discovered by <c>GranitValidationModule</c>.</para>
 /// </remarks>
 [DependsOn(
+    typeof(GranitAuditingModule),
     typeof(GranitAuthorizationModule),
     typeof(GranitCachingModule),
     typeof(GranitHttpApiDocumentationModule),

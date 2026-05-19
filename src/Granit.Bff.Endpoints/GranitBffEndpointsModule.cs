@@ -1,3 +1,4 @@
+using Granit.Auditing;
 using Granit.Bff.Endpoints.Internal;
 using Granit.Bff.Options;
 using Granit.Caching;
@@ -20,6 +21,7 @@ namespace Granit.Bff.Endpoints;
 /// because their names are configuration-driven (one per frontend).
 /// </remarks>
 [DependsOn(
+    typeof(GranitAuditingModule),
     typeof(GranitBffModule),
     typeof(GranitCachingModule),
     typeof(GranitHttpApiDocumentationModule),

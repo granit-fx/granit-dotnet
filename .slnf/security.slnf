@@ -5,6 +5,7 @@
       "src/Granit.AI/Granit.AI.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
+      "src/Granit.Auditing/Granit.Auditing.csproj",
       "src/Granit.Authentication.ApiKeys.BackgroundJobs/Granit.Authentication.ApiKeys.BackgroundJobs.csproj",
       "src/Granit.Authentication.ApiKeys.Endpoints/Granit.Authentication.ApiKeys.Endpoints.csproj",
       "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/Granit.Authentication.ApiKeys.EntityFrameworkCore.csproj",

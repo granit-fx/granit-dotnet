@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
+using Granit.Auditing;
+using Granit.Auditing.Domain;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Events;
@@ -131,6 +133,9 @@ internal static partial class AccountLoginEndpoints
 
             LogLoginFailed(logger, request.Login, "user_not_found");
             metrics?.RecordAuthenticationFailure(null, "invalid_credentials");
+            await TryWriteAuthAuditAsync(httpContext, logger,
+                method: "password", userId: null, userName: null,
+                failureReason: "invalid_credentials", cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Problem(
                 detail: "Invalid credentials.",
@@ -152,6 +157,9 @@ internal static partial class AccountLoginEndpoints
         {
             LogLoginSuccess(logger, user.Id.ToString());
             metrics?.RecordAuthenticationSuccess(null, "password");
+            await TryWriteAuthAuditAsync(httpContext, logger,
+                method: "password", userId: user.Id.ToString(), userName: user.UserName,
+                failureReason: null, cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
         }
@@ -170,6 +178,9 @@ internal static partial class AccountLoginEndpoints
 
             await PublishAccountLockedAsync(httpContext, userManager, user, cancellationToken)
                 .ConfigureAwait(false);
+            await TryWriteAuthAuditAsync(httpContext, logger,
+                method: "password", userId: user.Id.ToString(), userName: user.UserName,
+                failureReason: "account_locked", cancellationToken).ConfigureAwait(false);
 
             // Return 401 (same as invalid credentials) to prevent account enumeration.
             // The user is notified of the lockout exclusively via email.
@@ -182,6 +193,9 @@ internal static partial class AccountLoginEndpoints
         {
             LogLoginNotAllowed(logger, user.Id.ToString());
             metrics?.RecordAuthenticationFailure(null, "email_not_confirmed");
+            await TryWriteAuthAuditAsync(httpContext, logger,
+                method: "password", userId: user.Id.ToString(), userName: user.UserName,
+                failureReason: "email_not_confirmed", cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Problem(
                 detail: "Sign-in is not allowed. Verify your email address.",
@@ -191,6 +205,9 @@ internal static partial class AccountLoginEndpoints
         // Generic failure (wrong password)
         LogLoginFailed(logger, request.Login, "invalid_password");
         metrics?.RecordAuthenticationFailure(null, "invalid_credentials");
+        await TryWriteAuthAuditAsync(httpContext, logger,
+            method: "password", userId: user.Id.ToString(), userName: user.UserName,
+            failureReason: "invalid_credentials", cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Problem(
             detail: "Invalid credentials.",
@@ -263,6 +280,14 @@ internal static partial class AccountLoginEndpoints
         {
             LogTwoFactorSuccess(logger, method);
             metrics?.RecordAuthenticationSuccess(null, method);
+            LocalIdentity? signedInUser = await signInManager.UserManager
+                .GetUserAsync(httpContext.User).ConfigureAwait(false);
+            await TryWriteAuthAuditAsync(httpContext, logger,
+                method: method,
+                userId: signedInUser?.Id.ToString(),
+                userName: signedInUser?.UserName,
+                failureReason: null,
+                cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
         }
@@ -282,6 +307,13 @@ internal static partial class AccountLoginEndpoints
                     .ConfigureAwait(false);
             }
 
+            await TryWriteAuthAuditAsync(httpContext, logger,
+                method: method,
+                userId: lockedUser?.Id.ToString(),
+                userName: lockedUser?.UserName,
+                failureReason: "account_locked",
+                cancellationToken).ConfigureAwait(false);
+
             // Return 401 (same as invalid code) to prevent account enumeration.
             // The user is notified of the lockout exclusively via email.
             return TypedResults.Problem(
@@ -291,6 +323,14 @@ internal static partial class AccountLoginEndpoints
 
         LogTwoFactorFailed(logger, failureReason);
         metrics?.RecordAuthenticationFailure(null, "invalid_token");
+        LocalIdentity? twoFactorUser = await signInManager.GetTwoFactorAuthenticationUserAsync()
+            .ConfigureAwait(false);
+        await TryWriteAuthAuditAsync(httpContext, logger,
+            method: method,
+            userId: twoFactorUser?.Id.ToString(),
+            userName: twoFactorUser?.UserName,
+            failureReason: failureReason,
+            cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Problem(
             detail: "Invalid verification code.",
@@ -391,6 +431,59 @@ internal static partial class AccountLoginEndpoints
             cancellationToken).ConfigureAwait(false);
     }
 
+    // ──── Authentication audit ────
+
+    /// <summary>
+    /// Records an authentication audit row for the local-identity login flow.
+    /// No-op when <see cref="IAuditingWriter"/> is not registered. Audit
+    /// failures are swallowed so a transient audit-store outage never breaks
+    /// authentication.
+    /// </summary>
+    private static async Task TryWriteAuthAuditAsync(
+        HttpContext httpContext,
+        ILogger logger,
+        string method,
+        string? userId,
+        string? userName,
+        string? failureReason,
+        CancellationToken cancellationToken)
+    {
+        IAuditingWriter? auditingWriter = httpContext.RequestServices.GetService<IAuditingWriter>();
+        if (auditingWriter is null)
+        {
+            return;
+        }
+
+        TimeProvider timeProvider = httpContext.RequestServices.GetService<TimeProvider>()
+            ?? TimeProvider.System;
+        ICurrentTenant? currentTenant = httpContext.RequestServices.GetService<ICurrentTenant>();
+        Guid? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id : null;
+        string? ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+        string? userAgent = httpContext.Request.Headers.UserAgent.ToString();
+        if (string.IsNullOrEmpty(userAgent))
+        {
+            userAgent = null;
+        }
+        string? correlationId = Activity.Current?.Id;
+
+        AuditEntry entry = failureReason is null
+            ? AuthenticationAuditEntry.CreateSuccess(
+                timeProvider.GetUtcNow(), userId!, userName, method,
+                tenantId, ipAddress, userAgent, correlationId)
+            : AuthenticationAuditEntry.CreateFailure(
+                timeProvider.GetUtcNow(), userId, userName, method, failureReason,
+                tenantId, ipAddress, userAgent, correlationId);
+
+        try
+        {
+            await auditingWriter.WriteAsync(entry, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogAuditWriteFailed(logger, ex);
+        }
+    }
+
     // ──── Source-generated log messages ────
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Headless login: user {UserId} authenticated successfully")]
@@ -413,4 +506,7 @@ internal static partial class AccountLoginEndpoints
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Headless login: two-factor failed — {Reason}")]
     private static partial void LogTwoFactorFailed(ILogger logger, string reason);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Headless login: failed to write authentication audit entry — login flow continues.")]
+    private static partial void LogAuditWriteFailed(ILogger logger, Exception exception);
 }
