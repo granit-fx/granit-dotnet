@@ -1,5 +1,4 @@
 using Granit.Privacy.LegalAgreements.Domain;
-using Granit.Workflow.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

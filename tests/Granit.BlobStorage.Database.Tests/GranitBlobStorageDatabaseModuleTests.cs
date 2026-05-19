@@ -1,5 +1,3 @@
-using Granit.BlobStorage;
-using Granit.BlobStorage.Database;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 using Shouldly;

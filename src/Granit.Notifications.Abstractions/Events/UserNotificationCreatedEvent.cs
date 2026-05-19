@@ -1,5 +1,4 @@
 using Granit.Events;
-using Granit.Notifications.Domain;
 
 namespace Granit.Notifications.Events;
 

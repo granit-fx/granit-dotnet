@@ -1,4 +1,3 @@
-using Granit.Entities;
 using Granit.Entities.Relations;
 using Shouldly;
 using Xunit;

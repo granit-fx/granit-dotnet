@@ -1,4 +1,3 @@
-using Granit.Identity;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Notifications.NotificationTypes;
 using Granit.Notifications.Abstractions;

@@ -1,6 +1,5 @@
 using Granit.Workflow.AI.Options;
 using Shouldly;
-using Xunit;
 
 namespace Granit.Workflow.AI.Tests;
 

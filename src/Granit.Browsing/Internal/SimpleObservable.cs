@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Browsing.Internal;

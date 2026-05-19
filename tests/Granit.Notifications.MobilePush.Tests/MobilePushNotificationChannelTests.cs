@@ -1,6 +1,4 @@
 using System.Text.Json;
-using Granit.Notifications.Abstractions;
-using Granit.Notifications.MobilePush;
 using Granit.Notifications.MobilePush.Domain;
 using Granit.Notifications.MobilePush.Internal;
 using Granit.Notifications.MobilePush.Options;

@@ -1,7 +1,6 @@
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Options;
 using Granit.BlobStorage.Validators;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 

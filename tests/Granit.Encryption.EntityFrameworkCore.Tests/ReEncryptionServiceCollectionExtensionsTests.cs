@@ -1,4 +1,3 @@
-using Granit.Encryption.EntityFrameworkCore;
 using Granit.Encryption.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

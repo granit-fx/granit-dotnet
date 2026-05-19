@@ -1,7 +1,5 @@
 using Granit.DataExchange.Export;
-using Granit.DataExchange.Export.Internal;
 using Granit.DataExchange.Extensions;
-using Granit.DataExchange.Import.Internal;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Tests.Mapping;

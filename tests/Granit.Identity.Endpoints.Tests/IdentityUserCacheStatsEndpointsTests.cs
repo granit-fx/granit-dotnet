@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using Granit.Identity.Endpoints.Dtos;
 using Granit.Identity.Endpoints.Extensions;
-using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Permissions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

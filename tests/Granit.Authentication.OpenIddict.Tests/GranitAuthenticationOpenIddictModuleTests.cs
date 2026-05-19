@@ -1,4 +1,3 @@
-using Granit.Authentication.OpenIddict;
 using Granit.Modularity;
 using Shouldly;
 using Xunit;

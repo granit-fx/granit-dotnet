@@ -1,7 +1,4 @@
-using System;
-using System.IO;
 using Granit.Browsing.Exceptions;
-using Granit.Browsing.Sandbox;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.Browsing.PuppeteerSharp.Internal;

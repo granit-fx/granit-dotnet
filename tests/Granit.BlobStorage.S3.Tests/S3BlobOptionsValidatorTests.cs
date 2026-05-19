@@ -1,4 +1,3 @@
-using Granit.BlobStorage.S3;
 using Granit.BlobStorage.S3.Options;
 using Microsoft.Extensions.Options;
 using Shouldly;

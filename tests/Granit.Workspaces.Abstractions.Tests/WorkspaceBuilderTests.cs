@@ -1,4 +1,3 @@
-using Granit.Workspaces;
 using Shouldly;
 using Xunit;
 

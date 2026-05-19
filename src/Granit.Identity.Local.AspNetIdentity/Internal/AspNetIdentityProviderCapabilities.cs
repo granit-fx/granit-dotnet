@@ -1,5 +1,3 @@
-using Granit.Identity;
-
 namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>

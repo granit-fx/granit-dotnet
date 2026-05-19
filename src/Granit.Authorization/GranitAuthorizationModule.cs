@@ -9,7 +9,6 @@ using Granit.DataExchange.Extensions;
 using Granit.Entities.Extensions;
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
-using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Authorization;

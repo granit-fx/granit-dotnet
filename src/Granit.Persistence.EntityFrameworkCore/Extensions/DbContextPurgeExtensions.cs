@@ -1,7 +1,6 @@
 using System.Reflection;
 using Granit.Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Granit.Persistence.EntityFrameworkCore.Extensions;
 

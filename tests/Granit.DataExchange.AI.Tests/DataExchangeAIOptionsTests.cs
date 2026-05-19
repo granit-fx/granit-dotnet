@@ -1,6 +1,5 @@
 using Granit.DataExchange.AI.Options;
 using Shouldly;
-using Xunit;
 
 namespace Granit.DataExchange.AI.Tests;
 

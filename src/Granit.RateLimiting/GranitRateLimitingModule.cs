@@ -2,7 +2,6 @@ using Granit.Features;
 using Granit.Http.ExceptionHandling;
 using Granit.Modularity;
 using Granit.RateLimiting.Extensions;
-using Granit.Users;
 
 namespace Granit.RateLimiting;
 

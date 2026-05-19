@@ -1,7 +1,6 @@
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Identity;
 using Granit.DataExchange.EntityFrameworkCore.Tests.Infrastructure;
 using Granit.DataExchange.Import.Identity;
-using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 

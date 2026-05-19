@@ -1,4 +1,3 @@
-using System;
 using Granit.Browsing.Playwright.Options;
 using Microsoft.Extensions.Hosting;
 

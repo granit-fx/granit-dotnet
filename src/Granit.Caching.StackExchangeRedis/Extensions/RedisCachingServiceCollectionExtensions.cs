@@ -1,4 +1,3 @@
-using Granit.Caching;
 using Granit.Caching.Options;
 using Granit.Caching.StackExchangeRedis.HealthChecks;
 using Granit.Caching.StackExchangeRedis.Internal;

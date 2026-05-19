@@ -1,5 +1,4 @@
 using Granit.Events;
-using Granit.Identity;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.Keycloak.Extensions;
 using Granit.Timing;

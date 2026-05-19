@@ -1,4 +1,3 @@
-using Granit.Authentication.ApiKeys.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 

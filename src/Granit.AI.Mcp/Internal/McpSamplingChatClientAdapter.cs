@@ -3,7 +3,6 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
-using ModelContextProtocol.Server;
 
 namespace Granit.AI.Mcp.Internal;
 

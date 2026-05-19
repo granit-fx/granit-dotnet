@@ -2,7 +2,6 @@ using System.Text.Json;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
-using Granit.Notifications.Events;
 using Granit.Notifications.Privacy.DataExport;
 using Granit.QueryEngine;
 using NSubstitute;

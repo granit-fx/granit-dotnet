@@ -3,7 +3,6 @@ using System.Text;
 using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Options;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Shouldly;
 using Xunit;

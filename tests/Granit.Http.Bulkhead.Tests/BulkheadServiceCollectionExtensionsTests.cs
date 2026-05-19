@@ -1,4 +1,3 @@
-using Granit.Http.Bulkhead.Abstractions;
 using Granit.Http.Bulkhead.Diagnostics;
 using Granit.Http.Bulkhead.Exceptions;
 using Granit.Http.Bulkhead.Extensions;

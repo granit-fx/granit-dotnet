@@ -1,5 +1,4 @@
 using Granit.Authorization;
-using Granit.Localization;
 using Granit.Localization.Endpoints.Permissions;
 using NSubstitute;
 using Shouldly;

@@ -1,6 +1,5 @@
 using Granit.Exceptions;
 using Granit.Templating.Exceptions;
-using Granit.Templating.Store;
 using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;

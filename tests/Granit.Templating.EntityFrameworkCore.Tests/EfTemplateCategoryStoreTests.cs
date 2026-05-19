@@ -5,7 +5,6 @@ using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Store;
 using Granit.Timing;
-using Granit.Workflow.Domain;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;

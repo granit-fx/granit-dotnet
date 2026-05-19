@@ -1,7 +1,6 @@
 using Granit.Http.ResponseCompression.Internal;
 using Granit.Http.ResponseCompression.Options;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 

@@ -1,6 +1,5 @@
 using System.Reflection;
 using Granit.BackgroundJobs.Abstractions;
-using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Wolverine.Internal;
 using Granit.Modularity;
 using Granit.Wolverine;

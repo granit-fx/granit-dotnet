@@ -2,7 +2,6 @@ using Granit.Bff.Options;
 using Granit.Bff.Yarp.Internal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Yarp.ReverseProxy.Transforms;
 

@@ -2,7 +2,6 @@ using Granit.AI.Mcp.Internal;
 using Granit.AI.Mcp.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
 using NSubstitute;
 using Shouldly;

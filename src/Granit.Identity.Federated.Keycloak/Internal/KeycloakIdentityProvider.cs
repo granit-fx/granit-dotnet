@@ -6,7 +6,6 @@ using Granit.Diagnostics;
 using Granit.Events;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
-using Granit.Identity.Federated;
 using Granit.Identity.Federated.Exceptions;
 using Granit.Identity.Federated.Keycloak.Diagnostics;
 using Granit.Identity.Federated.Keycloak.Exceptions;

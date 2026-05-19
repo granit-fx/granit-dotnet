@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using ModelContextProtocol.AspNetCore;
 
 namespace Granit.Mcp.Server.Extensions;
 

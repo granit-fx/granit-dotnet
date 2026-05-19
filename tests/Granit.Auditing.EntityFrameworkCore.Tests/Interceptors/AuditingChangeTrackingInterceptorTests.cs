@@ -9,9 +9,7 @@
 // =============================================================================
 
 using Granit.Auditing.EntityFrameworkCore.Interceptors;
-using Granit.Auditing.EntityFrameworkCore.Internal.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 

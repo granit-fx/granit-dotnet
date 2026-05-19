@@ -1,5 +1,4 @@
 using Granit.AI;
-using Granit.Localization;
 using Granit.Modularity;
 
 namespace Granit.Localization.AI;

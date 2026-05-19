@@ -1,13 +1,10 @@
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Events;
 using Granit.Guids;
-using Granit.Identity;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.Keycloak.Extensions;
-using Granit.Identity.Federated.Keycloak.Options;
 using Granit.Identity.Federated.Keycloak.Sync;
 using Granit.Identity.Models;
 using Granit.Timing;

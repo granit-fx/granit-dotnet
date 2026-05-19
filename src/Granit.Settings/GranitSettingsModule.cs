@@ -10,7 +10,6 @@ using Granit.Settings.Domain;
 using Granit.Settings.Exports;
 using Granit.Settings.Extensions;
 using Granit.Settings.Queries;
-using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Settings;

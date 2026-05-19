@@ -1,7 +1,6 @@
 using Granit.Modularity;
 using Granit.Notifications.Privacy.DataExport;
 using Granit.Privacy.BlobStorage;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Notifications.Privacy;

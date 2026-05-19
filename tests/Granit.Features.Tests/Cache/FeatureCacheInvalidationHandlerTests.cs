@@ -1,7 +1,6 @@
 using Granit.Features.Cache;
 using Granit.Features.Events;
 using NSubstitute;
-using Shouldly;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
 

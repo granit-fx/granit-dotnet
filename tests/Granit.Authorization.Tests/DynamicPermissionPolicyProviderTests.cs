@@ -7,10 +7,8 @@
 //   - Retourne null pour une policy totalement inconnue
 // =============================================================================
 
-using Granit.Authorization;
 using Granit.Authorization.Authorization;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;

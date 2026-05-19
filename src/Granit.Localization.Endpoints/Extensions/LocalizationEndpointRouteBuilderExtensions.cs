@@ -10,7 +10,6 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Granit.Localization;
 using Granit.Localization.Domain;
 using Granit.Localization.Endpoints.Dtos;
 using Granit.Localization.Endpoints.Options;

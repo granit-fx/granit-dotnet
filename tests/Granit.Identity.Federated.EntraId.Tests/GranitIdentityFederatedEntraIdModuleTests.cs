@@ -1,4 +1,3 @@
-using Granit.Identity.Federated.EntraId.Extensions;
 using Granit.Identity.Federated.EntraId.Internal;
 using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;

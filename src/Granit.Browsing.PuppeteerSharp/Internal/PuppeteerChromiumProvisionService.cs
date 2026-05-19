@@ -1,6 +1,3 @@
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Granit.Browsing.PuppeteerSharp.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

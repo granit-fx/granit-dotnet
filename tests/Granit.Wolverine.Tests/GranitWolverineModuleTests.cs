@@ -9,7 +9,6 @@
 using Granit.Modularity;
 using Granit.MultiTenancy;
 using Granit.Users;
-using Granit.Validation;
 using Granit.Wolverine.Extensions;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.Options;
@@ -18,7 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Shouldly;
-using Wolverine;
 using Xunit;
 
 namespace Granit.Wolverine.Tests;

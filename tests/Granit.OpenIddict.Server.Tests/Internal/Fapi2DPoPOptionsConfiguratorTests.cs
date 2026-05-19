@@ -1,7 +1,6 @@
 using Granit.Authentication.DPoP.Options;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server.Internal;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 

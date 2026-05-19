@@ -2,7 +2,6 @@
 // DefaultStringEncryptionServiceTests - Tests du service principal
 // =============================================================================
 
-using Granit.Encryption;
 using Granit.Encryption.Options;
 using Granit.Encryption.Services;
 using Microsoft.Extensions.Options;

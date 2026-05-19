@@ -1,6 +1,5 @@
 using Granit.AI;
 using Granit.Modularity;
-using Granit.Observability;
 using Granit.Observability.AI.Extensions;
 
 namespace Granit.Observability.AI;

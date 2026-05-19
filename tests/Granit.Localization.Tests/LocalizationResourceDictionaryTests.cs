@@ -1,4 +1,3 @@
-using Granit.Localization.Internal;
 using Granit.Localization.Tests.TestResources;
 using Shouldly;
 using Xunit;

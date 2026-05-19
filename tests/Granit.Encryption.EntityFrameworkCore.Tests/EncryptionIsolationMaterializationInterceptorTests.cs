@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using Granit.Encryption.EntityFrameworkCore.Interceptors;
-using Granit.Encryption.EntityFrameworkCore.Internal;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;

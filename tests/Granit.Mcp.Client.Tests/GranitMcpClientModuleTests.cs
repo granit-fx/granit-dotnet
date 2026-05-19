@@ -1,5 +1,3 @@
-using Granit.Mcp;
-using Granit.Mcp.Client;
 using Granit.Modularity;
 using Shouldly;
 

@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Options;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;

@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Granit.Browsing.Pages;
 
 /// <summary>Operation surface for a single intercepted request handled by a <see cref="RouteHandler"/>.</summary>

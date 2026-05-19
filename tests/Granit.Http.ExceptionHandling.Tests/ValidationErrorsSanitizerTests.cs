@@ -9,7 +9,6 @@
 // not property names).
 // =============================================================================
 
-using System.Reflection;
 using Granit.DataProtection;
 using Granit.Http.ExceptionHandling.Internal;
 using Shouldly;

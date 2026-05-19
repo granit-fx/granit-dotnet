@@ -4,8 +4,6 @@
 // Provides common translations (errors, validation, authorizations).
 // ---------------------------------------------------------------------------
 
-using Granit.Localization;
-
 namespace Granit.Localization;
 
 /// <summary>

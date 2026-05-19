@@ -9,7 +9,6 @@
 // =============================================================================
 
 using System.Net;
-using System.Net.Http.Headers;
 using Granit.Http.Idempotency.Abstractions;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Http.Idempotency.Extensions;

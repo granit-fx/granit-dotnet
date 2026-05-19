@@ -3,7 +3,6 @@ using Granit.Guids.Extensions;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;

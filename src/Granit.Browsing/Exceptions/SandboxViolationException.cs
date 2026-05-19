@@ -1,5 +1,3 @@
-using System;
-
 namespace Granit.Browsing.Exceptions;
 
 /// <summary>

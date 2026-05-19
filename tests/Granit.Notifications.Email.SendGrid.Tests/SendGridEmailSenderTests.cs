@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Http.Json;
 using System.Text.Json;
 using Granit.Notifications.Email.SendGrid.Internal;
 using Granit.Notifications.Email.SendGrid.Options;

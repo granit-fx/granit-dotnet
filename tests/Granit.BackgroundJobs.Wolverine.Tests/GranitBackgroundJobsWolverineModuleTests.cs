@@ -1,4 +1,3 @@
-using Granit.BackgroundJobs;
 using Granit.BackgroundJobs.Abstractions;
 using Granit.BackgroundJobs.Wolverine.Internal;
 using Granit.Modularity;

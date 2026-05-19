@@ -2,7 +2,6 @@ using Granit.Authorization.Authorization;
 using Granit.Authorization.Diagnostics;
 using Granit.Authorization.Options;
 using Granit.Authorization.Services;
-using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

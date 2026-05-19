@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Granit.Browsing.Options;
 
 /// <summary>Per-page configuration applied at acquisition time.</summary>

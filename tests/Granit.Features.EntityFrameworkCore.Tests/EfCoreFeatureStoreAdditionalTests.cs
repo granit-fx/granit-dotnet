@@ -1,5 +1,4 @@
 using Granit.Events;
-using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Internal;
 using Granit.Features.Events;
 using Granit.Persistence.EntityFrameworkCore;

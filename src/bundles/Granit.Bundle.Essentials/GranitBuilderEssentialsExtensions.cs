@@ -5,7 +5,6 @@ using Granit.Modularity;
 using Granit.Observability;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
-using Granit.Users;
 using Granit.Validation;
 
 namespace Granit.Bundle.Essentials;

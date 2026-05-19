@@ -15,7 +15,6 @@ using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using Shouldly;
 using Xunit;
-using IClock = Granit.Timing.IClock;
 
 namespace Granit.Browsing.Playwright.Tests;
 

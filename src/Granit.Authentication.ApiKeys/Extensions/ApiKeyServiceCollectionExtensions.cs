@@ -1,7 +1,6 @@
 using Granit.Authentication.ApiKeys.Diagnostics;
 using Granit.Authentication.ApiKeys.Internal;
 using Granit.Authentication.ApiKeys.Options;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

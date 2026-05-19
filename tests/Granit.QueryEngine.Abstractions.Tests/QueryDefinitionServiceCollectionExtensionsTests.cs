@@ -1,4 +1,3 @@
-using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

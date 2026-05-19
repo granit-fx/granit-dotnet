@@ -1,4 +1,3 @@
-using Granit.Auditing;
 using Granit.Auditing.Endpoints.Internal;
 using Granit.Auditing.Endpoints.Workspaces;
 using Granit.Http.ApiDocumentation;

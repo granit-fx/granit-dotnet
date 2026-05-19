@@ -6,7 +6,6 @@
 //   - KeycloakClaimsTransformation registered
 // =============================================================================
 
-using Granit.Authentication.JwtBearer;
 using Granit.Authentication.JwtBearer.Keycloak.Authentication;
 using Granit.Modularity;
 using Granit.Users;

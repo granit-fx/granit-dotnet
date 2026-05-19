@@ -1,6 +1,5 @@
 using Granit.Events;
 using Granit.Guids;
-using Granit.Identity;
 using Granit.Identity.Federated.EntraId.Exceptions;
 using Granit.Identity.Federated.EntraId.Internal;
 using Granit.Identity.Federated.EntraId.Sync;

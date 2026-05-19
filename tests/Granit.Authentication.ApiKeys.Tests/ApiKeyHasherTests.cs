@@ -1,6 +1,5 @@
 using Granit.Authentication.ApiKeys.Internal;
 using Granit.Authentication.ApiKeys.Options;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 

@@ -3,7 +3,6 @@ using Granit.Bff.Options;
 using Granit.Timing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;

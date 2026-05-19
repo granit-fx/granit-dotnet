@@ -1,4 +1,3 @@
-using Granit.Identity.Federated.Keycloak.Extensions;
 using Granit.Identity.Federated.Keycloak.Internal;
 using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;

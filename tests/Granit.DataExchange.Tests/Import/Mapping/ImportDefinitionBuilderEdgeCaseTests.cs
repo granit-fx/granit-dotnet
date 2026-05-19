@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using Granit.DataExchange.Import.Mapping;
 using Shouldly;
 using Xunit;

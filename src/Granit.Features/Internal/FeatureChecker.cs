@@ -1,6 +1,5 @@
 using Granit.Features.Cache;
 using Granit.Features.Definitions;
-using Granit.Features.Diagnostics;
 using Granit.Features.Exceptions;
 using Granit.Features.ValueProviders;
 using Granit.MultiTenancy;

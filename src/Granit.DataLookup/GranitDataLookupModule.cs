@@ -3,7 +3,6 @@ using Granit.DataLookup.Extensions;
 using Granit.Diagnostics;
 using Granit.Localization;
 using Granit.Modularity;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.DataLookup;
 

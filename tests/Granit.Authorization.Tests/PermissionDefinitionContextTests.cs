@@ -1,4 +1,3 @@
-using Granit.Authorization;
 using Granit.Authorization.Services;
 using Granit.Localization;
 using Shouldly;

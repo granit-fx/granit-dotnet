@@ -7,7 +7,6 @@ using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Internal;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using OpenIddict.Abstractions;

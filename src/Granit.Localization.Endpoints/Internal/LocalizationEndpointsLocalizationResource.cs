@@ -1,5 +1,3 @@
-using Granit.Localization;
-
 namespace Granit.Localization.Endpoints.Internal;
 
 /// <summary>

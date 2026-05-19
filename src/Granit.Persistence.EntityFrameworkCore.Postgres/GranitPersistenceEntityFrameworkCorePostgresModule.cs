@@ -3,8 +3,6 @@ using Granit.Observability;
 using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Persistence.EntityFrameworkCore.Postgres.Extensions;
 using Npgsql;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 
 namespace Granit.Persistence.EntityFrameworkCore.Postgres;
 

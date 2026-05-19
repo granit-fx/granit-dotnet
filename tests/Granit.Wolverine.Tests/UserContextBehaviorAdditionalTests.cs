@@ -10,7 +10,6 @@ using Granit.Wolverine.Behaviors;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.Middleware;
 using NSubstitute;
-using Shouldly;
 using Wolverine;
 using Xunit;
 

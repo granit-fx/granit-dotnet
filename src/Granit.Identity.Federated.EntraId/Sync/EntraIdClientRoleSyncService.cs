@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Guids;
-using Granit.Identity;
 using Granit.Identity.Federated.EntraId.Exceptions;
 using Granit.Identity.Federated.EntraId.Options;
 using Granit.Identity.Models;

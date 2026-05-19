@@ -1,7 +1,6 @@
 using Granit.DocumentGeneration.Excel.Extensions;
 using Granit.Modularity;
 using Granit.Templating;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.DocumentGeneration.Excel;
 

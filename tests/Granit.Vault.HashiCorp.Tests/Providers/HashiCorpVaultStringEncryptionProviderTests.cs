@@ -1,4 +1,3 @@
-using Granit.Encryption;
 using Granit.Encryption.Options;
 using Granit.Vault.HashiCorp.Providers;
 using Microsoft.Extensions.Options;

@@ -5,7 +5,6 @@
 // to the in-process channel with correct fields, including tenant context handling.
 // =============================================================================
 
-using System.Text.Json;
 using System.Threading.Channels;
 using Granit.MultiTenancy;
 using Granit.Timing;

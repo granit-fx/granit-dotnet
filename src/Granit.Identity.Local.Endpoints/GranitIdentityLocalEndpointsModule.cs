@@ -1,7 +1,6 @@
 using Granit.Authorization;
 using Granit.Caching;
 using Granit.Http.ApiDocumentation;
-using Granit.Identity.Local;
 using Granit.Identity.Local.Endpoints.Endpoints;
 using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Localization.Extensions;

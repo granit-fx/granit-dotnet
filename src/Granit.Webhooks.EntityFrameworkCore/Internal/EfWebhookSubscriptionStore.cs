@@ -3,7 +3,6 @@ using Granit.Domain.ValueObjects;
 using Granit.Exceptions;
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;

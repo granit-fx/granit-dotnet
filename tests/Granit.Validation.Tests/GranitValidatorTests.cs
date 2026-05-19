@@ -9,7 +9,6 @@
 
 using FluentValidation;
 using FluentValidation.Results;
-using Granit.Validation;
 using Shouldly;
 using Xunit;
 

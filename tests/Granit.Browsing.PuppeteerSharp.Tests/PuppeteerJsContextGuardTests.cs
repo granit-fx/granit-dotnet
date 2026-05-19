@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Granit.Browsing.PuppeteerSharp.Internal;
 using NSubstitute;
 using PuppeteerSharp;

@@ -4,7 +4,6 @@ using Granit.Privacy.LegalAgreements.Internal;
 using NSubstitute;
 using Shouldly;
 using Xunit;
-using Xunit.v3;
 
 namespace Granit.Privacy.Tests;
 

@@ -2,7 +2,6 @@ using Granit.OpenIddict.EntityFrameworkCore.Seeding;
 using Granit.OpenIddict.Options;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using OpenIddict.Abstractions;
 using Xunit;

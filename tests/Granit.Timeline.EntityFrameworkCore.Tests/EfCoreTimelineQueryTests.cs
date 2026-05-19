@@ -8,7 +8,6 @@
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
-using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.EntityFrameworkCore.Internal;
 using Granit.Timeline.Options;

@@ -6,7 +6,6 @@
 //   - EntraIdClaimsTransformation registered
 // =============================================================================
 
-using Granit.Authentication.JwtBearer;
 using Granit.Authentication.JwtBearer.EntraId.Authentication;
 using Granit.Modularity;
 using Granit.Users;

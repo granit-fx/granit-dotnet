@@ -1,5 +1,4 @@
 using System.Net;
-using Granit.Http.Security;
 using Shouldly;
 using Xunit;
 

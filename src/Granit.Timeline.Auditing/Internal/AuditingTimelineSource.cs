@@ -3,7 +3,6 @@ using System.Text.Json;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
 using Granit.QueryEngine;
-using Granit.Timeline;
 using Granit.Timeline.Abstractions;
 
 namespace Granit.Timeline.Auditing.Internal;

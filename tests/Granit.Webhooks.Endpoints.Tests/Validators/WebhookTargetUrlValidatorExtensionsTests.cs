@@ -1,4 +1,3 @@
-using FluentValidation;
 using FluentValidation.TestHelper;
 using Granit.Validation;
 using Granit.Webhooks.Endpoints.Validators;

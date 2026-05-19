@@ -3,7 +3,6 @@ using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Granit.Events;
 using Granit.Identity.Events;
-using Granit.Identity.Federated;
 using Granit.Identity.Federated.Exceptions;
 using Granit.Identity.Federated.GoogleCloud.Diagnostics;
 using Granit.Identity.Federated.GoogleCloud.Options;

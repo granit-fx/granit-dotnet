@@ -2,7 +2,6 @@
 // CurrentTenantTests - Unit tests for ICurrentTenant / CurrentTenant
 // =============================================================================
 
-using Granit.MultiTenancy;
 using Granit.MultiTenancy.Internal;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;

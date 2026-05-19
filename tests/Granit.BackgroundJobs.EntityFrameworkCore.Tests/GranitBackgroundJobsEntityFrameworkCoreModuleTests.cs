@@ -1,4 +1,3 @@
-using Granit.BackgroundJobs.EntityFrameworkCore;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 using Shouldly;

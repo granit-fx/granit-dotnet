@@ -4,7 +4,6 @@ using Granit.Authorization.Domain;
 using Granit.Guids;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.SharedConnection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

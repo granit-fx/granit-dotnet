@@ -3,7 +3,6 @@ using Granit.Notifications;
 using Granit.Templating;
 using Granit.Templating.Extensions;
 using Granit.Timeline.Notifications.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Timeline.Notifications;
 

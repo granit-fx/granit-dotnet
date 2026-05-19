@@ -1,13 +1,11 @@
 using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Guids;
-using Granit.Identity;
 using Granit.Identity.Federated.Cognito.Sync;
 using Granit.Identity.Models;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;

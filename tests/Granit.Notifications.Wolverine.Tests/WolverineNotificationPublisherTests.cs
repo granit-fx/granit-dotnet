@@ -1,13 +1,10 @@
 using System.Text.Json;
 using Granit.Domain;
 using Granit.MultiTenancy;
-using Granit.Notifications;
-using Granit.Notifications.Abstractions;
 using Granit.Notifications.Messages;
 using Granit.Notifications.Wolverine.Internal;
 using Granit.Timing;
 using NSubstitute;
-using Shouldly;
 using Wolverine;
 using Xunit;
 

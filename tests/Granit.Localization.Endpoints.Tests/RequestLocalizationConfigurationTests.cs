@@ -1,5 +1,4 @@
 using System.Globalization;
-using Granit.Localization;
 using Granit.Localization.Endpoints.Extensions;
 using Granit.Localization.Options;
 using Microsoft.AspNetCore.Builder;

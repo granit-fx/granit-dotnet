@@ -1,4 +1,3 @@
-using Granit.MultiTenancy;
 using Shouldly;
 using Xunit;
 

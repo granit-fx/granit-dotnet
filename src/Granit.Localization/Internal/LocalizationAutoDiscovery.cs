@@ -11,7 +11,6 @@
 // ---------------------------------------------------------------------------
 
 using System.Reflection;
-using Granit.Localization;
 using Granit.Localization.Options;
 
 namespace Granit.Localization.Internal;

@@ -4,10 +4,7 @@
 // declared as AdditionalFiles and produces type-safe C# constant classes.
 // ---------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using Microsoft.CodeAnalysis;

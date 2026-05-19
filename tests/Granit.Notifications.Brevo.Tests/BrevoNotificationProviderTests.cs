@@ -14,7 +14,6 @@ using Granit.Notifications.Email;
 using Granit.Notifications.Sms;
 using Granit.Notifications.WhatsApp;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;

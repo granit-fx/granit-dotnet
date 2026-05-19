@@ -1,5 +1,4 @@
 using Granit.Mcp.Server.Internal;
-using Granit.Mcp.Server.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

@@ -3,7 +3,6 @@ using System.Net.Http.Json;
 using Granit.Settings.Definitions;
 using Granit.Settings.Endpoints.Extensions;
 using Granit.Settings.Services;
-using Granit.Settings.Values;
 using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

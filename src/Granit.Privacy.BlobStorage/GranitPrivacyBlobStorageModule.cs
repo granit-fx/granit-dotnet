@@ -2,7 +2,6 @@ using Granit.BlobStorage;
 using Granit.IO;
 using Granit.Modularity;
 using Granit.Privacy.BlobStorage.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Privacy.BlobStorage;
 

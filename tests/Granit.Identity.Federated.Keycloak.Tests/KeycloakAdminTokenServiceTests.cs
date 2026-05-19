@@ -3,7 +3,6 @@ using Granit.Identity.Federated.Keycloak.Internal;
 using Granit.Identity.Federated.Keycloak.Options;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;

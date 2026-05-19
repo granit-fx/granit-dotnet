@@ -2,7 +2,6 @@ using System.Reflection;
 using Granit.Localization;
 using Granit.Localization.Options;
 using Granit.Modularity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;

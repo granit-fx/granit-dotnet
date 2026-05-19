@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using IPuppeteerPage = PuppeteerSharp.IPage;
 
 namespace Granit.Browsing.PuppeteerSharp.Internal;

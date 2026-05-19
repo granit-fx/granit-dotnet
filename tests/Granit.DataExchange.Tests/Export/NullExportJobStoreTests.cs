@@ -1,4 +1,3 @@
-using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Internal;
 using Shouldly;

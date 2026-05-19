@@ -1,6 +1,5 @@
 using Granit.Testing.Containers;
 using Shouldly;
-using Xunit;
 
 namespace Granit.Testing.Tests.Containers;
 

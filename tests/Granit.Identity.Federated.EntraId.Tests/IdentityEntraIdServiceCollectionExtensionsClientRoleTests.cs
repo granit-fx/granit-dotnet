@@ -1,6 +1,5 @@
 using Granit.Events;
 using Granit.Guids.Extensions;
-using Granit.Identity;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.EntraId.Extensions;
 using Granit.Timing;

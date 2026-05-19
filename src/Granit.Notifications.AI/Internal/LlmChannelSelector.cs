@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Granit.AI;
-using Granit.AI.Internal;
 using Granit.Notifications.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;

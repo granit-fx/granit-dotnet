@@ -7,7 +7,6 @@ using Granit.Timing;
 using Granit.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;
 using Xunit;

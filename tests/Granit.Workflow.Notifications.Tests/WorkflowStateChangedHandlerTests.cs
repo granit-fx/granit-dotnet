@@ -5,7 +5,6 @@ using Granit.Workflow.Events;
 using Granit.Workflow.Notifications.Handlers;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using Shouldly;
 using Xunit;
 
 namespace Granit.Workflow.Notifications.Tests;

@@ -1,7 +1,6 @@
 using Granit.AI;
 using Granit.Modularity;
 using Shouldly;
-using Xunit;
 
 namespace Granit.Workflow.AI.Tests;
 

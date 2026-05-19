@@ -1,4 +1,3 @@
-using FluentValidation;
 using Granit.Validation;
 using Granit.Webhooks.Endpoints.Dtos;
 

@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Granit.Browsing.Capabilities;
 using Granit.Browsing.Pages;
 using Granit.IO;

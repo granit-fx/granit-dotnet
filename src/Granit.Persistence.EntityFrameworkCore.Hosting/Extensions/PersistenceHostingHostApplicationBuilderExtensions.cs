@@ -1,4 +1,3 @@
-using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Internal;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 using Microsoft.Extensions.DependencyInjection;

@@ -2,9 +2,7 @@
 // MultiTenancyServiceCollectionExtensionsTests - DI registration tests
 // =============================================================================
 
-using Granit.MultiTenancy;
 using Granit.MultiTenancy.Extensions;
-using Granit.MultiTenancy.Internal;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;

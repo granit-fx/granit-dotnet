@@ -1,5 +1,4 @@
 using Granit.Guids;
-using Granit.Identity;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.EntityFrameworkCore.Extensions;
 using Granit.Identity.Federated.EntityFrameworkCore.Internal;

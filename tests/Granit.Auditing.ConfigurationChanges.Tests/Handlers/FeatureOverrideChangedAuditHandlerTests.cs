@@ -5,7 +5,6 @@ using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Users;
 using NSubstitute;
-using Shouldly;
 using Xunit;
 
 namespace Granit.Auditing.ConfigurationChanges.Tests.Handlers;

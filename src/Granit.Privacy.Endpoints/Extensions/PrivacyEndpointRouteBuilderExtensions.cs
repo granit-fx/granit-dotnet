@@ -18,7 +18,6 @@ using Granit.Privacy.OptOut;
 using Granit.Privacy.OptOut.Events;
 using Granit.Privacy.ProcessingPurposes;
 using Granit.Privacy.Regulations;
-using Granit.Privacy.Regulations.Profiles;
 using Granit.Users;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;

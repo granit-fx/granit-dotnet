@@ -1,4 +1,3 @@
-using Granit.IO;
 using Granit.Modularity;
 using Granit.MultiTenancy;
 using Shouldly;

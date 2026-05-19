@@ -5,7 +5,6 @@
 // nécessaires et retourne la collection pour le chaînage.
 // =============================================================================
 
-using Granit.Authorization;
 using Granit.Authorization.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;

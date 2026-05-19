@@ -1,7 +1,5 @@
 using Granit.Guids;
-using Granit.Identity;
 using Granit.Identity.Domain;
-using Granit.Identity.Local.AspNetIdentity;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Options;
 using Microsoft.AspNetCore.Identity;

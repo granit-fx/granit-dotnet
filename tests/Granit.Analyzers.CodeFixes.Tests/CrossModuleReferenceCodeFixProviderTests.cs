@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Granit.Analyzers.CodeFixes.Tests;

@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Granit.Identity.Endpoints.Extensions;
-using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Options;
 using Granit.Identity.Endpoints.Permissions;
 using Microsoft.AspNetCore.Authentication;

@@ -12,7 +12,6 @@ using Granit.Timeline.Internal;
 using Granit.Timeline.Options;
 using Granit.Timing;
 using Granit.Users;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;

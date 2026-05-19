@@ -3,7 +3,6 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Granit.MultiTenancy;
-using Granit.Notifications.Endpoints;
 using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.Endpoints.Endpoints;
 using Granit.Notifications.MobilePush;

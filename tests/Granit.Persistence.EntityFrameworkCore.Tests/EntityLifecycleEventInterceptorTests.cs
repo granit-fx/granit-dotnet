@@ -3,7 +3,6 @@ using Granit.Events;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
-using Shouldly;
 using Xunit;
 
 namespace Granit.Persistence.EntityFrameworkCore.Tests;

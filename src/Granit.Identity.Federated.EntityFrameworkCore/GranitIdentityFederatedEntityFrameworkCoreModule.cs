@@ -1,4 +1,3 @@
-using Granit.Identity.Federated;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 

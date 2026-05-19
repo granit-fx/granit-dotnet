@@ -1,5 +1,3 @@
-using Granit.Timeline;
-
 namespace Granit.Timeline.Endpoints.Dtos;
 
 /// <summary>

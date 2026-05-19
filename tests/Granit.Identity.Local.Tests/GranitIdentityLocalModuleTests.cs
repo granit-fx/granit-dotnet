@@ -1,6 +1,5 @@
 using Granit.Events;
 using Granit.Guids;
-using Granit.Identity;
 using Granit.Modularity;
 using Granit.Timing;
 using Shouldly;

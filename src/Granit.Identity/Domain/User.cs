@@ -2,7 +2,6 @@ using Granit.DataProtection;
 using Granit.Domain;
 using Granit.Encryption;
 using Granit.Identity.Events;
-using Granit.MultiTenancy;
 
 namespace Granit.Identity.Domain;
 

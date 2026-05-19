@@ -4,7 +4,6 @@ using System.Text.Json.Serialization;
 using Granit.Json;
 using Granit.Modularity;
 using Granit.MultiTenancy;
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;

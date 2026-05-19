@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Granit.Identity.Federated;
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Privacy.DataExport;
 using Granit.MultiTenancy;

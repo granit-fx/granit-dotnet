@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Wolverine.Persistence;
 
 namespace Granit.Wolverine.Postgresql.Options;

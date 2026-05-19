@@ -10,7 +10,6 @@ using Granit.RateLimiting.Extensions;
 using Granit.RateLimiting.Options;
 using Granit.Users;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;

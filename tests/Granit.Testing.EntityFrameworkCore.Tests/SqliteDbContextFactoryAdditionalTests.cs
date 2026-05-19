@@ -1,4 +1,3 @@
-using Granit.Testing.EntityFrameworkCore;
 using Granit.Testing.Fakes;
 using Shouldly;
 

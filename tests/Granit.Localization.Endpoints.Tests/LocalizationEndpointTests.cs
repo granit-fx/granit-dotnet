@@ -1,7 +1,5 @@
-using System.Globalization;
 using System.Net;
 using System.Text.Json;
-using Granit.Localization;
 using Granit.Localization.Endpoints.Extensions;
 using Granit.Localization.Endpoints.Tests.TestResources;
 using Granit.Localization.Extensions;
@@ -10,7 +8,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Localization.Endpoints.Tests;
 

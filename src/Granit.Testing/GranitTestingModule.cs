@@ -1,6 +1,5 @@
 using Granit.Guids;
 using Granit.Modularity;
-using Granit.Users;
 
 namespace Granit.Testing;
 

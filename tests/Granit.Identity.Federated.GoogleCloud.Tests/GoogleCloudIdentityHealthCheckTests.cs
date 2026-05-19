@@ -2,7 +2,6 @@ using Granit.Identity.Federated.GoogleCloud.HealthChecks;
 using Granit.Identity.Federated.GoogleCloud.Internal;
 using Granit.Identity.Federated.GoogleCloud.Options;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;

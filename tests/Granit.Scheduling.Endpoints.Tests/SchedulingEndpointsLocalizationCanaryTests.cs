@@ -2,7 +2,6 @@ using System.Globalization;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Scheduling.Endpoints.Internal;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;

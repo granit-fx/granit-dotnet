@@ -2,7 +2,6 @@
 // HeaderTenantResolverTests - Unit tests for the HTTP header tenant resolver
 // =============================================================================
 
-using Granit.MultiTenancy;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Resolvers;
 using Microsoft.AspNetCore.Http;

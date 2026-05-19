@@ -4,7 +4,6 @@ using Granit.Authentication.ApiKeys.Events;
 using Granit.Authentication.ApiKeys.Options;
 using Granit.Events;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 using Shouldly;

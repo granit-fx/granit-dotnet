@@ -5,10 +5,8 @@
 using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Security.Claims;
-using Granit.MultiTenancy;
 using Granit.MultiTenancy.Authorization;
 using Granit.MultiTenancy.Diagnostics;
-using Granit.MultiTenancy.Internal;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;

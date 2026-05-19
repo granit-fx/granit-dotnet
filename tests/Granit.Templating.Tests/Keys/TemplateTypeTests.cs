@@ -1,4 +1,3 @@
-using System.Reflection;
 using Granit.Templating.Keys;
 using Shouldly;
 using Xunit;

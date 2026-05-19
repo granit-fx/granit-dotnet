@@ -6,12 +6,9 @@
 
 using System.Diagnostics.Metrics;
 using System.Text.Json;
-using System.Threading;
-using Granit.Domain;
 using Granit.Guids;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Diagnostics;
-using Granit.Notifications.Domain;
 using Granit.Notifications.EntityFrameworkCore.Internal;
 using Granit.Notifications.Handlers;
 using Granit.Notifications.Messages;

@@ -1,5 +1,3 @@
-using Granit.Guids;
-using Granit.Modularity;
 using Granit.MultiTenancy;
 using Granit.Testing.Fakes;
 using Granit.Timing;

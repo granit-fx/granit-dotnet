@@ -1,4 +1,3 @@
-using Granit.Http.OutputCaching.StackExchangeRedis.Options;
 using Granit.Modularity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

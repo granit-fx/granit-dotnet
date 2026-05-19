@@ -1,6 +1,5 @@
 using Granit.Features.AspNetCore;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 

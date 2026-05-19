@@ -1,10 +1,5 @@
-using Granit.Features.EntityFrameworkCore.Entities;
-using Granit.Features.EntityFrameworkCore.Extensions;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 

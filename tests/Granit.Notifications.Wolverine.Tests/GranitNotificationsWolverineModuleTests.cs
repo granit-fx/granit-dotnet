@@ -1,6 +1,5 @@
 using Granit.Domain;
 using Granit.Modularity;
-using Granit.Notifications;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Wolverine.Internal;
 using Granit.Wolverine;

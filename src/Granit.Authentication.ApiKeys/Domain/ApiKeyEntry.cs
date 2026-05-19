@@ -1,7 +1,6 @@
 using Granit.Authentication.ApiKeys.Events;
 using Granit.DataProtection;
 using Granit.Domain;
-using Granit.MultiTenancy;
 
 namespace Granit.Authentication.ApiKeys.Domain;
 

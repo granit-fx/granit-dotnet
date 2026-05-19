@@ -1,5 +1,4 @@
 using Granit.Modularity;
-using Granit.QueryEngine;
 using Shouldly;
 using Xunit;
 

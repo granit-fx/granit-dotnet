@@ -1,7 +1,6 @@
 using Granit.Authorization;
 using Granit.Authorization.Extensions;
 using Granit.QueryEngine;
-using Granit.Timeline;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Endpoints.Dtos;

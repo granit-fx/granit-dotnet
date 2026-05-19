@@ -7,7 +7,6 @@
 // =============================================================================
 
 using Granit.Domain;
-using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Domain.ValueObjects;
 using Granit.Timeline.Exceptions;

@@ -1,11 +1,6 @@
-using System;
-using System.IO;
 using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
 using Granit.Browsing.Exceptions;
 using Granit.Browsing.Playwright.Options;
-using Granit.Browsing.Sandbox;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

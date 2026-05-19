@@ -4,7 +4,6 @@
 // ---------------------------------------------------------------------------
 
 using System.Globalization;
-using Granit.Localization;
 using Granit.Localization.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;

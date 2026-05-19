@@ -2,7 +2,6 @@ using Granit.Modularity;
 using Granit.Notifications;
 using Granit.Templating;
 using Granit.Templating.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.BackgroundJobs.Notifications;
 

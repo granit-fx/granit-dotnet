@@ -2,7 +2,6 @@ using Amazon.KeyManagementService.Model;
 using Granit.Encryption;
 using Granit.Encryption.Options;
 using Granit.Vault.Aws.Providers;
-using Granit.Vault.Aws.Services;
 using NSubstitute;
 using Shouldly;
 using Xunit;

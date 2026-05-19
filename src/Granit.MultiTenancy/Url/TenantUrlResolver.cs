@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using Granit.MultiTenancy.Events;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Stores;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Granit.MultiTenancy.Url;

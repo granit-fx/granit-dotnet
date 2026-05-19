@@ -1,4 +1,3 @@
-using Granit.MultiTenancy.Authorization;
 using Granit.MultiTenancy.Authorization.Extensions;
 using Granit.MultiTenancy.Extensions;
 using Microsoft.Extensions.Configuration;

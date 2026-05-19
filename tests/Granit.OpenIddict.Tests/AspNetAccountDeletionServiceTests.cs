@@ -1,7 +1,6 @@
 using Granit.Events;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
-using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Internal;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;

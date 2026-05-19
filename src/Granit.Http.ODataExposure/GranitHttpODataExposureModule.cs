@@ -2,7 +2,6 @@ using Granit.Authorization;
 using Granit.Http.ODataExposure.Extensions;
 using Granit.Modularity;
 using Granit.RateLimiting;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Http.ODataExposure;
 

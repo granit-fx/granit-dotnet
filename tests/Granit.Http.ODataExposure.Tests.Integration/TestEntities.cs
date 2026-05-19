@@ -4,7 +4,6 @@ using Granit.Entities;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine;
-using Granit.QueryEngine.Filtering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Http.ODataExposure.Tests.Integration;

@@ -1,12 +1,8 @@
-using Granit.AI;
-using Granit.AI.VectorData;
 using Granit.AI.VectorData.Internal;
 using Granit.AI.VectorData.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using NSubstitute;
-using Shouldly;
 
 namespace Granit.AI.VectorData.Tests;
 

@@ -1,4 +1,3 @@
-using Granit.Privacy.Regulations.Profiles;
 using Granit.Privacy.Regulations.Profiles.Internal;
 using Shouldly;
 using Xunit;

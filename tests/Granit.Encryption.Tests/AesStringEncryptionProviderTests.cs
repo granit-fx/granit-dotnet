@@ -2,7 +2,6 @@
 // AesStringEncryptionProviderTests - Tests unitaires AES-256-CBC
 // =============================================================================
 
-using Granit.Encryption;
 using Granit.Encryption.Options;
 using Granit.Encryption.Providers;
 using Microsoft.Extensions.Hosting;

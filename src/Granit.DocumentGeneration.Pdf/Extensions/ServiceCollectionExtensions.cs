@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using Granit.Browsing;
-using Granit.Browsing.Capabilities;
 using Granit.Diagnostics;
 using Granit.DocumentGeneration.Pdf.Diagnostics;
 using Granit.DocumentGeneration.Pdf.Internal;

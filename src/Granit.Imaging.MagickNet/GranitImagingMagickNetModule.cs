@@ -1,6 +1,5 @@
 using Granit.Imaging.MagickNet.Extensions;
 using Granit.Modularity;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Imaging.MagickNet;
 

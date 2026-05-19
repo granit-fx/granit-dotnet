@@ -1,6 +1,5 @@
 using Granit.DataLookup.Descriptors;
 using Granit.DataLookup.Registry;
-using Granit.DataLookup.Sources;
 using Microsoft.Extensions.Localization;
 
 namespace Granit.DataLookup.Sources;

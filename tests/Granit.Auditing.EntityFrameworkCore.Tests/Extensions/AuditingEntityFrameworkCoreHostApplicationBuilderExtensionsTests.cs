@@ -16,7 +16,6 @@ using Granit.Auditing.EntityFrameworkCore.Internal.Services;
 using Granit.Auditing.Extensions;
 using Granit.Auditing.Internal.Services;
 using Granit.Auditing.Messages;
-using Granit.Auditing.Options;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

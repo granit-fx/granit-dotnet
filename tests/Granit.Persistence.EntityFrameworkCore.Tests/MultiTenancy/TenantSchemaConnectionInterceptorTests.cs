@@ -13,7 +13,6 @@ using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using Shouldly;
 using Xunit;
 
 namespace Granit.Persistence.EntityFrameworkCore.Tests.MultiTenancy;

@@ -1,4 +1,3 @@
-using System.Text;
 using Granit.DataExchange.Csv.Internal.Export;
 using Granit.DataExchange.Csv.Internal.Import;
 using Granit.DataExchange.Export;

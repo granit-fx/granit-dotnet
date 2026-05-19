@@ -1,5 +1,4 @@
 using Granit.Bff.BackgroundJobs.Internal;
-using Granit.Bff.BackgroundJobs.Jobs;
 using Granit.Bff.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;

@@ -4,7 +4,6 @@ using Granit.Timing;
 using Granit.Webhooks.Messages;
 using Granit.Webhooks.Wolverine.Internal;
 using NSubstitute;
-using Shouldly;
 using Wolverine;
 using Xunit;
 

@@ -1,4 +1,3 @@
-using System;
 using Granit.Browsing.Pages;
 using Shouldly;
 using Xunit;

@@ -1,4 +1,3 @@
-using Granit.Identity;
 using Granit.Identity.Local.Domain;
 using Granit.QueryEngine;
 using Microsoft.AspNetCore.Identity;

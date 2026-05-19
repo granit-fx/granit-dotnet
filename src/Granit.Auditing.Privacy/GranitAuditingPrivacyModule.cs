@@ -1,7 +1,6 @@
 using Granit.Auditing.Privacy.DataExport;
 using Granit.Modularity;
 using Granit.Privacy.BlobStorage;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Auditing.Privacy;

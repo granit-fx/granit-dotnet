@@ -11,7 +11,6 @@ using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using NSubstitute;
 using Shouldly;

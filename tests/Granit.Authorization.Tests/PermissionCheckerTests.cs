@@ -12,14 +12,12 @@
 // =============================================================================
 
 using System.Diagnostics.Metrics;
-using Granit.Authorization;
 using Granit.Authorization.Cache;
 using Granit.Authorization.Diagnostics;
 using Granit.Authorization.Options;
 using Granit.Authorization.Services;
 using Granit.MultiTenancy;
 using Granit.Users;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;

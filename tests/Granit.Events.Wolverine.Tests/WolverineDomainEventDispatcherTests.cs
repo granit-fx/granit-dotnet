@@ -1,5 +1,4 @@
 using System.Diagnostics.Metrics;
-using Granit.Events;
 using Granit.Events.Diagnostics;
 using Granit.Events.Wolverine.Internal;
 using Microsoft.Extensions.DependencyInjection;

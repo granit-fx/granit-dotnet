@@ -1,6 +1,5 @@
 using Granit.AI.Queries;
 using Shouldly;
-using Xunit;
 
 namespace Granit.AI.Tests.Queries;
 

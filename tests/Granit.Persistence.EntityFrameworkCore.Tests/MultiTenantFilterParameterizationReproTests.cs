@@ -22,7 +22,6 @@
 using System.Globalization;
 using Granit.Domain;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

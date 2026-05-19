@@ -2,7 +2,6 @@ using Granit.Identity.Endpoints.Endpoints;
 using Granit.Identity.Endpoints.Options;
 using Granit.Identity.Endpoints.Permissions;
 using Granit.Validation.AspNetCore;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

@@ -4,10 +4,8 @@ using Granit.Identity.Federated.Events;
 using Granit.Identity.Federated.Handlers;
 using Granit.Identity.Federated.Internal;
 using Granit.Identity.Federated.RateLimiting;
-using Granit.Identity.Models;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using Shouldly;
 using Xunit;
 
 namespace Granit.Identity.Federated.Tests.Handlers;

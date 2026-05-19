@@ -4,8 +4,6 @@ using Granit.Notifications.Email.Options;
 using Granit.Templating.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
-using TemplatingExtensions = Granit.Templating.Extensions.ServiceCollectionExtensions;
-
 namespace Granit.Notifications.Email.Extensions;
 
 /// <summary>Extension methods for the email notification channel.</summary>

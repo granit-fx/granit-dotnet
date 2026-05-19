@@ -1,15 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
-using Granit.DataFiltering;
 using Granit.Domain;
-using Granit.Events;
-using Granit.Identity;
-using Granit.Identity.Local;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
-using Granit.MultiTenancy;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;

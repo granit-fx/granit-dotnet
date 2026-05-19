@@ -4,7 +4,6 @@ using Granit.RateLimiting.Abstractions;
 using Granit.RateLimiting.Attributes;
 using Granit.RateLimiting.Diagnostics;
 using Granit.RateLimiting.Exceptions;
-using Granit.RateLimiting.Internal;
 using Granit.RateLimiting.Options;
 using Granit.RateLimiting.Wolverine;
 using Granit.Users;

@@ -1,4 +1,3 @@
-using Granit.Encryption.EntityFrameworkCore;
 using Granit.Encryption.EntityFrameworkCore.Extensions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;

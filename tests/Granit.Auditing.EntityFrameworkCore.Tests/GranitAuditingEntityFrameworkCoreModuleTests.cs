@@ -7,7 +7,6 @@
 //   - Module inherits from GranitModule
 // =============================================================================
 
-using Granit.Auditing;
 using Granit.Caching;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;

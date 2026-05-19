@@ -1,4 +1,3 @@
-using Granit.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Persistence.EntityFrameworkCore.Specification;

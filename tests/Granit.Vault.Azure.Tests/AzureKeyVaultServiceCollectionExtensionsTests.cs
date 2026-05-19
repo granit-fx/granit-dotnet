@@ -6,7 +6,6 @@ using Granit.Vault.Azure.Extensions;
 using Granit.Vault.Azure.HealthChecks;
 using Granit.Vault.Azure.Options;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Shouldly;

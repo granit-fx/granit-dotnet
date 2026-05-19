@@ -2,7 +2,6 @@ using Granit.BackgroundJobs.EntityFrameworkCore;
 using Granit.BlobStorage.EntityFrameworkCore;
 using Granit.Identity.EntityFrameworkCore;
 using Granit.MultiTenancy.EntityFrameworkCore;
-using Granit.Persistence.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 

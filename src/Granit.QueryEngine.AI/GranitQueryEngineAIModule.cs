@@ -1,9 +1,7 @@
 using Granit.AI;
 using Granit.Diagnostics;
 using Granit.Modularity;
-using Granit.QueryEngine;
 using Granit.QueryEngine.AI.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.QueryEngine.AI;

@@ -1,13 +1,10 @@
 using Granit.Guids;
-using Granit.Identity;
 using Granit.Identity.Domain;
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Internal;
 using Granit.Identity.Federated.Options;
-using Granit.Identity.Models;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;

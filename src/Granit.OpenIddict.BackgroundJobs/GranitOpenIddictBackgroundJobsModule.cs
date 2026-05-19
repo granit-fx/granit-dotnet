@@ -3,7 +3,6 @@ using Granit.Caching;
 using Granit.Modularity;
 using Granit.OpenIddict.BackgroundJobs.Services;
 using Granit.Settings;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.OpenIddict.BackgroundJobs;

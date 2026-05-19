@@ -1,6 +1,5 @@
 using Granit.BackgroundJobs.Wolverine.Internal;
 using NSubstitute;
-using Shouldly;
 using Wolverine;
 using Xunit;
 

@@ -1,5 +1,4 @@
 using Granit.Caching.Internal;
-using Granit.Http.Idempotency.Abstractions;
 using Granit.Http.Idempotency.Internal;
 using Granit.Http.Idempotency.Models;
 using Microsoft.Extensions.Logging.Abstractions;

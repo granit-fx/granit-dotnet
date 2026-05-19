@@ -1,15 +1,12 @@
 using System.Text;
 using System.Text.Json;
 using Fido2NetLib;
-using Fido2NetLib.Exceptions;
 using Fido2NetLib.Objects;
 using Granit.Identity.Local.Domain;
-using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 #pragma warning disable GRSEC003 // Passkey/credential constants, not secrets
 

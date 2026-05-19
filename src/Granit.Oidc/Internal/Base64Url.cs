@@ -1,5 +1,3 @@
-using System.Buffers.Text;
-
 namespace Granit.Oidc.Internal;
 
 /// <summary>

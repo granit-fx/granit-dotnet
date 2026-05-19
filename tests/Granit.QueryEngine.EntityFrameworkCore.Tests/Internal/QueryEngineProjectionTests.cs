@@ -1,5 +1,4 @@
 using Granit.QueryEngine.EntityFrameworkCore.Internal;
-using Granit.QueryEngine.Filtering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;

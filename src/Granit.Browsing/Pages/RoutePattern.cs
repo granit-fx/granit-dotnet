@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Granit.Browsing.Pages;

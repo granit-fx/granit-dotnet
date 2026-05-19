@@ -3,7 +3,6 @@ using Granit.Persistence.EntityFrameworkCore;
 using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Keys;
-using Granit.Templating.Pipeline;
 using Granit.Templating.Store;
 using Granit.Timing;
 using Granit.Workflow.Domain;

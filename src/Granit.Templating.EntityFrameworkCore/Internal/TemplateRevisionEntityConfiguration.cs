@@ -1,5 +1,4 @@
 using Granit.Templating.EntityFrameworkCore.Entities;
-using Granit.Workflow.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

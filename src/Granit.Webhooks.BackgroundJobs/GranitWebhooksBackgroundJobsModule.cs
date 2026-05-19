@@ -1,7 +1,6 @@
 using Granit.BackgroundJobs;
 using Granit.Modularity;
 using Granit.Webhooks.BackgroundJobs.Services;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Webhooks.BackgroundJobs;

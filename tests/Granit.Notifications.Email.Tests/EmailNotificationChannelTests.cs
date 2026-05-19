@@ -7,7 +7,6 @@
 
 using System.Text.Json;
 using Granit.Notifications.Abstractions;
-using Granit.Notifications.Email;
 using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
 using Granit.Templating.Pipeline;

@@ -1,7 +1,6 @@
 using Granit.Localization;
 using Granit.Localization.Options;
 using Granit.Modularity;
-using Granit.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Validation.NorthAmerica;

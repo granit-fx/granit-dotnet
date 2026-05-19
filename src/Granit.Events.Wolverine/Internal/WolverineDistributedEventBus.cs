@@ -1,4 +1,3 @@
-using Granit.Events;
 using Granit.Events.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Wolverine;

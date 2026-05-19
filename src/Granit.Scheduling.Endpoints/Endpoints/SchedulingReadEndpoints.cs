@@ -2,7 +2,6 @@ using Granit.Authorization.Extensions;
 using Granit.Scheduling.Domain;
 using Granit.Scheduling.Domain.ValueObjects;
 using Granit.Scheduling.Endpoints.Dtos;
-using Granit.Scheduling.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

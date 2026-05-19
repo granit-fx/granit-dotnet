@@ -1,6 +1,5 @@
 using System.Net;
 using Granit.Identity.Endpoints.Extensions;
-using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Permissions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

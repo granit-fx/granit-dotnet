@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
-using Xunit;
 
 namespace Granit.Workflow.AI.Tests;
 

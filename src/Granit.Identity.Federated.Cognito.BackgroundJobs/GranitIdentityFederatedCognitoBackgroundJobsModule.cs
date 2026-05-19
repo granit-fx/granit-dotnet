@@ -1,5 +1,4 @@
 using Granit.BackgroundJobs;
-using Granit.Identity.Federated.Cognito;
 using Granit.Modularity;
 
 namespace Granit.Identity.Federated.Cognito.BackgroundJobs;

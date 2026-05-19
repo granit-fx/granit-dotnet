@@ -1,7 +1,6 @@
 using Granit.AI.Internal;
 using Granit.Guids;
 using Granit.Modularity;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.AI;

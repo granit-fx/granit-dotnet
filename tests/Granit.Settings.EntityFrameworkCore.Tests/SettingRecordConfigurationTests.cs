@@ -6,7 +6,6 @@
 
 using Granit.Settings.Domain;
 using Granit.Settings.EntityFrameworkCore.Extensions;
-using Granit.Settings.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shouldly;

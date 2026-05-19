@@ -11,7 +11,6 @@ using Granit.Timeline.Domain;
 using Granit.Timeline.Domain.ValueObjects;
 using Granit.Timeline.Notifications.Internal;
 using NSubstitute;
-using Shouldly;
 using Xunit;
 
 namespace Granit.Timeline.Notifications.Tests;

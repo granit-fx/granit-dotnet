@@ -3,7 +3,6 @@ using Granit.Diagnostics;
 using Granit.Entities.Extensions;
 using Granit.Events;
 using Granit.Guids;
-using Granit.Identity;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Entities;
@@ -13,7 +12,6 @@ using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
 using Granit.Settings;
 using Granit.Timing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Identity.Local;

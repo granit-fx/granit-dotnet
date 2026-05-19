@@ -1,4 +1,3 @@
-using Granit.DataExchange.Excel;
 using Granit.Modularity;
 using Shouldly;
 using Xunit;

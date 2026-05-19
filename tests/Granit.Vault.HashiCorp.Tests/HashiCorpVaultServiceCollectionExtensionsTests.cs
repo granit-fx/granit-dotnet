@@ -1,5 +1,4 @@
 using Granit.Caching.Extensions;
-using Granit.Vault;
 using Granit.Vault.HashiCorp.Extensions;
 using Granit.Vault.HashiCorp.HealthChecks;
 using Granit.Vault.HashiCorp.Options;

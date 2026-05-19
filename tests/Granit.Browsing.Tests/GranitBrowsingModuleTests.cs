@@ -1,4 +1,3 @@
-using System.Linq;
 using Granit.Browsing.Sandbox;
 using Granit.Http.Security;
 using Granit.IO;

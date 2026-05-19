@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
-using Shouldly;
 using Xunit;
 
 namespace Granit.Privacy.BackgroundJobs.Tests.Jobs;

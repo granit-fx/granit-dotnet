@@ -4,7 +4,6 @@ using Granit.Http.ExceptionHandling;
 using Granit.Modularity;
 using Granit.QueryEngine;
 using Granit.Timing;
-using Granit.Users;
 
 namespace Granit.Authentication.ApiKeys;
 

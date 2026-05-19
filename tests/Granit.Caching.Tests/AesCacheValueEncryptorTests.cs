@@ -10,7 +10,6 @@
 
 using System.Security.Cryptography;
 using Granit.Caching.Options;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 

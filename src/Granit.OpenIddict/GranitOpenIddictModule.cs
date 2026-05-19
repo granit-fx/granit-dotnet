@@ -16,7 +16,6 @@ using Granit.OpenIddict.Queries;
 using Granit.OpenIddict.Services;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
-using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;

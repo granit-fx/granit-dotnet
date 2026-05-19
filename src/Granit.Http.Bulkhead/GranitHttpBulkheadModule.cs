@@ -2,7 +2,6 @@ using Granit.Features;
 using Granit.Http.Bulkhead.Extensions;
 using Granit.Http.ExceptionHandling;
 using Granit.Modularity;
-using Granit.Users;
 
 namespace Granit.Http.Bulkhead;
 

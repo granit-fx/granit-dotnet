@@ -2,7 +2,6 @@ using Granit.Authorization;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.QueryEngine.AspNetCore;
-using Granit.Webhooks;
 using Granit.Webhooks.Endpoints.Internal;
 using Granit.Webhooks.Endpoints.Workspaces;
 using Granit.Workspaces;

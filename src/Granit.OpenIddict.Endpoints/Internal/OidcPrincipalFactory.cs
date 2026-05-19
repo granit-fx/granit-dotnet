@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
 using Granit.Identity.Local.Domain;
-using Granit.Identity.Local.Extensions;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Identity;

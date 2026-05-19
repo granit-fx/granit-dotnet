@@ -1,5 +1,4 @@
 using Shouldly;
-using Xunit;
 
 namespace Granit.Validation.AI.Tests;
 

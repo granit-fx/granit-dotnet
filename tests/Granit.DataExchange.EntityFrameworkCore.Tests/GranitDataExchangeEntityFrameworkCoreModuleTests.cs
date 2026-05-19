@@ -1,4 +1,3 @@
-using Granit.DataExchange.EntityFrameworkCore;
 using Granit.Modularity;
 using Shouldly;
 using Xunit;

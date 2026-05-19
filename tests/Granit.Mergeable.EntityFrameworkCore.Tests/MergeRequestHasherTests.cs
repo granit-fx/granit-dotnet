@@ -1,4 +1,3 @@
-using Granit.Mergeable;
 using Granit.Mergeable.EntityFrameworkCore.Internal;
 using Shouldly;
 using Xunit;

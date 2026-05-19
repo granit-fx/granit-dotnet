@@ -15,7 +15,6 @@
 // DomainEventDispatcherInterceptor — covered in PermissionGrantEntityTests.
 // =============================================================================
 
-using Granit.Authorization;
 using Granit.Authorization.Services;
 using Granit.MultiTenancy;
 using Microsoft.Extensions.Logging;

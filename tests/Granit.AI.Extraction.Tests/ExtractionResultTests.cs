@@ -1,4 +1,3 @@
-using Granit.AI.Extraction;
 using Shouldly;
 
 namespace Granit.AI.Extraction.Tests;

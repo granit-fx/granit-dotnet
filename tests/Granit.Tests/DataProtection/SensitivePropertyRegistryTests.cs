@@ -2,7 +2,6 @@
 // Tests — SensitivePropertyRegistry: scanning, lookup, merge, and edge cases
 // =============================================================================
 
-using System.Reflection;
 using Granit.DataProtection;
 using Shouldly;
 using Xunit;

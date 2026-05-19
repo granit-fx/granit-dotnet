@@ -1,7 +1,6 @@
 using System.Net;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
-using Granit.Vault;
 using Granit.Vault.Aws.Services;
 using Granit.Vault.Exceptions;
 using Microsoft.Extensions.Logging.Abstractions;

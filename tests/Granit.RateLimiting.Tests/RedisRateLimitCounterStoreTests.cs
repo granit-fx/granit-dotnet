@@ -1,9 +1,7 @@
 using Granit.RateLimiting.Abstractions;
 using Granit.RateLimiting.Internal;
 using Granit.RateLimiting.Options;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;

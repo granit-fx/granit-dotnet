@@ -9,7 +9,6 @@
 //   - Works without a configured timezone (returns the value unchanged)
 // =============================================================================
 
-using Granit.Timing;
 using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 using Shouldly;

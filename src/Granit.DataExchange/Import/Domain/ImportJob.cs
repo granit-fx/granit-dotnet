@@ -1,7 +1,6 @@
 using Granit.DataExchange.Import.Events;
 using Granit.Domain;
 using Granit.Domain.ValueObjects;
-using Granit.MultiTenancy;
 
 namespace Granit.DataExchange.Import.Domain;
 

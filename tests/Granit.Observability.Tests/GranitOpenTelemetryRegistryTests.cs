@@ -1,4 +1,3 @@
-using Granit.Observability;
 using Granit.Observability.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

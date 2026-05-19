@@ -1,9 +1,7 @@
-using Granit.Caching;
 using Granit.Caching.Internal;
 using Granit.Caching.Options;
 using Shouldly;
 using Xunit;
-using ZiggyCreatures.Caching.Fusion.Serialization;
 using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
 
 namespace Granit.Caching.FusionCache.Tests;

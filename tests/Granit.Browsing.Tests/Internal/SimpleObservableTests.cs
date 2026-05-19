@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Granit.Browsing.Internal;
 using Shouldly;
 using Xunit;

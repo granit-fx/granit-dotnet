@@ -1,4 +1,3 @@
-using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 

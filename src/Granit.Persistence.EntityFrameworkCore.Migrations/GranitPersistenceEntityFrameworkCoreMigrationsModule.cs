@@ -1,5 +1,4 @@
 using Granit.Modularity;
-using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

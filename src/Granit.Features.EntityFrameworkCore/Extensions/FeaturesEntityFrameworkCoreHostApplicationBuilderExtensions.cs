@@ -1,4 +1,3 @@
-using Granit.Events;
 using Granit.Events.Extensions;
 using Granit.Features.Diagnostics;
 using Granit.Features.EntityFrameworkCore.Internal;

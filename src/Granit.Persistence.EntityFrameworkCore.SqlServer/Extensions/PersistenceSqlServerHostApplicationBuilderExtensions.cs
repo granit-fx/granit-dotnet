@@ -1,6 +1,5 @@
 using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Persistence.EntityFrameworkCore.SqlServer.Internal;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 

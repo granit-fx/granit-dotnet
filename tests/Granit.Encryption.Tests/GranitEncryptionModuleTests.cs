@@ -8,7 +8,6 @@
 // =============================================================================
 
 using Granit.Encryption.Diagnostics;
-using Granit.Encryption.Extensions;
 using Granit.Encryption.Options;
 using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;

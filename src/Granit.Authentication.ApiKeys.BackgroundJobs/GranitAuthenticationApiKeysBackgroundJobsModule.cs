@@ -1,7 +1,6 @@
 using Granit.Authentication.ApiKeys.BackgroundJobs.Services;
 using Granit.BackgroundJobs;
 using Granit.Modularity;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Authentication.ApiKeys.BackgroundJobs;

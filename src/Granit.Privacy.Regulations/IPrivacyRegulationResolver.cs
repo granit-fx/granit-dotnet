@@ -1,5 +1,3 @@
-using Granit.Privacy.Regulations.Profiles;
-
 namespace Granit.Privacy.Regulations;
 
 /// <summary>

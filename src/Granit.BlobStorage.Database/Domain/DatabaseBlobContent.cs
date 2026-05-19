@@ -1,5 +1,4 @@
 using Granit.Domain;
-using Granit.MultiTenancy;
 
 namespace Granit.BlobStorage.Database.Domain;
 

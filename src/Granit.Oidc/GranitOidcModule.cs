@@ -5,7 +5,6 @@ using Granit.Oidc.Discovery.Internal;
 using Granit.Oidc.DPoP;
 using Granit.Oidc.DPoP.Internal;
 using Granit.Timing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Oidc;

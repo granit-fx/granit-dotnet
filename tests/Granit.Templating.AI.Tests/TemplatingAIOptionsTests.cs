@@ -1,6 +1,5 @@
 using Granit.Templating.AI.Options;
 using Shouldly;
-using Xunit;
 
 namespace Granit.Templating.AI.Tests;
 

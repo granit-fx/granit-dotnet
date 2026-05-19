@@ -10,9 +10,7 @@
 // ProviderName="R" identifie un grantee de type rôle.
 // =============================================================================
 
-using Granit.Authorization;
 using Granit.Authorization.Domain;
-using Granit.Authorization.EntityFrameworkCore.DbContext;
 using Granit.Authorization.EntityFrameworkCore.Stores;
 using Granit.Guids;
 using Microsoft.EntityFrameworkCore;

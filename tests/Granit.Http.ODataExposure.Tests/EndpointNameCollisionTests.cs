@@ -8,7 +8,6 @@ using Granit.QueryEngine;
 using Granit.RateLimiting.Extensions;
 using Granit.RateLimiting.Options;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;

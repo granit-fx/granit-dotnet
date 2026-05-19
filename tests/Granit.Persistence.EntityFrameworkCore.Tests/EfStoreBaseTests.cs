@@ -14,13 +14,11 @@
 using System.Diagnostics.Metrics;
 using Granit.Domain;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.Metrics.Testing;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Testing;
 using NSubstitute;
 using Shouldly;

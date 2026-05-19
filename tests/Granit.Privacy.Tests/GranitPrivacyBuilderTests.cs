@@ -1,7 +1,6 @@
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Domain;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using Shouldly;
 using Xunit;
 

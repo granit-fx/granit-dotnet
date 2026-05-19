@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using Granit.DataExchange.AI.Internal;
 using Granit.DataExchange.AI.Options;
 using Granit.DataExchange.Extensions;
-using Granit.DataExchange.Import.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;

@@ -1,6 +1,5 @@
 using Granit.AI;
 using Granit.Modularity;
-using Granit.Privacy;
 
 namespace Granit.Privacy.AI;
 

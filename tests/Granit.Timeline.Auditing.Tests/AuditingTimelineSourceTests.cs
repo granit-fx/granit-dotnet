@@ -10,8 +10,6 @@ using System.Text.Json;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
 using Granit.QueryEngine;
-using Granit.Timeline;
-using Granit.Timeline.Abstractions;
 using Granit.Timeline.Auditing.Internal;
 using NSubstitute;
 using Shouldly;

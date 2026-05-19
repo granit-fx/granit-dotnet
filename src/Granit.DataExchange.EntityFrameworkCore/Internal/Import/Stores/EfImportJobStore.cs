@@ -3,7 +3,6 @@ using Granit.DataExchange.Import.Pipeline;
 using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 

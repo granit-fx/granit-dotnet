@@ -2,7 +2,6 @@ using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Resolvers;
 using Granit.MultiTenancy.Stores;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;

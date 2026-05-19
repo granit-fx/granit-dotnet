@@ -1,6 +1,5 @@
 using Granit.BlobStorage;
 using Granit.Events;
-using Granit.Privacy.BlobStorage;
 using Granit.Privacy.BlobStorage.Tests.DataExport;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;

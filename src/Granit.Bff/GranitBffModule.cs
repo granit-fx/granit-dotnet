@@ -8,7 +8,6 @@ using Granit.Http.Resilience.Extensions;
 using Granit.Modularity;
 using Granit.Oidc;
 using Granit.Timing;
-using Granit.Users;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

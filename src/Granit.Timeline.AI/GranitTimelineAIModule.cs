@@ -1,6 +1,5 @@
 using Granit.AI;
 using Granit.Modularity;
-using Granit.Timeline;
 
 namespace Granit.Timeline.AI;
 

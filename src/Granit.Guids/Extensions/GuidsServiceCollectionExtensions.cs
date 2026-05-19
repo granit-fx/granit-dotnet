@@ -1,4 +1,3 @@
-using Granit.Guids;
 using Granit.Guids.Options;
 using Granit.Timing.Extensions;
 using Microsoft.Extensions.DependencyInjection;

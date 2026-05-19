@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using Granit.Authentication.JwtBearer.GoogleCloud.Authentication;
 using Granit.Authentication.JwtBearer.GoogleCloud.Options;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 

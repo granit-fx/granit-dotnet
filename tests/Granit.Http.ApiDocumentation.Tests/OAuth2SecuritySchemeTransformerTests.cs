@@ -1,4 +1,3 @@
-using System.Net.Http;
 using Granit.Http.ApiDocumentation.Options;
 using Granit.Http.ApiDocumentation.Transformers;
 using Microsoft.AspNetCore.Authentication;

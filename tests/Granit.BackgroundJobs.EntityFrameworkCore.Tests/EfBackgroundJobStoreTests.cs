@@ -1,7 +1,6 @@
 using System.Data.Common;
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.EntityFrameworkCore.Internal;
-using Granit.BackgroundJobs.Internal;
 using Granit.Guids;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;

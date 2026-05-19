@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Granit.Notifications.Abstractions;
-using Granit.Notifications.Zulip;
 using Granit.Notifications.Zulip.Internal;
 using Granit.Notifications.Zulip.Options;
 using Microsoft.Extensions.Logging;

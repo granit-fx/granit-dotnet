@@ -1,5 +1,4 @@
 using Granit.BackgroundJobs;
-using Granit.Identity.Federated.Keycloak;
 using Granit.Modularity;
 
 namespace Granit.Identity.Federated.Keycloak.BackgroundJobs;

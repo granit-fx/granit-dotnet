@@ -1,6 +1,5 @@
 using Granit.Domain;
 using Granit.MultiTenancy;
-using Granit.Notifications;
 using Granit.Notifications.Abstractions;
 using Granit.Workflow.Events;
 using Microsoft.Extensions.Logging;

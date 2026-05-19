@@ -1,6 +1,5 @@
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timeline.Domain;
-using Granit.Timeline.EntityFrameworkCore;
 using Granit.Timeline.EntityFrameworkCore.Internal;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;

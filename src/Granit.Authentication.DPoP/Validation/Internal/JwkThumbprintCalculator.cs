@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 
 namespace Granit.Authentication.DPoP.Validation.Internal;

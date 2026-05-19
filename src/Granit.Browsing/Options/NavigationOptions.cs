@@ -1,5 +1,3 @@
-using System;
-
 namespace Granit.Browsing.Options;
 
 /// <summary>Options controlling a navigation or content-replacement operation.</summary>

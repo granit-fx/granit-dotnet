@@ -1,4 +1,3 @@
-using Granit.BlobStorage.GoogleCloud;
 using Shouldly;
 using Xunit;
 

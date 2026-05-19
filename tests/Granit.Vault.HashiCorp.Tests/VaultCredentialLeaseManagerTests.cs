@@ -1,7 +1,6 @@
 using Granit.Vault.HashiCorp.Options;
 using Granit.Vault.HashiCorp.Services;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;

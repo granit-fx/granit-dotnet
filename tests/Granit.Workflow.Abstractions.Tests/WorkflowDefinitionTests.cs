@@ -5,7 +5,6 @@
 // engine-level tests live in Granit.Workflow.Tests.
 // =============================================================================
 
-using Granit.Workflow;
 using Shouldly;
 using Xunit;
 

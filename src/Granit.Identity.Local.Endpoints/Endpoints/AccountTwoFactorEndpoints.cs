@@ -1,7 +1,6 @@
 using Granit.Events;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Http.SecurityHeaders.Extensions;
-using Granit.Identity;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;

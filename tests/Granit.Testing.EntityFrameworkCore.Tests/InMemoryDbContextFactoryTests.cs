@@ -1,5 +1,4 @@
 using Granit.Domain;
-using Granit.Testing.EntityFrameworkCore;
 using Granit.Testing.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;

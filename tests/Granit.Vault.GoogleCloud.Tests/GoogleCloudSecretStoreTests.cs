@@ -1,6 +1,5 @@
 using Google.Cloud.SecretManager.V1;
 using Google.Protobuf;
-using Granit.Vault;
 using Granit.Vault.Exceptions;
 using Granit.Vault.GoogleCloud.Options;
 using Granit.Vault.GoogleCloud.Services;

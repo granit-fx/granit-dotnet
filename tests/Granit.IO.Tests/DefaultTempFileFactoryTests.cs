@@ -2,7 +2,6 @@ using Granit.IO.Diagnostics;
 using Granit.IO.Internal;
 using Granit.IO.Options;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 using OptionsFactory = Microsoft.Extensions.Options.Options;

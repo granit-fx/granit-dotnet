@@ -1,5 +1,4 @@
 using Granit.AI.Endpoints.Dtos;
-using Granit.AI.Endpoints.Permissions;
 using Granit.AI.Workspaces;
 using Granit.Authorization.Extensions;
 using Microsoft.AspNetCore.Builder;

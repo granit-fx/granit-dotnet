@@ -1,4 +1,3 @@
-using Granit.Authorization;
 using Granit.Authorization.Endpoints.Internal;
 using Granit.Authorization.Endpoints.Workspaces;
 using Granit.Http.ApiDocumentation;

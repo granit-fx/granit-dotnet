@@ -1,7 +1,6 @@
 using Granit.Identity.Local.Endpoints.Endpoints;
 using Granit.Identity.Local.Endpoints.Options;
 using Granit.Validation.AspNetCore;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 

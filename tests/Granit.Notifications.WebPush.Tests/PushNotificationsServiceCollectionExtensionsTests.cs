@@ -1,4 +1,3 @@
-using Granit.Notifications.WebPush;
 using Granit.Notifications.WebPush.Extensions;
 using Granit.Notifications.WebPush.Options;
 using Microsoft.Extensions.Configuration;

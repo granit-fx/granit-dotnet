@@ -1,5 +1,4 @@
 using Granit.Templating.Endpoints.Dtos;
-using Granit.Templating.Store;
 using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;

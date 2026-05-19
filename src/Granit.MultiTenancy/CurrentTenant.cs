@@ -1,6 +1,5 @@
 using Granit.MultiTenancy.Internal;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 
 namespace Granit.MultiTenancy;
 

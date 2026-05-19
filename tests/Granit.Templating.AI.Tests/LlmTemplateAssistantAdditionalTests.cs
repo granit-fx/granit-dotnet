@@ -1,12 +1,10 @@
 using Granit.AI;
 using Granit.Templating.AI.Internal;
 using Granit.Templating.AI.Options;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
-using Xunit;
 
 namespace Granit.Templating.AI.Tests;
 

@@ -2,7 +2,6 @@ using Granit.DataExchange.Export;
 using Granit.Domain;
 using Granit.Persistence.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export;
 

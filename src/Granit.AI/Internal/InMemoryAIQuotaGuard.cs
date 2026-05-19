@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Threading;
 using Granit.AI.Options;
 using Granit.MultiTenancy;
 using Granit.Timing;

@@ -1,6 +1,5 @@
 using global::Azure;
 using global::Azure.Security.KeyVault.Secrets;
-using Granit.Vault;
 using Granit.Vault.Azure.Services;
 using Granit.Vault.Exceptions;
 using Microsoft.Extensions.Logging.Abstractions;

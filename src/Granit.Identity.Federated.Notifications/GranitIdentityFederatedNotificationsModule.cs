@@ -1,9 +1,7 @@
-using Granit.Identity.Federated;
 using Granit.Modularity;
 using Granit.Notifications;
 using Granit.Templating;
 using Granit.Templating.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Identity.Federated.Notifications;
 

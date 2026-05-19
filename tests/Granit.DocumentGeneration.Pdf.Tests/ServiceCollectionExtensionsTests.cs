@@ -1,4 +1,3 @@
-using System;
 using Granit.Browsing;
 using Granit.Browsing.Capabilities;
 using Granit.DocumentGeneration.Pdf.Extensions;

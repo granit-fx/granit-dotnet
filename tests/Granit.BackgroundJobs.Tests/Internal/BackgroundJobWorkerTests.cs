@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Threading.Channels;
 using Granit.BackgroundJobs.Abstractions;
 using Granit.BackgroundJobs.Domain;
@@ -7,7 +6,6 @@ using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
 

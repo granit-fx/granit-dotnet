@@ -1,7 +1,6 @@
 using Granit.Authentication.JwtBearer.Extensions;
 using Granit.Caching;
 using Granit.Modularity;
-using Granit.Users;
 
 namespace Granit.Authentication.JwtBearer;
 

@@ -1,11 +1,9 @@
 using System.Diagnostics.Metrics;
 using System.Net;
-using Granit.Http.Security;
 using Granit.Http.Security.Diagnostics;
 using Granit.Http.Security.Internal;
 using Granit.Http.Security.Options;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 

@@ -1,6 +1,5 @@
 using Granit.AI;
 using Granit.Modularity;
-using Granit.Templating;
 
 namespace Granit.Templating.AI;
 

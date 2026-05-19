@@ -8,7 +8,6 @@
 using System.Reflection;
 using Granit.Http.ApiDocumentation.Extensions;
 using Granit.Http.ApiDocumentation.Options;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

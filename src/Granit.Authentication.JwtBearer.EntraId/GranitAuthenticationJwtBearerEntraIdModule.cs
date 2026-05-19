@@ -1,4 +1,3 @@
-using Granit.Authentication.JwtBearer;
 using Granit.Authentication.JwtBearer.EntraId.Extensions;
 using Granit.Modularity;
 

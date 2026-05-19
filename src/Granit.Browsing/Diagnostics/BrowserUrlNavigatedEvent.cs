@@ -1,4 +1,3 @@
-using System;
 using Granit.DataProtection;
 using Granit.Events;
 

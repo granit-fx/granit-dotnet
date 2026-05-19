@@ -1,4 +1,3 @@
-using Granit.DataLookup;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 

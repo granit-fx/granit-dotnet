@@ -3,7 +3,6 @@ using System.Data.Common;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Granit.Persistence.EntityFrameworkCore.Postgres.Internal;
 

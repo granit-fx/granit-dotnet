@@ -1,4 +1,3 @@
-using Granit.Templating.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 

@@ -1,5 +1,3 @@
-using Granit.Identity.Federated;
-using Granit.Identity.Models;
 using Shouldly;
 using Xunit;
 

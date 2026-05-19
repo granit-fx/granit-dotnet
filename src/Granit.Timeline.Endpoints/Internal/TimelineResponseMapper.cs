@@ -1,4 +1,3 @@
-using Granit.Timeline;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Endpoints.Dtos;
 

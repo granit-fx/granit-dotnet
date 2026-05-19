@@ -4,7 +4,6 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using VaultSharp;
-using VaultSharp.V1.SystemBackend;
 using Xunit;
 using MsHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
 using VaultSystemHealth = VaultSharp.V1.SystemBackend.HealthStatus;

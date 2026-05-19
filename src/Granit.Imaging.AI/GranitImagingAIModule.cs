@@ -1,7 +1,6 @@
 using Granit.AI;
 using Granit.Imaging.AI.Extensions;
 using Granit.Modularity;
-using Microsoft.Extensions.Hosting;
 
 namespace Granit.Imaging.AI;
 

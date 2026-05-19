@@ -1,4 +1,3 @@
-using Granit.Authorization;
 using Granit.Authorization.Endpoints.Permissions;
 using Granit.Localization;
 using Shouldly;

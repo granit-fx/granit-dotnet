@@ -1,4 +1,3 @@
-using Granit.Authentication.JwtBearer;
 using Granit.Modularity;
 using Shouldly;
 using Xunit;

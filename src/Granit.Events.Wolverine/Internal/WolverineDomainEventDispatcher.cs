@@ -1,5 +1,4 @@
 using System.Reflection;
-using Granit.Events;
 using Granit.Events.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

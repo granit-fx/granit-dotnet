@@ -1,4 +1,3 @@
-using Granit.Authorization;
 using Granit.Authorization.Events;
 using Shouldly;
 using Xunit;

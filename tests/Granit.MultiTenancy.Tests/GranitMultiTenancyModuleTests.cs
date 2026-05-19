@@ -9,7 +9,6 @@
 
 using Granit.Extensions;
 using Granit.Modularity;
-using Granit.MultiTenancy;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Pipeline;
 using Granit.MultiTenancy.Resolvers;

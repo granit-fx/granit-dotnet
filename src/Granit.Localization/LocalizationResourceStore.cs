@@ -5,7 +5,6 @@
 // ---------------------------------------------------------------------------
 
 using System.Diagnostics.CodeAnalysis;
-using Granit.Localization.Options;
 
 namespace Granit.Localization;
 

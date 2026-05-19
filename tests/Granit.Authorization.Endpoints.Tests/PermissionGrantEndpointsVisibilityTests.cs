@@ -1,4 +1,3 @@
-using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Authorization.Endpoints.Endpoints;
 using Granit.MultiTenancy;

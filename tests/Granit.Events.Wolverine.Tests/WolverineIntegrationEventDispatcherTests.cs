@@ -1,11 +1,9 @@
 using System.Diagnostics.Metrics;
-using Granit.Events;
 using Granit.Events.Diagnostics;
 using Granit.Events.Wolverine.Internal;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using Shouldly;
 using Wolverine;
 using Xunit;
 

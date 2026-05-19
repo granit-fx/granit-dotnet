@@ -1,4 +1,3 @@
-using Granit.Browsing;
 using Granit.Browsing.Capabilities;
 using Granit.Browsing.Diagnostics;
 using Granit.Browsing.Playwright.Extensions;
@@ -11,7 +10,6 @@ using Granit.Http.Security;
 using Granit.Http.Security.Extensions;
 using Granit.IO.Extensions;
 using Granit.MultiTenancy;
-using Granit.Timing;
 using Granit.Timing.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

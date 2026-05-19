@@ -5,11 +5,9 @@
 // sécurité aux opérations quand JWT Bearer est configuré, et est no-op sinon.
 // =============================================================================
 
-using System.Net.Http;
 using Granit.Http.ApiDocumentation.Transformers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 using NSubstitute;

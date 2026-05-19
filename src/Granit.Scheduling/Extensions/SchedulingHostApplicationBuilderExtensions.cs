@@ -5,7 +5,6 @@ using Granit.Scheduling.Diagnostics;
 using Granit.Scheduling.Domain;
 using Granit.Scheduling.Exports;
 using Granit.Scheduling.Queries;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 

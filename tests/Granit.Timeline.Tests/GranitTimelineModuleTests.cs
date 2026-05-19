@@ -2,7 +2,6 @@ using Granit.Guids;
 using Granit.Modularity;
 using Granit.QueryEngine;
 using Granit.Timing;
-using Granit.Users;
 using Shouldly;
 using Xunit;
 

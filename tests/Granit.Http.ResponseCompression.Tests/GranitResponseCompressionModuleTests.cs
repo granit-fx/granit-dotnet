@@ -1,7 +1,6 @@
 using Granit.Http.ResponseCompression.Extensions;
 using Granit.Modularity;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Shouldly;

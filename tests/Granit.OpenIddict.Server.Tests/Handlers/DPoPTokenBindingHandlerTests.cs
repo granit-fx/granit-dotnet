@@ -5,7 +5,6 @@ using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;

@@ -1,7 +1,6 @@
 using Granit.Domain;
 using Granit.Encryption;
 using Granit.Guids;
-using Granit.Mergeable;
 using Granit.Mergeable.Domain;
 using Granit.Mergeable.EntityFrameworkCore.Internal;
 using Granit.Mergeable.EntityFrameworkCore.Options;

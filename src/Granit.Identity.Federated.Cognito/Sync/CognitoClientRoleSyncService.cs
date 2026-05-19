@@ -4,7 +4,6 @@ using Amazon.CognitoIdentityProvider.Model;
 using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Guids;
-using Granit.Identity;
 using Granit.Identity.Federated.Cognito.Options;
 using Granit.Identity.Models;
 using Granit.MultiTenancy;

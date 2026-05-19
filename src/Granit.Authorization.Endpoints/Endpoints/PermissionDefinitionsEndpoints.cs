@@ -1,7 +1,5 @@
-using Granit.Authorization;
 using Granit.Authorization.Endpoints.Dtos;
 using Granit.Authorization.Endpoints.Permissions;
-using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

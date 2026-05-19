@@ -11,7 +11,6 @@ using Granit.Modularity;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.Timing;
-using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;

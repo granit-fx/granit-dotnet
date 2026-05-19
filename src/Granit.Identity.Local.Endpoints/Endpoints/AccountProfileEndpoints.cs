@@ -1,5 +1,4 @@
 using Granit.Http.Idempotency.Attributes;
-using Granit.Identity;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;

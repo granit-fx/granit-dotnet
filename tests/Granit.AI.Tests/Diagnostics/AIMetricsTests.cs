@@ -3,7 +3,6 @@ using Granit.AI.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.Metrics.Testing;
 using Shouldly;
-using Xunit;
 
 namespace Granit.AI.Tests.Diagnostics;
 

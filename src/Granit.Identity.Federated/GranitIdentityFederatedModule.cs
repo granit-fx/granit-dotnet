@@ -1,6 +1,5 @@
 using Granit.DataExchange.Extensions;
 using Granit.Entities.Extensions;
-using Granit.Identity;
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Entities;
 using Granit.Identity.Federated.Exports;

@@ -1,7 +1,6 @@
 using Granit.BackgroundJobs;
 using Granit.BlobStorage.BackgroundJobs.Services;
 using Granit.Modularity;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.BlobStorage.BackgroundJobs;

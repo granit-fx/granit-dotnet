@@ -1,5 +1,4 @@
 using Granit.Identity.Local.Services;
-using Granit.OpenIddict.Services;
 using Granit.Settings.Services;
 using Microsoft.Extensions.Logging;
 using OpenIddict.Abstractions;

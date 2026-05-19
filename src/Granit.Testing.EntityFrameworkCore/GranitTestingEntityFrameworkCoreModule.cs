@@ -1,6 +1,5 @@
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.Testing;
 
 namespace Granit.Testing.EntityFrameworkCore;
 

@@ -1,4 +1,3 @@
-using Granit.Identity.Local;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Modularity;
 using Granit.Settings.Services;

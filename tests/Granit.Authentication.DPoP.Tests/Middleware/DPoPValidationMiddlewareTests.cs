@@ -3,7 +3,6 @@ using Granit.Authentication.DPoP.Options;
 using Granit.Authentication.DPoP.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;

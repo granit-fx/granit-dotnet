@@ -2,7 +2,6 @@ using Granit.BlobStorage.GoogleCloud.Internal;
 using Granit.BlobStorage.GoogleCloud.Options;
 using Granit.MultiTenancy;
 using Granit.Timing;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;

@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Granit.Authorization;
 
 namespace Granit.DataExchange.Endpoints.Permissions;
 

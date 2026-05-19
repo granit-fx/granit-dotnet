@@ -2,7 +2,6 @@ using System.Net;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using Granit.Bff;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Endpoints.Extensions;
 using Granit.Bff.Endpoints.Internal;

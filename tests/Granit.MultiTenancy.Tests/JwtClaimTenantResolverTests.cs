@@ -3,7 +3,6 @@
 // =============================================================================
 
 using System.Security.Claims;
-using Granit.MultiTenancy;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Resolvers;
 using Microsoft.AspNetCore.Http;

@@ -14,7 +14,6 @@ using Granit.Templating.Endpoints.Dtos;
 using Granit.Templating.Endpoints.Internal;
 using Granit.Templating.Endpoints.Options;
 using Granit.Templating.Endpoints.Permissions;
-using Granit.Templating.Exceptions;
 using Granit.Templating.GlobalContext;
 using Granit.Templating.Keys;
 using Granit.Templating.Layouts;

@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Granit.Browsing.Diagnostics;
 using Granit.Browsing.Exceptions;
 using Granit.Browsing.Internal;
-using Granit.Browsing.Options;
 using Granit.Browsing.Pages;
 using Granit.Browsing.Pool;
-using Granit.Browsing.Sandbox;
 using Granit.Events;
 using Granit.Http.Security;
 using Granit.Timing;

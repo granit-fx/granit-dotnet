@@ -1,4 +1,3 @@
-using Granit.AI;
 using Granit.AI.Mcp.Extensions;
 using Granit.Mcp.Client;
 using Granit.Modularity;

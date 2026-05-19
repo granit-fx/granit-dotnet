@@ -4,7 +4,6 @@ using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Internal;
 using Granit.DataExchange.Import.Pipeline;
-using Granit.DataExchange.Import.Reporting;
 using Granit.Events;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;

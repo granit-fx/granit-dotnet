@@ -1,4 +1,3 @@
-using Granit.Vault;
 using Granit.Vault.Exceptions;
 using Granit.Vault.HealthChecks;
 using Granit.Vault.Options;

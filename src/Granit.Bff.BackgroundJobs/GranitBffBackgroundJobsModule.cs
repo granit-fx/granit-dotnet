@@ -2,7 +2,6 @@ using Granit.BackgroundJobs;
 using Granit.Bff.BackgroundJobs.Internal;
 using Granit.Bff.EntityFrameworkCore;
 using Granit.Modularity;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Bff.BackgroundJobs;

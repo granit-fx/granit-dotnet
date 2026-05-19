@@ -10,7 +10,6 @@ using Granit.QueryEngine;
 using Granit.Validation;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.OpenIddict.Endpoints;

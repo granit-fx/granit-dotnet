@@ -1,4 +1,3 @@
-using Granit.Persistence.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 

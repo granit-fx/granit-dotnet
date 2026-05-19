@@ -1,4 +1,3 @@
-using Granit.DataExchange.Excel.Internal.Export;
 using Granit.DataExchange.Excel.Internal.Import;
 using Granit.DataExchange.Import.Parsing;
 using Shouldly;

@@ -1,8 +1,6 @@
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataExport;
-using Granit.Privacy.DataExport.Internal;
 using Granit.Privacy.LegalAgreements;
-using Granit.Privacy.LegalAgreements.Internal;
 using Granit.Privacy.OptOut;
 using Granit.Privacy.ProcessingPurposes;
 using Microsoft.Extensions.DependencyInjection;

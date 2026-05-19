@@ -1,5 +1,4 @@
 using Granit.Modularity;
-using Granit.Notifications;
 using Shouldly;
 using Xunit;
 

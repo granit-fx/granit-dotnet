@@ -2,11 +2,8 @@ using System.Diagnostics.Metrics;
 using System.Threading.RateLimiting;
 using Granit.Http.Bulkhead.Abstractions;
 using Granit.Http.Bulkhead.Diagnostics;
-using Granit.Http.Bulkhead.Internal;
 using Granit.Http.Bulkhead.Options;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Time.Testing;
 using Shouldly;
 using Xunit;
 

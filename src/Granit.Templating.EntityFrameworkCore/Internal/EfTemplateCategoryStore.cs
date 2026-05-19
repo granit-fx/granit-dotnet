@@ -1,4 +1,3 @@
-using Granit.Domain;
 using Granit.Exceptions;
 using Granit.Guids;
 using Granit.MultiTenancy;

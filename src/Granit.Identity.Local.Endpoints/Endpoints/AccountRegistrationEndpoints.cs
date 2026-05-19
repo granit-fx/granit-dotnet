@@ -1,8 +1,6 @@
 using System.Diagnostics;
 using Granit.Events;
 using Granit.Http.Idempotency.Attributes;
-using Granit.Identity;
-using Granit.Identity.Local;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Events;

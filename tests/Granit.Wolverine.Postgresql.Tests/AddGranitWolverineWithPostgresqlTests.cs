@@ -9,7 +9,6 @@ using Granit.Wolverine.Extensions;
 using Granit.Wolverine.Postgresql.Extensions;
 using Granit.Wolverine.Postgresql.Options;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Shouldly;

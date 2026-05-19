@@ -1,7 +1,6 @@
 using Granit.Http.ApiDocumentation.Extensions;
 using Granit.Http.ApiVersioning;
 using Granit.Modularity;
-using Granit.Users;
 
 namespace Granit.Http.ApiDocumentation;
 

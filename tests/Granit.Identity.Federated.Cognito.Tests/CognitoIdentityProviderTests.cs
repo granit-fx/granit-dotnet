@@ -2,7 +2,6 @@ using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Runtime;
 using Granit.Events;
-using Granit.Identity;
 using Granit.Identity.Events;
 using Granit.Identity.Federated.Cognito.Internal;
 using Granit.Identity.Federated.Cognito.Options;

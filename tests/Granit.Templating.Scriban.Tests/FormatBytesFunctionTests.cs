@@ -1,6 +1,5 @@
 using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
-using Granit.Templating.Scriban;
 using Granit.Templating.Scriban.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

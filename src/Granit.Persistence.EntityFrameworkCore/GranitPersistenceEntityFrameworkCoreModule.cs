@@ -3,7 +3,6 @@ using Granit.Http.ExceptionHandling;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Timing;
-using Granit.Users;
 
 namespace Granit.Persistence.EntityFrameworkCore;
 

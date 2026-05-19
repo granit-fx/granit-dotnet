@@ -9,7 +9,6 @@
 //   - ThrowAll propagates source failures
 // =============================================================================
 
-using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Exceptions;
 using Granit.Timeline.Internal;

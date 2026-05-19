@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Granit.Authorization;
-using Granit.MultiTenancy.Authorization;
 using NSubstitute;
 using Shouldly;
 using Xunit;

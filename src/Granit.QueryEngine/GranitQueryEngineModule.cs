@@ -1,6 +1,5 @@
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.QueryEngine;
 

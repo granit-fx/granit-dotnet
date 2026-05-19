@@ -1,7 +1,6 @@
 using Granit.Http.Cors.Internal;
 using Granit.Http.Cors.Options;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 

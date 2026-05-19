@@ -1,5 +1,4 @@
 using Granit.Notifications.Abstractions;
-using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.Notifications.Handlers;
 using NSubstitute;

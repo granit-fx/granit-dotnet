@@ -1,7 +1,6 @@
 using Granit.BlobStorage;
 using Granit.DataExchange.BlobStorage.Extensions;
 using Granit.Modularity;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.DataExchange.BlobStorage;
 

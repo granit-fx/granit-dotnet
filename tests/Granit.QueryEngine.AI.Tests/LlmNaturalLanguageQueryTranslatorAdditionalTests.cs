@@ -1,7 +1,6 @@
 using Granit.AI;
 using Granit.QueryEngine.AI.Internal;
 using Granit.QueryEngine.AI.Options;
-using Granit.QueryEngine.Filtering;
 using Granit.QueryEngine.Meta;
 using Granit.Timing;
 using Microsoft.Extensions.AI;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
-using Xunit;
 
 namespace Granit.QueryEngine.AI.Tests;
 

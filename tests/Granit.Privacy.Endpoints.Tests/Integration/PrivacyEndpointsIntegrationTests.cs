@@ -6,7 +6,6 @@ using Granit.Privacy.Endpoints.Dtos;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Domain;
 using Granit.Privacy.Options;
-using Granit.Privacy.OptOut;
 using Granit.Privacy.ProcessingPurposes;
 using Granit.Privacy.Regulations;
 using NSubstitute;

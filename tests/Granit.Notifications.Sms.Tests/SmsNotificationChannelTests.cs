@@ -7,7 +7,6 @@
 
 using System.Text.Json;
 using Granit.Notifications.Abstractions;
-using Granit.Notifications.Sms;
 using Granit.Notifications.Sms.Internal;
 using Granit.Notifications.Sms.Options;
 using Microsoft.Extensions.DependencyInjection;

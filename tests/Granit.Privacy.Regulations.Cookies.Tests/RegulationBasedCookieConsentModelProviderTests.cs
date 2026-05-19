@@ -1,5 +1,4 @@
 using Granit.Http.Cookies;
-using Granit.Privacy.Regulations;
 using Granit.Privacy.Regulations.Cookies.Internal;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;

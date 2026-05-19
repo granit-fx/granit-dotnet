@@ -4,7 +4,6 @@ using Granit.Templating.Scriban.GlobalContexts;
 using Granit.Templating.Scriban.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Templating.Scriban.Extensions;
 

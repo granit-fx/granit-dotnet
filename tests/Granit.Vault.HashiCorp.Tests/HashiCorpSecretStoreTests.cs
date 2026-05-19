@@ -1,5 +1,4 @@
 using System.Net;
-using Granit.Vault;
 using Granit.Vault.Exceptions;
 using Granit.Vault.HashiCorp.Options;
 using Granit.Vault.HashiCorp.Services;

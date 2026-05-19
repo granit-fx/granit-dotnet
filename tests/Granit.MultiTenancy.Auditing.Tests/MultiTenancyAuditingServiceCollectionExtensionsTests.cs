@@ -1,8 +1,6 @@
-using Granit.MultiTenancy.Auditing;
 using Granit.MultiTenancy.Auditing.Extensions;
 using Granit.MultiTenancy.Authorization;
 using Granit.MultiTenancy.Extensions;
-using Granit.MultiTenancy.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;

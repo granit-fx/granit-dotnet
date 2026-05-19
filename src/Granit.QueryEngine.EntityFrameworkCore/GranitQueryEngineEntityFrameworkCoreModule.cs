@@ -3,7 +3,6 @@ using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
 using Granit.QueryEngine.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.QueryEngine.EntityFrameworkCore;

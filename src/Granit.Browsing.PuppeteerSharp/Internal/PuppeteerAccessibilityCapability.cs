@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Granit.Browsing.Capabilities;
-using PuppeteerSharp;
 using PuppeteerSharp.PageAccessibility;
 
 namespace Granit.Browsing.PuppeteerSharp.Internal;

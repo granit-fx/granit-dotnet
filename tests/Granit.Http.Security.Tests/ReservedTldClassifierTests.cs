@@ -1,4 +1,3 @@
-using Granit.Http.Security;
 using Shouldly;
 using Xunit;
 

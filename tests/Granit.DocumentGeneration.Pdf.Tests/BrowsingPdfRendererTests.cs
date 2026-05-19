@@ -1,5 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Granit.Browsing;
 using Granit.Browsing.Capabilities;
 using Granit.Browsing.Pages;
@@ -8,7 +6,6 @@ using Granit.DocumentGeneration.Pdf.Options;
 using Granit.DocumentGeneration.Pipeline;
 using Granit.Templating.Keys;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;

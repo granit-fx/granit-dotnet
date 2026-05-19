@@ -1,7 +1,6 @@
 using System.Runtime.CompilerServices;
 using FirebaseAdmin.Auth;
 using Granit.Events;
-using Granit.Identity;
 using Granit.Identity.Events;
 using Granit.Identity.Federated.GoogleCloud.Internal;
 using Granit.Identity.Federated.GoogleCloud.Options;

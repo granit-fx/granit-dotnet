@@ -1,4 +1,3 @@
-using Granit.AI.Extraction;
 using Granit.AI.Extraction.Internal;
 using Granit.AI.Extraction.Options;
 using Microsoft.Extensions.AI;

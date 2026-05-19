@@ -1,4 +1,3 @@
-using System;
 using Granit.Browsing.Capabilities;
 using Granit.Browsing.Options;
 using Granit.Browsing.Playwright.Internal;

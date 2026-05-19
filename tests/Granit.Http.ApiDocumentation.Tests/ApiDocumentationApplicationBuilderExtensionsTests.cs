@@ -7,9 +7,7 @@
 // =============================================================================
 
 using Granit.Http.ApiDocumentation.Extensions;
-using Granit.Http.ApiDocumentation.Options;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

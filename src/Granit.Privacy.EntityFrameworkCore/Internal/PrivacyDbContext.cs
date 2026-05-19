@@ -3,8 +3,6 @@ using Granit.Encryption;
 using Granit.Encryption.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.Privacy.EntityFrameworkCore.DataDeletion;
-using Granit.Privacy.EntityFrameworkCore.DataExport;
 using Granit.Privacy.EntityFrameworkCore.Entities;
 using Granit.Privacy.EntityFrameworkCore.Extensions;
 using Granit.Privacy.LegalAgreements.Domain;

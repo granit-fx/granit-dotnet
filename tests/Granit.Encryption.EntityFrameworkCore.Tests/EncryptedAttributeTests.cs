@@ -1,5 +1,4 @@
 using System.Reflection;
-using Granit.Encryption.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 

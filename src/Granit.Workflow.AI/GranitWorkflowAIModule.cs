@@ -1,6 +1,5 @@
 using Granit.AI;
 using Granit.Modularity;
-using Granit.Workflow;
 
 namespace Granit.Workflow.AI;
 

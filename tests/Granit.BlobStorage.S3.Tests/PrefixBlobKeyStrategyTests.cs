@@ -1,9 +1,7 @@
-using Granit.BlobStorage.S3;
 using Granit.BlobStorage.S3.Internal;
 using Granit.BlobStorage.S3.Options;
 using Granit.MultiTenancy;
 using Granit.Timing;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;

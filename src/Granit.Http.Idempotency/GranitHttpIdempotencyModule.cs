@@ -1,7 +1,6 @@
 using Granit.Caching;
 using Granit.Http.Idempotency.Extensions;
 using Granit.Modularity;
-using Granit.Users;
 
 namespace Granit.Http.Idempotency;
 

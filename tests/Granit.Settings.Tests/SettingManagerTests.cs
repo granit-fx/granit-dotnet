@@ -8,7 +8,6 @@
 using Granit.Events;
 using Granit.Settings.Definitions;
 using Granit.Settings.Events;
-using Granit.Settings.Providers;
 using Granit.Settings.Services;
 using Granit.Settings.Stores;
 using Granit.Settings.Values;

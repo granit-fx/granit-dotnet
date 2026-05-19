@@ -3,7 +3,6 @@ using Granit.Modularity;
 using Granit.QueryEngine;
 using Granit.Timeline.Extensions;
 using Granit.Timing;
-using Granit.Users;
 
 namespace Granit.Timeline;
 

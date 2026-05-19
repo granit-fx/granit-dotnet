@@ -2,7 +2,6 @@ using Granit.Modularity;
 using Granit.Templating.Extensions;
 using Granit.Timing;
 using Granit.Workflow;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Templating;
 

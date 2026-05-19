@@ -1,5 +1,4 @@
 using Granit.BackgroundJobs;
-using Granit.Identity.Federated.EntraId;
 using Granit.Modularity;
 
 namespace Granit.Identity.Federated.EntraId.BackgroundJobs;

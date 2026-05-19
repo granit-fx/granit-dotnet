@@ -5,7 +5,6 @@ using Granit.Notifications;
 using Granit.Templating;
 using Granit.Templating.Extensions;
 using Granit.Workflow.Notifications.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Workflow.Notifications;
 

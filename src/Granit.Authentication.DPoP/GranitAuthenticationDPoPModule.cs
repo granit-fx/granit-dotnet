@@ -4,7 +4,6 @@ using Granit.Caching;
 using Granit.Diagnostics;
 using Granit.Modularity;
 using Granit.Timing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Authentication.DPoP;

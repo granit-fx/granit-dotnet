@@ -1,6 +1,5 @@
 using Granit.Domain;
 using Granit.Domain.ValueObjects;
-using Granit.MultiTenancy;
 
 namespace Granit.DataExchange.Export.Domain;
 

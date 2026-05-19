@@ -2,7 +2,6 @@ using Granit.IO.Diagnostics;
 using Granit.IO.Internal;
 using Granit.IO.Options;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Shouldly;
 using Xunit;

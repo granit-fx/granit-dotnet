@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Granit.Browsing.PuppeteerSharp.Internal;
 using Granit.Browsing.PuppeteerSharp.Options;
 using Microsoft.Extensions.FileProviders;

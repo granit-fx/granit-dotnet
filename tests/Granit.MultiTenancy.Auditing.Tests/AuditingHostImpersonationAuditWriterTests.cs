@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
-using Granit.MultiTenancy.Auditing;
 using Granit.MultiTenancy.Authorization;
 using Granit.Timing;
 using NSubstitute;

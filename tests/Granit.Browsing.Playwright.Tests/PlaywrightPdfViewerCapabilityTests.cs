@@ -1,4 +1,3 @@
-using System.IO;
 using Granit.Browsing.Playwright.Internal;
 using Shouldly;
 using Xunit;

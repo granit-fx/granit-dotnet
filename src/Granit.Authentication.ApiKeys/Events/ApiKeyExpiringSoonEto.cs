@@ -1,4 +1,3 @@
-using Granit.Authentication.ApiKeys.Domain;
 using Granit.Events;
 
 namespace Granit.Authentication.ApiKeys.Events;

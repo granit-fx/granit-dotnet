@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
-using Xunit;
 
 namespace Granit.Templating.AI.Tests;
 

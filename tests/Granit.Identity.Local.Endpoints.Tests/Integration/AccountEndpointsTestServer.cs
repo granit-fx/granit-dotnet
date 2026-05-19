@@ -3,7 +3,6 @@ using System.Text.Encodings.Web;
 using FluentValidation;
 using Granit.DataFiltering;
 using Granit.Events;
-using Granit.Identity;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Endpoints;

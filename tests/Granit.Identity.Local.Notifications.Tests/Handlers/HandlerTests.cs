@@ -7,7 +7,6 @@ using Granit.Notifications;
 using Granit.Notifications.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using Shouldly;
 using Xunit;
 
 namespace Granit.Identity.Local.Notifications.Tests.Handlers;

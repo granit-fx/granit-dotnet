@@ -4,7 +4,6 @@ using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Templating.Endpoints.Internal;
 using Granit.Templating.Endpoints.Workspaces;
-using Granit.Users;
 using Granit.Validation;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;

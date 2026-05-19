@@ -1,5 +1,4 @@
 using Granit.Authorization;
-using Granit.DataLookup;
 using Granit.DataLookup.Endpoints.Internal;
 using Granit.Localization.Extensions;
 using Granit.Modularity;

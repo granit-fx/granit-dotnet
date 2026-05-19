@@ -1,7 +1,6 @@
 using Granit.Authorization.Extensions;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Endpoints.Dtos;
-using Granit.BlobStorage.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

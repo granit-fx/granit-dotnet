@@ -1,4 +1,3 @@
-using Granit.Events;
 using Granit.Events.Wolverine.Internal;
 using Granit.Modularity;
 using Granit.Wolverine;

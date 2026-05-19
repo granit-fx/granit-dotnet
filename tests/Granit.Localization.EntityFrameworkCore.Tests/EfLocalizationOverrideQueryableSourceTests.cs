@@ -1,7 +1,6 @@
 using Granit.Localization.Domain;
 using Granit.Localization.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;

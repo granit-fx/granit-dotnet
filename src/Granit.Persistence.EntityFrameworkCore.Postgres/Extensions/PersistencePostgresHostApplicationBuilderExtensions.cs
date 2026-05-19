@@ -3,7 +3,6 @@ using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Postgres.Internal;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Npgsql;

@@ -9,7 +9,6 @@ using Granit.Validation.Internal;
 using Granit.Validation.JsonSchema;
 using Granit.Validation.OpenApi;
 using Granit.Validation.ServerValidation;
-using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Validation;

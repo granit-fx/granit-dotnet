@@ -4,7 +4,6 @@
 // Verifies default values, section name constant, and all validation branches.
 // =============================================================================
 
-using Granit.Wolverine.Postgresql;
 using Granit.Wolverine.Postgresql.Internal;
 using Granit.Wolverine.Postgresql.Options;
 using Microsoft.Extensions.Options;

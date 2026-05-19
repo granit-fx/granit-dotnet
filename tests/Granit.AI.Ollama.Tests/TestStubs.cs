@@ -1,4 +1,3 @@
-using Granit.AI.Ollama.Options;
 using Microsoft.Extensions.Options;
 
 namespace Granit.AI.Ollama.Tests;

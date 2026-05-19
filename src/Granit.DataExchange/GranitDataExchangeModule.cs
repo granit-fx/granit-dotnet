@@ -5,7 +5,6 @@ using Granit.Modularity;
 using Granit.QueryEngine;
 using Granit.Timing;
 using Granit.Validation;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.DataExchange;
 

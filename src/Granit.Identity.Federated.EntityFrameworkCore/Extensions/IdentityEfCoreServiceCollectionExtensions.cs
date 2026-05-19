@@ -2,7 +2,6 @@ using Granit.Identity.Federated.EntityFrameworkCore.DbContext;
 using Granit.Identity.Federated.EntityFrameworkCore.Internal;
 using Granit.Identity.Federated.Internal;
 using Granit.Identity.Federated.Options;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

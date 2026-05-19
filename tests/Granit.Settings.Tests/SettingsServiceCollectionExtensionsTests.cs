@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Settings.Tests;
 

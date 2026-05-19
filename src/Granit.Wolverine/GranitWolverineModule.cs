@@ -1,5 +1,4 @@
 using Granit.Modularity;
-using Granit.Users;
 using Granit.Validation;
 using Granit.Wolverine.Extensions;
 

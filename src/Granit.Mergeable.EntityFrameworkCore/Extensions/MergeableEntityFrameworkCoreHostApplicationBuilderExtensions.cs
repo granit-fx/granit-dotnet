@@ -2,7 +2,6 @@ using Granit.Mergeable.EntityFrameworkCore.Internal;
 using Granit.Mergeable.EntityFrameworkCore.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;

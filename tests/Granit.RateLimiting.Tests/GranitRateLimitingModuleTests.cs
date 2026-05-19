@@ -1,7 +1,4 @@
 using Granit.Modularity;
-using Granit.RateLimiting.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 

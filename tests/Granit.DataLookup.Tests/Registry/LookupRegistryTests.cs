@@ -1,4 +1,3 @@
-using Granit.DataLookup.Descriptors;
 using Granit.DataLookup.Registry;
 using Granit.DataLookup.Sources;
 using NSubstitute;

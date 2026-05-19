@@ -6,7 +6,6 @@ using Granit.Privacy.DataExport.Internal;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.Options;
-using JasperFx.CodeGeneration.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSubstitute;

@@ -1,5 +1,4 @@
 using Granit.DataExchange.EntityFrameworkCore.Internal;
-using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Entities;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Identity;
 using Granit.DataExchange.EntityFrameworkCore.Tests.Infrastructure;

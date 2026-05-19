@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
 

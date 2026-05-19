@@ -1,4 +1,3 @@
-using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 

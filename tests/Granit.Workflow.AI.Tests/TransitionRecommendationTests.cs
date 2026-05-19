@@ -1,5 +1,4 @@
 using Shouldly;
-using Xunit;
 
 namespace Granit.Workflow.AI.Tests;
 

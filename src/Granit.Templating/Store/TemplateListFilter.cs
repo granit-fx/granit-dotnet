@@ -1,4 +1,3 @@
-using Granit.Templating.Keys;
 using Granit.Workflow.Domain;
 
 namespace Granit.Templating.Store;

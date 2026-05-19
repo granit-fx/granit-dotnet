@@ -2,7 +2,6 @@ using Granit.Events;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
-using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using Shouldly;

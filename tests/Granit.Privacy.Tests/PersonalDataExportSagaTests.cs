@@ -10,7 +10,6 @@ using NSubstitute;
 using Shouldly;
 using Wolverine;
 using Xunit;
-using Xunit.v3;
 
 namespace Granit.Privacy.Tests;
 

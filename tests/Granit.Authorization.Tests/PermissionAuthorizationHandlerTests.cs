@@ -6,7 +6,6 @@
 // =============================================================================
 
 using System.Security.Claims;
-using Granit.Authorization;
 using Granit.Authorization.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using NSubstitute;

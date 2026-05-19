@@ -5,7 +5,6 @@ using Granit.Templating.Scriban.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Scriban;
-using Scriban.Parsing;
 using Shouldly;
 using Xunit;
 

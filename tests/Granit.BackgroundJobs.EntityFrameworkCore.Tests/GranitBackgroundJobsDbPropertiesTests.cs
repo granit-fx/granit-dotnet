@@ -1,4 +1,3 @@
-using Granit.BackgroundJobs.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 

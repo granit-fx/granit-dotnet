@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using Granit.QueryEngine.Filtering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.QueryEngine.EntityFrameworkCore.Internal;

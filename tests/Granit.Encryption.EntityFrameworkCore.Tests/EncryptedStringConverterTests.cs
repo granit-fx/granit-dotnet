@@ -1,4 +1,3 @@
-using Granit.Encryption.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
 using Xunit;

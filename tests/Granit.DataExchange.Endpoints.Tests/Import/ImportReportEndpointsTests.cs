@@ -2,8 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using Granit.DataExchange;
-using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.DataExchange.Endpoints.Extensions;
 using Granit.DataExchange.Endpoints.Permissions;

@@ -12,7 +12,6 @@
 // =============================================================================
 
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

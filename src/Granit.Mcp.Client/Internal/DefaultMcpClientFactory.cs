@@ -1,7 +1,6 @@
 using Granit.Mcp.Client.Options;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Client;
-using ModelContextProtocol.Protocol;
 
 namespace Granit.Mcp.Client.Internal;
 
