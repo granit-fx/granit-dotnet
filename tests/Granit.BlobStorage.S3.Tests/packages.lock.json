@@ -294,10 +294,10 @@
       },
       "OpenTelemetry.Extensions.AWS": {
         "type": "Transitive",
-        "resolved": "1.15.0",
-        "contentHash": "XO2mKJSF3cjzNepezUcKdYqnk1Ex3VCQ8UMbNH8oo3eN/tZ6EXVnI/9daXgEoXIJLPHjeHHT/+aEy3wd74lF8A==",
+        "resolved": "1.15.1",
+        "contentHash": "T+Vrhlv79PyG+fK6XnEtdJW9VtYp5WxSsVajplnkbuY0Q3gTyFNiLPP8tyu1qmEL19bKc9i6Wgp4JqhvupqirA==",
         "dependencies": {
-          "OpenTelemetry": "[1.15.0, 2.0.0)"
+          "OpenTelemetry": "[1.15.3, 2.0.0)"
         }
       },
       "Serilog": {
@@ -479,7 +479,7 @@
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
-          "OpenTelemetry.Instrumentation.AWS": "[1.15.0-beta.*, )"
+          "OpenTelemetry.Instrumentation.AWS": "[1.15.*, )"
         }
       },
       "granit.dataexchange.abstractions": {
@@ -517,7 +517,7 @@
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.15.*, )",
           "OpenTelemetry.Extensions.Hosting": "[1.15.*, )",
           "OpenTelemetry.Instrumentation.AspNetCore": "[1.15.*, )",
-          "OpenTelemetry.Instrumentation.EntityFrameworkCore": "[1.15.0-beta.*, )",
+          "OpenTelemetry.Instrumentation.EntityFrameworkCore": "[1.15.*-beta.*, )",
           "OpenTelemetry.Instrumentation.Http": "[1.15.*, )",
           "Serilog.AspNetCore": "[10.*, )",
           "Serilog.Sinks.OpenTelemetry": "[4.*, )"
@@ -676,25 +676,25 @@
       },
       "OpenTelemetry.Instrumentation.AWS": {
         "type": "CentralTransitive",
-        "requested": "[1.15.0-beta.*, )",
-        "resolved": "1.15.0",
-        "contentHash": "CVI0H47mfFHAw4cFoUf6QO1H5O1fK7MQY8+T7CriEp4rOBto65ncZMnbEQtwQhcfeeNqbOTED8TayMPWY1yMRA==",
+        "requested": "[1.15.*, )",
+        "resolved": "1.15.1",
+        "contentHash": "JQ8SzCNeLOR8a88v4hE1HUXfbA9QkGyZzVjxbOYCP3BLVYyXPdNp+rmGCOGJ26DcRuqLsPoaBmEV/1ElwfVKDw==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.3.3, 5.0.0)",
           "AWSSDK.SQS": "[4.0.2.5, 5.0.0)",
           "AWSSDK.SimpleNotificationService": "[4.0.2.7, 5.0.0)",
-          "OpenTelemetry.Extensions.AWS": "1.15.0"
+          "OpenTelemetry.Extensions.AWS": "1.15.1"
         }
       },
       "OpenTelemetry.Instrumentation.EntityFrameworkCore": {
         "type": "CentralTransitive",
-        "requested": "[1.15.0-beta.*, )",
-        "resolved": "1.15.0-beta.1",
-        "contentHash": "N01GzP+r8lpSBiqjRX0/WjSp17r+zk6dKvGKthiASyFzF44lrJo8cA3ihXnw3p4Rnqg1mVjOYy19R6iJ84NTpg==",
+        "requested": "[1.15.*-beta.*, )",
+        "resolved": "1.15.1-beta.1",
+        "contentHash": "NmtYLk3HJUUkV0g2VnFLs67/PGIVbI8JXtu0g4f9bk2ZaInp211/AL2+Qcbgkb9ih/uOi8loN6E1Aw2o0YIWag==",
         "dependencies": {
           "Microsoft.Extensions.Configuration": "10.0.0",
           "Microsoft.Extensions.Options": "10.0.0",
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.0, 2.0.0)"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.3, 2.0.0)"
         }
       },
       "OpenTelemetry.Instrumentation.Http": {

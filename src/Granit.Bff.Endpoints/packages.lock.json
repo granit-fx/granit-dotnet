@@ -156,8 +156,8 @@
       "granit.http.apiversioning": {
         "type": "Project",
         "dependencies": {
-          "Asp.Versioning.Mvc": "[10.0.0-preview.*, )",
-          "Asp.Versioning.Mvc.ApiExplorer": "[10.0.0-preview.*, )",
+          "Asp.Versioning.Mvc": "[10.*, )",
+          "Asp.Versioning.Mvc.ApiExplorer": "[10.*, )",
           "Granit": "[0.1.0-dev, )"
         }
       },
@@ -223,7 +223,7 @@
       },
       "Asp.Versioning.Mvc": {
         "type": "CentralTransitive",
-        "requested": "[10.0.0-preview.*, )",
+        "requested": "[10.*, )",
         "resolved": "10.0.0",
         "contentHash": "W0wZ+0uZ0UK4KstjvEkNBZ0xxhBmxunwNg8582SVyyW7txQmSXibtm8fC4o82LaemPquYskms67bIbJOSrnlug==",
         "dependencies": {
@@ -232,7 +232,7 @@
       },
       "Asp.Versioning.Mvc.ApiExplorer": {
         "type": "CentralTransitive",
-        "requested": "[10.0.0-preview.*, )",
+        "requested": "[10.*, )",
         "resolved": "10.0.0",
         "contentHash": "H54UOpRoc4RmhQ4RA2lzDz43a/hAu/JN19Yyy/DNmH4XlRxhemfhifJyh9BaXNJOtGa2Dnu2xEeP4VSiTdUdAg==",
         "dependencies": {

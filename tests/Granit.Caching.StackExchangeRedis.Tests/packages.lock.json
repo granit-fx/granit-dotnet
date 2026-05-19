@@ -463,7 +463,7 @@
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Observability": "[0.1.0-dev, )",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "[10.*, )",
-          "OpenTelemetry.Instrumentation.StackExchangeRedis": "[1.15.0-beta.*, )",
+          "OpenTelemetry.Instrumentation.StackExchangeRedis": "[1.15.*-beta.*, )",
           "StackExchange.Redis": "[2.*, )",
           "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )"
         }
@@ -477,7 +477,7 @@
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.15.*, )",
           "OpenTelemetry.Extensions.Hosting": "[1.15.*, )",
           "OpenTelemetry.Instrumentation.AspNetCore": "[1.15.*, )",
-          "OpenTelemetry.Instrumentation.EntityFrameworkCore": "[1.15.0-beta.*, )",
+          "OpenTelemetry.Instrumentation.EntityFrameworkCore": "[1.15.*-beta.*, )",
           "OpenTelemetry.Instrumentation.Http": "[1.15.*, )",
           "Serilog.AspNetCore": "[10.*, )",
           "Serilog.Sinks.OpenTelemetry": "[4.*, )"
@@ -633,13 +633,13 @@
       },
       "OpenTelemetry.Instrumentation.EntityFrameworkCore": {
         "type": "CentralTransitive",
-        "requested": "[1.15.0-beta.*, )",
-        "resolved": "1.15.0-beta.1",
-        "contentHash": "N01GzP+r8lpSBiqjRX0/WjSp17r+zk6dKvGKthiASyFzF44lrJo8cA3ihXnw3p4Rnqg1mVjOYy19R6iJ84NTpg==",
+        "requested": "[1.15.*-beta.*, )",
+        "resolved": "1.15.1-beta.1",
+        "contentHash": "NmtYLk3HJUUkV0g2VnFLs67/PGIVbI8JXtu0g4f9bk2ZaInp211/AL2+Qcbgkb9ih/uOi8loN6E1Aw2o0YIWag==",
         "dependencies": {
           "Microsoft.Extensions.Configuration": "10.0.0",
           "Microsoft.Extensions.Options": "10.0.0",
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.0, 2.0.0)"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.3, 2.0.0)"
         }
       },
       "OpenTelemetry.Instrumentation.Http": {
@@ -655,13 +655,13 @@
       },
       "OpenTelemetry.Instrumentation.StackExchangeRedis": {
         "type": "CentralTransitive",
-        "requested": "[1.15.0-beta.*, )",
-        "resolved": "1.15.0-beta.1",
-        "contentHash": "Igg/3MlBZZ9lZCTzMcvoFKav263+zOcKx9s4LVIdq96YmBHCuPmDiyygAIPdeIVzwN08VwD3RG1nXHDuRF1Ssg==",
+        "requested": "[1.15.*-beta.*, )",
+        "resolved": "1.15.1-beta.1",
+        "contentHash": "Fd/67wMh/eQ8HRpZ5BjB/y3r8roYyLT0KTqTHHI0ZN6/Pnb0rvNaxJjls0fuTuF8otVUThTk/4xC1MLNf6qS+A==",
         "dependencies": {
           "Microsoft.Extensions.Configuration": "10.0.0",
           "Microsoft.Extensions.Options": "10.0.0",
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.0, 2.0.0)",
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.3, 2.0.0)",
           "StackExchange.Redis": "2.6.122"
         }
       },

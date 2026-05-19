@@ -215,7 +215,7 @@
       "granit.backgroundjobs": {
         "type": "Project",
         "dependencies": {
-          "Cronos": "[0.12.*, )",
+          "Cronos": "[0.13.*, )",
           "Granit": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
@@ -343,9 +343,9 @@
       },
       "Cronos": {
         "type": "CentralTransitive",
-        "requested": "[0.12.*, )",
-        "resolved": "0.12.0",
-        "contentHash": "rOBW2cimLtkRoyLIZWZx1uM300cNI2wUKOUbLbGLnNQRly5R/YK3VdC1mk3Wvt24J4k9PY5j+9WL4smv0RIZvA=="
+        "requested": "[0.13.*, )",
+        "resolved": "0.13.0",
+        "contentHash": "Nkve+Yi0+ol3ntSBRHeW0ka9cJQ8vndSUvvkXqF9LVqwpoqWueyxu/HS275r98RDOmF7/mzRnZW5XXUBXob+TA=="
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "CentralTransitive",
