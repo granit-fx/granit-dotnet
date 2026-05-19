@@ -186,9 +186,14 @@ jobs:
   # transitive dependencies disclosed AFTER lockfile generation).
   # Sharded the same way as build/test — restoring + auditing the full solution
   # (~295 projects) on a single runner exceeded the 5-minute budget.
+  # `dotnet list package --vulnerable --include-transitive` is bottlenecked by
+  # NuGet's vulnerability API: the architecture/security/infrastructure shards
+  # already trend toward 7–8 min as the framework grows, so a 10-min cap leaves
+  # no slack for NuGet latency spikes. 15 min keeps the job snappy on a green
+  # day while absorbing the worst observed runs.
   dotnet-audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
