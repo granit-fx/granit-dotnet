@@ -3497,6 +3497,72 @@
       ]
     },
     {
+      "name": "AIEndpointPolicy",
+      "fqn": "Granit.AI.Tenancy.AIEndpointPolicy",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AIEndpointPolicy.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(RequireHttps: true, AllowLoopback: false, AllowPrivateIp: false, AllowedPorts: new[] { 443 }.ToFrozenSet()",
+          "returnType": "AIEndpointPolicy HostedHttps ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(RequireHttps: false, AllowLoopback: true, AllowPrivateIp: false, AllowedPorts: new[] { 80, 443, 11434 }.ToFrozenSet()",
+          "returnType": "AIEndpointPolicy OllamaTenant ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(RequireHttps: false, AllowLoopback: true, AllowPrivateIp: true, AllowedPorts: null)",
+          "returnType": "AIEndpointPolicy HostPermissive ="
+        }
+      ]
+    },
+    {
+      "name": "AIEndpointValidationResult",
+      "fqn": "Granit.AI.Tenancy.AIEndpointValidationResult",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AIEndpointValidationResult.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Ok",
+          "kind": "method",
+          "signature": "Ok(string resolvedHost)",
+          "returnType": "AIEndpointValidationResult"
+        },
+        {
+          "name": "Fail",
+          "kind": "method",
+          "signature": "Fail(string error)",
+          "returnType": "AIEndpointValidationResult"
+        }
+      ]
+    },
+    {
+      "name": "AIEndpointValidator",
+      "fqn": "Granit.AI.Tenancy.AIEndpointValidator",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AIEndpointValidator.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "Validate",
+          "kind": "method",
+          "signature": "Validate(string? endpoint, AIEndpointPolicy policy)",
+          "returnType": "AIEndpointValidationResult"
+        }
+      ]
+    },
+    {
       "name": "AIProviderCredential",
       "fqn": "Granit.AI.Tenancy.AIProviderCredential",
       "kind": "record",
@@ -3565,6 +3631,22 @@
       "file": "src/Granit.AI/Tenancy/AISettingNames.cs",
       "line": 33,
       "members": []
+    },
+    {
+      "name": "GranitSafeConnectCallback",
+      "fqn": "Granit.AI.Tenancy.GranitSafeConnectCallback",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/GranitSafeConnectCallback.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(AIEndpointPolicy policy)",
+          "returnType": "Func<SocketsHttpConnectionContext, CancellationToken, ValueTask<Stream>>"
+        }
+      ]
     },
     {
       "name": "IAIProviderCredentialResolver",
