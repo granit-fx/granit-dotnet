@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Options;
-
 namespace Granit.AI.OpenAI.Options;
 
 /// <summary>
@@ -8,6 +6,8 @@ namespace Granit.AI.OpenAI.Options;
 /// <remarks>
 /// Bound to the <c>AI:OpenAI</c> configuration section.
 /// The <see cref="ApiKey"/> should be injected from <c>Granit.Vault</c>; never hardcode it.
+/// Rotation is hot — <see cref="Internal.OpenAIProviderFactory"/> rebuilds its underlying
+/// SDK client whenever <c>IOptionsMonitor</c> publishes a change.
 /// </remarks>
 public sealed class OpenAIProviderOptions
 {
@@ -38,23 +38,27 @@ public sealed class OpenAIProviderOptions
     /// Default embedding model to use for embedding generation.
     /// </summary>
     public string DefaultEmbeddingModel { get; set; } = "text-embedding-3-small";
-}
 
-/// <summary>
-/// Validates <see cref="OpenAIProviderOptions"/> at startup (fail-fast on missing configuration).
-/// </summary>
-internal sealed class OpenAIProviderOptionsValidator : IValidateOptions<OpenAIProviderOptions>
-{
-    /// <inheritdoc/>
-    public ValidateOptionsResult Validate(string? name, OpenAIProviderOptions options)
-    {
-        if (string.IsNullOrWhiteSpace(options.ApiKey))
-        {
-            return ValidateOptionsResult.Fail(
-                $"{nameof(options.ApiKey)} must be non-empty. " +
-                "Inject it from Granit.Vault; never hardcode API keys.");
-        }
+    /// <summary>
+    /// Optional allowlist of model identifiers callers are permitted to request.
+    /// When empty (the default), any model identifier accepted by the OpenAI API is allowed.
+    /// </summary>
+    /// <remarks>
+    /// Defense-in-depth against cost amplification: a tenant-controlled workspace cannot direct
+    /// traffic to a more expensive model tier than the operator approved. <see cref="DefaultModel"/>
+    /// and <see cref="DefaultEmbeddingModel"/> must themselves appear in this list when it is non-empty.
+    /// </remarks>
+    public IList<string> AllowedModels { get; set; } = [];
 
-        return ValidateOptionsResult.Success;
-    }
+    /// <summary>
+    /// Maximum duration of a single OpenAI HTTP call (including DNS, connect, request, response).
+    /// Retries are governed by <see cref="MaxRetries"/> and are not counted in this budget.
+    /// </summary>
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(2);
+
+    /// <summary>
+    /// Number of retries the SDK performs on transient failures (5xx, throttling) with exponential
+    /// backoff. Set to <c>0</c> to disable retries.
+    /// </summary>
+    public int MaxRetries { get; set; } = 3;
 }

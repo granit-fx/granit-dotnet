@@ -17,7 +17,7 @@ namespace Granit.AI.Ollama.HealthChecks;
 /// </remarks>
 internal sealed class OllamaHealthCheck(
     IHttpClientFactory httpClientFactory,
-    IOptions<OllamaOptions> options) : IHealthCheck
+    IOptions<OllamaProviderOptions> options) : IHealthCheck
 {
     private static readonly TimeSpan HealthCheckTimeout = TimeSpan.FromSeconds(10);
 

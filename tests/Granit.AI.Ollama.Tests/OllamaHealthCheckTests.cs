@@ -11,9 +11,9 @@ public sealed class OllamaHealthCheckTests
 {
     private static OllamaHealthCheck CreateHealthCheck(
         HttpMessageHandler handler,
-        OllamaOptions? options = null)
+        OllamaProviderOptions? options = null)
     {
-        OllamaOptions opts = options ?? new OllamaOptions();
+        OllamaProviderOptions opts = options ?? new OllamaProviderOptions();
         var httpClient = new HttpClient(handler);
         IHttpClientFactory factory = Substitute.For<IHttpClientFactory>();
         factory.CreateClient("GranitAIOllamaHealthCheck").Returns(httpClient);

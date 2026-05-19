@@ -6,6 +6,7 @@ using Granit.AI.Ollama.Options;
 using Granit.Diagnostics;
 using Granit.Http.Resilience.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -23,8 +24,9 @@ public static class AIOllamaHostApplicationBuilderExtensions
     /// Adds <c>Granit.AI.Ollama</c> services: Ollama provider factory, options, and activity source.
     /// </summary>
     /// <remarks>
-    /// Reads <see cref="OllamaOptions"/> from the <c>"AI:Ollama"</c> configuration section.
+    /// Reads <see cref="OllamaProviderOptions"/> from the <c>"AI:Ollama"</c> configuration section.
     /// No API key is required — Ollama runs models locally.
+    /// Registers the named <see cref="HttpClient"/> consumed by both the SDK and the health check.
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
     /// <returns>The builder for chaining.</returns>
@@ -34,11 +36,17 @@ public static class AIOllamaHostApplicationBuilderExtensions
         GranitActivitySourceRegistry.Register(AIOllamaActivitySource.Name);
 
         builder.Services
-            .AddOptions<OllamaOptions>()
-            .BindConfiguration(OllamaOptions.SectionName)
+            .AddOptions<OllamaProviderOptions>()
+            .BindConfiguration(OllamaProviderOptions.SectionName)
             .ValidateOnStart();
 
-        builder.Services.AddSingleton<IValidateOptions<OllamaOptions>, OllamaOptionsValidator>();
+        builder.Services.AddSingleton<IValidateOptions<OllamaProviderOptions>, OllamaProviderOptionsValidator>();
+
+        // TimeProvider may already be registered by the host; TryAdd avoids overriding it.
+        builder.Services.TryAddSingleton(TimeProvider.System);
+
+        // The OllamaSharp client uses the HttpClient timeout directly (no separate SDK timeout).
+        builder.Services.AddHttpClient(OllamaProviderFactory.HttpClientName);
 
         builder.Services.AddSingleton<IAIProviderFactory, OllamaProviderFactory>();
 

@@ -9,10 +9,13 @@ namespace Granit.AI.Ollama.Tests;
 
 public sealed class OllamaProviderFactoryTests
 {
-    private static OllamaProviderFactory CreateFactory(OllamaOptions? options = null)
+    private static OllamaProviderFactory CreateFactory(OllamaProviderOptions? options = null)
     {
-        OllamaOptions opts = options ?? new OllamaOptions();
-        return new OllamaProviderFactory(Microsoft.Extensions.Options.Options.Create(opts), TimeProvider.System);
+        OllamaProviderOptions opts = options ?? new OllamaProviderOptions();
+        return new OllamaProviderFactory(
+            new TestOptionsMonitor<OllamaProviderOptions>(opts),
+            new TestHttpClientFactory(),
+            TimeProvider.System);
     }
 
     private static AIWorkspace CreateWorkspace(string? model = "llama3.2") =>
@@ -32,18 +35,18 @@ public sealed class OllamaProviderFactoryTests
     }
 
     [Fact]
-    public void CreateChatClient_ReturnsOllamaApiClient()
+    public void CreateChatClient_WrapsOllamaApiClient()
     {
         OllamaProviderFactory factory = CreateFactory();
 
         IChatClient client = factory.CreateChatClient(CreateWorkspace());
 
         client.ShouldNotBeNull();
-        client.ShouldBeOfType<OllamaApiClient>();
+        client.GetService(typeof(OllamaApiClient)).ShouldNotBeNull();
     }
 
     [Fact]
-    public void CreateEmbeddingGenerator_ReturnsClient()
+    public void CreateEmbeddingGenerator_ReturnsOllamaApiClient()
     {
         OllamaProviderFactory factory = CreateFactory();
 

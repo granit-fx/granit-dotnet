@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Options;
-
 namespace Granit.AI.AzureOpenAI.Options;
 
 /// <summary>
@@ -10,6 +8,8 @@ namespace Granit.AI.AzureOpenAI.Options;
 /// When <see cref="ApiKey"/> is empty, the provider falls back to
 /// <c>DefaultAzureCredential</c> (Managed Identity) — the recommended
 /// approach for production deployments.
+/// Rotation is hot — <see cref="Internal.AzureOpenAIProviderFactory"/> rebuilds its underlying
+/// SDK client whenever <c>IOptionsMonitor</c> publishes a change.
 /// </remarks>
 public sealed class AzureOpenAIProviderOptions
 {
@@ -39,30 +39,28 @@ public sealed class AzureOpenAIProviderOptions
     /// Default embedding deployment name.
     /// </summary>
     public string DefaultEmbeddingDeployment { get; set; } = "text-embedding-3-small";
-}
 
-/// <summary>
-/// Validates <see cref="AzureOpenAIProviderOptions"/> at startup.
-/// </summary>
-internal sealed class AzureOpenAIProviderOptionsValidator : IValidateOptions<AzureOpenAIProviderOptions>
-{
-    /// <inheritdoc/>
-    public ValidateOptionsResult Validate(string? name, AzureOpenAIProviderOptions options)
-    {
-        if (string.IsNullOrWhiteSpace(options.Endpoint))
-        {
-            return ValidateOptionsResult.Fail(
-                $"{nameof(options.Endpoint)} must be non-empty. " +
-                "Set it to your Azure OpenAI resource endpoint (e.g. https://my-resource.openai.azure.com).");
-        }
+    /// <summary>
+    /// Optional allowlist of deployment names callers are permitted to request. When empty
+    /// (the default), any deployment configured on the Azure OpenAI resource is allowed.
+    /// </summary>
+    /// <remarks>
+    /// Defense-in-depth against cost amplification: a tenant-controlled workspace cannot direct
+    /// traffic to a more expensive deployment than the operator approved.
+    /// <see cref="DefaultDeployment"/> and <see cref="DefaultEmbeddingDeployment"/> must
+    /// themselves appear in this list when it is non-empty.
+    /// </remarks>
+    public IList<string> AllowedDeployments { get; set; } = [];
 
-        if (!Uri.TryCreate(options.Endpoint, UriKind.Absolute, out Uri? uri) ||
-            uri.Scheme != Uri.UriSchemeHttps)
-        {
-            return ValidateOptionsResult.Fail(
-                $"{nameof(options.Endpoint)} must be a valid HTTPS URI. Got: '{options.Endpoint}'.");
-        }
+    /// <summary>
+    /// Maximum duration of a single Azure OpenAI HTTP call. Retries are governed by
+    /// <see cref="MaxRetries"/> and are not counted in this budget.
+    /// </summary>
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(2);
 
-        return ValidateOptionsResult.Success;
-    }
+    /// <summary>
+    /// Number of retries the SDK performs on transient failures (5xx, throttling) with exponential
+    /// backoff. Set to <c>0</c> to disable retries.
+    /// </summary>
+    public int MaxRetries { get; set; } = 3;
 }

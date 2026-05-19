@@ -20,8 +20,9 @@ public static class AIAnthropicHostApplicationBuilderExtensions
     /// </summary>
     /// <remarks>
     /// Binds <see cref="AnthropicProviderOptions"/> from the <c>AI:Anthropic</c> configuration section,
-    /// registers options validation, and registers <see cref="AnthropicProviderFactory"/>
-    /// as an <see cref="IAIProviderFactory"/> implementation.
+    /// registers options validation, registers the named <see cref="HttpClient"/> consumed by the
+    /// Anthropic SDK (timeout handling is owned by the SDK itself), and registers
+    /// <see cref="AnthropicProviderFactory"/> as an <see cref="IAIProviderFactory"/> implementation.
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
     /// <returns>The builder for chaining.</returns>
@@ -35,6 +36,15 @@ public static class AIAnthropicHostApplicationBuilderExtensions
             .ValidateOnStart();
 
         builder.Services.AddSingleton<IValidateOptions<AnthropicProviderOptions>, AnthropicProviderOptionsValidator>();
+
+        // The Anthropic SDK enforces its own per-call Timeout; setting HttpClient.Timeout to
+        // InfiniteTimeSpan prevents the inner HttpClient timeout from racing the SDK cancellation handler.
+        builder.Services
+            .AddHttpClient(AnthropicProviderFactory.HttpClientName, client =>
+            {
+                client.Timeout = Timeout.InfiniteTimeSpan;
+            });
+
         builder.Services.AddSingleton<IAIProviderFactory, AnthropicProviderFactory>();
 
         return builder;

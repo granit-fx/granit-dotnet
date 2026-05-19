@@ -1,4 +1,5 @@
 using System.ClientModel;
+using System.ClientModel.Primitives;
 using System.Collections.Frozen;
 using Granit.AI.OpenAI.Options;
 using Granit.AI.Workspaces;
@@ -13,22 +14,29 @@ namespace Granit.AI.OpenAI.Internal;
 /// OpenAI implementation of <see cref="IAIProviderFactory"/> and <see cref="IAIModelCatalog"/>.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Creates <see cref="IChatClient"/> and <see cref="IEmbeddingGenerator{String, Embedding}"/>
-/// instances backed by the OpenAI API via <see cref="OpenAIClient"/>.
-/// Model catalog is fetched dynamically from the OpenAI <c>GET /v1/models</c> endpoint
-/// and enriched with known metadata (context window, capabilities) for well-known models.
-/// Results are cached for 5 minutes.
+/// instances backed by <see cref="OpenAIClient"/>. The chat client is wrapped by
+/// <see cref="TracingOpenAIChatClient"/> so each call emits an OpenTelemetry GenAI span.
+/// </para>
+/// <para>
+/// The underlying <see cref="OpenAIClient"/> is rebuilt whenever <see cref="IOptionsMonitor{TOptions}"/>
+/// publishes a configuration change, so API-key rotation from <c>Granit.Vault</c> takes effect
+/// without a process restart. The transport <see cref="HttpClient"/> is sourced from
+/// <see cref="IHttpClientFactory"/> so connection pooling and DNS refresh are owned by the host.
+/// </para>
+/// <para>
+/// Model catalog is fetched dynamically from the OpenAI <c>GET /v1/models</c> endpoint and
+/// enriched with known metadata (context window, capabilities) for well-known models. Results
+/// are cached for 5 minutes.
+/// </para>
 /// </remarks>
-internal sealed class OpenAIProviderFactory(
-    IOptions<OpenAIProviderOptions> options,
-    TimeProvider timeProvider) : IAIProviderFactory, IAIModelCatalog
+internal sealed class OpenAIProviderFactory : IAIProviderFactory, IAIModelCatalog, IDisposable
 {
-    private readonly OpenAIProviderOptions _options = options.Value;
+    /// <summary>Named <see cref="HttpClient"/> consumed by this factory.</summary>
+    internal const string HttpClientName = "Granit.AI.OpenAI";
 
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
-    private readonly Lock _lock = new();
-    private IReadOnlyList<AIModelInfo>? _cachedModels;
-    private DateTimeOffset _cacheExpiry;
 
     /// <summary>
     /// Known metadata for well-known OpenAI models. Models not in this map
@@ -49,38 +57,69 @@ internal sealed class OpenAIProviderFactory(
             ["text-embedding-3-large"] = ("Text Embedding 3 Large", new AIModelCapabilities { Chat = false, Embeddings = true, Streaming = false }, 8_191),
         }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
+    private readonly IOptionsMonitor<OpenAIProviderOptions> _optionsMonitor;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly TimeProvider _timeProvider;
+    private readonly IDisposable? _changeSubscription;
+    private readonly Lock _cacheLock = new();
+    private OpenAIClient _client;
+    private IReadOnlyList<AIModelInfo>? _cachedModels;
+    private DateTimeOffset _cacheExpiry;
+
+    public OpenAIProviderFactory(
+        IOptionsMonitor<OpenAIProviderOptions> optionsMonitor,
+        IHttpClientFactory httpClientFactory,
+        TimeProvider timeProvider)
+    {
+        _optionsMonitor = optionsMonitor;
+        _httpClientFactory = httpClientFactory;
+        _timeProvider = timeProvider;
+        _client = BuildClient(optionsMonitor.CurrentValue);
+        _changeSubscription = optionsMonitor.OnChange(OnOptionsChanged);
+    }
+
     /// <inheritdoc/>
     public string ProviderName => "OpenAI";
 
     /// <inheritdoc/>
     public IChatClient CreateChatClient(AIWorkspace workspace)
     {
-        OpenAIClient client = CreateOpenAIClient();
-        string model = string.IsNullOrWhiteSpace(workspace.Model) ? _options.DefaultModel : workspace.Model;
+        ArgumentNullException.ThrowIfNull(workspace);
 
-        return client.GetChatClient(model).AsIChatClient();
+        OpenAIProviderOptions options = _optionsMonitor.CurrentValue;
+        string model = string.IsNullOrWhiteSpace(workspace.Model) ? options.DefaultModel : workspace.Model;
+        EnforceAllowlist(options, model);
+
+        OpenAIClient client = Volatile.Read(ref _client);
+        IChatClient inner = client.GetChatClient(model).AsIChatClient();
+        return new TracingOpenAIChatClient(inner, model);
     }
 
     /// <inheritdoc/>
     public IEmbeddingGenerator<string, Embedding<float>>? CreateEmbeddingGenerator(AIWorkspace workspace)
     {
-        OpenAIClient client = CreateOpenAIClient();
+        ArgumentNullException.ThrowIfNull(workspace);
 
-        return client.GetEmbeddingClient(_options.DefaultEmbeddingModel).AsIEmbeddingGenerator();
+        OpenAIProviderOptions options = _optionsMonitor.CurrentValue;
+        string model = options.DefaultEmbeddingModel;
+        EnforceAllowlist(options, model);
+
+        OpenAIClient client = Volatile.Read(ref _client);
+        return client.GetEmbeddingClient(model).AsIEmbeddingGenerator();
     }
 
     /// <inheritdoc/>
     public async Task<IReadOnlyList<AIModelInfo>> GetAvailableModelsAsync(CancellationToken cancellationToken = default)
     {
-        lock (_lock)
+        lock (_cacheLock)
         {
-            if (_cachedModels is not null && timeProvider.GetUtcNow() < _cacheExpiry)
+            if (_cachedModels is not null && _timeProvider.GetUtcNow() < _cacheExpiry)
             {
                 return _cachedModels;
             }
         }
 
-        OpenAIClient client = CreateOpenAIClient();
+        OpenAIClient client = Volatile.Read(ref _client);
         OpenAIModelClient modelClient = client.GetOpenAIModelClient();
 
         OpenAIModelCollection apiModels = await modelClient
@@ -92,13 +131,21 @@ internal sealed class OpenAIProviderFactory(
             .OrderBy(m => m.DisplayName, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        lock (_lock)
+        lock (_cacheLock)
         {
             _cachedModels = models;
-            _cacheExpiry = timeProvider.GetUtcNow().Add(CacheDuration);
+            _cacheExpiry = _timeProvider.GetUtcNow().Add(CacheDuration);
         }
 
         return models;
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        _changeSubscription?.Dispose();
+        // OpenAIClient does not own the HttpClient (provided via Transport from IHttpClientFactory);
+        // GC reclaims the wrapper.
     }
 
     private static AIModelInfo EnrichModel(string modelId)
@@ -115,16 +162,60 @@ internal sealed class OpenAIProviderFactory(
         return new AIModelInfo(modelId, modelId, capabilities);
     }
 
-    private OpenAIClient CreateOpenAIClient()
+    private static void EnforceAllowlist(OpenAIProviderOptions options, string model)
     {
-        var credential = new ApiKeyCredential(_options.ApiKey);
-
-        if (!string.IsNullOrWhiteSpace(_options.Endpoint))
+        if (options.AllowedModels.Count > 0 &&
+            !options.AllowedModels.Contains(model, StringComparer.Ordinal))
         {
-            var clientOptions = new OpenAIClientOptions { Endpoint = new Uri(_options.Endpoint) };
-            return new OpenAIClient(credential, clientOptions);
+            throw new InvalidOperationException(
+                $"OpenAI model '{model}' is not in the configured AllowedModels list. " +
+                "Add it to AI:OpenAI:AllowedModels or update the workspace.");
+        }
+    }
+
+    private void OnOptionsChanged(OpenAIProviderOptions newOptions)
+    {
+        OpenAIClient next;
+        try
+        {
+            next = BuildClient(newOptions);
+        }
+        catch
+        {
+            // Keep the current client if the new options are unusable (e.g. transient configuration glitch).
+            // The validator already rejects malformed options at startup; this guards mid-flight hot reloads.
+            return;
         }
 
-        return new OpenAIClient(credential);
+        Interlocked.Exchange(ref _client, next);
+        lock (_cacheLock)
+        {
+            // Invalidate the model catalog cache so the next caller observes the rotated endpoint/key.
+            _cachedModels = null;
+            _cacheExpiry = DateTimeOffset.MinValue;
+        }
+    }
+
+    private OpenAIClient BuildClient(OpenAIProviderOptions options)
+    {
+        var credential = new ApiKeyCredential(options.ApiKey);
+
+        // HttpClient.Timeout left at InfiniteTimeSpan (configured in the DI extension) so the
+        // SDK's NetworkTimeout drives cancellation; otherwise the inner HttpClient cancellation
+        // races the pipeline's retry policy.
+        HttpClient http = _httpClientFactory.CreateClient(HttpClientName);
+        var clientOptions = new OpenAIClientOptions
+        {
+            Transport = new HttpClientPipelineTransport(http),
+            NetworkTimeout = options.Timeout,
+            RetryPolicy = new ClientRetryPolicy(options.MaxRetries),
+        };
+
+        if (!string.IsNullOrWhiteSpace(options.Endpoint))
+        {
+            clientOptions.Endpoint = new Uri(options.Endpoint);
+        }
+
+        return new OpenAIClient(credential, clientOptions);
     }
 }

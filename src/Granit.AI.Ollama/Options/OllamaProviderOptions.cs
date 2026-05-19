@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Options;
-
 namespace Granit.AI.Ollama.Options;
 
 /// <summary>
@@ -15,8 +13,12 @@ namespace Granit.AI.Ollama.Options;
 /// dedicated GPU server). Override <see cref="DefaultModel"/> to change the fallback
 /// model when an <see cref="Granit.AI.Workspaces.AIWorkspace"/> does not specify one.
 /// </para>
+/// <para>
+/// Endpoint changes are hot — <see cref="Internal.OllamaProviderFactory"/> picks up
+/// the new endpoint whenever <c>IOptionsMonitor</c> publishes a change.
+/// </para>
 /// </remarks>
-public sealed class OllamaOptions
+public sealed class OllamaProviderOptions
 {
     /// <summary>
     /// Configuration section name used for <c>IConfiguration</c> binding.
@@ -33,31 +35,20 @@ public sealed class OllamaOptions
     /// Defaults to <c>llama3.1</c>.
     /// </summary>
     public string DefaultModel { get; set; } = "llama3.1";
-}
 
-/// <summary>
-/// Validates <see cref="OllamaOptions"/> at startup (fail-fast on invalid configuration).
-/// </summary>
-internal sealed class OllamaOptionsValidator : IValidateOptions<OllamaOptions>
-{
-    /// <inheritdoc/>
-    public ValidateOptionsResult Validate(string? name, OllamaOptions options)
-    {
-        if (string.IsNullOrWhiteSpace(options.Endpoint))
-        {
-            return ValidateOptionsResult.Fail(
-                $"{nameof(options.Endpoint)} must be non-empty. " +
-                "Set it to the Ollama server URL (e.g. http://localhost:11434).");
-        }
+    /// <summary>
+    /// Optional allowlist of model identifiers callers are permitted to request. When empty
+    /// (the default), any model installed on the Ollama server is allowed.
+    /// </summary>
+    /// <remarks>
+    /// Defense-in-depth against unauthorised model usage on shared GPU servers.
+    /// <see cref="DefaultModel"/> must itself appear in this list when it is non-empty.
+    /// </remarks>
+    public IList<string> AllowedModels { get; set; } = [];
 
-        if (!Uri.TryCreate(options.Endpoint, UriKind.Absolute, out Uri? uri) ||
-            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
-        {
-            return ValidateOptionsResult.Fail(
-                $"{nameof(options.Endpoint)} must be a valid HTTP or HTTPS URI. " +
-                $"Got: '{options.Endpoint}'.");
-        }
-
-        return ValidateOptionsResult.Success;
-    }
+    /// <summary>
+    /// Maximum duration of a single Ollama HTTP call. Defaults to 5 minutes since
+    /// local-inference latency dominates for larger models (no network).
+    /// </summary>
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(5);
 }

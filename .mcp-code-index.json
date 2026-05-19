@@ -2364,7 +2364,7 @@
       "kind": "class",
       "project": "Granit.AI.Anthropic",
       "file": "src/Granit.AI.Anthropic/Options/AnthropicProviderOptions.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "ApiKey",
@@ -2377,6 +2377,24 @@
           "kind": "property",
           "signature": "string DefaultModel",
           "returnType": "string"
+        },
+        {
+          "name": "AllowedModels",
+          "kind": "property",
+          "signature": "IList<string> AllowedModels",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(2)",
+          "returnType": "TimeSpan Timeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxRetries",
+          "kind": "property",
+          "signature": "int MaxRetries",
+          "returnType": "int"
         }
       ]
     },
@@ -2430,6 +2448,24 @@
           "kind": "property",
           "signature": "string DefaultEmbeddingDeployment",
           "returnType": "string"
+        },
+        {
+          "name": "AllowedDeployments",
+          "kind": "property",
+          "signature": "IList<string> AllowedDeployments",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(2)",
+          "returnType": "TimeSpan Timeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxRetries",
+          "kind": "property",
+          "signature": "int MaxRetries",
+          "returnType": "int"
         }
       ]
     },
@@ -3169,7 +3205,7 @@
       "kind": "class",
       "project": "Granit.AI.Ollama",
       "file": "src/Granit.AI.Ollama/Extensions/AIOllamaHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitAIOllama",
@@ -3189,12 +3225,12 @@
       "members": []
     },
     {
-      "name": "OllamaOptions",
-      "fqn": "Granit.AI.Ollama.Options.OllamaOptions",
+      "name": "OllamaProviderOptions",
+      "fqn": "Granit.AI.Ollama.Options.OllamaProviderOptions",
       "kind": "class",
       "project": "Granit.AI.Ollama",
-      "file": "src/Granit.AI.Ollama/Options/OllamaOptions.cs",
-      "line": 19,
+      "file": "src/Granit.AI.Ollama/Options/OllamaProviderOptions.cs",
+      "line": 21,
       "members": [
         {
           "name": "Endpoint",
@@ -3207,6 +3243,18 @@
           "kind": "property",
           "signature": "string DefaultModel",
           "returnType": "string"
+        },
+        {
+          "name": "AllowedModels",
+          "kind": "property",
+          "signature": "IList<string> AllowedModels",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan Timeout { get; set; } = TimeSpan."
         }
       ]
     },
@@ -3216,7 +3264,7 @@
       "kind": "class",
       "project": "Granit.AI.OpenAI",
       "file": "src/Granit.AI.OpenAI/Extensions/AIOpenAIHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitAIOpenAI",
@@ -3260,6 +3308,24 @@
           "kind": "property",
           "signature": "string DefaultEmbeddingModel",
           "returnType": "string"
+        },
+        {
+          "name": "AllowedModels",
+          "kind": "property",
+          "signature": "IList<string> AllowedModels",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(2)",
+          "returnType": "TimeSpan Timeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxRetries",
+          "kind": "property",
+          "signature": "int MaxRetries",
+          "returnType": "int"
         }
       ]
     },

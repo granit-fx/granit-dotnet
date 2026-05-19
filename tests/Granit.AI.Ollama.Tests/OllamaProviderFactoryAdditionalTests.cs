@@ -9,11 +9,15 @@ namespace Granit.AI.Ollama.Tests;
 
 public sealed class OllamaProviderFactoryAdditionalTests
 {
-    private static OllamaProviderFactory CreateFactory(OllamaOptions? options = null)
+    private static OllamaProviderFactory CreateFactory(out TestOptionsMonitor<OllamaProviderOptions> monitor, OllamaProviderOptions? options = null)
     {
-        OllamaOptions opts = options ?? new OllamaOptions();
-        return new OllamaProviderFactory(Microsoft.Extensions.Options.Options.Create(opts), TimeProvider.System);
+        OllamaProviderOptions opts = options ?? new OllamaProviderOptions();
+        monitor = new TestOptionsMonitor<OllamaProviderOptions>(opts);
+        return new OllamaProviderFactory(monitor, new TestHttpClientFactory(), TimeProvider.System);
     }
+
+    private static OllamaProviderFactory CreateFactory(OllamaProviderOptions? options = null)
+        => CreateFactory(out _, options);
 
     private static AIWorkspace CreateWorkspace(string? model = "llama3.2") =>
         new()
@@ -23,22 +27,23 @@ public sealed class OllamaProviderFactoryAdditionalTests
             Model = model!,
         };
 
+    private static OllamaApiClient UnwrapApiClient(IChatClient client) =>
+        (OllamaApiClient)client.GetService(typeof(OllamaApiClient))!;
+
     [Fact]
     public void CreateChatClient_NullModel_FallsBackToDefaultModel()
     {
-        var options = new OllamaOptions { DefaultModel = "mistral" };
-        OllamaProviderFactory factory = CreateFactory(options);
+        OllamaProviderFactory factory = CreateFactory(new OllamaProviderOptions { DefaultModel = "mistral" });
 
-        var client = (OllamaApiClient)factory.CreateChatClient(CreateWorkspace(model: null));
+        IChatClient client = factory.CreateChatClient(CreateWorkspace(model: null));
 
-        client.SelectedModel.ShouldBe("mistral");
+        UnwrapApiClient(client).SelectedModel.ShouldBe("mistral");
     }
 
     [Fact]
     public void CreateEmbeddingGenerator_NullModel_FallsBackToDefaultModel()
     {
-        var options = new OllamaOptions { DefaultModel = "nomic-embed-text" };
-        OllamaProviderFactory factory = CreateFactory(options);
+        OllamaProviderFactory factory = CreateFactory(new OllamaProviderOptions { DefaultModel = "nomic-embed-text" });
 
         var generator = (OllamaApiClient)factory.CreateEmbeddingGenerator(CreateWorkspace(model: null));
 
@@ -48,34 +53,75 @@ public sealed class OllamaProviderFactoryAdditionalTests
     [Fact]
     public void CreateChatClient_ExplicitModel_UsesWorkspaceModel()
     {
-        var options = new OllamaOptions { DefaultModel = "mistral" };
-        OllamaProviderFactory factory = CreateFactory(options);
+        OllamaProviderFactory factory = CreateFactory(new OllamaProviderOptions { DefaultModel = "mistral" });
 
-        var client = (OllamaApiClient)factory.CreateChatClient(CreateWorkspace("phi3"));
+        IChatClient client = factory.CreateChatClient(CreateWorkspace("phi3"));
 
-        client.SelectedModel.ShouldBe("phi3");
+        UnwrapApiClient(client).SelectedModel.ShouldBe("phi3");
     }
 
     [Fact]
     public void CreateChatClient_CustomEndpoint_UsesConfiguredEndpoint()
     {
-        var options = new OllamaOptions { Endpoint = "http://gpu-server:11434" };
-        OllamaProviderFactory factory = CreateFactory(options);
+        OllamaProviderFactory factory = CreateFactory(new OllamaProviderOptions { Endpoint = "http://gpu-server:11434" });
 
         IChatClient client = factory.CreateChatClient(CreateWorkspace());
 
-        client.ShouldBeOfType<OllamaApiClient>();
+        UnwrapApiClient(client).ShouldNotBeNull();
     }
 
     [Fact]
     public void CreateEmbeddingGenerator_CustomEndpoint_UsesConfiguredEndpoint()
     {
-        var options = new OllamaOptions { Endpoint = "https://ollama.internal:443" };
-        OllamaProviderFactory factory = CreateFactory(options);
+        OllamaProviderFactory factory = CreateFactory(new OllamaProviderOptions { Endpoint = "https://ollama.internal:443" });
 
         IEmbeddingGenerator<string, Embedding<float>> generator =
             factory.CreateEmbeddingGenerator(CreateWorkspace());
 
         generator.ShouldBeOfType<OllamaApiClient>();
+    }
+
+    [Fact]
+    public void CreateChatClient_WithModelOutsideAllowlist_Throws()
+    {
+        OllamaProviderOptions options = new()
+        {
+            DefaultModel = "llama3.2",
+            AllowedModels = ["llama3.2"],
+        };
+        OllamaProviderFactory factory = CreateFactory(options);
+
+        Should.Throw<InvalidOperationException>(
+            () => factory.CreateChatClient(CreateWorkspace("phi3")));
+    }
+
+    [Fact]
+    public void CreateEmbeddingGenerator_WithModelOutsideAllowlist_Throws()
+    {
+        OllamaProviderOptions options = new()
+        {
+            DefaultModel = "llama3.2",
+            AllowedModels = ["llama3.2"],
+        };
+        OllamaProviderFactory factory = CreateFactory(options);
+
+        Should.Throw<InvalidOperationException>(
+            () => factory.CreateEmbeddingGenerator(CreateWorkspace("phi3")));
+    }
+
+    [Fact]
+    public void OptionsChange_NewEndpoint_PickedUpOnNextCall()
+    {
+        OllamaProviderFactory factory = CreateFactory(
+            out TestOptionsMonitor<OllamaProviderOptions> monitor,
+            new OllamaProviderOptions { Endpoint = "http://localhost:11434", DefaultModel = "mistral" });
+
+        IChatClient before = factory.CreateChatClient(CreateWorkspace());
+        UnwrapApiClient(before).ShouldNotBeNull();
+
+        monitor.Set(new OllamaProviderOptions { Endpoint = "http://gpu-server:11434", DefaultModel = "mistral" });
+
+        IChatClient after = factory.CreateChatClient(CreateWorkspace());
+        UnwrapApiClient(after).ShouldNotBeNull();
     }
 }

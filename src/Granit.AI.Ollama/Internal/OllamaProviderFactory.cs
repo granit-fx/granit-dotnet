@@ -13,20 +13,45 @@ namespace Granit.AI.Ollama.Internal;
 /// <see cref="IChatClient"/> and <see cref="IEmbeddingGenerator{TInput,TEmbedding}"/>.
 /// </summary>
 /// <remarks>
+/// <para>
 /// <see cref="OllamaApiClient"/> natively supports the <c>Microsoft.Extensions.AI</c>
-/// abstractions. Each call creates a new client pointing at the configured
-/// endpoint with the workspace model (or the default model from options).
-/// Model catalog is fetched dynamically via <c>GET /api/tags</c> and enriched
-/// with per-model capabilities via <c>GET /api/show</c>. Cached for 30 seconds.
+/// abstractions. The chat client is wrapped by <see cref="TracingOllamaChatClient"/>
+/// so each call emits an OpenTelemetry GenAI span.
+/// </para>
+/// <para>
+/// The transport <see cref="HttpClient"/> is sourced from <see cref="IHttpClientFactory"/>,
+/// so connection pooling, DNS refresh, and timeout enforcement are owned by the host.
+/// Endpoint changes are picked up via <see cref="IOptionsMonitor{TOptions}"/>; consecutive
+/// calls observe the new endpoint without a process restart.
+/// </para>
+/// <para>
+/// Model catalog is fetched dynamically via <c>GET /api/tags</c> and enriched with
+/// per-model capabilities via <c>GET /api/show</c>. Cached for 30 seconds.
+/// </para>
 /// </remarks>
-internal sealed class OllamaProviderFactory(
-    IOptions<OllamaOptions> options,
-    TimeProvider timeProvider) : IAIProviderFactory, IAIModelCatalog
+internal sealed class OllamaProviderFactory : IAIProviderFactory, IAIModelCatalog
 {
+    /// <summary>Named <see cref="HttpClient"/> consumed by this factory.</summary>
+    internal const string HttpClientName = "Granit.AI.Ollama";
+
     private static readonly TimeSpan CacheDuration = TimeSpan.FromSeconds(30);
+
+    private readonly IOptionsMonitor<OllamaProviderOptions> _optionsMonitor;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly TimeProvider _timeProvider;
     private readonly Lock _lock = new();
     private IReadOnlyList<AIModelInfo>? _cachedModels;
     private DateTimeOffset _cacheExpiry;
+
+    public OllamaProviderFactory(
+        IOptionsMonitor<OllamaProviderOptions> optionsMonitor,
+        IHttpClientFactory httpClientFactory,
+        TimeProvider timeProvider)
+    {
+        _optionsMonitor = optionsMonitor;
+        _httpClientFactory = httpClientFactory;
+        _timeProvider = timeProvider;
+    }
 
     /// <inheritdoc/>
     public string ProviderName => "Ollama";
@@ -36,10 +61,12 @@ internal sealed class OllamaProviderFactory(
     {
         ArgumentNullException.ThrowIfNull(workspace);
 
-        string model = workspace.Model ?? options.Value.DefaultModel;
-        var endpoint = new Uri(options.Value.Endpoint);
+        OllamaProviderOptions options = _optionsMonitor.CurrentValue;
+        string model = string.IsNullOrWhiteSpace(workspace.Model) ? options.DefaultModel : workspace.Model;
+        EnforceAllowlist(options, model);
 
-        return new OllamaApiClient(endpoint, model);
+        OllamaApiClient inner = CreateOllamaApiClient(options, model);
+        return new TracingOllamaChatClient(inner, model);
     }
 
     /// <inheritdoc/>
@@ -47,10 +74,11 @@ internal sealed class OllamaProviderFactory(
     {
         ArgumentNullException.ThrowIfNull(workspace);
 
-        string model = workspace.Model ?? options.Value.DefaultModel;
-        var endpoint = new Uri(options.Value.Endpoint);
+        OllamaProviderOptions options = _optionsMonitor.CurrentValue;
+        string model = string.IsNullOrWhiteSpace(workspace.Model) ? options.DefaultModel : workspace.Model;
+        EnforceAllowlist(options, model);
 
-        return new OllamaApiClient(endpoint, model);
+        return CreateOllamaApiClient(options, model);
     }
 
     /// <inheritdoc/>
@@ -58,14 +86,14 @@ internal sealed class OllamaProviderFactory(
     {
         lock (_lock)
         {
-            if (_cachedModels is not null && timeProvider.GetUtcNow() < _cacheExpiry)
+            if (_cachedModels is not null && _timeProvider.GetUtcNow() < _cacheExpiry)
             {
                 return _cachedModels;
             }
         }
 
-        var endpoint = new Uri(options.Value.Endpoint);
-        var client = new OllamaApiClient(endpoint);
+        OllamaProviderOptions options = _optionsMonitor.CurrentValue;
+        OllamaApiClient client = CreateOllamaApiClient(options, options.DefaultModel);
 
         IEnumerable<Model> localModels = await client
             .ListLocalModelsAsync(cancellationToken)
@@ -81,10 +109,29 @@ internal sealed class OllamaProviderFactory(
         lock (_lock)
         {
             _cachedModels = models;
-            _cacheExpiry = timeProvider.GetUtcNow().Add(CacheDuration);
+            _cacheExpiry = _timeProvider.GetUtcNow().Add(CacheDuration);
         }
 
         return models;
+    }
+
+    private static void EnforceAllowlist(OllamaProviderOptions options, string model)
+    {
+        if (options.AllowedModels.Count > 0 &&
+            !options.AllowedModels.Contains(model, StringComparer.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"Ollama model '{model}' is not in the configured AllowedModels list. " +
+                "Add it to AI:Ollama:AllowedModels or update the workspace.");
+        }
+    }
+
+    private OllamaApiClient CreateOllamaApiClient(OllamaProviderOptions options, string model)
+    {
+        HttpClient http = _httpClientFactory.CreateClient(HttpClientName);
+        http.BaseAddress = new Uri(options.Endpoint);
+        http.Timeout = options.Timeout;
+        return new OllamaApiClient(http, model);
     }
 
     /// <summary>
