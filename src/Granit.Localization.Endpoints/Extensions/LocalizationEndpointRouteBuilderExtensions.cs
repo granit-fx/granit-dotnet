@@ -2,7 +2,8 @@
 // LocalizationEndpointRouteBuilderExtensions.cs
 // Minimal API extensions for Granit localization:
 //   - MapGranitLocalization: GET /{prefix}/localization (SPA bootstrapping, anonymous)
-//   - MapGranitLocalizationOverrides: CRUD /{prefix}/localization/overrides
+//   - MapGranitLocalizationOverrides: query-engine list/meta + CRUD
+//     under /{prefix}/localization/overrides
 //     (admin, requires Localization.Overrides.Manage permission)
 // ---------------------------------------------------------------------------
 
@@ -10,10 +11,13 @@ using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Granit.Localization;
+using Granit.Localization.Domain;
 using Granit.Localization.Endpoints.Dtos;
 using Granit.Localization.Endpoints.Options;
 using Granit.Localization.Endpoints.Permissions;
 using Granit.Localization.Options;
+using Granit.QueryEngine;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -76,38 +80,6 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
         return endpoints;
     }
 
-    private static Task MarkOverridesQueryParamsRequired(
-        OpenApiOperation operation,
-        OpenApiOperationTransformerContext context,
-        CancellationToken cancellationToken)
-    {
-        if (operation.Parameters is null)
-        {
-            return Task.CompletedTask;
-        }
-
-        foreach (IOpenApiParameter parameter in operation.Parameters)
-        {
-            if (parameter.In != ParameterLocation.Query)
-            {
-                continue;
-            }
-
-            if (parameter is OpenApiParameter concrete && parameter.Name is "resourceName" or "cultureName")
-            {
-                concrete.Required = true;
-            }
-
-            if (parameter.Name == "cultureName" && parameter.Schema is OpenApiSchema cultureSchema)
-            {
-                cultureSchema.Pattern ??= "^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{1,8})*$";
-                cultureSchema.Example ??= System.Text.Json.Nodes.JsonValue.Create("fr-BE");
-            }
-        }
-
-        return Task.CompletedTask;
-    }
-
     private static Task DescribeCultureNameParam(
         OpenApiOperation operation,
         OpenApiOperationTransformerContext context,
@@ -139,17 +111,30 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Registers 3 endpoints under <c>/{prefix}/localization/overrides</c>:
+    /// Registers query-engine endpoints + CRUD under <c>/{prefix}/localization/overrides</c>:
     /// <list type="bullet">
-    /// <item><c>GET ?resourceName=X&amp;cultureName=fr</c> — list all overrides for a resource/culture</item>
+    /// <item><c>GET /</c> — paginated, filterable, sortable list of overrides (query engine)</item>
+    /// <item><c>GET /meta</c> — query metadata (columns, filters, sorts, presets)</item>
     /// <item><c>PUT /{resourceName}/{cultureName}/{key}</c> — create or update an override</item>
     /// <item><c>DELETE /{resourceName}/{cultureName}/{key}</c> — remove an override</item>
     /// </list>
     /// </para>
     /// <para>
+    /// The list/meta endpoints require <see cref="IQueryableSource{TEntity}"/> for
+    /// <see cref="LocalizationOverride"/> to be registered (provided by
+    /// <c>AddGranitLocalizationEntityFrameworkCore</c>). The PUT/DELETE endpoints require
+    /// <see cref="ILocalizationOverrideStoreWriter"/> to be registered (same call);
+    /// without it they return <c>501 Not Implemented</c>.
+    /// </para>
+    /// <para>
     /// All endpoints require the <c>Localization.Overrides.Manage</c> permission.
-    /// If <see cref="ILocalizationOverrideStoreReader"/>/<see cref="ILocalizationOverrideStoreWriter"/> is not registered (no EF Core or other
-    /// persistence module loaded), all endpoints return <c>501 Not Implemented</c>.
+    /// </para>
+    /// <para>
+    /// <b>Breaking change vs. earlier versions:</b> the legacy
+    /// <c>GET /overrides?resourceName=X&amp;cultureName=Y</c> shape has been replaced by the
+    /// query-engine surface (<c>GET /</c> + <c>GET /meta</c>). Frontends that previously
+    /// called the legacy shape must switch to the query-engine contract (e.g.
+    /// <c>useQueryEndpoint</c> / <c>useQueryMeta</c>).
     /// </para>
     /// </remarks>
     /// <param name="endpoints">The endpoint route builder.</param>
@@ -167,14 +152,9 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
             .RequireAuthorization(LocalizationOverridesPermissions.Overrides.Manage)
             .WithTags(options.TagName);
 
-        group.MapGet("", HandleGetOverridesAsync)
-             .WithName("GetLocalizationOverrides")
-             .WithSummary("Returns all translation overrides for a resource and culture.")
-             .WithDescription("Returns all active translation overrides for the specified resource and culture as a key-value dictionary. Both resourceName and cultureName query parameters are required. Returns 501 if no override store is registered.")
-             .Produces<IReadOnlyDictionary<string, string>>()
-             .ProducesProblem(StatusCodes.Status400BadRequest)
-             .ProducesProblem(StatusCodes.Status501NotImplemented)
-             .AddOpenApiOperationTransformer(MarkOverridesQueryParamsRequired);
+        // Query-engine surface: GET / (list) + GET /meta (definition).
+        // Inherits the group's auth + tags so we don't need TagName / AuthorizationPolicy here.
+        group.MapGranitQuery<LocalizationOverride>();
 
         group.MapPut("/{resourceName}/{cultureName}/{key}", HandlePutOverrideAsync)
              .WithName("PutLocalizationOverride")
@@ -244,41 +224,6 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
     // -------------------------------------------------------------------------
     // Handlers — CRUD /{prefix}/localization/overrides
     // -------------------------------------------------------------------------
-
-    private static async Task<Results<Ok<IReadOnlyDictionary<string, string>>, ProblemHttpResult>> HandleGetOverridesAsync(
-        HttpContext context,
-        string? resourceName,
-        string? cultureName,
-        CancellationToken cancellationToken)
-    {
-        ILocalizationOverrideStoreReader? storeReader =
-            context.RequestServices.GetService<ILocalizationOverrideStoreReader>();
-
-        if (storeReader is null)
-        {
-            return StoreNotRegistered();
-        }
-
-        if (string.IsNullOrWhiteSpace(resourceName) || string.IsNullOrWhiteSpace(cultureName))
-        {
-            return TypedResults.Problem(
-                detail: "Query parameters 'resourceName' and 'cultureName' are required.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        ProblemHttpResult? error = ValidateMaxLength(resourceName, nameof(resourceName), MaxResourceNameLength)
-            ?? ValidateBcp47(cultureName);
-
-        if (error is not null)
-        {
-            return error;
-        }
-
-        IReadOnlyDictionary<string, string> overrides =
-            await storeReader.GetOverridesAsync(resourceName, cultureName, cancellationToken).ConfigureAwait(false);
-
-        return TypedResults.Ok(overrides);
-    }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> HandlePutOverrideAsync(
         HttpContext context,

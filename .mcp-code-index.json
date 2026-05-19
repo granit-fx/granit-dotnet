@@ -1133,6 +1133,7 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.Localization",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -24835,7 +24836,7 @@
       "kind": "class",
       "project": "Granit.Localization.Endpoints",
       "file": "src/Granit.Localization.Endpoints/Extensions/LocalizationEndpointRouteBuilderExtensions.cs",
-      "line": 33,
+      "line": 37,
       "members": [
         {
           "name": "MapGranitLocalization",
@@ -24916,7 +24917,7 @@
       "kind": "class",
       "project": "Granit.Localization.EntityFrameworkCore",
       "file": "src/Granit.Localization.EntityFrameworkCore/Extensions/LocalizationEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitLocalizationEntityFrameworkCore",

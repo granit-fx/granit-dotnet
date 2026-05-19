@@ -1,6 +1,8 @@
+using Granit.Localization.Domain;
 using Granit.Localization.EntityFrameworkCore.Internal;
 using Granit.Localization.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -43,6 +45,8 @@ public static class LocalizationEntityFrameworkCoreHostApplicationBuilderExtensi
             CachedLocalizationOverrideStore.RawStoreKey);
         builder.Services.TryAddKeyedScoped<ILocalizationOverrideStoreWriter, EfCoreLocalizationOverrideStore>(
             CachedLocalizationOverrideStore.RawStoreKey);
+
+        builder.Services.TryAddScoped<IQueryableSource<LocalizationOverride>, EfLocalizationOverrideQueryableSource>();
 
         return builder;
     }
