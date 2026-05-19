@@ -1,4 +1,5 @@
 using Granit.AI.Anthropic.Options;
+using Granit.AI.Exceptions;
 using Granit.AI.Tenancy;
 using Granit.AI.Workspaces;
 using Granit.Settings.Definitions;

@@ -2822,6 +2822,22 @@
       "members": []
     },
     {
+      "name": "AIProviderCredentialNotConfiguredException",
+      "fqn": "Granit.AI.Exceptions.AIProviderCredentialNotConfiguredException",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Exceptions/AIProviderCredentialNotConfiguredException.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AIProviderCredentialNotConfiguredException",
+          "kind": "method",
+          "signature": "AIProviderCredentialNotConfiguredException(string providerName, string workspaceName, Guid? tenantId)",
+          "returnType": "string ProviderName { get; } public string WorkspaceName { get; } public Guid? TenantId { get; } public"
+        }
+      ]
+    },
+    {
       "name": "AIProviderNotRegisteredException",
       "fqn": "Granit.AI.Exceptions.AIProviderNotRegisteredException",
       "kind": "class",
@@ -3572,22 +3588,6 @@
       "members": []
     },
     {
-      "name": "AIProviderCredentialNotConfiguredException",
-      "fqn": "Granit.AI.Tenancy.AIProviderCredentialNotConfiguredException",
-      "kind": "class",
-      "project": "Granit.AI",
-      "file": "src/Granit.AI/Tenancy/AIProviderCredentialNotConfiguredException.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "AIProviderCredentialNotConfiguredException",
-          "kind": "method",
-          "signature": "AIProviderCredentialNotConfiguredException(string providerName, string workspaceName, Guid? tenantId)",
-          "returnType": "string ProviderName { get; } public string WorkspaceName { get; } public Guid? TenantId { get; } public"
-        }
-      ]
-    },
-    {
       "name": "AIProviderCredentialScope",
       "fqn": "Granit.AI.Tenancy.AIProviderCredentialScope",
       "kind": "enum",
@@ -3654,7 +3654,7 @@
       "kind": "interface",
       "project": "Granit.AI",
       "file": "src/Granit.AI/Tenancy/IAIProviderCredentialResolver.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "ResolveAsync",

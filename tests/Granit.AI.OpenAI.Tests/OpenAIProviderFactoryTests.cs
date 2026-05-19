@@ -1,3 +1,4 @@
+using Granit.AI.Exceptions;
 using Granit.AI.OpenAI.Internal;
 using Granit.AI.OpenAI.Options;
 using Granit.AI.Tenancy;

@@ -1,5 +1,6 @@
 using Granit.AI.AzureOpenAI.Internal;
 using Granit.AI.AzureOpenAI.Options;
+using Granit.AI.Exceptions;
 using Granit.AI.Tenancy;
 using Granit.AI.Workspaces;
 using Microsoft.Extensions.AI;

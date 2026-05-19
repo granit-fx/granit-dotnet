@@ -41,9 +41,11 @@ internal sealed class AIWorkspaceEntity : AuditedEntity, IActive, IMultiTenant, 
     public string? ApiKey { get; set; }
 
     /// <summary>
-    /// Workspace-scoped endpoint override (URL). Not encrypted (URL, not a secret) but masked
-    /// in audit/log/MCP output. Mirrors <see cref="AIWorkspace.Endpoint"/>.
+    /// Workspace-scoped endpoint override (URL). Encrypted at rest because a tenant-managed URL
+    /// can leak topology or internal hostnames; masked in audit/log/MCP output. Mirrors
+    /// <see cref="AIWorkspace.Endpoint"/>.
     /// </summary>
+    [Encrypted]
     [SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask)]
     public string? Endpoint { get; set; }
 

@@ -1,4 +1,6 @@
-namespace Granit.AI.Tenancy;
+using Granit.AI.Tenancy;
+
+namespace Granit.AI.Exceptions;
 
 /// <summary>
 /// Raised when <see cref="IAIProviderCredentialResolver.ResolveAsync"/> cannot find a credential

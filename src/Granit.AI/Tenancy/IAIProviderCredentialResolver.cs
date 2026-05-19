@@ -1,3 +1,4 @@
+using Granit.AI.Exceptions;
 using Granit.AI.Workspaces;
 
 namespace Granit.AI.Tenancy;

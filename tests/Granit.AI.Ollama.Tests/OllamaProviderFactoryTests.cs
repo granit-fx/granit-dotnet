@@ -1,3 +1,4 @@
+using Granit.AI.Exceptions;
 using Granit.AI.Ollama.Internal;
 using Granit.AI.Ollama.Options;
 using Granit.AI.Tenancy;
