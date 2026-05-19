@@ -41,7 +41,7 @@ internal sealed class OpenIddictDbContext(
     private static readonly MethodInfo ConfigureMultiTenantFilterMethod =
         typeof(OpenIddictDbContext).GetMethod(
             nameof(ConfigureMultiTenantFilter),
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
+            BindingFlags.Instance | BindingFlags.NonPublic)!; // NOSONAR S3011 - intentional: ConfigureMultiTenantFilter must stay private to keep its `this`-binding (load-bearing for EF Core parameter extraction); reflection is the only way to invoke a generic instance method per-entity-type.
 
     private readonly ICurrentTenant _currentTenant = currentTenant
         ?? throw new ArgumentNullException(nameof(currentTenant));

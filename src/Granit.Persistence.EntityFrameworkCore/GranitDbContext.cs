@@ -47,7 +47,7 @@ public abstract class GranitDbContext : DbContext
     private static readonly MethodInfo ConfigureMultiTenantFilterMethod =
         typeof(GranitDbContext).GetMethod(
             nameof(ConfigureMultiTenantFilter),
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
+            BindingFlags.Instance | BindingFlags.NonPublic)!; // NOSONAR S3011 - intentional: ConfigureMultiTenantFilter must stay private to keep its `this`-binding (load-bearing for EF Core parameter extraction); reflection is the only way to invoke a generic instance method per-entity-type.
 
     /// <summary>
     /// The tenant context for this scope, captured at construction time.
