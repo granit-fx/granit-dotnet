@@ -44,6 +44,15 @@ internal sealed class AIWorkspaceEntityConfiguration : IEntityTypeConfiguration<
             .IsRequired()
             .HasDefaultValue(true);
 
+        // Workspace-scoped credentials (see AIWorkspaceEntity). ApiKey is encrypted via the
+        // [Encrypted] convention applied by ApplyEncryptionConventions in the host's DbContext;
+        // we only set the max length here. Endpoint is a URL — not encrypted.
+        builder.Property(e => e.ApiKey)
+            .HasMaxLength(2_000);
+
+        builder.Property(e => e.Endpoint)
+            .HasMaxLength(2_000);
+
         builder.Property(e => e.IsDeleted)
             .IsRequired()
             .HasDefaultValue(false);

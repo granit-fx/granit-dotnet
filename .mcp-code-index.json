@@ -3521,6 +3521,15 @@
       "members": []
     },
     {
+      "name": "AIWorkspaceCredentialsChangedEvent",
+      "fqn": "Granit.AI.Tenancy.AIWorkspaceCredentialsChangedEvent",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AIWorkspaceCredentialsChangedEvent.cs",
+      "line": 25,
+      "members": []
+    },
+    {
       "name": "Anthropic",
       "fqn": "Granit.AI.Tenancy.Anthropic",
       "kind": "class",
@@ -3711,7 +3720,7 @@
       "kind": "record",
       "project": "Granit.AI",
       "file": "src/Granit.AI/Workspaces/AIWorkspace.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "Name",

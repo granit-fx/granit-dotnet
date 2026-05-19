@@ -1,3 +1,5 @@
+using Granit.DataProtection;
+
 namespace Granit.AI.Workspaces;
 
 /// <summary>
@@ -54,4 +56,32 @@ public sealed record AIWorkspace
     /// Whether this workspace is active and available for use.
     /// </summary>
     public bool Activated { get; init; } = true;
+
+    /// <summary>
+    /// Provider API key override scoped to this workspace, or <c>null</c> to fall through to
+    /// the tenant / global / host cascade.
+    /// </summary>
+    /// <remarks>
+    /// Encrypted at rest by <c>Granit.Encryption.EntityFrameworkCore</c>. Omitted from audit
+    /// trails, log fields, MCP responses, and data exports by virtue of
+    /// <see cref="SensitiveDataAttribute"/> (<see cref="Sensitivity.Restricted"/> +
+    /// <see cref="SensitiveDataMode.Omit"/>). Never exposed via <c>AIWorkspaceResponse</c>
+    /// or <c>AIWorkspace{Create,Update}Request</c> — credentials transit through the
+    /// dedicated <c>/workspaces/{name}/credentials</c> endpoint gated by
+    /// <c>AI.Credentials.Manage</c>.
+    /// </remarks>
+    [SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
+    public string? ApiKey { get; init; }
+
+    /// <summary>
+    /// Provider endpoint override scoped to this workspace (e.g. a tenant-managed Ollama URL or
+    /// an OpenAI-compatible proxy), or <c>null</c> to fall through to the cascade.
+    /// </summary>
+    /// <remarks>
+    /// Validated against the provider's <c>AIEndpointPolicy</c> on write (anti-SSRF). Masked in
+    /// audit/log/MCP output via <see cref="SensitiveDataAttribute"/>: a URL can leak tenant
+    /// topology or internal hostnames.
+    /// </remarks>
+    [SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask)]
+    public string? Endpoint { get; init; }
 }
