@@ -55,15 +55,17 @@ public sealed partial class TenantResolutionMiddleware(
 
         if (result.Tenant is not null)
         {
-            if (_options.HeaderTrustMode == TenantHeaderTrustMode.CrossValidate
-                && context.User.Identity?.IsAuthenticated == true)
+            if (context.User.Identity?.IsAuthenticated == true)
             {
                 string? jwtClaim = context.User.FindFirstValue(_options.TenantIdClaimType);
 
                 if (!string.IsNullOrEmpty(jwtClaim))
                 {
-                    // Tenant user: header (or any non-JWT resolver) must match the JWT claim.
-                    if (Guid.TryParse(jwtClaim, out Guid jwtTenantId)
+                    // Tenant user: in CrossValidate mode the resolved tenant must match
+                    // the JWT claim. In Unrestricted mode the header is trusted by
+                    // configuration and the cross-check is skipped.
+                    if (_options.HeaderTrustMode == TenantHeaderTrustMode.CrossValidate
+                        && Guid.TryParse(jwtClaim, out Guid jwtTenantId)
                         && result.Tenant.Id is Guid resolvedTenantId
                         && jwtTenantId != resolvedTenantId)
                     {
@@ -78,9 +80,12 @@ public sealed partial class TenantResolutionMiddleware(
                 else if (!result.IsAuthoritative && result.Tenant.Id.HasValue)
                 {
                     // Host user (no tenant_id claim) attempting tenant impersonation via a
-                    // non-JWT resolver (header, query, domain). Gate it through
-                    // IHostImpersonationGate — secure-by-default refuses unless wired up
-                    // by Granit.MultiTenancy.Authorization.
+                    // non-JWT resolver (header, query, domain). The gate runs regardless of
+                    // HeaderTrustMode: header trust and impersonation authorization are
+                    // orthogonal — opting into Unrestricted trusts the proxy to scrub the
+                    // header for Tenant users, not to waive permission checks for Host
+                    // operators. Secure-by-default refuses unless wired up by
+                    // Granit.MultiTenancy.Authorization.
                     HostImpersonationDecision decision = await _hostImpersonationGate
                         .CanImpersonateAsync(context.User, result.Tenant.Id.Value, context.RequestAborted)
                         .ConfigureAwait(false);
