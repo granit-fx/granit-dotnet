@@ -27,7 +27,7 @@ public sealed class DefaultAIEmbeddingGeneratorFactoryTests
             Substitute.For<IEmbeddingGenerator<string, Embedding<float>>>();
         IAIProviderFactory providerFactory = Substitute.For<IAIProviderFactory>();
         providerFactory.ProviderName.Returns("OpenAI");
-        providerFactory.CreateEmbeddingGenerator(workspace).Returns(mockGenerator);
+        providerFactory.CreateEmbeddingGeneratorAsync(workspace, Arg.Any<CancellationToken>()).Returns(mockGenerator);
 
         DefaultAIEmbeddingGeneratorFactory factory = new(_workspaceProvider, [providerFactory], _options);
 
@@ -47,7 +47,7 @@ public sealed class DefaultAIEmbeddingGeneratorFactoryTests
             Substitute.For<IEmbeddingGenerator<string, Embedding<float>>>();
         IAIProviderFactory providerFactory = Substitute.For<IAIProviderFactory>();
         providerFactory.ProviderName.Returns("OpenAI");
-        providerFactory.CreateEmbeddingGenerator(workspace).Returns(mockGenerator);
+        providerFactory.CreateEmbeddingGeneratorAsync(workspace, Arg.Any<CancellationToken>()).Returns(mockGenerator);
 
         DefaultAIEmbeddingGeneratorFactory factory = new(_workspaceProvider, [providerFactory], _options);
 
@@ -92,7 +92,7 @@ public sealed class DefaultAIEmbeddingGeneratorFactoryTests
 
         IAIProviderFactory providerFactory = Substitute.For<IAIProviderFactory>();
         providerFactory.ProviderName.Returns("OpenAI");
-        providerFactory.CreateEmbeddingGenerator(workspace).Returns((IEmbeddingGenerator<string, Embedding<float>>?)null);
+        providerFactory.CreateEmbeddingGeneratorAsync(workspace, Arg.Any<CancellationToken>()).Returns((IEmbeddingGenerator<string, Embedding<float>>?)null);
 
         DefaultAIEmbeddingGeneratorFactory factory = new(_workspaceProvider, [providerFactory], _options);
 

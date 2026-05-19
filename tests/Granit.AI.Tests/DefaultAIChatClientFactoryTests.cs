@@ -31,7 +31,7 @@ public sealed class DefaultAIChatClientFactoryTests
         IChatClient mockClient = Substitute.For<IChatClient>();
         IAIProviderFactory providerFactory = Substitute.For<IAIProviderFactory>();
         providerFactory.ProviderName.Returns("OpenAI");
-        providerFactory.CreateChatClient(workspace).Returns(mockClient);
+        providerFactory.CreateChatClientAsync(workspace, Arg.Any<CancellationToken>()).Returns(mockClient);
 
         var factory = new DefaultAIChatClientFactory(_workspaceProvider, [providerFactory], _options);
 
@@ -49,7 +49,7 @@ public sealed class DefaultAIChatClientFactoryTests
         IChatClient mockClient = Substitute.For<IChatClient>();
         IAIProviderFactory providerFactory = Substitute.For<IAIProviderFactory>();
         providerFactory.ProviderName.Returns("OpenAI");
-        providerFactory.CreateChatClient(workspace).Returns(mockClient);
+        providerFactory.CreateChatClientAsync(workspace, Arg.Any<CancellationToken>()).Returns(mockClient);
 
         var factory = new DefaultAIChatClientFactory(_workspaceProvider, [providerFactory], _options);
 
