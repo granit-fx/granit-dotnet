@@ -82,6 +82,7 @@
       "src/Granit.Scheduling.Notifications/Granit.Scheduling.Notifications.csproj",
       "src/Granit.Scheduling.Wolverine/Granit.Scheduling.Wolverine.csproj",
       "src/Granit.Scheduling/Granit.Scheduling.csproj",
+      "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",

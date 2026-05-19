@@ -62,6 +62,7 @@
     <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Settings\Granit.Settings.csproj" />
     <!-- Optional at runtime: ICurrentTenant resolved via constructor injection (NullTenantContext when multi-tenancy is not installed) -->
   </ItemGroup>
 

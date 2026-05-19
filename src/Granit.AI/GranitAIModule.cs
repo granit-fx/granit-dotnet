@@ -1,6 +1,7 @@
 using Granit.AI.Internal;
 using Granit.Guids;
 using Granit.Modularity;
+using Granit.Settings;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.AI;
@@ -22,8 +23,13 @@ namespace Granit.AI;
 /// assembly and auto-discovered by <c>GranitLocalizationModule</c> via
 /// <see cref="AILocalizationResource"/>.
 /// </para>
+/// <para>
+/// Depends on <c>Granit.Settings</c> for per-tenant credential storage via the cascade
+/// in <c>Granit.AI.Tenancy.IAIProviderCredentialResolver</c>.
+/// </para>
 /// </remarks>
 [DependsOn(typeof(GranitGuidsModule))]
+[DependsOn(typeof(GranitSettingsModule))]
 public sealed class GranitAIModule : GranitModule
 {
     /// <inheritdoc/>

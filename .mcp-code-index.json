@@ -12,7 +12,8 @@
         "Granit",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
-        "Granit.QueryEngine.Abstractions"
+        "Granit.QueryEngine.Abstractions",
+        "Granit.Settings"
       ],
       "framework": "net10.0"
     },
@@ -2984,7 +2985,7 @@
       "kind": "class",
       "project": "Granit.AI",
       "file": "src/Granit.AI/GranitAIModule.cs",
-      "line": 27,
+      "line": 33,
       "members": [
         {
           "name": "ConfigureServices",
@@ -3423,6 +3424,153 @@
           "returnType": "Type? LocalizationResourceType =>"
         }
       ]
+    },
+    {
+      "name": "AICacheKey",
+      "fqn": "Granit.AI.Tenancy.AICacheKey",
+      "kind": "struct",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AICacheKey.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "UseManagedIdentity",
+          "kind": "property",
+          "signature": "bool UseManagedIdentity",
+          "returnType": "bool"
+        },
+        {
+          "name": "Endpoint",
+          "kind": "property",
+          "signature": "string? Endpoint",
+          "returnType": "string?"
+        },
+        {
+          "name": "ForEndpoint",
+          "kind": "method",
+          "signature": "ForEndpoint(string endpoint)",
+          "returnType": "AICacheKey"
+        },
+        {
+          "name": "ForManagedIdentity",
+          "kind": "method",
+          "signature": "ForManagedIdentity(string endpoint)",
+          "returnType": "AICacheKey"
+        },
+        {
+          "name": "Equals",
+          "kind": "method",
+          "signature": "Equals(AICacheKey other)",
+          "returnType": "bool"
+        },
+        {
+          "name": "GetHashCode",
+          "kind": "method",
+          "signature": "GetHashCode()",
+          "returnType": "int"
+        },
+        {
+          "name": "operator",
+          "kind": "property",
+          "signature": "bool operator",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "AIProviderCredential",
+      "fqn": "Granit.AI.Tenancy.AIProviderCredential",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AIProviderCredential.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "AIProviderCredentialNotConfiguredException",
+      "fqn": "Granit.AI.Tenancy.AIProviderCredentialNotConfiguredException",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AIProviderCredentialNotConfiguredException.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "AIProviderCredentialNotConfiguredException",
+          "kind": "method",
+          "signature": "AIProviderCredentialNotConfiguredException(string providerName, string workspaceName, Guid? tenantId)",
+          "returnType": "string ProviderName { get; } public string WorkspaceName { get; } public Guid? TenantId { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "AIProviderCredentialScope",
+      "fqn": "Granit.AI.Tenancy.AIProviderCredentialScope",
+      "kind": "enum",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AIProviderCredentialScope.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "AISettingNames",
+      "fqn": "Granit.AI.Tenancy.AISettingNames",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AISettingNames.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "Anthropic",
+      "fqn": "Granit.AI.Tenancy.Anthropic",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AISettingNames.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "AzureOpenAI",
+      "fqn": "Granit.AI.Tenancy.AzureOpenAI",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AISettingNames.cs",
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "IAIProviderCredentialResolver",
+      "fqn": "Granit.AI.Tenancy.IAIProviderCredentialResolver",
+      "kind": "interface",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/IAIProviderCredentialResolver.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(AIWorkspace workspace, CancellationToken cancellationToken = default)",
+          "returnType": "string ProviderName { get; } ValueTask<AIProviderCredential>"
+        }
+      ]
+    },
+    {
+      "name": "Ollama",
+      "fqn": "Granit.AI.Tenancy.Ollama",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AISettingNames.cs",
+      "line": 43,
+      "members": []
+    },
+    {
+      "name": "OpenAI",
+      "fqn": "Granit.AI.Tenancy.OpenAI",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Tenancy/AISettingNames.cs",
+      "line": 23,
+      "members": []
     },
     {
       "name": "VectorDataHostApplicationBuilderExtensions",
