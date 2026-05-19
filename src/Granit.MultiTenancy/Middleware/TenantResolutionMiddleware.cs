@@ -64,12 +64,13 @@ public sealed partial class TenantResolutionMiddleware(
                 {
                     // Tenant user: header (or any non-JWT resolver) must match the JWT claim.
                     if (Guid.TryParse(jwtClaim, out Guid jwtTenantId)
-                        && jwtTenantId != result.Tenant.Id)
+                        && result.Tenant.Id is Guid resolvedTenantId
+                        && jwtTenantId != resolvedTenantId)
                     {
                         _metrics.RecordResolutionFailed();
-                        LogTenantMismatch(result.Tenant.Id!.Value, result.ResolverType, jwtTenantId);
+                        LogTenantMismatch(resolvedTenantId, result.ResolverType, jwtTenantId);
                         await ProblemDetailsWriter
-                            .WriteTenantMismatchAsync(context, _localizer, result.Tenant.Id.Value, jwtTenantId)
+                            .WriteTenantMismatchAsync(context, _localizer, resolvedTenantId, jwtTenantId)
                             .ConfigureAwait(false);
                         return;
                     }
@@ -147,7 +148,7 @@ public sealed partial class TenantResolutionMiddleware(
         TenantResolutionResult result,
         HostImpersonationDecision decision)
     {
-        if (!result.Tenant!.Id.HasValue)
+        if (result.Tenant?.Id is not Guid tenantId)
         {
             return;
         }
@@ -156,7 +157,7 @@ public sealed partial class TenantResolutionMiddleware(
         {
             await _hostImpersonationAuditWriter.WriteAsync(
                 context.User,
-                result.Tenant.Id.Value,
+                tenantId,
                 decision,
                 result.ResolverType,
                 context.Connection.RemoteIpAddress?.ToString(),
@@ -164,10 +165,10 @@ public sealed partial class TenantResolutionMiddleware(
                 context.TraceIdentifier,
                 context.RequestAborted).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             // Audit failure must NEVER break the request — log + swallow.
-            LogAuditWriteFailed(ex, result.Tenant.Id.Value);
+            LogAuditWriteFailed(ex, tenantId);
         }
     }
 }
