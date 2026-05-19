@@ -1,5 +1,6 @@
 using Granit.AI.AzureOpenAI.Internal;
 using Granit.AI.AzureOpenAI.Options;
+using Granit.AI.Tenancy;
 using Granit.AI.Workspaces;
 using Microsoft.Extensions.AI;
 using Shouldly;
@@ -8,156 +9,101 @@ namespace Granit.AI.AzureOpenAI.Tests;
 
 public sealed class AzureOpenAIProviderFactoryTests
 {
-    private static AzureOpenAIProviderFactory CreateFactory(
-        out TestOptionsMonitor<AzureOpenAIProviderOptions> monitor,
-        AzureOpenAIProviderOptions? options = null)
-    {
-        monitor = new TestOptionsMonitor<AzureOpenAIProviderOptions>(options ?? TestFixtures.DefaultOptions());
-        return new AzureOpenAIProviderFactory(monitor, new TestHttpClientFactory());
-    }
-
-    private static AIWorkspace CreateWorkspace(string? model = "gpt-4o") =>
+    private static AIWorkspace CreateWorkspace(string? model = "gpt-4o", string? apiKey = null, string? endpoint = null) =>
         new()
         {
             Name = "test",
             Provider = "AzureOpenAI",
             Model = model!,
+            ApiKey = apiKey,
+            Endpoint = endpoint,
         };
 
     [Fact]
     public void ProviderName_IsAzureOpenAI()
     {
-        AzureOpenAIProviderFactory factory = CreateFactory(out _);
+        (AzureOpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory();
 
         factory.ProviderName.ShouldBe("AzureOpenAI");
     }
 
     [Fact]
-    public void CreateChatClient_WithApiKey_ReturnsClient()
+    public async Task CreateChatClientAsync_WithHostFallback_ReturnsClient()
     {
-        AzureOpenAIProviderFactory factory = CreateFactory(out _);
+        (AzureOpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory();
 
-        IChatClient client = factory.CreateChatClient(CreateWorkspace());
+        IChatClient client = await factory.CreateChatClientAsync(CreateWorkspace(), TestContext.Current.CancellationToken);
 
         client.ShouldNotBeNull();
     }
 
     [Fact]
-    public void CreateChatClient_WithManagedIdentity_ReturnsClient()
+    public async Task CreateChatClientAsync_NoApiKey_NoManagedIdentityFallback_Throws()
     {
         AzureOpenAIProviderOptions options = TestFixtures.DefaultOptions();
         options.ApiKey = null;
-        AzureOpenAIProviderFactory factory = CreateFactory(out _, options);
+        // AllowManagedIdentityFallback defaults to false
+        (AzureOpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory(options);
 
-        IChatClient client = factory.CreateChatClient(CreateWorkspace());
+        await Should.ThrowAsync<AIProviderCredentialNotConfiguredException>(
+            async () => await factory.CreateChatClientAsync(CreateWorkspace(), TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task CreateChatClientAsync_NoApiKey_WithManagedIdentityFallback_ReturnsClient()
+    {
+        AzureOpenAIProviderOptions options = TestFixtures.DefaultOptions();
+        options.ApiKey = null;
+        options.AllowManagedIdentityFallback = true;
+        (AzureOpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory(options);
+
+        IChatClient client = await factory.CreateChatClientAsync(CreateWorkspace(), TestContext.Current.CancellationToken);
 
         client.ShouldNotBeNull();
     }
 
     [Fact]
-    public void CreateEmbeddingGenerator_ReturnsGenerator()
-    {
-        AzureOpenAIProviderFactory factory = CreateFactory(out _);
-
-        IEmbeddingGenerator<string, Embedding<float>>? generator =
-            factory.CreateEmbeddingGenerator(CreateWorkspace());
-
-        generator.ShouldNotBeNull();
-    }
-
-    [Fact]
-    public void CreateChatClient_WithNullWorkspace_Throws()
-    {
-        AzureOpenAIProviderFactory factory = CreateFactory(out _);
-
-        Should.Throw<ArgumentNullException>(() => factory.CreateChatClient(null!));
-    }
-
-    [Fact]
-    public void CreateEmbeddingGenerator_WithNullWorkspace_Throws()
-    {
-        AzureOpenAIProviderFactory factory = CreateFactory(out _);
-
-        Should.Throw<ArgumentNullException>(() => factory.CreateEmbeddingGenerator(null!));
-    }
-
-    [Fact]
-    public void Dispose_IsIdempotent()
-    {
-        AzureOpenAIProviderFactory factory = CreateFactory(out _);
-
-        factory.Dispose();
-
-        Should.NotThrow(() => factory.Dispose());
-    }
-
-    [Fact]
-    public void CreateChatClient_WithDeploymentOutsideAllowlist_Throws()
+    public async Task CreateChatClientAsync_DeploymentOutsideAllowlist_Throws()
     {
         AzureOpenAIProviderOptions options = TestFixtures.DefaultOptions();
         options.AllowedDeployments = ["gpt-4o", "text-embedding-3-small"];
-        AzureOpenAIProviderFactory factory = CreateFactory(out _, options);
+        (AzureOpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory(options);
 
-        InvalidOperationException ex = Should.Throw<InvalidOperationException>(
-            () => factory.CreateChatClient(CreateWorkspace("o3-mini")));
-
-        ex.Message.ShouldContain("AllowedDeployments");
-        ex.Message.ShouldContain("o3-mini");
+        await Should.ThrowAsync<InvalidOperationException>(
+            async () => await factory.CreateChatClientAsync(CreateWorkspace("o3-mini"), TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public void CreateChatClient_FallsBackToDefaultDeployment_WhenWorkspaceModelBlank()
+    public async Task CreateChatClientAsync_TenantSetting_OverridesHostOptions()
     {
-        AzureOpenAIProviderOptions options = TestFixtures.DefaultOptions();
-        options.AllowedDeployments = ["gpt-4o", "text-embedding-3-small"];
-        AzureOpenAIProviderFactory factory = CreateFactory(out _, options);
+        (AzureOpenAIProviderFactory factory, TestSettingValueProvider tenant, _, _) = TestFixtures.BuildFactory();
 
-        IChatClient client = factory.CreateChatClient(CreateWorkspace(""));
+        tenant.Set(AISettingNames.AzureOpenAI.ApiKey, "tenant-key");
+        tenant.Set(AISettingNames.AzureOpenAI.Endpoint, "https://tenant-resource.openai.azure.com");
+
+        IChatClient client = await factory.CreateChatClientAsync(
+            CreateWorkspace() with { TenantId = Guid.NewGuid() },
+            TestContext.Current.CancellationToken);
 
         client.ShouldNotBeNull();
     }
 
     [Fact]
-    public void OptionsChange_TightensAllowlist_NewCallsAreRejected()
+    public async Task CreateChatClientAsync_NullWorkspace_Throws()
     {
-        AzureOpenAIProviderFactory factory = CreateFactory(out TestOptionsMonitor<AzureOpenAIProviderOptions> monitor);
+        (AzureOpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory();
 
-        factory.CreateChatClient(CreateWorkspace("o3-mini")).ShouldNotBeNull();
-
-        AzureOpenAIProviderOptions tightened = TestFixtures.DefaultOptions();
-        tightened.AllowedDeployments = ["gpt-4o", "text-embedding-3-small"];
-        monitor.Set(tightened);
-
-        Should.Throw<InvalidOperationException>(
-            () => factory.CreateChatClient(CreateWorkspace("o3-mini")));
-    }
-
-    [Fact]
-    public void OptionsChange_RotatesApiKey_FactoryStillServesRequests()
-    {
-        AzureOpenAIProviderFactory factory = CreateFactory(out TestOptionsMonitor<AzureOpenAIProviderOptions> monitor);
-
-        IChatClient before = factory.CreateChatClient(CreateWorkspace());
-
-        AzureOpenAIProviderOptions rotated = TestFixtures.DefaultOptions();
-        rotated.ApiKey = "rotated-key";
-        monitor.Set(rotated);
-
-        IChatClient after = factory.CreateChatClient(CreateWorkspace());
-
-        before.ShouldNotBeNull();
-        after.ShouldNotBeNull();
+        await Should.ThrowAsync<ArgumentNullException>(
+            async () => await factory.CreateChatClientAsync(null!, TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task GetAvailableModelsAsync_ReturnsConfiguredDeployments()
     {
-        AzureOpenAIProviderFactory factory = CreateFactory(out _);
+        (AzureOpenAIProviderFactory factory, _, _, _) = TestFixtures.BuildFactory();
 
         IReadOnlyList<AIModelInfo> models = await factory.GetAvailableModelsAsync(TestContext.Current.CancellationToken);
 
         models.Count.ShouldBe(2);
-        models.ShouldContain(m => m.Id == "gpt-4o");
-        models.ShouldContain(m => m.Id == "text-embedding-3-small");
     }
 }

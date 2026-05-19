@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Granit.AI.AzureOpenAI.Diagnostics;
 using Granit.AI.AzureOpenAI.Internal;
 using Granit.AI.AzureOpenAI.Options;
+using Granit.AI.Tenancy;
 using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,10 +20,11 @@ public static class AIAzureOpenAIHostApplicationBuilderExtensions
     /// Adds <c>Granit.AI.AzureOpenAI</c> services.
     /// </summary>
     /// <remarks>
-    /// Reads <see cref="AzureOpenAIProviderOptions"/> from the <c>AI:AzureOpenAI</c> configuration section.
-    /// When <see cref="AzureOpenAIProviderOptions.ApiKey"/> is empty, the provider uses
-    /// <c>DefaultAzureCredential</c> (Managed Identity) — recommended for production.
-    /// Registers the named <see cref="HttpClient"/> consumed by the Azure OpenAI SDK.
+    /// Cascade Workspace → Tenant Setting → Global Setting → Host Options resolved by
+    /// <see cref="AzureOpenAICredentialResolver"/>. Managed Identity fallback is opt-in via
+    /// <see cref="AzureOpenAIProviderOptions.AllowManagedIdentityFallback"/> (default <c>false</c>).
+    /// HttpClient is configured with redirect-follow disabled and a
+    /// <see cref="GranitSafeConnectCallback"/> to defeat DNS rebinding.
     /// </remarks>
     public static IHostApplicationBuilder AddGranitAIAzureOpenAI(this IHostApplicationBuilder builder)
     {
@@ -35,15 +37,22 @@ public static class AIAzureOpenAIHostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<IValidateOptions<AzureOpenAIProviderOptions>, AzureOpenAIProviderOptionsValidator>();
 
-        // The Azure OpenAI SDK enforces its own NetworkTimeout; setting HttpClient.Timeout to
-        // InfiniteTimeSpan prevents the inner HttpClient timeout from racing the SDK cancellation handler.
         builder.Services
             .AddHttpClient(AzureOpenAIProviderFactory.HttpClientName, client =>
             {
                 client.Timeout = Timeout.InfiniteTimeSpan;
+            })
+            .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
+            {
+                AllowAutoRedirect = false,
+                ConnectCallback = GranitSafeConnectCallback.Create(AIEndpointPolicy.AzureOpenAI),
             });
 
-        builder.Services.AddSingleton<IAIProviderFactory, AzureOpenAIProviderFactory>();
+        builder.Services.AddSingleton<AzureOpenAIClientCache>();
+        builder.Services.AddScoped<AzureOpenAICredentialResolver>();
+        builder.Services.AddScoped<IAIProviderCredentialResolver>(sp =>
+            sp.GetRequiredService<AzureOpenAICredentialResolver>());
+        builder.Services.AddScoped<IAIProviderFactory, AzureOpenAIProviderFactory>();
 
         return builder;
     }

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Granit.AI.AzureOpenAI.Diagnostics;
 using Granit.AI.AzureOpenAI.Internal;
+using Granit.AI.Tenancy;
 using Microsoft.Extensions.AI;
 using NSubstitute;
 using Shouldly;
@@ -9,6 +10,14 @@ namespace Granit.AI.AzureOpenAI.Tests;
 
 public sealed class TracingAzureOpenAIChatClientTests
 {
+    private static readonly AIProviderCredential TestCredential = new()
+    {
+        ApiKey = "test",
+        Endpoint = "https://res.openai.azure.com",
+        Scope = AIProviderCredentialScope.Host,
+        BilledToTenantId = null,
+    };
+
     private static (ActivityListener Listener, List<Activity> Started) ListenForSpans()
     {
         List<Activity> started = [];
@@ -36,7 +45,7 @@ public sealed class TracingAzureOpenAIChatClientTests
         inner.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(expected));
 
-        TracingAzureOpenAIChatClient sut = new(inner, "gpt-4o");
+        TracingAzureOpenAIChatClient sut = new(inner, "gpt-4o", TestCredential);
 
         ChatResponse response = await sut.GetResponseAsync(
             [new ChatMessage(ChatRole.User, "ping")],
@@ -62,7 +71,7 @@ public sealed class TracingAzureOpenAIChatClientTests
         inner.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
             .Returns<Task<ChatResponse>>(_ => throw new InvalidOperationException("boom"));
 
-        TracingAzureOpenAIChatClient sut = new(inner, "gpt-4o");
+        TracingAzureOpenAIChatClient sut = new(inner, "gpt-4o", TestCredential);
 
         await Should.ThrowAsync<InvalidOperationException>(
             async () => await sut.GetResponseAsync(
@@ -78,7 +87,7 @@ public sealed class TracingAzureOpenAIChatClientTests
     public void Dispose_DelegatesToInner()
     {
         IChatClient inner = Substitute.For<IChatClient>();
-        TracingAzureOpenAIChatClient sut = new(inner, "gpt-4o");
+        TracingAzureOpenAIChatClient sut = new(inner, "gpt-4o", TestCredential);
 
         sut.Dispose();
 

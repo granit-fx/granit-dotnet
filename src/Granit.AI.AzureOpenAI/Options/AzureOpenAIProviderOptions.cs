@@ -63,4 +63,12 @@ public sealed class AzureOpenAIProviderOptions
     /// backoff. Set to <c>0</c> to disable retries.
     /// </summary>
     public int MaxRetries { get; set; } = 3;
+
+    /// <summary>
+    /// When <c>true</c>, the resolver falls back to <c>DefaultAzureCredential</c> (Managed Identity)
+    /// when no ApiKey is configured at any cascade layer. Defaults to <c>false</c> (audit VULN-103):
+    /// silently switching from API-key to Managed Identity changes the trust principal in a way
+    /// that may have unintended privilege implications.
+    /// </summary>
+    public bool AllowManagedIdentityFallback { get; set; }
 }

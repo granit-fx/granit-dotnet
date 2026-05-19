@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Granit.AI.AzureOpenAI.Diagnostics;
+using Granit.AI.Tenancy;
 using Microsoft.Extensions.AI;
 
 namespace Granit.AI.AzureOpenAI.Internal;
@@ -12,7 +13,10 @@ namespace Granit.AI.AzureOpenAI.Internal;
 /// One span per request — both <c>GetResponseAsync</c> and <c>GetStreamingResponseAsync</c> are wrapped.
 /// Disposal is delegated to the wrapped client; the decorator owns no additional resources.
 /// </remarks>
-internal sealed class TracingAzureOpenAIChatClient(IChatClient inner, string requestedDeployment) : IChatClient
+internal sealed class TracingAzureOpenAIChatClient(
+    IChatClient inner,
+    string requestedDeployment,
+    AIProviderCredential credential) : IChatClient
 {
     public Task<ChatResponse> GetResponseAsync(
         IEnumerable<ChatMessage> messages,
@@ -110,6 +114,13 @@ internal sealed class TracingAzureOpenAIChatClient(IChatClient inner, string req
 
         activity.SetTag("gen_ai.system", AIAzureOpenAIActivitySource.SystemTagValue);
         activity.SetTag("gen_ai.request.model", requestedDeployment);
+        activity.SetTag("gen_ai.credential.scope", credential.Scope.ToString());
+        if (credential.BilledToTenantId is { } tenantId)
+        {
+            string idStr = tenantId.ToString();
+            activity.SetTag("gen_ai.tenant.id", idStr);
+            activity.SetTag("gen_ai.billed_to_tenant.id", idStr);
+        }
         return activity;
     }
 

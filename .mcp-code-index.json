@@ -2410,7 +2410,7 @@
       "kind": "class",
       "project": "Granit.AI.AzureOpenAI",
       "file": "src/Granit.AI.AzureOpenAI/Extensions/AIAzureOpenAIHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitAIAzureOpenAI",
