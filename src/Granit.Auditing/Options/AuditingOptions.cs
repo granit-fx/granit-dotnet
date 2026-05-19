@@ -52,6 +52,12 @@ public sealed class AuditingOptions
     public TimeSpan AccessDeniedRetention { get; set; } = TimeSpan.FromDays(2555);
 
     /// <summary>
+    /// Retention period for <see cref="AuditCategory.PrivilegedAccess"/> entries.
+    /// Default: ~7 years (2555 days) — same regulatory weight as <see cref="AuditCategory.AccessDenied"/>.
+    /// </summary>
+    public TimeSpan PrivilegedAccessRetention { get; set; } = TimeSpan.FromDays(2555);
+
+    /// <summary>
     /// Cache duration for individual audit log entries retrieved by ID.
     /// Entries are immutable so a long TTL is safe. Default: 30 minutes.
     /// </summary>
@@ -93,6 +99,7 @@ public sealed class AuditingOptions
         AuditCategory.DataMutation => DataMutationRetention,
         AuditCategory.DataAccess => DataAccessRetention,
         AuditCategory.AccessDenied => AccessDeniedRetention,
+        AuditCategory.PrivilegedAccess => PrivilegedAccessRetention,
         _ => DataMutationRetention,
     };
 }

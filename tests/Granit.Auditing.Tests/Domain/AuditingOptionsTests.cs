@@ -20,6 +20,7 @@ public sealed class AuditingOptionsTests
         options.DataMutationRetention.ShouldBe(TimeSpan.FromDays(365));
         options.DataAccessRetention.ShouldBe(TimeSpan.FromDays(90));
         options.AccessDeniedRetention.ShouldBe(TimeSpan.FromDays(2555));
+        options.PrivilegedAccessRetention.ShouldBe(TimeSpan.FromDays(2555));
     }
 
     [Theory]
@@ -27,6 +28,7 @@ public sealed class AuditingOptionsTests
     [InlineData(AuditCategory.DataMutation, 365)]
     [InlineData(AuditCategory.DataAccess, 90)]
     [InlineData(AuditCategory.AccessDenied, 2555)]
+    [InlineData(AuditCategory.PrivilegedAccess, 2555)]
     public void GetRetention_ReturnsCorrectDefault(AuditCategory category, int expectedDays)
     {
         AuditingOptions options = new();

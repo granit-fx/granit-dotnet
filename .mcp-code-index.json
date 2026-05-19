@@ -4116,7 +4116,7 @@
       "kind": "enum",
       "project": "Granit.Auditing",
       "file": "src/Granit.Auditing/Domain/AuditCategory.cs",
-      "line": 14,
+      "line": 15,
       "members": []
     },
     {
@@ -4750,6 +4750,12 @@
           "kind": "method",
           "signature": "FromDays(2555)",
           "returnType": "TimeSpan AccessDeniedRetention { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(2555)",
+          "returnType": "TimeSpan PrivilegedAccessRetention { get; set; } = TimeSpan."
         },
         {
           "name": "FromMinutes",
@@ -26126,7 +26132,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.Auditing",
       "file": "src/Granit.MultiTenancy.Auditing/AuditingHostImpersonationAuditWriter.cs",
-      "line": 20,
+      "line": 23,
       "members": [
         {
           "name": "WriteAsync",
