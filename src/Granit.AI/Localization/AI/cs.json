@@ -14,6 +14,8 @@
     "AI.Columns.EstimatedCost": "Odhadované náklady",
     "AI.Columns.CostCurrency": "Měna",
     "AI.Columns.Timestamp": "Timestamp",
-    "AI.Columns.Duration": "Duration"
+    "AI.Columns.Duration": "Duration",
+    "PermissionGroup:AI": "AI",
+    "Permission:AI.Credentials.Manage": "Manage AI credentials"
   }
 }

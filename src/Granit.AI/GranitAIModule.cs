@@ -1,4 +1,5 @@
 using Granit.AI.Internal;
+using Granit.Authorization;
 using Granit.Guids;
 using Granit.Modularity;
 using Granit.Settings;
@@ -29,6 +30,7 @@ namespace Granit.AI;
 /// </para>
 /// </remarks>
 [DependsOn(typeof(GranitGuidsModule))]
+[DependsOn(typeof(GranitAuthorizationModule))]
 [DependsOn(typeof(GranitSettingsModule))]
 public sealed class GranitAIModule : GranitModule
 {

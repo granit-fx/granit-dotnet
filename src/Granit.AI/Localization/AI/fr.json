@@ -14,6 +14,8 @@
     "AI.Columns.EstimatedCost": "Coût estimé",
     "AI.Columns.CostCurrency": "Devise",
     "AI.Columns.Timestamp": "Horodatage",
-    "AI.Columns.Duration": "Durée"
+    "AI.Columns.Duration": "Durée",
+    "PermissionGroup:AI": "IA",
+    "Permission:AI.Credentials.Manage": "Gérer les identifiants IA"
   }
 }

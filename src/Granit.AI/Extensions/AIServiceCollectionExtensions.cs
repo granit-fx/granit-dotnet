@@ -4,10 +4,13 @@ using Granit.AI.Exports;
 using Granit.AI.Internal;
 using Granit.AI.Options;
 using Granit.AI.Queries;
+using Granit.AI.Tenancy;
 using Granit.AI.Workspaces;
+using Granit.Authorization;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.QueryEngine.Extensions;
+using Granit.Settings.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -69,6 +72,72 @@ public static class AIServiceCollectionExtensions
         builder.Services.AddQueryDefinition<AIUsageRecord, AIUsageRecordQueryDefinition>();
         builder.Services.AddExportDefinition<AIUsageRecord, AIUsageRecordExportDefinition>();
 
+        // Wrap the configured ISettingManager so that writes to Granit.AI.* keys require the
+        // AI.Credentials.Manage permission (in addition to the standard Settings.*.Manage). See
+        // AISettingsCredentialsGuard for the rationale (audit VULN-100).
+        DecorateSettingManagerWithCredentialsGuard(builder.Services);
+
         return builder;
+    }
+
+    private static void DecorateSettingManagerWithCredentialsGuard(IServiceCollection services)
+    {
+        // Find the latest registration (Granit.Settings registers SettingManager via TryAdd
+        // before this method runs).
+        ServiceDescriptor? existing = null;
+        for (int i = services.Count - 1; i >= 0; i--)
+        {
+            if (services[i].ServiceType == typeof(ISettingManager))
+            {
+                existing = services[i];
+                services.RemoveAt(i);
+                break;
+            }
+        }
+
+        if (existing is null)
+        {
+            // Settings was not registered yet; the guard cannot wrap nothing. Leaving early
+            // is safe because GranitAIModule depends on GranitSettingsModule and the module
+            // initialization order normally guarantees Settings runs first. Tests that bypass
+            // the module bootstrap still see the inner manager.
+            return;
+        }
+
+        if (existing.ImplementationType is not null)
+        {
+            // Re-register the underlying implementation under its concrete type so the guard
+            // can pull it via DI.
+            services.Add(new ServiceDescriptor(
+                existing.ImplementationType,
+                existing.ImplementationType,
+                existing.Lifetime));
+
+            services.Add(new ServiceDescriptor(
+                typeof(ISettingManager),
+                sp => new AISettingsCredentialsGuard(
+                    (ISettingManager)sp.GetRequiredService(existing.ImplementationType),
+                    sp.GetRequiredService<IPermissionChecker>()),
+                existing.Lifetime));
+            return;
+        }
+
+        if (existing.ImplementationFactory is not null)
+        {
+            services.Add(new ServiceDescriptor(
+                typeof(ISettingManager),
+                sp => new AISettingsCredentialsGuard(
+                    (ISettingManager)existing.ImplementationFactory(sp),
+                    sp.GetRequiredService<IPermissionChecker>()),
+                existing.Lifetime));
+            return;
+        }
+
+        if (existing.ImplementationInstance is ISettingManager instance)
+        {
+            services.AddSingleton<ISettingManager>(sp => new AISettingsCredentialsGuard(
+                instance,
+                sp.GetRequiredService<IPermissionChecker>()));
+        }
     }
 }

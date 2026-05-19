@@ -14,6 +14,8 @@
     "AI.Columns.EstimatedCost": "Costo estimado",
     "AI.Columns.CostCurrency": "Moneda",
     "AI.Columns.Timestamp": "Marca de tiempo",
-    "AI.Columns.Duration": "Duración"
+    "AI.Columns.Duration": "Duración",
+    "PermissionGroup:AI": "AI",
+    "Permission:AI.Credentials.Manage": "Manage AI credentials"
   }
 }
