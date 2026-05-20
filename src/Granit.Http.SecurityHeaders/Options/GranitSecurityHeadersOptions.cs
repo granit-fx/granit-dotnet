@@ -1,3 +1,4 @@
+// ReSharper disable once CheckNamespace
 namespace Granit.Http.SecurityHeaders.Options;
 
 /// <summary>
@@ -62,21 +63,27 @@ public sealed class GranitSecurityHeadersOptions
         "accelerometer=(), gyroscope=(), magnetometer=(), usb=()";
 
     /// <summary>
-    /// Sets <c>Content-Security-Policy</c> header.
-    /// Default: API-grade strict CSP suitable for any JSON-only endpoint.
+    /// Typed Content-Security-Policy base configuration. Default: API-grade
+    /// strict CSP — <c>default-src 'none'</c>, <c>base-uri 'none'</c>,
+    /// <c>frame-ancestors 'none'</c>.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// <c>default-src 'none'; frame-ancestors 'none'; base-uri 'none'</c> is safe
-    /// for <c>application/json</c> responses: no scripts, no embeddable content,
-    /// no relative URL hijacking. BFF / SPA hosts that serve HTML must override
-    /// with a stricter CSP that includes <c>script-src</c> rules and a nonce
-    /// injection middleware.
-    /// </para>
-    /// <para>Set to <c>null</c> to omit the header entirely (not recommended).</para>
+    /// The composer starts from these directives and lets every registered
+    /// <see cref="ICspContributor"/> layer additional sources on top for
+    /// requests matching its scope. To inject ad-hoc overrides at deployment
+    /// time, set <see cref="CspOptions.RawOverride"/> — that bypasses the
+    /// composer entirely and emits the raw string as the CSP header.
     /// </remarks>
-    public string? ContentSecurityPolicy { get; set; } =
-        "default-src 'none'; frame-ancestors 'none'; base-uri 'none'";
+    public CspOptions Csp { get; set; } = new();
+
+    /// <summary>
+    /// Names (matching <see cref="ICspContributor.Name"/>) of contributors
+    /// that must be ignored even when registered. Bind from
+    /// <c>SecurityHeaders:DisabledContributors</c> to disable a framework
+    /// contributor when an internal security policy is stricter than the
+    /// framework's default.
+    /// </summary>
+    public IReadOnlyList<string> DisabledContributors { get; set; } = [];
 
     // -------------------------------------------------------------------------
     // HSTS (HTTP Strict Transport Security)

@@ -106,6 +106,7 @@
       "src/Granit.Http.Resilience/Granit.Http.Resilience.csproj",
       "src/Granit.Http.ResponseCompression/Granit.Http.ResponseCompression.csproj",
       "src/Granit.Http.Security/Granit.Http.Security.csproj",
+      "src/Granit.Http.SecurityHeaders.Abstractions/Granit.Http.SecurityHeaders.Abstractions.csproj",
       "src/Granit.Http.SecurityHeaders/Granit.Http.SecurityHeaders.csproj",
       "src/Granit.IO/Granit.IO.csproj",
       "src/Granit.Identity.Endpoints/Granit.Identity.Endpoints.csproj",

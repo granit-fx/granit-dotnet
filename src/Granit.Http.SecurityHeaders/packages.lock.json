@@ -10,6 +10,9 @@
       },
       "granit": {
         "type": "Project"
+      },
+      "granit.http.securityheaders.abstractions": {
+        "type": "Project"
       }
     }
   }

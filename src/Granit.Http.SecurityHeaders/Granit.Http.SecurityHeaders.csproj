@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Http.SecurityHeaders.Abstractions\Granit.Http.SecurityHeaders.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

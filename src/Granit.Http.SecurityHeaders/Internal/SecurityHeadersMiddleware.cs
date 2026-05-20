@@ -8,34 +8,63 @@ namespace Granit.Http.SecurityHeaders.Internal;
 /// Middleware that adds OWASP recommended security response headers.
 /// </summary>
 /// <remarks>
-/// Headers are applied both directly (for the normal response path) and via
-/// <see cref="HttpResponse.OnStarting(Func{object, Task}, object)"/> to survive <c>Response.Clear()</c>
-/// called by <c>ExceptionHandlerMiddleware</c> on unhandled exceptions.
+/// <para>
+/// Scalar headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy,
+/// X-XSS-Protection, Permissions-Policy, COOP/COEP/CORP) are applied eagerly
+/// at request entry — they do not depend on route matching.
+/// </para>
+/// <para>
+/// The <c>Content-Security-Policy</c> header is applied inside
+/// <see cref="HttpResponse.OnStarting(Func{object, Task}, object)"/>, which
+/// fires <b>after</b> routing has matched. This lets the composer read
+/// <c>context.GetEndpoint()?.Metadata</c> to dispatch the right
+/// <see cref="ICspContributor"/>s.
+/// </para>
+/// <para>
+/// All headers are re-applied via <c>OnStarting</c> so they survive
+/// <c>Response.Clear()</c> called by <c>ExceptionHandlerMiddleware</c> on
+/// unhandled exceptions. <c>OnStarting</c> callbacks are NOT cleared by
+/// <c>Response.Clear()</c>.
+/// </para>
 /// </remarks>
-internal sealed class SecurityHeadersMiddleware(
-    RequestDelegate next,
-    IOptions<GranitSecurityHeadersOptions> options)
+internal sealed class SecurityHeadersMiddleware
 {
-    private readonly GranitSecurityHeadersOptions _options = options.Value;
+    private readonly RequestDelegate _next;
+    private readonly IOptionsMonitor<GranitSecurityHeadersOptions> _optionsMonitor;
+    private readonly CspComposer? _composer;
+
+    public SecurityHeadersMiddleware(
+        RequestDelegate next,
+        IOptionsMonitor<GranitSecurityHeadersOptions> optionsMonitor,
+        CspComposer? composer = null)
+    {
+        _next = next;
+        _optionsMonitor = optionsMonitor;
+        _composer = composer;
+    }
 
     public Task InvokeAsync(HttpContext context)
     {
-        ApplyHeaders(context.Response.Headers, _options);
+        GranitSecurityHeadersOptions options = _optionsMonitor.CurrentValue;
 
-        // Re-apply via OnStarting so headers survive Response.Clear()
-        // (called by ExceptionHandlerMiddleware on unhandled exceptions).
-        // OnStarting callbacks are NOT cleared by Response.Clear().
+        ApplyScalarHeaders(context.Response.Headers, options);
+
         context.Response.OnStarting(static state =>
         {
-            (HttpContext ctx, GranitSecurityHeadersOptions opts) = ((HttpContext, GranitSecurityHeadersOptions))state;
-            ApplyHeaders(ctx.Response.Headers, opts);
-            return Task.CompletedTask;
-        }, (context, _options));
+            (HttpContext ctx, SecurityHeadersMiddleware self) =
+                ((HttpContext, SecurityHeadersMiddleware))state;
+            GranitSecurityHeadersOptions opts = self._optionsMonitor.CurrentValue;
 
-        return next(context);
+            ApplyScalarHeaders(ctx.Response.Headers, opts);
+            self.ApplyContentSecurityPolicy(ctx);
+
+            return Task.CompletedTask;
+        }, (context, this));
+
+        return _next(context);
     }
 
-    internal static void ApplyHeaders(
+    internal static void ApplyScalarHeaders(
         IHeaderDictionary headers, GranitSecurityHeadersOptions options)
     {
         if (options.EnableContentTypeOptions)
@@ -63,11 +92,6 @@ internal sealed class SecurityHeadersMiddleware(
             headers["Permissions-Policy"] = options.PermissionsPolicy;
         }
 
-        if (options.ContentSecurityPolicy is not null)
-        {
-            headers.ContentSecurityPolicy = options.ContentSecurityPolicy;
-        }
-
         if (options.CrossOriginOpenerPolicy is { Length: > 0 })
         {
             headers["Cross-Origin-Opener-Policy"] = options.CrossOriginOpenerPolicy;
@@ -81,6 +105,29 @@ internal sealed class SecurityHeadersMiddleware(
         if (options.CrossOriginResourcePolicy is { Length: > 0 })
         {
             headers["Cross-Origin-Resource-Policy"] = options.CrossOriginResourcePolicy;
+        }
+    }
+
+    private void ApplyContentSecurityPolicy(HttpContext context)
+    {
+        if (_composer is null)
+        {
+            return;
+        }
+
+        (string Name, string Value)? composed = _composer.Compose(context);
+
+        // Single source of truth: always remove first. If anything upstream
+        // (a [ResponseHeader] attribute, another middleware, an output-cache
+        // layer) wrote a CSP, the browser would intersect multiple headers
+        // and pick the strictest combination — silently neutralising any
+        // contributor relaxation. The framework owns this header.
+        context.Response.Headers.Remove("Content-Security-Policy");
+        context.Response.Headers.Remove("Content-Security-Policy-Report-Only");
+
+        if (composed is { Value: { Length: > 0 } } c)
+        {
+            context.Response.Headers[c.Name] = c.Value;
         }
     }
 }

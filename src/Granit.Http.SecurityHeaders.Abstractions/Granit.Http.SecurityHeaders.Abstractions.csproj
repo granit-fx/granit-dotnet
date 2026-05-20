@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Http.SecurityHeaders.Abstractions</PackageId>
+    <Description>Contracts for composing the Content-Security-Policy across Granit packages: ICspContributor, ICspContributorRegistry, CspBuilder. Reference this package — not the runtime — when declaring a CSP contributor in a framework module.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Http.SecurityHeaders" />
+    <InternalsVisibleTo Include="Granit.Http.SecurityHeaders.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

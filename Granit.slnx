@@ -29,6 +29,7 @@
     <Project Path="src/Granit.Http.Resilience/Granit.Http.Resilience.csproj" />
     <Project Path="src/Granit.Http.ResponseCompression/Granit.Http.ResponseCompression.csproj" />
     <Project Path="src/Granit.Http.Security/Granit.Http.Security.csproj" />
+    <Project Path="src/Granit.Http.SecurityHeaders.Abstractions/Granit.Http.SecurityHeaders.Abstractions.csproj" />
     <Project Path="src/Granit.Http.SecurityHeaders/Granit.Http.SecurityHeaders.csproj" />
     <Project Path="src/Granit.IO/Granit.IO.csproj" />
     <Project Path="src/Granit.Mcp.Client/Granit.Mcp.Client.csproj" />
@@ -309,6 +310,7 @@
     <Project Path="tests/Granit.Http.Resilience.Tests/Granit.Http.Resilience.Tests.csproj" />
     <Project Path="tests/Granit.Http.ResponseCompression.Tests/Granit.Http.ResponseCompression.Tests.csproj" />
     <Project Path="tests/Granit.Http.Security.Tests/Granit.Http.Security.Tests.csproj" />
+    <Project Path="tests/Granit.Http.SecurityHeaders.Abstractions.Tests/Granit.Http.SecurityHeaders.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Http.SecurityHeaders.Tests/Granit.Http.SecurityHeaders.Tests.csproj" />
     <Project Path="tests/Granit.IO.Tests/Granit.IO.Tests.csproj" />
     <Project Path="tests/Granit.Mcp.Client.Tests/Granit.Mcp.Client.Tests.csproj" />

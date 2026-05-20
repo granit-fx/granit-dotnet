@@ -1,7 +1,10 @@
+using Granit.Http.SecurityHeaders.Contributors;
+using Granit.Http.SecurityHeaders.Internal;
 using Granit.Http.SecurityHeaders.Options;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -52,6 +55,10 @@ public static class SecurityHostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<IConfigureOptions<HstsOptions>,
             ConfigureHstsOptions>();
+
+        // CSP composition pipeline. TryAdd to allow tests / hosts to swap.
+        builder.Services.TryAddSingleton<ICspContributorRegistry, CspContributorRegistry>();
+        builder.Services.TryAddSingleton<CspComposer>();
 
         return builder;
     }

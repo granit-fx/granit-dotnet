@@ -647,6 +647,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Http.ApiVersioning": "[0.1.0-dev, )",
+          "Granit.Http.SecurityHeaders.Abstractions": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.OpenApi": "[10.*, )",
           "Scalar.AspNetCore": "[2.*, )"
         }
@@ -670,6 +671,9 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
         }
+      },
+      "granit.http.securityheaders.abstractions": {
+        "type": "Project"
       },
       "granit.identity": {
         "type": "Project",

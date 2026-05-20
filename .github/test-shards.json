@@ -138,6 +138,7 @@
         "tests/Granit.Http.Resilience.Tests",
         "tests/Granit.Http.ResponseCompression.Tests",
         "tests/Granit.Http.Security.Tests",
+        "tests/Granit.Http.SecurityHeaders.Abstractions.Tests",
         "tests/Granit.Http.SecurityHeaders.Tests",
         "tests/Granit.IO.Tests",
         "tests/Granit.Imaging.MagickNet.Tests",

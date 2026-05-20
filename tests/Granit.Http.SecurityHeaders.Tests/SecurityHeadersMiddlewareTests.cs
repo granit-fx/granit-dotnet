@@ -1,7 +1,12 @@
+using Granit.Http.SecurityHeaders.Contributors;
 using Granit.Http.SecurityHeaders.Internal;
 using Granit.Http.SecurityHeaders.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -10,137 +15,102 @@ namespace Granit.Http.SecurityHeaders.Tests;
 public sealed class SecurityHeadersMiddlewareTests
 {
     [Fact]
-    public async Task Middleware_AddsDefaultSecurityHeaders()
+    public async Task Middleware_AddsDefaultScalarHeaders()
     {
-        DefaultHttpContext context = new();
-        SecurityHeadersMiddleware middleware = CreateMiddleware();
+        TestHarness harness = new();
+        await harness.Invoke();
 
-        await middleware.InvokeAsync(context);
-
-        context.Response.Headers.XContentTypeOptions.ToString().ShouldBe("nosniff");
-        context.Response.Headers.XFrameOptions.ToString().ShouldBe("DENY");
-        context.Response.Headers["Referrer-Policy"].ToString()
+        harness.Response.Headers.XContentTypeOptions.ToString().ShouldBe("nosniff");
+        harness.Response.Headers.XFrameOptions.ToString().ShouldBe("DENY");
+        harness.Response.Headers["Referrer-Policy"].ToString()
             .ShouldBe("strict-origin-when-cross-origin");
-        context.Response.Headers.XXSSProtection.ToString().ShouldBe("0");
-        context.Response.Headers["Permissions-Policy"].ToString()
+        harness.Response.Headers.XXSSProtection.ToString().ShouldBe("0");
+        harness.Response.Headers["Permissions-Policy"].ToString()
             .ShouldBe("camera=(), microphone=(), geolocation=(), payment=(), " +
                        "accelerometer=(), gyroscope=(), magnetometer=(), usb=()");
-        context.Response.Headers["Cross-Origin-Opener-Policy"].ToString()
+        harness.Response.Headers["Cross-Origin-Opener-Policy"].ToString()
             .ShouldBe("same-origin");
-        context.Response.Headers["Cross-Origin-Resource-Policy"].ToString()
+        harness.Response.Headers["Cross-Origin-Resource-Policy"].ToString()
             .ShouldBe("same-origin");
     }
 
     [Fact]
-    public async Task Middleware_OmitsContentSecurityPolicy_WhenExplicitlyNull()
+    public async Task Middleware_EmitsApiGradeCsp_ByDefault_AfterOnStarting()
     {
-        DefaultHttpContext context = new();
-        SecurityHeadersMiddleware middleware = CreateMiddleware(opts =>
-            opts.ContentSecurityPolicy = null);
+        TestHarness harness = new();
+        await harness.InvokeAndFlush();
 
-        await middleware.InvokeAsync(context);
-
-        context.Response.Headers.ContainsKey("Content-Security-Policy").ShouldBeFalse();
+        harness.Response.Headers.ContentSecurityPolicy.ToString()
+            .ShouldBe("default-src 'none'; base-uri 'none'; frame-ancestors 'none'");
     }
 
     [Fact]
-    public async Task Middleware_AddsApiGradeContentSecurityPolicy_ByDefault()
+    public async Task Middleware_EmitsRawOverride_VerbatimWhenSet()
     {
-        DefaultHttpContext context = new();
-        SecurityHeadersMiddleware middleware = CreateMiddleware();
+        TestHarness harness = new(o => o.Csp.RawOverride = "default-src 'self'");
+        await harness.InvokeAndFlush();
 
-        await middleware.InvokeAsync(context);
-
-        context.Response.Headers.ContentSecurityPolicy.ToString()
-            .ShouldBe("default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
-    }
-
-    [Fact]
-    public async Task Middleware_AddsContentSecurityPolicy_WhenConfigured()
-    {
-        DefaultHttpContext context = new();
-        SecurityHeadersMiddleware middleware = CreateMiddleware(opts =>
-            opts.ContentSecurityPolicy = "default-src 'self'");
-
-        await middleware.InvokeAsync(context);
-
-        context.Response.Headers.ContentSecurityPolicy.ToString()
-            .ShouldBe("default-src 'self'");
+        harness.Response.Headers.ContentSecurityPolicy.ToString().ShouldBe("default-src 'self'");
     }
 
     [Fact]
     public async Task Middleware_OmitsXFrameOptions_WhenNull()
     {
-        DefaultHttpContext context = new();
-        SecurityHeadersMiddleware middleware = CreateMiddleware(opts =>
-            opts.XFrameOptions = null);
+        TestHarness harness = new(o => o.XFrameOptions = null);
+        await harness.Invoke();
 
-        await middleware.InvokeAsync(context);
-
-        context.Response.Headers.ContainsKey("X-Frame-Options").ShouldBeFalse();
+        harness.Response.Headers.ContainsKey("X-Frame-Options").ShouldBeFalse();
     }
 
     [Fact]
     public async Task Middleware_OmitsCrossOriginEmbedderPolicy_WhenNull()
     {
-        DefaultHttpContext context = new();
-        SecurityHeadersMiddleware middleware = CreateMiddleware();
+        TestHarness harness = new();
+        await harness.Invoke();
 
-        await middleware.InvokeAsync(context);
-
-        context.Response.Headers.ContainsKey("Cross-Origin-Embedder-Policy").ShouldBeFalse();
+        harness.Response.Headers.ContainsKey("Cross-Origin-Embedder-Policy").ShouldBeFalse();
     }
 
     [Fact]
     public async Task Middleware_AddsCrossOriginEmbedderPolicy_WhenConfigured()
     {
-        DefaultHttpContext context = new();
-        SecurityHeadersMiddleware middleware = CreateMiddleware(opts =>
-            opts.CrossOriginEmbedderPolicy = "require-corp");
+        TestHarness harness = new(o => o.CrossOriginEmbedderPolicy = "require-corp");
+        await harness.Invoke();
 
-        await middleware.InvokeAsync(context);
-
-        context.Response.Headers["Cross-Origin-Embedder-Policy"].ToString()
-            .ShouldBe("require-corp");
+        harness.Response.Headers["Cross-Origin-Embedder-Policy"].ToString().ShouldBe("require-corp");
     }
 
     [Fact]
     public async Task Middleware_DisablesAllHeaders_WhenConfiguredOff()
     {
-        DefaultHttpContext context = new();
-        SecurityHeadersMiddleware middleware = CreateMiddleware(opts =>
+        TestHarness harness = new(o =>
         {
-            opts.EnableContentTypeOptions = false;
-            opts.XFrameOptions = null;
-            opts.DisableXssProtection = false;
-            opts.PermissionsPolicy = null;
-            opts.ReferrerPolicy = "";
-            opts.CrossOriginOpenerPolicy = "";
-            opts.CrossOriginResourcePolicy = "";
+            o.EnableContentTypeOptions = false;
+            o.XFrameOptions = null;
+            o.DisableXssProtection = false;
+            o.PermissionsPolicy = null;
+            o.ReferrerPolicy = "";
+            o.CrossOriginOpenerPolicy = "";
+            o.CrossOriginResourcePolicy = "";
         });
+        await harness.Invoke();
 
-        await middleware.InvokeAsync(context);
-
-        context.Response.Headers.ContainsKey("X-Content-Type-Options").ShouldBeFalse();
-        context.Response.Headers.ContainsKey("X-Frame-Options").ShouldBeFalse();
-        context.Response.Headers.ContainsKey("X-XSS-Protection").ShouldBeFalse();
-        context.Response.Headers.ContainsKey("Permissions-Policy").ShouldBeFalse();
-        context.Response.Headers.ContainsKey("Referrer-Policy").ShouldBeFalse();
-        context.Response.Headers.ContainsKey("Cross-Origin-Opener-Policy").ShouldBeFalse();
-        context.Response.Headers.ContainsKey("Cross-Origin-Resource-Policy").ShouldBeFalse();
+        harness.Response.Headers.ContainsKey("X-Content-Type-Options").ShouldBeFalse();
+        harness.Response.Headers.ContainsKey("X-Frame-Options").ShouldBeFalse();
+        harness.Response.Headers.ContainsKey("X-XSS-Protection").ShouldBeFalse();
+        harness.Response.Headers.ContainsKey("Permissions-Policy").ShouldBeFalse();
+        harness.Response.Headers.ContainsKey("Referrer-Policy").ShouldBeFalse();
+        harness.Response.Headers.ContainsKey("Cross-Origin-Opener-Policy").ShouldBeFalse();
+        harness.Response.Headers.ContainsKey("Cross-Origin-Resource-Policy").ShouldBeFalse();
     }
 
     [Fact]
     public async Task Middleware_CallsNextDelegate()
     {
         bool nextCalled = false;
-        GranitSecurityHeadersOptions options = new();
-        SecurityHeadersMiddleware middleware = new(
-            _ => { nextCalled = true; return Task.CompletedTask; },
-            Microsoft.Extensions.Options.Options.Create(options));
-        DefaultHttpContext context = new();
+        TestHarness harness = new(next: _ => { nextCalled = true; return Task.CompletedTask; });
 
-        await middleware.InvokeAsync(context);
+        await harness.Invoke();
 
         nextCalled.ShouldBeTrue();
     }
@@ -148,71 +118,206 @@ public sealed class SecurityHeadersMiddlewareTests
     [Fact]
     public async Task Middleware_ReappliesHeaders_AfterResponseClear()
     {
-        // Simulate ExceptionHandlerMiddleware clearing the response.
-        // OnStarting callbacks survive Response.Clear() and re-apply headers.
-        List<(Func<object, Task> Callback, object State)> onStartingCallbacks = [];
-        CallbackCapturingResponseFeature responseFeature = new(onStartingCallbacks);
-        FeatureCollection features = new();
-        features.Set<IHttpResponseFeature>(responseFeature);
-        features.Set<IHttpRequestFeature>(new HttpRequestFeature());
-        features.Set<IHttpResponseBodyFeature>(new StreamResponseBodyFeature(Stream.Null));
-
-        DefaultHttpContext context = new(features);
-        GranitSecurityHeadersOptions options = new();
-        SecurityHeadersMiddleware middleware = new(
-            ctx =>
-            {
-                ctx.Response.Headers.Clear();
-                return Task.CompletedTask;
-            },
-            Microsoft.Extensions.Options.Options.Create(options));
-
-        await middleware.InvokeAsync(context);
-
-        // Headers were cleared by the simulated exception handler
-        context.Response.Headers.ContainsKey("X-Content-Type-Options").ShouldBeFalse();
-
-        // Fire OnStarting as Kestrel would before sending the response
-        foreach ((Func<object, Task> callback, object state) in onStartingCallbacks)
+        TestHarness harness = new(next: ctx =>
         {
-            await callback(state);
-        }
+            ctx.Response.Headers.Clear();
+            return Task.CompletedTask;
+        });
 
-        context.Response.Headers.XContentTypeOptions.ToString().ShouldBe("nosniff");
-        context.Response.Headers.XFrameOptions.ToString().ShouldBe("DENY");
-        context.Response.Headers["Referrer-Policy"].ToString()
+        await harness.Invoke();
+        harness.Response.Headers.ContainsKey("X-Content-Type-Options").ShouldBeFalse();
+
+        await harness.FireOnStarting();
+
+        harness.Response.Headers.XContentTypeOptions.ToString().ShouldBe("nosniff");
+        harness.Response.Headers.XFrameOptions.ToString().ShouldBe("DENY");
+        harness.Response.Headers["Referrer-Policy"].ToString()
             .ShouldBe("strict-origin-when-cross-origin");
     }
 
     [Fact]
-    public void ApplyHeaders_IsIdempotent()
+    public async Task Middleware_RunsContributors_ForMatchedEndpoint()
+    {
+        StubContributor contributor = new(
+            applies: endpoint => endpoint?.Metadata.GetMetadata<StubMarker>() is not null,
+            contribute: b => b.AddScriptSrc("'self'", "'unsafe-inline'"));
+
+        TestHarness harness = new(contributors: [contributor]);
+        harness.SetEndpoint(new Endpoint(static _ => Task.CompletedTask,
+            new EndpointMetadataCollection(new StubMarker()), "scalar-test"));
+
+        await harness.InvokeAndFlush();
+
+        string csp = harness.Response.Headers.ContentSecurityPolicy.ToString();
+        csp.ShouldContain("script-src 'self' 'unsafe-inline'");
+    }
+
+    [Fact]
+    public async Task Middleware_SkipsContributors_DisabledByName()
+    {
+        StubContributor contributor = new(
+            applies: _ => true,
+            contribute: b => b.AddScriptSrc("'self'"),
+            name: "MyContrib");
+
+        TestHarness harness = new(
+            configure: o => o.DisabledContributors = ["MyContrib"],
+            contributors: [contributor]);
+        harness.SetEndpoint(new Endpoint(static _ => Task.CompletedTask,
+            EndpointMetadataCollection.Empty, "any"));
+
+        await harness.InvokeAndFlush();
+
+        harness.Response.Headers.ContentSecurityPolicy.ToString()
+            .ShouldNotContain("script-src");
+    }
+
+    [Fact]
+    public async Task Middleware_ContributorOnDifferentEndpoint_DoesNotLeak()
+    {
+        StubContributor contributor = new(
+            applies: endpoint => endpoint?.Metadata.GetMetadata<StubMarker>() is not null,
+            contribute: b => b.AddScriptSrc("'self'", "'unsafe-inline'"));
+
+        TestHarness harness = new(contributors: [contributor]);
+        // Endpoint without marker → contributor should not apply.
+        harness.SetEndpoint(new Endpoint(static _ => Task.CompletedTask,
+            EndpointMetadataCollection.Empty, "plain"));
+
+        await harness.InvokeAndFlush();
+
+        harness.Response.Headers.ContentSecurityPolicy.ToString()
+            .ShouldBe("default-src 'none'; base-uri 'none'; frame-ancestors 'none'");
+    }
+
+    [Fact]
+    public async Task Middleware_RemovesAnyExistingCsp_BeforeWriting()
+    {
+        // Single-header guarantee: if upstream code wrote a CSP, the composer
+        // must Remove it before writing the composed one — multi-header CSP
+        // is intersected by browsers and silently neutralises contributor
+        // relaxations.
+        StubContributor contributor = new(
+            applies: _ => true,
+            contribute: b => b.AddScriptSrc("'self'", "'unsafe-inline'"));
+
+        TestHarness harness = new(next: ctx =>
+        {
+            ctx.Response.Headers["Content-Security-Policy"] = "default-src 'attacker.example'";
+            return Task.CompletedTask;
+        }, contributors: [contributor]);
+        harness.SetEndpoint(new Endpoint(static _ => Task.CompletedTask,
+            EndpointMetadataCollection.Empty, "any"));
+
+        await harness.InvokeAndFlush();
+
+        // Exactly one CSP header, and it's the composed one (not the bogus,
+        // not an intersection).
+        string[] cspValues = harness.Response.Headers.ContentSecurityPolicy.ToArray()!;
+        cspValues.Length.ShouldBe(1);
+        cspValues[0].ShouldContain("script-src 'self' 'unsafe-inline'");
+        cspValues[0].ShouldNotContain("attacker.example");
+    }
+
+    [Fact]
+    public void ApplyScalarHeaders_IsIdempotent()
     {
         HeaderDictionary headers = [];
         GranitSecurityHeadersOptions options = new();
 
-        SecurityHeadersMiddleware.ApplyHeaders(headers, options);
-        SecurityHeadersMiddleware.ApplyHeaders(headers, options);
+        SecurityHeadersMiddleware.ApplyScalarHeaders(headers, options);
+        SecurityHeadersMiddleware.ApplyScalarHeaders(headers, options);
 
         headers["X-Content-Type-Options"].ToString().ShouldBe("nosniff");
         headers["X-Frame-Options"].ToString().ShouldBe("DENY");
     }
 
-    private static SecurityHeadersMiddleware CreateMiddleware(
-        Action<GranitSecurityHeadersOptions>? configure = null)
+    // ===== test harness ===================================================
+
+    private sealed class StubMarker;
+
+    private sealed class StubContributor(
+        Func<Endpoint?, bool> applies,
+        Action<CspBuilder> contribute,
+        string? name = null) : ICspContributor
     {
-        GranitSecurityHeadersOptions options = new();
-        configure?.Invoke(options);
+        public string Name => name ?? nameof(StubContributor);
 
-        RequestDelegate next = _ => Task.CompletedTask;
-
-        return new SecurityHeadersMiddleware(
-            next,
-            Microsoft.Extensions.Options.Options.Create(options));
+        public void Contribute(HttpContext context, CspBuilder builder)
+        {
+            if (applies(context.GetEndpoint()))
+            {
+                contribute(builder);
+            }
+        }
     }
 
-    private sealed class CallbackCapturingResponseFeature(
-        List<(Func<object, Task>, object)> callbacks) : IHttpResponseFeature
+    private sealed class TestHarness
     {
+        public DefaultHttpContext Context { get; }
+        public HttpResponse Response => Context.Response;
+        public SecurityHeadersMiddleware Middleware { get; }
+        private readonly CallbackCapturingResponseFeature _responseFeature;
+
+        public TestHarness(
+            Action<GranitSecurityHeadersOptions>? configure = null,
+            RequestDelegate? next = null,
+            IList<ICspContributor>? contributors = null)
+        {
+            GranitSecurityHeadersOptions options = new();
+            configure?.Invoke(options);
+
+            FeatureCollection features = new();
+            _responseFeature = new CallbackCapturingResponseFeature();
+            features.Set<IHttpResponseFeature>(_responseFeature);
+            features.Set<IHttpRequestFeature>(new HttpRequestFeature());
+            features.Set<IHttpResponseBodyFeature>(new StreamResponseBodyFeature(Stream.Null));
+            Context = new DefaultHttpContext(features);
+
+            CspContributorRegistry registry = new();
+            if (contributors is not null)
+            {
+                foreach (ICspContributor c in contributors)
+                {
+                    registry.Add(c);
+                }
+            }
+
+            IHostEnvironment env = Substitute.For<IHostEnvironment>();
+            env.EnvironmentName.Returns(Environments.Development);
+
+            TestOptionsMonitor<GranitSecurityHeadersOptions> monitor = new(options);
+            CspComposer composer = new(monitor, registry, env, NullLogger<CspComposer>.Instance);
+
+            Middleware = new SecurityHeadersMiddleware(
+                next ?? (_ => Task.CompletedTask),
+                monitor,
+                composer);
+        }
+
+        public void SetEndpoint(Endpoint endpoint) =>
+            Context.SetEndpoint(endpoint);
+
+        public Task Invoke() => Middleware.InvokeAsync(Context);
+
+        public async Task InvokeAndFlush()
+        {
+            await Invoke();
+            await FireOnStarting();
+        }
+
+        public async Task FireOnStarting()
+        {
+            foreach ((Func<object, Task> callback, object state) in _responseFeature.Callbacks)
+            {
+                await callback(state);
+            }
+        }
+    }
+
+    private sealed class CallbackCapturingResponseFeature : IHttpResponseFeature
+    {
+        public List<(Func<object, Task> Callback, object State)> Callbacks { get; } = [];
         public int StatusCode { get; set; } = 200;
         public string? ReasonPhrase { get; set; }
         public IHeaderDictionary Headers { get; set; } = new HeaderDictionary();
@@ -220,8 +325,37 @@ public sealed class SecurityHeadersMiddlewareTests
         public bool HasStarted => false;
 
         public void OnStarting(Func<object, Task> callback, object state) =>
-            callbacks.Add((callback, state));
+            Callbacks.Add((callback, state));
 
         public void OnCompleted(Func<object, Task> callback, object state) { }
+    }
+
+    internal sealed class TestOptionsMonitor<T>(T value) : IOptionsMonitor<T> where T : class
+    {
+        private readonly List<Action<T, string?>> _listeners = [];
+
+        public T CurrentValue { get; private set; } = value;
+        public T Get(string? name) => CurrentValue;
+
+        public IDisposable OnChange(Action<T, string?> listener)
+        {
+            _listeners.Add(listener);
+            return new Subscription(_listeners, listener);
+        }
+
+        public void TriggerChange(T newValue)
+        {
+            CurrentValue = newValue;
+            foreach (Action<T, string?> listener in _listeners.ToArray())
+            {
+                listener(newValue, null);
+            }
+        }
+
+        private sealed class Subscription(List<Action<T, string?>> listeners, Action<T, string?> listener)
+            : IDisposable
+        {
+            public void Dispose() => listeners.Remove(listener);
+        }
     }
 }

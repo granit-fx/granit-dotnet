@@ -772,7 +772,8 @@
     {
       "name": "Granit.Http.ApiDocumentation",
       "deps": [
-        "Granit.Http.ApiVersioning"
+        "Granit.Http.ApiVersioning",
+        "Granit.Http.SecurityHeaders.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -891,8 +892,14 @@
     {
       "name": "Granit.Http.SecurityHeaders",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.Http.SecurityHeaders.Abstractions"
       ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Http.SecurityHeaders.Abstractions",
+      "deps": [],
       "framework": "net10.0"
     },
     {
@@ -18032,7 +18039,7 @@
       "kind": "class",
       "project": "Granit.Http.ApiDocumentation",
       "file": "src/Granit.Http.ApiDocumentation/Extensions/ApiDocumentationApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "UseGranitApiDocumentation",
@@ -19950,6 +19957,154 @@
       ]
     },
     {
+      "name": "CspBuilder",
+      "fqn": "Granit.Http.SecurityHeaders.CspBuilder",
+      "kind": "class",
+      "project": "Granit.Http.SecurityHeaders.Abstractions",
+      "file": "src/Granit.Http.SecurityHeaders.Abstractions/CspBuilder.cs",
+      "line": 43,
+      "members": [
+        {
+          "name": "AddDefaultSrc",
+          "kind": "method",
+          "signature": "AddDefaultSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddScriptSrc",
+          "kind": "method",
+          "signature": "AddScriptSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddScriptSrcElem",
+          "kind": "method",
+          "signature": "AddScriptSrcElem(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddScriptSrcAttr",
+          "kind": "method",
+          "signature": "AddScriptSrcAttr(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddStyleSrc",
+          "kind": "method",
+          "signature": "AddStyleSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddStyleSrcElem",
+          "kind": "method",
+          "signature": "AddStyleSrcElem(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddStyleSrcAttr",
+          "kind": "method",
+          "signature": "AddStyleSrcAttr(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddFontSrc",
+          "kind": "method",
+          "signature": "AddFontSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddImgSrc",
+          "kind": "method",
+          "signature": "AddImgSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddConnectSrc",
+          "kind": "method",
+          "signature": "AddConnectSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddFrameSrc",
+          "kind": "method",
+          "signature": "AddFrameSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddWorkerSrc",
+          "kind": "method",
+          "signature": "AddWorkerSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddMediaSrc",
+          "kind": "method",
+          "signature": "AddMediaSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddObjectSrc",
+          "kind": "method",
+          "signature": "AddObjectSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddManifestSrc",
+          "kind": "method",
+          "signature": "AddManifestSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddChildSrc",
+          "kind": "method",
+          "signature": "AddChildSrc(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddBaseUri",
+          "kind": "method",
+          "signature": "AddBaseUri(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddFormAction",
+          "kind": "method",
+          "signature": "AddFormAction(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "AddFrameAncestors",
+          "kind": "method",
+          "signature": "AddFrameAncestors(params string[] sources)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "SetReportUri",
+          "kind": "method",
+          "signature": "SetReportUri(string uri)",
+          "returnType": "CspBuilder"
+        },
+        {
+          "name": "ReportUri",
+          "kind": "property",
+          "signature": "string? ReportUri",
+          "returnType": "string?"
+        },
+        {
+          "name": "ReportTo",
+          "kind": "property",
+          "signature": "string? ReportTo",
+          "returnType": "string?"
+        },
+        {
+          "name": "UpgradeInsecureRequests",
+          "kind": "property",
+          "signature": "bool UpgradeInsecureRequests",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
       "name": "RouteHandlerBuilderNoStoreExtensions",
       "fqn": "Granit.Http.SecurityHeaders.Extensions.RouteHandlerBuilderNoStoreExtensions",
       "kind": "class",
@@ -19987,7 +20142,7 @@
       "kind": "class",
       "project": "Granit.Http.SecurityHeaders",
       "file": "src/Granit.Http.SecurityHeaders/Extensions/SecurityHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitHttpSecurity",
@@ -20030,12 +20185,174 @@
       ]
     },
     {
+      "name": "ICspContributor",
+      "fqn": "Granit.Http.SecurityHeaders.ICspContributor",
+      "kind": "interface",
+      "project": "Granit.Http.SecurityHeaders.Abstractions",
+      "file": "src/Granit.Http.SecurityHeaders.Abstractions/ICspContributor.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "GetType",
+          "kind": "method",
+          "signature": "GetType()",
+          "returnType": "string Name =>"
+        },
+        {
+          "name": "Contribute",
+          "kind": "method",
+          "signature": "Contribute(HttpContext context, CspBuilder builder)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ICspContributorRegistry",
+      "fqn": "Granit.Http.SecurityHeaders.ICspContributorRegistry",
+      "kind": "interface",
+      "project": "Granit.Http.SecurityHeaders.Abstractions",
+      "file": "src/Granit.Http.SecurityHeaders.Abstractions/ICspContributorRegistry.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Add",
+          "kind": "method",
+          "signature": "Add(ICspContributor contributor)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "CspOptions",
+      "fqn": "Granit.Http.SecurityHeaders.Options.CspOptions",
+      "kind": "class",
+      "project": "Granit.Http.SecurityHeaders",
+      "file": "src/Granit.Http.SecurityHeaders/Options/CspOptions.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "DefaultSrc",
+          "kind": "property",
+          "signature": "IList<string> DefaultSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "ScriptSrc",
+          "kind": "property",
+          "signature": "IList<string> ScriptSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "ScriptSrcElem",
+          "kind": "property",
+          "signature": "IList<string> ScriptSrcElem",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "ScriptSrcAttr",
+          "kind": "property",
+          "signature": "IList<string> ScriptSrcAttr",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "StyleSrc",
+          "kind": "property",
+          "signature": "IList<string> StyleSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "StyleSrcElem",
+          "kind": "property",
+          "signature": "IList<string> StyleSrcElem",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "StyleSrcAttr",
+          "kind": "property",
+          "signature": "IList<string> StyleSrcAttr",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "FontSrc",
+          "kind": "property",
+          "signature": "IList<string> FontSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "ImgSrc",
+          "kind": "property",
+          "signature": "IList<string> ImgSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "ConnectSrc",
+          "kind": "property",
+          "signature": "IList<string> ConnectSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "FrameSrc",
+          "kind": "property",
+          "signature": "IList<string> FrameSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "WorkerSrc",
+          "kind": "property",
+          "signature": "IList<string> WorkerSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "MediaSrc",
+          "kind": "property",
+          "signature": "IList<string> MediaSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "ObjectSrc",
+          "kind": "property",
+          "signature": "IList<string> ObjectSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "ManifestSrc",
+          "kind": "property",
+          "signature": "IList<string> ManifestSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "ChildSrc",
+          "kind": "property",
+          "signature": "IList<string> ChildSrc",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "BaseUri",
+          "kind": "property",
+          "signature": "IList<string> BaseUri",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "FormAction",
+          "kind": "property",
+          "signature": "IList<string> FormAction",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "FrameAncestors",
+          "kind": "property",
+          "signature": "IList<string> FrameAncestors",
+          "returnType": "IList<string>"
+        }
+      ]
+    },
+    {
       "name": "GranitSecurityHeadersOptions",
       "fqn": "Granit.Http.SecurityHeaders.Options.GranitSecurityHeadersOptions",
       "kind": "class",
       "project": "Granit.Http.SecurityHeaders",
       "file": "src/Granit.Http.SecurityHeaders/Options/GranitSecurityHeadersOptions.cs",
-      "line": 7,
+      "line": 8,
       "members": [
         {
           "name": "SuppressServerHeader",
@@ -20074,10 +20391,16 @@
           "returnType": "string?"
         },
         {
-          "name": "ContentSecurityPolicy",
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "CspOptions Csp { get; set; } ="
+        },
+        {
+          "name": "DisabledContributors",
           "kind": "property",
-          "signature": "string? ContentSecurityPolicy",
-          "returnType": "string?"
+          "signature": "IReadOnlyList<string> DisabledContributors",
+          "returnType": "IReadOnlyList<string>"
         },
         {
           "name": "EnableHsts",

@@ -29,6 +29,7 @@
       "src/Granit.Http.Cookies.Klaro/Granit.Http.Cookies.Klaro.csproj",
       "src/Granit.Http.Cookies/Granit.Http.Cookies.csproj",
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
+      "src/Granit.Http.SecurityHeaders.Abstractions/Granit.Http.SecurityHeaders.Abstractions.csproj",
       "src/Granit.IO/Granit.IO.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
       "src/Granit.MultiTenancy/Granit.MultiTenancy.csproj",

@@ -38,9 +38,21 @@ public sealed class GranitSecurityHeadersOptionsTests
                        "accelerometer=(), gyroscope=(), magnetometer=(), usb=()");
 
     [Fact]
-    public void ContentSecurityPolicy_DefaultsToApiGradeStrictPolicy() =>
-        new GranitSecurityHeadersOptions().ContentSecurityPolicy
-            .ShouldBe("default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
+    public void Csp_DefaultsToApiGradeStrictPolicy()
+    {
+        CspOptions csp = new GranitSecurityHeadersOptions().Csp;
+
+        csp.DefaultSrc.ShouldBe(["'none'"]);
+        csp.BaseUri.ShouldBe(["'none'"]);
+        csp.FrameAncestors.ShouldBe(["'none'"]);
+        csp.ScriptSrc.ShouldBeEmpty();
+        csp.RawOverride.ShouldBeNull();
+        csp.ReportOnly.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void DisabledContributors_DefaultsToEmpty() =>
+        new GranitSecurityHeadersOptions().DisabledContributors.ShouldBeEmpty();
 
     [Fact]
     public void EnableHsts_DefaultsToTrue() =>
