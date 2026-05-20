@@ -903,6 +903,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Http.SecurityHeaders.Endpoints",
+      "deps": [
+        "Granit.Diagnostics.Endpoints",
+        "Granit.Http.SecurityHeaders",
+        "Granit.Http.SecurityHeaders.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.IO",
       "deps": [
         "Granit",
@@ -20101,6 +20110,80 @@
           "kind": "property",
           "signature": "bool UpgradeInsecureRequests",
           "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "CspAuditResponse",
+      "fqn": "Granit.Http.SecurityHeaders.Endpoints.Dtos.CspAuditResponse",
+      "kind": "record",
+      "project": "Granit.Http.SecurityHeaders.Endpoints",
+      "file": "src/Granit.Http.SecurityHeaders.Endpoints/Dtos/CspAuditResponse.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "CspContributorInfo",
+      "fqn": "Granit.Http.SecurityHeaders.Endpoints.Dtos.CspContributorInfo",
+      "kind": "record",
+      "project": "Granit.Http.SecurityHeaders.Endpoints",
+      "file": "src/Granit.Http.SecurityHeaders.Endpoints/Dtos/CspAuditResponse.cs",
+      "line": 36,
+      "members": []
+    },
+    {
+      "name": "CspEndpointAudit",
+      "fqn": "Granit.Http.SecurityHeaders.Endpoints.Dtos.CspEndpointAudit",
+      "kind": "record",
+      "project": "Granit.Http.SecurityHeaders.Endpoints",
+      "file": "src/Granit.Http.SecurityHeaders.Endpoints/Dtos/CspAuditResponse.cs",
+      "line": 52,
+      "members": []
+    },
+    {
+      "name": "SecurityHeadersEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Http.SecurityHeaders.Endpoints.Extensions.SecurityHeadersEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.SecurityHeaders.Endpoints",
+      "file": "src/Granit.Http.SecurityHeaders.Endpoints/Extensions/SecurityHeadersEndpointRouteBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapGranitSecurityHeadersAudit",
+          "kind": "method",
+          "signature": "MapGranitSecurityHeadersAudit(this IEndpointRouteBuilder endpoints, Action<SecurityHeadersEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpSecurityHeadersEndpointsModule",
+      "fqn": "Granit.Http.SecurityHeaders.Endpoints.GranitHttpSecurityHeadersEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Http.SecurityHeaders.Endpoints",
+      "file": "src/Granit.Http.SecurityHeaders.Endpoints/GranitHttpSecurityHeadersEndpointsModule.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "SecurityHeadersEndpointsOptions",
+      "fqn": "Granit.Http.SecurityHeaders.Endpoints.Options.SecurityHeadersEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Http.SecurityHeaders.Endpoints",
+      "file": "src/Granit.Http.SecurityHeaders.Endpoints/Options/SecurityHeadersEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
         }
       ]
     },
