@@ -536,6 +536,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Caching.Vault",
+      "deps": [
+        "Granit.Caching",
+        "Granit.Vault"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.DataExchange",
       "deps": [
         "Granit.DataExchange.Abstractions",
@@ -11958,6 +11966,47 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "CachingVaultServiceCollectionExtensions",
+      "fqn": "Granit.Caching.Vault.Extensions.CachingVaultServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Caching.Vault",
+      "file": "src/Granit.Caching.Vault/Extensions/CachingVaultServiceCollectionExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitCachingEncryptionFromVault",
+          "kind": "method",
+          "signature": "AddGranitCachingEncryptionFromVault(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitCachingVaultModule",
+      "fqn": "Granit.Caching.Vault.GranitCachingVaultModule",
+      "kind": "class",
+      "project": "Granit.Caching.Vault",
+      "file": "src/Granit.Caching.Vault/GranitCachingVaultModule.cs",
+      "line": 37,
+      "members": [
+        {
+          "name": "IsEnabled",
+          "kind": "method",
+          "signature": "IsEnabled(ServiceConfigurationContext context)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "CacheEncryptionVaultOptions",
+      "fqn": "Granit.Caching.Vault.Options.CacheEncryptionVaultOptions",
+      "kind": "class",
+      "project": "Granit.Caching.Vault",
+      "file": "src/Granit.Caching.Vault/Options/CacheEncryptionVaultOptions.cs",
+      "line": 13,
+      "members": []
     },
     {
       "name": "ICommandSender",

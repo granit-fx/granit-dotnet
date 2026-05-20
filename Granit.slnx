@@ -185,6 +185,7 @@
     <Project Path="src/Granit.BlobStorage.S3/Granit.BlobStorage.S3.csproj" />
     <Project Path="src/Granit.BlobStorage/Granit.BlobStorage.csproj" />
     <Project Path="src/Granit.Caching.StackExchangeRedis/Granit.Caching.StackExchangeRedis.csproj" />
+    <Project Path="src/Granit.Caching.Vault/Granit.Caching.Vault.csproj" />
     <Project Path="src/Granit.Caching/Granit.Caching.csproj" />
     <Project Path="src/Granit.Events.Wolverine/Granit.Events.Wolverine.csproj" />
     <Project Path="src/Granit.Events/Granit.Events.csproj" />
@@ -476,6 +477,7 @@
     <Project Path="tests/Granit.Caching.StackExchangeRedis.Tests/Granit.Caching.StackExchangeRedis.Tests.csproj" />
     <Project Path="tests/Granit.Caching.Tests.Integration/Granit.Caching.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Caching.Tests/Granit.Caching.Tests.csproj" />
+    <Project Path="tests/Granit.Caching.Vault.Tests/Granit.Caching.Vault.Tests.csproj" />
     <Project Path="tests/Granit.Events.Tests/Granit.Events.Tests.csproj" />
     <Project Path="tests/Granit.Events.Wolverine.Tests/Granit.Events.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.AI.Tests/Granit.Imaging.AI.Tests.csproj" />
