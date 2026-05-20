@@ -52,6 +52,9 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.http.securityheaders.abstractions": {
+        "type": "Project"
+      },
       "Asp.Versioning.Mvc": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",

@@ -1,4 +1,6 @@
+using Granit.Http.ApiDocumentation.Internal;
 using Granit.Http.ApiDocumentation.Options;
+using Granit.Http.SecurityHeaders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -81,9 +83,46 @@ public static partial class ApiDocumentationApplicationBuilderExtensions
                     });
                 }
             });
+        scalarEndpoint.WithMetadata(new ScalarApiReferenceMetadata());
         ApplyAuthorizationPolicy(scalarEndpoint, options.AuthorizationPolicy);
 
+        RegisterScalarCspContributor(app);
+
         return app;
+    }
+
+    /// <summary>
+    /// Registers <see cref="ScalarCspContributor"/> into the CSP composer's
+    /// registry so the strict default CSP is relaxed on the Scalar route.
+    /// Resolves the registry from the <b>root</b> application container
+    /// (<see cref="IApplicationBuilder.ApplicationServices"/>) — this code
+    /// runs at app-build time, before any request scope exists.
+    /// </summary>
+    /// <remarks>
+    /// The registry is resolved via <c>GetService</c>, not
+    /// <c>GetRequiredService</c>: <see cref="ICspContributorRegistry"/> lives
+    /// in <c>Granit.Http.SecurityHeaders.Abstractions</c>, but its
+    /// implementation lives in <c>Granit.Http.SecurityHeaders</c>. If a
+    /// consumer references <c>Granit.Http.ApiDocumentation</c> without
+    /// pulling in <c>Granit.Http.SecurityHeaders</c>, the registry is
+    /// unresolved — the contributor registration is a no-op (logged at
+    /// Debug) and the consumer is left to manage CSP externally.
+    /// </remarks>
+    private static void RegisterScalarCspContributor(WebApplication app)
+    {
+        ICspContributorRegistry? registry =
+            app.Services.GetService<ICspContributorRegistry>();
+
+        if (registry is null)
+        {
+            ILogger logger = app.Services
+                .GetRequiredService<ILoggerFactory>()
+                .CreateLogger("Granit.Http.ApiDocumentation");
+            LogCspRegistryUnresolved(logger);
+            return;
+        }
+
+        registry.Add(new ScalarCspContributor());
     }
 
     private static void ApplyAuthorizationPolicy(
@@ -111,4 +150,11 @@ public static partial class ApiDocumentationApplicationBuilderExtensions
                   "Set ApiDocumentation:AuthorizationPolicy to a named policy (e.g. \"ApiDocsReaders\") " +
                   "or an empty string (explicit anonymous) to silence this warning.")]
     private static partial void LogProductionOpenApiWithoutPolicy(ILogger logger);
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "ICspContributorRegistry not registered — Scalar CSP contributor skipped " +
+                  "(consumer is managing security headers externally, or " +
+                  "Granit.Http.SecurityHeaders is not referenced).")]
+    private static partial void LogCspRegistryUnresolved(ILogger logger);
 }
