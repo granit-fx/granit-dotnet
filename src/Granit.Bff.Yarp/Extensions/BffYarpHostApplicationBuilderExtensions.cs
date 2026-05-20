@@ -1,4 +1,3 @@
-using Granit.Bff.Options;
 using Granit.Bff.Yarp.Internal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -22,8 +21,9 @@ public static class BffYarpHostApplicationBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Services.Configure<GranitBffOptions>(
-            builder.Configuration.GetSection(GranitBffOptions.SectionName));
+        // GranitBffOptions binding lives in GranitBffModule (single source of truth).
+        // Binding here too would duplicate List<T> properties (e.g. Frontends) since
+        // IConfiguration.Bind appends on every call.
 
         builder.Services
             .AddReverseProxy()

@@ -34,6 +34,14 @@ public sealed class GranitBffModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        // Single binding site for the "Bff" section. Companion packages
+        // (Granit.Bff.Yarp, Granit.Bff.Endpoints) depend on this module and must NOT
+        // re-bind: IConfiguration.Bind appends to List<T> properties on every call,
+        // so a second bind would duplicate Frontends entries and break endpoint
+        // name uniqueness (BffLogin_<name>).
+        context.Services.Configure<GranitBffOptions>(
+            context.Configuration.GetSection(GranitBffOptions.SectionName));
+
         context.Services.TryAddSingleton<IValidateOptions<GranitBffOptions>, GranitBffOptionsValidator>();
         context.Services.TryAddSingleton<BffMetrics>();
         context.Services.TryAddScoped<IBffTokenStore, DistributedCacheBffTokenStore>();

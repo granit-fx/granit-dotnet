@@ -32,11 +32,9 @@ public sealed class GranitBffEndpointsModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        // Auto-bind BFF options from the "Bff" configuration section so consumers
-        // don't need to call Configure<GranitBffOptions> manually. Idempotent if
-        // AddGranitBffYarp also binds from the same section.
-        context.Services.Configure<GranitBffOptions>(
-            context.Builder!.Configuration.GetSection(GranitBffOptions.SectionName));
+        // GranitBffOptions binding is owned by GranitBffModule (single source of truth).
+        // Re-binding here would duplicate List<T> properties (e.g. Frontends) since
+        // IConfiguration.Bind appends on every call.
 
         context.Services.TryAddScoped<IBffLogoutOrchestrator, DefaultBffLogoutOrchestrator>();
 
