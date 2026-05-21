@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
 using Granit.DataExchange.Import.Mapping;
 using Granit.Guids;
@@ -32,13 +31,7 @@ internal sealed class EfMappingStore(
             .FirstOrDefaultAsync(
                 e => e.DefinitionName == definitionName && e.TenantId == tenantId, cancellationToken).ConfigureAwait(false);
 
-        if (entity is null)
-        {
-            return [];
-        }
-
-        List<ImportColumnMapping>? mappings = JsonSerializer.Deserialize<List<ImportColumnMapping>>(entity.MappingsJson);
-        return mappings?.AsReadOnly() ?? (IReadOnlyList<ImportColumnMapping>)[];
+        return entity?.Mappings.AsReadOnly() ?? (IReadOnlyList<ImportColumnMapping>)[];
     }
 
     /// <inheritdoc/>
@@ -49,7 +42,6 @@ internal sealed class EfMappingStore(
     {
         await using DataExchangeDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
-        string json = JsonSerializer.Serialize(mappings);
 
         SavedMappingEntity? existing = await context.SavedMappings
             .FirstOrDefaultAsync(
@@ -57,7 +49,7 @@ internal sealed class EfMappingStore(
 
         if (existing is not null)
         {
-            existing.MappingsJson = json;
+            existing.Mappings = [.. mappings];
             existing.SavedAt = clock.Now;
         }
         else
@@ -67,7 +59,7 @@ internal sealed class EfMappingStore(
                 Id = guidGenerator.Create(),
                 DefinitionName = definitionName,
                 TenantId = tenantId,
-                MappingsJson = json,
+                Mappings = [.. mappings],
                 SavedAt = clock.Now,
                 SavedBy = currentUser.UserId ?? "system",
             });

@@ -19,7 +19,7 @@ internal sealed class ExportPresetEntityConfiguration : IEntityTypeConfiguration
         builder.Property(e => e.DefinitionName).HasMaxLength(200).IsRequired();
         builder.Property(e => e.PresetName).HasMaxLength(200).IsRequired();
         builder.Property(e => e.TenantId);
-        builder.Property(e => e.FieldsJson).IsRequired();
+        builder.PrimitiveCollection(e => e.Fields).IsRequired();
         builder.Property(e => e.Format).HasMaxLength(10).IsRequired();
         builder.Property(e => e.IncludeIdForImport).IsRequired();
         builder.Property(e => e.SavedAt).IsRequired();

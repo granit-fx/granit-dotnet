@@ -20,8 +20,8 @@ internal sealed class ExportPresetEntity : IMultiTenant
     /// <summary>Tenant identifier. <c>null</c> when multi-tenancy is not active.</summary>
     public Guid? TenantId { get; set; }
 
-    /// <summary>Serialized <c>string[]</c> of selected field property paths (JSON).</summary>
-    public required string FieldsJson { get; set; }
+    /// <summary>Selected field property paths, persisted as a JSON primitive collection.</summary>
+    public required List<string> Fields { get; set; }
 
     /// <summary>Output format (<c>"xlsx"</c> or <c>"csv"</c>).</summary>
     public required string Format { get; set; }

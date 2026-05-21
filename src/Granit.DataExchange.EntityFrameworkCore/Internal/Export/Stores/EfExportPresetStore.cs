@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Entities;
 using Granit.DataExchange.Export;
 using Granit.Guids;
@@ -58,7 +57,6 @@ internal sealed class EfExportPresetStore(
     {
         await using DataExchangeDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
-        string fieldsJson = JsonSerializer.Serialize(preset.SelectedFields);
 
         ExportPresetEntity? existing = await context.ExportPresets
             .FirstOrDefaultAsync(
@@ -68,7 +66,7 @@ internal sealed class EfExportPresetStore(
 
         if (existing is not null)
         {
-            existing.FieldsJson = fieldsJson;
+            existing.Fields = [.. preset.SelectedFields];
             existing.Format = preset.Format;
             existing.IncludeIdForImport = preset.IncludeIdForImport;
             existing.SavedAt = clock.Now;
@@ -81,7 +79,7 @@ internal sealed class EfExportPresetStore(
                 DefinitionName = preset.DefinitionName,
                 PresetName = preset.PresetName,
                 TenantId = tenantId,
-                FieldsJson = fieldsJson,
+                Fields = [.. preset.SelectedFields],
                 Format = preset.Format,
                 IncludeIdForImport = preset.IncludeIdForImport,
                 SavedAt = clock.Now,
@@ -112,14 +110,11 @@ internal sealed class EfExportPresetStore(
         }
     }
 
-    private static ExportPreset ToPreset(ExportPresetEntity entity)
-    {
-        List<string>? fields = JsonSerializer.Deserialize<List<string>>(entity.FieldsJson);
-        return new ExportPreset(
+    private static ExportPreset ToPreset(ExportPresetEntity entity) =>
+        new(
             entity.DefinitionName,
             entity.PresetName,
-            fields?.AsReadOnly() ?? (IReadOnlyList<string>)[],
+            entity.Fields.AsReadOnly(),
             entity.Format,
             entity.IncludeIdForImport);
-    }
 }

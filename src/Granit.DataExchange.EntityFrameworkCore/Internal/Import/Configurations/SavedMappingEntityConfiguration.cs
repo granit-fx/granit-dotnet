@@ -18,7 +18,13 @@ internal sealed class SavedMappingEntityConfiguration : IEntityTypeConfiguration
 
         builder.Property(e => e.DefinitionName).HasMaxLength(200).IsRequired();
         builder.Property(e => e.TenantId);
-        builder.Property(e => e.MappingsJson).IsRequired();
+        builder.OwnsMany(e => e.Mappings, m =>
+        {
+            m.ToJson();
+            m.Property(p => p.SourceColumn);
+            m.Property(p => p.TargetProperty);
+            m.Property(p => p.Confidence);
+        });
         builder.Property(e => e.SavedAt).IsRequired();
         builder.Property(e => e.SavedBy).HasMaxLength(200).IsRequired();
 

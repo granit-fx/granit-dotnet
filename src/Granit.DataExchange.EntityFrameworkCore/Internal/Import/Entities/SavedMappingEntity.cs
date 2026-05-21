@@ -1,3 +1,4 @@
+using Granit.DataExchange.Import.Mapping;
 using Granit.Domain;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
@@ -17,8 +18,8 @@ internal sealed class SavedMappingEntity : IMultiTenant
     /// <summary>Tenant identifier. <c>null</c> when multi-tenancy is not active.</summary>
     public Guid? TenantId { get; set; }
 
-    /// <summary>Serialized <c>ImportColumnMapping[]</c> as JSON.</summary>
-    public required string MappingsJson { get; set; }
+    /// <summary>Column mappings persisted as a JSON-owned collection.</summary>
+    public required List<ImportColumnMapping> Mappings { get; set; }
 
     /// <summary>When the mappings were saved.</summary>
     public DateTimeOffset SavedAt { get; set; }
