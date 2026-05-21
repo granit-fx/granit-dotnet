@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-05-19
+Dernière mise à jour : 2026-05-21
 
 ---
 
@@ -12,12 +12,11 @@ Dernière mise à jour : 2026-05-19
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 91                 |
-| Apache-2.0   | 36                 |
-| BSD-3-Clause | 2                  |
+| MIT          | 87                 |
+| Apache-2.0   | 38                 |
+| BSD-3-Clause | 3                  |
 | BSD-2-Clause | 1                  |
-| PostgreSQL   | 1                  |
-| LGPL-2.1     | 1                  |
+| PostgreSQL   | 2                  |
 
 ---
 
@@ -35,66 +34,65 @@ Dernière mise à jour : 2026-05-19
 | Azure.Communication.Email | 1.1.0 | (c) Microsoft Corporation |
 | Azure.Communication.Sms | 1.0.2 | (c) Microsoft Corporation |
 | Azure.Identity | 1.21.0 | (c) Microsoft Corporation |
-| Azure.Security.KeyVault.Keys | 4.9.0 | (c) Microsoft Corporation |
-| Azure.Security.KeyVault.Secrets | 4.10.0 | (c) Microsoft Corporation |
-| Azure.Storage.Blobs | 12.27.0 | (c) Microsoft Corporation |
+| Azure.Security.KeyVault.Keys | 4.10.0 | (c) Microsoft Corporation |
+| Azure.Security.KeyVault.Secrets | 4.11.0 | (c) Microsoft Corporation |
+| Azure.Storage.Blobs | 12.28.0 | (c) Microsoft Corporation |
 | ClosedXML | 0.105.0 | ClosedXML Contributors |
-| Cronos | 0.12.0 | Copyright (c) 2016-2025 Hangfire OU |
-| DocumentFormat.OpenXml | 3.5.1 | Copyright (c) Microsoft Corporation |
-| FuzzySharp | 2.0.2 | Copyright (c) Jacob Bayer |
+| Cronos | 0.13.0 | Copyright (c) 2016-2025 Hangfire OU |
+| DocumentFormat.OpenXml | 3.1.1 | Copyright (c) Microsoft Corporation |
 | Lib.Net.Http.WebPush | 3.3.1 | Copyright (c) Tomasz Pęczek |
 | MailKit | 4.16.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
-| Mjml.Net | 4.11.0 | Copyright (c) Sebastian Stehle |
-| Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Identity.EntityFrameworkCore | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.OpenApi | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.OutputCaching.StackExchangeRedis | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.SignalR.StackExchangeRedis | 10.0.7 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Identity.EntityFrameworkCore | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.OpenApi | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.OutputCaching.StackExchangeRedis | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.SignalR.StackExchangeRedis | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.Azure.NotificationHubs | 4.2.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.BannedApiAnalyzers | 3.3.4 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.Relational | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.SqlServer | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.AI.Abstractions | 10.5.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.AI.OpenAI | 10.5.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.Abstractions | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.Hybrid | 10.5.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.Memory | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.StackExchangeRedis | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Configuration.Binder | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.DependencyInjection.Abstractions | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Diagnostics.HealthChecks | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Diagnostics.Testing | 10.5.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Hosting.Abstractions | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Http | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Http.Resilience | 10.5.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Localization | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Logging.Abstractions | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Options | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Options.ConfigurationExtensions | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.VectorData.Abstractions | 10.5.0 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.Relational | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.SqlServer | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.AI.Abstractions | 10.6.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.AI.OpenAI | 10.6.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.Abstractions | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.Hybrid | 10.6.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.Memory | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.StackExchangeRedis | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Configuration.Binder | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.DependencyInjection.Abstractions | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Diagnostics.HealthChecks | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Diagnostics.Testing | 10.6.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.FileSystemGlobbing | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Hosting.Abstractions | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Http | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Http.Resilience | 10.6.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Localization | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Localization.Abstractions | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Logging.Abstractions | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Options | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Options.ConfigurationExtensions | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.VectorData.Abstractions | 10.6.0 | (c) Microsoft Corporation |
 | Microsoft.IO.RecyclableMemoryStream | 3.0.1 | (c) Microsoft Corporation |
+| Microsoft.Playwright | 1.59.0 | (c) Microsoft Corporation |
 | MimeKit | 4.16.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
-| Mollie.Api | 4.19.0 | Copyright (c) 2023 Vincent Kok |
+| Mjml.Net | 4.11.0 | Copyright (c) Sebastian Stehle |
 | OllamaSharp | 5.4.25 | Copyright (c) 2023-2026 Awalon |
 | PdfPig | 0.1.14 | Copyright (c) Eliot Jones |
-| PuppeteerSharp | 24.40.0 | PuppeteerSharp Contributors |
-| Scalar.AspNetCore | 2.14.6 | Scalar Contributors |
-| Sep | 0.13.0 | Copyright (c) 2023 nietras |
+| PuppeteerSharp | 24.42.0 | PuppeteerSharp Contributors |
+| Scalar.AspNetCore | 2.14.14 | Scalar Contributors |
+| Sep | 0.14.1 | Copyright (c) 2023 nietras |
 | SmartFormat | 3.6.1 | Copyright 2011-2025 SmartFormat Project |
-| SoftWx.Match | 2.0.3 | Copyright © 2015-2018 SoftWx, Inc. |
-| StackExchange.Redis | 2.12.14 | Copyright 2014-2026 Stack Exchange, Inc. |
-| Stripe.net | 51.1.0 | Copyright (c) Stripe, Inc. |
-| Sylvan.Data.Excel | 0.5.5 | Copyright (c) Mark Pflug |
-| System.Composition.AttributedModel | 9.0.15 | (c) Microsoft Corporation |
-| System.Text.Json | 9.0.15 | (c) Microsoft Corporation |
-| WolverineFx | 5.32.1 | JasperFx Contributors |
-| WolverineFx.EntityFrameworkCore | 5.32.1 | JasperFx Contributors |
-| WolverineFx.FluentValidation | 5.32.1 | JasperFx Contributors |
-| WolverineFx.Http.FluentValidation | 5.31.1 | JasperFx Contributors |
-| WolverineFx.Postgresql | 5.32.1 | JasperFx Contributors |
-| WolverineFx.SqlServer | 5.32.1 | JasperFx Contributors |
+| StackExchange.Redis | 2.13.1 | Copyright 2014-2026 Stack Exchange, Inc. |
+| Sylvan.Data.Excel | 0.5.6 | Copyright (c) Mark Pflug |
+| System.Composition.AttributedModel | 9.0.16 | (c) Microsoft Corporation |
+| System.Text.Json | 9.0.16 | (c) Microsoft Corporation |
+| WolverineFx | 5.39.3 | JasperFx Contributors |
+| WolverineFx.EntityFrameworkCore | 5.39.3 | JasperFx Contributors |
+| WolverineFx.FluentValidation | 5.39.3 | JasperFx Contributors |
+| WolverineFx.Http.FluentValidation | 5.39.3 | JasperFx Contributors |
+| WolverineFx.Postgresql | 5.39.3 | JasperFx Contributors |
+| WolverineFx.SqlServer | 5.39.3 | JasperFx Contributors |
 | Yarp.ReverseProxy | 2.3.0 | (c) Microsoft Corporation |
 | ZiggyCreatures.FusionCache | 2.6.0 | Copyright (c) Jody Donetti |
 | ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis | 2.6.0 | Copyright (c) Jody Donetti |
@@ -105,27 +103,24 @@ Dernière mise à jour : 2026-05-19
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| AWSSDK.CognitoIdentityProvider | 4.0.8.2 | Amazon Web Services, Inc. |
-| AWSSDK.KeyManagementService | 4.0.9.13 | Amazon Web Services, Inc. |
-| AWSSDK.S3 | 4.0.22.1 | Amazon Web Services, Inc. |
-| AWSSDK.SecretsManager | 4.0.4.19 | Amazon Web Services, Inc. |
-| AWSSDK.SimpleEmailV2 | 4.0.12.12 | Amazon Web Services, Inc. |
-| AWSSDK.SimpleNotificationService | 4.0.2.29 | Amazon Web Services, Inc. |
+| AWSSDK.CognitoIdentityProvider | 4.0.8.6 | Amazon Web Services, Inc. |
+| AWSSDK.KeyManagementService | 4.0.11 | Amazon Web Services, Inc. |
+| AWSSDK.S3 | 4.0.23.3 | Amazon Web Services, Inc. |
+| AWSSDK.SecretsManager | 4.0.4.23 | Amazon Web Services, Inc. |
+| AWSSDK.SimpleEmailV2 | 4.0.12.16 | Amazon Web Services, Inc. |
+| AWSSDK.SimpleNotificationService | 4.0.2.33 | Amazon Web Services, Inc. |
 | Fido2 | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.AspNet | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.Models | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | FirebaseAdmin | 3.5.0 | Copyright (c) 2018 Google Inc. |
 | FluentValidation | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
-| GoCardless | 9.5.0 | Copyright (c) 2017 GoCardless |
 | FluentValidation.DependencyInjectionExtensions | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
 | Google.Cloud.Kms.V1 | 3.24.0 | Copyright (c) Google LLC |
 | Google.Cloud.SecretManager.V1 | 2.7.0 | Copyright (c) Google LLC |
 | Google.Cloud.Storage.V1 | 4.14.0 | Copyright (c) Google LLC |
-| libphonenumber-csharp | 9.0.29 | Copyright (c) Patrick Mézard, Thomas Clegg, Google, libphonenumber contributors |
-| Magick.NET-Q8-AnyCPU | 14.13.0 | Copyright 2013-2026 Dirk Lemstra |
-| MetadataExtractor | 2.9.3 | Copyright (c) Drew Noakes |
-| ModelContextProtocol | 1.2.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
-| ModelContextProtocol.AspNetCore | 1.2.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
+| Magick.NET-Q8-AnyCPU | 14.13.1 | Copyright 2013-2026 Dirk Lemstra |
+| ModelContextProtocol | 1.3.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
+| ModelContextProtocol.AspNetCore | 1.3.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | OpenIddict | 7.5.0 | Copyright (c) Kévin Chalet |
 | OpenIddict.EntityFrameworkCore | 7.5.0 | Copyright (c) Kévin Chalet |
 | OpenIddict.Server.AspNetCore | 7.5.0 | Copyright (c) Kévin Chalet |
@@ -136,8 +131,10 @@ Dernière mise à jour : 2026-05-19
 | OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.15.3 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Extensions.Hosting | 1.15.3 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Instrumentation.AspNetCore | 1.15.2 | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Instrumentation.EntityFrameworkCore | 1.15.0-beta.1 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Instrumentation.AWS | 1.15.1 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Instrumentation.EntityFrameworkCore | 1.15.1-beta.1 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Instrumentation.Http | 1.15.1 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Instrumentation.StackExchangeRedis | 1.15.1-beta.1 | Copyright The OpenTelemetry Authors |
 | Serilog.AspNetCore | 10.0.0 | Serilog Contributors |
 | Serilog.Sinks.OpenTelemetry | 4.2.0 | Serilog Contributors |
 | VaultSharp | 1.17.5.1 | Copyright (c) 2024 Raja Nadar |
@@ -146,13 +143,13 @@ Dernière mise à jour : 2026-05-19
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| Scriban | 7.1.0 | Copyright (c) Alexandre Mutel |
+| Scriban | 7.2.0 | Copyright (c) Alexandre Mutel |
 
 ### BSD-3-Clause
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| NetTopologySuite | 2.6.0 | Copyright (c) NetTopologySuite Team |
+| NetTopologySuite | 2.5.0 | Copyright (c) NetTopologySuite Team |
 
 ### MIT (OData)
 
@@ -169,17 +166,6 @@ Dernière mise à jour : 2026-05-19
 | Npgsql.EntityFrameworkCore.PostgreSQL | 10.0.1 | Copyright 2025 The Npgsql Development Team |
 | Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite | 10.0.1 | Copyright 2025 The Npgsql Development Team |
 
-### LGPL-2.1
-
-Licence non permissive utilisée en lien dynamique uniquement (NuGet
-ship un assembly distinct, jamais lié statiquement). L'obligation
-copyleft ne se propage pas au framework Granit (Apache-2.0) ni au code
-applicatif consommant le NuGet `Granit.Documents.AssetMetadata.AudioVideo`.
-
-| Package | Version | Copyright |
-| ------- | ------- | --------- |
-| TagLibSharp | 2.3.0 | Copyright (c) Brian Nickel, Gabriel Burt, Stephen Shaw, and contributors |
-
 ---
 
 ## Dépendances de test uniquement
@@ -189,20 +175,20 @@ applicatif consommant le NuGet `Granit.Documents.AssetMetadata.AudioVideo`.
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
 | Bogus | 35.6.5 | Copyright (c) 2015 Brian Chavez |
-| coverlet.collector | 10.0.0 | (c) 2018 Toni Solarin-Sodara |
+| coverlet.collector | 10.0.1 | (c) 2018 Toni Solarin-Sodara |
 | JunitXml.TestLogger | 7.1.0 | JunitXml.TestLogger Contributors |
-| Microsoft.AspNetCore.Mvc.Testing | 10.0.7 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Mvc.Testing | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.Analyzers | 3.11.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.CSharp | 5.0.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.CSharp.Workspaces | 5.0.0 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.InMemory | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.Sqlite | 10.0.7 | (c) Microsoft Corporation |
-| Microsoft.Extensions.TimeProvider.Testing | 10.5.0 | (c) Microsoft Corporation |
-| Microsoft.NET.Test.Sdk | 18.5.0 | (c) Microsoft Corporation |
-| Testcontainers.Keycloak | 4.11.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
+| Microsoft.EntityFrameworkCore.InMemory | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.Sqlite | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.TimeProvider.Testing | 10.6.0 | (c) Microsoft Corporation |
+| Microsoft.NET.Test.Sdk | 18.5.1 | (c) Microsoft Corporation |
+| Testcontainers.Keycloak | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
 | Testcontainers.MsSql | 4.11.0 | Copyright (c) 2019-2025 Andre Hofmeister |
-| Testcontainers.PostgreSql | 4.11.0 | Copyright (c) 2019-2025 Andre Hofmeister |
-| Testcontainers.Redis | 4.11.0 | Copyright (c) 2019-2025 Andre Hofmeister |
+| Testcontainers.PostgreSql | 4.12.0 | Copyright (c) 2019-2025 Andre Hofmeister |
+| Testcontainers.Redis | 4.12.0 | Copyright (c) 2019-2025 Andre Hofmeister |
 
 ### Apache-2.0 (tests)
 
@@ -210,11 +196,11 @@ applicatif consommant le NuGet `Granit.Documents.AssetMetadata.AudioVideo`.
 | ------- | ------- | --------- |
 | TngTech.ArchUnitNET | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
 | TngTech.ArchUnitNET.xUnit | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
-| WireMock.Net | 2.4.0 | Copyright (c) WireMock.Net Contributors |
+| WireMock.Net | 2.6.0 | Copyright (c) WireMock.Net Contributors |
 | xunit.v3 | 3.2.2 | Copyright (C) .NET Foundation |
 | xunit.runner.visualstudio | 3.1.5 | Copyright (C) .NET Foundation |
 
-### BSD-3-Clause
+### BSD-3-Clause (tests)
 
 | Package     | Version | Copyright                                |
 | ----------- | ------- | ---------------------------------------- |
@@ -305,12 +291,6 @@ Ce SDK est utilisé par les packages `Granit.Identity.Firebase` (administration 
 utilisateurs Firebase Authentication) et `Granit.Notifications.Push.Firebase` (envoi
 de notifications push via Firebase Cloud Messaging).
 
-### GoCardless
-
-Ce SDK est utilisé par le package `Granit.Payments.SepaDirectDebit.GoCardless` pour
-la gestion de mandats SEPA Direct Debit et la collecte de paiements via GoCardless.
-Les webhooks sont vérifiés par signature HMAC-SHA256.
-
 ### Google.Cloud.Kms.V1 / Google.Cloud.SecretManager.V1
 
 Ces SDK sont utilisés par le package `Granit.Vault.GoogleCloud` pour le chiffrement
@@ -328,6 +308,13 @@ Azure Blob Storage.
 Ce SDK est utilisé par le package `Granit.Notifications.MobilePush.AzureNotificationHubs`
 pour l'envoi de notifications push mobiles (FCM, APNS) via Azure Notification Hubs.
 
+### Microsoft.Playwright
+
+Ce SDK est utilisé par le package `Granit.Browsing.Playwright` pour piloter un
+navigateur headless (impressions PDF, captures d'écran, scraping interne). Le
+binaire navigateur est téléchargé par Playwright à la première exécution sur
+l'image runtime — aucun binaire Chromium n'est redistribué avec le framework.
+
 ### MimeKit
 
 Ce package est utilisé par `Granit.Notifications.Email.Smtp` pour la construction
@@ -335,24 +322,11 @@ de messages MIME. La version est épinglée à 4.16.0 via `Directory.Packages.pr
 pour corriger la vulnérabilité GHSA-g7hc-96xr-gvvx (CVE sur les versions < 4.15.1)
 et s'aligner sur l'exigence transitive de MailKit 4.16.0.
 
-### Mollie.Api
-
-Ce SDK est utilisé par le package `Granit.Payments.Mollie` pour l'intégration
-avec l'API Mollie (paiements en ligne, sessions de checkout hébergées, remboursements).
-Les données de paiement transitent directement vers Mollie sans stockage intermédiaire.
-
 ### OllamaSharp
 
 Ce SDK est utilisé par les modules `Granit.*.AI` pour l'intégration avec des
 modèles de langage locaux via Ollama. Les données restent sur l'infrastructure
 de l'organisation (aucun appel vers des services cloud externes).
-
-### Stripe.net
-
-Ce SDK est utilisé par les packages `Granit.Payments.Stripe` (paiements en ligne,
-checkout sessions, gestion de moyens de paiement) et `Granit.Tax.Stripe` (calcul
-de taxes multi-juridictions et validation de numéros de TVA). Les données de
-paiement transitent directement vers Stripe sans stockage intermédiaire.
 
 ### Yarp.ReverseProxy
 
