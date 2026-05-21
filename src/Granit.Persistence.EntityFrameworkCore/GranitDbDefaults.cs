@@ -55,7 +55,7 @@ public static class GranitDbDefaults
             return;
         }
 
-        string? hostSchema = configuration["TenantIsolation:HostSchema"];
+        string? hostSchema = configuration["MultiTenancy:TenantIsolation:HostSchema"];
         System.Diagnostics.Trace.TraceInformation("[GranitDbDefaults] EnsureFromConfiguration read '{0}' from config", hostSchema ?? "(null)");
         if (hostSchema is not null)
         {

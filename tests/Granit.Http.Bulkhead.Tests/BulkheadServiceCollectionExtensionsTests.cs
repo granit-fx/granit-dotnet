@@ -21,7 +21,7 @@ public sealed class BulkheadServiceCollectionExtensionsTests
         IConfiguration configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Bulkhead:Policies:api:PermitLimit"] = "10",
+                ["Http:Bulkhead:Policies:api:PermitLimit"] = "10",
             })
             .Build();
         services.AddSingleton(configuration);
@@ -45,7 +45,7 @@ public sealed class BulkheadServiceCollectionExtensionsTests
         IConfiguration configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Bulkhead:Policies:api:PermitLimit"] = "10",
+                ["Http:Bulkhead:Policies:api:PermitLimit"] = "10",
             })
             .Build();
         services.AddSingleton(configuration);

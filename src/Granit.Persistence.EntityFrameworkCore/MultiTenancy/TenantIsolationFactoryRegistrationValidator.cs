@@ -57,7 +57,7 @@ internal sealed class TenantIsolationFactoryRegistrationValidator(
         };
 
         StringBuilder sb = new();
-        sb.Append("TenantIsolation:Strategy='").Append(strategy)
+        sb.Append("MultiTenancy:TenantIsolation:Strategy='").Append(strategy)
           .Append("' but no ").Append(delegateName)
           .AppendLine(" delegate was passed for the following DbContexts:");
 

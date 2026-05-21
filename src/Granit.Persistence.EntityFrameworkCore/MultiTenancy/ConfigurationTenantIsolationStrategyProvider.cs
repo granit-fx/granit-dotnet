@@ -11,7 +11,7 @@ namespace Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 /// Configuration example:
 /// <code>
 /// {
-///   "TenantIsolation": {
+///   "MultiTenancy:TenantIsolation": {
 ///     "Strategy": "SchemaPerTenant"
 ///   }
 /// }

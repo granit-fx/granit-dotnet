@@ -290,15 +290,15 @@ public sealed class ScalarCspContributorTests
         builder.Environment.EnvironmentName = environmentName;
         Dictionary<string, string?> config = new()
         {
-            ["ApiDocumentation:Title"] = "Test API",
-            ["ApiDocumentation:MajorVersions:0"] = "1",
-            ["ApiDocumentation:EnableInProduction"] = enableScalarInProduction.ToString(),
+            ["Http:ApiDocumentation:Title"] = "Test API",
+            ["Http:ApiDocumentation:MajorVersions:0"] = "1",
+            ["Http:ApiDocumentation:EnableInProduction"] = enableScalarInProduction.ToString(),
         };
         if (configureOAuth2)
         {
-            config["ApiDocumentation:OAuth2:AuthorizationUrl"] = "http://localhost:8080/auth";
-            config["ApiDocumentation:OAuth2:TokenUrl"] = "http://localhost:8080/token";
-            config["ApiDocumentation:OAuth2:ClientId"] = "scalar-test";
+            config["Http:ApiDocumentation:OAuth2:AuthorizationUrl"] = "http://localhost:8080/auth";
+            config["Http:ApiDocumentation:OAuth2:TokenUrl"] = "http://localhost:8080/token";
+            config["Http:ApiDocumentation:OAuth2:ClientId"] = "scalar-test";
         }
         builder.Configuration.AddInMemoryCollection(config);
 

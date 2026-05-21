@@ -19,8 +19,8 @@ public sealed class GranitAuthenticationJwtBearerCognitoModuleTests
         {
             ["Authentication:Authority"] = "https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_TEST",
             ["Authentication:Audience"] = "test",
-            ["Cognito:Authority"] = "https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_TEST",
-            ["Cognito:ClientId"] = "test-client",
+            ["Authentication:Cognito:Authority"] = "https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_TEST",
+            ["Authentication:Cognito:ClientId"] = "test-client",
         });
 
         builder.Services.AddSingleton<IConfiguration>(builder.Configuration);

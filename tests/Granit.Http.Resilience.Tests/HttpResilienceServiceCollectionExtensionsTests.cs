@@ -93,7 +93,7 @@ public sealed class HttpResilienceServiceCollectionExtensionsTests
     {
         Dictionary<string, string?> configData = new()
         {
-            ["HttpResilience:my-api:Retry:MaxRetryAttempts"] = "5"
+            ["Http:Resilience:my-api:Retry:MaxRetryAttempts"] = "5"
         };
 
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();

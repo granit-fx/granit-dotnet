@@ -29,10 +29,10 @@ public sealed class EntraIdServiceCollectionExtensionsTests
         new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["EntraId:TenantId"] = tenantId,
-                ["EntraId:ClientId"] = clientId,
-                ["EntraId:Instance"] = "https://login.microsoftonline.com/",
-                ["EntraId:RequireHttpsMetadata"] = "false"
+                ["Authentication:EntraId:TenantId"] = tenantId,
+                ["Authentication:EntraId:ClientId"] = clientId,
+                ["Authentication:EntraId:Instance"] = "https://login.microsoftonline.com/",
+                ["Authentication:EntraId:RequireHttpsMetadata"] = "false"
             })
             .Build();
 

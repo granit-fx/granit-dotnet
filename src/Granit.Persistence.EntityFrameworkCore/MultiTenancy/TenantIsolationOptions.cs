@@ -2,10 +2,13 @@ namespace Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 
 /// <summary>
 /// Configuration options for the static tenant isolation strategy.
-/// Bound from the <c>TenantIsolation</c> section of <c>appsettings.json</c>.
+/// Bound from the <c>MultiTenancy:TenantIsolation</c> section of <c>appsettings.json</c>.
 /// </summary>
 public sealed class TenantIsolationOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "MultiTenancy:TenantIsolation";
+
     /// <summary>
     /// The isolation strategy applied to all tenants.
     /// Defaults to <see cref="TenantIsolationStrategy.SharedDatabase"/> when the configuration
