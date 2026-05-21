@@ -33890,6 +33890,15 @@
       ]
     },
     {
+      "name": "JsonbPropertyBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Postgres.Extensions.JsonbPropertyBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore.Postgres",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Postgres/Extensions/JsonbPropertyBuilderExtensions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "NpgsqlDbContextOptionsExtensions",
       "fqn": "Granit.Persistence.EntityFrameworkCore.Postgres.Extensions.NpgsqlDbContextOptionsExtensions",
       "kind": "class",
