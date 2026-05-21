@@ -99,6 +99,7 @@ public sealed class ScalarCspContributorTests
         builder.Directives.ShouldContainKey("script-src");
         builder.Directives["script-src"].ShouldContain("'self'");
         builder.Directives["script-src"].ShouldContain("'unsafe-inline'");
+        builder.Directives["script-src"].ShouldContain("'unsafe-eval'");
         builder.Directives.ShouldContainKey("style-src");
         builder.Directives["style-src"].ShouldContain("'unsafe-inline'");
         builder.Directives.ShouldContainKey("font-src");

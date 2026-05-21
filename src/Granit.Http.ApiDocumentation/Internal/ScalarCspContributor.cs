@@ -11,17 +11,23 @@ namespace Granit.Http.ApiDocumentation.Internal;
 /// inline styles, woff2 fonts from <c>https://fonts.scalar.com</c>, and
 /// fetches its curated-documents / search registry from
 /// <c>https://api.scalar.com</c> — all of which the API-grade default CSP
-/// (<c>default-src 'none'</c>) blocks. When OAuth2 is configured, the
-/// origins (scheme + host + port) of the authorization and token endpoints
-/// are added to <c>connect-src</c> so the Authorization Code → Token
-/// exchange (cross-origin XHR/fetch from the Scalar SPA to the IdP) is
-/// not blocked.
+/// (<c>default-src 'none'</c>) blocks. The Scalar bundle also evaluates code
+/// dynamically (template parsing, JSON Schema example rendering) via
+/// <c>eval</c> / <c>new Function</c>, hence <c>'unsafe-eval'</c> on
+/// <c>script-src</c>. When OAuth2 is configured, the origins (scheme + host
+/// + port) of the authorization and token endpoints are added to
+/// <c>connect-src</c> so the Authorization Code → Token exchange
+/// (cross-origin XHR/fetch from the Scalar SPA to the IdP) is not blocked.
 /// </summary>
 /// <remarks>
 /// Scoped strictly by the presence of <see cref="ScalarApiReferenceMetadata"/>
 /// on the matched endpoint, so no other route inherits the relaxation. The
 /// contributor is registered by <c>UseGranitApiDocumentation</c> only when
-/// the dev/prod gate decides Scalar will actually be mapped.
+/// the dev/prod gate decides Scalar will actually be mapped — and Scalar
+/// itself is dev-only by default (<see cref="ApiDocumentationOptions.EnableInProduction"/>
+/// defaults to <c>false</c>), so the <c>'unsafe-eval'</c> / <c>'unsafe-inline'</c>
+/// relaxations stay confined to a single non-production route. The rest of
+/// the application keeps the strict <c>default-src 'none'</c> baseline.
 /// </remarks>
 internal sealed class ScalarCspContributor(IOptions<ApiDocumentationOptions> options) : ICspContributor
 {
@@ -39,7 +45,7 @@ internal sealed class ScalarCspContributor(IOptions<ApiDocumentationOptions> opt
         AddOrigin(connectSources, _options.OAuth2.TokenUrl);
 
         builder
-            .AddScriptSrc("'self'", "'unsafe-inline'")
+            .AddScriptSrc("'self'", "'unsafe-inline'", "'unsafe-eval'")
             .AddStyleSrc("'self'", "'unsafe-inline'")
             .AddFontSrc("'self'", "data:", "https://fonts.scalar.com")
             .AddImgSrc("'self'", "data:", "https:")
