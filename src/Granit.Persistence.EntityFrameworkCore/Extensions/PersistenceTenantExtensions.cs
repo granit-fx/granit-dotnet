@@ -174,10 +174,10 @@ public static class PersistenceTenantExtensions
         // Isolation options — fail-fast on invalid appsettings value AND on a missing
         // factory delegate for the active strategy (see TenantIsolationFactoryRegistrationValidator).
         services.AddOptions<TenantIsolationOptions>()
-            .BindConfiguration("TenantIsolation")
+            .BindConfiguration(TenantIsolationOptions.SectionName)
             .Validate(
                 opts => Enum.IsDefined(opts.Strategy),
-                "TenantIsolation:Strategy is not a valid TenantIsolationStrategy value. " +
+                "MultiTenancy:TenantIsolation:Strategy is not a valid TenantIsolationStrategy value. " +
                 "Valid values: SharedDatabase, DatabasePerTenant, SchemaPerTenant.")
             .ValidateOnStart();
 

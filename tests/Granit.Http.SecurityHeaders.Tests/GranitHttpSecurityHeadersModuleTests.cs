@@ -44,7 +44,7 @@ public sealed class GranitHttpSecurityHeadersModuleTests
     public void AddGranitHttpSecurity_RespectsDisabledSuppression()
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-        builder.Configuration["SecurityHeaders:SuppressServerHeader"] = "false";
+        builder.Configuration["Http:SecurityHeaders:SuppressServerHeader"] = "false";
 
         builder.AddGranitHttpSecurity();
 
@@ -83,9 +83,9 @@ public sealed class GranitHttpSecurityHeadersModuleTests
         // proves the override applied.
         const int TwoYearsSeconds = 63_072_000;
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-        builder.Configuration["SecurityHeaders:HstsMaxAgeSeconds"] = TwoYearsSeconds.ToString();
-        builder.Configuration["SecurityHeaders:HstsIncludeSubDomains"] = "false";
-        builder.Configuration["SecurityHeaders:HstsPreload"] = "true";
+        builder.Configuration["Http:SecurityHeaders:HstsMaxAgeSeconds"] = TwoYearsSeconds.ToString();
+        builder.Configuration["Http:SecurityHeaders:HstsIncludeSubDomains"] = "false";
+        builder.Configuration["Http:SecurityHeaders:HstsPreload"] = "true";
 
         builder.AddGranitHttpSecurity();
 
@@ -102,7 +102,7 @@ public sealed class GranitHttpSecurityHeadersModuleTests
     public void AddGranitHttpSecurity_HstsDisabled_DoesNotOverrideDefaults()
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-        builder.Configuration["SecurityHeaders:EnableHsts"] = "false";
+        builder.Configuration["Http:SecurityHeaders:EnableHsts"] = "false";
 
         builder.AddGranitHttpSecurity();
 
@@ -141,8 +141,8 @@ public sealed class GranitHttpSecurityHeadersModuleTests
     public void AddGranitHttpSecurity_BindsFromConfiguration()
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-        builder.Configuration["SecurityHeaders:XFrameOptions"] = "SAMEORIGIN";
-        builder.Configuration["SecurityHeaders:ReferrerPolicy"] = "no-referrer";
+        builder.Configuration["Http:SecurityHeaders:XFrameOptions"] = "SAMEORIGIN";
+        builder.Configuration["Http:SecurityHeaders:ReferrerPolicy"] = "no-referrer";
 
         builder.AddGranitHttpSecurity();
 
@@ -162,7 +162,7 @@ public sealed class GranitHttpSecurityHeadersModuleTests
     public void AddGranitHttpSecurity_RejectsInvalidXFrameOptions()
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-        builder.Configuration["SecurityHeaders:XFrameOptions"] = "INVALID";
+        builder.Configuration["Http:SecurityHeaders:XFrameOptions"] = "INVALID";
 
         builder.AddGranitHttpSecurity();
 
@@ -176,7 +176,7 @@ public sealed class GranitHttpSecurityHeadersModuleTests
     public void AddGranitHttpSecurity_RejectsNegativeHstsMaxAge()
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-        builder.Configuration["SecurityHeaders:HstsMaxAgeSeconds"] = "-1";
+        builder.Configuration["Http:SecurityHeaders:HstsMaxAgeSeconds"] = "-1";
 
         builder.AddGranitHttpSecurity();
 

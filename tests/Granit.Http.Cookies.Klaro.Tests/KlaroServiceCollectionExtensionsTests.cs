@@ -16,7 +16,7 @@ public sealed class KlaroServiceCollectionExtensionsTests
     {
         Dictionary<string, string?> configData = new()
         {
-            ["Klaro:CookieName"] = cookieName,
+            ["Http:Cookies:Klaro:CookieName"] = cookieName,
         };
 
         return new ConfigurationBuilder()

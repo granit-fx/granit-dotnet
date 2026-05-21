@@ -16,7 +16,7 @@ public sealed class GranitHttpOutputCachingStackExchangeRedisModuleIsEnabledTest
         IConfiguration configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["OutputCaching:Redis:IsEnabled"] = "true",
+                ["Http:OutputCaching:Redis:IsEnabled"] = "true",
             })
             .Build();
 
@@ -34,7 +34,7 @@ public sealed class GranitHttpOutputCachingStackExchangeRedisModuleIsEnabledTest
         IConfiguration configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["OutputCaching:Redis:IsEnabled"] = "false",
+                ["Http:OutputCaching:Redis:IsEnabled"] = "false",
             })
             .Build();
 

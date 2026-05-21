@@ -22,8 +22,8 @@ public sealed class CognitoServiceCollectionExtensionsTests
         {
             ["Authentication:Authority"] = authority,
             ["Authentication:Audience"] = clientId,
-            ["Cognito:Authority"] = authority,
-            ["Cognito:ClientId"] = clientId,
+            ["Authentication:Cognito:Authority"] = authority,
+            ["Authentication:Cognito:ClientId"] = clientId,
         };
 
         return new ConfigurationBuilder()
@@ -102,8 +102,8 @@ public sealed class CognitoServiceCollectionExtensionsTests
         {
             ["Authentication:Authority"] = "https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_ABC",
             ["Authentication:Audience"] = "fallback",
-            ["Cognito:Authority"] = "https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_ABC",
-            ["Cognito:ClientId"] = "my-app-client",
+            ["Authentication:Cognito:Authority"] = "https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_ABC",
+            ["Authentication:Cognito:ClientId"] = "my-app-client",
         };
 
         IConfiguration config = new ConfigurationBuilder()

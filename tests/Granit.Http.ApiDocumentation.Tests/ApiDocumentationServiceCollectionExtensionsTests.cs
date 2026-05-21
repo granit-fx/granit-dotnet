@@ -29,9 +29,9 @@ public sealed class ApiDocumentationServiceCollectionExtensionsTests
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["ApiDocumentation:Title"] = "Test API",
-            ["ApiDocumentation:MajorVersions:0"] = "2",
-            ["ApiDocumentation:EnableInProduction"] = "false",
+            ["Http:ApiDocumentation:Title"] = "Test API",
+            ["Http:ApiDocumentation:MajorVersions:0"] = "2",
+            ["Http:ApiDocumentation:EnableInProduction"] = "false",
         });
 
         // Act
@@ -53,9 +53,9 @@ public sealed class ApiDocumentationServiceCollectionExtensionsTests
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["ApiDocumentation:Title"] = "Test API",
-            ["ApiDocumentation:MajorVersions:0"] = "2",
-            ["ApiDocumentation:MajorVersions:1"] = "3",
+            ["Http:ApiDocumentation:Title"] = "Test API",
+            ["Http:ApiDocumentation:MajorVersions:0"] = "2",
+            ["Http:ApiDocumentation:MajorVersions:1"] = "3",
         });
 
         // Act
@@ -107,10 +107,10 @@ public sealed class ApiDocumentationServiceCollectionExtensionsTests
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["ApiDocumentation:Title"] = "Multi-version API",
-            ["ApiDocumentation:MajorVersions:0"] = "1",
-            ["ApiDocumentation:MajorVersions:1"] = "2",
-            ["ApiDocumentation:MajorVersions:2"] = "3",
+            ["Http:ApiDocumentation:Title"] = "Multi-version API",
+            ["Http:ApiDocumentation:MajorVersions:0"] = "1",
+            ["Http:ApiDocumentation:MajorVersions:1"] = "2",
+            ["Http:ApiDocumentation:MajorVersions:2"] = "3",
         });
 
         // Act
@@ -131,9 +131,9 @@ public sealed class ApiDocumentationServiceCollectionExtensionsTests
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["ApiDocumentation:Title"] = "My API",
-            ["ApiDocumentation:Description"] = "My description",
-            ["ApiDocumentation:MajorVersions:0"] = "1",
+            ["Http:ApiDocumentation:Title"] = "My API",
+            ["Http:ApiDocumentation:Description"] = "My description",
+            ["Http:ApiDocumentation:MajorVersions:0"] = "1",
         });
 
         builder.AddGranitApiDocumentation();
@@ -167,9 +167,9 @@ public sealed class ApiDocumentationServiceCollectionExtensionsTests
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["ApiDocumentation:Title"] = "Test API",
-            ["ApiDocumentation:ContactEmail"] = "api@example.com",
-            ["ApiDocumentation:MajorVersions:0"] = "2",
+            ["Http:ApiDocumentation:Title"] = "Test API",
+            ["Http:ApiDocumentation:ContactEmail"] = "api@example.com",
+            ["Http:ApiDocumentation:MajorVersions:0"] = "2",
         });
 
         builder.AddGranitApiDocumentation();

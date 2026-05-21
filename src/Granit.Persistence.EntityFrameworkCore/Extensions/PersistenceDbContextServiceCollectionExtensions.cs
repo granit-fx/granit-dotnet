@@ -56,7 +56,7 @@ public static class PersistenceDbContextServiceCollectionExtensions
             var configuration = services
                 .FirstOrDefault(d => d.ServiceType == typeof(IConfiguration))
                 ?.ImplementationInstance as IConfiguration;
-            string? hostSchema = configuration?["TenantIsolation:HostSchema"];
+            string? hostSchema = configuration?["MultiTenancy:TenantIsolation:HostSchema"];
             if (hostSchema is not null)
             {
                 GranitDbDefaults.HostDbSchema = hostSchema;

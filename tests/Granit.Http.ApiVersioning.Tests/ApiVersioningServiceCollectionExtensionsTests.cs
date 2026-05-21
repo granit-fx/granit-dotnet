@@ -44,8 +44,8 @@ public sealed class ApiVersioningServiceCollectionExtensionsTests
         IConfiguration configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ApiVersioning:DefaultMajorVersion"] = "2",
-                ["ApiVersioning:ReportApiVersions"] = "false",
+                ["Http:ApiVersioning:DefaultMajorVersion"] = "2",
+                ["Http:ApiVersioning:ReportApiVersions"] = "false",
             })
             .Build();
         services.AddSingleton<IConfiguration>(configuration);
@@ -120,8 +120,8 @@ public sealed class ApiVersioningServiceCollectionExtensionsTests
         IConfiguration configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ApiVersioning:DefaultMajorVersion"] = "3",
-                ["ApiVersioning:ReportApiVersions"] = "false",
+                ["Http:ApiVersioning:DefaultMajorVersion"] = "3",
+                ["Http:ApiVersioning:ReportApiVersions"] = "false",
             })
             .Build();
         services.AddSingleton<IConfiguration>(configuration);

@@ -20,7 +20,7 @@ public sealed class TenantIsolationFactoryRegistrationValidatorTests
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["TenantIsolation:Strategy"] = strategy,
+            ["MultiTenancy:TenantIsolation:Strategy"] = strategy,
         });
         return builder;
     }

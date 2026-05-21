@@ -746,7 +746,7 @@ public sealed class EmailNotificationChannelTests
         IConfiguration config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Granit:Templating:App:BaseUrl"] = "https://myapp.com",
+                ["Templating:App:BaseUrl"] = "https://myapp.com",
             })
             .Build();
 

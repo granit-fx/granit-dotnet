@@ -25,8 +25,8 @@ public sealed class GranitAuthenticationJwtBearerEntraIdModuleTests
         // Arrange
         GranitAuthenticationJwtBearerEntraIdModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["EntraId:TenantId"] = "00000000-0000-0000-0000-000000000001";
-        builder.Configuration["EntraId:ClientId"] = "test-client";
+        builder.Configuration["Authentication:EntraId:TenantId"] = "00000000-0000-0000-0000-000000000001";
+        builder.Configuration["Authentication:EntraId:ClientId"] = "test-client";
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
         // Call GranitAuthenticationJwtBearerModule first (dependency)
         new GranitAuthenticationJwtBearerModule().ConfigureServices(context);
@@ -47,8 +47,8 @@ public sealed class GranitAuthenticationJwtBearerEntraIdModuleTests
         // Arrange
         GranitAuthenticationJwtBearerEntraIdModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["EntraId:TenantId"] = "00000000-0000-0000-0000-000000000001";
-        builder.Configuration["EntraId:ClientId"] = "test-client";
+        builder.Configuration["Authentication:EntraId:TenantId"] = "00000000-0000-0000-0000-000000000001";
+        builder.Configuration["Authentication:EntraId:ClientId"] = "test-client";
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
         new GranitAuthenticationJwtBearerModule().ConfigureServices(context);
 
