@@ -1,8 +1,7 @@
-using System.Text.Json;
 using Granit.Notifications.Domain;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Granit.Notifications.EntityFrameworkCore.Configurations;
 
@@ -18,10 +17,7 @@ internal sealed class UserNotificationConfiguration : IEntityTypeConfiguration<U
         builder.Property(x => x.NotificationTypeName).HasMaxLength(256).IsRequired();
         builder.Property(x => x.RecipientUserId).HasMaxLength(256).IsRequired();
 
-        builder.Property(x => x.Data)
-            .HasConversion(new ValueConverter<JsonElement, string>(
-                v => v.GetRawText(),
-                v => JsonDocument.Parse(v, default).RootElement));
+        builder.Property(x => x.Data).HasJsonConversion();
 
         builder.Property(x => x.RelatedEntityType).HasMaxLength(256);
         builder.Property(x => x.RelatedEntityId).HasMaxLength(256);

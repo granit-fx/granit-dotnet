@@ -1,9 +1,7 @@
-using System.Text.Json;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Privacy.EntityFrameworkCore.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Granit.Privacy.EntityFrameworkCore.DataExport.Internal;
 
@@ -31,17 +29,8 @@ internal sealed class ExportRequestEntityConfiguration : IEntityTypeConfiguratio
         builder.Property(e => e.ArchiveBlobReferenceId)
             .HasMaxLength(200);
 
-        ValueConverter<List<string>, string> missingProvidersConverter = new(
-            v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>());
-
-        ValueComparer<List<string>> missingProvidersComparer = new(
-            (l, r) => (l ?? new List<string>()).SequenceEqual(r ?? new List<string>()),
-            v => v.Aggregate(0, (h, s) => HashCode.Combine(h, s.GetHashCode(StringComparison.Ordinal))),
-            v => v.ToList());
-
         builder.Property(e => e.MissingProviders)
-            .HasConversion(missingProvidersConverter, missingProvidersComparer)
+            .HasJsonConversion()
             .IsRequired();
 
         // User timeline lookup (GET /privacy/exports → GetByUserAsync).

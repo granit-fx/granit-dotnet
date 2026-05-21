@@ -32972,6 +32972,15 @@
       ]
     },
     {
+      "name": "JsonPropertyBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.JsonPropertyBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/JsonPropertyBuilderExtensions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "ModelBuilderExtensions",
       "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.ModelBuilderExtensions",
       "kind": "class",
