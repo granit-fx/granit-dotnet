@@ -80,6 +80,11 @@ public static partial class ApiDocumentationApplicationBuilderExtensions
                         {
                             flow.WithPkce(Pkce.Sha256);
                         }
+
+                        if (!string.IsNullOrEmpty(options.OAuth2.RedirectUri))
+                        {
+                            flow.WithRedirectUri(options.OAuth2.RedirectUri);
+                        }
                     });
                 }
             });

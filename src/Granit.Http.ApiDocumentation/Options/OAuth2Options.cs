@@ -26,6 +26,19 @@ public sealed class OAuth2Options
     public IList<string> Scopes { get; set; } = ["openid"];
 
     /// <summary>
+    /// Absolute redirect URI passed to the Scalar OAuth2 flow. Workaround for
+    /// <c>Scalar.AspNetCore</c> 2.12.40+ where the default redirect URI changed
+    /// and breaks Authorization Code popups (scalar/scalar#8165, #8187): the
+    /// popup re-opens same-origin but on a URL Scalar no longer recognises, so
+    /// the auth code is never piped back and the user sees
+    /// "Window was closed without granting authorization." Typically set to
+    /// the absolute URL of the Scalar UI (e.g. <c>http://localhost:5000/scalar</c>).
+    /// When <c>null</c>, Scalar's (currently broken) default is used — leave it
+    /// unset only when you trust the upstream default again.
+    /// </summary>
+    public string? RedirectUri { get; set; }
+
+    /// <summary>
     /// Returns <c>true</c> when all required properties are set,
     /// indicating the OAuth2 scheme should be registered.
     /// </summary>

@@ -18159,6 +18159,12 @@
           "kind": "property",
           "signature": "IList<string> Scopes",
           "returnType": "IList<string>"
+        },
+        {
+          "name": "RedirectUri",
+          "kind": "property",
+          "signature": "string? RedirectUri",
+          "returnType": "string?"
         }
       ]
     },
