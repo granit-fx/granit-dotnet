@@ -4,7 +4,7 @@ namespace Granit.Notifications.WebPush.Options;
 public sealed class PushChannelOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "Notifications:Push";
+    public const string SectionName = "Notifications:WebPush";
 
     /// <summary>VAPID subject (mailto: or https: URL).</summary>
     public string VapidSubject { get; set; } = string.Empty;

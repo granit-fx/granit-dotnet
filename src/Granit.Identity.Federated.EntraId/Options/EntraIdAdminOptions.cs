@@ -24,7 +24,7 @@ namespace Granit.Identity.Federated.EntraId.Options;
 public sealed class EntraIdAdminOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "EntraIdAdmin";
+    public const string SectionName = "Identity:Federated:EntraId";
 
     /// <summary>
     /// Azure AD tenant ID (e.g. <c>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</c>).

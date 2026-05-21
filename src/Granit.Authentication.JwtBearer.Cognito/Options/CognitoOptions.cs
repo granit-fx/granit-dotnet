@@ -6,7 +6,7 @@ namespace Granit.Authentication.JwtBearer.Cognito.Options;
 public sealed class CognitoOptions
 {
     /// <summary>Section key in the configuration.</summary>
-    public const string SectionName = "Cognito";
+    public const string SectionName = "Authentication:Cognito";
 
     /// <summary>
     /// OIDC authority URL (e.g. <c>https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_XXXXXXXXX</c>).

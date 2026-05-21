@@ -14,7 +14,7 @@ public sealed class ApiDocumentationOptionsTests
 {
     [Fact]
     public void SectionName_IsApiDocumentation() =>
-        ApiDocumentationOptions.SectionName.ShouldBe("ApiDocumentation");
+        ApiDocumentationOptions.SectionName.ShouldBe("Http:ApiDocumentation");
 
     [Fact]
     public void MajorVersions_DefaultsToListWithOne()

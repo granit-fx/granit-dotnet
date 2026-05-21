@@ -6,7 +6,7 @@ namespace Granit.Authentication.ApiKeys.Endpoints.Options;
 public sealed class ApiKeysEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "ApiKeysEndpoints";
+    public const string SectionName = "Authentication:ApiKeys:Endpoints";
 
     /// <summary>Route prefix for API key endpoints. Default: <c>authentication</c>.</summary>
     public string RoutePrefix { get; set; } = "authentication";

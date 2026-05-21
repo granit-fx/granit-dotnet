@@ -7,7 +7,7 @@ namespace Granit.Identity.Federated.Tests.Options;
 public sealed class UserCacheOptionsTests
 {
     [Fact]
-    public void SectionName_IsIdentityUserCache() => UserCacheOptions.SectionName.ShouldBe("IdentityUserCache");
+    public void SectionName_IsIdentityFederatedUserCache() => UserCacheOptions.SectionName.ShouldBe("Identity:Federated:UserCache");
 
     [Fact]
     public void Defaults_StalenessThresholdIs24Hours()

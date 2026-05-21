@@ -8,7 +8,7 @@ public sealed class GranitCorsOptionsTests
 {
     [Fact]
     public void SectionName_IsCors() =>
-        GranitCorsOptions.SectionName.ShouldBe("Cors");
+        GranitCorsOptions.SectionName.ShouldBe("Http:Cors");
 
     [Fact]
     public void AllowedOrigins_DefaultsToEmpty() =>

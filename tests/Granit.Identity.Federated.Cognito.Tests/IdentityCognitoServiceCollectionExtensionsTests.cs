@@ -19,8 +19,8 @@ public sealed class IdentityCognitoServiceCollectionExtensionsTests
     {
         Dictionary<string, string?> config = new()
         {
-            ["CognitoAdmin:Region"] = "eu-west-1",
-            ["CognitoAdmin:UserPoolId"] = "eu-west-1_TEST",
+            ["Identity:Federated:Cognito:Region"] = "eu-west-1",
+            ["Identity:Federated:Cognito:UserPoolId"] = "eu-west-1_TEST",
         };
 
         IConfiguration configuration = new ConfigurationBuilder()

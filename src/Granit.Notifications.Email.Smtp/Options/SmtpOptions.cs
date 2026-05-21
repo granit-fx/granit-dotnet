@@ -6,7 +6,7 @@ namespace Granit.Notifications.Email.Smtp.Options;
 public sealed class SmtpOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "Notifications:Smtp";
+    public const string SectionName = "Notifications:Email:Smtp";
 
     /// <summary>SMTP server hostname.</summary>
     public string Host { get; set; } = "localhost";

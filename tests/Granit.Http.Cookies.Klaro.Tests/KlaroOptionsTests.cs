@@ -8,7 +8,7 @@ public sealed class KlaroOptionsTests
 {
     [Fact]
     public void SectionName_IsKlaro() =>
-        KlaroOptions.SectionName.ShouldBe("Klaro");
+        KlaroOptions.SectionName.ShouldBe("Http:Cookies:Klaro");
 
     [Fact]
     public void DefaultCookieName_IsKlaro()

@@ -2,14 +2,14 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Options;
 
 /// <summary>
 /// Configuration options for <c>MigrationStartupService</c>.
-/// Bound from the <c>"GranitMigrations"</c> section in <c>appsettings.json</c>.
+/// Bound from the <c>"Persistence:Migrations"</c> section in <c>appsettings.json</c>.
 /// </summary>
 public sealed class MigrationStartupOptions
 {
     /// <summary>
     /// Configuration section name in <c>appsettings.json</c>.
     /// </summary>
-    public const string SectionName = "GranitMigrations";
+    public const string SectionName = "Persistence:Migrations";
 
     /// <summary>
     /// Default number of rows to process per batch.

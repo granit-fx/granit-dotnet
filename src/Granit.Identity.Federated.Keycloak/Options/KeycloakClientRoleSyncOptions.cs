@@ -10,8 +10,8 @@ namespace Granit.Identity.Federated.Keycloak.Options;
 /// </summary>
 public sealed class KeycloakClientRoleSyncOptions
 {
-    /// <summary>Configuration section: <c>KeycloakAdmin:ClientRoleSync</c>.</summary>
-    public const string SectionName = "KeycloakAdmin:ClientRoleSync";
+    /// <summary>Configuration section: <c>Identity:Federated:Keycloak:ClientRoleSync</c>.</summary>
+    public const string SectionName = "Identity:Federated:Keycloak:ClientRoleSync";
 
     /// <summary>
     /// When <see langword="false"/>, the sync contributor becomes a no-op even if tracked

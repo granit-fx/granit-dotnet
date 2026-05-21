@@ -17,5 +17,5 @@ public sealed class BlobStorageEndpointsOptionsTests
 
     [Fact]
     public void SectionName_should_be_BlobStorageEndpoints() =>
-        BlobStorageEndpointsOptions.SectionName.ShouldBe("BlobStorageEndpoints");
+        BlobStorageEndpointsOptions.SectionName.ShouldBe("BlobStorage:Endpoints");
 }

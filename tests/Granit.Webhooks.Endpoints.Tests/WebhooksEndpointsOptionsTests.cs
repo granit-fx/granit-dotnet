@@ -16,5 +16,5 @@ public sealed class WebhooksEndpointsOptionsTests
 
     [Fact]
     public void SectionName_ShouldBeWebhooksEndpoints() =>
-        WebhooksEndpointsOptions.SectionName.ShouldBe("WebhooksEndpoints");
+        WebhooksEndpointsOptions.SectionName.ShouldBe("Webhooks:Endpoints");
 }

@@ -8,5 +8,5 @@ public sealed class HttpResilienceOptionsTests
 {
     [Fact]
     public void SectionName_IsHttpResilience() =>
-        HttpResilienceOptions.SectionName.ShouldBe("HttpResilience");
+        HttpResilienceOptions.SectionName.ShouldBe("Http:Resilience");
 }

@@ -5,7 +5,7 @@ namespace Granit.Wolverine.SqlServer.Options;
 
 /// <summary>
 /// Configuration options for the SQL Server Wolverine provider.
-/// Bound from the <c>"WolverineSqlServer"</c> section of <c>appsettings.json</c>.
+/// Bound from the <c>"Wolverine:SqlServer"</c> section of <c>appsettings.json</c>.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -21,7 +21,7 @@ namespace Granit.Wolverine.SqlServer.Options;
 public sealed class WolverineSqlServerOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "WolverineSqlServer";
+    public const string SectionName = "Wolverine:SqlServer";
 
     /// <summary>
     /// SQL Server connection string for the Wolverine Outbox tables.

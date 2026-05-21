@@ -8,7 +8,7 @@ public sealed class OutputCachingOptionsTests
 {
     [Fact]
     public void SectionName_IsOutputCaching() =>
-        OutputCachingOptions.SectionName.ShouldBe("OutputCaching");
+        OutputCachingOptions.SectionName.ShouldBe("Http:OutputCaching");
 
     [Fact]
     public void DefaultExpiration_DefaultsTo60Seconds() =>

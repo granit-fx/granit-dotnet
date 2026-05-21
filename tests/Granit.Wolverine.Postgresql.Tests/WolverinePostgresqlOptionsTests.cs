@@ -21,7 +21,7 @@ public sealed class WolverinePostgresqlOptionsTests
 
     [Fact]
     public void SectionName_IsWolverinePostgresql() =>
-        WolverinePostgresqlOptions.SectionName.ShouldBe("WolverinePostgresql");
+        WolverinePostgresqlOptions.SectionName.ShouldBe("Wolverine:Postgresql");
 
     [Fact]
     public void DefaultTransportConnectionString_IsNull() =>

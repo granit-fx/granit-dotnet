@@ -33,7 +33,7 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
     /// </para>
     /// <para>
     /// Reads <see cref="WolverinePostgresqlOptions"/> from the
-    /// <c>"WolverinePostgresql"</c> configuration section and validates at startup.
+    /// <c>"Wolverine:Postgresql"</c> configuration section and validates at startup.
     /// </para>
     /// <para>
     /// Configures:
@@ -72,7 +72,7 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
     /// before the host is built.
     /// </para>
     /// <para>
-    /// Reads <see cref="WolverinePostgresqlOptions"/> from the <c>"WolverinePostgresql"</c>
+    /// Reads <see cref="WolverinePostgresqlOptions"/> from the <c>"Wolverine:Postgresql"</c>
     /// configuration section. The <c>TransportConnectionString</c> targets the shared Wolverine
     /// Outbox database; per-tenant application data is routed by
     /// <see cref="ITenantConnectionStringProvider"/>.

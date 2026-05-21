@@ -2,13 +2,13 @@ namespace Granit.DataExchange.Endpoints.Options;
 
 /// <summary>
 /// Configuration options for the data exchange endpoints (import + export).
-/// Bind from <c>"DataExchangeEndpoints"</c> or pass an action to
+/// Bind from <c>"DataExchange:Endpoints"</c> or pass an action to
 /// <see cref="Extensions.DataExchangeEndpointRouteBuilderExtensions.MapGranitDataExchange"/>.
 /// </summary>
 public sealed class DataExchangeEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "DataExchangeEndpoints";
+    public const string SectionName = "DataExchange:Endpoints";
 
     /// <summary>
     /// Route prefix for all data exchange endpoints.

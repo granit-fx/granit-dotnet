@@ -7,8 +7,8 @@ namespace Granit.IO.Options;
 /// </summary>
 public sealed class TempFileOptions
 {
-    /// <summary>Configuration section name: <c>Granit:IO:TempFiles</c>.</summary>
-    public const string SectionName = "Granit:IO:TempFiles";
+    /// <summary>Configuration section name: <c>IO:TempFiles</c>.</summary>
+    public const string SectionName = "IO:TempFiles";
 
     /// <summary>Default root directory: <c>{Path.GetTempPath()}/granit</c>.</summary>
     public static string DefaultRootDirectory { get; } = Path.Combine(Path.GetTempPath(), "granit");

@@ -7,8 +7,8 @@ namespace Granit.Authentication.JwtBearer.GoogleCloud.Tests;
 public sealed class GoogleCloudAuthenticationOptionsTests
 {
     [Fact]
-    public void SectionName_IsGoogleCloudAuth() =>
-        GoogleCloudAuthenticationOptions.SectionName.ShouldBe("GoogleCloudAuth");
+    public void SectionName_IsAuthenticationGoogleCloud() =>
+        GoogleCloudAuthenticationOptions.SectionName.ShouldBe("Authentication:GoogleCloud");
 
     [Fact]
     public void Authority_IsDerivedFromProjectId()

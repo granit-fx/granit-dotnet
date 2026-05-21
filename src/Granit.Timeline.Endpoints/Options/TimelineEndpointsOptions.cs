@@ -6,7 +6,7 @@ namespace Granit.Timeline.Endpoints.Options;
 public sealed class TimelineEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "TimelineEndpoints";
+    public const string SectionName = "Timeline:Endpoints";
 
     /// <summary>
     /// Route prefix for all timeline endpoints.

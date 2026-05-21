@@ -6,7 +6,7 @@ namespace Granit.Http.OutputCaching.Options;
 public sealed class OutputCachingOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "OutputCaching";
+    public const string SectionName = "Http:OutputCaching";
 
     /// <summary>
     /// Default response cache duration applied to the base policy.

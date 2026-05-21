@@ -2,7 +2,7 @@ namespace Granit.Templating.Scriban.GlobalContexts;
 
 /// <summary>
 /// Configuration options for the <c>app</c> template global context.
-/// Bind from <c>Granit:Templating:App</c> in appsettings.json.
+/// Bind from <c>Templating:App</c> in appsettings.json.
 /// </summary>
 /// <remarks>
 /// These values are exposed in every Scriban template under <c>{{ app.* }}</c>.
@@ -11,7 +11,7 @@ namespace Granit.Templating.Scriban.GlobalContexts;
 public sealed class AppGlobalContextOptions
 {
     /// <summary>Configuration section path.</summary>
-    public const string SectionName = "Granit:Templating:App";
+    public const string SectionName = "Templating:App";
 
     /// <summary>
     /// The application display name (e.g., <c>"Guava Admin"</c>).

@@ -12,7 +12,7 @@ namespace Granit.Wolverine.SqlServer;
 /// Adds a SQL Server Outbox and EF Core transaction integration on top of the
 /// provider-agnostic core configured by <see cref="GranitWolverineModule"/>.
 /// <para>
-/// Reads <see cref="WolverineSqlServerOptions"/> from the <c>"WolverineSqlServer"</c>
+/// Reads <see cref="WolverineSqlServerOptions"/> from the <c>"Wolverine:SqlServer"</c>
 /// section in <c>appsettings.json</c>. The connection string is validated at startup.
 /// </para>
 /// <para>

@@ -5,12 +5,12 @@ namespace Granit.Identity.Federated.Options;
 /// <summary>
 /// Configuration options for federated-identity audit notifications, currently
 /// covering the <c>IdentityUserSyncFailedEto</c> emission cadence.
-/// Bind to the <c>IdentityFederatedNotifications</c> configuration section.
+/// Bind to the <c>Identity:Federated:Notifications</c> configuration section.
 /// </summary>
 public sealed class IdentityFederatedNotificationOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "IdentityFederatedNotifications";
+    public const string SectionName = "Identity:Federated:Notifications";
 
     /// <summary>
     /// Cool-off window, in minutes, used to rate-limit

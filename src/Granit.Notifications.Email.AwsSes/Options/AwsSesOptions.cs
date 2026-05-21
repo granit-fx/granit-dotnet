@@ -6,7 +6,7 @@ namespace Granit.Notifications.Email.AwsSes.Options;
 public sealed class AwsSesOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "Notifications:AwsSes";
+    public const string SectionName = "Notifications:Email:AwsSes";
 
     /// <summary>AWS region endpoint (e.g. "eu-west-1"). Required.</summary>
     [Required]

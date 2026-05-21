@@ -24,12 +24,12 @@ public sealed class IdempotencyServiceCollectionExtensionsTests
         IConfiguration config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Idempotency:HeaderName"] = "X-Idempotency-Key",
-                ["Idempotency:KeyPrefix"] = "myapp",
+                ["Http:Idempotency:HeaderName"] = "X-Idempotency-Key",
+                ["Http:Idempotency:KeyPrefix"] = "myapp",
             })
             .Build();
 
-        services.AddGranitIdempotency(config.GetSection("Idempotency"));
+        services.AddGranitIdempotency(config.GetSection("Http:Idempotency"));
 
         services.ShouldContain(d =>
             d.ServiceType == typeof(IConfigureOptions<IdempotencyOptions>));

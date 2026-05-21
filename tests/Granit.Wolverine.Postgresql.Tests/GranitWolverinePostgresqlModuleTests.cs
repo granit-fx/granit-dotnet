@@ -55,7 +55,7 @@ public sealed class GranitWolverinePostgresqlModuleTests
         };
         settings.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["WolverinePostgresql:TransportConnectionString"] =
+            ["Wolverine:Postgresql:TransportConnectionString"] =
                 "Host=localhost;Database=test;Username=test;Password=test",
         });
         HostApplicationBuilder builder = Host.CreateApplicationBuilder(settings);

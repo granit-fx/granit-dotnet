@@ -8,7 +8,7 @@ public sealed class ApiKeysEndpointsOptionsTests
 {
     [Fact]
     public void SectionName_IsApiKeysEndpoints() =>
-        ApiKeysEndpointsOptions.SectionName.ShouldBe("ApiKeysEndpoints");
+        ApiKeysEndpointsOptions.SectionName.ShouldBe("Authentication:ApiKeys:Endpoints");
 
     [Fact]
     public void Defaults_AreCorrect()

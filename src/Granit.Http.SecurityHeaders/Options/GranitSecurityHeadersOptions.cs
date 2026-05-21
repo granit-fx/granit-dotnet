@@ -10,7 +10,7 @@ public sealed class GranitSecurityHeadersOptions
     /// <summary>
     /// Configuration section name in <c>appsettings.json</c>.
     /// </summary>
-    public const string SectionName = "SecurityHeaders";
+    public const string SectionName = "Http:SecurityHeaders";
 
     // -------------------------------------------------------------------------
     // Server fingerprinting

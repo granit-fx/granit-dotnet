@@ -2,12 +2,12 @@ namespace Granit.Identity.Endpoints.Options;
 
 /// <summary>
 /// Configuration options for the identity webhook endpoint.
-/// Bind to the <c>IdentityWebhook</c> configuration section.
+/// Bind to the <c>Identity:Webhook</c> configuration section.
 /// </summary>
 public sealed class IdentityWebhookOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "IdentityWebhook";
+    public const string SectionName = "Identity:Webhook";
 
     /// <summary>
     /// Shared secret for HMAC-SHA256 signature validation.

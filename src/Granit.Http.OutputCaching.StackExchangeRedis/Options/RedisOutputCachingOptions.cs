@@ -2,12 +2,12 @@ namespace Granit.Http.OutputCaching.StackExchangeRedis.Options;
 
 /// <summary>
 /// Configuration options for the Redis output cache store.
-/// Section <c>"OutputCaching:Redis"</c> in <c>appsettings.json</c>.
+/// Section <c>"Http:OutputCaching:Redis"</c> in <c>appsettings.json</c>.
 /// </summary>
 public sealed class RedisOutputCachingOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "OutputCaching:Redis";
+    public const string SectionName = "Http:OutputCaching:Redis";
 
     /// <summary>
     /// Enables or disables the Redis output cache store.

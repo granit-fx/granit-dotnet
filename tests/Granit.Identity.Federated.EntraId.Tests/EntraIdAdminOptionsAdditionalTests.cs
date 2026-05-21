@@ -16,7 +16,7 @@ public sealed class EntraIdAdminOptionsAdditionalTests
     };
 
     [Fact]
-    public void SectionName_IsEntraIdAdmin() => EntraIdAdminOptions.SectionName.ShouldBe("EntraIdAdmin");
+    public void SectionName_IsEntraIdAdmin() => EntraIdAdminOptions.SectionName.ShouldBe("Identity:Federated:EntraId");
 
     [Fact]
     public void DefaultValues_AreEmptyStrings()

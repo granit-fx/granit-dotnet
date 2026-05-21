@@ -21,7 +21,7 @@ public sealed class WolverineSqlServerOptionsTests
 
     [Fact]
     public void SectionName_IsWolverineSqlServer() =>
-        WolverineSqlServerOptions.SectionName.ShouldBe("WolverineSqlServer");
+        WolverineSqlServerOptions.SectionName.ShouldBe("Wolverine:SqlServer");
 
     [Fact]
     public void DefaultTransportConnectionString_IsEmpty() =>

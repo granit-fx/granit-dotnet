@@ -11,9 +11,9 @@ namespace Granit.Authentication.ApiKeys.Options;
 public sealed class ApiKeysOptions
 {
     /// <summary>
-    /// Default configuration section: <c>"Granit:ApiKeys"</c>.
+    /// Default configuration section: <c>"Authentication:ApiKeys"</c>.
     /// </summary>
-    public const string SectionName = "Granit:ApiKeys";
+    public const string SectionName = "Authentication:ApiKeys";
 
     /// <summary>
     /// Number of days before <see cref="Domain.ApiKeyEntry.ExpiresAt"/> at which the

@@ -35,14 +35,14 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
         ServiceCollection services = [];
         Dictionary<string, string?> config = new()
         {
-            ["KeycloakAdmin:BaseUrl"] = _keycloak.BaseUrl,
-            ["KeycloakAdmin:Realm"] = KeycloakFixture.Realm,
-            ["KeycloakAdmin:ClientId"] = KeycloakFixture.AdminClientId,
-            ["KeycloakAdmin:ClientSecret"] = KeycloakFixture.AdminClientSecret,
+            ["Identity:Federated:Keycloak:BaseUrl"] = _keycloak.BaseUrl,
+            ["Identity:Federated:Keycloak:Realm"] = KeycloakFixture.Realm,
+            ["Identity:Federated:Keycloak:ClientId"] = KeycloakFixture.AdminClientId,
+            ["Identity:Federated:Keycloak:ClientSecret"] = KeycloakFixture.AdminClientSecret,
         };
         for (int i = 0; i < trackedClientIds.Length; i++)
         {
-            config[$"KeycloakAdmin:ClientRoleSync:TrackedClientIds:{i}"] = trackedClientIds[i];
+            config[$"Identity:Federated:Keycloak:ClientRoleSync:TrackedClientIds:{i}"] = trackedClientIds[i];
         }
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder()

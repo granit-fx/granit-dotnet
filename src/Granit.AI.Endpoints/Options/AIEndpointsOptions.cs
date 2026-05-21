@@ -6,7 +6,7 @@ namespace Granit.AI.Endpoints.Options;
 public sealed class AIEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "AIEndpoints";
+    public const string SectionName = "AI:Endpoints";
 
     /// <summary>
     /// Route prefix for all AI endpoints.

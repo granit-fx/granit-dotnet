@@ -33,10 +33,10 @@ public sealed class GranitIdentityFederatedKeycloakModuleTests
     public void ConfigureServices_RegistersKeycloakIdentityProvider()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["KeycloakAdmin:BaseUrl"] = "https://keycloak.test";
-        builder.Configuration["KeycloakAdmin:Realm"] = "test-realm";
-        builder.Configuration["KeycloakAdmin:ClientId"] = "admin-service";
-        builder.Configuration["KeycloakAdmin:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:Keycloak:BaseUrl"] = "https://keycloak.test";
+        builder.Configuration["Identity:Federated:Keycloak:Realm"] = "test-realm";
+        builder.Configuration["Identity:Federated:Keycloak:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:Keycloak:ClientSecret"] = "secret";
 
         var context = new ServiceConfigurationContext(builder.Services, builder.Configuration, builder);
         var module = new GranitIdentityFederatedKeycloakModule();
@@ -54,10 +54,10 @@ public sealed class GranitIdentityFederatedKeycloakModuleTests
     public void ConfigureServices_RegistersTokenServiceAsSingleton()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["KeycloakAdmin:BaseUrl"] = "https://keycloak.test";
-        builder.Configuration["KeycloakAdmin:Realm"] = "test-realm";
-        builder.Configuration["KeycloakAdmin:ClientId"] = "admin-service";
-        builder.Configuration["KeycloakAdmin:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:Keycloak:BaseUrl"] = "https://keycloak.test";
+        builder.Configuration["Identity:Federated:Keycloak:Realm"] = "test-realm";
+        builder.Configuration["Identity:Federated:Keycloak:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:Keycloak:ClientSecret"] = "secret";
 
         var context = new ServiceConfigurationContext(builder.Services, builder.Configuration, builder);
         var module = new GranitIdentityFederatedKeycloakModule();

@@ -9,7 +9,7 @@ namespace Granit.Http.Bulkhead.Options;
 public sealed class GranitBulkheadOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "Bulkhead";
+    public const string SectionName = "Http:Bulkhead";
 
     /// <summary>Whether bulkhead isolation is enabled. Default: <see langword="true"/>.</summary>
     public bool Enabled { get; set; } = true;

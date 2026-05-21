@@ -24,8 +24,8 @@ namespace Granit.Identity.Federated.Cognito.Options;
 /// </remarks>
 public sealed class CognitoClientRoleSyncOptions
 {
-    /// <summary>Configuration section: <c>CognitoAdmin:ClientRoleSync</c>.</summary>
-    public const string SectionName = "CognitoAdmin:ClientRoleSync";
+    /// <summary>Configuration section: <c>Identity:Federated:Cognito:ClientRoleSync</c>.</summary>
+    public const string SectionName = "Identity:Federated:Cognito:ClientRoleSync";
 
     /// <summary>
     /// When <see langword="false"/>, the sync contributor becomes a no-op even if

@@ -6,7 +6,7 @@ namespace Granit.Identity.Endpoints.Options;
 public sealed class IdentityEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "IdentityEndpoints";
+    public const string SectionName = "Identity:Endpoints";
 
     /// <summary>
     /// Route prefix for all identity user cache endpoints.

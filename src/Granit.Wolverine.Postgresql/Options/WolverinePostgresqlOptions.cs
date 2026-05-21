@@ -4,7 +4,7 @@ namespace Granit.Wolverine.Postgresql.Options;
 
 /// <summary>
 /// Configuration options for the PostgreSQL Wolverine provider.
-/// Bound from the <c>"WolverinePostgresql"</c> section of <c>appsettings.json</c>.
+/// Bound from the <c>"Wolverine:Postgresql"</c> section of <c>appsettings.json</c>.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -20,7 +20,7 @@ namespace Granit.Wolverine.Postgresql.Options;
 public sealed class WolverinePostgresqlOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "WolverinePostgresql";
+    public const string SectionName = "Wolverine:Postgresql";
 
     /// <summary>
     /// Explicit PostgreSQL connection string for the Wolverine Outbox tables.
@@ -38,7 +38,7 @@ public sealed class WolverinePostgresqlOptions
     /// <code>
     /// // appsettings.json
     /// {
-    ///   "WolverinePostgresql": {
+    ///   "Wolverine:Postgresql": {
     ///     "TransportConnectionStringName": "catalog-db"
     ///   }
     /// }

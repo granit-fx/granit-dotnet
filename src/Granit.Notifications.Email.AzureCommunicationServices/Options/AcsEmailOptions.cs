@@ -6,7 +6,7 @@ namespace Granit.Notifications.Email.AzureCommunicationServices.Options;
 public sealed class AcsEmailOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "AzureCommunicationServices:Email";
+    public const string SectionName = "Notifications:Email:AzureCommunicationServices";
 
     /// <summary>
     /// ACS connection string. When provided, takes precedence over <see cref="Endpoint"/>.

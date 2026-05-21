@@ -28,12 +28,12 @@ public enum TenantSchemaNamingConvention
 
 /// <summary>
 /// Options for the per-tenant schema isolation strategy.
-/// Bound from the <c>"TenantSchema"</c> configuration section.
+/// Bound from the <c>"MultiTenancy:TenantSchema"</c> configuration section.
 /// </summary>
 public sealed class TenantSchemaOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "TenantSchema";
+    public const string SectionName = "MultiTenancy:TenantSchema";
 
     /// <summary>
     /// Naming convention used to derive the PostgreSQL schema name from the tenant context.

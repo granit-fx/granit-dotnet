@@ -2,12 +2,12 @@ namespace Granit.Identity.Federated.Options;
 
 /// <summary>
 /// Configuration options for the identity user cache.
-/// Bind to the <c>IdentityUserCache</c> configuration section.
+/// Bind to the <c>Identity:Federated:UserCache</c> configuration section.
 /// </summary>
 public sealed class UserCacheOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "IdentityUserCache";
+    public const string SectionName = "Identity:Federated:UserCache";
 
     /// <summary>
     /// Duration after which a cached user entry is considered stale and eligible for re-fetch

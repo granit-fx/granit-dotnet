@@ -11,7 +11,7 @@ public sealed class WorkflowEndpointsOptionsTests
 {
     [Fact]
     public void SectionName_is_WorkflowEndpoints() =>
-        WorkflowEndpointsOptions.SectionName.ShouldBe("WorkflowEndpoints");
+        WorkflowEndpointsOptions.SectionName.ShouldBe("Workflow:Endpoints");
 
     [Fact]
     public void Default_RoutePrefix_is_workflow()

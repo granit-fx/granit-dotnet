@@ -12,7 +12,7 @@ namespace Granit.Wolverine.Postgresql;
 /// Adds a PostgreSQL Outbox and EF Core transaction integration on top of the
 /// provider-agnostic core configured by <see cref="GranitWolverineModule"/>.
 /// <para>
-/// Reads <see cref="WolverinePostgresqlOptions"/> from the <c>"WolverinePostgresql"</c>
+/// Reads <see cref="WolverinePostgresqlOptions"/> from the <c>"Wolverine:Postgresql"</c>
 /// section in <c>appsettings.json</c>. The connection string is validated at startup.
 /// </para>
 /// <para>

@@ -10,8 +10,8 @@ namespace Granit.Identity.Federated.EntraId.Options;
 /// </summary>
 public sealed class EntraIdClientRoleSyncOptions
 {
-    /// <summary>Configuration section: <c>EntraIdAdmin:ClientRoleSync</c>.</summary>
-    public const string SectionName = "EntraIdAdmin:ClientRoleSync";
+    /// <summary>Configuration section: <c>Identity:Federated:EntraId:ClientRoleSync</c>.</summary>
+    public const string SectionName = "Identity:Federated:EntraId:ClientRoleSync";
 
     /// <summary>
     /// When <see langword="false"/>, the sync contributor becomes a no-op even if tracked

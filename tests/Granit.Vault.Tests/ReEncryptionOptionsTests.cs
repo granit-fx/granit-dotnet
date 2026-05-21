@@ -7,7 +7,7 @@ namespace Granit.Vault.Tests;
 public sealed class ReEncryptionOptionsTests
 {
     [Fact]
-    public void SectionName_IsReEncryption() => ReEncryptionOptions.SectionName.ShouldBe("ReEncryption");
+    public void SectionName_IsReEncryption() => ReEncryptionOptions.SectionName.ShouldBe("Vault:ReEncryption");
 
     [Fact]
     public void RetiredKeyVersions_DefaultsToEmptySet()

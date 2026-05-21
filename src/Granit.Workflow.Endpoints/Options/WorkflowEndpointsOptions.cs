@@ -6,7 +6,7 @@ namespace Granit.Workflow.Endpoints.Options;
 public sealed class WorkflowEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "WorkflowEndpoints";
+    public const string SectionName = "Workflow:Endpoints";
 
     /// <summary>
     /// Route prefix for all workflow endpoints.
