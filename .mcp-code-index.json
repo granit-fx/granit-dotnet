@@ -33121,6 +33121,15 @@
       "members": []
     },
     {
+      "name": "GranitPersistenceAnnotationNames",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.GranitPersistenceAnnotationNames",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/GranitPersistenceAnnotationNames.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "GranitPersistenceEntityFrameworkCoreModule",
       "fqn": "Granit.Persistence.EntityFrameworkCore.GranitPersistenceEntityFrameworkCoreModule",
       "kind": "class",
@@ -33897,6 +33906,22 @@
       "file": "src/Granit.Persistence.EntityFrameworkCore.Postgres/Extensions/JsonbPropertyBuilderExtensions.cs",
       "line": 11,
       "members": []
+    },
+    {
+      "name": "ModelBuilderJsonbExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Postgres.Extensions.ModelBuilderJsonbExtensions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore.Postgres",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Postgres/Extensions/ModelBuilderJsonbExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "UseGranitJsonbForJsonProperties",
+          "kind": "method",
+          "signature": "UseGranitJsonbForJsonProperties(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
     },
     {
       "name": "NpgsqlDbContextOptionsExtensions",

@@ -56,6 +56,7 @@ public static class JsonPropertyBuilderExtensions
             v => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(v, options), options)!);
 
         builder.HasConversion(converter, comparer);
+        builder.Metadata.SetAnnotation(GranitPersistenceAnnotationNames.JsonSerialized, true);
         return builder;
     }
 }
