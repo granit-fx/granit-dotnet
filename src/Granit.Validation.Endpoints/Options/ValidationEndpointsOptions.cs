@@ -5,6 +5,9 @@ namespace Granit.Validation.Endpoints.Options;
 /// </summary>
 public sealed class ValidationEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Validation:Endpoints";
+
     /// <summary>
     /// Route prefix for all validation endpoints.
     /// Default: <c>"validation"</c>.

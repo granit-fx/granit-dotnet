@@ -32447,7 +32447,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictOptions.cs",
-      "line": 127,
+      "line": 130,
       "members": [
         {
           "name": "WithFapi2Profile",

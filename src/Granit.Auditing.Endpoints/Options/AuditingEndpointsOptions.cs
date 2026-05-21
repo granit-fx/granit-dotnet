@@ -5,6 +5,9 @@ namespace Granit.Auditing.Endpoints.Options;
 /// </summary>
 public sealed class AuditingEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Auditing:Endpoints";
+
     /// <summary>
     /// Route prefix for audit log endpoints. Default: <c>"auditing"</c>.
     /// </summary>

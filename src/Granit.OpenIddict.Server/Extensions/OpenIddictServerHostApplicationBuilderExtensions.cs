@@ -31,7 +31,7 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
 
         // Read options from configuration for build-time decisions
         GranitOpenIddictOptions granitOptions = new();
-        builder.Configuration.GetSection("OpenIddict").Bind(granitOptions);
+        builder.Configuration.GetSection(GranitOpenIddictOptions.SectionName).Bind(granitOptions);
 
         // FAPI 2.0 profile: apply all mandatory server-side constraints
         if (granitOptions.EnableFapi2Profile)

@@ -7,6 +7,10 @@ namespace Granit.QueryEngine.AspNetCore.Tests.Options;
 public sealed class QueryEndpointOptionsTests
 {
     [Fact]
+    public void SectionName_HasExpectedValue() =>
+        QueryEndpointOptions.SectionName.ShouldBe("QueryEngine:Endpoint");
+
+    [Fact]
     public void TagName_defaults_to_null()
     {
         QueryEndpointOptions options = new();

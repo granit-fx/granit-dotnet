@@ -5,6 +5,9 @@ namespace Granit.Http.SecurityHeaders.Endpoints.Options;
 /// </summary>
 public sealed class SecurityHeadersEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Http:SecurityHeaders:Endpoints";
+
     /// <summary>
     /// Route prefix for the audit endpoint. The endpoint is mounted at
     /// <c>/{prefix}/csp</c>. Default: <c>"security-headers"</c>.

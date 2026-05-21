@@ -8,7 +8,7 @@ namespace Granit.QueryEngine.Options;
 /// <remarks>
 /// Bind from configuration:
 /// <code>
-/// services.Configure&lt;QueryEngineOptions&gt;(configuration.GetSection("QueryEngine"));
+/// services.Configure&lt;QueryEngineOptions&gt;(configuration.GetSection(QueryEngineOptions.SectionName));
 /// </code>
 /// Or configure inline:
 /// <code>
@@ -17,6 +17,9 @@ namespace Granit.QueryEngine.Options;
 /// </remarks>
 public sealed class QueryEngineOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "QueryEngine";
+
     /// <summary>Default page size for paginated queries. Default: <c>20</c>.</summary>
     public int DefaultPageSize { get; set; } = QueryEngineDefaults.DefaultPageSize;
 

@@ -5,6 +5,9 @@ namespace Granit.Identity.Local.Endpoints.Options;
 /// </summary>
 public sealed class RoleEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Identity:Local:Endpoints:Role";
+
     /// <summary>Route prefix for the role CRUD endpoints. Default: <c>"admin/roles"</c>.</summary>
     public string RolesRoutePrefix { get; set; } = "admin/roles";
 

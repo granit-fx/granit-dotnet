@@ -7,6 +7,10 @@ namespace Granit.QueryEngine.Tests.Options;
 public sealed class QueryEngineOptionsTests
 {
     [Fact]
+    public void SectionName_IsQueryEngine() =>
+        QueryEngineOptions.SectionName.ShouldBe("QueryEngine");
+
+    [Fact]
     public void DefaultPageSize_defaults_to_QueryEngineDefaults()
     {
         QueryEngineOptions options = new();

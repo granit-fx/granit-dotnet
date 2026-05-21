@@ -5,6 +5,9 @@ namespace Granit.OpenIddict.Endpoints.Options;
 /// </summary>
 public sealed class OpenIddictServerEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "OpenIddict:Server:Endpoints";
+
     /// <summary>
     /// Default path to redirect unauthenticated users during authorization.
     /// The cookie authentication handler appends a <c>ReturnUrl</c> query parameter.

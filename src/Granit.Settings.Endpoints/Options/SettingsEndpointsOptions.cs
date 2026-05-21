@@ -5,6 +5,9 @@ namespace Granit.Settings.Endpoints.Options;
 /// </summary>
 public sealed class SettingsEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Settings:Endpoints";
+
     /// <summary>
     /// Route prefix for user-scoped setting endpoints.
     /// Default: <c>"settings/user"</c>.

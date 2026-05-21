@@ -5,6 +5,9 @@ namespace Granit.Features.Endpoints.Options;
 /// </summary>
 public sealed class FeaturesEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Features:Endpoints";
+
     /// <summary>
     /// Route prefix for all feature endpoints.
     /// Default: <c>"features"</c>.

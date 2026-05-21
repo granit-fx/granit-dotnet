@@ -5,6 +5,9 @@ namespace Granit.OpenIddict.Endpoints.Options;
 /// </summary>
 public sealed class OpenIddictEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "OpenIddict:Endpoints";
+
     /// <summary>Route prefix for account self-service endpoints. Default: <c>"account"</c>.</summary>
     public string AccountRoutePrefix { get; set; } = "account";
 

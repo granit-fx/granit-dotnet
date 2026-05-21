@@ -43,7 +43,7 @@ public sealed class GranitOpenIddictModule : GranitModule
 
         context.Services
             .AddOptions<GranitOpenIddictOptions>()
-            .BindConfiguration("OpenIddict");
+            .BindConfiguration(GranitOpenIddictOptions.SectionName);
 
         context.Services
             .AddOptions<GranitOpenIddictClientOptions>()

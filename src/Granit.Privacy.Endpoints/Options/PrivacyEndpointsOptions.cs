@@ -5,6 +5,9 @@ namespace Granit.Privacy.Endpoints.Options;
 /// </summary>
 public sealed class PrivacyEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Privacy:Endpoints";
+
     /// <summary>
     /// Route prefix for all privacy endpoints.
     /// Default: <c>"privacy"</c>.

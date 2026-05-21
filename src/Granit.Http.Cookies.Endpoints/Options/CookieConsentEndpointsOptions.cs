@@ -5,6 +5,9 @@ namespace Granit.Http.Cookies.Endpoints.Options;
 /// </summary>
 public sealed class CookieConsentEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Http:Cookies:Endpoints";
+
     /// <summary>Base route prefix for the cookie consent endpoints. Default: "cookies".</summary>
     public string RoutePrefix { get; set; } = "cookies";
 

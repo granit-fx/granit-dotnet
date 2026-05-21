@@ -5,6 +5,9 @@ namespace Granit.MultiTenancy.Endpoints.Options;
 /// </summary>
 public sealed class MultiTenancyEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "MultiTenancy:Endpoints";
+
     /// <summary>
     /// Route prefix for all tenant management endpoints.
     /// Default: <c>"multi-tenancy"</c>.

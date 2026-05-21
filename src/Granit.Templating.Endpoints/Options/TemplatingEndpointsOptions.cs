@@ -5,6 +5,9 @@ namespace Granit.Templating.Endpoints.Options;
 /// </summary>
 public sealed class TemplatingEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Templating:Endpoints";
+
     /// <summary>
     /// Route prefix for all template admin endpoints.
     /// Default: <c>"templating"</c>.

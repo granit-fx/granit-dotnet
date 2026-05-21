@@ -6,6 +6,9 @@ namespace Granit.QueryEngine.AspNetCore.Options;
 /// </summary>
 public sealed class QueryEndpointOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "QueryEngine:Endpoint";
+
     /// <summary>
     /// The OpenAPI tag name for the query endpoints.
     /// Defaults to the entity type name.

@@ -5,6 +5,9 @@ namespace Granit.DataLookup.Endpoints.Options;
 /// </summary>
 public sealed class DataLookupEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "DataLookup:Endpoints";
+
     /// <summary>Route prefix under which the endpoints are mapped. Default: <c>"lookups"</c>.</summary>
     public string RoutePrefix { get; set; } = "lookups";
 

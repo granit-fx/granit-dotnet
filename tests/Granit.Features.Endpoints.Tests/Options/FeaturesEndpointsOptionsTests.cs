@@ -7,6 +7,10 @@ namespace Granit.Features.Endpoints.Tests.Options;
 public sealed class FeaturesEndpointsOptionsTests
 {
     [Fact]
+    public void SectionName_HasExpectedValue() =>
+        FeaturesEndpointsOptions.SectionName.ShouldBe("Features:Endpoints");
+
+    [Fact]
     public void Defaults_RoutePrefix_IsFeatures()
     {
         FeaturesEndpointsOptions options = new();

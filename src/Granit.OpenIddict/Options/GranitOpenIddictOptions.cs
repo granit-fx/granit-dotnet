@@ -9,6 +9,9 @@ namespace Granit.OpenIddict.Options;
 /// </remarks>
 public sealed class GranitOpenIddictOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "OpenIddict";
+
     /// <summary>
     /// Gets or sets the OIDC issuer URI.
     /// </summary>

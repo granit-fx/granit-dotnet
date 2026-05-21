@@ -5,6 +5,9 @@ namespace Granit.Identity.Local.Endpoints.Options;
 /// </summary>
 public sealed class AccountEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Identity:Local:Endpoints:Account";
+
     /// <summary>Route prefix for account self-service endpoints. Default: <c>"account"</c>.</summary>
     public string AccountRoutePrefix { get; set; } = "account";
 

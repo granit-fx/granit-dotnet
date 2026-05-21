@@ -39,7 +39,7 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
 
         // Read options from configuration for build-time decisions
         GranitOpenIddictOptions granitOptions = new();
-        builder.Configuration.GetSection("OpenIddict").Bind(granitOptions);
+        builder.Configuration.GetSection(GranitOpenIddictOptions.SectionName).Bind(granitOptions);
 
         // 1. Register the isolated DbContext with Granit interceptors
         builder.Services.AddGranitDbContext<OpenIddictDbContext>(configure);

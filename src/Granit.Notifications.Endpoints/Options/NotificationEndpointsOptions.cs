@@ -5,6 +5,9 @@ namespace Granit.Notifications.Endpoints.Options;
 /// </summary>
 public sealed class NotificationEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Notifications:Endpoints";
+
     /// <summary>
     /// Route prefix for all notification endpoints.
     /// Default: <c>"notifications"</c>.

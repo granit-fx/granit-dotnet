@@ -9,6 +9,9 @@ namespace Granit.Localization.Endpoints.Options;
 /// </summary>
 public sealed class LocalizationEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Localization:Endpoints";
+
     /// <summary>
     /// Route prefix for both the bootstrapping endpoint and the overrides management endpoints.
     /// Default: <c>"localization"</c>.

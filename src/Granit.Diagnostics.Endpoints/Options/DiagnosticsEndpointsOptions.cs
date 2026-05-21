@@ -5,6 +5,9 @@ namespace Granit.Diagnostics.Endpoints.Options;
 /// </summary>
 public sealed class DiagnosticsEndpointsOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Diagnostics:Endpoints";
+
     /// <summary>
     /// Route prefix for monitoring endpoints.
     /// Default: <c>"diagnostics"</c>.
