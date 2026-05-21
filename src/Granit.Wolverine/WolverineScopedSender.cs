@@ -17,8 +17,11 @@ public sealed class WolverineScopedSender(IServiceScopeFactory scopeFactory)
     /// </summary>
     /// <typeparam name="TCommand">The command type.</typeparam>
     /// <param name="command">The command to send.</param>
-    public async Task SendAsync<TCommand>(TCommand command) where TCommand : class
+    /// <param name="cancellationToken">Token to cancel the scope creation and dispatch.</param>
+    public async Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
+        where TCommand : class
     {
+        cancellationToken.ThrowIfCancellationRequested();
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
         IMessageBus bus = scope.ServiceProvider.GetRequiredService<IMessageBus>();
         await bus.SendAsync(command).ConfigureAwait(false);

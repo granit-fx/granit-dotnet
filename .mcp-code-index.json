@@ -40422,7 +40422,7 @@
         {
           "name": "BuildAsync",
           "kind": "method",
-          "signature": "BuildAsync(Action<IServiceCollection>? configureServices = null)",
+          "signature": "BuildAsync(Action<IServiceCollection>? configureServices = null, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {

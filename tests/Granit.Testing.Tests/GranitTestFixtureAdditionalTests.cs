@@ -20,7 +20,7 @@ public sealed class GranitTestFixtureAdditionalTests
     public async Task Dispose_Does_Not_Throw_After_Build()
     {
         GranitTestFixture<GranitTestingModule> fixture = new();
-        await fixture.BuildAsync();
+        await fixture.BuildAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         Should.NotThrow(() => fixture.Dispose());
     }
@@ -37,7 +37,7 @@ public sealed class GranitTestFixtureAdditionalTests
     public async Task DisposeAsync_Stops_And_Disposes_Host()
     {
         GranitTestFixture<GranitTestingModule> fixture = new();
-        await fixture.BuildAsync();
+        await fixture.BuildAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         await fixture.DisposeAsync();
 
@@ -48,7 +48,7 @@ public sealed class GranitTestFixtureAdditionalTests
     public async Task Multiple_Dispose_Is_Safe()
     {
         GranitTestFixture<GranitTestingModule> fixture = new();
-        await fixture.BuildAsync();
+        await fixture.BuildAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         fixture.Dispose();
         Should.NotThrow(() => fixture.Dispose());
@@ -73,7 +73,7 @@ public sealed class GranitTestFixtureAdditionalTests
     public async Task GetService_Returns_Registered_Service()
     {
         GranitTestFixture<GranitTestingModule> fixture = new();
-        await fixture.BuildAsync();
+        await fixture.BuildAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         IClock? clock = fixture.GetService<IClock>();
 
@@ -92,7 +92,7 @@ public sealed class GranitTestFixtureAdditionalTests
         fixture.User.UserId = "custom-user";
         fixture.Clock.Now = new DateTimeOffset(2030, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
-        await fixture.BuildAsync();
+        await fixture.BuildAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         ICurrentTenant resolvedTenant = fixture.GetRequiredService<ICurrentTenant>();
         resolvedTenant.Id.ShouldBe(tenantId);
