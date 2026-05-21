@@ -11,7 +11,10 @@ namespace Granit.Http.SecurityHeaders.Internal;
 /// <para>
 /// Scalar headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy,
 /// X-XSS-Protection, Permissions-Policy, COOP/COEP/CORP) are applied eagerly
-/// at request entry — they do not depend on route matching.
+/// at request entry and re-applied in <c>OnStarting</c> (after routing) so
+/// endpoint-scoped overrides — currently
+/// <see cref="AllowsPopupAuthorizationMetadata"/> downgrading COOP to
+/// <c>unsafe-none</c> — see the matched endpoint.
 /// </para>
 /// <para>
 /// The <c>Content-Security-Policy</c> header is applied inside
@@ -47,7 +50,7 @@ internal sealed class SecurityHeadersMiddleware
     {
         GranitSecurityHeadersOptions options = _optionsMonitor.CurrentValue;
 
-        ApplyScalarHeaders(context.Response.Headers, options);
+        ApplyScalarHeaders(context, options);
 
         context.Response.OnStarting(static state =>
         {
@@ -55,7 +58,7 @@ internal sealed class SecurityHeadersMiddleware
                 ((HttpContext, SecurityHeadersMiddleware))state;
             GranitSecurityHeadersOptions opts = self._optionsMonitor.CurrentValue;
 
-            ApplyScalarHeaders(ctx.Response.Headers, opts);
+            ApplyScalarHeaders(ctx, opts);
             self.ApplyContentSecurityPolicy(ctx);
 
             return Task.CompletedTask;
@@ -65,8 +68,10 @@ internal sealed class SecurityHeadersMiddleware
     }
 
     internal static void ApplyScalarHeaders(
-        IHeaderDictionary headers, GranitSecurityHeadersOptions options)
+        HttpContext context, GranitSecurityHeadersOptions options)
     {
+        IHeaderDictionary headers = context.Response.Headers;
+
         if (options.EnableContentTypeOptions)
         {
             headers.XContentTypeOptions = "nosniff";
@@ -92,9 +97,18 @@ internal sealed class SecurityHeadersMiddleware
             headers["Permissions-Policy"] = options.PermissionsPolicy;
         }
 
-        if (options.CrossOriginOpenerPolicy is { Length: > 0 })
+        // COOP can be downgraded to 'unsafe-none' per-endpoint via
+        // AllowsPopupAuthorizationMetadata. GetEndpoint() returns null on the
+        // eager call (routing has not run yet); the OnStarting re-application
+        // sees the matched endpoint and applies the override.
+        string? coop = options.CrossOriginOpenerPolicy;
+        if (context.GetEndpoint()?.Metadata.GetMetadata<AllowsPopupAuthorizationMetadata>() is not null)
         {
-            headers["Cross-Origin-Opener-Policy"] = options.CrossOriginOpenerPolicy;
+            coop = "unsafe-none";
+        }
+        if (coop is { Length: > 0 })
+        {
+            headers["Cross-Origin-Opener-Policy"] = coop;
         }
 
         if (options.CrossOriginEmbedderPolicy is not null)

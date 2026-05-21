@@ -222,14 +222,58 @@ public sealed class SecurityHeadersMiddlewareTests
     [Fact]
     public void ApplyScalarHeaders_IsIdempotent()
     {
-        HeaderDictionary headers = [];
+        DefaultHttpContext ctx = new();
         GranitSecurityHeadersOptions options = new();
 
-        SecurityHeadersMiddleware.ApplyScalarHeaders(headers, options);
-        SecurityHeadersMiddleware.ApplyScalarHeaders(headers, options);
+        SecurityHeadersMiddleware.ApplyScalarHeaders(ctx, options);
+        SecurityHeadersMiddleware.ApplyScalarHeaders(ctx, options);
 
-        headers["X-Content-Type-Options"].ToString().ShouldBe("nosniff");
-        headers["X-Frame-Options"].ToString().ShouldBe("DENY");
+        ctx.Response.Headers["X-Content-Type-Options"].ToString().ShouldBe("nosniff");
+        ctx.Response.Headers["X-Frame-Options"].ToString().ShouldBe("DENY");
+    }
+
+    [Fact]
+    public async Task Middleware_AppliesDefaultCoop_OnEndpointWithoutPopupMarker()
+    {
+        TestHarness harness = new();
+        harness.SetEndpoint(new Endpoint(static _ => Task.CompletedTask,
+            EndpointMetadataCollection.Empty, "plain"));
+
+        await harness.InvokeAndFlush();
+
+        harness.Response.Headers["Cross-Origin-Opener-Policy"].ToString().ShouldBe("same-origin");
+    }
+
+    [Fact]
+    public async Task Middleware_DowngradesCoopToUnsafeNone_OnEndpointWithPopupMarker()
+    {
+        TestHarness harness = new();
+        harness.SetEndpoint(new Endpoint(static _ => Task.CompletedTask,
+            new EndpointMetadataCollection(new AllowsPopupAuthorizationMetadata()),
+            "popup-oauth"));
+
+        await harness.InvokeAndFlush();
+
+        harness.Response.Headers["Cross-Origin-Opener-Policy"].ToString().ShouldBe("unsafe-none");
+    }
+
+    [Fact]
+    public async Task Middleware_PopupMarkerOnOneEndpoint_DoesNotLeakToOthers()
+    {
+        // Same harness, two consecutive requests on different endpoints.
+        TestHarness harness = new();
+
+        harness.SetEndpoint(new Endpoint(static _ => Task.CompletedTask,
+            new EndpointMetadataCollection(new AllowsPopupAuthorizationMetadata()),
+            "popup-oauth"));
+        await harness.InvokeAndFlush();
+        harness.Response.Headers["Cross-Origin-Opener-Policy"].ToString().ShouldBe("unsafe-none");
+
+        TestHarness harness2 = new();
+        harness2.SetEndpoint(new Endpoint(static _ => Task.CompletedTask,
+            EndpointMetadataCollection.Empty, "plain"));
+        await harness2.InvokeAndFlush();
+        harness2.Response.Headers["Cross-Origin-Opener-Policy"].ToString().ShouldBe("same-origin");
     }
 
     // ===== test harness ===================================================

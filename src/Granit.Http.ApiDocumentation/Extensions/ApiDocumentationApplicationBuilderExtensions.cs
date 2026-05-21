@@ -89,6 +89,19 @@ public static partial class ApiDocumentationApplicationBuilderExtensions
                 }
             });
         scalarEndpoint.WithMetadata(new ScalarApiReferenceMetadata());
+
+        // Scalar's Authorize button opens the IdP in a popup and polls the
+        // popup's location for the auth code. The framework default COOP
+        // ('same-origin') severs the opener↔popup reference the moment the
+        // popup navigates cross-origin to the IdP. Mark the endpoint so the
+        // security-headers middleware downgrades COOP to 'unsafe-none' for
+        // /scalar only; routes without the marker keep the strict baseline.
+        // Only needed when OAuth2 is wired — otherwise no popup is opened.
+        if (options.OAuth2.IsConfigured)
+        {
+            scalarEndpoint.WithMetadata(new AllowsPopupAuthorizationMetadata());
+        }
+
         ApplyAuthorizationPolicy(scalarEndpoint, options.AuthorizationPolicy);
 
         RegisterScalarCspContributor(app);

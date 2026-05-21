@@ -230,19 +230,77 @@ public sealed class ScalarCspContributorTests
         return ctx;
     }
 
+    [Fact]
+    public async Task UseGranitApiDocumentation_AttachesPopupMarker_WhenOAuth2Configured()
+    {
+        WebApplication app = BuildApp(
+            Environments.Development,
+            withSecurityHeaders: true,
+            configureOAuth2: true);
+        app.UseGranitApiDocumentation();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            EndpointDataSource dataSource = app.Services.GetRequiredService<EndpointDataSource>();
+            Endpoint? scalar = dataSource.Endpoints
+                .FirstOrDefault(e => e.Metadata.GetMetadata<ScalarApiReferenceMetadata>() is not null);
+
+            scalar.ShouldNotBeNull();
+            scalar.Metadata.GetMetadata<AllowsPopupAuthorizationMetadata>()
+                .ShouldNotBeNull("OAuth2 configured ⇒ the Scalar endpoint must carry the popup marker so the security-headers middleware downgrades COOP to 'unsafe-none'.");
+        }
+        finally
+        {
+            await app.StopAsync(TestContext.Current.CancellationToken);
+        }
+    }
+
+    [Fact]
+    public async Task UseGranitApiDocumentation_DoesNotAttachPopupMarker_WhenOAuth2NotConfigured()
+    {
+        WebApplication app = BuildApp(
+            Environments.Development,
+            withSecurityHeaders: true,
+            configureOAuth2: false);
+        app.UseGranitApiDocumentation();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            EndpointDataSource dataSource = app.Services.GetRequiredService<EndpointDataSource>();
+            Endpoint? scalar = dataSource.Endpoints
+                .FirstOrDefault(e => e.Metadata.GetMetadata<ScalarApiReferenceMetadata>() is not null);
+
+            scalar.ShouldNotBeNull();
+            scalar.Metadata.GetMetadata<AllowsPopupAuthorizationMetadata>()
+                .ShouldBeNull("Without OAuth2 there is no popup flow — COOP must stay at the strict default.");
+        }
+        finally
+        {
+            await app.StopAsync(TestContext.Current.CancellationToken);
+        }
+    }
+
     private static WebApplication BuildApp(
         string environmentName,
         bool withSecurityHeaders,
-        bool enableScalarInProduction = false)
+        bool enableScalarInProduction = false,
+        bool configureOAuth2 = false)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Environment.EnvironmentName = environmentName;
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        Dictionary<string, string?> config = new()
         {
             ["ApiDocumentation:Title"] = "Test API",
             ["ApiDocumentation:MajorVersions:0"] = "1",
             ["ApiDocumentation:EnableInProduction"] = enableScalarInProduction.ToString(),
-        });
+        };
+        if (configureOAuth2)
+        {
+            config["ApiDocumentation:OAuth2:AuthorizationUrl"] = "http://localhost:8080/auth";
+            config["ApiDocumentation:OAuth2:TokenUrl"] = "http://localhost:8080/token";
+            config["ApiDocumentation:OAuth2:ClientId"] = "scalar-test";
+        }
+        builder.Configuration.AddInMemoryCollection(config);
 
         if (withSecurityHeaders)
         {
