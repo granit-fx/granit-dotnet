@@ -7,8 +7,8 @@ namespace Granit.Authentication.JwtBearer.Keycloak.Tests;
 public sealed class KeycloakOptionsTests
 {
     [Fact]
-    public void SectionName_IsKeycloak() =>
-        KeycloakOptions.SectionName.ShouldBe("Keycloak");
+    public void SectionName_IsAuthenticationKeycloak() =>
+        KeycloakOptions.SectionName.ShouldBe("Authentication:Keycloak");
 
     [Fact]
     public void Defaults_AreCorrect()

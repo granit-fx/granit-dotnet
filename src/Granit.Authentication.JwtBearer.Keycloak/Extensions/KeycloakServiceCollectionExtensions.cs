@@ -25,12 +25,18 @@ public static class KeycloakServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        // PostConfigure s'exécute après AddGranitJwtBearer (GranitAuthenticationJwtBearerModule),
-        // permettant de surcharger Authority, Audience et NameClaimType pour Keycloak.
-        // Deferred configuration: reads KeycloakOptions at resolution time.
+        // Configure (not PostConfigure) so Keycloak's Authority / Audience are
+        // applied BEFORE the framework's JwtBearerPostConfigureOptions runs:
+        // that built-in PostConfigure is the one that materialises
+        // ConfigurationManager<OpenIdConnectConfiguration> from Authority. If
+        // Authority is still empty at that point, no ConfigurationManager is
+        // built, JWKS is never fetched, and every inbound token fails with
+        // IDX10500 ("Signature validation failed. Unable to resolve
+        // SignatureValidator or SecurityTokenSignatureValidator"). PostConfigure
+        // here would run too late.
         services
             .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-            .PostConfigure<IOptions<KeycloakOptions>>((jwt, keycloakOpts) =>
+            .Configure<IOptions<KeycloakOptions>>((jwt, keycloakOpts) =>
             {
                 KeycloakOptions options = keycloakOpts.Value;
                 string audience = options.Audience ?? options.ClientId;

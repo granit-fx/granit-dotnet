@@ -3,7 +3,8 @@
 // =============================================================================
 // Verifies that AddGranitKeycloak correctly registers:
 //   - KeycloakOptions from the "Keycloak" section
-//   - PostConfigure JWT Bearer (Authority, Audience, NameClaimType)
+//   - Configure JWT Bearer (Authority, Audience, NameClaimType) so the
+//     framework's PostConfigure can build ConfigurationManager
 //   - KeycloakClaimsTransformation
 // =============================================================================
 
@@ -29,9 +30,9 @@ public sealed class KeycloakServiceCollectionExtensionsTests
         new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Keycloak:Authority"] = authority,
-                ["Keycloak:ClientId"] = clientId,
-                ["Keycloak:RequireHttpsMetadata"] = "false",
+                ["Authentication:Keycloak:Authority"] = authority,
+                ["Authentication:Keycloak:ClientId"] = clientId,
+                ["Authentication:Keycloak:RequireHttpsMetadata"] = "false",
             })
             .Build();
 
@@ -87,10 +88,10 @@ public sealed class KeycloakServiceCollectionExtensionsTests
         IConfiguration config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Keycloak:Authority"] = "https://keycloak.test/realms/test",
-                ["Keycloak:ClientId"] = "test-client",
-                ["Keycloak:Audience"] = "custom-audience",
-                ["Keycloak:RequireHttpsMetadata"] = "false"
+                ["Authentication:Keycloak:Authority"] = "https://keycloak.test/realms/test",
+                ["Authentication:Keycloak:ClientId"] = "test-client",
+                ["Authentication:Keycloak:Audience"] = "custom-audience",
+                ["Authentication:Keycloak:RequireHttpsMetadata"] = "false"
             })
             .Build();
         services.AddSingleton<IConfiguration>(config);
@@ -106,6 +107,43 @@ public sealed class KeycloakServiceCollectionExtensionsTests
             .Get(JwtBearerDefaults.AuthenticationScheme);
 
         jwtOptions.Audience.ShouldBe("custom-audience");
+    }
+
+    [Fact]
+    public void AddGranitKeycloak_OnlyKeycloakSection_MaterialisesConfigurationManager()
+    {
+        // Regression: a consumer that only provides the "Keycloak" section
+        // (no "Authentication" section) must still get a fully-wired
+        // JwtBearerOptions with a non-null ConfigurationManager. The framework's
+        // built-in JwtBearerPostConfigureOptions is what materialises that
+        // manager from Authority, and it runs in the PostConfigure phase — so
+        // Granit's Keycloak overrides MUST run in the Configure phase (not
+        // PostConfigure), otherwise Authority is still empty when the framework
+        // looks at it, no manager is created, JWKS is never fetched, and every
+        // inbound token fails with IDX10500.
+        ServiceCollection services = new();
+        IConfiguration config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                // No "Authentication:*" keys — only Keycloak.
+                ["Authentication:Keycloak:Authority"] = "https://keycloak.test/realms/test",
+                ["Authentication:Keycloak:ClientId"] = "test-client",
+                ["Authentication:Keycloak:RequireHttpsMetadata"] = "false",
+            })
+            .Build();
+        services.AddSingleton<IConfiguration>(config);
+        services.AddGranitJwtBearer();
+        services.AddGranitKeycloak();
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+        JwtBearerOptions jwtOptions = sp.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>()
+            .Get(JwtBearerDefaults.AuthenticationScheme);
+
+        jwtOptions.Authority.ShouldBe("https://keycloak.test/realms/test");
+        jwtOptions.ConfigurationManager.ShouldNotBeNull(
+            "Framework JwtBearerPostConfigureOptions must see Authority set when it runs, " +
+            "otherwise the OpenIdConnectConfiguration manager is never created and JWKS is " +
+            "never fetched (IDX10500 on every inbound token).");
     }
 
     [Fact]

@@ -25,8 +25,8 @@ public sealed class GranitAuthenticationJwtBearerKeycloakModuleTests
         // Arrange
         GranitAuthenticationJwtBearerKeycloakModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["Keycloak:Authority"] = "https://keycloak.test/realms/test";
-        builder.Configuration["Keycloak:ClientId"] = "test-client";
+        builder.Configuration["Authentication:Keycloak:Authority"] = "https://keycloak.test/realms/test";
+        builder.Configuration["Authentication:Keycloak:ClientId"] = "test-client";
         // Call GranitAuthenticationJwtBearerModule first (dependency)
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
         new GranitAuthenticationJwtBearerModule().ConfigureServices(context);
@@ -47,8 +47,8 @@ public sealed class GranitAuthenticationJwtBearerKeycloakModuleTests
         // Arrange
         GranitAuthenticationJwtBearerKeycloakModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["Keycloak:Authority"] = "https://keycloak.test/realms/test";
-        builder.Configuration["Keycloak:ClientId"] = "test-client";
+        builder.Configuration["Authentication:Keycloak:Authority"] = "https://keycloak.test/realms/test";
+        builder.Configuration["Authentication:Keycloak:ClientId"] = "test-client";
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
         new GranitAuthenticationJwtBearerModule().ConfigureServices(context);
 

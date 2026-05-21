@@ -9,6 +9,22 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Fixed
 
+- **Breaking — `Granit.Authentication.JwtBearer.Keycloak`.** Two related changes ship together. (1) `AddGranitKeycloak()` now applies its Keycloak-specific JwtBearer overrides via `.Configure<>` instead of `.PostConfigure<>`: the framework's built-in `JwtBearerPostConfigureOptions` is what materialises the `ConfigurationManager<OpenIdConnectConfiguration>` from `Authority`, and it runs in the PostConfigure phase. With the previous registration, if a host provided only the Keycloak section (no `Authentication:*` doublon), `Authority` was still empty when the framework's PostConfigure ran → no ConfigurationManager → no JWKS fetch → every inbound token failed with `IDX10500 ("Signature validation failed. Unable to resolve SignatureValidator…")`. (2) `KeycloakOptions.SectionName` moves from `"Keycloak"` (root) to `"Authentication:Keycloak"` so Keycloak config sits under the same `Authentication:*` parent as `JwtBearerAuthOptions` (section `"Authentication"`). **Migration**: rewrite the host appsettings:
+
+  ```diff
+  - "Keycloak": {
+  -   "Authority": "http://localhost:8080/realms/my-realm",
+  -   "ClientId": "my-api"
+  - }
+  + "Authentication": {
+  +   "Keycloak": {
+  +     "Authority": "http://localhost:8080/realms/my-realm",
+  +     "ClientId": "my-api"
+  +   }
+  + }
+  ```
+
+  Env-var bindings: `Keycloak__Authority` → `Authentication__Keycloak__Authority`. K8s/Vault projections, CI secrets, and ExternalSecret manifests must be updated in the same deploy. The unrelated `KeycloakAdminOptions` section (`"KeycloakAdmin"`, owned by `Granit.Identity.Federated.Keycloak`) is **not** affected.
 - `Granit.Http.SecurityHeaders` / `Granit.Http.ApiDocumentation` — new public marker `AllowsPopupAuthorizationMetadata` (in `Granit.Http.SecurityHeaders.Abstractions`). When attached to an endpoint, the security-headers middleware downgrades `Cross-Origin-Opener-Policy` to `unsafe-none` for that endpoint only; every other route keeps the strict `same-origin` baseline. `UseGranitApiDocumentation()` automatically attaches the marker on the Scalar route when `OAuth2` is configured. The default `same-origin` (and even `same-origin-allow-popups`) severs the opener↔popup window reference the moment the popup navigates to the IdP, breaking Scalar's polling-based Authorization Code flow: the popup completes, but the parent can no longer read its `window.location` to pick up the auth code and shows `"Window was closed without granting authorization."` Without this fix every CSP / RedirectUri change shipped in `[Unreleased]` still left Authorize broken on hosts that enable the strict COOP default.
 - `Granit.Http.ApiDocumentation` — new `ApiDocumentationOptions.OAuth2.RedirectUri` property, propagated to Scalar via `flow.WithRedirectUri(...)`. Workaround for `Scalar.AspNetCore` 2.12.40+ where the default redirect URI changed and breaks Authorization Code popups (scalar/scalar#8165, #8187): the popup returns same-origin but on a URL Scalar no longer recognises, so the auth code is never piped back and the user sees `"Window was closed without granting authorization."` Set this to the absolute URL of the Scalar UI (e.g. `http://localhost:5000/scalar`) and make sure it is registered as a valid redirect URI on the IdP client. Leave unset only when upstream restores the previous default.
 - `Granit.Http.ApiDocumentation` — `ScalarCspContributor` now whitelists `https://api.scalar.com` on `connect-src` (Scalar's Vue.js bootstrap fetches its curated-documents / search registry from `api.scalar.com/vector/registry/*` on mount and on every search keystroke). When `ApiDocumentationOptions.OAuth2` is configured, the contributor also adds the origins (scheme + host + port) of the OAuth2 `AuthorizationUrl` and `TokenUrl` to `connect-src`, allowing Scalar's Authorization Code → Token exchange (browser-side cross-origin POST to the IdP, e.g. `localhost:5000 → localhost:8080`) to complete instead of being blocked by CSP. Without this, the interactive "Authorize" button signed-in state never persisted. `script-src` now also carries `'unsafe-eval'`: the Scalar bundle evaluates code dynamically (template parsing, JSON Schema example rendering) via `eval` / `new Function`, which the previous policy blocked. The relaxation stays scoped to endpoints carrying `ScalarApiReferenceMetadata` and is dev-only by default (`EnableInProduction = false`).

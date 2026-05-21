@@ -5,8 +5,13 @@ namespace Granit.Authentication.JwtBearer.Keycloak.Options;
 /// </summary>
 public sealed class KeycloakOptions
 {
-    /// <summary>Section key in the configuration.</summary>
-    public const string SectionName = "Keycloak";
+    /// <summary>
+    /// Section key in configuration. Sits under <c>Authentication:*</c> to match the
+    /// ASP.NET convention used by <c>JwtBearerAuthOptions</c> (section
+    /// <c>"Authentication"</c>) — both blocks live under the same parent so a host
+    /// can see at a glance everything that affects token validation.
+    /// </summary>
+    public const string SectionName = "Authentication:Keycloak";
 
     /// <summary>OIDC authority URL (e.g. https://keycloak.example.com/realms/my-realm).</summary>
     public string Authority { get; set; } = string.Empty;
