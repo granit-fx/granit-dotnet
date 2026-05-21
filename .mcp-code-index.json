@@ -5701,12 +5701,12 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.EntityFrameworkCore",
       "file": "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/Extensions/ApiKeysEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitApiKeysEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitApiKeysEntityFrameworkCore(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDbContext)",
+          "signature": "AddGranitApiKeysEntityFrameworkCore(this IServiceCollection services, Action<DbContextOptionsBuilder> configureShared, Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null, Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null, Action<TenantSchemaOptions>? configureTenantSchema = null)",
           "returnType": "IServiceCollection"
         }
       ]
