@@ -1,11 +1,9 @@
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Extensions;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
-using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Interceptors;
-using Granit.Timing;
-using Granit.Users;
+using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
@@ -15,15 +13,24 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests;
 
 public sealed class ApiKeysEntityFrameworkCoreServiceCollectionExtensionsTests
 {
+    private static ServiceCollection CreateBaseServices()
+    {
+        var services = new ServiceCollection();
+        // AddGranitIsolatedDbContext binds TenantIsolationOptions from configuration
+        // and the IsolatedDbContextFactory logs through ILogger<>. Tests need both.
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddLogging();
+        services.AddSingleton(Substitute.For<ICurrentTenant>());
+        return services;
+    }
+
     [Fact]
     public void AddGranitApiKeysEntityFrameworkCore_RegistersRequiredServices()
     {
-        var services = new ServiceCollection();
-        services.AddLogging();
-        services.AddSingleton(Substitute.For<ICurrentTenant>());
+        ServiceCollection services = CreateBaseServices();
 
         services.AddGranitApiKeysEntityFrameworkCore(
-            options => options.UseSqlite("DataSource=:memory:"));
+            configureShared: options => options.UseSqlite("DataSource=:memory:"));
 
         ServiceProvider provider = services.BuildServiceProvider();
 
@@ -42,12 +49,12 @@ public sealed class ApiKeysEntityFrameworkCoreServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitApiKeysEntityFrameworkCore_NullConfigureAction_ThrowsArgumentNullException()
+    public void AddGranitApiKeysEntityFrameworkCore_NullConfigureShared_ThrowsArgumentNullException()
     {
         var services = new ServiceCollection();
 
         Should.Throw<ArgumentNullException>(
-            () => services.AddGranitApiKeysEntityFrameworkCore(null!));
+            () => services.AddGranitApiKeysEntityFrameworkCore(configureShared: null!));
     }
 
     [Fact]
@@ -65,43 +72,59 @@ public sealed class ApiKeysEntityFrameworkCoreServiceCollectionExtensionsTests
         services.Count(s => s.ServiceType == typeof(IApiKeyAdminStore)).ShouldBe(1);
     }
 
+    /// <summary>
+    /// Regression: under SchemaPerTenant the registration must wire the schema-keyed factory
+    /// so <c>TenantSchemaConnectionInterceptor</c> is active and queries land in the tenant
+    /// schema instead of <c>public</c> (repro: granit-iot-showcase 42P01 on /api/api-keys).
+    /// </summary>
     [Fact]
-    public void AddGranitApiKeysEntityFrameworkCore_WithInterceptors_ResolvesFactory()
+    public void AddGranitApiKeysEntityFrameworkCore_SchemaPerTenant_RegistersSchemaKeyedFactory()
     {
-        var services = new ServiceCollection();
-
-        // Register real interceptors with substituted dependencies
-        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
-        services.AddSingleton(new AuditedEntityInterceptor(
-            Substitute.For<ICurrentUserService>(),
-            Substitute.For<IClock>(),
-            Substitute.For<IGuidGenerator>(),
-            currentTenant));
-        services.AddSingleton(new SoftDeleteInterceptor(
-            Substitute.For<ICurrentUserService>(),
-            Substitute.For<IClock>()));
+        ServiceCollection services = CreateBaseServices();
 
         services.AddGranitApiKeysEntityFrameworkCore(
-            options => options.UseSqlite("DataSource=:memory:"));
+            configureShared: options => options.UseSqlite("DataSource=:memory:"),
+            configureSchemaPerTenant: options => options.UseSqlite("DataSource=:memory:"));
 
         ServiceProvider provider = services.BuildServiceProvider();
-        using IServiceScope scope = provider.CreateScope();
-        IDbContextFactory<AuthenticationApiKeysDbContext> factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AuthenticationApiKeysDbContext>>();
-        factory.ShouldNotBeNull();
+
+        IsolatedDbContextMarker marker = provider
+            .GetServices<IsolatedDbContextMarker>()
+            .Single(m => m.DbContextType == typeof(AuthenticationApiKeysDbContext));
+
+        marker.RegisteredStrategies.ShouldContain(TenantIsolationStrategy.SchemaPerTenant);
+        marker.RegisteredStrategies.ShouldContain(TenantIsolationStrategy.SharedDatabase);
+
+        // Verify the keyed factory descriptor is registered. We don't resolve it because
+        // the SchemaPerTenant factory pulls in ITenantSchemaActivator / ITenantSchemaProvider
+        // which require GranitPersistenceEntityFrameworkCoreModule to be loaded — out of scope
+        // for a unit test of the extension method.
+        services.ShouldContain(d =>
+            d.ServiceType == typeof(IDbContextFactory<AuthenticationApiKeysDbContext>) &&
+            d.IsKeyedService &&
+            Equals(d.ServiceKey, TenantIsolationStrategy.SchemaPerTenant));
     }
 
     [Fact]
-    public void AddGranitApiKeysEntityFrameworkCore_WithoutInterceptors_ResolvesFactory()
+    public void AddGranitApiKeysEntityFrameworkCore_DatabasePerTenant_RegistersDatabaseKeyedFactory()
     {
-        var services = new ServiceCollection();
+        ServiceCollection services = CreateBaseServices();
 
-        // No interceptors registered — the null path in the extension method
         services.AddGranitApiKeysEntityFrameworkCore(
-            options => options.UseSqlite("DataSource=:memory:"));
+            configureShared: options => options.UseSqlite("DataSource=:memory:"),
+            configureDatabasePerTenant: (options, _) => options.UseSqlite("DataSource=:memory:"));
 
         ServiceProvider provider = services.BuildServiceProvider();
-        using IServiceScope scope = provider.CreateScope();
-        IDbContextFactory<AuthenticationApiKeysDbContext> factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AuthenticationApiKeysDbContext>>();
-        factory.ShouldNotBeNull();
+
+        IsolatedDbContextMarker marker = provider
+            .GetServices<IsolatedDbContextMarker>()
+            .Single(m => m.DbContextType == typeof(AuthenticationApiKeysDbContext));
+
+        marker.RegisteredStrategies.ShouldContain(TenantIsolationStrategy.DatabasePerTenant);
+
+        services.ShouldContain(d =>
+            d.ServiceType == typeof(IDbContextFactory<AuthenticationApiKeysDbContext>) &&
+            d.IsKeyedService &&
+            Equals(d.ServiceKey, TenantIsolationStrategy.DatabasePerTenant));
     }
 }
