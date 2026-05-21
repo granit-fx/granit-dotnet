@@ -103,7 +103,7 @@ internal static class ImportUploadEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        job.ConfirmMappings(System.Text.Json.JsonSerializer.Serialize(request.Mappings));
+        job.ConfirmMappings(request.Mappings);
         await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();

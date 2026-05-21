@@ -140,7 +140,8 @@ public sealed class ExportDtoMappingTests
     public void ExportJobResponse_FromJob_MapsAllProperties()
     {
         var job = ExportJob.Create(
-            Guid.NewGuid(), "Acme.Export", "xlsx", "{}");
+            Guid.NewGuid(), "Acme.Export", "xlsx",
+            new ExportRequest("Acme.Export", "xlsx", null, false, null, null, null, null));
 
         var response = ExportJobResponse.FromJob(job);
 

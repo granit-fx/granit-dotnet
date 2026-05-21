@@ -1,6 +1,5 @@
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using Granit.Commands;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export;
@@ -50,8 +49,7 @@ public sealed class ExportOrchestratorTests
                     id,
                     "Test.Export",
                     "csv",
-                    JsonSerializer.Serialize(new ExportRequest(
-                        "Test.Export", "csv", null, false, null, null, null, null)));
+                    new ExportRequest("Test.Export", "csv", null, false, null, null, null, null));
             });
     }
 
@@ -148,7 +146,7 @@ public sealed class ExportOrchestratorTests
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", ["Name"], false, null, null, null, null);
-        var job = ExportJob.Create(jobId, "Test.Export", "csv", JsonSerializer.Serialize(request));
+        var job = ExportJob.Create(jobId, "Test.Export", "csv", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         IExportWriter capturedWriter = Substitute.For<IExportWriter>();
@@ -187,7 +185,7 @@ public sealed class ExportOrchestratorTests
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", ["Company.Name"], false, null, null, null, null);
-        var job = ExportJob.Create(jobId, "Test.Export", "csv", JsonSerializer.Serialize(request));
+        var job = ExportJob.Create(jobId, "Test.Export", "csv", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         List<IReadOnlyDictionary<string, object?>> capturedRows = [];
@@ -259,7 +257,7 @@ public sealed class ExportOrchestratorTests
         // Arrange
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.QueryExport", "csv", null, false, "-Name", null, null, null);
-        var job = ExportJob.Create(jobId, "Test.QueryExport", "csv", JsonSerializer.Serialize(request));
+        var job = ExportJob.Create(jobId, "Test.QueryExport", "csv", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         FakeQueryEngine queryEngine = new();
@@ -283,7 +281,7 @@ public sealed class ExportOrchestratorTests
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", [], false, null, null, null, null);
-        var job = ExportJob.Create(jobId, "Test.Export", "csv", JsonSerializer.Serialize(request));
+        var job = ExportJob.Create(jobId, "Test.Export", "csv", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         IReadOnlyList<ExportFieldDescriptor>? capturedFields = null;
@@ -320,7 +318,7 @@ public sealed class ExportOrchestratorTests
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", ["Email", "Name"], false, null, null, null, null);
-        var job = ExportJob.Create(jobId, "Test.Export", "csv", JsonSerializer.Serialize(request));
+        var job = ExportJob.Create(jobId, "Test.Export", "csv", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         IReadOnlyList<ExportFieldDescriptor>? capturedFields = null;
@@ -379,7 +377,7 @@ public sealed class ExportOrchestratorTests
         Dictionary<string, string> filter = new() { ["name.eq"] = "Alice" };
         Dictionary<string, string> presets = new() { ["status"] = "Active" };
         ExportRequest request = new("Test.QueryExport", "csv", null, false, "-Name", filter, presets, "test search");
-        var job = ExportJob.Create(jobId, "Test.QueryExport", "csv", JsonSerializer.Serialize(request));
+        var job = ExportJob.Create(jobId, "Test.QueryExport", "csv", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         FakeQueryEngine queryEngine = new();
@@ -496,7 +494,7 @@ public sealed class ExportOrchestratorTests
         // Arrange — xlsx format
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
-        var job = ExportJob.Create(jobId, "Test.Export", "xlsx", "{}");
+        var job = ExportJob.Create(jobId, "Test.Export", "xlsx", new ExportRequest("Test.Export", "xlsx", null, false, null, null, null, null));
         job.MarkAsExporting();
         job.Complete("blob-ref-xlsx", "test_export.xlsx", 0, DateTimeOffset.UtcNow);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
@@ -568,7 +566,7 @@ public sealed class ExportOrchestratorTests
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         var job = ExportJob.Create(jobId, "Test.Export", "csv",
-            JsonSerializer.Serialize(new ExportRequest("Test.Export", "csv", null, false, null, null, null, null)));
+            new ExportRequest("Test.Export", "csv", null, false, null, null, null, null));
         job.MarkAsExporting();
         job.Complete("blob-ref-export", "test_export.csv", 10, DateTimeOffset.UtcNow);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
@@ -708,8 +706,7 @@ public sealed class ExportOrchestratorTests
             id,
             "Test.Export",
             "csv",
-            JsonSerializer.Serialize(new ExportRequest(
-                "Test.Export", "csv", null, false, null, null, null, null)));
+            new ExportRequest("Test.Export", "csv", null, false, null, null, null, null));
 
         // Transition to desired status using behavior methods
         if (status == ExportJobStatus.Exporting)

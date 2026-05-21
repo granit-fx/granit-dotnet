@@ -33,7 +33,7 @@ public sealed class EfExportJobStoreTests
         loaded.DefinitionName.ShouldBe("Test.Export");
         loaded.Format.ShouldBe("csv");
         loaded.Status.ShouldBe(ExportJobStatus.Queued);
-        loaded.RequestJson.ShouldBe(job.RequestJson);
+        loaded.Request.ShouldBe(job.Request);
     }
 
     [Fact]
@@ -136,5 +136,5 @@ public sealed class EfExportJobStoreTests
             Guid.NewGuid(),
             "Test.Export",
             "csv",
-            """{"DefinitionName":"Test.Export","Format":"csv"}""");
+            new ExportRequest("Test.Export", "csv", null, false, null, null, null, null));
 }

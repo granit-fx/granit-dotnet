@@ -1,4 +1,6 @@
 using Granit.DataExchange.Import.Events;
+using Granit.DataExchange.Import.Mapping;
+using Granit.DataExchange.Import.Reporting;
 using Granit.Domain;
 using Granit.Domain.ValueObjects;
 
@@ -77,14 +79,16 @@ public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant
     public ImportJobStatus Status { get; private set; } = ImportJobStatus.Created;
 
     /// <summary>
-    /// Serialized column mappings (JSON). Set after user confirmation.
+    /// Column mappings confirmed by the user. Persisted as a JSON-owned collection.
+    /// <see langword="null"/> until <see cref="ConfirmMappings"/> is called.
     /// </summary>
-    public string? MappingsJson { get; private set; }
+    public IReadOnlyList<ImportColumnMapping>? Mappings { get; private set; }
 
     /// <summary>
-    /// Serialized import report (JSON). Set after execution completes.
+    /// Import execution report. Persisted as a JSON-serialized value.
+    /// <see langword="null"/> until <see cref="Complete"/> is called.
     /// </summary>
-    public string? ReportJson { get; private set; }
+    public ImportReport? Report { get; private set; }
 
     /// <summary>
     /// Timestamp when the import completed (success, partial, or failure).
@@ -102,8 +106,8 @@ public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant
     /// <summary>
     /// Sets the column mappings after user confirmation.
     /// </summary>
-    internal void SetMappings(string mappingsJson) =>
-        MappingsJson = mappingsJson;
+    internal void SetMappings(IReadOnlyList<ImportColumnMapping> mappings) =>
+        Mappings = mappings;
 
     /// <summary>
     /// Transitions to <see cref="ImportJobStatus.Previewed"/> after header extraction.
@@ -121,14 +125,14 @@ public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant
     /// <summary>
     /// Confirms mappings and transitions to <see cref="ImportJobStatus.Mapped"/>.
     /// </summary>
-    internal void ConfirmMappings(string mappingsJson)
+    internal void ConfirmMappings(IReadOnlyList<ImportColumnMapping> mappings)
     {
         if (Status is not ImportJobStatus.Previewed)
         {
             throw new InvalidOperationException($"Cannot transition to '{ImportJobStatus.Mapped}' from '{Status}'.");
         }
 
-        MappingsJson = mappingsJson;
+        Mappings = mappings;
         Status = ImportJobStatus.Mapped;
     }
 
@@ -162,7 +166,7 @@ public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant
     /// <summary>
     /// Marks the import as completed with a final status and report.
     /// </summary>
-    internal void Complete(ImportJobStatus finalStatus, string reportJson, DateTimeOffset completedAt)
+    internal void Complete(ImportJobStatus finalStatus, ImportReport report, DateTimeOffset completedAt)
     {
         if (Status is not ImportJobStatus.Executing)
         {
@@ -170,7 +174,7 @@ public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant
         }
 
         Status = finalStatus;
-        ReportJson = reportJson;
+        Report = report;
         CompletedAt = completedAt;
     }
 }

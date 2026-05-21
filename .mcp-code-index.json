@@ -12476,7 +12476,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, string definitionName, string format, string requestJson, Guid? tenantId = null)",
+          "signature": "Create(Guid id, string definitionName, string format, ExportRequest request, Guid? tenantId = null)",
           "returnType": "ExportJob"
         },
         {
@@ -12492,10 +12492,10 @@
           "returnType": "string"
         },
         {
-          "name": "RequestJson",
+          "name": "Request",
           "kind": "property",
-          "signature": "string RequestJson",
-          "returnType": "string"
+          "signature": "ExportRequest Request",
+          "returnType": "ExportRequest"
         },
         {
           "name": "Status",
@@ -12642,7 +12642,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/ExportOrchestrator.cs",
-      "line": 27,
+      "line": 26,
       "members": [
         {
           "name": "ExportAsync",
@@ -13100,7 +13100,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Import/Domain/ImportJob.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "Create",
@@ -13145,10 +13145,10 @@
           "returnType": "ImportJobStatus"
         },
         {
-          "name": "MappingsJson",
+          "name": "Mappings",
           "kind": "property",
-          "signature": "string? MappingsJson",
-          "returnType": "string?"
+          "signature": "IReadOnlyList<ImportColumnMapping>? Mappings",
+          "returnType": "IReadOnlyList<ImportColumnMapping>?"
         }
       ]
     },

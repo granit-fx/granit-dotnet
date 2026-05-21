@@ -1,3 +1,4 @@
+using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Internal;
 using Shouldly;
@@ -21,7 +22,8 @@ public sealed class NullExportJobStoreTests
     [Fact]
     public async Task CreateAsync_DoesNotThrow()
     {
-        var job = ExportJob.Create(Guid.NewGuid(), "Test", "csv", "{}");
+        var job = ExportJob.Create(Guid.NewGuid(), "Test", "csv",
+            new ExportRequest("Test", "csv", null, false, null, null, null, null));
 
         await Should.NotThrowAsync(() =>
             _store.CreateAsync(job, TestContext.Current.CancellationToken));
@@ -30,7 +32,8 @@ public sealed class NullExportJobStoreTests
     [Fact]
     public async Task UpdateAsync_DoesNotThrow()
     {
-        var job = ExportJob.Create(Guid.NewGuid(), "Test", "csv", "{}");
+        var job = ExportJob.Create(Guid.NewGuid(), "Test", "csv",
+            new ExportRequest("Test", "csv", null, false, null, null, null, null));
 
         await Should.NotThrowAsync(() =>
             _store.UpdateAsync(job, TestContext.Current.CancellationToken));

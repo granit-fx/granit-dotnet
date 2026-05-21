@@ -1,4 +1,5 @@
 using Granit.DataExchange.Import.Domain;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,8 +29,19 @@ internal sealed class ImportJobConfiguration : IEntityTypeConfiguration<ImportJo
             .HasConversion<string>()
             .HasMaxLength(20);
 
-        builder.Property(e => e.MappingsJson);
-        builder.Property(e => e.ReportJson);
+        builder.OwnsMany(e => e.Mappings, m =>
+        {
+            m.ToJson();
+            m.Property(p => p.SourceColumn);
+            m.Property(p => p.TargetProperty);
+            m.Property(p => p.Confidence);
+        });
+
+        // ImportReport is serialized as an opaque JSON string via the framework helper
+        // rather than .ToJson() owned mapping: ImportReport's nested IReadOnlyList<ImportRowError>
+        // + TimeSpan + enum compose awkwardly under EF Core 10 owned-types, while
+        // round-tripping through System.Text.Json is straightforward.
+        builder.Property(e => e.Report).HasJsonConversion();
         builder.Property(e => e.CompletedAt);
         builder.Property(e => e.TenantId);
 

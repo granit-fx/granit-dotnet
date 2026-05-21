@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using Granit.Commands;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export.Domain;
@@ -54,7 +53,7 @@ public sealed partial class ExportOrchestrator(
             guidGenerator.Create(),
             request.DefinitionName,
             request.Format,
-            JsonSerializer.Serialize(request),
+            request,
             currentTenant.IsAvailable ? currentTenant.Id : null);
 
         await jobWriter.CreateAsync(job, cancellationToken).ConfigureAwait(false);
@@ -87,7 +86,7 @@ public sealed partial class ExportOrchestrator(
             job.MarkAsExporting();
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
-            ExportRequest request = JsonSerializer.Deserialize<ExportRequest>(job.RequestJson)!;
+            ExportRequest request = job.Request;
             IExportDefinitionDescriptor definition = ResolveDefinition(request.DefinitionName);
             IExportWriter writer = ResolveWriter(request.Format);
             IReadOnlyList<ExportFieldDescriptor> fields = ResolveFields(definition, request.SelectedFields, request.IncludeIdForImport);

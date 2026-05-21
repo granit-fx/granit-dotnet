@@ -19,7 +19,7 @@ public sealed class ExportJobTests
             Guid.NewGuid(),
             "Test",
             "xlsx",
-            "{}");
+            new ExportRequest("Test", "xlsx", null, false, null, null, null, null));
 
         job.Status.ShouldBe(ExportJobStatus.Queued);
     }
@@ -31,7 +31,7 @@ public sealed class ExportJobTests
             Guid.NewGuid(),
             "Test",
             "csv",
-            "{}");
+            new ExportRequest("Test", "csv", null, false, null, null, null, null));
 
         job.BlobReference.ShouldBeNull();
         job.FileName.ShouldBeNull();
@@ -47,17 +47,20 @@ public sealed class ExportJobTests
         var id = Guid.NewGuid();
         var tenantId = Guid.NewGuid();
 
+        var request = new ExportRequest(
+            "Acme.PatientExport", "xlsx", null, false, null,
+            new Dictionary<string, string> { ["status"] = "active" }, null, null);
         var job = ExportJob.Create(
             id,
             "Acme.PatientExport",
             "xlsx",
-            """{"filter":"active"}""",
+            request,
             tenantId);
 
         job.Id.ShouldBe(id);
         job.DefinitionName.ShouldBe("Acme.PatientExport");
         job.Format.ShouldBe("xlsx");
-        job.RequestJson.ShouldBe("""{"filter":"active"}""");
+        job.Request.ShouldBe(request);
         job.Status.ShouldBe(ExportJobStatus.Queued);
         job.TenantId.ShouldBe(tenantId);
     }
@@ -69,7 +72,7 @@ public sealed class ExportJobTests
             Guid.NewGuid(),
             "Test",
             "xlsx",
-            "{}");
+            new ExportRequest("Test", "xlsx", null, false, null, null, null, null));
         DateTimeOffset now = DateTimeOffset.UtcNow;
         job.MarkAsExporting();
 
@@ -89,7 +92,7 @@ public sealed class ExportJobTests
             Guid.NewGuid(),
             "Test",
             "csv",
-            "{}");
+            new ExportRequest("Test", "csv", null, false, null, null, null, null));
 
         job.MarkAsExporting();
 
@@ -103,7 +106,7 @@ public sealed class ExportJobTests
             Guid.NewGuid(),
             "Test",
             "csv",
-            "{}");
+            new ExportRequest("Test", "csv", null, false, null, null, null, null));
         DateTimeOffset now = DateTimeOffset.UtcNow;
         job.MarkAsExporting();
 

@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
 using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.DataExchange.Endpoints.Extensions;
 using Granit.DataExchange.Endpoints.Permissions;
@@ -96,7 +95,7 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
         // Arrange
         var jobId = Guid.NewGuid();
         ImportReport report = BuildReport();
-        ImportJob job = BuildJob(jobId, ImportJobStatus.Completed, JsonSerializer.Serialize(report));
+        ImportJob job = BuildJob(jobId, ImportJobStatus.Completed, report);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         // Act
@@ -131,7 +130,7 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
     {
         // Arrange
         var jobId = Guid.NewGuid();
-        ImportJob job = BuildJob(jobId, ImportJobStatus.Executing, reportJson: null);
+        ImportJob job = BuildJob(jobId, ImportJobStatus.Executing, report: null);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         // Act
@@ -150,7 +149,7 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
         // Arrange
         var jobId = Guid.NewGuid();
         ImportReport report = BuildReport();
-        ImportJob job = BuildJob(jobId, ImportJobStatus.PartiallyCompleted, JsonSerializer.Serialize(report));
+        ImportJob job = BuildJob(jobId, ImportJobStatus.PartiallyCompleted, report);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         // Act
@@ -181,7 +180,7 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
             FinalStatus = ImportJobStatus.Completed,
             RowErrors = [],
         };
-        ImportJob job = BuildJob(jobId, ImportJobStatus.Completed, JsonSerializer.Serialize(report));
+        ImportJob job = BuildJob(jobId, ImportJobStatus.Completed, report);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         // Act
@@ -216,36 +215,22 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
         return client;
     }
 
-    private static ImportJob BuildJob(Guid id, ImportJobStatus status, string? reportJson)
+    private static ImportJob BuildJob(Guid id, ImportJobStatus status, ImportReport? report)
     {
         var job = ImportJob.Create(id, "Test.Import", "Object", "test.csv", "text/csv", 100, "blob-ref-1");
         job.CreatedAt = DateTimeOffset.UtcNow;
 
-        if (status == ImportJobStatus.Completed && reportJson is not null)
+        if (status is ImportJobStatus.Completed or ImportJobStatus.PartiallyCompleted or ImportJobStatus.Failed && report is not null)
         {
             job.MarkAsPreviewed();
-            job.ConfirmMappings("[]");
+            job.ConfirmMappings([]);
             job.MarkAsExecuting();
-            job.Complete(ImportJobStatus.Completed, reportJson, DateTimeOffset.UtcNow);
-        }
-        else if (status == ImportJobStatus.PartiallyCompleted && reportJson is not null)
-        {
-            job.MarkAsPreviewed();
-            job.ConfirmMappings("[]");
-            job.MarkAsExecuting();
-            job.Complete(ImportJobStatus.PartiallyCompleted, reportJson, DateTimeOffset.UtcNow);
-        }
-        else if (status == ImportJobStatus.Failed && reportJson is not null)
-        {
-            job.MarkAsPreviewed();
-            job.ConfirmMappings("[]");
-            job.MarkAsExecuting();
-            job.Complete(ImportJobStatus.Failed, reportJson, DateTimeOffset.UtcNow);
+            job.Complete(status, report, DateTimeOffset.UtcNow);
         }
         else if (status == ImportJobStatus.Executing)
         {
             job.MarkAsPreviewed();
-            job.ConfirmMappings("[]");
+            job.ConfirmMappings([]);
             job.MarkAsExecuting();
         }
 

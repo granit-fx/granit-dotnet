@@ -309,20 +309,20 @@ public sealed class ImportExecutionEndpointsTests : IAsyncDisposable
         else if (status == ImportJobStatus.Mapped)
         {
             job.MarkAsPreviewed();
-            job.ConfirmMappings("[]");
+            job.ConfirmMappings([]);
         }
         else if (status == ImportJobStatus.Executing)
         {
             job.MarkAsPreviewed();
-            job.ConfirmMappings("[]");
+            job.ConfirmMappings([]);
             job.MarkAsExecuting();
         }
         else if (status == ImportJobStatus.Completed)
         {
             job.MarkAsPreviewed();
-            job.ConfirmMappings("[]");
+            job.ConfirmMappings([]);
             job.MarkAsExecuting();
-            job.Complete(ImportJobStatus.Completed, "{}", DateTimeOffset.UtcNow);
+            job.Complete(ImportJobStatus.Completed, BuildReport(), DateTimeOffset.UtcNow);
         }
         else if (status == ImportJobStatus.Cancelled)
         {

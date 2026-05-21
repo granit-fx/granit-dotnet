@@ -334,7 +334,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         else if (status == ImportJobStatus.Mapped)
         {
             job.MarkAsPreviewed();
-            job.ConfirmMappings("[]");
+            job.ConfirmMappings([]);
         }
         else if (status == ImportJobStatus.Executing)
         {

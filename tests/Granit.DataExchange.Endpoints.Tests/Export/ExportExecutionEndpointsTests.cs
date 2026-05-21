@@ -96,7 +96,8 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
         _orchestrator.ExportAsync(Arg.Any<ExportRequest>(), Arg.Any<CancellationToken>())
             .Returns(new ExportJobResult(jobId, ExportJobStatus.Queued));
         _orchestrator.GetJobAsync(jobId, Arg.Any<CancellationToken>())
-            .Returns(ExportJob.Create(jobId, "Test.Export", "csv", "{}"));
+            .Returns(ExportJob.Create(jobId, "Test.Export", "csv",
+                new ExportRequest("Test.Export", "csv", null, false, null, null, null, null)));
 
         CreateExportJobRequest request = new("Test.Export", "csv", null, false, null, null, null, null);
 
@@ -176,7 +177,8 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
     {
         // Arrange
         var jobId = Guid.NewGuid();
-        var completedJob = ExportJob.Create(jobId, "Test.Export", "xlsx", "{}");
+        var completedJob = ExportJob.Create(jobId, "Test.Export", "xlsx",
+            new ExportRequest("Test.Export", "xlsx", null, false, null, null, null, null));
         completedJob.MarkAsExporting();
         completedJob.Complete("blob-ref", "export.xlsx", 100, DateTimeOffset.UtcNow);
         _orchestrator.GetJobAsync(jobId, Arg.Any<CancellationToken>())
@@ -218,7 +220,8 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
     {
         // Arrange
         var jobId = Guid.NewGuid();
-        var downloadJob = ExportJob.Create(jobId, "Test.Export", "csv", "{}");
+        var downloadJob = ExportJob.Create(jobId, "Test.Export", "csv",
+            new ExportRequest("Test.Export", "csv", null, false, null, null, null, null));
         downloadJob.MarkAsExporting();
         downloadJob.Complete("blob-ref", "export.csv", 10, DateTimeOffset.UtcNow);
         _orchestrator.GetJobAsync(jobId, Arg.Any<CancellationToken>())
@@ -242,7 +245,8 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
     {
         // Arrange
         var jobId = Guid.NewGuid();
-        var exportingJob = ExportJob.Create(jobId, "Test.Export", "csv", "{}");
+        var exportingJob = ExportJob.Create(jobId, "Test.Export", "csv",
+            new ExportRequest("Test.Export", "csv", null, false, null, null, null, null));
         exportingJob.MarkAsExporting();
         _orchestrator.GetJobAsync(jobId, Arg.Any<CancellationToken>())
             .Returns(exportingJob);

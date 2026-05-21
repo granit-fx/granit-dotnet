@@ -1,4 +1,6 @@
 using Granit.DataExchange.Import.Domain;
+using Granit.DataExchange.Import.Mapping;
+using Granit.DataExchange.Import.Reporting;
 using Granit.Domain;
 using Shouldly;
 using Xunit;
@@ -65,7 +67,7 @@ public sealed class ImportJobTests
     }
 
     [Fact]
-    public void SetMappings_stores_json()
+    public void SetMappings_stores_typed_collection()
     {
         var job = ImportJob.Create(
             Guid.NewGuid(),
@@ -75,10 +77,11 @@ public sealed class ImportJobTests
             "text/csv",
             1024,
             "blob/test.csv");
+        ImportColumnMapping[] mappings = [new("A", null, MappingConfidence.Manual)];
 
-        job.SetMappings("[{\"sourceColumn\":\"A\"}]");
+        job.SetMappings(mappings);
 
-        job.MappingsJson.ShouldBe("[{\"sourceColumn\":\"A\"}]");
+        job.Mappings.ShouldBe(mappings);
     }
 
     [Fact]
@@ -93,7 +96,7 @@ public sealed class ImportJobTests
             1024,
             "blob/test.csv");
         job.MarkAsPreviewed();
-        job.ConfirmMappings("[]");
+        job.ConfirmMappings([]);
 
         job.MarkAsExecuting();
 
@@ -113,13 +116,25 @@ public sealed class ImportJobTests
             "blob/test.csv");
         DateTimeOffset completedAt = DateTimeOffset.UtcNow;
         job.MarkAsPreviewed();
-        job.ConfirmMappings("[]");
+        job.ConfirmMappings([]);
         job.MarkAsExecuting();
 
-        job.Complete(ImportJobStatus.Completed, "{\"totalRows\":100}", completedAt);
+        ImportReport report = new()
+        {
+            TotalRows = 100,
+            SucceededRows = 100,
+            FailedRows = 0,
+            SkippedRows = 0,
+            InsertedRows = 100,
+            UpdatedRows = 0,
+            Duration = TimeSpan.Zero,
+            FinalStatus = ImportJobStatus.Completed,
+            RowErrors = [],
+        };
+        job.Complete(ImportJobStatus.Completed, report, completedAt);
 
         job.Status.ShouldBe(ImportJobStatus.Completed);
-        job.ReportJson.ShouldBe("{\"totalRows\":100}");
+        job.Report.ShouldBe(report);
         job.CompletedAt.ShouldBe(completedAt);
     }
 }

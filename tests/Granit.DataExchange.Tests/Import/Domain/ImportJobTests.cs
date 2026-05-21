@@ -1,4 +1,6 @@
 using Granit.DataExchange.Import.Domain;
+using Granit.DataExchange.Import.Mapping;
+using Granit.DataExchange.Import.Reporting;
 using Shouldly;
 using Xunit;
 
@@ -6,6 +8,22 @@ namespace Granit.DataExchange.Tests.Import.Domain;
 
 public sealed class ImportJobTests
 {
+    private static readonly ImportColumnMapping[] SampleMappings =
+        [new("Email", "Email", MappingConfidence.Manual)];
+
+    private static ImportReport SampleReport(ImportJobStatus status = ImportJobStatus.Completed, int totalRows = 100) => new()
+    {
+        TotalRows = totalRows,
+        SucceededRows = totalRows,
+        FailedRows = 0,
+        SkippedRows = 0,
+        InsertedRows = totalRows,
+        UpdatedRows = 0,
+        Duration = TimeSpan.Zero,
+        FinalStatus = status,
+        RowErrors = [],
+    };
+
     private static ImportJob CreateJob(Guid? tenantId = null) =>
         ImportJob.Create(
             Guid.NewGuid(),
@@ -42,8 +60,8 @@ public sealed class ImportJobTests
         job.BlobReference.Value.ShouldBe("blob/ref");
         job.Status.ShouldBe(ImportJobStatus.Created);
         job.TenantId.ShouldBe(tenantId);
-        job.MappingsJson.ShouldBeNull();
-        job.ReportJson.ShouldBeNull();
+        job.Mappings.ShouldBeNull();
+        job.Report.ShouldBeNull();
         job.CompletedAt.ShouldBeNull();
     }
 
@@ -66,27 +84,25 @@ public sealed class ImportJobTests
     }
 
     [Fact]
-    public void SetMappings_StoresMappingsJson()
+    public void SetMappings_StoresTypedMappings()
     {
         ImportJob job = CreateJob();
-        const string json = """[{"SourceColumn":"Email","TargetProperty":"Email"}]""";
 
-        job.SetMappings(json);
+        job.SetMappings(SampleMappings);
 
-        job.MappingsJson.ShouldBe(json);
+        job.Mappings.ShouldBe(SampleMappings);
     }
 
     [Fact]
     public void ConfirmMappings_SetsMappingsAndTransitionsToMapped()
     {
         ImportJob job = CreateJob();
-        const string json = """[{"SourceColumn":"Email","TargetProperty":"Email"}]""";
         job.MarkAsPreviewed();
 
-        job.ConfirmMappings(json);
+        job.ConfirmMappings(SampleMappings);
 
         job.Status.ShouldBe(ImportJobStatus.Mapped);
-        job.MappingsJson.ShouldBe(json);
+        job.Mappings.ShouldBe(SampleMappings);
     }
 
     [Fact]
@@ -94,7 +110,7 @@ public sealed class ImportJobTests
     {
         ImportJob job = CreateJob();
         job.MarkAsPreviewed();
-        job.ConfirmMappings("[]");
+        job.ConfirmMappings([]);
 
         job.MarkAsExecuting();
 
@@ -106,15 +122,15 @@ public sealed class ImportJobTests
     {
         ImportJob job = CreateJob();
         DateTimeOffset completedAt = DateTimeOffset.UtcNow;
-        const string reportJson = """{"totalRows":100}""";
+        ImportReport report = SampleReport();
         job.MarkAsPreviewed();
-        job.ConfirmMappings("[]");
+        job.ConfirmMappings([]);
         job.MarkAsExecuting();
 
-        job.Complete(ImportJobStatus.Completed, reportJson, completedAt);
+        job.Complete(ImportJobStatus.Completed, report, completedAt);
 
         job.Status.ShouldBe(ImportJobStatus.Completed);
-        job.ReportJson.ShouldBe(reportJson);
+        job.Report.ShouldBe(report);
         job.CompletedAt.ShouldBe(completedAt);
     }
 
@@ -124,10 +140,10 @@ public sealed class ImportJobTests
         ImportJob job = CreateJob();
         DateTimeOffset completedAt = DateTimeOffset.UtcNow;
         job.MarkAsPreviewed();
-        job.ConfirmMappings("[]");
+        job.ConfirmMappings([]);
         job.MarkAsExecuting();
 
-        job.Complete(ImportJobStatus.PartiallyCompleted, "{}", completedAt);
+        job.Complete(ImportJobStatus.PartiallyCompleted, SampleReport(ImportJobStatus.PartiallyCompleted), completedAt);
 
         job.Status.ShouldBe(ImportJobStatus.PartiallyCompleted);
     }

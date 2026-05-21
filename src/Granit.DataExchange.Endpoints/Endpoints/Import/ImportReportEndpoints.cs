@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Parsing;
@@ -47,18 +46,12 @@ internal static class ImportReportEndpoints
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
-        if (job is null || string.IsNullOrEmpty(job.ReportJson))
+        if (job?.Report is null)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
-        ImportReport? report = JsonSerializer.Deserialize<ImportReport>(job.ReportJson);
-        if (report is null)
-        {
-            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
-        }
-
-        return TypedResults.Ok(ImportReportResponse.FromReport(jobId, report));
+        return TypedResults.Ok(ImportReportResponse.FromReport(jobId, job.Report));
     }
 
     private static async Task<Results<FileStreamHttpResult, NoContent, ProblemHttpResult>> GetCorrectionFileAsync(
@@ -69,16 +62,12 @@ internal static class ImportReportEndpoints
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
-        if (job is null || string.IsNullOrEmpty(job.ReportJson))
+        if (job?.Report is null)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
-        ImportReport? report = JsonSerializer.Deserialize<ImportReport>(job.ReportJson);
-        if (report is null)
-        {
-            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
-        }
+        ImportReport report = job.Report;
 
         if (report.RowErrors.Count == 0)
         {

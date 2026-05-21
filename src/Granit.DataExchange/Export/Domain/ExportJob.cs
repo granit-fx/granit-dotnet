@@ -22,13 +22,13 @@ public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant
         Guid id,
         string definitionName,
         string format,
-        string requestJson,
+        ExportRequest request,
         Guid? tenantId = null) => new()
         {
             Id = id,
             DefinitionName = definitionName,
             Format = format,
-            RequestJson = requestJson,
+            Request = request,
             Status = ExportJobStatus.Queued,
             TenantId = tenantId,
         };
@@ -45,9 +45,10 @@ public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant
     public string Format { get; private set; } = string.Empty;
 
     /// <summary>
-    /// Serialized <see cref="ExportRequest"/> (JSON). Preserved for auditability and retry.
+    /// Original <see cref="ExportRequest"/>. Persisted as a JSON-serialized value;
+    /// preserved for auditability and retry.
     /// </summary>
-    public string RequestJson { get; private set; } = string.Empty;
+    public ExportRequest Request { get; private set; } = null!;
 
     /// <summary>
     /// Current lifecycle status.

@@ -7,12 +7,15 @@ namespace Granit.DataExchange.Tests.Export.Domain;
 
 public sealed class ExportJobTests
 {
+    private static ExportRequest SampleRequest(string format = "xlsx") =>
+        new("Acme.PatientExport", format, null, false, null, null, null, null);
+
     private static ExportJob CreateJob(Guid? tenantId = null) =>
         ExportJob.Create(
             Guid.NewGuid(),
             "Acme.PatientExport",
             "xlsx",
-            """{"definitionName":"Acme.PatientExport","format":"xlsx"}""",
+            SampleRequest(),
             tenantId);
 
     [Fact]
@@ -20,18 +23,19 @@ public sealed class ExportJobTests
     {
         var id = Guid.NewGuid();
         var tenantId = Guid.NewGuid();
+        ExportRequest request = SampleRequest("csv");
 
         var job = ExportJob.Create(
             id,
             "Acme.PatientExport",
             "csv",
-            """{"format":"csv"}""",
+            request,
             tenantId);
 
         job.Id.ShouldBe(id);
         job.DefinitionName.ShouldBe("Acme.PatientExport");
         job.Format.ShouldBe("csv");
-        job.RequestJson.ShouldBe("""{"format":"csv"}""");
+        job.Request.ShouldBe(request);
         job.Status.ShouldBe(ExportJobStatus.Queued);
         job.TenantId.ShouldBe(tenantId);
         job.BlobReference.ShouldBeNull();

@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Text.Json;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Execution;
@@ -54,7 +53,7 @@ internal sealed class ImportOrchestrator(
             ImportReport report = await ExecuteTypedPipelineAsync(job, dryRun: false, cancellationToken).ConfigureAwait(false);
 
             stopwatch.Stop();
-            job.Complete(report.FinalStatus, JsonSerializer.Serialize(report), clock.Now);
+            job.Complete(report.FinalStatus, report, clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
             metrics.RecordImportCompleted(report, job);
@@ -90,7 +89,7 @@ internal sealed class ImportOrchestrator(
                 ],
             };
 
-            job.Complete(ImportJobStatus.Failed, JsonSerializer.Serialize(errorReport), clock.Now);
+            job.Complete(ImportJobStatus.Failed, errorReport, clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
             metrics.RecordImportCompleted(errorReport, job);
@@ -132,19 +131,14 @@ internal sealed class ImportOrchestrator(
                 $"Ensure the corresponding module is added: GranitDataExchangeCsvModule for CSV, GranitDataExchangeExcelModule for Excel.");
         }
 
-        // Deserialize the confirmed column mappings
-        if (string.IsNullOrEmpty(job.MappingsJson))
+        // Confirmed column mappings — set by ConfirmMappings before the job is queued.
+        if (job.Mappings is null || job.Mappings.Count == 0)
         {
             throw new InvalidOperationException(
                 $"Import job '{job.Id}' has no confirmed mappings.");
         }
 
-        List<ImportColumnMapping>? mappings = JsonSerializer.Deserialize<List<ImportColumnMapping>>(job.MappingsJson);
-        if (mappings is null || mappings.Count == 0)
-        {
-            throw new InvalidOperationException(
-                $"Import job '{job.Id}' has invalid mappings JSON.");
-        }
+        IReadOnlyList<ImportColumnMapping> mappings = job.Mappings;
 
         // Open the file stream
         await using Stream fileStream = await fileProvider.OpenAsync(job.BlobReference, cancellationToken).ConfigureAwait(false);
@@ -190,7 +184,7 @@ internal sealed class ImportOrchestrator(
         IFileParser parser,
         Stream fileStream,
         FileParsingOptions parsingOptions,
-        List<ImportColumnMapping> mappings,
+        IReadOnlyList<ImportColumnMapping> mappings,
         bool dryRun,
         CancellationToken cancellationToken)
     {

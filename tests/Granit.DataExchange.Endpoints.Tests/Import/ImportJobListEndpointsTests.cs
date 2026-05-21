@@ -8,6 +8,7 @@ using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Parsing;
 using Granit.DataExchange.Import.Pipeline;
+using Granit.DataExchange.Import.Reporting;
 using Granit.Guids;
 using Granit.QueryEngine;
 using Granit.Timing;
@@ -210,6 +211,19 @@ public sealed class ImportJobListEndpointsTests : IAsyncDisposable
 
     // ── Helpers ──────────────────────────────────────────────────────────
 
+    private static ImportReport EmptyReport() => new()
+    {
+        TotalRows = 0,
+        SucceededRows = 0,
+        FailedRows = 0,
+        SkippedRows = 0,
+        InsertedRows = 0,
+        UpdatedRows = 0,
+        Duration = TimeSpan.Zero,
+        FinalStatus = ImportJobStatus.Completed,
+        RowErrors = [],
+    };
+
     private static ImportJob CreateJob(ImportJobStatus status)
     {
         var job = ImportJob.Create(
@@ -218,14 +232,14 @@ public sealed class ImportJobListEndpointsTests : IAsyncDisposable
         if (status == ImportJobStatus.Completed)
         {
             job.MarkAsPreviewed();
-            job.ConfirmMappings("[]");
+            job.ConfirmMappings([]);
             job.MarkAsExecuting();
-            job.Complete(ImportJobStatus.Completed, "{}", DateTimeOffset.UtcNow);
+            job.Complete(ImportJobStatus.Completed, EmptyReport(), DateTimeOffset.UtcNow);
         }
         else if (status == ImportJobStatus.Executing)
         {
             job.MarkAsPreviewed();
-            job.ConfirmMappings("[]");
+            job.ConfirmMappings([]);
             job.MarkAsExecuting();
         }
 

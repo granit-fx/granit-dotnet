@@ -1,4 +1,5 @@
 using Granit.DataExchange.Export.Domain;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,7 +19,11 @@ internal sealed class ExportJobConfiguration : IEntityTypeConfiguration<ExportJo
 
         builder.Property(e => e.DefinitionName).HasMaxLength(200).IsRequired();
         builder.Property(e => e.Format).HasMaxLength(10).IsRequired();
-        builder.Property(e => e.RequestJson).IsRequired();
+        // ExportRequest is serialized as an opaque JSON string via the framework helper
+        // rather than .ToJson() owned mapping: ExportRequest's IReadOnlyDictionary and
+        // IReadOnlyList interface-typed properties don't compose cleanly with EF Core 10
+        // owned-types, while System.Text.Json handles them transparently.
+        builder.Property(e => e.Request).HasJsonConversion().IsRequired();
         builder.Property(e => e.Status).IsRequired();
         builder.Property(e => e.BlobReference).HasMaxLength(500);
         builder.Property(e => e.FileName).HasMaxLength(500);

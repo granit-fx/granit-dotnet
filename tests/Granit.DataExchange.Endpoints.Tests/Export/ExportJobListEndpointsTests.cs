@@ -212,7 +212,8 @@ public sealed class ExportJobListEndpointsTests : IAsyncDisposable
 
     private static ExportJob CreateJob(ExportJobStatus status)
     {
-        var job = ExportJob.Create(Guid.NewGuid(), "Test.Export", "xlsx", "{}");
+        var job = ExportJob.Create(Guid.NewGuid(), "Test.Export", "xlsx",
+            new ExportRequest("Test.Export", "xlsx", null, false, null, null, null, null));
 
         if (status == ExportJobStatus.Exporting)
         {

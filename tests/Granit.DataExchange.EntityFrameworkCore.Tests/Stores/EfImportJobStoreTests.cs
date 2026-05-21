@@ -2,6 +2,8 @@ using Granit.DataExchange.EntityFrameworkCore.Internal;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Stores;
 using Granit.DataExchange.EntityFrameworkCore.Tests.Infrastructure;
 using Granit.DataExchange.Import.Domain;
+using Granit.DataExchange.Import.Mapping;
+using Granit.DataExchange.Import.Reporting;
 using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
@@ -100,7 +102,7 @@ public sealed class EfImportJobStoreTests
 
         // Act
         job.MarkAsPreviewed();
-        job.ConfirmMappings("[]");
+        job.ConfirmMappings([]);
         job.MarkAsExecuting();
         job.ModifiedAt = DateTimeOffset.UtcNow;
         job.ModifiedBy = "system";
@@ -121,11 +123,24 @@ public sealed class EfImportJobStoreTests
         EfImportJobStore store = CreateStore(dbName);
         var tenantId = Guid.NewGuid();
         ImportJob job = CreateJobWithTenant(tenantId);
+        ImportColumnMapping[] mappings = [new("A", null, MappingConfidence.Manual)];
+        ImportReport report = new()
+        {
+            TotalRows = 100,
+            SucceededRows = 100,
+            FailedRows = 0,
+            SkippedRows = 0,
+            InsertedRows = 100,
+            UpdatedRows = 0,
+            Duration = TimeSpan.Zero,
+            FinalStatus = ImportJobStatus.Completed,
+            RowErrors = [],
+        };
         // Use internal behavior methods to set state through proper lifecycle
         job.MarkAsPreviewed();
-        job.ConfirmMappings("[{\"sourceColumn\":\"A\"}]");
+        job.ConfirmMappings(mappings);
         job.MarkAsExecuting();
-        job.Complete(ImportJobStatus.Completed, "{\"totalRows\":100}", DateTimeOffset.UtcNow);
+        job.Complete(ImportJobStatus.Completed, report, DateTimeOffset.UtcNow);
 
         // Act
         await store.CreateAsync(job, TestContext.Current.CancellationToken);
@@ -135,8 +150,9 @@ public sealed class EfImportJobStoreTests
         // Assert
         result.ShouldNotBeNull();
         result.TenantId.ShouldBe(tenantId);
-        result.MappingsJson.ShouldBe("[{\"sourceColumn\":\"A\"}]");
-        result.ReportJson.ShouldBe("{\"totalRows\":100}");
+        result.Mappings.ShouldBe(mappings);
+        result.Report.ShouldNotBeNull();
+        result.Report.TotalRows.ShouldBe(100);
         result.CompletedAt.ShouldNotBeNull();
     }
 
@@ -151,11 +167,22 @@ public sealed class EfImportJobStoreTests
 
         // Act — simulate full lifecycle using behavior methods
         job.MarkAsPreviewed();
-        job.ConfirmMappings("[]");
+        job.ConfirmMappings([]);
         job.MarkAsExecuting();
         await store.UpdateAsync(job, TestContext.Current.CancellationToken);
 
-        job.Complete(ImportJobStatus.Completed, "{}", DateTimeOffset.UtcNow);
+        job.Complete(ImportJobStatus.Completed, new ImportReport
+        {
+            TotalRows = 0,
+            SucceededRows = 0,
+            FailedRows = 0,
+            SkippedRows = 0,
+            InsertedRows = 0,
+            UpdatedRows = 0,
+            Duration = TimeSpan.Zero,
+            FinalStatus = ImportJobStatus.Completed,
+            RowErrors = [],
+        }, DateTimeOffset.UtcNow);
         await store.UpdateAsync(job, TestContext.Current.CancellationToken);
 
         // Assert
