@@ -46,7 +46,7 @@ public static class PersistenceMigrationsHostApplicationBuilderExtensions
     ///   </item>
     ///   <item>
     ///     <see cref="MigrationStartupOptions"/> — bound from the
-    ///     <c>"GranitMigrations"</c> configuration section.
+    ///     <c>"Persistence:Migrations"</c> configuration section.
     ///   </item>
     /// </list>
     /// </para>
@@ -94,7 +94,7 @@ public static class PersistenceMigrationsHostApplicationBuilderExtensions
         // Hosted service — resumes pending and in-progress cycles at startup.
         builder.Services.AddHostedService<MigrationStartupService>();
 
-        // Options — bound from the "GranitMigrations" configuration section.
+        // Options — bound from the "Persistence:Migrations" configuration section.
         builder.Services
             .AddOptions<MigrationStartupOptions>()
             .BindConfiguration(MigrationStartupOptions.SectionName)

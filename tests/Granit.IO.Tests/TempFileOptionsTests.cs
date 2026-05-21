@@ -22,7 +22,7 @@ public sealed class TempFileOptionsTests
 
     [Fact]
     public void SectionName_IsCorrect() =>
-        TempFileOptions.SectionName.ShouldBe("Granit:IO:TempFiles");
+        TempFileOptions.SectionName.ShouldBe("IO:TempFiles");
 
     [Fact]
     public void EffectiveRootDirectory_FallsBackToDefault_WhenUnset()

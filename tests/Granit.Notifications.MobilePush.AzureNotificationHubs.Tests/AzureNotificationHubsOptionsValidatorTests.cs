@@ -117,7 +117,7 @@ public sealed class AzureNotificationHubsOptionsValidatorTests
 
     [Fact]
     public void SectionName_IsNotificationsAzureNotificationHubs() =>
-        AzureNotificationHubsOptions.SectionName.ShouldBe("Notifications:AzureNotificationHubs");
+        AzureNotificationHubsOptions.SectionName.ShouldBe("Notifications:MobilePush:AzureNotificationHubs");
 
     [Fact]
     public void ConnectionString_Default_IsEmpty() =>

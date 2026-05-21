@@ -33,10 +33,10 @@ public sealed class GranitIdentityFederatedEntraIdModuleTests
     public void ConfigureServices_RegistersEntraIdIdentityProvider()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["EntraIdAdmin:TenantId"] = "test-tenant-id";
-        builder.Configuration["EntraIdAdmin:ClientId"] = "admin-service";
-        builder.Configuration["EntraIdAdmin:ClientSecret"] = "secret";
-        builder.Configuration["EntraIdAdmin:ServicePrincipalObjectId"] = "sp-obj-id";
+        builder.Configuration["Identity:Federated:EntraId:TenantId"] = "test-tenant-id";
+        builder.Configuration["Identity:Federated:EntraId:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:EntraId:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:EntraId:ServicePrincipalObjectId"] = "sp-obj-id";
 
         var context = new ServiceConfigurationContext(builder.Services, builder.Configuration, builder);
         var module = new GranitIdentityFederatedEntraIdModule();
@@ -54,10 +54,10 @@ public sealed class GranitIdentityFederatedEntraIdModuleTests
     public void ConfigureServices_RegistersTokenServiceAsSingleton()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["EntraIdAdmin:TenantId"] = "test-tenant-id";
-        builder.Configuration["EntraIdAdmin:ClientId"] = "admin-service";
-        builder.Configuration["EntraIdAdmin:ClientSecret"] = "secret";
-        builder.Configuration["EntraIdAdmin:ServicePrincipalObjectId"] = "sp-obj-id";
+        builder.Configuration["Identity:Federated:EntraId:TenantId"] = "test-tenant-id";
+        builder.Configuration["Identity:Federated:EntraId:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:EntraId:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:EntraId:ServicePrincipalObjectId"] = "sp-obj-id";
 
         var context = new ServiceConfigurationContext(builder.Services, builder.Configuration, builder);
         var module = new GranitIdentityFederatedEntraIdModule();

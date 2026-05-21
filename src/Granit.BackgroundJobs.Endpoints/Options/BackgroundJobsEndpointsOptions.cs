@@ -2,13 +2,13 @@ namespace Granit.BackgroundJobs.Endpoints.Options;
 
 /// <summary>
 /// Configuration options for the background jobs administration endpoints.
-/// Bind from <c>"BackgroundJobsEndpoints"</c> or pass an action to
+/// Bind from <c>"BackgroundJobs:Endpoints"</c> or pass an action to
 /// <see cref="Extensions.BackgroundJobsEndpointRouteBuilderExtensions.MapGranitBackgroundJobs"/>.
 /// </summary>
 public sealed class BackgroundJobsEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "BackgroundJobsEndpoints";
+    public const string SectionName = "BackgroundJobs:Endpoints";
 
     /// <summary>
     /// Route prefix for all background jobs endpoints.

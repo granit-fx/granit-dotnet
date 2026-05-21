@@ -6,7 +6,7 @@ namespace Granit.Authentication.JwtBearer.EntraId.Options;
 public sealed class EntraIdOptions
 {
     /// <summary>Section key in the configuration.</summary>
-    public const string SectionName = "EntraId";
+    public const string SectionName = "Authentication:EntraId";
 
     /// <summary>
     /// Azure AD instance URL. Default: <c>https://login.microsoftonline.com/</c>.

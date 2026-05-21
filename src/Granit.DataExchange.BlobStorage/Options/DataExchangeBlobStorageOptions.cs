@@ -10,7 +10,7 @@ public sealed class DataExchangeBlobStorageOptions
     /// <summary>
     /// Configuration section name.
     /// </summary>
-    public const string SectionName = "Granit:DataExchange:BlobStorage";
+    public const string SectionName = "DataExchange:BlobStorage";
 
     /// <summary>
     /// Logical container name used as a key-prefix segment in the object key path

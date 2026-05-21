@@ -6,7 +6,7 @@ namespace Granit.Scheduling.Endpoints.Options;
 public sealed class SchedulingEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "SchedulingEndpoints";
+    public const string SectionName = "Scheduling:Endpoints";
 
     /// <summary>
     /// Route prefix for all scheduling endpoints.

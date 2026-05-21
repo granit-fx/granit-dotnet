@@ -11,7 +11,7 @@ public sealed class TimelineEndpointsOptionsTests
 {
     [Fact]
     public void SectionName_is_TimelineEndpoints() =>
-        TimelineEndpointsOptions.SectionName.ShouldBe("TimelineEndpoints");
+        TimelineEndpointsOptions.SectionName.ShouldBe("Timeline:Endpoints");
 
     [Fact]
     public void Default_RoutePrefix_is_timeline()

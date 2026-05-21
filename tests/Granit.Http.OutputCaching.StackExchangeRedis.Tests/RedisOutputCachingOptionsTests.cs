@@ -8,7 +8,7 @@ public sealed class RedisOutputCachingOptionsTests
 {
     [Fact]
     public void SectionName_IsOutputCachingRedis() =>
-        RedisOutputCachingOptions.SectionName.ShouldBe("OutputCaching:Redis");
+        RedisOutputCachingOptions.SectionName.ShouldBe("Http:OutputCaching:Redis");
 
     [Fact]
     public void IsEnabled_DefaultsToTrue() =>

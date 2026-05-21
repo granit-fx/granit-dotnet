@@ -36,7 +36,7 @@ namespace Granit.Http.ResponseCompression.Options;
 public sealed class GranitResponseCompressionOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "ResponseCompression";
+    public const string SectionName = "Http:ResponseCompression";
 
     /// <summary>
     /// Whether to compress responses served over HTTPS.

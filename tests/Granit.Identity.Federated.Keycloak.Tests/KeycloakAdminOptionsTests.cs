@@ -15,8 +15,8 @@ public sealed class KeycloakAdminOptionsTests
     };
 
     [Fact]
-    public void SectionName_IsKeycloakAdmin() =>
-        KeycloakAdminOptions.SectionName.ShouldBe("KeycloakAdmin");
+    public void SectionName_IsIdentityFederatedKeycloak() =>
+        KeycloakAdminOptions.SectionName.ShouldBe("Identity:Federated:Keycloak");
 
     [Fact]
     public void GetTokenEndpoint_ReturnsCorrectUrl()

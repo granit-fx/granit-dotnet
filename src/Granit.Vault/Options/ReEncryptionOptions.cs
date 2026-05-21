@@ -6,7 +6,7 @@ namespace Granit.Vault.Options;
 public sealed class ReEncryptionOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "ReEncryption";
+    public const string SectionName = "Vault:ReEncryption";
 
     /// <summary>
     /// Set of key versions that are considered retired (e.g. <c>"v1"</c>, <c>"v2"</c>).

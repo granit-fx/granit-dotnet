@@ -18,7 +18,7 @@ public sealed class IdentityGoogleCloudServiceCollectionExtensionsTests
         IConfiguration configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(config ?? new Dictionary<string, string?>
             {
-                ["Identity:GoogleCloud:ProjectId"] = "test-project",
+                ["Identity:Federated:GoogleCloud:ProjectId"] = "test-project",
             })
             .Build();
         services.AddSingleton(configuration);

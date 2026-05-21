@@ -19,7 +19,7 @@ public sealed class GoogleCloudAuthenticationServiceCollectionExtensionsTests
         IConfiguration configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(config ?? new Dictionary<string, string?>
             {
-                ["GoogleCloudAuth:ProjectId"] = "my-project",
+                ["Authentication:GoogleCloud:ProjectId"] = "my-project",
             })
             .Build();
         services.AddSingleton(configuration);

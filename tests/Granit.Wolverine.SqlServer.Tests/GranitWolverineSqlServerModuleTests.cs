@@ -55,7 +55,7 @@ public sealed class GranitWolverineSqlServerModuleTests
         };
         settings.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["WolverineSqlServer:TransportConnectionString"] =
+            ["Wolverine:SqlServer:TransportConnectionString"] =
                 "Server=localhost;Database=test;User Id=sa;Password=test;TrustServerCertificate=True",
         });
         HostApplicationBuilder builder = Host.CreateApplicationBuilder(settings);

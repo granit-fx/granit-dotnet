@@ -154,7 +154,7 @@ internal sealed partial class EmailNotificationChannel(
         string? resolvedUrl = urlResolver is not null
             ? await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false)
             : null;
-        string? baseUrl = !string.IsNullOrEmpty(resolvedUrl) ? resolvedUrl : configuration["Granit:Templating:App:BaseUrl"];
+        string? baseUrl = !string.IsNullOrEmpty(resolvedUrl) ? resolvedUrl : configuration["Templating:App:BaseUrl"];
 
         return string.IsNullOrEmpty(baseUrl) ? "" : baseUrl.TrimEnd('/') + "/notifications/preferences";
     }

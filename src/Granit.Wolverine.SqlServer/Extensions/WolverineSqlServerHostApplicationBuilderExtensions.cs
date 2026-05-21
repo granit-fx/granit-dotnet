@@ -30,7 +30,7 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
     /// </para>
     /// <para>
     /// Reads <see cref="WolverineSqlServerOptions"/> from the
-    /// <c>"WolverineSqlServer"</c> configuration section and validates at startup.
+    /// <c>"Wolverine:SqlServer"</c> configuration section and validates at startup.
     /// </para>
     /// <para>
     /// Configures:
@@ -69,7 +69,7 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
     /// before the host is built.
     /// </para>
     /// <para>
-    /// Reads <see cref="WolverineSqlServerOptions"/> from the <c>"WolverineSqlServer"</c>
+    /// Reads <see cref="WolverineSqlServerOptions"/> from the <c>"Wolverine:SqlServer"</c>
     /// configuration section. The <c>TransportConnectionString</c> targets the shared Wolverine
     /// Outbox database; per-tenant application data is routed by
     /// <see cref="ITenantConnectionStringProvider"/>.

@@ -7,7 +7,7 @@ namespace Granit.Identity.Endpoints.Tests.Options;
 public sealed class IdentityWebhookOptionsTests
 {
     [Fact]
-    public void SectionName_IsIdentityWebhook() => IdentityWebhookOptions.SectionName.ShouldBe("IdentityWebhook");
+    public void SectionName_IsIdentityWebhook() => IdentityWebhookOptions.SectionName.ShouldBe("Identity:Webhook");
 
     [Fact]
     public void Defaults_SecretIsEmpty()

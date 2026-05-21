@@ -21,7 +21,7 @@ namespace Granit.Identity.Federated.Options;
 public sealed class UserCacheHasherOptions
 {
     /// <summary>Configuration section name for binding from <c>appsettings.json</c>.</summary>
-    public const string SectionName = "Identity:UserCacheHasher";
+    public const string SectionName = "Identity:Federated:UserCacheHasher";
 
     /// <summary>
     /// HMAC pepper for email lookups. Accepts either a hex string (e.g. 64 hex chars

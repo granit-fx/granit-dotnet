@@ -12,7 +12,7 @@ namespace Granit.Identity.Federated.Cognito.Options;
 public sealed class CognitoAdminOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "CognitoAdmin";
+    public const string SectionName = "Identity:Federated:Cognito";
 
     /// <summary>AWS region (e.g. <c>eu-west-1</c>).</summary>
     [Required]

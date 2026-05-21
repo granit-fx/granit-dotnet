@@ -7,7 +7,7 @@ namespace Granit.Identity.Federated.Cognito.Tests;
 public sealed class CognitoAdminOptionsTests
 {
     [Fact]
-    public void SectionName_IsCognitoAdmin() => CognitoAdminOptions.SectionName.ShouldBe("CognitoAdmin");
+    public void SectionName_IsCognitoAdmin() => CognitoAdminOptions.SectionName.ShouldBe("Identity:Federated:Cognito");
 
     [Fact]
     public void DefaultValues_AreEmptyStrings()

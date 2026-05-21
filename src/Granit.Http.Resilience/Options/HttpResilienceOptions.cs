@@ -18,5 +18,5 @@ namespace Granit.Http.Resilience.Options;
 public static class HttpResilienceOptions
 {
     /// <summary>The root appsettings section under which per-client overrides are nested.</summary>
-    public const string SectionName = "HttpResilience";
+    public const string SectionName = "Http:Resilience";
 }

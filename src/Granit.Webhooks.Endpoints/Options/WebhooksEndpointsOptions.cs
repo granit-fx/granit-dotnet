@@ -6,7 +6,7 @@ namespace Granit.Webhooks.Endpoints.Options;
 public sealed class WebhooksEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "WebhooksEndpoints";
+    public const string SectionName = "Webhooks:Endpoints";
 
     /// <summary>
     /// Route prefix for all webhook endpoints.

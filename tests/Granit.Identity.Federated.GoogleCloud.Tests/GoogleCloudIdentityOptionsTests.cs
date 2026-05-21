@@ -7,7 +7,7 @@ namespace Granit.Identity.Federated.GoogleCloud.Tests;
 public sealed class GoogleCloudIdentityOptionsTests
 {
     [Fact]
-    public void SectionName_IsIdentityGoogleCloud() => GoogleCloudIdentityOptions.SectionName.ShouldBe("Identity:GoogleCloud");
+    public void SectionName_IsIdentityGoogleCloud() => GoogleCloudIdentityOptions.SectionName.ShouldBe("Identity:Federated:GoogleCloud");
 
     [Fact]
     public void Defaults_ProjectIdIsEmpty()

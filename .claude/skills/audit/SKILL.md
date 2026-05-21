@@ -64,7 +64,7 @@ FLAGS
     anatomy       Module structure and layering
     layer-purity  Detect domain code leaking into .Endpoints / .EntityFrameworkCore
     code          C# 14 idioms, anti-patterns, modern patterns
-    naming        Permissions, events, jobs, DTOs, module homogeneity
+    naming        Permissions, events, jobs, DTOs, module homogeneity, SectionName hierarchy
     http          HTTP conventions, status codes, pagination, caching
     openapi       Endpoint metadata (5 mandatory elements)
     persistence   DbContext, EF Core, interceptors, concurrency
@@ -254,6 +254,12 @@ After auditing individual modules, perform cross-cutting checks:
 5b. **Module naming homogeneity** — all classes, methods, string literals, and
    namespaces consistently use the current module name (detect rename residues via
    `git log --diff-filter=R`)
+5c. **`SectionName` hierarchy** — every `public const string SectionName` follows
+   the colon-separated namespace-aligned convention, no `Granit:` prefix, no
+   PascalCase-glued names; covered by `SectionNameConventionTests` in
+   `Granit.ArchitectureTests`. Audit checks (a) the assertion lines up with
+   `Granit.{X}.Y` namespace, (b) `templates/granit-*/appsettings.json` keys are
+   aligned, (c) doc/XML comments reference the canonical path
 6. **Health check uniformity** — readiness/startup tags, 10s timeout, no PII
 7. **Localization completeness** — all 18 cultures present in every module
 8. **[DependsOn] consistency** — matches actual `<ProjectReference>` graph

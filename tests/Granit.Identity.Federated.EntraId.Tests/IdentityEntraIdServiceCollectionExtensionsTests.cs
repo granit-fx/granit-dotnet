@@ -13,10 +13,10 @@ public sealed class IdentityEntraIdServiceCollectionExtensionsTests
     public void AddGranitIdentityEntraId_RegistersIdentityProvider()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["EntraIdAdmin:TenantId"] = "test-tenant-id";
-        builder.Configuration["EntraIdAdmin:ClientId"] = "admin-service";
-        builder.Configuration["EntraIdAdmin:ClientSecret"] = "secret";
-        builder.Configuration["EntraIdAdmin:ServicePrincipalObjectId"] = "sp-obj-id";
+        builder.Configuration["Identity:Federated:EntraId:TenantId"] = "test-tenant-id";
+        builder.Configuration["Identity:Federated:EntraId:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:EntraId:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:EntraId:ServicePrincipalObjectId"] = "sp-obj-id";
 
         builder.Services.AddGranitIdentityEntraId();
 
@@ -30,10 +30,10 @@ public sealed class IdentityEntraIdServiceCollectionExtensionsTests
     public void AddGranitIdentityEntraId_RegistersHttpClient()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["EntraIdAdmin:TenantId"] = "test-tenant-id";
-        builder.Configuration["EntraIdAdmin:ClientId"] = "admin-service";
-        builder.Configuration["EntraIdAdmin:ClientSecret"] = "secret";
-        builder.Configuration["EntraIdAdmin:ServicePrincipalObjectId"] = "sp-obj-id";
+        builder.Configuration["Identity:Federated:EntraId:TenantId"] = "test-tenant-id";
+        builder.Configuration["Identity:Federated:EntraId:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:EntraId:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:EntraId:ServicePrincipalObjectId"] = "sp-obj-id";
 
         builder.Services.AddGranitIdentityEntraId();
 
@@ -45,10 +45,10 @@ public sealed class IdentityEntraIdServiceCollectionExtensionsTests
     public void AddGranitIdentityEntraId_RegistersTokenServiceAsSingleton()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["EntraIdAdmin:TenantId"] = "test-tenant-id";
-        builder.Configuration["EntraIdAdmin:ClientId"] = "admin-service";
-        builder.Configuration["EntraIdAdmin:ClientSecret"] = "secret";
-        builder.Configuration["EntraIdAdmin:ServicePrincipalObjectId"] = "sp-obj-id";
+        builder.Configuration["Identity:Federated:EntraId:TenantId"] = "test-tenant-id";
+        builder.Configuration["Identity:Federated:EntraId:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:EntraId:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:EntraId:ServicePrincipalObjectId"] = "sp-obj-id";
 
         builder.Services.AddGranitIdentityEntraId();
 
@@ -62,10 +62,10 @@ public sealed class IdentityEntraIdServiceCollectionExtensionsTests
     public void AddGranitIdentityEntraId_ReturnsSameServiceCollection()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["EntraIdAdmin:TenantId"] = "test-tenant-id";
-        builder.Configuration["EntraIdAdmin:ClientId"] = "admin-service";
-        builder.Configuration["EntraIdAdmin:ClientSecret"] = "secret";
-        builder.Configuration["EntraIdAdmin:ServicePrincipalObjectId"] = "sp-obj-id";
+        builder.Configuration["Identity:Federated:EntraId:TenantId"] = "test-tenant-id";
+        builder.Configuration["Identity:Federated:EntraId:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:EntraId:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:EntraId:ServicePrincipalObjectId"] = "sp-obj-id";
 
         IServiceCollection result = builder.Services.AddGranitIdentityEntraId();
 
@@ -76,10 +76,10 @@ public sealed class IdentityEntraIdServiceCollectionExtensionsTests
     public void AddGranitIdentityEntraId_ConfiguresOptionsFromConfiguration()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["EntraIdAdmin:TenantId"] = "my-tenant";
-        builder.Configuration["EntraIdAdmin:ClientId"] = "my-client";
-        builder.Configuration["EntraIdAdmin:ClientSecret"] = "my-secret";
-        builder.Configuration["EntraIdAdmin:ServicePrincipalObjectId"] = "my-sp";
+        builder.Configuration["Identity:Federated:EntraId:TenantId"] = "my-tenant";
+        builder.Configuration["Identity:Federated:EntraId:ClientId"] = "my-client";
+        builder.Configuration["Identity:Federated:EntraId:ClientSecret"] = "my-secret";
+        builder.Configuration["Identity:Federated:EntraId:ServicePrincipalObjectId"] = "my-sp";
 
         builder.Services.AddGranitIdentityEntraId();
 

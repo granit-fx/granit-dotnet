@@ -4,7 +4,7 @@ namespace Granit.Http.ApiVersioning.Options;
 public sealed class GranitApiVersioningOptions
 {
     /// <summary>Configuration section name in appsettings.json.</summary>
-    public const string SectionName = "ApiVersioning";
+    public const string SectionName = "Http:ApiVersioning";
 
     /// <summary>
     /// Default API major version assumed when the client does not specify one.

@@ -13,10 +13,10 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsTests
     public void AddGranitIdentityKeycloak_RegistersIdentityProvider()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["KeycloakAdmin:BaseUrl"] = "https://keycloak.test";
-        builder.Configuration["KeycloakAdmin:Realm"] = "test-realm";
-        builder.Configuration["KeycloakAdmin:ClientId"] = "admin-service";
-        builder.Configuration["KeycloakAdmin:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:Keycloak:BaseUrl"] = "https://keycloak.test";
+        builder.Configuration["Identity:Federated:Keycloak:Realm"] = "test-realm";
+        builder.Configuration["Identity:Federated:Keycloak:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:Keycloak:ClientSecret"] = "secret";
 
         builder.Services.AddGranitIdentityKeycloak();
 
@@ -30,10 +30,10 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsTests
     public void AddGranitIdentityKeycloak_RegistersTokenService()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["KeycloakAdmin:BaseUrl"] = "https://keycloak.test";
-        builder.Configuration["KeycloakAdmin:Realm"] = "test-realm";
-        builder.Configuration["KeycloakAdmin:ClientId"] = "admin-service";
-        builder.Configuration["KeycloakAdmin:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:Keycloak:BaseUrl"] = "https://keycloak.test";
+        builder.Configuration["Identity:Federated:Keycloak:Realm"] = "test-realm";
+        builder.Configuration["Identity:Federated:Keycloak:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:Keycloak:ClientSecret"] = "secret";
 
         builder.Services.AddGranitIdentityKeycloak();
 
@@ -47,10 +47,10 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsTests
     public void AddGranitIdentityKeycloak_RegistersHttpClient()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["KeycloakAdmin:BaseUrl"] = "https://keycloak.test";
-        builder.Configuration["KeycloakAdmin:Realm"] = "test-realm";
-        builder.Configuration["KeycloakAdmin:ClientId"] = "admin-service";
-        builder.Configuration["KeycloakAdmin:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:Keycloak:BaseUrl"] = "https://keycloak.test";
+        builder.Configuration["Identity:Federated:Keycloak:Realm"] = "test-realm";
+        builder.Configuration["Identity:Federated:Keycloak:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:Keycloak:ClientSecret"] = "secret";
 
         builder.Services.AddGranitIdentityKeycloak();
 
@@ -63,10 +63,10 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsTests
     public void AddGranitIdentityKeycloak_ReturnsSameServiceCollection()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["KeycloakAdmin:BaseUrl"] = "https://keycloak.test";
-        builder.Configuration["KeycloakAdmin:Realm"] = "test-realm";
-        builder.Configuration["KeycloakAdmin:ClientId"] = "admin-service";
-        builder.Configuration["KeycloakAdmin:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:Keycloak:BaseUrl"] = "https://keycloak.test";
+        builder.Configuration["Identity:Federated:Keycloak:Realm"] = "test-realm";
+        builder.Configuration["Identity:Federated:Keycloak:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:Keycloak:ClientSecret"] = "secret";
 
         IServiceCollection result = builder.Services.AddGranitIdentityKeycloak();
 
@@ -77,10 +77,10 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsTests
     public void AddGranitIdentityKeycloak_ConfiguresOptionsFromConfiguration()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["KeycloakAdmin:BaseUrl"] = "https://keycloak.test";
-        builder.Configuration["KeycloakAdmin:Realm"] = "my-realm";
-        builder.Configuration["KeycloakAdmin:ClientId"] = "my-client";
-        builder.Configuration["KeycloakAdmin:ClientSecret"] = "my-secret";
+        builder.Configuration["Identity:Federated:Keycloak:BaseUrl"] = "https://keycloak.test";
+        builder.Configuration["Identity:Federated:Keycloak:Realm"] = "my-realm";
+        builder.Configuration["Identity:Federated:Keycloak:ClientId"] = "my-client";
+        builder.Configuration["Identity:Federated:Keycloak:ClientSecret"] = "my-secret";
 
         builder.Services.AddGranitIdentityKeycloak();
 

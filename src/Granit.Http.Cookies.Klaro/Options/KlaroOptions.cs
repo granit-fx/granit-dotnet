@@ -12,7 +12,7 @@ namespace Granit.Http.Cookies.Klaro.Options;
 public sealed class KlaroOptions
 {
     /// <summary>Section key in the configuration.</summary>
-    public const string SectionName = "Klaro";
+    public const string SectionName = "Http:Cookies:Klaro";
 
     /// <summary>
     /// Name of the cookie where Klaro stores consent decisions.

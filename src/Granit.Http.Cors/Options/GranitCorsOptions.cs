@@ -13,7 +13,7 @@ namespace Granit.Http.Cors.Options;
 public sealed class GranitCorsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "Cors";
+    public const string SectionName = "Http:Cors";
 
     /// <summary>
     /// Allowed CORS origins. At least one origin must be configured.

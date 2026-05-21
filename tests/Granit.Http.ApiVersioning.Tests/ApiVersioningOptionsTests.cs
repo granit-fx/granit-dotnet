@@ -14,7 +14,7 @@ public sealed class GranitApiVersioningOptionsTests
 {
     [Fact]
     public void SectionName_IsApiVersioning() =>
-        GranitApiVersioningOptions.SectionName.ShouldBe("ApiVersioning");
+        GranitApiVersioningOptions.SectionName.ShouldBe("Http:ApiVersioning");
 
     [Fact]
     public void DefaultMajorVersion_DefaultsToOne()

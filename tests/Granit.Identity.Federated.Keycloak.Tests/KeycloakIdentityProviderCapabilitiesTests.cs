@@ -55,10 +55,10 @@ public sealed class KeycloakIdentityProviderCapabilitiesTests
     public void AddGranitIdentityKeycloak_RegistersKeycloakCapabilities()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["KeycloakAdmin:BaseUrl"] = "https://keycloak.test";
-        builder.Configuration["KeycloakAdmin:Realm"] = "test-realm";
-        builder.Configuration["KeycloakAdmin:ClientId"] = "admin-service";
-        builder.Configuration["KeycloakAdmin:ClientSecret"] = "secret";
+        builder.Configuration["Identity:Federated:Keycloak:BaseUrl"] = "https://keycloak.test";
+        builder.Configuration["Identity:Federated:Keycloak:Realm"] = "test-realm";
+        builder.Configuration["Identity:Federated:Keycloak:ClientId"] = "admin-service";
+        builder.Configuration["Identity:Federated:Keycloak:ClientSecret"] = "secret";
 
         builder.Services.AddGranitIdentityKeycloak();
 

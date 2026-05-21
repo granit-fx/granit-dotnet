@@ -8,7 +8,7 @@ public sealed class PushChannelOptionsTests
 {
     [Fact]
     public void SectionName_IsCorrect() =>
-        PushChannelOptions.SectionName.ShouldBe("Notifications:Push");
+        PushChannelOptions.SectionName.ShouldBe("Notifications:WebPush");
 
     [Fact]
     public void Defaults_VapidSubjectIsEmpty()

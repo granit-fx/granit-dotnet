@@ -8,7 +8,7 @@ public sealed class TokenManagementOptions
     /// <summary>
     /// The configuration section name used by <c>IConfiguration.GetSection()</c>.
     /// </summary>
-    public const string SectionName = "TokenManagement";
+    public const string SectionName = "Oidc:TokenManagement";
 
     /// <summary>
     /// The default margin subtracted from token lifetimes before caching,

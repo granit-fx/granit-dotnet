@@ -7,8 +7,8 @@ namespace Granit.Authentication.JwtBearer.Cognito.Tests;
 public sealed class CognitoOptionsTests
 {
     [Fact]
-    public void SectionName_IsCognito() =>
-        CognitoOptions.SectionName.ShouldBe("Cognito");
+    public void SectionName_IsAuthenticationCognito() =>
+        CognitoOptions.SectionName.ShouldBe("Authentication:Cognito");
 
     [Fact]
     public void Defaults_AreCorrect()

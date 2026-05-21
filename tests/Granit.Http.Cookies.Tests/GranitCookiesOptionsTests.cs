@@ -8,7 +8,7 @@ public sealed class GranitCookiesOptionsTests
 {
     [Fact]
     public void SectionName_IsCookies() =>
-        GranitCookiesOptions.SectionName.ShouldBe("Cookies");
+        GranitCookiesOptions.SectionName.ShouldBe("Http:Cookies");
 
     [Fact]
     public void ThrowOnUnregistered_DefaultsToTrue() =>

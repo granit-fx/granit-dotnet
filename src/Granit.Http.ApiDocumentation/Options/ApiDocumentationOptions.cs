@@ -4,7 +4,7 @@ namespace Granit.Http.ApiDocumentation.Options;
 public sealed class ApiDocumentationOptions
 {
     /// <summary>Configuration section name in appsettings.json.</summary>
-    public const string SectionName = "ApiDocumentation";
+    public const string SectionName = "Http:ApiDocumentation";
 
     /// <summary>
     /// Major API version numbers to document. Each entry generates a distinct OpenAPI document

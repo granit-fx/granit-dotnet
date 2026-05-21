@@ -2,7 +2,7 @@
 // Tests - EntraIdServiceCollectionExtensions
 // =============================================================================
 // Verifies that AddGranitEntraId correctly registers:
-//   - EntraIdOptions from the "EntraId" section
+//   - EntraIdOptions from the "Authentication:EntraId" section
 //   - PostConfigure JWT Bearer (Authority, Audience, NameClaimType)
 //   - EntraIdClaimsTransformation
 // =============================================================================

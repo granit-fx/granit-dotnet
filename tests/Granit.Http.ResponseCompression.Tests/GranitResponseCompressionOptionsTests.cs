@@ -9,7 +9,7 @@ public sealed class GranitResponseCompressionOptionsTests
 {
     [Fact]
     public void SectionName_IsResponseCompression() =>
-        GranitResponseCompressionOptions.SectionName.ShouldBe("ResponseCompression");
+        GranitResponseCompressionOptions.SectionName.ShouldBe("Http:ResponseCompression");
 
     [Fact]
     public void Defaults_EnableForHttps_IsTrue() =>

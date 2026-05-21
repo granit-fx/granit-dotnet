@@ -149,6 +149,45 @@ Ref: `docs-site/…/concepts/dependency-injection.mdx`
 - [ ] `ValidateOnStart()` for fail-fast on misconfiguration
 - [ ] No secrets in `appsettings.json` — use env vars, User Secrets, or Vault
 
+#### `SectionName` convention (STRICT)
+
+Format: `{Module}[:{SubModule}[:{Feature}]]` — colon-separated, ASP.NET-style.
+Aligned on the project namespace after stripping the `Granit` prefix.
+Example: `Granit.Foo.Bar.Baz` → `"Foo:Bar:Baz"`.
+
+- [ ] **Never starts with `Granit:`** — `Granit` is the code namespace, not a
+  configuration root. `"Granit:ApiKeys"` → `"Authentication:ApiKeys"`,
+  `"Granit:IO:TempFiles"` → `"IO:TempFiles"`, etc.
+- [ ] **No PascalCase-glued tokens** — `"FooBar"` is forbidden whenever
+  `"Foo:Bar"` applies. Specifically forbidden patterns:
+  - `*Endpoints` → split as `*:Endpoints` (e.g. `BlobStorageEndpoints` →
+    `BlobStorage:Endpoints`)
+  - `Wolverine*` → split as `Wolverine:*` (e.g. `WolverinePostgresql` →
+    `Wolverine:Postgresql`)
+  - `GranitMigrations` → `Persistence:Migrations`
+  - `TenantSchema` → `MultiTenancy:TenantSchema`
+- [ ] **Single-segment SectionName** is allowed ONLY for top-level modules whose
+  project is the root namespace (`Notifications`, `Authentication`, `Vault`,
+  `BlobStorage`, `Cache`, `Bff`, …). Any compound concept MUST be hierarchical.
+- [ ] **Aligned with namespace** — a sub-project under `Granit.Foo.Bar` should
+  bind to `"Foo:Bar"`, never invent a new root (`"AzureCommunicationServices:Email"`
+  for `Granit.Notifications.Email.AzureCommunicationServices` is wrong — should be
+  `"Notifications:Email:AzureCommunicationServices"`).
+- [ ] **No collision** — two `Options` classes never share the same SectionName
+  string. ASP.NET allows a section to host both bound properties AND child
+  sub-sections, but two distinct Options classes pointing at the same path
+  break binding silently (real incident: `ImportOptions` and the parent
+  `DataExchange` root both used `"DataExchange"`).
+- [ ] **Test asserts the SectionName** — every `*Options` ships an
+  `OptionsTests.cs` with `SectionName.ShouldBe("Expected:Path")` so renames
+  surface in CI.
+- [ ] **`appsettings.json` examples reflect the current name** — in
+  `templates/`, doc XML, and embedded examples.
+
+Enforced by `Granit.ArchitectureTests.SectionNameConventionTests`. When you
+need a new top-level section, add it to `AllowedSingleSegmentSections` in that
+file along with a one-line rationale.
+
 Ref: `docs-site/…/concepts/configuration.mdx`
 
 ---
@@ -267,6 +306,31 @@ Ref: `CLAUDE.md §Background Jobs`
 - [ ] Identifiers: UUID v7 with dashes
 
 Ref: `CLAUDE.md §DTOs`, `docs-site/…/architecture/http-conventions.md`
+
+### 3d-bis. `SectionName` homogeneity (`--scope naming`)
+
+Full rule list under §1d. Quick checklist for the naming pass:
+
+- [ ] No SectionName starts with `Granit:` (use bare hierarchical path)
+- [ ] No PascalCase-glued SectionName for compound concepts (`FooBar` →
+  `Foo:Bar`)
+- [ ] `*.Endpoints` SectionName follows `Module:Endpoints` (and
+  `Module:Endpoints:Feature` for feature subsets) — never `ModuleEndpoints`
+- [ ] Sub-projects under `Granit.Notifications.{Channel}.{Provider}` SectionName
+  is `Notifications:{Channel}:{Provider}` (don't skip the channel segment, don't
+  invent a vendor root)
+- [ ] Sub-projects under `Granit.Identity.Federated.{Provider}` SectionName is
+  `Identity:Federated:{Provider}` (don't use the legacy `{Provider}Admin` flat
+  form)
+- [ ] `Granit.{Family}.{Subprovider}` (Vault, Wolverine, Cache, Mcp, AI, …) →
+  `{Family}:{Subprovider}` (Wolverine.Postgresql → `Wolverine:Postgresql`)
+- [ ] Every Options class has a unit test asserting `SectionName.ShouldBe(...)`
+  with the canonical path; assertion is up to date after any rename
+- [ ] `templates/granit-*/appsettings.json` keys match the current SectionName
+
+Enforced by `Granit.ArchitectureTests.SectionNameConventionTests`. If the test
+flags a new top-level section that you intend to keep, edit
+`AllowedSingleSegmentSections` with a one-line rationale.
 
 ### 3e. Module naming homogeneity (post-rename check)
 

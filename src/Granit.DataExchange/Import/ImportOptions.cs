@@ -6,7 +6,7 @@ namespace Granit.DataExchange.Import;
 public sealed class ImportOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "DataExchange";
+    public const string SectionName = "DataExchange:Import";
 
     /// <summary>
     /// Default maximum file size in megabytes.

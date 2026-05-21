@@ -24,7 +24,7 @@ namespace Granit.Identity.Federated.Keycloak.Options;
 public sealed class KeycloakAdminOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "KeycloakAdmin";
+    public const string SectionName = "Identity:Federated:Keycloak";
 
     /// <summary>
     /// Keycloak server base URL (e.g. <c>https://keycloak.example.com</c>).

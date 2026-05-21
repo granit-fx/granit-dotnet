@@ -6,7 +6,7 @@ namespace Granit.BlobStorage.Endpoints.Options;
 public sealed class BlobStorageEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "BlobStorageEndpoints";
+    public const string SectionName = "BlobStorage:Endpoints";
 
     /// <summary>
     /// Route prefix for all blob storage endpoints.

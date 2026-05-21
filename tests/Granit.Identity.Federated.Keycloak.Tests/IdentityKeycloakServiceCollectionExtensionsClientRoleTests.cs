@@ -26,10 +26,10 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsClientRoleTests
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["KeycloakAdmin:BaseUrl"] = "https://keycloak.test",
-                ["KeycloakAdmin:Realm"] = "test",
-                ["KeycloakAdmin:ClientId"] = "admin",
-                ["KeycloakAdmin:ClientSecret"] = "secret",
+                ["Identity:Federated:Keycloak:BaseUrl"] = "https://keycloak.test",
+                ["Identity:Federated:Keycloak:Realm"] = "test",
+                ["Identity:Federated:Keycloak:ClientId"] = "admin",
+                ["Identity:Federated:Keycloak:ClientSecret"] = "secret",
             }).Build());
 
         services.AddLogging();

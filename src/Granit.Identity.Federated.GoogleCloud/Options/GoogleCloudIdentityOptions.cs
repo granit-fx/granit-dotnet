@@ -6,7 +6,7 @@ namespace Granit.Identity.Federated.GoogleCloud.Options;
 public sealed class GoogleCloudIdentityOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "Identity:GoogleCloud";
+    public const string SectionName = "Identity:Federated:GoogleCloud";
 
     /// <summary>GCP project ID. Required.</summary>
     [Required]

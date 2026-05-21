@@ -6,7 +6,7 @@ namespace Granit.Http.Cookies.Options;
 public sealed class GranitCookiesOptions
 {
     /// <summary>Section key in the configuration.</summary>
-    public const string SectionName = "Cookies";
+    public const string SectionName = "Http:Cookies";
 
     /// <summary>
     /// When <c>true</c>, writing an unregistered cookie throws <see cref="Exceptions.UnregisteredCookieException"/>.

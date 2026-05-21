@@ -7,8 +7,8 @@ namespace Granit.Authentication.JwtBearer.EntraId.Tests;
 public sealed class EntraIdOptionsTests
 {
     [Fact]
-    public void SectionName_IsEntraId() =>
-        EntraIdOptions.SectionName.ShouldBe("EntraId");
+    public void SectionName_IsAuthenticationEntraId() =>
+        EntraIdOptions.SectionName.ShouldBe("Authentication:EntraId");
 
     [Fact]
     public void Defaults_AreCorrect()

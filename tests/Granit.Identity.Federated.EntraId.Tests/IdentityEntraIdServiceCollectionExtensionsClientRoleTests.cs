@@ -27,10 +27,10 @@ public sealed class IdentityEntraIdServiceCollectionExtensionsClientRoleTests
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["EntraIdAdmin:TenantId"] = "test-tenant-id",
-                ["EntraIdAdmin:ClientId"] = "admin-service",
-                ["EntraIdAdmin:ClientSecret"] = "secret",
-                ["EntraIdAdmin:ServicePrincipalObjectId"] = "sp-object-id",
+                ["Identity:Federated:EntraId:TenantId"] = "test-tenant-id",
+                ["Identity:Federated:EntraId:ClientId"] = "admin-service",
+                ["Identity:Federated:EntraId:ClientSecret"] = "secret",
+                ["Identity:Federated:EntraId:ServicePrincipalObjectId"] = "sp-object-id",
             }).Build());
 
         services.AddLogging();

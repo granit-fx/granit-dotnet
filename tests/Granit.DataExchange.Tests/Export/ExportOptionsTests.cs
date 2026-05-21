@@ -7,8 +7,8 @@ namespace Granit.DataExchange.Tests.Export;
 public sealed class ExportOptionsTests
 {
     [Fact]
-    public void SectionName_IsDataExport() =>
-        ExportOptions.SectionName.ShouldBe("DataExport");
+    public void SectionName_IsDataExchangeExport() =>
+        ExportOptions.SectionName.ShouldBe("DataExchange:Export");
 
     [Fact]
     public void DefaultBackgroundThreshold_Is1000()

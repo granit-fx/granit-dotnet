@@ -8,7 +8,7 @@ public sealed class DataExchangeEndpointsOptionsTests
 {
     [Fact]
     public void SectionName_IsDataExchangeEndpoints() =>
-        DataExchangeEndpointsOptions.SectionName.ShouldBe("DataExchangeEndpoints");
+        DataExchangeEndpointsOptions.SectionName.ShouldBe("DataExchange:Endpoints");
 
     [Fact]
     public void Default_RoutePrefix_IsDataExchange()

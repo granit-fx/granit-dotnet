@@ -18,7 +18,7 @@ public static class BlobStorageEndpointsHostApplicationBuilderExtensions
     /// <summary>
     /// Adds <c>Granit.BlobStorage.Endpoints</c> services: binds
     /// <see cref="BlobStorageEndpointsOptions"/> from the
-    /// <c>"BlobStorageEndpoints"</c> configuration section and registers the
+    /// <c>"BlobStorage:Endpoints"</c> configuration section and registers the
     /// OpenAPI schema example provider.
     /// </summary>
     /// <param name="builder">The host application builder.</param>

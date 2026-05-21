@@ -8,7 +8,7 @@ public sealed class GranitSecurityHeadersOptionsTests
 {
     [Fact]
     public void SectionName_IsSecurityHeaders() =>
-        GranitSecurityHeadersOptions.SectionName.ShouldBe("SecurityHeaders");
+        GranitSecurityHeadersOptions.SectionName.ShouldBe("Http:SecurityHeaders");
 
     [Fact]
     public void SuppressServerHeader_DefaultsToTrue() =>

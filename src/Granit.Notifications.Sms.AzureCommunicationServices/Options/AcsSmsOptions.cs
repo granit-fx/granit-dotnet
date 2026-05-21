@@ -6,7 +6,7 @@ namespace Granit.Notifications.Sms.AzureCommunicationServices.Options;
 public sealed class AcsSmsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "AzureCommunicationServices:Sms";
+    public const string SectionName = "Notifications:Sms:AzureCommunicationServices";
 
     /// <summary>
     /// ACS connection string. When provided, takes precedence over <see cref="Endpoint"/>.

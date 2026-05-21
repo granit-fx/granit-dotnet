@@ -24,8 +24,8 @@ public sealed class IdentityCognitoServiceCollectionExtensionsClientRoleTests
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["CognitoAdmin:Region"] = "eu-west-1",
-                ["CognitoAdmin:UserPoolId"] = "eu-west-1_TEST",
+                ["Identity:Federated:Cognito:Region"] = "eu-west-1",
+                ["Identity:Federated:Cognito:UserPoolId"] = "eu-west-1_TEST",
             }).Build());
 
         services.AddLogging();

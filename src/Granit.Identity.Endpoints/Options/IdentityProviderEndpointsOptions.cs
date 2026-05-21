@@ -6,7 +6,7 @@ namespace Granit.Identity.Endpoints.Options;
 public sealed class IdentityProviderEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "IdentityProviderEndpoints";
+    public const string SectionName = "Identity:Endpoints:Provider";
 
     /// <summary>
     /// Route prefix for all identity provider endpoints.

@@ -6,7 +6,7 @@ namespace Granit.Authentication.JwtBearer.GoogleCloud.Options;
 public sealed class GoogleCloudAuthenticationOptions
 {
     /// <summary>Section key in the configuration.</summary>
-    public const string SectionName = "GoogleCloudAuth";
+    public const string SectionName = "Authentication:GoogleCloud";
 
     /// <summary>
     /// GCP project ID. Used to derive the OIDC authority

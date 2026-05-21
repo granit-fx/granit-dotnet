@@ -9,7 +9,7 @@ namespace Granit.Http.Idempotency.Models;
 public sealed class IdempotencyOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "Idempotency";
+    public const string SectionName = "Http:Idempotency";
 
     /// <summary>Name of the HTTP header carrying the idempotency key. Default: <c>Idempotency-Key</c>.</summary>
     [Required]

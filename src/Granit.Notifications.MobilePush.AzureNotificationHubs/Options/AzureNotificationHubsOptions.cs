@@ -6,7 +6,7 @@ namespace Granit.Notifications.MobilePush.AzureNotificationHubs.Options;
 public sealed class AzureNotificationHubsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "Notifications:AzureNotificationHubs";
+    public const string SectionName = "Notifications:MobilePush:AzureNotificationHubs";
 
     /// <summary>
     /// Azure Notification Hubs connection string. Required.

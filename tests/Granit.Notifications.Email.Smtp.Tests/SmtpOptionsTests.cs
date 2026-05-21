@@ -8,7 +8,7 @@ public sealed class SmtpOptionsTests
 {
     [Fact]
     public void SectionName_IsNotificationsSmtp() =>
-        SmtpOptions.SectionName.ShouldBe("Notifications:Smtp");
+        SmtpOptions.SectionName.ShouldBe("Notifications:Email:Smtp");
 
     [Fact]
     public void Host_Default_IsLocalhost() =>
