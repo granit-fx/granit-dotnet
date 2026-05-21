@@ -35266,12 +35266,12 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitPrivacyEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitPrivacyEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitPrivacyEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configureShared, Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null, Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null, Action<TenantSchemaOptions>? configureTenantSchema = null)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
