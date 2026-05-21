@@ -9,6 +9,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Fixed
 
+- `Granit.Http.ApiDocumentation` — `ScalarCspContributor` now whitelists `https://api.scalar.com` on `connect-src`. The Scalar Vue.js bootstrap fetches its curated-documents / search registry from `api.scalar.com/vector/registry/*` on mount and on every search, producing two CSP violations in the browser console of every Granit host that exposes Scalar via `UseGranitApiDocumentation()`.
 - `Granit.Authentication.OpenIddict` & `Granit.OpenIddict.Server` — role claims emitted by OpenIddict.Validation under the OIDC short claim type `role` are now normalized to `ClaimTypes.Role`, restoring parity with `Granit.Authentication.JwtBearer`. Without this, `ICurrentUserService.GetRoles()` and the `PermissionChecker.AdminRoles` bypass returned empty even when `ClaimsPrincipal.IsInRole()` matched, causing 403s on permission-protected endpoints for admin-role users on resource servers using OpenIddict validation.
 
 ### Changed (framework)

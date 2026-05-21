@@ -6,8 +6,10 @@ namespace Granit.Http.ApiDocumentation.Internal;
 /// <summary>
 /// Relaxes the Content-Security-Policy on the Scalar interactive API
 /// reference endpoint. The Scalar HTML bootstrap loads its own inline script,
-/// inline styles, and woff2 fonts from <c>https://fonts.scalar.com</c> — all
-/// of which the API-grade default CSP (<c>default-src 'none'</c>) blocks.
+/// inline styles, woff2 fonts from <c>https://fonts.scalar.com</c>, and
+/// fetches its curated-documents / search registry from
+/// <c>https://api.scalar.com</c> — all of which the API-grade default CSP
+/// (<c>default-src 'none'</c>) blocks.
 /// </summary>
 /// <remarks>
 /// Scoped strictly by the presence of <see cref="ScalarApiReferenceMetadata"/>
@@ -29,6 +31,6 @@ internal sealed class ScalarCspContributor : ICspContributor
             .AddStyleSrc("'self'", "'unsafe-inline'")
             .AddFontSrc("'self'", "data:", "https://fonts.scalar.com")
             .AddImgSrc("'self'", "data:", "https:")
-            .AddConnectSrc("'self'");
+            .AddConnectSrc("'self'", "https://api.scalar.com");
     }
 }

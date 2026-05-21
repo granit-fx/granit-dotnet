@@ -110,6 +110,8 @@ public sealed class ScalarCspContributorTests
         builder.Directives["font-src"].ShouldContain("data:");
         builder.Directives.ShouldContainKey("img-src");
         builder.Directives.ShouldContainKey("connect-src");
+        builder.Directives["connect-src"].ShouldContain("'self'");
+        builder.Directives["connect-src"].ShouldContain("https://api.scalar.com");
     }
 
     [Fact]
