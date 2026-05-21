@@ -63,8 +63,13 @@ public class GranitTestFixture<TModule> : IAsyncDisposable, IDisposable
     /// Optional callback to register additional test-specific services
     /// (e.g. test DbContext, additional mocks).
     /// </param>
-    public async Task BuildAsync(Action<IServiceCollection>? configureServices = null)
+    /// <param name="cancellationToken">Token to cancel module bootstrap.</param>
+    public async Task BuildAsync(
+        Action<IServiceCollection>? configureServices = null,
+        CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         await builder.AddGranitAsync<TModule>().ConfigureAwait(false);
 
@@ -75,6 +80,7 @@ public class GranitTestFixture<TModule> : IAsyncDisposable, IDisposable
 
         configureServices?.Invoke(builder.Services);
 
+        cancellationToken.ThrowIfCancellationRequested();
         _host = builder.Build();
         await _host.UseGranitAsync().ConfigureAwait(false);
     }

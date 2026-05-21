@@ -19972,6 +19972,15 @@
       ]
     },
     {
+      "name": "AllowsPopupAuthorizationMetadata",
+      "fqn": "Granit.Http.SecurityHeaders.AllowsPopupAuthorizationMetadata",
+      "kind": "class",
+      "project": "Granit.Http.SecurityHeaders.Abstractions",
+      "file": "src/Granit.Http.SecurityHeaders.Abstractions/AllowsPopupAuthorizationMetadata.cs",
+      "line": 29,
+      "members": []
+    },
+    {
       "name": "CspBuilder",
       "fqn": "Granit.Http.SecurityHeaders.CspBuilder",
       "kind": "class",
@@ -40413,7 +40422,7 @@
         {
           "name": "BuildAsync",
           "kind": "method",
-          "signature": "BuildAsync(Action<IServiceCollection>? configureServices = null)",
+          "signature": "BuildAsync(Action<IServiceCollection>? configureServices = null, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {

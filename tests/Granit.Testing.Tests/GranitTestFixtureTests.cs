@@ -15,7 +15,7 @@ public sealed class GranitTestFixtureTests : IAsyncDisposable
     [Fact]
     public async Task BuildAsync_Bootstraps_Module_Graph()
     {
-        await _fixture.BuildAsync();
+        await _fixture.BuildAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         GranitApplication app = _fixture.GetRequiredService<GranitApplication>();
         app.ShouldNotBeNull();
@@ -24,7 +24,7 @@ public sealed class GranitTestFixtureTests : IAsyncDisposable
     [Fact]
     public async Task Fakes_Are_Injected_Into_Container()
     {
-        await _fixture.BuildAsync();
+        await _fixture.BuildAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         _fixture.GetRequiredService<ICurrentTenant>().ShouldBeSameAs(_fixture.Tenant);
         _fixture.GetRequiredService<ICurrentUserService>().ShouldBeSameAs(_fixture.User);
@@ -35,8 +35,9 @@ public sealed class GranitTestFixtureTests : IAsyncDisposable
     [Fact]
     public async Task ConfigureServices_Callback_Can_Add_Services()
     {
-        await _fixture.BuildAsync(services =>
-            services.AddSingleton<ICustomTestService, CustomTestService>());
+        await _fixture.BuildAsync(
+            services => services.AddSingleton<ICustomTestService, CustomTestService>(),
+            TestContext.Current.CancellationToken);
 
         _fixture.GetRequiredService<ICustomTestService>().ShouldNotBeNull();
     }
@@ -48,7 +49,7 @@ public sealed class GranitTestFixtureTests : IAsyncDisposable
     [Fact]
     public async Task GetService_Returns_Null_For_Unregistered()
     {
-        await _fixture.BuildAsync();
+        await _fixture.BuildAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         _fixture.GetService<ICustomTestService>().ShouldBeNull();
     }
