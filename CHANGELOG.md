@@ -9,7 +9,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Fixed
 
-- `Granit.Http.ApiDocumentation` — `ScalarCspContributor` now whitelists `https://api.scalar.com` on `connect-src`. The Scalar Vue.js bootstrap fetches its curated-documents / search registry from `api.scalar.com/vector/registry/*` on mount and on every search, producing two CSP violations in the browser console of every Granit host that exposes Scalar via `UseGranitApiDocumentation()`.
+- `Granit.Http.ApiDocumentation` — `ScalarCspContributor` now whitelists `https://api.scalar.com` on `connect-src` (Scalar's Vue.js bootstrap fetches its curated-documents / search registry from `api.scalar.com/vector/registry/*` on mount and on every search keystroke). When `ApiDocumentationOptions.OAuth2` is configured, the contributor also adds the origins (scheme + host + port) of the OAuth2 `AuthorizationUrl` and `TokenUrl` to `connect-src`, allowing Scalar's Authorization Code → Token exchange (browser-side cross-origin POST to the IdP, e.g. `localhost:5000 → localhost:8080`) to complete instead of being blocked by CSP. Without this, the interactive "Authorize" button signed-in state never persisted.
 - `Granit.Authentication.OpenIddict` & `Granit.OpenIddict.Server` — role claims emitted by OpenIddict.Validation under the OIDC short claim type `role` are now normalized to `ClaimTypes.Role`, restoring parity with `Granit.Authentication.JwtBearer`. Without this, `ICurrentUserService.GetRoles()` and the `PermissionChecker.AdminRoles` bypass returned empty even when `ClaimsPrincipal.IsInRole()` matched, causing 403s on permission-protected endpoints for admin-role users on resource servers using OpenIddict validation.
 
 ### Changed (framework)

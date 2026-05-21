@@ -122,7 +122,8 @@ public static partial class ApiDocumentationApplicationBuilderExtensions
             return;
         }
 
-        registry.Add(new ScalarCspContributor());
+        registry.Add(new ScalarCspContributor(
+            app.Services.GetRequiredService<IOptions<ApiDocumentationOptions>>()));
     }
 
     private static void ApplyAuthorizationPolicy(

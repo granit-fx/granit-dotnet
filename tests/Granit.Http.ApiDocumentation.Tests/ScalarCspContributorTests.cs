@@ -8,6 +8,7 @@
 
 using Granit.Http.ApiDocumentation.Extensions;
 using Granit.Http.ApiDocumentation.Internal;
+using Granit.Http.ApiDocumentation.Options;
 using Granit.Http.SecurityHeaders;
 using Granit.Http.SecurityHeaders.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
+using MEOptions = Microsoft.Extensions.Options.Options;
 
 namespace Granit.Http.ApiDocumentation.Tests;
 
@@ -89,16 +91,10 @@ public sealed class ScalarCspContributorTests
     [Fact]
     public void ScalarCspContributor_OnScalarMarkedEndpoint_RelaxesCsp()
     {
-        ScalarCspContributor contributor = new();
+        ScalarCspContributor contributor = BuildContributor();
         CspBuilder builder = new();
 
-        DefaultHttpContext ctx = new();
-        ctx.SetEndpoint(new Endpoint(
-            static _ => Task.CompletedTask,
-            new EndpointMetadataCollection(new ScalarApiReferenceMetadata()),
-            "scalar"));
-
-        contributor.Contribute(ctx, builder);
+        contributor.Contribute(BuildScalarContext(), builder);
 
         builder.Directives.ShouldContainKey("script-src");
         builder.Directives["script-src"].ShouldContain("'self'");
@@ -115,9 +111,78 @@ public sealed class ScalarCspContributorTests
     }
 
     [Fact]
+    public void ScalarCspContributor_WithoutOAuth2_OnlyExposesScalarRegistryOrigin()
+    {
+        // OAuth2 left at defaults (both URLs null) → AddOrigin skipped silently
+        ScalarCspContributor contributor = BuildContributor();
+        CspBuilder builder = new();
+
+        contributor.Contribute(BuildScalarContext(), builder);
+
+        builder.Directives["connect-src"].ShouldBe(["'self'", "https://api.scalar.com"]);
+    }
+
+    [Fact]
+    public void ScalarCspContributor_WithOAuth2KeycloakStyle_AddsSharedOriginOnce()
+    {
+        // Realistic Keycloak: auth and token endpoints share the same authority
+        ScalarCspContributor contributor = BuildContributor(new OAuth2Options
+        {
+            AuthorizationUrl = "http://localhost:8080/realms/iot-showcase/protocol/openid-connect/auth",
+            TokenUrl = "http://localhost:8080/realms/iot-showcase/protocol/openid-connect/token",
+            ClientId = "iot-showcase-scalar",
+        });
+        CspBuilder builder = new();
+
+        contributor.Contribute(BuildScalarContext(), builder);
+
+        IReadOnlyCollection<string> connect = builder.Directives["connect-src"];
+        connect.ShouldContain("http://localhost:8080");
+        connect.Count(o => o == "http://localhost:8080").ShouldBe(1, "Distinct() must dedupe the shared IdP origin");
+        connect.ShouldBe(["'self'", "https://api.scalar.com", "http://localhost:8080"]);
+    }
+
+    [Fact]
+    public void ScalarCspContributor_WithOAuth2DistinctAuthAndTokenHosts_AddsBothOrigins()
+    {
+        // Split-host IdP setup (auth UI on 8080, token endpoint on 8081)
+        ScalarCspContributor contributor = BuildContributor(new OAuth2Options
+        {
+            AuthorizationUrl = "http://localhost:8080/auth",
+            TokenUrl = "http://localhost:8081/token",
+            ClientId = "scalar",
+        });
+        CspBuilder builder = new();
+
+        contributor.Contribute(BuildScalarContext(), builder);
+
+        builder.Directives["connect-src"].ShouldContain("http://localhost:8080");
+        builder.Directives["connect-src"].ShouldContain("http://localhost:8081");
+    }
+
+    [Theory]
+    [InlineData("not a url")]                  // not absolute → TryCreate fails
+    [InlineData("/relative/path/only")]        // absolute-path-only → TryCreate yields file:// on Linux; filtered by scheme guard
+    [InlineData("ftp://idp.example.com")]      // valid URI but non-HTTP(S); filtered by scheme guard
+    public void ScalarCspContributor_WithMalformedOrNonHttpOAuth2Urls_SilentlyIgnoresThem(string badUrl)
+    {
+        ScalarCspContributor contributor = BuildContributor(new OAuth2Options
+        {
+            AuthorizationUrl = badUrl,
+            TokenUrl = badUrl,
+            ClientId = "scalar",
+        });
+        CspBuilder builder = new();
+
+        Should.NotThrow(() => contributor.Contribute(BuildScalarContext(), builder));
+
+        builder.Directives["connect-src"].ShouldBe(["'self'", "https://api.scalar.com"]);
+    }
+
+    [Fact]
     public void ScalarCspContributor_OnNonScalarEndpoint_DoesNothing()
     {
-        ScalarCspContributor contributor = new();
+        ScalarCspContributor contributor = BuildContributor();
         CspBuilder builder = new();
 
         DefaultHttpContext ctx = new();
@@ -135,13 +200,33 @@ public sealed class ScalarCspContributorTests
     [Fact]
     public void ScalarCspContributor_WithoutMatchedEndpoint_DoesNothing()
     {
-        ScalarCspContributor contributor = new();
+        ScalarCspContributor contributor = BuildContributor();
         CspBuilder builder = new();
         DefaultHttpContext ctx = new();   // No endpoint set
 
         contributor.Contribute(ctx, builder);
 
         builder.Directives.ShouldBeEmpty();
+    }
+
+    private static ScalarCspContributor BuildContributor(OAuth2Options? oauth2 = null)
+    {
+        ApiDocumentationOptions options = new();
+        if (oauth2 is not null)
+        {
+            options.OAuth2 = oauth2;
+        }
+        return new ScalarCspContributor(MEOptions.Create(options));
+    }
+
+    private static DefaultHttpContext BuildScalarContext()
+    {
+        DefaultHttpContext ctx = new();
+        ctx.SetEndpoint(new Endpoint(
+            static _ => Task.CompletedTask,
+            new EndpointMetadataCollection(new ScalarApiReferenceMetadata()),
+            "scalar"));
+        return ctx;
     }
 
     private static WebApplication BuildApp(
