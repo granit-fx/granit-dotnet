@@ -61,7 +61,7 @@ internal sealed class PresenceQueryService(
         DateTimeOffset lastSeen = heartbeat?.LastPollUtc ?? DateTimeOffset.MinValue;
 
         ManualPresenceStatus? activeOverride = presence?.GetActiveOverride(clock);
-        DateTimeOffset? overrideUntil = activeOverride is null ? null : presence?.OverrideUntilUtc;
+        DateTimeOffset? overrideUntil = activeOverride is null ? null : presence!.OverrideUntilUtc;
 
         PresenceStatus effective = activeOverride switch
         {
