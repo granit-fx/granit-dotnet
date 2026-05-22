@@ -72,10 +72,12 @@ internal sealed class EfCoreAuditingReader(
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         // Resolve every CLR type the audit log may have stamped for this
-        // canonical name (ADR-051 split persistence). The cache key uses the
-        // canonical name only since the resolved set is deterministic given
-        // the registered providers.
-        IReadOnlySet<string> matchTypes = aliasProviders.Resolve(entityType);
+        // canonical name (ADR-051 split persistence). Materialise to string[]
+        // because Npgsql translates Contains on arrays/lists to a SQL IN-list
+        // but does not recognise IReadOnlySet<string> — the query would fall
+        // back to client evaluation (silently empty on InMemory in tests, hard
+        // failure on Postgres at runtime).
+        string[] matchTypes = [.. aliasProviders.Resolve(entityType)];
 
         IQueryable<AuditEntry> queryable = dbContext.AuditEntries
             .Include(e => e.EntityChanges)
