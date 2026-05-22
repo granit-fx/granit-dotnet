@@ -7,13 +7,8 @@
     "Permission:Timeline.Entries.Read": "Aktivitätsfeeds und Prüfverlauf anzeigen",
     "Permission:Timeline.Followers.Manage": "Entitäten in Aktivitätsfeeds folgen und entfolgen",
     "Permission:Timeline.InternalNotes.Read": "Interne Notizen (nur für Mitarbeiter) in Aktivitätsfeeds anzeigen",
-    "Permission:Timeline.Reactions.React": "Auf Zeitachseneinträge mit Katalog-Emojis reagieren",
+    "Permission:Timeline.Reactions.React": "Auf Zeitachseneinträge mit beliebigen Unicode-Emojis reagieren",
     "PermissionGroup:Timeline": "Zeitachse",
-    "Reaction:eyes": "Augen",
-    "Reaction:heart": "Herz",
-    "Reaction:joy": "Lachen",
-    "Reaction:tada": "Feiern",
-    "Reaction:thumbs_up": "Daumen hoch",
     "TimelineEndpoints:Workspace.Item": "Activity feed",
     "TimelineEndpoints:Workspace.Section": "Timeline"
   }

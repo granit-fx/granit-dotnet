@@ -7,13 +7,8 @@
     "Permission:Timeline.Entries.Read": "Visualizzare i flussi di attività e la cronologia di audit",
     "Permission:Timeline.Followers.Manage": "Seguire e smettere di seguire entità nei feed di attività",
     "Permission:Timeline.InternalNotes.Read": "Visualizzare le note interne riservate al personale nei feed di attività",
-    "Permission:Timeline.Reactions.React": "Reagire alle voci della timeline con gli emoji del catalogo",
+    "Permission:Timeline.Reactions.React": "Reagire alle voci della timeline con qualsiasi emoji Unicode",
     "PermissionGroup:Timeline": "Cronologia",
-    "Reaction:eyes": "Occhi",
-    "Reaction:heart": "Cuore",
-    "Reaction:joy": "Risata",
-    "Reaction:tada": "Festeggiare",
-    "Reaction:thumbs_up": "Pollice in su",
     "TimelineEndpoints:Workspace.Item": "Activity feed",
     "TimelineEndpoints:Workspace.Section": "Timeline"
   }

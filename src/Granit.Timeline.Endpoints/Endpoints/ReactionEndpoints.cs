@@ -4,7 +4,6 @@ using Granit.MultiTenancy;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Endpoints.Dtos;
-using Granit.Timeline.Endpoints.Internal;
 using Granit.Timeline.Endpoints.Permissions;
 using Granit.Timeline.Events;
 using Granit.Timing;
@@ -14,54 +13,29 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 
 namespace Granit.Timeline.Endpoints.Endpoints;
 
 /// <summary>
-/// POST /api/timeline/entries/{entryId}/reactions/{emoji} (toggle) and
-/// GET /api/timeline/reactions/catalog (closed list of supported emojis).
-/// Both gated by <see cref="TimelinePermissions.Reactions.React"/>.
+/// POST /api/timeline/entries/{entryId}/reactions/{emoji} — toggle a
+/// reaction on a timeline entry. Any well-formed Unicode emoji sequence
+/// is accepted; the picker UI lives client-side.
+/// Gated by <see cref="TimelinePermissions.Reactions.React"/>.
 /// </summary>
 internal static class ReactionEndpoints
 {
     internal static RouteGroupBuilder MapReactionEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/reactions/catalog", GetCatalogAsync)
-            .RequireAuthorization(TimelinePermissions.Reactions.React)
-            .WithName("GetTimelineReactionCatalog")
-            .WithSummary("Returns the closed catalog of supported reaction emojis.")
-            .WithDescription("Returns the 5 v1 emojis (👍 / ❤️ / 🎉 / 😂 / 👀) with their localized display labels for the current request culture. Used by the React shell to render the reaction picker. Permission gate matches the toggle endpoint — a user who cannot react does not need to see the picker.")
-            .Produces<IReadOnlyList<ReactionCatalogEntryResponse>>();
-
         group.MapPost("/entries/{entryId:guid}/reactions/{emoji}", ToggleAsync)
             .RequireAuthorization(TimelinePermissions.Reactions.React)
             .WithName("ToggleTimelineReaction")
             .WithSummary("Toggles a reaction on a timeline entry by the calling user.")
-            .WithDescription("Idempotent toggle — adds the reaction if absent, removes if present. Validates the emoji against the closed ReactionEmojiCatalog (returns 400 with Granit:Timeline:UnknownEmoji on a miss). Emits ReactionToggledEvent on the local bus on success. Concurrent double-POST is collapsed by the unique (EntryId, UserId, Emoji) DB index.")
+            .WithDescription("Idempotent toggle — adds the reaction if absent, removes if present. Accepts any well-formed Unicode emoji sequence (see EmojiValidator); rejects malformed input with 400 and Granit:Timeline:InvalidEmoji. Emits ReactionToggledEvent on the local bus on success. Concurrent double-POST is collapsed by the unique (EntryId, UserId, Emoji) DB index.")
             .Produces<ReactionToggleResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         return group;
-    }
-
-    private static Ok<IReadOnlyList<ReactionCatalogEntryResponse>> GetCatalogAsync(
-        [FromServices] IStringLocalizerFactory localizerFactory)
-    {
-        IStringLocalizer localizer = localizerFactory.Create(typeof(TimelineEndpointsLocalizationResource));
-
-        IReadOnlyList<ReactionCatalogEntryResponse> entries = [.. ReactionEmojiCatalog.All
-            .Select(emoji =>
-            {
-                string key = $"Reaction:{emoji}";
-                return new ReactionCatalogEntryResponse(
-                    Emoji: emoji,
-                    DisplayKey: key,
-                    Display: localizer[key].Value);
-            })];
-
-        return TypedResults.Ok(entries);
     }
 
     private static async Task<Results<Ok<ReactionToggleResponse>, ProblemHttpResult>> ToggleAsync(
@@ -76,12 +50,12 @@ internal static class ReactionEndpoints
         [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
-        if (!ReactionEmojiCatalog.IsValid(emoji))
+        if (!EmojiValidator.IsValid(emoji))
         {
             return TypedResults.Problem(
-                detail: $"Emoji '{emoji}' is not in the closed catalog (Granit:Timeline:UnknownEmoji).",
+                detail: $"Emoji '{emoji}' is not a valid Unicode emoji sequence (Granit:Timeline:InvalidEmoji).",
                 statusCode: StatusCodes.Status400BadRequest,
-                title: "Unknown emoji");
+                title: "Invalid emoji");
         }
 
         if (currentUser.UserId is not { } userIdRaw

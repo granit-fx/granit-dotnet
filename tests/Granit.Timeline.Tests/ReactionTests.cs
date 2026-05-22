@@ -16,24 +16,24 @@ public sealed class ReactionTests
         DateTimeOffset now = new(2026, 5, 2, 12, 0, 0, TimeSpan.Zero);
 
         var reaction = Reaction.Create(
-            id, entryId, userId, "thumbs_up", now, "user-1", tenantId: null);
+            id, entryId, userId, "👍", now, "user-1", tenantId: null);
 
         reaction.Id.ShouldBe(id);
         reaction.EntryId.ShouldBe(entryId);
         reaction.UserId.ShouldBe(userId);
-        reaction.Emoji.ShouldBe("thumbs_up");
+        reaction.Emoji.ShouldBe("👍");
         reaction.CreatedAt.ShouldBe(now);
         reaction.CreatedBy.ShouldBe("user-1");
     }
 
     [Fact]
-    public void Create_with_unknown_emoji_throws()
+    public void Create_with_invalid_emoji_throws()
     {
         ArgumentException ex = Should.Throw<ArgumentException>(() => Reaction.Create(
-            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "rocket", DateTimeOffset.UtcNow, "user-1"));
+            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "thumbs_up", DateTimeOffset.UtcNow, "user-1"));
 
-        ex.Message.ShouldContain("rocket");
-        ex.Message.ShouldContain("catalog");
+        ex.Message.ShouldContain("thumbs_up");
+        ex.Message.ShouldContain("Unicode");
     }
 
     [Theory]
@@ -46,24 +46,24 @@ public sealed class ReactionTests
     [Fact]
     public void Create_with_empty_entryId_throws() =>
         Should.Throw<ArgumentException>(() => Reaction.Create(
-            Guid.NewGuid(), Guid.Empty, Guid.NewGuid(), "heart", DateTimeOffset.UtcNow, "user-1"));
+            Guid.NewGuid(), Guid.Empty, Guid.NewGuid(), "❤️", DateTimeOffset.UtcNow, "user-1"));
 
     [Fact]
     public void Create_with_empty_userId_throws() =>
         Should.Throw<ArgumentException>(() => Reaction.Create(
-            Guid.NewGuid(), Guid.NewGuid(), Guid.Empty, "heart", DateTimeOffset.UtcNow, "user-1"));
+            Guid.NewGuid(), Guid.NewGuid(), Guid.Empty, "❤️", DateTimeOffset.UtcNow, "user-1"));
 
     [Fact]
     public void Create_with_blank_createdBy_throws() =>
         Should.Throw<ArgumentException>(() => Reaction.Create(
-            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "heart", DateTimeOffset.UtcNow, ""));
+            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "❤️", DateTimeOffset.UtcNow, ""));
 
     [Fact]
     public void IMultiTenant_round_trips_explicitly()
     {
         var tenantId = Guid.NewGuid();
         var reaction = Reaction.Create(
-            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "heart",
+            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "❤️",
             DateTimeOffset.UtcNow, "user-1", tenantId);
 
         reaction.TenantId.ShouldBe(tenantId);
@@ -75,25 +75,54 @@ public sealed class ReactionTests
     }
 }
 
-public sealed class ReactionEmojiCatalogTests
+public sealed class EmojiValidatorTests
 {
+    [Theory]
+    [InlineData("👍")]                  // single base codepoint
+    [InlineData("❤️")]                  // base + VS-16
+    [InlineData("🎉")]
+    [InlineData("🚀")]
+    [InlineData("✅")]                  // BMP block 0x2600..0x27BF
+    [InlineData("⚠️")]                  // BMP + VS-16
+    [InlineData("👍🏽")]                 // base + Fitzpatrick modifier
+    [InlineData("👨‍👩‍👧‍👦")]          // ZWJ family sequence
+    [InlineData("1️⃣")]                 // keycap: digit + VS-16 + combining enclosing keycap
+    public void IsValid_accepts_well_formed_unicode_emojis(string emoji) =>
+        EmojiValidator.IsValid(emoji).ShouldBeTrue();
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("thumbs_up")]           // legacy short name no longer accepted
+    [InlineData("<script>")]
+    [InlineData("a")]
+    [InlineData("👍 ")]                 // trailing space
+    [InlineData("‍👍")]             // leading ZWJ
+    [InlineData("👍‍")]             // trailing ZWJ
+    [InlineData("👍‍‍👀")]    // doubled ZWJ
+    public void IsValid_rejects_malformed_input(string emoji) =>
+        EmojiValidator.IsValid(emoji).ShouldBeFalse();
+
     [Fact]
-    public void All_returns_5_v1_emojis()
+    public void IsValid_rejects_input_longer_than_max_length()
     {
-        ReactionEmojiCatalog.All.Count.ShouldBe(5);
-        ReactionEmojiCatalog.All.ShouldBe(
-            ["thumbs_up", "heart", "tada", "joy", "eyes"]);
+        string oversize = new('a', EmojiValidator.MaxLength + 1);
+        EmojiValidator.IsValid(oversize).ShouldBeFalse();
     }
 
     [Theory]
-    [InlineData("thumbs_up", true)]
-    [InlineData("heart", true)]
-    [InlineData("tada", true)]
-    [InlineData("joy", true)]
-    [InlineData("eyes", true)]
-    [InlineData("rocket", false)]
-    [InlineData("THUMBS_UP", false)] // case-sensitive (Ordinal)
-    [InlineData("", false)]
-    public void IsValid_recognises_only_catalog_keys(string emoji, bool expected) =>
-        ReactionEmojiCatalog.IsValid(emoji).ShouldBe(expected);
+    [InlineData("👍", "👍")]            // no modifiers — unchanged
+    [InlineData("👍🏽", "👍")]           // Fitzpatrick stripped
+    [InlineData("👍🏿", "👍")]
+    [InlineData("❤️", "❤")]            // VS-16 stripped
+    [InlineData("👍🏽👀", "👍👀")]       // modifier in middle
+    public void NormalizeForAggregate_collapses_skin_tone_and_vs16(string input, string expected) =>
+        EmojiValidator.NormalizeForAggregate(input).ShouldBe(expected);
+
+    [Fact]
+    public void NormalizeForAggregate_returns_empty_for_null_or_empty()
+    {
+        EmojiValidator.NormalizeForAggregate(null).ShouldBe(string.Empty);
+        EmojiValidator.NormalizeForAggregate("").ShouldBe(string.Empty);
+    }
 }

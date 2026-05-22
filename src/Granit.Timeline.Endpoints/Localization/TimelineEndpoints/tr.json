@@ -7,13 +7,8 @@
     "Permission:Timeline.Entries.Read": "Etkinlik akışlarını ve denetim geçmişini görüntüle",
     "Permission:Timeline.Followers.Manage": "Etkinlik akışlarında varlıkları takip edin ve takipten çıkın",
     "Permission:Timeline.InternalNotes.Read": "Etkinlik akışlarında yalnızca personele özel dahili notları görüntüleyin",
-    "Permission:Timeline.Reactions.React": "Zaman çizelgesi girişlerine katalog emojileriyle tepki verin",
+    "Permission:Timeline.Reactions.React": "Zaman çizelgesi girişlerine herhangi bir Unicode emoji ile tepki verin",
     "PermissionGroup:Timeline": "Zaman Çizelgesi",
-    "Reaction:eyes": "Gözler",
-    "Reaction:heart": "Kalp",
-    "Reaction:joy": "Gülme",
-    "Reaction:tada": "Kutlama",
-    "Reaction:thumbs_up": "Beğeni",
     "TimelineEndpoints:Workspace.Item": "Activity feed",
     "TimelineEndpoints:Workspace.Section": "Timeline"
   }

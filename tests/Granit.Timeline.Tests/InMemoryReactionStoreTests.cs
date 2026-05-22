@@ -7,7 +7,7 @@ namespace Granit.Timeline.Tests;
 
 public sealed class InMemoryReactionStoreTests
 {
-    private static Reaction NewReaction(Guid entryId, Guid userId, string emoji = "heart") =>
+    private static Reaction NewReaction(Guid entryId, Guid userId, string emoji = "❤️") =>
         Reaction.Create(
             id: Guid.NewGuid(),
             entryId: entryId,
@@ -49,7 +49,7 @@ public sealed class InMemoryReactionStoreTests
         var userId = Guid.NewGuid();
         await sut.AddAsync(NewReaction(entryId, userId), TestContext.Current.CancellationToken);
 
-        await sut.RemoveAsync(entryId, userId, "heart", TestContext.Current.CancellationToken);
+        await sut.RemoveAsync(entryId, userId, "❤️", TestContext.Current.CancellationToken);
         await sut.AddAsync(NewReaction(entryId, userId), TestContext.Current.CancellationToken);
 
         IReadOnlyList<Reaction> rows = await sut.GetByEntryAsync(entryId, TestContext.Current.CancellationToken);
@@ -61,7 +61,7 @@ public sealed class InMemoryReactionStoreTests
     {
         InMemoryReactionStore sut = new();
         await Should.NotThrowAsync(() =>
-            sut.RemoveAsync(Guid.NewGuid(), Guid.NewGuid(), "heart", TestContext.Current.CancellationToken));
+            sut.RemoveAsync(Guid.NewGuid(), Guid.NewGuid(), "❤️", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -93,12 +93,12 @@ public sealed class InMemoryReactionStoreTests
         InMemoryReactionStore sut = new();
         var entryId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        await sut.AddAsync(NewReaction(entryId, userId, "thumbs_up"), TestContext.Current.CancellationToken);
+        await sut.AddAsync(NewReaction(entryId, userId, "👍"), TestContext.Current.CancellationToken);
 
-        Reaction? hit = await sut.FindAsync(entryId, userId, "thumbs_up", TestContext.Current.CancellationToken);
+        Reaction? hit = await sut.FindAsync(entryId, userId, "👍", TestContext.Current.CancellationToken);
         hit.ShouldNotBeNull();
 
-        Reaction? miss = await sut.FindAsync(entryId, userId, "heart", TestContext.Current.CancellationToken);
+        Reaction? miss = await sut.FindAsync(entryId, userId, "❤️", TestContext.Current.CancellationToken);
         miss.ShouldBeNull();
     }
 }

@@ -31,10 +31,10 @@ public sealed class ReactionConfigurationTests
     }
 
     [Fact]
-    public void Emoji_property_has_max_length_32()
+    public void Emoji_property_has_max_length_64()
     {
         IProperty prop = GetEntityType().FindProperty(nameof(Reaction.Emoji))!;
-        prop.GetMaxLength().ShouldBe(32);
+        prop.GetMaxLength().ShouldBe(64);
         prop.IsNullable.ShouldBeFalse();
     }
 

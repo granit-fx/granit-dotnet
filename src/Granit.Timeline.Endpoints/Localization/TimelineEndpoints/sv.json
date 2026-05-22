@@ -7,13 +7,8 @@
     "Permission:Timeline.Entries.Read": "Visa aktivitetsflöden och revisionshistorik",
     "Permission:Timeline.Followers.Manage": "Följa och sluta följa entiteter i aktivitetsflöden",
     "Permission:Timeline.InternalNotes.Read": "Visa personalens interna anteckningar i aktivitetsflöden",
-    "Permission:Timeline.Reactions.React": "Reagera på tidslinjeposter med katalogens emojier",
+    "Permission:Timeline.Reactions.React": "Reagera på tidslinjeposter med valfri Unicode-emoji",
     "PermissionGroup:Timeline": "Tidslinje",
-    "Reaction:eyes": "Ögon",
-    "Reaction:heart": "Hjärta",
-    "Reaction:joy": "Skratt",
-    "Reaction:tada": "Fira",
-    "Reaction:thumbs_up": "Tummen upp",
     "TimelineEndpoints:Workspace.Item": "Activity feed",
     "TimelineEndpoints:Workspace.Section": "Timeline"
   }

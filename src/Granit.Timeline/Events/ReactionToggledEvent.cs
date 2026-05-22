@@ -10,7 +10,7 @@ namespace Granit.Timeline.Events;
 /// </summary>
 /// <param name="EntryId">The timeline entry the reaction is on.</param>
 /// <param name="UserId">The user who toggled.</param>
-/// <param name="Emoji">Catalog key (e.g. <c>"thumbs_up"</c>).</param>
+/// <param name="Emoji">Unicode emoji sequence (e.g. <c>"👍"</c>, <c>"❤️"</c>).</param>
 /// <param name="Action">Whether the toggle resulted in an add or a remove.</param>
 public sealed record ReactionToggledEvent(
     Guid EntryId,

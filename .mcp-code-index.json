@@ -40938,34 +40938,34 @@
       ]
     },
     {
+      "name": "EmojiValidator",
+      "fqn": "Granit.Timeline.Domain.EmojiValidator",
+      "kind": "class",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Domain/EmojiValidator.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "IsValid",
+          "kind": "method",
+          "signature": "IsValid(string? emoji)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
       "name": "Reaction",
       "fqn": "Granit.Timeline.Domain.Reaction",
       "kind": "class",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Domain/Reaction.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "Create",
           "kind": "method",
           "signature": "Create(Guid id, Guid entryId, Guid userId, string emoji, DateTimeOffset createdAt, string createdBy, Guid? tenantId = null)",
           "returnType": "Reaction"
-        }
-      ]
-    },
-    {
-      "name": "ReactionEmojiCatalog",
-      "fqn": "Granit.Timeline.Domain.ReactionEmojiCatalog",
-      "kind": "class",
-      "project": "Granit.Timeline",
-      "file": "src/Granit.Timeline/Domain/ReactionEmojiCatalog.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "IsValid",
-          "kind": "method",
-          "signature": "IsValid(string emoji)",
-          "returnType": "bool"
         }
       ]
     },
@@ -41091,16 +41091,7 @@
       "kind": "record",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Dtos/ReactionResponses.cs",
-      "line": 28,
-      "members": []
-    },
-    {
-      "name": "ReactionCatalogEntryResponse",
-      "fqn": "Granit.Timeline.Endpoints.Dtos.ReactionCatalogEntryResponse",
-      "kind": "record",
-      "project": "Granit.Timeline.Endpoints",
-      "file": "src/Granit.Timeline.Endpoints/Dtos/ReactionResponses.cs",
-      "line": 17,
+      "line": 20,
       "members": []
     },
     {
@@ -41109,7 +41100,7 @@
       "kind": "record",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Dtos/ReactionResponses.cs",
-      "line": 7,
+      "line": 8,
       "members": []
     },
     {
@@ -41118,7 +41109,7 @@
       "kind": "record",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
-      "line": 22,
+      "line": 24,
       "members": []
     },
     {
@@ -41127,7 +41118,7 @@
       "kind": "record",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
-      "line": 10,
+      "line": 12,
       "members": []
     },
     {

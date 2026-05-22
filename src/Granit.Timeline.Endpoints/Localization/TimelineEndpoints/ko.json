@@ -7,13 +7,8 @@
     "Permission:Timeline.Entries.Read": "활동 피드 및 감사 이력 보기",
     "Permission:Timeline.Followers.Manage": "활동 피드에서 엔터티 팔로우 및 팔로우 취소",
     "Permission:Timeline.InternalNotes.Read": "활동 피드에서 직원 전용 내부 메모 보기",
-    "Permission:Timeline.Reactions.React": "카탈로그 이모지로 타임라인 항목에 반응하기",
+    "Permission:Timeline.Reactions.React": "타임라인 항목에 모든 유니코드 이모지로 반응하기",
     "PermissionGroup:Timeline": "타임라인",
-    "Reaction:eyes": "눈",
-    "Reaction:heart": "하트",
-    "Reaction:joy": "웃음",
-    "Reaction:tada": "축하",
-    "Reaction:thumbs_up": "좋아요",
     "TimelineEndpoints:Workspace.Item": "Activity feed",
     "TimelineEndpoints:Workspace.Section": "Timeline"
   }

@@ -3,10 +3,11 @@ using Granit.Domain;
 namespace Granit.Timeline.Domain;
 
 /// <summary>
-/// One reaction (👍 / ❤️ / 🎉 / 😂 / 👀) by a user on a
-/// <see cref="TimelineEntry"/>. Idempotency is enforced at the SQL level by a
-/// composite unique index on <c>(EntryId, UserId, Emoji)</c>; the toggle
-/// endpoint (story C2) flips between Add and Remove against that constraint.
+/// One reaction by a user on a <see cref="TimelineEntry"/>, identified by
+/// any well-formed Unicode emoji sequence (see <see cref="EmojiValidator"/>).
+/// Idempotency is enforced at the SQL level by a composite unique index on
+/// <c>(EntryId, UserId, Emoji)</c>; the toggle endpoint (story C2) flips
+/// between Add and Remove against that constraint.
 /// </summary>
 /// <remarks>
 /// Cascade-deletes with the parent <see cref="TimelineEntry"/> — reactions
@@ -20,9 +21,9 @@ public sealed class Reaction : CreationAuditedEntity, IMultiTenant
     private Reaction() { }
 
     /// <summary>
-    /// Creates a new reaction. Validates <paramref name="emoji"/> against the
-    /// closed <see cref="ReactionEmojiCatalog"/>; unknown values throw at the
-    /// factory boundary so they never hit persistence.
+    /// Creates a new reaction. Validates <paramref name="emoji"/> against
+    /// <see cref="EmojiValidator"/>; malformed values throw at the factory
+    /// boundary so they never hit persistence.
     /// </summary>
     public static Reaction Create(
         Guid id,
@@ -43,10 +44,10 @@ public sealed class Reaction : CreationAuditedEntity, IMultiTenant
         {
             throw new ArgumentException("UserId cannot be Guid.Empty.", nameof(userId));
         }
-        if (!ReactionEmojiCatalog.IsValid(emoji))
+        if (!EmojiValidator.IsValid(emoji))
         {
             throw new ArgumentException(
-                $"Emoji '{emoji}' is not in the closed catalog (see ReactionEmojiCatalog.All).",
+                $"Emoji '{emoji}' is not a valid Unicode emoji sequence (see EmojiValidator).",
                 nameof(emoji));
         }
 
@@ -68,7 +69,7 @@ public sealed class Reaction : CreationAuditedEntity, IMultiTenant
     /// <summary>The user who reacted.</summary>
     public Guid UserId { get; private set; }
 
-    /// <summary>Catalog key (e.g. <c>"thumbs_up"</c>).</summary>
+    /// <summary>Unicode emoji sequence (e.g. <c>"👍"</c>, <c>"👍🏽"</c>, <c>"❤️"</c>).</summary>
     public string Emoji { get; private set; } = string.Empty;
 
     /// <inheritdoc/>

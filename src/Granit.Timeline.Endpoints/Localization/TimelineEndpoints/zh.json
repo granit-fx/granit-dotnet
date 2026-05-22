@@ -7,13 +7,8 @@
     "Permission:Timeline.Entries.Read": "查看活动流和审计历史",
     "Permission:Timeline.Followers.Manage": "在活动源中关注和取消关注实体",
     "Permission:Timeline.InternalNotes.Read": "查看活动源中仅供员工查看的内部笔记",
-    "Permission:Timeline.Reactions.React": "使用目录表情符号对时间线条目作出回应",
+    "Permission:Timeline.Reactions.React": "使用任意 Unicode 表情符号对时间线条目作出回应",
     "PermissionGroup:Timeline": "时间线",
-    "Reaction:eyes": "眼睛",
-    "Reaction:heart": "爱心",
-    "Reaction:joy": "大笑",
-    "Reaction:tada": "庆祝",
-    "Reaction:thumbs_up": "点赞",
     "TimelineEndpoints:Workspace.Item": "Activity feed",
     "TimelineEndpoints:Workspace.Section": "Timeline"
   }

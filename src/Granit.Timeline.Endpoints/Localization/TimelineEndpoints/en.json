@@ -7,13 +7,8 @@
     "Permission:Timeline.Entries.Read": "View activity feeds and audit history",
     "Permission:Timeline.Followers.Manage": "Follow and unfollow entities in timeline feeds",
     "Permission:Timeline.InternalNotes.Read": "View staff-only internal notes in activity feeds",
-    "Permission:Timeline.Reactions.React": "React to timeline entries with the closed-catalog emojis",
+    "Permission:Timeline.Reactions.React": "React to timeline entries with any Unicode emoji",
     "PermissionGroup:Timeline": "Timeline",
-    "Reaction:eyes": "Eyes",
-    "Reaction:heart": "Heart",
-    "Reaction:joy": "Laughing",
-    "Reaction:tada": "Celebrate",
-    "Reaction:thumbs_up": "Thumbs up",
     "TimelineEndpoints:Workspace.Item": "Activity feed",
     "TimelineEndpoints:Workspace.Section": "Timeline"
   }

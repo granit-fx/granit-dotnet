@@ -7,13 +7,8 @@
     "Permission:Timeline.Entries.Read": "Activiteitsfeeds en auditgeschiedenis bekijken",
     "Permission:Timeline.Followers.Manage": "Entiteiten volgen en ontvolgen in activiteitenfeeds",
     "Permission:Timeline.InternalNotes.Read": "Alleen voor personeel bestemde interne notities bekijken",
-    "Permission:Timeline.Reactions.React": "Reageren op tijdlijnvermeldingen met de catalogus-emoji's",
+    "Permission:Timeline.Reactions.React": "Reageren op tijdlijnvermeldingen met elke Unicode-emoji",
     "PermissionGroup:Timeline": "Tijdlijn",
-    "Reaction:eyes": "Ogen",
-    "Reaction:heart": "Hart",
-    "Reaction:joy": "Lachen",
-    "Reaction:tada": "Vieren",
-    "Reaction:thumbs_up": "Duim omhoog",
     "TimelineEndpoints:Workspace.Item": "Activity feed",
     "TimelineEndpoints:Workspace.Section": "Timeline"
   }

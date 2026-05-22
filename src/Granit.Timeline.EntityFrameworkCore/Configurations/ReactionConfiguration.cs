@@ -19,7 +19,7 @@ internal sealed class ReactionConfiguration : IEntityTypeConfiguration<Reaction>
 
         builder.Property(x => x.EntryId).IsRequired();
         builder.Property(x => x.UserId).IsRequired();
-        builder.Property(x => x.Emoji).HasMaxLength(32).IsRequired();
+        builder.Property(x => x.Emoji).HasMaxLength(64).IsRequired();
         builder.Property(x => x.CreatedBy).HasMaxLength(256).IsRequired();
 
         // Cascade-delete with the parent TimelineEntry — reactions have no

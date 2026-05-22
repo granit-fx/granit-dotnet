@@ -7,13 +7,8 @@
     "Permission:Timeline.Entries.Read": "Zobrazit aktivity a historii auditu",
     "Permission:Timeline.Followers.Manage": "Sledovat a přestat sledovat entity v kanálech aktivity",
     "Permission:Timeline.InternalNotes.Read": "Zobrazit interní poznámky pouze pro zaměstnance v kanálech aktivity",
-    "Permission:Timeline.Reactions.React": "Reagovat na položky časové osy emoji z katalogu",
+    "Permission:Timeline.Reactions.React": "Reagovat na položky časové osy libovolným Unicode emoji",
     "PermissionGroup:Timeline": "Časová osa",
-    "Reaction:eyes": "Oči",
-    "Reaction:heart": "Srdce",
-    "Reaction:joy": "Smích",
-    "Reaction:tada": "Oslava",
-    "Reaction:thumbs_up": "Palec nahoru",
     "TimelineEndpoints:Workspace.Item": "Activity feed",
     "TimelineEndpoints:Workspace.Section": "Timeline"
   }

@@ -7,13 +7,8 @@
     "Permission:Timeline.Entries.Read": "Consulter les flux d'activité et l'historique d'audit",
     "Permission:Timeline.Followers.Manage": "Suivre et ne plus suivre des entités dans les fils d'activité",
     "Permission:Timeline.InternalNotes.Read": "Consulter les notes internes réservées au personnel",
-    "Permission:Timeline.Reactions.React": "Réagir aux entrées du fil d'activité avec les emojis du catalogue",
+    "Permission:Timeline.Reactions.React": "Réagir aux entrées du fil d'activité avec n'importe quel emoji Unicode",
     "PermissionGroup:Timeline": "Fil d'activité",
-    "Reaction:eyes": "Yeux",
-    "Reaction:heart": "Cœur",
-    "Reaction:joy": "Rire",
-    "Reaction:tada": "Bravo",
-    "Reaction:thumbs_up": "Pouce levé",
     "TimelineEndpoints:Workspace.Item": "Flux d'activité",
     "TimelineEndpoints:Workspace.Section": "Timeline"
   }

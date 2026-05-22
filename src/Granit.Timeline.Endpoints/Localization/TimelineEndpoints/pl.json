@@ -7,13 +7,8 @@
     "Permission:Timeline.Entries.Read": "Wyświetlanie kanałów aktywności i historii audytu",
     "Permission:Timeline.Followers.Manage": "Obserwowanie i rezygnacja z obserwowania podmiotów w kanałach aktywności",
     "Permission:Timeline.InternalNotes.Read": "Przeglądanie wewnętrznych notatek dostępnych tylko dla personelu",
-    "Permission:Timeline.Reactions.React": "Reaguj na wpisy osi czasu emoji z katalogu",
+    "Permission:Timeline.Reactions.React": "Reaguj na wpisy osi czasu dowolnym emoji Unicode",
     "PermissionGroup:Timeline": "Oś czasu",
-    "Reaction:eyes": "Oczy",
-    "Reaction:heart": "Serce",
-    "Reaction:joy": "Śmiech",
-    "Reaction:tada": "Świętowanie",
-    "Reaction:thumbs_up": "Kciuk w górę",
     "TimelineEndpoints:Workspace.Item": "Activity feed",
     "TimelineEndpoints:Workspace.Section": "Timeline"
   }

@@ -18,7 +18,10 @@ internal static class TimelineResponseMapper
     /// Aggregates the flat reaction list returned by
     /// <c>IReactionReader.GetByEntriesAsync</c> into a per-entry,
     /// per-emoji summary suitable for the wire payload (story C3).
-    /// Entries with no reactions are absent from the map (caller passes
+    /// Skin-tone variants and VS-16 selectors are collapsed via
+    /// <see cref="EmojiValidator.NormalizeForAggregate"/> so 👍 / 👍🏽 /
+    /// 👍🏿 share a single counter keyed under the base codepoint. Entries
+    /// with no reactions are absent from the map (caller passes
     /// <see langword="null"/> for those).
     /// </summary>
     internal static IReadOnlyDictionary<Guid, IReadOnlyDictionary<string, ReactionAggregateResponse>> AggregateReactions(
@@ -33,8 +36,9 @@ internal static class TimelineResponseMapper
                 perEmoji = new Dictionary<string, (int, bool)>(StringComparer.Ordinal);
                 byEntry[r.EntryId] = perEmoji;
             }
-            perEmoji.TryGetValue(r.Emoji, out (int Count, bool ByCurrentUser) cur);
-            perEmoji[r.Emoji] = (cur.Count + 1, cur.ByCurrentUser || (currentUserId is { } uid && r.UserId == uid));
+            string key = EmojiValidator.NormalizeForAggregate(r.Emoji);
+            perEmoji.TryGetValue(key, out (int Count, bool ByCurrentUser) cur);
+            perEmoji[key] = (cur.Count + 1, cur.ByCurrentUser || (currentUserId is { } uid && r.UserId == uid));
         }
 
         Dictionary<Guid, IReadOnlyDictionary<string, ReactionAggregateResponse>> result = [];

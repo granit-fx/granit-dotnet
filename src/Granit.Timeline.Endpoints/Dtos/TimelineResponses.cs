@@ -2,7 +2,9 @@ namespace Granit.Timeline.Endpoints.Dtos;
 
 /// <summary>
 /// Activity stream entry. The <c>Reactions</c> field carries the per-emoji
-/// reaction summary keyed by the catalog emoji (e.g. <c>"thumbs_up"</c>);
+/// reaction summary keyed by the base Unicode emoji codepoint (skin-tone
+/// variants collapse under the base — see
+/// <see cref="Granit.Timeline.Domain.EmojiValidator.NormalizeForAggregate"/>);
 /// only emojis with at least one reaction are present and the field itself
 /// is <see langword="null"/> when the entry has no reactions, keeping the
 /// wire payload tight (story C3).
