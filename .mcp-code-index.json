@@ -1674,6 +1674,7 @@
         "Granit.Authorization",
         "Granit.Http.Abstractions",
         "Granit.Presence",
+        "Granit.RateLimiting",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -34316,6 +34317,22 @@
       ]
     },
     {
+      "name": "IPresenceEraser",
+      "fqn": "Granit.Presence.Abstractions.IPresenceEraser",
+      "kind": "interface",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/IPresenceEraser.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "EraseAsync",
+          "kind": "method",
+          "signature": "EraseAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IPresenceHeartbeatRecorder",
       "fqn": "Granit.Presence.Abstractions.IPresenceHeartbeatRecorder",
       "kind": "interface",
@@ -34372,6 +34389,22 @@
           "kind": "method",
           "signature": "GetManyAsync(IReadOnlyList<Guid> userIds, CancellationToken cancellationToken)",
           "returnType": "Task<IReadOnlyDictionary<Guid, PresenceSnapshot>>"
+        }
+      ]
+    },
+    {
+      "name": "IPresenceReadAuditSink",
+      "fqn": "Granit.Presence.Abstractions.IPresenceReadAuditSink",
+      "kind": "interface",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/IPresenceReadAuditSink.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "RecordReadAsync",
+          "kind": "method",
+          "signature": "RecordReadAsync(Guid callerUserId, int targetCount, int allowedCount, bool includesSelf, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -34440,6 +34473,22 @@
           "kind": "method",
           "signature": "RemoveAsync(Guid userId, CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IPresenceVisibilityPolicy",
+      "fqn": "Granit.Presence.Abstractions.IPresenceVisibilityPolicy",
+      "kind": "interface",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/IPresenceVisibilityPolicy.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "FilterVisibleAsync",
+          "kind": "method",
+          "signature": "FilterVisibleAsync(Guid callerUserId, IReadOnlyCollection<Guid> targetUserIds, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlySet<Guid>>"
         }
       ]
     },
@@ -34638,6 +34687,15 @@
       "project": "Granit.Presence.Endpoints",
       "file": "src/Granit.Presence.Endpoints/Permissions/PresencePermissions.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "PresenceRateLimitPolicies",
+      "fqn": "Granit.Presence.Endpoints.Permissions.PresenceRateLimitPolicies",
+      "kind": "class",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Permissions/PresenceRateLimitPolicies.cs",
+      "line": 18,
       "members": []
     },
     {

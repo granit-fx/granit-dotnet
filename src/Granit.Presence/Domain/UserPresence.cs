@@ -43,7 +43,17 @@ public sealed class UserPresence : AuditedAggregateRoot
     /// <summary>The user this presence belongs to. Equal to <see cref="Entity.Id"/>.</summary>
     public Guid UserId { get; private set; }
 
-    /// <summary>Current manual override. <see cref="ManualPresenceStatus.Available"/> means none.</summary>
+    /// <summary>
+    /// Current manual override. <see cref="ManualPresenceStatus.Available"/> means none.
+    /// </summary>
+    /// <remarks>
+    /// This field can be stale: when <see cref="OverrideUntilUtc"/> is in the past the
+    /// row is NOT actively rewritten — the read path computes the correct effective
+    /// status via <see cref="GetActiveOverride"/> and the next mutation overwrites the
+    /// row. <b>Always consume the override through <see cref="GetActiveOverride"/></b>;
+    /// never read <c>ManualStatus</c> directly in business logic, BI extracts, or ad-hoc
+    /// SQL queries without joining on <c>OverrideUntilUtc &gt; now</c>.
+    /// </remarks>
     public ManualPresenceStatus ManualStatus { get; private set; }
 
     /// <summary>

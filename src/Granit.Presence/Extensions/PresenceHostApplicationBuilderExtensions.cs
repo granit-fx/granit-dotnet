@@ -52,12 +52,20 @@ public static class PresenceHostApplicationBuilderExtensions
         // Default tracker uses IFusionCache from Granit.Caching (L1 + optional Redis L2 backplane).
         builder.Services.TryAddSingleton<IPresenceTracker, FusionCachePresenceTracker>();
 
+        // Permissive default visibility policy. Multi-tenant apps MUST register a tenant-aware
+        // replacement before the endpoints are mapped (otherwise cross-tenant reads succeed).
+        builder.Services.TryAddSingleton<IPresenceVisibilityPolicy, AllowAllPresenceVisibilityPolicy>();
+
         // Query service is concrete + interface-registered so internal consumers can take the concrete type.
         builder.Services.TryAddScoped<PresenceQueryService>();
         builder.Services.TryAddScoped<IPresenceQueryService>(sp => sp.GetRequiredService<PresenceQueryService>());
 
         builder.Services.TryAddScoped<IPresenceHeartbeatRecorder, PresenceHeartbeatRecorder>();
         builder.Services.TryAddScoped<IPresenceOverrideService, PresenceOverrideService>();
+        builder.Services.TryAddScoped<IPresenceEraser, PresenceEraser>();
+        builder.Services.TryAddSingleton<IPresenceReadAuditSink, LoggingPresenceReadAuditSink>();
+
+        builder.Services.AddHostedService<PresenceStartupChecks>();
 
         return builder;
     }

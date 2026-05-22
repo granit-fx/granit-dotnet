@@ -18,6 +18,26 @@ public static class PresenceEndpointRouteBuilderExtensions
     /// The self-management routes require <c>Presence.Self.Manage</c>; the query routes
     /// require <c>Presence.Users.Read</c>.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>CSRF.</b> The mutating endpoints (<c>PUT /my</c>, <c>DELETE /my/override</c>,
+    /// <c>POST /my/poll</c>, <c>POST /users/batch</c>) are state-changing and must NOT be
+    /// reachable directly from a browser session without an anti-forgery token. The intended
+    /// topology mounts these endpoints behind <c>Granit.Bff</c>, which enforces the CSRF
+    /// token on every mutating call. Hosting these endpoints standalone behind cookie auth
+    /// requires the caller to add the equivalent CSRF middleware before <see cref="MapGranitPresence"/>.
+    /// </para>
+    /// <para>
+    /// <b>Visibility.</b> Cross-user reads are filtered by <c>IPresenceVisibilityPolicy</c>.
+    /// The default implementation is permissive and only suitable for single-tenant deployments;
+    /// multi-tenant apps MUST register a tenant-aware replacement.
+    /// </para>
+    /// <para>
+    /// <b>Rate limiting.</b> Each endpoint declares a Granit rate-limiting policy
+    /// (<c>presence-poll</c>, <c>presence-mutate</c>, <c>presence-query</c>). Configure quotas
+    /// under <c>RateLimiting:Policies</c> — see <c>PresenceRateLimitPolicies</c>.
+    /// </para>
+    /// </remarks>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="PresenceEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>

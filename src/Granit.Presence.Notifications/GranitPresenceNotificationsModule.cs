@@ -20,6 +20,11 @@ public sealed class GranitPresenceNotificationsModule : GranitModule
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        context.Services.AddSingleton<INotificationDeliveryGate, PresenceNotificationDeliveryGate>();
+        // Scoped: PresenceNotificationDeliveryGate depends on IPresenceQueryService (Scoped).
+        // Registering the gate as Singleton would either throw under ValidateScopes=true or
+        // silently capture the root-scope query service forever — a captive-dependency bug.
+        // NotificationFanoutHandler resolves IEnumerable<INotificationDeliveryGate> per call,
+        // so a Scoped gate is honored without instantiation overhead concerns.
+        context.Services.AddScoped<INotificationDeliveryGate, PresenceNotificationDeliveryGate>();
     }
 }

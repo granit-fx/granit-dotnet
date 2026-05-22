@@ -1,29 +1,53 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Granit.Presence.Endpoints.Internal;
 
 internal static class PresenceCallerContext
 {
     /// <summary>
-    /// Extracts the caller's user identifier from the <see cref="ClaimsPrincipal"/>.
-    /// Looks at <c>nameid</c> then <c>sub</c>. Throws when neither is present
-    /// (defensive: the endpoint group requires authorization).
+    /// Attempts to extract the caller's user identifier from the <see cref="ClaimsPrincipal"/>.
+    /// Looks at <c>nameid</c> then <c>sub</c>. Returns <c>null</c> when neither is present
+    /// or when the value is not a valid <see cref="Guid"/>.
     /// </summary>
-    public static Guid GetUserId(ClaimsPrincipal user)
+    public static Guid? TryGetUserId(ClaimsPrincipal? user)
     {
-        ArgumentNullException.ThrowIfNull(user);
+        if (user is null)
+        {
+            return null;
+        }
 
         string? raw =
             user.FindFirstValue(ClaimTypes.NameIdentifier)
             ?? user.FindFirstValue("sub");
 
-        if (raw is null)
+        return Guid.TryParse(raw, out Guid parsed) ? parsed : null;
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> and the caller's user identifier when a valid GUID claim is present,
+    /// otherwise yields a 401 ProblemDetails result without echoing the raw claim value.
+    /// </summary>
+    public static bool TryResolveSelf(
+        ClaimsPrincipal? user,
+        out Guid userId,
+        [NotNullWhen(false)] out ProblemHttpResult? unauthorized)
+    {
+        Guid? resolved = TryGetUserId(user);
+        if (resolved is { } id)
         {
-            throw new UnauthorizedAccessException("User identifier claim not found.");
+            userId = id;
+            unauthorized = null;
+            return true;
         }
 
-        return Guid.TryParse(raw, out Guid parsed)
-            ? parsed
-            : throw new UnauthorizedAccessException($"User identifier '{raw}' is not a valid GUID.");
+        userId = Guid.Empty;
+        unauthorized = TypedResults.Problem(
+            detail: "Authenticated identity does not carry a recognized user identifier.",
+            statusCode: StatusCodes.Status401Unauthorized,
+            title: "Unauthorized");
+        return false;
     }
 }

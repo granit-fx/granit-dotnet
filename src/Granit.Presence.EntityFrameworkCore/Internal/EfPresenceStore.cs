@@ -67,18 +67,14 @@ internal sealed class EfPresenceStore(IDbContextFactory<PresenceDbContext> conte
 
     public async Task DeleteAsync(Guid userId, CancellationToken cancellationToken)
     {
+        // GDPR Art. 17: hard delete so no trace of the user identifier remains. ExecuteDeleteAsync
+        // emits a single SQL DELETE that bypasses the soft-delete change-tracker interceptor
+        // wired by ApplyGranitConventions.
         await using PresenceDbContext context = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        UserPresence? tracked = await context.UserPresences
-            .FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken).ConfigureAwait(false);
-
-        if (tracked is null)
-        {
-            return;
-        }
-
-        context.UserPresences.Remove(tracked);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await context.UserPresences
+            .Where(p => p.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
     }
 }
