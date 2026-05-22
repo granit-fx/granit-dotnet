@@ -40943,7 +40943,7 @@
       "kind": "class",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Domain/EmojiValidator.cs",
-      "line": 30,
+      "line": 32,
       "members": [
         {
           "name": "IsValid",

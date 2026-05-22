@@ -111,6 +111,56 @@ public sealed class EmojiValidatorTests
     }
 
     [Theory]
+    [InlineData("🏴󠁧󠁢󠁥󠁮󠁧󠁿")] // England
+    [InlineData("🏴󠁧󠁢󠁳󠁣󠁴󠁿")] // Scotland
+    [InlineData("🏴󠁧󠁢󠁷󠁬󠁳󠁿")] // Wales
+    public void IsValid_accepts_unicode_tag_subdivision_flags(string flag) =>
+        EmojiValidator.IsValid(flag).ShouldBeTrue();
+
+    [Fact]
+    public void IsValid_still_accepts_lone_black_flag_without_tag_suffix() =>
+        EmojiValidator.IsValid("🏴").ShouldBeTrue();
+
+    [Fact]
+    public void IsValid_still_accepts_regional_indicator_flags() =>
+        EmojiValidator.IsValid("🇧🇪").ShouldBeTrue();
+
+    [Fact]
+    public void IsValid_rejects_tag_sequence_without_cancel_tag()
+    {
+        // 🏴 + 'g' 'b' 'e' 'n' 'g' tag chars, no U+E007F terminator.
+        string truncated = "🏴\U000E0067\U000E0062\U000E0065\U000E006E\U000E0067";
+        EmojiValidator.IsValid(truncated).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsValid_rejects_cancel_tag_with_no_tag_chars_between()
+    {
+        // 🏴 immediately followed by U+E007F, no tag chars in between.
+        string immediateCancel = "🏴\U000E007F";
+        EmojiValidator.IsValid(immediateCancel).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsValid_rejects_lone_tag_char_without_base() =>
+        EmojiValidator.IsValid("\U000E0067").ShouldBeFalse();
+
+    [Fact]
+    public void IsValid_rejects_tag_char_after_zwj()
+    {
+        // 👨 ZWJ tag char — not a defined sequence.
+        string bad = "👨‍\U000E0067";
+        EmojiValidator.IsValid(bad).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void NormalizeForAggregate_leaves_subdivision_flags_intact()
+    {
+        const string england = "🏴󠁧󠁢󠁥󠁮󠁧󠁿";
+        EmojiValidator.NormalizeForAggregate(england).ShouldBe(england);
+    }
+
+    [Theory]
     [InlineData("👍", "👍")]            // no modifiers — unchanged
     [InlineData("👍🏽", "👍")]           // Fitzpatrick stripped
     [InlineData("👍🏿", "👍")]

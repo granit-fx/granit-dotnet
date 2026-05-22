@@ -8,7 +8,9 @@ namespace Granit.Timeline.Domain;
 /// a doctrine-aligned <i>closed by upstream standard</i> rule
 /// (ADR-040 §5): any sequence formed of recognised emoji codepoints
 /// (joined by ZWJ, optionally suffixed by VS-16, Fitzpatrick skin-tone
-/// modifiers, or the combining enclosing keycap) is accepted.
+/// modifiers, the combining enclosing keycap, or a Unicode tag sequence
+/// terminated by U+E007F — used by subdivision flags such as 🏴󠁧󠁢󠁥󠁮󠁧󠁿)
+/// is accepted.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -41,6 +43,9 @@ public static class EmojiValidator
     private const int KeycapCombiner = 0x20E3;
     private const int FitzpatrickMin = 0x1F3FB;
     private const int FitzpatrickMax = 0x1F3FF;
+    private const int TagCharMin = 0xE0020;
+    private const int TagCharMax = 0xE007E;
+    private const int TagEnd = 0xE007F;
 
     /// <summary>
     /// Returns <see langword="true"/> when <paramref name="emoji"/> is a
@@ -84,12 +89,33 @@ public static class EmojiValidator
                         return false;
                     }
                     break;
+                case RuneKind.TagChar:
+                    // Tag chars (U+E0020..U+E007E) form the payload of an
+                    // Emoji_Tag_Sequence after a base — e.g. the
+                    // subdivision flags 🏴󠁧󠁢󠁥󠁮󠁧󠁿 (England). They are never
+                    // valid at start, after a combiner, or after a ZWJ.
+                    if (previous is not (RuneKind.Base or RuneKind.TagChar))
+                    {
+                        return false;
+                    }
+                    break;
+                case RuneKind.TagEnd:
+                    // Cancel-tag (U+E007F) terminates an open tag sequence
+                    // and is only valid right after at least one tag char.
+                    if (previous != RuneKind.TagChar)
+                    {
+                        return false;
+                    }
+                    break;
             }
             previous = kind;
         }
 
-        // Trailing ZWJ leaves a dangling joiner — reject.
-        return hasBase && previous != RuneKind.Zwj;
+        // Trailing ZWJ leaves a dangling joiner; trailing tag chars without
+        // the cancel-tag leave the sequence open — reject both.
+        return hasBase
+            && previous != RuneKind.Zwj
+            && previous != RuneKind.TagChar;
     }
 
     /// <summary>
@@ -154,6 +180,8 @@ public static class EmojiValidator
         Zwj,
         KeycapBase,
         KeycapCombiner,
+        TagChar,
+        TagEnd,
     }
 
     private static RuneKind Classify(int cp)
@@ -173,6 +201,14 @@ public static class EmojiValidator
         if (cp >= FitzpatrickMin && cp <= FitzpatrickMax)
         {
             return RuneKind.Modifier;
+        }
+        if (cp == TagEnd)
+        {
+            return RuneKind.TagEnd;
+        }
+        if (cp >= TagCharMin && cp <= TagCharMax)
+        {
+            return RuneKind.TagChar;
         }
         if (IsKeycapBase(cp))
         {
