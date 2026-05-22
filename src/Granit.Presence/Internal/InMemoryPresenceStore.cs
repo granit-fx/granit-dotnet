@@ -37,11 +37,19 @@ internal sealed class InMemoryPresenceStore : IPresenceStore
         return Task.FromResult<IReadOnlyDictionary<Guid, UserPresence>>(result);
     }
 
-    public Task UpsertAsync(UserPresence presence, CancellationToken cancellationToken)
+    public Task<UserPresence> MutateAsync(
+        Guid userId,
+        Func<UserPresence> factory,
+        Action<UserPresence> mutator,
+        CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(presence);
-        _byUserId[presence.UserId] = presence;
-        return Task.CompletedTask;
+        ArgumentNullException.ThrowIfNull(factory);
+        ArgumentNullException.ThrowIfNull(mutator);
+
+        UserPresence presence = _byUserId.GetOrAdd(userId, _ => factory());
+        mutator(presence);
+        _byUserId[userId] = presence;
+        return Task.FromResult(presence);
     }
 
     public Task DeleteAsync(Guid userId, CancellationToken cancellationToken)

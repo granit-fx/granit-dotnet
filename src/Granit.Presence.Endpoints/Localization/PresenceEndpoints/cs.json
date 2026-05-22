@@ -1,13 +1,13 @@
 {
   "culture": "cs",
   "texts": {
-    "Granit:Validation:PresenceOverrideUntilInPast": "<!-- AUTO-TRANSLATED -->Override expiration must be in the future.",
-    "Granit:Validation:PresenceOverrideUntilTooFar": "<!-- AUTO-TRANSLATED -->Override expiration is too far in the future.",
-    "Granit:Validation:PresenceUntilWithoutOverride": "<!-- AUTO-TRANSLATED -->An expiration cannot be supplied when the manual status is Available.",
-    "Granit:Validation:PresenceIdleSecondsNegative": "<!-- AUTO-TRANSLATED -->Idle duration cannot be negative.",
-    "Granit:Validation:PresenceIdleSecondsTooLarge": "<!-- AUTO-TRANSLATED -->Idle duration exceeds the maximum allowed value.",
-    "Granit:Validation:PresenceBatchTooLarge": "<!-- AUTO-TRANSLATED -->Too many user identifiers in a single batch request.",
-    "Granit:Validation:PresenceBatchDuplicates": "<!-- AUTO-TRANSLATED -->Duplicate user identifiers are not allowed in a batch request.",
+    "Granit:Validation:PresenceBatchDuplicates": "Duplicitní identifikátory uživatelů nejsou v hromadném požadavku povoleny.",
+    "Granit:Validation:PresenceBatchTooLarge": "Příliš mnoho identifikátorů uživatelů v jednom hromadném požadavku.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "Doba nečinnosti nemůže být záporná.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "Doba nečinnosti překračuje maximální povolenou hodnotu.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "Vypršení platnosti přepsání musí být v budoucnosti.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "Vypršení platnosti přepsání je příliš daleko v budoucnosti.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "Vypršení platnosti nelze zadat, pokud je ruční stav Dostupný.",
     "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
     "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
     "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"

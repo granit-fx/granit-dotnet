@@ -1,5 +1,5 @@
 {
-  "culture": "en",
+  "culture": "en-GB",
   "texts": {
     "Granit:Validation:PresenceBatchDuplicates": "Duplicate user identifiers are not allowed in a batch request.",
     "Granit:Validation:PresenceBatchTooLarge": "Too many user identifiers in a single batch request.",

@@ -23,10 +23,10 @@ internal sealed class PresenceOverrideService(
         ManualPresenceStatus status,
         DateTimeOffset? untilUtc,
         CancellationToken cancellationToken) =>
-        MutateAsync(userId, presence => presence.SetOverride(status, untilUtc, clock), status, untilUtc is not null, cancellationToken);
+        MutateAsync(userId, p => p.SetOverride(status, untilUtc, clock), status, untilUtc is not null, cancellationToken);
 
     public Task<PresenceSnapshot> ClearAsync(Guid userId, CancellationToken cancellationToken) =>
-        MutateAsync(userId, presence => presence.ClearOverride(clock), ManualPresenceStatus.Available, hasUntil: false, cancellationToken);
+        MutateAsync(userId, p => p.ClearOverride(clock), ManualPresenceStatus.Available, hasUntil: false, cancellationToken);
 
     private async Task<PresenceSnapshot> MutateAsync(
         Guid userId,
@@ -39,17 +39,15 @@ internal sealed class PresenceOverrideService(
         activity?.SetTag("presence.user_id", userId);
         activity?.SetTag("presence.status", targetStatus.ToString());
 
-        UserPresence? presence = await store.GetAsync(userId, cancellationToken).ConfigureAwait(false);
-        presence ??= UserPresence.Create(userId, clock);
-
+        UserPresence? existing = await store.GetAsync(userId, cancellationToken).ConfigureAwait(false);
         PresenceHeartbeat? heartbeat = await tracker.GetAsync(userId, cancellationToken).ConfigureAwait(false);
-        PresenceSnapshot previous = queryService.Compose(userId, presence, heartbeat);
+        PresenceSnapshot previous = queryService.Compose(userId, existing, heartbeat);
 
-        mutator(presence);
+        UserPresence saved = await store
+            .MutateAsync(userId, () => UserPresence.Create(userId, clock), mutator, cancellationToken)
+            .ConfigureAwait(false);
 
-        await store.UpsertAsync(presence, cancellationToken).ConfigureAwait(false);
-
-        PresenceSnapshot current = queryService.Compose(userId, presence, heartbeat);
+        PresenceSnapshot current = queryService.Compose(userId, saved, heartbeat);
         string? tenantId = currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
         metrics.RecordOverrideSet(tenantId, targetStatus, hasUntil);
 

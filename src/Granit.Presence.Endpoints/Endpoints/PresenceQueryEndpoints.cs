@@ -19,7 +19,7 @@ internal static class PresenceQueryEndpoints
         group.MapGet("/users/{userId:guid}", GetUserPresenceAsync)
             .WithName("GetUserPresence")
             .WithSummary("Returns the presence snapshot of one user.")
-            .WithDescription("Computes the effective presence status for the specified user. Returns Offline when the user has never been seen.")
+            .WithDescription("Computes the effective presence status for the specified user. Always returns 200 OK — unknown or never-seen users are reported as Offline with a null LastSeenUtc rather than 404, so clients can use this endpoint to refresh a roster without branching on missing rows.")
             .Produces<PresenceResponse>();
 
         group.MapPost("/users/batch", GetBatchPresenceAsync)

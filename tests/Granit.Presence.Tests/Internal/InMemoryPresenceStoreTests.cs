@@ -27,32 +27,66 @@ public sealed class InMemoryPresenceStoreTests
     }
 
     [Fact]
-    public async Task UpsertAsync_then_GetAsync_round_trips()
+    public async Task MutateAsync_creates_then_mutates_then_returns_saved_aggregate()
     {
         InMemoryPresenceStore store = new();
-        var presence = UserPresence.Create(Guid.NewGuid(), CreateClock());
-        presence.SetOverride(ManualPresenceStatus.Busy, null, CreateClock());
+        IClock clock = CreateClock();
+        var userId = Guid.NewGuid();
 
-        await store.UpsertAsync(presence, CancellationToken.None);
-        UserPresence? roundTrip = await store.GetAsync(presence.UserId, CancellationToken.None);
+        UserPresence saved = await store.MutateAsync(
+            userId,
+            factory: () => UserPresence.Create(userId, clock),
+            mutator: p => p.SetOverride(ManualPresenceStatus.Busy, null, clock),
+            CancellationToken.None);
 
+        saved.ManualStatus.ShouldBe(ManualPresenceStatus.Busy);
+
+        UserPresence? roundTrip = await store.GetAsync(userId, CancellationToken.None);
         roundTrip.ShouldNotBeNull();
         roundTrip!.ManualStatus.ShouldBe(ManualPresenceStatus.Busy);
+    }
+
+    [Fact]
+    public async Task MutateAsync_reuses_existing_aggregate_on_second_call()
+    {
+        InMemoryPresenceStore store = new();
+        IClock clock = CreateClock();
+        var userId = Guid.NewGuid();
+
+        UserPresence first = await store.MutateAsync(
+            userId,
+            () => UserPresence.Create(userId, clock),
+            p => p.SetOverride(ManualPresenceStatus.Busy, null, clock),
+            CancellationToken.None);
+
+        UserPresence second = await store.MutateAsync(
+            userId,
+            () => throw new InvalidOperationException("factory should not be invoked when aggregate exists"),
+            p => p.SetOverride(ManualPresenceStatus.DoNotDisturb, null, clock),
+            CancellationToken.None);
+
+        ReferenceEquals(first, second).ShouldBeTrue();
+        second.ManualStatus.ShouldBe(ManualPresenceStatus.DoNotDisturb);
     }
 
     [Fact]
     public async Task GetManyAsync_omits_missing_entries()
     {
         InMemoryPresenceStore store = new();
-        var existing = UserPresence.Create(Guid.NewGuid(), CreateClock());
-        await store.UpsertAsync(existing, CancellationToken.None);
+        IClock clock = CreateClock();
+        var existingId = Guid.NewGuid();
+        await store.MutateAsync(
+            existingId,
+            () => UserPresence.Create(existingId, clock),
+            _ => { /* no-op */ },
+            CancellationToken.None);
 
         var missing = Guid.NewGuid();
         IReadOnlyDictionary<Guid, UserPresence> result = await store
-            .GetManyAsync([existing.UserId, missing], CancellationToken.None);
+            .GetManyAsync([existingId, missing], CancellationToken.None);
 
         result.Count.ShouldBe(1);
-        result.ShouldContainKey(existing.UserId);
+        result.ShouldContainKey(existingId);
         result.ShouldNotContainKey(missing);
     }
 

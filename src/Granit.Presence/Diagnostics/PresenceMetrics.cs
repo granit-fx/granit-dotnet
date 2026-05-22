@@ -37,11 +37,11 @@ public sealed class PresenceMetrics
             description: "Number of presence heartbeats received.");
 
         _statusChanged = meter.CreateCounter<long>(
-            "granit.presence.status_changed",
+            "granit.presence.status.changed",
             description: "Number of effective-status transitions detected.");
 
         _overrideSet = meter.CreateCounter<long>(
-            "granit.presence.override_set",
+            "granit.presence.override.set",
             description: "Number of manual override mutations.");
 
         _notificationGated = meter.CreateCounter<long>(

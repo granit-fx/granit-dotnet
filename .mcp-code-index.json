@@ -34339,7 +34339,7 @@
       "kind": "interface",
       "project": "Granit.Presence",
       "file": "src/Granit.Presence/Abstractions/IPresenceStore.cs",
-      "line": 9,
+      "line": 16,
       "members": [
         {
           "name": "GetAsync",
@@ -34354,10 +34354,10 @@
           "returnType": "Task<IReadOnlyDictionary<Guid, UserPresence>>"
         },
         {
-          "name": "UpsertAsync",
+          "name": "MutateAsync",
           "kind": "method",
-          "signature": "UpsertAsync(UserPresence presence, CancellationToken cancellationToken)",
-          "returnType": "Task"
+          "signature": "MutateAsync(Guid userId, Func<UserPresence> factory, Action<UserPresence> mutator, CancellationToken cancellationToken)",
+          "returnType": "Task<UserPresence>"
         },
         {
           "name": "DeleteAsync",
@@ -37431,8 +37431,15 @@
       "kind": "class",
       "project": "Granit.QueryEngine.AspNetCore",
       "file": "src/Granit.QueryEngine.AspNetCore/GranitQueryEngineAspNetCoreModule.cs",
-      "line": 22,
-      "members": []
+      "line": 24,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "QueryEndpointOptions",

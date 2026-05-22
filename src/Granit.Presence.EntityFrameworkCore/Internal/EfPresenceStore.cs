@@ -12,6 +12,7 @@ internal sealed class EfPresenceStore(IDbContextFactory<PresenceDbContext> conte
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         return await context.UserPresences
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken).ConfigureAwait(false);
     }
 
@@ -30,32 +31,38 @@ internal sealed class EfPresenceStore(IDbContextFactory<PresenceDbContext> conte
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         List<UserPresence> rows = await context.UserPresences
+            .AsNoTracking()
             .Where(p => userIds.Contains(p.UserId))
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         return rows.ToDictionary(p => p.UserId);
     }
 
-    public async Task UpsertAsync(UserPresence presence, CancellationToken cancellationToken)
+    public async Task<UserPresence> MutateAsync(
+        Guid userId,
+        Func<UserPresence> factory,
+        Action<UserPresence> mutator,
+        CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(presence);
+        ArgumentNullException.ThrowIfNull(factory);
+        ArgumentNullException.ThrowIfNull(mutator);
 
         await using PresenceDbContext context = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        UserPresence? existing = await context.UserPresences
-            .FirstOrDefaultAsync(p => p.UserId == presence.UserId, cancellationToken).ConfigureAwait(false);
+        UserPresence? tracked = await context.UserPresences
+            .FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken).ConfigureAwait(false);
 
-        if (existing is null)
+        if (tracked is null)
         {
-            await context.UserPresences.AddAsync(presence, cancellationToken).ConfigureAwait(false);
+            tracked = factory();
+            context.UserPresences.Add(tracked);
         }
-        else
-        {
-            context.Entry(existing).CurrentValues.SetValues(presence);
-        }
+
+        mutator(tracked);
 
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return tracked;
     }
 
     public async Task DeleteAsync(Guid userId, CancellationToken cancellationToken)
@@ -63,8 +70,15 @@ internal sealed class EfPresenceStore(IDbContextFactory<PresenceDbContext> conte
         await using PresenceDbContext context = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        await context.UserPresences
-            .Where(p => p.UserId == userId)
-            .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+        UserPresence? tracked = await context.UserPresences
+            .FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken).ConfigureAwait(false);
+
+        if (tracked is null)
+        {
+            return;
+        }
+
+        context.UserPresences.Remove(tracked);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Presence.Notifications</PackageId>
-    <Description>Soft-dependency bridge between Granit.Presence and Granit.Notifications. Registers an INotificationDeliveryGate that suppresses push channels (SignalR, Sse, WebPush, MobilePush) for users in DoNotDisturb or Offline status. Store-and-forward channels (InApp, Email, Sms) keep delivering.</Description>
+    <Description>Soft-dependency bridge between Granit.Presence and Granit.Notifications. Registers an INotificationDeliveryGate that suppresses push channels (SignalR, Sse, Push, MobilePush) for users in DoNotDisturb or Offline status. Store-and-forward channels (InApp, Email, Sms) keep delivering.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
