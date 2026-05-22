@@ -1,0 +1,15 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Granit:Validation:PresenceOverrideUntilInPast": "<!-- AUTO-TRANSLATED -->Override expiration must be in the future.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "<!-- AUTO-TRANSLATED -->Override expiration is too far in the future.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "<!-- AUTO-TRANSLATED -->An expiration cannot be supplied when the manual status is Available.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "<!-- AUTO-TRANSLATED -->Idle duration cannot be negative.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "<!-- AUTO-TRANSLATED -->Idle duration exceeds the maximum allowed value.",
+    "Granit:Validation:PresenceBatchTooLarge": "<!-- AUTO-TRANSLATED -->Too many user identifiers in a single batch request.",
+    "Granit:Validation:PresenceBatchDuplicates": "<!-- AUTO-TRANSLATED -->Duplicate user identifiers are not allowed in a batch request.",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

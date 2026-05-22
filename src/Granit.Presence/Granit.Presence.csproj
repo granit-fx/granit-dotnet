@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Presence</PackageId>
+    <Description>User presence and availability for Granit. Tracks online/away/offline status from a client heartbeat, persists a manual override (Available, Busy, DoNotDisturb, AppearOffline) with optional expiration, and exposes an extension point for soft-dependent modules to react to presence changes. Backplane via Granit.Caching (FusionCache + optional Redis L2).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Presence.Tests" />
+    <InternalsVisibleTo Include="Granit.Presence.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Presence.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Presence.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Presence.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.Presence.Notifications" />
+    <InternalsVisibleTo Include="Granit.Presence.Notifications.Tests" />
+    <InternalsVisibleTo Include="Granit.Presence.Wolverine" />
+    <InternalsVisibleTo Include="Granit.Presence.Privacy" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>

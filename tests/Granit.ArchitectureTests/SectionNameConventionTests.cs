@@ -42,6 +42,7 @@ public sealed partial class SectionNameConventionTests
         "Notifications",
         "Observability",
         "OpenIddict",
+        "Presence",
         "Privacy",
         "QueryEngine",
         "RateLimiting",
