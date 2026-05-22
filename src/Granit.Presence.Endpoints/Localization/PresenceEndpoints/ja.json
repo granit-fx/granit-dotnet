@@ -1,0 +1,15 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "バッチリクエストで重複したユーザー識別子は許可されていません。",
+    "Granit:Validation:PresenceBatchTooLarge": "1 回のバッチリクエストでユーザー識別子が多すぎます。",
+    "Granit:Validation:PresenceIdleSecondsNegative": "アイドル時間を負の値にすることはできません。",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "アイドル時間が許可された最大値を超えています。",
+    "Granit:Validation:PresenceOverrideUntilInPast": "オーバーライドの有効期限は将来である必要があります。",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "オーバーライドの有効期限が将来に遠すぎます。",
+    "Granit:Validation:PresenceUntilWithoutOverride": "手動ステータスが「利用可能」の場合、有効期限を指定できません。",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

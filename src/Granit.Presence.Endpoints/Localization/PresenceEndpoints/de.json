@@ -1,0 +1,15 @@
+{
+  "culture": "de",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "Doppelte Benutzerkennungen sind in einer Sammelanfrage nicht erlaubt.",
+    "Granit:Validation:PresenceBatchTooLarge": "Zu viele Benutzerkennungen in einer einzelnen Sammelanfrage.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "Die Leerlaufzeit darf nicht negativ sein.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "Die Leerlaufzeit überschreitet den maximal zulässigen Wert.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "Das Ablaufdatum der Übersteuerung muss in der Zukunft liegen.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "Das Ablaufdatum der Übersteuerung liegt zu weit in der Zukunft.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "Ein Ablaufdatum kann nicht angegeben werden, wenn der manuelle Status Verfügbar ist.",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "일괄 요청에서 중복된 사용자 식별자는 허용되지 않습니다.",
+    "Granit:Validation:PresenceBatchTooLarge": "단일 일괄 요청에 사용자 식별자가 너무 많습니다.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "유휴 시간은 음수일 수 없습니다.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "유휴 시간이 허용된 최대값을 초과합니다.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "재정의 만료는 미래여야 합니다.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "재정의 만료가 미래에 너무 멉니다.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "수동 상태가 '사용 가능'일 때는 만료를 제공할 수 없습니다.",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

@@ -20,8 +20,13 @@ public sealed class NotificationFanoutHandler(
     IGuidGenerator guidGenerator,
     ICurrentTenant currentTenant,
     NotificationsMetrics metrics,
+    IEnumerable<INotificationDeliveryGate>? deliveryGates = null,
     IStringEncryptionService? encryptionService = null)
 {
+    private readonly INotificationDeliveryGate[] _deliveryGates =
+        deliveryGates?.ToArray() ?? [];
+
+
     /// <summary>
     /// Resolves recipients, loads preferences, filters channels, and produces delivery commands.
     /// </summary>
@@ -47,6 +52,7 @@ public sealed class NotificationFanoutHandler(
         NotificationDefinition? definition = definitionStore.Get(trigger.NotificationTypeName);
         IReadOnlyList<string> defaultChannels = definition?.DefaultChannels ?? [NotificationChannels.InApp];
         bool allowOptOut = definition?.AllowUserOptOut ?? true;
+        bool bypassGates = definition?.AllowDoNotDisturbBypass ?? false;
 
         IReadOnlyList<string> recipientUserIds = await ResolveRecipientsAsync(
             trigger, tenantId, cancellationToken).ConfigureAwait(false);
@@ -65,6 +71,11 @@ public sealed class NotificationFanoutHandler(
             foreach (string channelName in defaultChannels)
             {
                 if (allowOptOut && !await IsChannelEnabledAsync(userId, trigger, channelName, tenantId, cancellationToken).ConfigureAwait(false))
+                {
+                    continue;
+                }
+
+                if (!bypassGates && !await AllGatesAllowAsync(userId, trigger, channelName, tenantId, cancellationToken).ConfigureAwait(false))
                 {
                     continue;
                 }
@@ -138,4 +149,31 @@ public sealed class NotificationFanoutHandler(
         CancellationToken cancellationToken) =>
         preferenceReader.IsChannelEnabledAsync(
             userId, trigger.NotificationTypeName, channelName, tenantId, cancellationToken);
+
+    private async Task<bool> AllGatesAllowAsync(
+        string userId,
+        NotificationTrigger trigger,
+        string channelName,
+        Guid? tenantId,
+        CancellationToken cancellationToken)
+    {
+        if (_deliveryGates.Length == 0)
+        {
+            return true;
+        }
+
+        foreach (INotificationDeliveryGate gate in _deliveryGates)
+        {
+            bool allowed = await gate.ShouldDeliverAsync(
+                userId, trigger.NotificationTypeName, channelName, tenantId, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!allowed)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

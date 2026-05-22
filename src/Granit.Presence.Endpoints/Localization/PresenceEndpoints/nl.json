@@ -1,0 +1,15 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "Dubbele gebruikers-id's zijn niet toegestaan in een batchverzoek.",
+    "Granit:Validation:PresenceBatchTooLarge": "Te veel gebruikers-id's in één batchverzoek.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "De inactiviteitsduur mag niet negatief zijn.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "De inactiviteitsduur overschrijdt de maximaal toegestane waarde.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "De vervaldatum van de overschrijving moet in de toekomst liggen.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "De vervaldatum van de overschrijving ligt te ver in de toekomst.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "Er kan geen vervaldatum worden opgegeven wanneer de handmatige status Beschikbaar is.",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

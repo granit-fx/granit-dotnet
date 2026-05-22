@@ -1,0 +1,15 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "Dubbletter av användar-ID:n är inte tillåtna i en batchbegäran.",
+    "Granit:Validation:PresenceBatchTooLarge": "För många användar-ID:n i en enskild batchbegäran.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "Inaktivitetstid kan inte vara negativ.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "Inaktivitetstid överstiger det maximalt tillåtna värdet.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "Åsidosättningens utgång måste vara i framtiden.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "Åsidosättningens utgång är för långt fram i tiden.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "Ett utgångsdatum kan inte anges när den manuella statusen är Tillgänglig.",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

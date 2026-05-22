@@ -1,0 +1,15 @@
+{
+  "culture": "it",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "Identificatori utente duplicati non sono consentiti in una richiesta in batch.",
+    "Granit:Validation:PresenceBatchTooLarge": "Troppi identificatori utente in una singola richiesta in batch.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "La durata di inattività non può essere negativa.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "La durata di inattività supera il valore massimo consentito.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "La scadenza dell'override deve essere nel futuro.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "La scadenza dell'override è troppo lontana nel futuro.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "Non è possibile fornire una scadenza quando lo stato manuale è Disponibile.",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

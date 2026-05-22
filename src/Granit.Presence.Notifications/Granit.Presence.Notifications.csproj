@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Presence.Notifications</PackageId>
+    <Description>Soft-dependency bridge between Granit.Presence and Granit.Notifications. Registers an INotificationDeliveryGate that suppresses push channels (SignalR, Sse, Push, MobilePush) for users in DoNotDisturb or Offline status. Store-and-forward channels (InApp, Email, Sms) keep delivering.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Presence.Notifications.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Presence\Granit.Presence.csproj" />
+  </ItemGroup>
+
+</Project>

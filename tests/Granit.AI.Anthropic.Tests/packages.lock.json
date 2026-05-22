@@ -443,8 +443,8 @@
       "Anthropic": {
         "type": "CentralTransitive",
         "requested": "[12.*, )",
-        "resolved": "12.22.0",
-        "contentHash": "hSmNOcU2XbLChNULZHrN2MrJE9g+Em9VND5525czAJkfJDvCgo+cuHRKuezI+3abxZ3nZKu4VHMRj0wtzHnyEQ==",
+        "resolved": "12.23.0",
+        "contentHash": "lXjfsenNf8miOYi+Yu8oPntNwRmOm4KnMLnHhyeJEuFVrKiZ0KgUVsOYYvwJkcrg+L1GpMwB54yVleI5gPEiGA==",
         "dependencies": {
           "Microsoft.Extensions.AI.Abstractions": "10.5.1"
         }

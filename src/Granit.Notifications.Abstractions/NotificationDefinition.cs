@@ -29,6 +29,16 @@ public sealed class NotificationDefinition
     /// </summary>
     public bool AllowUserOptOut { get; init; } = true;
 
+    /// <summary>
+    /// When <c>true</c>, registered
+    /// <see cref="Abstractions.INotificationDeliveryGate"/>s are skipped for this
+    /// notification — delivery proceeds on every default channel even when the
+    /// recipient is in <c>DoNotDisturb</c> or appears offline. Reserved for
+    /// security-critical alerts (suspicious login, MFA disabled, breach notices).
+    /// Defaults to <c>false</c>.
+    /// </summary>
+    public bool AllowDoNotDisturbBypass { get; init; }
+
     public NotificationDefinition(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);

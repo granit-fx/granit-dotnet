@@ -1,0 +1,15 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "Duplicitní identifikátory uživatelů nejsou v hromadném požadavku povoleny.",
+    "Granit:Validation:PresenceBatchTooLarge": "Příliš mnoho identifikátorů uživatelů v jednom hromadném požadavku.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "Doba nečinnosti nemůže být záporná.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "Doba nečinnosti překračuje maximální povolenou hodnotu.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "Vypršení platnosti přepsání musí být v budoucnosti.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "Vypršení platnosti přepsání je příliš daleko v budoucnosti.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "Vypršení platnosti nelze zadat, pokud je ruční stav Dostupný.",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

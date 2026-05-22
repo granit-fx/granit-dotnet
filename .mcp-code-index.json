@@ -1658,6 +1658,42 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Presence",
+      "deps": [
+        "Granit",
+        "Granit.Caching",
+        "Granit.Guids",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Presence.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Http.Abstractions",
+        "Granit.Presence",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Presence.EntityFrameworkCore",
+      "deps": [
+        "Granit.Presence",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Presence.Notifications",
+      "deps": [
+        "Granit.Notifications.Abstractions",
+        "Granit.Presence"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Privacy",
       "deps": [
         "Granit",
@@ -28239,6 +28275,22 @@
       ]
     },
     {
+      "name": "INotificationDeliveryGate",
+      "fqn": "Granit.Notifications.Abstractions.INotificationDeliveryGate",
+      "kind": "interface",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationDeliveryGate.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ShouldDeliverAsync",
+          "kind": "method",
+          "signature": "ShouldDeliverAsync(string userId, string notificationTypeName, string channelName, Guid? tenantId, CancellationToken cancellationToken)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
       "name": "INotificationDeliveryWriter",
       "fqn": "Granit.Notifications.Abstractions.INotificationDeliveryWriter",
       "kind": "interface",
@@ -29918,6 +29970,12 @@
           "kind": "property",
           "signature": "string? DisplayName",
           "returnType": "string?"
+        },
+        {
+          "name": "NotificationDefinition",
+          "kind": "method",
+          "signature": "NotificationDefinition(string name)",
+          "returnType": "bool AllowDoNotDisturbBypass { get; init; } public"
         }
       ]
     },
@@ -34212,6 +34270,528 @@
           "kind": "method",
           "signature": "Select(Expression<Func<T, TResult>> selector)",
           "returnType": "Expression<Func<T, TResult>>? Selector { get; private set; } protected void"
+        }
+      ]
+    },
+    {
+      "name": "IPresenceHeartbeatRecorder",
+      "fqn": "Granit.Presence.Abstractions.IPresenceHeartbeatRecorder",
+      "kind": "interface",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/IPresenceHeartbeatRecorder.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordAsync",
+          "kind": "method",
+          "signature": "RecordAsync(Guid userId, TimeSpan idleDuration, CancellationToken cancellationToken)",
+          "returnType": "Task<PresenceSnapshot>"
+        }
+      ]
+    },
+    {
+      "name": "IPresenceOverrideService",
+      "fqn": "Granit.Presence.Abstractions.IPresenceOverrideService",
+      "kind": "interface",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/IPresenceOverrideService.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "SetAsync",
+          "kind": "method",
+          "signature": "SetAsync(Guid userId, ManualPresenceStatus status, DateTimeOffset? untilUtc, CancellationToken cancellationToken)",
+          "returnType": "Task<PresenceSnapshot>"
+        },
+        {
+          "name": "ClearAsync",
+          "kind": "method",
+          "signature": "ClearAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task<PresenceSnapshot>"
+        }
+      ]
+    },
+    {
+      "name": "IPresenceQueryService",
+      "fqn": "Granit.Presence.Abstractions.IPresenceQueryService",
+      "kind": "interface",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/IPresenceQueryService.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task<PresenceSnapshot>"
+        },
+        {
+          "name": "GetManyAsync",
+          "kind": "method",
+          "signature": "GetManyAsync(IReadOnlyList<Guid> userIds, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyDictionary<Guid, PresenceSnapshot>>"
+        }
+      ]
+    },
+    {
+      "name": "IPresenceStore",
+      "fqn": "Granit.Presence.Abstractions.IPresenceStore",
+      "kind": "interface",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/IPresenceStore.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task<UserPresence?>"
+        },
+        {
+          "name": "GetManyAsync",
+          "kind": "method",
+          "signature": "GetManyAsync(IReadOnlyList<Guid> userIds, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyDictionary<Guid, UserPresence>>"
+        },
+        {
+          "name": "MutateAsync",
+          "kind": "method",
+          "signature": "MutateAsync(Guid userId, Func<UserPresence> factory, Action<UserPresence> mutator, CancellationToken cancellationToken)",
+          "returnType": "Task<UserPresence>"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IPresenceTracker",
+      "fqn": "Granit.Presence.Abstractions.IPresenceTracker",
+      "kind": "interface",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/IPresenceTracker.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "RecordPollAsync",
+          "kind": "method",
+          "signature": "RecordPollAsync(Guid userId, TimeSpan idleDuration, CancellationToken cancellationToken)",
+          "returnType": "Task<PresenceHeartbeat>"
+        },
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task<PresenceHeartbeat?>"
+        },
+        {
+          "name": "GetManyAsync",
+          "kind": "method",
+          "signature": "GetManyAsync(IReadOnlyList<Guid> userIds, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyDictionary<Guid, PresenceHeartbeat>>"
+        },
+        {
+          "name": "RemoveAsync",
+          "kind": "method",
+          "signature": "RemoveAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PresenceMetrics",
+      "fqn": "Granit.Presence.Diagnostics.PresenceMetrics",
+      "kind": "class",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Diagnostics/PresenceMetrics.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "RecordStatusChanged",
+          "kind": "method",
+          "signature": "RecordStatusChanged(string? tenantId, PresenceStatus from, PresenceStatus to)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordOverrideSet",
+          "kind": "method",
+          "signature": "RecordOverrideSet(string? tenantId, ManualPresenceStatus status, bool hasUntil)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordNotificationGated",
+          "kind": "method",
+          "signature": "RecordNotificationGated(string? tenantId, string channelName)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ManualPresenceStatus",
+      "fqn": "Granit.Presence.Domain.ManualPresenceStatus",
+      "kind": "enum",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Domain/ManualPresenceStatus.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PresenceConnectivity",
+      "fqn": "Granit.Presence.Domain.PresenceConnectivity",
+      "kind": "enum",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Domain/PresenceConnectivity.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PresenceHeartbeat",
+      "fqn": "Granit.Presence.Domain.PresenceHeartbeat",
+      "kind": "record",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Domain/PresenceHeartbeat.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "PresenceSnapshot",
+      "fqn": "Granit.Presence.Domain.PresenceSnapshot",
+      "kind": "record",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Domain/PresenceSnapshot.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "PresenceStatus",
+      "fqn": "Granit.Presence.Domain.PresenceStatus",
+      "kind": "enum",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Domain/PresenceStatus.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "UserPresence",
+      "fqn": "Granit.Presence.Domain.UserPresence",
+      "kind": "class",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Domain/UserPresence.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid userId, IClock clock)",
+          "returnType": "UserPresence"
+        }
+      ]
+    },
+    {
+      "name": "BatchPresenceRequest",
+      "fqn": "Granit.Presence.Endpoints.Dtos.BatchPresenceRequest",
+      "kind": "record",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Dtos/BatchPresenceRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "BatchPresenceResponse",
+      "fqn": "Granit.Presence.Endpoints.Dtos.BatchPresenceResponse",
+      "kind": "record",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Dtos/BatchPresenceResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "HeartbeatRequest",
+      "fqn": "Granit.Presence.Endpoints.Dtos.HeartbeatRequest",
+      "kind": "record",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Dtos/HeartbeatRequest.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "PresenceResponse",
+      "fqn": "Granit.Presence.Endpoints.Dtos.PresenceResponse",
+      "kind": "record",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Dtos/PresenceResponse.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "SetPresenceRequest",
+      "fqn": "Granit.Presence.Endpoints.Dtos.SetPresenceRequest",
+      "kind": "record",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Dtos/SetPresenceRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "PresenceEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Presence.Endpoints.Extensions.PresenceEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Extensions/PresenceEndpointRouteBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "MapGranitPresence",
+          "kind": "method",
+          "signature": "MapGranitPresence(this IEndpointRouteBuilder endpoints, Action<PresenceEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPresenceEndpointsModule",
+      "fqn": "Granit.Presence.Endpoints.GranitPresenceEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/GranitPresenceEndpointsModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PresenceEndpointsOptions",
+      "fqn": "Granit.Presence.Endpoints.Options.PresenceEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Options/PresenceEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PresencePermissions",
+      "fqn": "Granit.Presence.Endpoints.Permissions.PresencePermissions",
+      "kind": "class",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Permissions/PresencePermissions.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "Self",
+      "fqn": "Granit.Presence.Endpoints.Permissions.Self",
+      "kind": "class",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Permissions/PresencePermissions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "Users",
+      "fqn": "Granit.Presence.Endpoints.Permissions.Users",
+      "kind": "class",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Permissions/PresencePermissions.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "PresenceEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Presence.EntityFrameworkCore.Extensions.PresenceEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Presence.EntityFrameworkCore",
+      "file": "src/Granit.Presence.EntityFrameworkCore/Extensions/PresenceEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitPresenceEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitPresenceEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "PresenceModelBuilderExtensions",
+      "fqn": "Granit.Presence.EntityFrameworkCore.Extensions.PresenceModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Presence.EntityFrameworkCore",
+      "file": "src/Granit.Presence.EntityFrameworkCore/Extensions/PresenceModelBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigurePresenceModule",
+          "kind": "method",
+          "signature": "ConfigurePresenceModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPresenceDbProperties",
+      "fqn": "Granit.Presence.EntityFrameworkCore.GranitPresenceDbProperties",
+      "kind": "class",
+      "project": "Granit.Presence.EntityFrameworkCore",
+      "file": "src/Granit.Presence.EntityFrameworkCore/GranitPresenceDbProperties.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitPresenceEntityFrameworkCoreModule",
+      "fqn": "Granit.Presence.EntityFrameworkCore.GranitPresenceEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Presence.EntityFrameworkCore",
+      "file": "src/Granit.Presence.EntityFrameworkCore/GranitPresenceEntityFrameworkCoreModule.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "UserPresenceChangedEto",
+      "fqn": "Granit.Presence.Events.UserPresenceChangedEto",
+      "kind": "record",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Events/UserPresenceChangedEto.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "UserPresenceOverrideChangedEvent",
+      "fqn": "Granit.Presence.Events.UserPresenceOverrideChangedEvent",
+      "kind": "record",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Events/UserPresenceOverrideChangedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "PresenceHostApplicationBuilderExtensions",
+      "fqn": "Granit.Presence.Extensions.PresenceHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Extensions/PresenceHostApplicationBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitPresence",
+          "kind": "method",
+          "signature": "AddGranitPresence(this IHostApplicationBuilder builder, Action<PresenceOptions>? configure = null)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPresenceModule",
+      "fqn": "Granit.Presence.GranitPresenceModule",
+      "kind": "class",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/GranitPresenceModule.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitPresenceNotificationsModule",
+      "fqn": "Granit.Presence.Notifications.GranitPresenceNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Presence.Notifications",
+      "file": "src/Granit.Presence.Notifications/GranitPresenceNotificationsModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PresenceNotificationDeliveryGate",
+      "fqn": "Granit.Presence.Notifications.PresenceNotificationDeliveryGate",
+      "kind": "class",
+      "project": "Granit.Presence.Notifications",
+      "file": "src/Granit.Presence.Notifications/PresenceNotificationDeliveryGate.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ShouldDeliverAsync",
+          "kind": "method",
+          "signature": "ShouldDeliverAsync(string userId, string notificationTypeName, string channelName, Guid? tenantId, CancellationToken cancellationToken)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "PresenceOptions",
+      "fqn": "Granit.Presence.Options.PresenceOptions",
+      "kind": "class",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Options/PresenceOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(90)",
+          "returnType": "TimeSpan OfflineThreshold { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(3)",
+          "returnType": "TimeSpan AwayThreshold { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(120)",
+          "returnType": "TimeSpan HeartbeatCacheTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxBatchSize",
+          "kind": "property",
+          "signature": "int MaxBatchSize",
+          "returnType": "int"
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(7)",
+          "returnType": "TimeSpan MaxOverrideDuration { get; set; } = TimeSpan."
         }
       ]
     },

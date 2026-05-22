@@ -1,0 +1,15 @@
+{
+  "culture": "pt-BR",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "Identificadores de usuário duplicados não são permitidos em uma requisição em lote.",
+    "Granit:Validation:PresenceBatchTooLarge": "Muitos identificadores de usuário em uma única requisição em lote.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "A duração de inatividade não pode ser negativa.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "A duração de inatividade excede o valor máximo permitido.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "A expiração da substituição deve estar no futuro.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "A expiração da substituição está muito distante no futuro.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "Não é possível fornecer uma expiração quando o status manual é Disponível.",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

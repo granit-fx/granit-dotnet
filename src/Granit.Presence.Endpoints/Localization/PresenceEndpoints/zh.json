@@ -1,0 +1,15 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "批量请求中不允许重复的用户标识符。",
+    "Granit:Validation:PresenceBatchTooLarge": "单个批量请求中的用户标识符过多。",
+    "Granit:Validation:PresenceIdleSecondsNegative": "空闲时间不能为负数。",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "空闲时间超过允许的最大值。",
+    "Granit:Validation:PresenceOverrideUntilInPast": "覆盖的到期时间必须在将来。",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "覆盖的到期时间在将来过于遥远。",
+    "Granit:Validation:PresenceUntilWithoutOverride": "当手动状态为“可用”时不能提供到期时间。",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

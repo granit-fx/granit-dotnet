@@ -1,0 +1,15 @@
+{
+  "culture": "fr",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "Les identifiants utilisateurs en double ne sont pas autorisés dans une requête groupée.",
+    "Granit:Validation:PresenceBatchTooLarge": "Trop d'identifiants utilisateurs dans une seule requête groupée.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "La durée d'inactivité ne peut pas être négative.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "La durée d'inactivité dépasse la valeur maximale autorisée.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "L'expiration de la surcharge doit être dans le futur.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "L'expiration de la surcharge est trop éloignée dans le futur.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "Une expiration ne peut pas être fournie lorsque le statut manuel est Disponible.",
+    "Permission:Presence.Self.Manage": "Définir ou effacer mon propre statut de disponibilité (Disponible, Occupé, Ne pas déranger, Apparaître hors ligne)",
+    "Permission:Presence.Users.Read": "Consulter le statut de disponibilité des autres utilisateurs",
+    "PermissionGroup:Presence": "Disponibilité"
+  }
+}

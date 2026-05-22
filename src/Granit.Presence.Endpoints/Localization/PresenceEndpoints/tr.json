@@ -1,0 +1,15 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "Toplu istekte yinelenen kullanıcı tanımlayıcılarına izin verilmez.",
+    "Granit:Validation:PresenceBatchTooLarge": "Tek bir toplu istekte çok fazla kullanıcı tanımlayıcısı var.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "Boşta kalma süresi negatif olamaz.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "Boşta kalma süresi izin verilen maksimum değeri aşıyor.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "Geçersiz kılma sona erme tarihi gelecekte olmalıdır.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "Geçersiz kılma sona erme tarihi gelecekte çok uzak.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "Manuel durum Müsait olduğunda sona erme tarihi sağlanamaz.",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

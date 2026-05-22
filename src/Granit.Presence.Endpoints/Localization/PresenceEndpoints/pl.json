@@ -1,0 +1,15 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "Zduplikowane identyfikatory użytkowników nie są dozwolone w żądaniu zbiorczym.",
+    "Granit:Validation:PresenceBatchTooLarge": "Za dużo identyfikatorów użytkowników w pojedynczym żądaniu zbiorczym.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "Czas bezczynności nie może być ujemny.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "Czas bezczynności przekracza maksymalną dozwoloną wartość.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "Wygaśnięcie nadpisania musi być w przyszłości.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "Wygaśnięcie nadpisania jest zbyt odległe w przyszłości.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "Nie można podać wygaśnięcia, gdy status ręczny to Dostępny.",
+    "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
+    "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
+    "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
+  }
+}

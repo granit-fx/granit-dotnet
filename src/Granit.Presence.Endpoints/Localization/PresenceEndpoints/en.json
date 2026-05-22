@@ -1,0 +1,15 @@
+{
+  "culture": "en",
+  "texts": {
+    "Granit:Validation:PresenceBatchDuplicates": "Duplicate user identifiers are not allowed in a batch request.",
+    "Granit:Validation:PresenceBatchTooLarge": "Too many user identifiers in a single batch request.",
+    "Granit:Validation:PresenceIdleSecondsNegative": "Idle duration cannot be negative.",
+    "Granit:Validation:PresenceIdleSecondsTooLarge": "Idle duration exceeds the maximum allowed value.",
+    "Granit:Validation:PresenceOverrideUntilInPast": "Override expiration must be in the future.",
+    "Granit:Validation:PresenceOverrideUntilTooFar": "Override expiration is too far in the future.",
+    "Granit:Validation:PresenceUntilWithoutOverride": "An expiration cannot be supplied when the manual status is Available.",
+    "Permission:Presence.Self.Manage": "Set or clear my own presence status (Available, Busy, Do Not Disturb, Appear Offline)",
+    "Permission:Presence.Users.Read": "View the presence status of other users",
+    "PermissionGroup:Presence": "Presence"
+  }
+}

@@ -342,8 +342,8 @@
       "StackExchange.Redis": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.1",
-        "contentHash": "jC5wkRe8K6HPoDENUws+fl2d7+GKz+ky8SWEDzYzPx6hHt2EwxWm01gmYPWLzlT49jfYYap0guB5bExtyX9aIQ==",
+        "resolved": "2.13.10",
+        "contentHash": "PsVrFkNoOdjIGOXg2+duLS02mzEtOCsE++dNvRiO+gaejKBUuHYBLbTvGR+nL/5ik+vtLKqHZTirNQ5p9qaN+A==",
         "dependencies": {
           "Pipelines.Sockets.Unofficial": "2.2.16",
           "System.IO.Hashing": "10.0.2"
