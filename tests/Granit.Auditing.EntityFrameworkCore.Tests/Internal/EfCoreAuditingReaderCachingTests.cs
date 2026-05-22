@@ -40,7 +40,7 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
         await SeedEntryAsync(entryId);
 
         IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, _options);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [], _options);
 
         // Act — first call loads from DB
         AuditEntry? first = await reader.GetByIdAsync(entryId, TestContext.Current.CancellationToken);
@@ -66,7 +66,7 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
     {
         // Arrange
         IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, _options);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [], _options);
 
         var missingId = Guid.NewGuid();
 
@@ -87,7 +87,7 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
         await SeedEntryWithEntityChangeAsync(entryId, "Invoice", "INV-001");
 
         IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, _options);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [], _options);
 
         // Act — first call loads from DB
         PagedResult<AuditEntry> first = await reader.GetByEntityAsync("Invoice", "INV-001", cancellationToken: TestContext.Current.CancellationToken);
@@ -118,7 +118,7 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
         await SeedEntryWithEntityChangeAsync(entryId2, "A", "B:C");
 
         IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, _options);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [], _options);
 
         // Act
         PagedResult<AuditEntry> result1 = await reader.GetByEntityAsync("A:B", "C", cancellationToken: TestContext.Current.CancellationToken);
@@ -127,6 +127,88 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
         // Assert — each query returns its own entry, not the other's cached result
         result1.Items.ShouldAllBe(e => e.EntityChanges.Any(ec => ec.EntityType == "A:B"));
         result2.Items.ShouldAllBe(e => e.EntityChanges.Any(ec => ec.EntityType == "A"));
+    }
+
+    // -------------------------------------------------------------------------
+    // Alias resolution — ADR-051 split persistence
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task GetByEntityAsync_WithAliasProvider_ReturnsRowsStampedWithAliasedClrName()
+    {
+        // Arrange — audit rows are stamped "LocalIdentity" (CLR name), but a
+        // reader query for "User" must surface them because of the alias.
+        const string SharedId = "user-42";
+        await SeedEntryWithEntityChangeAsync(Guid.NewGuid(), "LocalIdentity", SharedId);
+        await SeedEntryWithEntityChangeAsync(Guid.NewGuid(), "FederatedIdentity", SharedId);
+        await SeedEntryWithEntityChangeAsync(Guid.NewGuid(), "User", SharedId);
+
+        StaticAuditEntityTypeAliasProvider aliasProvider = new(
+            new Dictionary<string, IReadOnlySet<string>>(StringComparer.Ordinal)
+            {
+                ["User"] = new HashSet<string>(StringComparer.Ordinal) { "LocalIdentity", "FederatedIdentity" },
+            });
+
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [aliasProvider], _options);
+
+        // Act
+        PagedResult<AuditEntry> result = await reader
+            .GetByEntityAsync("User", SharedId, cancellationToken: TestContext.Current.CancellationToken);
+
+        // Assert — all three rows surface under the canonical name.
+        result.Items.Count.ShouldBe(3);
+        result.Items.SelectMany(e => e.EntityChanges)
+            .Select(c => c.EntityType)
+            .ShouldBe(new[] { "User", "LocalIdentity", "FederatedIdentity" }, ignoreOrder: true);
+    }
+
+    [Fact]
+    public async Task GetByEntityAsync_QueryByPhysicalAlias_DoesNotIncludeCanonicalRows()
+    {
+        // Arrange — directional alias: a lookup by "LocalIdentity" must NOT
+        // bleed in "User" rows. Forensic precision is preserved.
+        const string SharedId = "user-42";
+        await SeedEntryWithEntityChangeAsync(Guid.NewGuid(), "LocalIdentity", SharedId);
+        await SeedEntryWithEntityChangeAsync(Guid.NewGuid(), "User", SharedId);
+
+        StaticAuditEntityTypeAliasProvider aliasProvider = new(
+            new Dictionary<string, IReadOnlySet<string>>(StringComparer.Ordinal)
+            {
+                ["User"] = new HashSet<string>(StringComparer.Ordinal) { "LocalIdentity" },
+            });
+
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [aliasProvider], _options);
+
+        // Act
+        PagedResult<AuditEntry> result = await reader
+            .GetByEntityAsync("LocalIdentity", SharedId, cancellationToken: TestContext.Current.CancellationToken);
+
+        // Assert — only the LocalIdentity row.
+        result.Items.Count.ShouldBe(1);
+        result.Items.Single().EntityChanges.Single().EntityType.ShouldBe("LocalIdentity");
+    }
+
+    [Fact]
+    public async Task GetByEntityAsync_WithNoProviders_BehavesAsBefore()
+    {
+        // Arrange — hosts without any IAuditEntityTypeAliasProvider see the
+        // pre-aliasing behaviour: strict ordinal match on EntityType.
+        const string SharedId = "user-42";
+        await SeedEntryWithEntityChangeAsync(Guid.NewGuid(), "LocalIdentity", SharedId);
+        await SeedEntryWithEntityChangeAsync(Guid.NewGuid(), "User", SharedId);
+
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [], _options);
+
+        // Act
+        PagedResult<AuditEntry> result = await reader
+            .GetByEntityAsync("User", SharedId, cancellationToken: TestContext.Current.CancellationToken);
+
+        // Assert — only the canonical row, the LocalIdentity row stays hidden.
+        result.Items.Count.ShouldBe(1);
+        result.Items.Single().EntityChanges.Single().EntityType.ShouldBe("User");
     }
 
     // --- Helpers ---

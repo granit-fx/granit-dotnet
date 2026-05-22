@@ -1,4 +1,5 @@
 using Granit.Auditing.Domain;
+using Granit.Auditing.Extensions;
 using Granit.Auditing.Options;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -17,6 +18,7 @@ internal sealed class EfCoreAuditingReader(
     IDbContextFactory<AuditingDbContext> dbContextFactory,
     IFusionCache cache,
     ICurrentTenant currentTenant,
+    IEnumerable<IAuditEntityTypeAliasProvider> aliasProviders,
     IOptions<AuditingOptions> options) : IAuditingReader
 {
     private readonly AuditingOptions _options = options.Value;
@@ -69,11 +71,17 @@ internal sealed class EfCoreAuditingReader(
         await using AuditingDbContext dbContext = await dbContextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
+        // Resolve every CLR type the audit log may have stamped for this
+        // canonical name (ADR-051 split persistence). The cache key uses the
+        // canonical name only since the resolved set is deterministic given
+        // the registered providers.
+        IReadOnlySet<string> matchTypes = aliasProviders.Resolve(entityType);
+
         IQueryable<AuditEntry> queryable = dbContext.AuditEntries
             .Include(e => e.EntityChanges)
                 .ThenInclude(ec => ec.PropertyChanges)
             .Where(e => e.EntityChanges.Any(ec =>
-                ec.EntityType == entityType && ec.EntityId == entityId))
+                matchTypes.Contains(ec.EntityType) && ec.EntityId == entityId))
             .AsNoTracking();
 
         PagedResult<AuditEntry> result = await queryable

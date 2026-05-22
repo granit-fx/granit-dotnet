@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
+using Granit.Auditing.Extensions;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 
@@ -13,7 +14,9 @@ namespace Granit.Timeline.Auditing.Internal;
 /// <c>AddGranitTimelineAuditing</c>; once present, every audited mutation on
 /// an entity shows up in that entity's timeline without per-module wiring.
 /// </summary>
-internal sealed class AuditingTimelineSource(IAuditingReader auditing) : ITimelineSource
+internal sealed class AuditingTimelineSource(
+    IAuditingReader auditing,
+    IEnumerable<IAuditEntityTypeAliasProvider> aliasProviders) : ITimelineSource
 {
     /// <inheritdoc/>
     public string SourceKey => "auditing";
@@ -25,13 +28,15 @@ internal sealed class AuditingTimelineSource(IAuditingReader auditing) : ITimeli
         int limit,
         CancellationToken cancellationToken = default)
     {
+        IReadOnlySet<string> matchTypes = aliasProviders.Resolve(entityType);
+
         // Single page sized to the merger's fetch budget — the reader only
         // ever asks for top-K and merges across sources.
         PagedResult<AuditEntry> result = await auditing
             .GetByEntityAsync(entityType, entityId, page: 1, pageSize: limit, cancellationToken)
             .ConfigureAwait(false);
 
-        return [.. result.Items.Select(e => Project(entityType, entityId, e))];
+        return [.. result.Items.Select(e => Project(matchTypes, entityId, e))];
     }
 
     /// <inheritdoc/>
@@ -52,19 +57,22 @@ internal sealed class AuditingTimelineSource(IAuditingReader auditing) : ITimeli
             return null;
         }
 
+        IReadOnlySet<string> matchTypes = aliasProviders.Resolve(entityType);
+
         // Security: refuse to anchor an audit row that does not target this
-        // entity — the caller's URL claims an entity scope that must match.
+        // entity — the caller's URL claims an entity scope that must match
+        // either the canonical name or any aliased CLR name.
         bool targetsEntity = entry.EntityChanges.Any(c =>
-            string.Equals(c.EntityType, entityType, StringComparison.Ordinal) &&
+            matchTypes.Contains(c.EntityType) &&
             string.Equals(c.EntityId, entityId, StringComparison.Ordinal));
 
-        return targetsEntity ? Project(entityType, entityId, entry) : null;
+        return targetsEntity ? Project(matchTypes, entityId, entry) : null;
     }
 
-    private static TimelineStreamEntry Project(string entityType, string entityId, AuditEntry entry)
+    private static TimelineStreamEntry Project(IReadOnlySet<string> matchTypes, string entityId, AuditEntry entry)
     {
         AuditEntityChange? change = entry.EntityChanges.FirstOrDefault(c =>
-            string.Equals(c.EntityType, entityType, StringComparison.Ordinal) &&
+            matchTypes.Contains(c.EntityType) &&
             string.Equals(c.EntityId, entityId, StringComparison.Ordinal));
 
         return new TimelineStreamEntry

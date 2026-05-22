@@ -1,3 +1,4 @@
+using Granit.Auditing;
 using Granit.DataExchange.Extensions;
 using Granit.Entities.Extensions;
 using Granit.Identity.Domain;
@@ -21,6 +22,7 @@ namespace Granit.Identity;
 /// <c>Granit.Identity.EntityFrameworkCore</c> to wire the EF Core
 /// <see cref="IUserDirectoryQueryableSource"/> impl.
 /// </summary>
+[DependsOn(typeof(GranitAuditingModule))]
 [DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitIdentityModule : GranitModule
 {

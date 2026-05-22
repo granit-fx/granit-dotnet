@@ -1,3 +1,4 @@
+using Granit.Auditing;
 using Granit.Diagnostics;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Internal;
@@ -29,8 +30,29 @@ public static class IdentityServiceCollectionExtensions
         services.TryAddScoped<IIdentityProviderCapabilities, NullIdentityProviderCapabilities>();
         services.TryAddScoped<IUserLookupService, NullUserLookupService>();
         services.TryAddScoped<IUserCacheStats, NullUserCacheStats>();
+
+        RegisterAuditEntityTypeAliases(services);
+
         return services;
     }
+
+    // ADR-051: the canonical User aggregate shares its Guid with two sibling
+    // CLR types — LocalIdentity (auth secrets) and FederatedIdentity (IdP
+    // cache). Their audit log rows must surface on /timeline/User/{id} and
+    // through IAuditingReader.GetByEntityAsync("User", ...). The reverse is
+    // intentionally not aliased: a forensic lookup by "LocalIdentity" still
+    // returns auth-only writes.
+    private static void RegisterAuditEntityTypeAliases(IServiceCollection services) =>
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IAuditEntityTypeAliasProvider>(
+            new StaticAuditEntityTypeAliasProvider(
+                new Dictionary<string, IReadOnlySet<string>>(StringComparer.Ordinal)
+                {
+                    ["User"] = new HashSet<string>(StringComparer.Ordinal)
+                    {
+                        "LocalIdentity",
+                        "FederatedIdentity",
+                    },
+                })));
 
     /// <summary>
     /// Registers a custom <see cref="IIdentityProvider"/> implementation,

@@ -22,7 +22,16 @@ public sealed class AuditingTimelineSourceTests
     private readonly IAuditingReader _auditing = Substitute.For<IAuditingReader>();
     private readonly AuditingTimelineSource _source;
 
-    public AuditingTimelineSourceTests() => _source = new AuditingTimelineSource(_auditing);
+    public AuditingTimelineSourceTests() => _source = new AuditingTimelineSource(_auditing, []);
+
+    private static AuditingTimelineSource WithUserAlias(IAuditingReader auditing) =>
+        new(auditing, [
+            new StaticAuditEntityTypeAliasProvider(
+                new Dictionary<string, IReadOnlySet<string>>(StringComparer.Ordinal)
+                {
+                    ["User"] = new HashSet<string>(StringComparer.Ordinal) { "LocalIdentity", "FederatedIdentity" },
+                }),
+        ]);
 
     [Fact]
     public void SourceKey_IsAuditing() => _source.SourceKey.ShouldBe("auditing");
@@ -106,6 +115,111 @@ public sealed class AuditingTimelineSourceTests
     {
         TimelineStreamEntry? result = await _source
             .GetEntryAsync("User", "user-42", "not-a-guid", TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
+    // -------------------------------------------------------------------------
+    // Alias resolution — ADR-051 split persistence
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task GetEntriesAsync_WithAliasProvider_ProjectsEntriesStampedWithAliasedClrName()
+    {
+        // Audit row stamped "LocalIdentity" (auth-secret mutation), queried
+        // via the canonical "User" endpoint — must surface and project the
+        // matching change.
+        var auditId = Guid.NewGuid();
+        var entry = new AuditEntry
+        {
+            Id = auditId,
+            Timestamp = DateTimeOffset.UtcNow,
+            UserId = "u-1",
+            UserName = "Alice",
+            Category = AuditCategory.DataMutation,
+            EntityChanges = [new AuditEntityChange
+            {
+                EntityType = "LocalIdentity",
+                EntityId = "user-42",
+                ChangeType = AuditChangeType.Modified,
+                PropertyChanges = [new AuditPropertyChange
+                {
+                    PropertyName = "PasswordHash",
+                    OriginalValue = "***",
+                    NewValue = "***",
+                }],
+            }],
+        };
+
+        _auditing.GetByEntityAsync("User", "user-42", 1, 50, Arg.Any<CancellationToken>())
+            .Returns(new PagedResult<AuditEntry>([entry], 1, false));
+
+        AuditingTimelineSource source = WithUserAlias(_auditing);
+
+        IReadOnlyList<TimelineStreamEntry> result = await source
+            .GetEntriesAsync("User", "user-42", 50, TestContext.Current.CancellationToken);
+
+        result.Count.ShouldBe(1);
+        using var payload = JsonDocument.Parse(result[0].Body);
+        payload.RootElement.GetProperty("changeType").GetString().ShouldBe("Modified");
+        payload.RootElement.GetProperty("changes")[0].GetProperty("property").GetString().ShouldBe("PasswordHash");
+    }
+
+    [Fact]
+    public async Task GetEntryAsync_WithAliasProvider_AcceptsAuditRowStampedWithAliasedClrName()
+    {
+        // Security check must accept aliased CLR names — otherwise the entry
+        // anchored from /timeline/User/{id} would be rejected.
+        var auditId = Guid.NewGuid();
+        var entry = new AuditEntry
+        {
+            Id = auditId,
+            Timestamp = DateTimeOffset.UtcNow,
+            UserId = "u-1",
+            EntityChanges = [new AuditEntityChange
+            {
+                EntityType = "FederatedIdentity",
+                EntityId = "user-42",
+                ChangeType = AuditChangeType.Modified,
+            }],
+        };
+
+        _auditing.GetByIdAsync(auditId, Arg.Any<CancellationToken>()).Returns(entry);
+
+        AuditingTimelineSource source = WithUserAlias(_auditing);
+
+        TimelineStreamEntry? result = await source
+            .GetEntryAsync("User", "user-42", auditId.ToString(), TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.SourceId.ShouldBe(auditId.ToString("D"));
+    }
+
+    [Fact]
+    public async Task GetEntryAsync_QueriedByPhysicalAlias_DoesNotMatchCanonicalRow()
+    {
+        // Directional alias: forensic lookup by "LocalIdentity" must NOT
+        // accept rows stamped "User".
+        var auditId = Guid.NewGuid();
+        var entry = new AuditEntry
+        {
+            Id = auditId,
+            Timestamp = DateTimeOffset.UtcNow,
+            UserId = "u-1",
+            EntityChanges = [new AuditEntityChange
+            {
+                EntityType = "User",
+                EntityId = "user-42",
+                ChangeType = AuditChangeType.Modified,
+            }],
+        };
+
+        _auditing.GetByIdAsync(auditId, Arg.Any<CancellationToken>()).Returns(entry);
+
+        AuditingTimelineSource source = WithUserAlias(_auditing);
+
+        TimelineStreamEntry? result = await source
+            .GetEntryAsync("LocalIdentity", "user-42", auditId.ToString(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }

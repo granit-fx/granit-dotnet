@@ -923,6 +923,7 @@
       "name": "Granit.Identity",
       "deps": [
         "Granit",
+        "Granit.Auditing",
         "Granit.DataExchange.Abstractions",
         "Granit.Entities.Abstractions",
         "Granit.QueryEngine.Abstractions"
@@ -4918,6 +4919,22 @@
       ]
     },
     {
+      "name": "AuditEntityTypeAliasProviderExtensions",
+      "fqn": "Granit.Auditing.Extensions.AuditEntityTypeAliasProviderExtensions",
+      "kind": "class",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Extensions/AuditEntityTypeAliasProviderExtensions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Resolve",
+          "kind": "method",
+          "signature": "Resolve(this IEnumerable<IAuditEntityTypeAliasProvider> providers, string logicalEntityType)",
+          "returnType": "IReadOnlySet<string>"
+        }
+      ]
+    },
+    {
       "name": "AuditingServiceCollectionExtensions",
       "fqn": "Granit.Auditing.Extensions.AuditingServiceCollectionExtensions",
       "kind": "class",
@@ -4962,6 +4979,22 @@
           "kind": "method",
           "signature": "PersistAsync(AuditingBatch batch, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IAuditEntityTypeAliasProvider",
+      "fqn": "Granit.Auditing.IAuditEntityTypeAliasProvider",
+      "kind": "interface",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/IAuditEntityTypeAliasProvider.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "GetAliases",
+          "kind": "method",
+          "signature": "GetAliases(string logicalEntityType)",
+          "returnType": "IReadOnlySet<string>"
         }
       ]
     },
@@ -5366,6 +5399,15 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "StaticAuditEntityTypeAliasProvider",
+      "fqn": "Granit.Auditing.StaticAuditEntityTypeAliasProvider",
+      "kind": "class",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/StaticAuditEntityTypeAliasProvider.cs",
+      "line": 11,
+      "members": []
     },
     {
       "name": "ApiKeyAuthenticationDefaults",
@@ -21328,7 +21370,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Extensions/IdentityServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitIdentity",
@@ -22551,7 +22593,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/GranitIdentityModule.cs",
-      "line": 25,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",

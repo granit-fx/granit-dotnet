@@ -1,3 +1,5 @@
+using Granit.Auditing;
+using Granit.Auditing.Extensions;
 using Granit.Identity.Internal;
 using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,5 +34,23 @@ public sealed class GranitIdentityModuleTests
         var module = new GranitIdentityModule();
 
         module.ShouldBeAssignableTo<GranitModule>();
+    }
+
+    [Fact]
+    public void ConfigureServices_RegistersUserAuditAliasForLocalAndFederatedIdentity()
+    {
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+        var context = new ServiceConfigurationContext(builder.Services, builder.Configuration, builder);
+        var module = new GranitIdentityModule();
+
+        module.ConfigureServices(context);
+
+        ServiceProvider provider = builder.Services.BuildServiceProvider();
+        IEnumerable<IAuditEntityTypeAliasProvider> aliasProviders =
+            provider.GetServices<IAuditEntityTypeAliasProvider>();
+
+        IReadOnlySet<string> aliasesForUser = aliasProviders.Resolve("User");
+
+        aliasesForUser.ShouldBe(new[] { "User", "LocalIdentity", "FederatedIdentity" }, ignoreOrder: true);
     }
 }
