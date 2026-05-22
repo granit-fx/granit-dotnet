@@ -12,46 +12,46 @@ public sealed class ServerValidatorRegistryTests
     public void GetOrNull_RegisteredCode_ReturnsValidator()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true));
+            new DelegatingServerValidator("Validation:InvalidIban", _ => true));
 
-        IServerValidator? result = registry.GetOrNull("Granit:Validation:InvalidIban");
+        IServerValidator? result = registry.GetOrNull("Validation:InvalidIban");
 
         result.ShouldNotBeNull();
-        result.ErrorCode.ShouldBe("Granit:Validation:InvalidIban");
+        result.ErrorCode.ShouldBe("Validation:InvalidIban");
     }
 
     [Fact]
     public void GetOrNull_UnknownCode_ReturnsNull()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true));
+            new DelegatingServerValidator("Validation:InvalidIban", _ => true));
 
-        registry.GetOrNull("Granit:Validation:Unknown").ShouldBeNull();
+        registry.GetOrNull("Validation:Unknown").ShouldBeNull();
     }
 
     [Fact]
     public void GetAllErrorCodes_ReturnsAllRegisteredCodes()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true),
-            new DelegatingServerValidator("Granit:Validation:InvalidEmail", _ => true));
+            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Validation:InvalidEmail", _ => true));
 
         IReadOnlyCollection<string> codes = registry.GetAllErrorCodes();
 
         codes.Count.ShouldBe(2);
-        codes.ShouldContain("Granit:Validation:InvalidIban");
-        codes.ShouldContain("Granit:Validation:InvalidEmail");
+        codes.ShouldContain("Validation:InvalidIban");
+        codes.ShouldContain("Validation:InvalidEmail");
     }
 
     [Fact]
     public void DuplicateErrorCode_KeepsFirstRegistration()
     {
-        var first = new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true);
-        var second = new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => false);
+        var first = new DelegatingServerValidator("Validation:InvalidIban", _ => true);
+        var second = new DelegatingServerValidator("Validation:InvalidIban", _ => false);
 
         ServerValidatorRegistry registry = CreateRegistry(first, second);
 
-        IServerValidator? result = registry.GetOrNull("Granit:Validation:InvalidIban");
+        IServerValidator? result = registry.GetOrNull("Validation:InvalidIban");
         result.ShouldNotBeNull();
         result.Validate("anything").ShouldBeTrue();
     }
@@ -62,21 +62,21 @@ public sealed class ServerValidatorRegistryTests
         ServerValidatorRegistry registry = CreateRegistry();
 
         registry.GetAllErrorCodes().ShouldBeEmpty();
-        registry.GetOrNull("Granit:Validation:InvalidIban").ShouldBeNull();
+        registry.GetOrNull("Validation:InvalidIban").ShouldBeNull();
     }
 
     [Fact]
     public void GetAll_ReturnsAllValidatorInstances()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true),
-            new DelegatingServerValidator("Granit:Validation:InvalidSsn", _ => true, isSensitive: true));
+            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Validation:InvalidSsn", _ => true, isSensitive: true));
 
         IReadOnlyCollection<IServerValidator> all = registry.GetAll();
 
         all.Count.ShouldBe(2);
-        all.ShouldContain(v => v.ErrorCode == "Granit:Validation:InvalidIban");
-        all.ShouldContain(v => v.ErrorCode == "Granit:Validation:InvalidSsn" && v.IsSensitive);
+        all.ShouldContain(v => v.ErrorCode == "Validation:InvalidIban");
+        all.ShouldContain(v => v.ErrorCode == "Validation:InvalidSsn" && v.IsSensitive);
     }
 
     private static ServerValidatorRegistry CreateRegistry(params IServerValidator[] validators)

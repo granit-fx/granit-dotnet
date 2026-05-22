@@ -1,0 +1,9 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Validation:CursorPageMutuallyExclusive": "'Cursor' a 'Page' nelze použít současně.",
+    "Validation:MaxFilterEntries": "Je povoleno maximálně 50 položek filtru.",
+    "Validation:MaxPresetEntries": "Je povoleno maximálně 20 předvoleb.",
+    "Validation:MaxQuickFilterEntries": "Je povoleno maximálně 20 rychlých filtrů."
+  }
+}

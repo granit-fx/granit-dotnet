@@ -16,34 +16,34 @@ internal sealed class CoreServerValidatorContributor : IServerValidatorContribut
     public IEnumerable<IServerValidator> GetValidators()
     {
         // Payment identifiers (algorithm-based)
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidIban", IbanAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidBicSwift", BicSwiftAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidSepaCreditorIdentifier", SepaCreditorIdentifierAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidCreditCard", CreditCardAlgorithm.IsValid, isSensitive: true);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidLei", LeiAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:InvalidIban", IbanAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:InvalidBicSwift", BicSwiftAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:InvalidSepaCreditorIdentifier", SepaCreditorIdentifierAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:InvalidCreditCard", CreditCardAlgorithm.IsValid, isSensitive: true);
+        yield return new DelegatingServerValidator("Validation:InvalidLei", LeiAlgorithm.IsValid);
 
         // ISO standard codes (algorithm + regex)
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidIso4217CurrencyCode", Iso4217CurrencyCodeAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidIso8601Duration", StandardValidatorExtensions.IsValidIso8601Duration);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUuid", StandardValidatorExtensions.IsValidUuid);
+        yield return new DelegatingServerValidator("Validation:InvalidIso4217CurrencyCode", Iso4217CurrencyCodeAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:InvalidIso8601Duration", StandardValidatorExtensions.IsValidIso8601Duration);
+        yield return new DelegatingServerValidator("Validation:InvalidUuid", StandardValidatorExtensions.IsValidUuid);
 
         // Party identifiers (regex-based)
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidEmail", ContactValidatorExtensions.IsValidEmail);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidE164Phone", ContactValidatorExtensions.IsValidE164Phone);
+        yield return new DelegatingServerValidator("Validation:InvalidEmail", ContactValidatorExtensions.IsValidEmail);
+        yield return new DelegatingServerValidator("Validation:InvalidE164Phone", ContactValidatorExtensions.IsValidE164Phone);
 
         // Format validators (regex + algorithm)
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidSlug", FormatValidatorExtensions.IsValidSlug);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidBase64String", FormatValidatorExtensions.IsValidBase64String);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidColorHex", FormatValidatorExtensions.IsValidColorHex);
+        yield return new DelegatingServerValidator("Validation:InvalidSlug", FormatValidatorExtensions.IsValidSlug);
+        yield return new DelegatingServerValidator("Validation:InvalidBase64String", FormatValidatorExtensions.IsValidBase64String);
+        yield return new DelegatingServerValidator("Validation:InvalidColorHex", FormatValidatorExtensions.IsValidColorHex);
 
         // Network identifiers (regex + algorithm)
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUrl", NetworkValidatorExtensions.IsValidUrl);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidIpv4Address", NetworkValidatorExtensions.IsValidIpv4Address);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidIpv6Address", NetworkValidatorExtensions.IsValidIpv6Address);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidMacAddress", NetworkValidatorExtensions.IsValidMacAddress);
+        yield return new DelegatingServerValidator("Validation:InvalidUrl", NetworkValidatorExtensions.IsValidUrl);
+        yield return new DelegatingServerValidator("Validation:InvalidIpv4Address", NetworkValidatorExtensions.IsValidIpv4Address);
+        yield return new DelegatingServerValidator("Validation:InvalidIpv6Address", NetworkValidatorExtensions.IsValidIpv6Address);
+        yield return new DelegatingServerValidator("Validation:InvalidMacAddress", NetworkValidatorExtensions.IsValidMacAddress);
 
         // Locale identifiers (regex-based)
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidIso3166Alpha2", LocaleValidatorExtensions.IsValidIso3166Alpha2);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidBcp47LanguageTag", LocaleValidatorExtensions.IsValidBcp47LanguageTag);
+        yield return new DelegatingServerValidator("Validation:InvalidIso3166Alpha2", LocaleValidatorExtensions.IsValidIso3166Alpha2);
+        yield return new DelegatingServerValidator("Validation:InvalidBcp47LanguageTag", LocaleValidatorExtensions.IsValidBcp47LanguageTag);
     }
 }

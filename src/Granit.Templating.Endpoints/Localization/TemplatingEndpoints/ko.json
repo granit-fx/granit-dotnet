@@ -1,6 +1,7 @@
 {
   "culture": "ko",
   "texts": {
+    "Validation:InvalidTemplateNamePattern": "템플릿 이름은 'Domain.Name' 패턴을 따라야 합니다(예: 'Billing.Invoice').",
     "Permission:Templating.Categories.Manage": "템플릿 카테고리 관리 (생성, 편집, 삭제)",
     "Permission:Templating.Categories.Read": "템플릿 카테고리 보기",
     "Permission:Templating.Templates.Manage": "템플릿 관리 (보기, 생성, 편집, 삭제, 게시)",

@@ -51,8 +51,8 @@ public sealed class ItalianIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(value));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidItalianCodiceFiscale");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidItalianCodiceFiscale");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidItalianCodiceFiscale");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidItalianCodiceFiscale");
     }
 
     // =========================================================================
@@ -90,8 +90,8 @@ public sealed class ItalianIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(value));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidItalianPartitaIva");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidItalianPartitaIva");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidItalianPartitaIva");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidItalianPartitaIva");
     }
 
     // =========================================================================
@@ -129,8 +129,8 @@ public sealed class ItalianIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(value));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidItalianPostalCode");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidItalianPostalCode");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidItalianPostalCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidItalianPostalCode");
     }
 
     // -------------------------------------------------------------------------

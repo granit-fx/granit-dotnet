@@ -1,6 +1,7 @@
 {
   "culture": "nl",
   "texts": {
+    "Validation:MaxCustomAttributes": "Het maximale aantal aangepaste attributen is overschreden.",
     "IdentityEndpoints:Workspace.Groups": "Groups",
     "IdentityEndpoints:Workspace.Roles": "Roles",
     "IdentityEndpoints:Workspace.Section": "Identity",

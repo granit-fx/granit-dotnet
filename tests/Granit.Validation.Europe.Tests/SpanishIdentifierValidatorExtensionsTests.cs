@@ -53,8 +53,8 @@ public sealed class SpanishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(nif));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidSpanishNif");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidSpanishNif");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidSpanishNif");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidSpanishNif");
     }
 
     // =========================================================================
@@ -93,8 +93,8 @@ public sealed class SpanishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(nie));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidSpanishNie");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidSpanishNie");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidSpanishNie");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidSpanishNie");
     }
 
     // =========================================================================
@@ -135,8 +135,8 @@ public sealed class SpanishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(cif));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidSpanishCif");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidSpanishCif");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidSpanishCif");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidSpanishCif");
     }
 
     // =========================================================================
@@ -174,8 +174,8 @@ public sealed class SpanishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidSpanishPostalCode");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidSpanishPostalCode");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidSpanishPostalCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidSpanishPostalCode");
     }
 
     // -------------------------------------------------------------------------

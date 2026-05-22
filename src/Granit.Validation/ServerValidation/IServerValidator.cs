@@ -12,7 +12,7 @@ namespace Granit.Validation.ServerValidation;
 public interface IServerValidator
 {
     /// <summary>
-    /// The <c>Granit:Validation:*</c> error code that uniquely identifies this validator.
+    /// The <c>Validation:*</c> error code that uniquely identifies this validator.
     /// </summary>
     string ErrorCode { get; }
 

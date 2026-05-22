@@ -1,6 +1,7 @@
 {
   "culture": "tr",
   "texts": {
+    "Validation:InvalidTemplateNamePattern": "Şablon adı 'Alan.Ad' desenini izlemelidir (ör. 'Billing.Invoice').",
     "Permission:Templating.Categories.Manage": "Şablon kategorilerini yönet (oluştur, düzenle, sil)",
     "Permission:Templating.Categories.Read": "Şablon kategorilerini görüntüle",
     "Permission:Templating.Templates.Manage": "Şablonları yönet (görüntüle, oluştur, düzenle, sil, yayınla)",

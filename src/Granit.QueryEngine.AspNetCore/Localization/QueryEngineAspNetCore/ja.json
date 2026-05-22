@@ -1,0 +1,9 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Validation:CursorPageMutuallyExclusive": "'Cursor' と 'Page' は同時に使用できません。",
+    "Validation:MaxFilterEntries": "フィルター項目は最大50件までです。",
+    "Validation:MaxPresetEntries": "プリセット項目は最大20件までです。",
+    "Validation:MaxQuickFilterEntries": "クイックフィルターは最大20件までです。"
+  }
+}

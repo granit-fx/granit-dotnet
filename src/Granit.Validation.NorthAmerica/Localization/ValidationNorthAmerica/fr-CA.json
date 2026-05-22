@@ -1,7 +1,7 @@
 {
   "culture": "fr-CA",
   "texts": {
-    "Granit:Validation:InvalidCanadianSin": "Le numéro d'assurance sociale (NAS) est invalide.",
-    "Granit:Validation:InvalidCanadianBusinessNumber": "Le numéro d'entreprise (NE) est invalide."
+    "Validation:InvalidCanadianSin": "Le numéro d'assurance sociale (NAS) est invalide.",
+    "Validation:InvalidCanadianBusinessNumber": "Le numéro d'entreprise (NE) est invalide."
   }
 }

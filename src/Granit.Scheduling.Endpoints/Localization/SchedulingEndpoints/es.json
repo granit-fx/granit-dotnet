@@ -1,6 +1,7 @@
 {
   "culture": "es",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "La fecha programada debe ser en el futuro.",
     "Permission:Scheduling.Actions.Manage": "Gestionar acciones programadas (cancelar, reprogramar)",
     "Permission:Scheduling.Actions.Read": "Ver acciones programadas (lista, detalle)",
     "PermissionGroup:Scheduling": "Programación",

@@ -1,13 +1,13 @@
 {
   "culture": "it",
   "texts": {
-    "Granit:Validation:InvalidUsSsn": "Il numero di previdenza sociale statunitense (SSN) non è valido.",
-    "Granit:Validation:InvalidUsEin": "Il numero di identificazione del datore di lavoro statunitense (EIN) non è valido.",
-    "Granit:Validation:InvalidUsZipCode": "Il codice postale statunitense (ZIP) non è valido (5 cifre o formato ZIP+4 previsto).",
-    "Granit:Validation:InvalidNanpPhoneNumber": "Il numero di telefono non è valido (formato NANP previsto: NXX-NXX-XXXX).",
-    "Granit:Validation:InvalidUsStateCode": "Il codice dello stato o territorio statunitense non è valido.",
-    "Granit:Validation:InvalidCanadianSin": "Il numero di assicurazione sociale canadese (SIN) non è valido.",
-    "Granit:Validation:InvalidCanadianPostalCode": "Il codice postale canadese non è valido (formato previsto: A1A 1A1).",
-    "Granit:Validation:InvalidCanadianBusinessNumber": "Il numero d'impresa canadese (BN) non è valido."
+    "Validation:InvalidUsSsn": "Il numero di previdenza sociale statunitense (SSN) non è valido.",
+    "Validation:InvalidUsEin": "Il numero di identificazione del datore di lavoro statunitense (EIN) non è valido.",
+    "Validation:InvalidUsZipCode": "Il codice postale statunitense (ZIP) non è valido (5 cifre o formato ZIP+4 previsto).",
+    "Validation:InvalidNanpPhoneNumber": "Il numero di telefono non è valido (formato NANP previsto: NXX-NXX-XXXX).",
+    "Validation:InvalidUsStateCode": "Il codice dello stato o territorio statunitense non è valido.",
+    "Validation:InvalidCanadianSin": "Il numero di assicurazione sociale canadese (SIN) non è valido.",
+    "Validation:InvalidCanadianPostalCode": "Il codice postale canadese non è valido (formato previsto: A1A 1A1).",
+    "Validation:InvalidCanadianBusinessNumber": "Il numero d'impresa canadese (BN) non è valido."
   }
 }

@@ -1,0 +1,9 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Validation:CursorPageMutuallyExclusive": "'Cursor' और 'Page' परस्पर अनन्य हैं।",
+    "Validation:MaxFilterEntries": "अधिकतम 50 फ़िल्टर प्रविष्टियाँ अनुमत हैं।",
+    "Validation:MaxPresetEntries": "अधिकतम 20 प्रीसेट प्रविष्टियाँ अनुमत हैं।",
+    "Validation:MaxQuickFilterEntries": "अधिकतम 20 त्वरित फ़िल्टर अनुमत हैं।"
+  }
+}

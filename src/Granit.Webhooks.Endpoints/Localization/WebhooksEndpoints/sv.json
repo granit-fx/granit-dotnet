@@ -1,10 +1,10 @@
 {
   "culture": "sv",
   "texts": {
-    "Granit:Validation:InvalidWebhookUrl": "Mål-URL måste vara en giltig HTTPS-URL",
-    "Granit:Validation:UnknownWebhookEventType": "Den angivna händelsetypen är inte registrerad. Använd GET /event-types för tillgängliga typer.",
-    "Granit:Validation:WebhookUrlBlockedTld": "Interna domännamn (.local, .internal, .localhost, .onion) är inte tillåtna",
-    "Granit:Validation:WebhookUrlPrivateAddress": "Privata, lokala eller reserverade IP-adresser är inte tillåtna",
+    "Validation:InvalidWebhookUrl": "Mål-URL måste vara en giltig HTTPS-URL",
+    "Validation:UnknownWebhookEventType": "Den angivna händelsetypen är inte registrerad. Använd GET /event-types för tillgängliga typer.",
+    "Validation:WebhookUrlBlockedTld": "Interna domännamn (.local, .internal, .localhost, .onion) är inte tillåtna",
+    "Validation:WebhookUrlPrivateAddress": "Privata, lokala eller reserverade IP-adresser är inte tillåtna",
     "Permission:Webhooks.Subscriptions.Manage": "Hantera webhooks (livscykel, hemlighetsrotation, testping, statistik)",
     "Permission:Webhooks.Subscriptions.Read": "Visa webhook-prenumerationer",
     "PermissionGroup:Webhooks": "Webhooks",

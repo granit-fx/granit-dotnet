@@ -1,7 +1,7 @@
 {
   "culture": "it",
   "texts": {
-    "Granit:Validation:TooManyAttachments": "Non è possibile allegare più di 20 file.",
+    "Validation:TooManyAttachments": "Non è possibile allegare più di 20 file.",
     "Permission:Timeline.Entries.Create": "Pubblicare commenti e seguire/smettere di seguire entità",
     "Permission:Timeline.Entries.Manage": "Gestire (eliminare) qualsiasi voce della timeline indipendentemente dal proprietario",
     "Permission:Timeline.Entries.Read": "Visualizzare i flussi di attività e la cronologia di audit",

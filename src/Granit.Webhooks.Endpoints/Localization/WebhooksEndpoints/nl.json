@@ -1,10 +1,10 @@
 {
   "culture": "nl",
   "texts": {
-    "Granit:Validation:InvalidWebhookUrl": "De doel-URL moet een geldige HTTPS-URL zijn",
-    "Granit:Validation:UnknownWebhookEventType": "Het opgegeven gebeurtenistype is niet geregistreerd. Gebruik GET /event-types voor beschikbare typen.",
-    "Granit:Validation:WebhookUrlBlockedTld": "Interne domeinnamen (.local, .internal, .localhost, .onion) zijn niet toegestaan",
-    "Granit:Validation:WebhookUrlPrivateAddress": "Privé-, lokale of gereserveerde IP-adressen zijn niet toegestaan",
+    "Validation:InvalidWebhookUrl": "De doel-URL moet een geldige HTTPS-URL zijn",
+    "Validation:UnknownWebhookEventType": "Het opgegeven gebeurtenistype is niet geregistreerd. Gebruik GET /event-types voor beschikbare typen.",
+    "Validation:WebhookUrlBlockedTld": "Interne domeinnamen (.local, .internal, .localhost, .onion) zijn niet toegestaan",
+    "Validation:WebhookUrlPrivateAddress": "Privé-, lokale of gereserveerde IP-adressen zijn niet toegestaan",
     "Permission:Webhooks.Subscriptions.Manage": "Webhooks beheren (levenscyclus, geheimrotatie, testping, statistieken)",
     "Permission:Webhooks.Subscriptions.Read": "Webhookabonnementen bekijken",
     "PermissionGroup:Webhooks": "Webhooks",

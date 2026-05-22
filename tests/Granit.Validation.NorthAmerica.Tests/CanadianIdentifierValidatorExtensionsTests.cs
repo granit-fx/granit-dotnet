@@ -51,7 +51,7 @@ public sealed class CanadianIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(sin));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidCanadianSin");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidCanadianSin");
     }
 
     // =========================================================================
@@ -87,7 +87,7 @@ public sealed class CanadianIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(bn));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidCanadianBusinessNumber");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidCanadianBusinessNumber");
     }
 
     // -------------------------------------------------------------------------

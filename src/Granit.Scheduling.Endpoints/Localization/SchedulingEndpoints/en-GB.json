@@ -1,6 +1,7 @@
 {
   "culture": "en-GB",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "Scheduled date must be in the future.",
     "SchedulingEndpoints:Workspace.Item": "Scheduled actions",
     "SchedulingEndpoints:Workspace.Section": "Scheduling"
   }

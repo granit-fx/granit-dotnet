@@ -1,7 +1,7 @@
 {
   "culture": "pt-BR",
   "texts": {
-    "Granit:Validation:TooManyAttachments": "Não é possível anexar mais de 20 arquivos.",
+    "Validation:TooManyAttachments": "Não é possível anexar mais de 20 arquivos.",
     "Permission:Timeline.Entries.Manage": "Gerenciar (excluir) qualquer entrada de linha do tempo independentemente do proprietário",
     "Permission:Timeline.Followers.Manage": "Seguir e deixar de seguir entidades nos feeds de atividade",
     "Permission:Timeline.InternalNotes.Read": "Ver notas internas somente para funcionários nos feeds de atividade",

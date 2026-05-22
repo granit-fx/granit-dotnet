@@ -18,6 +18,6 @@ internal sealed class AIWorkspaceCreateRequestValidator : GranitValidator<AIWork
             .NotEmpty()
             .MaximumLength(128)
             .Matches("^[a-z0-9][a-z0-9-]*$")
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidWorkspaceName");
+            .WithErrorCodeAndMessage("Validation:InvalidWorkspaceName");
     }
 }

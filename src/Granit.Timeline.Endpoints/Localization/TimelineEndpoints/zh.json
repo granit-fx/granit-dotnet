@@ -1,7 +1,7 @@
 {
   "culture": "zh",
   "texts": {
-    "Granit:Validation:TooManyAttachments": "不能附加超过20个文件。",
+    "Validation:TooManyAttachments": "不能附加超过20个文件。",
     "Permission:Timeline.Entries.Create": "发表评论和关注/取消关注实体",
     "Permission:Timeline.Entries.Manage": "管理（删除）任何时间轴条目，无论所有者",
     "Permission:Timeline.Entries.Read": "查看活动流和审计历史",

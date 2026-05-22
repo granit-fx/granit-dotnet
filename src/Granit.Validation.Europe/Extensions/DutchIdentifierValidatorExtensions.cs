@@ -19,7 +19,7 @@ public static class DutchIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> DutchBsn<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(BsnAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidDutchBsn");
+            .WithErrorCodeAndMessage("Validation:InvalidDutchBsn");
 
     /// <summary>
     /// Validates a Dutch Chamber of Commerce number (Kamer van Koophandel / KVK).
@@ -30,7 +30,7 @@ public static class DutchIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> DutchKvk<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(KvkAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidDutchKvk");
+            .WithErrorCodeAndMessage("Validation:InvalidDutchKvk");
 
     /// <summary>
     /// Validates a Dutch postcode.
@@ -43,5 +43,5 @@ public static class DutchIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> DutchPostcode<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(DutchPostcodeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidDutchPostcode");
+            .WithErrorCodeAndMessage("Validation:InvalidDutchPostcode");
 }

@@ -11,7 +11,7 @@ namespace Granit.Validation;
 /// validation rules are evaluated and all errors are returned in a single response.
 /// This prevents the "one error at a time" UX anti-pattern in SPAs.
 /// <para>
-/// Custom validators should use <c>.WithErrorCodeAndMessage("Granit:Validation:...")</c>
+/// Custom validators should use <c>.WithErrorCodeAndMessage("Validation:...")</c>
 /// so that the error code is serialized in <c>ValidationProblemDetails.errors</c>
 /// by the Wolverine HTTP middleware.
 /// </para>

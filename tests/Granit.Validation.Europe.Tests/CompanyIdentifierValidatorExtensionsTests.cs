@@ -52,8 +52,8 @@ public sealed class CompanyIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(siren));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidFrenchSiren");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidFrenchSiren");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidFrenchSiren");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidFrenchSiren");
     }
 
     // =========================================================================
@@ -90,8 +90,8 @@ public sealed class CompanyIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(siret));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidFrenchSiret");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidFrenchSiret");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidFrenchSiret");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidFrenchSiret");
     }
 
     // =========================================================================
@@ -130,8 +130,8 @@ public sealed class CompanyIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(bce));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidBelgianBce");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidBelgianBce");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidBelgianBce");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidBelgianBce");
     }
 
     // =========================================================================
@@ -168,8 +168,8 @@ public sealed class CompanyIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidFrenchNafCode");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidFrenchNafCode");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidFrenchNafCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidFrenchNafCode");
     }
 
     // -------------------------------------------------------------------------

@@ -1,13 +1,13 @@
 {
   "culture": "pt",
   "texts": {
-    "Granit:Validation:InvalidUsSsn": "O número de segurança social norte-americano (SSN) é inválido.",
-    "Granit:Validation:InvalidUsEin": "O número de identificação do empregador norte-americano (EIN) é inválido.",
-    "Granit:Validation:InvalidUsZipCode": "O código postal norte-americano (ZIP) é inválido (5 dígitos ou formato ZIP+4 esperado).",
-    "Granit:Validation:InvalidNanpPhoneNumber": "O número de telefone é inválido (formato NANP esperado: NXX-NXX-XXXX).",
-    "Granit:Validation:InvalidUsStateCode": "O código do estado ou território norte-americano é inválido.",
-    "Granit:Validation:InvalidCanadianSin": "O número de seguro social canadense (SIN) é inválido.",
-    "Granit:Validation:InvalidCanadianPostalCode": "O código postal canadense é inválido (formato esperado: A1A 1A1).",
-    "Granit:Validation:InvalidCanadianBusinessNumber": "O número de empresa canadense (BN) é inválido."
+    "Validation:InvalidUsSsn": "O número de segurança social norte-americano (SSN) é inválido.",
+    "Validation:InvalidUsEin": "O número de identificação do empregador norte-americano (EIN) é inválido.",
+    "Validation:InvalidUsZipCode": "O código postal norte-americano (ZIP) é inválido (5 dígitos ou formato ZIP+4 esperado).",
+    "Validation:InvalidNanpPhoneNumber": "O número de telefone é inválido (formato NANP esperado: NXX-NXX-XXXX).",
+    "Validation:InvalidUsStateCode": "O código do estado ou território norte-americano é inválido.",
+    "Validation:InvalidCanadianSin": "O número de seguro social canadense (SIN) é inválido.",
+    "Validation:InvalidCanadianPostalCode": "O código postal canadense é inválido (formato esperado: A1A 1A1).",
+    "Validation:InvalidCanadianBusinessNumber": "O número de empresa canadense (BN) é inválido."
   }
 }

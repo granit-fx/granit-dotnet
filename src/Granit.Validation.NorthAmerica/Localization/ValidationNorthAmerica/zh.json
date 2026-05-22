@@ -1,13 +1,13 @@
 {
   "culture": "zh",
   "texts": {
-    "Granit:Validation:InvalidUsSsn": "美国社会安全号码 (SSN) 无效。",
-    "Granit:Validation:InvalidUsEin": "美国雇主识别号 (EIN) 无效。",
-    "Granit:Validation:InvalidUsZipCode": "美国邮政编码 (ZIP) 无效（需要5位数字或ZIP+4格式）。",
-    "Granit:Validation:InvalidNanpPhoneNumber": "电话号码无效（需要NANP格式：NXX-NXX-XXXX）。",
-    "Granit:Validation:InvalidUsStateCode": "美国州或领地代码无效。",
-    "Granit:Validation:InvalidCanadianSin": "加拿大社会保险号 (SIN) 无效。",
-    "Granit:Validation:InvalidCanadianPostalCode": "加拿大邮政编码无效（需要格式：A1A 1A1）。",
-    "Granit:Validation:InvalidCanadianBusinessNumber": "加拿大企业编号 (BN) 无效。"
+    "Validation:InvalidUsSsn": "美国社会安全号码 (SSN) 无效。",
+    "Validation:InvalidUsEin": "美国雇主识别号 (EIN) 无效。",
+    "Validation:InvalidUsZipCode": "美国邮政编码 (ZIP) 无效（需要5位数字或ZIP+4格式）。",
+    "Validation:InvalidNanpPhoneNumber": "电话号码无效（需要NANP格式：NXX-NXX-XXXX）。",
+    "Validation:InvalidUsStateCode": "美国州或领地代码无效。",
+    "Validation:InvalidCanadianSin": "加拿大社会保险号 (SIN) 无效。",
+    "Validation:InvalidCanadianPostalCode": "加拿大邮政编码无效（需要格式：A1A 1A1）。",
+    "Validation:InvalidCanadianBusinessNumber": "加拿大企业编号 (BN) 无效。"
   }
 }

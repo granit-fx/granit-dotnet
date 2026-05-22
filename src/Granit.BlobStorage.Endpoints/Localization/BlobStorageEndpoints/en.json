@@ -1,10 +1,12 @@
 {
-    "culture": "en",
-    "texts": {
-        "BlobStorageEndpoints:Workspace.Item": "Blobs",
-        "BlobStorageEndpoints:Workspace.Section": "Blob storage",
-        "Permission:BlobStorage.Administration.Manage": "Manage blob storage (upload, download, delete, confirm, cleanup)",
-        "Permission:BlobStorage.Administration.Read": "View blob storage administration (list, descriptors, query)",
-        "PermissionGroup:BlobStorage": "Blob Storage"
-    }
+  "culture": "en",
+  "texts": {
+    "BlobStorageEndpoints:Workspace.Item": "Blobs",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Validation:InvalidContainerName": "Container name must be lowercase alphanumeric with optional hyphens.",
+    "Validation:InvalidMimeType": "Content type must be a valid MIME type.",
+    "Permission:BlobStorage.Administration.Manage": "Manage blob storage (upload, download, delete, confirm, cleanup)",
+    "Permission:BlobStorage.Administration.Read": "View blob storage administration (list, descriptors, query)",
+    "PermissionGroup:BlobStorage": "Blob Storage"
+  }
 }

@@ -1,6 +1,7 @@
 {
   "culture": "cs",
   "texts": {
+    "Validation:MaxCustomAttributes": "Byl překročen maximální počet vlastních atributů.",
     "IdentityEndpoints:Workspace.Groups": "Groups",
     "IdentityEndpoints:Workspace.Roles": "Roles",
     "IdentityEndpoints:Workspace.Section": "Identity",

@@ -1,6 +1,7 @@
 {
   "culture": "sv",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "Schemalagt datum måste vara i framtiden.",
     "Permission:Scheduling.Actions.Manage": "Hantera schemalagda åtgärder (avbryt, omplanera)",
     "Permission:Scheduling.Actions.Read": "Visa schemalagda åtgärder (lista, detalj)",
     "PermissionGroup:Scheduling": "Schemaläggning",

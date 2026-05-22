@@ -1,12 +1,12 @@
 {
   "culture": "hi",
   "texts": {
-    "Granit:Validation:InvalidUkNationalInsuranceNumber": "UK राष्ट्रीय बीमा नंबर अमान्य है।",
-    "Granit:Validation:InvalidUkNhsNumber": "NHS नंबर अमान्य है।",
-    "Granit:Validation:InvalidUkUtr": "विशिष्ट करदाता संदर्भ (UTR) अमान्य है।",
-    "Granit:Validation:InvalidUkVat": "UK VAT पंजीकरण संख्या अमान्य है।",
-    "Granit:Validation:InvalidUkCompaniesHouseNumber": "Companies House पंजीकरण संख्या अमान्य है।",
-    "Granit:Validation:InvalidUkPostcode": "UK पोस्टकोड अमान्य है।",
-    "Granit:Validation:InvalidUkSortCode": "UK बैंक सॉर्ट कोड अमान्य है (6 अंक अपेक्षित हैं)।"
+    "Validation:InvalidUkNationalInsuranceNumber": "UK राष्ट्रीय बीमा नंबर अमान्य है।",
+    "Validation:InvalidUkNhsNumber": "NHS नंबर अमान्य है।",
+    "Validation:InvalidUkUtr": "विशिष्ट करदाता संदर्भ (UTR) अमान्य है।",
+    "Validation:InvalidUkVat": "UK VAT पंजीकरण संख्या अमान्य है।",
+    "Validation:InvalidUkCompaniesHouseNumber": "Companies House पंजीकरण संख्या अमान्य है।",
+    "Validation:InvalidUkPostcode": "UK पोस्टकोड अमान्य है।",
+    "Validation:InvalidUkSortCode": "UK बैंक सॉर्ट कोड अमान्य है (6 अंक अपेक्षित हैं)।"
   }
 }

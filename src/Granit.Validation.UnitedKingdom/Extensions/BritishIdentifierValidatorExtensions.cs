@@ -19,7 +19,7 @@ public static class BritishIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> NationalInsuranceNumber<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(NationalInsuranceNumberAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidUkNationalInsuranceNumber");
+            .WithErrorCodeAndMessage("Validation:InvalidUkNationalInsuranceNumber");
 
     /// <summary>
     /// Validates an NHS (National Health Service) number.
@@ -30,5 +30,5 @@ public static class BritishIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> NhsNumber<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(NhsNumberAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidUkNhsNumber");
+            .WithErrorCodeAndMessage("Validation:InvalidUkNhsNumber");
 }

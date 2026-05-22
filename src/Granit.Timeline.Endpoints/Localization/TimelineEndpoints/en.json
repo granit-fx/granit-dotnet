@@ -1,7 +1,7 @@
 {
   "culture": "en",
   "texts": {
-    "Granit:Validation:TooManyAttachments": "Cannot attach more than 20 files.",
+    "Validation:TooManyAttachments": "Cannot attach more than 20 files.",
     "Permission:Timeline.Entries.Create": "Post comments and follow/unfollow entities",
     "Permission:Timeline.Entries.Manage": "Manage (delete) any timeline entry regardless of ownership",
     "Permission:Timeline.Entries.Read": "View activity feeds and audit history",

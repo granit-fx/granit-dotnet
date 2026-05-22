@@ -19,7 +19,7 @@ public static class RuleBuilderExtensions
     /// <typeparam name="T">The type being validated.</typeparam>
     /// <typeparam name="TProperty">The property type.</typeparam>
     /// <param name="rule">The rule builder options to configure.</param>
-    /// <param name="code">The <c>Granit:Validation:*</c> error code (also used as message key).</param>
+    /// <param name="code">The <c>Validation:*</c> error code (also used as message key).</param>
     /// <returns>The same rule builder options for fluent chaining.</returns>
     public static IRuleBuilderOptions<T, TProperty> WithErrorCodeAndMessage<T, TProperty>(
         this IRuleBuilderOptions<T, TProperty> rule, string code) =>
@@ -42,7 +42,7 @@ public static class RuleBuilderExtensions
     /// <code>
     /// RuleFor(x => x.CountryCode)
     ///     .Matches(@"^[A-Z]{2}$")
-    ///     .WithPatternHint("Granit:Validation:Hints:Alpha2Code");
+    ///     .WithPatternHint("Validation:Hints:Alpha2Code");
     /// </code>
     /// </example>
     /// </remarks>

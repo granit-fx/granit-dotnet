@@ -12,12 +12,12 @@ public sealed class ServerValidatorRegistryTests
     public void GetOrNull_RegisteredCode_ReturnsValidator()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true));
+            new DelegatingServerValidator("Validation:InvalidIban", _ => true));
 
-        IServerValidator? result = registry.GetOrNull("Granit:Validation:InvalidIban");
+        IServerValidator? result = registry.GetOrNull("Validation:InvalidIban");
 
         result.ShouldNotBeNull();
-        result.ErrorCode.ShouldBe("Granit:Validation:InvalidIban");
+        result.ErrorCode.ShouldBe("Validation:InvalidIban");
     }
 
     [Fact]
@@ -25,21 +25,21 @@ public sealed class ServerValidatorRegistryTests
     {
         ServerValidatorRegistry registry = CreateRegistry();
 
-        registry.GetOrNull("Granit:Validation:Unknown").ShouldBeNull();
+        registry.GetOrNull("Validation:Unknown").ShouldBeNull();
     }
 
     [Fact]
     public void GetAllErrorCodes_ReturnsAllRegisteredCodes()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true),
-            new DelegatingServerValidator("Granit:Validation:InvalidEmail", _ => true));
+            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Validation:InvalidEmail", _ => true));
 
         IReadOnlyCollection<string> codes = registry.GetAllErrorCodes();
 
         codes.Count.ShouldBe(2);
-        codes.ShouldContain("Granit:Validation:InvalidIban");
-        codes.ShouldContain("Granit:Validation:InvalidEmail");
+        codes.ShouldContain("Validation:InvalidIban");
+        codes.ShouldContain("Validation:InvalidEmail");
     }
 
     [Fact]
@@ -54,12 +54,12 @@ public sealed class ServerValidatorRegistryTests
     [Fact]
     public void DuplicateErrorCode_KeepsFirstRegistration()
     {
-        DelegatingServerValidator first = new("Granit:Validation:InvalidIban", _ => true);
-        DelegatingServerValidator second = new("Granit:Validation:InvalidIban", _ => false);
+        DelegatingServerValidator first = new("Validation:InvalidIban", _ => true);
+        DelegatingServerValidator second = new("Validation:InvalidIban", _ => false);
 
         ServerValidatorRegistry registry = CreateRegistry(first, second);
 
-        IServerValidator? result = registry.GetOrNull("Granit:Validation:InvalidIban");
+        IServerValidator? result = registry.GetOrNull("Validation:InvalidIban");
         result.ShouldNotBeNull();
         result.Validate("anything").ShouldBeTrue();
     }
@@ -68,10 +68,10 @@ public sealed class ServerValidatorRegistryTests
     public void MultipleContributors_CombineValidators()
     {
         TestContributor contributor1 = new([
-            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
         ]);
         TestContributor contributor2 = new([
-            new DelegatingServerValidator("Granit:Validation:InvalidEmail", _ => true),
+            new DelegatingServerValidator("Validation:InvalidEmail", _ => true),
         ]);
 
         ILogger<ServerValidatorRegistry> logger = Substitute.For<ILogger<ServerValidatorRegistry>>();
@@ -84,14 +84,14 @@ public sealed class ServerValidatorRegistryTests
     public void GetAll_ReturnsAllValidatorInstances()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true),
-            new DelegatingServerValidator("Granit:Validation:InvalidSsn", _ => true, isSensitive: true));
+            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Validation:InvalidSsn", _ => true, isSensitive: true));
 
         IReadOnlyCollection<IServerValidator> all = registry.GetAll();
 
         all.Count.ShouldBe(2);
-        all.ShouldContain(v => v.ErrorCode == "Granit:Validation:InvalidIban" && !v.IsSensitive);
-        all.ShouldContain(v => v.ErrorCode == "Granit:Validation:InvalidSsn" && v.IsSensitive);
+        all.ShouldContain(v => v.ErrorCode == "Validation:InvalidIban" && !v.IsSensitive);
+        all.ShouldContain(v => v.ErrorCode == "Validation:InvalidSsn" && v.IsSensitive);
     }
 
     // -------------------------------------------------------------------------

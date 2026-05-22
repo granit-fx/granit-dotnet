@@ -20,7 +20,7 @@ public static class LuxembourgishIdentifierValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(LuxembourgMatriculeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidLuxembourgMatricule");
+            .WithErrorCodeAndMessage("Validation:InvalidLuxembourgMatricule");
 
     /// <summary>
     /// Validates a Luxembourg RCS number (Registre de Commerce et des Sociétés).
@@ -33,5 +33,5 @@ public static class LuxembourgishIdentifierValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(LuxembourgRcsAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidLuxembourgRcs");
+            .WithErrorCodeAndMessage("Validation:InvalidLuxembourgRcs");
 }

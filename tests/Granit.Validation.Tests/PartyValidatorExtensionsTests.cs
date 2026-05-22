@@ -48,8 +48,8 @@ public sealed class ContactValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(email));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidEmail");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidEmail");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidEmail");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidEmail");
     }
 
     // -------------------------------------------------------------------------

@@ -27,11 +27,11 @@ internal sealed class ApiKeyCreateRequestValidator : GranitValidator<ApiKeyCreat
         RuleFor(x => x.Environment)
             .NotEmpty()
             .Must(env => env is "live" or "test" or "dev")
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidEnvironment");
+            .WithErrorCodeAndMessage("Validation:InvalidEnvironment");
 
         RuleFor(x => x.Permissions)
             .Must(p => p is null || p.Count <= MaxPermissions)
-            .WithErrorCodeAndMessage("Granit:Validation:MaxPermissions");
+            .WithErrorCodeAndMessage("Validation:MaxPermissions");
 
         RuleForEach(x => x.Permissions)
             .NotEmpty()
@@ -39,18 +39,18 @@ internal sealed class ApiKeyCreateRequestValidator : GranitValidator<ApiKeyCreat
 
         RuleFor(x => x.AllowedCidrs)
             .Must(c => c is null || c.Count <= MaxCidrs)
-            .WithErrorCodeAndMessage("Granit:Validation:MaxCidrRanges");
+            .WithErrorCodeAndMessage("Validation:MaxCidrRanges");
 
         RuleForEach(x => x.AllowedCidrs)
             .NotEmpty()
             .Must(CidrValidator.IsValidCidr)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidCidrNotation")
+            .WithErrorCodeAndMessage("Validation:InvalidCidrNotation")
             .When(x => x.AllowedCidrs is { Count: > 0 });
 
         RuleFor(x => x.ExpiresAt)
             .Must(expiresAt => expiresAt > clock.Now)
             .When(x => x.ExpiresAt.HasValue)
-            .WithErrorCodeAndMessage("Granit:Validation:ExpirationMustBeFuture");
+            .WithErrorCodeAndMessage("Validation:ExpirationMustBeFuture");
 
         RuleFor(x => x.CacheBehavior)
             .IsInEnum();

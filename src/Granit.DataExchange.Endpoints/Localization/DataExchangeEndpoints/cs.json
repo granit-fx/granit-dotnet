@@ -4,6 +4,7 @@
     "DataExchangeEndpoints:Workspace.Exports": "Exports",
     "DataExchangeEndpoints:Workspace.Imports": "Imports",
     "DataExchangeEndpoints:Workspace.Section": "Data exchange",
+    "Validation:AtLeastOneMappingTarget": "Alespoň jedno mapování musí mít nenulovou cílovou vlastnost.",
     "Permission:DataExchange.Exports.Execute": "Spustit export dat (definice, provedení, stažení, předvolby)",
     "Permission:DataExchange.Exports.Read": "Zobrazit definice a historii exportů",
     "Permission:DataExchange.Imports.Execute": "Spustit import dat (nahrání, mapování, provedení, reporty)",

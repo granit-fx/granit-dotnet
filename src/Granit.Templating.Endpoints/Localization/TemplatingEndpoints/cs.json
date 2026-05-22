@@ -1,6 +1,7 @@
 {
   "culture": "cs",
   "texts": {
+    "Validation:InvalidTemplateNamePattern": "Název šablony musí odpovídat vzoru 'Doména.Název' (např. 'Billing.Invoice').",
     "Permission:Templating.Categories.Manage": "Spravovat kategorie šablon (vytvořit, upravit, smazat)",
     "Permission:Templating.Categories.Read": "Zobrazit kategorie šablon",
     "Permission:Templating.Templates.Manage": "Správa šablon (zobrazení, vytvoření, úprava, smazání, publikování)",

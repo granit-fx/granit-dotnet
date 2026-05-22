@@ -1,6 +1,7 @@
 {
   "culture": "de",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "Das geplante Datum muss in der Zukunft liegen.",
     "Permission:Scheduling.Actions.Manage": "Geplante Aktionen verwalten (abbrechen, neu planen)",
     "Permission:Scheduling.Actions.Read": "Geplante Aktionen anzeigen (Liste, Detail)",
     "PermissionGroup:Scheduling": "Planung",

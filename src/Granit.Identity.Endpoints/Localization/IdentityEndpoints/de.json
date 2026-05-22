@@ -1,6 +1,7 @@
 {
   "culture": "de",
   "texts": {
+    "Validation:MaxCustomAttributes": "Die maximale Anzahl benutzerdefinierter Attribute wurde überschritten.",
     "IdentityEndpoints:Workspace.Groups": "Groups",
     "IdentityEndpoints:Workspace.Roles": "Roles",
     "IdentityEndpoints:Workspace.Section": "Identity",

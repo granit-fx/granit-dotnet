@@ -3,6 +3,7 @@
   "texts": {
     "DataExchangeEndpoints:Workspace.Exports": "Exports",
     "DataExchangeEndpoints:Workspace.Imports": "Imports",
-    "DataExchangeEndpoints:Workspace.Section": "Data exchange"
+    "DataExchangeEndpoints:Workspace.Section": "Data exchange",
+    "Validation:AtLeastOneMappingTarget": "Pelo menos um mapeamento deve ter uma propriedade de destino não nula."
   }
 }

@@ -19,7 +19,7 @@ public static class ProfessionalRegistryValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchRpps<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(RppsAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidFrenchRpps");
+            .WithErrorCodeAndMessage("Validation:InvalidFrenchRpps");
 
     /// <summary>
     /// Validates a French ADELI number (Automatisation DEs LIstes).
@@ -30,7 +30,7 @@ public static class ProfessionalRegistryValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchAdeli<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(AdeliAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidFrenchAdeli");
+            .WithErrorCodeAndMessage("Validation:InvalidFrenchAdeli");
 
     /// <summary>
     /// Validates a French Finess number (Fichier National des Établissements Sanitaires et Sociaux).
@@ -42,7 +42,7 @@ public static class ProfessionalRegistryValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchFiness<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(FinesAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidFrenchFiness");
+            .WithErrorCodeAndMessage("Validation:InvalidFrenchFiness");
 
     /// <summary>
     /// Validates a Belgian INAMI number (Institut National d'Assurance Maladie-Invalidité / RIZIV).
@@ -54,5 +54,5 @@ public static class ProfessionalRegistryValidatorExtensions
     public static IRuleBuilderOptions<T, string?> BelgianInami<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(InamiAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidBelgianInami");
+            .WithErrorCodeAndMessage("Validation:InvalidBelgianInami");
 }

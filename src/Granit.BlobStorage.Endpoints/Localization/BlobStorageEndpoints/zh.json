@@ -1,10 +1,12 @@
 {
-    "culture": "zh",
-    "texts": {
-        "BlobStorageEndpoints:Workspace.Item": "Blob",
-        "BlobStorageEndpoints:Workspace.Section": "Blob storage",
-        "Permission:BlobStorage.Administration.Manage": "管理文件存储（上传、下载、删除、确认、清理）",
-        "Permission:BlobStorage.Administration.Read": "查看文件存储管理（列表、描述符、查询）",
-        "PermissionGroup:BlobStorage": "文件存储"
-    }
+  "culture": "zh",
+  "texts": {
+    "BlobStorageEndpoints:Workspace.Item": "Blob",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Validation:InvalidContainerName": "容器名称必须为小写字母数字，可包含连字符。",
+    "Validation:InvalidMimeType": "内容类型必须为有效的 MIME 类型。",
+    "Permission:BlobStorage.Administration.Manage": "管理文件存储（上传、下载、删除、确认、清理）",
+    "Permission:BlobStorage.Administration.Read": "查看文件存储管理（列表、描述符、查询）",
+    "PermissionGroup:BlobStorage": "文件存储"
+  }
 }

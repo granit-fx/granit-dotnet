@@ -6,7 +6,7 @@ namespace Granit.Validation;
 /// JSON files: <c>Localization/Validation/{culture}.json</c>, embedded in this assembly.
 /// </summary>
 /// <remarks>
-/// Covers all <c>Granit:Validation:*</c> error codes, including both custom identifier
+/// Covers all <c>Validation:*</c> error codes, including both custom identifier
 /// validators and the built-in FluentValidation validators remapped by
 /// <c>GranitErrorCodeLanguageManager</c>.
 /// </remarks>

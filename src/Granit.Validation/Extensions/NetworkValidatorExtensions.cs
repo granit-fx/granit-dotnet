@@ -37,7 +37,7 @@ public static partial class NetworkValidatorExtensions
     public static IRuleBuilderOptions<T, string?> Url<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && UrlRegex().IsMatch(value.Trim()))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidUrl");
+            .WithErrorCodeAndMessage("Validation:InvalidUrl");
 
     /// <summary>
     /// Validates an IPv4 address per RFC 791.
@@ -49,7 +49,7 @@ public static partial class NetworkValidatorExtensions
     public static IRuleBuilderOptions<T, string?> Ipv4Address<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && Ipv4Regex().IsMatch(value.Trim()))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidIpv4Address");
+            .WithErrorCodeAndMessage("Validation:InvalidIpv4Address");
 
     /// <summary>
     /// Validates an IPv6 address per RFC 4291.
@@ -64,7 +64,7 @@ public static partial class NetworkValidatorExtensions
                 value != null
                 && System.Net.IPAddress.TryParse(value.Trim(), out System.Net.IPAddress? ip)
                 && ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidIpv6Address");
+            .WithErrorCodeAndMessage("Validation:InvalidIpv6Address");
 
     /// <summary>
     /// Validates a MAC address per IEEE 802.
@@ -77,7 +77,7 @@ public static partial class NetworkValidatorExtensions
     public static IRuleBuilderOptions<T, string?> MacAddress<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && MacAddressRegex().IsMatch(value.Trim()))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidMacAddress");
+            .WithErrorCodeAndMessage("Validation:InvalidMacAddress");
 
     // -------------------------------------------------------------------------
     // Server-side single-field validation delegates

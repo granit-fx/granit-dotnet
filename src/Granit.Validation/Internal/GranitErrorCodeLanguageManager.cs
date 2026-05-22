@@ -9,7 +9,7 @@ namespace Granit.Validation.Internal;
 /// </summary>
 /// <remarks>
 /// All built-in validator messages (e.g. <c>NotEmptyValidator</c>) are replaced
-/// by codes following the convention <c>Granit:Validation:{ValidatorName}</c>.
+/// by codes following the convention <c>Validation:{ValidatorName}</c>.
 /// The SPA resolves codes to localized strings using the dictionary served by
 /// <c>GET /api/{version}/localization</c>, which supports per-tenant overrides.
 /// <para>
@@ -31,5 +31,5 @@ internal sealed class GranitErrorCodeLanguageManager : ILanguageManager
 
     /// <inheritdoc/>
     public string GetString(string key, CultureInfo? culture = null) =>
-        $"Granit:Validation:{key}";
+        $"Validation:{key}";
 }

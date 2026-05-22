@@ -23,12 +23,12 @@ public sealed class NorthAmericaServerValidatorContributorTests
         _validators.Select(v => v.ErrorCode).Distinct().Count().ShouldBe(_validators.Count);
 
     [Theory]
-    [InlineData("Granit:Validation:InvalidUsSsn", "078051120", true)]
-    [InlineData("Granit:Validation:InvalidUsSsn", "000000000", false)]
-    [InlineData("Granit:Validation:InvalidUsZipCode", "10001", true)]
-    [InlineData("Granit:Validation:InvalidUsZipCode", "ABCDE", false)]
-    [InlineData("Granit:Validation:InvalidCanadianPostalCode", "K1A 0B1", true)]
-    [InlineData("Granit:Validation:InvalidCanadianPostalCode", "INVALID", false)]
+    [InlineData("Validation:InvalidUsSsn", "078051120", true)]
+    [InlineData("Validation:InvalidUsSsn", "000000000", false)]
+    [InlineData("Validation:InvalidUsZipCode", "10001", true)]
+    [InlineData("Validation:InvalidUsZipCode", "ABCDE", false)]
+    [InlineData("Validation:InvalidCanadianPostalCode", "K1A 0B1", true)]
+    [InlineData("Validation:InvalidCanadianPostalCode", "INVALID", false)]
     public void Validate_ReturnsExpectedResult(string errorCode, string? value, bool expected)
     {
         IServerValidator validator = _validators.Single(v => v.ErrorCode == errorCode);

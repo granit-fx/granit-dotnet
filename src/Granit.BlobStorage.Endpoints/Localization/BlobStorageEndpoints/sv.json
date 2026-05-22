@@ -1,10 +1,12 @@
 {
-    "culture": "sv",
-    "texts": {
-        "BlobStorageEndpoints:Workspace.Item": "Blobbar",
-        "BlobStorageEndpoints:Workspace.Section": "Blob storage",
-        "Permission:BlobStorage.Administration.Manage": "Hantera fillagring (ladda upp, ladda ner, ta bort, bekräfta, rensa)",
-        "Permission:BlobStorage.Administration.Read": "Visa fillagringsadministration (lista, beskrivningar, fråga)",
-        "PermissionGroup:BlobStorage": "Fillagring"
-    }
+  "culture": "sv",
+  "texts": {
+    "BlobStorageEndpoints:Workspace.Item": "Blobbar",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Validation:InvalidContainerName": "Containernamnet måste bestå av gemena alfanumeriska tecken med valfria bindestreck.",
+    "Validation:InvalidMimeType": "Innehållstypen måste vara en giltig MIME-typ.",
+    "Permission:BlobStorage.Administration.Manage": "Hantera fillagring (ladda upp, ladda ner, ta bort, bekräfta, rensa)",
+    "Permission:BlobStorage.Administration.Read": "Visa fillagringsadministration (lista, beskrivningar, fråga)",
+    "PermissionGroup:BlobStorage": "Fillagring"
+  }
 }

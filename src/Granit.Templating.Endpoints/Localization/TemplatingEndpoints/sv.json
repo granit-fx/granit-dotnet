@@ -1,6 +1,7 @@
 {
   "culture": "sv",
   "texts": {
+    "Validation:InvalidTemplateNamePattern": "Mallnamnet måste följa mönstret 'Domän.Namn' (t.ex. 'Billing.Invoice').",
     "Permission:Templating.Categories.Manage": "Hantera mallkategorier (skapa, redigera, ta bort)",
     "Permission:Templating.Categories.Read": "Visa mallkategorier",
     "Permission:Templating.Templates.Manage": "Hantera mallar (visa, skapa, redigera, radera, publicera)",

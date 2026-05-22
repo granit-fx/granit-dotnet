@@ -1,6 +1,7 @@
 {
   "culture": "pl",
   "texts": {
+    "Validation:MaxCustomAttributes": "Przekroczono maksymalną liczbę atrybutów niestandardowych.",
     "IdentityEndpoints:Workspace.Groups": "Groups",
     "IdentityEndpoints:Workspace.Roles": "Roles",
     "IdentityEndpoints:Workspace.Section": "Identity",

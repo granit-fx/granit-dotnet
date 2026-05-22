@@ -1,6 +1,7 @@
 {
   "culture": "tr",
   "texts": {
+    "Validation:MaxCustomAttributes": "Maksimum özel öznitelik sayısı aşıldı.",
     "IdentityEndpoints:Workspace.Groups": "Groups",
     "IdentityEndpoints:Workspace.Roles": "Roles",
     "IdentityEndpoints:Workspace.Section": "Identity",

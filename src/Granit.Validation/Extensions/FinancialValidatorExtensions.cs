@@ -23,7 +23,7 @@ public static class FinancialValidatorExtensions
     public static IRuleBuilderOptions<T, string?> CreditCardNumber<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(CreditCardAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidCreditCard");
+            .WithErrorCodeAndMessage("Validation:InvalidCreditCard");
 
     /// <summary>
     /// Validates a Legal Entity Identifier (LEI) per ISO 17442.
@@ -35,5 +35,5 @@ public static class FinancialValidatorExtensions
     public static IRuleBuilderOptions<T, string?> Lei<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(LeiAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidLei");
+            .WithErrorCodeAndMessage("Validation:InvalidLei");
 }

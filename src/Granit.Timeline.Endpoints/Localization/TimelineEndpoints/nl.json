@@ -1,7 +1,7 @@
 {
   "culture": "nl",
   "texts": {
-    "Granit:Validation:TooManyAttachments": "U kunt niet meer dan 20 bestanden bijvoegen.",
+    "Validation:TooManyAttachments": "U kunt niet meer dan 20 bestanden bijvoegen.",
     "Permission:Timeline.Entries.Create": "Reacties plaatsen en entiteiten volgen/ontvolgen",
     "Permission:Timeline.Entries.Manage": "Alle tijdlijnvermeldingen beheren (verwijderen) ongeacht eigenaar",
     "Permission:Timeline.Entries.Read": "Activiteitsfeeds en auditgeschiedenis bekijken",

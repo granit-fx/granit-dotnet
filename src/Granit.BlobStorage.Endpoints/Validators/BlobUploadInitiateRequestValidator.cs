@@ -12,7 +12,7 @@ internal sealed class BlobUploadInitiateRequestValidator : AbstractValidator<Blo
             .NotEmpty()
             .MaximumLength(128)
             .Matches("^[a-z0-9][a-z0-9-]*$")
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidContainerName");
+            .WithErrorCodeAndMessage("Validation:InvalidContainerName");
 
         RuleFor(x => x.FileName)
             .NotEmpty()
@@ -22,7 +22,7 @@ internal sealed class BlobUploadInitiateRequestValidator : AbstractValidator<Blo
             .NotEmpty()
             .MaximumLength(256)
             .Matches("^[a-zA-Z0-9][a-zA-Z0-9!#$&\\-^_.+]*\\/[a-zA-Z0-9][a-zA-Z0-9!#$&\\-^_.+]*$")
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidMimeType");
+            .WithErrorCodeAndMessage("Validation:InvalidMimeType");
 
         RuleFor(x => x.SizeBytes)
             .GreaterThan(0);

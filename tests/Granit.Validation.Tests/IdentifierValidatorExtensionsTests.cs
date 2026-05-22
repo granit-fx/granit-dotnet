@@ -2,7 +2,7 @@
 // Tests - International identifier validators
 // =============================================================================
 // Verifies each identifier validator with real valid/invalid values.
-// Error codes follow the convention Granit:Validation:* (WithMessage = WithErrorCode).
+// Error codes follow the convention Validation:* (WithMessage = WithErrorCode).
 // =============================================================================
 
 using FluentValidation;
@@ -50,7 +50,7 @@ public sealed class IdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(phone));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidE164Phone");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidE164Phone");
     }
 
     // =========================================================================
@@ -88,7 +88,7 @@ public sealed class IdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(iban));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidIban");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidIban");
     }
 
     // -------------------------------------------------------------------------

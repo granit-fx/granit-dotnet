@@ -121,7 +121,7 @@ public sealed class WebhookSubscriptionCreateRequestValidatorTests
         TestValidationResult<WebhookSubscriptionCreateRequest> result = _validator.TestValidate(request);
 
         result.ShouldHaveValidationErrorFor(x => x.EventType)
-            .WithErrorCode("Granit:Validation:UnknownWebhookEventType");
+            .WithErrorCode("Validation:UnknownWebhookEventType");
     }
 
     [Fact]
@@ -136,6 +136,6 @@ public sealed class WebhookSubscriptionCreateRequestValidatorTests
         TestValidationResult<WebhookSubscriptionCreateRequest> result = validator.TestValidate(request);
 
         result.ShouldHaveValidationErrorFor(x => x.EventType)
-            .WithErrorCode("Granit:Validation:UnknownWebhookEventType");
+            .WithErrorCode("Validation:UnknownWebhookEventType");
     }
 }

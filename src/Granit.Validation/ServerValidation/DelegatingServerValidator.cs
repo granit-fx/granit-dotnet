@@ -8,7 +8,7 @@ namespace Granit.Validation.ServerValidation;
 /// creating a dedicated class for each validator:
 /// <code>
 /// yield return new DelegatingServerValidator(
-///     "Granit:Validation:InvalidIban", IbanAlgorithm.IsValid);
+///     "Validation:InvalidIban", IbanAlgorithm.IsValid);
 /// </code>
 /// </remarks>
 public sealed class DelegatingServerValidator(string errorCode, Func<string?, bool> validateFunc, bool isSensitive = false)

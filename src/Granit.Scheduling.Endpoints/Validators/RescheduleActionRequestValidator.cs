@@ -15,6 +15,6 @@ internal sealed class RescheduleActionRequestValidator : GranitValidator<Resched
     {
         RuleFor(x => x.NewExecuteAt)
             .Must(date => date > clock.Now)
-            .WithErrorCodeAndMessage("Granit:Validation:ScheduledAction:FutureDate");
+            .WithErrorCodeAndMessage("Validation:ScheduledAction:FutureDate");
     }
 }

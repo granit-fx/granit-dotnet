@@ -36,7 +36,7 @@ public static partial class AddressValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && FrenchPostalCodeRegex().IsMatch(value))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidFrenchPostalCode");
+            .WithErrorCodeAndMessage("Validation:InvalidFrenchPostalCode");
 
     /// <summary>
     /// Validates a Belgian postal code (code postal / postcode).
@@ -48,7 +48,7 @@ public static partial class AddressValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && BelgianPostalCodeRegex().IsMatch(value))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidBelgianPostalCode");
+            .WithErrorCodeAndMessage("Validation:InvalidBelgianPostalCode");
 
     /// <summary>
     /// Validates a French INSEE commune code (code officiel géographique).
@@ -62,7 +62,7 @@ public static partial class AddressValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && FrenchInseeCodeRegex().IsMatch(value))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidFrenchInseeCode");
+            .WithErrorCodeAndMessage("Validation:InvalidFrenchInseeCode");
 
     // -------------------------------------------------------------------------
     // Server-side single-field validation delegates

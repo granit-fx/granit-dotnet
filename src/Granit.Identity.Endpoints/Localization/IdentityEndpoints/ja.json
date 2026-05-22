@@ -1,6 +1,7 @@
 {
   "culture": "ja",
   "texts": {
+    "Validation:MaxCustomAttributes": "カスタム属性の最大数を超えました。",
     "IdentityEndpoints:Workspace.Groups": "Groups",
     "IdentityEndpoints:Workspace.Roles": "Roles",
     "IdentityEndpoints:Workspace.Section": "Identity",

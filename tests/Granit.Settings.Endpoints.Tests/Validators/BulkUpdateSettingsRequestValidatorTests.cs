@@ -74,7 +74,7 @@ public sealed class BulkUpdateSettingsRequestValidatorTests
             request, TestContext.Current.CancellationToken);
 
         result.IsValid.ShouldBeFalse();
-        result.Errors.ShouldContain(e => e.ErrorCode == "Granit:Validation:BulkSettingsTooLarge");
+        result.Errors.ShouldContain(e => e.ErrorCode == "Validation:BulkSettingsTooLarge");
     }
 
     [Fact]

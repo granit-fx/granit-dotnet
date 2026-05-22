@@ -3,6 +3,11 @@
   "texts": {
     "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
     "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
+    "Validation:ExpirationMustBeFuture": "Utgångsdatumet måste vara i framtiden.",
+    "Validation:InvalidCidrNotation": "Värdet är inte en giltig CIDR-notation.",
+    "Validation:InvalidEnvironment": "Miljön måste vara 'live', 'test' eller 'dev'.",
+    "Validation:MaxCidrRanges": "Högst 50 CIDR-intervall är tillåtna.",
+    "Validation:MaxPermissions": "Högst 100 behörigheter är tillåtna.",
     "Permission:AuthenticationApiKeys.Keys.Create": "Skapa nya API-nycklar",
     "Permission:AuthenticationApiKeys.Keys.Read": "Visa API-nycklar (lista, detaljer)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "Återkalla API-nycklar",

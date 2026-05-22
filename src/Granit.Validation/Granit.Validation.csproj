@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Validation</PackageId>
-    <Description>FluentValidation module for Granit. Provides GranitValidator&lt;T&gt; (CascadeMode.Continue), GranitErrorCodeLanguageManager (standardized Granit:Validation:* error codes) and validation extensions for international identifiers (IBAN, BIC/SWIFT, SEPA, E.164). See Granit.Validation.Europe for France/Belgium-specific validators.</Description>
+    <Description>FluentValidation module for Granit. Provides GranitValidator&lt;T&gt; (CascadeMode.Continue), GranitErrorCodeLanguageManager (standardized Validation:* error codes) and validation extensions for international identifiers (IBAN, BIC/SWIFT, SEPA, E.164). See Granit.Validation.Europe for France/Belgium-specific validators.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

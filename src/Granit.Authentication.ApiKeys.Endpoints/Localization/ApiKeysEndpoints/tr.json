@@ -3,6 +3,11 @@
   "texts": {
     "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
     "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
+    "Validation:ExpirationMustBeFuture": "Son kullanma tarihi gelecekte olmalıdır.",
+    "Validation:InvalidCidrNotation": "Değer geçerli bir CIDR gösterimi değil.",
+    "Validation:InvalidEnvironment": "Ortam 'live', 'test' veya 'dev' olmalıdır.",
+    "Validation:MaxCidrRanges": "En fazla 50 CIDR aralığına izin verilir.",
+    "Validation:MaxPermissions": "En fazla 100 izne izin verilir.",
     "Permission:AuthenticationApiKeys.Keys.Create": "Yeni API anahtarları oluştur",
     "Permission:AuthenticationApiKeys.Keys.Read": "API anahtarlarını görüntüle (liste, ayrıntılar)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "API anahtarlarını iptal et",

@@ -44,7 +44,7 @@ internal sealed class BindableQueryRequestValidator : GranitValidator<BindableQu
 
         RuleFor(x => x.Value.Cursor)
             .Null()
-            .WithErrorCodeAndMessage("Granit:Validation:CursorPageMutuallyExclusive")
+            .WithErrorCodeAndMessage("Validation:CursorPageMutuallyExclusive")
             .When(x => x.Value.Page.HasValue && x.Value.Cursor is not null);
 
         RuleFor(x => x.Value.Search)
@@ -61,23 +61,23 @@ internal sealed class BindableQueryRequestValidator : GranitValidator<BindableQu
 
         RuleFor(x => x.Value.Filter)
             .Must(f => f!.Count <= MaxFilterEntries)
-            .WithErrorCodeAndMessage("Granit:Validation:MaxFilterEntries")
+            .WithErrorCodeAndMessage("Validation:MaxFilterEntries")
             .When(x => x.Value.Filter is not null);
 
         RuleFor(x => x.Value.Filter)
             .Must(f => f!.All(kv => kv.Key.Length <= MaxFilterKeyLength
                 && kv.Value.Length <= MaxFilterValueLength))
-            .WithErrorCodeAndMessage("Granit:Validation:FilterEntryTooLong")
+            .WithErrorCodeAndMessage("Validation:FilterEntryTooLong")
             .When(x => x.Value.Filter is not null);
 
         RuleFor(x => x.Value.QuickFilters)
             .Must(q => q!.Count <= MaxQuickFilters)
-            .WithErrorCodeAndMessage("Granit:Validation:MaxQuickFilterEntries")
+            .WithErrorCodeAndMessage("Validation:MaxQuickFilterEntries")
             .When(x => x.Value.QuickFilters is not null);
 
         RuleFor(x => x.Value.Presets)
             .Must(p => p!.Count <= MaxPresetEntries)
-            .WithErrorCodeAndMessage("Granit:Validation:MaxPresetEntries")
+            .WithErrorCodeAndMessage("Validation:MaxPresetEntries")
             .When(x => x.Value.Presets is not null);
     }
 }

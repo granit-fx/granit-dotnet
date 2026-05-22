@@ -1,7 +1,7 @@
 {
   "culture": "de",
   "texts": {
-    "Granit:Validation:TooManyAttachments": "Es können nicht mehr als 20 Dateien angehängt werden.",
+    "Validation:TooManyAttachments": "Es können nicht mehr als 20 Dateien angehängt werden.",
     "Permission:Timeline.Entries.Create": "Kommentare veröffentlichen und Entitäten folgen/entfolgen",
     "Permission:Timeline.Entries.Manage": "Beliebige Zeitachseneinträge verwalten (löschen), unabhängig vom Eigentümer",
     "Permission:Timeline.Entries.Read": "Aktivitätsfeeds und Prüfverlauf anzeigen",

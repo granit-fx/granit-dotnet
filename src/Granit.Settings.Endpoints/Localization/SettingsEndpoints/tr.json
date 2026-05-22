@@ -4,6 +4,7 @@
     "Granit:Settings:NotFound": "Ayar bildirilmemiş.",
     "Granit:Settings:ProviderNotAllowed": "Bu kapsam, bu ayar için izin verilmiyor.",
     "Granit:Settings:ValidationFailed": "Değer, beklenen biçimle veya izin verilen listeyle eşleşmiyor.",
+    "Validation:BulkSettingsTooLarge": "Toplu istek başına en fazla 200 ayara izin verilir.",
     "Permission:Settings.Global.Manage": "Genel ayarları yönet (görüntüle, oluştur, düzenle)",
     "Permission:Settings.Global.Read": "Genel ayarları görüntüle",
     "Permission:Settings.Tenant.Manage": "Kiracı ayarlarını yönet (görüntüle, oluştur, düzenle)",

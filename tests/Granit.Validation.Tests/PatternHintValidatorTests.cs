@@ -10,15 +10,15 @@ public sealed class PatternHintValidatorTests
     [Fact]
     public void HintKey_ReturnsProvidedKey()
     {
-        PatternHintValidator<TestModel, string> validator = new("Granit:Validation:Hints:TestHint");
+        PatternHintValidator<TestModel, string> validator = new("Validation:Hints:TestHint");
 
-        validator.HintKey.ShouldBe("Granit:Validation:Hints:TestHint");
+        validator.HintKey.ShouldBe("Validation:Hints:TestHint");
     }
 
     [Fact]
     public void Name_ReturnsPatternHintValidator()
     {
-        PatternHintValidator<TestModel, string> validator = new("Granit:Validation:Hints:TestHint");
+        PatternHintValidator<TestModel, string> validator = new("Validation:Hints:TestHint");
 
         validator.Name.ShouldBe("PatternHintValidator");
     }
@@ -26,7 +26,7 @@ public sealed class PatternHintValidatorTests
     [Fact]
     public void IsValid_AlwaysReturnsTrue()
     {
-        PatternHintValidator<TestModel, string> validator = new("Granit:Validation:Hints:TestHint");
+        PatternHintValidator<TestModel, string> validator = new("Validation:Hints:TestHint");
         ValidationContext<TestModel> context = new(new TestModel("test"));
 
         bool result = validator.IsValid(context, "anything");
@@ -37,7 +37,7 @@ public sealed class PatternHintValidatorTests
     [Fact]
     public void IsValid_NullValue_ReturnsTrue()
     {
-        PatternHintValidator<TestModel, string?> validator = new("Granit:Validation:Hints:TestHint");
+        PatternHintValidator<TestModel, string?> validator = new("Validation:Hints:TestHint");
         ValidationContext<TestModel> context = new(new TestModel(null));
 
         bool result = validator.IsValid(context, null);

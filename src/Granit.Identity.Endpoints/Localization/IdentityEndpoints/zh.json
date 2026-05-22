@@ -1,6 +1,7 @@
 {
   "culture": "zh",
   "texts": {
+    "Validation:MaxCustomAttributes": "已超过自定义属性的最大数量。",
     "IdentityEndpoints:Workspace.Groups": "Groups",
     "IdentityEndpoints:Workspace.Roles": "Roles",
     "IdentityEndpoints:Workspace.Section": "Identity",

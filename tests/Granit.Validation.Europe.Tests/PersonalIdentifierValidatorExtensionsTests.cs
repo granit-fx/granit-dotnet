@@ -53,8 +53,8 @@ public sealed class PersonalIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(nir));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidFrenchNir");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidFrenchNir");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidFrenchNir");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidFrenchNir");
     }
 
     // =========================================================================
@@ -92,8 +92,8 @@ public sealed class PersonalIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(eid));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidBelgianEid");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidBelgianEid");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidBelgianEid");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidBelgianEid");
     }
 
     // -------------------------------------------------------------------------

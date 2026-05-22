@@ -1,12 +1,12 @@
 {
   "culture": "nl",
   "texts": {
-    "Granit:Validation:InvalidUkNationalInsuranceNumber": "Het Britse National Insurance-nummer is ongeldig.",
-    "Granit:Validation:InvalidUkNhsNumber": "Het NHS-nummer is ongeldig.",
-    "Granit:Validation:InvalidUkUtr": "De Unique Taxpayer Reference (UTR) is ongeldig.",
-    "Granit:Validation:InvalidUkVat": "Het Britse btw-nummer is ongeldig.",
-    "Granit:Validation:InvalidUkCompaniesHouseNumber": "Het Companies House-registratienummer is ongeldig.",
-    "Granit:Validation:InvalidUkPostcode": "De Britse postcode is ongeldig.",
-    "Granit:Validation:InvalidUkSortCode": "De Britse bank sort code is ongeldig (6 cijfers verwacht)."
+    "Validation:InvalidUkNationalInsuranceNumber": "Het Britse National Insurance-nummer is ongeldig.",
+    "Validation:InvalidUkNhsNumber": "Het NHS-nummer is ongeldig.",
+    "Validation:InvalidUkUtr": "De Unique Taxpayer Reference (UTR) is ongeldig.",
+    "Validation:InvalidUkVat": "Het Britse btw-nummer is ongeldig.",
+    "Validation:InvalidUkCompaniesHouseNumber": "Het Companies House-registratienummer is ongeldig.",
+    "Validation:InvalidUkPostcode": "De Britse postcode is ongeldig.",
+    "Validation:InvalidUkSortCode": "De Britse bank sort code is ongeldig (6 cijfers verwacht)."
   }
 }

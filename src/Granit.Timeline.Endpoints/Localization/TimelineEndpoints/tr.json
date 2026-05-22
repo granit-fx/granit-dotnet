@@ -1,7 +1,7 @@
 {
   "culture": "tr",
   "texts": {
-    "Granit:Validation:TooManyAttachments": "20'den fazla dosya eklenemez.",
+    "Validation:TooManyAttachments": "20'den fazla dosya eklenemez.",
     "Permission:Timeline.Entries.Create": "Yorum yap ve varlıkları takip et/takipten çık",
     "Permission:Timeline.Entries.Manage": "Sahibinden bağımsız olarak herhangi bir zaman çizelgesi girişini yönetin (silin)",
     "Permission:Timeline.Entries.Read": "Etkinlik akışlarını ve denetim geçmişini görüntüle",

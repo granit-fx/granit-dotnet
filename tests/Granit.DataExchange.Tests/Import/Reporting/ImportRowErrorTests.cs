@@ -12,14 +12,14 @@ public sealed class ImportRowErrorTests
         ImportRowError error = new(
             42,
             ImportRowErrorKind.Validation,
-            ["Granit:Validation:NotEmpty", "Granit:Validation:MaxLength"],
+            ["Validation:NotEmpty", "Validation:MaxLength"],
             "Name is required. Name must be at most 100 characters.");
 
         error.RowNumber.ShouldBe(42);
         error.Kind.ShouldBe(ImportRowErrorKind.Validation);
         error.ErrorCodes.Count.ShouldBe(2);
-        error.ErrorCodes[0].ShouldBe("Granit:Validation:NotEmpty");
-        error.ErrorCodes[1].ShouldBe("Granit:Validation:MaxLength");
+        error.ErrorCodes[0].ShouldBe("Validation:NotEmpty");
+        error.ErrorCodes[1].ShouldBe("Validation:MaxLength");
         error.Message.ShouldBe("Name is required. Name must be at most 100 characters.");
     }
 

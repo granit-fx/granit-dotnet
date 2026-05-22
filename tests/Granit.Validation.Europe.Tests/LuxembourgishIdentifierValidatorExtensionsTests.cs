@@ -52,8 +52,8 @@ public sealed class LuxembourgishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(value));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidLuxembourgMatricule");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidLuxembourgMatricule");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidLuxembourgMatricule");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidLuxembourgMatricule");
     }
 
     // =========================================================================
@@ -94,8 +94,8 @@ public sealed class LuxembourgishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(value));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidLuxembourgRcs");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidLuxembourgRcs");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidLuxembourgRcs");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidLuxembourgRcs");
     }
 
     // -------------------------------------------------------------------------

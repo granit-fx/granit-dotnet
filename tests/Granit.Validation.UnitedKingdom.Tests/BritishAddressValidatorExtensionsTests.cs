@@ -56,7 +56,7 @@ public sealed class BritishAddressValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(postcode));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidUkPostcode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUkPostcode");
     }
 
     // -------------------------------------------------------------------------

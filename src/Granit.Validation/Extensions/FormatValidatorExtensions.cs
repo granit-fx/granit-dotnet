@@ -28,7 +28,7 @@ public static partial class FormatValidatorExtensions
     public static IRuleBuilderOptions<T, string?> Slug<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && SlugRegex().IsMatch(value))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidSlug");
+            .WithErrorCodeAndMessage("Validation:InvalidSlug");
 
     /// <summary>
     /// Validates a Base64-encoded string.
@@ -43,7 +43,7 @@ public static partial class FormatValidatorExtensions
                 value != null
                 && value.Length > 0
                 && Convert.TryFromBase64String(value, new byte[value.Length], out _))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidBase64String");
+            .WithErrorCodeAndMessage("Validation:InvalidBase64String");
 
     /// <summary>
     /// Validates a CSS hex color code.
@@ -56,7 +56,7 @@ public static partial class FormatValidatorExtensions
     public static IRuleBuilderOptions<T, string?> ColorHex<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && ColorHexRegex().IsMatch(value.Trim()))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidColorHex");
+            .WithErrorCodeAndMessage("Validation:InvalidColorHex");
 
     // -------------------------------------------------------------------------
     // Server-side single-field validation delegates

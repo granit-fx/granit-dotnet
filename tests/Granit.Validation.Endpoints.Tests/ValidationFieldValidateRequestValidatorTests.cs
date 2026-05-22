@@ -11,8 +11,8 @@ public sealed class ValidationFieldValidateRequestValidatorTests
     private readonly ValidationFieldValidateRequestValidator _sut = new();
 
     [Theory]
-    [InlineData("Granit:Validation:InvalidIban", "BE68539007547034")]
-    [InlineData("Granit:Validation:InvalidEmail", null)]
+    [InlineData("Validation:InvalidIban", "BE68539007547034")]
+    [InlineData("Validation:InvalidEmail", null)]
     [InlineData("Guava:Validation:Custom", "test")]
     public void ValidRequest_PassesValidation(string errorCode, string? value)
     {
@@ -39,7 +39,7 @@ public sealed class ValidationFieldValidateRequestValidatorTests
     public void ErrorCodeWithInvalidChars_FailsValidation()
     {
         ValidationResult result = _sut.Validate(
-            new ValidationFieldValidateRequest("Granit:Validation:Invalid Iban", "value"));
+            new ValidationFieldValidateRequest("Validation:Invalid Iban", "value"));
         result.IsValid.ShouldBeFalse();
     }
 
@@ -48,7 +48,7 @@ public sealed class ValidationFieldValidateRequestValidatorTests
     {
         string longValue = new('x', 501);
         ValidationResult result = _sut.Validate(
-            new ValidationFieldValidateRequest("Granit:Validation:InvalidIban", longValue));
+            new ValidationFieldValidateRequest("Validation:InvalidIban", longValue));
         result.IsValid.ShouldBeFalse();
     }
 }

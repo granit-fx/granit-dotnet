@@ -21,7 +21,7 @@ public static class ItalianIdentifierValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(CodiceFiscaleAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidItalianCodiceFiscale");
+            .WithErrorCodeAndMessage("Validation:InvalidItalianCodiceFiscale");
 
     /// <summary>
     /// Validates an Italian Partita IVA (VAT identification number).
@@ -34,7 +34,7 @@ public static class ItalianIdentifierValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(PartitaIvaAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidItalianPartitaIva");
+            .WithErrorCodeAndMessage("Validation:InvalidItalianPartitaIva");
 
     /// <summary>
     /// Validates an Italian postal code (CAP — Codice di Avviamento Postale).
@@ -46,5 +46,5 @@ public static class ItalianIdentifierValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(ItalianPostalCodeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidItalianPostalCode");
+            .WithErrorCodeAndMessage("Validation:InvalidItalianPostalCode");
 }

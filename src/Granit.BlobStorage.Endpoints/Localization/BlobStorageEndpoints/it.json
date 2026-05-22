@@ -1,10 +1,12 @@
 {
-    "culture": "it",
-    "texts": {
-        "BlobStorageEndpoints:Workspace.Item": "Blob",
-        "BlobStorageEndpoints:Workspace.Section": "Blob storage",
-        "Permission:BlobStorage.Administration.Manage": "Gestire l'archiviazione file (caricare, scaricare, eliminare, confermare, pulire)",
-        "Permission:BlobStorage.Administration.Read": "Visualizzare l'amministrazione dell'archiviazione file (elenco, descrittori, query)",
-        "PermissionGroup:BlobStorage": "Archiviazione file"
-    }
+  "culture": "it",
+  "texts": {
+    "BlobStorageEndpoints:Workspace.Item": "Blob",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Validation:InvalidContainerName": "Il nome del contenitore deve essere alfanumerico minuscolo con trattini opzionali.",
+    "Validation:InvalidMimeType": "Il tipo di contenuto deve essere un tipo MIME valido.",
+    "Permission:BlobStorage.Administration.Manage": "Gestire l'archiviazione file (caricare, scaricare, eliminare, confermare, pulire)",
+    "Permission:BlobStorage.Administration.Read": "Visualizzare l'amministrazione dell'archiviazione file (elenco, descrittori, query)",
+    "PermissionGroup:BlobStorage": "Archiviazione file"
+  }
 }

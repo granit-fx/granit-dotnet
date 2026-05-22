@@ -28,18 +28,18 @@ internal sealed class SaveTemplateRequestValidator : GranitValidator<SaveTemplat
             .NotEmpty()
             .MaximumLength(TemplatingPatterns.MaxMimeTypeLength)
             .Must(mime => SupportedMimeTypes.Contains(mime, StringComparer.OrdinalIgnoreCase))
-            .WithErrorCodeAndMessage("Granit:Validation:UnsupportedMimeType");
+            .WithErrorCodeAndMessage("Validation:UnsupportedMimeType");
 
         RuleFor(x => x.Name)
             .MaximumLength(TemplatingPatterns.MaxNameLength)
             .Matches(TemplatingPatterns.TemplateNamePattern())
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidTemplateNamePattern")
+            .WithErrorCodeAndMessage("Validation:InvalidTemplateNamePattern")
             .When(x => x.Name is not null);
 
         RuleFor(x => x.Culture)
             .MaximumLength(TemplatingPatterns.MaxCultureLength)
             .Matches(TemplatingPatterns.Bcp47Pattern())
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidBcp47LanguageTag")
+            .WithErrorCodeAndMessage("Validation:InvalidBcp47LanguageTag")
             .When(x => x.Culture is not null);
     }
 }

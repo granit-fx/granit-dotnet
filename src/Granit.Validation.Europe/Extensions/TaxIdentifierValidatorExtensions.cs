@@ -18,7 +18,7 @@ public static class TaxIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> BelgianVat<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => EuropeanVatAlgorithm.IsValid(value))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidBelgianVat");
+            .WithErrorCodeAndMessage("Validation:InvalidBelgianVat");
 
     /// <summary>
     /// Validates a French VAT number (numéro de TVA intracommunautaire).
@@ -30,7 +30,7 @@ public static class TaxIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchVat<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(FrenchVatAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidFrenchVat");
+            .WithErrorCodeAndMessage("Validation:InvalidFrenchVat");
 
     /// <summary>
     /// Validates a European VAT number for any EU member state.
@@ -44,5 +44,5 @@ public static class TaxIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> EuropeanVat<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(EuropeanVatAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidEuropeanVat");
+            .WithErrorCodeAndMessage("Validation:InvalidEuropeanVat");
 }

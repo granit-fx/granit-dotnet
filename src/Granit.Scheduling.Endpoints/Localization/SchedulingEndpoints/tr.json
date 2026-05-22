@@ -1,6 +1,7 @@
 {
   "culture": "tr",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "Planlanan tarih gelecekte olmalıdır.",
     "Permission:Scheduling.Actions.Manage": "Zamanlanmış eylemleri yönet (iptal et, yeniden zamanla)",
     "Permission:Scheduling.Actions.Read": "Zamanlanmış eylemleri görüntüle (liste, detay)",
     "PermissionGroup:Scheduling": "Zamanlama",

@@ -23,10 +23,10 @@ public sealed class UnitedKingdomServerValidatorContributorTests
         _validators.Select(v => v.ErrorCode).Distinct().Count().ShouldBe(_validators.Count);
 
     [Theory]
-    [InlineData("Granit:Validation:InvalidUkPostcode", "SW1A 1AA", true)]
-    [InlineData("Granit:Validation:InvalidUkPostcode", "INVALID", false)]
-    [InlineData("Granit:Validation:InvalidUkSortCode", "20-00-00", true)]
-    [InlineData("Granit:Validation:InvalidUkSortCode", "ABCDEF", false)]
+    [InlineData("Validation:InvalidUkPostcode", "SW1A 1AA", true)]
+    [InlineData("Validation:InvalidUkPostcode", "INVALID", false)]
+    [InlineData("Validation:InvalidUkSortCode", "20-00-00", true)]
+    [InlineData("Validation:InvalidUkSortCode", "ABCDEF", false)]
     public void Validate_ReturnsExpectedResult(string errorCode, string? value, bool expected)
     {
         IServerValidator validator = _validators.Single(v => v.ErrorCode == errorCode);

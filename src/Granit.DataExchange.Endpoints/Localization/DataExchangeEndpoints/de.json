@@ -4,6 +4,7 @@
     "DataExchangeEndpoints:Workspace.Exports": "Exports",
     "DataExchangeEndpoints:Workspace.Imports": "Imports",
     "DataExchangeEndpoints:Workspace.Section": "Data exchange",
+    "Validation:AtLeastOneMappingTarget": "Mindestens eine Zuordnung muss eine nicht-null Zieleigenschaft haben.",
     "Permission:DataExchange.Exports.Execute": "Datenexporte ausführen (Definitionen, Ausführung, Download, Voreinstellungen)",
     "Permission:DataExchange.Exports.Read": "Exportdefinitionen und Verlauf anzeigen",
     "Permission:DataExchange.Imports.Execute": "Datenimporte ausführen (Upload, Zuordnung, Ausführung, Berichte)",

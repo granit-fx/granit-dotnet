@@ -4,6 +4,7 @@
     "Granit:Settings:NotFound": "Nastavení není deklarováno.",
     "Granit:Settings:ProviderNotAllowed": "Tento rozsah není pro toto nastavení povolen.",
     "Granit:Settings:ValidationFailed": "Hodnota neodpovídá očekávanému formátu ani povolenému seznamu.",
+    "Validation:BulkSettingsTooLarge": "Povoleno je maximálně 200 nastavení na hromadný požadavek.",
     "Permission:Settings.Global.Manage": "Spravovat globální nastavení (zobrazit, vytvořit, upravit)",
     "Permission:Settings.Global.Read": "Zobrazit globální nastavení",
     "Permission:Settings.Tenant.Manage": "Spravovat nastavení nájemce (zobrazit, vytvořit, upravit)",

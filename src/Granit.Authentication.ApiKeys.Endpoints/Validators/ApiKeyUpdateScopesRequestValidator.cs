@@ -18,7 +18,7 @@ internal sealed class ApiKeyUpdateScopesRequestValidator : GranitValidator<ApiKe
         RuleFor(x => x.Permissions)
             .NotNull()
             .Must(p => p.Count <= MaxPermissions)
-            .WithErrorCodeAndMessage("Granit:Validation:MaxPermissions");
+            .WithErrorCodeAndMessage("Validation:MaxPermissions");
 
         RuleForEach(x => x.Permissions)
             .NotEmpty();
@@ -26,11 +26,11 @@ internal sealed class ApiKeyUpdateScopesRequestValidator : GranitValidator<ApiKe
         RuleFor(x => x.AllowedCidrs)
             .NotNull()
             .Must(c => c.Count <= MaxCidrs)
-            .WithErrorCodeAndMessage("Granit:Validation:MaxCidrRanges");
+            .WithErrorCodeAndMessage("Validation:MaxCidrRanges");
 
         RuleForEach(x => x.AllowedCidrs)
             .NotEmpty()
             .Must(CidrValidator.IsValidCidr)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidCidrNotation");
+            .WithErrorCodeAndMessage("Validation:InvalidCidrNotation");
     }
 }

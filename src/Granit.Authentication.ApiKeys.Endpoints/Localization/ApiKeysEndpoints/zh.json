@@ -3,6 +3,11 @@
   "texts": {
     "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
     "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
+    "Validation:ExpirationMustBeFuture": "过期日期必须在未来。",
+    "Validation:InvalidCidrNotation": "该值不是有效的 CIDR 表示法。",
+    "Validation:InvalidEnvironment": "环境必须为 'live'、'test' 或 'dev'。",
+    "Validation:MaxCidrRanges": "最多允许 50 个 CIDR 范围。",
+    "Validation:MaxPermissions": "最多允许 100 个权限。",
     "Permission:AuthenticationApiKeys.Keys.Create": "创建新的 API 密钥",
     "Permission:AuthenticationApiKeys.Keys.Read": "查看 API 密钥（列表、详情）",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "撤销 API 密钥",

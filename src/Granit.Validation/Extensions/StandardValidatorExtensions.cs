@@ -33,7 +33,7 @@ public static partial class StandardValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(Iso4217CurrencyCodeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidIso4217CurrencyCode");
+            .WithErrorCodeAndMessage("Validation:InvalidIso4217CurrencyCode");
 
     /// <summary>
     /// Validates an ISO 8601 duration (e.g. <c>P1Y2M3DT4H5M6S</c>, <c>PT30M</c>).
@@ -47,7 +47,7 @@ public static partial class StandardValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && Iso8601DurationRegex().IsMatch(value.Trim()))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidIso8601Duration");
+            .WithErrorCodeAndMessage("Validation:InvalidIso8601Duration");
 
     /// <summary>
     /// Validates a UUID/GUID in canonical format per RFC 9562.
@@ -60,7 +60,7 @@ public static partial class StandardValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && UuidRegex().IsMatch(value.Trim()))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidUuid");
+            .WithErrorCodeAndMessage("Validation:InvalidUuid");
 
     // -------------------------------------------------------------------------
     // Server-side single-field validation delegates

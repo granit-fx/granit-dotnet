@@ -51,8 +51,8 @@ public sealed class PaymentValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(rib));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidFrenchRib");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidFrenchRib");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidFrenchRib");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidFrenchRib");
     }
 
     // =========================================================================
@@ -90,8 +90,8 @@ public sealed class PaymentValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(account));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidBelgianAccountNumber");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidBelgianAccountNumber");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidBelgianAccountNumber");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidBelgianAccountNumber");
     }
 
     // -------------------------------------------------------------------------

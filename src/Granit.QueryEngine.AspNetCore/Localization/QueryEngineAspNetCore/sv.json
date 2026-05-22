@@ -1,0 +1,9 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Validation:CursorPageMutuallyExclusive": "'Cursor' och 'Page' kan inte användas samtidigt.",
+    "Validation:MaxFilterEntries": "Högst 50 filterposter är tillåtna.",
+    "Validation:MaxPresetEntries": "Högst 20 förinställningar är tillåtna.",
+    "Validation:MaxQuickFilterEntries": "Högst 20 snabbfilter är tillåtna."
+  }
+}

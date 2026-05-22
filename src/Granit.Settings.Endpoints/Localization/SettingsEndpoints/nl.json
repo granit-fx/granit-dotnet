@@ -4,6 +4,7 @@
     "Granit:Settings:NotFound": "Instelling is niet gedeclareerd.",
     "Granit:Settings:ProviderNotAllowed": "Deze scope is niet toegestaan voor deze instelling.",
     "Granit:Settings:ValidationFailed": "De waarde voldoet niet aan het verwachte formaat of de toegestane lijst.",
+    "Validation:BulkSettingsTooLarge": "Maximaal 200 instellingen toegestaan per bulkverzoek.",
     "Permission:Settings.Global.Manage": "Globale instellingen beheren (bekijken, aanmaken, bewerken)",
     "Permission:Settings.Global.Read": "Globale instellingen bekijken",
     "Permission:Settings.Tenant.Manage": "Tenantinstellingen beheren (bekijken, aanmaken, bewerken)",

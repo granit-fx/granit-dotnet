@@ -1,7 +1,7 @@
 {
   "culture": "pl",
   "texts": {
-    "Granit:Validation:TooManyAttachments": "Nie można dołączyć więcej niż 20 plików.",
+    "Validation:TooManyAttachments": "Nie można dołączyć więcej niż 20 plików.",
     "Permission:Timeline.Entries.Create": "Dodawanie komentarzy i śledzenie/zaprzestanie śledzenia encji",
     "Permission:Timeline.Entries.Manage": "Zarządzanie (usuwanie) wpisów osi czasu niezależnie od właściciela",
     "Permission:Timeline.Entries.Read": "Wyświetlanie kanałów aktywności i historii audytu",

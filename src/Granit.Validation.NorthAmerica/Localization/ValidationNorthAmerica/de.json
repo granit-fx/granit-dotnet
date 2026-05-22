@@ -1,13 +1,13 @@
 {
   "culture": "de",
   "texts": {
-    "Granit:Validation:InvalidUsSsn": "Die US-Sozialversicherungsnummer (SSN) ist ungültig.",
-    "Granit:Validation:InvalidUsEin": "Die US-Arbeitgeberidentifikationsnummer (EIN) ist ungültig.",
-    "Granit:Validation:InvalidUsZipCode": "Die US-Postleitzahl (ZIP) ist ungültig (5 Ziffern oder ZIP+4-Format erwartet).",
-    "Granit:Validation:InvalidNanpPhoneNumber": "Die Telefonnummer ist ungültig (NANP-Format erwartet: NXX-NXX-XXXX).",
-    "Granit:Validation:InvalidUsStateCode": "Der US-Staats- oder Gebietscode ist ungültig.",
-    "Granit:Validation:InvalidCanadianSin": "Die kanadische Sozialversicherungsnummer (SIN) ist ungültig.",
-    "Granit:Validation:InvalidCanadianPostalCode": "Die kanadische Postleitzahl ist ungültig (erwartetes Format: A1A 1A1).",
-    "Granit:Validation:InvalidCanadianBusinessNumber": "Die kanadische Unternehmensnummer (BN) ist ungültig."
+    "Validation:InvalidUsSsn": "Die US-Sozialversicherungsnummer (SSN) ist ungültig.",
+    "Validation:InvalidUsEin": "Die US-Arbeitgeberidentifikationsnummer (EIN) ist ungültig.",
+    "Validation:InvalidUsZipCode": "Die US-Postleitzahl (ZIP) ist ungültig (5 Ziffern oder ZIP+4-Format erwartet).",
+    "Validation:InvalidNanpPhoneNumber": "Die Telefonnummer ist ungültig (NANP-Format erwartet: NXX-NXX-XXXX).",
+    "Validation:InvalidUsStateCode": "Der US-Staats- oder Gebietscode ist ungültig.",
+    "Validation:InvalidCanadianSin": "Die kanadische Sozialversicherungsnummer (SIN) ist ungültig.",
+    "Validation:InvalidCanadianPostalCode": "Die kanadische Postleitzahl ist ungültig (erwartetes Format: A1A 1A1).",
+    "Validation:InvalidCanadianBusinessNumber": "Die kanadische Unternehmensnummer (BN) ist ungültig."
   }
 }

@@ -3,6 +3,11 @@
   "texts": {
     "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
     "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
+    "Validation:ExpirationMustBeFuture": "Datum vypršení musí být v budoucnosti.",
+    "Validation:InvalidCidrNotation": "Hodnota není platná notace CIDR.",
+    "Validation:InvalidEnvironment": "Prostředí musí být 'live', 'test' nebo 'dev'.",
+    "Validation:MaxCidrRanges": "Je povoleno maximálně 50 rozsahů CIDR.",
+    "Validation:MaxPermissions": "Je povoleno maximálně 100 oprávnění.",
     "Permission:AuthenticationApiKeys.Keys.Create": "Vytvořit nové API klíče",
     "Permission:AuthenticationApiKeys.Keys.Read": "Zobrazit API klíče (seznam, podrobnosti)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "Odvolat API klíče",

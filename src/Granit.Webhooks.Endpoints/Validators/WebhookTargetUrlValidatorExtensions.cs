@@ -32,11 +32,11 @@ public static class WebhookTargetUrlValidatorExtensions
             .NotEmpty()
             .MaximumLength(MaxUrlLength)
             .Must(BeAValidHttpsUrl)
-                .WithErrorCodeAndMessage("Granit:Validation:InvalidWebhookUrl")
+                .WithErrorCodeAndMessage("Validation:InvalidWebhookUrl")
             .Must(NotTargetPrivateOrLocalAddress)
-                .WithErrorCodeAndMessage("Granit:Validation:WebhookUrlPrivateAddress")
+                .WithErrorCodeAndMessage("Validation:WebhookUrlPrivateAddress")
             .Must(NotUseBlockedTld)
-                .WithErrorCodeAndMessage("Granit:Validation:WebhookUrlBlockedTld");
+                .WithErrorCodeAndMessage("Validation:WebhookUrlBlockedTld");
     }
 
     private static bool BeAValidHttpsUrl(string url) =>

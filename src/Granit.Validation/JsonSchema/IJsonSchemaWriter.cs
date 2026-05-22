@@ -16,7 +16,7 @@ namespace Granit.Validation.JsonSchema;
 /// <para>
 /// Custom Granit validators (IBAN, E.164, etc.) are exposed as
 /// <c>x-granit-validator</c> string properties carrying the structured error code
-/// (e.g. <c>Granit:Validation:InvalidIban</c>). Pattern hint validators emit a
+/// (e.g. <c>Validation:InvalidIban</c>). Pattern hint validators emit a
 /// companion <c>x-granit-pattern-hint</c> property alongside <c>pattern</c>.
 /// </para>
 /// <para>

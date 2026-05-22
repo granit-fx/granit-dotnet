@@ -1,12 +1,10 @@
 {
-  "Granit:Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
+  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "pt-BR",
   "texts": {
-    "Granit:Validation:AtLeastOneMappingTarget": "Pelo menos um mapeamento deve ter uma propriedade de destino não nula.",
-    "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' só pode conter letras, dígitos, hifens, underscores ou pontos.",
-    "Granit:Validation:EntityViewShareEmptyAudience": "O público deve incluir pelo menos uma função ou usuário.",
-    "Granit:Validation:PaymentAmountOutOfRange": "O valor do pagamento está fora do intervalo permitido.",
-    "Granit:Validation:ScheduledAction:FutureDate": "A data agendada deve ser no futuro.",
-    "Granit:Validation:UrlMustBeHttps": "A URL deve usar HTTPS."
+    "Validation:CodeInvalidFormat": "'{PropertyName}' só pode conter letras, dígitos, hifens, underscores ou pontos.",
+    "Validation:EntityViewShareEmptyAudience": "O público deve incluir pelo menos uma função ou usuário.",
+    "Validation:PaymentAmountOutOfRange": "O valor do pagamento está fora do intervalo permitido.",
+    "Validation:UrlMustBeHttps": "A URL deve usar HTTPS."
   }
 }

@@ -55,8 +55,8 @@ public sealed class FormatValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(slug));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidSlug");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidSlug");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidSlug");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidSlug");
     }
 
     // =========================================================================
@@ -92,8 +92,8 @@ public sealed class FormatValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(base64));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidBase64String");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidBase64String");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidBase64String");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidBase64String");
     }
 
     // =========================================================================
@@ -134,8 +134,8 @@ public sealed class FormatValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(color));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidColorHex");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidColorHex");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidColorHex");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidColorHex");
     }
 
     // -------------------------------------------------------------------------

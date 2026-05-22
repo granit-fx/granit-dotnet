@@ -1,13 +1,13 @@
 {
   "culture": "tr",
   "texts": {
-    "Granit:Validation:InvalidUsSsn": "ABD Sosyal Güvenlik Numarası (SSN) geçersiz.",
-    "Granit:Validation:InvalidUsEin": "ABD İşveren Kimlik Numarası (EIN) geçersiz.",
-    "Granit:Validation:InvalidUsZipCode": "ABD posta kodu (ZIP) geçersiz (5 rakam veya ZIP+4 biçimi bekleniyor).",
-    "Granit:Validation:InvalidNanpPhoneNumber": "Telefon numarası geçersiz (NANP biçimi bekleniyor: NXX-NXX-XXXX).",
-    "Granit:Validation:InvalidUsStateCode": "ABD eyalet veya bölge kodu geçersiz.",
-    "Granit:Validation:InvalidCanadianSin": "Kanada Sosyal Sigorta Numarası (SIN) geçersiz.",
-    "Granit:Validation:InvalidCanadianPostalCode": "Kanada posta kodu geçersiz (beklenen biçim: A1A 1A1).",
-    "Granit:Validation:InvalidCanadianBusinessNumber": "Kanada İşletme Numarası (BN) geçersiz."
+    "Validation:InvalidUsSsn": "ABD Sosyal Güvenlik Numarası (SSN) geçersiz.",
+    "Validation:InvalidUsEin": "ABD İşveren Kimlik Numarası (EIN) geçersiz.",
+    "Validation:InvalidUsZipCode": "ABD posta kodu (ZIP) geçersiz (5 rakam veya ZIP+4 biçimi bekleniyor).",
+    "Validation:InvalidNanpPhoneNumber": "Telefon numarası geçersiz (NANP biçimi bekleniyor: NXX-NXX-XXXX).",
+    "Validation:InvalidUsStateCode": "ABD eyalet veya bölge kodu geçersiz.",
+    "Validation:InvalidCanadianSin": "Kanada Sosyal Sigorta Numarası (SIN) geçersiz.",
+    "Validation:InvalidCanadianPostalCode": "Kanada posta kodu geçersiz (beklenen biçim: A1A 1A1).",
+    "Validation:InvalidCanadianBusinessNumber": "Kanada İşletme Numarası (BN) geçersiz."
   }
 }

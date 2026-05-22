@@ -4,6 +4,7 @@
     "Granit:Settings:NotFound": "Einstellung ist nicht deklariert.",
     "Granit:Settings:ProviderNotAllowed": "Dieser Geltungsbereich ist für diese Einstellung nicht erlaubt.",
     "Granit:Settings:ValidationFailed": "Der Wert entspricht nicht dem erwarteten Format oder der Zulassungsliste.",
+    "Validation:BulkSettingsTooLarge": "Maximal 200 Einstellungen pro Sammelanfrage erlaubt.",
     "Permission:Settings.Global.Manage": "Globale Einstellungen verwalten (anzeigen, erstellen, bearbeiten)",
     "Permission:Settings.Global.Read": "Globale Einstellungen anzeigen",
     "Permission:Settings.Tenant.Manage": "Mandanteneinstellungen verwalten (anzeigen, erstellen, bearbeiten)",

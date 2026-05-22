@@ -1,6 +1,7 @@
 {
   "culture": "fr",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "La date planifiée doit être dans le futur.",
     "Permission:Scheduling.Actions.Manage": "Gérer les actions planifiées (annuler, replanifier)",
     "Permission:Scheduling.Actions.Read": "Consulter les actions planifiées (liste, détail)",
     "PermissionGroup:Scheduling": "Planification",

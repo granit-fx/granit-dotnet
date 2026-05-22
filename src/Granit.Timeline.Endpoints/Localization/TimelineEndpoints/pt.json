@@ -1,7 +1,7 @@
 {
   "culture": "pt",
   "texts": {
-    "Granit:Validation:TooManyAttachments": "Não é possível anexar mais de 20 ficheiros.",
+    "Validation:TooManyAttachments": "Não é possível anexar mais de 20 ficheiros.",
     "Permission:Timeline.Entries.Create": "Publicar comentários e seguir/deixar de seguir entidades",
     "Permission:Timeline.Entries.Manage": "Gerir (eliminar) qualquer entrada de cronologia independentemente do proprietário",
     "Permission:Timeline.Entries.Read": "Ver fluxos de atividade e histórico de auditoria",

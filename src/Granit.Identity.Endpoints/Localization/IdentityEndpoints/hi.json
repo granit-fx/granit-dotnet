@@ -1,6 +1,7 @@
 {
   "culture": "hi",
   "texts": {
+    "Validation:MaxCustomAttributes": "कस्टम विशेषताओं की अधिकतम संख्या पार हो गई।",
     "IdentityEndpoints:Workspace.Groups": "Groups",
     "IdentityEndpoints:Workspace.Roles": "Roles",
     "IdentityEndpoints:Workspace.Section": "Identity",

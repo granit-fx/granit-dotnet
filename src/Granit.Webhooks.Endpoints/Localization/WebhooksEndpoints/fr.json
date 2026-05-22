@@ -1,10 +1,10 @@
 {
   "culture": "fr",
   "texts": {
-    "Granit:Validation:InvalidWebhookUrl": "L'URL cible doit être une URL HTTPS valide",
-    "Granit:Validation:UnknownWebhookEventType": "Le type d'événement spécifié n'est pas enregistré. Utilisez GET /event-types pour les types disponibles.",
-    "Granit:Validation:WebhookUrlBlockedTld": "Les noms de domaine internes (.local, .internal, .localhost, .onion) ne sont pas autorisés",
-    "Granit:Validation:WebhookUrlPrivateAddress": "Les adresses IP privées, locales ou réservées ne sont pas autorisées",
+    "Validation:InvalidWebhookUrl": "L'URL cible doit être une URL HTTPS valide",
+    "Validation:UnknownWebhookEventType": "Le type d'événement spécifié n'est pas enregistré. Utilisez GET /event-types pour les types disponibles.",
+    "Validation:WebhookUrlBlockedTld": "Les noms de domaine internes (.local, .internal, .localhost, .onion) ne sont pas autorisés",
+    "Validation:WebhookUrlPrivateAddress": "Les adresses IP privées, locales ou réservées ne sont pas autorisées",
     "Permission:Webhooks.Subscriptions.Manage": "Gérer les webhooks (cycle de vie, rotation des secrets, ping de test, statistiques)",
     "Permission:Webhooks.Subscriptions.Read": "Consulter les abonnements webhook",
     "PermissionGroup:Webhooks": "Webhooks",

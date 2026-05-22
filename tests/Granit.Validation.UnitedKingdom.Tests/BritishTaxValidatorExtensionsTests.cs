@@ -49,7 +49,7 @@ public sealed class BritishTaxValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(utr));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidUkUtr");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUkUtr");
     }
 
     // =========================================================================
@@ -92,7 +92,7 @@ public sealed class BritishTaxValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(vat));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidUkVat");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUkVat");
     }
 
     // =========================================================================
@@ -131,7 +131,7 @@ public sealed class BritishTaxValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(number));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidUkCompaniesHouseNumber");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUkCompaniesHouseNumber");
     }
 
     // -------------------------------------------------------------------------

@@ -152,7 +152,7 @@ public sealed partial class ValidationConventionTests
     /// <summary>
     /// Validator classes must not use <c>.WithMessage("hardcoded string")</c>.
     /// Built-in validators are auto-converted to error codes by <c>GranitErrorCodeLanguageManager</c>.
-    /// Custom <c>.Must()</c> validators must use <c>.WithErrorCodeAndMessage("Granit:Validation:XxxCode")</c>.
+    /// Custom <c>.Must()</c> validators must use <c>.WithErrorCodeAndMessage("Validation:XxxCode")</c>.
     /// </summary>
     [Fact]
     public void Validators_should_not_use_hardcoded_WithMessage()
@@ -184,7 +184,7 @@ public sealed partial class ValidationConventionTests
 
         violations.ShouldBeEmpty(
             "Validators must not use hardcoded .WithMessage(\"...\") strings. " +
-            "Use .WithErrorCodeAndMessage(\"Granit:Validation:XxxCode\") and add the key " +
+            "Use .WithErrorCodeAndMessage(\"Validation:XxxCode\") and add the key " +
             "to the localization JSON files in src/Granit.Validation/Localization/Validation/. " +
             $"Violators: {string.Join("; ", violations)}");
     }

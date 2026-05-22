@@ -1,6 +1,7 @@
 {
   "culture": "sv",
   "texts": {
+    "Validation:MaxCustomAttributes": "Det maximala antalet anpassade attribut har överskridits.",
     "IdentityEndpoints:Workspace.Groups": "Groups",
     "IdentityEndpoints:Workspace.Roles": "Roles",
     "IdentityEndpoints:Workspace.Section": "Identity",

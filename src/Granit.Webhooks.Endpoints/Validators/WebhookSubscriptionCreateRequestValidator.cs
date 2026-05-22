@@ -15,6 +15,6 @@ internal sealed class WebhookSubscriptionCreateRequestValidator : GranitValidato
             .NotEmpty()
             .MaximumLength(200)
             .Must(eventTypeRegistry.Exists)
-                .WithErrorCodeAndMessage("Granit:Validation:UnknownWebhookEventType");
+                .WithErrorCodeAndMessage("Validation:UnknownWebhookEventType");
     }
 }

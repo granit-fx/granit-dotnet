@@ -4,6 +4,7 @@
     "Granit:Settings:NotFound": "Ustawienie nie jest zadeklarowane.",
     "Granit:Settings:ProviderNotAllowed": "Ten zakres nie jest dozwolony dla tego ustawienia.",
     "Granit:Settings:ValidationFailed": "Wartość nie pasuje do oczekiwanego formatu lub listy dozwolonych wartości.",
+    "Validation:BulkSettingsTooLarge": "Dozwolonych jest maksymalnie 200 ustawień na żądanie zbiorcze.",
     "Permission:Settings.Global.Manage": "Zarządzanie ustawieniami globalnymi (wyświetlanie, tworzenie, edycja)",
     "Permission:Settings.Global.Read": "Wyświetlanie ustawień globalnych",
     "Permission:Settings.Tenant.Manage": "Zarządzanie ustawieniami najemcy (wyświetlanie, tworzenie, edycja)",

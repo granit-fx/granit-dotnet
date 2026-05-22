@@ -18,7 +18,7 @@ namespace Granit.Validation.AspNetCore;
 /// <para>
 /// When validation fails, returns <c>422 Unprocessable Entity</c> with a
 /// <c>HttpValidationProblemDetails</c> body containing structured error codes
-/// (e.g. <c>Granit:Validation:NotEmptyValidator</c>).
+/// (e.g. <c>Validation:NotEmptyValidator</c>).
 /// </para>
 /// <para>
 /// Arguments of primitive types, strings, enums, <see cref="CancellationToken"/>,

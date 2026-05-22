@@ -1,10 +1,10 @@
 {
   "culture": "tr",
   "texts": {
-    "Granit:Validation:InvalidWebhookUrl": "Hedef URL geçerli bir HTTPS URL olmalıdır",
-    "Granit:Validation:UnknownWebhookEventType": "Belirtilen olay türü kayıtlı değil. Kullanılabilir türler için GET /event-types kullanın.",
-    "Granit:Validation:WebhookUrlBlockedTld": "Dahili alan adlarına (.local, .internal, .localhost, .onion) izin verilmez",
-    "Granit:Validation:WebhookUrlPrivateAddress": "Özel, yerel veya ayrılmış IP adreslerine izin verilmez",
+    "Validation:InvalidWebhookUrl": "Hedef URL geçerli bir HTTPS URL olmalıdır",
+    "Validation:UnknownWebhookEventType": "Belirtilen olay türü kayıtlı değil. Kullanılabilir türler için GET /event-types kullanın.",
+    "Validation:WebhookUrlBlockedTld": "Dahili alan adlarına (.local, .internal, .localhost, .onion) izin verilmez",
+    "Validation:WebhookUrlPrivateAddress": "Özel, yerel veya ayrılmış IP adreslerine izin verilmez",
     "Permission:Webhooks.Subscriptions.Manage": "Webhookları yönet (yaşam döngüsü, gizli anahtar rotasyonu, test ping, istatistikler)",
     "Permission:Webhooks.Subscriptions.Read": "Webhook aboneliklerini görüntüle",
     "PermissionGroup:Webhooks": "Webhooks",

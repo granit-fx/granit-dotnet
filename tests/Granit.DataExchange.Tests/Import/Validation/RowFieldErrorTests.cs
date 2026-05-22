@@ -11,11 +11,11 @@ public sealed class RowFieldErrorTests
     {
         var sut = new RowFieldError(
             "Email",
-            "Granit:Validation:NotEmpty",
+            "Validation:NotEmpty",
             "The Email field is required.");
 
         sut.PropertyName.ShouldBe("Email");
-        sut.ErrorCode.ShouldBe("Granit:Validation:NotEmpty");
+        sut.ErrorCode.ShouldBe("Validation:NotEmpty");
         sut.ErrorMessage.ShouldBe("The Email field is required.");
     }
 

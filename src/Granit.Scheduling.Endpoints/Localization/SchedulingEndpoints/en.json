@@ -1,6 +1,7 @@
 {
   "culture": "en",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "Scheduled date must be in the future.",
     "Permission:Scheduling.Actions.Manage": "Manage scheduled actions (cancel, reschedule)",
     "Permission:Scheduling.Actions.Read": "View scheduled actions (list, detail)",
     "PermissionGroup:Scheduling": "Scheduling",

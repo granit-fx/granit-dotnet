@@ -1,10 +1,12 @@
 {
-    "culture": "hi",
-    "texts": {
-        "BlobStorageEndpoints:Workspace.Item": "Blob",
-        "BlobStorageEndpoints:Workspace.Section": "Blob storage",
-        "Permission:BlobStorage.Administration.Manage": "ब्लॉब स्टोरेज प्रबंधित करें (अपलोड, डाउनलोड, हटाएँ, पुष्टि करें, सफ़ाई)",
-        "Permission:BlobStorage.Administration.Read": "ब्लॉब स्टोरेज प्रशासन देखें (सूची, डिस्क्रिप्टर, क्वेरी)",
-        "PermissionGroup:BlobStorage": "ब्लॉब स्टोरेज"
-    }
+  "culture": "hi",
+  "texts": {
+    "BlobStorageEndpoints:Workspace.Item": "Blob",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Validation:InvalidContainerName": "कंटेनर नाम लोअरकेस अल्फ़ान्यूमेरिक होना चाहिए, वैकल्पिक हाइफ़न के साथ।",
+    "Validation:InvalidMimeType": "सामग्री प्रकार एक मान्य MIME प्रकार होना चाहिए।",
+    "Permission:BlobStorage.Administration.Manage": "ब्लॉब स्टोरेज प्रबंधित करें (अपलोड, डाउनलोड, हटाएँ, पुष्टि करें, सफ़ाई)",
+    "Permission:BlobStorage.Administration.Read": "ब्लॉब स्टोरेज प्रशासन देखें (सूची, डिस्क्रिप्टर, क्वेरी)",
+    "PermissionGroup:BlobStorage": "ब्लॉब स्टोरेज"
+  }
 }

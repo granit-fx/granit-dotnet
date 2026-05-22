@@ -4,6 +4,7 @@
     "DataExchangeEndpoints:Workspace.Exports": "Exports",
     "DataExchangeEndpoints:Workspace.Imports": "Imports",
     "DataExchangeEndpoints:Workspace.Section": "Data exchange",
+    "Validation:AtLeastOneMappingTarget": "En az bir eşleme, boş olmayan bir hedef özelliğe sahip olmalıdır.",
     "Permission:DataExchange.Exports.Execute": "Veri dışa aktarmalarını çalıştır (tanımlar, yürütme, indirme, ön ayarlar)",
     "Permission:DataExchange.Exports.Read": "Dışa aktarma tanımlarını ve geçmişini görüntüle",
     "Permission:DataExchange.Imports.Execute": "Veri içe aktarmalarını çalıştır (yükleme, eşleme, yürütme, raporlar)",

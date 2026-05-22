@@ -3,6 +3,11 @@
   "texts": {
     "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
     "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
+    "Validation:ExpirationMustBeFuture": "La data di scadenza deve essere nel futuro.",
+    "Validation:InvalidCidrNotation": "Il valore non è una notazione CIDR valida.",
+    "Validation:InvalidEnvironment": "L'ambiente deve essere 'live', 'test' o 'dev'.",
+    "Validation:MaxCidrRanges": "Sono consentiti al massimo 50 intervalli CIDR.",
+    "Validation:MaxPermissions": "Sono consentite al massimo 100 autorizzazioni.",
     "Permission:AuthenticationApiKeys.Keys.Create": "Creare nuove chiavi API",
     "Permission:AuthenticationApiKeys.Keys.Read": "Visualizzare le chiavi API (elenco, dettagli)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "Revocare le chiavi API",

@@ -1,0 +1,9 @@
+{
+  "culture": "de",
+  "texts": {
+    "Validation:CursorPageMutuallyExclusive": "'Cursor' und 'Page' schließen sich gegenseitig aus.",
+    "Validation:MaxFilterEntries": "Maximal 50 Filtereinträge sind zulässig.",
+    "Validation:MaxPresetEntries": "Maximal 20 Voreinstellungen sind zulässig.",
+    "Validation:MaxQuickFilterEntries": "Maximal 20 Schnellfilter sind zulässig."
+  }
+}

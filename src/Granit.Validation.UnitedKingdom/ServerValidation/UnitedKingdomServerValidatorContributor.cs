@@ -12,18 +12,18 @@ internal sealed class UnitedKingdomServerValidatorContributor : IServerValidator
     public IEnumerable<IServerValidator> GetValidators()
     {
         // --- Personal identifiers ---
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkNationalInsuranceNumber", NationalInsuranceNumberAlgorithm.IsValid, isSensitive: true);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkNhsNumber", NhsNumberAlgorithm.IsValid, isSensitive: true);
+        yield return new DelegatingServerValidator("Validation:InvalidUkNationalInsuranceNumber", NationalInsuranceNumberAlgorithm.IsValid, isSensitive: true);
+        yield return new DelegatingServerValidator("Validation:InvalidUkNhsNumber", NhsNumberAlgorithm.IsValid, isSensitive: true);
 
         // --- Payment ---
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkSortCode", SortCodeAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:InvalidUkSortCode", SortCodeAlgorithm.IsValid);
 
         // --- Tax & Company ---
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkUtr", UtrAlgorithm.IsValid, isSensitive: true);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkVat", UkVatAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkCompaniesHouseNumber", CompaniesHouseNumberAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:InvalidUkUtr", UtrAlgorithm.IsValid, isSensitive: true);
+        yield return new DelegatingServerValidator("Validation:InvalidUkVat", UkVatAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:InvalidUkCompaniesHouseNumber", CompaniesHouseNumberAlgorithm.IsValid);
 
         // --- Address ---
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkPostcode", UkPostcodeAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:InvalidUkPostcode", UkPostcodeAlgorithm.IsValid);
     }
 }

@@ -13,16 +13,16 @@ public sealed class ValidationDtoTests
     [Fact]
     public void ValidationFieldValidateRequest_Properties_AreSet()
     {
-        ValidationFieldValidateRequest request = new("Granit:Validation:InvalidIban", "BE68539007547034");
+        ValidationFieldValidateRequest request = new("Validation:InvalidIban", "BE68539007547034");
 
-        request.ErrorCode.ShouldBe("Granit:Validation:InvalidIban");
+        request.ErrorCode.ShouldBe("Validation:InvalidIban");
         request.Value.ShouldBe("BE68539007547034");
     }
 
     [Fact]
     public void ValidationFieldValidateRequest_NullValue_IsAllowed()
     {
-        ValidationFieldValidateRequest request = new("Granit:Validation:InvalidIban", null);
+        ValidationFieldValidateRequest request = new("Validation:InvalidIban", null);
 
         request.Value.ShouldBeNull();
     }
@@ -34,9 +34,9 @@ public sealed class ValidationDtoTests
     [Fact]
     public void ValidationFieldValidateResponse_Properties_AreSet()
     {
-        ValidationFieldValidateResponse response = new("Granit:Validation:InvalidIban", ValidationFieldStatus.Valid);
+        ValidationFieldValidateResponse response = new("Validation:InvalidIban", ValidationFieldStatus.Valid);
 
-        response.ErrorCode.ShouldBe("Granit:Validation:InvalidIban");
+        response.ErrorCode.ShouldBe("Validation:InvalidIban");
         response.Status.ShouldBe(ValidationFieldStatus.Valid);
     }
 
@@ -49,8 +49,8 @@ public sealed class ValidationDtoTests
     {
         List<ValidationFieldValidateRequest> fields =
         [
-            new("Granit:Validation:InvalidIban", "BE68539007547034"),
-            new("Granit:Validation:InvalidEmail", "test@example.com"),
+            new("Validation:InvalidIban", "BE68539007547034"),
+            new("Validation:InvalidEmail", "test@example.com"),
         ];
 
         ValidationFieldValidateBatchRequest request = new(fields);
@@ -67,8 +67,8 @@ public sealed class ValidationDtoTests
     {
         List<ValidationFieldValidateResponse> results =
         [
-            new("Granit:Validation:InvalidIban", ValidationFieldStatus.Valid),
-            new("Granit:Validation:InvalidEmail", ValidationFieldStatus.Invalid),
+            new("Validation:InvalidIban", ValidationFieldStatus.Valid),
+            new("Validation:InvalidEmail", ValidationFieldStatus.Invalid),
         ];
 
         ValidationFieldValidateBatchResponse response = new(results);

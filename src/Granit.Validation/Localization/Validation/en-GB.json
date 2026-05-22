@@ -1,12 +1,10 @@
 {
-  "Granit:Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
+  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "en-GB",
   "texts": {
-    "Granit:Validation:AtLeastOneMappingTarget": "At least one mapping must have a non-null target property.",
-    "Granit:Validation:EntityViewShareEmptyAudience": "Audience must include at least one role or user.",
-    "Granit:Validation:InvalidEmail": "'{PropertyName}' is not a valid email address.",
-    "Granit:Validation:PaymentAmountOutOfRange": "The payment amount is out of the allowed range.",
-    "Granit:Validation:ScheduledAction:FutureDate": "Scheduled date must be in the future.",
-    "Granit:Validation:UrlMustBeHttps": "The URL must use HTTPS."
+    "Validation:EntityViewShareEmptyAudience": "Audience must include at least one role or user.",
+    "Validation:InvalidEmail": "'{PropertyName}' is not a valid email address.",
+    "Validation:PaymentAmountOutOfRange": "The payment amount is out of the allowed range.",
+    "Validation:UrlMustBeHttps": "The URL must use HTTPS."
   }
 }

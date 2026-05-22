@@ -1,6 +1,7 @@
 {
   "culture": "ko",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "예약 날짜는 미래여야 합니다.",
     "Permission:Scheduling.Actions.Manage": "예약된 작업 관리 (취소, 재예약)",
     "Permission:Scheduling.Actions.Read": "예약된 작업 보기 (목록, 상세)",
     "PermissionGroup:Scheduling": "스케줄링",

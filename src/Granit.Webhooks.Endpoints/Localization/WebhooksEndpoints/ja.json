@@ -1,10 +1,10 @@
 {
   "culture": "ja",
   "texts": {
-    "Granit:Validation:InvalidWebhookUrl": "ターゲット URL は有効な HTTPS URL である必要があります",
-    "Granit:Validation:UnknownWebhookEventType": "指定されたイベントタイプは登録されていません。GET /event-types で利用可能なタイプを確認してください。",
-    "Granit:Validation:WebhookUrlBlockedTld": "内部ドメイン名（.local、.internal、.localhost、.onion）は許可されていません",
-    "Granit:Validation:WebhookUrlPrivateAddress": "プライベート、ローカル、または予約済みの IP アドレスは許可されていません",
+    "Validation:InvalidWebhookUrl": "ターゲット URL は有効な HTTPS URL である必要があります",
+    "Validation:UnknownWebhookEventType": "指定されたイベントタイプは登録されていません。GET /event-types で利用可能なタイプを確認してください。",
+    "Validation:WebhookUrlBlockedTld": "内部ドメイン名（.local、.internal、.localhost、.onion）は許可されていません",
+    "Validation:WebhookUrlPrivateAddress": "プライベート、ローカル、または予約済みの IP アドレスは許可されていません",
     "Permission:Webhooks.Subscriptions.Manage": "Webhooks を管理（ライフサイクル、シークレットローテーション、テスト Ping、統計）",
     "Permission:Webhooks.Subscriptions.Read": "Webhook サブスクリプションを表示",
     "PermissionGroup:Webhooks": "Webhooks",

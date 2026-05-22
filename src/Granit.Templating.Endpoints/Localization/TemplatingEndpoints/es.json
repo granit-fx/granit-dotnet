@@ -1,6 +1,7 @@
 {
   "culture": "es",
   "texts": {
+    "Validation:InvalidTemplateNamePattern": "El nombre de la plantilla debe seguir el patrón 'Dominio.Nombre' (p. ej. 'Billing.Invoice').",
     "Permission:Templating.Categories.Manage": "Gestionar categorías de plantillas (crear, editar, eliminar)",
     "Permission:Templating.Categories.Read": "Ver categorías de plantillas",
     "Permission:Templating.Templates.Manage": "Gestionar plantillas (ver, crear, editar, eliminar, publicar)",

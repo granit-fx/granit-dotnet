@@ -3,6 +3,11 @@
   "texts": {
     "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
     "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
+    "Validation:ExpirationMustBeFuture": "समाप्ति तिथि भविष्य में होनी चाहिए।",
+    "Validation:InvalidCidrNotation": "यह मान एक मान्य CIDR नोटेशन नहीं है।",
+    "Validation:InvalidEnvironment": "पर्यावरण 'live', 'test', या 'dev' होना चाहिए।",
+    "Validation:MaxCidrRanges": "अधिकतम 50 CIDR श्रेणियाँ अनुमत हैं।",
+    "Validation:MaxPermissions": "अधिकतम 100 अनुमतियाँ अनुमत हैं।",
     "Permission:AuthenticationApiKeys.Keys.Create": "नई API कुंजियाँ बनाएँ",
     "Permission:AuthenticationApiKeys.Keys.Read": "API कुंजियाँ देखें (सूची, विवरण)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "API कुंजियाँ निरस्त करें",

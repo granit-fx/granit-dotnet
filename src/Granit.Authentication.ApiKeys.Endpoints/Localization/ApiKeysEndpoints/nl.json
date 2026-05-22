@@ -3,6 +3,11 @@
   "texts": {
     "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
     "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
+    "Validation:ExpirationMustBeFuture": "De vervaldatum moet in de toekomst liggen.",
+    "Validation:InvalidCidrNotation": "De waarde is geen geldige CIDR-notatie.",
+    "Validation:InvalidEnvironment": "De omgeving moet 'live', 'test' of 'dev' zijn.",
+    "Validation:MaxCidrRanges": "Maximaal 50 CIDR-bereiken toegestaan.",
+    "Validation:MaxPermissions": "Maximaal 100 machtigingen toegestaan.",
     "Permission:AuthenticationApiKeys.Keys.Create": "Nieuwe API-sleutels aanmaken",
     "Permission:AuthenticationApiKeys.Keys.Read": "API-sleutels bekijken (lijst, details)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "API-sleutels intrekken",

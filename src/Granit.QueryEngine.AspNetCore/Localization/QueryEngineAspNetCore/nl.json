@@ -1,0 +1,9 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Validation:CursorPageMutuallyExclusive": "'Cursor' en 'Page' sluiten elkaar uit.",
+    "Validation:MaxFilterEntries": "Maximaal 50 filteritems zijn toegestaan.",
+    "Validation:MaxPresetEntries": "Maximaal 20 voorinstellingen zijn toegestaan.",
+    "Validation:MaxQuickFilterEntries": "Maximaal 20 snelfilters zijn toegestaan."
+  }
+}

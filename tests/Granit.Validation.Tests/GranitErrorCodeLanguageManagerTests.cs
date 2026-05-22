@@ -2,7 +2,7 @@
 // Tests - GranitErrorCodeLanguageManager
 // =============================================================================
 // Verifies:
-//   - Returns "Granit:Validation:{key}" for any key
+//   - Returns "Validation:{key}" for any key
 //   - Culture parameter has no effect on the returned code
 //   - Enabled is true by default
 //   - Culture is InvariantCulture by default
@@ -25,10 +25,10 @@ public sealed class GranitErrorCodeLanguageManagerTests
     // -------------------------------------------------------------------------
 
     [Theory]
-    [InlineData("NotEmptyValidator", "Granit:Validation:NotEmptyValidator")]
-    [InlineData("MaximumLengthValidator", "Granit:Validation:MaximumLengthValidator")]
-    [InlineData("EmailValidator", "Granit:Validation:EmailValidator")]
-    [InlineData("CustomKey", "Granit:Validation:CustomKey")]
+    [InlineData("NotEmptyValidator", "Validation:NotEmptyValidator")]
+    [InlineData("MaximumLengthValidator", "Validation:MaximumLengthValidator")]
+    [InlineData("EmailValidator", "Validation:EmailValidator")]
+    [InlineData("CustomKey", "Validation:CustomKey")]
     public void GetString_ReturnsGranitValidationCode(string key, string expected)
     {
         GranitErrorCodeLanguageManager manager = new();
@@ -96,6 +96,6 @@ public sealed class GranitErrorCodeLanguageManagerTests
 
         ValidationResult result = validator.Validate(string.Empty);
 
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:NotEmptyValidator");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:NotEmptyValidator");
     }
 }

@@ -1,6 +1,7 @@
 {
   "culture": "en",
   "texts": {
+    "Validation:InvalidTemplateNamePattern": "Template name must follow the 'Domain.Name' pattern (e.g. 'Billing.Invoice').",
     "Permission:Templating.Categories.Manage": "Manage template categories (create, edit, delete)",
     "Permission:Templating.Categories.Read": "View template categories",
     "Permission:Templating.Templates.Manage": "Manage templates (view, create, edit, delete, publish)",

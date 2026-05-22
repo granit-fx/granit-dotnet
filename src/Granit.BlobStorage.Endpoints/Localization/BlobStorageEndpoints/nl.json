@@ -1,10 +1,12 @@
 {
-    "culture": "nl",
-    "texts": {
-        "BlobStorageEndpoints:Workspace.Item": "Blobs",
-        "BlobStorageEndpoints:Workspace.Section": "Blob storage",
-        "Permission:BlobStorage.Administration.Manage": "Bestandsopslag beheren (uploaden, downloaden, verwijderen, bevestigen, opruimen)",
-        "Permission:BlobStorage.Administration.Read": "Bestandsopslagbeheer bekijken (lijst, descriptors, query)",
-        "PermissionGroup:BlobStorage": "Bestandsopslag"
-    }
+  "culture": "nl",
+  "texts": {
+    "BlobStorageEndpoints:Workspace.Item": "Blobs",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Validation:InvalidContainerName": "De containernaam moet bestaan uit kleine alfanumerieke tekens met optionele koppeltekens.",
+    "Validation:InvalidMimeType": "Het inhoudstype moet een geldig MIME-type zijn.",
+    "Permission:BlobStorage.Administration.Manage": "Bestandsopslag beheren (uploaden, downloaden, verwijderen, bevestigen, opruimen)",
+    "Permission:BlobStorage.Administration.Read": "Bestandsopslagbeheer bekijken (lijst, descriptors, query)",
+    "PermissionGroup:BlobStorage": "Bestandsopslag"
+  }
 }

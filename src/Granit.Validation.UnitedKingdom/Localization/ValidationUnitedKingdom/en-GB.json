@@ -1,6 +1,6 @@
 {
   "culture": "en-GB",
   "texts": {
-    "Granit:Validation:InvalidUkPostcode": "The postcode is invalid."
+    "Validation:InvalidUkPostcode": "The postcode is invalid."
   }
 }

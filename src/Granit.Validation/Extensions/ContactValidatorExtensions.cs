@@ -27,7 +27,7 @@ public static partial class ContactValidatorExtensions
     public static IRuleBuilderOptions<T, string?> Email<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && EmailRegex().IsMatch(value))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidEmail");
+            .WithErrorCodeAndMessage("Validation:InvalidEmail");
 
     /// <summary>
     /// Validates a phone number in E.164 international format.
@@ -38,7 +38,7 @@ public static partial class ContactValidatorExtensions
     public static IRuleBuilderOptions<T, string?> E164Phone<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && E164Regex().IsMatch(value))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidE164Phone");
+            .WithErrorCodeAndMessage("Validation:InvalidE164Phone");
 
     // -------------------------------------------------------------------------
     // Server-side single-field validation delegates

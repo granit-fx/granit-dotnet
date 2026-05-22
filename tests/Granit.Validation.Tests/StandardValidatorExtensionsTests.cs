@@ -53,8 +53,8 @@ public sealed class StandardValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidIso4217CurrencyCode");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidIso4217CurrencyCode");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidIso4217CurrencyCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidIso4217CurrencyCode");
     }
 
     // =========================================================================
@@ -101,8 +101,8 @@ public sealed class StandardValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(duration));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidIso8601Duration");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidIso8601Duration");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidIso8601Duration");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidIso8601Duration");
     }
 
     // =========================================================================
@@ -138,8 +138,8 @@ public sealed class StandardValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(uuid));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidUuid");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidUuid");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidUuid");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUuid");
     }
 
     // -------------------------------------------------------------------------

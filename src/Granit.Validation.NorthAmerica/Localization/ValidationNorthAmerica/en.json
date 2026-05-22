@@ -1,13 +1,13 @@
 {
   "culture": "en",
   "texts": {
-    "Granit:Validation:InvalidUsSsn": "The US Social Security Number (SSN) is invalid.",
-    "Granit:Validation:InvalidUsEin": "The US Employer Identification Number (EIN) is invalid.",
-    "Granit:Validation:InvalidUsZipCode": "The US ZIP code is invalid (expected 5 digits or ZIP+4 format).",
-    "Granit:Validation:InvalidNanpPhoneNumber": "The phone number is invalid (expected NANP format: NXX-NXX-XXXX).",
-    "Granit:Validation:InvalidUsStateCode": "The US state or territory code is invalid.",
-    "Granit:Validation:InvalidCanadianSin": "The Canadian Social Insurance Number (SIN) is invalid.",
-    "Granit:Validation:InvalidCanadianPostalCode": "The Canadian postal code is invalid (expected format: A1A 1A1).",
-    "Granit:Validation:InvalidCanadianBusinessNumber": "The Canadian Business Number (BN) is invalid."
+    "Validation:InvalidUsSsn": "The US Social Security Number (SSN) is invalid.",
+    "Validation:InvalidUsEin": "The US Employer Identification Number (EIN) is invalid.",
+    "Validation:InvalidUsZipCode": "The US ZIP code is invalid (expected 5 digits or ZIP+4 format).",
+    "Validation:InvalidNanpPhoneNumber": "The phone number is invalid (expected NANP format: NXX-NXX-XXXX).",
+    "Validation:InvalidUsStateCode": "The US state or territory code is invalid.",
+    "Validation:InvalidCanadianSin": "The Canadian Social Insurance Number (SIN) is invalid.",
+    "Validation:InvalidCanadianPostalCode": "The Canadian postal code is invalid (expected format: A1A 1A1).",
+    "Validation:InvalidCanadianBusinessNumber": "The Canadian Business Number (BN) is invalid."
   }
 }

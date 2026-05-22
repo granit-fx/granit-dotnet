@@ -1,6 +1,7 @@
 {
   "culture": "nl",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "De geplande datum moet in de toekomst liggen.",
     "Permission:Scheduling.Actions.Manage": "Geplande acties beheren (annuleren, herplannen)",
     "Permission:Scheduling.Actions.Read": "Geplande acties bekijken (lijst, detail)",
     "PermissionGroup:Scheduling": "Planning",

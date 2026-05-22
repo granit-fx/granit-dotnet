@@ -31,7 +31,7 @@ internal sealed class IdentityUserUpdateRequestValidator : GranitValidator<Ident
 
         RuleFor(x => x.Attributes)
             .Must(a => a!.Count <= MaxCustomAttributes)
-            .WithErrorCodeAndMessage("Granit:Validation:MaxCustomAttributes")
+            .WithErrorCodeAndMessage("Validation:MaxCustomAttributes")
             .When(x => x.Attributes is not null);
     }
 }

@@ -3,6 +3,11 @@
   "texts": {
     "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
     "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
+    "Validation:ExpirationMustBeFuture": "有効期限は未来の日付でなければなりません。",
+    "Validation:InvalidCidrNotation": "値が有効な CIDR 表記ではありません。",
+    "Validation:InvalidEnvironment": "環境は 'live'、'test'、または 'dev' でなければなりません。",
+    "Validation:MaxCidrRanges": "CIDR 範囲は最大50件までです。",
+    "Validation:MaxPermissions": "権限は最大100件までです。",
     "Permission:AuthenticationApiKeys.Keys.Create": "新しい API キーの作成",
     "Permission:AuthenticationApiKeys.Keys.Read": "API キーの表示（一覧、詳細）",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "API キーの失効",

@@ -1,0 +1,9 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Validation:CursorPageMutuallyExclusive": "'Cursor' 和 'Page' 不能同时使用。",
+    "Validation:MaxFilterEntries": "最多允许 50 个筛选条目。",
+    "Validation:MaxPresetEntries": "最多允许 20 个预设条目。",
+    "Validation:MaxQuickFilterEntries": "最多允许 20 个快速筛选。"
+  }
+}

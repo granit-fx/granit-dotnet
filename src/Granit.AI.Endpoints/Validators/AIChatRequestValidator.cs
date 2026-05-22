@@ -13,14 +13,14 @@ internal sealed class AIChatRequestValidator : AbstractValidator<AIChatRequest>
         RuleFor(x => x.Messages)
             .NotEmpty()
             .Must(m => m.Count <= options.Value.MaxChatMessages)
-            .WithErrorCodeAndMessage("Granit:Validation:MaxChatMessages");
+            .WithErrorCodeAndMessage("Validation:MaxChatMessages");
 
         RuleForEach(x => x.Messages).ChildRules(m =>
         {
             m.RuleFor(x => x.Role)
                 .NotEmpty()
                 .Must(r => r is "user" or "assistant" or "system")
-                .WithErrorCodeAndMessage("Granit:Validation:InvalidChatRole");
+                .WithErrorCodeAndMessage("Validation:InvalidChatRole");
 
             m.RuleFor(x => x.Content)
                 .NotEmpty()

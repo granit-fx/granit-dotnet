@@ -1,6 +1,7 @@
 {
   "culture": "zh",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "计划日期必须是将来的日期。",
     "Permission:Scheduling.Actions.Manage": "管理计划操作（取消、重新安排）",
     "Permission:Scheduling.Actions.Read": "查看计划操作（列表、详情）",
     "PermissionGroup:Scheduling": "计划任务",

@@ -22,7 +22,7 @@ public sealed class FluentValidationExceptionStatusCodeMapperTests
     public void ValidationException_Returns422()
     {
         FluentValidationExceptionStatusCodeMapper mapper = Create();
-        ValidationFailure failure = new("Name", "Granit:Validation:NotNullValidator");
+        ValidationFailure failure = new("Name", "Validation:NotNullValidator");
 
         int? result = mapper.TryGetStatusCode(new ValidationException([failure]));
 

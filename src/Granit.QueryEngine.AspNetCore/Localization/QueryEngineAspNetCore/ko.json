@@ -1,0 +1,9 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Validation:CursorPageMutuallyExclusive": "'Cursor'와 'Page'는 동시에 사용할 수 없습니다.",
+    "Validation:MaxFilterEntries": "필터 항목은 최대 50개까지 허용됩니다.",
+    "Validation:MaxPresetEntries": "프리셋 항목은 최대 20개까지 허용됩니다.",
+    "Validation:MaxQuickFilterEntries": "빠른 필터는 최대 20개까지 허용됩니다."
+  }
+}

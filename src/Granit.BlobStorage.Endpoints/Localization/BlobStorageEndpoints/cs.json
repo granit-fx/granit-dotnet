@@ -1,10 +1,12 @@
 {
-    "culture": "cs",
-    "texts": {
-        "BlobStorageEndpoints:Workspace.Item": "Bloby",
-        "BlobStorageEndpoints:Workspace.Section": "Blob storage",
-        "Permission:BlobStorage.Administration.Manage": "Spravovat úložiště souborů (nahrát, stáhnout, smazat, potvrdit, vyčistit)",
-        "Permission:BlobStorage.Administration.Read": "Zobrazit správu úložiště souborů (seznam, popisovače, dotaz)",
-        "PermissionGroup:BlobStorage": "Úložiště souborů"
-    }
+  "culture": "cs",
+  "texts": {
+    "BlobStorageEndpoints:Workspace.Item": "Bloby",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Validation:InvalidContainerName": "Název kontejneru musí být malými alfanumerickými znaky, pomlčky jsou volitelné.",
+    "Validation:InvalidMimeType": "Typ obsahu musí být platný typ MIME.",
+    "Permission:BlobStorage.Administration.Manage": "Spravovat úložiště souborů (nahrát, stáhnout, smazat, potvrdit, vyčistit)",
+    "Permission:BlobStorage.Administration.Read": "Zobrazit správu úložiště souborů (seznam, popisovače, dotaz)",
+    "PermissionGroup:BlobStorage": "Úložiště souborů"
+  }
 }

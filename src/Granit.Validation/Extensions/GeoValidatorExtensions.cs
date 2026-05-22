@@ -13,7 +13,7 @@ public static class GeoValidatorExtensions
     public static IRuleBuilderOptions<T, double> GeoLatitude<T>(this IRuleBuilder<T, double> ruleBuilder) =>
         ruleBuilder
             .Must(value => value is >= -90.0 and <= 90.0)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidGeoLatitude");
+            .WithErrorCodeAndMessage("Validation:InvalidGeoLatitude");
 
     /// <summary>
     /// Validates that a nullable latitude value is within the valid range [-90, 90].
@@ -21,7 +21,7 @@ public static class GeoValidatorExtensions
     public static IRuleBuilderOptions<T, double?> GeoLatitude<T>(this IRuleBuilder<T, double?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value is null or (>= -90.0 and <= 90.0))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidGeoLatitude");
+            .WithErrorCodeAndMessage("Validation:InvalidGeoLatitude");
 
     /// <summary>
     /// Validates that a decimal latitude value is within the valid range [-90, 90].
@@ -29,7 +29,7 @@ public static class GeoValidatorExtensions
     public static IRuleBuilderOptions<T, decimal> GeoLatitude<T>(this IRuleBuilder<T, decimal> ruleBuilder) =>
         ruleBuilder
             .Must(value => value is >= -90m and <= 90m)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidGeoLatitude");
+            .WithErrorCodeAndMessage("Validation:InvalidGeoLatitude");
 
     /// <summary>
     /// Validates that a longitude value is within the valid range [-180, 180].
@@ -37,7 +37,7 @@ public static class GeoValidatorExtensions
     public static IRuleBuilderOptions<T, double> GeoLongitude<T>(this IRuleBuilder<T, double> ruleBuilder) =>
         ruleBuilder
             .Must(value => value is >= -180.0 and <= 180.0)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidGeoLongitude");
+            .WithErrorCodeAndMessage("Validation:InvalidGeoLongitude");
 
     /// <summary>
     /// Validates that a nullable longitude value is within the valid range [-180, 180].
@@ -45,7 +45,7 @@ public static class GeoValidatorExtensions
     public static IRuleBuilderOptions<T, double?> GeoLongitude<T>(this IRuleBuilder<T, double?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value is null or (>= -180.0 and <= 180.0))
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidGeoLongitude");
+            .WithErrorCodeAndMessage("Validation:InvalidGeoLongitude");
 
     /// <summary>
     /// Validates that a decimal longitude value is within the valid range [-180, 180].
@@ -53,5 +53,5 @@ public static class GeoValidatorExtensions
     public static IRuleBuilderOptions<T, decimal> GeoLongitude<T>(this IRuleBuilder<T, decimal> ruleBuilder) =>
         ruleBuilder
             .Must(value => value is >= -180m and <= 180m)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidGeoLongitude");
+            .WithErrorCodeAndMessage("Validation:InvalidGeoLongitude");
 }

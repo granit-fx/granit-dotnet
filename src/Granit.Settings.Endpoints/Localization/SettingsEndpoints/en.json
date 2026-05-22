@@ -4,6 +4,7 @@
     "Granit:Settings:NotFound": "Setting is not declared.",
     "Granit:Settings:ProviderNotAllowed": "This scope is not allowed for this setting.",
     "Granit:Settings:ValidationFailed": "Value does not match the setting's expected format or allow-list.",
+    "Validation:BulkSettingsTooLarge": "Maximum 200 settings allowed per bulk request.",
     "Permission:Settings.Global.Manage": "Manage global settings (view, create, edit)",
     "Permission:Settings.Global.Read": "View global settings",
     "Permission:Settings.Tenant.Manage": "Manage tenant settings (view, create, edit)",

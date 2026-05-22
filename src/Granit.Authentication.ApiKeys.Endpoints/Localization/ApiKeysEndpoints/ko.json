@@ -3,6 +3,11 @@
   "texts": {
     "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
     "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
+    "Validation:ExpirationMustBeFuture": "만료 날짜는 미래여야 합니다.",
+    "Validation:InvalidCidrNotation": "값이 유효한 CIDR 표기법이 아닙니다.",
+    "Validation:InvalidEnvironment": "환경은 'live', 'test' 또는 'dev'여야 합니다.",
+    "Validation:MaxCidrRanges": "최대 50개의 CIDR 범위가 허용됩니다.",
+    "Validation:MaxPermissions": "최대 100개의 권한이 허용됩니다.",
     "Permission:AuthenticationApiKeys.Keys.Create": "새 API 키 생성",
     "Permission:AuthenticationApiKeys.Keys.Read": "API 키 보기 (목록, 상세)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "API 키 해지",

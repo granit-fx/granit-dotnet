@@ -1,0 +1,9 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Validation:CursorPageMutuallyExclusive": "'Cursor' ve 'Page' birlikte kullanılamaz.",
+    "Validation:MaxFilterEntries": "En fazla 50 filtre girişine izin verilir.",
+    "Validation:MaxPresetEntries": "En fazla 20 ön ayara izin verilir.",
+    "Validation:MaxQuickFilterEntries": "En fazla 20 hızlı filtreye izin verilir."
+  }
+}

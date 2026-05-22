@@ -1,6 +1,7 @@
 {
   "culture": "hi",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "निर्धारित तिथि भविष्य में होनी चाहिए।",
     "Permission:Scheduling.Actions.Manage": "निर्धारित कार्य प्रबंधित करें (रद्द करें, पुनर्निर्धारित करें)",
     "Permission:Scheduling.Actions.Read": "निर्धारित कार्य देखें (सूची, विवरण)",
     "PermissionGroup:Scheduling": "शेड्यूलिंग",

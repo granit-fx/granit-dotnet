@@ -13,7 +13,7 @@ internal sealed class AIEmbeddingRequestValidator : AbstractValidator<AIEmbeddin
         RuleFor(x => x.Inputs)
             .NotEmpty()
             .Must(i => i.Count <= options.Value.MaxEmbeddingInputs)
-            .WithErrorCodeAndMessage("Granit:Validation:MaxEmbeddingInputs");
+            .WithErrorCodeAndMessage("Validation:MaxEmbeddingInputs");
 
         RuleForEach(x => x.Inputs)
             .NotEmpty()

@@ -1,6 +1,7 @@
 {
   "culture": "ja",
   "texts": {
+    "Validation:InvalidTemplateNamePattern": "テンプレート名は 'Domain.Name' パターンに従う必要があります（例: 'Billing.Invoice'）。",
     "Permission:Templating.Categories.Manage": "テンプレートカテゴリの管理（作成、編集、削除）",
     "Permission:Templating.Categories.Read": "テンプレートカテゴリの表示",
     "Permission:Templating.Templates.Manage": "テンプレートの管理（表示、作成、編集、削除、公開）",

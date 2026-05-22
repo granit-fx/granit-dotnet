@@ -46,7 +46,7 @@ public sealed class ImportReportTests
             FinalStatus = ImportJobStatus.PartiallyCompleted,
             RowErrors =
             [
-                new ImportRowError(10, ImportRowErrorKind.Validation, ["Granit:Validation:NotEmpty"], "Name is required"),
+                new ImportRowError(10, ImportRowErrorKind.Validation, ["Validation:NotEmpty"], "Name is required"),
                 new ImportRowError(25, ImportRowErrorKind.Conversion, ["Granit:DataExchange:InvalidFormat"], "Invalid date"),
             ],
         };

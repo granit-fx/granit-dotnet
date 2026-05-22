@@ -1,6 +1,7 @@
 {
   "culture": "nl",
   "texts": {
+    "Validation:InvalidTemplateNamePattern": "De sjabloonnaam moet het patroon 'Domein.Naam' volgen (bijv. 'Billing.Invoice').",
     "Permission:Templating.Categories.Manage": "Templatecategorieën beheren (aanmaken, bewerken, verwijderen)",
     "Permission:Templating.Categories.Read": "Templatecategorieën bekijken",
     "Permission:Templating.Templates.Manage": "Sjablonen beheren (bekijken, aanmaken, bewerken, verwijderen, publiceren)",

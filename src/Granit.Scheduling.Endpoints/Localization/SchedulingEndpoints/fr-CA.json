@@ -1,6 +1,7 @@
 {
   "culture": "fr-CA",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "La date planifiée doit être dans le futur.",
     "SchedulingEndpoints:Workspace.Item": "Actions planifiées",
     "SchedulingEndpoints:Workspace.Section": "Planification"
   }

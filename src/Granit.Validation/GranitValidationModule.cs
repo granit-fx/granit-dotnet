@@ -19,7 +19,7 @@ namespace Granit.Validation;
 /// <remarks>
 /// <para>
 /// Registers <c>AddGranitValidation()</c>, which configures FluentValidation to
-/// emit structured error codes (<c>Granit:Validation:*</c>) instead of
+/// emit structured error codes (<c>Validation:*</c>) instead of
 /// human-readable messages. The SPA resolves codes from its local localization
 /// dictionary served by <c>GET /api/{version}/localization</c>.
 /// </para>

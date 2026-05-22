@@ -145,7 +145,7 @@ internal sealed class JsonSchemaWriter(IServiceScopeFactory scopeFactory) : IJso
 
             default:
                 string? errorCode = component.ErrorCode;
-                if (errorCode?.StartsWith("Granit:Validation:", StringComparison.Ordinal) == true)
+                if (errorCode?.StartsWith("Validation:", StringComparison.Ordinal) == true)
                 {
                     propertySchema["x-granit-validator"] = errorCode;
                 }

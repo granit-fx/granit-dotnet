@@ -1,6 +1,7 @@
 {
   "culture": "ja",
   "texts": {
+    "Validation:ScheduledAction:FutureDate": "スケジュール日は将来の日付である必要があります。",
     "Permission:Scheduling.Actions.Manage": "スケジュール済みアクションの管理（キャンセル、再スケジュール）",
     "Permission:Scheduling.Actions.Read": "スケジュール済みアクションの表示（一覧、詳細）",
     "PermissionGroup:Scheduling": "スケジュール",

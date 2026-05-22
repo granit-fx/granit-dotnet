@@ -51,8 +51,8 @@ public sealed class DutchIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(bsn));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidDutchBsn");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidDutchBsn");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidDutchBsn");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidDutchBsn");
     }
 
     // =========================================================================
@@ -86,8 +86,8 @@ public sealed class DutchIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(kvk));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidDutchKvk");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidDutchKvk");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidDutchKvk");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidDutchKvk");
     }
 
     // =========================================================================
@@ -125,8 +125,8 @@ public sealed class DutchIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(postcode));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidDutchPostcode");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidDutchPostcode");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidDutchPostcode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidDutchPostcode");
     }
 
     // -------------------------------------------------------------------------

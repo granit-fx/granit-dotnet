@@ -53,7 +53,7 @@ public sealed class AmericanAddressValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(zip));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidUsZipCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUsZipCode");
     }
 
     // =========================================================================
@@ -98,7 +98,7 @@ public sealed class AmericanAddressValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(phone));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidNanpPhoneNumber");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidNanpPhoneNumber");
     }
 
     // -------------------------------------------------------------------------

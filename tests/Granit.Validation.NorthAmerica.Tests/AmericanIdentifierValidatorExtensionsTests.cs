@@ -59,7 +59,7 @@ public sealed class AmericanIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(ssn));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidUsSsn");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUsSsn");
     }
 
     // =========================================================================
@@ -99,7 +99,7 @@ public sealed class AmericanIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(ein));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidUsEin");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUsEin");
     }
 
     // =========================================================================
@@ -141,7 +141,7 @@ public sealed class AmericanIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidUsStateCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUsStateCode");
     }
 
     // -------------------------------------------------------------------------

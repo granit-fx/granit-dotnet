@@ -1,12 +1,12 @@
 {
   "culture": "tr",
   "texts": {
-    "Granit:Validation:InvalidUkNationalInsuranceNumber": "Birleşik Krallık National Insurance numarası geçersiz.",
-    "Granit:Validation:InvalidUkNhsNumber": "NHS numarası geçersiz.",
-    "Granit:Validation:InvalidUkUtr": "Unique Taxpayer Reference (UTR) geçersiz.",
-    "Granit:Validation:InvalidUkVat": "Birleşik Krallık KDV numarası geçersiz.",
-    "Granit:Validation:InvalidUkCompaniesHouseNumber": "Companies House kayıt numarası geçersiz.",
-    "Granit:Validation:InvalidUkPostcode": "Birleşik Krallık posta kodu geçersiz.",
-    "Granit:Validation:InvalidUkSortCode": "Birleşik Krallık banka sort code'u geçersiz (6 rakam bekleniyor)."
+    "Validation:InvalidUkNationalInsuranceNumber": "Birleşik Krallık National Insurance numarası geçersiz.",
+    "Validation:InvalidUkNhsNumber": "NHS numarası geçersiz.",
+    "Validation:InvalidUkUtr": "Unique Taxpayer Reference (UTR) geçersiz.",
+    "Validation:InvalidUkVat": "Birleşik Krallık KDV numarası geçersiz.",
+    "Validation:InvalidUkCompaniesHouseNumber": "Companies House kayıt numarası geçersiz.",
+    "Validation:InvalidUkPostcode": "Birleşik Krallık posta kodu geçersiz.",
+    "Validation:InvalidUkSortCode": "Birleşik Krallık banka sort code'u geçersiz (6 rakam bekleniyor)."
   }
 }

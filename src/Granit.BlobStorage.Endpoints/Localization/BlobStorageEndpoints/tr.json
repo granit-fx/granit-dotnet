@@ -1,10 +1,12 @@
 {
-    "culture": "tr",
-    "texts": {
-        "BlobStorageEndpoints:Workspace.Item": "Bloblar",
-        "BlobStorageEndpoints:Workspace.Section": "Blob storage",
-        "Permission:BlobStorage.Administration.Manage": "Dosya depolamayı yönet (yükle, indir, sil, onayla, temizle)",
-        "Permission:BlobStorage.Administration.Read": "Dosya depolama yönetimini görüntüle (liste, tanımlayıcılar, sorgu)",
-        "PermissionGroup:BlobStorage": "Dosya depolama"
-    }
+  "culture": "tr",
+  "texts": {
+    "BlobStorageEndpoints:Workspace.Item": "Bloblar",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Validation:InvalidContainerName": "Kapsayıcı adı küçük harfli alfanümerik olmalı, kısa çizgiler isteğe bağlıdır.",
+    "Validation:InvalidMimeType": "İçerik türü geçerli bir MIME türü olmalıdır.",
+    "Permission:BlobStorage.Administration.Manage": "Dosya depolamayı yönet (yükle, indir, sil, onayla, temizle)",
+    "Permission:BlobStorage.Administration.Read": "Dosya depolama yönetimini görüntüle (liste, tanımlayıcılar, sorgu)",
+    "PermissionGroup:BlobStorage": "Dosya depolama"
+  }
 }

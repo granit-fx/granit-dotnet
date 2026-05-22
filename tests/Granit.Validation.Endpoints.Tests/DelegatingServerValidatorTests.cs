@@ -10,10 +10,10 @@ public sealed class DelegatingServerValidatorTests
     public void Validate_DelegatesToFunc()
     {
         var validator = new DelegatingServerValidator(
-            "Granit:Validation:Test",
+            "Validation:Test",
             value => value == "valid");
 
-        validator.ErrorCode.ShouldBe("Granit:Validation:Test");
+        validator.ErrorCode.ShouldBe("Validation:Test");
         validator.Validate("valid").ShouldBeTrue();
         validator.Validate("invalid").ShouldBeFalse();
         validator.Validate(null).ShouldBeFalse();
@@ -29,7 +29,7 @@ public sealed class DelegatingServerValidatorTests
     [Fact]
     public void IsSensitive_DefaultsFalse()
     {
-        var validator = new DelegatingServerValidator("Granit:Validation:Test", _ => true);
+        var validator = new DelegatingServerValidator("Validation:Test", _ => true);
 
         validator.IsSensitive.ShouldBeFalse();
     }
@@ -37,7 +37,7 @@ public sealed class DelegatingServerValidatorTests
     [Fact]
     public void IsSensitive_WhenExplicitlyTrue_ReturnsTrue()
     {
-        var validator = new DelegatingServerValidator("Granit:Validation:Test", _ => true, isSensitive: true);
+        var validator = new DelegatingServerValidator("Validation:Test", _ => true, isSensitive: true);
 
         validator.IsSensitive.ShouldBeTrue();
     }

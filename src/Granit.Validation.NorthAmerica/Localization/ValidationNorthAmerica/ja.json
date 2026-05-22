@@ -1,13 +1,13 @@
 {
   "culture": "ja",
   "texts": {
-    "Granit:Validation:InvalidUsSsn": "米国社会保障番号 (SSN) が無効です。",
-    "Granit:Validation:InvalidUsEin": "米国雇用者識別番号 (EIN) が無効です。",
-    "Granit:Validation:InvalidUsZipCode": "米国の郵便番号 (ZIP) が無効です（5桁またはZIP+4形式が必要です）。",
-    "Granit:Validation:InvalidNanpPhoneNumber": "電話番号が無効です（NANP形式が必要: NXX-NXX-XXXX）。",
-    "Granit:Validation:InvalidUsStateCode": "米国の州または準州コードが無効です。",
-    "Granit:Validation:InvalidCanadianSin": "カナダの社会保険番号 (SIN) が無効です。",
-    "Granit:Validation:InvalidCanadianPostalCode": "カナダの郵便番号が無効です（形式: A1A 1A1）。",
-    "Granit:Validation:InvalidCanadianBusinessNumber": "カナダの事業番号 (BN) が無効です。"
+    "Validation:InvalidUsSsn": "米国社会保障番号 (SSN) が無効です。",
+    "Validation:InvalidUsEin": "米国雇用者識別番号 (EIN) が無効です。",
+    "Validation:InvalidUsZipCode": "米国の郵便番号 (ZIP) が無効です（5桁またはZIP+4形式が必要です）。",
+    "Validation:InvalidNanpPhoneNumber": "電話番号が無効です（NANP形式が必要: NXX-NXX-XXXX）。",
+    "Validation:InvalidUsStateCode": "米国の州または準州コードが無効です。",
+    "Validation:InvalidCanadianSin": "カナダの社会保険番号 (SIN) が無効です。",
+    "Validation:InvalidCanadianPostalCode": "カナダの郵便番号が無効です（形式: A1A 1A1）。",
+    "Validation:InvalidCanadianBusinessNumber": "カナダの事業番号 (BN) が無効です。"
   }
 }

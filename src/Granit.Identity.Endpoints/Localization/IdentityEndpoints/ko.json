@@ -1,6 +1,7 @@
 {
   "culture": "ko",
   "texts": {
+    "Validation:MaxCustomAttributes": "사용자 정의 속성의 최대 수를 초과했습니다.",
     "IdentityEndpoints:Workspace.Groups": "Groups",
     "IdentityEndpoints:Workspace.Roles": "Roles",
     "IdentityEndpoints:Workspace.Section": "Identity",

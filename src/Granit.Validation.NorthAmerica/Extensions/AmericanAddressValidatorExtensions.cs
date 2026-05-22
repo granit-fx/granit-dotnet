@@ -18,7 +18,7 @@ public static class AmericanAddressValidatorExtensions
     public static IRuleBuilderOptions<T, string?> UsZipCode<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(ZipCodeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidUsZipCode");
+            .WithErrorCodeAndMessage("Validation:InvalidUsZipCode");
 
     /// <summary>
     /// Validates a NANP (North American Numbering Plan) phone number.
@@ -31,5 +31,5 @@ public static class AmericanAddressValidatorExtensions
     public static IRuleBuilderOptions<T, string?> NanpPhoneNumber<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(NanpPhoneAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidNanpPhoneNumber");
+            .WithErrorCodeAndMessage("Validation:InvalidNanpPhoneNumber");
 }

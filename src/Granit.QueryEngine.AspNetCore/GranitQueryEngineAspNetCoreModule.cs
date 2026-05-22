@@ -1,6 +1,8 @@
 using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
+using Granit.QueryEngine.AspNetCore.Internal;
 using Granit.Validation;
 
 namespace Granit.QueryEngine.AspNetCore;
@@ -19,4 +21,12 @@ namespace Granit.QueryEngine.AspNetCore;
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitQueryEngineModule),
     typeof(GranitValidationModule))]
-public sealed class GranitQueryEngineAspNetCoreModule : GranitModule;
+public sealed class GranitQueryEngineAspNetCoreModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        context.Services.AddLocalizationResource<QueryEngineAspNetCoreLocalizationResource>();
+    }
+}

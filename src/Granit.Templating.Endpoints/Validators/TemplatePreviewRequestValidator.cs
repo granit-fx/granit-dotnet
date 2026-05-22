@@ -16,7 +16,7 @@ internal sealed class TemplatePreviewRequestValidator : GranitValidator<Template
         RuleFor(x => x.Culture)
             .MaximumLength(TemplatingPatterns.MaxCultureLength)
             .Matches(TemplatingPatterns.Bcp47Pattern())
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidBcp47LanguageTag")
+            .WithErrorCodeAndMessage("Validation:InvalidBcp47LanguageTag")
             .When(x => x.Culture is not null);
     }
 }

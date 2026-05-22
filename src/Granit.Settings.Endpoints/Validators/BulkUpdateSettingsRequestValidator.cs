@@ -20,7 +20,7 @@ internal sealed class BulkUpdateSettingsRequestValidator : GranitValidator<BulkU
         RuleFor(x => x.Settings)
             .NotEmpty()
             .Must(s => s is null || s.Count <= MaxEntries)
-            .WithErrorCodeAndMessage("Granit:Validation:BulkSettingsTooLarge");
+            .WithErrorCodeAndMessage("Validation:BulkSettingsTooLarge");
 
         RuleForEach(x => x.Settings).ChildRules(entry =>
         {

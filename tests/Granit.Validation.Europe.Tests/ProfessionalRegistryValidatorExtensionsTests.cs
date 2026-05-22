@@ -50,8 +50,8 @@ public sealed class ProfessionalRegistryValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(inami));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Granit:Validation:InvalidBelgianInami");
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidBelgianInami");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidBelgianInami");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidBelgianInami");
     }
 
     // -------------------------------------------------------------------------

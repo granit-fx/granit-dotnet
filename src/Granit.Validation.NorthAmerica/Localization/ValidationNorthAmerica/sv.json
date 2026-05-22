@@ -1,13 +1,13 @@
 {
   "culture": "sv",
   "texts": {
-    "Granit:Validation:InvalidUsSsn": "Det amerikanska socialförsäkringsnumret (SSN) är ogiltigt.",
-    "Granit:Validation:InvalidUsEin": "Det amerikanska arbetsgivaridentifikationsnumret (EIN) är ogiltigt.",
-    "Granit:Validation:InvalidUsZipCode": "Det amerikanska postnumret (ZIP) är ogiltigt (5 siffror eller ZIP+4-format förväntas).",
-    "Granit:Validation:InvalidNanpPhoneNumber": "Telefonnumret är ogiltigt (NANP-format förväntas: NXX-NXX-XXXX).",
-    "Granit:Validation:InvalidUsStateCode": "Den amerikanska delstats- eller territorialkoden är ogiltig.",
-    "Granit:Validation:InvalidCanadianSin": "Det kanadensiska socialförsäkringsnumret (SIN) är ogiltigt.",
-    "Granit:Validation:InvalidCanadianPostalCode": "Det kanadensiska postnumret är ogiltigt (förväntat format: A1A 1A1).",
-    "Granit:Validation:InvalidCanadianBusinessNumber": "Det kanadensiska företagsnumret (BN) är ogiltigt."
+    "Validation:InvalidUsSsn": "Det amerikanska socialförsäkringsnumret (SSN) är ogiltigt.",
+    "Validation:InvalidUsEin": "Det amerikanska arbetsgivaridentifikationsnumret (EIN) är ogiltigt.",
+    "Validation:InvalidUsZipCode": "Det amerikanska postnumret (ZIP) är ogiltigt (5 siffror eller ZIP+4-format förväntas).",
+    "Validation:InvalidNanpPhoneNumber": "Telefonnumret är ogiltigt (NANP-format förväntas: NXX-NXX-XXXX).",
+    "Validation:InvalidUsStateCode": "Den amerikanska delstats- eller territorialkoden är ogiltig.",
+    "Validation:InvalidCanadianSin": "Det kanadensiska socialförsäkringsnumret (SIN) är ogiltigt.",
+    "Validation:InvalidCanadianPostalCode": "Det kanadensiska postnumret är ogiltigt (förväntat format: A1A 1A1).",
+    "Validation:InvalidCanadianBusinessNumber": "Det kanadensiska företagsnumret (BN) är ogiltigt."
   }
 }

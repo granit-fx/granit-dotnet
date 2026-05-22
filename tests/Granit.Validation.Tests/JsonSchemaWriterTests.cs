@@ -165,7 +165,7 @@ public sealed class JsonSchemaWriterTests
 
         JsonNode prop = schema["properties"]!["code"]!;
         prop["pattern"]!.GetValue<string>().ShouldBe(@"^[A-Z]{2}$");
-        prop["x-granit-pattern-hint"]!.GetValue<string>().ShouldBe("Granit:Validation:Hints:Alpha2Code");
+        prop["x-granit-pattern-hint"]!.GetValue<string>().ShouldBe("Validation:Hints:Alpha2Code");
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public sealed class JsonSchemaWriterTests
 
         schema["properties"]!["value"]!["x-granit-validator"]!
             .GetValue<string>()
-            .ShouldBe("Granit:Validation:CustomFoo");
+            .ShouldBe("Validation:CustomFoo");
     }
 
     [Fact]
@@ -343,7 +343,7 @@ public sealed class JsonSchemaWriterTests
         public PatternHintRequestValidator() =>
             RuleFor(x => x.Code)
                 .Matches(@"^[A-Z]{2}$")
-                .WithPatternHint("Granit:Validation:Hints:Alpha2Code");
+                .WithPatternHint("Validation:Hints:Alpha2Code");
     }
 
     private sealed record CustomCodeRequest(string Value);
@@ -353,7 +353,7 @@ public sealed class JsonSchemaWriterTests
         public CustomCodeRequestValidator() =>
             RuleFor(x => x.Value)
                 .Must(v => v?.StartsWith('X') == true)
-                .WithErrorCode("Granit:Validation:CustomFoo");
+                .WithErrorCode("Validation:CustomFoo");
     }
 
     private sealed record CompositeRequest(string Code);

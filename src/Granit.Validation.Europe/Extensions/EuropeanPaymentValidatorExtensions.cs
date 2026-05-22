@@ -21,7 +21,7 @@ public static class EuropeanPaymentValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchRib<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(FrenchRibAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidFrenchRib");
+            .WithErrorCodeAndMessage("Validation:InvalidFrenchRib");
 
     /// <summary>
     /// Validates a Belgian bank account number in the legacy pre-IBAN format.
@@ -37,5 +37,5 @@ public static class EuropeanPaymentValidatorExtensions
     public static IRuleBuilderOptions<T, string?> BelgianAccountNumber<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(BelgianAccountNumberAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Granit:Validation:InvalidBelgianAccountNumber");
+            .WithErrorCodeAndMessage("Validation:InvalidBelgianAccountNumber");
 }

@@ -4,6 +4,7 @@
     "Granit:Settings:NotFound": "Configuração não declarada.",
     "Granit:Settings:ProviderNotAllowed": "Este escopo não é permitido para esta configuração.",
     "Granit:Settings:ValidationFailed": "O valor não corresponde ao formato esperado ou à lista permitida.",
+    "Validation:BulkSettingsTooLarge": "São permitidas no máximo 200 configurações por solicitação em lote.",
     "Permission:Settings.Global.Manage": "Gerir definições globais (ver, criar, editar)",
     "Permission:Settings.Global.Read": "Ver definições globais",
     "Permission:Settings.Tenant.Manage": "Gerir definições do inquilino (ver, criar, editar)",

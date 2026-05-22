@@ -1,12 +1,12 @@
 {
   "culture": "ko",
   "texts": {
-    "Granit:Validation:InvalidUkNationalInsuranceNumber": "영국 국민보험번호가 유효하지 않습니다.",
-    "Granit:Validation:InvalidUkNhsNumber": "NHS 번호가 유효하지 않습니다.",
-    "Granit:Validation:InvalidUkUtr": "고유 납세자 참조번호 (UTR)가 유효하지 않습니다.",
-    "Granit:Validation:InvalidUkVat": "영국 부가가치세 등록번호가 유효하지 않습니다.",
-    "Granit:Validation:InvalidUkCompaniesHouseNumber": "Companies House 등록번호가 유효하지 않습니다.",
-    "Granit:Validation:InvalidUkPostcode": "영국 우편번호가 유효하지 않습니다.",
-    "Granit:Validation:InvalidUkSortCode": "영국 은행 정렬 코드가 유효하지 않습니다 (6자리 필요)."
+    "Validation:InvalidUkNationalInsuranceNumber": "영국 국민보험번호가 유효하지 않습니다.",
+    "Validation:InvalidUkNhsNumber": "NHS 번호가 유효하지 않습니다.",
+    "Validation:InvalidUkUtr": "고유 납세자 참조번호 (UTR)가 유효하지 않습니다.",
+    "Validation:InvalidUkVat": "영국 부가가치세 등록번호가 유효하지 않습니다.",
+    "Validation:InvalidUkCompaniesHouseNumber": "Companies House 등록번호가 유효하지 않습니다.",
+    "Validation:InvalidUkPostcode": "영국 우편번호가 유효하지 않습니다.",
+    "Validation:InvalidUkSortCode": "영국 은행 정렬 코드가 유효하지 않습니다 (6자리 필요)."
   }
 }

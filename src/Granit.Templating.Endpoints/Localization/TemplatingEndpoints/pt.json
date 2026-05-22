@@ -1,6 +1,7 @@
 {
   "culture": "pt",
   "texts": {
+    "Validation:InvalidTemplateNamePattern": "O nome do modelo deve seguir o padrão 'Domínio.Nome' (ex.: 'Billing.Invoice').",
     "Permission:Templating.Categories.Manage": "Gerir categorias de modelos (criar, editar, eliminar)",
     "Permission:Templating.Categories.Read": "Ver categorias de modelos",
     "Permission:Templating.Templates.Manage": "Gerir modelos (ver, criar, editar, eliminar, publicar)",

@@ -1,10 +1,12 @@
 {
-    "culture": "ja",
-    "texts": {
-        "BlobStorageEndpoints:Workspace.Item": "Blob",
-        "BlobStorageEndpoints:Workspace.Section": "Blob storage",
-        "Permission:BlobStorage.Administration.Manage": "ファイルストレージを管理（アップロード、ダウンロード、削除、確認、クリーンアップ）",
-        "Permission:BlobStorage.Administration.Read": "ファイルストレージ管理を表示（一覧、記述子、クエリ）",
-        "PermissionGroup:BlobStorage": "ファイルストレージ"
-    }
+  "culture": "ja",
+  "texts": {
+    "BlobStorageEndpoints:Workspace.Item": "Blob",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Validation:InvalidContainerName": "コンテナ名は小文字の英数字で、ハイフンは任意です。",
+    "Validation:InvalidMimeType": "コンテンツタイプは有効な MIME タイプでなければなりません。",
+    "Permission:BlobStorage.Administration.Manage": "ファイルストレージを管理（アップロード、ダウンロード、削除、確認、クリーンアップ）",
+    "Permission:BlobStorage.Administration.Read": "ファイルストレージ管理を表示（一覧、記述子、クエリ）",
+    "PermissionGroup:BlobStorage": "ファイルストレージ"
+  }
 }

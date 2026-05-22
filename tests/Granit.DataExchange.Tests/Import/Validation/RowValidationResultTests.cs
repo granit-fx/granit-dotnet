@@ -20,7 +20,7 @@ public sealed class RowValidationResultTests
     {
         var sut = new RowValidationResult
         {
-            Errors = [new RowFieldError("Name", "Granit:Validation:NotEmpty", "Name is required.")]
+            Errors = [new RowFieldError("Name", "Validation:NotEmpty", "Name is required.")]
         };
 
         sut.IsValid.ShouldBeFalse();

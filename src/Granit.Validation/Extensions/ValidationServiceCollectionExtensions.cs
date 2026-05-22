@@ -16,7 +16,7 @@ public static class ValidationServiceCollectionExtensions
     /// <remarks>
     /// Sets <c>ValidatorOptions.Global.LanguageManager</c> to
     /// <c>GranitErrorCodeLanguageManager</c> so that all built-in FluentValidation
-    /// rules return codes following the <c>Granit:Validation:{ValidatorName}</c>
+    /// rules return codes following the <c>Validation:{ValidatorName}</c>
     /// convention. The SPA resolves these codes from its local localization dictionary.
     /// </remarks>
     /// <param name="services">The service collection.</param>

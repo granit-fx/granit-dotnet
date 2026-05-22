@@ -1,7 +1,7 @@
 {
   "culture": "sv",
   "texts": {
-    "Granit:Validation:TooManyAttachments": "Det går inte att bifoga fler än 20 filer.",
+    "Validation:TooManyAttachments": "Det går inte att bifoga fler än 20 filer.",
     "Permission:Timeline.Entries.Create": "Publicera kommentarer och följa/sluta följa entiteter",
     "Permission:Timeline.Entries.Manage": "Hantera (ta bort) tidslinjepost oavsett ägare",
     "Permission:Timeline.Entries.Read": "Visa aktivitetsflöden och revisionshistorik",

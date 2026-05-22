@@ -4,6 +4,7 @@
     "Granit:Settings:NotFound": "未声明的设置。",
     "Granit:Settings:ProviderNotAllowed": "此作用域不允许该设置。",
     "Granit:Settings:ValidationFailed": "值不符合预期格式或允许列表。",
+    "Validation:BulkSettingsTooLarge": "每个批量请求最多允许 200 个设置。",
     "Permission:Settings.Global.Manage": "管理全局设置（查看、创建、编辑）",
     "Permission:Settings.Global.Read": "查看全局设置",
     "Permission:Settings.Tenant.Manage": "管理租户设置（查看、创建、编辑）",

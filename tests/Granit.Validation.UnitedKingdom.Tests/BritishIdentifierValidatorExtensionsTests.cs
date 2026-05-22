@@ -72,7 +72,7 @@ public sealed class BritishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(ni));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidUkNationalInsuranceNumber");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUkNationalInsuranceNumber");
     }
 
     // =========================================================================
@@ -108,7 +108,7 @@ public sealed class BritishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(nhs));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Granit:Validation:InvalidUkNhsNumber");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUkNhsNumber");
     }
 
     // -------------------------------------------------------------------------
