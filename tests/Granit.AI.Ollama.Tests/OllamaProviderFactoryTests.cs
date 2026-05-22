@@ -120,4 +120,44 @@ public sealed class OllamaProviderFactoryTests
         await Should.ThrowAsync<AIProviderCredentialNotConfiguredException>(
             async () => await factory.CreateChatClientAsync(CreateWorkspace(), TestContext.Current.CancellationToken));
     }
+
+    [Fact]
+    public async Task CreateChatClientAsync_HostEndpointToPrivateIp_RoutesThroughHostHttpClient()
+    {
+        // The HostPermissive policy allows operator-trusted private deployments. Before the
+        // fix, a single shared HttpClient was wired to the strict tenant connect callback —
+        // so even a host-options private IP was rejected at TCP connect. The cache now selects
+        // the Host-named client (which carries HostPermissive) when credential.Scope == Host.
+        OllamaProviderOptions options = new()
+        {
+            Endpoint = "http://192.168.10.13:11434",
+            DefaultModel = "llama3.2",
+        };
+        (OllamaProviderFactory factory, _, _, _, TestHttpClientFactory http) =
+            TestFixtures.BuildFactoryWithHttp(options);
+
+        IChatClient client = await factory.CreateChatClientAsync(
+            CreateWorkspace(), TestContext.Current.CancellationToken);
+
+        client.ShouldNotBeNull();
+        http.RequestedNames.ShouldContain(OllamaProviderFactory.HostHttpClientName);
+        http.RequestedNames.ShouldNotContain(OllamaProviderFactory.TenantHttpClientName);
+    }
+
+    [Fact]
+    public async Task CreateChatClientAsync_WorkspaceEndpoint_RoutesThroughTenantHttpClient()
+    {
+        // Workspace-scoped endpoint must keep the strict OllamaTenant connect policy so DNS
+        // rebinding to a private IP at call time still gets blocked.
+        (OllamaProviderFactory factory, _, _, _, TestHttpClientFactory http) =
+            TestFixtures.BuildFactoryWithHttp();
+
+        IChatClient client = await factory.CreateChatClientAsync(
+            CreateWorkspace(endpoint: "http://127.0.0.1:11434"),
+            TestContext.Current.CancellationToken);
+
+        client.ShouldNotBeNull();
+        http.RequestedNames.ShouldContain(OllamaProviderFactory.TenantHttpClientName);
+        http.RequestedNames.ShouldNotContain(OllamaProviderFactory.HostHttpClientName);
+    }
 }

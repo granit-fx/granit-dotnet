@@ -27,8 +27,18 @@ internal sealed class OllamaProviderFactory(
     OllamaClientCache clientCache,
     TimeProvider timeProvider) : IAIProviderFactory, IAIModelCatalog
 {
-    /// <summary>Named <see cref="HttpClient"/> consumed by the SDK client cache.</summary>
-    internal const string HttpClientName = "Granit.AI.Ollama";
+    /// <summary>
+    /// Named <see cref="HttpClient"/> for Workspace/Tenant/Global-scoped endpoints —
+    /// strict <see cref="AIEndpointPolicy.OllamaTenant"/> connect-time policy.
+    /// </summary>
+    internal const string TenantHttpClientName = "Granit.AI.Ollama";
+
+    /// <summary>
+    /// Named <see cref="HttpClient"/> for Host-scoped endpoints (operator-trusted, e.g. a
+    /// private deployment) — permissive <see cref="AIEndpointPolicy.HostPermissive"/>
+    /// connect-time policy.
+    /// </summary>
+    internal const string HostHttpClientName = "Granit.AI.Ollama.Host";
 
     private static readonly TimeSpan CatalogCacheDuration = TimeSpan.FromSeconds(30);
 
@@ -54,7 +64,7 @@ internal sealed class OllamaProviderFactory(
             .ResolveAsync(workspace, cancellationToken)
             .ConfigureAwait(false);
 
-        OllamaApiClient inner = clientCache.GetOrCreate(credential.Endpoint!, model);
+        OllamaApiClient inner = clientCache.GetOrCreate(credential.Endpoint!, model, credential.Scope);
         return new TracingOllamaChatClient(inner, model, credential);
     }
 
@@ -73,7 +83,7 @@ internal sealed class OllamaProviderFactory(
             .ResolveAsync(workspace, cancellationToken)
             .ConfigureAwait(false);
 
-        return clientCache.GetOrCreate(credential.Endpoint!, model);
+        return clientCache.GetOrCreate(credential.Endpoint!, model, credential.Scope);
     }
 
     /// <inheritdoc/>
@@ -93,7 +103,10 @@ internal sealed class OllamaProviderFactory(
             return [];
         }
 
-        OllamaApiClient client = clientCache.GetOrCreate(opts.Endpoint, opts.DefaultModel);
+        // Catalog uses the Host-options endpoint by construction → permissive connect policy
+        // so an operator-trusted private/internal deployment is reachable.
+        OllamaApiClient client = clientCache.GetOrCreate(
+            opts.Endpoint, opts.DefaultModel, AIProviderCredentialScope.Host);
 
         IEnumerable<Model> localModels = await client
             .ListLocalModelsAsync(cancellationToken)

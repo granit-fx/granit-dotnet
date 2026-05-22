@@ -44,15 +44,25 @@ public static class AIOllamaHostApplicationBuilderExtensions
 
         builder.Services.TryAddSingleton(TimeProvider.System);
 
-        // The OllamaSharp client uses the HttpClient timeout directly. AllowAutoRedirect=false +
-        // GranitSafeConnectCallback close the redirect-to-metadata SSRF path even when an
-        // operator points the host at a permissive endpoint.
+        // Two named clients keep the connect-time policy aligned with the scope-validated URL.
+        // Tenant/Workspace/Global endpoints connect via the strict OllamaTenant policy (no
+        // private IPs — DNS rebinding defence). The Host-options endpoint connects via the
+        // permissive policy so an operator-trusted private deployment is reachable. Both
+        // disable redirects to close the redirect-to-metadata SSRF path.
         builder.Services
-            .AddHttpClient(OllamaProviderFactory.HttpClientName)
+            .AddHttpClient(OllamaProviderFactory.TenantHttpClientName)
             .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
             {
                 AllowAutoRedirect = false,
                 ConnectCallback = GranitSafeConnectCallback.Create(AIEndpointPolicy.OllamaTenant),
+            });
+
+        builder.Services
+            .AddHttpClient(OllamaProviderFactory.HostHttpClientName)
+            .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
+            {
+                AllowAutoRedirect = false,
+                ConnectCallback = GranitSafeConnectCallback.Create(AIEndpointPolicy.HostPermissive),
             });
 
         builder.Services.AddSingleton<OllamaClientCache>();

@@ -55,7 +55,13 @@ internal sealed class TestOptionsMonitor<T>(T initial) : IOptionsMonitor<T>
 
 internal sealed class TestHttpClientFactory : IHttpClientFactory
 {
-    public HttpClient CreateClient(string name) => new();
+    public List<string> RequestedNames { get; } = [];
+
+    public HttpClient CreateClient(string name)
+    {
+        RequestedNames.Add(name);
+        return new HttpClient();
+    }
 }
 
 internal sealed class TestSettingValueProvider(string name) : ISettingValueProvider
@@ -107,13 +113,26 @@ internal static class TestFixtures
                    TestOptionsMonitor<OllamaProviderOptions> Monitor)
         BuildFactory(OllamaProviderOptions? options = null)
     {
+        (OllamaProviderFactory factory, TestSettingValueProvider tenant, TestSettingValueProvider global,
+            TestOptionsMonitor<OllamaProviderOptions> monitor, _) = BuildFactoryWithHttp(options);
+        return (factory, tenant, global, monitor);
+    }
+
+    public static (OllamaProviderFactory Factory,
+                   TestSettingValueProvider Tenant,
+                   TestSettingValueProvider Global,
+                   TestOptionsMonitor<OllamaProviderOptions> Monitor,
+                   TestHttpClientFactory HttpFactory)
+        BuildFactoryWithHttp(OllamaProviderOptions? options = null)
+    {
         var monitor = new TestOptionsMonitor<OllamaProviderOptions>(options ?? DefaultOptions());
         TestSettingValueProvider tenant = new(TenantSettingValueProvider.ProviderName);
         TestSettingValueProvider global = new(GlobalSettingValueProvider.ProviderName);
         SettingDefinitionManager definitions = BuildDefinitionManager();
         OllamaCredentialResolver resolver = new(definitions, [tenant, global], monitor);
-        OllamaClientCache cache = new(new TestHttpClientFactory(), Microsoft.Extensions.Options.Options.Create(monitor.CurrentValue));
+        TestHttpClientFactory httpFactory = new();
+        OllamaClientCache cache = new(httpFactory, Microsoft.Extensions.Options.Options.Create(monitor.CurrentValue));
         OllamaProviderFactory factory = new(monitor, resolver, cache, TimeProvider.System);
-        return (factory, tenant, global, monitor);
+        return (factory, tenant, global, monitor, httpFactory);
     }
 }
