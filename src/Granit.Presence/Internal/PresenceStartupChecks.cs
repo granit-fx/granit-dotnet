@@ -23,13 +23,17 @@ internal sealed partial class PresenceStartupChecks(
             return Task.CompletedTask;
         }
 
-        IPresenceStore store = services.GetRequiredService<IPresenceStore>();
+        // The store registration may be Scoped (EF Core impl depends on IDbContextFactory which is
+        // itself Scoped). Resolve through a fresh scope rather than from the root provider so that
+        // ValidateScopes does not flag this hosted service.
+        using IServiceScope scope = services.CreateScope();
+        IPresenceStore store = scope.ServiceProvider.GetRequiredService<IPresenceStore>();
         if (store is InMemoryPresenceStore)
         {
             LogInMemoryStoreInProduction(logger);
         }
 
-        ICacheValueEncryptor? encryptor = services.GetService<ICacheValueEncryptor>();
+        ICacheValueEncryptor? encryptor = scope.ServiceProvider.GetService<ICacheValueEncryptor>();
         if (encryptor is null || encryptor is NullCacheValueEncryptor)
         {
             LogUnencryptedCache(logger);

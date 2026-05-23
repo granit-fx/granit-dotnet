@@ -20,7 +20,7 @@ public static class PresenceEntityFrameworkCoreHostApplicationBuilderExtensions
     /// Must be called after <c>AddGranitPresence()</c>. Registers:
     /// <list type="bullet">
     ///   <item><see cref="Internal.PresenceDbContext"/> via <c>IDbContextFactory</c> for thread-safe usage.</item>
-    ///   <item><see cref="Internal.EfPresenceStore"/> as <see cref="IPresenceStore"/>.</item>
+    ///   <item><see cref="Internal.EfPresenceStore"/> as <see cref="IPresenceStore"/> (Scoped).</item>
     /// </list>
     /// </remarks>
     public static IHostApplicationBuilder AddGranitPresenceEntityFrameworkCore(
@@ -32,8 +32,13 @@ public static class PresenceEntityFrameworkCoreHostApplicationBuilderExtensions
 
         builder.Services.AddGranitDbContext<PresenceDbContext>(configure);
 
+        // Scoped: AddGranitDbContext registers IDbContextFactory<T> as Scoped (the EF interceptors
+        // wired by the factory depend on Scoped services such as ICurrentTenant / ICurrentUser).
+        // EfPresenceStore injects the factory and must therefore also be Scoped to avoid captive
+        // dependency violations under ValidateScopes / ValidateOnBuild.
+        builder.Services.AddScoped<EfPresenceStore>();
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<IPresenceStore, EfPresenceStore>());
+            ServiceDescriptor.Scoped<IPresenceStore>(sp => sp.GetRequiredService<EfPresenceStore>()));
 
         return builder;
     }
