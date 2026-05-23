@@ -21,6 +21,7 @@ internal sealed class S3BlobClient : IBlobStoreProvider, IPresignedUrlProvider, 
 {
     private readonly AmazonS3Client _s3;
     private readonly IClock _clock;
+    private readonly Uri? _httpServiceUrl;
 
     public S3BlobClient(IOptions<S3BlobOptions> options, IClock clock)
     {
@@ -31,6 +32,11 @@ internal sealed class S3BlobClient : IBlobStoreProvider, IPresignedUrlProvider, 
         Amazon.Runtime.BasicAWSCredentials credentials = new(opts.AccessKey, opts.SecretKey);
         _s3 = new AmazonS3Client(credentials, config);
         _clock = clock;
+
+        // See S3PresignedUrlRewriter for why post-rewriting is required on AWSSDK.S3 v4.
+        _httpServiceUrl = opts.ServiceUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            ? new Uri(opts.ServiceUrl)
+            : null;
     }
 
     // ── IPresignedUrlProvider ─────────────────────────────────────────────────
@@ -70,7 +76,7 @@ internal sealed class S3BlobClient : IBlobStoreProvider, IPresignedUrlProvider, 
             }
         }
 
-        string uploadUrl = _s3.GetPreSignedURL(presignRequest);
+        string uploadUrl = S3PresignedUrlRewriter.ForceScheme(_s3.GetPreSignedURL(presignRequest), _httpServiceUrl);
 
         Dictionary<string, string> requiredHeaders = new()
         {
@@ -113,7 +119,7 @@ internal sealed class S3BlobClient : IBlobStoreProvider, IPresignedUrlProvider, 
                 ContentDispositionHelper.BuildAttachmentHeader(options.DownloadFileName);
         }
 
-        string downloadUrl = _s3.GetPreSignedURL(presignRequest);
+        string downloadUrl = S3PresignedUrlRewriter.ForceScheme(_s3.GetPreSignedURL(presignRequest), _httpServiceUrl);
 
         PresignedDownloadUrl result = new(
             Url: new Uri(downloadUrl),
