@@ -92,13 +92,7 @@ internal static class TimelineEntryEndpoints
         TimelineStreamEntryResponse result = new(
             entry.Id,
             entry.CreatedAt,
-            entry.EntryType switch
-            {
-                TimelineEntryType.Comment => TimelineStreamEntryType.Comment,
-                TimelineEntryType.InternalNote => TimelineStreamEntryType.InternalNote,
-                TimelineEntryType.SystemLog => TimelineStreamEntryType.SystemLog,
-                _ => TimelineStreamEntryType.SystemLog,
-            },
+            (TimelineStreamEntryType)entry.EntryType,
             entry.AuthorId,
             entry.AuthorName,
             entry.Body,

@@ -49,13 +49,7 @@ internal sealed class InMemoryTimelineQuery(
         {
             Id = entry.Id,
             OccurredAt = entry.CreatedAt,
-            EntryType = entry.EntryType switch
-            {
-                TimelineEntryType.Comment => TimelineStreamEntryType.Comment,
-                TimelineEntryType.InternalNote => TimelineStreamEntryType.InternalNote,
-                TimelineEntryType.SystemLog => TimelineStreamEntryType.SystemLog,
-                _ => TimelineStreamEntryType.SystemLog,
-            },
+            EntryType = (TimelineStreamEntryType)entry.EntryType,
             AuthorId = entry.AuthorId,
             AuthorName = entry.AuthorName,
             Body = entry.Body,

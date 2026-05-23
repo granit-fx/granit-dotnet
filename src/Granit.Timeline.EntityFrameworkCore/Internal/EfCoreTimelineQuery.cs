@@ -79,13 +79,7 @@ internal sealed class EfCoreTimelineQuery(
             {
                 Id = e.Id,
                 OccurredAt = e.CreatedAt,
-                EntryType = e.EntryType switch
-                {
-                    TimelineEntryType.Comment => TimelineStreamEntryType.Comment,
-                    TimelineEntryType.InternalNote => TimelineStreamEntryType.InternalNote,
-                    TimelineEntryType.SystemLog => TimelineStreamEntryType.SystemLog,
-                    _ => TimelineStreamEntryType.SystemLog,
-                },
+                EntryType = (TimelineStreamEntryType)e.EntryType,
                 AuthorId = e.AuthorId,
                 AuthorName = e.AuthorName,
                 Body = e.Body,
