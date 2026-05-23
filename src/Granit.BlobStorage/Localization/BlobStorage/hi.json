@@ -13,6 +13,7 @@
     "BlobStorage.Columns.ValidatedAt": "Validated At",
     "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
     "BlobStorage:NotFound": "अनुरोधित फ़ाइल नहीं मिली।",
+    "BlobStorage:NotPending": "अपलोड रद्द नहीं किया जा सकता क्योंकि यह अब लंबित नहीं है।",
     "BlobStorage:NotValid": "फ़ाइल डाउनलोड के लिए उपलब्ध नहीं है।"
   }
 }

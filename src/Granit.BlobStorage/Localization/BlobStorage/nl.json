@@ -13,6 +13,7 @@
     "BlobStorage.Columns.ValidatedAt": "Gevalideerd op",
     "BlobStorage.Columns.VerifiedContentType": "Geverifieerd inhoudstype",
     "BlobStorage:NotFound": "Het gevraagde bestand werd niet gevonden.",
+    "BlobStorage:NotPending": "De upload kan niet worden geannuleerd omdat deze niet meer in behandeling is.",
     "BlobStorage:NotValid": "Het bestand is niet beschikbaar om te downloaden."
   }
 }

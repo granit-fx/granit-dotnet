@@ -13,6 +13,7 @@
     "BlobStorage.Columns.ValidatedAt": "Validated At",
     "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
     "BlobStorage:NotFound": "İstenen dosya bulunamadı.",
+    "BlobStorage:NotPending": "Yükleme bekleme durumunda olmadığı için iptal edilemez.",
     "BlobStorage:NotValid": "Dosya indirilebilir durumda değil."
   }
 }

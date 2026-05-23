@@ -13,6 +13,7 @@
     "BlobStorage.Columns.ValidatedAt": "Validated At",
     "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
     "BlobStorage:NotFound": "Požadovaný soubor nebyl nalezen.",
+    "BlobStorage:NotPending": "Nahrávání nelze zrušit, protože již není ve stavu čekání.",
     "BlobStorage:NotValid": "Soubor není dostupný ke stažení."
   }
 }

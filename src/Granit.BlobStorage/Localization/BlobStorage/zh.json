@@ -13,6 +13,7 @@
     "BlobStorage.Columns.ValidatedAt": "Validated At",
     "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
     "BlobStorage:NotFound": "请求的文件未找到。",
+    "BlobStorage:NotPending": "上传无法取消，因为它已不再处于待处理状态。",
     "BlobStorage:NotValid": "该文件不可下载。"
   }
 }

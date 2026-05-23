@@ -46,4 +46,23 @@ public sealed class BlobStorageOptionsTests
 
         options.DownloadUrlExpiry.ShouldBe(TimeSpan.FromHours(1));
     }
+
+    [Fact]
+    public void DefaultOrphanCleanupAge_Is24Hours()
+    {
+        BlobStorageOptions options = new();
+
+        options.OrphanCleanupAge.ShouldBe(TimeSpan.FromHours(24));
+    }
+
+    [Fact]
+    public void OrphanCleanupAge_CanBeCustomized()
+    {
+        BlobStorageOptions options = new()
+        {
+            OrphanCleanupAge = TimeSpan.FromMinutes(15),
+        };
+
+        options.OrphanCleanupAge.ShouldBe(TimeSpan.FromMinutes(15));
+    }
 }

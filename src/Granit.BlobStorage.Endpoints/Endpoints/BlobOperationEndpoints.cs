@@ -40,6 +40,21 @@ internal static class BlobOperationEndpoints
             .ProducesProblem(StatusCodes.Status429TooManyRequests)
             .RequireGranitRateLimiting(BlobStorageRateLimitPolicies.Download);
 
+        group.MapDelete("/{id:guid}/pending", CancelPendingUploadAsync)
+            .WithName("CancelPendingBlobUpload")
+            .WithSummary("Cancels a Pending upload whose presigned PUT failed client-side.")
+            .WithDescription(
+                "Short-circuits the orphan-cleanup window by transitioning a Pending blob directly to Rejected. "
+                + "Intended to be called by the client when its PUT to the presigned URL returns 4xx/5xx, "
+                + "so the descriptor does not linger visible for up to BlobStorageOptions.OrphanCleanupAge. "
+                + "Returns 409 Conflict if the blob has already left Pending state.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests)
+            .RequireGranitRateLimiting(BlobStorageRateLimitPolicies.Upload);
+
         group.MapPost("/cleanup-orphans", CleanupOrphansAsync)
             .WithName("CleanupOrphanedBlobs")
             .WithSummary("Cleans up orphaned blobs stuck in Pending or Uploading state.")
@@ -90,6 +105,19 @@ internal static class BlobOperationEndpoints
             .ConfigureAwait(false);
 
         return TypedResults.Ok(new BlobDownloadUrlResponse(url.Url.ToString(), url.ExpiresAt));
+    }
+
+    private static async Task<NoContent> CancelPendingUploadAsync(
+        Guid id,
+        BlobCancelPendingRequest request,
+        [FromServices] IBlobStorage blobStorage,
+        CancellationToken cancellationToken)
+    {
+        await blobStorage
+            .CancelPendingUploadAsync(request.ContainerName, id, request.Reason, cancellationToken)
+            .ConfigureAwait(false);
+
+        return TypedResults.NoContent();
     }
 
     private static async Task<Ok<BlobCleanupOrphansResponse>> CleanupOrphansAsync(

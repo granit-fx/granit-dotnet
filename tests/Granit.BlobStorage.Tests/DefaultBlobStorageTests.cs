@@ -4,6 +4,7 @@ using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Exceptions;
 using Granit.BlobStorage.Internal;
 using Granit.BlobStorage.Options;
+using Granit.Exceptions;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timing;
@@ -401,7 +402,100 @@ public sealed class DefaultBlobStorageTests
         await Should.ThrowAsync<BlobNotValidException>(() => _sut.ConfirmUploadAsync("medical-images", blobId));
     }
 
+    // ── CancelPendingUploadAsync ─────────────────────────────────────────────
+
+    [Fact]
+    public async Task CancelPendingUploadAsync_WhenPending_ShouldTransitionToRejectedAndAttemptDelete()
+    {
+        var blobId = Guid.NewGuid();
+        BlobDescriptor pending = BuildDescriptorInStatus(blobId, BlobStatus.Pending);
+        _reader.FindAsync(blobId, Arg.Any<CancellationToken>()).Returns(pending);
+        _keyStrategy.ResolveBucketName("medical-images").Returns("granit-blobs");
+
+        await _sut.CancelPendingUploadAsync("medical-images", blobId, "PUT returned 400", TestContext.Current.CancellationToken);
+
+        await _storeProvider.Received(1).DeleteAsync("granit-blobs", pending.ObjectKey, Arg.Any<CancellationToken>());
+        await _writer.Received(1).UpdateAsync(
+            Arg.Is<BlobDescriptor>(d =>
+                d.Id == blobId &&
+                d.Status == BlobStatus.Rejected &&
+                d.RejectionReason == "PUT returned 400"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CancelPendingUploadAsync_WhenStoreDeleteFails_ShouldStillTransitionToRejected()
+    {
+        var blobId = Guid.NewGuid();
+        BlobDescriptor pending = BuildDescriptorInStatus(blobId, BlobStatus.Pending);
+        _reader.FindAsync(blobId, Arg.Any<CancellationToken>()).Returns(pending);
+        _keyStrategy.ResolveBucketName("medical-images").Returns("granit-blobs");
+        _storeProvider.DeleteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(_ => throw new InvalidOperationException("S3 unreachable"));
+
+        await _sut.CancelPendingUploadAsync("medical-images", blobId, "client abort", TestContext.Current.CancellationToken);
+
+        await _writer.Received(1).UpdateAsync(
+            Arg.Is<BlobDescriptor>(d => d.Status == BlobStatus.Rejected),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CancelPendingUploadAsync_WhenBlobNotFound_ShouldThrow()
+    {
+        var blobId = Guid.NewGuid();
+        _reader.FindAsync(blobId, Arg.Any<CancellationToken>()).Returns((BlobDescriptor?)null);
+
+        await Should.ThrowAsync<BlobNotFoundException>(() =>
+            _sut.CancelPendingUploadAsync("medical-images", blobId, "anything"));
+    }
+
+    [Theory]
+    [InlineData(BlobStatus.Uploading)]
+    [InlineData(BlobStatus.Valid)]
+    [InlineData(BlobStatus.Rejected)]
+    [InlineData(BlobStatus.Deleted)]
+    public async Task CancelPendingUploadAsync_WhenNotPending_ShouldThrowConflictException(BlobStatus current)
+    {
+        var blobId = Guid.NewGuid();
+        _reader.FindAsync(blobId, Arg.Any<CancellationToken>()).Returns(BuildDescriptorInStatus(blobId, current));
+
+        ConflictException ex = await Should.ThrowAsync<ConflictException>(() =>
+            _sut.CancelPendingUploadAsync("medical-images", blobId, "anything"));
+        ex.ErrorCode.ShouldBe("BlobStorage:NotPending");
+    }
+
+    [Fact]
+    public async Task CancelPendingUploadAsync_WithEmptyReason_ShouldThrow()
+    {
+        await Should.ThrowAsync<ArgumentException>(() =>
+            _sut.CancelPendingUploadAsync("medical-images", Guid.NewGuid(), "   "));
+    }
+
     // ── CleanupOrphansAsync ──────────────────────────────────────────────────
+
+    [Fact]
+    public async Task CleanupOrphansAsync_ShouldUseConfiguredOrphanCleanupAgeForCutoff()
+    {
+        // Custom 1h cleanup age — cutoff must be Now - 1h, not the hard-coded 24h default.
+        DefaultBlobStorage sut = new(
+            _reader, _writer, _keyStrategy, _storeProvider, _presignedUrlProvider,
+            [], _guidGenerator, _clock, _currentTenant, _metrics,
+            NullLogger<DefaultBlobStorage>.Instance,
+            Microsoft.Extensions.Options.Options.Create(new BlobStorageOptions
+            {
+                OrphanCleanupAge = TimeSpan.FromHours(1),
+            }));
+        _reader.FindOrphanedAsync(Arg.Any<DateTimeOffset>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<BlobDescriptor>());
+
+        await sut.CleanupOrphansAsync(TestContext.Current.CancellationToken);
+
+        await _reader.Received(1).FindOrphanedAsync(
+            Now.AddHours(-1),
+            Arg.Any<int>(),
+            Arg.Any<CancellationToken>());
+    }
 
     [Fact]
     public async Task CleanupOrphansAsync_ShouldRejectOrphans()

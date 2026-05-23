@@ -26,4 +26,13 @@ public class BlobStorageOptions
     /// cannot be verified. Defaults to <c>false</c> (pass-through).
     /// </summary>
     public bool RejectUnverifiedContentTypes { get; set; }
+
+    /// <summary>
+    /// Minimum age a blob must reach in <see cref="Domain.BlobStatus.Pending"/> or
+    /// <see cref="Domain.BlobStatus.Uploading"/> before the orphan cleanup job rejects it.
+    /// Defaults to <c>24</c> hours, which is conservative enough to tolerate slow client uploads
+    /// and intermittent network retries. Showcases and CI environments may lower this to
+    /// surface failed flows faster.
+    /// </summary>
+    public TimeSpan OrphanCleanupAge { get; set; } = TimeSpan.FromHours(24);
 }

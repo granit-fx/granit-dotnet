@@ -40,6 +40,11 @@ internal sealed class BlobStorageSchemaExampleProvider : ISchemaExampleProvider
             {
                 [ContainerNameProperty] = ExampleContainerName,
             },
+            [typeof(BlobCancelPendingRequest)] = new JsonObject
+            {
+                [ContainerNameProperty] = ExampleContainerName,
+                ["reason"] = "PUT to presigned URL returned 400 SignatureDoesNotMatch",
+            },
             [typeof(BlobDeleteRequest)] = new JsonObject
             {
                 [ContainerNameProperty] = ExampleContainerName,

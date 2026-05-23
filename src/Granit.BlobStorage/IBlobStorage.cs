@@ -81,7 +81,28 @@ public interface IBlobStorage
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Cleans up orphaned blobs stuck in Pending/Uploading for over 24 hours.
+    /// Short-circuits a Pending upload that the client knows will never complete
+    /// (e.g. presigned PUT returned 4xx, user cancelled), transitioning the descriptor
+    /// to <see cref="BlobStatus.Rejected"/> immediately instead of waiting for the orphan
+    /// cleanup window. Attempts a best-effort delete of any partially-uploaded S3 object.
+    /// </summary>
+    /// <param name="containerName">Logical container the blob belongs to.</param>
+    /// <param name="blobId">Blob identifier returned by <see cref="InitiateUploadAsync"/>.</param>
+    /// <param name="reason">Human-readable cancellation reason for the audit trail.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="Exceptions.BlobNotFoundException">Blob not found for the current tenant.</exception>
+    /// <exception cref="Granit.Exceptions.ConflictException">
+    /// Blob exists but is not in <see cref="BlobStatus.Pending"/> state.
+    /// </exception>
+    Task CancelPendingUploadAsync(
+        string containerName,
+        Guid blobId,
+        string reason,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Cleans up orphaned blobs stuck in Pending/Uploading beyond
+    /// <see cref="BlobStorageOptions.OrphanCleanupAge"/> (default 24 hours).
     /// </summary>
     Task<int> CleanupOrphansAsync(CancellationToken cancellationToken = default);
 }

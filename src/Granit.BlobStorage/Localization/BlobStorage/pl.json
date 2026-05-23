@@ -13,6 +13,7 @@
     "BlobStorage.Columns.ValidatedAt": "Validated At",
     "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
     "BlobStorage:NotFound": "Żądany plik nie został znaleziony.",
+    "BlobStorage:NotPending": "Nie można anulować przesyłania, ponieważ nie jest już w stanie oczekiwania.",
     "BlobStorage:NotValid": "Plik nie jest dostępny do pobrania."
   }
 }

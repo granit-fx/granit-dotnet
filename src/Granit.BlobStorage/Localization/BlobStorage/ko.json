@@ -13,6 +13,7 @@
     "BlobStorage.Columns.ValidatedAt": "Validated At",
     "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
     "BlobStorage:NotFound": "요청한 파일을 찾을 수 없습니다.",
+    "BlobStorage:NotPending": "업로드가 더 이상 대기 중이 아니므로 취소할 수 없습니다.",
     "BlobStorage:NotValid": "파일을 다운로드할 수 없습니다."
   }
 }

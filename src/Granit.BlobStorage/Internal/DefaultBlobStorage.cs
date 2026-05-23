@@ -3,6 +3,7 @@ using Granit.BlobStorage.Diagnostics;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Exceptions;
 using Granit.BlobStorage.Options;
+using Granit.Exceptions;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timing;
@@ -212,9 +213,43 @@ internal sealed partial class DefaultBlobStorage(
     }
 
     /// <inheritdoc/>
+    public async Task CancelPendingUploadAsync(
+        string containerName,
+        Guid blobId,
+        string reason,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+
+        BlobDescriptor descriptor = await FindOrThrowAsync(containerName, blobId, cancellationToken).ConfigureAwait(false);
+
+        if (descriptor.Status != BlobStatus.Pending)
+        {
+            throw new ConflictException(
+                "BlobStorage:NotPending",
+                $"Blob '{blobId}' cannot be cancelled: current status is '{descriptor.Status}' (expected '{BlobStatus.Pending}').");
+        }
+
+        // Best-effort cleanup of any partially-uploaded S3 object. The PUT may have streamed
+        // bytes before failing, or the client may simply have abandoned mid-flight.
+        string bucket = keyStrategy.ResolveBucketName(containerName);
+        try
+        {
+            await storeProvider.DeleteAsync(bucket, descriptor.ObjectKey, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogCancelDeleteFailed(blobId, ex);
+        }
+
+        descriptor.MarkAsCancelled(reason);
+        await writer.UpdateAsync(descriptor, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public async Task<int> CleanupOrphansAsync(CancellationToken cancellationToken = default)
     {
-        DateTimeOffset cutoff = clock.Now.AddHours(-24);
+        DateTimeOffset cutoff = clock.Now.Subtract(Options.OrphanCleanupAge);
         IReadOnlyList<BlobDescriptor> orphans = await reader.FindOrphanedAsync(cutoff, batchSize: 100, cancellationToken).ConfigureAwait(false);
 
         int cleaned = 0;
@@ -255,4 +290,7 @@ internal sealed partial class DefaultBlobStorage(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to delete storage object for orphaned blob {BlobId} during cleanup.")]
     private partial void LogOrphanDeleteFailed(Guid blobId, Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Best-effort delete of storage object for cancelled blob {BlobId} failed; descriptor will still be marked rejected.")]
+    private partial void LogCancelDeleteFailed(Guid blobId, Exception exception);
 }

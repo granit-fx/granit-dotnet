@@ -9759,6 +9759,15 @@
       "members": []
     },
     {
+      "name": "BlobCancelPendingRequest",
+      "fqn": "Granit.BlobStorage.Endpoints.Dtos.BlobCancelPendingRequest",
+      "kind": "record",
+      "project": "Granit.BlobStorage.Endpoints",
+      "file": "src/Granit.BlobStorage.Endpoints/Dtos/BlobCancelPendingRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "BlobCleanupOrphansResponse",
       "fqn": "Granit.BlobStorage.Endpoints.Dtos.BlobCleanupOrphansResponse",
       "kind": "record",
@@ -10331,6 +10340,12 @@
           "returnType": "Task<BlobConfirmationResult>"
         },
         {
+          "name": "CancelPendingUploadAsync",
+          "kind": "method",
+          "signature": "CancelPendingUploadAsync(string containerName, Guid blobId, string reason, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
           "name": "CleanupOrphansAsync",
           "kind": "method",
           "signature": "CleanupOrphansAsync(CancellationToken cancellationToken = default)",
@@ -10395,6 +10410,12 @@
           "kind": "property",
           "signature": "HashSet<string> AllowedContentTypes",
           "returnType": "HashSet<string>"
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(24)",
+          "returnType": "bool RejectUnverifiedContentTypes { get; set; } public TimeSpan OrphanCleanupAge { get; set; } = TimeSpan."
         }
       ]
     },

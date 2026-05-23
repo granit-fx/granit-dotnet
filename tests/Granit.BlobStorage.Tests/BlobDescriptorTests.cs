@@ -133,6 +133,45 @@ public sealed class BlobDescriptorTests
         Should.Throw<InvalidOperationException>(act).Message.ShouldContain($"{illegalStatus}");
     }
 
+    // ── Pending → Rejected (cancellation short-circuit) ──────────────────────
+
+    [Fact]
+    public void MarkAsCancelled_FromPending_ShouldTransitionToRejectedWithReason()
+    {
+        BlobDescriptor descriptor = CreatePending();
+
+        descriptor.MarkAsCancelled("PUT returned 400 SignatureDoesNotMatch");
+
+        descriptor.Status.ShouldBe(BlobStatus.Rejected);
+        descriptor.RejectionReason!.ShouldContain("SignatureDoesNotMatch");
+    }
+
+    [Fact]
+    public void MarkAsCancelled_ShouldEmitBlobRejectedEvent()
+    {
+        BlobDescriptor descriptor = CreatePending();
+
+        descriptor.MarkAsCancelled("client abort");
+
+        BlobRejectedEvent evt = descriptor.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<BlobRejectedEvent>();
+        evt.BlobId.ShouldBe(descriptor.Id);
+        evt.RejectionReason.ShouldBe("client abort");
+    }
+
+    [Theory]
+    [InlineData(BlobStatus.Uploading)]
+    [InlineData(BlobStatus.Valid)]
+    [InlineData(BlobStatus.Rejected)]
+    [InlineData(BlobStatus.Deleted)]
+    public void MarkAsCancelled_FromIllegalStatus_ShouldThrow(BlobStatus illegalStatus)
+    {
+        BlobDescriptor descriptor = BuildDescriptorInStatus(illegalStatus);
+
+        Action act = () => descriptor.MarkAsCancelled("anything");
+
+        Should.Throw<InvalidOperationException>(act).Message.ShouldContain($"{illegalStatus}");
+    }
+
     // ── Valid → Deleted (Crypto-Shredding) ───────────────────────────────────
 
     [Fact]

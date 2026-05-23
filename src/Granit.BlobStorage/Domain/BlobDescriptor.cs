@@ -161,6 +161,28 @@ public sealed class BlobDescriptor : CreationAuditedAggregateRoot, IMultiTenant
     }
 
     /// <summary>
+    /// Transitions from <see cref="BlobStatus.Pending"/> directly to <see cref="BlobStatus.Rejected"/>,
+    /// short-circuiting the upload lifecycle when the client knows the PUT will not complete
+    /// (e.g. presigned URL returned 4xx, user aborted the dialog). The caller should attempt to
+    /// delete any partially-uploaded S3 object beforehand.
+    /// </summary>
+    /// <param name="reason">Human-readable rejection reason for the audit trail.</param>
+    /// <exception cref="InvalidOperationException">When current status is not <see cref="BlobStatus.Pending"/>.</exception>
+    public void MarkAsCancelled(string reason)
+    {
+        if (Status != BlobStatus.Pending)
+        {
+            throw new InvalidOperationException(
+                $"Cannot cancel BlobDescriptor {Id}: current status is {Status} (expected {BlobStatus.Pending}).");
+        }
+
+        Status = BlobStatus.Rejected;
+        RejectionReason = reason;
+
+        AddDomainEvent(new BlobRejectedEvent(Id, ContainerName, reason));
+    }
+
+    /// <summary>
     /// Transitions from <see cref="BlobStatus.Valid"/> to <see cref="BlobStatus.Deleted"/>.
     /// The S3 object must be physically deleted by the caller before invoking this method.
     /// The record is retained in the database for ISO 27001 audit compliance.

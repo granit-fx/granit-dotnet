@@ -13,6 +13,7 @@
     "BlobStorage.Columns.ValidatedAt": "Validated At",
     "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
     "BlobStorage:NotFound": "要求されたファイルが見つかりませんでした。",
+    "BlobStorage:NotPending": "アップロードは保留中ではないためキャンセルできません。",
     "BlobStorage:NotValid": "このファイルはダウンロードできません。"
   }
 }
