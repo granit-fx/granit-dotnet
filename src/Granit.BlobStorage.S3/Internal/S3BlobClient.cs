@@ -64,24 +64,25 @@ internal sealed class S3BlobClient : IBlobStoreProvider, IPresignedUrlProvider, 
             ContentType = request.ContentType,
         };
 
-        // Embed declared content-type and original filename as S3 metadata.
-        presignRequest.Metadata.Add("x-amz-meta-original-filename", request.FileName);
-        presignRequest.Metadata.Add("x-amz-meta-declared-content-type", request.ContentType);
-
-        if (request.Metadata is not null)
+        // Embed declared content-type, original filename, and any caller metadata as signed
+        // x-amz-meta-* headers. The same dictionary feeds RequiredHeaders below so the client
+        // echoes exactly what was signed — otherwise MinIO/S3 returns 400 SignatureDoesNotMatch.
+        Dictionary<string, string> signedMetadata = S3UploadMetadataBuilder.Build(request);
+        foreach (KeyValuePair<string, string> entry in signedMetadata)
         {
-            foreach (KeyValuePair<string, string> entry in request.Metadata)
-            {
-                presignRequest.Metadata.Add($"x-amz-meta-{entry.Key}", entry.Value);
-            }
+            presignRequest.Metadata.Add(entry.Key, entry.Value);
         }
 
         string uploadUrl = S3PresignedUrlRewriter.ForceScheme(_s3.GetPreSignedURL(presignRequest), _httpServiceUrl);
 
-        Dictionary<string, string> requiredHeaders = new()
+        Dictionary<string, string> requiredHeaders = new(StringComparer.OrdinalIgnoreCase)
         {
             ["Content-Type"] = request.ContentType,
         };
+        foreach (KeyValuePair<string, string> entry in signedMetadata)
+        {
+            requiredHeaders[entry.Key] = entry.Value;
+        }
 
         PresignedUploadTicket ticket = new(
             BlobId: blobId,
