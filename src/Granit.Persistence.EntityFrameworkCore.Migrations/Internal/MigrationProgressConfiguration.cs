@@ -19,10 +19,20 @@ internal sealed class MigrationProgressConfiguration : IEntityTypeConfiguration<
             .HasMaxLength(200)
             .IsRequired();
 
+        // Persist Phase/Status as varchar to stay in sync with the host DbContext, which
+        // applies ApplyGranitConventions() and stores enums as their PascalCase name. This
+        // internal DbContext deliberately skips ApplyGranitConventions (no soft-delete /
+        // audit filters on a system table), so the conversion must be configured here
+        // explicitly — otherwise the runtime model treats the columns as int and emits
+        // "WHERE Status = 0", which fails against the varchar schema (PG 42883).
         builder.Property(e => e.Phase)
+            .HasConversion<string>()
+            .HasMaxLength(20)
             .IsRequired();
 
         builder.Property(e => e.Status)
+            .HasConversion<string>()
+            .HasMaxLength(20)
             .IsRequired();
 
         builder.Property(e => e.ProcessedRows)
