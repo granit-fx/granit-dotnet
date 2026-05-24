@@ -30,7 +30,6 @@ internal sealed class AuditEntryConfiguration : IEntityTypeConfiguration<AuditEn
             .HasMaxLength(256);
 
         builder.Property(e => e.Category)
-            .HasConversion<string>()
             .HasMaxLength(50)
             .IsRequired();
 

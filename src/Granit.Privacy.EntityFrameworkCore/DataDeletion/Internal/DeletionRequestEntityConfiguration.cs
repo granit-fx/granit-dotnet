@@ -18,7 +18,6 @@ internal sealed class DeletionRequestEntityConfiguration : IEntityTypeConfigurat
             .IsRequired();
 
         builder.Property(e => e.State)
-            .HasConversion<string>()
             .HasMaxLength(30)
             .IsRequired();
 

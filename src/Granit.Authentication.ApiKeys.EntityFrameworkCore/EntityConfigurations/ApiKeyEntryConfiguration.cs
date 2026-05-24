@@ -44,7 +44,7 @@ internal sealed class ApiKeyEntryConfiguration : IEntityTypeConfiguration<ApiKey
         builder.Property(e => e.ModifiedBy).HasMaxLength(200);
         builder.Property(e => e.DeletedBy).HasMaxLength(200);
 
-        builder.Property(e => e.Type).HasConversion<string>().HasMaxLength(20);
-        builder.Property(e => e.CacheBehavior).HasConversion<string>().HasMaxLength(20);
+        builder.Property(e => e.Type).HasMaxLength(20);
+        builder.Property(e => e.CacheBehavior).HasMaxLength(20);
     }
 }

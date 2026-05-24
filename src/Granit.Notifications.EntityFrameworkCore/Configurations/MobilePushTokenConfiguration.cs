@@ -25,7 +25,7 @@ internal sealed class MobilePushTokenConfiguration : IEntityTypeConfiguration<Mo
         // TenantId for exact-match upsert / remove on the encrypted token column.
         builder.Property(x => x.DeviceTokenHash).HasMaxLength(64).IsRequired();
 
-        builder.Property(x => x.Platform).HasConversion<string>().HasMaxLength(16);
+        builder.Property(x => x.Platform).HasMaxLength(16);
         builder.Property(x => x.CreatedBy).HasMaxLength(256);
 
         // Unique constraint: one device token per tenant — keyed on the lookup

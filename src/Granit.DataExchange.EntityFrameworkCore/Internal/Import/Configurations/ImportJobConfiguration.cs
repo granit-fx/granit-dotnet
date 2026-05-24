@@ -26,7 +26,6 @@ internal sealed class ImportJobConfiguration : IEntityTypeConfiguration<ImportJo
 
         builder.Property(e => e.Status)
             .IsRequired()
-            .HasConversion<string>()
             .HasMaxLength(20);
 
         builder.OwnsMany(e => e.Mappings, m =>

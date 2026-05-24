@@ -29,7 +29,6 @@ internal sealed class LegalDocumentConfiguration : IEntityTypeConfiguration<Lega
             .HasMaxLength(500);
 
         builder.Property(e => e.LifecycleStatus)
-            .HasConversion<string>()
             .HasMaxLength(20)
             .IsRequired();
 

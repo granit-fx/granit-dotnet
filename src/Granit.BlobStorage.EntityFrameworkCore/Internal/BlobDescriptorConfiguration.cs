@@ -46,10 +46,10 @@ internal sealed class BlobDescriptorConfiguration : IEntityTypeConfiguration<Blo
 
         builder.Property(e => e.SizeBytes);
 
-        // Store enum as string for readability and resilience to reordering.
+        // Persisted as varchar by the Granit enum convention; explicit max length
+        // keeps the original column width.
         builder.Property(e => e.Status)
             .IsRequired()
-            .HasConversion<string>()
             .HasMaxLength(20);
 
         builder.Property(e => e.CreatedAt)

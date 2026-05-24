@@ -64,7 +64,6 @@ public abstract class VersionedWorkflowEntityBaseConfiguration<T> : IEntityTypeC
             .IsRequired();
 
         builder.Property(e => e.LifecycleStatus)
-            .HasConversion<string>()
             .HasMaxLength(20)
             .IsRequired();
 

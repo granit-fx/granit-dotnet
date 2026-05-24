@@ -6,6 +6,7 @@ using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Granit.Persistence.EntityFrameworkCore.Extensions;
 
@@ -45,6 +46,13 @@ public static class ModelBuilderExtensions
     ///   </item>
     ///   <item><b>Translation conventions</b>:
     ///     <see cref="ITranslation{TParent}"/> → FK, cascade delete, unique index (ParentId, Culture).
+    ///   </item>
+    ///   <item><b>Enum persistence convention</b>:
+    ///     Every enum property is persisted as its PascalCase string name in a
+    ///     <c>varchar</c> column sized to the longest value (min 20). Opt out per
+    ///     property with <see cref="PersistAsIntAttribute"/>; <see cref="FlagsAttribute"/>
+    ///     enums are skipped automatically. Explicit
+    ///     <c>HasConversion&lt;...&gt;()</c> calls in entity configurations always win.
     ///   </item>
     /// </list>
     /// </summary>
@@ -168,7 +176,77 @@ public static class ModelBuilderExtensions
         //    SingleValueObject<T>, mapping them to the underlying primitive column type.
         ApplySingleValueObjectConverters(modelBuilder);
 
+        // --- Enum persistence convention ---
+        // Persist enum properties as their PascalCase string name (varchar) by default.
+        // Opt out per property with [PersistAsInt]; [Flags] enums are skipped automatically.
+        ApplyEnumStringConverters(modelBuilder);
+
         return modelBuilder;
+    }
+
+    // Auto-applies EnumToStringConverter<TEnum> to every enum property in the model,
+    // unless an explicit converter is already configured, the property is marked
+    // [PersistAsInt], or the enum carries [Flags] (bitmask semantics).
+    //
+    // Rationale: persisting enums as their string name (e.g. "Pending") instead of
+    // the underlying ordinal (e.g. 0) protects against silent breakage when enum
+    // values are reordered, and keeps the database lisible for ops/SQL audits. The
+    // wire format already uses string names via JsonStringEnumConverter — this
+    // convention restores symmetry between the HTTP surface and the DB columns.
+    private static void ApplyEnumStringConverters(ModelBuilder modelBuilder)
+    {
+        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (IMutableProperty property in entityType.GetProperties())
+            {
+                Type? enumType = GetEnumType(property.ClrType);
+                if (enumType is null)
+                {
+                    continue;
+                }
+
+                // Respect explicit overrides: a HasConversion<...>() call in the
+                // entity configuration always wins over the convention.
+                if (property.GetValueConverter() is not null)
+                {
+                    continue;
+                }
+
+                // Skip opt-out: property marked [PersistAsInt] with a documented reason.
+                if (property.PropertyInfo?.GetCustomAttribute<PersistAsIntAttribute>() is not null)
+                {
+                    continue;
+                }
+
+                // [Flags] enums encode multiple values bitwise — storing them as a single
+                // string name would lose information. Keep the int column unless an
+                // explicit converter was configured above.
+                if (enumType.GetCustomAttribute<FlagsAttribute>() is not null)
+                {
+                    continue;
+                }
+
+                Type converterType = typeof(EnumToStringConverter<>).MakeGenericType(enumType);
+                property.SetValueConverter(
+                    (ValueConverter)Activator.CreateInstance(converterType)!);
+
+                // Preserve any explicit HasMaxLength(N) the entity configuration already set
+                // (e.g. AuditEntry.Category keeps its 50-char column even though the convention
+                // floor would compute a smaller value). Only apply the default when missing.
+                if (property.GetMaxLength() is null)
+                {
+                    int longestName = Enum.GetNames(enumType).Max(name => name.Length);
+                    property.SetMaxLength(Math.Max(20, longestName + 4));
+                }
+            }
+        }
+    }
+
+    // Returns the enum CLR type for an enum or Nullable<TEnum> property, or null otherwise.
+    private static Type? GetEnumType(Type clrType)
+    {
+        Type underlying = Nullable.GetUnderlyingType(clrType) ?? clrType;
+        return underlying.IsEnum ? underlying : null;
     }
 
     // Removes any SingleValueObject<T> subclass that EF Core auto-discovered as an entity type.

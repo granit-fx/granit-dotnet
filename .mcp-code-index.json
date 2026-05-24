@@ -15405,6 +15405,15 @@
       ]
     },
     {
+      "name": "PersistAsIntAttribute",
+      "fqn": "Granit.Domain.PersistAsIntAttribute",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Domain/PersistAsIntAttribute.cs",
+      "line": 28,
+      "members": []
+    },
+    {
       "name": "SingleValueObject",
       "fqn": "Granit.Domain.SingleValueObject",
       "kind": "class",
@@ -33103,12 +33112,21 @@
       "members": []
     },
     {
+      "name": "MigrationBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.MigrationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/MigrationBuilderExtensions.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "ModelBuilderExtensions",
       "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.ModelBuilderExtensions",
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/ModelBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "ApplyGranitConventions",

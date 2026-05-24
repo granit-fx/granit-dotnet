@@ -31,7 +31,6 @@ internal sealed class AuditEntityChangeConfiguration : IEntityTypeConfiguration<
             .IsRequired();
 
         builder.Property(e => e.ChangeType)
-            .HasConversion<string>()
             .HasMaxLength(20)
             .IsRequired();
 

@@ -26,7 +26,6 @@ internal sealed class TemplateRevisionEntityConfiguration
 
         builder.Property(e => e.LifecycleStatus)
             .IsRequired()
-            .HasConversion<string>()
             .HasMaxLength(20);
 
         builder.Property(e => e.IsPublished).IsRequired();

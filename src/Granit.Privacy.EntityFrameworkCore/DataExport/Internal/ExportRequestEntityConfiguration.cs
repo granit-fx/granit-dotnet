@@ -19,7 +19,6 @@ internal sealed class ExportRequestEntityConfiguration : IEntityTypeConfiguratio
             .IsRequired();
 
         builder.Property(e => e.State)
-            .HasConversion<string>()
             .HasMaxLength(30)
             .IsRequired();
 

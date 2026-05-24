@@ -182,6 +182,12 @@ Every `*.Endpoints` module attaches `.WithTags(...)` on its root group. Format: 
 
 Reference: [`docs/framework/data/persistence.md`](docs/framework/data/persistence.md).
 
+### Enum persistence (STRICT)
+
+Every enum property on an entity is persisted as its **PascalCase string name in a `varchar` column** by `ApplyGranitConventions` — no `.HasConversion<string>()` boilerplate in `*Configuration.cs`. Default column width is `max(20, longestValueName + 4)`; an explicit `.HasMaxLength(N)` always wins. Rationale: lisibility for ops/SQL audits, refactor safety, symmetry with the wire format (`JsonStringEnumConverter`).
+
+Opt out per-property with `[PersistAsInt]` (in `Granit.Domain`) — reserve for `[Flags]` bitmasks (auto-skipped anyway), high-write tables where 4 bytes/row matter, or pre-existing DB contracts. Document the reason inline. Migration helper `MigrationBuilderExtensions.AlterEnumColumnIntToString<TEnum>` emits the mandatory PostgreSQL `USING CASE` clause when cascading the convention into apps with existing int columns.
+
 ### DDD — AggregateRoot vs Entity
 
 `AggregateRoot` (or audited variants) when the entity has a state machine, raises domain events, or encapsulates invariants. Plain `Entity` for append-only / config / lookup.
