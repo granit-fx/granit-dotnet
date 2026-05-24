@@ -78,11 +78,40 @@ public sealed class EnumPersistenceConventionTests
     public void Convention_RespectsExplicitConversion_HasConversionString()
     {
         // Idempotent: an entity configuration that already wrote .HasConversion<string>()
-        // keeps its own converter rather than being overwritten by the convention.
+        // is left untouched by the convention. HasConversion<TProvider>() sets only the
+        // provider CLR type — the actual ValueConverter is materialised later from the
+        // type mapping, so the convention guard checks GetProviderClrType() as well as
+        // GetValueConverter() to detect the opt-out. End result: schema stays varchar(50),
+        // wire format stays string PascalCase.
         IProperty property = GetProperty<EnumTestDbContext, EnumTestEntity>(nameof(EnumTestEntity.ExplicitStringStatus));
-        ValueConverter? converter = property.GetValueConverter();
-        converter.ShouldNotBeNull();
-        converter.ProviderClrType.ShouldBe(typeof(string));
+        property.GetProviderClrType().ShouldBe(typeof(string));
+        property.GetMaxLength().ShouldBe(50);
+    }
+
+    [Fact]
+    public void Convention_RespectsExplicitProviderType_HasConversionShort()
+    {
+        // Regression for the UserPresence.ManualStatus crash: HasConversion<short>()
+        // sets ProviderClrType only — the ValueConverter is materialised later from
+        // the type mapping, so GetValueConverter() returns null when the convention
+        // runs. Without checking GetProviderClrType() the convention would stack
+        // EnumToStringConverter on top and EF would crash on default-value
+        // sanitisation (FormatException trying to parse "Available" as short).
+        IProperty property = GetProperty<EnumTestDbContext, EnumTestEntity>(nameof(EnumTestEntity.ShortBackedStatus));
+        property.GetProviderClrType().ShouldBe(typeof(short));
+        property.GetValueConverter().ShouldBeNull();
+    }
+
+    [Fact]
+    public void Convention_DoesNotCrash_OnRelationalModelMaterialization_WithShortConversionAndDefaultValue()
+    {
+        // End-to-end regression: builds the relational schema (the path that
+        // `dotnet ef migrations add` walks). Before the GetProviderClrType() guard
+        // was added, this threw FormatException during IColumn.TryGetDefaultValue
+        // because EnumToStringConverter was stacked on top of the short provider
+        // type, then asked to round-trip the default "Available" through short.
+        using EnumRelationalTestDbContext context = new();
+        Should.NotThrow(() => context.Database.EnsureCreated());
     }
 
     [Fact]
@@ -123,6 +152,31 @@ public sealed class EnumPersistenceConventionTests
 }
 
 #pragma warning disable CA1812 // instantiated by EF Core via reflection
+
+// Sqlite-backed DbContext used by Convention_DoesNotCrash_OnRelationalModelMaterialization.
+// We need a relational provider (not InMemory) to exercise the column default-value
+// sanitisation path that previously crashed on UserPresence.ManualStatus.
+internal sealed class EnumRelationalTestDbContext : DbContext
+{
+    public DbSet<EnumTestEntity> Entities => Set<EnumTestEntity>();
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlite("DataSource=:memory:");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<EnumTestEntity>(builder =>
+        {
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.ShortBackedStatus)
+                .HasConversion<short>()
+                .HasDefaultValue(SampleStatus.Active);
+        });
+
+        modelBuilder.ApplyGranitConventions();
+    }
+}
+
 internal sealed class EnumTestDbContext : DbContext
 {
     public DbSet<EnumTestEntity> Entities => Set<EnumTestEntity>();
@@ -136,6 +190,11 @@ internal sealed class EnumTestDbContext : DbContext
         {
             builder.Property(e => e.ExplicitStringStatus).HasConversion<string>().HasMaxLength(50);
             builder.Property(e => e.CustomMaxLengthStatus).HasMaxLength(64);
+            // Mirrors UserPresence.ManualStatus: HasConversion<short>() + HasDefaultValue
+            // exercises the ProviderClrType-only opt-out path.
+            builder.Property(e => e.ShortBackedStatus)
+                .HasConversion<short>()
+                .HasDefaultValue(SampleStatus.Active);
         });
 
         modelBuilder.ApplyGranitConventions();
@@ -164,6 +223,8 @@ internal sealed class EnumTestEntity
     public SampleStatus ExplicitStringStatus { get; set; }
 
     public SampleStatus CustomMaxLengthStatus { get; set; }
+
+    public SampleStatus ShortBackedStatus { get; set; }
 }
 
 internal enum SampleStatus

@@ -54,6 +54,15 @@ public sealed class UserPresence : AuditedAggregateRoot
     /// never read <c>ManualStatus</c> directly in business logic, BI extracts, or ad-hoc
     /// SQL queries without joining on <c>OverrideUntilUtc &gt; now</c>.
     /// </remarks>
+    /// <remarks>
+    /// Persisted as <c>smallint</c> (see <see cref="PersistAsIntAttribute"/>): the
+    /// presence cache is a high-write hot path and the 4-byte savings per row matter
+    /// at scale (one row per active user × multi-tenant deployments). The
+    /// <c>HasConversion&lt;short&gt;()</c> call in <c>UserPresenceConfiguration</c>
+    /// pins the column type — the attribute documents intent at the entity level so
+    /// the framework convention does not stack a string converter on top.
+    /// </remarks>
+    [PersistAsInt]
     public ManualPresenceStatus ManualStatus { get; private set; }
 
     /// <summary>

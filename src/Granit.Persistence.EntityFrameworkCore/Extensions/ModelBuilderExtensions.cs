@@ -205,9 +205,20 @@ public static class ModelBuilderExtensions
                     continue;
                 }
 
-                // Respect explicit overrides: a HasConversion<...>() call in the
-                // entity configuration always wins over the convention.
-                if (property.GetValueConverter() is not null)
+                // Respect explicit overrides: a HasConversion<...>() call in the entity
+                // configuration always wins over the convention. EF Core exposes the
+                // override in two different ways depending on the overload:
+                //   - HasConversion(ValueConverter) / HasConversion<TConverter>()
+                //       → SetValueConverter, surfaced by GetValueConverter()
+                //   - HasConversion<TProvider>()  (e.g. HasConversion<short>())
+                //       → SetProviderClrType only; the ValueConverter is materialised
+                //         later from the type mapping, so GetValueConverter() is null
+                //         at convention-application time. Without the second check the
+                //         convention stacks EnumToStringConverter on top of the
+                //         provider type and EF crashes on default-value sanitisation
+                //         (FormatException trying to parse "Available" as short).
+                if (property.GetValueConverter() is not null
+                    || property.GetProviderClrType() is not null)
                 {
                     continue;
                 }
