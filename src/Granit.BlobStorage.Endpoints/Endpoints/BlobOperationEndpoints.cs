@@ -109,7 +109,7 @@ internal static class BlobOperationEndpoints
 
     private static async Task<NoContent> CancelPendingUploadAsync(
         Guid id,
-        BlobCancelPendingRequest request,
+        [FromBody] BlobCancelPendingRequest request,
         [FromServices] IBlobStorage blobStorage,
         CancellationToken cancellationToken)
     {
