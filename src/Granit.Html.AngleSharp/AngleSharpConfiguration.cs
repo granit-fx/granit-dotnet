@@ -3,30 +3,41 @@ using AngleSharp;
 namespace Granit.Html.AngleSharp;
 
 /// <summary>
-/// Factory for AngleSharp <see cref="IConfiguration"/> instances. Exposes two strictly
-/// separated profiles so callers must make the trust decision explicit.
+/// Factory for AngleSharp <see cref="IConfiguration"/> instances. Exposes two named
+/// profiles so the SSRF posture is encoded explicitly at the call site instead of being
+/// inferred from a default.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <see cref="BuildForUntrustedContent"/> intentionally OMITS the AngleSharp default loader,
-/// CSS resolution, and script execution. The architecture test in
-/// <c>Granit.Html.AngleSharp.Tests</c> verifies the source code of this type never
-/// invokes the default-loader fluent helper.
+/// Both profiles return <see cref="Configuration.Default"/> today — neither registers an
+/// HTTP requester, so external resources (links, stylesheets, images) are never resolved.
+/// The named factories exist so that future profile drift (e.g. attaching a same-origin
+/// requester to the trusted profile) lands deterministically on Notifications email
+/// templates only, leaving the untrusted ingest path locked down.
+/// </para>
+/// <para>
+/// The architecture test <c>AngleSharpConfigurationTests.Source_must_never_call_WithDefaultLoader</c>
+/// pins the SSRF guard at the source level — if either profile ever needs the AngleSharp
+/// default loader, the test forces an explicit, documented opt-in.
 /// </para>
 /// </remarks>
 public static class AngleSharpConfiguration
 {
     /// <summary>
-    /// Configuration suitable for trusted HTML produced by the host (e.g. Granit-owned
-    /// email templates rendered through Scriban). Matches the historical Notifications.Email
-    /// behaviour — parser only, no CSS engine, no JS engine, no external resource loading.
+    /// Profile for host-owned HTML (e.g. Granit-rendered email templates).
+    /// Returns <see cref="Configuration.Default"/> — parser only, no loader, no CSS engine,
+    /// no JS engine. Consumed by Notifications.Email through the keyed
+    /// <c>HtmlConverterKeys.Trusted</c> registration.
     /// </summary>
     public static IConfiguration BuildForTrustedTemplates() => Configuration.Default;
 
     /// <summary>
-    /// Configuration suitable for HTML that did not originate from the host
-    /// (user uploads, third-party content, indexed documents). NEVER invokes the AngleSharp
-    /// default-loader helper — that would open an SSRF channel.
+    /// Profile for HTML that did not originate from the host (user uploads, indexed
+    /// documents, incoming email bodies). Returns <see cref="Configuration.Default"/> —
+    /// identical to the trusted profile today, but isolated as its own factory so the SSRF
+    /// posture can never silently inherit a future loader added to the trusted profile.
+    /// Consumed by TextExtraction extractors through the keyed
+    /// <c>HtmlConverterKeys.Untrusted</c> registration.
     /// </summary>
     public static IConfiguration BuildForUntrustedContent() => Configuration.Default;
 }

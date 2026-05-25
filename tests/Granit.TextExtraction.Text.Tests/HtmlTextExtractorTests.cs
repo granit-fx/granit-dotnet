@@ -1,4 +1,6 @@
 using System.Text;
+using Granit.Html;
+using Granit.Html.AngleSharp;
 using Granit.TextExtraction.Exceptions;
 using Shouldly;
 using Xunit;
@@ -9,8 +11,11 @@ namespace Granit.TextExtraction.Text.Tests;
 
 public sealed class HtmlTextExtractorTests
 {
+    private static readonly IHtmlToPlainTextConverter UntrustedConverter =
+        new AngleSharpHtmlToPlainTextConverter(AngleSharpConfiguration.BuildForUntrustedContent());
+
     private static HtmlTextExtractor CreateExtractor(ExtractionOptions? options = null) =>
-        new(MEOptions.Create(options ?? new ExtractionOptions()));
+        new(UntrustedConverter, MEOptions.Create(options ?? new ExtractionOptions()));
 
     private static MemoryStream Utf8(string text) => new(Encoding.UTF8.GetBytes(text));
 

@@ -29,7 +29,7 @@ public sealed class TextExtractionMetricsTests : IDisposable
         using MeterListener listener = new();
         listener.InstrumentPublished = (instrument, ml) =>
         {
-            if (instrument.Name == "granit.text_extraction.extraction.success")
+            if (instrument.Name == "granit.text_extraction.document.extracted")
             {
                 ml.EnableMeasurementEvents(instrument);
             }
@@ -61,7 +61,7 @@ public sealed class TextExtractionMetricsTests : IDisposable
         using MeterListener listener = new();
         listener.InstrumentPublished = (instrument, ml) =>
         {
-            if (instrument.Name == "granit.text_extraction.extraction.truncated")
+            if (instrument.Name == "granit.text_extraction.document.truncated")
             {
                 ml.EnableMeasurementEvents(instrument);
             }
@@ -82,7 +82,7 @@ public sealed class TextExtractionMetricsTests : IDisposable
         using MeterListener listener = new();
         listener.InstrumentPublished = (instrument, ml) =>
         {
-            if (instrument.Name == "granit.text_extraction.extraction.skipped")
+            if (instrument.Name == "granit.text_extraction.document.skipped")
             {
                 ml.EnableMeasurementEvents(instrument);
             }
@@ -112,7 +112,7 @@ public sealed class TextExtractionMetricsTests : IDisposable
         using MeterListener listener = new();
         listener.InstrumentPublished = (instrument, ml) =>
         {
-            if (instrument.Name == "granit.text_extraction.extraction.failed")
+            if (instrument.Name == "granit.text_extraction.document.failed")
             {
                 ml.EnableMeasurementEvents(instrument);
             }

@@ -21,7 +21,6 @@ public sealed class GranitTextExtractionOptionsTests
         options.MaxZipEntries.ShouldBe(10_000);
         options.MaxExtractedCharLength.ShouldBe(500_000);
         options.MaxImagePixels.ShouldBe(100_000_000L);
-        options.ResolveHtmlExternalResources.ShouldBeFalse();
     }
 
     [Fact]
@@ -35,7 +34,6 @@ public sealed class GranitTextExtractionOptionsTests
         {
             ["TextExtraction:MaxBodySizeBytes"] = "12345",
             ["TextExtraction:MaxExtractedCharLength"] = "777",
-            ["TextExtraction:ResolveHtmlExternalResources"] = "true",
         };
 
         IConfiguration configuration = new ConfigurationBuilder()
@@ -52,7 +50,6 @@ public sealed class GranitTextExtractionOptionsTests
 
         bound.MaxBodySizeBytes.ShouldBe(12345);
         bound.MaxExtractedCharLength.ShouldBe(777);
-        bound.ResolveHtmlExternalResources.ShouldBeTrue();
         bound.MaxZipEntries.ShouldBe(10_000); // unset → default preserved
     }
 }

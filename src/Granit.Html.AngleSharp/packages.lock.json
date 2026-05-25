@@ -23,7 +23,7 @@
       "granit": {
         "type": "Project"
       },
-      "Granit.Html.Abstractions": {
+      "granit.html": {
         "type": "Project",
         "dependencies": {
           "AngleSharp": "[1.*, )",

@@ -1,3 +1,5 @@
+using Granit.Html;
+using Granit.Html.AngleSharp;
 using Granit.TextExtraction.Exceptions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
@@ -9,8 +11,12 @@ namespace Granit.TextExtraction.Email.Tests;
 
 public sealed class EmailTextExtractorTests
 {
+    private static readonly IHtmlToPlainTextConverter UntrustedConverter =
+        new AngleSharpHtmlToPlainTextConverter(AngleSharpConfiguration.BuildForUntrustedContent());
+
     private static EmailTextExtractor CreateExtractor(ExtractionOptions? options = null) =>
-        new(MEOptions.Create(options ?? new ExtractionOptions()),
+        new(UntrustedConverter,
+            MEOptions.Create(options ?? new ExtractionOptions()),
             NullLogger<EmailTextExtractor>.Instance);
 
     [Theory]

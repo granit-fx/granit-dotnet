@@ -36,9 +36,11 @@ configuration with an architecture test on your host application.
 ```json
 {
   "TextExtraction": {
-    "OcrAI": {
-      "WorkspaceName": "vision-ocr",
-      "AllowedContentTypes": ["image/png", "image/jpeg", "image/webp", "image/tiff"]
+    "Ocr": {
+      "AI": {
+        "WorkspaceName": "vision-ocr",
+        "AllowedContentTypes": ["image/png", "image/jpeg", "image/webp", "image/tiff"]
+      }
     }
   }
 }
@@ -51,11 +53,11 @@ at a model with vision/multimodal support (e.g. `gpt-4o`, `claude-3.5-sonnet`,
 ## Custom prompts
 
 Replace the default prompt by registering an `IVisionOcrPromptBuilder` before
-calling `AddAiVisionOcrExtractor`:
+calling `AddAIVisionOcrExtractor`:
 
 ```csharp
 services.AddSingleton<IVisionOcrPromptBuilder, MyDomainPromptBuilder>();
-services.AddAiVisionOcrExtractor();
+services.AddAIVisionOcrExtractor();
 ```
 
 The default prompt asks the model to "extract verbatim text, preserving table

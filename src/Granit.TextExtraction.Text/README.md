@@ -23,7 +23,7 @@ dotnet add package Granit.TextExtraction.Text
 
 | Extractor | MIME types | Notes |
 | --------- | ---------- | ----- |
-| `HtmlTextExtractor` | `text/html`, `application/xhtml+xml` | Constructs its own AngleSharp converter via `BuildForUntrustedContent()` by default. Hosts that index trusted templates can opt into `ResolveHtmlExternalResources = true`, which switches to `BuildForTrustedTemplates()`. SSRF-safe by default. |
+| `HtmlTextExtractor` | `text/html`, `application/xhtml+xml` | Consumes the keyed `HtmlConverterKeys.Untrusted` `IHtmlToPlainTextConverter` registered by `Granit.Html.AngleSharp`. SSRF-safe by design — the untrusted profile never resolves external resources. |
 | `MarkdownTextExtractor` | `text/markdown`, `text/x-markdown` | Uses `Markdig.Markdown.ToPlainText` with the `UseAdvancedExtensions()` pipeline (tables, footnotes, task lists, …). |
 
 ## Documentation

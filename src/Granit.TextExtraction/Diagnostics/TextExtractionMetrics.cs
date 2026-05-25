@@ -23,20 +23,20 @@ public sealed class TextExtractionMetrics
         Meter meter = meterFactory.Create(MeterName);
 
         _success = meter.CreateCounter<long>(
-            "granit.text_extraction.extraction.success",
-            description: "Number of successful text extractions.");
+            "granit.text_extraction.document.extracted",
+            description: "Number of documents successfully extracted to text.");
 
         _failed = meter.CreateCounter<long>(
-            "granit.text_extraction.extraction.failed",
-            description: "Number of failed text extractions (extractor threw or aborted).");
+            "granit.text_extraction.document.failed",
+            description: "Number of documents whose extraction failed (extractor threw or aborted).");
 
         _skipped = meter.CreateCounter<long>(
-            "granit.text_extraction.extraction.skipped",
-            description: "Number of extractions skipped because no extractor claimed the content type.");
+            "granit.text_extraction.document.skipped",
+            description: "Number of documents skipped because no extractor claimed the content type.");
 
         _truncated = meter.CreateCounter<long>(
-            "granit.text_extraction.extraction.truncated",
-            description: "Number of extractions that hit the MaxExtractedCharLength cap.");
+            "granit.text_extraction.document.truncated",
+            description: "Number of documents whose extraction hit the MaxExtractedCharLength cap.");
     }
 
     public void RecordSuccess(string? tenantId, string extractorName, string contentType)

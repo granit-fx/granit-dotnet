@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.TextExtraction.Diagnostics;
 using Granit.TextExtraction.Exceptions;
 using Granit.TextExtraction.Options;
@@ -14,11 +15,13 @@ internal sealed class TextExtractionPipeline(
     IEnumerable<ITextExtractor> extractors,
     PlainTextExtractor fallback,
     TextExtractionMetrics metrics,
+    ICurrentTenant currentTenant,
     IOptions<GranitTextExtractionOptions> options) : ITextExtractionPipeline
 {
     private readonly IReadOnlyList<ITextExtractor> _extractors = [.. extractors];
     private readonly PlainTextExtractor _fallback = fallback ?? throw new ArgumentNullException(nameof(fallback));
     private readonly TextExtractionMetrics _metrics = metrics ?? throw new ArgumentNullException(nameof(metrics));
+    private readonly ICurrentTenant _currentTenant = currentTenant ?? throw new ArgumentNullException(nameof(currentTenant));
     private readonly GranitTextExtractionOptions _options =
         options?.Value ?? throw new ArgumentNullException(nameof(options));
 
@@ -31,6 +34,7 @@ internal sealed class TextExtractionPipeline(
         ArgumentException.ThrowIfNullOrEmpty(contentType);
 
         ITextExtractor selected = SelectExtractor(contentType);
+        string? tenantId = ResolveTenantId();
 
         try
         {
@@ -38,17 +42,17 @@ internal sealed class TextExtractionPipeline(
                 .ExtractAsync(source, contentType, _options.MaxExtractedCharLength, cancellationToken)
                 .ConfigureAwait(false);
 
-            _metrics.RecordSuccess(tenantId: null, result.ExtractorName, contentType);
+            _metrics.RecordSuccess(tenantId, result.ExtractorName, contentType);
             if (result.IsTruncated)
             {
-                _metrics.RecordTruncated(tenantId: null, result.ExtractorName, contentType);
+                _metrics.RecordTruncated(tenantId, result.ExtractorName, contentType);
             }
 
             return result;
         }
         catch (TextExtractionException tex)
         {
-            _metrics.RecordFailed(tenantId: null, selected.Name, contentType, tex.Reason);
+            _metrics.RecordFailed(tenantId, selected.Name, contentType, tex.Reason);
             throw;
         }
         catch (OperationCanceledException)
@@ -57,10 +61,13 @@ internal sealed class TextExtractionPipeline(
         }
         catch (Exception ex)
         {
-            _metrics.RecordFailed(tenantId: null, selected.Name, contentType, ex.GetType().Name);
+            _metrics.RecordFailed(tenantId, selected.Name, contentType, ex.GetType().Name);
             throw;
         }
     }
+
+    private string? ResolveTenantId() =>
+        _currentTenant.IsAvailable ? _currentTenant.Id?.ToString() : null;
 
     private ITextExtractor SelectExtractor(string contentType)
     {
@@ -74,7 +81,7 @@ internal sealed class TextExtractionPipeline(
 
         // Universal fallback. RecordSkipped is fired so dashboards surface unmapped MIMEs even
         // though the pipeline still produces a (best-effort) plain-text result.
-        _metrics.RecordSkipped(tenantId: null, contentType);
+        _metrics.RecordSkipped(ResolveTenantId(), contentType);
         return _fallback;
     }
 }

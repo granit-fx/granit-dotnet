@@ -12,26 +12,26 @@ namespace Granit.TextExtraction.Ocr.AI.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers <see cref="AiVisionOcrExtractor"/> with the <c>Granit.TextExtraction</c>
+    /// Registers <see cref="AIVisionOcrExtractor"/> with the <c>Granit.TextExtraction</c>
     /// pipeline. Implicitly calls <c>AddGranitTextExtraction()</c>, binds
-    /// <see cref="AiVisionOcrOptions"/>, and registers the default
+    /// <see cref="AIVisionOcrOptions"/>, and registers the default
     /// <see cref="IVisionOcrPromptBuilder"/>. The host MUST also register a Granit.AI
     /// workspace (via <c>builder.AddGranitAI()</c> + a provider package) — this method
     /// does not configure the AI module itself.
     /// </summary>
-    public static IServiceCollection AddAiVisionOcrExtractor(
+    public static IServiceCollection AddAIVisionOcrExtractor(
         this IServiceCollection services,
-        Action<AiVisionOcrOptions>? configure = null)
+        Action<AIVisionOcrOptions>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddGranitTextExtraction();
-        services.AddTextExtractor<AiVisionOcrExtractor>();
+        services.AddTextExtractor<AIVisionOcrExtractor>();
 
         services.TryAddSingleton<IVisionOcrPromptBuilder, DefaultVisionOcrPromptBuilder>();
 
-        services.AddOptions<AiVisionOcrOptions>()
-            .BindConfiguration(AiVisionOcrOptions.SectionName);
+        services.AddOptions<AIVisionOcrOptions>()
+            .BindConfiguration(AIVisionOcrOptions.SectionName);
 
         if (configure is not null)
         {

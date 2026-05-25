@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>Granit.Html.Abstractions</PackageId>
-    <Description>HTML processing abstractions for Granit. Provides IHtmlToPlainTextConverter (AngleSharp-backed) and an AngleSharpConfiguration factory with separated trusted-template vs untrusted-content profiles to keep SSRF risks isolated. Shared by Notifications (trusted email templates) and TextExtraction (untrusted uploads).</Description>
+    <PackageId>Granit.Html</PackageId>
+    <Description>HTML processing abstractions for Granit. Provides IHtmlToPlainTextConverter and an AngleSharpConfiguration factory exposing trusted-template vs untrusted-content profiles to keep SSRF risks isolated. Shared by Notifications (trusted email templates) and TextExtraction (untrusted uploads).</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.Html.Abstractions.Tests" />
+    <InternalsVisibleTo Include="Granit.Html.Tests" />
     <InternalsVisibleTo Include="Granit.Notifications.Email" />
     <InternalsVisibleTo Include="Granit.Notifications.Email.Tests" />
     <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->

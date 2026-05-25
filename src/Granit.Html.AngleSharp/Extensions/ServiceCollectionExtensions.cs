@@ -5,21 +5,38 @@ namespace Granit.Html.AngleSharp.Extensions;
 
 /// <summary>
 /// Extension methods for registering the AngleSharp-backed
-/// <see cref="IHtmlToPlainTextConverter"/> implementation.
+/// <see cref="IHtmlToPlainTextConverter"/> implementations.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers <see cref="AngleSharpHtmlToPlainTextConverter"/> as the default
-    /// <see cref="IHtmlToPlainTextConverter"/>. Uses
-    /// <see cref="AngleSharpConfiguration.BuildForTrustedTemplates"/>. Hosts dealing with
-    /// untrusted content should replace the registration with a converter constructed via
-    /// <see cref="AngleSharpConfiguration.BuildForUntrustedContent"/>.
+    /// Registers the two posture profiles of <see cref="IHtmlToPlainTextConverter"/> as
+    /// keyed singletons:
+    /// <list type="bullet">
+    ///   <item><see cref="HtmlConverterKeys.Trusted"/> →
+    ///   <see cref="AngleSharpConfiguration.BuildForTrustedTemplates"/> (Notifications.Email,
+    ///   host-rendered templates).</item>
+    ///   <item><see cref="HtmlConverterKeys.Untrusted"/> →
+    ///   <see cref="AngleSharpConfiguration.BuildForUntrustedContent"/> (TextExtraction,
+    ///   indexing, anything dealing with externally-sourced HTML).</item>
+    /// </list>
+    /// Consumers pick the profile at injection time with
+    /// <c>[FromKeyedServices(HtmlConverterKeys.Trusted | Untrusted)]</c>.
     /// </summary>
     public static IServiceCollection AddGranitHtmlAngleSharp(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        services.TryAddSingleton<IHtmlToPlainTextConverter, AngleSharpHtmlToPlainTextConverter>();
+
+        services.TryAddKeyedSingleton<IHtmlToPlainTextConverter>(
+            HtmlConverterKeys.Trusted,
+            (_, _) => new AngleSharpHtmlToPlainTextConverter(
+                AngleSharpConfiguration.BuildForTrustedTemplates()));
+
+        services.TryAddKeyedSingleton<IHtmlToPlainTextConverter>(
+            HtmlConverterKeys.Untrusted,
+            (_, _) => new AngleSharpHtmlToPlainTextConverter(
+                AngleSharpConfiguration.BuildForUntrustedContent()));
+
         return services;
     }
 }

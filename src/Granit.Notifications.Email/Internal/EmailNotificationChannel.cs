@@ -45,7 +45,7 @@ internal sealed partial class EmailNotificationChannel(
     IOptions<EmailChannelOptions> options,
     IRecipientResolver recipientResolver,
     IConfiguration configuration,
-    IHtmlToPlainTextConverter htmlToPlainText,
+    [FromKeyedServices(HtmlConverterKeys.Trusted)] IHtmlToPlainTextConverter htmlToPlainText,
     ILogger<EmailNotificationChannel> logger) : INotificationChannel
 {
     /// <summary>

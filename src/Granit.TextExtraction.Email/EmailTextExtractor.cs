@@ -1,8 +1,8 @@
 using System.Globalization;
 using System.Text;
 using Granit.Html;
-using Granit.Html.AngleSharp;
 using Granit.TextExtraction.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
@@ -48,25 +48,19 @@ public sealed partial class EmailTextExtractor : ITextExtractor
 
     private readonly GranitTextExtractionOptions _options;
     private readonly ILogger<EmailTextExtractor> _logger;
-
-    // The DI-registered converter ships with the trusted-templates profile so that
-    // Notifications.Email keeps its historical behaviour. Email bodies are NOT trusted
-    // content — they originate from outside the host — so we build our own untrusted
-    // converter here. Same posture as Granit.TextExtraction.Text.HtmlTextExtractor.
-#pragma warning disable CA1859
     private readonly IHtmlToPlainTextConverter _htmlConverter;
-#pragma warning restore CA1859
 
     public EmailTextExtractor(
+        [FromKeyedServices(HtmlConverterKeys.Untrusted)] IHtmlToPlainTextConverter htmlConverter,
         IOptions<GranitTextExtractionOptions> options,
         ILogger<EmailTextExtractor> logger)
     {
+        ArgumentNullException.ThrowIfNull(htmlConverter);
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(logger);
+        _htmlConverter = htmlConverter;
         _options = options.Value;
         _logger = logger;
-        _htmlConverter = new AngleSharpHtmlToPlainTextConverter(
-            AngleSharpConfiguration.BuildForUntrustedContent());
     }
 
     /// <inheritdoc/>

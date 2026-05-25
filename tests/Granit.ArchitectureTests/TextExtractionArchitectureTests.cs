@@ -7,12 +7,59 @@ namespace Granit.ArchitectureTests;
 /// <summary>
 /// Architecture rules for the <c>Granit.TextExtraction.*</c> module family (epic #2233).
 /// Pins the VULN-001 input-size contract and the "pure utility, no host plumbing" boundary
-/// across the base package and the extractor providers (PDF, Office, Text).
+/// across the base package and the extractor providers (Email, Office, Pdf, Text, Tika,
+/// Ocr.AI, Ocr.Tesseract).
 /// </summary>
 public sealed class TextExtractionArchitectureTests
 {
     private static readonly string RepoRoot = FindRepoRoot();
     private static readonly string SrcRoot = Path.Join(RepoRoot, "src");
+
+    /// <summary>
+    /// Single source of truth for every <c>Granit.TextExtraction.*</c> provider package
+    /// that ships at least one extractor and must therefore satisfy the framework's
+    /// purity / DependsOn pins.
+    /// </summary>
+    private static readonly string[] ProviderPackageNames =
+    [
+        "Granit.TextExtraction.Email",
+        "Granit.TextExtraction.Ocr.AI",
+        "Granit.TextExtraction.Ocr.Tesseract",
+        "Granit.TextExtraction.Office",
+        "Granit.TextExtraction.Pdf",
+        "Granit.TextExtraction.Text",
+        "Granit.TextExtraction.Tika",
+    ];
+
+    public static TheoryData<string> ProviderPackages
+    {
+        get
+        {
+            TheoryData<string> data = [];
+            foreach (string p in ProviderPackageNames)
+            {
+                data.Add(p);
+            }
+            return data;
+        }
+    }
+
+    /// <summary>
+    /// Provider packages plus the base contract — used for the purity checks (no AspNetCore,
+    /// no EF Core) that apply to every package in the family without exception.
+    /// </summary>
+    public static TheoryData<string> AllPackages
+    {
+        get
+        {
+            TheoryData<string> data = ["Granit.TextExtraction"];
+            foreach (string p in ProviderPackageNames)
+            {
+                data.Add(p);
+            }
+            return data;
+        }
+    }
 
     /// <summary>
     /// Every <c>Granit.TextExtraction.*</c> package that ships at least one
@@ -53,11 +100,7 @@ public sealed class TextExtractionArchitectureTests
     /// background workers, indexing pipelines) to drag the web stack into their build.
     /// </summary>
     [Theory]
-    [InlineData("Granit.TextExtraction")]
-    [InlineData("Granit.TextExtraction.Email")]
-    [InlineData("Granit.TextExtraction.Office")]
-    [InlineData("Granit.TextExtraction.Pdf")]
-    [InlineData("Granit.TextExtraction.Text")]
+    [MemberData(nameof(AllPackages))]
     public void TextExtraction_packages_must_not_reference_AspNetCore(string projectName) =>
         AssertNoPackageReferenceStartsWith(projectName, "Microsoft.AspNetCore.");
 
@@ -68,11 +111,7 @@ public sealed class TextExtractionArchitectureTests
     /// caching extracted text into a table, and suddenly the framework has a DB dependency.
     /// </summary>
     [Theory]
-    [InlineData("Granit.TextExtraction")]
-    [InlineData("Granit.TextExtraction.Email")]
-    [InlineData("Granit.TextExtraction.Office")]
-    [InlineData("Granit.TextExtraction.Pdf")]
-    [InlineData("Granit.TextExtraction.Text")]
+    [MemberData(nameof(AllPackages))]
     public void TextExtraction_packages_must_not_reference_EntityFrameworkCore(string projectName) =>
         AssertNoPackageReferenceStartsWith(projectName, "Microsoft.EntityFrameworkCore");
 
@@ -99,30 +138,27 @@ public sealed class TextExtractionArchitectureTests
     }
 
     /// <summary>
-    /// Every provider package (<c>Granit.TextExtraction.Email</c>,
-    /// <c>Granit.TextExtraction.Office</c>, <c>Granit.TextExtraction.Pdf</c>,
-    /// <c>Granit.TextExtraction.Text</c>) must declare a <c>[DependsOn(...)]</c>
-    /// attribute that references <c>GranitTextExtractionModule</c> — either as the
-    /// sole entry or alongside other module deps. Without this, calling
-    /// <c>AddTextExtractor&lt;T&gt;</c> would silently no-op (no pipeline service
-    /// registered).
+    /// Every provider package must declare a <c>[DependsOn(...)]</c> attribute on its
+    /// <c>*Module</c> class that references <c>GranitTextExtractionModule</c>. Without
+    /// this, calling the provider's <c>Add*Extractor</c> extension would silently no-op
+    /// (no pipeline service registered).
     /// </summary>
     [Theory]
-    [InlineData("Granit.TextExtraction.Email", "GranitTextExtractionEmailModule.cs")]
-    [InlineData("Granit.TextExtraction.Office", "GranitTextExtractionOfficeModule.cs")]
-    [InlineData("Granit.TextExtraction.Pdf", "GranitTextExtractionPdfModule.cs")]
-    [InlineData("Granit.TextExtraction.Text", "GranitTextExtractionTextModule.cs")]
-    public void Extractor_provider_modules_must_DependOn_base(string projectName, string moduleFile)
+    [MemberData(nameof(ProviderPackages))]
+    public void Extractor_provider_modules_must_DependOn_base(string projectName)
     {
-        string modulePath = Path.Join(SrcRoot, projectName, moduleFile);
-        File.Exists(modulePath).ShouldBeTrue($"Expected {modulePath} to exist.");
+        string moduleFile = Directory
+            .EnumerateFiles(Path.Join(SrcRoot, projectName), "Granit*Module.cs", SearchOption.TopDirectoryOnly)
+            .SingleOrDefault()
+            ?? throw new InvalidOperationException(
+                $"Expected exactly one Granit*Module.cs under {projectName}.");
 
-        string source = File.ReadAllText(modulePath);
+        string source = File.ReadAllText(moduleFile);
 
         // Match `[DependsOn(...)]` blocks (possibly spanning multiple typeof args)
         // and assert at least one references GranitTextExtractionModule. The looser
         // form keeps the pin honest for modules that legitimately depend on more
-        // than one upstream module (e.g. Email also depending on Html.AngleSharp).
+        // than one upstream module.
         bool dependsOnBase = System.Text.RegularExpressions.Regex.IsMatch(
             source,
             @"\[DependsOn\([^\]]*typeof\(GranitTextExtractionModule\)[^\]]*\)\]");

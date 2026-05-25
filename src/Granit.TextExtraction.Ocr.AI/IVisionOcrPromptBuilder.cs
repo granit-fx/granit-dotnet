@@ -3,7 +3,7 @@ namespace Granit.TextExtraction.Ocr.AI;
 /// <summary>
 /// Builds the user-message prompt that accompanies the image when invoking the multimodal
 /// model. Hosts customise the prompt by registering their own implementation BEFORE
-/// calling <c>AddAiVisionOcrExtractor</c>.
+/// calling <c>AddAIVisionOcrExtractor</c>.
 /// </summary>
 public interface IVisionOcrPromptBuilder
 {

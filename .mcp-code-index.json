@@ -2034,7 +2034,6 @@
     {
       "name": "Granit.TextExtraction.Email",
       "deps": [
-        "Granit.Html",
         "Granit.Html.AngleSharp",
         "Granit.TextExtraction"
       ],
@@ -2072,7 +2071,6 @@
     {
       "name": "Granit.TextExtraction.Text",
       "deps": [
-        "Granit.Html",
         "Granit.Html.AngleSharp",
         "Granit.TextExtraction"
       ],
@@ -18233,7 +18231,7 @@
       "kind": "class",
       "project": "Granit.Html.AngleSharp",
       "file": "src/Granit.Html.AngleSharp/AngleSharpConfiguration.cs",
-      "line": 17,
+      "line": 24,
       "members": [
         {
           "name": "BuildForTrustedTemplates",
@@ -18297,6 +18295,15 @@
       "project": "Granit.Html",
       "file": "src/Granit.Html/GranitHtmlModule.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "HtmlConverterKeys",
+      "fqn": "Granit.Html.HtmlConverterKeys",
+      "kind": "class",
+      "project": "Granit.Html",
+      "file": "src/Granit.Html/HtmlConverterKeys.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -41497,7 +41504,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction.Email",
       "file": "src/Granit.TextExtraction.Email/Extensions/ServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitTextExtractionEmail",
@@ -41513,7 +41520,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction.Email",
       "file": "src/Granit.TextExtraction.Email/GranitTextExtractionEmailModule.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -41545,7 +41552,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction",
       "file": "src/Granit.TextExtraction/Extensions/ServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitTextExtraction",
@@ -41662,11 +41669,11 @@
       ]
     },
     {
-      "name": "AiVisionOcrExtractor",
-      "fqn": "Granit.TextExtraction.Ocr.AI.AiVisionOcrExtractor",
+      "name": "AIVisionOcrExtractor",
+      "fqn": "Granit.TextExtraction.Ocr.AI.AIVisionOcrExtractor",
       "kind": "class",
       "project": "Granit.TextExtraction.Ocr.AI",
-      "file": "src/Granit.TextExtraction.Ocr.AI/AiVisionOcrExtractor.cs",
+      "file": "src/Granit.TextExtraction.Ocr.AI/AIVisionOcrExtractor.cs",
       "line": 28,
       "members": [
         {
@@ -41686,9 +41693,9 @@
       "line": 12,
       "members": [
         {
-          "name": "AddAiVisionOcrExtractor",
+          "name": "AddAIVisionOcrExtractor",
           "kind": "method",
-          "signature": "AddAiVisionOcrExtractor(this IServiceCollection services, Action<AiVisionOcrOptions>? configure = null)",
+          "signature": "AddAIVisionOcrExtractor(this IServiceCollection services, Action<AIVisionOcrOptions>? configure = null)",
           "returnType": "IServiceCollection"
         }
       ]
@@ -41719,11 +41726,11 @@
       ]
     },
     {
-      "name": "AiVisionOcrOptions",
-      "fqn": "Granit.TextExtraction.Ocr.AI.Options.AiVisionOcrOptions",
+      "name": "AIVisionOcrOptions",
+      "fqn": "Granit.TextExtraction.Ocr.AI.Options.AIVisionOcrOptions",
       "kind": "class",
       "project": "Granit.TextExtraction.Ocr.AI",
-      "file": "src/Granit.TextExtraction.Ocr.AI/Options/AiVisionOcrOptions.cs",
+      "file": "src/Granit.TextExtraction.Ocr.AI/Options/AIVisionOcrOptions.cs",
       "line": 7,
       "members": [
         {
@@ -42060,7 +42067,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction.Text",
       "file": "src/Granit.TextExtraction.Text/Extensions/ServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitTextExtractionText",
@@ -42076,7 +42083,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction.Text",
       "file": "src/Granit.TextExtraction.Text/GranitTextExtractionTextModule.cs",
-      "line": 11,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -42092,7 +42099,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction.Text",
       "file": "src/Granit.TextExtraction.Text/HtmlTextExtractor.cs",
-      "line": 23,
+      "line": 20,
       "members": [
         {
           "name": "CanHandle",

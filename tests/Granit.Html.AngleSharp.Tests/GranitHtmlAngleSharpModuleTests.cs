@@ -27,15 +27,40 @@ public sealed class GranitHtmlAngleSharpModuleTests
     }
 
     [Fact]
-    public void AddGranitHtmlAngleSharp_registers_default_converter()
+    public void AddGranitHtmlAngleSharp_registers_trusted_keyed_converter()
     {
         ServiceCollection services = new();
         services.AddGranitHtmlAngleSharp();
 
         using ServiceProvider sp = services.BuildServiceProvider();
-        IHtmlToPlainTextConverter converter = sp.GetRequiredService<IHtmlToPlainTextConverter>();
+        IHtmlToPlainTextConverter converter =
+            sp.GetRequiredKeyedService<IHtmlToPlainTextConverter>(HtmlConverterKeys.Trusted);
 
         converter.ShouldBeOfType<AngleSharpHtmlToPlainTextConverter>();
+    }
+
+    [Fact]
+    public void AddGranitHtmlAngleSharp_registers_untrusted_keyed_converter()
+    {
+        ServiceCollection services = new();
+        services.AddGranitHtmlAngleSharp();
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+        IHtmlToPlainTextConverter converter =
+            sp.GetRequiredKeyedService<IHtmlToPlainTextConverter>(HtmlConverterKeys.Untrusted);
+
+        converter.ShouldBeOfType<AngleSharpHtmlToPlainTextConverter>();
+    }
+
+    [Fact]
+    public void AddGranitHtmlAngleSharp_does_not_register_unkeyed_default()
+    {
+        ServiceCollection services = new();
+        services.AddGranitHtmlAngleSharp();
+
+        services.Count(d =>
+            d.ServiceType == typeof(IHtmlToPlainTextConverter)
+            && d.ServiceKey is null).ShouldBe(0);
     }
 
     [Fact]
@@ -45,6 +70,11 @@ public sealed class GranitHtmlAngleSharpModuleTests
         services.AddGranitHtmlAngleSharp();
         services.AddGranitHtmlAngleSharp();
 
-        services.Count(d => d.ServiceType == typeof(IHtmlToPlainTextConverter)).ShouldBe(1);
+        services.Count(d =>
+            d.ServiceType == typeof(IHtmlToPlainTextConverter)
+            && Equals(d.ServiceKey, HtmlConverterKeys.Trusted)).ShouldBe(1);
+        services.Count(d =>
+            d.ServiceType == typeof(IHtmlToPlainTextConverter)
+            && Equals(d.ServiceKey, HtmlConverterKeys.Untrusted)).ShouldBe(1);
     }
 }

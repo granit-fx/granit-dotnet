@@ -1,4 +1,5 @@
 using Granit.Diagnostics;
+using Granit.MultiTenancy;
 using Granit.TextExtraction.Diagnostics;
 using Granit.TextExtraction.Internal;
 using Granit.TextExtraction.Options;
@@ -32,6 +33,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<TextExtractionMetrics>();
         services.TryAddSingleton<PlainTextExtractor>();
+        services.TryAddSingleton<ICurrentTenant>(NullTenantContext.Instance);
         services.TryAddSingleton<ITextExtractionPipeline, TextExtractionPipeline>();
 
         return services;

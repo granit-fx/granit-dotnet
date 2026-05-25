@@ -7,7 +7,7 @@ namespace Granit.TextExtraction.Ocr.Tesseract.Options;
 public sealed class TesseractOcrOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "TextExtraction:OcrTesseract";
+    public const string SectionName = "TextExtraction:Ocr:Tesseract";
 
     /// <summary>
     /// Default pixel-bomb cap (100 megapixels — covers A1 @ 600 DPI with margin).

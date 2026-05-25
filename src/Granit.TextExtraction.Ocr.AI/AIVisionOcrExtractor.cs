@@ -11,7 +11,7 @@ namespace Granit.TextExtraction.Ocr.AI;
 /// Extractor that sends raster images to a multimodal LLM (vision-capable
 /// <see cref="IChatClient"/>) and reads back the verbatim text. Backed by
 /// <see cref="IAIChatClientFactory"/>; the model + endpoint are resolved from the
-/// Granit.AI workspace named by <see cref="AiVisionOcrOptions.WorkspaceName"/>.
+/// Granit.AI workspace named by <see cref="AIVisionOcrOptions.WorkspaceName"/>.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -25,7 +25,7 @@ namespace Granit.TextExtraction.Ocr.AI;
 /// applies the quota middleware.
 /// </para>
 /// </remarks>
-public sealed partial class AiVisionOcrExtractor : ITextExtractor
+public sealed partial class AIVisionOcrExtractor : ITextExtractor
 {
     /// <summary>The stable extractor identifier surfaced on metrics and spans.</summary>
     public const string ExtractorName = "granit.text-extraction.ocr-ai";
@@ -33,16 +33,16 @@ public sealed partial class AiVisionOcrExtractor : ITextExtractor
     private readonly IAIChatClientFactory _chatClientFactory;
     private readonly IVisionOcrPromptBuilder _promptBuilder;
     private readonly GranitTextExtractionOptions _extractionOptions;
-    private readonly AiVisionOcrOptions _ocrOptions;
-    private readonly ILogger<AiVisionOcrExtractor> _logger;
+    private readonly AIVisionOcrOptions _ocrOptions;
+    private readonly ILogger<AIVisionOcrExtractor> _logger;
     private readonly HashSet<string> _allowedContentTypes;
 
-    public AiVisionOcrExtractor(
+    public AIVisionOcrExtractor(
         IAIChatClientFactory chatClientFactory,
         IVisionOcrPromptBuilder promptBuilder,
         IOptions<GranitTextExtractionOptions> extractionOptions,
-        IOptions<AiVisionOcrOptions> ocrOptions,
-        ILogger<AiVisionOcrExtractor> logger)
+        IOptions<AIVisionOcrOptions> ocrOptions,
+        ILogger<AIVisionOcrExtractor> logger)
     {
         ArgumentNullException.ThrowIfNull(chatClientFactory);
         ArgumentNullException.ThrowIfNull(promptBuilder);
@@ -159,11 +159,11 @@ public sealed partial class AiVisionOcrExtractor : ITextExtractor
 
     [LoggerMessage(
         Level = LogLevel.Warning,
-        Message = "AiVisionOcrExtractor failed to resolve IChatClient for workspace {Workspace}.")]
+        Message = "AIVisionOcrExtractor failed to resolve IChatClient for workspace {Workspace}.")]
     private partial void LogChatClientResolutionFailed(Exception exception, string workspace);
 
     [LoggerMessage(
         Level = LogLevel.Warning,
-        Message = "AiVisionOcrExtractor IChatClient call failed for workspace {Workspace}.")]
+        Message = "AIVisionOcrExtractor IChatClient call failed for workspace {Workspace}.")]
     private partial void LogChatClientCallFailed(Exception exception, string workspace);
 }

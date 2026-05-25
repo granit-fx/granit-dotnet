@@ -56,10 +56,4 @@ public sealed class GranitTextExtractionOptions
     /// Defaults to 100 000 000 (≈ 10 000 × 10 000). Guard against pixel-flood attacks.
     /// </summary>
     public long MaxImagePixels { get; set; } = 100_000_000;
-
-    /// <summary>
-    /// When <c>false</c> (default), HTML extractors MUST NOT resolve external resources
-    /// (links, stylesheets, images) — SSRF guard. Hosts may opt in for trusted corpora.
-    /// </summary>
-    public bool ResolveHtmlExternalResources { get; set; }
 }

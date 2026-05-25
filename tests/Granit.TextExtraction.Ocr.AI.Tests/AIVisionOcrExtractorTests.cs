@@ -11,15 +11,15 @@ using MEOptions = Microsoft.Extensions.Options.Options;
 
 namespace Granit.TextExtraction.Ocr.AI.Tests;
 
-public sealed class AiVisionOcrExtractorTests
+public sealed class AIVisionOcrExtractorTests
 {
     private const string Png = "image/png";
 
-    private static (AiVisionOcrExtractor extractor, IChatClient chatClient, IAIChatClientFactory factory)
+    private static (AIVisionOcrExtractor extractor, IChatClient chatClient, IAIChatClientFactory factory)
         CreateExtractor(
             ChatResponse? response = null,
             ExtractionOptions? extractionOptions = null,
-            AiVisionOcrOptions? ocrOptions = null,
+            AIVisionOcrOptions? ocrOptions = null,
             IVisionOcrPromptBuilder? promptBuilder = null)
     {
         IChatClient chatClient = Substitute.For<IChatClient>();
@@ -40,12 +40,12 @@ public sealed class AiVisionOcrExtractorTests
                 .Returns("default-prompt");
         }
 
-        AiVisionOcrExtractor extractor = new(
+        AIVisionOcrExtractor extractor = new(
             factory,
             prompt,
             MEOptions.Create(extractionOptions ?? new ExtractionOptions()),
-            MEOptions.Create(ocrOptions ?? new AiVisionOcrOptions()),
-            NullLogger<AiVisionOcrExtractor>.Instance);
+            MEOptions.Create(ocrOptions ?? new AIVisionOcrOptions()),
+            NullLogger<AIVisionOcrExtractor>.Instance);
 
         return (extractor, chatClient, factory);
     }
@@ -62,14 +62,14 @@ public sealed class AiVisionOcrExtractorTests
     [InlineData("", false)]
     public void CanHandle_recognises_configured_image_types(string contentType, bool expected)
     {
-        (AiVisionOcrExtractor extractor, _, _) = CreateExtractor();
+        (AIVisionOcrExtractor extractor, _, _) = CreateExtractor();
         extractor.CanHandle(contentType).ShouldBe(expected);
     }
 
     [Fact]
     public async Task Sends_prompt_and_image_data_then_returns_response_text()
     {
-        (AiVisionOcrExtractor extractor, IChatClient chatClient, IAIChatClientFactory factory) =
+        (AIVisionOcrExtractor extractor, IChatClient chatClient, IAIChatClientFactory factory) =
             CreateExtractor(new ChatResponse
             {
                 Messages = [new ChatMessage(ChatRole.Assistant, "Extracted document text.")],
@@ -82,7 +82,7 @@ public sealed class AiVisionOcrExtractorTests
             input, Png, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
 
         result.Content.ShouldBe("Extracted document text.");
-        result.ExtractorName.ShouldBe(AiVisionOcrExtractor.ExtractorName);
+        result.ExtractorName.ShouldBe(AIVisionOcrExtractor.ExtractorName);
         result.IsTruncated.ShouldBeFalse();
 
         // Inspect the messages sent to the chat client to verify the multimodal request.
@@ -101,7 +101,7 @@ public sealed class AiVisionOcrExtractorTests
         {
             Messages = [new ChatMessage(ChatRole.Assistant, new string('x', 5_000))],
         };
-        (AiVisionOcrExtractor extractor, _, _) = CreateExtractor(big);
+        (AIVisionOcrExtractor extractor, _, _) = CreateExtractor(big);
         using MemoryStream input = Bytes(8);
 
         TextExtractionResult result = await extractor.ExtractAsync(
@@ -115,7 +115,7 @@ public sealed class AiVisionOcrExtractorTests
     public async Task Body_size_cap_throws_input_too_large()
     {
         ExtractionOptions extraction = new() { MaxBodySizeBytes = 16 };
-        (AiVisionOcrExtractor extractor, _, _) = CreateExtractor(extractionOptions: extraction);
+        (AIVisionOcrExtractor extractor, _, _) = CreateExtractor(extractionOptions: extraction);
         using MemoryStream input = Bytes(4096);
 
         TextExtraction.Exceptions.TextExtractionException tex =
@@ -135,11 +135,11 @@ public sealed class AiVisionOcrExtractorTests
             .Throws(new InvalidOperationException("workspace not found"));
 
         IVisionOcrPromptBuilder prompt = Substitute.For<IVisionOcrPromptBuilder>();
-        AiVisionOcrExtractor extractor = new(
+        AIVisionOcrExtractor extractor = new(
             factory, prompt,
             MEOptions.Create(new ExtractionOptions()),
-            MEOptions.Create(new AiVisionOcrOptions()),
-            NullLogger<AiVisionOcrExtractor>.Instance);
+            MEOptions.Create(new AIVisionOcrOptions()),
+            NullLogger<AIVisionOcrExtractor>.Instance);
         using MemoryStream input = Bytes(8);
 
         TextExtractionResult result = await extractor.ExtractAsync(
@@ -166,11 +166,11 @@ public sealed class AiVisionOcrExtractorTests
         IVisionOcrPromptBuilder prompt = Substitute.For<IVisionOcrPromptBuilder>();
         prompt.BuildPrompt(Arg.Any<string>(), Arg.Any<int>()).Returns("p");
 
-        AiVisionOcrExtractor extractor = new(
+        AIVisionOcrExtractor extractor = new(
             factory, prompt,
             MEOptions.Create(new ExtractionOptions()),
-            MEOptions.Create(new AiVisionOcrOptions()),
-            NullLogger<AiVisionOcrExtractor>.Instance);
+            MEOptions.Create(new AIVisionOcrOptions()),
+            NullLogger<AIVisionOcrExtractor>.Instance);
         using MemoryStream input = Bytes(8);
 
         TextExtractionResult result = await extractor.ExtractAsync(
@@ -183,8 +183,8 @@ public sealed class AiVisionOcrExtractorTests
     [Fact]
     public async Task Workspace_name_from_options_is_used_to_resolve_chat_client()
     {
-        AiVisionOcrOptions opts = new() { WorkspaceName = "vision-ocr-fr" };
-        (AiVisionOcrExtractor extractor, _, IAIChatClientFactory factory) = CreateExtractor(ocrOptions: opts);
+        AIVisionOcrOptions opts = new() { WorkspaceName = "vision-ocr-fr" };
+        (AIVisionOcrExtractor extractor, _, IAIChatClientFactory factory) = CreateExtractor(ocrOptions: opts);
         using MemoryStream input = Bytes(8);
 
         await extractor.ExtractAsync(
@@ -199,7 +199,7 @@ public sealed class AiVisionOcrExtractorTests
         IVisionOcrPromptBuilder customPrompt = Substitute.For<IVisionOcrPromptBuilder>();
         customPrompt.BuildPrompt(Arg.Any<string>(), Arg.Any<int>()).Returns("custom-prompt-for-test");
 
-        (AiVisionOcrExtractor extractor, IChatClient chatClient, _) =
+        (AIVisionOcrExtractor extractor, IChatClient chatClient, _) =
             CreateExtractor(promptBuilder: customPrompt);
         using MemoryStream input = Bytes(8);
 

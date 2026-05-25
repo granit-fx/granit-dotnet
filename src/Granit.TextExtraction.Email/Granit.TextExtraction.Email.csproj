@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Html\Granit.Html.csproj" />
     <ProjectReference Include="..\Granit.Html.AngleSharp\Granit.Html.AngleSharp.csproj" />
     <ProjectReference Include="..\Granit.TextExtraction\Granit.TextExtraction.csproj" />
   </ItemGroup>
