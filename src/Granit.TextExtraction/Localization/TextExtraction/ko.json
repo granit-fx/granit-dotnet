@@ -1,0 +1,12 @@
+{
+  "culture": "ko",
+  "texts": {
+    "TextExtraction:InputTooLarge": "입력 스트림이 허용되는 최대 크기를 초과합니다.",
+    "TextExtraction:DecompressedTooLarge": "압축 해제된 콘텐츠가 허용되는 최대 크기를 초과합니다.",
+    "TextExtraction:ArchiveTooManyEntries": "아카이브에 허용된 항목 수보다 더 많은 항목이 포함되어 있습니다.",
+    "TextExtraction:ImageTooLarge": "이미지가 허용되는 최대 픽셀 수를 초과합니다.",
+    "TextExtraction:ExtractionTimeout": "텍스트 추출 시간이 초과되었습니다.",
+    "TextExtraction:UnsupportedContentType": "콘텐츠 형식 '{0}'에 사용할 수 있는 추출기가 없습니다.",
+    "TextExtraction:Truncated": "추출된 텍스트가 최대 문자 길이에 맞게 잘렸습니다."
+  }
+}

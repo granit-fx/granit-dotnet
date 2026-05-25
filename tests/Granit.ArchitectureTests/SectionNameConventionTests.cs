@@ -47,6 +47,7 @@ public sealed partial class SectionNameConventionTests
         "QueryEngine",
         "RateLimiting",
         "Settings",
+        "TextExtraction",
         "Vault",
         "Webhooks",
         "Wolverine",

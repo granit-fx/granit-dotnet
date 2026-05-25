@@ -2025,6 +2025,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.TextExtraction",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Timeline",
       "deps": [
         "Granit",
@@ -41404,6 +41411,245 @@
           "returnType": "FakeGuidGenerator GuidGenerator { get; } ="
         }
       ]
+    },
+    {
+      "name": "TextExtractionMetrics",
+      "fqn": "Granit.TextExtraction.Diagnostics.TextExtractionMetrics",
+      "kind": "class",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/Diagnostics/TextExtractionMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TextExtractionException",
+      "fqn": "Granit.TextExtraction.Exceptions.TextExtractionException",
+      "kind": "class",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/Exceptions/TextExtractionException.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "TextExtractionException",
+          "kind": "method",
+          "signature": "TextExtractionException(string reason)",
+          "returnType": "string Reason { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.TextExtraction.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/Extensions/ServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitTextExtraction",
+          "kind": "method",
+          "signature": "AddGranitTextExtraction(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTextExtractionModule",
+      "fqn": "Granit.TextExtraction.GranitTextExtractionModule",
+      "kind": "class",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/GranitTextExtractionModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ITextExtractionPipeline",
+      "fqn": "Granit.TextExtraction.ITextExtractionPipeline",
+      "kind": "interface",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/ITextExtractionPipeline.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Stream source, string contentType, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TextExtractionResult>"
+        }
+      ]
+    },
+    {
+      "name": "ITextExtractor",
+      "fqn": "Granit.TextExtraction.ITextExtractor",
+      "kind": "interface",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/ITextExtractor.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "string Name { get; } bool"
+        },
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Stream source, string contentType, int maxCharLength, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TextExtractionResult>"
+        }
+      ]
+    },
+    {
+      "name": "LimitedStream",
+      "fqn": "Granit.TextExtraction.LimitedStream",
+      "kind": "class",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/LimitedStream.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "LimitedStream",
+          "kind": "method",
+          "signature": "LimitedStream(Stream innerStream, long maxBytes)",
+          "returnType": "Stream InnerStream { get; } public long MaxBytes { get; } public long BytesRead { get; private set; } public"
+        },
+        {
+          "name": "CanSeek",
+          "kind": "property",
+          "signature": "bool CanSeek",
+          "returnType": "bool"
+        },
+        {
+          "name": "CanWrite",
+          "kind": "property",
+          "signature": "bool CanWrite",
+          "returnType": "bool"
+        },
+        {
+          "name": "NotSupportedException",
+          "kind": "method",
+          "signature": "NotSupportedException()",
+          "returnType": "long Length => InnerStream.CanSeek ? InnerStream.Length : throw"
+        },
+        {
+          "name": "Read",
+          "kind": "method",
+          "signature": "Read(byte[] buffer, int offset, int count)",
+          "returnType": "int"
+        },
+        {
+          "name": "SetLength",
+          "kind": "method",
+          "signature": "SetLength(long value)",
+          "returnType": "void"
+        },
+        {
+          "name": "Write",
+          "kind": "method",
+          "signature": "Write(byte[] buffer, int offset, int count)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitTextExtractionOptions",
+      "fqn": "Granit.TextExtraction.Options.GranitTextExtractionOptions",
+      "kind": "class",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/Options/GranitTextExtractionOptions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MaxConcurrentExtractions",
+          "kind": "property",
+          "signature": "int MaxConcurrentExtractions",
+          "returnType": "int"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan ExtractionTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxBodySizeBytes",
+          "kind": "property",
+          "signature": "long MaxBodySizeBytes",
+          "returnType": "long"
+        },
+        {
+          "name": "MaxDecompressedBytes",
+          "kind": "property",
+          "signature": "long MaxDecompressedBytes",
+          "returnType": "long"
+        },
+        {
+          "name": "MaxZipEntries",
+          "kind": "property",
+          "signature": "int MaxZipEntries",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxExtractedCharLength",
+          "kind": "property",
+          "signature": "int MaxExtractedCharLength",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxImagePixels",
+          "kind": "property",
+          "signature": "long MaxImagePixels",
+          "returnType": "long"
+        }
+      ]
+    },
+    {
+      "name": "PlainTextExtractor",
+      "fqn": "Granit.TextExtraction.PlainTextExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/PlainTextExtractor.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "TextExtractionLocalizationResource",
+      "fqn": "Granit.TextExtraction.TextExtractionLocalizationResource",
+      "kind": "class",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/TextExtractionLocalizationResource.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "TextExtractionResult",
+      "fqn": "Granit.TextExtraction.TextExtractionResult",
+      "kind": "record",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/TextExtractionResult.cs",
+      "line": 24,
+      "members": []
     },
     {
       "name": "AnomalyReport",

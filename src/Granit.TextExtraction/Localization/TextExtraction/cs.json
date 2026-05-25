@@ -1,0 +1,12 @@
+{
+  "culture": "cs",
+  "texts": {
+    "TextExtraction:InputTooLarge": "Vstupní proud překračuje maximální povolenou velikost.",
+    "TextExtraction:DecompressedTooLarge": "Rozbalený obsah překračuje maximální povolenou velikost.",
+    "TextExtraction:ArchiveTooManyEntries": "Archiv obsahuje více položek, než je povoleno.",
+    "TextExtraction:ImageTooLarge": "Obrázek překračuje maximální povolený počet pixelů.",
+    "TextExtraction:ExtractionTimeout": "Extrakce textu vypršela.",
+    "TextExtraction:UnsupportedContentType": "Pro typ obsahu „{0}“ není k dispozici žádný extraktor.",
+    "TextExtraction:Truncated": "Extrahovaný text byl zkrácen na maximální povolenou délku znaků."
+  }
+}

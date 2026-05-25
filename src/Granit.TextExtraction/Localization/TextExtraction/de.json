@@ -1,0 +1,12 @@
+{
+  "culture": "de",
+  "texts": {
+    "TextExtraction:InputTooLarge": "Der Eingabestrom überschreitet die maximal zulässige Größe.",
+    "TextExtraction:DecompressedTooLarge": "Der entpackte Inhalt überschreitet die maximal zulässige Größe.",
+    "TextExtraction:ArchiveTooManyEntries": "Das Archiv enthält mehr Einträge als erlaubt.",
+    "TextExtraction:ImageTooLarge": "Das Bild überschreitet die maximal zulässige Pixelanzahl.",
+    "TextExtraction:ExtractionTimeout": "Die Textextraktion hat das Zeitlimit überschritten.",
+    "TextExtraction:UnsupportedContentType": "Für den Inhaltstyp „{0}“ ist kein Extraktor verfügbar.",
+    "TextExtraction:Truncated": "Der extrahierte Text wurde auf die maximale Zeichenlänge gekürzt."
+  }
+}
