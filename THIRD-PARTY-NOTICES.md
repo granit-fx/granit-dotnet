@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-05-21
+Dernière mise à jour : 2026-05-25
 
 ---
 
@@ -103,12 +103,12 @@ Dernière mise à jour : 2026-05-21
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| AWSSDK.CognitoIdentityProvider | 4.0.8.6 | Amazon Web Services, Inc. |
-| AWSSDK.KeyManagementService | 4.0.11 | Amazon Web Services, Inc. |
-| AWSSDK.S3 | 4.0.23.3 | Amazon Web Services, Inc. |
-| AWSSDK.SecretsManager | 4.0.4.23 | Amazon Web Services, Inc. |
-| AWSSDK.SimpleEmailV2 | 4.0.12.16 | Amazon Web Services, Inc. |
-| AWSSDK.SimpleNotificationService | 4.0.2.33 | Amazon Web Services, Inc. |
+| AWSSDK.CognitoIdentityProvider | 4.0.8.7 | Amazon Web Services, Inc. |
+| AWSSDK.KeyManagementService | 4.0.11.1 | Amazon Web Services, Inc. |
+| AWSSDK.S3 | 4.0.23.4 | Amazon Web Services, Inc. |
+| AWSSDK.SecretsManager | 4.0.4.24 | Amazon Web Services, Inc. |
+| AWSSDK.SimpleEmailV2 | 4.0.13 | Amazon Web Services, Inc. |
+| AWSSDK.SimpleNotificationService | 4.0.2.34 | Amazon Web Services, Inc. |
 | Fido2 | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.AspNet | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.Models | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
@@ -143,7 +143,7 @@ Dernière mise à jour : 2026-05-21
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| Scriban | 7.2.0 | Copyright (c) Alexandre Mutel |
+| Scriban | 7.2.1 | Copyright (c) Alexandre Mutel |
 
 ### BSD-3-Clause
 
@@ -196,7 +196,7 @@ Dernière mise à jour : 2026-05-21
 | ------- | ------- | --------- |
 | TngTech.ArchUnitNET | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
 | TngTech.ArchUnitNET.xUnit | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
-| WireMock.Net | 2.6.0 | Copyright (c) WireMock.Net Contributors |
+| WireMock.Net | 2.7.0 | Copyright (c) WireMock.Net Contributors |
 | xunit.v3 | 3.2.2 | Copyright (C) .NET Foundation |
 | xunit.runner.visualstudio | 3.1.5 | Copyright (C) .NET Foundation |
 

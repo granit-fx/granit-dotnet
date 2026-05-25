@@ -103,8 +103,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.7.1",
-        "contentHash": "XA0GHLwEMkoVu3u8neKnLEDD9ViXpn26ie9UhKXZXYRzCRfSFrLWpBOhupWlf+cJEFBYCC5mx2NsN8h59Y+M2Q=="
+        "resolved": "4.0.7.3",
+        "contentHash": "F7x7IREeF8nd5pQUz0bYQf7TyrREZBQBqUdswkeGf1BWg91uHT8/lvENTb8+cN5xLxbf+m06FANDOD+GK8NrHw=="
       },
       "AWSSDK.SQS": {
         "type": "Transitive",
@@ -3617,55 +3617,55 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.8.6",
-        "contentHash": "F7oH2jOkGn1g4rSLZwsc75BciTbRCxNIpTvYCphIl24xoCv6Un41qeOT4751uN+Vr0bhVdBezAhKN2RHRGtBeQ==",
+        "resolved": "4.0.8.7",
+        "contentHash": "WNq9te/BnFmo6PCv9klAC5L6SAVgrZhOgBPJti61we+T2PzZPJUF90d8ZdyS9QdQN8Du4ac1ac2pRO84Mu70lg==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.1, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.3, 5.0.0)"
         }
       },
       "AWSSDK.KeyManagementService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.11",
-        "contentHash": "/mKpJBDVwJKccXfxyf2jK+Lo6Z0r0/P6l3P8+6MaJyeVsHt1apOaO8Q5Xf5BoYd2FV256uW4U8MOyODgJCEpyw==",
+        "resolved": "4.0.11.1",
+        "contentHash": "d8qX5yuOuLiOnu+2m811+Sr0AG84FWh6HzJYl+ZQMhzD+zeMvgzY9vjI0/gc/COq28hDegZdLIzpCrIhVTo83g==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.1, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.3, 5.0.0)"
         }
       },
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.23.3",
-        "contentHash": "ASgWIoX8j6gG4plWXc22vGx0vVwDuqtjBwl3I2ICa2g6kqneSk47eYlGtRg61M/I8gvvtP8uDpIN73FsmlwqHg==",
+        "resolved": "4.0.23.4",
+        "contentHash": "hcCTuMCPVk2cX83sQfvSF/e9uOPxK5KxpuhR9LZVFAKqwUMr2fnrsDXwWu3t3h4Vw+Urx4vTjV9V/PV2KLAUtQ==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.1, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.3, 5.0.0)"
         }
       },
       "AWSSDK.SecretsManager": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.4.23",
-        "contentHash": "bDg5U9mUC8vvsWDrAln/Y4t3F6paiNzH24aQNMXnz7cPFOWLt380tAe0dYd7IPx6j007RSEXtnfQ/sYb6ietUg==",
+        "resolved": "4.0.4.24",
+        "contentHash": "NOS/KOwrk+ReZqqut3ilcvtRhTv3hcSmTSWCVJRRLldpuZFsS/ExRDNbo4q6nOnxJmkekUKsgVnB40lfxsv4JQ==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.1, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.3, 5.0.0)"
         }
       },
       "AWSSDK.SimpleEmailV2": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.12.16",
-        "contentHash": "sVvEFaV37J9uF1MPDcEqsxiYNVF+q7zTvjG0fwo2/KCf5UbHn4ZXOwARcAsxCYu/ZscZicmIOYPQpJkjhhO9Cw==",
+        "resolved": "4.0.13",
+        "contentHash": "9aj/eldgHAFuoiC18Y6S8BHotNgqdmkcGJl3gmQnjSJwWLADjCxU2jxb5Rd5YWHZsaIu2Y4LNqWn3QYaLhArMQ==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.1, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.3, 5.0.0)"
         }
       },
       "AWSSDK.SimpleNotificationService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.2.33",
-        "contentHash": "YviozKoXi89RQewIpRaADxVj9r9z1rHTf6H+3zqmeOPoATGH1kca19tfd0gsIrzxj6Ij6as8EgOuX2hj3DWW2A==",
+        "resolved": "4.0.2.34",
+        "contentHash": "aL0rVsixtRE5D0i8UY9nE7L9Dj1YPi9m2O2JB29zf8VV5PHivUW4pFLT+xGt77uo4RIZHYQNJqVq9QKFo0I33w==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.1, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.3, 5.0.0)"
         }
       },
       "Azure.AI.OpenAI": {
@@ -4322,8 +4322,8 @@
       "Scriban": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.2.0",
-        "contentHash": "GiAuu6bCPVWJeMMK8AkJMCNX+wyqt2qgiKjVAPLvRWxzBwpDJjLhJltVP034tsZUHOkBtdfA/Otrny+n3NelBw=="
+        "resolved": "7.2.1",
+        "contentHash": "5Jw6PyOiY6RBhC5XgtZbOO6ZbZOXlqUDS35IVhLdAPRZHclf3iW35Tdh4FCw1/gNCJ9ia1CGVQabypGPYVThbw=="
       },
       "Sep": {
         "type": "CentralTransitive",

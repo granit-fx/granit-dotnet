@@ -66,8 +66,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.7.1",
-        "contentHash": "XA0GHLwEMkoVu3u8neKnLEDD9ViXpn26ie9UhKXZXYRzCRfSFrLWpBOhupWlf+cJEFBYCC5mx2NsN8h59Y+M2Q=="
+        "resolved": "4.0.7.3",
+        "contentHash": "F7x7IREeF8nd5pQUz0bYQf7TyrREZBQBqUdswkeGf1BWg91uHT8/lvENTb8+cN5xLxbf+m06FANDOD+GK8NrHw=="
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -487,10 +487,10 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.8.6",
-        "contentHash": "F7oH2jOkGn1g4rSLZwsc75BciTbRCxNIpTvYCphIl24xoCv6Un41qeOT4751uN+Vr0bhVdBezAhKN2RHRGtBeQ==",
+        "resolved": "4.0.8.7",
+        "contentHash": "WNq9te/BnFmo6PCv9klAC5L6SAVgrZhOgBPJti61we+T2PzZPJUF90d8ZdyS9QdQN8Du4ac1ac2pRO84Mu70lg==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.1, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.3, 5.0.0)"
         }
       },
       "Microsoft.EntityFrameworkCore": {

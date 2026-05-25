@@ -77,8 +77,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.7.1",
-        "contentHash": "XA0GHLwEMkoVu3u8neKnLEDD9ViXpn26ie9UhKXZXYRzCRfSFrLWpBOhupWlf+cJEFBYCC5mx2NsN8h59Y+M2Q=="
+        "resolved": "4.0.7.3",
+        "contentHash": "F7x7IREeF8nd5pQUz0bYQf7TyrREZBQBqUdswkeGf1BWg91uHT8/lvENTb8+cN5xLxbf+m06FANDOD+GK8NrHw=="
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -407,19 +407,19 @@
       "AWSSDK.KeyManagementService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.11",
-        "contentHash": "/mKpJBDVwJKccXfxyf2jK+Lo6Z0r0/P6l3P8+6MaJyeVsHt1apOaO8Q5Xf5BoYd2FV256uW4U8MOyODgJCEpyw==",
+        "resolved": "4.0.11.1",
+        "contentHash": "d8qX5yuOuLiOnu+2m811+Sr0AG84FWh6HzJYl+ZQMhzD+zeMvgzY9vjI0/gc/COq28hDegZdLIzpCrIhVTo83g==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.1, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.3, 5.0.0)"
         }
       },
       "AWSSDK.SecretsManager": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.4.23",
-        "contentHash": "bDg5U9mUC8vvsWDrAln/Y4t3F6paiNzH24aQNMXnz7cPFOWLt380tAe0dYd7IPx6j007RSEXtnfQ/sYb6ietUg==",
+        "resolved": "4.0.4.24",
+        "contentHash": "NOS/KOwrk+ReZqqut3ilcvtRhTv3hcSmTSWCVJRRLldpuZFsS/ExRDNbo4q6nOnxJmkekUKsgVnB40lfxsv4JQ==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.1, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.3, 5.0.0)"
         }
       },
       "Microsoft.Extensions.Caching.Abstractions": {
