@@ -318,7 +318,8 @@ l'image runtime — aucun binaire Chromium n'est redistribué avec le framework.
 ### MimeKit
 
 Ce package est utilisé par `Granit.Notifications.Email.Smtp` pour la construction
-de messages MIME. La version est épinglée à 4.16.0 via `Directory.Packages.props`
+de messages MIME et par `Granit.TextExtraction.Email` pour l'extraction de texte
+depuis des fichiers `.eml` (RFC822). La version est épinglée à 4.16.0 via `Directory.Packages.props`
 pour corriger la vulnérabilité GHSA-g7hc-96xr-gvvx (CVE sur les versions < 4.15.1)
 et s'aligner sur l'exigence transitive de MailKit 4.16.0.
 

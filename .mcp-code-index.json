@@ -2032,6 +2032,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.TextExtraction.Email",
+      "deps": [
+        "Granit.Html",
+        "Granit.Html.AngleSharp",
+        "Granit.TextExtraction"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.TextExtraction.Ocr.AI",
       "deps": [
         "Granit.AI",
@@ -41458,6 +41467,54 @@
       "file": "src/Granit.TextExtraction/Diagnostics/TextExtractionMetrics.cs",
       "line": 10,
       "members": []
+    },
+    {
+      "name": "EmailTextExtractor",
+      "fqn": "Granit.TextExtraction.Email.EmailTextExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Email",
+      "file": "src/Granit.TextExtraction.Email/EmailTextExtractor.cs",
+      "line": 40,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.TextExtraction.Email.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Email",
+      "file": "src/Granit.TextExtraction.Email/Extensions/ServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitTextExtractionEmail",
+          "kind": "method",
+          "signature": "AddGranitTextExtractionEmail(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTextExtractionEmailModule",
+      "fqn": "Granit.TextExtraction.Email.GranitTextExtractionEmailModule",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Email",
+      "file": "src/Granit.TextExtraction.Email/GranitTextExtractionEmailModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "TextExtractionException",

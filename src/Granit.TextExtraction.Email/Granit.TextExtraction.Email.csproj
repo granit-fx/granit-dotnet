@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.TextExtraction.Email</PackageId>
+    <Description>RFC822 email (.eml) text extractor for Granit.TextExtraction. Backed by MimeKit. Emits a header summary (Subject/From/To/Cc/Date) plus body text — prefers the plain part, falls back to the HTML part routed through the SSRF-safe Granit.Html converter. Envelope-only: attachments and encrypted bodies are reported but not opened.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.TextExtraction.Email.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MimeKit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Html\Granit.Html.csproj" />
+    <ProjectReference Include="..\Granit.Html.AngleSharp\Granit.Html.AngleSharp.csproj" />
+    <ProjectReference Include="..\Granit.TextExtraction\Granit.TextExtraction.csproj" />
+  </ItemGroup>
+
+</Project>

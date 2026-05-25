@@ -54,6 +54,7 @@ public sealed class TextExtractionArchitectureTests
     /// </summary>
     [Theory]
     [InlineData("Granit.TextExtraction")]
+    [InlineData("Granit.TextExtraction.Email")]
     [InlineData("Granit.TextExtraction.Office")]
     [InlineData("Granit.TextExtraction.Pdf")]
     [InlineData("Granit.TextExtraction.Text")]
@@ -68,6 +69,7 @@ public sealed class TextExtractionArchitectureTests
     /// </summary>
     [Theory]
     [InlineData("Granit.TextExtraction")]
+    [InlineData("Granit.TextExtraction.Email")]
     [InlineData("Granit.TextExtraction.Office")]
     [InlineData("Granit.TextExtraction.Pdf")]
     [InlineData("Granit.TextExtraction.Text")]
@@ -97,14 +99,16 @@ public sealed class TextExtractionArchitectureTests
     }
 
     /// <summary>
-    /// Every provider package (<c>Granit.TextExtraction.Office</c>,
-    /// <c>Granit.TextExtraction.Pdf</c>, <c>Granit.TextExtraction.Text</c>) must declare
-    /// <c>[DependsOn(typeof(GranitTextExtractionModule))]</c> so the pipeline + options +
-    /// metrics are wired into the host even when only one provider is added. Without
-    /// this, calling <c>AddTextExtractor&lt;T&gt;</c> would silently no-op (no pipeline
-    /// service registered).
+    /// Every provider package (<c>Granit.TextExtraction.Email</c>,
+    /// <c>Granit.TextExtraction.Office</c>, <c>Granit.TextExtraction.Pdf</c>,
+    /// <c>Granit.TextExtraction.Text</c>) must declare a <c>[DependsOn(...)]</c>
+    /// attribute that references <c>GranitTextExtractionModule</c> — either as the
+    /// sole entry or alongside other module deps. Without this, calling
+    /// <c>AddTextExtractor&lt;T&gt;</c> would silently no-op (no pipeline service
+    /// registered).
     /// </summary>
     [Theory]
+    [InlineData("Granit.TextExtraction.Email", "GranitTextExtractionEmailModule.cs")]
     [InlineData("Granit.TextExtraction.Office", "GranitTextExtractionOfficeModule.cs")]
     [InlineData("Granit.TextExtraction.Pdf", "GranitTextExtractionPdfModule.cs")]
     [InlineData("Granit.TextExtraction.Text", "GranitTextExtractionTextModule.cs")]
@@ -114,12 +118,19 @@ public sealed class TextExtractionArchitectureTests
         File.Exists(modulePath).ShouldBeTrue($"Expected {modulePath} to exist.");
 
         string source = File.ReadAllText(modulePath);
-        source.ShouldContain(
-            "[DependsOn(typeof(GranitTextExtractionModule))]",
-            customMessage:
-                $"{projectName} must declare [DependsOn(typeof(GranitTextExtractionModule))] " +
-                "on its module so the pipeline/options/metrics are registered when only " +
-                "this provider is wired in.");
+
+        // Match `[DependsOn(...)]` blocks (possibly spanning multiple typeof args)
+        // and assert at least one references GranitTextExtractionModule. The looser
+        // form keeps the pin honest for modules that legitimately depend on more
+        // than one upstream module (e.g. Email also depending on Html.AngleSharp).
+        bool dependsOnBase = System.Text.RegularExpressions.Regex.IsMatch(
+            source,
+            @"\[DependsOn\([^\]]*typeof\(GranitTextExtractionModule\)[^\]]*\)\]");
+
+        dependsOnBase.ShouldBeTrue(
+            $"{projectName} must declare [DependsOn(... typeof(GranitTextExtractionModule) ...)] " +
+            "on its module so the pipeline/options/metrics are registered when only this " +
+            "provider is wired in.");
     }
 
     private static IEnumerable<string> EnumerateExtractorPackages()
