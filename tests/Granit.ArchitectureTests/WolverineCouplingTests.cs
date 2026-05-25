@@ -45,6 +45,7 @@ public sealed class WolverineCouplingTests
         "Granit.Scheduling.Wolverine",
         "Granit.Webhooks.Wolverine",
         "Granit.Notifications.Wolverine",
+        "Granit.Presence.Wolverine",
         // Granit.Scheduling.BackgroundJobs carries the catch-up dispatcher which uses
         // Wolverine DeliveryOptions + custom headers tied to ScheduledActionStatusMiddleware.
         "Granit.Scheduling.BackgroundJobs",
