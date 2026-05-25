@@ -185,6 +185,8 @@
         "tests/Granit.MultiTenancy.EntityFrameworkCore.Tests",
         "tests/Granit.MultiTenancy.Provisioning.Tests",
         "tests/Granit.MultiTenancy.Tests",
+        "tests/Granit.Html.AngleSharp.Tests",
+        "tests/Granit.Html.Tests",
         "tests/Granit.Notifications.Abstractions.Tests",
         "tests/Granit.Notifications.Brevo.Tests",
         "tests/Granit.Notifications.Email.AwsSes.Tests",

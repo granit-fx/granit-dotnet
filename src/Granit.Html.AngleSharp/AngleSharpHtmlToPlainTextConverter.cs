@@ -3,29 +3,26 @@ using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 
-namespace Granit.Notifications.Email.Internal;
+namespace Granit.Html.AngleSharp;
 
 /// <summary>
-/// Converts rendered HTML email content to a clean plain-text representation
-/// suitable for the <c>text/plain</c> part of a <c>multipart/alternative</c> email.
+/// Default <see cref="IHtmlToPlainTextConverter"/> backed by AngleSharp.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Uses a reusable <see cref="IBrowsingContext"/> (thread-safe, no CSS/JS engine)
-/// to avoid per-call parser allocation overhead in high-throughput scenarios.
+/// Uses a reusable <see cref="IBrowsingContext"/> (thread-safe, no CSS/JS engine) to avoid
+/// per-call parser allocation overhead in high-throughput scenarios.
 /// </para>
 /// <para>
-/// The converter is optimized for Granit email templates: it recognizes layout tables
+/// The converter is optimised for Granit email templates: it recognises layout tables
 /// (<c>role="presentation"</c>), MSO conditional comments, and common email patterns
-/// (buttons, dividers, unsubscribe links).
+/// (buttons, dividers, unsubscribe links). It is equally safe for indexed-document text
+/// extraction when constructed with
+/// <see cref="AngleSharpConfiguration.BuildForUntrustedContent"/>.
 /// </para>
 /// </remarks>
-internal static class HtmlToPlainTextConverter
+public sealed class AngleSharpHtmlToPlainTextConverter : IHtmlToPlainTextConverter
 {
-    // Thread-safe: AngleSharp's IBrowsingContext with Configuration.Default (no CSS/JS engine)
-    // is safe for concurrent OpenAsync calls. Reused to avoid per-call allocation overhead.
-    private static readonly IBrowsingContext Context = BrowsingContext.New(Configuration.Default);
-
     private static readonly HashSet<string> BlockElements =
     [
         "p", "div", "tr", "blockquote", "section", "article", "aside", "nav",
@@ -36,14 +33,40 @@ internal static class HtmlToPlainTextConverter
 
     private static readonly HashSet<string> SkipElements = ["style", "script", "head"];
 
-    public static async Task<string> ConvertAsync(string html, CancellationToken ct = default)
+    private readonly IBrowsingContext _context;
+
+    /// <summary>
+    /// Creates an instance using <see cref="AngleSharpConfiguration.BuildForTrustedTemplates"/>.
+    /// Hosts that need the untrusted-content profile must use the
+    /// <see cref="AngleSharpHtmlToPlainTextConverter(IConfiguration)"/> overload.
+    /// </summary>
+    public AngleSharpHtmlToPlainTextConverter()
+        : this(AngleSharpConfiguration.BuildForTrustedTemplates())
+    {
+    }
+
+    /// <summary>
+    /// Creates an instance backed by the supplied AngleSharp <paramref name="configuration"/>.
+    /// Use <see cref="AngleSharpConfiguration.BuildForUntrustedContent"/> when processing
+    /// HTML that did not originate from the host.
+    /// </summary>
+    public AngleSharpHtmlToPlainTextConverter(IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+        _context = BrowsingContext.New(configuration);
+    }
+
+    /// <inheritdoc/>
+    public async Task<string> ConvertAsync(string html, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(html))
         {
             return string.Empty;
         }
 
-        using IDocument document = await Context.OpenAsync(req => req.Content(html), ct).ConfigureAwait(false);
+        using IDocument document = await _context
+            .OpenAsync(req => req.Content(html), cancellationToken)
+            .ConfigureAwait(false);
 
         IHtmlElement? body = document.Body;
         if (body is null)
@@ -69,7 +92,6 @@ internal static class HtmlToPlainTextConverter
                     break;
 
                 case IComment:
-                    // Strip MSO conditional comments and all HTML comments
                     break;
 
                 case IHtmlElement element:
@@ -87,13 +109,11 @@ internal static class HtmlToPlainTextConverter
     {
         string tag = element.LocalName;
 
-        // Skip invisible elements
         if (SkipElements.Contains(tag))
         {
             return;
         }
 
-        // Headings: UPPERCASE + newline
         if (HeadingElements.Contains(tag))
         {
             EnsureNewline(sb);
@@ -166,7 +186,7 @@ internal static class HtmlToPlainTextConverter
                 else
                 {
                     sb.Append(indent);
-                    sb.Append("\u2022 ");
+                    sb.Append("• ");
                 }
                 WalkNode(element, sb, listDepth, 0);
                 sb.Append('\n');
@@ -186,7 +206,6 @@ internal static class HtmlToPlainTextConverter
                 }
                 else
                 {
-                    // Inline elements: just recurse
                     WalkNode(element, sb, listDepth, 0);
                 }
                 return;
@@ -206,7 +225,6 @@ internal static class HtmlToPlainTextConverter
             return;
         }
 
-        // Skip redundant URL display for mailto links where text = email
         if (href.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase)
             && href["mailto:".Length..].Equals(linkText, StringComparison.OrdinalIgnoreCase))
         {
@@ -214,7 +232,6 @@ internal static class HtmlToPlainTextConverter
             return;
         }
 
-        // Skip if link text IS the URL (no need to duplicate)
         if (linkText.Equals(href, StringComparison.OrdinalIgnoreCase))
         {
             sb.Append(linkText);
@@ -229,8 +246,6 @@ internal static class HtmlToPlainTextConverter
 
     private static void ProcessTable(IHtmlElement element, StringBuilder sb, int listDepth)
     {
-        // Divider table pattern: single-cell table with only border-top styling
-        // Check before presentation role — divider tables inside layout tables are common
         if (IsDividerTable(element))
         {
             EnsureNewline(sb);
@@ -241,12 +256,10 @@ internal static class HtmlToPlainTextConverter
         string? role = element.GetAttribute("role");
         if (string.Equals(role, "presentation", StringComparison.OrdinalIgnoreCase))
         {
-            // Layout table: just traverse children, extract text
             WalkNode(element, sb, listDepth, 0);
             return;
         }
 
-        // Content table: render as rows
         WalkNode(element, sb, listDepth, 0);
     }
 
@@ -272,7 +285,6 @@ internal static class HtmlToPlainTextConverter
             return;
         }
 
-        // Collapse whitespace (like browser rendering)
         StringBuilder collapsed = new();
         bool lastWasSpace = false;
         foreach (char c in text)
@@ -305,7 +317,6 @@ internal static class HtmlToPlainTextConverter
 
     private static string NormalizeWhitespace(string text)
     {
-        // Collapse 3+ consecutive newlines to 2
         StringBuilder result = new(text.Length);
         int consecutiveNewlines = 0;
 

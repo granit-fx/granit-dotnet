@@ -1,3 +1,4 @@
+using Granit.Html.AngleSharp.Extensions;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
@@ -23,6 +24,7 @@ public static class EmailNotificationsServiceCollectionExtensions
             services.Configure(configure);
         }
 
+        services.AddGranitHtmlAngleSharp();
         services.AddScoped<INotificationChannel, EmailNotificationChannel>();
         services.AddEmbeddedTemplates(typeof(EmailNotificationsServiceCollectionExtensions).Assembly);
         services.AddTemplateLayout("Notifications.*", "Layout.Email");

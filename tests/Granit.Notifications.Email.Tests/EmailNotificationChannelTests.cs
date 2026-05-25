@@ -6,6 +6,7 @@
 // =============================================================================
 
 using System.Text.Json;
+using Granit.Html.AngleSharp;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
@@ -45,6 +46,7 @@ public sealed class EmailNotificationChannelTests
             _options,
             _recipientResolver,
             new ConfigurationBuilder().Build(),
+            new AngleSharpHtmlToPlainTextConverter(),
             Substitute.For<ILogger<EmailNotificationChannel>>());
     }
 
@@ -844,6 +846,7 @@ public sealed class EmailNotificationChannelTests
             Microsoft.Extensions.Options.Options.Create(opts),
             _recipientResolver,
             config,
+            new AngleSharpHtmlToPlainTextConverter(),
             Substitute.For<ILogger<EmailNotificationChannel>>());
     }
 }

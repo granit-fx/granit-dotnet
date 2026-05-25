@@ -1,45 +1,46 @@
-using Granit.Notifications.Email.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Notifications.Email.Tests;
+namespace Granit.Html.AngleSharp.Tests;
 
-public sealed class HtmlToPlainTextConverterTests
+public sealed class AngleSharpHtmlToPlainTextConverterTests
 {
     private static CancellationToken CancellationToken => TestContext.Current.CancellationToken;
+
+    private static readonly AngleSharpHtmlToPlainTextConverter Converter = new();
 
     [Fact]
     public async Task EmptyString_ReturnsEmpty()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync("", CancellationToken);
+        string result = await Converter.ConvertAsync("", CancellationToken);
         result.ShouldBeEmpty();
     }
 
     [Fact]
     public async Task NullString_ReturnsEmpty()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(null!, CancellationToken);
+        string result = await Converter.ConvertAsync(null!, CancellationToken);
         result.ShouldBeEmpty();
     }
 
     [Fact]
     public async Task WhitespaceOnly_ReturnsEmpty()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync("   \n\t  ", CancellationToken);
+        string result = await Converter.ConvertAsync("   \n\t  ", CancellationToken);
         result.ShouldBeEmpty();
     }
 
     [Fact]
     public async Task Paragraph_ExtractsText()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync("<p>Hello world</p>", CancellationToken);
+        string result = await Converter.ConvertAsync("<p>Hello world</p>", CancellationToken);
         result.ShouldBe("Hello world");
     }
 
     [Fact]
     public async Task MultipleParagraphs_SeparatedByDoubleNewline()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<p>First paragraph</p><p>Second paragraph</p>", CancellationToken);
         result.ShouldBe("First paragraph\n\nSecond paragraph");
     }
@@ -47,7 +48,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task LineBreak_ProducesNewline()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<p>Line one<br>Line two</p>", CancellationToken);
         result.ShouldBe("Line one\nLine two");
     }
@@ -55,7 +56,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task Heading_ConvertsToUppercase()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<h1>Welcome</h1><p>Content here</p>", CancellationToken);
         result.ShouldBe("WELCOME\n\nContent here");
     }
@@ -63,7 +64,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task AllHeadingLevels_ConvertToUppercase()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<h1>One</h1><h2>Two</h2><h3>Three</h3><h4>Four</h4><h5>Five</h5><h6>Six</h6>", CancellationToken);
         result.ShouldContain("ONE");
         result.ShouldContain("TWO");
@@ -76,7 +77,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task Link_FormatsAsTextWithUrl()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             """<a href="https://example.com">Click here</a>""", CancellationToken);
         result.ShouldBe("Click here (https://example.com)");
     }
@@ -84,7 +85,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task MailtoLink_WhenTextMatchesEmail_OmitsUrl()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             """<a href="mailto:support@test.com">support@test.com</a>""", CancellationToken);
         result.ShouldBe("support@test.com");
     }
@@ -92,7 +93,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task Link_WhenTextIsUrl_DoesNotDuplicate()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             """<a href="https://example.com">https://example.com</a>""", CancellationToken);
         result.ShouldBe("https://example.com");
     }
@@ -100,7 +101,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task Strong_WrapsWithAsterisks()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<p>This is <strong>important</strong> text</p>", CancellationToken);
         result.ShouldBe("This is *important* text");
     }
@@ -108,7 +109,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task Bold_WrapsWithAsterisks()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<p>This is <b>bold</b> text</p>", CancellationToken);
         result.ShouldBe("This is *bold* text");
     }
@@ -116,7 +117,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task Emphasis_WrapsWithUnderscores()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<p>This is <em>emphasized</em> text</p>", CancellationToken);
         result.ShouldBe("This is _emphasized_ text");
     }
@@ -124,17 +125,17 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task UnorderedList_UsesBullets()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<ul><li>Apple</li><li>Banana</li><li>Cherry</li></ul>", CancellationToken);
-        result.ShouldContain("\u2022 Apple");
-        result.ShouldContain("\u2022 Banana");
-        result.ShouldContain("\u2022 Cherry");
+        result.ShouldContain("• Apple");
+        result.ShouldContain("• Banana");
+        result.ShouldContain("• Cherry");
     }
 
     [Fact]
     public async Task OrderedList_UsesNumbers()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<ol><li>First</li><li>Second</li><li>Third</li></ol>", CancellationToken);
         result.ShouldContain("1. First");
         result.ShouldContain("2. Second");
@@ -144,7 +145,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task HorizontalRule_ProducesSeparator()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<p>Above</p><hr><p>Below</p>", CancellationToken);
         result.ShouldContain("---");
     }
@@ -152,7 +153,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task Image_ExtractsAltText()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             """<img src="logo.png" alt="Company Logo">""", CancellationToken);
         result.ShouldBe("[Company Logo]");
     }
@@ -160,7 +161,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task Image_NoAlt_ProducesNothing()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             """<img src="spacer.gif">""", CancellationToken);
         result.ShouldBeEmpty();
     }
@@ -168,7 +169,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task StyleTag_IsStripped()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<style>body { color: red; }</style><p>Visible text</p>", CancellationToken);
         result.ShouldBe("Visible text");
         result.ShouldNotContain("color");
@@ -177,7 +178,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task ScriptTag_IsStripped()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<script>alert('xss')</script><p>Safe text</p>", CancellationToken);
         result.ShouldBe("Safe text");
         result.ShouldNotContain("alert");
@@ -186,7 +187,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task LayoutTable_WithRolePresentation_TraversesChildren()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             """<table role="presentation"><tr><td>Cell content</td></tr></table>""", CancellationToken);
         result.ShouldContain("Cell content");
     }
@@ -194,7 +195,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task DividerTable_ProducesSeparator()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync("""
+        string result = await Converter.ConvertAsync("""
             <table>
                 <tr>
                     <td style="border-top: 1px solid #d1d5db; font-size: 0; line-height: 0;" height="1">&nbsp;</td>
@@ -207,15 +208,15 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task HtmlEntities_AreDecoded()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<p>&copy; 2026 Granit &amp; Co</p>", CancellationToken);
-        result.ShouldContain("\u00a9 2026 Granit & Co");
+        result.ShouldContain("© 2026 Granit & Co");
     }
 
     [Fact]
     public async Task ExcessiveWhitespace_IsCollapsed()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<p>Hello     world</p>", CancellationToken);
         result.ShouldBe("Hello world");
     }
@@ -223,7 +224,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task MoreThanTwoNewlines_CollapsedToTwo()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync(
+        string result = await Converter.ConvertAsync(
             "<p>Above</p><p></p><p></p><p></p><p>Below</p>", CancellationToken);
         result.ShouldNotContain("\n\n\n");
     }
@@ -231,7 +232,7 @@ public sealed class HtmlToPlainTextConverterTests
     [Fact]
     public async Task MsoConditionalComments_AreStripped()
     {
-        string result = await HtmlToPlainTextConverter.ConvertAsync("""
+        string result = await Converter.ConvertAsync("""
             <!--[if mso]><table width="600"><tr><td><![endif]-->
             <p>Content</p>
             <!--[if mso]></td></tr></table><![endif]-->
@@ -284,7 +285,7 @@ public sealed class HtmlToPlainTextConverterTests
             </html>
             """;
 
-        string result = await HtmlToPlainTextConverter.ConvertAsync(html, CancellationToken);
+        string result = await Converter.ConvertAsync(html, CancellationToken);
 
         result.ShouldContain("MyApp");
         result.ShouldContain("Hello *John*,");
@@ -292,7 +293,7 @@ public sealed class HtmlToPlainTextConverterTests
         result.ShouldContain("---");
         result.ShouldContain("Manage preferences (https://myapp.com/unsub)");
         result.ShouldContain("Do not reply to this email");
-        result.ShouldContain("\u00a9 2026 MyApp");
+        result.ShouldContain("© 2026 MyApp");
         result.ShouldNotContain("<");
         result.ShouldNotContain(">");
     }
@@ -304,6 +305,6 @@ public sealed class HtmlToPlainTextConverterTests
         await cts.CancelAsync();
 
         await Should.ThrowAsync<TaskCanceledException>(
-            () => HtmlToPlainTextConverter.ConvertAsync("<p>test</p>", cts.Token));
+            () => Converter.ConvertAsync("<p>test</p>", cts.Token));
     }
 }

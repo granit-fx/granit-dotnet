@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Html.AngleSharp</PackageId>
+    <Description>AngleSharp-backed implementation of Granit.Html. Ships AngleSharpHtmlToPlainTextConverter (email + indexing) and AngleSharpConfiguration with separated trusted-template vs untrusted-content profiles (VULN-300 SSRF guard).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Html.AngleSharp.Tests" />
+    <InternalsVisibleTo Include="Granit.Notifications.Email" />
+    <InternalsVisibleTo Include="Granit.Notifications.Email.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Html\Granit.Html.csproj" />
+  </ItemGroup>
+
+</Project>

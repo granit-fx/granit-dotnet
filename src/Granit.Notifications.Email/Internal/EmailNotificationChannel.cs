@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Granit.Html;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Email.Options;
@@ -44,6 +45,7 @@ internal sealed partial class EmailNotificationChannel(
     IOptions<EmailChannelOptions> options,
     IRecipientResolver recipientResolver,
     IConfiguration configuration,
+    IHtmlToPlainTextConverter htmlToPlainText,
     ILogger<EmailNotificationChannel> logger) : INotificationChannel
 {
     /// <summary>
@@ -119,7 +121,7 @@ internal sealed partial class EmailNotificationChannel(
         // Apply content transformers (MJML → HTML, CSS inlining, etc.)
         htmlBody = await ApplyTransformersAsync(htmlBody, cancellationToken).ConfigureAwait(false);
 
-        string plainTextBody = await HtmlToPlainTextConverter
+        string plainTextBody = await htmlToPlainText
             .ConvertAsync(htmlBody, cancellationToken).ConfigureAwait(false);
 
         EmailChannelOptions opts = options.Value;

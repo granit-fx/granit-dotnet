@@ -88,6 +88,8 @@
       "src/Granit.Features.EntityFrameworkCore/Granit.Features.EntityFrameworkCore.csproj",
       "src/Granit.Features/Granit.Features.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",
+      "src/Granit.Html.AngleSharp/Granit.Html.AngleSharp.csproj",
+      "src/Granit.Html/Granit.Html.csproj",
       "src/Granit.Http.Abstractions/Granit.Http.Abstractions.csproj",
       "src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj",
       "src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj",

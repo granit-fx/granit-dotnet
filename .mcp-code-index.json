@@ -765,6 +765,20 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Html",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Html.AngleSharp",
+      "deps": [
+        "Granit.Html"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Http.Abstractions",
       "deps": [],
       "framework": "net10.0"
@@ -1334,6 +1348,7 @@
     {
       "name": "Granit.Notifications.Email",
       "deps": [
+        "Granit.Html.AngleSharp",
         "Granit.Notifications.Abstractions",
         "Granit.Templating"
       ],
@@ -18152,6 +18167,94 @@
       ]
     },
     {
+      "name": "AngleSharpConfiguration",
+      "fqn": "Granit.Html.AngleSharp.AngleSharpConfiguration",
+      "kind": "class",
+      "project": "Granit.Html.AngleSharp",
+      "file": "src/Granit.Html.AngleSharp/AngleSharpConfiguration.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "BuildForTrustedTemplates",
+          "kind": "method",
+          "signature": "BuildForTrustedTemplates()",
+          "returnType": "IConfiguration"
+        },
+        {
+          "name": "BuildForUntrustedContent",
+          "kind": "method",
+          "signature": "BuildForUntrustedContent()",
+          "returnType": "IConfiguration"
+        }
+      ]
+    },
+    {
+      "name": "AngleSharpHtmlToPlainTextConverter",
+      "fqn": "Granit.Html.AngleSharp.AngleSharpHtmlToPlainTextConverter",
+      "kind": "class",
+      "project": "Granit.Html.AngleSharp",
+      "file": "src/Granit.Html.AngleSharp/AngleSharpHtmlToPlainTextConverter.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Html.AngleSharp.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Html.AngleSharp",
+      "file": "src/Granit.Html.AngleSharp/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitHtmlAngleSharp",
+          "kind": "method",
+          "signature": "AddGranitHtmlAngleSharp(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitHtmlAngleSharpModule",
+      "fqn": "Granit.Html.AngleSharp.GranitHtmlAngleSharpModule",
+      "kind": "class",
+      "project": "Granit.Html.AngleSharp",
+      "file": "src/Granit.Html.AngleSharp/GranitHtmlAngleSharpModule.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitHtmlModule",
+      "fqn": "Granit.Html.GranitHtmlModule",
+      "kind": "class",
+      "project": "Granit.Html",
+      "file": "src/Granit.Html/GranitHtmlModule.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "IHtmlToPlainTextConverter",
+      "fqn": "Granit.Html.IHtmlToPlainTextConverter",
+      "kind": "interface",
+      "project": "Granit.Html",
+      "file": "src/Granit.Html/IHtmlToPlainTextConverter.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ConvertAsync",
+          "kind": "method",
+          "signature": "ConvertAsync(string html, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
+        }
+      ]
+    },
+    {
       "name": "InternalApiAttribute",
       "fqn": "Granit.Http.ApiDocumentation.Attributes.InternalApiAttribute",
       "kind": "class",
@@ -28982,7 +29085,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email",
       "file": "src/Granit.Notifications.Email/Extensions/EmailNotificationsServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitNotificationsEmail",
@@ -28998,7 +29101,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email",
       "file": "src/Granit.Notifications.Email/GranitNotificationsEmailModule.cs",
-      "line": 17,
+      "line": 19,
       "members": []
     },
     {

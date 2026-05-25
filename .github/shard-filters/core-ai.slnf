@@ -32,6 +32,8 @@
       "src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj",
       "src/Granit.Events/Granit.Events.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",
+      "src/Granit.Html.AngleSharp/Granit.Html.AngleSharp.csproj",
+      "src/Granit.Html/Granit.Html.csproj",
       "src/Granit.Http.Abstractions/Granit.Http.Abstractions.csproj",
       "src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj",
       "src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj",

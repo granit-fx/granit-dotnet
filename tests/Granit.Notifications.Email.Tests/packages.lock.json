@@ -334,6 +334,22 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
+      "Granit.Html.Abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "AngleSharp": "[1.*, )",
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.html.anglesharp": {
+        "type": "Project",
+        "dependencies": {
+          "AngleSharp": "[1.*, )",
+          "Granit.Html.Abstractions": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
+        }
+      },
       "granit.localization": {
         "type": "Project",
         "dependencies": {
@@ -372,7 +388,7 @@
       "granit.notifications.email": {
         "type": "Project",
         "dependencies": {
-          "AngleSharp": "[1.*, )",
+          "Granit.Html.AngleSharp": "[0.1.0-dev, )",
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Granit.Templating": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",

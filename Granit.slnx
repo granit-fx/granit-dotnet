@@ -16,6 +16,8 @@
     <Project Path="src/Granit.Diagnostics/Granit.Diagnostics.csproj" />
     <Project Path="src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj" />
     <Project Path="src/Granit.Guids/Granit.Guids.csproj" />
+    <Project Path="src/Granit.Html.AngleSharp/Granit.Html.AngleSharp.csproj" />
+    <Project Path="src/Granit.Html/Granit.Html.csproj" />
     <Project Path="src/Granit.Http.Abstractions/Granit.Http.Abstractions.csproj" />
     <Project Path="src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj" />
     <Project Path="src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj" />
@@ -302,6 +304,8 @@
     <Project Path="tests/Granit.Diagnostics.Tests/Granit.Diagnostics.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Abstractions.Tests/Granit.Entities.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Guids.Tests/Granit.Guids.Tests.csproj" />
+    <Project Path="tests/Granit.Html.AngleSharp.Tests/Granit.Html.AngleSharp.Tests.csproj" />
+    <Project Path="tests/Granit.Html.Tests/Granit.Html.Tests.csproj" />
     <Project Path="tests/Granit.Http.Abstractions.Tests/Granit.Http.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Http.ApiDocumentation.Tests/Granit.Http.ApiDocumentation.Tests.csproj" />
     <Project Path="tests/Granit.Http.ApiVersioning.Tests/Granit.Http.ApiVersioning.Tests.csproj" />

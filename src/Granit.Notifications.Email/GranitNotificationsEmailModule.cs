@@ -1,3 +1,4 @@
+using Granit.Html.AngleSharp;
 using Granit.Modularity;
 using Granit.Templating;
 
@@ -12,6 +13,7 @@ namespace Granit.Notifications.Email;
 /// Embeds localized <c>Notifications.Default</c> fallback templates for when
 /// no type-specific template is registered.
 /// </remarks>
+[DependsOn(typeof(GranitHtmlAngleSharpModule))]
 [DependsOn(typeof(GranitNotificationsAbstractionsModule))]
 [DependsOn(typeof(GranitTemplatingModule))]
 public sealed class GranitNotificationsEmailModule : GranitModule;

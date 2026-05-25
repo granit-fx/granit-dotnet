@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Html.AngleSharp\Granit.Html.AngleSharp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Architecture test reads its own source to verify VULN-300 invariant. -->
+    <EmbeddedResource Include="..\..\src\Granit.Html.AngleSharp\AngleSharpConfiguration.cs"
+                      LogicalName="Granit.Html.AngleSharp.Source.AngleSharpConfiguration.cs"
+                      Visible="false" />
+  </ItemGroup>
+
+</Project>
