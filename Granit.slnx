@@ -210,6 +210,7 @@
     <Project Path="src/Granit.TextExtraction.Office/Granit.TextExtraction.Office.csproj" />
     <Project Path="src/Granit.TextExtraction.Pdf/Granit.TextExtraction.Pdf.csproj" />
     <Project Path="src/Granit.TextExtraction.Text/Granit.TextExtraction.Text.csproj" />
+    <Project Path="src/Granit.TextExtraction.Tika/Granit.TextExtraction.Tika.csproj" />
     <Project Path="src/Granit.TextExtraction/Granit.TextExtraction.csproj" />
     <Project Path="src/Granit.Webhooks.BackgroundJobs/Granit.Webhooks.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Webhooks.Endpoints/Granit.Webhooks.Endpoints.csproj" />
@@ -515,6 +516,7 @@
     <Project Path="tests/Granit.TextExtraction.Pdf.Tests/Granit.TextExtraction.Pdf.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Tests/Granit.TextExtraction.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Text.Tests/Granit.TextExtraction.Text.Tests.csproj" />
+    <Project Path="tests/Granit.TextExtraction.Tika.Tests/Granit.TextExtraction.Tika.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.BackgroundJobs.Tests/Granit.Webhooks.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.Endpoints.Tests/Granit.Webhooks.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.EntityFrameworkCore.Tests/Granit.Webhooks.EntityFrameworkCore.Tests.csproj" />

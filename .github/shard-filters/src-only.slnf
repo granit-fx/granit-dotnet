@@ -234,6 +234,7 @@
       "src/Granit.TextExtraction.Office/Granit.TextExtraction.Office.csproj",
       "src/Granit.TextExtraction.Pdf/Granit.TextExtraction.Pdf.csproj",
       "src/Granit.TextExtraction.Text/Granit.TextExtraction.Text.csproj",
+      "src/Granit.TextExtraction.Tika/Granit.TextExtraction.Tika.csproj",
       "src/Granit.TextExtraction/Granit.TextExtraction.csproj",
       "src/Granit.Timeline.AI/Granit.Timeline.AI.csproj",
       "src/Granit.Timeline.Auditing/Granit.Timeline.Auditing.csproj",

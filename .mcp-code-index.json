@@ -2055,6 +2055,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.TextExtraction.Tika",
+      "deps": [
+        "Granit.TextExtraction"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Timeline",
       "deps": [
         "Granit",
@@ -41898,6 +41905,87 @@
       "file": "src/Granit.TextExtraction/TextExtractionResult.cs",
       "line": 24,
       "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.TextExtraction.Tika.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Tika",
+      "file": "src/Granit.TextExtraction.Tika/Extensions/ServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddTikaSidecarExtractor",
+          "kind": "method",
+          "signature": "AddTikaSidecarExtractor(this IServiceCollection services, Action<TikaSidecarOptions>? configure = null)",
+          "returnType": "IHttpClientBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTextExtractionTikaModule",
+      "fqn": "Granit.TextExtraction.Tika.GranitTextExtractionTikaModule",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Tika",
+      "file": "src/Granit.TextExtraction.Tika/GranitTextExtractionTikaModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "TikaSidecarOptions",
+      "fqn": "Granit.TextExtraction.Tika.Options.TikaSidecarOptions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Tika",
+      "file": "src/Granit.TextExtraction.Tika/Options/TikaSidecarOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Uri",
+          "kind": "property",
+          "signature": "Uri Uri",
+          "returnType": "Uri"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan Timeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "AllowedHosts",
+          "kind": "property",
+          "signature": "IList<string> AllowedHosts",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "RequireMutualTls",
+          "kind": "property",
+          "signature": "bool RequireMutualTls",
+          "returnType": "bool"
+        },
+        {
+          "name": "AllowedContentTypes",
+          "kind": "property",
+          "signature": "IList<string> AllowedContentTypes",
+          "returnType": "IList<string>"
+        }
+      ]
+    },
+    {
+      "name": "TikaSidecarTextExtractor",
+      "fqn": "Granit.TextExtraction.Tika.TikaSidecarTextExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Tika",
+      "file": "src/Granit.TextExtraction.Tika/TikaSidecarTextExtractor.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "AnomalyReport",

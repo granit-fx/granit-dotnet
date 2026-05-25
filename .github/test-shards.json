@@ -231,6 +231,7 @@
         "tests/Granit.TextExtraction.Pdf.Tests",
         "tests/Granit.TextExtraction.Tests",
         "tests/Granit.TextExtraction.Text.Tests",
+        "tests/Granit.TextExtraction.Tika.Tests",
         "tests/Granit.Wolverine.Encryption.Tests",
         "tests/Granit.Wolverine.Postgresql.Tests",
         "tests/Granit.Wolverine.SqlServer.Tests",
