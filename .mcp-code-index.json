@@ -2032,6 +2032,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.TextExtraction.Ocr.AI",
+      "deps": [
+        "Granit.AI",
+        "Granit.TextExtraction"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.TextExtraction.Office",
       "deps": [
         "Granit.TextExtraction"
@@ -41586,6 +41594,79 @@
           "kind": "method",
           "signature": "Write(byte[] buffer, int offset, int count)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AiVisionOcrExtractor",
+      "fqn": "Granit.TextExtraction.Ocr.AI.AiVisionOcrExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Ocr.AI",
+      "file": "src/Granit.TextExtraction.Ocr.AI/AiVisionOcrExtractor.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.TextExtraction.Ocr.AI.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Ocr.AI",
+      "file": "src/Granit.TextExtraction.Ocr.AI/Extensions/ServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddAiVisionOcrExtractor",
+          "kind": "method",
+          "signature": "AddAiVisionOcrExtractor(this IServiceCollection services, Action<AiVisionOcrOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTextExtractionOcrAIModule",
+      "fqn": "Granit.TextExtraction.Ocr.AI.GranitTextExtractionOcrAIModule",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Ocr.AI",
+      "file": "src/Granit.TextExtraction.Ocr.AI/GranitTextExtractionOcrAIModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "IVisionOcrPromptBuilder",
+      "fqn": "Granit.TextExtraction.Ocr.AI.IVisionOcrPromptBuilder",
+      "kind": "interface",
+      "project": "Granit.TextExtraction.Ocr.AI",
+      "file": "src/Granit.TextExtraction.Ocr.AI/IVisionOcrPromptBuilder.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "BuildPrompt",
+          "kind": "method",
+          "signature": "BuildPrompt(string contentType, int maxCharLength)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "AiVisionOcrOptions",
+      "fqn": "Granit.TextExtraction.Ocr.AI.Options.AiVisionOcrOptions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Ocr.AI",
+      "file": "src/Granit.TextExtraction.Ocr.AI/Options/AiVisionOcrOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "WorkspaceName",
+          "kind": "property",
+          "signature": "string? WorkspaceName",
+          "returnType": "string?"
         }
       ]
     },
