@@ -1,3 +1,5 @@
+using Granit.TextExtraction.Options;
+
 namespace Granit.TextExtraction;
 
 /// <summary>

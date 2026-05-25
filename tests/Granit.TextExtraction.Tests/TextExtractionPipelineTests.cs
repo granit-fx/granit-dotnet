@@ -1,9 +1,11 @@
 using System.Text;
+using Granit.TextExtraction.Exceptions;
 using Granit.TextExtraction.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
+using ExtractionOptions = Granit.TextExtraction.Options.GranitTextExtractionOptions;
+using MEOptions = Microsoft.Extensions.Options.Options;
 
 namespace Granit.TextExtraction.Tests;
 
@@ -11,12 +13,12 @@ public sealed class TextExtractionPipelineTests
 {
     private static (ITextExtractionPipeline pipeline, ServiceProvider sp) BuildPipeline(
         Action<IServiceCollection>? configure = null,
-        GranitTextExtractionOptions? options = null)
+        ExtractionOptions? options = null)
     {
         ServiceCollection services = new();
         services.AddSingleton<IMeterFactoryAlias>(_ => new IMeterFactoryAlias());
         services.AddSingleton<System.Diagnostics.Metrics.IMeterFactory, TestMeterFactory>();
-        services.AddSingleton(Options.Create(options ?? new GranitTextExtractionOptions()));
+        services.AddSingleton(MEOptions.Create(options ?? new ExtractionOptions()));
         services.AddGranitTextExtraction();
 
         configure?.Invoke(services);
@@ -91,7 +93,7 @@ public sealed class TextExtractionPipelineTests
     [Fact]
     public async Task Honours_max_extracted_char_length_via_options()
     {
-        GranitTextExtractionOptions options = new() { MaxExtractedCharLength = 5 };
+        ExtractionOptions options = new() { MaxExtractedCharLength = 5 };
         (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline(options: options);
         using ServiceProvider _ = sp;
 

@@ -1,3 +1,5 @@
+using Granit.TextExtraction.Exceptions;
+
 namespace Granit.TextExtraction;
 
 /// <summary>

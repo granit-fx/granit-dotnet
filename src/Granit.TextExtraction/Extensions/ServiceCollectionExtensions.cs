@@ -1,6 +1,7 @@
 using Granit.Diagnostics;
 using Granit.TextExtraction.Diagnostics;
 using Granit.TextExtraction.Internal;
+using Granit.TextExtraction.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;

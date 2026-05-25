@@ -1,4 +1,4 @@
-namespace Granit.TextExtraction;
+namespace Granit.TextExtraction.Options;
 
 /// <summary>
 /// Configuration options for <c>Granit.TextExtraction</c>. Bound from the
@@ -25,9 +25,9 @@ public sealed class GranitTextExtractionOptions
     public TimeSpan ExtractionTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
-    /// Hard cap on the compressed input stream — enforced by <see cref="LimitedStream"/>.
+    /// Hard cap on the compressed input stream — enforced by <see cref="Granit.TextExtraction.LimitedStream"/>.
     /// Defaults to 100 MB. Breaching it raises
-    /// <see cref="TextExtractionException"/> with reason <c>input_too_large</c>.
+    /// <see cref="Granit.TextExtraction.Exceptions.TextExtractionException"/> with reason <c>input_too_large</c>.
     /// </summary>
     public long MaxBodySizeBytes { get; set; } = 100L * 1024 * 1024;
 
@@ -47,7 +47,7 @@ public sealed class GranitTextExtractionOptions
     /// Maximum number of characters returned by any extractor. Defaults to 500 000
     /// (≈ 1 MB UTF-8 — Postgres tsvector hard limit and a safe LOH bomb ceiling).
     /// Producing more characters MUST result in
-    /// <see cref="TextExtractionResult.IsTruncated"/> set to <c>true</c>.
+    /// <see cref="Granit.TextExtraction.TextExtractionResult.IsTruncated"/> set to <c>true</c>.
     /// </summary>
     public int MaxExtractedCharLength { get; set; } = 500_000;
 

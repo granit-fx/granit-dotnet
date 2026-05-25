@@ -1,4 +1,5 @@
 using System.Text;
+using Granit.TextExtraction.Options;
 using Microsoft.Extensions.Options;
 
 namespace Granit.TextExtraction;

@@ -1,4 +1,6 @@
 using Granit.TextExtraction.Diagnostics;
+using Granit.TextExtraction.Exceptions;
+using Granit.TextExtraction.Options;
 using Microsoft.Extensions.Options;
 
 namespace Granit.TextExtraction.Internal;

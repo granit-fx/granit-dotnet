@@ -1,16 +1,18 @@
 using System.Text;
-using Microsoft.Extensions.Options;
+using Granit.TextExtraction.Exceptions;
 using Shouldly;
 using Xunit;
+using ExtractionOptions = Granit.TextExtraction.Options.GranitTextExtractionOptions;
+using MEOptions = Microsoft.Extensions.Options.Options;
 
 namespace Granit.TextExtraction.Tests;
 
 public sealed class PlainTextExtractorTests
 {
-    private static PlainTextExtractor CreateExtractor(GranitTextExtractionOptions? options = null)
+    private static PlainTextExtractor CreateExtractor(ExtractionOptions? options = null)
     {
-        options ??= new GranitTextExtractionOptions();
-        return new PlainTextExtractor(Options.Create(options));
+        options ??= new ExtractionOptions();
+        return new PlainTextExtractor(MEOptions.Create(options));
     }
 
     private static MemoryStream Utf8(string text) => new(Encoding.UTF8.GetBytes(text));
@@ -74,7 +76,7 @@ public sealed class PlainTextExtractorTests
     [Fact]
     public async Task Body_size_cap_throws_input_too_large()
     {
-        GranitTextExtractionOptions options = new() { MaxBodySizeBytes = 8 };
+        ExtractionOptions options = new() { MaxBodySizeBytes = 8 };
         PlainTextExtractor extractor = CreateExtractor(options);
         using MemoryStream stream = Utf8(new string('a', 1024));
 

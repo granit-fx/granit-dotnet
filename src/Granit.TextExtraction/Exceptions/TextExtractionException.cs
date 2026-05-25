@@ -1,8 +1,8 @@
-namespace Granit.TextExtraction;
+namespace Granit.TextExtraction.Exceptions;
 
 /// <summary>
 /// Raised when an extraction stage detects an unrecoverable condition — most commonly an
-/// input stream exceeding <see cref="GranitTextExtractionOptions.MaxBodySizeBytes"/>
+/// input stream exceeding <see cref="Granit.TextExtraction.Options.GranitTextExtractionOptions.MaxBodySizeBytes"/>
 /// (zip-bomb / unbounded-upload defence). NEVER raised for soft caps (truncation is signalled
 /// via <see cref="TextExtractionResult.IsTruncated"/>).
 /// </summary>
