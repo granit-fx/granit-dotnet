@@ -2032,6 +2032,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.TextExtraction.Text",
+      "deps": [
+        "Granit.Html",
+        "Granit.Html.AngleSharp",
+        "Granit.TextExtraction"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Timeline",
       "deps": [
         "Granit",
@@ -41625,6 +41634,70 @@
           "signature": "string Name",
           "returnType": "string"
         },
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.TextExtraction.Text.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Text",
+      "file": "src/Granit.TextExtraction.Text/Extensions/ServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitTextExtractionText",
+          "kind": "method",
+          "signature": "AddGranitTextExtractionText(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTextExtractionTextModule",
+      "fqn": "Granit.TextExtraction.Text.GranitTextExtractionTextModule",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Text",
+      "file": "src/Granit.TextExtraction.Text/GranitTextExtractionTextModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "HtmlTextExtractor",
+      "fqn": "Granit.TextExtraction.Text.HtmlTextExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Text",
+      "file": "src/Granit.TextExtraction.Text/HtmlTextExtractor.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "MarkdownTextExtractor",
+      "fqn": "Granit.TextExtraction.Text.MarkdownTextExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Text",
+      "file": "src/Granit.TextExtraction.Text/MarkdownTextExtractor.cs",
+      "line": 13,
+      "members": [
         {
           "name": "CanHandle",
           "kind": "method",

@@ -9,6 +9,7 @@
   <!-- =================================================================== -->
   <ItemGroup Label="Localisation">
     <PackageVersion Include="AngleSharp" Version="1.*" />
+    <PackageVersion Include="Markdig" Version="0.*" />
     <PackageVersion Include="Microsoft.Extensions.Localization" Version="10.*" />
     <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="10.*" />
     <PackageVersion Include="SmartFormat" Version="3.*" />
