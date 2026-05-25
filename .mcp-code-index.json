@@ -2032,6 +2032,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.TextExtraction.Office",
+      "deps": [
+        "Granit.TextExtraction"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.TextExtraction.Pdf",
       "deps": [
         "Granit.TextExtraction"
@@ -41572,6 +41579,113 @@
           "kind": "method",
           "signature": "Write(byte[] buffer, int offset, int count)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ExcelTextExtractor",
+      "fqn": "Granit.TextExtraction.Office.ExcelTextExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Office",
+      "file": "src/Granit.TextExtraction.Office/ExcelTextExtractor.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
+        },
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Stream source, string contentType, int maxCharLength, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TextExtractionResult>"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.TextExtraction.Office.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Office",
+      "file": "src/Granit.TextExtraction.Office/Extensions/ServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitTextExtractionOffice",
+          "kind": "method",
+          "signature": "AddGranitTextExtractionOffice(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTextExtractionOfficeModule",
+      "fqn": "Granit.TextExtraction.Office.GranitTextExtractionOfficeModule",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Office",
+      "file": "src/Granit.TextExtraction.Office/GranitTextExtractionOfficeModule.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GateResult",
+      "fqn": "Granit.TextExtraction.Office.Internal.GateResult",
+      "kind": "enum",
+      "project": "Granit.TextExtraction.Office",
+      "file": "src/Granit.TextExtraction.Office/Internal/OpenXmlGate.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "PowerPointTextExtractor",
+      "fqn": "Granit.TextExtraction.Office.PowerPointTextExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Office",
+      "file": "src/Granit.TextExtraction.Office/PowerPointTextExtractor.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
+        },
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Stream source, string contentType, int maxCharLength, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TextExtractionResult>"
+        }
+      ]
+    },
+    {
+      "name": "WordTextExtractor",
+      "fqn": "Granit.TextExtraction.Office.WordTextExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Office",
+      "file": "src/Granit.TextExtraction.Office/WordTextExtractor.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
+        },
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Stream source, string contentType, int maxCharLength, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TextExtractionResult>"
         }
       ]
     },

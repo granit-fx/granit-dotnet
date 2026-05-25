@@ -231,6 +231,7 @@
       "src/Granit.Templating/Granit.Templating.csproj",
       "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
+      "src/Granit.TextExtraction.Office/Granit.TextExtraction.Office.csproj",
       "src/Granit.TextExtraction.Pdf/Granit.TextExtraction.Pdf.csproj",
       "src/Granit.TextExtraction.Text/Granit.TextExtraction.Text.csproj",
       "src/Granit.TextExtraction/Granit.TextExtraction.csproj",

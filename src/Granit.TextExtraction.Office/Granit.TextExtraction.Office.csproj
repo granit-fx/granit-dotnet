@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.TextExtraction.Office</PackageId>
+    <Description>Office (Word / Excel / PowerPoint) text extractors for Granit.TextExtraction. Backed by DocumentFormat.OpenXml with hard zip-bomb / decompression-bomb defences applied BEFORE handing the package to the parser.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.TextExtraction.Office.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.TextExtraction\Granit.TextExtraction.csproj" />
+  </ItemGroup>
+
+</Project>

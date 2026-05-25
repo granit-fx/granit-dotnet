@@ -227,6 +227,7 @@
         "tests/Granit.Settings.Endpoints.Tests",
         "tests/Granit.Settings.EntityFrameworkCore.Tests",
         "tests/Granit.Settings.Tests",
+        "tests/Granit.TextExtraction.Office.Tests",
         "tests/Granit.TextExtraction.Pdf.Tests",
         "tests/Granit.TextExtraction.Tests",
         "tests/Granit.TextExtraction.Text.Tests",
