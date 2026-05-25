@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-05-25
+Dernière mise à jour : 2026-05-25 (ajout SixLabors.ImageSharp + Tesseract pour OCR locale)
 
 ---
 
@@ -13,7 +13,7 @@ Dernière mise à jour : 2026-05-25
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
 | MIT          | 87                 |
-| Apache-2.0   | 38                 |
+| Apache-2.0   | 40                 |
 | BSD-3-Clause | 3                  |
 | BSD-2-Clause | 1                  |
 | PostgreSQL   | 2                  |
@@ -137,6 +137,8 @@ Dernière mise à jour : 2026-05-25
 | OpenTelemetry.Instrumentation.StackExchangeRedis | 1.15.1-beta.1 | Copyright The OpenTelemetry Authors |
 | Serilog.AspNetCore | 10.0.0 | Serilog Contributors |
 | Serilog.Sinks.OpenTelemetry | 4.2.0 | Serilog Contributors |
+| SixLabors.ImageSharp | 2.1.13 | Copyright (c) Six Labors |
+| Tesseract | 5.2.0 | Copyright (c) Charles Weld |
 | VaultSharp | 1.17.5.1 | Copyright (c) 2024 Raja Nadar |
 
 ### BSD-2-Clause
@@ -328,6 +330,24 @@ et s'aligner sur l'exigence transitive de MailKit 4.16.0.
 Ce SDK est utilisé par les modules `Granit.*.AI` pour l'intégration avec des
 modèles de langage locaux via Ollama. Les données restent sur l'infrastructure
 de l'organisation (aucun appel vers des services cloud externes).
+
+### SixLabors.ImageSharp
+
+Ce package est utilisé par `Granit.TextExtraction.Ocr.Tesseract` uniquement pour
+identifier les dimensions d'une image (entête du format) AVANT décodage —
+défense contre les attaques pixel-bomb (VULN-001). La version est épinglée à
+**2.\*** car la branche 3.x est passée sous la Six Labors Split License, incompatible
+avec la distribution Apache-2.0 propre de Granit. Aucune donnée de santé ne transite
+par les serveurs Six Labors (bibliothèque purement locale).
+
+### Tesseract
+
+Ce package est utilisé par `Granit.TextExtraction.Ocr.Tesseract` comme moteur OCR
+local pour images raster (PNG, JPEG, TIFF, BMP). Wrapper .NET autour de la
+bibliothèque native `libtesseract` (Apache-2.0) qui doit être installée séparément
+sur l'hôte (`apt-get install libtesseract5 tesseract-ocr-{lang}`). Aucune donnée
+ne sort de l'hôte — c'est le pendant on-prem du module `Granit.TextExtraction.Ocr.AI`
+(qui s'appuie sur un VLM tiers).
 
 ### Yarp.ReverseProxy
 

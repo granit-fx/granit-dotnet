@@ -209,6 +209,7 @@
     <Project Path="src/Granit.Presence/Granit.Presence.csproj" />
     <Project Path="src/Granit.TextExtraction.Email/Granit.TextExtraction.Email.csproj" />
     <Project Path="src/Granit.TextExtraction.Ocr.AI/Granit.TextExtraction.Ocr.AI.csproj" />
+    <Project Path="src/Granit.TextExtraction.Ocr.Tesseract/Granit.TextExtraction.Ocr.Tesseract.csproj" />
     <Project Path="src/Granit.TextExtraction.Office/Granit.TextExtraction.Office.csproj" />
     <Project Path="src/Granit.TextExtraction.Pdf/Granit.TextExtraction.Pdf.csproj" />
     <Project Path="src/Granit.TextExtraction.Text/Granit.TextExtraction.Text.csproj" />
@@ -516,6 +517,7 @@
     <Project Path="tests/Granit.Presence.Wolverine.Tests/Granit.Presence.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Email.Tests/Granit.TextExtraction.Email.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Ocr.AI.Tests/Granit.TextExtraction.Ocr.AI.Tests.csproj" />
+    <Project Path="tests/Granit.TextExtraction.Ocr.Tesseract.Tests/Granit.TextExtraction.Ocr.Tesseract.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Office.Tests/Granit.TextExtraction.Office.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Pdf.Tests/Granit.TextExtraction.Pdf.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Tests/Granit.TextExtraction.Tests.csproj" />

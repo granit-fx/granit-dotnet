@@ -233,6 +233,7 @@
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.TextExtraction.Email/Granit.TextExtraction.Email.csproj",
       "src/Granit.TextExtraction.Ocr.AI/Granit.TextExtraction.Ocr.AI.csproj",
+      "src/Granit.TextExtraction.Ocr.Tesseract/Granit.TextExtraction.Ocr.Tesseract.csproj",
       "src/Granit.TextExtraction.Office/Granit.TextExtraction.Office.csproj",
       "src/Granit.TextExtraction.Pdf/Granit.TextExtraction.Pdf.csproj",
       "src/Granit.TextExtraction.Text/Granit.TextExtraction.Text.csproj",

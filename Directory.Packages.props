@@ -94,9 +94,16 @@
   <ItemGroup Label="Imaging">
     <PackageVersion Include="Magick.NET-Q8-AnyCPU" Version="14.*" />
     <PackageVersion Include="MetadataExtractor" Version="2.*" />
+    <!-- Pinned to 2.* — Apache-2.0. SixLabors.ImageSharp 3.x switched to the
+         Six Labors Split License (commercial restrictions) which is incompatible
+         with Granit's clean Apache-2.0 OSS distribution. -->
+    <PackageVersion Include="SixLabors.ImageSharp" Version="2.*" />
   </ItemGroup>
   <ItemGroup Label="Office">
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.*" />
+  </ItemGroup>
+  <ItemGroup Label="OCR">
+    <PackageVersion Include="Tesseract" Version="5.*" />
   </ItemGroup>
   <ItemGroup Label="AudioVideo">
     <PackageVersion Include="TagLibSharp" Version="2.*" />

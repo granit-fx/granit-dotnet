@@ -2049,6 +2049,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.TextExtraction.Ocr.Tesseract",
+      "deps": [
+        "Granit.TextExtraction"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.TextExtraction.Office",
       "deps": [
         "Granit.TextExtraction"
@@ -41724,6 +41731,91 @@
           "kind": "property",
           "signature": "string? WorkspaceName",
           "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.TextExtraction.Ocr.Tesseract.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Ocr.Tesseract",
+      "file": "src/Granit.TextExtraction.Ocr.Tesseract/Extensions/ServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddTesseractOcrExtractor",
+          "kind": "method",
+          "signature": "AddTesseractOcrExtractor(this IServiceCollection services, Action<TesseractOcrOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTextExtractionOcrTesseractModule",
+      "fqn": "Granit.TextExtraction.Ocr.Tesseract.GranitTextExtractionOcrTesseractModule",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Ocr.Tesseract",
+      "file": "src/Granit.TextExtraction.Ocr.Tesseract/GranitTextExtractionOcrTesseractModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "ITesseractRecognizer",
+      "fqn": "Granit.TextExtraction.Ocr.Tesseract.ITesseractRecognizer",
+      "kind": "interface",
+      "project": "Granit.TextExtraction.Ocr.Tesseract",
+      "file": "src/Granit.TextExtraction.Ocr.Tesseract/ITesseractRecognizer.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecognizeAsync",
+          "kind": "method",
+          "signature": "RecognizeAsync(byte[] imageBytes, CancellationToken cancellationToken)",
+          "returnType": "Task<string>"
+        }
+      ]
+    },
+    {
+      "name": "TesseractOcrOptions",
+      "fqn": "Granit.TextExtraction.Ocr.Tesseract.Options.TesseractOcrOptions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Ocr.Tesseract",
+      "file": "src/Granit.TextExtraction.Ocr.Tesseract/Options/TesseractOcrOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "DataPath",
+          "kind": "property",
+          "signature": "string? DataPath",
+          "returnType": "string?"
+        },
+        {
+          "name": "MaxImagePixels",
+          "kind": "property",
+          "signature": "long MaxImagePixels",
+          "returnType": "long"
+        },
+        {
+          "name": "AllowedContentTypes",
+          "kind": "property",
+          "signature": "IList<string> AllowedContentTypes",
+          "returnType": "IList<string>"
+        }
+      ]
+    },
+    {
+      "name": "TesseractOcrExtractor",
+      "fqn": "Granit.TextExtraction.Ocr.Tesseract.TesseractOcrExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Ocr.Tesseract",
+      "file": "src/Granit.TextExtraction.Ocr.Tesseract/TesseractOcrExtractor.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
         }
       ]
     },
