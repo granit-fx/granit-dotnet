@@ -36,7 +36,7 @@ internal sealed class ApiKeyEntryConfiguration : IEntityTypeConfiguration<ApiKey
             .HasDatabaseName($"ix_{GranitApiKeysDbProperties.DbTablePrefix}entries_expiring_scan");
 
         builder.Property(e => e.Name).HasMaxLength(200).IsRequired();
-        builder.Property(e => e.HashedKey).HasMaxLength(64).IsRequired(); // SHA-256 hex = 64 chars
+        builder.Property(e => e.HashedKey).HasMaxLength(100).IsRequired(); // "vN$" prefix + SHA-256 hex (64 chars); 100 leaves headroom for future schemes
         builder.Property(e => e.Prefix).HasMaxLength(20).IsRequired();
         builder.Property(e => e.LastFourChars).HasMaxLength(4).IsRequired();
         builder.Property(e => e.Environment).HasMaxLength(10).IsRequired();
