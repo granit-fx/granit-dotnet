@@ -21,6 +21,7 @@ internal sealed class AuditingNotificationDefinitionProvider : INotificationDefi
             DefaultSeverity = NotificationSeverity.Warning,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "Auditing.AuditEntries.Read",
         });
     }
 }

@@ -21,6 +21,7 @@ internal sealed class BackgroundJobsNotificationDefinitionProvider : INotificati
             DefaultSeverity = NotificationSeverity.Warning,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "BackgroundJobs.Jobs.Read",
         });
     }
 }

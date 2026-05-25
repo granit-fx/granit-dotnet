@@ -21,6 +21,7 @@ internal sealed class WebhooksNotificationDefinitionProvider : INotificationDefi
             DefaultSeverity = NotificationSeverity.Warning,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "Webhooks.Subscriptions.Manage",
         });
 
         context.Add(new NotificationDefinition(WebhooksSigningKeyRotationDueNotificationType.Instance.Name)
@@ -31,6 +32,7 @@ internal sealed class WebhooksNotificationDefinitionProvider : INotificationDefi
             DefaultSeverity = NotificationSeverity.Warning,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "Webhooks.Subscriptions.Manage",
         });
     }
 }

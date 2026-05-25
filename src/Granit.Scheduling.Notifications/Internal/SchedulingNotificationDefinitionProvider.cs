@@ -21,6 +21,7 @@ internal sealed class SchedulingNotificationDefinitionProvider : INotificationDe
             DefaultSeverity = NotificationSeverity.Warning,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "Scheduling.Actions.Manage",
         });
     }
 }
