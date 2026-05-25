@@ -1,7 +1,10 @@
 using Granit.Modularity;
 using Granit.Notifications;
+using Granit.Notifications.Abstractions;
 using Granit.Templating;
 using Granit.Templating.Extensions;
+using Granit.Webhooks.Notifications.Internal;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Webhooks.Notifications;
 
@@ -29,5 +32,7 @@ public sealed class GranitWebhooksNotificationsModule : GranitModule
         // registers the actual `Layout.Email` template; if absent, templates render
         // without layout (warning logged, no crash).
         context.Services.AddTemplateLayout("webhooks.*", "Layout.Email");
+
+        context.Services.AddSingleton<INotificationDefinitionProvider, WebhooksNotificationDefinitionProvider>();
     }
 }

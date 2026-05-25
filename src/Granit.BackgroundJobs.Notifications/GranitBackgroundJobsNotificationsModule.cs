@@ -1,7 +1,10 @@
+using Granit.BackgroundJobs.Notifications.Internal;
 using Granit.Modularity;
 using Granit.Notifications;
+using Granit.Notifications.Abstractions;
 using Granit.Templating;
 using Granit.Templating.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.BackgroundJobs.Notifications;
 
@@ -29,5 +32,7 @@ public sealed class GranitBackgroundJobsNotificationsModule : GranitModule
         // application registers the actual `Layout.Email` template; if absent, templates
         // render without layout (warning logged, no crash).
         context.Services.AddTemplateLayout("jobs.*", "Layout.Email");
+
+        context.Services.AddSingleton<INotificationDefinitionProvider, BackgroundJobsNotificationDefinitionProvider>();
     }
 }

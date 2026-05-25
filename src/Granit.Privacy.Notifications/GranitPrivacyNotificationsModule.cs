@@ -1,9 +1,12 @@
 using Granit.Modularity;
 using Granit.Notifications;
+using Granit.Notifications.Abstractions;
 using Granit.Privacy.Notifications.GlobalContexts;
+using Granit.Privacy.Notifications.Internal;
 using Granit.Privacy.Regulations;
 using Granit.Templating;
 using Granit.Templating.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Privacy.Notifications;
 
@@ -36,5 +39,7 @@ public sealed class GranitPrivacyNotificationsModule : GranitModule
         // (warning logged, no crash).
         context.Services.AddTemplateLayout("privacy.*", "Layout.Email");
         context.Services.AddTemplateLayout("Privacy.*", "Layout.Email");
+
+        context.Services.AddSingleton<INotificationDefinitionProvider, PrivacyNotificationDefinitionProvider>();
     }
 }

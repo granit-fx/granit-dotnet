@@ -1,7 +1,10 @@
 using Granit.Modularity;
 using Granit.Notifications;
+using Granit.Notifications.Abstractions;
+using Granit.Scheduling.Notifications.Internal;
 using Granit.Templating;
 using Granit.Templating.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Scheduling.Notifications;
 
@@ -29,5 +32,7 @@ public sealed class GranitSchedulingNotificationsModule : GranitModule
         // application registers the actual `Layout.Email` template; if absent, templates
         // render without layout (warning logged, no crash).
         context.Services.AddTemplateLayout("scheduling.*", "Layout.Email");
+
+        context.Services.AddSingleton<INotificationDefinitionProvider, SchedulingNotificationDefinitionProvider>();
     }
 }

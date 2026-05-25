@@ -5157,7 +5157,7 @@
       "kind": "class",
       "project": "Granit.Auditing.Notifications",
       "file": "src/Granit.Auditing.Notifications/GranitAuditingNotificationsModule.cs",
-      "line": 29,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6192,7 +6192,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.Notifications",
       "file": "src/Granit.Authentication.ApiKeys.Notifications/GranitAuthenticationApiKeysNotificationsModule.cs",
-      "line": 26,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -8641,7 +8641,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs.Notifications",
       "file": "src/Granit.BackgroundJobs.Notifications/GranitBackgroundJobsNotificationsModule.cs",
-      "line": 18,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -22212,7 +22212,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Notifications",
       "file": "src/Granit.Identity.Federated.Notifications/GranitIdentityFederatedNotificationsModule.cs",
-      "line": 29,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36388,7 +36388,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/GranitPrivacyNotificationsModule.cs",
-      "line": 21,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
@@ -38950,7 +38950,7 @@
       "kind": "class",
       "project": "Granit.Scheduling.Notifications",
       "file": "src/Granit.Scheduling.Notifications/GranitSchedulingNotificationsModule.cs",
-      "line": 18,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -42179,7 +42179,7 @@
       "kind": "class",
       "project": "Granit.Timeline.Notifications",
       "file": "src/Granit.Timeline.Notifications/GranitTimelineNotificationsModule.cs",
-      "line": 19,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -45275,7 +45275,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.Notifications",
       "file": "src/Granit.Webhooks.Notifications/GranitWebhooksNotificationsModule.cs",
-      "line": 18,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -46569,7 +46569,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Notifications",
       "file": "src/Granit.Workflow.Notifications/GranitWorkflowNotificationsModule.cs",
-      "line": 35,
+      "line": 38,
       "members": [
         {
           "name": "ConfigureServices",

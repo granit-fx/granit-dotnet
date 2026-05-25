@@ -1,8 +1,11 @@
 using Granit.Modularity;
 using Granit.Notifications;
+using Granit.Notifications.Abstractions;
 using Granit.Templating;
 using Granit.Templating.Extensions;
 using Granit.Timeline.Notifications.Extensions;
+using Granit.Timeline.Notifications.Internal;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Timeline.Notifications;
 
@@ -32,5 +35,7 @@ public sealed class GranitTimelineNotificationsModule : GranitModule
         // wrapper if registered. If absent, templates render without layout (warning logged,
         // no crash).
         context.Services.AddTemplateLayout("timeline.*", "Layout.Email");
+
+        context.Services.AddSingleton<INotificationDefinitionProvider, TimelineNotificationDefinitionProvider>();
     }
 }

@@ -1,7 +1,10 @@
+using Granit.Authentication.ApiKeys.Notifications.Internal;
 using Granit.Modularity;
 using Granit.Notifications;
+using Granit.Notifications.Abstractions;
 using Granit.Templating;
 using Granit.Templating.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Authentication.ApiKeys.Notifications;
 
@@ -37,5 +40,7 @@ public sealed class GranitAuthenticationApiKeysNotificationsModule : GranitModul
         // application registers the actual `Layout.Email` template; if absent, templates
         // render without layout (warning logged, no crash).
         context.Services.AddTemplateLayout("apikeys.*", "Layout.Email");
+
+        context.Services.AddSingleton<INotificationDefinitionProvider, ApiKeysNotificationDefinitionProvider>();
     }
 }

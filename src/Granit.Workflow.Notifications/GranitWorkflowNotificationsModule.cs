@@ -2,9 +2,12 @@ using Granit.Authorization;
 using Granit.Identity;
 using Granit.Modularity;
 using Granit.Notifications;
+using Granit.Notifications.Abstractions;
 using Granit.Templating;
 using Granit.Templating.Extensions;
 using Granit.Workflow.Notifications.Extensions;
+using Granit.Workflow.Notifications.Internal;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Workflow.Notifications;
 
@@ -48,5 +51,7 @@ public sealed class GranitWorkflowNotificationsModule : GranitModule
         // wrapper if registered. If absent, templates render without layout (warning logged,
         // no crash).
         context.Services.AddTemplateLayout("workflow.*", "Layout.Email");
+
+        context.Services.AddSingleton<INotificationDefinitionProvider, WorkflowNotificationDefinitionProvider>();
     }
 }

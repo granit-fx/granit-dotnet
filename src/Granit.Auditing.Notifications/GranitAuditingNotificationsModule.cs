@@ -1,6 +1,8 @@
+using Granit.Auditing.Notifications.Internal;
 using Granit.Auditing.Notifications.Options;
 using Granit.Modularity;
 using Granit.Notifications;
+using Granit.Notifications.Abstractions;
 using Granit.Templating;
 using Granit.Templating.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,5 +51,7 @@ public sealed class GranitAuditingNotificationsModule : GranitModule
             .BindConfiguration(AuditNotificationOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        context.Services.AddSingleton<INotificationDefinitionProvider, AuditingNotificationDefinitionProvider>();
     }
 }

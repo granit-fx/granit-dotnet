@@ -1,7 +1,10 @@
+using Granit.Identity.Federated.Notifications.Internal;
 using Granit.Modularity;
 using Granit.Notifications;
+using Granit.Notifications.Abstractions;
 using Granit.Templating;
 using Granit.Templating.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Identity.Federated.Notifications;
 
@@ -40,5 +43,7 @@ public sealed class GranitIdentityFederatedNotificationsModule : GranitModule
         // registers the actual `Layout.Email` template; if absent, templates render
         // without layout (warning logged, no crash).
         context.Services.AddTemplateLayout("identity.*", "Layout.Email");
+
+        context.Services.AddSingleton<INotificationDefinitionProvider, IdentityFederatedNotificationDefinitionProvider>();
     }
 }
