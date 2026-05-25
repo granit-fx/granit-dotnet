@@ -2032,6 +2032,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.TextExtraction.Pdf",
+      "deps": [
+        "Granit.TextExtraction"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.TextExtraction.Text",
       "deps": [
         "Granit.Html",
@@ -41617,6 +41624,60 @@
           "kind": "property",
           "signature": "long MaxImagePixels",
           "returnType": "long"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.TextExtraction.Pdf.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Pdf",
+      "file": "src/Granit.TextExtraction.Pdf/Extensions/ServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitTextExtractionPdf",
+          "kind": "method",
+          "signature": "AddGranitTextExtractionPdf(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTextExtractionPdfModule",
+      "fqn": "Granit.TextExtraction.Pdf.GranitTextExtractionPdfModule",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Pdf",
+      "file": "src/Granit.TextExtraction.Pdf/GranitTextExtractionPdfModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PdfTextExtractor",
+      "fqn": "Granit.TextExtraction.Pdf.PdfTextExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Pdf",
+      "file": "src/Granit.TextExtraction.Pdf/PdfTextExtractor.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
+        },
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Stream source, string contentType, int maxCharLength, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TextExtractionResult>"
         }
       ]
     },

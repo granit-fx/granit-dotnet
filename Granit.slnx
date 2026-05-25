@@ -207,6 +207,7 @@
     <Project Path="src/Granit.Presence.Notifications/Granit.Presence.Notifications.csproj" />
     <Project Path="src/Granit.Presence.Wolverine/Granit.Presence.Wolverine.csproj" />
     <Project Path="src/Granit.Presence/Granit.Presence.csproj" />
+    <Project Path="src/Granit.TextExtraction.Pdf/Granit.TextExtraction.Pdf.csproj" />
     <Project Path="src/Granit.TextExtraction.Text/Granit.TextExtraction.Text.csproj" />
     <Project Path="src/Granit.TextExtraction/Granit.TextExtraction.csproj" />
     <Project Path="src/Granit.Webhooks.BackgroundJobs/Granit.Webhooks.BackgroundJobs.csproj" />
@@ -509,6 +510,7 @@
     <Project Path="tests/Granit.Presence.Notifications.Tests/Granit.Presence.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Presence.Tests/Granit.Presence.Tests.csproj" />
     <Project Path="tests/Granit.Presence.Wolverine.Tests/Granit.Presence.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.TextExtraction.Pdf.Tests/Granit.TextExtraction.Pdf.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Tests/Granit.TextExtraction.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Text.Tests/Granit.TextExtraction.Text.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.BackgroundJobs.Tests/Granit.Webhooks.BackgroundJobs.Tests.csproj" />

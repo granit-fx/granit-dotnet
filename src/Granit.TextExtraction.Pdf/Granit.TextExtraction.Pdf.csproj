@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.TextExtraction.Pdf</PackageId>
+    <Description>PDF text extractor for Granit.TextExtraction. Backed by PdfPig's content-order extractor with a defensive word-iteration fallback. Rejects password-protected and malformed PDFs without throwing.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.TextExtraction.Pdf.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PdfPig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.TextExtraction\Granit.TextExtraction.csproj" />
+  </ItemGroup>
+
+</Project>
