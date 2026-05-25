@@ -1,0 +1,12 @@
+{
+  "culture": "hi",
+  "texts": {
+    "TextExtraction:InputTooLarge": "इनपुट स्ट्रीम अनुमत अधिकतम आकार से अधिक है।",
+    "TextExtraction:DecompressedTooLarge": "विघटित सामग्री अनुमत अधिकतम आकार से अधिक है।",
+    "TextExtraction:ArchiveTooManyEntries": "संग्रह में अनुमत से अधिक प्रविष्टियाँ हैं।",
+    "TextExtraction:ImageTooLarge": "छवि अनुमत अधिकतम पिक्सेल संख्या से अधिक है।",
+    "TextExtraction:ExtractionTimeout": "टेक्स्ट निष्कर्षण का समय समाप्त हो गया।",
+    "TextExtraction:UnsupportedContentType": "सामग्री प्रकार '{0}' के लिए कोई एक्सट्रैक्टर उपलब्ध नहीं है।",
+    "TextExtraction:Truncated": "निकाला गया टेक्स्ट अधिकतम वर्ण लंबाई में फिट करने के लिए छोटा कर दिया गया।"
+  }
+}

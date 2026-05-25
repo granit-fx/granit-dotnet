@@ -1,0 +1,12 @@
+{
+  "culture": "sv",
+  "texts": {
+    "TextExtraction:InputTooLarge": "Indataströmmen överskrider den tillåtna maxstorleken.",
+    "TextExtraction:DecompressedTooLarge": "Det uppackade innehållet överskrider den tillåtna maxstorleken.",
+    "TextExtraction:ArchiveTooManyEntries": "Arkivet innehåller fler poster än vad som tillåts.",
+    "TextExtraction:ImageTooLarge": "Bilden överskrider det tillåtna maxantalet pixlar.",
+    "TextExtraction:ExtractionTimeout": "Textutdragningen tog för lång tid.",
+    "TextExtraction:UnsupportedContentType": "Det finns ingen tillgänglig extraktor för innehållstypen ”{0}”.",
+    "TextExtraction:Truncated": "Den extraherade texten har förkortats för att rymmas inom maximal teckenlängd."
+  }
+}

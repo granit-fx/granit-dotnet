@@ -1,0 +1,12 @@
+{
+  "culture": "es",
+  "texts": {
+    "TextExtraction:InputTooLarge": "El flujo de entrada supera el tamaño máximo permitido.",
+    "TextExtraction:DecompressedTooLarge": "El contenido descomprimido supera el tamaño máximo permitido.",
+    "TextExtraction:ArchiveTooManyEntries": "El archivo contiene más entradas de las permitidas.",
+    "TextExtraction:ImageTooLarge": "La imagen supera la cantidad máxima de píxeles permitida.",
+    "TextExtraction:ExtractionTimeout": "La extracción de texto ha agotado el tiempo de espera.",
+    "TextExtraction:UnsupportedContentType": "No hay ningún extractor disponible para el tipo de contenido «{0}».",
+    "TextExtraction:Truncated": "El texto extraído se ha truncado para ajustarse a la longitud máxima de caracteres."
+  }
+}

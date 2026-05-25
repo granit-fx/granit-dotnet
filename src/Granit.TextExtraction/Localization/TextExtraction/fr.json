@@ -1,0 +1,12 @@
+{
+  "culture": "fr",
+  "texts": {
+    "TextExtraction:InputTooLarge": "Le flux d'entrée dépasse la taille maximale autorisée.",
+    "TextExtraction:DecompressedTooLarge": "Le contenu décompressé dépasse la taille maximale autorisée.",
+    "TextExtraction:ArchiveTooManyEntries": "L'archive contient plus d'entrées que ce qui est autorisé.",
+    "TextExtraction:ImageTooLarge": "L'image dépasse le nombre maximal de pixels autorisé.",
+    "TextExtraction:ExtractionTimeout": "L'extraction du texte a expiré.",
+    "TextExtraction:UnsupportedContentType": "Aucun extracteur n'est disponible pour le type de contenu « {0} ».",
+    "TextExtraction:Truncated": "Le texte extrait a été tronqué pour respecter la longueur maximale de caractères."
+  }
+}

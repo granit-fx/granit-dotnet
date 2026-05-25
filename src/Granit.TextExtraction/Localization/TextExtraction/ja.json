@@ -1,0 +1,12 @@
+{
+  "culture": "ja",
+  "texts": {
+    "TextExtraction:InputTooLarge": "入力ストリームが許可された最大サイズを超えています。",
+    "TextExtraction:DecompressedTooLarge": "展開されたコンテンツが許可された最大サイズを超えています。",
+    "TextExtraction:ArchiveTooManyEntries": "アーカイブに含まれるエントリ数が許可された上限を超えています。",
+    "TextExtraction:ImageTooLarge": "画像が許可された最大ピクセル数を超えています。",
+    "TextExtraction:ExtractionTimeout": "テキスト抽出がタイムアウトしました。",
+    "TextExtraction:UnsupportedContentType": "コンテンツ タイプ「{0}」に使用できる抽出機能がありません。",
+    "TextExtraction:Truncated": "抽出されたテキストは最大文字数に合わせて切り詰められました。"
+  }
+}

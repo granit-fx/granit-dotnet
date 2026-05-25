@@ -1,0 +1,12 @@
+{
+  "culture": "nl",
+  "texts": {
+    "TextExtraction:InputTooLarge": "De invoerstroom overschrijdt de maximaal toegestane grootte.",
+    "TextExtraction:DecompressedTooLarge": "De gedecomprimeerde inhoud overschrijdt de maximaal toegestane grootte.",
+    "TextExtraction:ArchiveTooManyEntries": "Het archief bevat meer items dan toegestaan.",
+    "TextExtraction:ImageTooLarge": "De afbeelding overschrijdt het maximaal toegestane aantal pixels.",
+    "TextExtraction:ExtractionTimeout": "De tekstextractie heeft een time-out bereikt.",
+    "TextExtraction:UnsupportedContentType": "Er is geen extractor beschikbaar voor het inhoudstype '{0}'.",
+    "TextExtraction:Truncated": "De geëxtraheerde tekst is ingekort tot de maximale tekenlengte."
+  }
+}

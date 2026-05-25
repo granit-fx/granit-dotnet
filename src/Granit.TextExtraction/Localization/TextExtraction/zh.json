@@ -1,0 +1,12 @@
+{
+  "culture": "zh",
+  "texts": {
+    "TextExtraction:InputTooLarge": "输入流超过允许的最大大小。",
+    "TextExtraction:DecompressedTooLarge": "解压后的内容超过允许的最大大小。",
+    "TextExtraction:ArchiveTooManyEntries": "压缩包包含的条目数量超过允许值。",
+    "TextExtraction:ImageTooLarge": "图像超过允许的最大像素数。",
+    "TextExtraction:ExtractionTimeout": "文本提取超时。",
+    "TextExtraction:UnsupportedContentType": "没有可用于内容类型“{0}”的提取器。",
+    "TextExtraction:Truncated": "已截断提取的文本以符合最大字符长度。"
+  }
+}

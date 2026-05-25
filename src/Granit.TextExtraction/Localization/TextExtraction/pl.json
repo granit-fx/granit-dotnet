@@ -1,0 +1,12 @@
+{
+  "culture": "pl",
+  "texts": {
+    "TextExtraction:InputTooLarge": "Strumień wejściowy przekracza maksymalny dozwolony rozmiar.",
+    "TextExtraction:DecompressedTooLarge": "Zdekompresowana zawartość przekracza maksymalny dozwolony rozmiar.",
+    "TextExtraction:ArchiveTooManyEntries": "Archiwum zawiera więcej wpisów niż jest dozwolone.",
+    "TextExtraction:ImageTooLarge": "Obraz przekracza maksymalną dozwoloną liczbę pikseli.",
+    "TextExtraction:ExtractionTimeout": "Wyodrębnianie tekstu przekroczyło limit czasu.",
+    "TextExtraction:UnsupportedContentType": "Brak dostępnego ekstraktora dla typu zawartości „{0}”.",
+    "TextExtraction:Truncated": "Wyodrębniony tekst został skrócony do maksymalnej długości znaków."
+  }
+}

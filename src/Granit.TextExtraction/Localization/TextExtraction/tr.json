@@ -1,0 +1,12 @@
+{
+  "culture": "tr",
+  "texts": {
+    "TextExtraction:InputTooLarge": "Giriş akışı izin verilen en büyük boyutu aşıyor.",
+    "TextExtraction:DecompressedTooLarge": "Sıkıştırması açılmış içerik izin verilen en büyük boyutu aşıyor.",
+    "TextExtraction:ArchiveTooManyEntries": "Arşiv izin verilenden daha fazla giriş içeriyor.",
+    "TextExtraction:ImageTooLarge": "Görüntü izin verilen en yüksek piksel sayısını aşıyor.",
+    "TextExtraction:ExtractionTimeout": "Metin çıkarma işlemi zaman aşımına uğradı.",
+    "TextExtraction:UnsupportedContentType": "'{0}' içerik türü için kullanılabilir bir çıkarıcı yok.",
+    "TextExtraction:Truncated": "Çıkarılan metin en fazla karakter uzunluğuna sığacak şekilde kısaltıldı."
+  }
+}

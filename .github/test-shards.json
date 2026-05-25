@@ -225,6 +225,7 @@
         "tests/Granit.Settings.Endpoints.Tests",
         "tests/Granit.Settings.EntityFrameworkCore.Tests",
         "tests/Granit.Settings.Tests",
+        "tests/Granit.TextExtraction.Tests",
         "tests/Granit.Wolverine.Encryption.Tests",
         "tests/Granit.Wolverine.Postgresql.Tests",
         "tests/Granit.Wolverine.SqlServer.Tests",
