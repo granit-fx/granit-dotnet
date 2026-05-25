@@ -73,6 +73,7 @@ public sealed class MarkdownTextExtractor : ITextExtractor
             DetectedLanguage: null,
             IsTruncated: truncated,
             CharCount: plain.Length,
-            ExtractorName: ExtractorName);
+            ExtractorName: ExtractorName,
+            Confidence: ExtractionConfidence.Deterministic);
     }
 }

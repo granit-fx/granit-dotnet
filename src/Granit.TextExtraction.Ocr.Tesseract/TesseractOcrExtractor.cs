@@ -150,7 +150,10 @@ public sealed partial class TesseractOcrExtractor : ITextExtractor
             DetectedLanguage: null,
             IsTruncated: truncated,
             CharCount: output.Length,
-            ExtractorName: ExtractorName);
+            ExtractorName: ExtractorName,
+            // Tesseract is a deterministic OCR engine: same image bytes, same `tessdata`,
+            // same recognised text. No model in the loop — Heuristic would overstate the risk.
+            Confidence: ExtractionConfidence.Deterministic);
     }
 
     private static TextExtractionResult Skipped() =>
@@ -158,7 +161,8 @@ public sealed partial class TesseractOcrExtractor : ITextExtractor
             DetectedLanguage: null,
             IsTruncated: true,
             CharCount: 0,
-            ExtractorName: ExtractorName);
+            ExtractorName: ExtractorName,
+            Confidence: ExtractionConfidence.Deterministic);
 
     [LoggerMessage(
         Level = LogLevel.Information,

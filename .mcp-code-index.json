@@ -41479,7 +41479,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction",
       "file": "src/Granit.TextExtraction/Diagnostics/TextExtractionMetrics.cs",
-      "line": 10,
+      "line": 18,
       "members": []
     },
     {
@@ -41561,6 +41561,15 @@
           "returnType": "IServiceCollection"
         }
       ]
+    },
+    {
+      "name": "ExtractionConfidence",
+      "fqn": "Granit.TextExtraction.ExtractionConfidence",
+      "kind": "enum",
+      "project": "Granit.TextExtraction",
+      "file": "src/Granit.TextExtraction/ExtractionConfidence.cs",
+      "line": 14,
+      "members": []
     },
     {
       "name": "GranitTextExtractionModule",
@@ -41886,7 +41895,7 @@
       "kind": "enum",
       "project": "Granit.TextExtraction.Office",
       "file": "src/Granit.TextExtraction.Office/Internal/OpenXmlGate.cs",
-      "line": 20,
+      "line": 43,
       "members": []
     },
     {
@@ -42140,7 +42149,7 @@
       "kind": "record",
       "project": "Granit.TextExtraction",
       "file": "src/Granit.TextExtraction/TextExtractionResult.cs",
-      "line": 24,
+      "line": 31,
       "members": []
     },
     {
@@ -42149,7 +42158,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction.Tika",
       "file": "src/Granit.TextExtraction.Tika/Extensions/ServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddTikaSidecarExtractor",
@@ -42198,6 +42207,18 @@
           "name": "RequireMutualTls",
           "kind": "property",
           "signature": "bool RequireMutualTls",
+          "returnType": "bool"
+        },
+        {
+          "name": "RequireHttps",
+          "kind": "property",
+          "signature": "bool RequireHttps",
+          "returnType": "bool"
+        },
+        {
+          "name": "SkipEmbeddedResources",
+          "kind": "property",
+          "signature": "bool SkipEmbeddedResources",
           "returnType": "bool"
         },
         {

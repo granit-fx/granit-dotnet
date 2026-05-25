@@ -91,7 +91,8 @@ public sealed class PlainTextExtractor(IOptions<GranitTextExtractionOptions> opt
             DetectedLanguage: null,
             IsTruncated: truncated,
             CharCount: text.Length,
-            ExtractorName: ExtractorName);
+            ExtractorName: ExtractorName,
+            Confidence: ExtractionConfidence.Deterministic);
     }
 
     /// <summary>

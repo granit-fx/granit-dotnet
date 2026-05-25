@@ -82,13 +82,15 @@ public sealed partial class PdfTextExtractor : ITextExtractor
         {
             StringBuilder sb = new(Math.Min(maxCharLength, 8192));
             bool truncated = false;
+            bool usedFallback = false;
 
             for (int i = 1; i <= document.NumberOfPages; i++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 Page page = document.GetPage(i);
-                string pageText = ExtractPageText(page);
+                (string pageText, bool pageFallback) = ExtractPageText(page);
+                usedFallback |= pageFallback;
 
                 if (sb.Length > 0)
                 {
@@ -113,22 +115,28 @@ public sealed partial class PdfTextExtractor : ITextExtractor
                 DetectedLanguage: null,
                 IsTruncated: truncated,
                 CharCount: content.Length,
-                ExtractorName: ExtractorName);
+                ExtractorName: ExtractorName,
+                // Heuristic when any page tripped layout analysis — the raw-word fallback can
+                // mis-order tokens (multi-column → linearised). Consumers can downgrade trust
+                // (e.g. flag as "partial extraction").
+                Confidence: usedFallback
+                    ? ExtractionConfidence.Heuristic
+                    : ExtractionConfidence.Deterministic);
         }
     }
 
-    private string ExtractPageText(Page page)
+    private (string Text, bool UsedFallback) ExtractPageText(Page page)
     {
         try
         {
-            return ContentOrderTextExtractor.GetText(page) ?? string.Empty;
+            return (ContentOrderTextExtractor.GetText(page) ?? string.Empty, false);
         }
         catch (Exception ex)
         {
             // Some malformed PDFs trip the layout analyser even though the page parses fine —
             // fall back to raw words so the document stays indexable instead of being dropped.
             LogPageOrderingFallback(ex, page.Number);
-            return string.Join(' ', page.GetWords().Select(w => w.Text));
+            return (string.Join(' ', page.GetWords().Select(w => w.Text)), true);
         }
     }
 
@@ -146,7 +154,8 @@ public sealed partial class PdfTextExtractor : ITextExtractor
             DetectedLanguage: null,
             IsTruncated: true,
             CharCount: 0,
-            ExtractorName: ExtractorName);
+            ExtractorName: ExtractorName,
+            Confidence: ExtractionConfidence.Deterministic);
 
     // PdfPig doesn't expose a single "malformed PDF" base type. Any exception whose
     // namespace lives under UglyToad.PdfPig.* originates from the parser and means the

@@ -226,4 +226,57 @@ public sealed class EmailTextExtractorTests
         result.Content.ShouldContain("Subject: cleansubject");
         result.Content.ShouldNotContain("");
     }
+
+    [Fact]
+    public async Task Strips_embedded_LF_from_subject_to_prevent_log_line_splicing()
+    {
+        // VULN-301: an RFC 2047 encoded Subject whose decoded value contains a literal LF
+        // must NOT survive into the emitted "Subject: …\n" line, or a structured-log
+        // consumer would see a spliced fake header.
+        //
+        // =?utf-8?B?Z29vZApGcm9tOiBhdHRhY2tlckBldmls?= decodes to "good\nFrom: attacker@evil".
+        string raw =
+            "From: sender@example.com\r\n" +
+            "To: rec@example.com\r\n" +
+            "Subject: =?utf-8?B?Z29vZApGcm9tOiBhdHRhY2tlckBldmls?=\r\n" +
+            "Date: Mon, 25 May 2026 10:30:00 +0000\r\n" +
+            "Content-Type: text/plain; charset=utf-8\r\n" +
+            "\r\n" +
+            "body\r\n";
+        byte[] eml = System.Text.Encoding.ASCII.GetBytes(raw);
+        using MemoryStream stream = new(eml);
+
+        TextExtractionResult result = await CreateExtractor().ExtractAsync(
+            stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
+
+        // Decoded payload runs together — no embedded LF survives the sanitiser.
+        result.Content.ShouldContain("Subject: goodFrom: attacker@evil");
+        // And the splice is not on its own line that a log consumer could mistake for a header.
+        int splice = result.Content.IndexOf("From: attacker@evil", StringComparison.Ordinal);
+        splice.ShouldBeGreaterThanOrEqualTo(0);
+        result.Content[splice - 1].ShouldNotBe('\n');
+    }
+
+    [Fact]
+    public async Task Strips_carriage_returns_too()
+    {
+        // Belt-and-braces for VULN-301: \r alone (no \n) is also a structured-log threat.
+        string raw =
+            "From: sender@example.com\r\n" +
+            "To: rec@example.com\r\n" +
+            "Subject: =?utf-8?Q?carriage=0Dreturn?=\r\n" +
+            "Date: Mon, 25 May 2026 10:30:00 +0000\r\n" +
+            "Content-Type: text/plain; charset=utf-8\r\n" +
+            "\r\n" +
+            "body\r\n";
+        byte[] eml = System.Text.Encoding.ASCII.GetBytes(raw);
+        using MemoryStream stream = new(eml);
+
+        TextExtractionResult result = await CreateExtractor().ExtractAsync(
+            stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
+
+        result.Content.ShouldContain("Subject: carriagereturn");
+        result.Content.ShouldNotContain("\r");
+    }
+
 }

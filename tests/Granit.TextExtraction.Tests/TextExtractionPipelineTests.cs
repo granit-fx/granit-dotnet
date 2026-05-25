@@ -126,6 +126,86 @@ public sealed class TextExtractionPipelineTests
         tex.Reason.ShouldBe("input_too_large");
     }
 
+    [Fact]
+    public async Task ExtractionTimeout_translates_slow_extractor_to_extraction_timeout_failure()
+    {
+        // VULN-101: a slow parser must surface as a structured failure, not pin a slot.
+        ExtractionOptions options = new() { ExtractionTimeout = TimeSpan.FromMilliseconds(50) };
+        (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline(
+            s => s.AddTextExtractor<SlowExtractor>(),
+            options);
+        using ServiceProvider _ = sp;
+
+        using MemoryStream stream = Utf8("ignored");
+
+        TextExtractionException tex = await Should.ThrowAsync<TextExtractionException>(
+            async () => await pipeline.ExtractAsync(
+                stream,
+                "application/x-slow",
+                TestContext.Current.CancellationToken));
+
+        tex.Reason.ShouldBe("extraction_timeout");
+    }
+
+    [Fact]
+    public async Task ExtractionTimeout_zero_disables_the_per_call_deadline()
+    {
+        // Hosts can opt down with TimeSpan.Zero for offline batch jobs.
+        ExtractionOptions options = new() { ExtractionTimeout = TimeSpan.Zero };
+        (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline(
+            s => s.AddTextExtractor<FakeHtmlExtractor>(),
+            options);
+        using ServiceProvider _ = sp;
+
+        using MemoryStream stream = Utf8("ignored");
+        TextExtractionResult result = await pipeline.ExtractAsync(
+            stream, "text/html", TestContext.Current.CancellationToken);
+
+        result.ExtractorName.ShouldBe(FakeHtmlExtractor.Id);
+    }
+
+    [Fact]
+    public async Task MaxConcurrentExtractions_caps_in_flight_calls()
+    {
+        // VULN-100: the (N+1)th call must queue behind the first N slots.
+        ExtractionOptions options = new()
+        {
+            MaxConcurrentExtractions = 2,
+            ExtractionTimeout = TimeSpan.FromSeconds(10),
+        };
+        (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline(
+            s => s.AddTextExtractor<GateableExtractor>(),
+            options);
+        using ServiceProvider _ = sp;
+
+        // 3 concurrent calls; only 2 should be in-flight at any moment.
+        Task<TextExtractionResult>[] inFlight =
+        [
+            Run(pipeline),
+            Run(pipeline),
+            Run(pipeline),
+        ];
+
+        // Give the first two a chance to enter the gate before asserting.
+        await Task.Delay(50, TestContext.Current.CancellationToken);
+        GateableExtractor.CurrentInFlight.ShouldBeLessThanOrEqualTo(2);
+        GateableExtractor.MaxObservedInFlight.ShouldBeLessThanOrEqualTo(2);
+
+        // Release in waves: the third should only start after one finishes.
+        GateableExtractor.ReleaseOne();
+        GateableExtractor.ReleaseOne();
+        GateableExtractor.ReleaseOne();
+
+        await Task.WhenAll(inFlight);
+        GateableExtractor.MaxObservedInFlight.ShouldBeLessThanOrEqualTo(2);
+
+        static Task<TextExtractionResult> Run(ITextExtractionPipeline p)
+        {
+            MemoryStream s = new(Encoding.UTF8.GetBytes("x"));
+            return p.ExtractAsync(s, "application/x-gateable", CancellationToken.None);
+        }
+    }
+
     // ──── Fakes ────
 
     private sealed class FakeHtmlExtractor : ITextExtractor
@@ -139,7 +219,7 @@ public sealed class TextExtractionPipelineTests
 
         public Task<TextExtractionResult> ExtractAsync(
             Stream source, string contentType, int maxCharLength, CancellationToken cancellationToken) =>
-            Task.FromResult(new TextExtractionResult("h", null, false, 1, Id));
+            Task.FromResult(new TextExtractionResult("h", null, false, 1, Id, ExtractionConfidence.Deterministic));
     }
 
     private sealed class FakeMarkdownExtractor : ITextExtractor
@@ -153,7 +233,7 @@ public sealed class TextExtractionPipelineTests
 
         public Task<TextExtractionResult> ExtractAsync(
             Stream source, string contentType, int maxCharLength, CancellationToken cancellationToken) =>
-            Task.FromResult(new TextExtractionResult("m", null, false, 1, Id));
+            Task.FromResult(new TextExtractionResult("m", null, false, 1, Id, ExtractionConfidence.Deterministic));
     }
 
     private sealed class FakeCatchAllExtractor : ITextExtractor
@@ -166,7 +246,7 @@ public sealed class TextExtractionPipelineTests
 
         public Task<TextExtractionResult> ExtractAsync(
             Stream source, string contentType, int maxCharLength, CancellationToken cancellationToken) =>
-            Task.FromResult(new TextExtractionResult("c", null, false, 1, Id));
+            Task.FromResult(new TextExtractionResult("c", null, false, 1, Id, ExtractionConfidence.Deterministic));
     }
 
     private sealed class ThrowingExtractor : ITextExtractor
@@ -184,5 +264,65 @@ public sealed class TextExtractionPipelineTests
     private sealed class IMeterFactoryAlias
     {
         // Anchor — kept solely to ensure the meter factory binding above doesn't get pruned.
+    }
+
+    private sealed class SlowExtractor : ITextExtractor
+    {
+        public string Name => "granit.text-extraction.slow";
+
+        public bool CanHandle(string contentType) =>
+            contentType.Equals("application/x-slow", StringComparison.OrdinalIgnoreCase);
+
+        public async Task<TextExtractionResult> ExtractAsync(
+            Stream source, string contentType, int maxCharLength, CancellationToken cancellationToken)
+        {
+            // Sleep > pipeline timeout. Honours the linked token so the pipeline can pre-empt.
+            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(false);
+            return new TextExtractionResult("never", null, false, 5, Name, ExtractionConfidence.Deterministic);
+        }
+    }
+
+    /// <summary>
+    /// Test double that lets the unit test orchestrate exactly when each in-flight
+    /// extraction finishes — proves the pipeline's concurrency gate caps in-flight calls.
+    /// </summary>
+    private sealed class GateableExtractor : ITextExtractor
+    {
+        private static readonly SemaphoreSlim Release = new(0, int.MaxValue);
+        private static int _inFlight;
+        private static int _maxObservedInFlight;
+        private static readonly Lock Sync = new();
+
+        public string Name => "granit.text-extraction.gateable";
+
+        public bool CanHandle(string contentType) =>
+            contentType.Equals("application/x-gateable", StringComparison.OrdinalIgnoreCase);
+
+        public async Task<TextExtractionResult> ExtractAsync(
+            Stream source, string contentType, int maxCharLength, CancellationToken cancellationToken)
+        {
+            lock (Sync)
+            {
+                _inFlight++;
+                if (_inFlight > _maxObservedInFlight)
+                {
+                    _maxObservedInFlight = _inFlight;
+                }
+            }
+
+            try
+            {
+                await Release.WaitAsync(cancellationToken).ConfigureAwait(false);
+                return new TextExtractionResult("g", null, false, 1, Name, ExtractionConfidence.Deterministic);
+            }
+            finally
+            {
+                lock (Sync) { _inFlight--; }
+            }
+        }
+
+        public static int CurrentInFlight { get { lock (Sync) { return _inFlight; } } }
+        public static int MaxObservedInFlight { get { lock (Sync) { return _maxObservedInFlight; } } }
+        public static void ReleaseOne() => Release.Release();
     }
 }

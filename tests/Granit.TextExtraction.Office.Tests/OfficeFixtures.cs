@@ -181,4 +181,30 @@ internal static class OfficeFixtures
     }
 
     public static byte[] InvalidZip() => Encoding.UTF8.GetBytes("not a zip at all");
+
+    /// <summary>
+    /// Builds a single-entry zip whose payload is <paramref name="rawSize"/> bytes of zeros
+    /// using <see cref="CompressionLevel.SmallestSize"/>. Zeros compress to a handful of
+    /// dictionary tokens, so the resulting CompressedLength/Length ratio comfortably exceeds
+    /// the OpenXmlGate's <c>MaxCompressionRatio</c> (200×). Exercises the VULN-201 gate
+    /// branch (<c>SuspiciousCompressionRatio</c>).
+    /// </summary>
+    public static byte[] ZipWithHighCompressionRatio(int rawSize)
+    {
+        using MemoryStream ms = new();
+        using (ZipArchive archive = new(ms, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            ZipArchiveEntry entry = archive.CreateEntry("zeros.bin", CompressionLevel.SmallestSize);
+            using Stream s = entry.Open();
+            byte[] chunk = new byte[64 * 1024];
+            int remaining = rawSize;
+            while (remaining > 0)
+            {
+                int write = Math.Min(chunk.Length, remaining);
+                s.Write(chunk, 0, write);
+                remaining -= write;
+            }
+        }
+        return ms.ToArray();
+    }
 }

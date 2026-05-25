@@ -13,21 +13,32 @@ public sealed class TextExtractionResultTests
             DetectedLanguage: "en",
             IsTruncated: true,
             CharCount: 5,
-            ExtractorName: "granit.test");
+            ExtractorName: "granit.test",
+            Confidence: ExtractionConfidence.Heuristic);
 
         result.Content.ShouldBe("hello");
         result.DetectedLanguage.ShouldBe("en");
         result.IsTruncated.ShouldBeTrue();
         result.CharCount.ShouldBe(5);
         result.ExtractorName.ShouldBe("granit.test");
+        result.Confidence.ShouldBe(ExtractionConfidence.Heuristic);
     }
 
     [Fact]
     public void Is_a_value_record()
     {
-        TextExtractionResult a = new("x", null, false, 1, "n");
-        TextExtractionResult b = new("x", null, false, 1, "n");
+        TextExtractionResult a = new("x", null, false, 1, "n", ExtractionConfidence.Deterministic);
+        TextExtractionResult b = new("x", null, false, 1, "n", ExtractionConfidence.Deterministic);
 
         a.ShouldBe(b);
+    }
+
+    [Fact]
+    public void Two_results_with_different_confidence_are_not_equal()
+    {
+        TextExtractionResult a = new("x", null, false, 1, "n", ExtractionConfidence.Deterministic);
+        TextExtractionResult b = new("x", null, false, 1, "n", ExtractionConfidence.ModelGenerated);
+
+        a.ShouldNotBe(b);
     }
 }

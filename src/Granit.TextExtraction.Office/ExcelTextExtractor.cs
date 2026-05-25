@@ -126,7 +126,8 @@ public sealed partial class ExcelTextExtractor : ITextExtractor
                 DetectedLanguage: null,
                 IsTruncated: truncated,
                 CharCount: sb.Length,
-                ExtractorName: ExtractorName);
+                ExtractorName: ExtractorName,
+                Confidence: ExtractionConfidence.Deterministic);
         }
         catch (Exception ex) when (IsOpenXmlException(ex))
         {

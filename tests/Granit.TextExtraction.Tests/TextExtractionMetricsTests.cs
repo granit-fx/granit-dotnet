@@ -106,6 +106,58 @@ public sealed class TextExtractionMetricsTests : IDisposable
     }
 
     [Fact]
+    public void NormalizeContentType_strips_parameters_and_lowercases()
+    {
+        // VULN-103: a malicious upstream submitting a fresh boundary= per request would
+        // explode metric cardinality unless we normalise. NormalizeContentType is the
+        // single chokepoint — all four RecordXxx call it.
+        TextExtractionMetrics.NormalizeContentType("APPLICATION/JSON; charset=utf-8")
+            .ShouldBe("application/json");
+        TextExtractionMetrics.NormalizeContentType("Multipart/Form-Data; boundary=----xyz")
+            .ShouldBe("multipart/form-data");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("not a media type")]
+    [InlineData("/no-type")]
+    public void NormalizeContentType_returns_invalid_sentinel_on_malformed_input(string? raw) =>
+        TextExtractionMetrics.NormalizeContentType(raw).ShouldBe(TextExtractionMetrics.InvalidContentTypeTag);
+
+    [Fact]
+    public void RecordSkipped_normalises_content_type_tag_dropping_boundary_parameter()
+    {
+        string? typeTag = null;
+        using MeterListener listener = new();
+        listener.InstrumentPublished = (instrument, ml) =>
+        {
+            if (instrument.Name == "granit.text_extraction.document.skipped")
+            {
+                ml.EnableMeasurementEvents(instrument);
+            }
+        };
+        listener.SetMeasurementEventCallback<long>((_, _, tags, _) =>
+        {
+            foreach (KeyValuePair<string, object?> tag in tags)
+            {
+                if (tag.Key == "content_type")
+                {
+                    typeTag = tag.Value as string;
+                }
+            }
+        });
+        listener.Start();
+
+        // The boundary= parameter must NOT survive into the tag — that's the cardinality bomb.
+        _metrics.RecordSkipped("t", "application/x-unknown; boundary=attacker-controlled");
+        listener.RecordObservableInstruments();
+
+        typeTag.ShouldBe("application/x-unknown");
+    }
+
+    [Fact]
     public void RecordFailed_includes_reason_tag()
     {
         string? reasonTag = null;

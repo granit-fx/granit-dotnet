@@ -102,6 +102,14 @@ public sealed partial class TikaSidecarTextExtractor : ITextExtractor
         request.Content = content;
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
 
+        // VULN-400: refuse the recursive parser path. Tika historically had SSRF / fetch
+        // CVEs in embedded-resource handling (CVE-2022-30126 etc.); the option lets the
+        // host opt back in only when it explicitly wants recursive indexing.
+        if (_tikaOptions.SkipEmbeddedResources)
+        {
+            request.Headers.Add("X-Tika-Skip-Embedded-Resources", "true");
+        }
+
         HttpResponseMessage response;
         try
         {
@@ -179,7 +187,9 @@ public sealed partial class TikaSidecarTextExtractor : ITextExtractor
             DetectedLanguage: null,
             IsTruncated: truncated,
             CharCount: text.Length,
-            ExtractorName: ExtractorName);
+            ExtractorName: ExtractorName,
+            // Tika is a deterministic parser farm (not a model). Provenance stays Deterministic.
+            Confidence: ExtractionConfidence.Deterministic);
     }
 
     private static TextExtractionResult Skipped() =>
@@ -187,7 +197,8 @@ public sealed partial class TikaSidecarTextExtractor : ITextExtractor
             DetectedLanguage: null,
             IsTruncated: true,
             CharCount: 0,
-            ExtractorName: ExtractorName);
+            ExtractorName: ExtractorName,
+            Confidence: ExtractionConfidence.Deterministic);
 
     [LoggerMessage(
         Level = LogLevel.Warning,

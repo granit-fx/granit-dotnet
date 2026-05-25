@@ -118,7 +118,8 @@ public sealed partial class PowerPointTextExtractor : ITextExtractor
                 DetectedLanguage: null,
                 IsTruncated: truncated,
                 CharCount: sb.Length,
-                ExtractorName: ExtractorName);
+                ExtractorName: ExtractorName,
+                Confidence: ExtractionConfidence.Deterministic);
         }
         catch (Exception ex) when (IsOpenXmlException(ex))
         {

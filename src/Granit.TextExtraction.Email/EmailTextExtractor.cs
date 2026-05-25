@@ -46,6 +46,14 @@ public sealed partial class EmailTextExtractor : ITextExtractor
     private const string EmlAlt = "application/eml";
     private const string EncryptedPlaceholder = "[encrypted message]";
 
+    // VULN-401: cap MimeKit recursion. The .eml format allows message/rfc822 parts to nest
+    // arbitrarily; a crafted file inside the body-size cap can still exercise quadratic
+    // parser paths. 16 is generous (real-world forwards rarely exceed 5) without giving an
+    // attacker anything to play with. MaxAddressGroupDepth bounds the analogous quadratic
+    // path on group address lists in From/To/Cc.
+    private const int MaxMimeDepth = 16;
+    private const int MaxAddressGroupDepth = 8;
+
     private readonly GranitTextExtractionOptions _options;
     private readonly ILogger<EmailTextExtractor> _logger;
     private readonly IHtmlToPlainTextConverter _htmlConverter;
@@ -93,10 +101,17 @@ public sealed partial class EmailTextExtractor : ITextExtractor
         // up-front, keeping the size cap deterministic.
         LimitedStream limited = new(source, _options.MaxBodySizeBytes);
 
+        ParserOptions parserOptions = new()
+        {
+            MaxMimeDepth = MaxMimeDepth,
+            MaxAddressGroupDepth = MaxAddressGroupDepth,
+        };
+
         MimeMessage message;
         try
         {
-            message = await MimeMessage.LoadAsync(limited, persistent: false, cancellationToken)
+            message = await MimeMessage
+                .LoadAsync(parserOptions, limited, persistent: false, cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (FormatException ex)
@@ -139,7 +154,8 @@ public sealed partial class EmailTextExtractor : ITextExtractor
             DetectedLanguage: null,
             IsTruncated: truncated,
             CharCount: content.Length,
-            ExtractorName: ExtractorName);
+            ExtractorName: ExtractorName,
+            Confidence: ExtractionConfidence.Deterministic);
     }
 
     private static void AppendHeaders(MimeMessage m, StringBuilder sb, int max, ref bool truncated)
@@ -215,10 +231,12 @@ public sealed partial class EmailTextExtractor : ITextExtractor
         StringBuilder buf = new(value.Length);
         foreach (char c in value)
         {
-            // Strip control characters except line feed and tab — defends against
-            // header/log injection through indexed content (e.g. an attacker crafting
-            // a Subject with embedded CR/LF to splice fake log lines downstream).
-            if (c < 0x20 && c != '\n' && c != '\t')
+            // VULN-301: drop ALL control chars (incl. CR / LF) from header values. A
+            // structured-log consumer that ingests Content as a field could otherwise
+            // see spliced fake header lines if an attacker embedded an LF inside a
+            // RFC 2047-encoded Subject (e.g. "ok\nFrom: attacker@evil"). Tabs are also
+            // dropped so a Subject can't disguise itself as multi-field formatting.
+            if (c < 0x20 || c == 0x7F)
             {
                 continue;
             }
@@ -272,7 +290,8 @@ public sealed partial class EmailTextExtractor : ITextExtractor
             DetectedLanguage: null,
             IsTruncated: true,
             CharCount: 0,
-            ExtractorName: ExtractorName);
+            ExtractorName: ExtractorName,
+            Confidence: ExtractionConfidence.Deterministic);
 
     [LoggerMessage(
         Level = LogLevel.Information,

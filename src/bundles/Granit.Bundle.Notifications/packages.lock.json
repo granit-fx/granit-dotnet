@@ -217,7 +217,7 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
-      "Granit.Html.Abstractions": {
+      "granit.html": {
         "type": "Project",
         "dependencies": {
           "AngleSharp": "[1.*, )",
@@ -229,7 +229,7 @@
         "type": "Project",
         "dependencies": {
           "AngleSharp": "[1.*, )",
-          "Granit.Html.Abstractions": "[0.1.0-dev, )",
+          "Granit.Html": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
         }
       },

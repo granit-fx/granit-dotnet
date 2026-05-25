@@ -147,6 +147,37 @@ public sealed class TikaSidecarTextExtractorTests
     }
 
     [Fact]
+    public async Task Sends_skip_embedded_resources_header_by_default()
+    {
+        // VULN-400: defence against Tika SSRF/fetch-recursion CVEs via embedded parsing.
+        (TikaSidecarTextExtractor extractor, StubHttpMessageHandler handler) = CreateExtractor();
+        using MemoryStream input = Utf8("body");
+
+        _ = await extractor.ExtractAsync(input, Rtf, 1024, TestContext.Current.CancellationToken);
+
+        handler.Calls[0].Headers.TryGetValues("X-Tika-Skip-Embedded-Resources", out IEnumerable<string>? values)
+            .ShouldBeTrue();
+        values!.ShouldContain("true");
+    }
+
+    [Fact]
+    public async Task Omits_skip_embedded_resources_header_when_option_disabled()
+    {
+        TikaSidecarOptions opts = new()
+        {
+            Uri = DefaultTikaUri,
+            AllowedHosts = ["tika.test"],
+            SkipEmbeddedResources = false,
+        };
+        (TikaSidecarTextExtractor extractor, StubHttpMessageHandler handler) = CreateExtractor(tikaOptions: opts);
+        using MemoryStream input = Utf8("body");
+
+        _ = await extractor.ExtractAsync(input, Rtf, 1024, TestContext.Current.CancellationToken);
+
+        handler.Calls[0].Headers.Contains("X-Tika-Skip-Embedded-Resources").ShouldBeFalse();
+    }
+
+    [Fact]
     public async Task CanHandle_can_be_extended_via_options()
     {
         TikaSidecarOptions opts = new()

@@ -37,7 +37,8 @@ internal static class OpenXmlExtraction
             DetectedLanguage: null,
             IsTruncated: true,
             CharCount: 0,
-            ExtractorName: extractorName);
+            ExtractorName: extractorName,
+            Confidence: ExtractionConfidence.Deterministic);
 
     public static TextExtractionResult Truncate(string content, int maxCharLength, string extractorName)
     {
@@ -49,6 +50,7 @@ internal static class OpenXmlExtraction
             DetectedLanguage: null,
             IsTruncated: truncated,
             CharCount: output.Length,
-            ExtractorName: extractorName);
+            ExtractorName: extractorName,
+            Confidence: ExtractionConfidence.Deterministic);
     }
 }

@@ -31,11 +31,32 @@ public sealed class TikaSidecarOptions
 
     /// <summary>
     /// When <c>true</c>, the module refuses to start unless the named HTTP client
-    /// for <c>granit-tika</c> is wired with a primary message handler (typically
-    /// configured by the host to attach a client certificate). Defaults to
-    /// <c>true</c> in production; the host opts down for dev/staging.
+    /// for <c>granit-tika</c> is wired with a custom primary message handler (typically
+    /// configured by the host via <c>.ConfigurePrimaryHttpMessageHandler(...)</c> to attach
+    /// a client certificate or a mesh-aware handler). Defaults to <c>true</c> in production;
+    /// hosts opt down for dev/staging by setting <c>false</c> in
+    /// <c>appsettings.Development.json</c>. Enforced at startup by the validator chain.
     /// </summary>
     public bool RequireMutualTls { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c>, <see cref="Uri"/> must use the <c>https</c> scheme. Defaults to
+    /// <c>true</c>: document bytes (PII / contracts / medical records) must not leave the
+    /// host in cleartext on the cluster network (GDPR Art. 32). The validator additionally
+    /// allows <c>http://</c> when the URI host resolves to <c>localhost</c>, <c>127.0.0.1</c>,
+    /// or <c>::1</c> so localhost dev sidecars stay frictionless.
+    /// </summary>
+    public bool RequireHttps { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c>, the extractor sends <c>X-Tika-Skip-Embedded-Resources: true</c>
+    /// on every <c>PUT /tika</c> call so the sidecar does not recurse into embedded
+    /// resources (Office linked content, mbox attachments, EPUB items). Closes a class of
+    /// Tika SSRF / fetch-recursion CVEs historically associated with the embedded parser
+    /// path. Defaults to <c>true</c>; opt down only when the host explicitly wants the
+    /// recursive index.
+    /// </summary>
+    public bool SkipEmbeddedResources { get; set; } = true;
 
     /// <summary>
     /// MIME types the extractor will claim via <see cref="ITextExtractor.CanHandle"/>.
