@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using Granit.Authorization;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
@@ -34,6 +35,7 @@ public sealed class NotificationEndpointsTests : IAsyncDisposable
     private readonly INotificationSubscriptionReader _subscriptionReader = Substitute.For<INotificationSubscriptionReader>();
     private readonly INotificationSubscriptionWriter _subscriptionWriter = Substitute.For<INotificationSubscriptionWriter>();
     private readonly INotificationDefinitionStore _definitionStore = Substitute.For<INotificationDefinitionStore>();
+    private readonly IPermissionChecker _permissionChecker = Substitute.For<IPermissionChecker>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly WebApplication _app;
@@ -62,6 +64,7 @@ public sealed class NotificationEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_subscriptionReader);
         builder.Services.AddSingleton(_subscriptionWriter);
         builder.Services.AddSingleton(_definitionStore);
+        builder.Services.AddSingleton(_permissionChecker);
         builder.Services.AddSingleton(_currentTenant);
         builder.Services.AddSingleton(_clock);
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
@@ -211,6 +214,75 @@ public sealed class NotificationEndpointsTests : IAsyncDisposable
             $"{Prefix}/types", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task GetNotificationTypes_Hides_definitions_whose_RequiredPermission_user_lacks()
+    {
+        _definitionStore.GetAll().Returns(
+        [
+            new NotificationDefinition("ungated.event"),
+            new NotificationDefinition("gated.event") { RequiredPermission = "Test.Resource.Read" },
+        ]);
+        _permissionChecker.GetGrantedAsync(Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<string>());
+
+        List<NotificationDefinition> response = await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+            $"{Prefix}/types", TestContext.Current.CancellationToken)
+            ?? throw new InvalidOperationException();
+
+        response.Select(d => d.Name).ShouldBe(["ungated.event"]);
+    }
+
+    [Fact]
+    public async Task GetNotificationTypes_Shows_definitions_whose_RequiredPermission_user_has()
+    {
+        _definitionStore.GetAll().Returns(
+        [
+            new NotificationDefinition("gated.event") { RequiredPermission = "Test.Resource.Read" },
+        ]);
+        _permissionChecker.GetGrantedAsync(Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>())
+            .Returns(["Test.Resource.Read"]);
+
+        List<NotificationDefinition> response = await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+            $"{Prefix}/types", TestContext.Current.CancellationToken)
+            ?? throw new InvalidOperationException();
+
+        response.Select(d => d.Name).ShouldBe(["gated.event"]);
+    }
+
+    [Fact]
+    public async Task GetNotificationTypes_Treats_unknown_permission_as_not_granted()
+    {
+        _definitionStore.GetAll().Returns(
+        [
+            new NotificationDefinition("gated.event") { RequiredPermission = "Missing.Permission" },
+        ]);
+        _permissionChecker.GetGrantedAsync(Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>())
+            .Returns<IReadOnlyList<string>>(_ => throw new InvalidOperationException("not declared"));
+
+        List<NotificationDefinition> response = await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+            $"{Prefix}/types", TestContext.Current.CancellationToken)
+            ?? throw new InvalidOperationException();
+
+        response.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task GetNotificationTypes_With_no_feature_gate_registered_shows_RequiredFeature_definitions()
+    {
+        _definitionStore.GetAll().Returns(
+        [
+            new NotificationDefinition("feature.gated") { RequiredFeature = "Workflow.Enabled" },
+        ]);
+        _permissionChecker.GetGrantedAsync(Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<string>());
+
+        List<NotificationDefinition> response = await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+            $"{Prefix}/types", TestContext.Current.CancellationToken)
+            ?? throw new InvalidOperationException();
+
+        response.Select(d => d.Name).ShouldBe(["feature.gated"]);
     }
 
     // ── GET /subscriptions ─────────────────────────────────────────────────

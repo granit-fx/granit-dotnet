@@ -21,6 +21,7 @@ internal sealed class ApiKeysNotificationDefinitionProvider : INotificationDefin
             DefaultSeverity = NotificationSeverity.Info,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "AuthenticationApiKeys.Keys.Read",
         });
 
         context.Add(new NotificationDefinition(ApiKeyRotatedNotificationType.Instance.Name)
@@ -31,6 +32,7 @@ internal sealed class ApiKeysNotificationDefinitionProvider : INotificationDefin
             DefaultSeverity = NotificationSeverity.Info,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "AuthenticationApiKeys.Keys.Read",
         });
 
         context.Add(new NotificationDefinition(ApiKeyRevokedNotificationType.Instance.Name)
@@ -41,6 +43,7 @@ internal sealed class ApiKeysNotificationDefinitionProvider : INotificationDefin
             DefaultSeverity = NotificationSeverity.Info,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "AuthenticationApiKeys.Keys.Read",
         });
 
         context.Add(new NotificationDefinition(ApiKeyExpiringSoonNotificationType.Instance.Name)
@@ -51,6 +54,7 @@ internal sealed class ApiKeysNotificationDefinitionProvider : INotificationDefin
             DefaultSeverity = NotificationSeverity.Warning,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "AuthenticationApiKeys.Keys.Read",
         });
     }
 }

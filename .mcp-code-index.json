@@ -28398,6 +28398,22 @@
       ]
     },
     {
+      "name": "INotificationFeatureGate",
+      "fqn": "Granit.Notifications.Abstractions.INotificationFeatureGate",
+      "kind": "interface",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationFeatureGate.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "IsFeatureEnabledAsync",
+          "kind": "method",
+          "signature": "IsFeatureEnabledAsync(string featureName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
       "name": "INotificationPreferenceReader",
       "fqn": "Granit.Notifications.Abstractions.INotificationPreferenceReader",
       "kind": "interface",
@@ -29329,7 +29345,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/Extensions/NotificationEndpointRouteBuilderExtensions.cs",
-      "line": 23,
+      "line": 24,
       "members": [
         {
           "name": "MapGranitNotifications",
@@ -30048,7 +30064,7 @@
           "name": "NotificationDefinition",
           "kind": "method",
           "signature": "NotificationDefinition(string name)",
-          "returnType": "bool AllowDoNotDisturbBypass { get; init; } public"
+          "returnType": "bool AllowDoNotDisturbBypass { get; init; } public string? RequiredPermission { get; init; } public string? RequiredFeature { get; init; } public"
         }
       ]
     },

@@ -22,6 +22,7 @@ internal sealed class IdentityFederatedNotificationDefinitionProvider : INotific
             DefaultSeverity = NotificationSeverity.Warning,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "Identity.Users.Read",
         });
 
         context.Add(new NotificationDefinition(IdentityUserProvisioningRemovedNotificationType.Instance.Name)
@@ -32,6 +33,7 @@ internal sealed class IdentityFederatedNotificationDefinitionProvider : INotific
             DefaultSeverity = NotificationSeverity.Info,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "Identity.Users.Read",
         });
 
         context.Add(new NotificationDefinition(IdentityTokenExchangeAuditNotificationType.Instance.Name)
@@ -42,6 +44,7 @@ internal sealed class IdentityFederatedNotificationDefinitionProvider : INotific
             DefaultSeverity = NotificationSeverity.Warning,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
+            RequiredPermission = "Identity.Users.Read",
         });
     }
 }
