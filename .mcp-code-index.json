@@ -1696,6 +1696,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Presence.Wolverine",
+      "deps": [
+        "Granit.Identity.Local",
+        "Granit.Presence",
+        "Granit.Wolverine"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Privacy",
       "deps": [
         "Granit",
@@ -34947,6 +34956,38 @@
           "kind": "method",
           "signature": "FromDays(7)",
           "returnType": "TimeSpan MaxOverrideDuration { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "GranitPresenceWolverineModule",
+      "fqn": "Granit.Presence.Wolverine.GranitPresenceWolverineModule",
+      "kind": "class",
+      "project": "Granit.Presence.Wolverine",
+      "file": "src/Granit.Presence.Wolverine/GranitPresenceWolverineModule.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AccountDeletedHandler",
+      "fqn": "Granit.Presence.Wolverine.Handlers.AccountDeletedHandler",
+      "kind": "class",
+      "project": "Granit.Presence.Wolverine",
+      "file": "src/Granit.Presence.Wolverine/Handlers/AccountDeletedHandler.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(AccountDeletedEto message, IPresenceStore store, IPresenceTracker tracker, ILogger<AccountDeletedHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },

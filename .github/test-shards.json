@@ -215,6 +215,7 @@
         "tests/Granit.Presence.EntityFrameworkCore.Tests",
         "tests/Granit.Presence.Notifications.Tests",
         "tests/Granit.Presence.Tests",
+        "tests/Granit.Presence.Wolverine.Tests",
         "tests/Granit.Scheduling.BackgroundJobs.Tests",
         "tests/Granit.Scheduling.Endpoints.Tests",
         "tests/Granit.Scheduling.EntityFrameworkCore.Tests",

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Presence.Wolverine</PackageId>
+    <Description>Wolverine integration for Granit.Presence: handles user-account lifecycle events (AccountDeletedEto) to purge the manual presence override and live heartbeat. Required to meet GDPR Art. 17 (right to erasure) when Granit.Presence is loaded alongside Granit.Identity.Local.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Presence.Wolverine.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WolverineFx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Identity.Local\Granit.Identity.Local.csproj" />
+    <ProjectReference Include="..\Granit.Presence\Granit.Presence.csproj" />
+    <ProjectReference Include="..\Granit.Wolverine\Granit.Wolverine.csproj" />
+  </ItemGroup>
+
+</Project>
