@@ -346,9 +346,15 @@ public static class NotificationEndpointRouteBuilderExtensions
                     enabled.Add(feature);
                 }
             }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
             catch
             {
-                // Same safe-default as permissions: an unknown feature stays hidden rather than crashing the UI.
+                // Safe default: any other failure of a host-supplied gate keeps the notification hidden
+                // rather than 500-ing the preferences endpoint. The gate impl is third-party from the
+                // framework's perspective, so we can't narrow to a known exception type.
             }
         }
 
