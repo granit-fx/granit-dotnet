@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Indexing.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.Indexing: durable resume-after-crash full reindex via a Wolverine-discovered handler. Decoupled from the base Granit.Indexing module so hosts that don't need it pay nothing.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Indexing.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Indexing\Granit.Indexing.csproj" />
+  </ItemGroup>
+
+</Project>

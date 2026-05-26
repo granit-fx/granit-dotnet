@@ -233,6 +233,7 @@
       "label": "Search Pipeline",
       "projects": [
         "tests/Granit.Indexing.Tests",
+        "tests/Granit.Indexing.BackgroundJobs.Tests",
         "tests/Granit.Indexing.Elasticsearch.Tests",
         "tests/Granit.Indexing.Embeddings.Tests",
         "tests/Granit.Indexing.EntityFrameworkCore.Tests",

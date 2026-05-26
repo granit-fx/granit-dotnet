@@ -30,10 +30,27 @@ public interface IIndexedEntrySource<TKey>
     string Name { get; }
 
     /// <summary>
-    /// Enumerates every key the source can produce, scoped to the current tenant. Used
-    /// by the background reindex job for full rebuilds.
+    /// Enumerates every key the source can produce for the given tenant in a stable,
+    /// deterministic order (typically ascending primary key). The background reindex
+    /// job calls this with the last successfully processed key in
+    /// <paramref name="resumeAfter"/> after a crash, expecting the source to start
+    /// past that point so no rows are re-indexed.
     /// </summary>
-    IAsyncEnumerable<TKey> EnumerateKeysAsync(CancellationToken cancellationToken = default);
+    /// <param name="tenantId">
+    /// Tenant scope. <c>null</c> means "all tenants" — used by single-tenant deployments
+    /// and ops-driven full rebuilds in multi-tenant hosts that explicitly opt out of
+    /// tenant scoping.
+    /// </param>
+    /// <param name="resumeAfter">
+    /// The last key successfully indexed in a prior run. <c>null</c> means "start from
+    /// the beginning". The source MUST guarantee that the same enumeration ordering
+    /// holds across calls so resume is deterministic.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    IAsyncEnumerable<TKey> EnumerateKeysAsync(
+        Guid? tenantId,
+        TKey? resumeAfter,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Builds the <see cref="IndexedEntry{TKey}"/> for <paramref name="key"/>, or

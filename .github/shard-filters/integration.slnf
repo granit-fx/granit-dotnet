@@ -38,6 +38,7 @@
       "src/Granit.Identity.Local.Endpoints/Granit.Identity.Local.Endpoints.csproj",
       "src/Granit.Identity.Local/Granit.Identity.Local.csproj",
       "src/Granit.Identity/Granit.Identity.csproj",
+      "src/Granit.Indexing.BackgroundJobs/Granit.Indexing.BackgroundJobs.csproj",
       "src/Granit.Indexing.Elasticsearch/Granit.Indexing.Elasticsearch.csproj",
       "src/Granit.Indexing.Embeddings/Granit.Indexing.Embeddings.csproj",
       "src/Granit.Indexing.EntityFrameworkCore/Granit.Indexing.EntityFrameworkCore.csproj",
