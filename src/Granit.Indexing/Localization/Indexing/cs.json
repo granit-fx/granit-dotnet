@@ -1,0 +1,9 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Indexing:EmptyResultRateLimited": "Příliš mnoho hledání bez výsledků. Zkuste to za chvíli znovu.",
+    "Indexing:AuthorizationLimitReached": "Některé další shody byly přeskočeny, aby odpověď zůstala rychlá. Zpřesněte dotaz pro přesnější výsledky.",
+    "Indexing:AdvancedSyntaxNotAllowed": "Pokročilé operátory vyhledávání nejsou pro tento dotaz povoleny.",
+    "Indexing:LanguageDetectionFailed": "Jazyk dokumentu nebylo možné rozpoznat; byla použita výchozí analýza."
+  }
+}

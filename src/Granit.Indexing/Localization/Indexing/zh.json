@@ -1,0 +1,9 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Indexing:EmptyResultRateLimited": "无结果的搜索过多，请稍后重试。",
+    "Indexing:AuthorizationLimitReached": "为保证响应速度，已跳过部分匹配项。请细化查询以获得更精确的结果。",
+    "Indexing:AdvancedSyntaxNotAllowed": "此查询不允许使用高级搜索运算符。",
+    "Indexing:LanguageDetectionFailed": "无法检测文档语言，已应用默认分析。"
+  }
+}

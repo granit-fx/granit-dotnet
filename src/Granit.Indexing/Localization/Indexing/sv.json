@@ -1,0 +1,9 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Indexing:EmptyResultRateLimited": "För många sökningar utan resultat. Försök igen om en stund.",
+    "Indexing:AuthorizationLimitReached": "Vissa ytterligare träffar hoppades över för att hålla svaret snabbt. Förfina din fråga för mer exakta resultat.",
+    "Indexing:AdvancedSyntaxNotAllowed": "Avancerade sökoperatorer är inte tillåtna för den här frågan.",
+    "Indexing:LanguageDetectionFailed": "Det gick inte att identifiera dokumentets språk; standardanalys tillämpades."
+  }
+}

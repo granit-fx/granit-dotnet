@@ -1,0 +1,9 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Indexing:EmptyResultRateLimited": "結果のない検索が多すぎます。しばらくしてからもう一度お試しください。",
+    "Indexing:AuthorizationLimitReached": "応答を高速に保つため、一部の追加一致をスキップしました。より正確な結果を得るにはクエリを絞り込んでください。",
+    "Indexing:AdvancedSyntaxNotAllowed": "このクエリでは高度な検索演算子は許可されていません。",
+    "Indexing:LanguageDetectionFailed": "ドキュメントの言語を検出できませんでした。既定の解析を適用しました。"
+  }
+}

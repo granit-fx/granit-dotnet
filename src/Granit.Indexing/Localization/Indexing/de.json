@@ -1,0 +1,9 @@
+{
+  "culture": "de",
+  "texts": {
+    "Indexing:EmptyResultRateLimited": "Zu viele Suchen ohne Ergebnis. Bitte versuchen Sie es gleich erneut.",
+    "Indexing:AuthorizationLimitReached": "Einige weitere Treffer wurden übersprungen, um die Antwortzeit kurz zu halten. Verfeinern Sie Ihre Suche für genauere Ergebnisse.",
+    "Indexing:AdvancedSyntaxNotAllowed": "Erweiterte Suchoperatoren sind für diese Abfrage nicht zulässig.",
+    "Indexing:LanguageDetectionFailed": "Die Sprache des Dokuments konnte nicht erkannt werden; es wurde die Standardanalyse angewendet."
+  }
+}

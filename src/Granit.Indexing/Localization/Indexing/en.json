@@ -1,0 +1,9 @@
+{
+  "culture": "en",
+  "texts": {
+    "Indexing:EmptyResultRateLimited": "Too many empty-result searches. Try again in a moment.",
+    "Indexing:AuthorizationLimitReached": "Some additional matches were skipped to keep the response fast. Refine your query for more precise results.",
+    "Indexing:AdvancedSyntaxNotAllowed": "Advanced search operators are not allowed for this query.",
+    "Indexing:LanguageDetectionFailed": "The language of the document could not be detected; default analysis was applied."
+  }
+}

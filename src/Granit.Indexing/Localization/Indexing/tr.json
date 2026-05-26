@@ -1,0 +1,9 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Indexing:EmptyResultRateLimited": "Sonuçsuz çok sayıda arama. Lütfen biraz sonra tekrar deneyin.",
+    "Indexing:AuthorizationLimitReached": "Yanıtın hızlı kalması için bazı ek eşleşmeler atlandı. Daha kesin sonuçlar için sorgunuzu daraltın.",
+    "Indexing:AdvancedSyntaxNotAllowed": "Bu sorgu için gelişmiş arama işleçlerine izin verilmiyor.",
+    "Indexing:LanguageDetectionFailed": "Belgenin dili algılanamadı; varsayılan çözümleme uygulandı."
+  }
+}

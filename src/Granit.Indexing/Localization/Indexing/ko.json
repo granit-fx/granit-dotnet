@@ -1,0 +1,9 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Indexing:EmptyResultRateLimited": "결과 없는 검색이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+    "Indexing:AuthorizationLimitReached": "응답 속도를 유지하기 위해 일부 추가 일치 항목을 건너뛰었습니다. 더 정확한 결과를 얻으려면 검색어를 구체화하세요.",
+    "Indexing:AdvancedSyntaxNotAllowed": "이 쿼리에서는 고급 검색 연산자가 허용되지 않습니다.",
+    "Indexing:LanguageDetectionFailed": "문서의 언어를 감지할 수 없습니다. 기본 분석이 적용되었습니다."
+  }
+}

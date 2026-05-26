@@ -1,0 +1,9 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Indexing:EmptyResultRateLimited": "Te veel zoekopdrachten zonder resultaat. Probeer het zo opnieuw.",
+    "Indexing:AuthorizationLimitReached": "Enkele extra overeenkomsten zijn overgeslagen om het antwoord snel te houden. Verfijn uw zoekopdracht voor preciezere resultaten.",
+    "Indexing:AdvancedSyntaxNotAllowed": "Geavanceerde zoekoperatoren zijn niet toegestaan voor deze zoekopdracht.",
+    "Indexing:LanguageDetectionFailed": "De taal van het document kon niet worden gedetecteerd; de standaardanalyse is toegepast."
+  }
+}

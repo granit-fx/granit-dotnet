@@ -36,6 +36,7 @@ public sealed partial class SectionNameConventionTests
         "Browsing",
         "Cache",
         "Encryption",
+        "Indexing",
         "Mcp",
         "Mergeable",
         "MultiTenancy",

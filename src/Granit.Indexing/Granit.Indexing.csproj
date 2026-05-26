@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Indexing</PackageId>
+    <Description>Horizontal full-text + semantic search framework. Pluggable backends, language-aware analysis, exponential over-fetch with consumer-supplied authorization, and GDPR Art. 17 hooks. Tenant isolation is enforced here; per-resource ACL filtering is delegated to consumer modules via ISearchResultAuthorizer.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Indexing.Tests" />
+    <InternalsVisibleTo Include="Granit.Indexing.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Indexing.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Indexing.Lingua" />
+    <InternalsVisibleTo Include="Granit.Indexing.Lingua.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal types in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+</Project>

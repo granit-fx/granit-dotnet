@@ -1153,6 +1153,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Indexing",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Localization",
       "deps": [
         "Granit.Caching",
@@ -25684,6 +25691,368 @@
       "project": "Granit.Imaging",
       "file": "src/Granit.Imaging/CropRectangle.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "AuthorizedResult",
+      "fqn": "Granit.Indexing.AuthorizedResult",
+      "kind": "record",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/ISearchResultAuthorizer.cs",
+      "line": 62,
+      "members": []
+    },
+    {
+      "name": "BackendSearchPage",
+      "fqn": "Granit.Indexing.BackendSearchPage",
+      "kind": "record",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/ISearchBackend.cs",
+      "line": 59,
+      "members": []
+    },
+    {
+      "name": "CompositeLanguageDetector",
+      "fqn": "Granit.Indexing.CompositeLanguageDetector",
+      "kind": "class",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/CompositeLanguageDetector.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "DetectAsync",
+          "kind": "method",
+          "signature": "DetectAsync(string content, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string?>"
+        }
+      ]
+    },
+    {
+      "name": "IndexingMetrics",
+      "fqn": "Granit.Indexing.Diagnostics.IndexingMetrics",
+      "kind": "class",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/Diagnostics/IndexingMetrics.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "EntryIndexedEvent",
+      "fqn": "Granit.Indexing.Events.EntryIndexedEvent",
+      "kind": "record",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/Events/EntryIndexedEvent.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "EntryIndexingFailedEvent",
+      "fqn": "Granit.Indexing.Events.EntryIndexingFailedEvent",
+      "kind": "record",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/Events/EntryIndexingFailedEvent.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "EmptyResultRateLimitedException",
+      "fqn": "Granit.Indexing.Exceptions.EmptyResultRateLimitedException",
+      "kind": "class",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/Exceptions/EmptyResultRateLimitedException.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Reason",
+          "kind": "property",
+          "signature": "string Reason",
+          "returnType": "string"
+        },
+        {
+          "name": "EmptyResultRateLimitedException",
+          "kind": "method",
+          "signature": "EmptyResultRateLimitedException(string principalIdentifierHash)",
+          "returnType": "string PrincipalIdentifierHash { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Indexing.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/Extensions/ServiceCollectionExtensions.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "AddGranitIndexing",
+          "kind": "method",
+          "signature": "AddGranitIndexing(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIndexingModule",
+      "fqn": "Granit.Indexing.GranitIndexingModule",
+      "kind": "class",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/GranitIndexingModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IAutoTagger",
+      "fqn": "Granit.Indexing.IAutoTagger",
+      "kind": "interface",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/IAutoTagger.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "TagAsync",
+          "kind": "method",
+          "signature": "TagAsync(string content, ITagCandidateProvider candidates, int maxTags, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        }
+      ]
+    },
+    {
+      "name": "IIndexedEntrySource",
+      "fqn": "Granit.Indexing.IIndexedEntrySource",
+      "kind": "interface",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/IIndexedEntrySource.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "EnumerateKeysAsync",
+          "kind": "method",
+          "signature": "EnumerateKeysAsync(CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } IAsyncEnumerable<TKey>"
+        },
+        {
+          "name": "BuildEntryAsync",
+          "kind": "method",
+          "signature": "BuildEntryAsync(TKey key, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IndexedEntry<TKey>?>"
+        },
+        {
+          "name": "GetDataSubjectIdAsync",
+          "kind": "method",
+          "signature": "GetDataSubjectIdAsync(TKey key, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Guid?>"
+        }
+      ]
+    },
+    {
+      "name": "IIndexer",
+      "fqn": "Granit.Indexing.IIndexer",
+      "kind": "interface",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/IIndexer.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "IndexAsync",
+          "kind": "method",
+          "signature": "IndexAsync(IndexedEntry<TKey> entry, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RemoveAsync",
+          "kind": "method",
+          "signature": "RemoveAsync(TKey key, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ILanguageDetector",
+      "fqn": "Granit.Indexing.ILanguageDetector",
+      "kind": "interface",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/ILanguageDetector.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "DetectAsync",
+          "kind": "method",
+          "signature": "DetectAsync(string content, CancellationToken cancellationToken = default)",
+          "returnType": "int Priority { get; } Task<string?>"
+        }
+      ]
+    },
+    {
+      "name": "ISearchBackend",
+      "fqn": "Granit.Indexing.ISearchBackend",
+      "kind": "interface",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/ISearchBackend.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "SearchAsync",
+          "kind": "method",
+          "signature": "SearchAsync(SearchRequest request, int offset, int limit, CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } Task<BackendSearchPage<TKey, TResult>>"
+        }
+      ]
+    },
+    {
+      "name": "ISearchResultAuthorizer",
+      "fqn": "Granit.Indexing.ISearchResultAuthorizer",
+      "kind": "interface",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/ISearchResultAuthorizer.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "FilterAsync",
+          "kind": "method",
+          "signature": "FilterAsync(IReadOnlyList<TKey> candidates, CancellationToken cancellationToken = default)",
+          "returnType": "int RecommendedInitialMultiplier { get; } Task<AuthorizedResult<TKey>>"
+        }
+      ]
+    },
+    {
+      "name": "ISearchService",
+      "fqn": "Granit.Indexing.ISearchService",
+      "kind": "interface",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/ISearchService.cs",
+      "line": 33,
+      "members": [
+        {
+          "name": "SearchAsync",
+          "kind": "method",
+          "signature": "SearchAsync(SearchRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<SearchPage<TResult>>"
+        }
+      ]
+    },
+    {
+      "name": "ISummarizer",
+      "fqn": "Granit.Indexing.ISummarizer",
+      "kind": "interface",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/ISummarizer.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "SummarizeAsync",
+          "kind": "method",
+          "signature": "SummarizeAsync(string content, string? language = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string?>"
+        }
+      ]
+    },
+    {
+      "name": "ITagCandidateProvider",
+      "fqn": "Granit.Indexing.ITagCandidateProvider",
+      "kind": "interface",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/IAutoTagger.cs",
+      "line": 33,
+      "members": [
+        {
+          "name": "GetCandidatesAsync",
+          "kind": "method",
+          "signature": "GetCandidatesAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        }
+      ]
+    },
+    {
+      "name": "IndexedEntry",
+      "fqn": "Granit.Indexing.IndexedEntry",
+      "kind": "record",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/IndexedEntry.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "IndexingLocalizationResource",
+      "fqn": "Granit.Indexing.IndexingLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/IndexingLocalizationResource.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "GranitIndexingOptions",
+      "fqn": "Granit.Indexing.Options.GranitIndexingOptions",
+      "kind": "class",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/Options/GranitIndexingOptions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "DefaultPageSize",
+          "kind": "property",
+          "signature": "int DefaultPageSize",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxPageSize",
+          "kind": "property",
+          "signature": "int MaxPageSize",
+          "returnType": "int"
+        },
+        {
+          "name": "AuthorizationOverfetchMultiplier",
+          "kind": "property",
+          "signature": "int AuthorizationOverfetchMultiplier",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxAuthorizationDepth",
+          "kind": "property",
+          "signature": "int MaxAuthorizationDepth",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxEmptyResultQueriesPerPrincipalPerMinute",
+          "kind": "property",
+          "signature": "int MaxEmptyResultQueriesPerPrincipalPerMinute",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "SearchHit",
+      "fqn": "Granit.Indexing.SearchHit",
+      "kind": "record",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/SearchHit.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "SearchPage",
+      "fqn": "Granit.Indexing.SearchPage",
+      "kind": "record",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/SearchPage.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "SearchRequest",
+      "fqn": "Granit.Indexing.SearchRequest",
+      "kind": "record",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/SearchRequest.cs",
+      "line": 31,
       "members": []
     },
     {

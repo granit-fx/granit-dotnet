@@ -1,0 +1,9 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Indexing:EmptyResultRateLimited": "Zbyt wiele wyszukiwań bez wyników. Spróbuj ponownie za chwilę.",
+    "Indexing:AuthorizationLimitReached": "Niektóre dodatkowe dopasowania zostały pominięte, aby zachować szybkość odpowiedzi. Doprecyzuj zapytanie, aby uzyskać dokładniejsze wyniki.",
+    "Indexing:AdvancedSyntaxNotAllowed": "Operatory wyszukiwania zaawansowanego nie są dozwolone w tym zapytaniu.",
+    "Indexing:LanguageDetectionFailed": "Nie udało się wykryć języka dokumentu; zastosowano analizę domyślną."
+  }
+}

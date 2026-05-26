@@ -196,6 +196,7 @@
     <Project Path="src/Granit.Imaging.AI/Granit.Imaging.AI.csproj" />
     <Project Path="src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj" />
     <Project Path="src/Granit.Imaging/Granit.Imaging.csproj" />
+    <Project Path="src/Granit.Indexing/Granit.Indexing.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.Hosting/Granit.Persistence.EntityFrameworkCore.Hosting.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.Migrations/Granit.Persistence.EntityFrameworkCore.Migrations.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.Postgres/Granit.Persistence.EntityFrameworkCore.Postgres.csproj" />
@@ -504,6 +505,7 @@
     <Project Path="tests/Granit.Imaging.AI.Tests/Granit.Imaging.AI.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.MagickNet.Tests/Granit.Imaging.MagickNet.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.Tests/Granit.Imaging.Tests.csproj" />
+    <Project Path="tests/Granit.Indexing.Tests/Granit.Indexing.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Hosting.Tests/Granit.Persistence.EntityFrameworkCore.Hosting.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Postgres.Tests/Granit.Persistence.EntityFrameworkCore.Postgres.Tests.csproj" />

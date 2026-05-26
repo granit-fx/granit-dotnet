@@ -1,0 +1,9 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Indexing:EmptyResultRateLimited": "बिना परिणाम वाली खोजें बहुत अधिक हैं। कृपया कुछ देर बाद पुनः प्रयास करें।",
+    "Indexing:AuthorizationLimitReached": "उत्तर को तेज़ रखने के लिए कुछ अतिरिक्त मिलान छोड़ दिए गए। अधिक सटीक परिणामों के लिए अपनी क्वेरी को परिष्कृत करें।",
+    "Indexing:AdvancedSyntaxNotAllowed": "इस क्वेरी के लिए उन्नत खोज ऑपरेटर अनुमत नहीं हैं।",
+    "Indexing:LanguageDetectionFailed": "दस्तावेज़ की भाषा का पता नहीं लगाया जा सका; डिफ़ॉल्ट विश्लेषण लागू किया गया।"
+  }
+}
