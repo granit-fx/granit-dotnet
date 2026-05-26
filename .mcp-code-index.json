@@ -26047,6 +26047,33 @@
       ]
     },
     {
+      "name": "IndexRebuildAbortedEvent",
+      "fqn": "Granit.Indexing.BackgroundJobs.Events.IndexRebuildAbortedEvent",
+      "kind": "record",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Events/IndexRebuildAbortedEvent.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "IndexRebuildCompletedEvent",
+      "fqn": "Granit.Indexing.BackgroundJobs.Events.IndexRebuildCompletedEvent",
+      "kind": "record",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Events/IndexRebuildCompletedEvent.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "IndexRebuildStartedEvent",
+      "fqn": "Granit.Indexing.BackgroundJobs.Events.IndexRebuildStartedEvent",
+      "kind": "record",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Events/IndexRebuildStartedEvent.cs",
+      "line": 22,
+      "members": []
+    },
+    {
       "name": "RebuildAlreadyInProgressException",
       "fqn": "Granit.Indexing.BackgroundJobs.Exceptions.RebuildAlreadyInProgressException",
       "kind": "class",
@@ -26065,6 +26092,22 @@
           "kind": "method",
           "signature": "RebuildAlreadyInProgressException(Guid? tenantId, string sourceName, Exception? innerException = null)",
           "returnType": "Guid? TenantId { get; } public string SourceName { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "RebuildBudgetExceededException",
+      "fqn": "Granit.Indexing.BackgroundJobs.Exceptions.RebuildBudgetExceededException",
+      "kind": "class",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Exceptions/RebuildBudgetExceededException.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "RebuildBudgetExceededException",
+          "kind": "method",
+          "signature": "RebuildBudgetExceededException(string reason, Guid? tenantId, string sourceName, long processedCount)",
+          "returnType": "string Reason { get; } public Guid? TenantId { get; } public string SourceName { get; } public long ProcessedCount { get; } public"
         }
       ]
     },
@@ -26143,7 +26186,7 @@
       "kind": "record",
       "project": "Granit.Indexing.BackgroundJobs",
       "file": "src/Granit.Indexing.BackgroundJobs/Jobs/RebuildIndexJob.cs",
-      "line": 19,
+      "line": 29,
       "members": []
     },
     {
@@ -26192,7 +26235,7 @@
       "kind": "class",
       "project": "Granit.Indexing.BackgroundJobs",
       "file": "src/Granit.Indexing.BackgroundJobs/Services/RebuildIndexService.cs",
-      "line": 28,
+      "line": 48,
       "members": []
     },
     {

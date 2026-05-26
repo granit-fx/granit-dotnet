@@ -16,5 +16,9 @@ internal sealed class IndexingRebuildCheckpointRowConfiguration : IEntityTypeCon
 
         builder.Property(e => e.SourceName).IsRequired().HasMaxLength(128);
         builder.Property(e => e.LastProcessedKey).IsRequired().HasMaxLength(256);
+
+        // ConcurrencyStamp is auto-wired by ApplyGranitConventions (IsConcurrencyToken +
+        // ConcurrencyStampInterceptor). We only fix the physical column shape here.
+        builder.Property(e => e.ConcurrencyStamp).IsRequired().HasMaxLength(36);
     }
 }

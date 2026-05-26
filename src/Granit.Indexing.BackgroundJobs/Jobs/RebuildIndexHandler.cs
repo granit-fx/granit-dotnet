@@ -11,7 +11,7 @@ namespace Granit.Indexing.BackgroundJobs.Jobs;
 /// therefore <c>public</c> with a public constructor, the method is
 /// <c>public static</c>. See CLAUDE.md §Wolverine handlers.
 /// </remarks>
-public class RebuildIndexHandler
+public sealed class RebuildIndexHandler
 {
     public static Task HandleAsync<TKey>(
         RebuildIndexJob<TKey> job,

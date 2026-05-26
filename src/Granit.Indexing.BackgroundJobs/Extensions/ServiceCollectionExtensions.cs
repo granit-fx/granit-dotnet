@@ -1,4 +1,3 @@
-using Granit.Diagnostics;
 using Granit.Indexing.BackgroundJobs.Diagnostics;
 using Granit.Indexing.BackgroundJobs.Internal;
 using Granit.Indexing.BackgroundJobs.Options;
@@ -22,8 +21,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddGranitIndexingBackgroundJobs(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-
-        GranitActivitySourceRegistry.Register(IndexingBackgroundJobsMetrics.MeterName);
 
         services.AddOptions<IndexingBackgroundJobsOptions>()
             .BindConfiguration(IndexingBackgroundJobsOptions.SectionName)

@@ -1,10 +1,15 @@
 using System.Diagnostics.Metrics;
+using Granit.Events;
 using Granit.Indexing.BackgroundJobs.Diagnostics;
+using Granit.Indexing.BackgroundJobs.Events;
+using Granit.Indexing.BackgroundJobs.Exceptions;
 using Granit.Indexing.BackgroundJobs.Internal;
 using Granit.Indexing.BackgroundJobs.Options;
 using Granit.Indexing.BackgroundJobs.Services;
+using Granit.Users;
 using Microsoft.Extensions.Diagnostics.Metrics.Testing;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -124,6 +129,111 @@ public sealed class RebuildIndexServiceTests
             .ShouldBe(ok);
     }
 
+    [Fact]
+    public async Task ExecuteAsync_publishes_Started_and_Completed_events_on_success()
+    {
+        // GDPR-grade audit trail: every rebuild lifecycle transition publishes a domain
+        // event on ILocalEventBus so audit subscribers correlate dispatch-time identity
+        // (DispatchedByUserId) with the run outcome.
+        Harness h = new();
+        h.WithKeys(Guid.NewGuid(), Guid.NewGuid());
+
+        RebuildIndexService<Guid> service = h.Build();
+        await service.ExecuteAsync(TenantA, TestContext.Current.CancellationToken);
+
+        IndexRebuildStartedEvent started = h.EventBus.Published.OfType<IndexRebuildStartedEvent>().ShouldHaveSingleItem();
+        started.TenantId.ShouldBe(TenantA);
+        started.SourceName.ShouldBe("documents");
+        started.ResumedFromCheckpoint.ShouldBeFalse();
+        started.DispatchedByUserId.ShouldBe("user-7");
+
+        IndexRebuildCompletedEvent completed = h.EventBus.Published.OfType<IndexRebuildCompletedEvent>().ShouldHaveSingleItem();
+        completed.EntriesIndexed.ShouldBe(2);
+        completed.EntriesSkipped.ShouldBe(0);
+        completed.EntriesFailed.ShouldBe(0);
+        completed.DispatchedByUserId.ShouldBe("user-7");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_publishes_Aborted_event_when_MaxConsecutiveFailures_trips()
+    {
+        // The abort path emits IndexRebuildAbortedEvent with a stable Reason — required
+        // for SIEM rules that distinguish circuit-breaker trips from budget cutoffs.
+        Harness h = new();
+        h.Options.CheckpointBatchSize = 1;
+        h.Options.MaxConsecutiveFailures = 2;
+        var f1 = Guid.NewGuid();
+        var f2 = Guid.NewGuid();
+        h.WithKeys(f1, f2);
+        h.Source.BuildEntryAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns<Task<IndexedEntry<Guid>?>>(_ => throw new InvalidOperationException("boom"));
+
+        RebuildIndexService<Guid> service = h.Build();
+        await Should.ThrowAsync<InvalidOperationException>(() =>
+            service.ExecuteAsync(TenantA, TestContext.Current.CancellationToken));
+
+        IndexRebuildAbortedEvent aborted = h.EventBus.Published.OfType<IndexRebuildAbortedEvent>().ShouldHaveSingleItem();
+        aborted.Reason.ShouldBe("max_consecutive_failures");
+        h.EventBus.Published.OfType<IndexRebuildCompletedEvent>().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_throws_RebuildBudgetExceeded_when_MaxEntriesPerRun_is_hit_and_preserves_checkpoint()
+    {
+        // Denial-of-Wallet defense: a host that caps entries-per-run gets a deterministic
+        // cutoff, the checkpoint is preserved so the retry resumes, and a typed exception
+        // signals to Wolverine that this is a budget yield (not a fault).
+        Harness h = new();
+        h.Options.CheckpointBatchSize = 100; // do not flush mid-batch
+        h.Options.MaxEntriesPerRun = 2;
+        var k1 = Guid.NewGuid();
+        var k2 = Guid.NewGuid();
+        var k3 = Guid.NewGuid();
+        h.WithKeys(k1, k2, k3);
+
+        RebuildIndexService<Guid> service = h.Build();
+        RebuildBudgetExceededException ex = await Should.ThrowAsync<RebuildBudgetExceededException>(() =>
+            service.ExecuteAsync(TenantA, TestContext.Current.CancellationToken));
+
+        ex.Reason.ShouldBe("max_entries_per_run");
+        ex.ProcessedCount.ShouldBe(2);
+
+        // Checkpoint preserved at last successful key so retry resumes past k2.
+        (await h.Checkpoints.GetLastCheckpointAsync(TenantA, h.Source.Name, TestContext.Current.CancellationToken))
+            .ShouldBe(k2);
+
+        IndexRebuildAbortedEvent aborted = h.EventBus.Published.OfType<IndexRebuildAbortedEvent>().ShouldHaveSingleItem();
+        aborted.Reason.ShouldBe("max_entries_per_run");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_throws_RebuildBudgetExceeded_when_MaxRunDuration_elapses()
+    {
+        // Wall-clock budget cutoff. We advance the FakeTimeProvider between keys so the
+        // service notices the budget overrun on the first per-key budget check.
+        Harness h = new();
+        h.Options.CheckpointBatchSize = 100;
+        h.Options.MaxRunDurationSeconds = 30;
+        var k1 = Guid.NewGuid();
+        var k2 = Guid.NewGuid();
+        h.WithKeys(k1, k2);
+        // Advance the clock when BuildEntryAsync(k1) is called so the post-key check trips.
+        h.Source.BuildEntryAsync(k1, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                h.TimeProvider.Advance(TimeSpan.FromMinutes(1));
+                return Task.FromResult<IndexedEntry<Guid>?>(new IndexedEntry<Guid> { Key = k1, TenantId = TenantA, Content = "x" });
+            });
+
+        RebuildIndexService<Guid> service = h.Build();
+        RebuildBudgetExceededException ex = await Should.ThrowAsync<RebuildBudgetExceededException>(() =>
+            service.ExecuteAsync(TenantA, TestContext.Current.CancellationToken));
+
+        ex.Reason.ShouldBe("max_run_duration");
+        h.EventBus.Published.OfType<IndexRebuildAbortedEvent>().ShouldHaveSingleItem()
+            .Reason.ShouldBe("max_run_duration");
+    }
+
     private sealed class Harness
     {
         public IIndexer<Guid> Indexer { get; } = Substitute.For<IIndexer<Guid>>();
@@ -132,11 +242,15 @@ public sealed class RebuildIndexServiceTests
         public IndexingBackgroundJobsOptions Options { get; } = new();
         public TestMeterFactory MeterFactory { get; } = new();
         public IndexingBackgroundJobsMetrics Metrics { get; }
+        public RecordingEventBus EventBus { get; } = new();
+        public ICurrentUserService CurrentUser { get; } = Substitute.For<ICurrentUserService>();
+        public FakeTimeProvider TimeProvider { get; } = new();
 
         public Harness()
         {
             Source.Name.Returns("documents");
             Metrics = new IndexingBackgroundJobsMetrics(MeterFactory);
+            CurrentUser.UserId.Returns("user-7");
         }
 
         public void WithKeys(params Guid[] keys)
@@ -184,6 +298,9 @@ public sealed class RebuildIndexServiceTests
             Checkpoints,
             Microsoft.Extensions.Options.Options.Create(Options),
             Metrics,
+            EventBus,
+            CurrentUser,
+            TimeProvider,
             NullLogger<RebuildIndexService<Guid>>.Instance);
 
         private static async IAsyncEnumerable<Guid> AsAsync(IEnumerable<Guid> keys)
@@ -201,5 +318,17 @@ public sealed class RebuildIndexServiceTests
         public Meter Meter { get; } = new(IndexingBackgroundJobsMetrics.MeterName);
         public Meter Create(MeterOptions options) => Meter;
         public void Dispose() => Meter.Dispose();
+    }
+
+    private sealed class RecordingEventBus : ILocalEventBus
+    {
+        public List<object> Published { get; } = [];
+
+        public Task PublishAsync<TEvent>(TEvent localEvent, CancellationToken cancellationToken = default)
+            where TEvent : class
+        {
+            Published.Add(localEvent);
+            return Task.CompletedTask;
+        }
     }
 }

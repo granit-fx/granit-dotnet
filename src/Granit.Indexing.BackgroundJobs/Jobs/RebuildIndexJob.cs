@@ -9,18 +9,22 @@ namespace Granit.Indexing.BackgroundJobs.Jobs;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Not auto-scheduled.</b> The <see cref="RecurringJobAttribute"/> carries a
-/// <c>null</c> cron — hosts dispatch the job explicitly via
+/// <b>Not auto-scheduled.</b> No <see cref="RecurringJobAttribute"/> is applied — that
+/// attribute is reserved for cron-driven recurring jobs and its constructor rejects a
+/// null cron. Hosts dispatch this job explicitly via
 /// <c>IBackgroundJobDispatcher.PublishAsync</c> after a schema upgrade, tenant
-/// onboarding, or operator intervention.
+/// onboarding, or operator intervention. Hosts that want a periodic full rebuild
+/// (e.g. nightly re-tokenisation) wire their own cron-driven trigger that emits
+/// <see cref="RebuildIndexJob{TKey}"/>.
 /// </para>
 /// <para>
-/// <b>Name.</b> <c>indexing-rebuild-index</c> per the framework
-/// <c>{module-kebab}-{action-kebab}</c> convention. The same name covers every
-/// <typeparamref name="TKey"/> instantiation — the message type carries the
-/// discriminator.
+/// <b>Authorization.</b> The handler trusts <c>TenantId</c> as-is — there is no
+/// runtime principal at handler time. The dispatch site MUST enforce
+/// <see cref="Granit.Indexing.BackgroundJobs.Permissions.IndexingRebuildPermissions.Rebuild.Execute"/>
+/// (tenant-scoped), and additionally
+/// <see cref="Granit.Indexing.BackgroundJobs.Permissions.IndexingRebuildPermissions.Rebuild.ExecuteGlobal"/>
+/// when dispatching with <c>TenantId == null</c> (cross-tenant rebuild).
 /// </para>
 /// </remarks>
-[RecurringJob(cronExpression: null!, name: "indexing-rebuild-index")]
 public sealed record RebuildIndexJob<TKey>(Guid? TenantId) : IBackgroundJob
     where TKey : notnull;
