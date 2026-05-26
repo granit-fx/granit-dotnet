@@ -1825,6 +1825,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Privacy.BackgroundJobs.Wolverine",
+      "deps": [
+        "Granit.Privacy.BackgroundJobs",
+        "Granit.Wolverine"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Privacy.BlobStorage",
       "deps": [
         "Granit.Privacy",
@@ -37042,6 +37050,22 @@
       ]
     },
     {
+      "name": "GranitPrivacyBackgroundJobsWolverineModule",
+      "fqn": "Granit.Privacy.BackgroundJobs.Wolverine.GranitPrivacyBackgroundJobsWolverineModule",
+      "kind": "class",
+      "project": "Granit.Privacy.BackgroundJobs.Wolverine",
+      "file": "src/Granit.Privacy.BackgroundJobs.Wolverine/GranitPrivacyBackgroundJobsWolverineModule.cs",
+      "line": 41,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "PrivacyExportSizeLimitExceededException",
       "fqn": "Granit.Privacy.BlobStorage.DataExport.Exceptions.PrivacyExportSizeLimitExceededException",
       "kind": "class",
@@ -37056,7 +37080,7 @@
       "kind": "record",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/PrivacyExportAssemblyService.cs",
-      "line": 412,
+      "line": 437,
       "members": []
     },
     {
@@ -37387,7 +37411,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Events/PersonalDataPreparedEto.cs",
-      "line": 17,
+      "line": 19,
       "members": []
     },
     {
@@ -37398,6 +37422,22 @@
       "file": "src/Granit.Privacy/DataExport/Events/PersonalDataRequestedEto.cs",
       "line": 27,
       "members": []
+    },
+    {
+      "name": "PrivacyExportAssemblyException",
+      "fqn": "Granit.Privacy.DataExport.Exceptions.PrivacyExportAssemblyException",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Exceptions/PrivacyExportAssemblyException.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "PrivacyExportAssemblyException",
+          "kind": "method",
+          "signature": "PrivacyExportAssemblyException(Guid requestId, string message, Exception innerException)",
+          "returnType": "Guid RequestId { get; } public"
+        }
+      ]
     },
     {
       "name": "ExportAssemblyCheckpoint",
@@ -37712,7 +37752,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/ReceivedFragment.cs",
-      "line": 22,
+      "line": 23,
       "members": []
     },
     {

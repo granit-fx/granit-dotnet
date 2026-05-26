@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Privacy.BackgroundJobs.Wolverine</PackageId>
+    <Description>Wolverine retry-with-cooldown policy for the personal-data export assembly background job. Transient PrivacyExportAssemblyException retries at 1m / 5m / 15m before the message moves to the dead-letter queue; the mid-flight per-shard checkpoint ensures retries resume past the last committed shard.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Privacy.BackgroundJobs.Wolverine.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WolverineFx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Privacy.BackgroundJobs\Granit.Privacy.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Wolverine\Granit.Wolverine.csproj" />
+  </ItemGroup>
+
+</Project>

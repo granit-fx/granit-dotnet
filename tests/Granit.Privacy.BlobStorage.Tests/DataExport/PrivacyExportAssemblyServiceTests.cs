@@ -9,6 +9,7 @@ using Granit.Privacy.BlobStorage.DataExport;
 using Granit.Privacy.BlobStorage.DataExport.Internal;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
+using Granit.Privacy.DataExport.Exceptions;
 using Granit.Privacy.DataExport.Security;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Options;
@@ -92,6 +93,43 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
 
         (await _checkpoints.GetAsync(requestId, tenantId: null, TestContext.Current.CancellationToken))
             .ShouldBeNull("checkpoint should be cleared after successful assembly");
+    }
+
+    [Fact]
+    public async Task AssembleAsync_WrapsTransientFailure_InPrivacyExportAssemblyException()
+    {
+        // A blob-storage HTTP failure during fragment download is the canonical
+        // transient case the Wolverine retry-with-cooldown policy targets. The
+        // service wraps the inner HttpRequestException in
+        // PrivacyExportAssemblyException so the policy matches and re-dispatches.
+        var requestId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var blobA = Guid.NewGuid();
+
+        // Stub the presigned URL but DON'T MapGet the URI — the fake handler
+        // returns 404 → HttpResponseMessage.EnsureSuccessStatusCode throws.
+        Uri downloadUri = new($"https://s3.example/{blobA}");
+        _blobStorage.CreateDownloadUrlAsync(
+            PrivacyExportContainerNames.FragmentContainer,
+            blobA,
+            Arg.Any<DownloadUrlOptions>(),
+            Arg.Any<CancellationToken>())
+            .Returns(new PresignedDownloadUrl(downloadUri, _timeProvider.GetUtcNow().AddMinutes(15)));
+        _blobStorage.GetDescriptorAsync(
+            PrivacyExportContainerNames.FragmentContainer,
+            blobA,
+            Arg.Any<CancellationToken>())
+            .Returns((BlobDescriptor?)null);
+        SetupManifestUpload();
+
+        ReceivedFragment fragment = BuildSignedFragment(requestId, userId, "identity", blobA, "identity.json", "application/json");
+        ExportCompletedEto evt = BuildEvent(requestId, userId, [fragment]);
+
+        PrivacyExportAssemblyException ex = await Should.ThrowAsync<PrivacyExportAssemblyException>(() =>
+            CreateSut().AssembleAsync(evt, TestContext.Current.CancellationToken));
+
+        ex.RequestId.ShouldBe(requestId);
+        ex.InnerException.ShouldNotBeNull("the inner HTTP exception is preserved for diagnostics");
     }
 
     [Fact]

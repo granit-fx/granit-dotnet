@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Domain.ValueObjects;
 
 namespace Granit.Privacy.DataExport;
@@ -24,6 +25,7 @@ public sealed record ReceivedFragment(
     string FragmentKind,
     string SourceContainer,
     BlobReference BlobReferenceId,
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Hash)]
     string EntryPath,
     string ContentType,
     string IntegrityTag);
