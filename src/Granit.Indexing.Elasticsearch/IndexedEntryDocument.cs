@@ -48,4 +48,14 @@ public sealed class IndexedEntryDocument
     /// single <c>delete_by_query</c> targeting <c>tenant_id + data_subject_id</c>.
     /// </summary>
     public Guid? DataSubjectId { get; set; }
+
+    /// <summary>
+    /// Optional semantic embedding. Persisted in the SAME document as <see cref="Content"/>
+    /// so the existing <c>delete_by_query</c> GDPR cascade purges both atoms atomically
+    /// (VULN-201). Mapped as <c>dense_vector</c> with the dimensionality configured in
+    /// <c>Granit.Indexing.Embeddings.Options.GranitIndexingEmbeddingsOptions.Dimensions</c>
+    /// — when that option is unset, the field is dropped from the index mapping and
+    /// always serialises as <c>null</c>.
+    /// </summary>
+    public float[]? Embedding { get; set; }
 }

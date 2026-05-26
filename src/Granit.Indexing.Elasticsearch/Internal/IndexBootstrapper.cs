@@ -3,6 +3,8 @@ using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Granit.Indexing.Elasticsearch.Options;
+using Granit.Indexing.Embeddings.Options;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Indexing.Elasticsearch.Internal;
 
@@ -21,14 +23,22 @@ internal sealed class IndexBootstrapper
 {
     private readonly ElasticsearchClient _client;
     private readonly IndexingElasticsearchOptions _options;
+    private readonly int? _embeddingDimensions;
     private readonly ConcurrentDictionary<string, byte> _ensuredIndices = new(StringComparer.Ordinal);
 
-    public IndexBootstrapper(ElasticsearchClient client, IndexingElasticsearchOptions options)
+    public IndexBootstrapper(
+        ElasticsearchClient client,
+        IndexingElasticsearchOptions options,
+        IOptions<GranitIndexingEmbeddingsOptions>? embeddingsOptions = null)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(options);
         _client = client;
         _options = options;
+        // Embeddings are opt-in. The IOptions<> can be null when the host hasn't called
+        // AddGranitIndexingEmbeddings(). When present but with Dimensions = 0 (default
+        // sentinel) the field is also dropped.
+        _embeddingDimensions = embeddingsOptions?.Value.Dimensions is int d and > 0 ? d : null;
     }
 
     public async Task EnsureAsync(string indexName, CancellationToken cancellationToken)
@@ -66,16 +76,27 @@ internal sealed class IndexBootstrapper
 
     private void BuildMappings(TypeMappingDescriptor<IndexedEntryDocument> mapping)
     {
-        mapping.Properties(p => p
-            .Keyword(d => d.Key, k => k.IgnoreAbove(512))
-            .Keyword(d => d.TenantId)
-            .Keyword(d => d.Language, k => k.IgnoreAbove(16))
-            .Keyword(d => d.Tags, k => k.IgnoreAbove(256))
-            .Keyword(d => d.DataSubjectId)
-            .Boolean(d => d.IsTruncated)
-            .IntegerNumber(d => d.CharCount)
-            .Text(d => d.Content, t => ConfigureTextField(t, store: _options.StoreFullContentInIndex))
-            .Text(d => d.Summary, t => ConfigureTextField(t, store: true)));
+        mapping.Properties(p =>
+        {
+            p
+                .Keyword(d => d.Key, k => k.IgnoreAbove(512))
+                .Keyword(d => d.TenantId)
+                .Keyword(d => d.Language, k => k.IgnoreAbove(16))
+                .Keyword(d => d.Tags, k => k.IgnoreAbove(256))
+                .Keyword(d => d.DataSubjectId)
+                .Boolean(d => d.IsTruncated)
+                .IntegerNumber(d => d.CharCount)
+                .Text(d => d.Content, t => ConfigureTextField(t, store: _options.StoreFullContentInIndex))
+                .Text(d => d.Summary, t => ConfigureTextField(t, store: true));
+
+            if (_embeddingDimensions is { } dims)
+            {
+                p.DenseVector(d => d.Embedding!, v => v
+                    .Dims(dims)
+                    .Index(true)
+                    .Similarity(DenseVectorSimilarity.Cosine));
+            }
+        });
     }
 
     private void ConfigureTextField(TextPropertyDescriptor<IndexedEntryDocument> text, bool store)

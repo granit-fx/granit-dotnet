@@ -60,6 +60,58 @@ public static class ModelBuilderExtensions
         return entity;
     }
 
+    /// <summary>
+    /// Configures <see cref="IndexedEntryRow{TKey}.Embedding"/> as a Postgres
+    /// <c>vector(N)</c> column with an HNSW index using <c>vector_cosine_ops</c>.
+    /// Idempotent — calling twice for the same key type is a no-op past the first.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>VULN-201 atomic Art. 17 delete.</b> The embedding column lives on the same
+    /// row as <see cref="IndexedEntryRow{TKey}.Content"/> so the existing
+    /// <c>IIndexedDataEraser</c> cascade purges both atoms in a single statement.
+    /// </para>
+    /// <para>
+    /// <b>HNSW caveat.</b> Postgres' HNSW index retains stale graph pointers after
+    /// <c>DELETE</c> until a <c>REINDEX INDEX CONCURRENTLY</c> runs. Operators MUST
+    /// schedule this for full GDPR Art. 17 conformance — see
+    /// <c>granit-docs</c> "Embeddings + GDPR Art. 17" page for a <c>pg_cron</c> snippet.
+    /// </para>
+    /// </remarks>
+    public static EntityTypeBuilder<IndexedEntryRow<TKey>> HasEmbeddingColumn<TKey>(
+        this ModelBuilder modelBuilder,
+        int dimensions)
+    {
+        ArgumentNullException.ThrowIfNull(modelBuilder);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(dimensions);
+
+        EntityTypeBuilder<IndexedEntryRow<TKey>> entity = modelBuilder.Entity<IndexedEntryRow<TKey>>();
+
+        entity.Property(e => e.Embedding)
+            .HasColumnType($"vector({dimensions})");
+
+        entity.HasIndex(e => e.Embedding)
+            .HasMethod("hnsw")
+            .HasOperators("vector_cosine_ops")
+            .HasDatabaseName($"IX_IndexedEntry_{typeof(TKey).Name}_Embedding_HNSW");
+
+        return entity;
+    }
+
+    /// <summary>
+    /// Unmaps <see cref="IndexedEntryRow{TKey}.Embedding"/> from the model — used by
+    /// the DbContext when the host does NOT opt into embeddings, so the EF model never
+    /// tries to project a <c>vector</c> column that isn't there.
+    /// </summary>
+    public static EntityTypeBuilder<IndexedEntryRow<TKey>> IgnoreEmbeddingColumn<TKey>(
+        this ModelBuilder modelBuilder)
+    {
+        ArgumentNullException.ThrowIfNull(modelBuilder);
+        EntityTypeBuilder<IndexedEntryRow<TKey>> entity = modelBuilder.Entity<IndexedEntryRow<TKey>>();
+        entity.Ignore(e => e.Embedding);
+        return entity;
+    }
+
     private static string SanitiseDictionary(string raw)
     {
         foreach (char c in raw)

@@ -197,6 +197,7 @@
     <Project Path="src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj" />
     <Project Path="src/Granit.Imaging/Granit.Imaging.csproj" />
     <Project Path="src/Granit.Indexing.Elasticsearch/Granit.Indexing.Elasticsearch.csproj" />
+    <Project Path="src/Granit.Indexing.Embeddings/Granit.Indexing.Embeddings.csproj" />
     <Project Path="src/Granit.Indexing.EntityFrameworkCore/Granit.Indexing.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Indexing.AI/Granit.Indexing.AI.csproj" />
     <Project Path="src/Granit.Indexing.Privacy/Granit.Indexing.Privacy.csproj" />
@@ -514,6 +515,7 @@
     <Project Path="tests/Granit.Imaging.Tests/Granit.Imaging.Tests.csproj" />
     <Project Path="tests/Granit.Indexing.Elasticsearch.Tests.Integration/Granit.Indexing.Elasticsearch.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Indexing.Elasticsearch.Tests/Granit.Indexing.Elasticsearch.Tests.csproj" />
+    <Project Path="tests/Granit.Indexing.Embeddings.Tests/Granit.Indexing.Embeddings.Tests.csproj" />
     <Project Path="tests/Granit.Indexing.EntityFrameworkCore.Tests.Integration/Granit.Indexing.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Indexing.EntityFrameworkCore.Tests/Granit.Indexing.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Indexing.Privacy.Tests/Granit.Indexing.Privacy.Tests.csproj" />

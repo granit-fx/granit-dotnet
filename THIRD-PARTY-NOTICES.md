@@ -79,6 +79,7 @@ Dernière mise à jour : 2026-05-26 (ajout du dataset Franc pour `Granit.Languag
 | Mjml.Net | 4.11.0 | Copyright (c) Sebastian Stehle |
 | OllamaSharp | 5.4.25 | Copyright (c) 2023-2026 Awalon |
 | PdfPig | 0.1.14 | Copyright (c) Eliot Jones |
+| Pgvector.EntityFrameworkCore | 0.3.0 | Copyright (c) Andrew Kane |
 | PuppeteerSharp | 24.42.0 | PuppeteerSharp Contributors |
 | Scalar.AspNetCore | 2.14.14 | Scalar Contributors |
 | Sep | 0.14.1 | Copyright (c) 2023 nietras |

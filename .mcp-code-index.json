@@ -1171,6 +1171,14 @@
     {
       "name": "Granit.Indexing.Elasticsearch",
       "deps": [
+        "Granit.Indexing",
+        "Granit.Indexing.Embeddings"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Indexing.Embeddings",
+      "deps": [
         "Granit.Indexing"
       ],
       "framework": "net10.0"
@@ -1179,6 +1187,7 @@
       "name": "Granit.Indexing.EntityFrameworkCore",
       "deps": [
         "Granit.Indexing",
+        "Granit.Indexing.Embeddings",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -26006,7 +26015,7 @@
       "kind": "class",
       "project": "Granit.Indexing.Elasticsearch",
       "file": "src/Granit.Indexing.Elasticsearch/Extensions/ServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitIndexingElasticsearch",
@@ -26107,6 +26116,97 @@
       ]
     },
     {
+      "name": "EmbeddingsMetrics",
+      "fqn": "Granit.Indexing.Embeddings.Diagnostics.EmbeddingsMetrics",
+      "kind": "class",
+      "project": "Granit.Indexing.Embeddings",
+      "file": "src/Granit.Indexing.Embeddings/Diagnostics/EmbeddingsMetrics.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Indexing.Embeddings.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Indexing.Embeddings",
+      "file": "src/Granit.Indexing.Embeddings/Extensions/ServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitIndexingEmbeddings",
+          "kind": "method",
+          "signature": "AddGranitIndexingEmbeddings(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIndexingEmbeddingsModule",
+      "fqn": "Granit.Indexing.Embeddings.GranitIndexingEmbeddingsModule",
+      "kind": "class",
+      "project": "Granit.Indexing.Embeddings",
+      "file": "src/Granit.Indexing.Embeddings/GranitIndexingEmbeddingsModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IVectorSearchBackend",
+      "fqn": "Granit.Indexing.Embeddings.IVectorSearchBackend",
+      "kind": "interface",
+      "project": "Granit.Indexing.Embeddings",
+      "file": "src/Granit.Indexing.Embeddings/IVectorSearchBackend.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "SearchAsync",
+          "kind": "method",
+          "signature": "SearchAsync(ReadOnlyMemory<float> queryEmbedding, SearchRequest request, int offset, int limit, CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } Task<BackendSearchPage<TKey, TResult>>"
+        }
+      ]
+    },
+    {
+      "name": "GranitIndexingEmbeddingsOptions",
+      "fqn": "Granit.Indexing.Embeddings.Options.GranitIndexingEmbeddingsOptions",
+      "kind": "class",
+      "project": "Granit.Indexing.Embeddings",
+      "file": "src/Granit.Indexing.Embeddings/Options/GranitIndexingEmbeddingsOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Dimensions",
+          "kind": "property",
+          "signature": "int Dimensions",
+          "returnType": "int"
+        },
+        {
+          "name": "RrfK",
+          "kind": "property",
+          "signature": "int RrfK",
+          "returnType": "int"
+        },
+        {
+          "name": "RrfFetchPoolSize",
+          "kind": "property",
+          "signature": "int RrfFetchPoolSize",
+          "returnType": "int"
+        },
+        {
+          "name": "RecommendHnswReindexCadenceDays",
+          "kind": "property",
+          "signature": "int RecommendHnswReindexCadenceDays",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
       "name": "ModelBuilderExtensions",
       "fqn": "Granit.Indexing.EntityFrameworkCore.Extensions.ModelBuilderExtensions",
       "kind": "class",
@@ -26121,7 +26221,7 @@
       "kind": "class",
       "project": "Granit.Indexing.EntityFrameworkCore",
       "file": "src/Granit.Indexing.EntityFrameworkCore/Extensions/ServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitIndexingEntityFrameworkCore",
@@ -26190,7 +26290,7 @@
       "kind": "record",
       "project": "Granit.Indexing.EntityFrameworkCore",
       "file": "src/Granit.Indexing.EntityFrameworkCore/IndexingDbContext.cs",
-      "line": 97,
+      "line": 131,
       "members": []
     },
     {

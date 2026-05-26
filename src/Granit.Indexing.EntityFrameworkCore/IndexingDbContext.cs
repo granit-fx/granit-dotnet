@@ -27,6 +27,7 @@ public sealed class IndexingDbContext : GranitDbContext
 {
     internal IReadOnlyList<Type> IndexedKeyTypes { get; }
     internal string DefaultDictionary { get; }
+    internal int? EmbeddingDimensions { get; }
 
     public IndexingDbContext(
         DbContextOptions<IndexingDbContext> options,
@@ -38,12 +39,18 @@ public sealed class IndexingDbContext : GranitDbContext
         ArgumentNullException.ThrowIfNull(schema);
         IndexedKeyTypes = schema.KeyTypes;
         DefaultDictionary = schema.DefaultDictionary;
+        EmbeddingDimensions = schema.EmbeddingDimensions;
     }
 
     /// <inheritdoc/>
     protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {
         bool isPostgres = string.Equals(Database.ProviderName, GranitDbProviders.Postgres, StringComparison.Ordinal);
+
+        if (isPostgres && EmbeddingDimensions.HasValue)
+        {
+            modelBuilder.HasPostgresExtension("vector");
+        }
 
         foreach (Type keyType in IndexedKeyTypes)
         {
@@ -56,13 +63,29 @@ public sealed class IndexingDbContext : GranitDbContext
                 HasGeneratedTsVectorColumnMethod
                     .MakeGenericMethod(keyType)
                     .Invoke(null, [modelBuilder, DefaultDictionary]);
+
+                if (EmbeddingDimensions.HasValue)
+                {
+                    HasEmbeddingColumnMethod
+                        .MakeGenericMethod(keyType)
+                        .Invoke(null, [modelBuilder, EmbeddingDimensions.Value]);
+                }
+                else
+                {
+                    IgnoreEmbeddingColumnMethod
+                        .MakeGenericMethod(keyType)
+                        .Invoke(null, [modelBuilder]);
+                }
             }
             else
             {
-                // Non-Postgres providers (in-memory / SQLite test rigs) don't have tsvector;
-                // unmap the generated column so EF Core's relational provider doesn't try to
-                // emit a column it cannot translate.
+                // Non-Postgres providers (in-memory / SQLite test rigs) don't have tsvector
+                // or pgvector; unmap both so EF Core's relational provider doesn't try to
+                // emit columns it cannot translate.
                 IgnoreSearchVectorMethod
+                    .MakeGenericMethod(keyType)
+                    .Invoke(null, [modelBuilder]);
+                IgnoreEmbeddingColumnMethod
                     .MakeGenericMethod(keyType)
                     .Invoke(null, [modelBuilder]);
             }
@@ -80,6 +103,16 @@ public sealed class IndexingDbContext : GranitDbContext
             nameof(Extensions.ModelBuilderExtensions.HasGeneratedTsVectorColumn),
             BindingFlags.Static | BindingFlags.Public)!;
 
+    private static readonly MethodInfo HasEmbeddingColumnMethod =
+        typeof(Extensions.ModelBuilderExtensions).GetMethod(
+            nameof(Extensions.ModelBuilderExtensions.HasEmbeddingColumn),
+            BindingFlags.Static | BindingFlags.Public)!;
+
+    private static readonly MethodInfo IgnoreEmbeddingColumnMethod =
+        typeof(Extensions.ModelBuilderExtensions).GetMethod(
+            nameof(Extensions.ModelBuilderExtensions.IgnoreEmbeddingColumn),
+            BindingFlags.Static | BindingFlags.Public)!;
+
     private static readonly MethodInfo IgnoreSearchVectorMethod =
         typeof(IndexingDbContext).GetMethod(
             nameof(IgnoreSearchVector),
@@ -90,8 +123,12 @@ public sealed class IndexingDbContext : GranitDbContext
 }
 
 /// <summary>
-/// Per-DbContext schema bundle: which TKey tables to map and which fallback dictionary
-/// to use for tsvector generation. Resolved from DI by
+/// Per-DbContext schema bundle: which TKey tables to map, which fallback dictionary to
+/// use for tsvector generation, and (optionally) the embedding vector dimensionality
+/// when the host opts into <c>Granit.Indexing.Embeddings</c>. Resolved from DI by
 /// <see cref="IndexingDbContext"/> at construction time.
 /// </summary>
-public sealed record IndexingDbContextSchema(IReadOnlyList<Type> KeyTypes, string DefaultDictionary);
+public sealed record IndexingDbContextSchema(
+    IReadOnlyList<Type> KeyTypes,
+    string DefaultDictionary,
+    int? EmbeddingDimensions = null);

@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Indexing\Granit.Indexing.csproj" />
+    <ProjectReference Include="..\Granit.Indexing.Embeddings\Granit.Indexing.Embeddings.csproj" />
   </ItemGroup>
 
 </Project>

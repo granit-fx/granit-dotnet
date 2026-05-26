@@ -84,6 +84,7 @@ internal sealed class ElasticsearchIndexer<TKey> : IIndexer<TKey>
             IsTruncated = entry.IsTruncated,
             CharCount = entry.CharCount,
             DataSubjectId = entry.DataSubjectId,
+            Embedding = entry.Embedding?.ToArray(),
         };
 
         IndexResponse response = await _client

@@ -234,6 +234,7 @@
       "projects": [
         "tests/Granit.Indexing.Tests",
         "tests/Granit.Indexing.Elasticsearch.Tests",
+        "tests/Granit.Indexing.Embeddings.Tests",
         "tests/Granit.Indexing.EntityFrameworkCore.Tests",
         "tests/Granit.Indexing.Privacy.Tests",
         "tests/Granit.LanguageDetection.Tests",

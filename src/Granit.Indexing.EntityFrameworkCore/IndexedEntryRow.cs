@@ -66,4 +66,14 @@ public sealed class IndexedEntryRow<TKey> : IMultiTenant
     /// GDPR Art. 17 handler can delete by subject in a single <c>ExecuteDelete</c>.
     /// </summary>
     public Guid? DataSubjectId { get; set; }
+
+    /// <summary>
+    /// Optional semantic embedding produced by <c>Granit.Indexing.Embeddings</c>.
+    /// Lives on the SAME row as <see cref="Content"/> — VULN-201 mandates an atomic
+    /// GDPR Art. 17 cascade. The column is mapped as <c>vector(N)</c> only when the
+    /// host opts in via
+    /// <c>Granit.Indexing.EntityFrameworkCore.Extensions.ModelBuilderExtensions.HasEmbeddingColumn</c>;
+    /// otherwise it is ignored at model-build time and remains <c>null</c> in every row.
+    /// </summary>
+    public Pgvector.Vector? Embedding { get; set; }
 }

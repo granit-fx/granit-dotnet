@@ -56,6 +56,8 @@ internal sealed class EfIndexer<TKey> : IIndexer<TKey>
             .FirstOrDefaultAsync(r => r.TenantId == tenantId && r.Key!.Equals(entry.Key), cancellationToken)
             .ConfigureAwait(false);
 
+        Pgvector.Vector? embedding = entry.Embedding is { } e ? new Pgvector.Vector(e) : null;
+
         if (existing is null)
         {
             set.Add(new IndexedEntryRow<TKey>
@@ -69,6 +71,7 @@ internal sealed class EfIndexer<TKey> : IIndexer<TKey>
                 IsTruncated = entry.IsTruncated,
                 CharCount = entry.CharCount,
                 DataSubjectId = entry.DataSubjectId,
+                Embedding = embedding,
             });
         }
         else
@@ -80,6 +83,12 @@ internal sealed class EfIndexer<TKey> : IIndexer<TKey>
             existing.IsTruncated = entry.IsTruncated;
             existing.CharCount = entry.CharCount;
             existing.DataSubjectId = entry.DataSubjectId;
+            // Overwrite embedding when the new entry brings one; preserve the existing
+            // vector when the caller didn't compute one (re-indexing only the body).
+            if (embedding is not null)
+            {
+                existing.Embedding = embedding;
+            }
         }
 
         try

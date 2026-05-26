@@ -1,3 +1,5 @@
+using Granit.Indexing.Embeddings;
+using Granit.Indexing.Embeddings.Options;
 using Granit.Indexing.EntityFrameworkCore.Internal;
 using Granit.Indexing.EntityFrameworkCore.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -52,9 +54,13 @@ public static class ServiceCollectionExtensions
             sp.GetRequiredService<IOptions<IndexingEntityFrameworkCoreOptions>>().Value);
 
         // Schema bundle captured once at registration; the DbContext reads it from DI.
+        // EmbeddingDimensions is folded in lazily so a host that calls
+        // AddGranitIndexingEmbeddings() AFTER this extension still gets a vector-aware
+        // model — as long as it happens before the first DbContext use.
         services.TryAddSingleton(sp => new IndexingDbContextSchema(
             indexedKeyTypes,
-            sp.GetRequiredService<IndexingEntityFrameworkCoreOptions>().DefaultDictionary));
+            sp.GetRequiredService<IndexingEntityFrameworkCoreOptions>().DefaultDictionary,
+            sp.GetService<IOptions<GranitIndexingEmbeddingsOptions>>()?.Value.Dimensions is int d and > 0 ? d : null));
 
         services.AddDbContextFactory<IndexingDbContext>((sp, options) =>
         {
@@ -94,6 +100,41 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<ISearchBackend<TKey, TResult>>(sp => new EfSearchBackend<TKey, TResult>(
             sp.GetRequiredService<IDbContextFactory<IndexingDbContext>>(),
             sp.GetRequiredService<IndexingEntityFrameworkCoreOptions>(),
+            projection));
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers a concrete <see cref="IVectorSearchBackend{TKey, TResult}"/> for the
+    /// given projection, backed by pgvector cosine kNN. Pair with
+    /// <c>AddGranitIndexingHybridSearch&lt;TKey, TResult&gt;()</c> from
+    /// <c>Granit.Indexing.Embeddings</c> to enable hybrid retrieval.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// MUST be called AFTER <see cref="AddGranitIndexingEntityFrameworkCore"/> so the
+    /// <see cref="IDbContextFactory{IndexingDbContext}"/> is in the container, and MUST
+    /// be paired with an <c>AddGranitIndexingEmbeddings()</c> call that binds
+    /// <see cref="GranitIndexingEmbeddingsOptions.Dimensions"/> so the DbContext model
+    /// maps the <c>vector(N)</c> column at build time.
+    /// </para>
+    /// <para>
+    /// Hosts must also enable the pgvector type mapping in their Npgsql configuration:
+    /// <c>opts.UseNpgsql(cs, npg =&gt; npg.UseVector())</c>. Without it, EF Core throws
+    /// at first index attempt.
+    /// </para>
+    /// </remarks>
+    public static IServiceCollection AddGranitIndexingEmbeddingsBackend<TKey, TResult>(
+        this IServiceCollection services,
+        Func<IndexedEntryRow<TKey>, TResult> projection)
+        where TKey : notnull
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(projection);
+
+        services.TryAddScoped<IVectorSearchBackend<TKey, TResult>>(sp => new EfVectorSearchBackend<TKey, TResult>(
+            sp.GetRequiredService<IDbContextFactory<IndexingDbContext>>(),
             projection));
 
         return services;
