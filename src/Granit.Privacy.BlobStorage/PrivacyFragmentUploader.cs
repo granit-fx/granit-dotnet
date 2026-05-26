@@ -60,7 +60,7 @@ public sealed partial class PrivacyFragmentUploader(
             (string kind, string container, BlobReference blob) = fragment switch
             {
                 StagedExportFragment staged => (StagedFragmentKind, PrivacyExportContainerNames.FragmentContainer, staged.StagedBlob),
-                PassThroughExportFragment pt => (PassThroughFragmentKind, ResolveContainer(pt.SourceBlob), pt.SourceBlob),
+                PassThroughExportFragment pt => (PassThroughFragmentKind, pt.SourceContainer, pt.SourceBlob),
                 _ => throw new InvalidOperationException($"Unknown fragment kind: {fragment.GetType().Name}"),
             };
 
@@ -98,11 +98,6 @@ public sealed partial class PrivacyFragmentUploader(
                 cancellationToken).ConfigureAwait(false);
         }
     }
-
-    // For PR-1b the only known passthrough source is the staging container. Documents
-    // (granit-business) will populate the real container name when its provider lands.
-    private static string ResolveContainer(BlobReference blob) =>
-        PrivacyExportContainerNames.FragmentContainer;
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Privacy export: provider {Provider} has no data for user {UserId} (request {RequestId}); emitting empty sentinel")]

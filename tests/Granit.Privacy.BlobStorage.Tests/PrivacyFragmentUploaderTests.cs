@@ -83,6 +83,7 @@ public sealed class PrivacyFragmentUploaderTests
             ContentType = "application/pdf",
             KnownSizeBytes = 1024,
             IntegrityTag = "v1:passthrough-signed",
+            SourceContainer = "documents-content",
             SourceBlob = sourceBlob,
         };
         StubProvider provider = new(fragments: [fragment]);
@@ -92,6 +93,7 @@ public sealed class PrivacyFragmentUploaderTests
         await _eventBus.Received(1).PublishAsync(
             Arg.Is<PersonalDataPreparedEto>(e =>
                 e.FragmentKind == PrivacyFragmentUploader.PassThroughFragmentKind &&
+                e.SourceContainer == "documents-content" &&
                 e.BlobReferenceId == sourceBlob &&
                 e.EntryPath == "Documents/2024/foo.pdf" &&
                 e.ContentType == "application/pdf" &&

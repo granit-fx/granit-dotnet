@@ -1,4 +1,5 @@
 using Granit.Privacy.BlobStorage.DataExport;
+using Granit.Privacy.BlobStorage.Streaming;
 using Granit.Privacy.DataExport.Security;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -21,6 +22,9 @@ public static class ServiceCollectionExtensions
     ///   <item><see cref="ExportArchiveAssemblyHandler"/> — terminal ZIP assembler triggered by
     ///   <see cref="Granit.Privacy.DataExport.Events.ExportCompletedEto"/>. Auto-discovered by
     ///   Wolverine once registered with DI.</item>
+    ///   <item><see cref="IBlobBackedExportSource"/> (via <see cref="BlobBackedExportSource"/>) —
+    ///   helper that yields HMAC-signed pass-through fragments for blob-backed providers
+    ///   (Documents, attachments) without staging round-trips.</item>
     /// </list>
     /// </summary>
     public static IServiceCollection AddGranitPrivacyBlobStorage(this IServiceCollection services)
@@ -29,6 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient(ExportArchiveAssemblyHandler.HttpClientName);
         services.TryAddSingleton<IExportHmacSigner, EphemeralExportHmacSigner>();
         services.TryAddScoped<IStagedFragmentBuilder, StagedFragmentBuilder>();
+        services.TryAddScoped<IBlobBackedExportSource, BlobBackedExportSource>();
         services.TryAddScoped<PrivacyFragmentUploader>();
         services.TryAddScoped<ExportArchiveAssemblyHandler>();
         return services;

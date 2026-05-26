@@ -37012,7 +37012,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/Extensions/ServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitPrivacyBlobStorage",
@@ -37064,6 +37064,40 @@
       "file": "src/Granit.Privacy.BlobStorage/StagedFragmentBuilder.cs",
       "line": 20,
       "members": []
+    },
+    {
+      "name": "BlobBackedExportItem",
+      "fqn": "Granit.Privacy.BlobStorage.Streaming.BlobBackedExportItem",
+      "kind": "record",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/Streaming/IBlobBackedExportSource.cs",
+      "line": 60,
+      "members": []
+    },
+    {
+      "name": "BlobBackedExportSource",
+      "fqn": "Granit.Privacy.BlobStorage.Streaming.BlobBackedExportSource",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/Streaming/BlobBackedExportSource.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "IBlobBackedExportSource",
+      "fqn": "Granit.Privacy.BlobStorage.Streaming.IBlobBackedExportSource",
+      "kind": "interface",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/Streaming/IBlobBackedExportSource.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "StreamAsync",
+          "kind": "method",
+          "signature": "StreamAsync(IAsyncEnumerable<BlobBackedExportItem> items, PrivacyExportContext context, string providerName, CancellationToken cancellationToken)",
+          "returnType": "IAsyncEnumerable<ExportFragment>"
+        }
+      ]
     },
     {
       "name": "DeletionAction",

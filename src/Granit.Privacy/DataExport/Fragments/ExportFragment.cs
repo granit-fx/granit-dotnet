@@ -68,6 +68,13 @@ public sealed record StagedExportFragment : ExportFragment
 /// </summary>
 public sealed record PassThroughExportFragment : ExportFragment
 {
+    /// <summary>
+    /// Container holding <see cref="SourceBlob"/>. Required because the source can live in
+    /// any module-owned container (Documents binaries, attachments, …) — not just the
+    /// privacy staging container. The HMAC capability is bound to this value.
+    /// </summary>
+    public required string SourceContainer { get; init; }
+
     /// <summary>Reference to the source blob owned by the subject.</summary>
     public required BlobReference SourceBlob { get; init; }
 }
