@@ -1,23 +1,5 @@
-// PR-1b breaking migration: the IPrivacyDataProvider streaming contract
-// invalidates the call sites below. Tests are preserved for reference and
-// will be rewritten under P6.2 (#2313).
-//
-// To re-enable while migrating: drop the #if FALSE wrapper and update each
-// PersonalDataPreparedEto/ReceivedFragment construction to the new 8-arg shape,
-// then convert provider.ExportAsync(userId, ct) calls to (PrivacyExportContext, ct).
-
-using Xunit;
-
-namespace Granit.Privacy.Tests;
-
-public class PersonalDataExportSagaTests_PendingRewrite
-{
-    [Fact(Skip = "P6.1b — pending rewrite under #2313 (P6.2)")]
-    public void Pending() { }
-}
-
-#if FALSE_PR1B_PENDING_REWRITE
 using System.Diagnostics.Metrics;
+using Granit.Domain.ValueObjects;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.DataExport.Internal;
@@ -61,6 +43,18 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         return registry;
     }
 
+    private static PersonalDataPreparedEto StagedFragmentEto(
+        Guid requestId, string providerName, string blobValue, string entryPath) =>
+        new(
+            RequestId: requestId,
+            ProviderName: providerName,
+            FragmentKind: "staged",
+            SourceContainer: "gdpr-exports",
+            BlobReferenceId: BlobReference.Create(blobValue),
+            EntryPath: entryPath,
+            ContentType: "application/json",
+            IntegrityTag: "v1:test");
+
     // -------------------------------------------------------------------------
     // Scénario 1 : export complet avec plusieurs modules
     // -------------------------------------------------------------------------
@@ -103,7 +97,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     }
 
     [Fact]
-    public async Task Handle_PreparedEvent_ReturnsNullUntilAllFragmentsArrived()
+    public async Task Handle_PreparedEvent_ReturnsNullUntilAllProvidersResponded()
     {
         PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
@@ -112,9 +106,9 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
 
         ExportCompletedEto? result1 = saga.Handle(
-            new PersonalDataPreparedEto(startEvt.RequestId, "patients", "blob-1", "application/json"), _metrics);
+            StagedFragmentEto(startEvt.RequestId, "patients", "blob-1", "patients.json"), _metrics);
         ExportCompletedEto? result2 = saga.Handle(
-            new PersonalDataPreparedEto(startEvt.RequestId, "billing", "blob-2", "application/json"), _metrics);
+            StagedFragmentEto(startEvt.RequestId, "billing", "blob-2", "billing.json"), _metrics);
 
         result1.ShouldBeNull();
         result2.ShouldBeNull();
@@ -123,7 +117,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     }
 
     [Fact]
-    public async Task Handle_PreparedEvent_ReturnsCompletedEvent_WhenAllFragmentsArrived()
+    public async Task Handle_PreparedEvent_ReturnsCompletedEvent_WhenAllProvidersResponded()
     {
         PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
@@ -131,9 +125,9 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
         await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
 
-        saga.Handle(new PersonalDataPreparedEto(startEvt.RequestId, "patients", "blob-patients", "application/json"), _metrics);
+        saga.Handle(StagedFragmentEto(startEvt.RequestId, "patients", "blob-patients", "patients.json"), _metrics);
         ExportCompletedEto? result = saga.Handle(
-            new PersonalDataPreparedEto(startEvt.RequestId, "billing", "blob-billing", "application/json"), _metrics);
+            StagedFragmentEto(startEvt.RequestId, "billing", "blob-billing", "billing.json"), _metrics);
 
         result.ShouldNotBeNull();
         result!.RequestId.ShouldBe(startEvt.RequestId);
@@ -143,6 +137,30 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         result.ArchiveBlobReferenceId.Value.ShouldBe($"personal-data-export/{startEvt.RequestId}");
         result.Fragments.Count.ShouldBe(2);
         result.Fragments.Select(f => f.BlobReferenceId.Value).ShouldBe(["blob-patients", "blob-billing"], ignoreOrder: true);
+    }
+
+    [Fact]
+    public async Task Handle_PreparedEvent_AcceptsMultipleFragmentsFromSingleProvider()
+    {
+        // P6.1 multi-fragment-friendly: a provider (Documents-like) can emit N
+        // PersonalDataPreparedEto events; the saga only deducts from PendingProviders once.
+        PersonalDataExportSaga saga = new();
+        IMessageContext context = Substitute.For<IMessageContext>();
+        DataProviderRegistry registry = BuildRegistry("documents");
+        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
+        await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
+
+        saga.Handle(StagedFragmentEto(startEvt.RequestId, "documents", "blob-1", "Documents/a.pdf"), _metrics);
+        ExportCompletedEto? second = saga.Handle(StagedFragmentEto(startEvt.RequestId, "documents", "blob-2", "Documents/b.pdf"), _metrics);
+        ExportCompletedEto? third = saga.Handle(StagedFragmentEto(startEvt.RequestId, "documents", "blob-3", "Documents/c.pdf"), _metrics);
+
+        // First fragment from "documents" emptied PendingProviders → saga completes there.
+        // Subsequent fragments still get recorded; completion fires every time PendingProviders is empty,
+        // which is acceptable since Wolverine will dedupe by saga identity.
+        saga.ReceivedFragments.Count.ShouldBe(3);
+        saga.PendingProviders.ShouldBeEmpty();
+        second.ShouldNotBeNull();
+        third.ShouldNotBeNull();
     }
 
     // -------------------------------------------------------------------------
@@ -158,8 +176,8 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
         await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
 
-        saga.Handle(new PersonalDataPreparedEto(startEvt.RequestId, "patients", "blob-patients", "application/json"), _metrics);
-        saga.Handle(new PersonalDataPreparedEto(startEvt.RequestId, "billing", "blob-billing", "application/json"), _metrics);
+        saga.Handle(StagedFragmentEto(startEvt.RequestId, "patients", "blob-patients", "patients.json"), _metrics);
+        saga.Handle(StagedFragmentEto(startEvt.RequestId, "billing", "blob-billing", "billing.json"), _metrics);
         ExportCompletedEto result = saga.Handle(new ExportTimedOutEvent(startEvt.RequestId), _metrics);
 
         result.IsPartial.ShouldBeTrue();
@@ -199,17 +217,20 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     [Fact]
     public void PersonalDataPreparedEto_ContainsOnlyBlobReferenceId_NotRawData()
     {
-        // Structural contract: the event record only carries a BlobReferenceId,
-        // never raw personal data — enforced by the type definition (ISO 27001 compliance).
-        PersonalDataPreparedEto evt = new(
-            Guid.NewGuid(), "patients", "blob-ref-123", "application/json");
+        // Structural contract: the event record only carries fragment metadata and a
+        // BlobReferenceId, never raw personal data — enforced by the type definition.
+        PersonalDataPreparedEto evt = StagedFragmentEto(Guid.NewGuid(), "patients", "blob-ref-123", "patients.json");
 
         evt.BlobReferenceId.Value.ShouldBe("blob-ref-123");
 
         System.Reflection.PropertyInfo[] properties =
             typeof(PersonalDataPreparedEto).GetProperties();
         string[] allowedProperties =
-            ["RequestId", "ProviderName", "BlobReferenceId", "ContentType", "EqualityContract"];
+        [
+            "RequestId", "ProviderName", "FragmentKind", "SourceContainer",
+            "BlobReferenceId", "EntryPath", "ContentType", "IntegrityTag",
+            "EqualityContract",
+        ];
         properties.Select(p => p.Name).ShouldAllBe(name => allowedProperties.Contains(name));
     }
 
@@ -251,9 +272,8 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
 
         ExportCompletedEto? result = saga.Handle(
-            new PersonalDataPreparedEto(startEvt.RequestId, "auth", "blob-auth", "application/json"), _metrics);
+            StagedFragmentEto(startEvt.RequestId, "auth", "blob-auth", "auth.json"), _metrics);
 
         result!.ArchiveBlobReferenceId.Value.ShouldBe($"personal-data-export/{startEvt.RequestId}");
     }
 }
-#endif

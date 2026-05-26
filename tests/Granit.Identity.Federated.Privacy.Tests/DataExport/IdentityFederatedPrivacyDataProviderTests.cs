@@ -1,26 +1,10 @@
-// PR-1b breaking migration: the IPrivacyDataProvider streaming contract
-// invalidates the call sites below. Tests are preserved for reference and
-// will be rewritten under P6.2 (#2313).
-//
-// To re-enable while migrating: drop the #if FALSE wrapper and update each
-// PersonalDataPreparedEto/ReceivedFragment construction to the new 8-arg shape,
-// then convert provider.ExportAsync(userId, ct) calls to (PrivacyExportContext, ct).
-
-using Xunit;
-
-namespace Granit.Identity.Federated.Privacy.Tests.DataExport;
-
-public class IdentityFederatedPrivacyDataProviderTests_PendingRewrite
-{
-    [Fact(Skip = "P6.1b — pending rewrite under #2313 (P6.2)")]
-    public void Pending() { }
-}
-
-#if FALSE_PR1B_PENDING_REWRITE
-using System.Text.Json;
+using Granit.Domain.ValueObjects;
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Privacy.DataExport;
 using Granit.MultiTenancy;
+using Granit.Privacy.BlobStorage;
+using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Fragments;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -31,35 +15,92 @@ public sealed class IdentityFederatedPrivacyDataProviderTests
 {
     private readonly IFederatedUserCacheReader _reader = Substitute.For<IFederatedUserCacheReader>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
+    private readonly IStagedFragmentBuilder _builder = Substitute.For<IStagedFragmentBuilder>();
 
-    private IdentityFederatedPrivacyDataProvider Sut() => new(_reader, _currentTenant);
+    private IdentityFederatedPrivacyDataProvider Sut() => new(_reader, _currentTenant, _builder);
+
+    private static PrivacyExportContext Ctx(Guid? subjectUserId = null) =>
+        new(
+            RequestId: Guid.NewGuid(),
+            SubjectUserId: subjectUserId ?? Guid.NewGuid(),
+            CallerUserId: subjectUserId ?? Guid.NewGuid(),
+            TenantId: null,
+            Regulation: "EU_GDPR");
+
+    private static StagedExportFragment StubFragment() =>
+        new()
+        {
+            EntryPath = "identity-federated.json",
+            ContentType = "application/json",
+            IntegrityTag = "v1:stub",
+            StagedBlob = BlobReference.Create(Guid.NewGuid().ToString()),
+        };
 
     [Fact]
     public void ProviderName_Is_IdentityFederated() =>
         IdentityFederatedPrivacyDataProvider.ProviderName.ShouldBe("identity-federated");
 
     [Fact]
-    public void ContentType_IsApplicationJson() =>
-        IdentityFederatedPrivacyDataProvider.ContentType.ShouldBe("application/json");
+    public void DisplayKey_TargetsScopeSelectorLocKey() =>
+        IdentityFederatedPrivacyDataProvider.DisplayKey.ShouldBe("Privacy.Scopes.IdentityFederated");
 
     [Fact]
-    public void FileName_IsStable() =>
-        IdentityFederatedPrivacyDataProvider.FileName(Guid.NewGuid()).ShouldBe("identity-federated.json");
+    public void FeatureName_IsNull_AlwaysVisible() =>
+        IdentityFederatedPrivacyDataProvider.FeatureName.ShouldBeNull();
 
     [Fact]
-    public async Task ExportAsync_UserNotCached_ReturnsEmpty()
+    public async Task HasDataAsync_ReturnsTrue_WhenCacheReaderFindsEntry()
+    {
+        var userId = Guid.NewGuid();
+        _currentTenant.IsAvailable.Returns(false);
+        _reader.FindByExternalIdAsync(userId.ToString(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns(new FederatedIdentity
+            {
+                Id = Guid.NewGuid(),
+                ExternalUserId = userId.ToString(),
+                Enabled = true,
+                LastSyncedAt = DateTimeOffset.UtcNow,
+                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = "system",
+            });
+
+        bool has = await Sut().HasDataAsync(Ctx(userId), TestContext.Current.CancellationToken);
+
+        has.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task HasDataAsync_ReturnsFalse_WhenCacheReaderMisses()
     {
         _currentTenant.IsAvailable.Returns(false);
         _reader.FindByExternalIdAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
             .Returns((FederatedIdentity?)null);
 
-        ReadOnlyMemory<byte> result = await Sut().ExportAsync(Guid.NewGuid(), TestContext.Current.CancellationToken);
+        bool has = await Sut().HasDataAsync(Ctx(), TestContext.Current.CancellationToken);
 
-        result.IsEmpty.ShouldBeTrue();
+        has.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task ExportAsync_KnownUser_ReturnsJsonWithCacheEntry()
+    public async Task ExportAsync_UserNotCached_YieldsNothing()
+    {
+        _currentTenant.IsAvailable.Returns(false);
+        _reader.FindByExternalIdAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns((FederatedIdentity?)null);
+
+        List<ExportFragment> fragments = [];
+        await foreach (ExportFragment f in Sut().ExportAsync(Ctx(), TestContext.Current.CancellationToken))
+        {
+            fragments.Add(f);
+        }
+
+        fragments.ShouldBeEmpty();
+        await _builder.DidNotReceive().BuildJsonAsync(
+            Arg.Any<PrivacyExportContext>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<object>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExportAsync_KnownUser_BuildsDtoFromCacheEntry_AndYieldsFragment()
     {
         var userId = Guid.NewGuid();
         var tenantId = Guid.NewGuid();
@@ -83,14 +124,27 @@ public sealed class IdentityFederatedPrivacyDataProviderTests
         _reader.FindByExternalIdAsync(userId.ToString(), tenantId, Arg.Any<CancellationToken>())
             .Returns(entry);
 
-        ReadOnlyMemory<byte> result = await Sut().ExportAsync(userId, TestContext.Current.CancellationToken);
+        IdentityFederatedExportResponse? capturedDto = null;
+        _builder.BuildJsonAsync(
+            Arg.Any<PrivacyExportContext>(),
+            IdentityFederatedPrivacyDataProvider.ProviderName,
+            "identity-federated.json",
+            Arg.Do<IdentityFederatedExportResponse>(d => capturedDto = d),
+            Arg.Any<CancellationToken>())
+            .Returns(StubFragment());
 
-        result.IsEmpty.ShouldBeFalse();
-        using var doc = JsonDocument.Parse(result);
-        doc.RootElement.GetProperty("externalUserId").GetString().ShouldBe(userId.ToString());
-        doc.RootElement.GetProperty("email").GetString().ShouldBe("alice@example.com");
-        doc.RootElement.GetProperty("enabled").GetBoolean().ShouldBeTrue();
-        doc.RootElement.GetProperty("tenantId").GetGuid().ShouldBe(tenantId);
+        List<ExportFragment> fragments = [];
+        await foreach (ExportFragment f in Sut().ExportAsync(Ctx(userId), TestContext.Current.CancellationToken))
+        {
+            fragments.Add(f);
+        }
+
+        fragments.Count.ShouldBe(1);
+        fragments[0].ShouldBeOfType<StagedExportFragment>();
+        capturedDto.ShouldNotBeNull();
+        capturedDto!.ExternalUserId.ShouldBe(userId.ToString());
+        capturedDto.Email.ShouldBe("alice@example.com");
+        capturedDto.Enabled.ShouldBeTrue();
+        capturedDto.TenantId.ShouldBe(tenantId);
     }
 }
-#endif

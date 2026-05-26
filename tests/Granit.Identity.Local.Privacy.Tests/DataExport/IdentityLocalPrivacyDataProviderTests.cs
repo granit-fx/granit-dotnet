@@ -1,25 +1,9 @@
-// PR-1b breaking migration: the IPrivacyDataProvider streaming contract
-// invalidates the call sites below. Tests are preserved for reference and
-// will be rewritten under P6.2 (#2313).
-//
-// To re-enable while migrating: drop the #if FALSE wrapper and update each
-// PersonalDataPreparedEto/ReceivedFragment construction to the new 8-arg shape,
-// then convert provider.ExportAsync(userId, ct) calls to (PrivacyExportContext, ct).
-
-using Xunit;
-
-namespace Granit.Identity.Local.Privacy.Tests.DataExport;
-
-public class IdentityLocalPrivacyDataProviderTests_PendingRewrite
-{
-    [Fact(Skip = "P6.1b — pending rewrite under #2313 (P6.2)")]
-    public void Pending() { }
-}
-
-#if FALSE_PR1B_PENDING_REWRITE
-using System.Text.Json;
+using Granit.Domain.ValueObjects;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Privacy.DataExport;
+using Granit.Privacy.BlobStorage;
+using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Fragments;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using Shouldly;
@@ -29,40 +13,92 @@ namespace Granit.Identity.Local.Privacy.Tests.DataExport;
 
 public sealed class IdentityLocalPrivacyDataProviderTests
 {
+    private readonly IStagedFragmentBuilder _builder = Substitute.For<IStagedFragmentBuilder>();
+
     private static UserManager<LocalIdentity> CreateUserManager(IUserStore<LocalIdentity> store) =>
         Substitute.For<UserManager<LocalIdentity>>(store, null, null, null, null, null, null, null, null);
+
+    private static PrivacyExportContext Ctx(Guid? subjectUserId = null) =>
+        new(
+            RequestId: Guid.NewGuid(),
+            SubjectUserId: subjectUserId ?? Guid.NewGuid(),
+            CallerUserId: subjectUserId ?? Guid.NewGuid(),
+            TenantId: null,
+            Regulation: "EU_GDPR");
+
+    private static StagedExportFragment StubFragment() =>
+        new()
+        {
+            EntryPath = "identity-local.json",
+            ContentType = "application/json",
+            IntegrityTag = "v1:stub",
+            StagedBlob = BlobReference.Create(Guid.NewGuid().ToString()),
+        };
 
     [Fact]
     public void ProviderName_Is_IdentityLocal() =>
         IdentityLocalPrivacyDataProvider.ProviderName.ShouldBe("identity-local");
 
     [Fact]
-    public void ContentType_IsApplicationJson() =>
-        IdentityLocalPrivacyDataProvider.ContentType.ShouldBe("application/json");
+    public void DisplayKey_TargetsScopeSelectorLocKey() =>
+        IdentityLocalPrivacyDataProvider.DisplayKey.ShouldBe("Privacy.Scopes.IdentityLocal");
 
     [Fact]
-    public void FileName_IsStableAcrossRequests()
-    {
-        IdentityLocalPrivacyDataProvider.FileName(Guid.NewGuid())
-            .ShouldBe("identity-local.json");
-    }
+    public void FeatureName_IsNull_AlwaysVisible() =>
+        IdentityLocalPrivacyDataProvider.FeatureName.ShouldBeNull();
 
     [Fact]
-    public async Task ExportAsync_UnknownUser_ReturnsEmpty()
+    public async Task HasDataAsync_ReturnsFalse_WhenUserNotFound()
     {
         IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
         UserManager<LocalIdentity> userManager = CreateUserManager(store);
         userManager.FindByIdAsync(Arg.Any<string>()).Returns((LocalIdentity?)null);
 
-        IdentityLocalPrivacyDataProvider sut = new(userManager);
+        IdentityLocalPrivacyDataProvider sut = new(userManager, _builder);
 
-        ReadOnlyMemory<byte> result = await sut.ExportAsync(Guid.NewGuid(), TestContext.Current.CancellationToken);
+        bool has = await sut.HasDataAsync(Ctx(), TestContext.Current.CancellationToken);
 
-        result.IsEmpty.ShouldBeTrue();
+        has.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task ExportAsync_KnownUser_ReturnsJsonWithProfileAndRoles()
+    public async Task HasDataAsync_ReturnsTrue_WhenUserExists()
+    {
+        var userId = Guid.NewGuid();
+        IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
+        UserManager<LocalIdentity> userManager = CreateUserManager(store);
+        userManager.FindByIdAsync(userId.ToString())
+            .Returns(new LocalIdentity { Id = userId, UserName = "alice", CreatedBy = "system" });
+
+        IdentityLocalPrivacyDataProvider sut = new(userManager, _builder);
+
+        bool has = await sut.HasDataAsync(Ctx(userId), TestContext.Current.CancellationToken);
+
+        has.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task ExportAsync_UnknownUser_YieldsNothing()
+    {
+        IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
+        UserManager<LocalIdentity> userManager = CreateUserManager(store);
+        userManager.FindByIdAsync(Arg.Any<string>()).Returns((LocalIdentity?)null);
+
+        IdentityLocalPrivacyDataProvider sut = new(userManager, _builder);
+
+        List<ExportFragment> fragments = [];
+        await foreach (ExportFragment f in sut.ExportAsync(Ctx(), TestContext.Current.CancellationToken))
+        {
+            fragments.Add(f);
+        }
+
+        fragments.ShouldBeEmpty();
+        await _builder.DidNotReceive().BuildJsonAsync(
+            Arg.Any<PrivacyExportContext>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<object>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExportAsync_KnownUser_BuildsDtoAndYieldsOneFragment()
     {
         var userId = Guid.NewGuid();
         LocalIdentity user = new()
@@ -83,18 +119,29 @@ public sealed class IdentityLocalPrivacyDataProviderTests
         userManager.FindByIdAsync(userId.ToString()).Returns(user);
         userManager.GetRolesAsync(user).Returns<IList<string>>(["Admin", "User"]);
 
-        IdentityLocalPrivacyDataProvider sut = new(userManager);
+        IdentityLocalExportResponse? capturedDto = null;
+        _builder.BuildJsonAsync(
+            Arg.Any<PrivacyExportContext>(),
+            IdentityLocalPrivacyDataProvider.ProviderName,
+            "identity-local.json",
+            Arg.Do<IdentityLocalExportResponse>(d => capturedDto = d),
+            Arg.Any<CancellationToken>())
+            .Returns(StubFragment());
 
-        ReadOnlyMemory<byte> result = await sut.ExportAsync(userId, TestContext.Current.CancellationToken);
+        IdentityLocalPrivacyDataProvider sut = new(userManager, _builder);
 
-        result.IsEmpty.ShouldBeFalse();
+        List<ExportFragment> fragments = [];
+        await foreach (ExportFragment f in sut.ExportAsync(Ctx(userId), TestContext.Current.CancellationToken))
+        {
+            fragments.Add(f);
+        }
 
-        using var doc = JsonDocument.Parse(result);
-        doc.RootElement.GetProperty("id").GetGuid().ShouldBe(userId);
-        doc.RootElement.GetProperty("email").GetString().ShouldBe("alice@example.com");
-        doc.RootElement.GetProperty("firstName").GetString().ShouldBe("Alice");
-        doc.RootElement.GetProperty("roles").EnumerateArray()
-            .Select(e => e.GetString()).ShouldBe(["Admin", "User"]);
+        fragments.Count.ShouldBe(1);
+        fragments[0].ShouldBeOfType<StagedExportFragment>();
+        capturedDto.ShouldNotBeNull();
+        capturedDto!.Id.ShouldBe(userId);
+        capturedDto.Email.ShouldBe("alice@example.com");
+        capturedDto.FirstName.ShouldBe("Alice");
+        capturedDto.Roles.ShouldBe(["Admin", "User"]);
     }
 }
-#endif

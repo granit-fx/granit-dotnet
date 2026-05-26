@@ -1,127 +1,157 @@
-// PR-1b breaking migration: the IPrivacyDataProvider streaming contract
-// invalidates the call sites below. Tests are preserved for reference and
-// will be rewritten under P6.2 (#2313).
-//
-// To re-enable while migrating: drop the #if FALSE wrapper and update each
-// PersonalDataPreparedEto/ReceivedFragment construction to the new 8-arg shape,
-// then convert provider.ExportAsync(userId, ct) calls to (PrivacyExportContext, ct).
-
-using Xunit;
-
-namespace Granit.Privacy.BlobStorage.Tests;
-
-public class PrivacyFragmentUploaderTests_PendingRewrite
-{
-    [Fact(Skip = "P6.1b — pending rewrite under #2313 (P6.2)")]
-    public void Pending() { }
-}
-
-#if FALSE_PR1B_PENDING_REWRITE
-using Granit.BlobStorage;
+using System.Runtime.CompilerServices;
+using Granit.Domain.ValueObjects;
 using Granit.Events;
-using Granit.Privacy.BlobStorage.Tests.DataExport;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
+using Granit.Privacy.DataExport.Fragments;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using Shouldly;
 using Xunit;
 
 namespace Granit.Privacy.BlobStorage.Tests;
 
-public sealed class PrivacyFragmentUploaderTests : IDisposable
+public sealed class PrivacyFragmentUploaderTests
 {
-    private readonly IBlobStorage _blobStorage = Substitute.For<IBlobStorage>();
     private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
-    private readonly FakeHttpMessageHandler _http = new();
-
-    public void Dispose() => _http.Dispose();
 
     private PrivacyFragmentUploader CreateSut() =>
-        new(_blobStorage, new FakeHttpClientFactory(_http), _eventBus,
-            NullLogger<PrivacyFragmentUploader>.Instance);
+        new(_eventBus, NullLogger<PrivacyFragmentUploader>.Instance);
 
     [Fact]
-    public async Task UploadAsync_EmptyPayload_PublishesEmptySentinel_AndSkipsBlobCalls()
+    public async Task UploadAsync_ProviderYieldsNothing_PublishesEmptySentinel()
     {
         var requestId = Guid.NewGuid();
         var userId = Guid.NewGuid();
         PersonalDataRequestedEto request = new(requestId, userId, DateTimeOffset.UtcNow, "EU_GDPR");
 
-        StubProvider provider = new(payload: ReadOnlyMemory<byte>.Empty);
+        StubProvider provider = new(fragments: []);
 
         await CreateSut().UploadAsync(request, provider, TestContext.Current.CancellationToken);
 
-        await _blobStorage.DidNotReceive().InitiateUploadAsync(
-            Arg.Any<string>(), Arg.Any<BlobUploadRequest>(), Arg.Any<CancellationToken>());
         await _eventBus.Received(1).PublishAsync(
             Arg.Is<PersonalDataPreparedEto>(e =>
                 e.RequestId == requestId &&
                 e.ProviderName == StubProvider.Name &&
-                e.BlobReferenceId == $"{PrivacyExportContainerNames.EmptyFragmentPrefix}{requestId}" &&
-                e.ContentType == StubProvider.Content),
+                e.FragmentKind == PrivacyFragmentUploader.EmptyFragmentKind &&
+                e.BlobReferenceId.Value == $"{PrivacyExportContainerNames.EmptyFragmentPrefix}{requestId}"),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task UploadAsync_WithPayload_RunsPresignedDance_AndPublishesPreparedEto()
+    public async Task UploadAsync_StagedFragment_PublishesPreparedEto_WithBuilderProvidedData()
     {
         var requestId = Guid.NewGuid();
         var userId = Guid.NewGuid();
         PersonalDataRequestedEto request = new(requestId, userId, DateTimeOffset.UtcNow, "EU_GDPR");
 
         var blobId = Guid.NewGuid();
-        Uri uploadUri = new("https://s3.example/upload/fragment");
-        _blobStorage.InitiateUploadAsync(
-            PrivacyExportContainerNames.FragmentContainer,
-            Arg.Any<BlobUploadRequest>(),
-            Arg.Any<CancellationToken>())
-            .Returns(new PresignedUploadTicket(
-                blobId, uploadUri, "PUT", DateTimeOffset.UtcNow.AddMinutes(15),
-                new Dictionary<string, string> { ["x-amz-server-side-encryption"] = "AES256" }));
-
-        _http.MapPut(uploadUri);
-
-        StubProvider provider = new(payload: new byte[] { 1, 2, 3, 4 });
+        StagedExportFragment fragment = new()
+        {
+            EntryPath = "stub.json",
+            ContentType = "application/json",
+            KnownSizeBytes = 42,
+            IntegrityTag = "v1:builder-signed",
+            StagedBlob = BlobReference.Create(blobId.ToString()),
+        };
+        StubProvider provider = new(fragments: [fragment]);
 
         await CreateSut().UploadAsync(request, provider, TestContext.Current.CancellationToken);
-
-        await _blobStorage.Received(1).InitiateUploadAsync(
-            PrivacyExportContainerNames.FragmentContainer,
-            Arg.Is<BlobUploadRequest>(r =>
-                r.FileName == StubProvider.FileNameFor(requestId) &&
-                r.ContentType == StubProvider.Content &&
-                r.MaxAllowedBytes == 4),
-            Arg.Any<CancellationToken>());
-
-        _http.CapturedUploads.Count.ShouldBe(1);
-        _http.CapturedUploads[0].Url.ShouldBe(uploadUri);
-        _http.CapturedUploads[0].Body.ShouldBe([1, 2, 3, 4]);
-
-        await _blobStorage.Received(1).ConfirmUploadAsync(
-            PrivacyExportContainerNames.FragmentContainer, blobId, Arg.Any<CancellationToken>());
 
         await _eventBus.Received(1).PublishAsync(
             Arg.Is<PersonalDataPreparedEto>(e =>
                 e.RequestId == requestId &&
                 e.ProviderName == StubProvider.Name &&
-                e.BlobReferenceId == blobId.ToString() &&
-                e.ContentType == StubProvider.Content),
+                e.FragmentKind == PrivacyFragmentUploader.StagedFragmentKind &&
+                e.SourceContainer == PrivacyExportContainerNames.FragmentContainer &&
+                e.BlobReferenceId.Value == blobId.ToString() &&
+                e.EntryPath == "stub.json" &&
+                e.ContentType == "application/json" &&
+                e.IntegrityTag == "v1:builder-signed"),
             Arg.Any<CancellationToken>());
     }
 
-    private sealed class StubProvider(ReadOnlyMemory<byte> payload) : IPrivacyDataProvider
+    [Fact]
+    public async Task UploadAsync_PassThroughFragment_PublishesPreparedEto_WithSourceBlobReference()
+    {
+        var requestId = Guid.NewGuid();
+        PersonalDataRequestedEto request = new(requestId, Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
+
+        var sourceBlob = BlobReference.Create(Guid.NewGuid().ToString());
+        PassThroughExportFragment fragment = new()
+        {
+            EntryPath = "Documents/2024/foo.pdf",
+            ContentType = "application/pdf",
+            KnownSizeBytes = 1024,
+            IntegrityTag = "v1:passthrough-signed",
+            SourceBlob = sourceBlob,
+        };
+        StubProvider provider = new(fragments: [fragment]);
+
+        await CreateSut().UploadAsync(request, provider, TestContext.Current.CancellationToken);
+
+        await _eventBus.Received(1).PublishAsync(
+            Arg.Is<PersonalDataPreparedEto>(e =>
+                e.FragmentKind == PrivacyFragmentUploader.PassThroughFragmentKind &&
+                e.BlobReferenceId == sourceBlob &&
+                e.EntryPath == "Documents/2024/foo.pdf" &&
+                e.ContentType == "application/pdf" &&
+                e.IntegrityTag == "v1:passthrough-signed"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task UploadAsync_MultipleFragments_PublishesOneEventPerFragment()
+    {
+        var requestId = Guid.NewGuid();
+        PersonalDataRequestedEto request = new(requestId, Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
+
+        StagedExportFragment a = new()
+        {
+            EntryPath = "a.json",
+            ContentType = "application/json",
+            IntegrityTag = "v1:a",
+            StagedBlob = BlobReference.Create(Guid.NewGuid().ToString()),
+        };
+        StagedExportFragment b = new()
+        {
+            EntryPath = "b.json",
+            ContentType = "application/json",
+            IntegrityTag = "v1:b",
+            StagedBlob = BlobReference.Create(Guid.NewGuid().ToString()),
+        };
+        StubProvider provider = new(fragments: [a, b]);
+
+        await CreateSut().UploadAsync(request, provider, TestContext.Current.CancellationToken);
+
+        await _eventBus.Received(2).PublishAsync(
+            Arg.Any<PersonalDataPreparedEto>(),
+            Arg.Any<CancellationToken>());
+        // No empty-sentinel when at least one fragment was yielded.
+        await _eventBus.DidNotReceive().PublishAsync(
+            Arg.Is<PersonalDataPreparedEto>(e => e.FragmentKind == PrivacyFragmentUploader.EmptyFragmentKind),
+            Arg.Any<CancellationToken>());
+    }
+
+    private sealed class StubProvider(ExportFragment[] fragments) : IPrivacyDataProvider
     {
         public const string Name = "stub-provider";
-        public const string Content = "application/json";
 
         public static string ProviderName => Name;
-        public static string ContentType => Content;
-        public static string FileName(Guid requestId) => FileNameFor(requestId);
-        public static string FileNameFor(Guid requestId) => $"stub-{requestId}.json";
+        public static string DisplayKey => "Privacy.Scopes.Stub";
+        public static string? FeatureName => null;
 
-        public Task<ReadOnlyMemory<byte>> ExportAsync(Guid userId, CancellationToken cancellationToken) =>
-            Task.FromResult(payload);
+        public ValueTask<bool> HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(fragments.Length > 0);
+
+        public async IAsyncEnumerable<ExportFragment> ExportAsync(
+            PrivacyExportContext context,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            foreach (ExportFragment fragment in fragments)
+            {
+                await Task.Yield();
+                yield return fragment;
+            }
+        }
     }
 }
-#endif
