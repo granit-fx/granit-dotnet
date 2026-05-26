@@ -199,6 +199,8 @@
     <Project Path="src/Granit.Indexing.EntityFrameworkCore/Granit.Indexing.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Indexing.Privacy/Granit.Indexing.Privacy.csproj" />
     <Project Path="src/Granit.Indexing/Granit.Indexing.csproj" />
+    <Project Path="src/Granit.LanguageDetection.Trigram/Granit.LanguageDetection.Trigram.csproj" />
+    <Project Path="src/Granit.LanguageDetection/Granit.LanguageDetection.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.Hosting/Granit.Persistence.EntityFrameworkCore.Hosting.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.Migrations/Granit.Persistence.EntityFrameworkCore.Migrations.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.Postgres/Granit.Persistence.EntityFrameworkCore.Postgres.csproj" />
@@ -511,6 +513,8 @@
     <Project Path="tests/Granit.Indexing.EntityFrameworkCore.Tests/Granit.Indexing.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Indexing.Privacy.Tests/Granit.Indexing.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Indexing.Tests/Granit.Indexing.Tests.csproj" />
+    <Project Path="tests/Granit.LanguageDetection.Tests/Granit.LanguageDetection.Tests.csproj" />
+    <Project Path="tests/Granit.LanguageDetection.Trigram.Tests/Granit.LanguageDetection.Trigram.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Hosting.Tests/Granit.Persistence.EntityFrameworkCore.Hosting.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Postgres.Tests/Granit.Persistence.EntityFrameworkCore.Postgres.Tests.csproj" />

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.LanguageDetection.Trigram</PackageId>
+    <Description>Default ILanguageDetector for the Granit framework. Pure-managed trigram language detector with Unicode-script pre-filtering, ported clean-room from Franc (Titus Wormer, MIT). Embedded data for 390+ languages across 9 scripts — deterministic, sub-millisecond, no native dependency.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.LanguageDetection.Trigram.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.LanguageDetection\Granit.LanguageDetection.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\profiles.json" />
+  </ItemGroup>
+
+</Project>

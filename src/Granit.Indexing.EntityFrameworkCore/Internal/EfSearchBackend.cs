@@ -57,7 +57,7 @@ internal sealed class EfSearchBackend<TKey, TResult> : ISearchBackend<TKey, TRes
 
         await using IndexingDbContext db = await _factory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        string dictionary = MapLanguageToDictionary(request.Language, db.DefaultDictionary);
+        string dictionary = IndexingLanguageMap.GetPostgresDictionary(request.Language, db.DefaultDictionary);
         string queryText = request.Query ?? string.Empty;
 
         // Fetch one extra row to determine HasMore without a separate COUNT.
@@ -93,32 +93,6 @@ internal sealed class EfSearchBackend<TKey, TResult> : ISearchBackend<TKey, TRes
         }
 
         return new BackendSearchPage<TKey, TResult>(hits, hasMore);
-    }
-
-    private static string MapLanguageToDictionary(string? language, string fallback)
-    {
-        // Stable mapping for the most common ISO 639-1 codes. The full mapping (the one
-        // that survives Lingua's output) ships in Granit.Indexing.Lingua (I-F3.1) via
-        // IndexingLanguageMap; this in-line map covers the boot-strap path so the
-        // backend works correctly when used without the Lingua package.
-        return (language?.ToLowerInvariant()) switch
-        {
-            "en" => "english",
-            "fr" => "french",
-            "es" => "spanish",
-            "de" => "german",
-            "it" => "italian",
-            "nl" => "dutch",
-            "pt" => "portuguese",
-            "ru" => "russian",
-            "sv" => "swedish",
-            "no" => "norwegian",
-            "da" => "danish",
-            "fi" => "finnish",
-            "tr" => "turkish",
-            null or "" => fallback,
-            _ => fallback,
-        };
     }
 
 }

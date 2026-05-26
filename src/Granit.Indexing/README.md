@@ -9,7 +9,7 @@ Base contracts only — no backend, no language detector, no AI provider.
 - **Write port** — `IIndexer<TKey>` (`IndexAsync`, `RemoveAsync`).
 - **Read port** — `ISearchService<TKey, TResult>` (orchestrator) over `ISearchBackend<TKey, TResult>` (paged fetch).
 - **Authorization boundary** — `ISearchResultAuthorizer<TKey>` extensibility port for per-resource ACL filtering. The framework enforces tenant isolation only; everything else is the consumer module's responsibility.
-- **Enrichment ports** — `ILanguageDetector` (+ `CompositeLanguageDetector`), `ISummarizer`, `IAutoTagger` (+ `ITagCandidateProvider`).
+- **Enrichment ports** — `ISummarizer`, `IAutoTagger` (+ `ITagCandidateProvider`). Language detection lives in `Granit.LanguageDetection` (a cross-cutting concern, used by indexing and beyond).
 - **Data subject hook** — `IIndexedEntrySource<TKey>.GetDataSubjectIdAsync` for GDPR Art. 17 cascades.
 - **Events** — `EntryIndexedEvent<TKey>`, `EntryIndexingFailedEvent<TKey>` (local bus).
 - **Options** — `GranitIndexingOptions` (`SectionName = "Indexing"`).
@@ -21,7 +21,8 @@ Base contracts only — no backend, no language detector, no AI provider.
 | --- | --- |
 | `Granit.Indexing.EntityFrameworkCore` | Postgres tsvector default backend. |
 | `Granit.Indexing.Elasticsearch` | ES backend for OR cluster deployments. |
-| `Granit.Indexing.Lingua` | Default `ILanguageDetector` (Apache-2.0). |
+| `Granit.LanguageDetection` | Cross-cutting `ILanguageDetector` abstraction. |
+| `Granit.LanguageDetection.Lingua` | Default trigram language detector (Franc dataset, MIT). |
 | `Granit.Indexing.AI.*` | AI-backed `ISummarizer`, `IAutoTagger`, embedding generators. |
 | `Granit.Indexing.BackgroundJobs` | Reindex / cleanup recurring jobs. |
 

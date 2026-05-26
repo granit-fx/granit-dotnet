@@ -1155,7 +1155,8 @@
     {
       "name": "Granit.Indexing",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.LanguageDetection"
       ],
       "framework": "net10.0"
     },
@@ -1172,6 +1173,20 @@
       "deps": [
         "Granit.Indexing",
         "Granit.Privacy"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.LanguageDetection",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.LanguageDetection.Trigram",
+      "deps": [
+        "Granit.LanguageDetection"
       ],
       "framework": "net10.0"
     },
@@ -25728,22 +25743,6 @@
       "members": []
     },
     {
-      "name": "CompositeLanguageDetector",
-      "fqn": "Granit.Indexing.CompositeLanguageDetector",
-      "kind": "class",
-      "project": "Granit.Indexing",
-      "file": "src/Granit.Indexing/CompositeLanguageDetector.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "DetectAsync",
-          "kind": "method",
-          "signature": "DetectAsync(string content, CancellationToken cancellationToken = default)",
-          "returnType": "Task<string?>"
-        }
-      ]
-    },
-    {
       "name": "IndexingMetrics",
       "fqn": "Granit.Indexing.Diagnostics.IndexingMetrics",
       "kind": "class",
@@ -25840,6 +25839,22 @@
       "members": []
     },
     {
+      "name": "IndexingLanguageMap",
+      "fqn": "Granit.Indexing.EntityFrameworkCore.IndexingLanguageMap",
+      "kind": "class",
+      "project": "Granit.Indexing.EntityFrameworkCore",
+      "file": "src/Granit.Indexing.EntityFrameworkCore/IndexingLanguageMap.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "GetPostgresDictionary",
+          "kind": "method",
+          "signature": "GetPostgresDictionary(string? iso639Code, string fallback)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "IndexingEntityFrameworkCoreOptions",
       "fqn": "Granit.Indexing.EntityFrameworkCore.Options.IndexingEntityFrameworkCoreOptions",
       "kind": "class",
@@ -25907,7 +25922,7 @@
       "kind": "class",
       "project": "Granit.Indexing",
       "file": "src/Granit.Indexing/Extensions/ServiceCollectionExtensions.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitIndexing",
@@ -25923,7 +25938,7 @@
       "kind": "class",
       "project": "Granit.Indexing",
       "file": "src/Granit.Indexing/GranitIndexingModule.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -26012,22 +26027,6 @@
           "kind": "method",
           "signature": "RemoveAsync(TKey key, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "ILanguageDetector",
-      "fqn": "Granit.Indexing.ILanguageDetector",
-      "kind": "interface",
-      "project": "Granit.Indexing",
-      "file": "src/Granit.Indexing/ILanguageDetector.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "DetectAsync",
-          "kind": "method",
-          "signature": "DetectAsync(string content, CancellationToken cancellationToken = default)",
-          "returnType": "int Priority { get; } Task<string?>"
         }
       ]
     },
@@ -26247,6 +26246,124 @@
           "kind": "method",
           "signature": "CreateConverter(Type typeToConvert, JsonSerializerOptions options)",
           "returnType": "JsonConverter"
+        }
+      ]
+    },
+    {
+      "name": "CompositeLanguageDetector",
+      "fqn": "Granit.LanguageDetection.CompositeLanguageDetector",
+      "kind": "class",
+      "project": "Granit.LanguageDetection",
+      "file": "src/Granit.LanguageDetection/CompositeLanguageDetector.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "DetectAsync",
+          "kind": "method",
+          "signature": "DetectAsync(string content, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string?>"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.LanguageDetection.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.LanguageDetection",
+      "file": "src/Granit.LanguageDetection/Extensions/ServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitLanguageDetection",
+          "kind": "method",
+          "signature": "AddGranitLanguageDetection(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitLanguageDetectionModule",
+      "fqn": "Granit.LanguageDetection.GranitLanguageDetectionModule",
+      "kind": "class",
+      "project": "Granit.LanguageDetection",
+      "file": "src/Granit.LanguageDetection/GranitLanguageDetectionModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ILanguageDetector",
+      "fqn": "Granit.LanguageDetection.ILanguageDetector",
+      "kind": "interface",
+      "project": "Granit.LanguageDetection",
+      "file": "src/Granit.LanguageDetection/ILanguageDetector.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "DetectAsync",
+          "kind": "method",
+          "signature": "DetectAsync(string content, CancellationToken cancellationToken = default)",
+          "returnType": "int Priority { get; } Task<string?>"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.LanguageDetection.Trigram.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.LanguageDetection.Trigram",
+      "file": "src/Granit.LanguageDetection.Trigram/Extensions/ServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitLanguageDetectionTrigram",
+          "kind": "method",
+          "signature": "AddGranitLanguageDetectionTrigram(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitLanguageDetectionTrigramModule",
+      "fqn": "Granit.LanguageDetection.Trigram.GranitLanguageDetectionTrigramModule",
+      "kind": "class",
+      "project": "Granit.LanguageDetection.Trigram",
+      "file": "src/Granit.LanguageDetection.Trigram/GranitLanguageDetectionTrigramModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "TrigramLanguageDetector",
+      "fqn": "Granit.LanguageDetection.Trigram.TrigramLanguageDetector",
+      "kind": "class",
+      "project": "Granit.LanguageDetection.Trigram",
+      "file": "src/Granit.LanguageDetection.Trigram/TrigramLanguageDetector.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "MaxSampleChars",
+          "kind": "property",
+          "signature": "int MaxSampleChars",
+          "returnType": "int"
+        },
+        {
+          "name": "DetectAsync",
+          "kind": "method",
+          "signature": "DetectAsync(string content, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string?>"
         }
       ]
     },

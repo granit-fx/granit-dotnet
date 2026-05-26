@@ -406,7 +406,8 @@
       "granit.indexing": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )",
+          "Granit.LanguageDetection": "[0.1.0-dev, )"
         }
       },
       "granit.indexing.entityframeworkcore": {
@@ -416,6 +417,12 @@
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.*, )"
+        }
+      },
+      "granit.languagedetection": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.persistence": {

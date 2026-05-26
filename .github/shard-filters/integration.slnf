@@ -41,6 +41,7 @@
       "src/Granit.Indexing.EntityFrameworkCore/Granit.Indexing.EntityFrameworkCore.csproj",
       "src/Granit.Indexing.Privacy/Granit.Indexing.Privacy.csproj",
       "src/Granit.Indexing/Granit.Indexing.csproj",
+      "src/Granit.LanguageDetection/Granit.LanguageDetection.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
       "src/Granit.MultiTenancy/Granit.MultiTenancy.csproj",
       "src/Granit.Observability/Granit.Observability.csproj",

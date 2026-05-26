@@ -190,6 +190,8 @@
         "tests/Granit.Indexing.EntityFrameworkCore.Tests",
         "tests/Granit.Indexing.Privacy.Tests",
         "tests/Granit.Indexing.Tests",
+        "tests/Granit.LanguageDetection.Tests",
+        "tests/Granit.LanguageDetection.Trigram.Tests",
         "tests/Granit.Notifications.Abstractions.Tests",
         "tests/Granit.Notifications.Brevo.Tests",
         "tests/Granit.Notifications.Email.AwsSes.Tests",

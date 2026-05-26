@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-05-25 (ajout SixLabors.ImageSharp + Tesseract pour OCR locale)
+Dernière mise à jour : 2026-05-26 (ajout du dataset Franc pour `Granit.LanguageDetection.Trigram`)
 
 ---
 
@@ -229,6 +229,32 @@ n'est compilé, lié ou redistribué avec le framework — l'hôte installe la
 dépendance sur son image runtime (`apt-get install libreoffice` /
 `apk add libreoffice` / `brew install --cask libreoffice`). Le framework reste
 sous Apache-2.0.
+
+---
+
+## Jeux de données embarqués
+
+### Franc trigram dataset
+
+| Champ | Valeur |
+| --- | --- |
+| Source | <https://github.com/wooorm/franc> (`packages/franc-all/data.js`) |
+| Auteur | Titus Wormer, 2014+ |
+| Licence | MIT |
+| Copyright | © 2014 Titus Wormer ; © 2008 Kent S Johnson ; © 2006 Jacob R Rideout |
+| Date d'ajout | 2026-05-26 |
+
+Le fichier `src/Granit.LanguageDetection.Trigram/Resources/profiles.json` est dérivé
+du dataset Franc (parsé depuis le source JS en JSON compact, ~549 KB). Les profils
+de trigrammes ont été entraînés sur le corpus de la Déclaration universelle des
+droits de l'homme (UDHR) et des extraits Wikipédia. Le code C# du détecteur est
+une réimplémentation **clean-room** ; seules les données statistiques (tables de
+trigrammes ranked) sont reprises. La licence MIT permet l'inclusion sans
+contamination Apache-2.0 du framework, sous réserve du maintien de cette
+attribution.
+
+Le format d'origine (`data.js` JS) est documenté à
+<https://github.com/wooorm/franc/tree/main/packages/franc-all>.
 
 ---
 

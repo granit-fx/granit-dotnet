@@ -10,12 +10,6 @@
       },
       "granit": {
         "type": "Project"
-      },
-      "granit.languagedetection": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
       }
     }
   }

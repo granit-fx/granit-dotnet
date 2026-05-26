@@ -20,13 +20,16 @@ public sealed class GranitIndexingModuleTests
         typeof(GranitIndexingModule).IsSealed.ShouldBeTrue();
 
     [Fact]
-    public void Module_declares_no_DependsOn()
+    public void Module_depends_on_GranitLanguageDetectionModule()
     {
-        // Indexing is a horizontal framework module with zero declared dependencies
-        // (Granit is the implicit base). Adding a [DependsOn] later would couple all
-        // consumers to that dependency tree, so the absence is part of the contract.
-        object[] attrs = typeof(GranitIndexingModule).GetCustomAttributes(typeof(DependsOnAttribute), inherit: true);
-        attrs.ShouldBeEmpty();
+        // Language detection is a cross-cutting concern; the abstraction lives in its
+        // own package so notifications, AI prompts, etc. can consume detection without
+        // pulling in indexing. The dependency direction is therefore Indexing →
+        // LanguageDetection (one way, never reversed).
+        var attrs = (DependsOnAttribute[])typeof(GranitIndexingModule)
+            .GetCustomAttributes(typeof(DependsOnAttribute), inherit: true);
+        attrs.SelectMany(a => a.DependedTypes)
+            .ShouldContain(typeof(Granit.LanguageDetection.GranitLanguageDetectionModule));
     }
 
     [Fact]

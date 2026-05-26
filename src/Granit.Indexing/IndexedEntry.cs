@@ -36,7 +36,7 @@ public sealed record IndexedEntry<TKey>
 
     /// <summary>
     /// ISO 639-1 language code (e.g. <c>en</c>, <c>fr</c>, <c>zh</c>) detected by an
-    /// <see cref="ILanguageDetector"/>. <c>null</c> when detection failed; the backend
+    /// <see cref="LanguageDetection.ILanguageDetector"/>. <c>null</c> when detection failed; the backend
     /// falls back to its language-agnostic dictionary (Postgres: <c>simple</c>).
     /// </summary>
     public string? Language { get; init; }

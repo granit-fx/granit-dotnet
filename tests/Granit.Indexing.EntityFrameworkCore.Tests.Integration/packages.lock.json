@@ -477,7 +477,8 @@
       "granit.indexing": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )",
+          "Granit.LanguageDetection": "[0.1.0-dev, )"
         }
       },
       "granit.indexing.entityframeworkcore": {
@@ -494,6 +495,12 @@
         "dependencies": {
           "Granit.Indexing": "[0.1.0-dev, )",
           "Granit.Privacy": "[0.1.0-dev, )"
+        }
+      },
+      "granit.languagedetection": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.persistence": {

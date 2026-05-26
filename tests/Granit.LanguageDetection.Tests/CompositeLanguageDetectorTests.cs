@@ -1,10 +1,12 @@
 using Shouldly;
 using Xunit;
 
-namespace Granit.Indexing.Tests;
+namespace Granit.LanguageDetection.Tests;
 
 public sealed class CompositeLanguageDetectorTests
 {
+    private static CancellationToken Ct => TestContext.Current.CancellationToken;
+
     [Fact]
     public async Task Higher_priority_detector_wins()
     {
@@ -13,8 +15,7 @@ public sealed class CompositeLanguageDetectorTests
 
         CompositeLanguageDetector composite = new([low, high]);
 
-        string? result = await composite.DetectAsync("anything", TestContext.Current.CancellationToken);
-
+        string? result = await composite.DetectAsync("anything", Ct);
         result.ShouldBe("en");
         high.CallCount.ShouldBe(1);
         low.CallCount.ShouldBe(0);
@@ -28,8 +29,7 @@ public sealed class CompositeLanguageDetectorTests
 
         CompositeLanguageDetector composite = new([fallback, primary]);
 
-        string? result = await composite.DetectAsync("anything", TestContext.Current.CancellationToken);
-
+        string? result = await composite.DetectAsync("anything", Ct);
         result.ShouldBe("es");
         primary.CallCount.ShouldBe(1);
         fallback.CallCount.ShouldBe(1);
@@ -40,25 +40,19 @@ public sealed class CompositeLanguageDetectorTests
     {
         StubDetector a = new(priority: 100, returns: null);
         StubDetector b = new(priority: 50, returns: null);
-
         CompositeLanguageDetector composite = new([a, b]);
 
-        string? result = await composite.DetectAsync("anything", TestContext.Current.CancellationToken);
-
-        result.ShouldBeNull();
+        (await composite.DetectAsync("anything", Ct)).ShouldBeNull();
     }
 
     [Fact]
     public async Task Empty_string_treated_as_no_detection()
     {
-        StubDetector hollow = new(priority: 200, returns: "");
+        StubDetector hollow = new(priority: 200, returns: string.Empty);
         StubDetector real = new(priority: 100, returns: "de");
-
         CompositeLanguageDetector composite = new([hollow, real]);
 
-        string? result = await composite.DetectAsync("anything", TestContext.Current.CancellationToken);
-
-        result.ShouldBe("de");
+        (await composite.DetectAsync("anything", Ct)).ShouldBe("de");
     }
 
     [Fact]
@@ -67,13 +61,9 @@ public sealed class CompositeLanguageDetectorTests
         StubDetector inner = new(priority: 100, returns: "fr");
         CompositeLanguageDetector innerComposite = new([inner]);
         StubDetector outer = new(priority: 50, returns: "en");
-
         CompositeLanguageDetector composite = new([innerComposite, outer]);
 
-        string? result = await composite.DetectAsync("anything", TestContext.Current.CancellationToken);
-
-        // Nested composite is filtered out; only the StubDetector at priority 50 contributes.
-        result.ShouldBe("en");
+        (await composite.DetectAsync("anything", Ct)).ShouldBe("en");
         inner.CallCount.ShouldBe(0);
     }
 

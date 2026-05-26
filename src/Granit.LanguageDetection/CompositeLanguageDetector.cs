@@ -1,4 +1,4 @@
-namespace Granit.Indexing;
+namespace Granit.LanguageDetection;
 
 /// <summary>
 /// Priority-chain composite that delegates to each registered
@@ -7,15 +7,15 @@ namespace Granit.Indexing;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Registered as <see cref="ILanguageDetector"/> by <c>AddGranitIndexing</c>. Concrete
-/// detectors (Lingua, AI provider, metadata-hint) plug in by registering additional
-/// <see cref="ILanguageDetector"/> services in DI — the composite picks them up via
-/// constructor injection. Ties are resolved by registration order (first-wins).
+/// Registered as <see cref="ILanguageDetector"/> by <c>AddGranitLanguageDetection</c>.
+/// Concrete detectors (Lingua/Franc-trigram, AI provider, metadata-hint) plug in by
+/// registering additional <see cref="ILanguageDetector"/> services in DI — the
+/// composite picks them up via constructor injection. Ties on identical priority are
+/// resolved by DI registration order.
 /// </para>
 /// <para>
-/// <see cref="Priority"/> on the composite itself is <see cref="int.MaxValue"/> so the
-/// chain remains stable even when consumers nest the composite inside an outer chain
-/// (rare, but supported).
+/// <see cref="Priority"/> on the composite itself is <see cref="int.MaxValue"/> so a
+/// composite can be safely nested inside an outer chain (rare, but supported).
 /// </para>
 /// </remarks>
 public sealed class CompositeLanguageDetector : ILanguageDetector

@@ -1,0 +1,117 @@
+namespace Granit.LanguageDetection.Trigram.Internal;
+
+/// <summary>
+/// ISO 639-3 → ISO 639-1 mapping for the language codes returned by the detector.
+/// Limited to languages that have an ISO 639-1 alpha-2 code — codes outside the list
+/// trigger a <c>null</c> return from <see cref="TrigramLanguageDetector"/> so the
+/// composite detector chain falls through to the next provider (typically AI-backed).
+/// </summary>
+/// <remarks>
+/// Covers the full set of languages the Granit framework recognises plus the Postgres
+/// text-search dictionaries listed in <c>IndexingLanguageMap</c>. Adding a language
+/// requires both an ISO 639-3 to ISO 639-1 entry here and (if Postgres-dictionary
+/// scoring is desired) an entry in <c>IndexingLanguageMap</c>.
+/// </remarks>
+internal static class Iso639Map
+{
+    private static readonly Dictionary<string, string> Iso3ToIso1 = new(StringComparer.Ordinal)
+    {
+        // Western European
+        ["eng"] = "en",
+        ["fra"] = "fr",
+        ["spa"] = "es",
+        ["deu"] = "de",
+        ["ita"] = "it",
+        ["nld"] = "nl",
+        ["por"] = "pt",
+        ["dan"] = "da",
+        ["nor"] = "no",
+        ["nob"] = "no",
+        ["nno"] = "no",
+        ["swe"] = "sv",
+        ["fin"] = "fi",
+        ["isl"] = "is",
+        ["gle"] = "ga",
+        ["cym"] = "cy",
+        ["cat"] = "ca",
+        ["eus"] = "eu",
+        ["glg"] = "gl",
+        // Central / Eastern European
+        ["pol"] = "pl",
+        ["ces"] = "cs",
+        ["slk"] = "sk",
+        ["hun"] = "hu",
+        ["ron"] = "ro",
+        ["bul"] = "bg",
+        ["hrv"] = "hr",
+        ["srp"] = "sr",
+        ["slv"] = "sl",
+        ["lit"] = "lt",
+        ["lav"] = "lv",
+        ["est"] = "et",
+        ["ell"] = "el",
+        // Cyrillic
+        ["rus"] = "ru",
+        ["ukr"] = "uk",
+        ["bel"] = "be",
+        ["mkd"] = "mk",
+        // Middle East
+        ["ara"] = "ar",
+        ["heb"] = "he",
+        ["tur"] = "tr",
+        ["fas"] = "fa",
+        ["pes"] = "fa",
+        ["urd"] = "ur",
+        ["aze"] = "az",
+        ["kur"] = "ku",
+        // South / South-East Asia
+        ["hin"] = "hi",
+        ["ben"] = "bn",
+        ["pan"] = "pa",
+        ["mar"] = "mr",
+        ["tam"] = "ta",
+        ["tel"] = "te",
+        ["guj"] = "gu",
+        ["kan"] = "kn",
+        ["mal"] = "ml",
+        ["nep"] = "ne",
+        ["sin"] = "si",
+        ["tha"] = "th",
+        ["vie"] = "vi",
+        ["ind"] = "id",
+        ["msa"] = "ms",
+        ["zsm"] = "ms",
+        ["tgl"] = "tl",
+        ["khm"] = "km",
+        ["mya"] = "my",
+        ["lao"] = "lo",
+        // CJK
+        ["cmn"] = "zh",
+        ["zho"] = "zh",
+        ["jpn"] = "ja",
+        ["kor"] = "ko",
+        // Africa
+        ["swa"] = "sw",
+        ["amh"] = "am",
+        ["som"] = "so",
+        ["hau"] = "ha",
+        ["yor"] = "yo",
+        ["zul"] = "zu",
+        ["afr"] = "af",
+        ["mlg"] = "mg",
+        // Other
+        ["lat"] = "la",
+        ["epo"] = "eo",
+        ["hye"] = "hy",
+        ["kat"] = "ka",
+        ["kaz"] = "kk",
+        ["uzb"] = "uz",
+    };
+
+    /// <summary>
+    /// Returns the ISO 639-1 code for the given ISO 639-3 code, or <c>null</c> when
+    /// no mapping exists.
+    /// </summary>
+    public static string? ToIso639_1(string iso639_3) =>
+        Iso3ToIso1.TryGetValue(iso639_3, out string? iso1) ? iso1 : null;
+}
