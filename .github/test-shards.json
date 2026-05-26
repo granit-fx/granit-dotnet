@@ -338,6 +338,7 @@
         "tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration",
         "tests/Granit.OpenIddict.Tests.Integration",
         "tests/Granit.QueryEngine.AspNetCore.Tests.Integration",
+        "tests/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration",
         "tests/Granit.Wolverine.Postgresql.Tests.Integration",
         "tests/Granit.Wolverine.SqlServer.Tests.Integration"
       ]

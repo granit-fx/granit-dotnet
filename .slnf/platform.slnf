@@ -206,6 +206,7 @@
       "tests/Granit.Tests/Granit.Tests.csproj",
       "tests/Granit.TextExtraction.Email.Tests/Granit.TextExtraction.Email.Tests.csproj",
       "tests/Granit.TextExtraction.Ocr.AI.Tests/Granit.TextExtraction.Ocr.AI.Tests.csproj",
+      "tests/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration.csproj",
       "tests/Granit.TextExtraction.Ocr.Tesseract.Tests/Granit.TextExtraction.Ocr.Tesseract.Tests.csproj",
       "tests/Granit.TextExtraction.Office.Tests/Granit.TextExtraction.Office.Tests.csproj",
       "tests/Granit.TextExtraction.Pdf.Tests/Granit.TextExtraction.Pdf.Tests.csproj",

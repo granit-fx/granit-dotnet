@@ -64,6 +64,8 @@
       "src/Granit.RateLimiting/Granit.RateLimiting.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
+      "src/Granit.TextExtraction.Ocr.Tesseract/Granit.TextExtraction.Ocr.Tesseract.csproj",
+      "src/Granit.TextExtraction/Granit.TextExtraction.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",
       "src/Granit.Wolverine.Postgresql/Granit.Wolverine.Postgresql.csproj",
@@ -85,6 +87,7 @@
       "tests/Granit.Indexing.EntityFrameworkCore.Tests.Integration/Granit.Indexing.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.OpenIddict.Tests.Integration/Granit.OpenIddict.Tests.Integration.csproj",
       "tests/Granit.QueryEngine.AspNetCore.Tests.Integration/Granit.QueryEngine.AspNetCore.Tests.Integration.csproj",
+      "tests/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration.csproj",
       "tests/Granit.Wolverine.Postgresql.Tests.Integration/Granit.Wolverine.Postgresql.Tests.Integration.csproj",
       "tests/Granit.Wolverine.SqlServer.Tests.Integration/Granit.Wolverine.SqlServer.Tests.Integration.csproj"
     ]
