@@ -10621,6 +10621,34 @@
       ]
     },
     {
+      "name": "MultipartWriteStream",
+      "fqn": "Granit.BlobStorage.MultipartWriteStream",
+      "kind": "class",
+      "project": "Granit.BlobStorage",
+      "file": "src/Granit.BlobStorage/MultipartWriteStream.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "CompleteAsync",
+          "kind": "method",
+          "signature": "CompleteAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "AbortAsync",
+          "kind": "method",
+          "signature": "AbortAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DisposeAsync",
+          "kind": "method",
+          "signature": "DisposeAsync()",
+          "returnType": "ValueTask"
+        }
+      ]
+    },
+    {
       "name": "BlobStorageOptions",
       "fqn": "Granit.BlobStorage.Options.BlobStorageOptions",
       "kind": "class",

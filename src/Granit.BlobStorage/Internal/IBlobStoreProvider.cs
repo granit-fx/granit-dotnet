@@ -55,4 +55,41 @@ internal interface IBlobStoreProvider
         string objectKey,
         int byteCount,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Opens a streaming write surface whose final size is not known in advance —
+    /// used by content producers that write incrementally (ZIP shards, archive
+    /// builders) and cannot buffer the entire payload in memory.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The caller writes bytes via the returned <see cref="MultipartWriteStream"/>
+    /// and finalises with either
+    /// <see cref="MultipartWriteStream.CompleteAsync"/> (commit the blob) or
+    /// <see cref="MultipartWriteStream.AbortAsync"/> (discard). Disposing without
+    /// calling either is treated as an abort — partial bytes never reach the blob.
+    /// </para>
+    /// <para>
+    /// The default implementation buffers writes to a
+    /// <c>FileOptions.DeleteOnClose</c> temp file and ships the whole content via
+    /// a single <see cref="SaveAsync"/> on
+    /// <see cref="MultipartWriteStream.CompleteAsync"/>. Correct for every
+    /// provider but not memory-optimal — providers with native multipart support
+    /// (S3 InitiateMultipartUpload, Azure StageBlock, GCS resumable upload)
+    /// override this method to stream parts directly without the temp-file hop.
+    /// </para>
+    /// </remarks>
+    Task<MultipartWriteStream> OpenWriteMultipartAsync(
+        string bucket,
+        string objectKey,
+        string contentType,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(bucket);
+        ArgumentException.ThrowIfNullOrEmpty(objectKey);
+        ArgumentException.ThrowIfNullOrEmpty(contentType);
+
+        return Task.FromResult<MultipartWriteStream>(
+            new BufferedMultipartWriteStream(this, bucket, objectKey, contentType));
+    }
 }
