@@ -1,5 +1,7 @@
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
+using Granit.Privacy.DataExport;
+using Granit.Privacy.EntityFrameworkCore.DataExport.Internal;
 using Granit.Privacy.EntityFrameworkCore.Internal;
 using Granit.Privacy.LegalAgreements;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +56,10 @@ public static class PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.TryAddScoped<ILegalDocumentWriter>(sp => sp.GetRequiredService<EfLegalDocumentStore>());
 
         builder.Services.TryAddScoped<ILegalDocumentPublicationService, LegalDocumentPublicationService>();
+
+        // Swap the BlobStorage in-memory default with the durable EF impl.
+        // Replace (not TryAdd) so the EF impl wins regardless of registration order.
+        builder.Services.Replace(ServiceDescriptor.Scoped<IExportAssemblyCheckpointStore, EfExportAssemblyCheckpointStore>());
 
         return builder;
     }

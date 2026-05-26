@@ -13,6 +13,7 @@ public static class PrivacyModelBuilderExtensions
     {
         modelBuilder.ApplyConfiguration(new LegalDocumentConfiguration());
         modelBuilder.ApplyConfiguration(new ExportRequestEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new ExportAssemblyCheckpointRowConfiguration());
         modelBuilder.ApplyConfiguration(new DeletionRequestEntityConfiguration());
         return modelBuilder;
     }

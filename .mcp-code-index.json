@@ -38162,6 +38162,28 @@
       ]
     },
     {
+      "name": "ExportAssemblyCheckpointRow",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.Entities.ExportAssemblyCheckpointRow",
+      "kind": "class",
+      "project": "Granit.Privacy.EntityFrameworkCore",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/Entities/ExportAssemblyCheckpointRow.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "RequestId",
+          "kind": "property",
+          "signature": "Guid RequestId",
+          "returnType": "Guid"
+        },
+        {
+          "name": "UpdatedAt",
+          "kind": "property",
+          "signature": "DateTimeOffset UpdatedAt",
+          "returnType": "DateTimeOffset"
+        }
+      ]
+    },
+    {
       "name": "ExportRequestEntity",
       "fqn": "Granit.Privacy.EntityFrameworkCore.Entities.ExportRequestEntity",
       "kind": "class",
@@ -38199,7 +38221,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitPrivacyEntityFrameworkCore",
