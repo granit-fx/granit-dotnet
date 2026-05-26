@@ -19,7 +19,7 @@ namespace Granit.Indexing.EntityFrameworkCore;
 /// <c>GENERATED ALWAYS AS (...) STORED</c> column built by
 /// <see cref="Extensions.ModelBuilderExtensions.HasGeneratedTsVectorColumn"/>. The
 /// generator picks the Postgres text-search dictionary from <see cref="Language"/>
-/// (English, French, …) — the mapping is owned by I-F3.1 (<c>Granit.Indexing.Lingua</c>).
+/// (English, French, …) — the ISO-to-dictionary mapping is owned by <c>IndexingLanguageMap</c>.
 /// </para>
 /// <para>
 /// <b>No ACL columns.</b> Per the framework's authorization boundary, this row carries

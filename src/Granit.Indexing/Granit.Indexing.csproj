@@ -10,8 +10,6 @@
     <InternalsVisibleTo Include="Granit.Indexing.Tests" />
     <InternalsVisibleTo Include="Granit.Indexing.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.Indexing.EntityFrameworkCore.Tests" />
-    <InternalsVisibleTo Include="Granit.Indexing.Lingua" />
-    <InternalsVisibleTo Include="Granit.Indexing.Lingua.Tests" />
     <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal types in tests -->
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>

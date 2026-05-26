@@ -7,10 +7,11 @@ namespace Granit.LanguageDetection.Trigram.Internal;
 /// composite detector chain falls through to the next provider (typically AI-backed).
 /// </summary>
 /// <remarks>
-/// Covers the full set of languages the Granit framework recognises plus the Postgres
-/// text-search dictionaries listed in <c>IndexingLanguageMap</c>. Adding a language
-/// requires both an ISO 639-3 to ISO 639-1 entry here and (if Postgres-dictionary
-/// scoring is desired) an entry in <c>IndexingLanguageMap</c>.
+/// Covers the languages the Granit framework recognises plus every language whose
+/// stemmer ships with a vanilla Postgres install (the common consumer surface).
+/// Adding a language requires an ISO 639-3 to ISO 639-1 entry here; downstream
+/// language-to-resource mappings (Postgres dictionaries, locale resource bundles, …)
+/// are the consumer's responsibility.
 /// </remarks>
 internal static class Iso639Map
 {

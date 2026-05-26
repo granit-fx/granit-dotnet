@@ -26,13 +26,30 @@ public sealed class GranitLanguageDetectionTrigramModuleTests
     }
 
     [Fact]
-    public void DI_extension_registers_detector_in_composite_chain()
+    public void DI_extension_registers_detector_as_provider_for_the_composite_chain()
     {
         ServiceCollection services = [];
         services.AddGranitLanguageDetectionTrigram();
         ServiceProvider sp = services.BuildServiceProvider();
 
-        IEnumerable<ILanguageDetector> all = sp.GetServices<ILanguageDetector>();
-        all.OfType<TrigramLanguageDetector>().Count().ShouldBe(1);
+        // Concrete detectors register under ILanguageDetectorProvider so the composite
+        // picks them up via IEnumerable<ILanguageDetectorProvider>. The audit's
+        // BREAKING finding #1 (composite bypass) regressed because the trigram detector
+        // was registered as ILanguageDetector — locking the right marker here.
+        IEnumerable<ILanguageDetectorProvider> providers = sp.GetServices<ILanguageDetectorProvider>();
+        providers.OfType<TrigramLanguageDetector>().Count().ShouldBe(1);
+    }
+
+    [Fact]
+    public void DI_extension_is_idempotent()
+    {
+        // TryAddEnumerable + TryAddSingleton guarantee that calling the extension twice
+        // does not register the detector twice — both calls converge to a single provider.
+        ServiceCollection services = [];
+        services.AddGranitLanguageDetectionTrigram();
+        services.AddGranitLanguageDetectionTrigram();
+        ServiceProvider sp = services.BuildServiceProvider();
+
+        sp.GetServices<ILanguageDetectorProvider>().Count().ShouldBe(1);
     }
 }

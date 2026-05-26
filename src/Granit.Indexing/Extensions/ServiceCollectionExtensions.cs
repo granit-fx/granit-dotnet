@@ -16,7 +16,7 @@ namespace Granit.Indexing.Extensions;
 /// <remarks>
 /// Concrete backends ship in dedicated packages (<c>Granit.Indexing.EntityFrameworkCore</c>
 /// for Postgres tsvector, <c>Granit.Indexing.Elasticsearch</c> for ES). Concrete language
-/// detectors / summarisers / auto-taggers ship in <c>Granit.Indexing.Lingua</c> and the
+/// detectors ship in <c>Granit.LanguageDetection.Trigram</c>; concrete summarisers / auto-taggers ship in the
 /// AI provider packages.
 /// </remarks>
 public static class ServiceCollectionExtensions

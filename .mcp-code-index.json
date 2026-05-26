@@ -26255,7 +26255,7 @@
       "kind": "class",
       "project": "Granit.LanguageDetection",
       "file": "src/Granit.LanguageDetection/CompositeLanguageDetector.cs",
-      "line": 21,
+      "line": 23,
       "members": [
         {
           "name": "DetectAsync",
@@ -26312,6 +26312,15 @@
           "returnType": "int Priority { get; } Task<string?>"
         }
       ]
+    },
+    {
+      "name": "ILanguageDetectorProvider",
+      "fqn": "Granit.LanguageDetection.ILanguageDetectorProvider",
+      "kind": "interface",
+      "project": "Granit.LanguageDetection",
+      "file": "src/Granit.LanguageDetection/ILanguageDetectorProvider.cs",
+      "line": 27,
+      "members": []
     },
     {
       "name": "ServiceCollectionExtensions",

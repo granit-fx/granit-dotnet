@@ -9,11 +9,11 @@ namespace Granit.LanguageDetection.Trigram;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Coverage.</b> 390+ ISO 639-3 languages across 9 multi-language scripts and
-/// 7 single-language scripts. The detector returns an ISO 639-1 (alpha-2) code so
-/// the result is directly consumable by <c>IndexingLanguageMap</c>; ISO 639-3
-/// inputs without a 639-1 equivalent return <c>null</c> and the composite chain
-/// falls through to the next provider.
+/// <b>Coverage.</b> 390+ ISO 639-3 languages across 7 multi-language scripts and
+/// 6 single-language scripts (see <c>README.md</c> for the exact list). The detector
+/// returns an ISO 639-1 (alpha-2) code, ready for downstream alpha-2-keyed maps;
+/// ISO 639-3 inputs without a 639-1 equivalent return <c>null</c> and the composite
+/// chain falls through to the next provider.
 /// </para>
 /// <para>
 /// <b>Priority.</b> Registered at <c>100</c> so explicit metadata-hint detectors
@@ -25,7 +25,7 @@ namespace Granit.LanguageDetection.Trigram;
 /// up to <see cref="MaxSampleChars"/>.
 /// </para>
 /// </remarks>
-public sealed class TrigramLanguageDetector : ILanguageDetector
+public sealed class TrigramLanguageDetector : ILanguageDetectorProvider
 {
     private const int DefaultMaxSampleChars = 2_048;
     private const int DefaultInputTopN = 300;

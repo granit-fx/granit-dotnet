@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.LanguageDetection.Trigram</PackageId>
-    <Description>Default ILanguageDetector for the Granit framework. Pure-managed trigram language detector with Unicode-script pre-filtering, ported clean-room from Franc (Titus Wormer, MIT). Embedded data for 390+ languages across 9 scripts — deterministic, sub-millisecond, no native dependency.</Description>
+    <Description>Default ILanguageDetectorProvider for the Granit framework. Pure-managed trigram language detector with Unicode-script pre-filtering, ported clean-room from Franc (Titus Wormer, MIT). Embedded data for 390+ languages — deterministic, sub-millisecond, no native dependency.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\profiles.json" />
+    <!-- WithCulture="false" guards against MSBuild inferring satellite assemblies if
+         the dataset is ever sharded per-language (e.g. profiles.fr.json). -->
+    <EmbeddedResource Include="Resources\profiles.json" WithCulture="false" />
   </ItemGroup>
 
 </Project>

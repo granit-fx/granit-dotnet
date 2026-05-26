@@ -2,16 +2,18 @@ namespace Granit.LanguageDetection;
 
 /// <summary>
 /// Priority-chain composite that delegates to each registered
-/// <see cref="ILanguageDetector"/> in descending <see cref="ILanguageDetector.Priority"/>
-/// order until one returns a non-<c>null</c> result.
+/// <see cref="ILanguageDetectorProvider"/> in descending
+/// <see cref="ILanguageDetector.Priority"/> order until one returns a non-<c>null</c>
+/// result. The single <see cref="ILanguageDetector"/> exposed by the DI container.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Registered as <see cref="ILanguageDetector"/> by <c>AddGranitLanguageDetection</c>.
-/// Concrete detectors (Lingua/Franc-trigram, AI provider, metadata-hint) plug in by
-/// registering additional <see cref="ILanguageDetector"/> services in DI — the
-/// composite picks them up via constructor injection. Ties on identical priority are
-/// resolved by DI registration order.
+/// Registered by <c>AddGranitLanguageDetection</c> as the sole
+/// <see cref="ILanguageDetector"/>. Provider packages (the bundled trigram detector,
+/// AI-backed detectors, metadata-hint detectors) register concrete classes under
+/// <see cref="ILanguageDetectorProvider"/> via <c>TryAddEnumerable</c>; the composite
+/// picks them up at construction. Ties on identical priority are resolved by DI
+/// registration order.
 /// </para>
 /// <para>
 /// <see cref="Priority"/> on the composite itself is <see cref="int.MaxValue"/> so a
@@ -20,13 +22,12 @@ namespace Granit.LanguageDetection;
 /// </remarks>
 public sealed class CompositeLanguageDetector : ILanguageDetector
 {
-    private readonly IReadOnlyList<ILanguageDetector> _ordered;
+    private readonly IReadOnlyList<ILanguageDetectorProvider> _ordered;
 
-    public CompositeLanguageDetector(IEnumerable<ILanguageDetector> detectors)
+    public CompositeLanguageDetector(IEnumerable<ILanguageDetectorProvider> providers)
     {
-        ArgumentNullException.ThrowIfNull(detectors);
-        _ordered = detectors
-            .Where(d => d is not CompositeLanguageDetector)
+        ArgumentNullException.ThrowIfNull(providers);
+        _ordered = providers
             .OrderByDescending(d => d.Priority)
             .ToArray();
     }
@@ -38,9 +39,9 @@ public sealed class CompositeLanguageDetector : ILanguageDetector
     public async Task<string?> DetectAsync(string content, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(content);
-        foreach (ILanguageDetector detector in _ordered)
+        foreach (ILanguageDetectorProvider provider in _ordered)
         {
-            string? result = await detector.DetectAsync(content, cancellationToken).ConfigureAwait(false);
+            string? result = await provider.DetectAsync(content, cancellationToken).ConfigureAwait(false);
             if (!string.IsNullOrEmpty(result))
             {
                 return result;

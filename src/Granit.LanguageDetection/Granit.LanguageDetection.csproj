@@ -2,16 +2,9 @@
 
   <PropertyGroup>
     <PackageId>Granit.LanguageDetection</PackageId>
-    <Description>Cross-cutting language-detection abstractions for the Granit framework. ILanguageDetector + CompositeLanguageDetector priority chain. Concrete implementations ship in dedicated packages (e.g. Granit.LanguageDetection.Lingua).</Description>
+    <Description>Cross-cutting language-detection abstractions for the Granit framework. ILanguageDetector facade + ILanguageDetectorProvider marker + CompositeLanguageDetector priority chain. Concrete implementations ship in dedicated packages (e.g. Granit.LanguageDetection.Trigram).</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="Granit.LanguageDetection.Tests" />
-    <InternalsVisibleTo Include="Granit.LanguageDetection.Lingua" />
-    <InternalsVisibleTo Include="Granit.LanguageDetection.Lingua.Tests" />
-    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />

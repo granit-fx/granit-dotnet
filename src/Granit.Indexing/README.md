@@ -22,7 +22,7 @@ Base contracts only — no backend, no language detector, no AI provider.
 | `Granit.Indexing.EntityFrameworkCore` | Postgres tsvector default backend. |
 | `Granit.Indexing.Elasticsearch` | ES backend for OR cluster deployments. |
 | `Granit.LanguageDetection` | Cross-cutting `ILanguageDetector` abstraction. |
-| `Granit.LanguageDetection.Lingua` | Default trigram language detector (Franc dataset, MIT). |
+| `Granit.LanguageDetection.Trigram` | Default trigram language detector (Franc dataset, MIT). |
 | `Granit.Indexing.AI.*` | AI-backed `ISummarizer`, `IAutoTagger`, embedding generators. |
 | `Granit.Indexing.BackgroundJobs` | Reindex / cleanup recurring jobs. |
 

@@ -8,7 +8,7 @@ namespace Granit.LanguageDetection;
 /// </summary>
 /// <remarks>
 /// Zero declared dependencies (Granit is the implicit base). Add a concrete detector
-/// package (e.g. <c>Granit.LanguageDetection.Lingua</c>) alongside this module to get
+/// package (e.g. <c>Granit.LanguageDetection.Trigram</c>) alongside this module to get
 /// a working out-of-the-box default; without one, the composite returns <c>null</c>.
 /// </remarks>
 public sealed class GranitLanguageDetectionModule : GranitModule
