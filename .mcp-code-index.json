@@ -2148,6 +2148,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.TextExtraction.Pdf.Ocr",
+      "deps": [
+        "Granit.TextExtraction",
+        "Granit.TextExtraction.Pdf"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.TextExtraction.Text",
       "deps": [
         "Granit.Html.AngleSharp",
@@ -43851,6 +43859,109 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.TextExtraction.Pdf.Ocr.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Pdf.Ocr",
+      "file": "src/Granit.TextExtraction.Pdf.Ocr/Extensions/ServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitTextExtractionPdfOcr",
+          "kind": "method",
+          "signature": "AddGranitTextExtractionPdfOcr(this IServiceCollection services, Action<PdfOcrOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTextExtractionPdfOcrModule",
+      "fqn": "Granit.TextExtraction.Pdf.Ocr.GranitTextExtractionPdfOcrModule",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Pdf.Ocr",
+      "file": "src/Granit.TextExtraction.Pdf.Ocr/GranitTextExtractionPdfOcrModule.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "IPdfRasterizer",
+      "fqn": "Granit.TextExtraction.Pdf.Ocr.IPdfRasterizer",
+      "kind": "interface",
+      "project": "Granit.TextExtraction.Pdf.Ocr",
+      "file": "src/Granit.TextExtraction.Pdf.Ocr/IPdfRasterizer.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "GetPageCount",
+          "kind": "method",
+          "signature": "GetPageCount(ReadOnlyMemory<byte> pdfBytes, CancellationToken cancellationToken)",
+          "returnType": "int"
+        },
+        {
+          "name": "RasterisePageAsync",
+          "kind": "method",
+          "signature": "RasterisePageAsync(ReadOnlyMemory<byte> pdfBytes, int pageIndex, int dpi, CancellationToken cancellationToken)",
+          "returnType": "Task<byte[]>"
+        }
+      ]
+    },
+    {
+      "name": "PdfOcrOptions",
+      "fqn": "Granit.TextExtraction.Pdf.Ocr.Options.PdfOcrOptions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Pdf.Ocr",
+      "file": "src/Granit.TextExtraction.Pdf.Ocr/Options/PdfOcrOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "MinNativeCharsPerPage",
+          "kind": "property",
+          "signature": "int MinNativeCharsPerPage",
+          "returnType": "int"
+        },
+        {
+          "name": "RenderDpi",
+          "kind": "property",
+          "signature": "int RenderDpi",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxPagesToRasterise",
+          "kind": "property",
+          "signature": "int MaxPagesToRasterise",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxPagePixels",
+          "kind": "property",
+          "signature": "long MaxPagePixels",
+          "returnType": "long"
+        }
+      ]
+    },
+    {
+      "name": "PdfOcrTextExtractor",
+      "fqn": "Granit.TextExtraction.Pdf.Ocr.PdfOcrTextExtractor",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Pdf.Ocr",
+      "file": "src/Granit.TextExtraction.Pdf.Ocr/PdfOcrTextExtractor.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string contentType)",
+          "returnType": "bool"
+        },
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Stream source, string contentType, int maxCharLength, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TextExtractionResult>"
         }
       ]
     },

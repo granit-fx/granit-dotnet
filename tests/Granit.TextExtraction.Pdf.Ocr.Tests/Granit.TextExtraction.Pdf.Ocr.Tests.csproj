@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.TextExtraction\Granit.TextExtraction.csproj" />
+    <ProjectReference Include="..\..\src\Granit.TextExtraction.Pdf\Granit.TextExtraction.Pdf.csproj" />
+    <ProjectReference Include="..\..\src\Granit.TextExtraction.Pdf.Ocr\Granit.TextExtraction.Pdf.Ocr.csproj" />
+  </ItemGroup>
+
+</Project>
