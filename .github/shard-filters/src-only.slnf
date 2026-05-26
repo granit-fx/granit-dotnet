@@ -245,6 +245,7 @@
       "src/Granit.TextExtraction.Ocr.AI/Granit.TextExtraction.Ocr.AI.csproj",
       "src/Granit.TextExtraction.Ocr.Tesseract/Granit.TextExtraction.Ocr.Tesseract.csproj",
       "src/Granit.TextExtraction.Office/Granit.TextExtraction.Office.csproj",
+      "src/Granit.TextExtraction.Pdf.Ocr/Granit.TextExtraction.Pdf.Ocr.csproj",
       "src/Granit.TextExtraction.Pdf/Granit.TextExtraction.Pdf.csproj",
       "src/Granit.TextExtraction.Text/Granit.TextExtraction.Text.csproj",
       "src/Granit.TextExtraction.Tika/Granit.TextExtraction.Tika.csproj",

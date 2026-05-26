@@ -20,6 +20,7 @@
     <PackageVersion Include="Mjml.Net" Version="4.*" />
     <PackageVersion Include="PuppeteerSharp" Version="24.*" />
     <PackageVersion Include="PdfPig" Version="0.1.*" />
+    <PackageVersion Include="PDFtoImage" Version="5.*" />
     <PackageVersion Include="Scriban" Version="7.*" />
   </ItemGroup>
   <ItemGroup Label="AI">

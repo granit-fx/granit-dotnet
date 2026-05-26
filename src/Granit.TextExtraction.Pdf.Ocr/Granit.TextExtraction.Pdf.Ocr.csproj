@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.TextExtraction.Pdf.Ocr</PackageId>
+    <Description>Opt-in scanned-PDF OCR for Granit.TextExtraction. Detects text-empty pages with PdfPig, rasterises them one-at-a-time with PDFium (via PDFtoImage), and routes each bitmap through whatever ITextExtractor the host already wired for image/png (Granit.TextExtraction.Ocr.Tesseract or Granit.TextExtraction.Ocr.AI). The base Granit.TextExtraction.Pdf package stays text-only — only hosts that need scanned PDFs pull the native PDFium dependency.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.TextExtraction.Pdf.Ocr.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="PdfPig" />
+    <PackageReference Include="PDFtoImage" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.TextExtraction\Granit.TextExtraction.csproj" />
+    <ProjectReference Include="..\Granit.TextExtraction.Pdf\Granit.TextExtraction.Pdf.csproj" />
+  </ItemGroup>
+
+</Project>

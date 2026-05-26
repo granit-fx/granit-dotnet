@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-05-26 (ajout du dataset Franc pour `Granit.LanguageDetection.Trigram`)
+Dernière mise à jour : 2026-05-26 (ajout de `PDFtoImage` pour `Granit.TextExtraction.Pdf.Ocr`)
 
 ---
 
@@ -12,7 +12,7 @@ Dernière mise à jour : 2026-05-26 (ajout du dataset Franc pour `Granit.Languag
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 87                 |
+| MIT          | 88                 |
 | Apache-2.0   | 40                 |
 | BSD-3-Clause | 3                  |
 | BSD-2-Clause | 1                  |
@@ -79,6 +79,7 @@ Dernière mise à jour : 2026-05-26 (ajout du dataset Franc pour `Granit.Languag
 | Mjml.Net | 4.11.0 | Copyright (c) Sebastian Stehle |
 | OllamaSharp | 5.4.25 | Copyright (c) 2023-2026 Awalon |
 | PdfPig | 0.1.14 | Copyright (c) Eliot Jones |
+| PDFtoImage | 5.2.1 | Copyright (c) David Sungaila |
 | Pgvector.EntityFrameworkCore | 0.3.0 | Copyright (c) Andrew Kane |
 | PuppeteerSharp | 24.42.0 | PuppeteerSharp Contributors |
 | Scalar.AspNetCore | 2.14.14 | Scalar Contributors |

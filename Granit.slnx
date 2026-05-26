@@ -222,6 +222,7 @@
     <Project Path="src/Granit.TextExtraction.Ocr.Tesseract/Granit.TextExtraction.Ocr.Tesseract.csproj" />
     <Project Path="src/Granit.TextExtraction.Office/Granit.TextExtraction.Office.csproj" />
     <Project Path="src/Granit.TextExtraction.Pdf/Granit.TextExtraction.Pdf.csproj" />
+    <Project Path="src/Granit.TextExtraction.Pdf.Ocr/Granit.TextExtraction.Pdf.Ocr.csproj" />
     <Project Path="src/Granit.TextExtraction.Text/Granit.TextExtraction.Text.csproj" />
     <Project Path="src/Granit.TextExtraction.Tika/Granit.TextExtraction.Tika.csproj" />
     <Project Path="src/Granit.TextExtraction/Granit.TextExtraction.csproj" />
@@ -543,6 +544,7 @@
     <Project Path="tests/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration.csproj" />
     <Project Path="tests/Granit.TextExtraction.Office.Tests/Granit.TextExtraction.Office.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Pdf.Tests/Granit.TextExtraction.Pdf.Tests.csproj" />
+    <Project Path="tests/Granit.TextExtraction.Pdf.Ocr.Tests/Granit.TextExtraction.Pdf.Ocr.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Tests/Granit.TextExtraction.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Text.Tests/Granit.TextExtraction.Text.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Tika.Tests/Granit.TextExtraction.Tika.Tests.csproj" />

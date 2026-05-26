@@ -28,6 +28,7 @@ public sealed class TextExtractionArchitectureTests
         "Granit.TextExtraction.Ocr.Tesseract",
         "Granit.TextExtraction.Office",
         "Granit.TextExtraction.Pdf",
+        "Granit.TextExtraction.Pdf.Ocr",
         "Granit.TextExtraction.Text",
         "Granit.TextExtraction.Tika",
     ];
