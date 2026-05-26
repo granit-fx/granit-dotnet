@@ -144,13 +144,16 @@ public static partial class EntryPathSanitizer
         }
 
         // Per-segment trailing dot/space strip (Windows rejects those when unpacking).
+        // Segments that are entirely '.'s (e.g. "..", ".") are left alone so the
+        // parent-traversal / current-dir checks downstream can still flag them — trimming
+        // would silently rewrite ".." into "" and let "a/../b" collapse to "a//b".
         string[] segments = converted.Split('/');
         char[] trailingChars = ['.', ' '];
         bool anyTrim = false;
         for (int i = 0; i < segments.Length; i++)
         {
             string trimmed = segments[i].TrimEnd(trailingChars);
-            if (!ReferenceEquals(trimmed, segments[i]) && trimmed.Length != segments[i].Length)
+            if (trimmed.Length > 0 && trimmed.Length != segments[i].Length)
             {
                 segments[i] = trimmed;
                 anyTrim = true;
