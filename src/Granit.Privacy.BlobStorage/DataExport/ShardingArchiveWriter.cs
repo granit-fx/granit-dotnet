@@ -65,17 +65,28 @@ internal sealed class ShardingArchiveWriter : IAsyncDisposable
         IBlobStoreProvider provider,
         string bucket,
         string objectKeyPrefix,
-        long shardMaxBytes)
+        long shardMaxBytes,
+        int startShardIndex = 0,
+        IReadOnlyList<ShardManifest>? priorShards = null)
     {
         ArgumentNullException.ThrowIfNull(provider);
         ArgumentException.ThrowIfNullOrEmpty(bucket);
         ArgumentException.ThrowIfNullOrEmpty(objectKeyPrefix);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(shardMaxBytes);
+        ArgumentOutOfRangeException.ThrowIfNegative(startShardIndex);
 
         _provider = provider;
         _bucket = bucket;
         _objectKeyPrefix = objectKeyPrefix;
         _shardMaxBytes = shardMaxBytes;
+        _nextShardIndex = startShardIndex;
+
+        // Resume seeds — previously committed shards re-surfaced in the final
+        // manifest returned by CompleteAsync without re-uploading their bytes.
+        if (priorShards is { Count: > 0 })
+        {
+            _completedShards.AddRange(priorShards);
+        }
     }
 
     /// <summary>Shards finalised by <see cref="CompleteAsync"/>, in write order.</summary>
