@@ -343,15 +343,7 @@
         "type": "Project",
         "dependencies": {
           "Elastic.Clients.Elasticsearch": "[8.*, )",
-          "Granit.Indexing": "[0.1.0-dev, )",
-          "Granit.Indexing.Embeddings": "[0.1.0-dev, )"
-        }
-      },
-      "granit.indexing.embeddings": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Indexing": "[0.1.0-dev, )",
-          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+          "Granit.Indexing": "[0.1.0-dev, )"
         }
       },
       "granit.languagedetection": {
@@ -369,12 +361,6 @@
           "Elastic.Esql": "0.11.0",
           "Elastic.Transport": "0.17.1"
         }
-      },
-      "Microsoft.Extensions.AI.Abstractions": {
-        "type": "CentralTransitive",
-        "requested": "[10.*, )",
-        "resolved": "10.6.0",
-        "contentHash": "JCkVoyqBqi9r3Vs5Qo5PfZobT0+CWeOx+9y9yggBxtW9s/X5CAoa7Iw/tP/rfUdz+nxRKMSBmrytYgwmu60lgA=="
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "CentralTransitive",

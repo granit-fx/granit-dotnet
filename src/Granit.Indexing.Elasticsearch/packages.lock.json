@@ -38,24 +38,11 @@
           "Granit.LanguageDetection": "[0.1.0-dev, )"
         }
       },
-      "granit.indexing.embeddings": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Indexing": "[0.1.0-dev, )",
-          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
-        }
-      },
       "granit.languagedetection": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
         }
-      },
-      "Microsoft.Extensions.AI.Abstractions": {
-        "type": "CentralTransitive",
-        "requested": "[10.*, )",
-        "resolved": "10.6.0",
-        "contentHash": "JCkVoyqBqi9r3Vs5Qo5PfZobT0+CWeOx+9y9yggBxtW9s/X5CAoa7Iw/tP/rfUdz+nxRKMSBmrytYgwmu60lgA=="
       }
     }
   }

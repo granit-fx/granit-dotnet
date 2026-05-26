@@ -52,6 +52,10 @@ public sealed class IndexingDbContext : GranitDbContext
             modelBuilder.HasPostgresExtension("vector");
         }
 
+        // Rebuild-job checkpoint table — always mapped so the
+        // EfRebuildCheckpointStore impl works without a separate DbContext.
+        modelBuilder.ApplyConfiguration(new Configurations.IndexingRebuildCheckpointRowConfiguration());
+
         foreach (Type keyType in IndexedKeyTypes)
         {
             ApplyConfigurationMethod

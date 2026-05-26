@@ -1169,6 +1169,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Indexing.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Indexing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Indexing.Elasticsearch",
       "deps": [
         "Granit.Indexing",
@@ -1187,6 +1195,7 @@
       "name": "Granit.Indexing.EntityFrameworkCore",
       "deps": [
         "Granit.Indexing",
+        "Granit.Indexing.BackgroundJobs",
         "Granit.Indexing.Embeddings",
         "Granit.Persistence.EntityFrameworkCore"
       ],
@@ -25992,6 +26001,161 @@
       "members": []
     },
     {
+      "name": "IndexingBackgroundJobsMetrics",
+      "fqn": "Granit.Indexing.BackgroundJobs.Diagnostics.IndexingBackgroundJobsMetrics",
+      "kind": "class",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Diagnostics/IndexingBackgroundJobsMetrics.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "RecordRebuildResumed",
+          "kind": "method",
+          "signature": "RecordRebuildResumed(string? tenantId, string sourceName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRebuildCompleted",
+          "kind": "method",
+          "signature": "RecordRebuildCompleted(string? tenantId, string sourceName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRebuildAborted",
+          "kind": "method",
+          "signature": "RecordRebuildAborted(string? tenantId, string sourceName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordEntryIndexed",
+          "kind": "method",
+          "signature": "RecordEntryIndexed(string? tenantId, string sourceName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordEntrySkipped",
+          "kind": "method",
+          "signature": "RecordEntrySkipped(string? tenantId, string sourceName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordEntryFailed",
+          "kind": "method",
+          "signature": "RecordEntryFailed(string? tenantId, string sourceName, string reason)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Indexing.BackgroundJobs.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Extensions/ServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitIndexingBackgroundJobs",
+          "kind": "method",
+          "signature": "AddGranitIndexingBackgroundJobs(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIndexingBackgroundJobsModule",
+      "fqn": "Granit.Indexing.BackgroundJobs.GranitIndexingBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/GranitIndexingBackgroundJobsModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IRebuildCheckpointStore",
+      "fqn": "Granit.Indexing.BackgroundJobs.IRebuildCheckpointStore",
+      "kind": "interface",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/IRebuildCheckpointStore.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "GetLastCheckpointAsync",
+          "kind": "method",
+          "signature": "GetLastCheckpointAsync(Guid? tenantId, string sourceName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TKey?>"
+        },
+        {
+          "name": "SetCheckpointAsync",
+          "kind": "method",
+          "signature": "SetCheckpointAsync(Guid? tenantId, string sourceName, TKey checkpoint, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ClearAsync",
+          "kind": "method",
+          "signature": "ClearAsync(Guid? tenantId, string sourceName, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "RebuildIndexHandler",
+      "fqn": "Granit.Indexing.BackgroundJobs.Jobs.RebuildIndexHandler",
+      "kind": "class",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Jobs/RebuildIndexHandler.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "RebuildIndexJob",
+      "fqn": "Granit.Indexing.BackgroundJobs.Jobs.RebuildIndexJob",
+      "kind": "record",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Jobs/RebuildIndexJob.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "IndexingBackgroundJobsOptions",
+      "fqn": "Granit.Indexing.BackgroundJobs.Options.IndexingBackgroundJobsOptions",
+      "kind": "class",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Options/IndexingBackgroundJobsOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "CheckpointBatchSize",
+          "kind": "property",
+          "signature": "int CheckpointBatchSize",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxConsecutiveFailures",
+          "kind": "property",
+          "signature": "int MaxConsecutiveFailures",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "RebuildIndexService",
+      "fqn": "Granit.Indexing.BackgroundJobs.Services.RebuildIndexService",
+      "kind": "class",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Services/RebuildIndexService.cs",
+      "line": 28,
+      "members": []
+    },
+    {
       "name": "IndexingMetrics",
       "fqn": "Granit.Indexing.Diagnostics.IndexingMetrics",
       "kind": "class",
@@ -26221,7 +26385,7 @@
       "kind": "class",
       "project": "Granit.Indexing.EntityFrameworkCore",
       "file": "src/Granit.Indexing.EntityFrameworkCore/Extensions/ServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitIndexingEntityFrameworkCore",
@@ -26290,7 +26454,7 @@
       "kind": "record",
       "project": "Granit.Indexing.EntityFrameworkCore",
       "file": "src/Granit.Indexing.EntityFrameworkCore/IndexingDbContext.cs",
-      "line": 131,
+      "line": 135,
       "members": []
     },
     {
@@ -26305,6 +26469,28 @@
           "name": "GetPostgresDictionary",
           "kind": "method",
           "signature": "GetPostgresDictionary(string? iso639Code, string fallback)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "IndexingRebuildCheckpointRow",
+      "fqn": "Granit.Indexing.EntityFrameworkCore.IndexingRebuildCheckpointRow",
+      "kind": "class",
+      "project": "Granit.Indexing.EntityFrameworkCore",
+      "file": "src/Granit.Indexing.EntityFrameworkCore/IndexingRebuildCheckpointRow.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "LastProcessedKey",
+          "kind": "property",
+          "signature": "string LastProcessedKey",
           "returnType": "string"
         }
       ]
@@ -26446,7 +26632,7 @@
         {
           "name": "EnumerateKeysAsync",
           "kind": "method",
-          "signature": "EnumerateKeysAsync(CancellationToken cancellationToken = default)",
+          "signature": "EnumerateKeysAsync(Guid? tenantId, TKey? resumeAfter, CancellationToken cancellationToken = default)",
           "returnType": "string Name { get; } IAsyncEnumerable<TKey>"
         },
         {

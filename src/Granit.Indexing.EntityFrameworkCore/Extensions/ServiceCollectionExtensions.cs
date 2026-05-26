@@ -1,3 +1,4 @@
+using Granit.Indexing.BackgroundJobs;
 using Granit.Indexing.Embeddings;
 using Granit.Indexing.Embeddings.Options;
 using Granit.Indexing.EntityFrameworkCore.Internal;
@@ -136,6 +137,41 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IVectorSearchBackend<TKey, TResult>>(sp => new EfVectorSearchBackend<TKey, TResult>(
             sp.GetRequiredService<IDbContextFactory<IndexingDbContext>>(),
             projection));
+
+        return services;
+    }
+
+    /// <summary>
+    /// Replaces the in-memory <see cref="IRebuildCheckpointStore{TKey}"/> default with
+    /// a persistent EF-backed implementation rooted in <see cref="IndexingDbContext"/>.
+    /// Required for production rebuilds — the in-memory default loses state on worker
+    /// restart.
+    /// </summary>
+    /// <remarks>
+    /// MUST be called AFTER <see cref="AddGranitIndexingEntityFrameworkCore"/> AND after
+    /// the host has called <c>AddGranitIndexingBackgroundJobs()</c> so the in-memory
+    /// fallback is already registered and can be replaced cleanly via TryAdd-then-replace.
+    /// </remarks>
+    public static IServiceCollection AddGranitIndexingEntityFrameworkCoreCheckpointStore<TKey>(
+        this IServiceCollection services)
+        where TKey : notnull
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // Strip any pre-registered IRebuildCheckpointStore<TKey> — most likely the
+        // in-memory fallback from AddGranitIndexingBackgroundJobs(). The host explicitly
+        // opted into persistent checkpoints, the default must not also resolve.
+        for (int i = services.Count - 1; i >= 0; i--)
+        {
+            if (services[i].ServiceType == typeof(IRebuildCheckpointStore<TKey>))
+            {
+                services.RemoveAt(i);
+            }
+        }
+
+        services.AddScoped<IRebuildCheckpointStore<TKey>>(sp => new EfRebuildCheckpointStore<TKey>(
+            sp.GetRequiredService<IDbContextFactory<IndexingDbContext>>(),
+            sp.GetRequiredService<TimeProvider>()));
 
         return services;
     }
