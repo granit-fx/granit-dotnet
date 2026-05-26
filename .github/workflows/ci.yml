@@ -120,9 +120,10 @@ jobs:
       #
       # The Charlesw `Tesseract` NuGet (5.x) hard-codes the names
       # `libleptonica-1.82.0` and `libtesseract50` when probing the loader path.
-      # apt ships `liblept.so.5` / `libtesseract.so.5` so we symlink the canonical
-      # names into place — without it, P/Invoke throws DllNotFoundException at the
-      # first OCR call.
+      # The runtime apt packages (`liblept5`, `libtesseract5`) only ship the
+      # fully-versioned `.so.MAJOR.MINOR.PATCH` files — no `.so.MAJOR` symlinks
+      # (those come with the `-dev` packages). We discover the actual file via
+      # glob and point the canonical names at it.
       - name: Install libtesseract (integration shard only)
         if: matrix.shard.name == 'integration'
         run: |
@@ -130,8 +131,16 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             libtesseract5 tesseract-ocr-eng tesseract-ocr-fra \
             fontconfig fonts-dejavu-core
-          sudo ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
-          sudo ln -sf /usr/lib/x86_64-linux-gnu/libtesseract.so.5 /usr/lib/x86_64-linux-gnu/libtesseract50.so
+          LIB_DIR=/usr/lib/x86_64-linux-gnu
+          LEPT_LIB=$(ls "$LIB_DIR"/liblept.so.5* 2>/dev/null | head -n 1)
+          TESS_LIB=$(ls "$LIB_DIR"/libtesseract.so.5* 2>/dev/null | head -n 1)
+          if [ -z "$LEPT_LIB" ] || [ -z "$TESS_LIB" ]; then
+            echo "Could not locate libtesseract / liblept under $LIB_DIR" >&2
+            ls "$LIB_DIR" | grep -E '(lept|tesseract)' >&2 || true
+            exit 1
+          fi
+          sudo ln -sf "$LEPT_LIB" "$LIB_DIR/libleptonica-1.82.0.so"
+          sudo ln -sf "$TESS_LIB" "$LIB_DIR/libtesseract50.so"
           echo "TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata" >> "$GITHUB_ENV"
 
       - name: Build shard
