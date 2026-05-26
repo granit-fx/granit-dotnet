@@ -23,6 +23,7 @@ internal sealed class GoogleCloudBlobClient : IBlobStoreProvider, IPresignedUrlP
     private readonly StorageClient _storage;
     private readonly UrlSigner _urlSigner;
     private readonly IClock _clock;
+    private readonly GcsResumableUploadOperations _resumableUploadOperations;
 
     public GoogleCloudBlobClient(IOptions<GoogleCloudStorageOptions> options, IClock clock)
     {
@@ -56,6 +57,8 @@ internal sealed class GoogleCloudBlobClient : IBlobStoreProvider, IPresignedUrlP
                         "or provide a CredentialFilePath to a service account key file."));
             }
         }
+
+        _resumableUploadOperations = new GcsResumableUploadOperations(_storage);
     }
 
     // ── IPresignedUrlProvider ─────────────────────────────────────────────────
@@ -224,6 +227,29 @@ internal sealed class GoogleCloudBlobClient : IBlobStoreProvider, IPresignedUrlP
             cancellationToken).ConfigureAwait(false);
         stream.Position = 0;
         return stream;
+    }
+
+    /// <inheritdoc/>
+    public async Task<MultipartWriteStream> OpenWriteMultipartAsync(
+        string bucket,
+        string objectKey,
+        string contentType,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(bucket);
+        ArgumentException.ThrowIfNullOrEmpty(objectKey);
+        ArgumentException.ThrowIfNullOrEmpty(contentType);
+
+        using Activity? activity = BlobStorageGoogleCloudActivitySource.Source.StartActivity("Gcs.InitiateResumableUpload");
+        activity?.SetTag(BlobStorageGoogleCloudActivitySource.TagBucket, bucket);
+        activity?.SetTag(BlobStorageGoogleCloudActivitySource.TagObjectKey, objectKey);
+        activity?.SetTag(BlobStorageGoogleCloudActivitySource.TagContentType, contentType);
+
+        Uri sessionUri = await _resumableUploadOperations
+            .InitiateSessionAsync(bucket, objectKey, contentType, cancellationToken)
+            .ConfigureAwait(false);
+
+        return new GcsResumableMultipartWriteStream(_resumableUploadOperations, sessionUri);
     }
 
     /// <inheritdoc/>
