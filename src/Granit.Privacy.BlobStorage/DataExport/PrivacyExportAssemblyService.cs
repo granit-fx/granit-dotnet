@@ -338,3 +338,18 @@ internal sealed partial class PrivacyExportAssemblyService(
     private static partial void LogAssemblyFailed(ILogger logger, Guid requestId, string exceptionType);
 }
 
+/// <summary>
+/// Manifest entry describing a single fragment that contributed bytes to the
+/// assembled archive — recorded inside the manifest sidecar uploaded by
+/// <see cref="PrivacyExportAssemblyService"/>.
+/// </summary>
+/// <param name="ProviderName">Originating <c>IPrivacyDataProvider.ProviderName</c>.</param>
+/// <param name="FileName">Resolved ZIP entry path inside the shard archives.</param>
+/// <param name="ContentType">MIME type carried on the originating prepared event.</param>
+/// <param name="BlobReferenceId">Source blob the bytes were streamed from.</param>
+public sealed record ExportManifestFragment(
+    string ProviderName,
+    string FileName,
+    string ContentType,
+    BlobReference BlobReferenceId);
+

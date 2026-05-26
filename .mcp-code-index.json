@@ -36978,6 +36978,22 @@
       ]
     },
     {
+      "name": "PrivacyExportCompletedHandler",
+      "fqn": "Granit.Privacy.BackgroundJobs.Jobs.PrivacyExportCompletedHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.BackgroundJobs",
+      "file": "src/Granit.Privacy.BackgroundJobs/Jobs/PrivacyExportCompletedHandler.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ExportCompletedEto completion, IBackgroundJobDispatcher dispatcher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "Exports",
       "fqn": "Granit.Privacy.BackgroundJobs.Permissions.Exports",
       "kind": "class",
@@ -37021,37 +37037,12 @@
       "members": []
     },
     {
-      "name": "ExportArchiveAssemblyHandler",
-      "fqn": "Granit.Privacy.BlobStorage.DataExport.ExportArchiveAssemblyHandler",
-      "kind": "class",
-      "project": "Granit.Privacy.BlobStorage",
-      "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportArchiveAssemblyHandler.cs",
-      "line": 46,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(ExportCompletedEto @event, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "ExportManifest",
-      "fqn": "Granit.Privacy.BlobStorage.DataExport.ExportManifest",
-      "kind": "record",
-      "project": "Granit.Privacy.BlobStorage",
-      "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportManifest.cs",
-      "line": 20,
-      "members": []
-    },
-    {
       "name": "ExportManifestFragment",
       "fqn": "Granit.Privacy.BlobStorage.DataExport.ExportManifestFragment",
       "kind": "record",
       "project": "Granit.Privacy.BlobStorage",
-      "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportManifest.cs",
-      "line": 36,
+      "file": "src/Granit.Privacy.BlobStorage/DataExport/PrivacyExportAssemblyService.cs",
+      "line": 350,
       "members": []
     },
     {

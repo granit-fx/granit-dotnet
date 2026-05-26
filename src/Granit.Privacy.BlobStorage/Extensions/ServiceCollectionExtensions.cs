@@ -21,9 +21,9 @@ public static class ServiceCollectionExtensions
     ///   provider helper that serialises DTOs, uploads to staging, and signs the integrity tag.</item>
     ///   <item><see cref="IExportHmacSigner"/> default impl (<see cref="EphemeralExportHmacSigner"/>) —
     ///   production hosts override with a Vault-backed signer.</item>
-    ///   <item><see cref="ExportArchiveAssemblyHandler"/> — terminal ZIP assembler triggered by
-    ///   <see cref="Granit.Privacy.DataExport.Events.ExportCompletedEto"/>. Auto-discovered by
-    ///   Wolverine once registered with DI.</item>
+    ///   <item><see cref="IPrivacyExportAssemblyService"/> (via <see cref="PrivacyExportAssemblyService"/>) —
+    ///   sharded ZIP assembly driven by the background-job handler in
+    ///   <c>Granit.Privacy.BackgroundJobs</c>.</item>
     ///   <item><see cref="IBlobBackedExportSource"/> (via <see cref="BlobBackedExportSource"/>) —
     ///   helper that yields HMAC-signed pass-through fragments for blob-backed providers
     ///   (Documents, attachments) without staging round-trips.</item>
@@ -32,7 +32,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddGranitPrivacyBlobStorage(this IServiceCollection services)
     {
         services.AddHttpClient(StagedFragmentBuilder.HttpClientName);
-        services.AddHttpClient(ExportArchiveAssemblyHandler.HttpClientName);
         services.AddHttpClient(PrivacyExportAssemblyService.HttpClientName);
         services.TryAddSingleton<IExportHmacSigner, EphemeralExportHmacSigner>();
         services.TryAddSingleton<IExportAssemblyCheckpointStore, InMemoryExportAssemblyCheckpointStore>();
@@ -40,7 +39,6 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IBlobBackedExportSource, BlobBackedExportSource>();
         services.TryAddScoped<IPrivacyExportAssemblyService, PrivacyExportAssemblyService>();
         services.TryAddScoped<PrivacyFragmentUploader>();
-        services.TryAddScoped<ExportArchiveAssemblyHandler>();
         return services;
     }
 }

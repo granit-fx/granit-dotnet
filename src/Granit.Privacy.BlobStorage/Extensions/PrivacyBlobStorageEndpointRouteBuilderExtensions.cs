@@ -18,8 +18,8 @@ public static class PrivacyBlobStorageEndpointRouteBuilderExtensions
 {
     /// <summary>
     /// Maps <c>GET /{prefix}/exports/{requestId}/download</c>. The handler resolves the tracker,
-    /// verifies the caller owns the request, and 302-redirects to a presigned URL for the ZIP
-    /// archive produced by <see cref="DataExport.ExportArchiveAssemblyHandler"/>.
+    /// verifies the caller owns the request, and 302-redirects to a presigned URL for the
+    /// manifest blob produced by <see cref="DataExport.PrivacyExportAssemblyService"/>.
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="routePrefix">Route prefix — typically mirrors <c>MapGranitPrivacy</c>. Default <c>"privacy"</c>.</param>
