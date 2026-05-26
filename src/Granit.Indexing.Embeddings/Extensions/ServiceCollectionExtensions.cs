@@ -1,8 +1,8 @@
+using Granit.AI;
 using Granit.Diagnostics;
 using Granit.Indexing.Embeddings.Diagnostics;
 using Granit.Indexing.Embeddings.Internal;
 using Granit.Indexing.Embeddings.Options;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -39,16 +39,17 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Decorates the host's <see cref="IIndexer{TKey}"/> with
     /// <c>EmbeddingIndexer&lt;TKey&gt;</c> so every <c>IndexAsync</c> call enriches the
-    /// entry with an embedding generated via the configured
-    /// <see cref="IEmbeddingGenerator{TInput, TEmbedding}"/>.
+    /// entry with an embedding generated via the configured <c>Granit.AI</c>
+    /// workspace (resolved through <see cref="IAIEmbeddingGeneratorFactory"/>).
     /// </summary>
     /// <remarks>
     /// <para>
     /// MUST be called AFTER the storage backend's <c>Add…</c> extension so the
     /// inner indexer is present in the descriptor list. Fast-fails at composition
-    /// time when no <see cref="IEmbeddingGenerator{TInput, TEmbedding}"/> is registered
-    /// — a silent wiring miss would let entries persist without embeddings and
-    /// semantic search would return zero results.
+    /// time when <c>IAIEmbeddingGeneratorFactory</c> is missing — host must wire
+    /// <c>AddGranitAI()</c> before this extension. Workspace mis-configuration
+    /// surfaces at the first embedding call, not at composition (workspaces can
+    /// come from a database loader that boots after DI).
     /// </para>
     /// <para>
     /// MUST also be the LAST decorator on <see cref="IIndexer{TKey}"/>. If a host
@@ -61,12 +62,12 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        if (services.All(d => d.ServiceType != typeof(IEmbeddingGenerator<string, Embedding<float>>)))
+        if (services.All(d => d.ServiceType != typeof(IAIEmbeddingGeneratorFactory)))
         {
             throw new InvalidOperationException(
-                $"AddGranitIndexingEmbeddingsWriter<{typeof(TKey).Name}>() requires an "
-                + "IEmbeddingGenerator<string, Embedding<float>> to be registered in DI. "
-                + "Wire your provider (e.g. OpenAI, Azure OpenAI, Ollama) before calling this extension.");
+                $"AddGranitIndexingEmbeddingsWriter<{typeof(TKey).Name}>() requires "
+                + "IAIEmbeddingGeneratorFactory to be registered in DI. "
+                + "Call AddGranitAI() (and wire your workspace catalogue) before this extension.");
         }
 
         ServiceDescriptor inner = services.LastOrDefault(d => d.ServiceType == typeof(IIndexer<TKey>))
@@ -105,11 +106,12 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        if (services.All(d => d.ServiceType != typeof(IEmbeddingGenerator<string, Embedding<float>>)))
+        if (services.All(d => d.ServiceType != typeof(IAIEmbeddingGeneratorFactory)))
         {
             throw new InvalidOperationException(
-                $"AddGranitIndexingHybridSearch<{typeof(TKey).Name}, {typeof(TResult).Name}>() requires an "
-                + "IEmbeddingGenerator<string, Embedding<float>> to be registered in DI.");
+                $"AddGranitIndexingHybridSearch<{typeof(TKey).Name}, {typeof(TResult).Name}>() requires "
+                + "IAIEmbeddingGeneratorFactory to be registered in DI. "
+                + "Call AddGranitAI() (and wire your workspace catalogue) before this extension.");
         }
 
         if (services.All(d => d.ServiceType != typeof(IVectorSearchBackend<TKey, TResult>)))

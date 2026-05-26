@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
     <ProjectReference Include="..\Granit.Indexing\Granit.Indexing.csproj" />
   </ItemGroup>
 

@@ -1,3 +1,4 @@
+using Granit.AI;
 using Granit.Indexing.Embeddings.Diagnostics;
 using Granit.Indexing.Embeddings.Options;
 using Granit.MultiTenancy;
@@ -11,8 +12,9 @@ namespace Granit.Indexing.Embeddings.Internal;
 /// <see cref="ISearchBackend{TKey, TResult}"/> wrapping a lexical inner backend +
 /// an <see cref="IVectorSearchBackend{TKey, TResult}"/>. On every search:
 /// <list type="number">
-///   <item>Embeds <see cref="SearchRequest.Query"/> once via the configured
-///         <see cref="IEmbeddingGenerator{TInput, TEmbedding}"/>.</item>
+///   <item>Embeds <see cref="SearchRequest.Query"/> once via an
+///         <see cref="IEmbeddingGenerator{TInput, TEmbedding}"/> resolved from the
+///         configured <c>Granit.AI</c> workspace.</item>
 ///   <item>Fetches a deep pool from both channels in parallel
 ///         (<c>poolSize = max(RrfFetchPoolSize, (offset + limit) * 2)</c>).</item>
 ///   <item>Fuses via <see cref="ReciprocalRankFusion.Fuse"/> with dense ranking.</item>
@@ -26,10 +28,10 @@ namespace Granit.Indexing.Embeddings.Internal;
 /// stays unchanged and benefits from RRF transparently.
 /// </para>
 /// <para>
-/// <b>Graceful degradation.</b> When the embedding call fails (transport, timeout) the
-/// hybrid backend falls back to the lexical inner alone with original offset/limit so
-/// the user still gets results. The vector miss counter is bumped so operators can
-/// alert on embedding-generator outages.
+/// <b>Graceful degradation.</b> When the embedding call fails (workspace mis-config,
+/// transport, timeout) the hybrid backend falls back to the lexical inner alone with
+/// original offset/limit so the user still gets results. The vector miss counter is
+/// bumped so operators can alert on embedding-generator outages.
 /// </para>
 /// </remarks>
 internal sealed partial class HybridSearchBackend<TKey, TResult> : ISearchBackend<TKey, TResult>
@@ -37,7 +39,7 @@ internal sealed partial class HybridSearchBackend<TKey, TResult> : ISearchBacken
 {
     private readonly ISearchBackend<TKey, TResult> _lexical;
     private readonly IVectorSearchBackend<TKey, TResult> _vector;
-    private readonly IEmbeddingGenerator<string, Embedding<float>> _generator;
+    private readonly IAIEmbeddingGeneratorFactory _factory;
     private readonly GranitIndexingEmbeddingsOptions _options;
     private readonly EmbeddingsMetrics _metrics;
     private readonly ICurrentTenant _currentTenant;
@@ -47,7 +49,7 @@ internal sealed partial class HybridSearchBackend<TKey, TResult> : ISearchBacken
     public HybridSearchBackend(
         ISearchBackend<TKey, TResult> lexical,
         IVectorSearchBackend<TKey, TResult> vector,
-        IEmbeddingGenerator<string, Embedding<float>> generator,
+        IAIEmbeddingGeneratorFactory factory,
         IOptions<GranitIndexingEmbeddingsOptions> options,
         EmbeddingsMetrics metrics,
         ICurrentTenant currentTenant,
@@ -56,7 +58,7 @@ internal sealed partial class HybridSearchBackend<TKey, TResult> : ISearchBacken
     {
         ArgumentNullException.ThrowIfNull(lexical);
         ArgumentNullException.ThrowIfNull(vector);
-        ArgumentNullException.ThrowIfNull(generator);
+        ArgumentNullException.ThrowIfNull(factory);
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(metrics);
         ArgumentNullException.ThrowIfNull(currentTenant);
@@ -64,7 +66,7 @@ internal sealed partial class HybridSearchBackend<TKey, TResult> : ISearchBacken
         ArgumentNullException.ThrowIfNull(logger);
         _lexical = lexical;
         _vector = vector;
-        _generator = generator;
+        _factory = factory;
         _options = options.Value;
         _metrics = metrics;
         _currentTenant = currentTenant;
@@ -137,7 +139,12 @@ internal sealed partial class HybridSearchBackend<TKey, TResult> : ISearchBacken
     {
         try
         {
-            GeneratedEmbeddings<Embedding<float>> result = await _generator
+            string? workspace = string.IsNullOrEmpty(_options.WorkspaceName) ? null : _options.WorkspaceName;
+            using IEmbeddingGenerator<string, Embedding<float>> generator = await _factory
+                .CreateAsync(workspace, cancellationToken)
+                .ConfigureAwait(false);
+
+            GeneratedEmbeddings<Embedding<float>> result = await generator
                 .GenerateAsync([query ?? string.Empty], options: null, cancellationToken)
                 .ConfigureAwait(false);
 

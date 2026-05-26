@@ -1,8 +1,8 @@
+using Granit.AI;
 using Granit.Indexing.Embeddings.Extensions;
 using Granit.Indexing.Embeddings.Options;
 using Granit.Indexing.Extensions;
 using Granit.MultiTenancy;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -16,9 +16,6 @@ public sealed class ServiceCollectionExtensionsTests
     [Fact]
     public void AddGranitIndexingEmbeddings_validates_Dimensions_at_startup()
     {
-        // Dimensions is required and must be in [1, 8192]. ValidateOnStart would surface
-        // a misconfiguration loudly at app boot — here we trigger the validator manually
-        // via Get() to keep the unit suite independent of a full IHostedService bootstrap.
         ServiceCollection services = BuildBaseServices(new Dictionary<string, string?>
         {
             ["Indexing:Embeddings:Dimensions"] = "0",
@@ -31,16 +28,17 @@ public sealed class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitIndexingEmbeddingsWriter_fast_fails_when_no_IEmbeddingGenerator_registered()
+    public void AddGranitIndexingEmbeddingsWriter_fast_fails_when_no_AI_factory_registered()
     {
-        // The silent-degraded-mode trap: a host wires the decorator but forgets the
-        // generator and discovers at indexing time that semantic search returns nothing.
-        // Throwing at composition prevents that.
+        // Silent-degraded-mode trap: a host wires the decorator but forgets to call
+        // AddGranitAI() and discovers at indexing time that semantic search returns
+        // nothing. Throwing at composition prevents that.
         ServiceCollection services = BuildBaseServices();
         services.AddSingleton<IIndexer<Guid>, FakeInnerIndexer>();
 
-        Should.Throw<InvalidOperationException>(() =>
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
             services.AddGranitIndexingEmbeddingsWriter<Guid>());
+        ex.Message.ShouldContain("IAIEmbeddingGeneratorFactory");
     }
 
     [Fact]
@@ -50,17 +48,28 @@ public sealed class ServiceCollectionExtensionsTests
         // before this extension wraps it. A bare embeddings registration without a
         // backend is a broken host config; surface it now, not at first index.
         ServiceCollection services = BuildBaseServices();
-        services.AddSingleton(Substitute.For<IEmbeddingGenerator<string, Embedding<float>>>());
+        services.AddSingleton(Substitute.For<IAIEmbeddingGeneratorFactory>());
 
         Should.Throw<InvalidOperationException>(() =>
             services.AddGranitIndexingEmbeddingsWriter<Guid>());
     }
 
     [Fact]
+    public void AddGranitIndexingHybridSearch_fast_fails_when_no_AI_factory_registered()
+    {
+        ServiceCollection services = BuildBaseServices();
+        services.AddSingleton<ISearchBackend<Guid, FakeResult>, FakeInnerSearchBackend>();
+
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
+            services.AddGranitIndexingHybridSearch<Guid, FakeResult>());
+        ex.Message.ShouldContain("IAIEmbeddingGeneratorFactory");
+    }
+
+    [Fact]
     public void AddGranitIndexingHybridSearch_fast_fails_when_no_vector_backend_registered()
     {
         ServiceCollection services = BuildBaseServices();
-        services.AddSingleton(Substitute.For<IEmbeddingGenerator<string, Embedding<float>>>());
+        services.AddSingleton(Substitute.For<IAIEmbeddingGeneratorFactory>());
         services.AddSingleton<ISearchBackend<Guid, FakeResult>, FakeInnerSearchBackend>();
 
         Should.Throw<InvalidOperationException>(() =>
@@ -75,7 +84,7 @@ public sealed class ServiceCollectionExtensionsTests
         // original FakeInnerIndexer as its inner field — we don't need to assert that
         // here, just that the decoration replaced the descriptor).
         ServiceCollection services = BuildBaseServices();
-        services.AddSingleton(Substitute.For<IEmbeddingGenerator<string, Embedding<float>>>());
+        services.AddSingleton(Substitute.For<IAIEmbeddingGeneratorFactory>());
         services.AddSingleton<IIndexer<Guid>, FakeInnerIndexer>();
 
         services.AddGranitIndexingEmbeddingsWriter<Guid>();

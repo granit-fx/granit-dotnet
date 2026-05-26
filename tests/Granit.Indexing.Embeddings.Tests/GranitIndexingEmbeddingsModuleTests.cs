@@ -1,3 +1,4 @@
+using Granit.AI;
 using Granit.Modularity;
 using Shouldly;
 using Xunit;
@@ -14,16 +15,18 @@ public sealed class GranitIndexingEmbeddingsModuleTests
     }
 
     [Fact]
-    public void Module_declares_DependsOn_GranitIndexingModule_only()
+    public void Module_declares_DependsOn_GranitIndexingModule_and_GranitAIModule()
     {
-        // The storage backends are wired by host opt-in extensions (EF / ES) — module
+        // Storage backends are wired by host opt-in extensions (EF / ES) — module
         // discovery MUST NOT couple this package to either backend. Locking the
-        // dependency set keeps the embeddings opt-in even on hosts that scan modules.
+        // dependency set to {Indexing, AI} keeps the storage path opt-in while
+        // making the workspace-routed factory available without extra wiring.
         var attr = (DependsOnAttribute?)Attribute.GetCustomAttribute(
             typeof(GranitIndexingEmbeddingsModule), typeof(DependsOnAttribute));
 
         attr.ShouldNotBeNull();
         attr.DependedTypes.ShouldContain(typeof(GranitIndexingModule));
-        attr.DependedTypes.Length.ShouldBe(1);
+        attr.DependedTypes.ShouldContain(typeof(GranitAIModule));
+        attr.DependedTypes.Length.ShouldBe(2);
     }
 }

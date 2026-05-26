@@ -1187,6 +1187,7 @@
     {
       "name": "Granit.Indexing.Embeddings",
       "deps": [
+        "Granit.AI",
         "Granit.Indexing"
       ],
       "framework": "net10.0"
@@ -26495,7 +26496,7 @@
       "kind": "class",
       "project": "Granit.Indexing.Embeddings",
       "file": "src/Granit.Indexing.Embeddings/GranitIndexingEmbeddingsModule.cs",
-      "line": 15,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -26529,6 +26530,12 @@
       "file": "src/Granit.Indexing.Embeddings/Options/GranitIndexingEmbeddingsOptions.cs",
       "line": 9,
       "members": [
+        {
+          "name": "WorkspaceName",
+          "kind": "property",
+          "signature": "string WorkspaceName",
+          "returnType": "string"
+        },
         {
           "name": "Dimensions",
           "kind": "property",

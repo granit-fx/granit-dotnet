@@ -12,20 +12,37 @@ public sealed class GranitIndexingEmbeddingsOptions
     public const string SectionName = "Indexing:Embeddings";
 
     /// <summary>
+    /// <c>Granit.AI</c> workspace name resolved via
+    /// <c>IAIEmbeddingGeneratorFactory.CreateAsync(workspaceName)</c> at
+    /// indexing / search time. Required — the framework no longer accepts a flat
+    /// <c>IEmbeddingGenerator</c> singleton; everything goes through the workspace
+    /// catalogue so per-tenant provider routing, cost monitoring, and the
+    /// ISO 27001 audit trail stay consistent across modules.
+    /// </summary>
+    /// <remarks>
+    /// Leave at an empty string to opt into the <c>Granit.AI</c> default workspace
+    /// (matches <c>IAIEmbeddingGeneratorFactory.CreateAsync(null)</c> semantics).
+    /// Misconfigurations surface as <c>AIWorkspaceNotFoundException</c> on the first
+    /// embedding call rather than at composition time — by design, since workspaces
+    /// can come from a database loader that boots after DI.
+    /// </remarks>
+    public string WorkspaceName { get; set; } = string.Empty;
+
+    /// <summary>
     /// Dimensionality of the embedding vectors produced by the configured
-    /// <c>IEmbeddingGenerator</c>. Must match the model used by the host
-    /// (e.g. 1536 for OpenAI <c>text-embedding-3-small</c>, 768 for
-    /// <c>bge-base</c>, 384 for <c>all-MiniLM-L6-v2</c>) AND the column type
-    /// configured in the storage backend (<c>vector(N)</c> on pgvector,
-    /// <c>dims: N</c> on Elasticsearch <c>dense_vector</c>).
+    /// workspace's provider. Must match the model used (e.g. 1536 for OpenAI
+    /// <c>text-embedding-3-small</c>, 768 for <c>bge-base</c>, 384 for
+    /// <c>all-MiniLM-L6-v2</c>) AND the column type configured in the storage
+    /// backend (<c>vector(N)</c> on pgvector, <c>dims: N</c> on Elasticsearch
+    /// <c>dense_vector</c>).
     /// </summary>
     [Range(1, 8192)]
     public int Dimensions { get; set; }
 
     /// <summary>
     /// Free-form model identifier surfaced on metrics + logs (e.g.
-    /// <c>"text-embedding-3-small"</c>). Informational only — the host wires the
-    /// actual <c>IEmbeddingGenerator</c> in DI.
+    /// <c>"text-embedding-3-small"</c>). Informational only — the actual model
+    /// is resolved via the workspace's provider configuration in <c>Granit.AI</c>.
     /// </summary>
     public string EmbeddingModelId { get; set; } = string.Empty;
 
