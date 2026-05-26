@@ -51,4 +51,26 @@ public sealed class TesseractOcrOptions
         "image/tiff",
         "image/bmp",
     ];
+
+    /// <summary>
+    /// Filesystem directory the Charlesw <c>Tesseract</c> NuGet should probe for the
+    /// native <c>libleptonica</c> / <c>libtesseract</c> binaries.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The NuGet uses its own <c>InteropDotNet.LibraryLoader</c> on Linux which does
+    /// NOT honour <c>LD_LIBRARY_PATH</c> or the standard <c>dlopen</c> search paths.
+    /// It only checks the app's <c>bin/</c> folder and a <c>CustomSearchPath</c>.
+    /// Without this option set, hosts that install <c>libtesseract</c> system-wide
+    /// (the common Linux production case) get <c>DllNotFoundException</c> at the
+    /// first OCR call.
+    /// </para>
+    /// <para>
+    /// Defaults to <see langword="null"/>: the recognizer auto-detects the standard
+    /// Debian/Ubuntu path on Linux (<c>/usr/lib/x86_64-linux-gnu</c> on amd64,
+    /// <c>/usr/lib/aarch64-linux-gnu</c> on arm64). Set explicitly to point at a
+    /// non-standard install path; set to empty string to opt out of auto-detection.
+    /// </para>
+    /// </remarks>
+    public string? LibrarySearchPath { get; set; }
 }

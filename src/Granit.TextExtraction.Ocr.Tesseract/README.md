@@ -48,6 +48,31 @@ adds ~10–30 MB.
   pipeline never throws on OCR failure so a broken image doesn't tank the rest of
   the document.
 
+## Native-library search path
+
+The Charlesw `Tesseract` NuGet uses its own `InteropDotNet.LibraryLoader` on
+Linux which does **not** honour `LD_LIBRARY_PATH` or the standard `dlopen`
+search paths — it only probes the app's `bin/` directory and a
+`TesseractEnviornment.CustomSearchPath` (typo in the upstream API). Hosts
+that install `libtesseract` system-wide via apt would otherwise hit
+`DllNotFoundException` on the first OCR call.
+
+`DefaultTesseractRecognizer` routes `TesseractOcrOptions.LibrarySearchPath`
+into the wrapper's API automatically. Left unset, it auto-detects the
+Debian/Ubuntu canonical path on Linux (`/usr/lib/x86_64-linux-gnu` on amd64,
+`/usr/lib/aarch64-linux-gnu` on arm64). Override for non-standard installs:
+
+```csharp
+services.AddTesseractOcrExtractor(o =>
+{
+    o.DataPath = "/opt/myapp/tessdata";
+    o.LibrarySearchPath = "/opt/myapp/native";
+});
+```
+
+Set to the empty string to opt out of auto-detection (e.g. Windows hosts
+shipping the bundled DLLs in `bin/`).
+
 ## Threading
 
 `DefaultTesseractRecognizer` serialises all calls through one locked
