@@ -13,6 +13,7 @@ GRSEC001 | Security | Warning | DateTimeNowAnalyzer, IsEnabledByDefault=True
 GRSEC002 | Security | Warning | GuidNewGuidAnalyzer, IsEnabledByDefault=True
 GRSEC003 | Security | Error | HardcodedSecretAnalyzer, IsEnabledByDefault=True
 GRSEC004 | Security | Warning | DirectCookieAccessAnalyzer, IsEnabledByDefault=True
+GRSEC005 | Security | Warning | PrivacyExportSubjectSubstitutionAnalyzer, IsEnabledByDefault=True
 GREF001 | EntityFramework | Warning | SynchronousSaveChangesAnalyzer, IsEnabledByDefault=True
 GRAPI001 | Api | Warning | UntypedResultsAnalyzer, IsEnabledByDefault=True
 GRAPI002 | Api | Warning | TypedResultsBadRequestAnalyzer, IsEnabledByDefault=True

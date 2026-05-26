@@ -4645,6 +4645,15 @@
       "members": []
     },
     {
+      "name": "PrivacyExportSubjectSubstitutionAnalyzer",
+      "fqn": "Granit.Analyzers.PrivacyExportSubjectSubstitutionAnalyzer",
+      "kind": "class",
+      "project": "Granit.Analyzers",
+      "file": "src/Granit.Analyzers/PrivacyExportSubjectSubstitutionAnalyzer.cs",
+      "line": 40,
+      "members": []
+    },
+    {
       "name": "RenameColumnForbiddenAnalyzer",
       "fqn": "Granit.Analyzers.RenameColumnForbiddenAnalyzer",
       "kind": "class",
