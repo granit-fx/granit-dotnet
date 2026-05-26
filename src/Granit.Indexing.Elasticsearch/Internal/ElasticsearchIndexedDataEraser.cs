@@ -54,12 +54,12 @@ internal sealed class ElasticsearchIndexedDataEraser : IIndexedDataEraser
 
             Query subjectFilter = new TermQuery
             {
-                Field = "dataSubjectId.keyword",
+                Field = "dataSubjectId",
                 Value = dataSubjectId.ToString(),
             };
             Query tenantFilter = new TermQuery
             {
-                Field = "tenantId.keyword",
+                Field = "tenantId",
                 Value = tenantId?.ToString() ?? string.Empty,
             };
             Query composite = new BoolQuery { Filter = [tenantFilter, subjectFilter] };

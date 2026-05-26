@@ -80,7 +80,7 @@ internal sealed class ElasticsearchSearchBackend<TKey, TResult> : ISearchBackend
         Query textQuery = BuildTextQuery(request);
         Query tenantFilter = new TermQuery
         {
-            Field = "tenantId.keyword",
+            Field = "tenantId",
             Value = tenantId?.ToString() ?? string.Empty,
         };
         Query composite = new BoolQuery

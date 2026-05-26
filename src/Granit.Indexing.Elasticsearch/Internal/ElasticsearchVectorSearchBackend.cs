@@ -73,7 +73,7 @@ internal sealed class ElasticsearchVectorSearchBackend<TKey, TResult> : IVectorS
 
         Query tenantFilter = new TermQuery
         {
-            Field = "tenantId.keyword",
+            Field = "tenantId",
             Value = tenantId?.ToString() ?? string.Empty,
         };
 
