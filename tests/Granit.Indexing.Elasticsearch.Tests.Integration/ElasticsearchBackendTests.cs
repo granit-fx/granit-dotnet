@@ -1,3 +1,4 @@
+using Elastic.Clients.Elasticsearch;
 using Granit.Events;
 using Granit.Indexing.Elasticsearch.Extensions;
 using Granit.Indexing.Extensions;
@@ -41,8 +42,10 @@ public sealed class ElasticsearchBackendTests : IClassFixture<ElasticsearchFixtu
             CharCount = 43,
         }, TestContext.Current.CancellationToken);
 
-        // Wait for the refresh interval (Testcontainers defaults to 1s).
-        await Task.Delay(TimeSpan.FromSeconds(1.5), TestContext.Current.CancellationToken);
+        // Force a refresh so the doc is visible to the next search. Time-based waits
+        // (the previous `Task.Delay(1.5s)`) raced ES's default 1s refresh interval on
+        // CI and produced the GDPR_eraser + roundtrip flakes documented on PR #2308.
+        await RefreshAllAsync(sp, TestContext.Current.CancellationToken);
 
         BackendSearchPage<Guid, EntrySnapshot> page = await backend.SearchAsync(
             new SearchRequest("quick fox"), offset: 0, limit: 10, TestContext.Current.CancellationToken);
@@ -72,7 +75,7 @@ public sealed class ElasticsearchBackendTests : IClassFixture<ElasticsearchFixtu
             CharCount = 31,
         }, TestContext.Current.CancellationToken);
 
-        await Task.Delay(TimeSpan.FromSeconds(1.5), TestContext.Current.CancellationToken);
+        await RefreshAllAsync(hostA, TestContext.Current.CancellationToken);
 
         // Tenant B searches the same index family.
         ServiceProvider hostB = BuildHost(TenantB, prefix);
@@ -113,12 +116,12 @@ public sealed class ElasticsearchBackendTests : IClassFixture<ElasticsearchFixtu
             CharCount = 31,
         }, TestContext.Current.CancellationToken);
 
-        await Task.Delay(TimeSpan.FromSeconds(1.5), TestContext.Current.CancellationToken);
+        await RefreshAllAsync(sp, TestContext.Current.CancellationToken);
 
         int deleted = await eraser.EraseAsync(TenantA, subject, TestContext.Current.CancellationToken);
         deleted.ShouldBe(1);
 
-        await Task.Delay(TimeSpan.FromSeconds(1.5), TestContext.Current.CancellationToken);
+        await RefreshAllAsync(sp, TestContext.Current.CancellationToken);
 
         ISearchBackend<Guid, EntrySnapshot> backend = sp.GetRequiredService<ISearchBackend<Guid, EntrySnapshot>>();
         BackendSearchPage<Guid, EntrySnapshot> remaining = await backend.SearchAsync(
@@ -153,6 +156,18 @@ public sealed class ElasticsearchBackendTests : IClassFixture<ElasticsearchFixtu
             resultProjection: d => new EntrySnapshot(d.Key, d.Content));
 
         return services.BuildServiceProvider();
+    }
+
+    /// <summary>
+    /// Forces a refresh of every index reachable from the host's <see cref="ElasticsearchClient"/>.
+    /// Replaces the previous time-based <c>Task.Delay</c> that raced ES's default 1s
+    /// refresh interval on CI — `refresh=true` returns only when the documents are
+    /// visible to subsequent searches, making the suite deterministic.
+    /// </summary>
+    private static async Task RefreshAllAsync(IServiceProvider sp, CancellationToken cancellationToken)
+    {
+        ElasticsearchClient client = sp.GetRequiredService<ElasticsearchClient>();
+        await client.Indices.RefreshAsync(Indices.All, cancellationToken).ConfigureAwait(false);
     }
 
     public sealed record EntrySnapshot(string Key, string? Content);
