@@ -174,7 +174,151 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
             Arg.Any<CancellationToken>());
     }
 
-    private PrivacyExportAssemblyService CreateSut() =>
+    [Fact]
+    public async Task AssembleAsync_WritesCheckpoint_OnEveryShardRollover()
+    {
+        // Three large incompressible payloads with a 1 MB shard cap force one
+        // rollover (shard 0 closes when fragment 2 is appended). Verify the
+        // checkpoint snapshots that rollover: shard 0 committed, next fragment
+        // index points at fragment 2 (currently in flight in shard 1).
+        var requestId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        Guid[] blobs = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+        byte[] big = new byte[700 * 1024];
+        Random.Shared.NextBytes(big);
+        foreach (Guid b in blobs)
+        {
+            SetupFragmentDownload(b, big, "application/octet-stream");
+        }
+        SetupManifestUpload();
+
+        ExportCompletedEto evt = BuildEvent(
+            requestId, userId,
+            [
+                BuildSignedFragment(requestId, userId, "p0", blobs[0], "p0.bin", "application/octet-stream"),
+                BuildSignedFragment(requestId, userId, "p1", blobs[1], "p1.bin", "application/octet-stream"),
+                BuildSignedFragment(requestId, userId, "p2", blobs[2], "p2.bin", "application/octet-stream"),
+            ]);
+
+        GranitPrivacyOptions opts = new() { ExportShardMaxSizeMb = 1 };
+        await CreateSut(opts).AssembleAsync(evt, TestContext.Current.CancellationToken);
+
+        _blobStoreProvider.SavedBlobs.Keys.Count(k => k.EndsWith(".zip", StringComparison.Ordinal)).ShouldBe(2);
+
+        // After clean completion the checkpoint is cleared — but along the way the
+        // mid-flight one was observed. We assert the latter via a fresh harness so
+        // we can capture the in-flight state.
+    }
+
+    [Fact]
+    public async Task AssembleAsync_MidFlightCheckpoint_RecordsCommittedShardAndCurrentFragmentIndex()
+    {
+        // Spy on the checkpoint store to capture every SetAsync between the start
+        // marker and the final ClearAsync. The mid-flight snapshot must point at
+        // the fragment that triggered the rollover (= fragment 2 here).
+        var requestId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        Guid[] blobs = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+        byte[] big = new byte[700 * 1024];
+        Random.Shared.NextBytes(big);
+        foreach (Guid b in blobs)
+        {
+            SetupFragmentDownload(b, big, "application/octet-stream");
+        }
+        SetupManifestUpload();
+
+        var spy = new RecordingCheckpointStore();
+        ExportCompletedEto evt = BuildEvent(
+            requestId, userId,
+            [
+                BuildSignedFragment(requestId, userId, "p0", blobs[0], "p0.bin", "application/octet-stream"),
+                BuildSignedFragment(requestId, userId, "p1", blobs[1], "p1.bin", "application/octet-stream"),
+                BuildSignedFragment(requestId, userId, "p2", blobs[2], "p2.bin", "application/octet-stream"),
+            ]);
+
+        GranitPrivacyOptions opts = new() { ExportShardMaxSizeMb = 1 };
+        PrivacyExportAssemblyService sut = new(
+            _blobStorage, _blobStoreProvider, _hmacSigner, spy, _tracker,
+            new FakeHttpClientFactory(_http), ConfigOptions.Create(opts),
+            _timeProvider, _metrics, NullLogger<PrivacyExportAssemblyService>.Instance);
+
+        await sut.AssembleAsync(evt, TestContext.Current.CancellationToken);
+
+        // First Set: fresh-run marker (LastCompletedShardIndex = -1, NextFragmentIndex = 0).
+        spy.Sets[0].Checkpoint.LastCompletedShardIndex.ShouldBe(-1);
+        spy.Sets[0].Checkpoint.NextFragmentIndex.ShouldBe(0);
+
+        // Mid-flight Set: shard 0 committed, fragment 2 in flight.
+        ExportAssemblyCheckpoint midflight = spy.Sets[1].Checkpoint;
+        midflight.LastCompletedShardIndex.ShouldBe(0);
+        midflight.NextFragmentIndex.ShouldBe(2);
+        midflight.CompletedShardObjectKeys.Count.ShouldBe(1);
+
+        // Clear fired after successful completion.
+        spy.Cleared.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task AssembleAsync_ResumesFromCheckpoint_SkipsCommittedFragments_AndStartsAtNextShardIndex()
+    {
+        // Pre-seed a checkpoint pointing at "shard 0 committed, fragment 2 ready
+        // to resume". The service must skip fragments 0+1 (no blob read, no
+        // re-streaming), continue with fragment 2 into shard 1, and surface the
+        // pre-existing shard 0 in the final manifest.
+        var requestId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        Guid[] blobs = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+        // Only fragment 2 will be re-streamed — but the resume path still calls
+        // ResolveEntryNameAsync for fragments 0+1 (manifest rebuild), so we stub
+        // those descriptors too.
+        foreach (Guid b in blobs)
+        {
+            SetupFragmentDownload(b, "{}"u8.ToArray());
+        }
+        SetupManifestUpload();
+
+        string priorShardKey = $"personal-data-export/{requestId}-000.zip";
+        await _checkpoints.SetAsync(
+            requestId,
+            tenantId: null,
+            new ExportAssemblyCheckpoint(
+                LastCompletedShardIndex: 0,
+                NextFragmentIndex: 2,
+                CompletedShardObjectKeys: [priorShardKey]),
+            TestContext.Current.CancellationToken);
+
+        ExportCompletedEto evt = BuildEvent(
+            requestId, userId,
+            [
+                BuildSignedFragment(requestId, userId, "p0", blobs[0], "p0.json", "application/json"),
+                BuildSignedFragment(requestId, userId, "p1", blobs[1], "p1.json", "application/json"),
+                BuildSignedFragment(requestId, userId, "p2", blobs[2], "p2.json", "application/json"),
+            ]);
+
+        await CreateSut().AssembleAsync(evt, TestContext.Current.CancellationToken);
+
+        // Only one NEW shard was uploaded (shard 001), even though the final manifest
+        // covers two shards (000 and 001).
+        _blobStoreProvider.SavedBlobs.Keys.Count(k => k.EndsWith(".zip", StringComparison.Ordinal)).ShouldBe(1);
+        _blobStoreProvider.SavedBlobs.Keys.ShouldContain($"personal-data-export/{requestId}-001.zip");
+
+        // The new shard contains only the third fragment.
+        byte[] shardBytes = _blobStoreProvider.SavedBlobs[$"personal-data-export/{requestId}-001.zip"];
+        using MemoryStream zipStream = new(shardBytes);
+        using ZipArchive zip = new(zipStream, ZipArchiveMode.Read);
+        zip.Entries.Select(e => e.FullName).ShouldBe(["p2.json"]);
+
+        // Fragments 0 and 1 were re-fetched only for descriptor lookup, NOT for
+        // bytes (no presigned-download URL request fired).
+        int downloadCalls = _http.Requests.Count(r => r.Method == HttpMethod.Get);
+        downloadCalls.ShouldBe(1, "only fragment 2 should re-stream bytes on resume");
+
+        // Checkpoint cleared after the clean run.
+        (await _checkpoints.GetAsync(requestId, tenantId: null, TestContext.Current.CancellationToken))
+            .ShouldBeNull();
+    }
+
+    private PrivacyExportAssemblyService CreateSut(GranitPrivacyOptions? opts = null) =>
         new(
             _blobStorage,
             _blobStoreProvider,
@@ -182,12 +326,12 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
             _checkpoints,
             _tracker,
             new FakeHttpClientFactory(_http),
-            ConfigOptions.Create(new GranitPrivacyOptions()),
+            ConfigOptions.Create(opts ?? new GranitPrivacyOptions()),
             _timeProvider,
             _metrics,
             NullLogger<PrivacyExportAssemblyService>.Instance);
 
-    private void SetupFragmentDownload(Guid blobId, byte[] payload)
+    private void SetupFragmentDownload(Guid blobId, byte[] payload, string contentType = "application/json")
     {
         Uri downloadUri = new($"https://s3.example/{blobId}");
         _blobStorage.CreateDownloadUrlAsync(
@@ -201,7 +345,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
             blobId,
             Arg.Any<CancellationToken>())
             .Returns((BlobDescriptor?)null);
-        _http.MapGet(downloadUri, payload, "application/json");
+        _http.MapGet(downloadUri, payload, contentType);
     }
 
     private Guid SetupManifestUpload()
@@ -255,6 +399,34 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
             Fragments: fragments,
             Regulation: "EU_GDPR",
             RequestedAt: RequestedAt);
+
+    /// <summary>
+    /// Records every <see cref="IExportAssemblyCheckpointStore"/> call so the test
+    /// can assert the mid-flight snapshot taken at a shard rollover.
+    /// </summary>
+    private sealed class RecordingCheckpointStore : IExportAssemblyCheckpointStore
+    {
+        public List<(Guid RequestId, Guid? TenantId, ExportAssemblyCheckpoint Checkpoint)> Sets { get; } = [];
+        public int Cleared { get; private set; }
+        private ExportAssemblyCheckpoint? _latest;
+
+        public Task<ExportAssemblyCheckpoint?> GetAsync(Guid requestId, Guid? tenantId, CancellationToken cancellationToken = default) =>
+            Task.FromResult(_latest);
+
+        public Task SetAsync(Guid requestId, Guid? tenantId, ExportAssemblyCheckpoint checkpoint, CancellationToken cancellationToken = default)
+        {
+            Sets.Add((requestId, tenantId, checkpoint));
+            _latest = checkpoint;
+            return Task.CompletedTask;
+        }
+
+        public Task ClearAsync(Guid requestId, Guid? tenantId, CancellationToken cancellationToken = default)
+        {
+            Cleared++;
+            _latest = null;
+            return Task.CompletedTask;
+        }
+    }
 
     /// <summary>
     /// In-memory <see cref="IBlobStoreProvider"/> — exercises the default interface
