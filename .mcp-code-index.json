@@ -1817,6 +1817,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Privacy.Auditing",
+      "deps": [
+        "Granit.Auditing",
+        "Granit.Privacy",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Privacy.BackgroundJobs",
       "deps": [
         "Granit.BackgroundJobs",
@@ -36921,6 +36930,72 @@
       "members": []
     },
     {
+      "name": "AuditingPrivacyExportAuditWriter",
+      "fqn": "Granit.Privacy.Auditing.AuditingPrivacyExportAuditWriter",
+      "kind": "class",
+      "project": "Granit.Privacy.Auditing",
+      "file": "src/Granit.Privacy.Auditing/AuditingPrivacyExportAuditWriter.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "WriteExportRequestedAsync",
+          "kind": "method",
+          "signature": "WriteExportRequestedAsync(PrivacyExportRequestedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteExportCompletedAsync",
+          "kind": "method",
+          "signature": "WriteExportCompletedAsync(PrivacyExportCompletedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteShardDownloadedAsync",
+          "kind": "method",
+          "signature": "WriteShardDownloadedAsync(PrivacyExportShardDownloadedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteExportFailedAsync",
+          "kind": "method",
+          "signature": "WriteExportFailedAsync(PrivacyExportFailedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyAuditingServiceCollectionExtensions",
+      "fqn": "Granit.Privacy.Auditing.Extensions.PrivacyAuditingServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Privacy.Auditing",
+      "file": "src/Granit.Privacy.Auditing/Extensions/PrivacyAuditingServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitPrivacyExportAuditing",
+          "kind": "method",
+          "signature": "AddGranitPrivacyExportAuditing(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitPrivacyAuditingModule",
+      "fqn": "Granit.Privacy.Auditing.GranitPrivacyAuditingModule",
+      "kind": "class",
+      "project": "Granit.Privacy.Auditing",
+      "file": "src/Granit.Privacy.Auditing/GranitPrivacyAuditingModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "GranitPrivacyBackgroundJobsModule",
       "fqn": "Granit.Privacy.BackgroundJobs.GranitPrivacyBackgroundJobsModule",
       "kind": "class",
@@ -37080,7 +37155,7 @@
       "kind": "record",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/PrivacyExportAssemblyService.cs",
-      "line": 486,
+      "line": 500,
       "members": []
     },
     {
@@ -37386,6 +37461,76 @@
           "returnType": "Guid? TenantId { get; set; } public bool ReminderSent { get; set; } public Task"
         }
       ]
+    },
+    {
+      "name": "IPrivacyExportAuditWriter",
+      "fqn": "Granit.Privacy.DataExport.Audit.IPrivacyExportAuditWriter",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "WriteExportRequestedAsync",
+          "kind": "method",
+          "signature": "WriteExportRequestedAsync(PrivacyExportRequestedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteExportCompletedAsync",
+          "kind": "method",
+          "signature": "WriteExportCompletedAsync(PrivacyExportCompletedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteShardDownloadedAsync",
+          "kind": "method",
+          "signature": "WriteShardDownloadedAsync(PrivacyExportShardDownloadedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteExportFailedAsync",
+          "kind": "method",
+          "signature": "WriteExportFailedAsync(PrivacyExportFailedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyExportCompletedAudit",
+      "fqn": "Granit.Privacy.DataExport.Audit.PrivacyExportCompletedAudit",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
+      "line": 75,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportFailedAudit",
+      "fqn": "Granit.Privacy.DataExport.Audit.PrivacyExportFailedAudit",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
+      "line": 119,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportRequestedAudit",
+      "fqn": "Granit.Privacy.DataExport.Audit.PrivacyExportRequestedAudit",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
+      "line": 51,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportShardDownloadedAudit",
+      "fqn": "Granit.Privacy.DataExport.Audit.PrivacyExportShardDownloadedAudit",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
+      "line": 98,
+      "members": []
     },
     {
       "name": "ExportArchiveAssembledEto",
@@ -38158,7 +38303,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Extensions/PrivacyEndpointRouteBuilderExtensions.cs",
-      "line": 36,
+      "line": 37,
       "members": [
         {
           "name": "MapGranitPrivacy",
@@ -38439,7 +38584,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/Extensions/PrivacyServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitPrivacy",

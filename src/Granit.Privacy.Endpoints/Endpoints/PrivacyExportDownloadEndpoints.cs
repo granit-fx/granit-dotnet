@@ -1,4 +1,6 @@
+using Granit.MultiTenancy;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Audit;
 using Granit.Privacy.DataExport.Exceptions;
 using Granit.Privacy.Endpoints.Extensions;
 using Granit.Privacy.Endpoints.Internal;
@@ -83,6 +85,8 @@ internal static class PrivacyExportDownloadEndpoints
         [FromServices] ICurrentUserService currentUser,
         [FromServices] IExportRequestTrackerReader tracker,
         [FromServices] IPrivacyExportDownloadResolver downloadResolver,
+        [FromServices] IPrivacyExportAuditWriter auditWriter,
+        [FromServices] ICurrentTenant currentTenant,
         [FromServices] IOptions<PrivacyEndpointsOptions> options,
         [FromServices] TimeProvider timeProvider,
         CancellationToken cancellationToken)
@@ -104,12 +108,13 @@ internal static class PrivacyExportDownloadEndpoints
             PrivacyExportManifestSummary summary = await downloadResolver
                 .ReadManifestSummaryAsync(requestId, cancellationToken).ConfigureAwait(false);
 
-            PrivacyExportDownloadPayload payload = summary.ShardCount switch
+            (PrivacyExportDownloadPayload payload, int auditedShardIndex) = summary.ShardCount switch
             {
-                1 => await downloadResolver.OpenShardAsync(requestId, 0, cancellationToken).ConfigureAwait(false),
-                _ => await downloadResolver.OpenManifestAsync(requestId, cancellationToken).ConfigureAwait(false),
+                1 => (await downloadResolver.OpenShardAsync(requestId, 0, cancellationToken).ConfigureAwait(false), 0),
+                _ => (await downloadResolver.OpenManifestAsync(requestId, cancellationToken).ConfigureAwait(false), ManifestShardSentinel),
             };
 
+            await WriteShardDownloadAuditAsync(auditWriter, httpContext, currentTenant, requestId, userId, auditedShardIndex, timeProvider, cancellationToken).ConfigureAwait(false);
             return ToFileResult(payload);
         }
         catch (PrivacyExportNotReadyException)
@@ -124,6 +129,8 @@ internal static class PrivacyExportDownloadEndpoints
         [FromServices] ICurrentUserService currentUser,
         [FromServices] IExportRequestTrackerReader tracker,
         [FromServices] IPrivacyExportDownloadResolver downloadResolver,
+        [FromServices] IPrivacyExportAuditWriter auditWriter,
+        [FromServices] ICurrentTenant currentTenant,
         [FromServices] IOptions<PrivacyEndpointsOptions> options,
         [FromServices] TimeProvider timeProvider,
         CancellationToken cancellationToken)
@@ -144,6 +151,7 @@ internal static class PrivacyExportDownloadEndpoints
         {
             PrivacyExportDownloadPayload payload = await downloadResolver
                 .OpenManifestAsync(requestId, cancellationToken).ConfigureAwait(false);
+            await WriteShardDownloadAuditAsync(auditWriter, httpContext, currentTenant, requestId, userId, ManifestShardSentinel, timeProvider, cancellationToken).ConfigureAwait(false);
             return ToFileResult(payload);
         }
         catch (PrivacyExportNotReadyException)
@@ -159,6 +167,8 @@ internal static class PrivacyExportDownloadEndpoints
         [FromServices] ICurrentUserService currentUser,
         [FromServices] IExportRequestTrackerReader tracker,
         [FromServices] IPrivacyExportDownloadResolver downloadResolver,
+        [FromServices] IPrivacyExportAuditWriter auditWriter,
+        [FromServices] ICurrentTenant currentTenant,
         [FromServices] IOptions<PrivacyEndpointsOptions> options,
         [FromServices] TimeProvider timeProvider,
         CancellationToken cancellationToken)
@@ -179,6 +189,7 @@ internal static class PrivacyExportDownloadEndpoints
         {
             PrivacyExportDownloadPayload payload = await downloadResolver
                 .OpenShardAsync(requestId, shardIndex, cancellationToken).ConfigureAwait(false);
+            await WriteShardDownloadAuditAsync(auditWriter, httpContext, currentTenant, requestId, userId, shardIndex, timeProvider, cancellationToken).ConfigureAwait(false);
             return ToFileResult(payload);
         }
         catch (ArgumentOutOfRangeException)
@@ -231,5 +242,30 @@ internal static class PrivacyExportDownloadEndpoints
 
     private static FileStreamHttpResult ToFileResult(PrivacyExportDownloadPayload payload) =>
         TypedResults.Stream(payload.Content, payload.ContentType, payload.FileName);
+
+    /// <summary>Sentinel ShardIndex value used in the audit payload for manifest downloads.</summary>
+    private const int ManifestShardSentinel = -1;
+
+    private static Task WriteShardDownloadAuditAsync(
+        IPrivacyExportAuditWriter auditWriter,
+        HttpContext httpContext,
+        ICurrentTenant currentTenant,
+        Guid requestId,
+        Guid subjectUserId,
+        int shardIndex,
+        TimeProvider timeProvider,
+        CancellationToken cancellationToken) =>
+        auditWriter.WriteShardDownloadedAsync(
+            new PrivacyExportShardDownloadedAudit(
+                RequestId: requestId,
+                SubjectUserId: subjectUserId,
+                TenantId: currentTenant.IsAvailable ? currentTenant.Id : null,
+                ShardIndex: shardIndex,
+                ClientIp: PrivacyEndpointRouteBuilderExtensions.PseudonymizeIpAddress(httpContext.Connection.RemoteIpAddress?.ToString()),
+                UserAgent: httpContext.Request.Headers.UserAgent.ToString(),
+                AuthMethod: httpContext.User.Identity?.AuthenticationType,
+                CorrelationId: httpContext.TraceIdentifier,
+                Timestamp: timeProvider.GetUtcNow()),
+            cancellationToken);
 }
 

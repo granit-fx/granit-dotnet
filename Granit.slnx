@@ -248,6 +248,7 @@
     <Project Path="src/Granit.Http.Cookies.Klaro/Granit.Http.Cookies.Klaro.csproj" />
     <Project Path="src/Granit.Http.Cookies/Granit.Http.Cookies.csproj" />
     <Project Path="src/Granit.Privacy.AI/Granit.Privacy.AI.csproj" />
+    <Project Path="src/Granit.Privacy.Auditing/Granit.Privacy.Auditing.csproj" />
     <Project Path="src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Privacy.BackgroundJobs.Wolverine/Granit.Privacy.BackgroundJobs.Wolverine.csproj" />
     <Project Path="src/Granit.Privacy.BlobStorage/Granit.Privacy.BlobStorage.csproj" />
@@ -573,6 +574,7 @@
     <Project Path="tests/Granit.Http.Cookies.Klaro.Tests/Granit.Http.Cookies.Klaro.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Tests/Granit.Http.Cookies.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.AI.Tests/Granit.Privacy.AI.Tests.csproj" />
+    <Project Path="tests/Granit.Privacy.Auditing.Tests/Granit.Privacy.Auditing.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.BackgroundJobs.Tests/Granit.Privacy.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.BackgroundJobs.Wolverine.Tests/Granit.Privacy.BackgroundJobs.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.BlobStorage.Tests/Granit.Privacy.BlobStorage.Tests.csproj" />

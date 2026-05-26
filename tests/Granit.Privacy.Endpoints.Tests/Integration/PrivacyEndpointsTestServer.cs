@@ -7,6 +7,7 @@ using Granit.Http.Cookies;
 using Granit.MultiTenancy;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Audit;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Endpoints.Extensions;
 using Granit.Privacy.Endpoints.Options;
@@ -128,6 +129,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
 
         IExportRequestTrackerWriter exportWriter = Substitute.For<IExportRequestTrackerWriter>();
         IExportRequestTrackerReader exportReader = Substitute.For<IExportRequestTrackerReader>();
+        IPrivacyExportAuditWriter auditWriter = Substitute.For<IPrivacyExportAuditWriter>();
         IPrivacyScopeResolver scopeResolver = Substitute.For<IPrivacyScopeResolver>();
         scopeResolver.ListVisibleAsync(Arg.Any<PrivacyExportContext>(), Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<ProviderDescriptor>)[]);
@@ -199,6 +201,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(currentUser);
         builder.Services.AddSingleton(exportWriter);
         builder.Services.AddSingleton(exportReader);
+        builder.Services.AddSingleton(auditWriter);
         builder.Services.AddSingleton(scopeResolver);
         builder.Services.AddSingleton(deletionWriter);
         builder.Services.AddSingleton(deletionReader);

@@ -5,6 +5,7 @@ using Granit.MultiTenancy;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Audit;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Endpoints.Dtos;
@@ -437,9 +438,11 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
     private static async Task<Results<Accepted<PrivacyExportRequestResponse>, ProblemHttpResult>> HandleRequestExportAsync(
         [FromBody] PrivacyExportRequest? body,
+        HttpContext httpContext,
         [FromServices] ICurrentUserService currentUser,
         [FromServices] IDistributedEventBus eventBus,
         [FromServices] IExportRequestTrackerWriter tracker,
+        [FromServices] IPrivacyExportAuditWriter auditWriter,
         [FromServices] PrivacyMetrics metrics,
         [FromServices] TimeProvider timeProvider,
         [FromServices] ICurrentTenant currentTenant,
@@ -478,6 +481,20 @@ public static class PrivacyEndpointRouteBuilderExtensions
             .ConfigureAwait(false);
 
         metrics.RecordExportRequested(tenantId, regulation);
+
+        await auditWriter.WriteExportRequestedAsync(
+            new PrivacyExportRequestedAudit(
+                RequestId: requestId,
+                CallerUserId: userId,
+                SubjectUserId: userId,
+                TenantId: tenantId,
+                Regulation: regulation,
+                ResolvedScopes: requestedScopes ?? [],
+                ClientIp: PseudonymizeIpAddress(httpContext.Connection.RemoteIpAddress?.ToString()),
+                UserAgent: httpContext.Request.Headers.UserAgent.ToString(),
+                CorrelationId: httpContext.TraceIdentifier,
+                Timestamp: now),
+            cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Accepted(
             $"/privacy/export/{requestId}",

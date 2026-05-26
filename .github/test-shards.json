@@ -307,6 +307,7 @@
         "tests/Granit.OpenIddict.EntityFrameworkCore.Tests",
         "tests/Granit.OpenIddict.Server.Tests",
         "tests/Granit.OpenIddict.Tests",
+        "tests/Granit.Privacy.Auditing.Tests",
         "tests/Granit.Privacy.BackgroundJobs.Tests",
         "tests/Granit.Privacy.BackgroundJobs.Wolverine.Tests",
         "tests/Granit.Privacy.BlobStorage.Tests",

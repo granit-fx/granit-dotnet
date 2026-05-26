@@ -8,6 +8,7 @@ using Granit.BlobStorage.Options;
 using Granit.Domain.ValueObjects;
 using Granit.Events;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Audit;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.DataExport.Exceptions;
 using Granit.Privacy.DataExport.Security;
@@ -58,6 +59,7 @@ internal sealed partial class PrivacyExportAssemblyService(
     IExportAssemblyCheckpointStore checkpointStore,
     IExportRequestTrackerWriter trackerWriter,
     IDistributedEventBus eventBus,
+    IPrivacyExportAuditWriter auditWriter,
     IHttpClientFactory httpClientFactory,
     IOptions<GranitPrivacyOptions> options,
     TimeProvider timeProvider,
@@ -238,6 +240,18 @@ internal sealed partial class PrivacyExportAssemblyService(
             metrics.RecordArchiveAssembled(
                 tenantId: completion.TenantId, status: finalState.ToString(), completion.IsPartial, duration, completion.Regulation);
             LogArchiveAssembled(logger, completion.RequestId, shards.Count, completion.Fragments.Count, emptyProviders.Count, (long)duration.TotalMilliseconds);
+
+            await auditWriter.WriteExportCompletedAsync(
+                new PrivacyExportCompletedAudit(
+                    RequestId: completion.RequestId,
+                    SubjectUserId: completion.UserId,
+                    TenantId: completion.TenantId,
+                    Regulation: completion.Regulation,
+                    ShardCount: shards.Count,
+                    IsPartial: completion.IsPartial,
+                    AssemblyDurationMs: (long)duration.TotalMilliseconds,
+                    Timestamp: timeProvider.GetUtcNow()),
+                cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is not OperationCanceledException
                                   && ex is not InvalidOperationException

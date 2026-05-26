@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Privacy.Auditing</PackageId>
+    <Description>Glue package wiring Granit.Privacy's IPrivacyExportAuditWriter to Granit.Auditing's IAuditingWriter. Inscribes personal-data-export lifecycle events (requested / completed / shard-downloaded / failed) as ISO 27001 A.5.34 + GDPR Art. 30 ROPA audit entries.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Privacy.Auditing.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Auditing\Granit.Auditing.csproj" />
+    <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>

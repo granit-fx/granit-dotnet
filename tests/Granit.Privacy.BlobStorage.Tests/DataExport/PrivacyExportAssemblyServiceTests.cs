@@ -11,6 +11,7 @@ using Granit.Events;
 using Granit.Privacy.BlobStorage.DataExport;
 using Granit.Privacy.BlobStorage.DataExport.Internal;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Audit;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.DataExport.Exceptions;
 using Granit.Privacy.DataExport.Security;
@@ -37,6 +38,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
     private readonly InMemoryExportAssemblyCheckpointStore _checkpoints = new();
     private readonly EphemeralExportHmacSigner _hmacSigner = new(NullLogger<EphemeralExportHmacSigner>.Instance);
     private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
+    private readonly IPrivacyExportAuditWriter _auditWriter = Substitute.For<IPrivacyExportAuditWriter>();
     private readonly FakeHttpMessageHandler _http = new();
     private readonly ServiceProvider _sp;
     private readonly PrivacyMetrics _metrics;
@@ -321,7 +323,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
         GranitPrivacyOptions opts = new() { ExportShardMaxSizeMb = 1 };
         PrivacyExportAssemblyService sut = new(
             _blobStorage, _blobStoreProvider, _hmacSigner, _hmacSigner, spy, _tracker,
-            _eventBus, new FakeHttpClientFactory(_http), ConfigOptions.Create(opts),
+            _eventBus, _auditWriter, new FakeHttpClientFactory(_http), ConfigOptions.Create(opts),
             _timeProvider, _metrics, NullLogger<PrivacyExportAssemblyService>.Instance);
 
         await sut.AssembleAsync(evt, TestContext.Current.CancellationToken);
@@ -409,6 +411,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
             _checkpoints,
             _tracker,
             _eventBus,
+            _auditWriter,
             new FakeHttpClientFactory(_http),
             ConfigOptions.Create(opts ?? new GranitPrivacyOptions()),
             _timeProvider,

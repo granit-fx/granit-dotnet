@@ -1,5 +1,6 @@
 using Granit.Diagnostics;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Audit;
 using Granit.Privacy.DataExport.Internal;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.LegalAgreements;
@@ -67,6 +68,10 @@ public static class PrivacyServiceCollectionExtensions
         // has data stays visible) — hosts override via services.AddSingleton<IPrivacyScopeVisibilityPolicy, ...>.
         services.TryAddSingleton<IPrivacyScopeVisibilityPolicy, AllowAllPrivacyScopeVisibilityPolicy>();
         services.TryAddScoped<IPrivacyScopeResolver, PrivacyScopeResolver>();
+
+        // ROPA / ISO 27001 audit trail — hosts that wire Granit.Privacy.Auditing replace this
+        // with the IAuditingWriter-backed adapter via DI overrides.
+        services.TryAddSingleton<IPrivacyExportAuditWriter, NullPrivacyExportAuditWriter>();
 
         // When Granit.Privacy.EntityFrameworkCore is wired (ILegalDocumentReader registered),
         // use the composite registry (DB-first, static-fallback with distributed cache).
