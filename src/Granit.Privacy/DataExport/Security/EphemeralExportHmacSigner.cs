@@ -18,7 +18,7 @@ namespace Granit.Privacy.DataExport.Security;
 /// legacy tags during a rotation window.
 /// </para>
 /// </remarks>
-public sealed partial class EphemeralExportHmacSigner : IExportHmacSigner, IDisposable
+public sealed partial class EphemeralExportHmacSigner : IExportHmacSigner, IExportContentSigner, IDisposable
 {
     private const string Version = "v1";
     private const int KeySizeBytes = 32;
@@ -72,6 +72,46 @@ public sealed partial class EphemeralExportHmacSigner : IExportHmacSigner, IDisp
         string presented = tag[(colonIndex + 1)..];
         byte[] canonical = Canonicalize(parameters);
         byte[] expected = HMACSHA256.HashData(_key, canonical);
+        byte[] decoded;
+        try
+        {
+            decoded = Base64UrlDecode(presented);
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+
+        return CryptographicOperations.FixedTimeEquals(expected, decoded);
+    }
+
+    /// <inheritdoc />
+    public string SignBytes(ReadOnlySpan<byte> payload)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        byte[] mac = HMACSHA256.HashData(_key, payload);
+        return $"{Version}:{Base64UrlEncode(mac)}";
+    }
+
+    /// <inheritdoc />
+    public bool VerifyBytes(ReadOnlySpan<byte> payload, string tag)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        ArgumentException.ThrowIfNullOrEmpty(tag);
+
+        int colonIndex = tag.IndexOf(':', StringComparison.Ordinal);
+        if (colonIndex <= 0)
+        {
+            return false;
+        }
+
+        if (!tag.AsSpan(0, colonIndex).SequenceEqual(Version))
+        {
+            return false;
+        }
+
+        string presented = tag[(colonIndex + 1)..];
+        byte[] expected = HMACSHA256.HashData(_key, payload);
         byte[] decoded;
         try
         {

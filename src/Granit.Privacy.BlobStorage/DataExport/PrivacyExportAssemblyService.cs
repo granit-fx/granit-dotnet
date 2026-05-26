@@ -53,6 +53,7 @@ internal sealed partial class PrivacyExportAssemblyService(
     IBlobStorage blobStorage,
     IBlobStoreProvider blobStoreProvider,
     IExportHmacSigner hmacSigner,
+    IExportContentSigner contentSigner,
     IExportAssemblyCheckpointStore checkpointStore,
     IExportRequestTrackerWriter trackerWriter,
     IHttpClientFactory httpClientFactory,
@@ -95,7 +96,10 @@ internal sealed partial class PrivacyExportAssemblyService(
         int startShardIndex = (resumeFrom?.LastCompletedShardIndex ?? -1) + 1;
         IReadOnlyList<ShardManifest> priorShards = resumeFrom is null
             ? []
-            : [.. resumeFrom.CompletedShardObjectKeys.Select((key, idx) => new ShardManifest(idx, key, CompressedSizeBytes: 0))];
+            // Sha256 is empty for resumed shards — re-streaming to recompute the digest
+            // would defeat the point of checkpointing. The manifest serialiser writes an
+            // empty string for these so downstream verifiers can flag and re-download.
+            : [.. resumeFrom.CompletedShardObjectKeys.Select((key, idx) => new ShardManifest(idx, key, CompressedSizeBytes: 0, Sha256: []))];
 
         if (resumeFrom is not null)
         {
@@ -333,7 +337,14 @@ internal sealed partial class PrivacyExportAssemblyService(
         HttpClient httpClient,
         CancellationToken cancellationToken)
     {
-        var manifest = new
+        // The signed-manifest envelope is a two-property object: `payload` carries
+        // the canonical manifest content, `integrityTag` carries the HMAC over the
+        // payload's UTF-8 bytes. Verifiers extract `payload`'s raw JSON text (via
+        // JsonDocument.GetRawText / Utf8JsonReader) to recompute the HMAC — that's
+        // why we serialise the payload separately and splice it in with
+        // Utf8JsonWriter.WriteRawValue (no re-parse, byte-identical to what was
+        // signed).
+        var manifestPayload = new
         {
             schemaVersion = 1,
             requestId = completion.RequestId,
@@ -349,11 +360,15 @@ internal sealed partial class PrivacyExportAssemblyService(
                 index = s.Index,
                 objectKey = s.ObjectKey,
                 compressedSizeBytes = s.CompressedSizeBytes,
+                sha256 = s.Sha256.Length == 0 ? "" : Convert.ToHexStringLower(s.Sha256),
             }).ToArray(),
             fragments = manifestFragments,
         };
 
-        byte[] payload = JsonSerializer.SerializeToUtf8Bytes(manifest, ManifestJsonOptions);
+        byte[] payloadBytes = JsonSerializer.SerializeToUtf8Bytes(manifestPayload, ManifestJsonOptions);
+        string integrityTag = contentSigner.SignBytes(payloadBytes);
+
+        byte[] payload = BuildSignedEnvelope(payloadBytes, integrityTag);
 
         PresignedUploadTicket ticket = await blobStorage.InitiateUploadAsync(
             PrivacyExportContainerNames.FragmentContainer,
@@ -382,6 +397,23 @@ internal sealed partial class PrivacyExportAssemblyService(
             PrivacyExportContainerNames.FragmentContainer, ticket.BlobId, cancellationToken).ConfigureAwait(false);
 
         return BlobReference.Create(ticket.BlobId.ToString());
+    }
+
+    private static byte[] BuildSignedEnvelope(byte[] payloadBytes, string integrityTag)
+    {
+        using MemoryStream ms = new(payloadBytes.Length + 128);
+        using (Utf8JsonWriter writer = new(ms, new JsonWriterOptions { Indented = true }))
+        {
+            writer.WriteStartObject();
+            writer.WritePropertyName("payload");
+            // WriteRawValue writes payloadBytes verbatim — byte-identical to what
+            // contentSigner.SignBytes saw. Without this, a re-parse + re-emit could
+            // change whitespace or numeric formatting and break verification.
+            writer.WriteRawValue(payloadBytes);
+            writer.WriteString("integrityTag", integrityTag);
+            writer.WriteEndObject();
+        }
+        return ms.ToArray();
     }
 
     private static string BuildObjectKeyPrefix(Guid requestId) =>

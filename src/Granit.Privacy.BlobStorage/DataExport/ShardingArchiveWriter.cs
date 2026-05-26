@@ -57,6 +57,7 @@ internal sealed class ShardingArchiveWriter : IAsyncDisposable
     private int _nextShardIndex;
     private MultipartWriteStream? _multipart;
     private WriteCountingStream? _counter;
+    private Sha256ComputingStream? _hasher;
     private ZipArchive? _zip;
     private bool _completed;
     private bool _disposed;
@@ -178,6 +179,12 @@ internal sealed class ShardingArchiveWriter : IAsyncDisposable
             _multipart = null;
         }
 
+        if (_hasher is not null)
+        {
+            await _hasher.DisposeAsync().ConfigureAwait(false);
+            _hasher = null;
+        }
+
         if (_counter is not null)
         {
             await _counter.DisposeAsync().ConfigureAwait(false);
@@ -190,11 +197,15 @@ internal sealed class ShardingArchiveWriter : IAsyncDisposable
         string objectKey = $"{_objectKeyPrefix}-{_nextShardIndex:D3}.zip";
         _multipart = await _provider.OpenWriteMultipartAsync(
             _bucket, objectKey, "application/zip", cancellationToken).ConfigureAwait(false);
+        // ZipArchive → Sha256ComputingStream → WriteCountingStream → MultipartWriteStream.
+        // The hash + counter both observe post-ZIP-framing bytes (including the central
+        // directory written on Dispose), which is exactly what a downloading client sees.
         _counter = new WriteCountingStream(_multipart, leaveOpen: true);
+        _hasher = new Sha256ComputingStream(_counter, leaveOpen: true);
         // leaveOpen on the ZipArchive so disposing it writes the central directory
-        // through the counter without closing the multipart stream — we still need
-        // to call CompleteAsync on it explicitly.
-        _zip = new ZipArchive(_counter, ZipArchiveMode.Create, leaveOpen: true);
+        // through the hash + counter without closing the multipart stream — we still
+        // need to call CompleteAsync on it explicitly.
+        _zip = new ZipArchive(_hasher, ZipArchiveMode.Create, leaveOpen: true);
     }
 
     private async Task CloseCurrentShardAsync(CancellationToken cancellationToken)
@@ -207,22 +218,26 @@ internal sealed class ShardingArchiveWriter : IAsyncDisposable
         int shardIndex = _nextShardIndex;
         string objectKey = $"{_objectKeyPrefix}-{shardIndex:D3}.zip";
 
-        // Disposing ZipArchive writes the central directory bytes into the counter +
-        // multipart stream. Must precede CompleteAsync on the multipart so the upload
-        // captures the directory.
+        // Disposing ZipArchive writes the central directory bytes through the hasher +
+        // counter into the multipart stream. Must precede CompleteAsync on the multipart
+        // so the upload captures the directory — and ComputeHashAndReset must happen
+        // after the dispose so the central directory is included in the digest.
         _zip.Dispose();
         _zip = null;
 
+        byte[] sha256 = _hasher!.ComputeHashAndReset();
         long bytes = _counter!.BytesWritten;
         await _counter.FlushAsync(cancellationToken).ConfigureAwait(false);
         await _multipart!.CompleteAsync(cancellationToken).ConfigureAwait(false);
 
+        await _hasher.DisposeAsync().ConfigureAwait(false);
+        _hasher = null;
         await _counter.DisposeAsync().ConfigureAwait(false);
         _counter = null;
         await _multipart.DisposeAsync().ConfigureAwait(false);
         _multipart = null;
 
-        _completedShards.Add(new ShardManifest(shardIndex, objectKey, bytes));
+        _completedShards.Add(new ShardManifest(shardIndex, objectKey, bytes, sha256));
         _nextShardIndex++;
     }
 
@@ -274,4 +289,6 @@ internal sealed class ShardingArchiveWriter : IAsyncDisposable
 /// <param name="Index">Zero-based shard index in write order.</param>
 /// <param name="ObjectKey">Blob-storage object key of the shard ZIP.</param>
 /// <param name="CompressedSizeBytes">Total bytes written to the shard (post-ZIP framing).</param>
-internal sealed record ShardManifest(int Index, string ObjectKey, long CompressedSizeBytes);
+/// <param name="Sha256">SHA-256 digest of the shard's bytes — empty for shards rehydrated
+/// from a checkpoint (re-streaming would be the only way to recompute, deliberately skipped).</param>
+internal sealed record ShardManifest(int Index, string ObjectKey, long CompressedSizeBytes, byte[] Sha256);

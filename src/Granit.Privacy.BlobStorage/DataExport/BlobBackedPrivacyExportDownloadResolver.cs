@@ -2,7 +2,6 @@ using System.Text.Json;
 using Granit.BlobStorage;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Internal;
-using Granit.Domain.ValueObjects;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Exceptions;
 
@@ -31,9 +30,12 @@ internal sealed class BlobBackedPrivacyExportDownloadResolver(
         Guid requestId,
         CancellationToken cancellationToken)
     {
-        ManifestLookup lookup = await ReadManifestAsync(requestId, cancellationToken).ConfigureAwait(false);
+        // Skip the JSON parse — we don't need shard metadata to return the manifest
+        // stream itself, only the descriptor's object key. Saves one blob read per
+        // manifest download vs routing through ReadManifestAsync.
+        BlobDescriptor descriptor = await ResolveManifestDescriptorAsync(requestId, cancellationToken).ConfigureAwait(false);
         Stream stream = await blobStoreProvider
-            .OpenReadAsync(PrivacyExportContainerNames.FragmentContainer, lookup.ManifestObjectKey, cancellationToken)
+            .OpenReadAsync(PrivacyExportContainerNames.FragmentContainer, descriptor.ObjectKey, cancellationToken)
             .ConfigureAwait(false);
 
         return new PrivacyExportDownloadPayload(
@@ -68,16 +70,11 @@ internal sealed class BlobBackedPrivacyExportDownloadResolver(
             LengthBytes: shard.CompressedSizeBytes > 0 ? shard.CompressedSizeBytes : null);
     }
 
-    private async Task<ManifestLookup> ReadManifestAsync(Guid requestId, CancellationToken cancellationToken)
+    private async Task<BlobDescriptor> ResolveManifestDescriptorAsync(Guid requestId, CancellationToken cancellationToken)
     {
         ExportRequestStatus? status = await trackerReader.GetStatusAsync(requestId, cancellationToken).ConfigureAwait(false);
-        if (status?.ArchiveBlobReferenceId is null)
-        {
-            throw new PrivacyExportNotReadyException(requestId);
-        }
-
-        BlobReference manifestRef = status.ArchiveBlobReferenceId;
-        if (!Guid.TryParse(manifestRef.Value, out Guid manifestBlobId))
+        if (status?.ArchiveBlobReferenceId is null
+            || !Guid.TryParse(status.ArchiveBlobReferenceId.Value, out Guid manifestBlobId))
         {
             throw new PrivacyExportNotReadyException(requestId);
         }
@@ -86,26 +83,34 @@ internal sealed class BlobBackedPrivacyExportDownloadResolver(
             .GetDescriptorAsync(PrivacyExportContainerNames.FragmentContainer, manifestBlobId, cancellationToken)
             .ConfigureAwait(false);
 
-        if (descriptor is null)
-        {
-            throw new PrivacyExportNotReadyException(requestId);
-        }
+        return descriptor ?? throw new PrivacyExportNotReadyException(requestId);
+    }
+
+    private async Task<ManifestLookup> ReadManifestAsync(Guid requestId, CancellationToken cancellationToken)
+    {
+        BlobDescriptor descriptor = await ResolveManifestDescriptorAsync(requestId, cancellationToken).ConfigureAwait(false);
 
         await using Stream manifestStream = await blobStoreProvider
             .OpenReadAsync(PrivacyExportContainerNames.FragmentContainer, descriptor.ObjectKey, cancellationToken)
             .ConfigureAwait(false);
 
-        ManifestPayload payload = await JsonSerializer
-            .DeserializeAsync<ManifestPayload>(manifestStream, ManifestJsonOptions, cancellationToken)
+        ManifestEnvelope envelope = await JsonSerializer
+            .DeserializeAsync<ManifestEnvelope>(manifestStream, ManifestJsonOptions, cancellationToken)
             .ConfigureAwait(false)
             ?? throw new PrivacyExportNotReadyException(requestId);
 
-        return new ManifestLookup(descriptor.ObjectKey, payload.Shards ?? []);
+        return new ManifestLookup(descriptor.ObjectKey, envelope.Payload?.Shards ?? []);
     }
 
     private static readonly JsonSerializerOptions ManifestJsonOptions = new(JsonSerializerDefaults.Web);
 
     private sealed record ManifestLookup(string ManifestObjectKey, IReadOnlyList<ManifestShard> Shards);
+
+    // Signed-manifest envelope: { "payload": { schemaVersion, ..., shards: [...] }, "integrityTag": "v1:..." }.
+    // The resolver only needs `shards` from inside the payload — it doesn't re-verify the
+    // HMAC, that's the verifier's job (a future endpoint or client-side CLI). All we
+    // care about here is routing shardIndex → objectKey.
+    private sealed record ManifestEnvelope(ManifestPayload? Payload);
 
     private sealed record ManifestPayload(IReadOnlyList<ManifestShard>? Shards);
 

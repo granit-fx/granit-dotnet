@@ -163,8 +163,14 @@ public sealed class BlobBackedPrivacyExportDownloadResolverTests
             index = i,
             objectKey = $"personal-data-export/abc-{i:D3}.zip",
             compressedSizeBytes = 1024 * (i + 1),
+            sha256 = "00".PadRight(64, '0'),
         });
-        return JsonSerializer.Serialize(new { shards });
+        // Signed-envelope shape: { payload: { shards: [...] }, integrityTag: "..." }
+        return JsonSerializer.Serialize(new
+        {
+            payload = new { shards },
+            integrityTag = "v1:stub",
+        });
     }
 
     private sealed record Setup(BlobBackedPrivacyExportDownloadResolver Resolver, IBlobStoreProvider Provider);

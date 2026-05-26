@@ -37080,7 +37080,7 @@
       "kind": "record",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/PrivacyExportAssemblyService.cs",
-      "line": 437,
+      "line": 469,
       "members": []
     },
     {
@@ -37834,6 +37834,28 @@
       "file": "src/Granit.Privacy/DataExport/Security/EphemeralExportHmacSigner.cs",
       "line": 21,
       "members": []
+    },
+    {
+      "name": "IExportContentSigner",
+      "fqn": "Granit.Privacy.DataExport.Security.IExportContentSigner",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Security/IExportContentSigner.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "SignBytes",
+          "kind": "method",
+          "signature": "SignBytes(ReadOnlySpan<byte> payload)",
+          "returnType": "string"
+        },
+        {
+          "name": "VerifyBytes",
+          "kind": "method",
+          "signature": "VerifyBytes(ReadOnlySpan<byte> payload, string tag)",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "IExportHmacSigner",

@@ -33,7 +33,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddHttpClient(StagedFragmentBuilder.HttpClientName);
         services.AddHttpClient(PrivacyExportAssemblyService.HttpClientName);
-        services.TryAddSingleton<IExportHmacSigner, EphemeralExportHmacSigner>();
+        services.TryAddSingleton<EphemeralExportHmacSigner>();
+        services.TryAddSingleton<IExportHmacSigner>(sp => sp.GetRequiredService<EphemeralExportHmacSigner>());
+        services.TryAddSingleton<IExportContentSigner>(sp => sp.GetRequiredService<EphemeralExportHmacSigner>());
         services.TryAddSingleton<IExportAssemblyCheckpointStore, InMemoryExportAssemblyCheckpointStore>();
         services.TryAddScoped<IStagedFragmentBuilder, StagedFragmentBuilder>();
         services.TryAddScoped<IBlobBackedExportSource, BlobBackedExportSource>();

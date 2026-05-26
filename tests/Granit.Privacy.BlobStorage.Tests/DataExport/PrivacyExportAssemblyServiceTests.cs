@@ -1,5 +1,7 @@
 using System.Diagnostics.Metrics;
 using System.IO.Compression;
+using System.Text;
+using System.Text.Json;
 using Granit.BlobStorage;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Internal;
@@ -93,6 +95,46 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
 
         (await _checkpoints.GetAsync(requestId, tenantId: null, TestContext.Current.CancellationToken))
             .ShouldBeNull("checkpoint should be cleared after successful assembly");
+    }
+
+    [Fact]
+    public async Task AssembleAsync_ManifestIsSigned_AndHmacRoundTrips_Over_PayloadRawBytes()
+    {
+        var requestId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var blobA = Guid.NewGuid();
+        SetupFragmentDownload(blobA, """{"id":"u1"}"""u8.ToArray());
+        SetupManifestUpload();
+
+        ExportCompletedEto evt = BuildEvent(
+            requestId, userId,
+            [BuildSignedFragment(requestId, userId, "identity", blobA, "identity.json", "application/json")]);
+
+        await CreateSut().AssembleAsync(evt, TestContext.Current.CancellationToken);
+
+        // The manifest is the only application/json PUT body captured by the fake HTTP handler.
+        CapturedUpload manifestUpload = _http.CapturedUploads
+            .Single(u => u.Url.AbsoluteUri.StartsWith("https://s3.example/upload/", StringComparison.Ordinal));
+
+        using var envelope = JsonDocument.Parse(manifestUpload.Body);
+        JsonElement payloadElement = envelope.RootElement.GetProperty("payload");
+        JsonElement tagElement = envelope.RootElement.GetProperty("integrityTag");
+
+        string tag = tagElement.GetString().ShouldNotBeNull();
+        tag.ShouldStartWith("v1:");
+
+        // Verify the HMAC by feeding the payload's UTF-8 raw text back through the signer.
+        byte[] payloadBytes = Encoding.UTF8.GetBytes(payloadElement.GetRawText());
+        _hmacSigner.VerifyBytes(payloadBytes, tag).ShouldBeTrue("the assembly service must sign over the payload's raw bytes");
+
+        // schemaVersion stamp is mandatory — verifiers branch on it.
+        payloadElement.GetProperty("schemaVersion").GetInt32().ShouldBe(1);
+
+        // sha256 hex digest is emitted per shard (64 hex chars = 32 bytes).
+        foreach (JsonElement shard in payloadElement.GetProperty("shards").EnumerateArray())
+        {
+            shard.GetProperty("sha256").GetString()!.Length.ShouldBe(64);
+        }
     }
 
     [Fact]
@@ -276,7 +318,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
 
         GranitPrivacyOptions opts = new() { ExportShardMaxSizeMb = 1 };
         PrivacyExportAssemblyService sut = new(
-            _blobStorage, _blobStoreProvider, _hmacSigner, spy, _tracker,
+            _blobStorage, _blobStoreProvider, _hmacSigner, _hmacSigner, spy, _tracker,
             new FakeHttpClientFactory(_http), ConfigOptions.Create(opts),
             _timeProvider, _metrics, NullLogger<PrivacyExportAssemblyService>.Instance);
 
@@ -360,6 +402,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
         new(
             _blobStorage,
             _blobStoreProvider,
+            _hmacSigner,
             _hmacSigner,
             _checkpoints,
             _tracker,
