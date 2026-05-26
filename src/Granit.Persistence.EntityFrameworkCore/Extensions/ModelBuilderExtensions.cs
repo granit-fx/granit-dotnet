@@ -44,6 +44,11 @@ public static class ModelBuilderExtensions
     ///     Implementors of <see cref="IHasMergeTombstone"/> get the <c>MergedIntoId</c> +
     ///     <c>MergedAt</c> columns and an index on <c>MergedIntoId</c> auto-applied.
     ///   </item>
+    ///   <item><b>Ownership index convention</b>:
+    ///     Implementors of <see cref="IOwnable"/> get an index on <c>(TenantId, OwnerId)</c>
+    ///     when also <see cref="IMultiTenant"/>, or on <c>(OwnerId)</c> alone otherwise.
+    ///     Aligned with the multi-tenant query filter for efficient "my entities" lookups.
+    ///   </item>
     ///   <item><b>Translation conventions</b>:
     ///     <see cref="ITranslation{TParent}"/> → FK, cascade delete, unique index (ParentId, Culture).
     ///   </item>
@@ -141,6 +146,14 @@ public static class ModelBuilderExtensions
                 .Invoke(null, [modelBuilder]);
         }
 
+        // --- Ownership index convention ---
+        // Detects IOwnable implementors and adds an index on (TenantId, OwnerId) when also
+        // IMultiTenant, or on (OwnerId) alone otherwise. Aligned with the multi-tenant
+        // query filter so that "my entities in this tenant" lookups remain a seek.
+        // No query filter is registered — ownership is an exposed column (admin must be
+        // able to list "all entities owned by Alice"), not a hidden filter.
+        ApplyOwnershipIndexes(modelBuilder);
+
         // --- Translation conventions ---
         // Detects ITranslation<TParent> implementations and configures:
         //   - FK from Translation.ParentId → Parent.Id with cascade delete
@@ -182,6 +195,53 @@ public static class ModelBuilderExtensions
         ApplyEnumStringConverters(modelBuilder);
 
         return modelBuilder;
+    }
+
+    // Adds an automatic composite index on (TenantId, OwnerId) for IOwnable + IMultiTenant
+    // entities, or on (OwnerId) alone otherwise. Uses the Fluent API
+    // modelBuilder.Entity(...).HasIndex(...) rather than the low-level
+    // entityType.AddIndex(...) to stay aligned with ModelBuilder validations.
+    //
+    // Skips entities without their own table (TPH derived types, keyless query types).
+    // De-duplicates: if an index over the same property set already exists, no new
+    // index is added — module authors keep the freedom to declare it explicitly with
+    // a custom name when they want one.
+    private static void ApplyOwnershipIndexes(ModelBuilder modelBuilder)
+    {
+        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (!typeof(IOwnable).IsAssignableFrom(entityType.ClrType))
+            {
+                continue;
+            }
+
+            string? tableName = entityType.GetTableName();
+            if (tableName is null)
+            {
+                // Keyless / TPH-derived / view-mapped — no own table to index.
+                continue;
+            }
+
+            bool isMultiTenant = typeof(IMultiTenant).IsAssignableFrom(entityType.ClrType);
+            string[] propertyNames = isMultiTenant
+                ? [nameof(IMultiTenant.TenantId), nameof(IOwnable.OwnerId)]
+                : [nameof(IOwnable.OwnerId)];
+
+            // De-dup: skip if an index over the exact same property set already exists.
+            bool alreadyIndexed = entityType.GetIndexes().Any(idx =>
+                idx.Properties.Count == propertyNames.Length
+                && idx.Properties.Select(p => p.Name).SequenceEqual(propertyNames));
+
+            if (alreadyIndexed)
+            {
+                continue;
+            }
+
+            string suffix = isMultiTenant ? "tenant_owner" : "owner";
+            modelBuilder.Entity(entityType.ClrType)
+                .HasIndex(propertyNames)
+                .HasDatabaseName($"ix_{tableName}_{suffix}");
+        }
     }
 
     // Auto-applies EnumToStringConverter<TEnum> to every enum property in the model,

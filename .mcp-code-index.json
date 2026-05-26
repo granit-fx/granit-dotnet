@@ -7289,6 +7289,15 @@
       "members": []
     },
     {
+      "name": "OwnedRequirement",
+      "fqn": "Granit.Authorization.Authorization.OwnedRequirement",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Authorization/OwnedRequirement.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "PermissionRequirement",
       "fqn": "Granit.Authorization.Authorization.PermissionRequirement",
       "kind": "class",
@@ -15460,6 +15469,15 @@
       "project": "Granit",
       "file": "src/Granit/Domain/IMultiTenant.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "IOwnable",
+      "fqn": "Granit.Domain.IOwnable",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/Domain/IOwnable.cs",
+      "line": 23,
       "members": []
     },
     {

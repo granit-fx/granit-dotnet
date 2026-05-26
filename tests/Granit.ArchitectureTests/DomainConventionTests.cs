@@ -36,6 +36,10 @@ public sealed class DomainConventionTests
     public void Event_naming_should_follow_convention() =>
         DomainConventionRules.EventNamingShouldFollowConvention(Architecture, "Granit.");
 
+    [Fact]
+    public void IOwnable_types_should_have_private_set_on_OwnerId() =>
+        DomainConventionRules.IOwnableTypesShouldHavePrivateSetOnOwnerId(Architecture, "Granit.");
+
     /// <summary>
     /// No type should manually implement <c>IDomainEventSource</c> — use aggregate root base classes instead.
     /// </summary>

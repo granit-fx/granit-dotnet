@@ -56,6 +56,7 @@ public static class AuthorizationServiceCollectionExtensions
 
         services.AddSingleton<IAuthorizationPolicyProvider, DynamicPermissionPolicyProvider>();
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddScoped<IAuthorizationHandler, OwnedByCurrentUserHandler>();
 
         return services;
     }

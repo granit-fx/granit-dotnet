@@ -228,6 +228,47 @@ public static class DomainConventionRules
             $"Violators: {string.Join(", ", violations)}");
     }
 
+    /// <summary>
+    /// Every concrete <c>IOwnable</c> implementor must expose <c>OwnerId</c> with a
+    /// non-public setter (private set or init). Ownership is a domain decision; allowing
+    /// callers to overwrite <c>OwnerId</c> directly bypasses the <c>TransferOwnership</c>
+    /// behaviour method and the domain event emission that goes with it.
+    /// </summary>
+    public static void IOwnableTypesShouldHavePrivateSetOnOwnerId(
+        Architecture architecture,
+        string typePrefix)
+    {
+        List<string> violations = [];
+
+        foreach (Class c in architecture.Classes
+            .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
+                && !c.IsAbstract.GetValueOrDefault()
+                && ImplementsInterface(c, "Granit.Domain.IOwnable")))
+        {
+            // ArchUnitNET exposes property setters as methods named "set_PropertyName".
+            // A public set_OwnerId means OwnerId has a public setter.
+            MethodMember? publicOwnerIdSetter = c.Members.OfType<MethodMember>()
+                .FirstOrDefault(m => m.Name.StartsWith("set_OwnerId", StringComparison.Ordinal)
+                    && m.Visibility == Visibility.Public
+                    && !m.Name.Contains('.'));
+
+            if (publicOwnerIdSetter is not null)
+            {
+                violations.Add(c.FullName);
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "IOwnable implementors must not expose a public setter on OwnerId — " +
+            "use a TransferOwnership(Guid) behaviour method instead. " +
+            $"Violators: {string.Join(", ", violations)}");
+    }
+
+    private static bool ImplementsInterface(Class c, string interfaceFullName) =>
+        c.Dependencies.Any(d =>
+            d is ArchUnitNET.Domain.Dependencies.ImplementsInterfaceDependency
+            && d.Target.FullName == interfaceFullName);
+
     private static bool IsAssignableToValueObject(Class c) =>
         HasBaseClass(c, "Granit.Domain.ValueObject");
 
