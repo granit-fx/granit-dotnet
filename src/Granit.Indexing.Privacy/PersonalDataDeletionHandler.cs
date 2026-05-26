@@ -35,14 +35,11 @@ public class PersonalDataDeletionHandler
         ArgumentNullException.ThrowIfNull(erasers);
         ArgumentNullException.ThrowIfNull(currentTenant);
 
-        Guid? tenantId = ParseTenantId(@event.TenantId) ?? currentTenant.Id;
+        Guid? tenantId = @event.TenantId ?? currentTenant.Id;
 
         foreach (IIndexedDataEraser eraser in erasers)
         {
             await eraser.EraseAsync(tenantId, @event.UserId, cancellationToken).ConfigureAwait(false);
         }
     }
-
-    private static Guid? ParseTenantId(string? raw) =>
-        Guid.TryParse(raw, out Guid id) ? id : null;
 }
