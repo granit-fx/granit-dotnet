@@ -26047,12 +26047,34 @@
       ]
     },
     {
+      "name": "RebuildAlreadyInProgressException",
+      "fqn": "Granit.Indexing.BackgroundJobs.Exceptions.RebuildAlreadyInProgressException",
+      "kind": "class",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Exceptions/RebuildAlreadyInProgressException.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Reason",
+          "kind": "property",
+          "signature": "string Reason",
+          "returnType": "string"
+        },
+        {
+          "name": "RebuildAlreadyInProgressException",
+          "kind": "method",
+          "signature": "RebuildAlreadyInProgressException(Guid? tenantId, string sourceName, Exception? innerException = null)",
+          "returnType": "Guid? TenantId { get; } public string SourceName { get; } public"
+        }
+      ]
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.Indexing.BackgroundJobs.Extensions.ServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Indexing.BackgroundJobs",
       "file": "src/Granit.Indexing.BackgroundJobs/Extensions/ServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitIndexingBackgroundJobs",
@@ -26121,7 +26143,7 @@
       "kind": "record",
       "project": "Granit.Indexing.BackgroundJobs",
       "file": "src/Granit.Indexing.BackgroundJobs/Jobs/RebuildIndexJob.cs",
-      "line": 25,
+      "line": 19,
       "members": []
     },
     {
@@ -26145,6 +26167,24 @@
           "returnType": "int"
         }
       ]
+    },
+    {
+      "name": "IndexingRebuildPermissions",
+      "fqn": "Granit.Indexing.BackgroundJobs.Permissions.IndexingRebuildPermissions",
+      "kind": "class",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Permissions/IndexingRebuildPermissions.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "Rebuild",
+      "fqn": "Granit.Indexing.BackgroundJobs.Permissions.Rebuild",
+      "kind": "class",
+      "project": "Granit.Indexing.BackgroundJobs",
+      "file": "src/Granit.Indexing.BackgroundJobs/Permissions/IndexingRebuildPermissions.cs",
+      "line": 34,
+      "members": []
     },
     {
       "name": "RebuildIndexService",
@@ -26479,7 +26519,7 @@
       "kind": "class",
       "project": "Granit.Indexing.EntityFrameworkCore",
       "file": "src/Granit.Indexing.EntityFrameworkCore/IndexingRebuildCheckpointRow.cs",
-      "line": 20,
+      "line": 32,
       "members": [
         {
           "name": "TenantId",
@@ -26492,6 +26532,12 @@
           "kind": "property",
           "signature": "string LastProcessedKey",
           "returnType": "string"
+        },
+        {
+          "name": "UpdatedAt",
+          "kind": "property",
+          "signature": "DateTimeOffset UpdatedAt",
+          "returnType": "DateTimeOffset"
         }
       ]
     },
