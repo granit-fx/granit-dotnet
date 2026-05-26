@@ -141,7 +141,22 @@ jobs:
           fi
           sudo ln -sf "$LEPT_LIB" "$LIB_DIR/libleptonica-1.82.0.so"
           sudo ln -sf "$TESS_LIB" "$LIB_DIR/libtesseract50.so"
+          # Refresh the loader cache — fresh symlinks aren't in /etc/ld.so.cache
+          # until ldconfig runs, and the Charlesw NuGet's InteropDotNet loader uses
+          # dlopen which consults the cache before falling through to a path scan.
+          # Belt-and-suspenders: also push $LIB_DIR onto LD_LIBRARY_PATH in case the
+          # cache refresh races the test step.
+          sudo ldconfig
+          echo "LD_LIBRARY_PATH=$LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
           echo "TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata" >> "$GITHUB_ENV"
+          # Smoke-check — fail the step (with diagnostics) if dlopen still won't
+          # resolve the canonical names. Catches a symlink target gone wrong faster
+          # than waiting for the .NET P/Invoke to throw later.
+          ldconfig -p | grep -E '(libleptonica|libtesseract50)' || {
+            echo "ldconfig cache does not contain the canonical names" >&2
+            ls -l "$LIB_DIR/libleptonica-1.82.0.so" "$LIB_DIR/libtesseract50.so" >&2 || true
+            exit 1
+          }
 
       - name: Build shard
         run: >
