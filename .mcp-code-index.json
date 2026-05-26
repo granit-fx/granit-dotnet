@@ -37269,6 +37269,33 @@
       "members": []
     },
     {
+      "name": "ExportFragment",
+      "fqn": "Granit.Privacy.DataExport.Fragments.ExportFragment",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Fragments/ExportFragment.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "PassThroughExportFragment",
+      "fqn": "Granit.Privacy.DataExport.Fragments.PassThroughExportFragment",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Fragments/ExportFragment.cs",
+      "line": 69,
+      "members": []
+    },
+    {
+      "name": "StagedExportFragment",
+      "fqn": "Granit.Privacy.DataExport.Fragments.StagedExportFragment",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Fragments/ExportFragment.cs",
+      "line": 58,
+      "members": []
+    },
+    {
       "name": "IDataProviderRegistry",
       "fqn": "Granit.Privacy.DataExport.IDataProviderRegistry",
       "kind": "interface",
@@ -37407,12 +37434,86 @@
       ]
     },
     {
+      "name": "PrivacyExportContext",
+      "fqn": "Granit.Privacy.DataExport.PrivacyExportContext",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/PrivacyExportContext.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "ReceivedFragment",
       "fqn": "Granit.Privacy.DataExport.ReceivedFragment",
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/ReceivedFragment.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "EntryPathSanitizer",
+      "fqn": "Granit.Privacy.DataExport.Sanitization.EntryPathSanitizer",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Sanitization/EntryPathSanitizer.cs",
+      "line": 41,
+      "members": [
+        {
+          "name": "Sanitize",
+          "kind": "method",
+          "signature": "Sanitize(string entryPath)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "InvalidExportEntryPathException",
+      "fqn": "Granit.Privacy.DataExport.Sanitization.InvalidExportEntryPathException",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Sanitization/InvalidExportEntryPathException.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "EphemeralExportHmacSigner",
+      "fqn": "Granit.Privacy.DataExport.Security.EphemeralExportHmacSigner",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Security/EphemeralExportHmacSigner.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "IExportHmacSigner",
+      "fqn": "Granit.Privacy.DataExport.Security.IExportHmacSigner",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Security/IExportHmacSigner.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "Sign",
+          "kind": "method",
+          "signature": "Sign(in ExportHmacParameters parameters)",
+          "returnType": "string"
+        },
+        {
+          "name": "Verify",
+          "kind": "method",
+          "signature": "Verify(in ExportHmacParameters parameters, string tag)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Privacy.DataExport.Security.struct",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Security/IExportHmacSigner.cs",
+      "line": 59,
       "members": []
     },
     {
