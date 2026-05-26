@@ -4,7 +4,7 @@ using System.Diagnostics.Metrics;
 namespace Granit.Indexing.AI.Diagnostics;
 
 /// <summary>
-/// OpenTelemetry metrics for the AI summarizer (and future AI auto-tagger). Meter:
+/// OpenTelemetry metrics for the AI summarizer + auto-tagger. Meter:
 /// <c>Granit.Indexing.AI</c>.
 /// </summary>
 /// <remarks>
@@ -21,6 +21,12 @@ public sealed class IndexingAIMetrics
     private readonly Counter<long> _summarizerFailed;
     private readonly Counter<long> _summarizerTruncated;
     private readonly Counter<long> _summarizerInjection;
+
+    private readonly Counter<long> _autoTaggerAttempted;
+    private readonly Counter<long> _autoTaggerThrottled;
+    private readonly Counter<long> _autoTaggerFailed;
+    private readonly Counter<long> _autoTaggerInjection;
+    private readonly Counter<long> _autoTaggerOutOfCandidate;
 
     public IndexingAIMetrics(IMeterFactory meterFactory)
     {
@@ -47,6 +53,26 @@ public sealed class IndexingAIMetrics
         _summarizerInjection = meter.CreateCounter<long>(
             "granit.indexing.ai.summarizer.injection_attempt",
             description: "Summarizer responses rejected because they did not satisfy the JSON schema (potential prompt-injection signal).");
+
+        _autoTaggerAttempted = meter.CreateCounter<long>(
+            "granit.indexing.ai.autotag.calls.attempted",
+            description: "Outbound LLM calls dispatched by the AI auto-tagger.");
+
+        _autoTaggerThrottled = meter.CreateCounter<long>(
+            "granit.indexing.ai.autotag.calls.throttled",
+            description: "Auto-tagger calls skipped because the per-tenant hourly ceiling was exceeded.");
+
+        _autoTaggerFailed = meter.CreateCounter<long>(
+            "granit.indexing.ai.autotag.calls.failed",
+            description: "Auto-tagger calls that did not yield a usable response (timeout, transport, deserialisation).");
+
+        _autoTaggerInjection = meter.CreateCounter<long>(
+            "granit.indexing.ai.autotag.injection_attempt",
+            description: "Auto-tagger responses rejected because they did not satisfy the JSON schema (potential prompt-injection signal).");
+
+        _autoTaggerOutOfCandidate = meter.CreateCounter<long>(
+            "granit.indexing.ai.autotag.out_of_candidate",
+            description: "Auto-tagger responses where the LLM proposed at least one tag NOT in the candidate list — silently dropped by the server-side intersection (hallucination or prompt-injection signal).");
     }
 
     public void RecordSummarizerAttempted(string? tenantId)
@@ -81,5 +107,43 @@ public sealed class IndexingAIMetrics
     {
         TagList tags = [new("tenant_id", tenantId ?? "global")];
         _summarizerInjection.Add(1, tags);
+    }
+
+    public void RecordAutoTaggerAttempted(string? tenantId)
+    {
+        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        _autoTaggerAttempted.Add(1, tags);
+    }
+
+    public void RecordAutoTaggerThrottled(string? tenantId)
+    {
+        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        _autoTaggerThrottled.Add(1, tags);
+    }
+
+    public void RecordAutoTaggerFailed(string? tenantId, string reason)
+    {
+        TagList tags =
+        [
+            new("tenant_id", tenantId ?? "global"),
+            new("reason", reason),
+        ];
+        _autoTaggerFailed.Add(1, tags);
+    }
+
+    public void RecordAutoTaggerInjection(string? tenantId)
+    {
+        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        _autoTaggerInjection.Add(1, tags);
+    }
+
+    public void RecordAutoTaggerOutOfCandidate(string? tenantId, long droppedCount)
+    {
+        if (droppedCount <= 0)
+        {
+            return;
+        }
+        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        _autoTaggerOutOfCandidate.Add(droppedCount, tags);
     }
 }

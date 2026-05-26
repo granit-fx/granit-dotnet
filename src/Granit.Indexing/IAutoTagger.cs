@@ -4,10 +4,17 @@ namespace Granit.Indexing;
 /// Produces facet tags for an extracted document body. Optional indexing enricher.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Implementations accept a consumer-supplied <see cref="ITagCandidateProvider"/> so the
 /// auto-tagger respects the tenant's tag universe instead of hallucinating new strings
 /// — important for stable facets and predictable cardinality on the index.
 /// Concrete implementations ship in I-F3.3 (AI provider).
+/// </para>
+/// <para>
+/// <b>⚠ Suggestion-only UX contract.</b> User-facing UI MUST require explicit
+/// confirmation before applying suggested tags. The 'suggestion-only' guarantee is a
+/// UX contract — in bulk-approve flows, this defence becomes ineffective.
+/// </para>
 /// </remarks>
 public interface IAutoTagger
 {

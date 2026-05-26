@@ -25922,6 +25922,24 @@
           "kind": "property",
           "signature": "int TimeoutSeconds",
           "returnType": "int"
+        },
+        {
+          "name": "MaxAutoTagCallsPerHourPerTenant",
+          "kind": "property",
+          "signature": "int MaxAutoTagCallsPerHourPerTenant",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxAutoTagContentLength",
+          "kind": "property",
+          "signature": "int MaxAutoTagContentLength",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxAutoTagsReturned",
+          "kind": "property",
+          "signature": "int MaxAutoTagsReturned",
+          "returnType": "int"
         }
       ]
     },
@@ -25942,6 +25960,22 @@
       ]
     },
     {
+      "name": "DefaultAutoTagPromptBuilder",
+      "fqn": "Granit.Indexing.AI.Prompts.DefaultAutoTagPromptBuilder",
+      "kind": "class",
+      "project": "Granit.Indexing.AI",
+      "file": "src/Granit.Indexing.AI/Prompts/DefaultAutoTagPromptBuilder.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "Build",
+          "kind": "method",
+          "signature": "Build(string content, IReadOnlyList<string> candidates, int maxTags)",
+          "returnType": "IReadOnlyList<ChatMessage>"
+        }
+      ]
+    },
+    {
       "name": "IAIAutoSummaryPromptBuilder",
       "fqn": "Granit.Indexing.AI.Prompts.IAIAutoSummaryPromptBuilder",
       "kind": "interface",
@@ -25954,6 +25988,38 @@
           "kind": "method",
           "signature": "Build(string content, int maxSummaryLength)",
           "returnType": "IReadOnlyList<ChatMessage>"
+        }
+      ]
+    },
+    {
+      "name": "IAutoTagPromptBuilder",
+      "fqn": "Granit.Indexing.AI.Prompts.IAutoTagPromptBuilder",
+      "kind": "interface",
+      "project": "Granit.Indexing.AI",
+      "file": "src/Granit.Indexing.AI/Prompts/IAutoTagPromptBuilder.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Build",
+          "kind": "method",
+          "signature": "Build(string content, IReadOnlyList<string> candidates, int maxTags)",
+          "returnType": "IReadOnlyList<ChatMessage>"
+        }
+      ]
+    },
+    {
+      "name": "AutoTagResponse",
+      "fqn": "Granit.Indexing.AI.Schema.AutoTagResponse",
+      "kind": "class",
+      "project": "Granit.Indexing.AI",
+      "file": "src/Granit.Indexing.AI/Schema/AutoTagResponse.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Tags",
+          "kind": "property",
+          "signature": "string[] Tags",
+          "returnType": "string[]"
         }
       ]
     },
@@ -26409,7 +26475,7 @@
       "kind": "interface",
       "project": "Granit.Indexing",
       "file": "src/Granit.Indexing/IAutoTagger.cs",
-      "line": 12,
+      "line": 19,
       "members": [
         {
           "name": "TagAsync",
@@ -26555,7 +26621,7 @@
       "kind": "interface",
       "project": "Granit.Indexing",
       "file": "src/Granit.Indexing/IAutoTagger.cs",
-      "line": 33,
+      "line": 40,
       "members": [
         {
           "name": "GetCandidatesAsync",

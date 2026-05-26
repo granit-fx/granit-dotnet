@@ -47,4 +47,28 @@ public sealed class IndexingAIOptions
     /// indexing pipeline keeps flowing on a stalled LLM. Default: <c>20</c>.
     /// </summary>
     public int TimeoutSeconds { get; set; } = 20;
+
+    /// <summary>
+    /// Hard cap on outbound LLM calls per tenant per hour dedicated to the
+    /// auto-tagger. Distinct from <see cref="MaxAICallsPerHourPerTenant"/> so the
+    /// (cheaper, more frequent) summarizer budget doesn't starve auto-tagging on
+    /// the same tenant. Calls above the cap return an empty tag list (graceful
+    /// skip) instead of throwing. Default: <c>500</c>.
+    /// </summary>
+    public int MaxAutoTagCallsPerHourPerTenant { get; set; } = 500;
+
+    /// <summary>
+    /// Maximum number of characters sampled from the head of the input before the
+    /// auto-tagger LLM call. Smaller than the summarizer cap — auto-tagging needs
+    /// the document's gist, not the full body — to keep token cost in check.
+    /// Default: <c>4_096</c>.
+    /// </summary>
+    public int MaxAutoTagContentLength { get; set; } = 4_096;
+
+    /// <summary>
+    /// Hard ceiling on the number of tags returned per call regardless of what
+    /// the LLM proposes. Mirrors the <c>maxTags</c> caller parameter — whichever
+    /// is smaller wins. Default: <c>10</c>.
+    /// </summary>
+    public int MaxAutoTagsReturned { get; set; } = 10;
 }
