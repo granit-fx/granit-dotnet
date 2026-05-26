@@ -44365,13 +44365,19 @@
       "kind": "interface",
       "project": "Granit",
       "file": "src/Granit/Users/ICurrentUserService.cs",
-      "line": 14,
+      "line": 15,
       "members": [
+        {
+          "name": "TryParse",
+          "kind": "method",
+          "signature": "TryParse(UserId, out Guid id)",
+          "returnType": "string? UserId { get; } Guid? UserGuid => Guid."
+        },
         {
           "name": "GetRoles",
           "kind": "method",
           "signature": "GetRoles()",
-          "returnType": "string? UserId { get; } string? UserName { get; } string? Email { get; } string? FirstName { get; } string? LastName { get; } bool IsAuthenticated { get; } IReadOnlyList<string>"
+          "returnType": "string? UserName { get; } string? Email { get; } string? FirstName { get; } string? LastName { get; } bool IsAuthenticated { get; } IReadOnlyList<string>"
         },
         {
           "name": "IsInRole",

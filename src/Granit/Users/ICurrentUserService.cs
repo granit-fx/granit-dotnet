@@ -6,8 +6,9 @@ namespace Granit.Users;
 /// <remarks>
 /// <para>
 /// Default interface methods (<see cref="ActorKind"/>, <see cref="IsMachine"/>,
-/// <see cref="ApiKeyId"/>) were added to support machine-to-machine authentication
-/// (API keys) without breaking existing implementations. Implementations that do not
+/// <see cref="ApiKeyId"/>, <see cref="UserGuid"/>) were added to support
+/// machine-to-machine authentication (API keys) and typed-identity propagation
+/// without breaking existing implementations. Implementations that do not
 /// override these members get the defaults for a human user context.
 /// </para>
 /// </remarks>
@@ -15,6 +16,20 @@ public interface ICurrentUserService
 {
     /// <summary>Unique identifier of the user (claim "sub").</summary>
     string? UserId { get; }
+
+    /// <summary>
+    /// The current actor's local aggregate id, when the IDP <c>sub</c> claim is
+    /// parseable as a <see cref="Guid"/>. Returns <c>null</c> for non-Guid subs
+    /// (e.g. Cognito federated identities prefixed with the pool region, Google's
+    /// numeric sub) or unauthenticated requests.
+    /// </summary>
+    /// <remarks>
+    /// Best-effort default impl: callers requiring an owner identity MUST handle the
+    /// <c>null</c> case explicitly — typically by throwing at the command-handler
+    /// or aggregate-factory boundary, so the failure surfaces before persistence
+    /// rather than as a silent <see cref="Guid.Empty"/> downstream.
+    /// </remarks>
+    Guid? UserGuid => Guid.TryParse(UserId, out Guid id) ? id : null;
 
     /// <summary>Username (according to the <c>NameClaimType</c> configured in JWT Bearer).</summary>
     string? UserName { get; }

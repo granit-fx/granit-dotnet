@@ -45,12 +45,50 @@ public sealed class ICurrentUserServiceDefaultsTests
         sut.ApiKeyId.ShouldBeNull();
     }
 
+    [Fact]
+    public void UserGuid_ReturnsParsedGuid_WhenUserIdIsAGuid()
+    {
+        var expected = Guid.Parse("c2c61eaf-1a3a-4bbf-90d7-9c8a5e2d6f12");
+        ICurrentUserService sut = CreateImplementationWithUserId(expected.ToString());
+        sut.UserGuid.ShouldBe(expected);
+    }
+
+    [Theory]
+    [InlineData("C2C61EAF-1A3A-4BBF-90D7-9C8A5E2D6F12")] // uppercase
+    [InlineData("{c2c61eaf-1a3a-4bbf-90d7-9c8a5e2d6f12}")] // braced
+    public void UserGuid_AcceptsCommonGuidFormats(string userId)
+    {
+        ICurrentUserService sut = CreateImplementationWithUserId(userId);
+        sut.UserGuid.ShouldBe(Guid.Parse("c2c61eaf-1a3a-4bbf-90d7-9c8a5e2d6f12"));
+    }
+
+    [Fact]
+    public void UserGuid_ReturnsNull_WhenUserIdIsNull()
+    {
+        ICurrentUserService sut = CreateMinimalImplementation();
+        sut.UserGuid.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("not-a-guid")]
+    [InlineData("103267192873091283")] // Google-style numeric sub
+    [InlineData("eu-west-1:c2c61eaf-1a3a-4bbf-90d7-9c8a5e2d6f12")] // Cognito federated
+    public void UserGuid_ReturnsNull_WhenUserIdIsNotParseable(string userId)
+    {
+        ICurrentUserService sut = CreateImplementationWithUserId(userId);
+        sut.UserGuid.ShouldBeNull();
+    }
+
     // CA1859: intentionally typed as interface to test default interface method dispatch.
 #pragma warning disable CA1859
     private static ICurrentUserService CreateMinimalImplementation() => new MinimalCurrentUserService();
 
     private static ICurrentUserService CreateImplementationWithActorKind(ActorKind actorKind) =>
         new ActorKindOverrideCurrentUserService(actorKind);
+
+    private static ICurrentUserService CreateImplementationWithUserId(string? userId) =>
+        new UserIdOverrideCurrentUserService(userId);
 #pragma warning restore CA1859
 
     /// <summary>
@@ -87,5 +125,22 @@ public sealed class ICurrentUserServiceDefaultsTests
         public bool IsInRole(string role) => false;
         public ActorKind ActorKind => actorKind;
         // IsMachine NOT overridden — default logic applies based on ActorKind.
+    }
+
+    /// <summary>
+    /// Implementation that overrides <see cref="ICurrentUserService.UserId"/> only,
+    /// relying on the default <see cref="ICurrentUserService.UserGuid"/> parse logic.
+    /// </summary>
+    private sealed class UserIdOverrideCurrentUserService(string? userId) : ICurrentUserService
+    {
+        public string? UserId => userId;
+        public string? UserName => null;
+        public string? Email => null;
+        public string? FirstName => null;
+        public string? LastName => null;
+        public bool IsAuthenticated => false;
+        public IReadOnlyList<string> GetRoles() => [];
+        public bool IsInRole(string role) => false;
+        // UserGuid NOT overridden — default Guid.TryParse logic applies.
     }
 }
