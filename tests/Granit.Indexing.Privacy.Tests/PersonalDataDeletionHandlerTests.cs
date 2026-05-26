@@ -22,7 +22,7 @@ public sealed class PersonalDataDeletionHandlerTests
             RequestedAt: DateTimeOffset.UtcNow,
             Reason: "GDPR",
             Regulation: "GDPR",
-            TenantId: tenantId.ToString());
+            TenantId: tenantId);
 
         await PersonalDataDeletionHandler.Handle(
             @event,
@@ -35,7 +35,7 @@ public sealed class PersonalDataDeletionHandlerTests
     }
 
     [Fact]
-    public async Task Falls_back_to_current_tenant_when_event_tenant_id_is_invalid()
+    public async Task Falls_back_to_current_tenant_when_event_tenant_id_is_null()
     {
         var currentTenantId = Guid.NewGuid();
         StubCurrentTenant tenant = new(currentTenantId);
@@ -48,7 +48,7 @@ public sealed class PersonalDataDeletionHandlerTests
             RequestedAt: DateTimeOffset.UtcNow,
             Reason: "r",
             Regulation: "GDPR",
-            TenantId: "not-a-guid");
+            TenantId: null);
 
         await PersonalDataDeletionHandler.Handle(@event, [ef], tenant, TestContext.Current.CancellationToken);
 

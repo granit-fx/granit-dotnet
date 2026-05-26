@@ -61,7 +61,7 @@ public sealed class PersonalDataDeletionCascadeTests(PostgresFixture fixture)
             RequestedAt: DateTimeOffset.UtcNow,
             Reason: "GDPR Art. 17",
             Regulation: "GDPR",
-            TenantId: tenantA.ToString());
+            TenantId: tenantA);
 
         await PersonalDataDeletionHandler.Handle(
             @event,
