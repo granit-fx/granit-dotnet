@@ -26,7 +26,7 @@ dotnet add package Granit.TextExtraction.Office
 | `ExcelTextExtractor` | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | Iterates each `WorksheetPart`, resolves shared-string cells via the `SharedStringTablePart`, joins by tab + newline. |
 | `PowerPointTextExtractor` | `application/vnd.openxmlformats-officedocument.presentationml.presentation` | Iterates `SlidePart.Slide.InnerText` per slide, joined with blank lines. |
 
-## Security posture (VULN-001)
+## Security posture
 
 OpenXml files are ZIP archives. The extractors apply zip-bomb and
 decompression-bomb defences **before** handing the stream to the parser:

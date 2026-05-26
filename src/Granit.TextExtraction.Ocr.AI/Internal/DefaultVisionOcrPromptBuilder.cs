@@ -3,8 +3,8 @@ namespace Granit.TextExtraction.Ocr.AI.Internal;
 /// <summary>
 /// Default <see cref="IVisionOcrPromptBuilder"/>. Produces a prompt that asks the model to
 /// extract verbatim text inside a sentinel-delimited envelope. The envelope is the
-/// VULN-200 defence: it lets downstream code strip everything outside the markers, defeating
-/// the "ignore previous instructions" style of prompt injection where the image itself
+/// prompt-injection defence: it lets downstream code strip everything outside the markers,
+/// defeating the "ignore previous instructions" style of attack where the image itself
 /// contains text masquerading as orchestration instructions.
 /// </summary>
 internal sealed class DefaultVisionOcrPromptBuilder : IVisionOcrPromptBuilder

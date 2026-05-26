@@ -105,7 +105,7 @@ public sealed class PrivateNetworkClassifierTests
             PrivateNetworkClassifier.Classify(null!, out _));
 
     [Theory]
-    // VULN-200 — reserved ranges
+    // Reserved ranges
     [InlineData("224.0.0.1", UrlSafetyViolationKind.ReservedAddress)]          // multicast
     [InlineData("239.255.255.255", UrlSafetyViolationKind.ReservedAddress)]    // multicast
     [InlineData("240.0.0.0", UrlSafetyViolationKind.ReservedAddress)]          // reserved future
@@ -131,7 +131,7 @@ public sealed class PrivateNetworkClassifierTests
     }
 
     [Theory]
-    // VULN-100 — IPv6 transitional / embedded-IPv4 bypass primitives
+    // IPv6 transitional / embedded-IPv4 bypass primitives
     // NAT64 64:ff9b::/96 wrapping loopback / IMDS / RFC1918
     [InlineData("64:ff9b::7f00:1", UrlSafetyViolationKind.IPv6EmbeddedIPv4)]      // → 127.0.0.1
     [InlineData("64:ff9b::a9fe:a9fe", UrlSafetyViolationKind.MetadataEndpoint)]   // → 169.254.169.254

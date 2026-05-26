@@ -8,7 +8,7 @@ using Xunit;
 namespace Granit.Indexing.EntityFrameworkCore.Tests.Integration;
 
 /// <summary>
-/// End-to-end VULN-004 cascade test: a personal-data deletion request reaches the
+/// End-to-end privacy-cascade test: a personal-data deletion request reaches the
 /// indexing privacy bridge, the EF eraser runs a single <c>ExecuteDelete</c> per
 /// registered TKey, and only rows tied to the subject in the calling tenant are removed.
 /// </summary>

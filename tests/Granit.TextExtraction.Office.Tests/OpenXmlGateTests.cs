@@ -35,7 +35,7 @@ public sealed class OpenXmlGateTests
     [Fact]
     public void Inspect_returns_SuspiciousCompressionRatio_on_high_ratio_payloads()
     {
-        // VULN-201: 8 MB of zeros lands well above the 1 KB compressed-size floor of the
+        // 8 MB of zeros lands well above the 1 KB compressed-size floor of the
         // ratio gate and still compresses with a ratio comfortably above 200× — the gate
         // must catch this before OpenXml streams the local-header bytes.
         byte[] package = OfficeFixtures.ZipWithHighCompressionRatio(rawSize: 8 * 1024 * 1024);

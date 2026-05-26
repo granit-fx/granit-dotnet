@@ -6,7 +6,7 @@ namespace Granit.ArchitectureTests;
 
 /// <summary>
 /// Architecture rules for the <c>Granit.TextExtraction.*</c> module family (epic #2233).
-/// Pins the VULN-001 input-size contract and the "pure utility, no host plumbing" boundary
+/// Pins the LimitedStream input-size contract and the "pure utility, no host plumbing" boundary
 /// across the base package and the extractor providers (Email, Office, Pdf, Text, Tika,
 /// Ocr.AI, Ocr.Tesseract).
 /// </summary>

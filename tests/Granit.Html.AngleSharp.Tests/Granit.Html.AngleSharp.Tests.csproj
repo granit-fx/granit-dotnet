@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Architecture test reads its own source to verify VULN-300 invariant. -->
+    <!-- Architecture test reads its own source to verify the SSRF-loader invariant. -->
     <EmbeddedResource Include="..\..\src\Granit.Html.AngleSharp\AngleSharpConfiguration.cs"
                       LogicalName="Granit.Html.AngleSharp.Source.AngleSharpConfiguration.cs"
                       Visible="false" />

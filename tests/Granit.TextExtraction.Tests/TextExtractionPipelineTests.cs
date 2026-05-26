@@ -129,7 +129,7 @@ public sealed class TextExtractionPipelineTests
     [Fact]
     public async Task ExtractionTimeout_translates_slow_extractor_to_extraction_timeout_failure()
     {
-        // VULN-101: a slow parser must surface as a structured failure, not pin a slot.
+        // A slow parser must surface as a structured failure, not pin a slot.
         ExtractionOptions options = new() { ExtractionTimeout = TimeSpan.FromMilliseconds(50) };
         (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline(
             s => s.AddTextExtractor<SlowExtractor>(),
@@ -167,7 +167,7 @@ public sealed class TextExtractionPipelineTests
     [Fact]
     public async Task MaxConcurrentExtractions_caps_in_flight_calls()
     {
-        // VULN-100: the (N+1)th call must queue behind the first N slots.
+        // The (N+1)th call must queue behind the first N slots.
         ExtractionOptions options = new()
         {
             MaxConcurrentExtractions = 2,

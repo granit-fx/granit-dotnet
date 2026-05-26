@@ -10,7 +10,7 @@ namespace Granit.AI.Tenancy;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Three layers of defence are coordinated by this validator (audit VULN-002):
+/// Three layers of defence are coordinated by this validator:
 /// </para>
 /// <list type="number">
 ///   <item>Static URL inspection (this class) — scheme, port, IDN normalisation, IP literal

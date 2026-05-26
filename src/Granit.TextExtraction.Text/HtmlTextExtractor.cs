@@ -60,7 +60,7 @@ public sealed class HtmlTextExtractor : ITextExtractor
         ArgumentNullException.ThrowIfNull(source);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCharLength);
 
-        // Wrap the source for VULN-001 protection before feeding it to AngleSharp.
+        // Wrap the source for size-cap protection before feeding it to AngleSharp.
         // AngleSharp reads the full HTML into a string internally, so we materialise here.
         LimitedStream limited = new(source, _options.MaxBodySizeBytes);
 

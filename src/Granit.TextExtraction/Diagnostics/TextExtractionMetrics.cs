@@ -13,7 +13,7 @@ namespace Granit.TextExtraction.Diagnostics;
 /// it lands in any <see cref="TagList"/>: only the bare <c>type/subtype</c> survives, parameters
 /// (<c>; charset=…</c>, <c>; boundary=…</c>) are dropped, and unparseable input degrades to a
 /// fixed <c>invalid</c> sentinel. Without that step an attacker controlling the content type
-/// could explode time-series cardinality on every counter (VULN-103, CWE-770).
+/// could explode time-series cardinality on every counter (CWE-770).
 /// </remarks>
 public sealed class TextExtractionMetrics
 {

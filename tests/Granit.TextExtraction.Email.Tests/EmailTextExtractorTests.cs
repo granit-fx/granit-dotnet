@@ -230,7 +230,7 @@ public sealed class EmailTextExtractorTests
     [Fact]
     public async Task Strips_embedded_LF_from_subject_to_prevent_log_line_splicing()
     {
-        // VULN-301: an RFC 2047 encoded Subject whose decoded value contains a literal LF
+        // An RFC 2047 encoded Subject whose decoded value contains a literal LF
         // must NOT survive into the emitted "Subject: …\n" line, or a structured-log
         // consumer would see a spliced fake header.
         //
@@ -260,7 +260,7 @@ public sealed class EmailTextExtractorTests
     [Fact]
     public async Task Strips_carriage_returns_too()
     {
-        // Belt-and-braces for VULN-301: \r alone (no \n) is also a structured-log threat.
+        // Belt-and-braces: \r alone (no \n) is also a structured-log threat.
         string raw =
             "From: sender@example.com\r\n" +
             "To: rec@example.com\r\n" +

@@ -361,7 +361,7 @@ de l'organisation (aucun appel vers des services cloud externes).
 
 Ce package est utilisé par `Granit.TextExtraction.Ocr.Tesseract` uniquement pour
 identifier les dimensions d'une image (entête du format) AVANT décodage —
-défense contre les attaques pixel-bomb (VULN-001). La version est épinglée à
+défense contre les attaques pixel-bomb. La version est épinglée à
 **2.\*** car la branche 3.x est passée sous la Six Labors Split License, incompatible
 avec la distribution Apache-2.0 propre de Granit. Aucune donnée de santé ne transite
 par les serveurs Six Labors (bibliothèque purement locale).

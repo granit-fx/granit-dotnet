@@ -29,7 +29,7 @@ dotnet add package Granit.TextExtraction.Pdf
 
 ## Security posture
 
-- Input wrapped in `LimitedStream` (`MaxBodySizeBytes` cap, VULN-001).
+- Input wrapped in `LimitedStream` (`MaxBodySizeBytes` cap).
 - **Password-protected PDFs** (`PdfDocumentEncryptedException`) are reported
   as an empty `TextExtractionResult` with `IsTruncated = true` and the
   `granit.text_extraction.document.skipped` metric incremented. No silent

@@ -20,7 +20,7 @@ namespace Granit.TextExtraction.Tika;
 /// integration without coupling.
 /// </para>
 /// <para>
-/// VULN-102 enforcement: <see cref="TikaSidecarOptions.AllowedHosts"/> is checked at
+/// Host allow-list enforcement: <see cref="TikaSidecarOptions.AllowedHosts"/> is checked at
 /// startup (module validation) and the request body is wrapped in
 /// <see cref="LimitedStream"/> with <see cref="GranitTextExtractionOptions.MaxBodySizeBytes"/>
 /// before upload. Response is truncated at <c>maxCharLength</c> on read.
@@ -85,7 +85,7 @@ public sealed partial class TikaSidecarTextExtractor : ITextExtractor
         ArgumentException.ThrowIfNullOrEmpty(contentType);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCharLength);
 
-        // VULN-001: read the request body through a LimitedStream so a malicious
+        // Read the request body through a LimitedStream so a malicious
         // upstream can't push more than MaxBodySizeBytes at us before Tika even sees
         // the bytes. Materialised to byte[] because HttpContent expects a content-length
         // for the Tika endpoint to allocate efficiently.
@@ -102,7 +102,7 @@ public sealed partial class TikaSidecarTextExtractor : ITextExtractor
         request.Content = content;
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
 
-        // VULN-400: refuse the recursive parser path. Tika historically had SSRF / fetch
+        // Refuse the recursive parser path. Tika historically had SSRF / fetch
         // CVEs in embedded-resource handling (CVE-2022-30126 etc.); the option lets the
         // host opt back in only when it explicitly wants recursive indexing.
         if (_tikaOptions.SkipEmbeddedResources)

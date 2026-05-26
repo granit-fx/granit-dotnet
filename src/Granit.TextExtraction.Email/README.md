@@ -61,8 +61,8 @@ Body resolution:
 
 ## Security posture
 
-- Input wrapped in `LimitedStream` (`MaxBodySizeBytes` cap, VULN-001) before
-  any MimeKit allocation.
+- Input wrapped in `LimitedStream` (`MaxBodySizeBytes` cap) before any
+  MimeKit allocation.
 - Header values are sanitised — control characters (`< 0x20`, except `\n`
   and `\t`) are stripped to prevent log/header injection through indexed
   content (an attacker crafting a `Subject` with embedded CR/LF cannot splice

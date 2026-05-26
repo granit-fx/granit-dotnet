@@ -87,7 +87,7 @@ public sealed class TikaSidecarOptionsValidationTests
         resolved.Uri.Host.ShouldBe("tika.internal");
     }
 
-    // ──── VULN-104 — HTTPS scheme enforcement ─────────────────────────────────────
+    // ──── HTTPS scheme enforcement ────────────────────────────────────────────────
 
     [Fact]
     public void Http_scheme_on_non_localhost_uri_fails_validation_when_RequireHttps_true()
@@ -134,7 +134,7 @@ public sealed class TikaSidecarOptionsValidationTests
         resolved.Uri.Scheme.ShouldBe("http");
     }
 
-    // ──── VULN-102 — RequireMutualTls enforcement ────────────────────────────────
+    // ──── RequireMutualTls enforcement ────────────────────────────────────────────
 
     [Fact]
     public void RequireMutualTls_true_without_custom_handler_throws_when_client_is_created()

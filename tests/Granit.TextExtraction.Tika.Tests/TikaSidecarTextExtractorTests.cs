@@ -149,7 +149,7 @@ public sealed class TikaSidecarTextExtractorTests
     [Fact]
     public async Task Sends_skip_embedded_resources_header_by_default()
     {
-        // VULN-400: defence against Tika SSRF/fetch-recursion CVEs via embedded parsing.
+        // Defence against Tika SSRF/fetch-recursion CVEs via embedded parsing.
         (TikaSidecarTextExtractor extractor, StubHttpMessageHandler handler) = CreateExtractor();
         using MemoryStream input = Utf8("body");
 

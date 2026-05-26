@@ -26,8 +26,8 @@ public sealed class AngleSharpConfigurationTests
     }
 
     /// <summary>
-    /// VULN-300: the untrusted-content profile MUST NEVER opt into AngleSharp's default loader.
-    /// Doing so would let untrusted HTML fetch arbitrary URLs (SSRF / data exfiltration).
+    /// The untrusted-content profile MUST NEVER opt into AngleSharp's default loader. Doing so
+    /// would let untrusted HTML fetch arbitrary URLs (SSRF / data exfiltration).
     ///
     /// We anchor the invariant on the source code rather than runtime behaviour because the
     /// loader is registered via a fluent builder — there is no public surface to inspect once
@@ -42,7 +42,7 @@ public sealed class AngleSharpConfigurationTests
 
         using Stream? stream = assembly.GetManifestResourceStream(resourceName);
         stream.ShouldNotBeNull(
-            $"Embedded resource '{resourceName}' is required for the VULN-300 archi test. " +
+            $"Embedded resource '{resourceName}' is required for the SSRF-loader archi test. " +
             "Check the EmbeddedResource entry in Granit.Html.AngleSharp.Tests.csproj.");
 
         using StreamReader reader = new(stream);
@@ -54,7 +54,7 @@ public sealed class AngleSharpConfigurationTests
         bool callsWithDefaultLoader = WithDefaultLoaderCallRegex.IsMatch(code);
 
         callsWithDefaultLoader.ShouldBeFalse(
-            "VULN-300: AngleSharpConfiguration must not invoke WithDefaultLoader — that " +
+            "AngleSharpConfiguration must not invoke WithDefaultLoader — that " +
             "would let untrusted HTML resolve external resources (SSRF). If a loader is " +
             "ever required for trusted templates, document the use case in the PR and " +
             "update this invariant deliberately.");

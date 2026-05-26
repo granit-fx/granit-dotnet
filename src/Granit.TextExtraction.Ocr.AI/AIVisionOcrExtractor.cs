@@ -85,7 +85,7 @@ public sealed partial class AIVisionOcrExtractor : ITextExtractor
         ArgumentException.ThrowIfNullOrEmpty(contentType);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCharLength);
 
-        // VULN-001: cap the request body before sending to the model. The byte cap is also
+        // Cap the request body before sending to the model. The byte cap is also
         // the effective pixel-bomb defence — a 100k×100k decoded image far exceeds 100 MB
         // long before reaching the provider.
         byte[] bytes = await ReadAllBytesAsync(
@@ -108,7 +108,7 @@ public sealed partial class AIVisionOcrExtractor : ITextExtractor
         {
             using IChatClient _ = chatClient;
 
-            // VULN-200 defence-in-depth: a system message that nails down the OCR-only
+            // Prompt-injection defence-in-depth: a system message that nails down the OCR-only
             // contract, complementing the envelope markers the prompt builder injects.
             // Most modern multimodal models respect a clear system-message boundary even
             // when the image embeds adversarial text.

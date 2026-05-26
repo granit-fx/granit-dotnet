@@ -74,7 +74,7 @@ public static class AIServiceCollectionExtensions
 
         // Wrap the configured ISettingManager so that writes to Granit.AI.* keys require the
         // AI.Credentials.Manage permission (in addition to the standard Settings.*.Manage). See
-        // AISettingsCredentialsGuard for the rationale (audit VULN-100).
+        // AISettingsCredentialsGuard for the rationale.
         DecorateSettingManagerWithCredentialsGuard(builder.Services);
 
         return builder;

@@ -11,7 +11,7 @@ namespace Granit.AI.Tenancy;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Closes the permission-boundary gap identified in audit VULN-100: AI credentials were
+/// Closes a permission-boundary gap: AI credentials were
 /// previously gated only by <c>Settings.{Tenant,Global}.Manage</c>, which is too broad —
 /// a routine config admin could redirect AI traffic to an attacker endpoint or rotate
 /// the credential under which prompts are sent.

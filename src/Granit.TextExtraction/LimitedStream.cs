@@ -6,7 +6,7 @@ namespace Granit.TextExtraction;
 /// Read-only stream wrapper that throws <see cref="TextExtractionException"/> with reason
 /// <c>input_too_large</c> as soon as the total number of bytes read crosses
 /// <see cref="MaxBytes"/>. Mandatory wrapping for every extractor — protects parser libraries
-/// from decompression bombs and unbounded uploads (VULN-001).
+/// from decompression bombs and unbounded uploads.
 /// </summary>
 /// <remarks>
 /// The wrapper does NOT own <see cref="InnerStream"/>; disposing the <see cref="LimitedStream"/>

@@ -186,8 +186,8 @@ internal static class OfficeFixtures
     /// Builds a single-entry zip whose payload is <paramref name="rawSize"/> bytes of zeros
     /// using <see cref="CompressionLevel.SmallestSize"/>. Zeros compress to a handful of
     /// dictionary tokens, so the resulting CompressedLength/Length ratio comfortably exceeds
-    /// the OpenXmlGate's <c>MaxCompressionRatio</c> (200×). Exercises the VULN-201 gate
-    /// branch (<c>SuspiciousCompressionRatio</c>).
+    /// the OpenXmlGate's <c>MaxCompressionRatio</c> (200×). Exercises the suspicious
+    /// compression-ratio gate branch.
     /// </summary>
     public static byte[] ZipWithHighCompressionRatio(int rawSize)
     {

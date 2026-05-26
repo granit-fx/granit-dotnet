@@ -46,7 +46,7 @@ tika:
 }
 ```
 
-## Security posture (VULN-102)
+## Security posture
 
 - **`AllowedHosts`** — explicit allowlist of hostnames the extractor will talk
   to. Empty allowlist + non-empty `Uri` → the module refuses to start with a

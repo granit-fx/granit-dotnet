@@ -140,7 +140,7 @@ public sealed class DefaultUrlSafetyValidatorTests
         result.Violation!.Kind.ShouldBe(UrlSafetyViolationKind.SchemeNotAllowed);
     }
 
-    // VULN-202 — defense in depth: listing "file" in AllowedSchemes is not enough on its own.
+    // Defense in depth: listing "file" in AllowedSchemes is not enough on its own.
     [Fact]
     public async Task FileScheme_InAllowlistButOptOutFalse_StillRejected()
     {
@@ -153,7 +153,7 @@ public sealed class DefaultUrlSafetyValidatorTests
         result.Violation!.Kind.ShouldBe(UrlSafetyViolationKind.SchemeNotAllowed);
     }
 
-    // VULN-202 — UNC file:// path triggers SMB egress on Windows; reject even when opted in.
+    // UNC file:// path triggers SMB egress on Windows; reject even when opted in.
     [Fact]
     public async Task FileScheme_UncPath_Rejected()
     {

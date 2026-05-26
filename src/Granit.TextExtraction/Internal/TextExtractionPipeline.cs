@@ -67,13 +67,13 @@ internal sealed class TextExtractionPipeline : ITextExtractionPipeline, IDisposa
         ITextExtractor selected = SelectExtractor(contentType);
         string? tenantId = ResolveTenantId();
 
-        // VULN-100: bound the number of in-flight extractions across the host process.
+        // Bound the number of in-flight extractions across the host process.
         // Done OUTSIDE the timeout link so queue time doesn't eat the per-extraction budget.
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
         {
-            // VULN-101: link the caller's token with our extraction timeout so slow parsers
+            // Link the caller's token with our extraction timeout so slow parsers
             // surface as a structured failure (extraction_timeout) instead of hanging the
             // semaphore slot indefinitely. A non-positive timeout means "disabled" — host
             // can opt down for offline batch jobs by setting ExtractionTimeout = 0.

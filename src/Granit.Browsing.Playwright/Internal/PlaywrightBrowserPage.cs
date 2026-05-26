@@ -134,7 +134,7 @@ internal sealed partial class PlaywrightBrowserPage : IBrowserPage
 
     /// <inheritdoc/>
     /// <remarks>
-    /// Defense-in-depth chain (VULN-101): the URL is validated pre-navigation by
+    /// Defense-in-depth chain: the URL is validated pre-navigation by
     /// <see cref="IUrlSafetyValidator"/>; sub-resource requests are intercepted by the
     /// <see cref="RequestRouter"/> when <see cref="IBrowserSandboxProfile.BlockPrivateNetworks"/>
     /// is set; the final URL is re-validated after navigation to defeat redirect chains
@@ -169,7 +169,7 @@ internal sealed partial class PlaywrightBrowserPage : IBrowserPage
             _maxRenderDuration,
             cancellationToken).ConfigureAwait(false);
 
-        // VULN-101 — re-validate the final URL (after redirects). Catches redirect chains
+        // Re-validate the final URL (after redirects). Catches redirect chains
         // landing on a hostname that resolves to a private IP at fetch time.
         if (_sandbox.BlockPrivateNetworks
             && Uri.TryCreate(_page.Url, UriKind.Absolute, out Uri? finalUrl)

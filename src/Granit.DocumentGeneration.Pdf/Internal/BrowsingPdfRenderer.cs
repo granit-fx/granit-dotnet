@@ -42,7 +42,7 @@ internal sealed partial class BrowsingPdfRenderer(
 
         PdfRenderOptions opts = options.Value;
 
-        // VULN-305 — bound HTML size to protect the Chromium renderer process from OOM.
+        // Bound HTML size to protect the Chromium renderer process from OOM.
         // Char count overestimates byte count when UTF-16 chars are ASCII (good) and underestimates
         // for surrogate pairs (rare). Use ByteCount for a tight check.
         int htmlByteLength = Encoding.UTF8.GetByteCount(html);
@@ -53,7 +53,7 @@ internal sealed partial class BrowsingPdfRenderer(
                 nameof(html));
         }
 
-        // VULN-204 — header/footer templates are trusted strings from configuration. Validate that
+        // Header/footer templates are trusted strings from configuration. Validate that
         // no remote-fetch primitive smuggled in; defense-in-depth against config-store compromise
         // / tenant-controlled overrides (the page-level route-abort does not apply to Chromium's
         // print-preview header/footer render context).

@@ -66,9 +66,9 @@ public sealed class AzureOpenAIProviderOptions
 
     /// <summary>
     /// When <c>true</c>, the resolver falls back to <c>DefaultAzureCredential</c> (Managed Identity)
-    /// when no ApiKey is configured at any cascade layer. Defaults to <c>false</c> (audit VULN-103):
-    /// silently switching from API-key to Managed Identity changes the trust principal in a way
-    /// that may have unintended privilege implications.
+    /// when no ApiKey is configured at any cascade layer. Defaults to <c>false</c>: silently
+    /// switching from API-key to Managed Identity changes the trust principal in a way that may
+    /// have unintended privilege implications, so the fallback must be opted into explicitly.
     /// </summary>
     public bool AllowManagedIdentityFallback { get; set; }
 }

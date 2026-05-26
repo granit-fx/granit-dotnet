@@ -15,7 +15,7 @@ namespace Granit.TextExtraction.Office.Internal;
 /// <list type="bullet">
 ///   <item><b>Cumulative size</b> — the sum of declared uncompressed entry lengths is capped
 ///   by <see cref="GranitTextExtractionOptions.MaxDecompressedBytes"/>.</item>
-///   <item><b>Per-entry compression ratio</b> — VULN-201 defence. The central-directory
+///   <item><b>Per-entry compression ratio</b> — zip-bomb defence. The central-directory
 ///   <see cref="ZipArchiveEntry.Length"/> is a hint, not a guarantee: a crafted package can
 ///   advertise a tiny size while OpenXml's streaming reader pulls much more from the local
 ///   header on decompression. We reject any entry whose declared length is more than
@@ -70,7 +70,7 @@ internal static class OpenXmlGate
                 long declared = entry.Length;
                 long compressed = entry.CompressedLength;
 
-                // VULN-201: catch declarations whose ratio is implausible for any
+                // Catch declarations whose ratio is implausible for any
                 // legitimate compressible payload (XML, embedded media).
                 if (compressed >= RatioCheckMinCompressedBytes &&
                     declared > compressed * MaxCompressionRatio)

@@ -108,7 +108,7 @@ public sealed class TextExtractionMetricsTests : IDisposable
     [Fact]
     public void NormalizeContentType_strips_parameters_and_lowercases()
     {
-        // VULN-103: a malicious upstream submitting a fresh boundary= per request would
+        // A malicious upstream submitting a fresh boundary= per request would
         // explode metric cardinality unless we normalise. NormalizeContentType is the
         // single chokepoint — all four RecordXxx call it.
         TextExtractionMetrics.NormalizeContentType("APPLICATION/JSON; charset=utf-8")

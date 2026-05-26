@@ -18,7 +18,8 @@ namespace Granit.AI.Anthropic.Internal;
 /// </para>
 /// <para>
 /// Cache keys are typed <see cref="AICacheKey"/> records carrying the SHA-256 hash of the API
-/// key, never the plaintext (audit VULN-202). Post-eviction callbacks dispose the
+/// key, never the plaintext, so cache keys cannot be coerced back into credential material.
+/// Post-eviction callbacks dispose the
 /// <see cref="AnthropicClient"/>; the <see cref="HttpClient"/> is owned by
 /// <see cref="IHttpClientFactory"/>.
 /// </para>

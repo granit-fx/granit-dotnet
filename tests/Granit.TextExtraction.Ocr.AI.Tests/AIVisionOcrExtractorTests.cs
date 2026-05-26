@@ -216,7 +216,7 @@ public sealed class AIVisionOcrExtractorTests
     [Fact]
     public async Task Strips_vlm_envelope_from_model_response()
     {
-        // VULN-200: model is asked to wrap output in <granit-vlm-ocr>…</granit-vlm-ocr>.
+        // The model is asked to wrap output in <granit-vlm-ocr>…</granit-vlm-ocr>.
         // Anything outside the envelope is discarded — defends against prompt-injection text
         // the model may have synthesised from inside the image bytes.
         const string modelEcho =
@@ -237,7 +237,7 @@ public sealed class AIVisionOcrExtractorTests
     [Fact]
     public async Task Result_is_tagged_as_model_generated()
     {
-        // VULN-402: downstream consumers must be able to tell VLM output apart from
+        // Downstream consumers must be able to tell VLM output apart from
         // deterministic parser output so they don't re-prompt with attacker-influenced text.
         (AIVisionOcrExtractor extractor, _, _) = CreateExtractor(new ChatResponse
         {
@@ -273,7 +273,7 @@ public sealed class AIVisionOcrExtractorTests
     private static bool HasPromptAndImage(IEnumerable<ChatMessage> messages, string mime, byte[] imageBytes)
     {
         ChatMessage[] msgs = [.. messages];
-        // System + user — VULN-200 hardening adds a system message ahead of the user
+        // System + user — prompt-injection hardening adds a system message ahead of the user
         // multimodal payload. Anything else means the contract has drifted.
         if (msgs.Length != 2) { return false; }
         if (msgs[0].Role != ChatRole.System) { return false; }

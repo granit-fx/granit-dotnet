@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Html.AngleSharp</PackageId>
-    <Description>AngleSharp-backed implementation of Granit.Html. Ships AngleSharpHtmlToPlainTextConverter (email + indexing) and AngleSharpConfiguration with separated trusted-template vs untrusted-content profiles (VULN-300 SSRF guard).</Description>
+    <Description>AngleSharp-backed implementation of Granit.Html. Ships AngleSharpHtmlToPlainTextConverter (email + indexing) and AngleSharpConfiguration with separated trusted-template vs untrusted-content profiles (SSRF-hardened: untrusted profile never enables the default network loader).</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

@@ -46,7 +46,7 @@ public sealed partial class EmailTextExtractor : ITextExtractor
     private const string EmlAlt = "application/eml";
     private const string EncryptedPlaceholder = "[encrypted message]";
 
-    // VULN-401: cap MimeKit recursion. The .eml format allows message/rfc822 parts to nest
+    // Cap MimeKit recursion. The .eml format allows message/rfc822 parts to nest
     // arbitrarily; a crafted file inside the body-size cap can still exercise quadratic
     // parser paths. 16 is generous (real-world forwards rarely exceed 5) without giving an
     // attacker anything to play with. MaxAddressGroupDepth bounds the analogous quadratic
@@ -96,7 +96,7 @@ public sealed partial class EmailTextExtractor : ITextExtractor
         ArgumentNullException.ThrowIfNull(source);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCharLength);
 
-        // Wrap before any MimeKit allocation — VULN-001. persistent:false makes MimeKit
+        // Wrap before any MimeKit allocation to enforce the body-size cap. persistent:false makes MimeKit
         // copy the message into memory eagerly so the wrapped stream is fully consumed
         // up-front, keeping the size cap deterministic.
         LimitedStream limited = new(source, _options.MaxBodySizeBytes);
@@ -231,7 +231,7 @@ public sealed partial class EmailTextExtractor : ITextExtractor
         StringBuilder buf = new(value.Length);
         foreach (char c in value)
         {
-            // VULN-301: drop ALL control chars (incl. CR / LF) from header values. A
+            // Drop ALL control chars (incl. CR / LF) from header values. A
             // structured-log consumer that ingests Content as a field could otherwise
             // see spliced fake header lines if an attacker embedded an LF inside a
             // RFC 2047-encoded Subject (e.g. "ok\nFrom: attacker@evil"). Tabs are also

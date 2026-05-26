@@ -18,7 +18,7 @@ namespace Granit.TextExtraction.Ocr.Tesseract;
 /// Point <see cref="TesseractOcrOptions.DataPath"/> at the directory.
 /// </para>
 /// <para>
-/// Pixel-bomb defence (VULN-001): the image header is read BEFORE any decode and the
+/// Pixel-bomb defence: the image header is read BEFORE any decode and the
 /// surface (<c>width × height</c>) is checked against
 /// <see cref="TesseractOcrOptions.MaxImagePixels"/>. Oversized images soft-skip without
 /// allocating a decoded buffer.
@@ -85,12 +85,12 @@ public sealed partial class TesseractOcrExtractor : ITextExtractor
         ArgumentException.ThrowIfNullOrEmpty(contentType);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCharLength);
 
-        // VULN-001 byte cap — Tesseract's Pix.LoadFromMemory will decode whatever we hand
+        // Byte cap — Tesseract's Pix.LoadFromMemory will decode whatever we hand
         // it, so the body-size cap from the base module is the first line of defence.
         byte[] bytes = await ReadAllBytesAsync(
             source, _extractionOptions.MaxBodySizeBytes, cancellationToken).ConfigureAwait(false);
 
-        // VULN-001 pixel-bomb defence — identify dimensions from the format header without
+        // Pixel-bomb defence — identify dimensions from the format header without
         // decoding. A 100 KB PNG can claim 100 000 × 100 000 pixels (~40 GB RGBA buffer);
         // we reject those before they hit Leptonica.
         IImageInfo? info;

@@ -55,7 +55,7 @@ public static class ServiceCollectionExtensions
             services.Configure(configure);
         }
 
-        // VULN-102: enforce RequireMutualTls at startup by inspecting the named client's
+        // Enforce RequireMutualTls at startup by inspecting the named client's
         // HttpClientFactoryOptions handler-chain configuration. The post-configurator throws
         // on first resolution of the named client when RequireMutualTls=true and no host
         // handler has been wired through .ConfigurePrimaryHttpMessageHandler(...).

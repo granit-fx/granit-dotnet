@@ -9,7 +9,7 @@ namespace Granit.AI.Tenancy;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Defeats DNS rebinding (audit VULN-002, item 8). At endpoint-write time the validator
+/// Defeats DNS rebinding. At endpoint-write time the validator
 /// inspects either the hostname or the IP literal; an attacker who controls authoritative DNS
 /// can return a public IP at validation time and a private/metadata IP at HTTP-call time.
 /// Attaching this delegate to the <see cref="HttpClient"/> via a

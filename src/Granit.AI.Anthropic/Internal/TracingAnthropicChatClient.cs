@@ -13,7 +13,8 @@ namespace Granit.AI.Anthropic.Internal;
 /// One span per request — both <c>GetResponseAsync</c> and <c>GetStreamingResponseAsync</c> are wrapped.
 /// The decorator tags each span with the resolved credential's <c>Scope</c> and
 /// <c>BilledToTenantId</c> so audit and billing can attribute usage even when the Host fallback
-/// served the request (audit VULN-202 mitigation). Plaintext <c>ApiKey</c> is never recorded.
+/// served the request, preserving traceability when credential cascade falls back to a host-level
+/// scope. Plaintext <c>ApiKey</c> is never recorded.
 /// Disposal is delegated to the wrapped client; the decorator owns no additional resources.
 /// </remarks>
 internal sealed class TracingAnthropicChatClient(
