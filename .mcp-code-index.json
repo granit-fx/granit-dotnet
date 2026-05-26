@@ -26561,8 +26561,15 @@
       "kind": "class",
       "project": "Granit.Indexing.EntityFrameworkCore",
       "file": "src/Granit.Indexing.EntityFrameworkCore/Extensions/ModelBuilderExtensions.cs",
-      "line": 14,
-      "members": []
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureIndexingModule",
+          "kind": "method",
+          "signature": "ConfigureIndexingModule(this ModelBuilder modelBuilder, IEnumerable<Type> indexedKeyTypes, string defaultDictionary = \"english\", int? embeddingDimensions = null, bool isPostgres = true)",
+          "returnType": "ModelBuilder"
+        }
+      ]
     },
     {
       "name": "ServiceCollectionExtensions",
@@ -26630,7 +26637,7 @@
       "kind": "class",
       "project": "Granit.Indexing.EntityFrameworkCore",
       "file": "src/Granit.Indexing.EntityFrameworkCore/IndexingDbContext.cs",
-      "line": 26,
+      "line": 34,
       "members": []
     },
     {
@@ -26639,7 +26646,7 @@
       "kind": "record",
       "project": "Granit.Indexing.EntityFrameworkCore",
       "file": "src/Granit.Indexing.EntityFrameworkCore/IndexingDbContext.cs",
-      "line": 135,
+      "line": 74,
       "members": []
     },
     {
