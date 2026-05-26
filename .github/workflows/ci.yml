@@ -119,11 +119,17 @@ jobs:
       # suite; the integration shard installs them and flips the switch.
       #
       # The Charlesw `Tesseract` NuGet (5.x) hard-codes the names
-      # `libleptonica-1.82.0` and `libtesseract50` when probing the loader path.
+      # `libleptonica-1.82.0` and `libtesseract50` when probing the loader path,
+      # AND its InteropDotNet.LibraryLoader appends a `platformName` subdirectory
+      # ("x64" on amd64) to the search root. So with `CustomSearchPath = /opt/X`
+      # the loader probes `/opt/X/x64/libleptonica-1.82.0.so` — the matching
+      # subdir layout is mandatory. We mirror what the NuGet ships natively
+      # (x64/x86 subdirs under the package root).
+      #
       # The runtime apt packages (`liblept5`, `libtesseract5`) only ship the
       # fully-versioned `.so.MAJOR.MINOR.PATCH` files — no `.so.MAJOR` symlinks
       # (those come with the `-dev` packages). We discover the actual file via
-      # glob and point the canonical names at it.
+      # glob and link the canonical names INTO the x64 subdir.
       - name: Install libtesseract (integration shard only)
         if: matrix.shard.name == 'integration'
         run: |
@@ -139,24 +145,24 @@ jobs:
             ls "$LIB_DIR" | grep -E '(lept|tesseract)' >&2 || true
             exit 1
           fi
-          sudo ln -sf "$LEPT_LIB" "$LIB_DIR/libleptonica-1.82.0.so"
-          sudo ln -sf "$TESS_LIB" "$LIB_DIR/libtesseract50.so"
-          # Refresh the loader cache — fresh symlinks aren't in /etc/ld.so.cache
-          # until ldconfig runs. Belt-and-suspenders: also push $LIB_DIR onto
-          # LD_LIBRARY_PATH so dlopen finds the canonical names even if the cache
-          # refresh races the test step.
-          sudo ldconfig
-          echo "LD_LIBRARY_PATH=$LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+          # Build the layout the Charlesw loader expects: <root>/x64/<file>.so.
+          # We use a dedicated root so we don't pollute /usr/lib/x86_64-linux-gnu
+          # with an `x64` subdir that doesn't belong to any apt package.
+          GRANIT_OCR_LIBS=/opt/granit-ocr-libs
+          sudo mkdir -p "$GRANIT_OCR_LIBS/x64"
+          sudo ln -sf "$LEPT_LIB" "$GRANIT_OCR_LIBS/x64/libleptonica-1.82.0.so"
+          sudo ln -sf "$TESS_LIB" "$GRANIT_OCR_LIBS/x64/libtesseract50.so"
+          # Hand the root to the integration test fixture via a dedicated env var
+          # (the test reads it explicitly — the auto-detect path inside the
+          # recognizer would pick /usr/lib/x86_64-linux-gnu which doesn't have
+          # the required `x64` subdir).
+          echo "GRANIT_TESSERACT_LIB_DIR=$GRANIT_OCR_LIBS" >> "$GITHUB_ENV"
           echo "TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata" >> "$GITHUB_ENV"
-          # Smoke-check the symlinks resolve. readlink -e follows the chain and
-          # fails if any link in the chain is broken — catches a target-gone-wrong
-          # faster than waiting for the .NET P/Invoke to throw later. ldconfig
-          # indexes shared objects by ELF SONAME, not filesystem name, so a cache
-          # grep on the aliased names would be a false negative.
-          readlink -e "$LIB_DIR/libleptonica-1.82.0.so" >/dev/null && \
-          readlink -e "$LIB_DIR/libtesseract50.so" >/dev/null || {
+          # Smoke-check the symlink chain resolves before we hand the box to .NET.
+          readlink -e "$GRANIT_OCR_LIBS/x64/libleptonica-1.82.0.so" >/dev/null && \
+          readlink -e "$GRANIT_OCR_LIBS/x64/libtesseract50.so" >/dev/null || {
             echo "libleptonica / libtesseract50 symlinks did not resolve" >&2
-            ls -l "$LIB_DIR/libleptonica-1.82.0.so" "$LIB_DIR/libtesseract50.so" >&2 || true
+            ls -l "$GRANIT_OCR_LIBS/x64/" >&2 || true
             exit 1
           }
 

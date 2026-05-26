@@ -53,23 +53,29 @@ public sealed class TesseractOcrOptions
     ];
 
     /// <summary>
-    /// Filesystem directory the Charlesw <c>Tesseract</c> NuGet should probe for the
+    /// Filesystem root the Charlesw <c>Tesseract</c> NuGet should probe for the
     /// native <c>libleptonica</c> / <c>libtesseract</c> binaries.
     /// </summary>
     /// <remarks>
     /// <para>
     /// The NuGet uses its own <c>InteropDotNet.LibraryLoader</c> on Linux which does
     /// NOT honour <c>LD_LIBRARY_PATH</c> or the standard <c>dlopen</c> search paths.
-    /// It only checks the app's <c>bin/</c> folder and a <c>CustomSearchPath</c>.
-    /// Without this option set, hosts that install <c>libtesseract</c> system-wide
-    /// (the common Linux production case) get <c>DllNotFoundException</c> at the
-    /// first OCR call.
+    /// It only probes the app's <c>bin/</c> directory and a <c>CustomSearchPath</c>,
+    /// and it appends a platform-name subdirectory (<c>x64</c> on amd64, <c>x86</c>
+    /// on 32-bit) to the root before opening files. So with
+    /// <c>LibrarySearchPath = "/opt/X"</c> the loader actually opens
+    /// <c>/opt/X/x64/libleptonica-1.82.0.so</c>.
     /// </para>
     /// <para>
-    /// Defaults to <see langword="null"/>: the recognizer auto-detects the standard
-    /// Debian/Ubuntu path on Linux (<c>/usr/lib/x86_64-linux-gnu</c> on amd64,
-    /// <c>/usr/lib/aarch64-linux-gnu</c> on arm64). Set explicitly to point at a
-    /// non-standard install path; set to empty string to opt out of auto-detection.
+    /// Hosts installing <c>libtesseract</c> via apt MUST stage the canonical-name
+    /// symlinks under a <c>&lt;root&gt;/x64/</c> subdirectory — mirroring the layout
+    /// the NuGet uses natively for its Windows DLLs. The package README ships a
+    /// ready-to-paste shell snippet.
+    /// </para>
+    /// <para>
+    /// Defaults to <see langword="null"/>: the wrapper's built-in fallbacks
+    /// (executing-assembly directory, AppDomain base, working dir) take over —
+    /// useful for Windows hosts shipping the bundled DLLs in <c>bin/</c>.
     /// </para>
     /// </remarks>
     public string? LibrarySearchPath { get; set; }

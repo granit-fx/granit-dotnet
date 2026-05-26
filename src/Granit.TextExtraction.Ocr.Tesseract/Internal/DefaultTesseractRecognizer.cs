@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Granit.TextExtraction.Ocr.Tesseract.Options;
 using Microsoft.Extensions.Options;
 using Tesseract;
@@ -58,27 +57,16 @@ internal sealed class DefaultTesseractRecognizer : ITesseractRecognizer, IDispos
         // The Charlesw `Tesseract` NuGet's InteropDotNet.LibraryLoader does NOT honour
         // LD_LIBRARY_PATH or the standard dlopen system paths on Linux — it only
         // probes the app's bin/ directory and `TesseractEnviornment.CustomSearchPath`
-        // (the wrapper's typo, not ours). Hosts that install libtesseract system-wide
-        // via apt (the common Linux production shape) would hit DllNotFoundException
-        // on the first OCR call. Route the option to the wrapper's API; auto-detect
-        // the Debian/Ubuntu canonical path when no explicit value is set.
-        string? searchPath = _options.LibrarySearchPath;
-        if (searchPath is null && OperatingSystem.IsLinux())
+        // (the wrapper's typo, not ours), AND it appends a platform-name subdirectory
+        // ("x64" on amd64) to the search root. So when the host sets
+        // LibrarySearchPath = "/opt/X" the loader actually opens
+        // "/opt/X/x64/libleptonica-1.82.0.so". Hosts installing libtesseract via apt
+        // must therefore stage the .so files under a `<root>/x64/` subdir manually —
+        // matching the layout the NuGet itself uses for its Windows DLLs. README
+        // documents the recipe; the recognizer just forwards the host's path.
+        if (!string.IsNullOrEmpty(_options.LibrarySearchPath))
         {
-            searchPath = RuntimeInformation.OSArchitecture switch
-            {
-                Architecture.X64 => "/usr/lib/x86_64-linux-gnu",
-                Architecture.Arm64 => "/usr/lib/aarch64-linux-gnu",
-                _ => null,
-            };
-        }
-
-        // Empty string is the opt-out sentinel — leave the existing wrapper default
-        // alone (the wrapper falls back to its own auto-detection logic, useful for
-        // Windows hosts shipping the bundled DLLs).
-        if (!string.IsNullOrEmpty(searchPath))
-        {
-            TesseractEnviornment.CustomSearchPath = searchPath;
+            TesseractEnviornment.CustomSearchPath = _options.LibrarySearchPath;
         }
     }
 

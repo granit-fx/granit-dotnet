@@ -68,6 +68,12 @@ public sealed class LiveTesseractRecognizerTests
 
     private static ServiceProvider BuildHost()
     {
+        // GRANIT_TESSERACT_LIB_DIR points at a root whose `x64/` subdir contains
+        // `libleptonica-1.82.0.so` + `libtesseract50.so` symlinks — the layout the
+        // Charlesw NuGet's InteropDotNet loader requires. CI prepares this under
+        // /opt/granit-ocr-libs; local opt-in is described in the package README.
+        string? libDir = Environment.GetEnvironmentVariable("GRANIT_TESSERACT_LIB_DIR");
+
         ServiceCollection services = [];
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging();
@@ -75,6 +81,10 @@ public sealed class LiveTesseractRecognizerTests
         {
             o.DataPath = TessdataPath;
             o.Language = "eng";
+            if (!string.IsNullOrEmpty(libDir))
+            {
+                o.LibrarySearchPath = libDir;
+            }
         });
         return services.BuildServiceProvider();
     }

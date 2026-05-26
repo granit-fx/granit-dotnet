@@ -24,18 +24,33 @@ Linux (Debian / Ubuntu):
 
 ```bash
 apt-get install -y libtesseract5 tesseract-ocr-eng tesseract-ocr-fra
-# The Charlesw Tesseract NuGet probes for "libleptonica-1.82.0" and
-# "libtesseract50" by name. The runtime apt packages only ship the fully
-# versioned `.so.MAJOR.MINOR.PATCH` files (`liblept.so.5.0.4`,
-# `libtesseract.so.5.0.3` on Ubuntu 24.04) — no `.so.MAJOR` shortcut.
-# Discover the file via glob and symlink the canonical names:
-LIB_DIR=/usr/lib/x86_64-linux-gnu
-ln -sf "$(ls $LIB_DIR/liblept.so.5* | head -n 1)" "$LIB_DIR/libleptonica-1.82.0.so"
-ln -sf "$(ls $LIB_DIR/libtesseract.so.5* | head -n 1)" "$LIB_DIR/libtesseract50.so"
+
+# The Charlesw `Tesseract` NuGet probes for "libleptonica-1.82.0" and
+# "libtesseract50" by name AND it appends a platform-name subdirectory
+# ("x64" on amd64) to the search root. Stage the canonical-name symlinks
+# under a <root>/x64/ subdirectory — mirrors the layout the NuGet uses
+# natively for its Windows DLLs. The runtime apt packages only ship the
+# fully-versioned `.so.MAJOR.MINOR.PATCH` files; we discover them via glob.
+SRC=/usr/lib/x86_64-linux-gnu
+DEST=/opt/granit-ocr-libs/x64
+mkdir -p "$DEST"
+ln -sf "$(ls $SRC/liblept.so.5* | head -n 1)" "$DEST/libleptonica-1.82.0.so"
+ln -sf "$(ls $SRC/libtesseract.so.5* | head -n 1)" "$DEST/libtesseract50.so"
 ```
 
 The traineddata path is then `/usr/share/tesseract-ocr/5/tessdata/`. Each language
 adds ~10–30 MB.
+
+Wire the search root via options:
+
+```csharp
+services.AddTesseractOcrExtractor(o =>
+{
+    o.DataPath = "/usr/share/tesseract-ocr/5/tessdata";
+    o.LibrarySearchPath = "/opt/granit-ocr-libs";  // NOT /opt/granit-ocr-libs/x64
+    o.Language = "eng+fra";
+});
+```
 
 ## Security
 
@@ -53,25 +68,27 @@ adds ~10–30 MB.
 The Charlesw `Tesseract` NuGet uses its own `InteropDotNet.LibraryLoader` on
 Linux which does **not** honour `LD_LIBRARY_PATH` or the standard `dlopen`
 search paths — it only probes the app's `bin/` directory and a
-`TesseractEnviornment.CustomSearchPath` (typo in the upstream API). Hosts
-that install `libtesseract` system-wide via apt would otherwise hit
-`DllNotFoundException` on the first OCR call.
+`TesseractEnviornment.CustomSearchPath` (typo in the upstream API), **and it
+appends a platform-name subdirectory (`x64` on amd64) to the root before
+opening files**. So `LibrarySearchPath = "/opt/X"` causes the loader to open
+`/opt/X/x64/libleptonica-1.82.0.so` — the `x64/` segment is mandatory.
 
-`DefaultTesseractRecognizer` routes `TesseractOcrOptions.LibrarySearchPath`
-into the wrapper's API automatically. Left unset, it auto-detects the
-Debian/Ubuntu canonical path on Linux (`/usr/lib/x86_64-linux-gnu` on amd64,
-`/usr/lib/aarch64-linux-gnu` on arm64). Override for non-standard installs:
+`DefaultTesseractRecognizer` forwards `TesseractOcrOptions.LibrarySearchPath`
+to the wrapper's API. The Deployment section above shows the staging
+recipe; if you point the option at a path that doesn't follow the
+`<root>/x64/` convention, `DllNotFoundException` fires on the first OCR call.
 
 ```csharp
 services.AddTesseractOcrExtractor(o =>
 {
     o.DataPath = "/opt/myapp/tessdata";
-    o.LibrarySearchPath = "/opt/myapp/native";
+    o.LibrarySearchPath = "/opt/myapp/native";  // libs live at /opt/myapp/native/x64/
 });
 ```
 
-Set to the empty string to opt out of auto-detection (e.g. Windows hosts
-shipping the bundled DLLs in `bin/`).
+Leave `null` (the default) when the host ships the Windows DLLs in the
+app's `bin/x64` directory — the wrapper's built-in fallbacks find them
+there without needing `CustomSearchPath`.
 
 ## Threading
 
@@ -90,7 +107,15 @@ tests skip themselves so a missing system package doesn't block the unit run:
 
 ```bash
 sudo apt-get install -y libtesseract5 tesseract-ocr-eng
+# Stage the canonical-name symlinks under <root>/x64/ (see Deployment above)
+sudo mkdir -p /opt/granit-ocr-libs/x64
+SRC=/usr/lib/x86_64-linux-gnu
+sudo ln -sf "$(ls $SRC/liblept.so.5* | head -n 1)" \
+    /opt/granit-ocr-libs/x64/libleptonica-1.82.0.so
+sudo ln -sf "$(ls $SRC/libtesseract.so.5* | head -n 1)" \
+    /opt/granit-ocr-libs/x64/libtesseract50.so
 export TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+export GRANIT_TESSERACT_LIB_DIR=/opt/granit-ocr-libs
 dotnet test tests/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration
 ```
 
