@@ -67,6 +67,16 @@ internal static class Iso639Map
         ["kur"] = "ku",
         // South / South-East Asia
         ["hin"] = "hi",
+        // Hindi-belt (Bihari) macro-language folding: Magahi, Bhojpuri and Maithili
+        // are listed by Franc as siblings of Hindi inside the Devanagari profile set
+        // but have no ISO 639-1 code of their own. They share heavy vocabulary overlap
+        // with Hindi, and Postgres ships only the Hindi stemmer for Devanagari, so
+        // folding them to "hi" matches both the Granit base-culture surface (15 cultures)
+        // and the downstream stemming/indexing reality. Without this, formal Hindi prose
+        // can score closest to "mag" or "bho" and return null.
+        ["mag"] = "hi",
+        ["bho"] = "hi",
+        ["mai"] = "hi",
         ["ben"] = "bn",
         ["pan"] = "pa",
         ["mar"] = "mr",
