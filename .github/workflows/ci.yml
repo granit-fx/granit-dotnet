@@ -89,6 +89,8 @@ jobs:
             label: "API & Http + Data"
           - name: infrastructure
             label: "Infrastructure"
+          - name: search
+            label: "Search Pipeline"
           - name: security
             label: "Security & Compliance"
           - name: integration
@@ -196,7 +198,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [core-ai, application, api-data, infrastructure, security, integration, architecture]
+        shard: [core-ai, application, api-data, infrastructure, search, security, integration, architecture]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
