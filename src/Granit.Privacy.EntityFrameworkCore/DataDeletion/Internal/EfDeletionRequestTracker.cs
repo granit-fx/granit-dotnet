@@ -120,5 +120,5 @@ internal sealed class EfDeletionRequestTracker<TContext>(
             entity.CancelledAt,
             entity.ExecutedAt,
             entity.Regulation,
-            entity.TenantId?.ToString());
+            entity.TenantId);
 }

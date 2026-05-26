@@ -163,16 +163,16 @@ public sealed class PrivacyHelperMethodTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void ResolveTenantId_TenantAvailable_ReturnsIdString()
+    public void ResolveTenantId_TenantAvailable_ReturnsId()
     {
         var tenantId = Guid.NewGuid();
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         currentTenant.IsAvailable.Returns(true);
         currentTenant.Id.Returns(tenantId);
 
-        string? result = PrivacyEndpointRouteBuilderExtensions.ResolveTenantId(currentTenant);
+        Guid? result = PrivacyEndpointRouteBuilderExtensions.ResolveTenantId(currentTenant);
 
-        result.ShouldBe(tenantId.ToString());
+        result.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -181,7 +181,7 @@ public sealed class PrivacyHelperMethodTests
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         currentTenant.IsAvailable.Returns(false);
 
-        string? result = PrivacyEndpointRouteBuilderExtensions.ResolveTenantId(currentTenant);
+        Guid? result = PrivacyEndpointRouteBuilderExtensions.ResolveTenantId(currentTenant);
 
         result.ShouldBeNull();
     }
@@ -193,7 +193,7 @@ public sealed class PrivacyHelperMethodTests
         currentTenant.IsAvailable.Returns(true);
         currentTenant.Id.Returns((Guid?)null);
 
-        string? result = PrivacyEndpointRouteBuilderExtensions.ResolveTenantId(currentTenant);
+        Guid? result = PrivacyEndpointRouteBuilderExtensions.ResolveTenantId(currentTenant);
 
         result.ShouldBeNull();
     }

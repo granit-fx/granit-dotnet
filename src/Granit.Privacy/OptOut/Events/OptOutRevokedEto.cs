@@ -13,4 +13,4 @@ public sealed record OptOutRevokedEto(
     string? AnonymousTrackId,
     DateTimeOffset RevokedAt,
     string Regulation,
-    string? TenantId) : IIntegrationEvent;
+    Guid? TenantId) : IIntegrationEvent;

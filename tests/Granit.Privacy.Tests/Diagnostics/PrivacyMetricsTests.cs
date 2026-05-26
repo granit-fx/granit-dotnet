@@ -9,6 +9,10 @@ namespace Granit.Privacy.Tests.Diagnostics;
 
 public sealed class PrivacyMetricsTests : IDisposable
 {
+    // Fixed tenant ids so the expected tag strings are stable across runs.
+    private static readonly Guid TenantA = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    private static readonly Guid TenantB = Guid.Parse("22222222-2222-2222-2222-222222222222");
+
     private readonly ServiceProvider _sp;
     private readonly IMeterFactory _meterFactory;
     private readonly PrivacyMetrics _metrics;
@@ -30,12 +34,12 @@ public sealed class PrivacyMetricsTests : IDisposable
         using var collector = new MetricCollector<long>(
             _meterFactory, PrivacyMetrics.MeterName, "granit.privacy.export.requests");
 
-        _metrics.RecordExportRequested("tenant-123");
+        _metrics.RecordExportRequested(TenantA);
 
         IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
         snapshot.ShouldHaveSingleItem();
         snapshot[0].Value.ShouldBe(1);
-        snapshot[0].Tags["tenant_id"].ShouldBe("tenant-123");
+        snapshot[0].Tags["tenant_id"].ShouldBe(TenantA.ToString());
     }
 
     [Fact]
@@ -57,12 +61,12 @@ public sealed class PrivacyMetricsTests : IDisposable
         using var collector = new MetricCollector<long>(
             _meterFactory, PrivacyMetrics.MeterName, "granit.privacy.export.fragments.received");
 
-        _metrics.RecordFragmentReceived("t1", "identity-provider");
+        _metrics.RecordFragmentReceived(TenantA, "identity-provider");
 
         IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
         snapshot.ShouldHaveSingleItem();
         snapshot[0].Value.ShouldBe(1);
-        snapshot[0].Tags["tenant_id"].ShouldBe("t1");
+        snapshot[0].Tags["tenant_id"].ShouldBe(TenantA.ToString());
         snapshot[0].Tags["provider"].ShouldBe("identity-provider");
     }
 
@@ -72,7 +76,7 @@ public sealed class PrivacyMetricsTests : IDisposable
         using var collector = new MetricCollector<long>(
             _meterFactory, PrivacyMetrics.MeterName, "granit.privacy.deletion.requests");
 
-        _metrics.RecordDeletionRequested("t1");
+        _metrics.RecordDeletionRequested(TenantA);
 
         IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
         snapshot.ShouldHaveSingleItem();
@@ -85,13 +89,13 @@ public sealed class PrivacyMetricsTests : IDisposable
         using var collector = new MetricCollector<double>(
             _meterFactory, PrivacyMetrics.MeterName, "granit.privacy.export.duration");
 
-        _metrics.RecordExportCompleted("t1", "completed", TimeSpan.FromSeconds(3.5));
+        _metrics.RecordExportCompleted(TenantA, "completed", TimeSpan.FromSeconds(3.5));
 
         IReadOnlyList<CollectedMeasurement<double>> snapshot = collector.GetMeasurementSnapshot();
         snapshot.ShouldHaveSingleItem();
         snapshot[0].Value.ShouldBe(3.5, 0.01);
         snapshot[0].Tags["status"].ShouldBe("completed");
-        snapshot[0].Tags["tenant_id"].ShouldBe("t1");
+        snapshot[0].Tags["tenant_id"].ShouldBe(TenantA.ToString());
     }
 
     [Fact]

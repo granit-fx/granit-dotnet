@@ -91,53 +91,53 @@ public sealed class PrivacyMetrics
     }
 
     /// <summary>Records an export request.</summary>
-    public void RecordExportRequested(string? tenantId, string? regulation = null) =>
+    public void RecordExportRequested(Guid? tenantId, string? regulation = null) =>
         _exportRequests.Add(1, CreateTags(tenantId, regulation));
 
     /// <summary>Records a fragment received from a data provider.</summary>
-    public void RecordFragmentReceived(string? tenantId, string provider, string? regulation = null) =>
+    public void RecordFragmentReceived(Guid? tenantId, string provider, string? regulation = null) =>
         _fragmentsReceived.Add(1, new TagList
         {
-            { TagTenantId, tenantId ?? DefaultTenant },
+            { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
             { TagRegulation, regulation ?? DefaultRegulation },
             { "provider", provider },
         });
 
     /// <summary>Records a deletion request.</summary>
-    public void RecordDeletionRequested(string? tenantId, string? regulation = null) =>
+    public void RecordDeletionRequested(Guid? tenantId, string? regulation = null) =>
         _deletionRequests.Add(1, CreateTags(tenantId, regulation));
 
     /// <summary>Records a deferred deletion request.</summary>
-    public void RecordDeletionDeferred(string? tenantId, string? regulation = null) =>
+    public void RecordDeletionDeferred(Guid? tenantId, string? regulation = null) =>
         _deletionDeferred.Add(1, CreateTags(tenantId, regulation));
 
     /// <summary>Records a cancelled deferred deletion.</summary>
-    public void RecordDeletionCancelled(string? tenantId, string? regulation = null) =>
+    public void RecordDeletionCancelled(Guid? tenantId, string? regulation = null) =>
         _deletionCancelled.Add(1, CreateTags(tenantId, regulation));
 
     /// <summary>Records an executed deletion.</summary>
-    public void RecordDeletionExecuted(string? tenantId, string? regulation = null) =>
+    public void RecordDeletionExecuted(Guid? tenantId, string? regulation = null) =>
         _deletionExecuted.Add(1, CreateTags(tenantId, regulation));
 
     /// <summary>Records a deletion reminder notification sent.</summary>
-    public void RecordDeletionReminderSent(string? tenantId, string? regulation = null) =>
+    public void RecordDeletionReminderSent(Guid? tenantId, string? regulation = null) =>
         _deletionReminders.Add(1, CreateTags(tenantId, regulation));
 
     /// <summary>Records the duration and status of a completed export.</summary>
-    public void RecordExportCompleted(string? tenantId, string status, TimeSpan duration, string? regulation = null) =>
+    public void RecordExportCompleted(Guid? tenantId, string status, TimeSpan duration, string? regulation = null) =>
         _exportDuration.Record(duration.TotalSeconds, new TagList
         {
-            { TagTenantId, tenantId ?? DefaultTenant },
+            { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
             { TagRegulation, regulation ?? DefaultRegulation },
             { "status", status },
         });
 
     /// <summary>Records a completed archive assembly (success or <c>SizeLimitExceeded</c>).</summary>
-    public void RecordArchiveAssembled(string? tenantId, string status, bool isPartial, TimeSpan duration, string? regulation = null)
+    public void RecordArchiveAssembled(Guid? tenantId, string status, bool isPartial, TimeSpan duration, string? regulation = null)
     {
         TagList tags = new()
         {
-            { TagTenantId, tenantId ?? DefaultTenant },
+            { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
             { TagRegulation, regulation ?? DefaultRegulation },
             { "status", status },
             { "is_partial", isPartial ? "true" : "false" },
@@ -147,11 +147,11 @@ public sealed class PrivacyMetrics
     }
 
     /// <summary>Records an opt-out request.</summary>
-    public void RecordOptOutRequested(string? tenantId, string? regulation = null) =>
+    public void RecordOptOutRequested(Guid? tenantId, string? regulation = null) =>
         _optOutRequests.Add(1, CreateTags(tenantId, regulation));
 
     /// <summary>Records an opt-out revocation.</summary>
-    public void RecordOptOutRevoked(string? tenantId, string? regulation = null) =>
+    public void RecordOptOutRevoked(Guid? tenantId, string? regulation = null) =>
         _optOutRevocations.Add(1, CreateTags(tenantId, regulation));
 
     /// <summary>
@@ -166,9 +166,9 @@ public sealed class PrivacyMetrics
             { "provider_name", providerName },
         });
 
-    private static TagList CreateTags(string? tenantId, string? regulation) => new()
+    private static TagList CreateTags(Guid? tenantId, string? regulation) => new()
     {
-        { TagTenantId, tenantId ?? DefaultTenant },
+        { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
         { TagRegulation, regulation ?? DefaultRegulation },
     };
 }

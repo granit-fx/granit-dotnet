@@ -196,7 +196,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
         Guid recordId = guidGenerator.Create();
         DateTimeOffset now = timeProvider.GetUtcNow();
         string regulation = await ResolveRegulationAsync(regulationResolver, cancellationToken).ConfigureAwait(false);
-        string? tenantId = ResolveTenantId(currentTenant);
+        Guid? tenantId = ResolveTenantId(currentTenant);
 
         // Determine identity — authenticated user or anonymous visitor
         Guid? userId = TryGetUserIdOrNull(httpContext);
@@ -475,7 +475,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
                 cancellationToken)
             .ConfigureAwait(false);
 
-        metrics.RecordExportRequested(tenantId?.ToString(), regulation);
+        metrics.RecordExportRequested(tenantId, regulation);
 
         return TypedResults.Accepted(
             $"/privacy/export/{requestId}",
@@ -603,7 +603,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
         Guid requestId = guidGenerator.Create();
         DateTimeOffset now = timeProvider.GetUtcNow();
-        string? tenantId = ResolveTenantId(currentTenant);
+        Guid? tenantId = ResolveTenantId(currentTenant);
         string requestedBy = currentUser.Email ?? "unknown";
         string regulation = await ResolveRegulationAsync(regulationResolver, cancellationToken).ConfigureAwait(false);
 
@@ -902,8 +902,8 @@ public static class PrivacyEndpointRouteBuilderExtensions
             detail: "User is not authenticated or has no valid user ID.",
             statusCode: StatusCodes.Status401Unauthorized);
 
-    internal static string? ResolveTenantId(ICurrentTenant currentTenant) =>
-        currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
+    internal static Guid? ResolveTenantId(ICurrentTenant currentTenant) =>
+        currentTenant.IsAvailable ? currentTenant.Id : null;
 
     internal static void RegisterOptOutCookie(ICookieRegistry registry) =>
         registry.Register(new CookieDefinition(

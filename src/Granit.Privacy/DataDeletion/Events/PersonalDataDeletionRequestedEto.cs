@@ -17,4 +17,4 @@ public sealed record PersonalDataDeletionRequestedEto(
     [property: SensitiveData(Level = Sensitivity.Confidential), Encrypted]
     string Reason,
     string Regulation,
-    string? TenantId = null) : IIntegrationEvent;
+    Guid? TenantId = null) : IIntegrationEvent;

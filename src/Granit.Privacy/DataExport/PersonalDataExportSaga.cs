@@ -83,7 +83,7 @@ public sealed class PersonalDataExportSaga : Saga
         Regulation = @event.Regulation;
         TenantId = @event.TenantId;
         RequestedAt = @event.RequestedAt;
-        metrics.RecordExportRequested(TenantId?.ToString(), Regulation);
+        metrics.RecordExportRequested(TenantId, Regulation);
 
         // Apply visibility gates + intersect with the subject's RequestedScopes list.
         // RequestedScopes naming an unknown / hidden provider is silently dropped (VULN-202:
@@ -144,7 +144,7 @@ public sealed class PersonalDataExportSaga : Saga
             @event.ContentType,
             @event.IntegrityTag));
         bool expected = PendingProviders.Remove(@event.ProviderName);
-        metrics.RecordFragmentReceived(TenantId?.ToString(), expected ? @event.ProviderName : "unknown", Regulation);
+        metrics.RecordFragmentReceived(TenantId, expected ? @event.ProviderName : "unknown", Regulation);
 
         // Multi-fragment providers (Documents, attachments) emit one Prepared event per
         // fragment but only count once against ExpectedCount via PendingProviders.Remove.
@@ -174,7 +174,7 @@ public sealed class PersonalDataExportSaga : Saga
     /// </summary>
     public ExportCompletedEto Handle(ExportTimedOutEvent @event, PrivacyMetrics metrics)
     {
-        metrics.RecordExportCompleted(TenantId?.ToString(), "timeout", TimeSpan.Zero, Regulation);
+        metrics.RecordExportCompleted(TenantId, "timeout", TimeSpan.Zero, Regulation);
         MarkCompleted();
         return new ExportCompletedEto(
             RequestId: Id,

@@ -19,5 +19,5 @@ public sealed record OptOutRecord(
     OptOutState State,
     DateTimeOffset RequestedAt,
     DateTimeOffset? RevokedAt,
-    string? TenantId,
+    Guid? TenantId,
     string Regulation);

@@ -58,7 +58,7 @@ public sealed class PersonalDataDeletionSaga : Saga
     public string Regulation { get; set; } = string.Empty;
 
     /// <summary>Tenant identifier propagated from the starting event for metrics tagging.</summary>
-    public string? TenantId { get; set; }
+    public Guid? TenantId { get; set; }
 
     /// <summary>Whether the reminder notification has been sent.</summary>
     public bool ReminderSent { get; set; }

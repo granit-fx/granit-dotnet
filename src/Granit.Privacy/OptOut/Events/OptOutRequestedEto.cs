@@ -13,4 +13,4 @@ public sealed record OptOutRequestedEto(
     string? AnonymousTrackId,
     DateTimeOffset RequestedAt,
     string Regulation,
-    string? TenantId) : IIntegrationEvent;
+    Guid? TenantId) : IIntegrationEvent;

@@ -37228,7 +37228,7 @@
           "name": "Start",
           "kind": "method",
           "signature": "Start(DeletionDeferredEto @event, IOptions<GranitPrivacyOptions> options, IMessageContext context, IDeletionRequestTrackerWriter tracker, PrivacyMetrics metrics)",
-          "returnType": "string? TenantId { get; set; } public bool ReminderSent { get; set; } public Task"
+          "returnType": "Guid? TenantId { get; set; } public bool ReminderSent { get; set; } public Task"
         }
       ]
     },
@@ -37598,55 +37598,55 @@
         {
           "name": "RecordFragmentReceived",
           "kind": "method",
-          "signature": "RecordFragmentReceived(string? tenantId, string provider, string? regulation = null)",
+          "signature": "RecordFragmentReceived(Guid? tenantId, string provider, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordDeletionRequested",
           "kind": "method",
-          "signature": "RecordDeletionRequested(string? tenantId, string? regulation = null)",
+          "signature": "RecordDeletionRequested(Guid? tenantId, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordDeletionDeferred",
           "kind": "method",
-          "signature": "RecordDeletionDeferred(string? tenantId, string? regulation = null)",
+          "signature": "RecordDeletionDeferred(Guid? tenantId, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordDeletionCancelled",
           "kind": "method",
-          "signature": "RecordDeletionCancelled(string? tenantId, string? regulation = null)",
+          "signature": "RecordDeletionCancelled(Guid? tenantId, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordDeletionExecuted",
           "kind": "method",
-          "signature": "RecordDeletionExecuted(string? tenantId, string? regulation = null)",
+          "signature": "RecordDeletionExecuted(Guid? tenantId, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordDeletionReminderSent",
           "kind": "method",
-          "signature": "RecordDeletionReminderSent(string? tenantId, string? regulation = null)",
+          "signature": "RecordDeletionReminderSent(Guid? tenantId, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordExportCompleted",
           "kind": "method",
-          "signature": "RecordExportCompleted(string? tenantId, string status, TimeSpan duration, string? regulation = null)",
+          "signature": "RecordExportCompleted(Guid? tenantId, string status, TimeSpan duration, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordArchiveAssembled",
           "kind": "method",
-          "signature": "RecordArchiveAssembled(string? tenantId, string status, bool isPartial, TimeSpan duration, string? regulation = null)",
+          "signature": "RecordArchiveAssembled(Guid? tenantId, string status, bool isPartial, TimeSpan duration, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordOptOutRevoked",
           "kind": "method",
-          "signature": "RecordOptOutRevoked(string? tenantId, string? regulation = null)",
+          "signature": "RecordOptOutRevoked(Guid? tenantId, string? regulation = null)",
           "returnType": "void"
         },
         {
