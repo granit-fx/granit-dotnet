@@ -26651,7 +26651,7 @@
       "kind": "class",
       "project": "Granit.LanguageDetection.AI",
       "file": "src/Granit.LanguageDetection.AI/Options/LanguageDetectionAIOptions.cs",
-      "line": 7,
+      "line": 16,
       "members": [
         {
           "name": "WorkspaceName",
@@ -26714,22 +26714,6 @@
           "kind": "method",
           "signature": "Build(string content)",
           "returnType": "IReadOnlyList<ChatMessage>"
-        }
-      ]
-    },
-    {
-      "name": "LanguageDetectionResponse",
-      "fqn": "Granit.LanguageDetection.AI.Schema.LanguageDetectionResponse",
-      "kind": "class",
-      "project": "Granit.LanguageDetection.AI",
-      "file": "src/Granit.LanguageDetection.AI/Schema/LanguageDetectionResponse.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "Language",
-          "kind": "property",
-          "signature": "string Language",
-          "returnType": "string"
         }
       ]
     },
@@ -26813,6 +26797,15 @@
       "project": "Granit.LanguageDetection",
       "file": "src/Granit.LanguageDetection/ILanguageDetectorProvider.cs",
       "line": 27,
+      "members": []
+    },
+    {
+      "name": "LanguageDetectorDefaults",
+      "fqn": "Granit.LanguageDetection.LanguageDetectorDefaults",
+      "kind": "class",
+      "project": "Granit.LanguageDetection",
+      "file": "src/Granit.LanguageDetection/LanguageDetectorDefaults.cs",
+      "line": 9,
       "members": []
     },
     {

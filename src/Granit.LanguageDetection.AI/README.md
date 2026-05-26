@@ -70,7 +70,7 @@ Three layers of defence apply to every call:
 2. **Structured-output pinning.** `ChatResponseFormat.ForJsonSchema<LanguageDetectionResponse>()`
    constrains the model to emit a strict JSON envelope.
 3. **ISO 639-1 validation.** The response must match `^[a-z]{2}$`. Non-conforming
-   responses bump the `granit.language_detection.ai.injection_attempt` metric
+   responses bump the `granit.language_detection.ai.injections.detected` metric
    (tenant-tagged, never content-tagged) and the call returns `null`.
 
 PII redaction over free text is optional via `IAIContentRedactor` (see

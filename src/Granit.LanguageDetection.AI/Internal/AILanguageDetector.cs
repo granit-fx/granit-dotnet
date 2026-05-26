@@ -6,7 +6,6 @@ using Granit.AI.Extraction.Redaction;
 using Granit.LanguageDetection.AI.Diagnostics;
 using Granit.LanguageDetection.AI.Options;
 using Granit.LanguageDetection.AI.Prompts;
-using Granit.LanguageDetection.AI.Schema;
 using Granit.MultiTenancy;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -31,7 +30,7 @@ namespace Granit.LanguageDetection.AI.Internal;
 /// instruction-isolation wrapping via <see cref="IAILanguageDetectionPromptBuilder"/>,
 /// JSON-schema pinning via <c>ChatResponseFormat.ForJsonSchema</c>, and an ISO 639-1
 /// regex validator on the response. Out-of-schema or out-of-pattern responses bump the
-/// <c>granit.language_detection.ai.injection_attempt</c> metric (tenant-tagged,
+/// <c>granit.language_detection.ai.injections.detected</c> metric (tenant-tagged,
 /// NEVER content-tagged) — the rejected payload is dropped on the floor.
 /// </para>
 /// </remarks>
@@ -48,7 +47,7 @@ internal sealed partial class AILanguageDetector : ILanguageDetectorProvider
         ResponseFormat = ChatResponseFormat.ForJsonSchema<LanguageDetectionResponse>(),
     };
 
-    private const int MinimumSampleLength = 10;
+    private const string RateLimitBucketPrefix = "language_detection";
 
     private readonly IAIChatClientFactory _chatClientFactory;
     private readonly IAILanguageDetectionPromptBuilder _promptBuilder;
@@ -95,13 +94,15 @@ internal sealed partial class AILanguageDetector : ILanguageDetectorProvider
     {
         ArgumentNullException.ThrowIfNull(content);
 
-        if (content.Length < MinimumSampleLength)
+        if (content.Length < LanguageDetectorDefaults.MinimumSampleLength)
         {
             return null;
         }
 
-        string? tenantId = _currentTenant.Id?.ToString();
-        string bucketKey = $"language_detection:{tenantId ?? "global"}";
+        string? tenantId = _currentTenant is { IsAvailable: true } tenant
+            ? tenant.Id?.ToString()
+            : null;
+        string bucketKey = $"{RateLimitBucketPrefix}:{tenantId ?? LanguageDetectionAIMetrics.GlobalTenant}";
 
         bool admitted = await _rateLimiter
             .TryAcquireAsync(bucketKey, _options.MaxAICallsPerHourPerTenant, cancellationToken)
@@ -110,13 +111,11 @@ internal sealed partial class AILanguageDetector : ILanguageDetectorProvider
         if (!admitted)
         {
             _metrics.RecordCallThrottled(tenantId);
-            LogThrottled(tenantId ?? "global");
+            LogThrottled(tenantId ?? LanguageDetectionAIMetrics.GlobalTenant);
             return null;
         }
 
-        string sample = content.Length > _options.MaxContentLength
-            ? content[.._options.MaxContentLength]
-            : content;
+        string sample = TruncateOnCodePoint(content, _options.MaxContentLength);
 
         if (_options.RedactPIIBeforeLLMCall)
         {
@@ -130,7 +129,10 @@ internal sealed partial class AILanguageDetector : ILanguageDetectorProvider
 
         try
         {
-            IChatClient chatClient = await _chatClientFactory
+            // IAIChatClientFactory.CreateAsync currently builds a fresh client per call
+            // (no cache). Dispose deterministically so the underlying HttpMessageHandler
+            // and tokenizer don't linger until the next GC cycle.
+            using IChatClient chatClient = await _chatClientFactory
                 .CreateAsync(_options.WorkspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 
@@ -145,7 +147,7 @@ internal sealed partial class AILanguageDetector : ILanguageDetectorProvider
         catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
             _metrics.RecordCallFailed(tenantId, "timeout");
-            LogTimeout(tenantId ?? "global", _options.TimeoutSeconds);
+            LogTimeout(tenantId ?? LanguageDetectionAIMetrics.GlobalTenant, _options.TimeoutSeconds);
             return null;
         }
         catch (OperationCanceledException)
@@ -154,22 +156,49 @@ internal sealed partial class AILanguageDetector : ILanguageDetectorProvider
         }
         catch (JsonException)
         {
-            _metrics.RecordInjectionAttempt(tenantId);
+            _metrics.RecordInjectionDetected(tenantId);
             return null;
         }
         catch (Exception ex)
         {
+            // Never log ex.Message or pass the exception object directly to ILogger:
+            // some IChatClient providers (OpenAI / Azure OpenAI / Anthropic) echo the
+            // prompt payload in their exception messages on 4xx (content policy, schema
+            // reject), which would leak PII into structured logs and silently bypass the
+            // IAIContentRedactor seam. The exception type is enough for ops triage;
+            // the failure-reason tag on the metric carries the structured signal.
             _metrics.RecordCallFailed(tenantId, "transport");
-            LogTransportFailure(tenantId ?? "global", ex.Message);
+            LogTransportFailure(tenantId ?? LanguageDetectionAIMetrics.GlobalTenant, ex.GetType().Name);
             return null;
         }
+    }
+
+    private static string TruncateOnCodePoint(string content, int maxChars)
+    {
+        if (content.Length <= maxChars)
+        {
+            return content;
+        }
+
+        int cut = maxChars;
+
+        // Avoid slicing in the middle of a surrogate pair — a lone surrogate produces
+        // invalid UTF-16 that the transport serializer either rejects or replaces with
+        // U+FFFD, biasing detection on CJK / emoji-heavy corpora and creating false
+        // injection-detection signals downstream.
+        if (cut > 0 && char.IsHighSurrogate(content[cut - 1]))
+        {
+            cut--;
+        }
+
+        return content[..cut];
     }
 
     private string? ParseAndValidate(string? responseText, string? tenantId)
     {
         if (string.IsNullOrWhiteSpace(responseText))
         {
-            _metrics.RecordInjectionAttempt(tenantId);
+            _metrics.RecordInjectionDetected(tenantId);
             return null;
         }
 
@@ -183,7 +212,7 @@ internal sealed partial class AILanguageDetector : ILanguageDetectorProvider
 
         if (!Iso639OneAlpha2().IsMatch(parsed.Language))
         {
-            _metrics.RecordInjectionAttempt(tenantId);
+            _metrics.RecordInjectionDetected(tenantId);
             return null;
         }
 
@@ -199,6 +228,6 @@ internal sealed partial class AILanguageDetector : ILanguageDetectorProvider
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI language detection timed out for tenant {TenantId} after {TimeoutSeconds}s")]
     private partial void LogTimeout(string tenantId, int timeoutSeconds);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "AI language detection transport failure for tenant {TenantId}: {ErrorMessage}")]
-    private partial void LogTransportFailure(string tenantId, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "AI language detection transport failure for tenant {TenantId} (exception type: {ExceptionType})")]
+    private partial void LogTransportFailure(string tenantId, string exceptionType);
 }

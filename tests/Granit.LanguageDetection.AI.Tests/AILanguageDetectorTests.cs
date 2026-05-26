@@ -9,8 +9,10 @@ using Granit.LanguageDetection.AI.Prompts;
 using Granit.MultiTenancy;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Diagnostics.Metrics.Testing;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
 
@@ -143,6 +145,107 @@ public sealed class AILanguageDetectorTests
         harness.Redactor.DidNotReceive().Redact(Arg.Any<string>());
     }
 
+    [Fact]
+    public async Task DetectAsync_truncates_to_MaxContentLength_without_splitting_a_surrogate_pair()
+    {
+        // A naive content[..N] slice on an emoji-heavy or CJK payload can land in the
+        // middle of a UTF-16 surrogate pair, producing a lone surrogate that the
+        // transport serializer either rejects (false transport failure metric) or
+        // replaces with U+FFFD (corrupted detection signal). We back the slice off by
+        // one code unit when needed so the sample is always valid UTF-16.
+        Harness harness = new();
+        harness.Options.MaxContentLength = 12;
+        harness.RespondWith("""{"language": "en"}""");
+        AILanguageDetector detector = BuildDetector(harness);
+
+        // 🚀 = U+1F680, stored as the surrogate pair D83D DE80 (2 chars in UTF-16).
+        // "abcdefghijk🚀tail" → cutting at 12 would land between D83D and DE80; the
+        // back-off must trim to 11 chars instead.
+        string sample = "abcdefghijk🚀tail";
+
+        await detector.DetectAsync(sample, TestContext.Current.CancellationToken);
+
+        string captured = harness.LastUserMessage.ShouldNotBeNull();
+        string inner = ExtractEnvelopeBody(captured);
+
+        // The truncated sample must be parseable as UTF-16 — no lone surrogate.
+        inner.ShouldNotMatch(@"[\uD800-\uDBFF](?![\uDC00-\uDFFF])");
+        inner.ShouldNotMatch(@"(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]");
+        // And it must fit within the cap (potentially one char less when the cut would
+        // have split a surrogate pair).
+        inner.Length.ShouldBeLessThanOrEqualTo(harness.Options.MaxContentLength);
+        inner.ShouldBe("abcdefghijk");
+    }
+
+    private static string ExtractEnvelopeBody(string userMessage)
+    {
+        const string open = "<untrusted_document>";
+        const string close = "</untrusted_document>";
+        int start = userMessage.IndexOf(open, StringComparison.Ordinal) + open.Length;
+        int end = userMessage.LastIndexOf(close, StringComparison.Ordinal);
+        return userMessage[start..end];
+    }
+
+    [Fact]
+    public async Task DetectAsync_records_transport_failure_when_chat_client_throws()
+    {
+        Harness harness = new();
+        harness.ChatClient.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
+            .ThrowsAsyncForAnyArgs(new HttpRequestException("simulated provider failure"));
+        AILanguageDetector detector = BuildDetector(harness);
+
+        string? result = await detector.DetectAsync("Bonjour à tous, ceci est un texte en français.", TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+        harness.CollectFailedCount().ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task DetectAsync_disposes_the_IChatClient_after_use()
+    {
+        // The default IAIChatClientFactory builds a fresh IChatClient per call. Without
+        // explicit disposal, the underlying HttpMessageHandler and tokenizer linger
+        // until the next GC cycle — at indexing-pipeline QPS this can exhaust sockets
+        // (SNAT/ephemeral-port exhaustion) before any retention pressure triggers GC.
+        Harness harness = new();
+        harness.RespondWith("""{"language": "en"}""");
+        AILanguageDetector detector = BuildDetector(harness);
+
+        await detector.DetectAsync("Bonjour à tous, ceci est un texte en français.", TestContext.Current.CancellationToken);
+
+        harness.ChatClient.Received(1).Dispose();
+    }
+
+    [Fact]
+    public async Task DetectAsync_does_NOT_include_exception_message_in_transport_failure_log()
+    {
+        // Several IChatClient providers echo the prompt payload in their exception
+        // messages on 4xx (content policy / schema reject). Forwarding ex.Message to
+        // ILogger or passing the exception object as a structured property would leak
+        // raw PII into logs and silently bypass the IAIContentRedactor seam. The
+        // detector must log only the exception type — never the message.
+        Harness harness = new();
+        var recordingLogger = new RecordingLogger();
+        const string sensitiveProbe = "SSN 123-45-6789 echoed by provider";
+        harness.ChatClient.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
+            .ThrowsAsyncForAnyArgs(new HttpRequestException(sensitiveProbe));
+        AILanguageDetector detector = new(
+            harness.ChatClientFactory,
+            new DefaultAILanguageDetectionPromptBuilder(),
+            harness.RateLimiter,
+            harness.Redactor,
+            Microsoft.Extensions.Options.Options.Create(harness.Options),
+            harness.Metrics,
+            new FixedTenant(TenantA),
+            recordingLogger);
+
+        await detector.DetectAsync("Bonjour à tous, ceci est un texte en français.", TestContext.Current.CancellationToken);
+
+        // The exception type must appear (ops triage signal); the message must not.
+        recordingLogger.AllOutput.ShouldContain(nameof(HttpRequestException));
+        recordingLogger.AllOutput.ShouldNotContain(sensitiveProbe);
+    }
+
     private static AILanguageDetector BuildDetector(Harness h) => new(
         h.ChatClientFactory,
         new DefaultAILanguageDetectionPromptBuilder(),
@@ -165,7 +268,9 @@ public sealed class AILanguageDetectorTests
         public LanguageDetectionAIOptions Options { get; } = new();
         public MetricCollector<long> ThrottledCollector { get; }
         public MetricCollector<long> InjectionCollector { get; }
+        public MetricCollector<long> FailedCollector { get; }
         public LanguageDetectionAIMetrics Metrics { get; }
+        public string? LastUserMessage { get; private set; }
 
         public Harness()
         {
@@ -178,20 +283,54 @@ public sealed class AILanguageDetectorTests
             ThrottledCollector = new MetricCollector<long>(
                 meterFactory.Meter, "granit.language_detection.ai.calls.throttled");
             InjectionCollector = new MetricCollector<long>(
-                meterFactory.Meter, "granit.language_detection.ai.injection_attempt");
+                meterFactory.Meter, "granit.language_detection.ai.injections.detected");
+            FailedCollector = new MetricCollector<long>(
+                meterFactory.Meter, "granit.language_detection.ai.calls.failed");
         }
 
         public void RespondWith(string text)
         {
             var response = new ChatResponse(new ChatMessage(ChatRole.Assistant, text));
             ChatClient.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
-                .Returns(Task.FromResult(response));
+                .Returns(call =>
+                {
+                    // Capture the (truncated, possibly redacted) user-envelope content so
+                    // tests can assert on what was actually shipped to the LLM.
+                    IEnumerable<ChatMessage> msgs = call.Arg<IEnumerable<ChatMessage>>();
+                    LastUserMessage = msgs.FirstOrDefault(m => m.Role == ChatRole.User)?.Text;
+                    return Task.FromResult(response);
+                });
         }
 
         public void SaturateRateLimiter() => RateLimiter.Saturated = true;
 
         public long CollectThrottledCount() => ThrottledCollector.GetMeasurementSnapshot().Sum(m => m.Value);
         public long CollectInjectionCount() => InjectionCollector.GetMeasurementSnapshot().Sum(m => m.Value);
+        public long CollectFailedCount() => FailedCollector.GetMeasurementSnapshot().Sum(m => m.Value);
+    }
+
+    private sealed class RecordingLogger : ILogger<AILanguageDetector>
+    {
+        private readonly System.Text.StringBuilder _buffer = new();
+
+        public string AllOutput => _buffer.ToString();
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
+        {
+            _buffer.AppendLine(formatter(state, exception));
+            if (exception is not null)
+            {
+                _buffer.AppendLine(exception.ToString());
+            }
+        }
     }
 
     private sealed class FakeRateLimiter : IAICallRateLimiter

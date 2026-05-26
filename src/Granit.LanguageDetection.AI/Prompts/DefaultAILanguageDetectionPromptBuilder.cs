@@ -30,7 +30,15 @@ public sealed class DefaultAILanguageDetectionPromptBuilder : IAILanguageDetecti
         return
         [
             new ChatMessage(ChatRole.System, SystemPrompt),
-            new ChatMessage(ChatRole.User, $"<untrusted_document>{content}</untrusted_document>"),
+            new ChatMessage(ChatRole.User, $"<untrusted_document>{NeutralizeEnvelopeBreakout(content)}</untrusted_document>"),
         ];
     }
+
+    // Defence against attempts to escape the <untrusted_document> envelope by embedding
+    // a closing tag inside the payload (OWASP LLM01). The model only sees an underscore
+    // suffix; the rejected sequence loses its XML-element meaning. Matched
+    // case-insensitively to cover variations like </Untrusted_Document>.
+    private static string NeutralizeEnvelopeBreakout(string content) => content
+        .Replace("</untrusted_document>", "</untrusted_document_>", StringComparison.OrdinalIgnoreCase)
+        .Replace("<untrusted_document>", "<untrusted_document_>", StringComparison.OrdinalIgnoreCase);
 }

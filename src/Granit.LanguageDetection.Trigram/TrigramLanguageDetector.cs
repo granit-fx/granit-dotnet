@@ -29,7 +29,6 @@ public sealed class TrigramLanguageDetector : ILanguageDetectorProvider
 {
     private const int DefaultMaxSampleChars = 2_048;
     private const int DefaultInputTopN = 300;
-    private const int MinimumSampleLength = 10;
 
     private readonly LanguageProfileBundle _bundle;
     private readonly int _maxSampleChars;
@@ -63,7 +62,7 @@ public sealed class TrigramLanguageDetector : ILanguageDetectorProvider
         ArgumentNullException.ThrowIfNull(content);
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (content.Length < MinimumSampleLength)
+        if (content.Length < LanguageDetectorDefaults.MinimumSampleLength)
         {
             return Task.FromResult<string?>(null);
         }

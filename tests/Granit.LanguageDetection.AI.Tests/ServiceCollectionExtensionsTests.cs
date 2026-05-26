@@ -1,9 +1,11 @@
 using Granit.LanguageDetection.AI.Extensions;
 using Granit.LanguageDetection.AI.Internal;
+using Granit.LanguageDetection.AI.Options;
 using Granit.LanguageDetection.AI.Prompts;
 using Granit.LanguageDetection.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
@@ -60,9 +62,74 @@ public sealed class ServiceCollectionExtensionsTests
             .ShouldBeOfType<DefaultAILanguageDetectionPromptBuilder>();
     }
 
-    private static ServiceCollection BuildBaseServices()
+    [Theory]
+    [InlineData("LanguageDetection:AI:MaxContentLength", "0")]
+    [InlineData("LanguageDetection:AI:MaxContentLength", "-1")]
+    [InlineData("LanguageDetection:AI:MaxAICallsPerHourPerTenant", "0")]
+    [InlineData("LanguageDetection:AI:MaxAICallsPerHourPerTenant", "-100")]
+    [InlineData("LanguageDetection:AI:TimeoutSeconds", "0")]
+    [InlineData("LanguageDetection:AI:TimeoutSeconds", "-5")]
+    [InlineData("LanguageDetection:AI:TimeoutSeconds", "999")]
+    [InlineData("LanguageDetection:AI:WorkspaceName", "")]
+    public void AddGranitLanguageDetectionAI_rejects_out_of_range_options_at_resolution(string key, string value)
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
+        // A silently-degraded configuration would inflate the injection_attempt counter
+        // with false positives — for example MaxContentLength=0 yields an empty sample
+        // and every call resolves to a schema reject. We must surface the misconfiguration
+        // loudly. ValidateOnStart triggers via IStartupValidator on full host build, but
+        // even when only the options pipeline is exercised, validation fires on first
+        // Get().
+        ServiceCollection services = BuildBaseServices(new Dictionary<string, string?>
+        {
+            [key] = value,
+        });
+        services.AddGranitLanguageDetectionAI();
+        ServiceProvider sp = services.BuildServiceProvider();
+
+        Action act = () => _ = sp.GetRequiredService<IOptions<LanguageDetectionAIOptions>>().Value;
+
+        act.ShouldThrow<OptionsValidationException>();
+    }
+
+    [Fact]
+    public void AddGranitLanguageDetectionAI_accepts_default_options_under_validation()
+    {
+        // Sanity check: shipped defaults must pass their own validators. A miscalibrated
+        // [Range] attribute would crash every host that takes the package as-is.
+        ServiceCollection services = BuildBaseServices();
+        services.AddGranitLanguageDetectionAI();
+        ServiceProvider sp = services.BuildServiceProvider();
+
+        LanguageDetectionAIOptions options =
+            sp.GetRequiredService<IOptions<LanguageDetectionAIOptions>>().Value;
+
+        options.WorkspaceName.ShouldBe("default");
+        options.MaxAICallsPerHourPerTenant.ShouldBe(1_000);
+        options.MaxContentLength.ShouldBe(2_048);
+        options.TimeoutSeconds.ShouldBe(10);
+        options.RedactPIIBeforeLLMCall.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void AddGranitLanguageDetectionAI_registers_redaction_startup_check()
+    {
+        // The startup probe is the user-visible signal that the NoOpAIContentRedactor
+        // identity default is leaving PII unredacted while RedactPIIBeforeLLMCall=true.
+        // If a future refactor drops the registration, this test catches it before the
+        // first production incident.
+        ServiceCollection services = BuildBaseServices();
+
+        services.AddGranitLanguageDetectionAI();
+
+        services.Any(d => d.ImplementationType == typeof(RedactionConfigurationStartupCheck))
+            .ShouldBeTrue();
+    }
+
+    private static ServiceCollection BuildBaseServices(IDictionary<string, string?>? overrides = null)
+    {
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(overrides ?? new Dictionary<string, string?>())
+            .Build();
         ServiceCollection services = [];
         services.AddSingleton(configuration);
         services.AddOptions();

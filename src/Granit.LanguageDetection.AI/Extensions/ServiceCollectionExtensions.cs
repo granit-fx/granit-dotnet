@@ -32,8 +32,14 @@ public static class ServiceCollectionExtensions
 
         GranitActivitySourceRegistry.Register(LanguageDetectionAIMetrics.MeterName);
 
+        // ValidateOnStart aborts host boot when MaxContentLength / TimeoutSeconds /
+        // MaxAICallsPerHourPerTenant / WorkspaceName are out of range. Silent
+        // degradation here would inflate the `injections.detected` counter with false
+        // positives (e.g. MaxContentLength=0 → empty sample → schema reject).
         services.AddOptions<LanguageDetectionAIOptions>()
-            .BindConfiguration(LanguageDetectionAIOptions.SectionName);
+            .BindConfiguration(LanguageDetectionAIOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.TryAddSingleton<LanguageDetectionAIMetrics>();
         services.TryAddSingleton<IAILanguageDetectionPromptBuilder, DefaultAILanguageDetectionPromptBuilder>();
@@ -42,6 +48,11 @@ public static class ServiceCollectionExtensions
         // The composite resolves IEnumerable<ILanguageDetectorProvider>; using
         // TryAddEnumerable keeps the registration idempotent for re-entrant DI builds.
         services.TryAddEnumerable(ServiceDescriptor.Scoped<ILanguageDetectorProvider, AILanguageDetector>());
+
+        // Warn at startup when RedactPIIBeforeLLMCall is enabled but the registered
+        // IAIContentRedactor is the identity NoOpAIContentRedactor — otherwise the
+        // option name is misleading and PII flows raw to the LLM with no masking.
+        services.AddHostedService<RedactionConfigurationStartupCheck>();
 
         return services;
     }
