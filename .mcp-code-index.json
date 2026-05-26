@@ -37919,7 +37919,14 @@
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/PrivacyExportContext.cs",
       "line": 17,
-      "members": []
+      "members": [
+        {
+          "name": "IsSelfService",
+          "kind": "property",
+          "signature": "bool IsSelfService",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "PrivacyExportDownloadPayload",
@@ -38371,21 +38378,21 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 34,
+      "line": 42,
       "members": []
     },
     {
-      "name": "Deletion",
-      "fqn": "Granit.Privacy.Endpoints.Permissions.Deletion",
+      "name": "Deletions",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.Deletions",
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 20,
+      "line": 28,
       "members": []
     },
     {
-      "name": "Export",
-      "fqn": "Granit.Privacy.Endpoints.Permissions.Export",
+      "name": "Exports",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.Exports",
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
@@ -38398,7 +38405,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 44,
+      "line": 52,
       "members": []
     },
     {
@@ -38416,7 +38423,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 27,
+      "line": 35,
       "members": []
     },
     {

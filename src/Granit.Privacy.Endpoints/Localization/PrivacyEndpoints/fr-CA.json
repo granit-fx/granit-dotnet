@@ -2,6 +2,7 @@
   "culture": "fr-CA",
   "texts": {
     "Granit:Validation:PrivacyExportTooManyScopes": "Trop de portées demandées dans un même export (limite : 64).",
+    "Permission:Privacy.Exports.OnBehalfOf": "Demander l'export des données personnelles d'un autre sujet (DSR administrateur)",
     "PrivacyEndpoints:Workspace.Agreements": "Consentements",
     "PrivacyEndpoints:Workspace.Purposes": "Finalités",
     "PrivacyEndpoints:Workspace.Section": "Confidentialité"

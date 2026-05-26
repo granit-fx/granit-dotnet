@@ -20,15 +20,21 @@ internal sealed class PrivacyPermissionDefinitionProvider : IPermissionDefinitio
                 "PermissionGroup:Privacy"));
 
         group.AddPermission(
-            PrivacyPermissions.Export.Execute,
+            PrivacyPermissions.Exports.Execute,
             LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
-                "Permission:Privacy.Export.Execute"),
+                "Permission:Privacy.Exports.Execute"),
             MultiTenancySides.Both);
 
         group.AddPermission(
-            PrivacyPermissions.Deletion.Execute,
+            PrivacyPermissions.Exports.OnBehalfOf,
             LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
-                "Permission:Privacy.Deletion.Execute"),
+                "Permission:Privacy.Exports.OnBehalfOf"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            PrivacyPermissions.Deletions.Execute,
+            LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
+                "Permission:Privacy.Deletions.Execute"),
             MultiTenancySides.Both);
 
         group.AddPermission(

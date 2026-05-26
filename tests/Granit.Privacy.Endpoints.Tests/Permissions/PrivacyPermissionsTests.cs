@@ -11,11 +11,15 @@ public sealed class PrivacyPermissionsTests
 
     [Fact]
     public void Export_Execute_FollowsThreeSegmentConvention() =>
-        PrivacyPermissions.Export.Execute.ShouldBe("Privacy.Export.Execute");
+        PrivacyPermissions.Exports.Execute.ShouldBe("Privacy.Exports.Execute");
 
     [Fact]
     public void Deletion_Execute_FollowsThreeSegmentConvention() =>
-        PrivacyPermissions.Deletion.Execute.ShouldBe("Privacy.Deletion.Execute");
+        PrivacyPermissions.Deletions.Execute.ShouldBe("Privacy.Deletions.Execute");
+
+    [Fact]
+    public void Exports_OnBehalfOf_FollowsThreeSegmentConvention() =>
+        PrivacyPermissions.Exports.OnBehalfOf.ShouldBe("Privacy.Exports.OnBehalfOf");
 
     [Fact]
     public void Agreements_Read_FollowsThreeSegmentConvention() =>
@@ -26,8 +30,9 @@ public sealed class PrivacyPermissionsTests
         PrivacyPermissions.Agreements.Create.ShouldBe("Privacy.Agreements.Create");
 
     [Theory]
-    [InlineData("Privacy.Export.Execute")]
-    [InlineData("Privacy.Deletion.Execute")]
+    [InlineData("Privacy.Exports.Execute")]
+    [InlineData("Privacy.Exports.OnBehalfOf")]
+    [InlineData("Privacy.Deletions.Execute")]
     [InlineData("Privacy.Agreements.Read")]
     [InlineData("Privacy.Agreements.Create")]
     public void AllPermissions_HaveThreeDotSeparatedSegments(string permission)
@@ -37,8 +42,9 @@ public sealed class PrivacyPermissionsTests
     }
 
     [Theory]
-    [InlineData("Privacy.Export.Execute")]
-    [InlineData("Privacy.Deletion.Execute")]
+    [InlineData("Privacy.Exports.Execute")]
+    [InlineData("Privacy.Exports.OnBehalfOf")]
+    [InlineData("Privacy.Deletions.Execute")]
     [InlineData("Privacy.Agreements.Read")]
     [InlineData("Privacy.Agreements.Create")]
     public void AllPermissions_StartWithGroupName(string permission) =>

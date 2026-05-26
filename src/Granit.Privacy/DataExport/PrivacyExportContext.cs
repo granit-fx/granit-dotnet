@@ -19,4 +19,16 @@ public sealed record PrivacyExportContext(
     Guid SubjectUserId,
     Guid CallerUserId,
     Guid? TenantId,
-    string Regulation);
+    string Regulation)
+{
+    /// <summary>
+    /// Returns <see langword="true"/> when caller and subject are the same identity —
+    /// the framework's default and the only mode supported in v1. Call sites that
+    /// construct a context where <see cref="SubjectUserId"/> differs from
+    /// <see cref="CallerUserId"/> MUST have validated the
+    /// <c>Privacy.Exports.OnBehalfOf</c> permission first (planned for v1.1); the
+    /// upcoming subject-substitution analyzer flags any construction site that
+    /// passes mismatched ids without an explicit bypass.
+    /// </summary>
+    public bool IsSelfService => SubjectUserId == CallerUserId;
+}

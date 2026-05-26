@@ -186,9 +186,9 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
 
         // Authorization policies matching the permission names used by the endpoints
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(PrivacyPermissions.Export.Execute,
+            .AddPolicy(PrivacyPermissions.Exports.Execute,
                 policy => policy.RequireRole(ExportRole))
-            .AddPolicy(PrivacyPermissions.Deletion.Execute,
+            .AddPolicy(PrivacyPermissions.Deletions.Execute,
                 policy => policy.RequireRole(DeletionRole))
             .AddPolicy(PrivacyPermissions.Purposes.Read,
                 policy => policy.RequireRole(PurposesReadRole))

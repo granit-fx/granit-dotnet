@@ -2,7 +2,7 @@ namespace Granit.Privacy.Endpoints.Permissions;
 
 /// <summary>
 /// Permission constants for GDPR privacy endpoints.
-/// Format: <c>{Group}.{Resource}.{Action}</c> (three dot-separated segments).
+/// Format: <c>{Group}.{Resource}.{Action}</c> (PascalCase, plural Resource).
 /// </summary>
 public static class PrivacyPermissions
 {
@@ -10,17 +10,25 @@ public static class PrivacyPermissions
     public const string GroupName = "Privacy";
 
     /// <summary>Permissions for personal data export (GDPR Art. 15/20).</summary>
-    public static class Export
+    public static class Exports
     {
-        /// <summary>Request a personal data export.</summary>
-        public const string Execute = "Privacy.Export.Execute";
+        /// <summary>Request a personal data export for one's own data (self-service).</summary>
+        public const string Execute = "Privacy.Exports.Execute";
+
+        /// <summary>
+        /// Request a personal data export on behalf of another subject (admin DSR path).
+        /// Constant is declared but the corresponding endpoint surface is gated to a
+        /// future iteration — the framework's current export handlers refuse any
+        /// request where caller ≠ subject regardless of which permission is granted.
+        /// </summary>
+        public const string OnBehalfOf = "Privacy.Exports.OnBehalfOf";
     }
 
     /// <summary>Permissions for personal data deletion (GDPR Art. 17).</summary>
-    public static class Deletion
+    public static class Deletions
     {
         /// <summary>Request and cancel personal data erasure.</summary>
-        public const string Execute = "Privacy.Deletion.Execute";
+        public const string Execute = "Privacy.Deletions.Execute";
     }
 
     /// <summary>Permissions for processing purpose management.</summary>

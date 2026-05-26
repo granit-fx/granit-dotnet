@@ -36,7 +36,7 @@ internal static class PrivacyExportDownloadEndpoints
     internal static RouteGroupBuilder MapPrivacyExportDownloadEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/exports/{requestId:guid}/download", HandleDownloadAsync)
-            .RequireAuthorization(PrivacyPermissions.Export.Execute)
+            .RequireAuthorization(PrivacyPermissions.Exports.Execute)
             .WithName("DownloadPrivacyExport")
             .WithSummary("Downloads the personal data export archive (compat — single-shard or manifest).")
             .WithDescription(
@@ -51,7 +51,7 @@ internal static class PrivacyExportDownloadEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapGet("/exports/{requestId:guid}/download/manifest", HandleDownloadManifestAsync)
-            .RequireAuthorization(PrivacyPermissions.Export.Execute)
+            .RequireAuthorization(PrivacyPermissions.Exports.Execute)
             .WithName("DownloadPrivacyExportManifest")
             .WithSummary("Downloads the manifest sidecar describing the export's shards.")
             .WithDescription(
@@ -64,7 +64,7 @@ internal static class PrivacyExportDownloadEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapGet("/exports/{requestId:guid}/download/{shardIndex:int:min(0)}", HandleDownloadShardAsync)
-            .RequireAuthorization(PrivacyPermissions.Export.Execute)
+            .RequireAuthorization(PrivacyPermissions.Exports.Execute)
             .WithName("DownloadPrivacyExportShard")
             .WithSummary("Downloads a single shard of a sharded personal data export.")
             .WithDescription(

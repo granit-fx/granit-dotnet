@@ -282,7 +282,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
     private static void MapExportEndpoints(RouteGroupBuilder group)
     {
         group.MapGet("/exports/scopes", HandleListExportScopesAsync)
-             .RequireAuthorization(PrivacyPermissions.Export.Execute)
+             .RequireAuthorization(PrivacyPermissions.Exports.Execute)
              .WithName("ListPrivacyExportScopes")
              .WithSummary("Lists the export scopes visible to the current user.")
              .WithDescription(
@@ -294,7 +294,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .Produces<IReadOnlyList<PrivacyExportScopeResponse>>();
 
         group.MapPost("/exports", HandleRequestExportAsync)
-             .RequireAuthorization(PrivacyPermissions.Export.Execute)
+             .RequireAuthorization(PrivacyPermissions.Exports.Execute)
              .RequireGranitRateLimiting(PrivacyExportRateLimitPolicies.ExportCreate)
              .WithMetadata(new IdempotentAttribute { Required = false })
              .WithName("RequestPrivacyExport")
@@ -343,7 +343,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
     private static void MapDeletionEndpoints(RouteGroupBuilder group)
     {
         group.MapPost("/deletions", HandleRequestDeletionAsync)
-             .RequireAuthorization(PrivacyPermissions.Deletion.Execute)
+             .RequireAuthorization(PrivacyPermissions.Deletions.Execute)
              .WithName("RequestPrivacyDeletion")
              .WithSummary("Requests personal data deletion for the current user.")
              .WithDescription(
@@ -358,7 +358,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .ProducesValidationProblem();
 
         group.MapPost("/deletions/{requestId:guid}/cancel", HandleCancelDeletionAsync)
-             .RequireAuthorization(PrivacyPermissions.Deletion.Execute)
+             .RequireAuthorization(PrivacyPermissions.Deletions.Execute)
              .WithName("CancelPrivacyDeletion")
              .WithSummary("Cancels a deferred deletion request during the grace period.")
              .WithDescription(
