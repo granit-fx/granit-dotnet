@@ -9,10 +9,11 @@ namespace Granit.LanguageDetection.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the composite language detector. Concrete detectors (trigram,
-    /// AI-backed, metadata-hint) plug in by registering additional
-    /// <see cref="ILanguageDetector"/> services in DI; the composite resolves them
-    /// at construction.
+    /// Registers the composite language detector as the sole
+    /// <see cref="ILanguageDetector"/>. Concrete detectors (trigram, AI-backed,
+    /// metadata-hint) plug in by registering additional
+    /// <see cref="ILanguageDetectorProvider"/> services in DI (typically via
+    /// <c>TryAddEnumerable</c>); the composite resolves them at construction.
     /// </summary>
     public static IServiceCollection AddGranitLanguageDetection(this IServiceCollection services)
     {
