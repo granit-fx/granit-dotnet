@@ -87,6 +87,70 @@ public sealed class AuditingPrivacyExportAuditWriterTests
     }
 
     [Fact]
+    public async Task WriteFragmentPreparedAsync_PersistsFragmentPhaseWithHashedEntryPath()
+    {
+        IAuditingWriter writer = Substitute.For<IAuditingWriter>();
+        AuditingPrivacyExportAuditWriter sut = new(writer);
+
+        await sut.WriteFragmentPreparedAsync(new PrivacyExportFragmentPreparedAudit(
+            RequestId, SubjectId, TenantId,
+            ProviderName: "identity-local",
+            FragmentKind: "staged",
+            EntryPathHash: "abc123",
+            SizeBytes: 4096,
+            Timestamp: Now), TestContext.Current.CancellationToken);
+
+        await writer.Received(1).WriteAsync(Arg.Is<AuditEntry>(e =>
+            e.Category == AuditCategory.DataAccess
+            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "Phase" && p.NewValue == "fragment-prepared")
+            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "ProviderName" && p.NewValue == "identity-local")
+            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "EntryPathHash" && p.NewValue == "abc123")
+            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "SizeBytes" && p.NewValue == "4096")),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task WriteAssemblyStartedAsync_PersistsAssemblyStartedPhase()
+    {
+        IAuditingWriter writer = Substitute.For<IAuditingWriter>();
+        AuditingPrivacyExportAuditWriter sut = new(writer);
+
+        await sut.WriteAssemblyStartedAsync(new PrivacyExportAssemblyStartedAudit(
+            RequestId, SubjectId, TenantId, "EU_GDPR",
+            ExpectedFragmentCount: 5,
+            IsResumed: true,
+            Timestamp: Now), TestContext.Current.CancellationToken);
+
+        await writer.Received(1).WriteAsync(Arg.Is<AuditEntry>(e =>
+            e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "Phase" && p.NewValue == "assembly-started")
+            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "ExpectedFragmentCount" && p.NewValue == "5")
+            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "IsResumed" && p.NewValue == "true")),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task WriteShardCompletedAsync_PersistsShardCompletedPhaseWithSha256()
+    {
+        IAuditingWriter writer = Substitute.For<IAuditingWriter>();
+        AuditingPrivacyExportAuditWriter sut = new(writer);
+
+        await sut.WriteShardCompletedAsync(new PrivacyExportShardCompletedAudit(
+            RequestId, SubjectId, TenantId,
+            ShardIndex: 1,
+            SizeBytes: 1024 * 1024,
+            Sha256Hex: "deadbeef",
+            DurationMs: 9876,
+            Timestamp: Now), TestContext.Current.CancellationToken);
+
+        await writer.Received(1).WriteAsync(Arg.Is<AuditEntry>(e =>
+            e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "Phase" && p.NewValue == "shard-completed")
+            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "ShardIndex" && p.NewValue == "1")
+            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "Sha256" && p.NewValue == "deadbeef")
+            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "DurationMs" && p.NewValue == "9876")),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task WriteExportFailedAsync_PersistsFailedPhaseWithoutPii()
     {
         IAuditingWriter writer = Substitute.For<IAuditingWriter>();

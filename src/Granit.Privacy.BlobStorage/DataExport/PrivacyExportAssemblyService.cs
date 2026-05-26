@@ -121,9 +121,24 @@ internal sealed partial class PrivacyExportAssemblyService(
                 cancellationToken).ConfigureAwait(false);
         }
 
+        await auditWriter.WriteAssemblyStartedAsync(
+            new PrivacyExportAssemblyStartedAudit(
+                RequestId: completion.RequestId,
+                SubjectUserId: completion.UserId,
+                TenantId: completion.TenantId,
+                Regulation: completion.Regulation,
+                ExpectedFragmentCount: completion.Fragments.Count,
+                IsResumed: resumeFrom is not null,
+                Timestamp: timeProvider.GetUtcNow()),
+            cancellationToken).ConfigureAwait(false);
+
         HttpClient httpClient = httpClientFactory.CreateClient(HttpClientName);
         List<string> emptyProviders = [];
         List<ExportManifestFragment> manifestFragments = [];
+
+        // Wall-clock anchor for per-shard duration audit. Reset on every rollover so
+        // each ShardCompleted entry records the time spent on that shard alone.
+        long shardStartTimestamp = Stopwatch.GetTimestamp();
 
         string objectKeyPrefix = BuildObjectKeyPrefix(completion.RequestId);
         await using ShardingArchiveWriter writer = new(
@@ -199,10 +214,22 @@ internal sealed partial class PrivacyExportAssemblyService(
                             NextFragmentIndex: i,
                             CompletedShardObjectKeys: [.. writer.Shards.Select(s => s.ObjectKey)]),
                         cancellationToken).ConfigureAwait(false);
+
+                    await EmitShardCompletedAuditAsync(completion, writer.Shards[^1], shardStartTimestamp, cancellationToken)
+                        .ConfigureAwait(false);
+                    shardStartTimestamp = Stopwatch.GetTimestamp();
                 }
             }
 
+            // Capture the shard count before CompleteAsync to detect whether a final
+            // open shard closes inside it (last shard never rolled over mid-loop).
+            int shardsBeforeFinal = writer.Shards.Count;
             IReadOnlyList<ShardManifest> shards = await writer.CompleteAsync(cancellationToken).ConfigureAwait(false);
+            if (shards.Count > shardsBeforeFinal)
+            {
+                await EmitShardCompletedAuditAsync(completion, shards[^1], shardStartTimestamp, cancellationToken)
+                    .ConfigureAwait(false);
+            }
 
             BlobReference manifestBlobReference = await UploadManifestAsync(
                 completion, emptyProviders, manifestFragments, shards, httpClient, cancellationToken)
@@ -270,6 +297,7 @@ internal sealed partial class PrivacyExportAssemblyService(
                 completion.IsPartial,
                 duration,
                 completion.Regulation);
+            await EmitFailedAuditAsync(completion, ex, cancellationToken).ConfigureAwait(false);
             throw new PrivacyExportAssemblyException(
                 completion.RequestId,
                 $"Privacy export {completion.RequestId} assembly failed: {ex.Message}",
@@ -287,7 +315,58 @@ internal sealed partial class PrivacyExportAssemblyService(
                 completion.IsPartial,
                 duration,
                 completion.Regulation);
+            await EmitFailedAuditAsync(completion, ex, cancellationToken).ConfigureAwait(false);
             throw;
+        }
+    }
+
+    private Task EmitShardCompletedAuditAsync(
+        ExportCompletedEto completion,
+        ShardManifest shard,
+        long shardStartTimestamp,
+        CancellationToken cancellationToken)
+    {
+        long durationMs = (long)Stopwatch.GetElapsedTime(shardStartTimestamp).TotalMilliseconds;
+        // Resumed shards arrive with empty sha256 (re-streaming to recompute would
+        // defeat the checkpoint). Emit an empty digest in that case so the audit row
+        // still pins the shard's identity by index + size.
+        string sha256Hex = shard.Sha256.Length == 0 ? "" : Convert.ToHexStringLower(shard.Sha256);
+        return auditWriter.WriteShardCompletedAsync(
+            new PrivacyExportShardCompletedAudit(
+                RequestId: completion.RequestId,
+                SubjectUserId: completion.UserId,
+                TenantId: completion.TenantId,
+                ShardIndex: shard.Index,
+                SizeBytes: shard.CompressedSizeBytes,
+                Sha256Hex: sha256Hex,
+                DurationMs: durationMs,
+                Timestamp: timeProvider.GetUtcNow()),
+            cancellationToken);
+    }
+
+    private async Task EmitFailedAuditAsync(
+        ExportCompletedEto completion,
+        Exception exception,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            // The audit writer must not mask the original assembly failure, so swallow
+            // any audit-side exception here and let the rethrow above surface the real
+            // cause. The audit row is best-effort on the failure path.
+            await auditWriter.WriteExportFailedAsync(
+                new PrivacyExportFailedAudit(
+                    RequestId: completion.RequestId,
+                    SubjectUserId: completion.UserId,
+                    TenantId: completion.TenantId,
+                    ExceptionType: exception.GetType().Name,
+                    RetryCount: 0,
+                    Timestamp: timeProvider.GetUtcNow()),
+                cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            // Best-effort — see remark above.
         }
     }
 

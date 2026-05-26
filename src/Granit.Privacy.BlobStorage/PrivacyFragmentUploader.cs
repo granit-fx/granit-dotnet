@@ -1,6 +1,9 @@
+using System.Security.Cryptography;
+using System.Text;
 using Granit.Domain.ValueObjects;
 using Granit.Events;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Audit;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.DataExport.Fragments;
 using Microsoft.Extensions.Logging;
@@ -22,6 +25,8 @@ namespace Granit.Privacy.BlobStorage;
 /// </remarks>
 public sealed partial class PrivacyFragmentUploader(
     IDistributedEventBus eventBus,
+    IPrivacyExportAuditWriter auditWriter,
+    TimeProvider timeProvider,
     ILogger<PrivacyFragmentUploader> logger)
 {
     /// <summary>FragmentKind sentinel value for providers with no data for the subject.</summary>
@@ -78,6 +83,19 @@ public sealed partial class PrivacyFragmentUploader(
                 cancellationToken).ConfigureAwait(false);
 
             LogFragmentPrepared(logger, TProvider.ProviderName, request.UserId, request.RequestId, fragment.EntryPath, kind);
+
+            await auditWriter.WriteFragmentPreparedAsync(
+                new PrivacyExportFragmentPreparedAudit(
+                    RequestId: request.RequestId,
+                    SubjectUserId: request.UserId,
+                    TenantId: request.TenantId,
+                    ProviderName: TProvider.ProviderName,
+                    FragmentKind: kind,
+                    EntryPathHash: HashEntryPath(fragment.EntryPath),
+                    SizeBytes: fragment.KnownSizeBytes,
+                    Timestamp: timeProvider.GetUtcNow()),
+                cancellationToken).ConfigureAwait(false);
+
             published++;
         }
 
@@ -96,7 +114,25 @@ public sealed partial class PrivacyFragmentUploader(
                     IntegrityTag: string.Empty,
                     TenantId: request.TenantId),
                 cancellationToken).ConfigureAwait(false);
+
+            await auditWriter.WriteFragmentPreparedAsync(
+                new PrivacyExportFragmentPreparedAudit(
+                    RequestId: request.RequestId,
+                    SubjectUserId: request.UserId,
+                    TenantId: request.TenantId,
+                    ProviderName: TProvider.ProviderName,
+                    FragmentKind: EmptyFragmentKind,
+                    EntryPathHash: HashEntryPath($"{TProvider.ProviderName}.empty"),
+                    SizeBytes: null,
+                    Timestamp: timeProvider.GetUtcNow()),
+                cancellationToken).ConfigureAwait(false);
         }
+    }
+
+    private static string HashEntryPath(string entryPath)
+    {
+        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(entryPath));
+        return Convert.ToHexStringLower(hash);
     }
 
     [LoggerMessage(Level = LogLevel.Information,

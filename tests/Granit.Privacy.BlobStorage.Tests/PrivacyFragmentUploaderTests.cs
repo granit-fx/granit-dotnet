@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using Granit.Domain.ValueObjects;
 using Granit.Events;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Audit;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.DataExport.Fragments;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,9 +14,11 @@ namespace Granit.Privacy.BlobStorage.Tests;
 public sealed class PrivacyFragmentUploaderTests
 {
     private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
+    private readonly IPrivacyExportAuditWriter _auditWriter = Substitute.For<IPrivacyExportAuditWriter>();
+    private readonly TimeProvider _timeProvider = TimeProvider.System;
 
     private PrivacyFragmentUploader CreateSut() =>
-        new(_eventBus, NullLogger<PrivacyFragmentUploader>.Instance);
+        new(_eventBus, _auditWriter, _timeProvider, NullLogger<PrivacyFragmentUploader>.Instance);
 
     [Fact]
     public async Task UploadAsync_ProviderYieldsNothing_PublishesEmptySentinel()

@@ -36946,6 +36946,24 @@
           "returnType": "Task"
         },
         {
+          "name": "WriteFragmentPreparedAsync",
+          "kind": "method",
+          "signature": "WriteFragmentPreparedAsync(PrivacyExportFragmentPreparedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteAssemblyStartedAsync",
+          "kind": "method",
+          "signature": "WriteAssemblyStartedAsync(PrivacyExportAssemblyStartedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteShardCompletedAsync",
+          "kind": "method",
+          "signature": "WriteShardCompletedAsync(PrivacyExportShardCompletedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
           "name": "WriteExportCompletedAsync",
           "kind": "method",
           "signature": "WriteExportCompletedAsync(PrivacyExportCompletedAudit data, CancellationToken cancellationToken)",
@@ -37157,7 +37175,7 @@
       "kind": "record",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/PrivacyExportAssemblyService.cs",
-      "line": 500,
+      "line": 579,
       "members": []
     },
     {
@@ -37223,7 +37241,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/PrivacyFragmentUploader.cs",
-      "line": 23,
+      "line": 26,
       "members": []
     },
     {
@@ -37479,6 +37497,24 @@
           "returnType": "Task"
         },
         {
+          "name": "WriteFragmentPreparedAsync",
+          "kind": "method",
+          "signature": "WriteFragmentPreparedAsync(PrivacyExportFragmentPreparedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteAssemblyStartedAsync",
+          "kind": "method",
+          "signature": "WriteAssemblyStartedAsync(PrivacyExportAssemblyStartedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteShardCompletedAsync",
+          "kind": "method",
+          "signature": "WriteShardCompletedAsync(PrivacyExportShardCompletedAudit data, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
           "name": "WriteExportCompletedAsync",
           "kind": "method",
           "signature": "WriteExportCompletedAsync(PrivacyExportCompletedAudit data, CancellationToken cancellationToken)",
@@ -37499,12 +37535,21 @@
       ]
     },
     {
+      "name": "PrivacyExportAssemblyStartedAudit",
+      "fqn": "Granit.Privacy.DataExport.Audit.PrivacyExportAssemblyStartedAudit",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
+      "line": 162,
+      "members": []
+    },
+    {
       "name": "PrivacyExportCompletedAudit",
       "fqn": "Granit.Privacy.DataExport.Audit.PrivacyExportCompletedAudit",
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
-      "line": 75,
+      "line": 88,
       "members": []
     },
     {
@@ -37513,7 +37558,16 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
-      "line": 119,
+      "line": 207,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportFragmentPreparedAudit",
+      "fqn": "Granit.Privacy.DataExport.Audit.PrivacyExportFragmentPreparedAudit",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
+      "line": 137,
       "members": []
     },
     {
@@ -37522,7 +37576,16 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
-      "line": 51,
+      "line": 64,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportShardCompletedAudit",
+      "fqn": "Granit.Privacy.DataExport.Audit.PrivacyExportShardCompletedAudit",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
+      "line": 187,
       "members": []
     },
     {
@@ -37531,7 +37594,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
-      "line": 98,
+      "line": 111,
       "members": []
     },
     {

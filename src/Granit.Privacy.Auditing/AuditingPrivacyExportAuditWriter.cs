@@ -47,6 +47,62 @@ public sealed class AuditingPrivacyExportAuditWriter(IAuditingWriter auditingWri
                 ])],
         }, cancellationToken);
 
+    public Task WriteFragmentPreparedAsync(PrivacyExportFragmentPreparedAudit data, CancellationToken cancellationToken) =>
+        auditingWriter.WriteAsync(new AuditEntry
+        {
+            Timestamp = data.Timestamp,
+            UserId = data.SubjectUserId.ToString("D", CultureInfo.InvariantCulture),
+            Category = AuditCategory.DataAccess,
+            TenantId = data.TenantId,
+            EntityChanges = [BuildLifecycleChange(
+                data.RequestId,
+                AuditChangeType.Modified,
+                [
+                    new AuditPropertyChange { PropertyName = "Phase", NewValue = "fragment-prepared" },
+                    new AuditPropertyChange { PropertyName = "ProviderName", NewValue = data.ProviderName },
+                    new AuditPropertyChange { PropertyName = "FragmentKind", NewValue = data.FragmentKind },
+                    new AuditPropertyChange { PropertyName = "EntryPathHash", NewValue = data.EntryPathHash },
+                    new AuditPropertyChange { PropertyName = "SizeBytes", NewValue = (data.SizeBytes ?? -1).ToString(CultureInfo.InvariantCulture) },
+                ])],
+        }, cancellationToken);
+
+    public Task WriteAssemblyStartedAsync(PrivacyExportAssemblyStartedAudit data, CancellationToken cancellationToken) =>
+        auditingWriter.WriteAsync(new AuditEntry
+        {
+            Timestamp = data.Timestamp,
+            UserId = data.SubjectUserId.ToString("D", CultureInfo.InvariantCulture),
+            Category = AuditCategory.DataAccess,
+            TenantId = data.TenantId,
+            EntityChanges = [BuildLifecycleChange(
+                data.RequestId,
+                AuditChangeType.Modified,
+                [
+                    new AuditPropertyChange { PropertyName = "Phase", NewValue = "assembly-started" },
+                    new AuditPropertyChange { PropertyName = "Regulation", NewValue = data.Regulation },
+                    new AuditPropertyChange { PropertyName = "ExpectedFragmentCount", NewValue = data.ExpectedFragmentCount.ToString(CultureInfo.InvariantCulture) },
+                    new AuditPropertyChange { PropertyName = "IsResumed", NewValue = data.IsResumed ? "true" : "false" },
+                ])],
+        }, cancellationToken);
+
+    public Task WriteShardCompletedAsync(PrivacyExportShardCompletedAudit data, CancellationToken cancellationToken) =>
+        auditingWriter.WriteAsync(new AuditEntry
+        {
+            Timestamp = data.Timestamp,
+            UserId = data.SubjectUserId.ToString("D", CultureInfo.InvariantCulture),
+            Category = AuditCategory.DataAccess,
+            TenantId = data.TenantId,
+            EntityChanges = [BuildLifecycleChange(
+                data.RequestId,
+                AuditChangeType.Modified,
+                [
+                    new AuditPropertyChange { PropertyName = "Phase", NewValue = "shard-completed" },
+                    new AuditPropertyChange { PropertyName = "ShardIndex", NewValue = data.ShardIndex.ToString(CultureInfo.InvariantCulture) },
+                    new AuditPropertyChange { PropertyName = "SizeBytes", NewValue = data.SizeBytes.ToString(CultureInfo.InvariantCulture) },
+                    new AuditPropertyChange { PropertyName = "Sha256", NewValue = data.Sha256Hex },
+                    new AuditPropertyChange { PropertyName = "DurationMs", NewValue = data.DurationMs.ToString(CultureInfo.InvariantCulture) },
+                ])],
+        }, cancellationToken);
+
     public Task WriteExportCompletedAsync(PrivacyExportCompletedAudit data, CancellationToken cancellationToken) =>
         auditingWriter.WriteAsync(new AuditEntry
         {

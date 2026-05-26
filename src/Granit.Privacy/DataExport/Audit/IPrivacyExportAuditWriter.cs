@@ -20,6 +20,19 @@ public interface IPrivacyExportAuditWriter
     /// <summary>Records that a data subject filed an export request.</summary>
     Task WriteExportRequestedAsync(PrivacyExportRequestedAudit data, CancellationToken cancellationToken);
 
+    /// <summary>Records that a provider prepared a fragment ready for assembly.</summary>
+    Task WriteFragmentPreparedAsync(PrivacyExportFragmentPreparedAudit data, CancellationToken cancellationToken);
+
+    /// <summary>Records the start of the archive-assembly job — emitted before the
+    /// first shard streams so an investigator can see "the assembler picked it up"
+    /// distinct from "the assembler finished it".</summary>
+    Task WriteAssemblyStartedAsync(PrivacyExportAssemblyStartedAudit data, CancellationToken cancellationToken);
+
+    /// <summary>Records that a single shard finished its multipart upload — emitted
+    /// after each shard's <c>CompleteMultipartUpload</c> so the audit trail captures
+    /// the per-shard sha256 + duration without waiting for the whole assembly to land.</summary>
+    Task WriteShardCompletedAsync(PrivacyExportShardCompletedAudit data, CancellationToken cancellationToken);
+
     /// <summary>Records that the archive assembly job persisted every shard plus the manifest.</summary>
     Task WriteExportCompletedAsync(PrivacyExportCompletedAudit data, CancellationToken cancellationToken);
 
@@ -104,6 +117,81 @@ public sealed record PrivacyExportShardDownloadedAudit(
     string? UserAgent,
     string? AuthMethod,
     string? CorrelationId,
+    DateTimeOffset Timestamp);
+
+/// <summary>
+/// Audit payload for a provider fragment that completed its upload step.
+/// </summary>
+/// <param name="RequestId">Saga / tracker correlation id.</param>
+/// <param name="SubjectUserId">Data subject the fragment belongs to.</param>
+/// <param name="TenantId">Tenant context.</param>
+/// <param name="ProviderName">Originating <c>IPrivacyDataProvider.ProviderName</c>.</param>
+/// <param name="FragmentKind">Fragment kind — <c>"staged"</c>, <c>"passthrough"</c>, or
+/// <c>"empty"</c> (sentinel for providers with no data).</param>
+/// <param name="EntryPathHash">SHA-256 hex digest of the entry path. The raw path
+/// can encode subject-visible filenames; the hash gives an investigator something
+/// to correlate by without leaking the original string into the audit row.</param>
+/// <param name="SizeBytes">Declared / measured payload size where known,
+/// <see langword="null"/> for empty-sentinel fragments.</param>
+/// <param name="Timestamp">When the fragment finished uploading (UTC).</param>
+public sealed record PrivacyExportFragmentPreparedAudit(
+    Guid RequestId,
+    Guid SubjectUserId,
+    Guid? TenantId,
+    string ProviderName,
+    string FragmentKind,
+    string EntryPathHash,
+    long? SizeBytes,
+    DateTimeOffset Timestamp);
+
+/// <summary>
+/// Audit payload for the moment the assembly background job picks the request up
+/// — distinct from <see cref="PrivacyExportRequestedAudit"/> (which records the
+/// HTTP request) and <see cref="PrivacyExportCompletedAudit"/> (which records the
+/// terminal state).
+/// </summary>
+/// <param name="RequestId">Saga / tracker correlation id.</param>
+/// <param name="SubjectUserId">Data subject.</param>
+/// <param name="TenantId">Tenant context.</param>
+/// <param name="Regulation">Regulation code.</param>
+/// <param name="ExpectedFragmentCount">Fragments the saga collected from providers —
+/// the assembler iterates over these.</param>
+/// <param name="IsResumed"><see langword="true"/> when the assembler picked up a
+/// prior crashed run via the checkpoint store.</param>
+/// <param name="Timestamp">Assembly start timestamp (UTC).</param>
+public sealed record PrivacyExportAssemblyStartedAudit(
+    Guid RequestId,
+    Guid SubjectUserId,
+    Guid? TenantId,
+    string Regulation,
+    int ExpectedFragmentCount,
+    bool IsResumed,
+    DateTimeOffset Timestamp);
+
+/// <summary>
+/// Audit payload for a single shard's multipart upload completion. Emitted as soon
+/// as <c>CompleteMultipartUpload</c> returns, before subsequent shards or the
+/// manifest, so the per-shard sha256 + duration is on the audit trail even if a
+/// later shard or the manifest write fails.
+/// </summary>
+/// <param name="RequestId">Saga / tracker correlation id.</param>
+/// <param name="SubjectUserId">Data subject.</param>
+/// <param name="TenantId">Tenant context.</param>
+/// <param name="ShardIndex">Zero-based shard index in write order.</param>
+/// <param name="SizeBytes">Total bytes the multipart upload committed.</param>
+/// <param name="Sha256Hex">Lowercase hex SHA-256 digest of the shard's bytes
+/// (matches the manifest's per-shard sha256).</param>
+/// <param name="DurationMs">Wall-clock time from the shard's open to its
+/// <c>CompleteMultipartUpload</c> return.</param>
+/// <param name="Timestamp">Completion timestamp (UTC).</param>
+public sealed record PrivacyExportShardCompletedAudit(
+    Guid RequestId,
+    Guid SubjectUserId,
+    Guid? TenantId,
+    int ShardIndex,
+    long SizeBytes,
+    string Sha256Hex,
+    long DurationMs,
     DateTimeOffset Timestamp);
 
 /// <summary>
