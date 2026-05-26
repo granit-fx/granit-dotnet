@@ -23,6 +23,8 @@ internal sealed class PrivacyDbContext(
 
     public DbSet<ExportRequestEntity> ExportRequests { get; set; } = null!;
 
+    public DbSet<ExportAssemblyCheckpointRow> ExportAssemblyCheckpoints { get; set; } = null!;
+
     public DbSet<DeletionRequestEntity> DeletionRequests { get; set; } = null!;
 
     protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
