@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <!-- Exclude from dotnet test in CI unit-test job (requires PostgreSQL Testcontainer). -->
+    <IsTestProject Condition="'$(SkipIntegrationTests)' == 'true'">false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Indexing\Granit.Indexing.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Indexing.EntityFrameworkCore\Granit.Indexing.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Indexing.Privacy\Granit.Indexing.Privacy.csproj" />
+  </ItemGroup>
+
+</Project>

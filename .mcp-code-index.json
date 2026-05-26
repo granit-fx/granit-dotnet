@@ -1160,6 +1160,22 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Indexing.EntityFrameworkCore",
+      "deps": [
+        "Granit.Indexing",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Indexing.Privacy",
+      "deps": [
+        "Granit.Indexing",
+        "Granit.Privacy"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Localization",
       "deps": [
         "Granit.Caching",
@@ -25737,6 +25753,115 @@
       "members": []
     },
     {
+      "name": "ModelBuilderExtensions",
+      "fqn": "Granit.Indexing.EntityFrameworkCore.Extensions.ModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Indexing.EntityFrameworkCore",
+      "file": "src/Granit.Indexing.EntityFrameworkCore/Extensions/ModelBuilderExtensions.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Indexing.EntityFrameworkCore.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Indexing.EntityFrameworkCore",
+      "file": "src/Granit.Indexing.EntityFrameworkCore/Extensions/ServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitIndexingEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitIndexingEntityFrameworkCore(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDbContext, params Type[] indexedKeyTypes)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIndexingEntityFrameworkCoreModule",
+      "fqn": "Granit.Indexing.EntityFrameworkCore.GranitIndexingEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Indexing.EntityFrameworkCore",
+      "file": "src/Granit.Indexing.EntityFrameworkCore/GranitIndexingEntityFrameworkCoreModule.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IndexedEntryRow",
+      "fqn": "Granit.Indexing.EntityFrameworkCore.IndexedEntryRow",
+      "kind": "class",
+      "project": "Granit.Indexing.EntityFrameworkCore",
+      "file": "src/Granit.Indexing.EntityFrameworkCore/IndexedEntryRow.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "Key",
+          "kind": "property",
+          "signature": "TKey Key",
+          "returnType": "TKey"
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "SearchVector",
+          "kind": "property",
+          "signature": "NpgsqlTsVector SearchVector",
+          "returnType": "NpgsqlTsVector"
+        }
+      ]
+    },
+    {
+      "name": "IndexingDbContext",
+      "fqn": "Granit.Indexing.EntityFrameworkCore.IndexingDbContext",
+      "kind": "class",
+      "project": "Granit.Indexing.EntityFrameworkCore",
+      "file": "src/Granit.Indexing.EntityFrameworkCore/IndexingDbContext.cs",
+      "line": 26,
+      "members": []
+    },
+    {
+      "name": "IndexingDbContextSchema",
+      "fqn": "Granit.Indexing.EntityFrameworkCore.IndexingDbContextSchema",
+      "kind": "record",
+      "project": "Granit.Indexing.EntityFrameworkCore",
+      "file": "src/Granit.Indexing.EntityFrameworkCore/IndexingDbContext.cs",
+      "line": 97,
+      "members": []
+    },
+    {
+      "name": "IndexingEntityFrameworkCoreOptions",
+      "fqn": "Granit.Indexing.EntityFrameworkCore.Options.IndexingEntityFrameworkCoreOptions",
+      "kind": "class",
+      "project": "Granit.Indexing.EntityFrameworkCore",
+      "file": "src/Granit.Indexing.EntityFrameworkCore/Options/IndexingEntityFrameworkCoreOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "DefaultDictionary",
+          "kind": "property",
+          "signature": "string DefaultDictionary",
+          "returnType": "string"
+        },
+        {
+          "name": "UseWebSearchSyntax",
+          "kind": "property",
+          "signature": "bool UseWebSearchSyntax",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
       "name": "EntryIndexedEvent",
       "fqn": "Granit.Indexing.Events.EntryIndexedEvent",
       "kind": "record",
@@ -25821,6 +25946,22 @@
           "kind": "method",
           "signature": "TagAsync(string content, ITagCandidateProvider candidates, int maxTags, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<string>>"
+        }
+      ]
+    },
+    {
+      "name": "IIndexedDataEraser",
+      "fqn": "Granit.Indexing.IIndexedDataEraser",
+      "kind": "interface",
+      "project": "Granit.Indexing",
+      "file": "src/Granit.Indexing/IIndexedDataEraser.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "EraseAsync",
+          "kind": "method",
+          "signature": "EraseAsync(Guid? tenantId, Guid dataSubjectId, CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } Task<int>"
         }
       ]
     },
@@ -26025,6 +26166,38 @@
           "kind": "property",
           "signature": "int MaxEmptyResultQueriesPerPrincipalPerMinute",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "GranitIndexingPrivacyModule",
+      "fqn": "Granit.Indexing.Privacy.GranitIndexingPrivacyModule",
+      "kind": "class",
+      "project": "Granit.Indexing.Privacy",
+      "file": "src/Granit.Indexing.Privacy/GranitIndexingPrivacyModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PersonalDataDeletionHandler",
+      "fqn": "Granit.Indexing.Privacy.PersonalDataDeletionHandler",
+      "kind": "class",
+      "project": "Granit.Indexing.Privacy",
+      "file": "src/Granit.Indexing.Privacy/PersonalDataDeletionHandler.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "Handle",
+          "kind": "method",
+          "signature": "Handle(PersonalDataDeletionRequestedEto @event, IEnumerable<IIndexedDataEraser> erasers, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },

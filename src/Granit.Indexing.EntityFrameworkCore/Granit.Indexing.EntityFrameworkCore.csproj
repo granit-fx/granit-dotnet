@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Indexing.EntityFrameworkCore</PackageId>
+    <Description>Default storage backend for Granit.Indexing: Postgres tsvector via EF Core. Provides IndexingDbContext, IndexedEntryRow, the EF indexer + search backend, a Postgres-scoped HasGeneratedTsVectorColumn extension, and a GDPR Art. 17 cascade handler.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Indexing.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Indexing.EntityFrameworkCore.Tests.Integration" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Indexing\Granit.Indexing.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

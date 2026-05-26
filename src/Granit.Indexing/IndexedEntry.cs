@@ -69,4 +69,18 @@ public sealed record IndexedEntry<TKey>
 
     /// <summary>Character count of <see cref="Content"/>, populated by the producer.</summary>
     public int CharCount { get; init; }
+
+    /// <summary>
+    /// Optional natural-person identifier the indexed body refers to. Persisted by
+    /// backends so the GDPR Art. 17 cascade handler can delete every row tied to a
+    /// subject in one statement. <c>null</c> when the resource is non-personal data
+    /// (system documents, public reference data).
+    /// </summary>
+    /// <remarks>
+    /// Producers populate this from
+    /// <see cref="IIndexedEntrySource{TKey}.GetDataSubjectIdAsync(TKey, CancellationToken)"/>
+    /// at build time. Not an ACL field — anyone with tenant access can still see the row
+    /// in search results; the subject id only drives erasure.
+    /// </remarks>
+    public Guid? DataSubjectId { get; init; }
 }

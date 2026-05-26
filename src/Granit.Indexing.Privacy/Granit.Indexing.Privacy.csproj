@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Indexing.Privacy</PackageId>
+    <Description>GDPR Art. 17 bridge for Granit.Indexing. Subscribes to PersonalDataDeletionRequestedEto and dispatches the cascade to every registered IIndexedDataEraser (backend-agnostic).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Indexing.Privacy.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Indexing\Granit.Indexing.csproj" />
+    <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
+  </ItemGroup>
+
+</Project>
