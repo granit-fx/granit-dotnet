@@ -1,13 +1,14 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using Granit.Privacy.Exceptions;
 
 namespace Granit.Privacy.DataExport.Sanitization;
 
 /// <summary>
 /// Validates and normalizes <see cref="Fragments.ExportFragment.EntryPath"/> values before
-/// they reach the ZIP archive. Closes <c>VULN-004</c> (zip-slip) — a malicious provider
-/// or compromised source data cannot inject a path that escapes the extraction directory
-/// on the recipient's machine.
+/// they reach the ZIP archive. Guards against zip-slip — a malicious provider or compromised
+/// source data cannot inject a path that escapes the extraction directory on the recipient's
+/// machine.
 /// </summary>
 /// <remarks>
 /// <para>

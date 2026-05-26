@@ -37457,7 +37457,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Sanitization/EntryPathSanitizer.cs",
-      "line": 41,
+      "line": 42,
       "members": [
         {
           "name": "Sanitize",
@@ -37466,15 +37466,6 @@
           "returnType": "string"
         }
       ]
-    },
-    {
-      "name": "InvalidExportEntryPathException",
-      "fqn": "Granit.Privacy.DataExport.Sanitization.InvalidExportEntryPathException",
-      "kind": "class",
-      "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataExport/Sanitization/InvalidExportEntryPathException.cs",
-      "line": 8,
-      "members": []
     },
     {
       "name": "EphemeralExportHmacSigner",
@@ -37982,6 +37973,15 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/GranitPrivacyEntityFrameworkCoreModule.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "InvalidExportEntryPathException",
+      "fqn": "Granit.Privacy.Exceptions.InvalidExportEntryPathException",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/Exceptions/InvalidExportEntryPathException.cs",
       "line": 10,
       "members": []
     },
