@@ -9,6 +9,8 @@
         "tests/Granit.AI.Endpoints.Tests",
         "tests/Granit.AI.EntityFrameworkCore.Tests",
         "tests/Granit.AI.Extraction.Tests",
+        "tests/Granit.Indexing.AI.Tests",
+        "tests/Granit.LanguageDetection.AI.Tests",
         "tests/Granit.AI.Ollama.Tests",
         "tests/Granit.AI.OpenAI.Tests",
         "tests/Granit.AI.Tests",

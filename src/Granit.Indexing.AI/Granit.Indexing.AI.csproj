@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Indexing.AI</PackageId>
+    <Description>AI-backed ISummarizer for Granit.Indexing. One-shot IChatClient call with structured output, instruction-isolation wrapping, optional PII redaction, and a per-tenant call-rate ceiling shared with the rest of the Granit.*.AI family. Opt-in.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Indexing.AI.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI.Extraction\Granit.AI.Extraction.csproj" />
+    <ProjectReference Include="..\Granit.Indexing\Granit.Indexing.csproj" />
+  </ItemGroup>
+
+</Project>

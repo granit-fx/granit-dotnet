@@ -198,8 +198,10 @@
     <Project Path="src/Granit.Imaging/Granit.Imaging.csproj" />
     <Project Path="src/Granit.Indexing.Elasticsearch/Granit.Indexing.Elasticsearch.csproj" />
     <Project Path="src/Granit.Indexing.EntityFrameworkCore/Granit.Indexing.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Indexing.AI/Granit.Indexing.AI.csproj" />
     <Project Path="src/Granit.Indexing.Privacy/Granit.Indexing.Privacy.csproj" />
     <Project Path="src/Granit.Indexing/Granit.Indexing.csproj" />
+    <Project Path="src/Granit.LanguageDetection.AI/Granit.LanguageDetection.AI.csproj" />
     <Project Path="src/Granit.LanguageDetection.Trigram/Granit.LanguageDetection.Trigram.csproj" />
     <Project Path="src/Granit.LanguageDetection/Granit.LanguageDetection.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.Hosting/Granit.Persistence.EntityFrameworkCore.Hosting.csproj" />
@@ -515,8 +517,10 @@
     <Project Path="tests/Granit.Indexing.EntityFrameworkCore.Tests.Integration/Granit.Indexing.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Indexing.EntityFrameworkCore.Tests/Granit.Indexing.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Indexing.Privacy.Tests/Granit.Indexing.Privacy.Tests.csproj" />
+    <Project Path="tests/Granit.Indexing.AI.Tests/Granit.Indexing.AI.Tests.csproj" />
     <Project Path="tests/Granit.Indexing.Tests/Granit.Indexing.Tests.csproj" />
     <Project Path="tests/Granit.LanguageDetection.Tests/Granit.LanguageDetection.Tests.csproj" />
+    <Project Path="tests/Granit.LanguageDetection.AI.Tests/Granit.LanguageDetection.AI.Tests.csproj" />
     <Project Path="tests/Granit.LanguageDetection.Trigram.Tests/Granit.LanguageDetection.Trigram.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Hosting.Tests/Granit.Persistence.EntityFrameworkCore.Hosting.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests.csproj" />
