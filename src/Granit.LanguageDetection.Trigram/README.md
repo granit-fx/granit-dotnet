@@ -18,6 +18,9 @@ Detection is deterministic — same input always yields the same answer. Suitabl
   Myanmar (3), Ethiopic (2), Hebrew (2).
 - 6 single-language script shortcuts: Greek (`el`), Bengali (`bn`), Thai (`th`),
   Hangul (`ko`), Hiragana/Katakana → Japanese (`ja`), Han → Chinese (`zh`).
+- Detected and asserted on the **15 Granit base cultures** (`en`, `fr`, `nl`, `de`,
+  `es`, `it`, `pt`, `zh`, `ja`, `pl`, `tr`, `ko`, `sv`, `cs`, `hi`) via the
+  `KnownSamples` theory in `Granit.LanguageDetection.Trigram.Tests`.
 
 The Franc dataset also bundles Tibetan and Canadian_Aboriginal multi-language
 scripts; their rank tables ship in `Resources/profiles.json` but `ScriptDetector`
