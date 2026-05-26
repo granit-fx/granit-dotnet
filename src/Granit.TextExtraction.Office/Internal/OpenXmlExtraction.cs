@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using Granit.TextExtraction.Options;
 
@@ -9,6 +10,17 @@ namespace Granit.TextExtraction.Office.Internal;
 /// </summary>
 internal static class OpenXmlExtraction
 {
+    /// <remarks>
+    /// We deliberately don't strip external relationships
+    /// (<c>&lt;Relationship Target="http://..."&gt;</c>) from the <c>.rels</c> parts
+    /// before opening: OpenXml's reader never dereferences an external relationship
+    /// target on its own, so a strip pass would cost CPU on every document for zero
+    /// behaviour change. The defence is structural instead — the architecture test
+    /// <c>Office_assembly_must_not_reference_HTTP_or_external_URI_APIs</c> enforces
+    /// that the Office assembly cannot reference <see cref="System.Net.Http.HttpClient"/> /
+    /// <c>System.Net.WebRequest</c> / <c>System.Net.Sockets</c> at build time, so even
+    /// a future code path that tried to follow an external target would fail to link.
+    /// </remarks>
     public static OpenSettings BuildOpenSettings(GranitTextExtractionOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -18,6 +30,14 @@ internal static class OpenXmlExtraction
             // honours this by throwing FileFormatException so the host stays bounded.
             MaxCharactersInPart = options.MaxExtractedCharLength,
             AutoSave = false,
+            // Pin Markup Compatibility processing to the Office 2010 schema set and
+            // walk only loaded parts. Future Office versions introducing new MC choice
+            // branches degrade gracefully (the parser ignores the unknown extension)
+            // instead of triggering OpenXml's "best effort" fallback — which has a
+            // history of opening attack surface for crafted alternate-content blocks.
+            MarkupCompatibilityProcessSettings = new MarkupCompatibilityProcessSettings(
+                MarkupCompatibilityProcessMode.ProcessLoadedPartsOnly,
+                FileFormatVersions.Office2010),
         };
     }
 

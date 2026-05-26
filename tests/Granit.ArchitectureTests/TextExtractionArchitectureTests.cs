@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Shouldly;
 using Xunit;
@@ -167,6 +168,91 @@ public sealed class TextExtractionArchitectureTests
             $"{projectName} must declare [DependsOn(... typeof(GranitTextExtractionModule) ...)] " +
             "on its module so the pipeline/options/metrics are registered when only this " +
             "provider is wired in.");
+    }
+
+    /// <summary>
+    /// <c>Granit.TextExtraction.Office</c> opens user-supplied OOXML packages with the
+    /// OpenXml SDK. Those packages can declare <c>&lt;Relationship Target="http://..."&gt;</c>
+    /// entries pointing at attacker-controlled URLs. The OpenXml reader does not
+    /// dereference them on its own, but a code path that wired in
+    /// <c>HttpClient</c> / <c>WebRequest</c> / <c>Socket</c> by mistake would turn the
+    /// extractor into an SSRF gadget.
+    /// </summary>
+    /// <remarks>
+    /// We anchor the invariant on a source scan: if a file in the Office package
+    /// references one of the forbidden APIs, the test fails. Strips line and block
+    /// comments first so xml-doc mentions don't trip the check — same pattern as the
+    /// VULN-300 <c>WithDefaultLoader</c> archi test in <c>Granit.Html.AngleSharp.Tests</c>.
+    /// </remarks>
+    [Fact]
+    public void Office_assembly_must_not_reference_HTTP_or_external_URI_APIs()
+    {
+        string officeDir = Path.Join(SrcRoot, "Granit.TextExtraction.Office");
+        Directory.Exists(officeDir).ShouldBeTrue($"Expected {officeDir} to exist.");
+
+        List<string> violations = [];
+
+        foreach (string csFile in Directory
+            .EnumerateFiles(officeDir, "*.cs", SearchOption.AllDirectories)
+            .Where(p => !p.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
+            .Where(p => !p.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.Ordinal)))
+        {
+            string code = StripCommentsAndStrings(File.ReadAllText(csFile));
+            string relativePath = Path.GetRelativePath(SrcRoot, csFile);
+
+            foreach (Regex forbidden in ForbiddenNetworkingApiRegexes)
+            {
+                Match match = forbidden.Match(code);
+                if (match.Success)
+                {
+                    violations.Add($"{relativePath}: {match.Value}");
+                }
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Granit.TextExtraction.Office must not reference HTTP / external-URI APIs " +
+            "(HttpClient, WebRequest, WebClient, System.Net.Sockets.*). " +
+            "OpenXml packages can declare external relationship targets — any networking " +
+            "API in this assembly is a latent SSRF path. " +
+            "If a code path genuinely needs networking, raise the requirement first; this " +
+            "invariant only flips intentionally. Violations: " + string.Join(" | ", violations));
+    }
+
+    private static readonly Regex[] ForbiddenNetworkingApiRegexes =
+    [
+        new(@"\busing\s+System\.Net\.Http\b", RegexOptions.Compiled),
+        new(@"\busing\s+System\.Net\.Sockets\b", RegexOptions.Compiled),
+        new(@"\busing\s+System\.Net\s*;", RegexOptions.Compiled),
+        new(@"\bSystem\.Net\.Http\.", RegexOptions.Compiled),
+        new(@"\bSystem\.Net\.Sockets\.", RegexOptions.Compiled),
+        new(@"\bSystem\.Net\.(WebRequest|WebClient)\b", RegexOptions.Compiled),
+        new(@"\bHttpClient\b", RegexOptions.Compiled),
+        new(@"\bWebRequest\b", RegexOptions.Compiled),
+        new(@"\bWebClient\b", RegexOptions.Compiled),
+    ];
+
+    private static readonly Regex LineCommentRegex =
+        new(@"//.*?$", RegexOptions.Multiline | RegexOptions.Compiled);
+
+    private static readonly Regex BlockCommentRegex =
+        new(@"/\*.*?\*/", RegexOptions.Singleline | RegexOptions.Compiled);
+
+    private static readonly Regex VerbatimStringRegex =
+        new(@"@""(?:""""|[^""])*""", RegexOptions.Compiled);
+
+    private static readonly Regex RegularStringRegex =
+        new(@"""(?:\\.|[^""\\])*""", RegexOptions.Compiled);
+
+    private static string StripCommentsAndStrings(string source)
+    {
+        // Comments first so a `// HttpClient is forbidden` xml-doc note doesn't trip
+        // the scan, then strings so `"HttpClient.cs"` literals don't either.
+        string s = BlockCommentRegex.Replace(source, string.Empty);
+        s = LineCommentRegex.Replace(s, string.Empty);
+        s = VerbatimStringRegex.Replace(s, "\"\"");
+        s = RegularStringRegex.Replace(s, "\"\"");
+        return s;
     }
 
     private static IEnumerable<string> EnumerateExtractorPackages()
