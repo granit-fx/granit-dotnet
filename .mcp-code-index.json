@@ -37080,7 +37080,7 @@
       "kind": "record",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/PrivacyExportAssemblyService.cs",
-      "line": 469,
+      "line": 486,
       "members": []
     },
     {
@@ -37386,6 +37386,15 @@
           "returnType": "Guid? TenantId { get; set; } public bool ReminderSent { get; set; } public Task"
         }
       ]
+    },
+    {
+      "name": "ExportArchiveAssembledEto",
+      "fqn": "Granit.Privacy.DataExport.Events.ExportArchiveAssembledEto",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Events/ExportArchiveAssembledEto.cs",
+      "line": 27,
+      "members": []
     },
     {
       "name": "ExportCompletedEto",
@@ -38847,7 +38856,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/Handlers/ExportCompletedNotificationHandler.cs",
-      "line": 15,
+      "line": 19,
       "members": [
         {
           "name": "HandleAsync",
@@ -39084,15 +39093,8 @@
       "kind": "record",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/PrivacyExportReadyNotificationType.cs",
-      "line": 44,
-      "members": [
-        {
-          "name": "ArchiveBlobReferenceDisplay",
-          "kind": "property",
-          "signature": "string ArchiveBlobReferenceDisplay",
-          "returnType": "string"
-        }
-      ]
+      "line": 45,
+      "members": []
     },
     {
       "name": "PrivacyExportReadyNotificationType",

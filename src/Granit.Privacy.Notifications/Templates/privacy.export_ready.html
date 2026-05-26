@@ -1,11 +1,24 @@
 <title>Your personal data export is ready</title>
 <p>Hi,</p>
 <p>Your personal data export, requested on <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} under regulation <code>{{ model.regulation }}</code>{{ end }}, is now ready for download.</p>
+{{ if model.shard_count > 1 }}
+<p>Your archive was split across <strong>{{ model.shard_count }} files</strong>. Download each one — they can be opened independently:</p>
+<ul style="padding-left: 18px;">
+  {{ for i in 0..(model.shard_count - 1) }}
+  <li style="margin: 6px 0;">
+    <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}/download/{{ i }}">Shard {{ i + 1 }} of {{ model.shard_count }}</a>
+  </li>
+  {{ end }}
+</ul>
+<p>You can also download the integrity manifest to verify each shard:</p>
+<p><a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}/download/manifest">Download manifest</a></p>
+{{ else }}
 <p>You can download your archive from your privacy dashboard:</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Download my archive</a>
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}/download/0" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Download my archive</a>
 </p>
-<p>The download link is time-limited for your security. If it expires, you can request a new one from the same page.</p>
+{{ end }}
+<p>For your security, each download link triggers a brief re-authentication. If you don't recognise this request, contact us immediately.</p>
 <p>Reference: <code>{{ model.request_id }}</code></p>
 {{ if privacy.dpo_email }}
 <p style="font-size: 13px; color: #4b5563;">Questions about your data? Contact our Data Protection Officer at <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>

@@ -1,13 +1,13 @@
-using Granit.Domain.ValueObjects;
 using Granit.Notifications;
 
 namespace Granit.Privacy.Notifications;
 
 /// <summary>
 /// Notification type for a personal data export that completed successfully —
-/// sent to the data subject after the export saga finished without timeouts.
-/// Carries the blob reference of the assembled archive so the email template can
-/// render a pre-signed download link.
+/// sent to the data subject after the archive assembly job persisted every shard.
+/// Carries the shard count so the email template can render one BFF download
+/// link per shard (no direct presigned URLs in the email body — every download
+/// stays under the step-up authentication gate).
 /// </summary>
 /// <remarks>
 /// Channel: Email only by default — the archive must reach the user as a transactional
@@ -35,22 +35,15 @@ public sealed class PrivacyExportReadyNotificationType
 /// Data payload for an export-ready notification.
 /// </summary>
 /// <param name="RequestId">Correlation id of the originating export request.</param>
-/// <param name="ArchiveBlobReferenceId">
-/// Logical blob reference of the assembled archive — the email template resolves
-/// this to a pre-signed download URL via the BlobStorage download endpoint.
-/// </param>
+/// <param name="ShardCount">Number of shard ZIPs the assembly job produced.
+/// Templates iterate <c>0..(ShardCount - 1)</c> to render one BFF download
+/// link per shard via <c>{{ app.base_url }}/privacy/exports/{{ model.request_id }}/download/{{ index }}</c>.</param>
 /// <param name="RequestedAt">When the data subject filed the request.</param>
-/// <param name="Regulation">Privacy regulation code the request was filed under (e.g. <c>EU_GDPR</c>).</param>
+/// <param name="Regulation">Privacy regulation code the request was filed under
+/// (e.g. <c>EU_GDPR</c>). Templates pick the localised display form (RGPD / DSGVO
+/// / RODO / GDPR) via the surrounding copy, not from this raw code.</param>
 public sealed record PrivacyExportReadyNotificationData(
     Guid RequestId,
-    BlobReference ArchiveBlobReferenceId,
+    int ShardCount,
     DateTimeOffset RequestedAt,
-    string Regulation)
-{
-    /// <summary>
-    /// String form of <see cref="ArchiveBlobReferenceId"/> exposed for Scriban templates.
-    /// Email templates render <c>{{ model.archive_blob_reference_display }}</c> to avoid
-    /// reaching through the value object's <c>.value</c> indirection in template syntax.
-    /// </summary>
-    public string ArchiveBlobReferenceDisplay => ArchiveBlobReferenceId.Value;
-}
+    string Regulation);

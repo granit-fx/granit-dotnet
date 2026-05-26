@@ -1,11 +1,24 @@
 <title>Votre export de données personnelles est prêt</title>
 <p>Bonjour,</p>
 <p>Votre export de données personnelles, demandé le <strong>{{ model.requested_at | date.to_string '%d %B %Y' }}</strong>{{ if model.regulation }} au titre de la réglementation <code>{{ model.regulation }}</code>{{ end }}, est désormais prêt à être téléchargé.</p>
+{{ if model.shard_count > 1 }}
+<p>Votre archive a été répartie sur <strong>{{ model.shard_count }} fichiers</strong>. Téléchargez chacun d'eux — ils peuvent être ouverts indépendamment :</p>
+<ul style="padding-left: 18px;">
+  {{ for i in 0..(model.shard_count - 1) }}
+  <li style="margin: 6px 0;">
+    <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}/download/{{ i }}">Fichier {{ i + 1 }} sur {{ model.shard_count }}</a>
+  </li>
+  {{ end }}
+</ul>
+<p>Vous pouvez aussi télécharger le manifeste d'intégrité pour vérifier chaque fichier :</p>
+<p><a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}/download/manifest">Télécharger le manifeste</a></p>
+{{ else }}
 <p>Vous pouvez télécharger votre archive depuis votre espace de confidentialité :</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Télécharger mon archive</a>
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}/download/0" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Télécharger mon archive</a>
 </p>
-<p>Le lien de téléchargement a une durée de validité limitée pour votre sécurité. S'il expire, vous pouvez en générer un nouveau depuis cette même page.</p>
+{{ end }}
+<p>Pour votre sécurité, chaque lien de téléchargement déclenche une brève ré-authentification. Si vous n'êtes pas à l'origine de cette demande, contactez-nous immédiatement.</p>
 <p>Référence : <code>{{ model.request_id }}</code></p>
 {{ if privacy.dpo_email }}
 <p style="font-size: 13px; color: #4b5563;">Une question sur vos données ? Contactez notre Délégué à la Protection des Données : <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>

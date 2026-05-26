@@ -6,6 +6,7 @@ using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Internal;
 using Granit.BlobStorage.Options;
 using Granit.Domain.ValueObjects;
+using Granit.Events;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.DataExport.Exceptions;
@@ -56,6 +57,7 @@ internal sealed partial class PrivacyExportAssemblyService(
     IExportContentSigner contentSigner,
     IExportAssemblyCheckpointStore checkpointStore,
     IExportRequestTrackerWriter trackerWriter,
+    IDistributedEventBus eventBus,
     IHttpClientFactory httpClientFactory,
     IOptions<GranitPrivacyOptions> options,
     TimeProvider timeProvider,
@@ -213,6 +215,21 @@ internal sealed partial class PrivacyExportAssemblyService(
                 finalState,
                 manifestBlobReference,
                 completion.MissingProviders,
+                cancellationToken).ConfigureAwait(false);
+
+            // The notification handler subscribes to this event (not the saga's
+            // ExportCompletedEto) so the download links it embeds can be trusted —
+            // the shards are committed before the email goes out.
+            await eventBus.PublishAsync(
+                new ExportArchiveAssembledEto(
+                    RequestId: completion.RequestId,
+                    UserId: completion.UserId,
+                    ManifestBlobReferenceId: manifestBlobReference,
+                    ShardCount: shards.Count,
+                    IsPartial: completion.IsPartial,
+                    Regulation: completion.Regulation,
+                    RequestedAt: completion.RequestedAt,
+                    TenantId: completion.TenantId),
                 cancellationToken).ConfigureAwait(false);
 
             await checkpointStore.ClearAsync(completion.RequestId, completion.TenantId, cancellationToken).ConfigureAwait(false);
