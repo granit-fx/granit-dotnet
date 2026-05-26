@@ -1,6 +1,7 @@
 {
   "culture": "fr-CA",
   "texts": {
+    "Granit:Validation:PrivacyExportTooManyScopes": "Trop de portées demandées dans un même export (limite : 64).",
     "PrivacyEndpoints:Workspace.Agreements": "Consentements",
     "PrivacyEndpoints:Workspace.Purposes": "Finalités",
     "PrivacyEndpoints:Workspace.Section": "Confidentialité"

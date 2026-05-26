@@ -1,6 +1,7 @@
 {
   "culture": "en",
   "texts": {
+    "Granit:Validation:PrivacyExportTooManyScopes": "Too many scopes requested in a single export. The limit is 64.",
     "Permission:Privacy.Agreements.Create": "Accept a legal agreement",
     "Permission:Privacy.Agreements.Read": "View legal documents and consent status",
     "Permission:Privacy.Deletion.Execute": "Request personal data deletion",

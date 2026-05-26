@@ -1,6 +1,7 @@
 {
   "culture": "nl",
   "texts": {
+    "Granit:Validation:PrivacyExportTooManyScopes": "Te veel scopes opgevraagd in één export. De limiet is 64.",
     "Permission:Privacy.Agreements.Create": "Een juridische overeenkomst accepteren",
     "Permission:Privacy.Agreements.Read": "Juridische documenten en toestemmingsstatus bekijken",
     "Permission:Privacy.Deletion.Execute": "Verwijdering van persoonsgegevens aanvragen",

@@ -1,6 +1,7 @@
 {
   "culture": "es",
   "texts": {
+    "Granit:Validation:PrivacyExportTooManyScopes": "Se han solicitado demasiados ámbitos en una sola exportación. El límite es 64.",
     "Permission:Privacy.Agreements.Create": "Aceptar un acuerdo legal",
     "Permission:Privacy.Agreements.Read": "Ver documentos legales y estado de consentimiento",
     "Permission:Privacy.Deletion.Execute": "Solicitar eliminación de datos personales",

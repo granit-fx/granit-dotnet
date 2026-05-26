@@ -1,6 +1,7 @@
 {
   "culture": "cs",
   "texts": {
+    "Granit:Validation:PrivacyExportTooManyScopes": "V jednom exportu bylo požádáno o příliš mnoho oborů (limit: 64).",
     "Permission:Privacy.Agreements.Create": "Přijmout právní smlouvu",
     "Permission:Privacy.Agreements.Read": "Zobrazit právní dokumenty a stav souhlasu",
     "Permission:Privacy.Deletion.Execute": "Požádat o smazání osobních údajů",

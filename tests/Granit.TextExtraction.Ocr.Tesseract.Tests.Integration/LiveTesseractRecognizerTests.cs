@@ -82,9 +82,12 @@ public sealed class LiveTesseractRecognizerTests
     private static byte[] RenderPngWithText(string text)
     {
         // Magick.NET (Apache-2.0, native deps bundled in the Q8-AnyCPU package) renders
-        // the caption to a PNG without requiring a system-font lookup — IM picks a built-in
-        // font, sized to fit. The output resolution is intentionally generous so Tesseract
-        // has clean glyph edges to work with.
+        // the caption to a PNG. We pin a font file path explicitly because the bundled
+        // libfreetype probes via fontconfig — on bare Ubuntu CI images without
+        // `fontconfig` + `fonts-dejavu-core` the probe returns `(null)` and IM throws
+        // MagickTypeErrorException. The CI integration shard installs both deps; the
+        // path resolution falls through to a known-good Linux location.
+        string fontPath = ResolveFontPath();
         MagickReadSettings settings = new()
         {
             Width = 600,
@@ -92,10 +95,30 @@ public sealed class LiveTesseractRecognizerTests
             BackgroundColor = MagickColors.White,
             FillColor = MagickColors.Black,
             FontPointsize = 64,
+            Font = fontPath,
         };
         using MagickImage image = new($"label:{text}", settings);
         image.BorderColor = MagickColors.White;
         image.Border(20);
         return image.ToByteArray(MagickFormat.Png);
+    }
+
+    private static string ResolveFontPath()
+    {
+        // Candidate list, ordered by what the CI integration shard installs first
+        // (`fonts-dejavu-core`). Other entries are fallbacks for developer machines.
+        string[] candidates =
+        [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/TTF/DejaVuSans.ttf",
+            "/usr/share/fonts/liberation/LiberationSans-Regular.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        ];
+        return Array.Find(candidates, File.Exists)
+            ?? throw new FileNotFoundException(
+                "No usable system font (DejaVu Sans / Liberation Sans) was found. " +
+                "Install fonts-dejavu-core on Debian/Ubuntu or set TESSDATA_PREFIX " +
+                "only on a machine that has a known TrueType font installed.");
     }
 }
