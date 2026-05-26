@@ -1,3 +1,4 @@
+using Granit.Events;
 using Granit.Indexing.Elasticsearch.Extensions;
 using Granit.Indexing.Extensions;
 using Granit.MultiTenancy;
@@ -142,6 +143,7 @@ public sealed class ElasticsearchBackendTests : IClassFixture<ElasticsearchFixtu
         services.AddLogging();
         services.AddMetrics();
         services.AddSingleton<ICurrentTenant>(new FixedTenant(tenantId));
+        services.AddSingleton<ILocalEventBus, NoopLocalEventBus>();
         services.AddGranitIndexing();
         services.AddGranitIndexingElasticsearch(
             configureClient: s => s.ServerCertificateValidationCallback((_, _, _, _) => true),
@@ -161,5 +163,11 @@ public sealed class ElasticsearchBackendTests : IClassFixture<ElasticsearchFixtu
         public Guid? Id { get; } = id;
         public string? Name => null;
         public IDisposable Change(Guid? id, string? name = null) => throw new NotSupportedException();
+    }
+
+    private sealed class NoopLocalEventBus : ILocalEventBus
+    {
+        public Task PublishAsync<TEvent>(TEvent localEvent, CancellationToken cancellationToken = default) where TEvent : class =>
+            Task.CompletedTask;
     }
 }
