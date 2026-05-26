@@ -1,4 +1,5 @@
 using Granit.Privacy.BlobStorage.DataExport;
+using Granit.Privacy.DataExport.Security;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -12,7 +13,11 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Registers the privacy-export services that bridge the scatter-gather saga to BlobStorage:
     /// <list type="bullet">
-    ///   <item><see cref="PrivacyFragmentUploader"/> — provider-side fragment upload helper.</item>
+    ///   <item><see cref="PrivacyFragmentUploader"/> — provider-side fragment publisher.</item>
+    ///   <item><see cref="StagedFragmentBuilder"/> (via <see cref="IStagedFragmentBuilder"/>) —
+    ///   provider helper that serialises DTOs, uploads to staging, and signs the integrity tag.</item>
+    ///   <item><see cref="IExportHmacSigner"/> default impl (<see cref="EphemeralExportHmacSigner"/>) —
+    ///   production hosts override with a Vault-backed signer.</item>
     ///   <item><see cref="ExportArchiveAssemblyHandler"/> — terminal ZIP assembler triggered by
     ///   <see cref="Granit.Privacy.DataExport.Events.ExportCompletedEto"/>. Auto-discovered by
     ///   Wolverine once registered with DI.</item>
@@ -20,8 +25,10 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddGranitPrivacyBlobStorage(this IServiceCollection services)
     {
-        services.AddHttpClient(PrivacyFragmentUploader.HttpClientName);
+        services.AddHttpClient(StagedFragmentBuilder.HttpClientName);
         services.AddHttpClient(ExportArchiveAssemblyHandler.HttpClientName);
+        services.TryAddSingleton<IExportHmacSigner, EphemeralExportHmacSigner>();
+        services.TryAddScoped<IStagedFragmentBuilder, StagedFragmentBuilder>();
         services.TryAddScoped<PrivacyFragmentUploader>();
         services.TryAddScoped<ExportArchiveAssemblyHandler>();
         return services;

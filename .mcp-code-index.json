@@ -5535,7 +5535,7 @@
       "kind": "class",
       "project": "Granit.Auditing.Privacy",
       "file": "src/Granit.Auditing.Privacy/DataExport/AuditingPrivacyDataProvider.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "ProviderName",
@@ -5544,22 +5544,22 @@
           "returnType": "string"
         },
         {
-          "name": "ContentType",
+          "name": "DisplayKey",
           "kind": "property",
-          "signature": "string ContentType",
+          "signature": "string DisplayKey",
           "returnType": "string"
         },
         {
-          "name": "FileName",
-          "kind": "method",
-          "signature": "FileName(Guid requestId)",
-          "returnType": "string"
+          "name": "FeatureName",
+          "kind": "property",
+          "signature": "string? FeatureName",
+          "returnType": "string?"
         },
         {
-          "name": "ExportAsync",
+          "name": "HasDataAsync",
           "kind": "method",
-          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
-          "returnType": "Task<ReadOnlyMemory<byte>>"
+          "signature": "HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<bool>"
         }
       ]
     },
@@ -22804,7 +22804,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Privacy",
       "file": "src/Granit.Identity.Federated.Privacy/DataExport/IdentityFederatedPrivacyDataProvider.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "ProviderName",
@@ -22813,22 +22813,22 @@
           "returnType": "string"
         },
         {
-          "name": "ContentType",
+          "name": "DisplayKey",
           "kind": "property",
-          "signature": "string ContentType",
+          "signature": "string DisplayKey",
           "returnType": "string"
         },
         {
-          "name": "FileName",
-          "kind": "method",
-          "signature": "FileName(Guid requestId)",
-          "returnType": "string"
+          "name": "FeatureName",
+          "kind": "property",
+          "signature": "string? FeatureName",
+          "returnType": "string?"
         },
         {
-          "name": "ExportAsync",
+          "name": "HasDataAsync",
           "kind": "method",
-          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
-          "returnType": "Task<ReadOnlyMemory<byte>>"
+          "signature": "HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<bool>"
         }
       ]
     },
@@ -24814,7 +24814,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Privacy",
       "file": "src/Granit.Identity.Local.Privacy/DataExport/IdentityLocalPrivacyDataProvider.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "ProviderName",
@@ -24823,22 +24823,22 @@
           "returnType": "string"
         },
         {
-          "name": "ContentType",
+          "name": "DisplayKey",
           "kind": "property",
-          "signature": "string ContentType",
+          "signature": "string DisplayKey",
           "returnType": "string"
         },
         {
-          "name": "FileName",
-          "kind": "method",
-          "signature": "FileName(Guid requestId)",
-          "returnType": "string"
+          "name": "FeatureName",
+          "kind": "property",
+          "signature": "string? FeatureName",
+          "returnType": "string?"
         },
         {
-          "name": "ExportAsync",
+          "name": "HasDataAsync",
           "kind": "method",
-          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
-          "returnType": "Task<ReadOnlyMemory<byte>>"
+          "signature": "HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<bool>"
         }
       ]
     },
@@ -31921,7 +31921,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Privacy",
       "file": "src/Granit.Notifications.Privacy/DataExport/NotificationsPrivacyDataProvider.cs",
-      "line": 20,
+      "line": 24,
       "members": [
         {
           "name": "ProviderName",
@@ -31930,22 +31930,22 @@
           "returnType": "string"
         },
         {
-          "name": "ContentType",
+          "name": "DisplayKey",
           "kind": "property",
-          "signature": "string ContentType",
+          "signature": "string DisplayKey",
           "returnType": "string"
         },
         {
-          "name": "FileName",
-          "kind": "method",
-          "signature": "FileName(Guid requestId)",
-          "returnType": "string"
+          "name": "FeatureName",
+          "kind": "property",
+          "signature": "string? FeatureName",
+          "returnType": "string?"
         },
         {
-          "name": "ExportAsync",
+          "name": "HasDataAsync",
           "kind": "method",
-          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
-          "returnType": "Task<ReadOnlyMemory<byte>>"
+          "signature": "HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<bool>"
         }
       ]
     },
@@ -36984,7 +36984,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/Extensions/ServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitPrivacyBlobStorage",
@@ -37011,12 +37011,30 @@
       ]
     },
     {
+      "name": "IStagedFragmentBuilder",
+      "fqn": "Granit.Privacy.BlobStorage.IStagedFragmentBuilder",
+      "kind": "interface",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/IStagedFragmentBuilder.cs",
+      "line": 19,
+      "members": []
+    },
+    {
       "name": "PrivacyFragmentUploader",
       "fqn": "Granit.Privacy.BlobStorage.PrivacyFragmentUploader",
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/PrivacyFragmentUploader.cs",
-      "line": 26,
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "StagedFragmentBuilder",
+      "fqn": "Granit.Privacy.BlobStorage.StagedFragmentBuilder",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/StagedFragmentBuilder.cs",
+      "line": 20,
       "members": []
     },
     {
@@ -37238,7 +37256,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Events/PersonalDataPreparedEto.cs",
-      "line": 12,
+      "line": 17,
       "members": []
     },
     {
@@ -37367,19 +37385,19 @@
       "kind": "interface",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/IPrivacyDataProvider.cs",
-      "line": 18,
+      "line": 25,
       "members": [
         {
-          "name": "FileName",
+          "name": "HasDataAsync",
           "kind": "method",
-          "signature": "FileName(Guid requestId)",
-          "returnType": "string ProviderName { get; } string ContentType { get; } string"
+          "signature": "HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "string ProviderName { get; } string DisplayKey { get; } string? FeatureName { get; } ValueTask<bool>"
         },
         {
           "name": "ExportAsync",
           "kind": "method",
-          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
-          "returnType": "Task<ReadOnlyMemory<byte>>"
+          "signature": "ExportAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "IAsyncEnumerable<ExportFragment>"
         }
       ]
     },
@@ -37448,7 +37466,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/ReceivedFragment.cs",
-      "line": 8,
+      "line": 22,
       "members": []
     },
     {

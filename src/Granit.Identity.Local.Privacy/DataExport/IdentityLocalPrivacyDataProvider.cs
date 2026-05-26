@@ -1,39 +1,54 @@
-using System.Text.Json;
+using System.Runtime.CompilerServices;
 using Granit.Identity.Local.Domain;
+using Granit.Privacy.BlobStorage;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Fragments;
 using Microsoft.AspNetCore.Identity;
 
 namespace Granit.Identity.Local.Privacy.DataExport;
 
 /// <summary>
-/// Privacy data provider for Granit.Identity.Local. Emits the authenticated user's profile
-/// (<see cref="LocalIdentity"/>) and the roles they belong to as a JSON fragment during the
-/// scatter-gather personal-data export saga (GDPR Art. 15/20).
+/// Privacy data provider for <c>Granit.Identity.Local</c>. Emits the authenticated user's
+/// profile (<see cref="LocalIdentity"/>) and the roles they belong to as a single staged
+/// JSON fragment during the scatter-gather personal-data export saga (GDPR Art. 15 / 20).
 /// </summary>
 /// <remarks>
-/// Returns <see cref="ReadOnlyMemory{T}.Empty"/> when the user has been hard-deleted or was
-/// never provisioned locally — the <c>PrivacyFragmentUploader</c> then emits the empty-fragment
-/// sentinel so the archive assembler records the provider in <c>manifest.EmptyProviders</c>
-/// rather than failing the whole export.
+/// Yields nothing when the user has been hard-deleted or was never provisioned locally —
+/// the uploader then emits the empty-fragment sentinel so the assembler records the
+/// provider in <c>EmptyProviders</c> rather than failing the export.
 /// </remarks>
-public sealed class IdentityLocalPrivacyDataProvider(UserManager<LocalIdentity> userManager) : IPrivacyDataProvider
+public sealed class IdentityLocalPrivacyDataProvider(
+    UserManager<LocalIdentity> userManager,
+    IStagedFragmentBuilder fragmentBuilder) : IPrivacyDataProvider
 {
     /// <inheritdoc />
     public static string ProviderName => "identity-local";
 
     /// <inheritdoc />
-    public static string ContentType => "application/json";
+    public static string DisplayKey => "Privacy.Scopes.IdentityLocal";
 
     /// <inheritdoc />
-    public static string FileName(Guid requestId) => "identity-local.json";
+    public static string? FeatureName => null;
 
     /// <inheritdoc />
-    public async Task<ReadOnlyMemory<byte>> ExportAsync(Guid userId, CancellationToken cancellationToken)
+    public async ValueTask<bool> HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)
     {
-        LocalIdentity? user = await userManager.FindByIdAsync(userId.ToString()).ConfigureAwait(false);
+        ArgumentNullException.ThrowIfNull(context);
+        LocalIdentity? user = await userManager.FindByIdAsync(context.SubjectUserId.ToString()).ConfigureAwait(false);
+        return user is not null;
+    }
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<ExportFragment> ExportAsync(
+        PrivacyExportContext context,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        LocalIdentity? user = await userManager.FindByIdAsync(context.SubjectUserId.ToString()).ConfigureAwait(false);
         if (user is null)
         {
-            return ReadOnlyMemory<byte>.Empty;
+            yield break;
         }
 
         IList<string> roles = await userManager.GetRolesAsync(user).ConfigureAwait(false);
@@ -41,7 +56,7 @@ public sealed class IdentityLocalPrivacyDataProvider(UserManager<LocalIdentity> 
         // CreatedBy / ModifiedBy intentionally omitted — those columns store administrator
         // user identifiers, which are third-party personal data and would expose admin
         // identities to the data subject (GDPR Art. 5(1)(c) — data minimisation).
-        IdentityLocalExportResponse dto = new(
+        var dto = new IdentityLocalExportResponse(
             Id: user.Id,
             UserName: user.UserName,
             Email: user.Email,
@@ -62,13 +77,10 @@ public sealed class IdentityLocalPrivacyDataProvider(UserManager<LocalIdentity> 
             CustomAttributesJson: user.CustomAttributesJson,
             Roles: roles);
 
-        return JsonSerializer.SerializeToUtf8Bytes(dto, ExportJsonOptions);
+        yield return await fragmentBuilder
+            .BuildJsonAsync(context, ProviderName, "identity-local.json", dto, cancellationToken)
+            .ConfigureAwait(false);
     }
-
-    private static readonly JsonSerializerOptions ExportJsonOptions = new(JsonSerializerDefaults.Web)
-    {
-        WriteIndented = true,
-    };
 }
 
 /// <summary>

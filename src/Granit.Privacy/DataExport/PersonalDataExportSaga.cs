@@ -110,11 +110,22 @@ public sealed class PersonalDataExportSaga : Saga
     /// </summary>
     public ExportCompletedEto? Handle(PersonalDataPreparedEto @event, PrivacyMetrics metrics)
     {
-        ReceivedFragments.Add(new ReceivedFragment(@event.ProviderName, @event.BlobReferenceId, @event.ContentType));
+        ReceivedFragments.Add(new ReceivedFragment(
+            @event.ProviderName,
+            @event.FragmentKind,
+            @event.SourceContainer,
+            @event.BlobReferenceId,
+            @event.EntryPath,
+            @event.ContentType,
+            @event.IntegrityTag));
         bool expected = PendingProviders.Remove(@event.ProviderName);
         metrics.RecordFragmentReceived(TenantId, expected ? @event.ProviderName : "unknown", Regulation);
 
-        if (ReceivedFragments.Count < ExpectedCount)
+        // Multi-fragment providers (Documents, attachments) emit one Prepared event per
+        // fragment but only count once against ExpectedCount via PendingProviders.Remove.
+        // We must wait until every expected provider has stopped contributing — which we
+        // approximate by waiting until PendingProviders is drained.
+        if (PendingProviders.Count > 0)
         {
             return null;
         }

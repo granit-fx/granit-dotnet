@@ -1,39 +1,58 @@
-using System.Text.Json;
+using System.Runtime.CompilerServices;
 using Granit.Identity.Federated.Domain;
 using Granit.MultiTenancy;
+using Granit.Privacy.BlobStorage;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Fragments;
 
 namespace Granit.Identity.Federated.Privacy.DataExport;
 
 /// <summary>
 /// Privacy data provider for <c>Granit.Identity.Federated</c>. Exports the user's local
-/// federated cache entry (profile mirror + sync metadata) as a JSON fragment during the
-/// scatter-gather export saga (GDPR Art. 15).
+/// federated cache entry (profile mirror + sync metadata) as a single staged JSON fragment
+/// during the scatter-gather export saga (GDPR Art. 15 / 20).
 /// </summary>
 /// <remarks>
 /// Federated providers (Keycloak, Entra ID, Cognito, Google Cloud) typically emit a
 /// GUID-format <c>sub</c> claim — we round-trip the supplied user id as the string
 /// representation to match <see cref="FederatedIdentity.ExternalUserId"/>. When the user is
-/// not cached locally (e.g. they authenticated once and never exercised a feature that
-/// populated the cache), the provider returns <see cref="ReadOnlyMemory{T}.Empty"/>.
+/// not cached locally (authenticated once and never exercised a feature that populated the
+/// cache), the provider yields nothing.
 /// </remarks>
 public sealed class IdentityFederatedPrivacyDataProvider(
     IFederatedUserCacheReader cacheReader,
-    ICurrentTenant currentTenant) : IPrivacyDataProvider
+    ICurrentTenant currentTenant,
+    IStagedFragmentBuilder fragmentBuilder) : IPrivacyDataProvider
 {
     /// <inheritdoc />
     public static string ProviderName => "identity-federated";
 
     /// <inheritdoc />
-    public static string ContentType => "application/json";
+    public static string DisplayKey => "Privacy.Scopes.IdentityFederated";
 
     /// <inheritdoc />
-    public static string FileName(Guid requestId) => "identity-federated.json";
+    public static string? FeatureName => null;
 
     /// <inheritdoc />
-    public async Task<ReadOnlyMemory<byte>> ExportAsync(Guid userId, CancellationToken cancellationToken)
+    public async ValueTask<bool> HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)
     {
-        string externalUserId = userId.ToString();
+        ArgumentNullException.ThrowIfNull(context);
+        string externalUserId = context.SubjectUserId.ToString();
+        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+        FederatedIdentity? entry = await cacheReader
+            .FindByExternalIdAsync(externalUserId, tenantId, cancellationToken)
+            .ConfigureAwait(false);
+        return entry is not null;
+    }
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<ExportFragment> ExportAsync(
+        PrivacyExportContext context,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        string externalUserId = context.SubjectUserId.ToString();
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
 
         FederatedIdentity? entry = await cacheReader
@@ -42,10 +61,10 @@ public sealed class IdentityFederatedPrivacyDataProvider(
 
         if (entry is null)
         {
-            return ReadOnlyMemory<byte>.Empty;
+            yield break;
         }
 
-        IdentityFederatedExportResponse dto = new(
+        var dto = new IdentityFederatedExportResponse(
             CacheEntryId: entry.Id,
             ExternalUserId: entry.ExternalUserId,
             Username: entry.Username,
@@ -59,13 +78,10 @@ public sealed class IdentityFederatedPrivacyDataProvider(
             ModifiedAt: entry.ModifiedAt,
             MetadataJson: entry.MetadataJson);
 
-        return JsonSerializer.SerializeToUtf8Bytes(dto, ExportJsonOptions);
+        yield return await fragmentBuilder
+            .BuildJsonAsync(context, ProviderName, "identity-federated.json", dto, cancellationToken)
+            .ConfigureAwait(false);
     }
-
-    private static readonly JsonSerializerOptions ExportJsonOptions = new(JsonSerializerDefaults.Web)
-    {
-        WriteIndented = true,
-    };
 }
 
 internal sealed record IdentityFederatedExportResponse(

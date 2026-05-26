@@ -1,27 +1,32 @@
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
+using Granit.Privacy.BlobStorage;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.DataExport.Fragments;
 using Granit.QueryEngine;
 
 namespace Granit.Notifications.Privacy.DataExport;
 
 /// <summary>
 /// Privacy data provider for Granit.Notifications. Exports the user's in-app inbox,
-/// notification preferences, and topic/entity subscriptions as a single JSON fragment.
+/// notification preferences, and topic/entity subscriptions as a single staged JSON
+/// fragment.
 /// </summary>
 /// <remarks>
 /// The inbox is paged via <see cref="IUserNotificationReader.GetListAsync"/> up to
 /// <see cref="NotificationsExportLimit"/>. Exceeding it flags the payload as
-/// <c>truncated</c>. Preferences and subscriptions are fetched in full — these
-/// collections are bounded by registered notification types/topics and stay small.
+/// <c>truncated</c>. Preferences and subscriptions are fetched in full — these collections
+/// are bounded by registered notification types/topics and stay small.
 /// </remarks>
 public sealed class NotificationsPrivacyDataProvider(
     IUserNotificationReader notificationReader,
     INotificationPreferenceReader preferenceReader,
     INotificationSubscriptionReader subscriptionReader,
-    ICurrentTenant currentTenant) : IPrivacyDataProvider
+    ICurrentTenant currentTenant,
+    IStagedFragmentBuilder fragmentBuilder) : IPrivacyDataProvider
 {
     /// <summary>Maximum inbox items exported for a single user.</summary>
     public const int NotificationsExportLimit = 5_000;
@@ -30,15 +35,46 @@ public sealed class NotificationsPrivacyDataProvider(
     public static string ProviderName => "notifications";
 
     /// <inheritdoc />
-    public static string ContentType => "application/json";
+    public static string DisplayKey => "Privacy.Scopes.Notifications";
 
     /// <inheritdoc />
-    public static string FileName(Guid requestId) => "notifications.json";
+    public static string? FeatureName => null;
 
     /// <inheritdoc />
-    public async Task<ReadOnlyMemory<byte>> ExportAsync(Guid userId, CancellationToken cancellationToken)
+    public async ValueTask<bool> HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)
     {
-        string recipientUserId = userId.ToString();
+        ArgumentNullException.ThrowIfNull(context);
+        string recipientUserId = context.SubjectUserId.ToString();
+        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+
+        PagedResult<UserNotification> firstPage = await notificationReader
+            .GetListAsync(recipientUserId, tenantId, page: 1, pageSize: 1, cancellationToken)
+            .ConfigureAwait(false);
+        if (firstPage.Items.Count > 0)
+        {
+            return true;
+        }
+
+        IReadOnlyList<NotificationPreference> preferences = await preferenceReader
+            .GetListAsync(recipientUserId, tenantId, cancellationToken).ConfigureAwait(false);
+        if (preferences.Count > 0)
+        {
+            return true;
+        }
+
+        IReadOnlyList<NotificationSubscription> subscriptions = await subscriptionReader
+            .GetUserSubscriptionsAsync(recipientUserId, tenantId, cancellationToken).ConfigureAwait(false);
+        return subscriptions.Count > 0;
+    }
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<ExportFragment> ExportAsync(
+        PrivacyExportContext context,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        string recipientUserId = context.SubjectUserId.ToString();
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
 
         List<UserNotification> inbox = [];
@@ -77,11 +113,11 @@ public sealed class NotificationsPrivacyDataProvider(
 
         if (inbox.Count == 0 && preferences.Count == 0 && subscriptions.Count == 0)
         {
-            return ReadOnlyMemory<byte>.Empty;
+            yield break;
         }
 
-        NotificationsExportDto dto = new(
-            UserId: userId,
+        var dto = new NotificationsExportDto(
+            UserId: context.SubjectUserId,
             ExportedInboxItems: inbox.Count,
             InboxTruncated: truncated,
             InboxLimit: NotificationsExportLimit,
@@ -91,7 +127,9 @@ public sealed class NotificationsPrivacyDataProvider(
             Subscriptions: subscriptions.Select(s => new NotificationsSubscriptionDto(
                 s.Id, s.NotificationTypeName, s.EntityType, s.EntityId, s.CreatedAt)).ToList());
 
-        return JsonSerializer.SerializeToUtf8Bytes(dto, ExportJsonOptions);
+        yield return await fragmentBuilder
+            .BuildJsonAsync(context, ProviderName, "notifications.json", dto, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     private static NotificationsInboxDto Map(UserNotification notification) =>
@@ -105,11 +143,6 @@ public sealed class NotificationsPrivacyDataProvider(
             notification.RelatedEntityType,
             notification.RelatedEntityId,
             notification.Data);
-
-    private static readonly JsonSerializerOptions ExportJsonOptions = new(JsonSerializerDefaults.Web)
-    {
-        WriteIndented = true,
-    };
 }
 
 internal sealed record NotificationsExportDto(

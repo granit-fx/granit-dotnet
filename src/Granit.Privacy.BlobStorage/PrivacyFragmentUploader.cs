@@ -1,39 +1,40 @@
-using System.Net.Http.Headers;
-using Granit.BlobStorage;
+using Granit.Domain.ValueObjects;
 using Granit.Events;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
+using Granit.Privacy.DataExport.Fragments;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Privacy.BlobStorage;
 
 /// <summary>
-/// Reusable utility that drives the scatter-gather provider-side upload:
-/// <list type="number">
-///   <item>Asks the provider for its bytes.</item>
-///   <item>If empty, publishes a <see cref="PersonalDataPreparedEto"/> with the
-///   <see cref="PrivacyExportContainerNames.EmptyFragmentPrefix"/> sentinel and returns —
-///   no blob is created for empty providers.</item>
-///   <item>Otherwise runs the presigned upload dance
-///   (<see cref="IBlobStorage.InitiateUploadAsync"/> → HTTP PUT → <see cref="IBlobStorage.ConfirmUploadAsync"/>)
-///   and publishes a <see cref="PersonalDataPreparedEto"/> carrying the confirmed blob id.</item>
-/// </list>
+/// Iterates the <see cref="ExportFragment"/> stream yielded by an
+/// <see cref="IPrivacyDataProvider"/> and publishes one
+/// <see cref="PersonalDataPreparedEto"/> per fragment. Empty providers emit a single
+/// sentinel event so the saga can decrement its pending-providers set without leaving an
+/// orphan entry in the manifest.
 /// </summary>
 /// <remarks>
-/// Every provider-side Wolverine handler forwards to <see cref="UploadAsync"/>. Handlers stay
-/// one-liners and the boilerplate lives here, where it can be unit-tested in isolation.
+/// Provider-side Wolverine handlers stay one-liners — all the iteration / sentinel logic
+/// lives here, where it can be unit-tested in isolation. The actual staging upload (for
+/// <see cref="StagedExportFragment"/>) and HMAC signing happen inside the provider via
+/// <see cref="IStagedFragmentBuilder"/> before the fragment reaches the uploader.
 /// </remarks>
 public sealed partial class PrivacyFragmentUploader(
-    IBlobStorage blobStorage,
-    IHttpClientFactory httpClientFactory,
     IDistributedEventBus eventBus,
     ILogger<PrivacyFragmentUploader> logger)
 {
-    /// <summary>Named <see cref="HttpClient"/> used to PUT fragment bytes to the presigned URL.</summary>
-    public const string HttpClientName = "Granit.Privacy.FragmentUpload";
+    /// <summary>FragmentKind sentinel value for providers with no data for the subject.</summary>
+    public const string EmptyFragmentKind = "empty";
+
+    /// <summary>FragmentKind value for staged fragments (bytes already in staging container).</summary>
+    public const string StagedFragmentKind = "staged";
+
+    /// <summary>FragmentKind value for pass-through fragments (source blob, single-transit).</summary>
+    public const string PassThroughFragmentKind = "passthrough";
 
     /// <summary>
-    /// Executes the upload-and-publish flow for a single provider.
+    /// Iterates the provider's fragment stream and publishes the corresponding events.
     /// </summary>
     public async Task UploadAsync<TProvider>(
         PersonalDataRequestedEto request,
@@ -44,71 +45,68 @@ public sealed partial class PrivacyFragmentUploader(
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(provider);
 
-        ReadOnlyMemory<byte> payload = await provider
-            .ExportAsync(request.UserId, cancellationToken)
-            .ConfigureAwait(false);
+        var context = new PrivacyExportContext(
+            RequestId: request.RequestId,
+            SubjectUserId: request.UserId,
+            CallerUserId: request.UserId,
+            TenantId: null,
+            Regulation: request.Regulation);
 
-        if (payload.IsEmpty)
+        int published = 0;
+        await foreach (ExportFragment fragment in provider
+            .ExportAsync(context, cancellationToken)
+            .ConfigureAwait(false))
         {
-            LogEmptyFragment(logger, TProvider.ProviderName, request.UserId, request.RequestId);
+            (string kind, string container, BlobReference blob) = fragment switch
+            {
+                StagedExportFragment staged => (StagedFragmentKind, PrivacyExportContainerNames.FragmentContainer, staged.StagedBlob),
+                PassThroughExportFragment pt => (PassThroughFragmentKind, ResolveContainer(pt.SourceBlob), pt.SourceBlob),
+                _ => throw new InvalidOperationException($"Unknown fragment kind: {fragment.GetType().Name}"),
+            };
 
             await eventBus.PublishAsync(
                 new PersonalDataPreparedEto(
-                    request.RequestId,
-                    TProvider.ProviderName,
-                    $"{PrivacyExportContainerNames.EmptyFragmentPrefix}{request.RequestId}",
-                    TProvider.ContentType),
+                    RequestId: request.RequestId,
+                    ProviderName: TProvider.ProviderName,
+                    FragmentKind: kind,
+                    SourceContainer: container,
+                    BlobReferenceId: blob,
+                    EntryPath: fragment.EntryPath,
+                    ContentType: fragment.ContentType,
+                    IntegrityTag: fragment.IntegrityTag),
                 cancellationToken).ConfigureAwait(false);
 
-            return;
+            LogFragmentPrepared(logger, TProvider.ProviderName, request.UserId, request.RequestId, fragment.EntryPath, kind);
+            published++;
         }
 
-        PresignedUploadTicket ticket = await blobStorage.InitiateUploadAsync(
-            PrivacyExportContainerNames.FragmentContainer,
-            new BlobUploadRequest(
-                FileName: TProvider.FileName(request.RequestId),
-                ContentType: TProvider.ContentType,
-                MaxAllowedBytes: payload.Length),
-            cancellationToken).ConfigureAwait(false);
-
-        HttpClient httpClient = httpClientFactory.CreateClient(HttpClientName);
-        using ByteArrayContent content = new(payload.ToArray());
-        content.Headers.ContentType = new MediaTypeHeaderValue(TProvider.ContentType);
-        foreach ((string key, string value) in ticket.RequiredHeaders)
+        if (published == 0)
         {
-            content.Headers.TryAddWithoutValidation(key, value);
+            LogEmptyFragment(logger, TProvider.ProviderName, request.UserId, request.RequestId);
+            await eventBus.PublishAsync(
+                new PersonalDataPreparedEto(
+                    RequestId: request.RequestId,
+                    ProviderName: TProvider.ProviderName,
+                    FragmentKind: EmptyFragmentKind,
+                    SourceContainer: PrivacyExportContainerNames.FragmentContainer,
+                    BlobReferenceId: BlobReference.Create($"{PrivacyExportContainerNames.EmptyFragmentPrefix}{request.RequestId}"),
+                    EntryPath: $"{TProvider.ProviderName}.empty",
+                    ContentType: "application/octet-stream",
+                    IntegrityTag: string.Empty),
+                cancellationToken).ConfigureAwait(false);
         }
-
-        using HttpRequestMessage httpRequest = new(new HttpMethod(ticket.HttpMethod), ticket.UploadUrl)
-        {
-            Content = content,
-        };
-        using HttpResponseMessage response = await httpClient
-            .SendAsync(httpRequest, cancellationToken)
-            .ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
-
-        await blobStorage.ConfirmUploadAsync(
-            PrivacyExportContainerNames.FragmentContainer,
-            ticket.BlobId,
-            cancellationToken).ConfigureAwait(false);
-
-        LogFragmentUploaded(logger, TProvider.ProviderName, request.UserId, request.RequestId, ticket.BlobId, payload.Length);
-
-        await eventBus.PublishAsync(
-            new PersonalDataPreparedEto(
-                request.RequestId,
-                TProvider.ProviderName,
-                ticket.BlobId.ToString(),
-                TProvider.ContentType),
-            cancellationToken).ConfigureAwait(false);
     }
+
+    // For PR-1b the only known passthrough source is the staging container. Documents
+    // (granit-business) will populate the real container name when its provider lands.
+    private static string ResolveContainer(BlobReference blob) =>
+        PrivacyExportContainerNames.FragmentContainer;
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Privacy export: provider {Provider} has no data for user {UserId} (request {RequestId}); emitting empty sentinel")]
     private static partial void LogEmptyFragment(ILogger logger, string provider, Guid userId, Guid requestId);
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Privacy export: provider {Provider} uploaded {Bytes} bytes for user {UserId} (request {RequestId}), blob {BlobId}")]
-    private static partial void LogFragmentUploaded(ILogger logger, string provider, Guid userId, Guid requestId, Guid blobId, int bytes);
+        Message = "Privacy export: provider {Provider} yielded fragment {EntryPath} ({Kind}) for user {UserId} (request {RequestId})")]
+    private static partial void LogFragmentPrepared(ILogger logger, string provider, Guid userId, Guid requestId, string entryPath, string kind);
 }

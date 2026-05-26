@@ -88,8 +88,7 @@ public sealed partial class ExportArchiveAssemblyHandler(
                 {
                     foreach (ReceivedFragment fragment in @event.Fragments)
                     {
-                        if (fragment.BlobReferenceId.Value.StartsWith(
-                            PrivacyExportContainerNames.EmptyFragmentPrefix, StringComparison.Ordinal))
+                        if (string.Equals(fragment.FragmentKind, "empty", StringComparison.Ordinal))
                         {
                             emptyProviders.Add(fragment.ProviderName);
                             continue;
@@ -101,9 +100,14 @@ public sealed partial class ExportArchiveAssemblyHandler(
                             continue;
                         }
 
-                        string entryName = await ResolveEntryNameAsync(blobId, fragment, cancellationToken).ConfigureAwait(false);
+                        // PR-1b: HMAC verification of fragment.IntegrityTag lands in P6.3 with
+                        // the multipart upload + sharding migration. Capability tag is signed
+                        // by the staging builder today; the verifier just isn't wired yet.
+                        string entryName = string.IsNullOrEmpty(fragment.EntryPath)
+                            ? await ResolveEntryNameAsync(blobId, fragment, cancellationToken).ConfigureAwait(false)
+                            : fragment.EntryPath;
                         await CopyFragmentToZipAsync(
-                            zip, entryName, blobId, downloadTtl, httpClient, cancellationToken).ConfigureAwait(false);
+                            zip, entryName, fragment.SourceContainer, blobId, downloadTtl, httpClient, cancellationToken).ConfigureAwait(false);
 
                         manifestFragments.Add(new ExportManifestFragment(
                             fragment.ProviderName, entryName, fragment.ContentType, fragment.BlobReferenceId));
@@ -173,13 +177,20 @@ public sealed partial class ExportArchiveAssemblyHandler(
     private async Task CopyFragmentToZipAsync(
         ZipArchive zip,
         string entryName,
+        string sourceContainer,
         Guid blobId,
         TimeSpan downloadTtl,
         HttpClient httpClient,
         CancellationToken cancellationToken)
     {
+        // PassThrough fragments carry the source-blob container directly; staged fragments
+        // resolve to the privacy staging container.
+        string container = string.IsNullOrEmpty(sourceContainer)
+            ? PrivacyExportContainerNames.FragmentContainer
+            : sourceContainer;
+
         PresignedDownloadUrl downloadUrl = await blobStorage.CreateDownloadUrlAsync(
-            PrivacyExportContainerNames.FragmentContainer,
+            container,
             blobId,
             new DownloadUrlOptions(Expiry: downloadTtl),
             cancellationToken).ConfigureAwait(false);
