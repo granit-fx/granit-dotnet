@@ -249,6 +249,7 @@
     <Project Path="src/Granit.Http.Cookies/Granit.Http.Cookies.csproj" />
     <Project Path="src/Granit.Privacy.AI/Granit.Privacy.AI.csproj" />
     <Project Path="src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.Privacy.BackgroundJobs.Wolverine/Granit.Privacy.BackgroundJobs.Wolverine.csproj" />
     <Project Path="src/Granit.Privacy.BlobStorage/Granit.Privacy.BlobStorage.csproj" />
     <Project Path="src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj" />
     <Project Path="src/Granit.Privacy.EntityFrameworkCore/Granit.Privacy.EntityFrameworkCore.csproj" />
@@ -573,6 +574,7 @@
     <Project Path="tests/Granit.Http.Cookies.Tests/Granit.Http.Cookies.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.AI.Tests/Granit.Privacy.AI.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.BackgroundJobs.Tests/Granit.Privacy.BackgroundJobs.Tests.csproj" />
+    <Project Path="tests/Granit.Privacy.BackgroundJobs.Wolverine.Tests/Granit.Privacy.BackgroundJobs.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.BlobStorage.Tests/Granit.Privacy.BlobStorage.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Endpoints.Tests/Granit.Privacy.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.EntityFrameworkCore.Tests/Granit.Privacy.EntityFrameworkCore.Tests.csproj" />
@@ -610,6 +612,7 @@
     <Project Path="tests/Granit.Notifications.Wolverine.Tests/Granit.Notifications.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
   </Folder>
+  <Folder Name="/tests/" />
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.Anthropic.Tests/Granit.AI.Anthropic.Tests.csproj" />
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />

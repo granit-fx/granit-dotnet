@@ -8,6 +8,7 @@ using Granit.BlobStorage.Options;
 using Granit.Domain.ValueObjects;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
+using Granit.Privacy.DataExport.Exceptions;
 using Granit.Privacy.DataExport.Security;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Options;
@@ -217,8 +218,32 @@ internal sealed partial class PrivacyExportAssemblyService(
                 tenantId: completion.TenantId, status: finalState.ToString(), completion.IsPartial, duration, completion.Regulation);
             LogArchiveAssembled(logger, completion.RequestId, shards.Count, completion.Fragments.Count, emptyProviders.Count, (long)duration.TotalMilliseconds);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (Exception ex) when (ex is not OperationCanceledException
+                                  && ex is not InvalidOperationException
+                                  && ex is not PrivacyExportAssemblyException)
         {
+            // Wrap unexpected transient failures so the Wolverine retry-with-cooldown
+            // policy picks them up. InvalidOperationException (HMAC rejection,
+            // malformed event) and PrivacyExportAssemblyException itself bypass the
+            // wrapping — the former goes straight to DLQ via Wolverine's default
+            // policy, the latter is already typed correctly.
+            TimeSpan duration = Stopwatch.GetElapsedTime(startTimestamp);
+            LogAssemblyFailed(logger, completion.RequestId, ex.GetType().Name);
+            metrics.RecordArchiveAssembled(
+                tenantId: completion.TenantId,
+                status: "failed",
+                completion.IsPartial,
+                duration,
+                completion.Regulation);
+            throw new PrivacyExportAssemblyException(
+                completion.RequestId,
+                $"Privacy export {completion.RequestId} assembly failed: {ex.Message}",
+                ex);
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or PrivacyExportAssemblyException)
+        {
+            // HMAC rejection / re-thrown PrivacyExportAssemblyException — preserve the
+            // type so the dispatcher applies the right policy.
             TimeSpan duration = Stopwatch.GetElapsedTime(startTimestamp);
             LogAssemblyFailed(logger, completion.RequestId, ex.GetType().Name);
             metrics.RecordArchiveAssembled(

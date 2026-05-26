@@ -1,4 +1,6 @@
+using Granit.DataProtection;
 using Granit.Domain.ValueObjects;
+using Granit.Encryption;
 using Granit.Events;
 using Wolverine.Persistence.Sagas;
 
@@ -20,6 +22,7 @@ public sealed record PersonalDataPreparedEto(
     string FragmentKind,
     string SourceContainer,
     BlobReference BlobReferenceId,
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Hash), Encrypted]
     string EntryPath,
     string ContentType,
     string IntegrityTag,
