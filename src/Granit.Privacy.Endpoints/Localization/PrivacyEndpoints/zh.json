@@ -1,6 +1,7 @@
 {
   "culture": "zh",
   "texts": {
+    "Granit:Validation:PrivacyExportTooManyScopes": "单次导出请求的范围过多,上限为 64。",
     "Permission:Privacy.Agreements.Create": "接受法律协议",
     "Permission:Privacy.Agreements.Read": "查看法律文件和同意状态",
     "Permission:Privacy.Deletion.Execute": "请求删除个人数据",

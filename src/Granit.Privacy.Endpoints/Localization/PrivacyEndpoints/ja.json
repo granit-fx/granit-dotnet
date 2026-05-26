@@ -1,6 +1,7 @@
 {
   "culture": "ja",
   "texts": {
+    "Granit:Validation:PrivacyExportTooManyScopes": "1 回のエクスポートで要求されたスコープが多すぎます (上限は 64 です)。",
     "Permission:Privacy.Agreements.Create": "法的合意に同意",
     "Permission:Privacy.Agreements.Read": "法的文書と同意ステータスを表示",
     "Permission:Privacy.Deletion.Execute": "個人データの削除を要求",

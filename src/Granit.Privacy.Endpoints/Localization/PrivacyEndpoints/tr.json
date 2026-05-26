@@ -1,6 +1,7 @@
 {
   "culture": "tr",
   "texts": {
+    "Granit:Validation:PrivacyExportTooManyScopes": "Tek bir dışa aktarmada çok fazla kapsam istendi (sınır: 64).",
     "Permission:Privacy.Agreements.Create": "Yasal sözleşmeyi kabul et",
     "Permission:Privacy.Agreements.Read": "Yasal belgeleri ve onay durumunu görüntüle",
     "Permission:Privacy.Deletion.Execute": "Kişisel veri silme talep et",

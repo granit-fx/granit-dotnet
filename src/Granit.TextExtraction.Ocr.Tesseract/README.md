@@ -25,10 +25,13 @@ Linux (Debian / Ubuntu):
 ```bash
 apt-get install -y libtesseract5 tesseract-ocr-eng tesseract-ocr-fra
 # The Charlesw Tesseract NuGet probes for "libleptonica-1.82.0" and
-# "libtesseract50" by name — the apt packages ship liblept.so.5 and
-# libtesseract.so.5 instead, so symlink the canonical names:
-ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
-ln -sf /usr/lib/x86_64-linux-gnu/libtesseract.so.5 /usr/lib/x86_64-linux-gnu/libtesseract50.so
+# "libtesseract50" by name. The runtime apt packages only ship the fully
+# versioned `.so.MAJOR.MINOR.PATCH` files (`liblept.so.5.0.4`,
+# `libtesseract.so.5.0.3` on Ubuntu 24.04) — no `.so.MAJOR` shortcut.
+# Discover the file via glob and symlink the canonical names:
+LIB_DIR=/usr/lib/x86_64-linux-gnu
+ln -sf "$(ls $LIB_DIR/liblept.so.5* | head -n 1)" "$LIB_DIR/libleptonica-1.82.0.so"
+ln -sf "$(ls $LIB_DIR/libtesseract.so.5* | head -n 1)" "$LIB_DIR/libtesseract50.so"
 ```
 
 The traineddata path is then `/usr/share/tesseract-ocr/5/tessdata/`. Each language

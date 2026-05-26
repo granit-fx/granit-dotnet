@@ -1,6 +1,7 @@
 {
   "culture": "hi",
   "texts": {
+    "Granit:Validation:PrivacyExportTooManyScopes": "एक ही एक्सपोर्ट में बहुत अधिक स्कोप मांगे गए हैं (सीमा: 64)।",
     "Permission:Privacy.Agreements.Create": "कानूनी समझौता स्वीकार करें",
     "Permission:Privacy.Agreements.Read": "कानूनी दस्तावेज़ और सहमति स्थिति देखें",
     "Permission:Privacy.Deletion.Execute": "व्यक्तिगत डेटा हटाने का अनुरोध करें",

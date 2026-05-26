@@ -1,6 +1,7 @@
 {
   "culture": "sv",
   "texts": {
+    "Granit:Validation:PrivacyExportTooManyScopes": "För många scopes begärda i en enskild export. Gränsen är 64.",
     "Permission:Privacy.Agreements.Create": "Acceptera ett juridiskt avtal",
     "Permission:Privacy.Agreements.Read": "Visa juridiska dokument och samtycksstatus",
     "Permission:Privacy.Deletion.Execute": "Begär radering av personuppgifter",
