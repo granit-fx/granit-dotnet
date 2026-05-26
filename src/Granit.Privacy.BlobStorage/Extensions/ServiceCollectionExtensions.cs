@@ -38,6 +38,7 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IStagedFragmentBuilder, StagedFragmentBuilder>();
         services.TryAddScoped<IBlobBackedExportSource, BlobBackedExportSource>();
         services.TryAddScoped<IPrivacyExportAssemblyService, PrivacyExportAssemblyService>();
+        services.TryAddScoped<IPrivacyExportDownloadResolver, BlobBackedPrivacyExportDownloadResolver>();
         services.TryAddScoped<PrivacyFragmentUploader>();
         return services;
     }

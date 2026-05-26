@@ -37440,6 +37440,15 @@
       ]
     },
     {
+      "name": "PrivacyExportNotReadyException",
+      "fqn": "Granit.Privacy.DataExport.Exceptions.PrivacyExportNotReadyException",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Exceptions/PrivacyExportNotReadyException.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "ExportAssemblyCheckpoint",
       "fqn": "Granit.Privacy.DataExport.ExportAssemblyCheckpoint",
       "kind": "record",
@@ -37638,6 +37647,34 @@
       ]
     },
     {
+      "name": "IPrivacyExportDownloadResolver",
+      "fqn": "Granit.Privacy.DataExport.IPrivacyExportDownloadResolver",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyExportDownloadResolver.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "ReadManifestSummaryAsync",
+          "kind": "method",
+          "signature": "ReadManifestSummaryAsync(Guid requestId, CancellationToken cancellationToken)",
+          "returnType": "Task<PrivacyExportManifestSummary>"
+        },
+        {
+          "name": "OpenManifestAsync",
+          "kind": "method",
+          "signature": "OpenManifestAsync(Guid requestId, CancellationToken cancellationToken)",
+          "returnType": "Task<PrivacyExportDownloadPayload>"
+        },
+        {
+          "name": "OpenShardAsync",
+          "kind": "method",
+          "signature": "OpenShardAsync(Guid requestId, int shardIndex, CancellationToken cancellationToken)",
+          "returnType": "Task<PrivacyExportDownloadPayload>"
+        }
+      ]
+    },
+    {
       "name": "IPrivacyScopeResolver",
       "fqn": "Granit.Privacy.DataExport.IPrivacyScopeResolver",
       "kind": "interface",
@@ -37726,6 +37763,24 @@
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/PrivacyExportContext.cs",
       "line": 17,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportDownloadPayload",
+      "fqn": "Granit.Privacy.DataExport.PrivacyExportDownloadPayload",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyExportDownloadResolver.cs",
+      "line": 60,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportManifestSummary",
+      "fqn": "Granit.Privacy.DataExport.PrivacyExportManifestSummary",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyExportDownloadResolver.cs",
+      "line": 50,
       "members": []
     },
     {
@@ -38117,6 +38172,18 @@
           "kind": "property",
           "signature": "string TagName",
           "returnType": "string"
+        },
+        {
+          "name": "RateLimitingPolicy",
+          "kind": "property",
+          "signature": "string? RateLimitingPolicy",
+          "returnType": "string?"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan DownloadStepUpMaxAge { get; set; } = TimeSpan."
         }
       ]
     },

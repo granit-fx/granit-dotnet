@@ -322,6 +322,8 @@ public static class PrivacyEndpointRouteBuilderExtensions
                  "Returns all export requests submitted by the current user, ordered by most recent first. "
                  + "Each entry includes the request state, timestamps, and archive reference when available.")
              .Produces<IReadOnlyList<PrivacyExportStatusResponse>>();
+
+        group.MapPrivacyExportDownloadEndpoints();
     }
 
     // -------------------------------------------------------------------------
