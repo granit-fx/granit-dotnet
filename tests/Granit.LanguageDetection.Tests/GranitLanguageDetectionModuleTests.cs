@@ -38,6 +38,7 @@ public sealed class GranitLanguageDetectionModuleTests
         // — this test pins the contract.
 
         ServiceCollection services = [];
+        services.AddMetrics();
         services.AddGranitLanguageDetection();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<ILanguageDetectorProvider, FakeProvider>());
 
@@ -51,6 +52,7 @@ public sealed class GranitLanguageDetectionModuleTests
     public void DI_aggregates_every_registered_provider_into_the_composite()
     {
         ServiceCollection services = [];
+        services.AddMetrics();
         services.AddGranitLanguageDetection();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<ILanguageDetectorProvider, FakeProvider>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<ILanguageDetectorProvider, OtherFakeProvider>());
@@ -58,6 +60,27 @@ public sealed class GranitLanguageDetectionModuleTests
         ServiceProvider sp = services.BuildServiceProvider();
         IEnumerable<ILanguageDetectorProvider> providers = sp.GetServices<ILanguageDetectorProvider>();
         providers.Count().ShouldBe(2);
+    }
+
+    [Fact]
+    public void AddGranitLanguageDetection_strips_any_prior_ILanguageDetector_binding()
+    {
+        // Regression for the audit's VULN-301: a stray
+        // services.AddSingleton<ILanguageDetector, MyDetector>() registered BEFORE
+        // AddGranitLanguageDetection() used to slip past TryAddSingleton and silently
+        // replace the composite (last-wins in the DI container). The fix removes any
+        // pre-existing ILanguageDetector descriptor so the composite always wins; custom
+        // detectors must register under ILanguageDetectorProvider.
+
+        ServiceCollection services = [];
+        services.AddMetrics();
+        services.AddSingleton<ILanguageDetector, FakeProvider>(); // misregistered detector
+        services.AddGranitLanguageDetection();
+
+        ServiceProvider sp = services.BuildServiceProvider();
+        ILanguageDetector resolved = sp.GetRequiredService<ILanguageDetector>();
+
+        resolved.ShouldBeOfType<CompositeLanguageDetector>();
     }
 
     private sealed class FakeProvider : ILanguageDetectorProvider

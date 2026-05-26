@@ -32,5 +32,13 @@ public interface ILanguageDetector
     /// Returns the detected ISO 639-1 code or <c>null</c> if detection was
     /// inconclusive. Implementations may sample the leading slice of large inputs.
     /// </summary>
+    /// <remarks>
+    /// <b>Caller responsibility — input size.</b> Implementations sample only the leading
+    /// few KB of <paramref name="content"/> (the bundled trigram detector caps at 2 048
+    /// chars), but the full string is still materialised in memory by the caller. Pre-
+    /// truncate caller-controlled payloads (e.g. extracted document text) to a sensible
+    /// bound — ~10 KB is more than enough for reliable detection — to avoid GC pressure
+    /// on very large inputs (CWE-770).
+    /// </remarks>
     Task<string?> DetectAsync(string content, CancellationToken cancellationToken = default);
 }

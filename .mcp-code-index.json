@@ -26255,7 +26255,7 @@
       "kind": "class",
       "project": "Granit.LanguageDetection",
       "file": "src/Granit.LanguageDetection/CompositeLanguageDetector.cs",
-      "line": 23,
+      "line": 27,
       "members": [
         {
           "name": "DetectAsync",
@@ -26266,12 +26266,21 @@
       ]
     },
     {
+      "name": "LanguageDetectionMetrics",
+      "fqn": "Granit.LanguageDetection.Diagnostics.LanguageDetectionMetrics",
+      "kind": "class",
+      "project": "Granit.LanguageDetection",
+      "file": "src/Granit.LanguageDetection/Diagnostics/LanguageDetectionMetrics.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.LanguageDetection.Extensions.ServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.LanguageDetection",
       "file": "src/Granit.LanguageDetection/Extensions/ServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitLanguageDetection",
