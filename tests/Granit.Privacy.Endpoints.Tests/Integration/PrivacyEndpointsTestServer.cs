@@ -202,6 +202,16 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(exportWriter);
         builder.Services.AddSingleton(exportReader);
         builder.Services.AddSingleton(auditWriter);
+        // RequireGranitRateLimiting filter resolves TenantPartitionedRateLimiter; wire a
+        // disabled instance (Enabled=false → CheckAsync returns null → filter passes through)
+        // so integration tests don't exercise the Redis counter store.
+        builder.Services.AddMetrics();
+        builder.Services.AddSingleton<Granit.RateLimiting.Diagnostics.RateLimitingMetrics>();
+        builder.Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(
+            new Granit.RateLimiting.Options.GranitRateLimitingOptions { Enabled = false }));
+        builder.Services.AddSingleton(Substitute.For<Granit.RateLimiting.Abstractions.IRateLimitCounterStore>());
+        builder.Services.AddSingleton(Substitute.For<Granit.RateLimiting.Abstractions.IRateLimitQuotaProvider>());
+        builder.Services.AddSingleton<Granit.RateLimiting.TenantPartitionedRateLimiter>();
         builder.Services.AddSingleton(scopeResolver);
         builder.Services.AddSingleton(deletionWriter);
         builder.Services.AddSingleton(deletionReader);

@@ -1856,10 +1856,12 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Guids",
+        "Granit.Http.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.Http.Cookies",
         "Granit.Privacy",
         "Granit.Privacy.Regulations",
+        "Granit.RateLimiting",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -38303,7 +38305,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Extensions/PrivacyEndpointRouteBuilderExtensions.cs",
-      "line": 37,
+      "line": 39,
       "members": [
         {
           "name": "MapGranitPrivacy",
@@ -38415,6 +38417,15 @@
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
       "line": 27,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportRateLimitPolicies",
+      "fqn": "Granit.Privacy.Endpoints.PrivacyExportRateLimitPolicies",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/PrivacyExportRateLimitPolicies.cs",
+      "line": 23,
       "members": []
     },
     {

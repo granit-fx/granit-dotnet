@@ -1,6 +1,7 @@
 using Granit.Events;
 using Granit.Guids;
 using Granit.Http.Cookies;
+using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
@@ -19,6 +20,7 @@ using Granit.Privacy.OptOut;
 using Granit.Privacy.OptOut.Events;
 using Granit.Privacy.ProcessingPurposes;
 using Granit.Privacy.Regulations;
+using Granit.RateLimiting.AspNetCore;
 using Granit.Users;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -293,6 +295,8 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
         group.MapPost("/exports", HandleRequestExportAsync)
              .RequireAuthorization(PrivacyPermissions.Export.Execute)
+             .RequireGranitRateLimiting(PrivacyExportRateLimitPolicies.ExportCreate)
+             .WithMetadata(new IdempotentAttribute { Required = false })
              .WithName("RequestPrivacyExport")
              .WithSummary("Requests a personal data export for the current user.")
              .WithDescription(
@@ -301,8 +305,13 @@ public static class PrivacyEndpointRouteBuilderExtensions
                  + "The optional `Scopes` array narrows the export to a subset of provider scopes (see "
                  + "GET /privacy/exports/scopes); omitting it exports everything visible to the subject. "
                  + "Poll GET /exports/{requestId} for status, or wire a Granit.Notifications handler on "
-                 + "ExportCompletedEto to notify the user when the archive is ready.")
-             .Produces<PrivacyExportRequestResponse>(StatusCodes.Status202Accepted);
+                 + "ExportCompletedEto to notify the user when the archive is ready. "
+                 + "Rate-limited via the `privacy-export-create` policy (hosts configure quotas in "
+                 + "`RateLimiting:Policies` — defaults to 1 export per subject per 24 hours). "
+                 + "Honours an optional `Idempotency-Key` header (Granit.Http.Idempotency) so accidental "
+                 + "double-clicks don't spawn two scatter-gather sagas.")
+             .Produces<PrivacyExportRequestResponse>(StatusCodes.Status202Accepted)
+             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapGet("/exports/{requestId:guid}", HandleGetExportStatusAsync)
              .WithName("GetPrivacyExportStatus")
