@@ -4,6 +4,7 @@ using Azure;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Sas;
 using Granit.BlobStorage.AzureBlob.Diagnostics;
 using Granit.BlobStorage.AzureBlob.Options;
@@ -226,6 +227,29 @@ internal sealed class AzureBlobClient : IBlobStoreProvider, IPresignedUrlProvide
         await stream.DisposeAsync().ConfigureAwait(false);
 
         return buffer;
+    }
+
+    /// <inheritdoc/>
+    public Task<MultipartWriteStream> OpenWriteMultipartAsync(
+        string bucket,
+        string objectKey,
+        string contentType,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(bucket);
+        ArgumentException.ThrowIfNullOrEmpty(objectKey);
+        ArgumentException.ThrowIfNullOrEmpty(contentType);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        BlockBlobClient blockClient = _serviceClient
+            .GetBlobContainerClient(bucket)
+            .GetBlockBlobClient(objectKey);
+
+        // Unlike S3, Azure has no separate "initiate" call — block ids are
+        // client-generated and the upload only exists once the first block stages.
+        AzureBlockBlobOperations operations = new(blockClient);
+        return Task.FromResult<MultipartWriteStream>(
+            new AzureBlockBlobMultipartWriteStream(operations, contentType));
     }
 
     // ── SAS generation helpers ────────────────────────────────────────────────
