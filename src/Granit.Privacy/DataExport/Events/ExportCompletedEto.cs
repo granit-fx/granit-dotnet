@@ -22,6 +22,9 @@ namespace Granit.Privacy.DataExport.Events;
 /// </param>
 /// <param name="Regulation">Privacy regulation code the request was filed under (e.g. <c>EU_GDPR</c>).</param>
 /// <param name="RequestedAt">When the data subject filed the request — recorded in the archive manifest.</param>
+/// <param name="TenantId">Tenant scope propagated from the originating request. The
+/// background-job assembly handler opens <c>ICurrentTenant.Change(TenantId)</c> before
+/// resolving scoped services (mitigation for VULN-002 in the upcoming P6.3 background job).</param>
 public sealed record ExportCompletedEto(
     Guid RequestId,
     Guid UserId,
@@ -30,4 +33,5 @@ public sealed record ExportCompletedEto(
     IReadOnlyList<string> MissingProviders,
     IReadOnlyList<ReceivedFragment> Fragments,
     string Regulation,
-    DateTimeOffset RequestedAt) : IIntegrationEvent;
+    DateTimeOffset RequestedAt,
+    Guid? TenantId = null) : IIntegrationEvent;

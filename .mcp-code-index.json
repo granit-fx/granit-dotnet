@@ -37238,7 +37238,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Events/ExportCompletedEto.cs",
-      "line": 25,
+      "line": 28,
       "members": []
     },
     {
@@ -37265,7 +37265,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Events/PersonalDataRequestedEto.cs",
-      "line": 25,
+      "line": 27,
       "members": []
     },
     {
@@ -37475,7 +37475,7 @@
           "name": "Start",
           "kind": "method",
           "signature": "Start(PersonalDataRequestedEto @event, IPrivacyScopeResolver scopeResolver, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics, CancellationToken cancellationToken)",
-          "returnType": "string? TenantId { get; set; } public DateTimeOffset RequestedAt { get; set; } public Task<ExportCompletedEto?>"
+          "returnType": "Guid? TenantId { get; set; } public DateTimeOffset RequestedAt { get; set; } public Task<ExportCompletedEto?>"
         }
       ]
     },

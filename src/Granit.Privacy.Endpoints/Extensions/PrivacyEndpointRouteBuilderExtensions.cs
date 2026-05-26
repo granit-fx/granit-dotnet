@@ -452,7 +452,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
         Guid requestId = guidGenerator.Create();
         DateTimeOffset now = timeProvider.GetUtcNow();
-        string? tenantId = ResolveTenantId(currentTenant);
+        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
         string regulation = await ResolveRegulationAsync(regulationResolver, cancellationToken).ConfigureAwait(false);
 
         // Null / empty Scopes → "everything visible" (Takeout default). Unknown / hidden
@@ -475,7 +475,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
                 cancellationToken)
             .ConfigureAwait(false);
 
-        metrics.RecordExportRequested(tenantId, regulation);
+        metrics.RecordExportRequested(tenantId?.ToString(), regulation);
 
         return TypedResults.Accepted(
             $"/privacy/export/{requestId}",

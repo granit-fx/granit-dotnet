@@ -53,8 +53,11 @@ public sealed class PersonalDataExportSaga : Saga
     /// <summary>Applicable privacy regulation code for this export request.</summary>
     public string Regulation { get; set; } = string.Empty;
 
-    /// <summary>Tenant identifier propagated from the starting event for metrics tagging.</summary>
-    public string? TenantId { get; set; }
+    /// <summary>
+    /// Tenant identifier propagated from the starting event for metrics tagging and for
+    /// re-opening the tenant scope in the background-job assembly handler (P6.3).
+    /// </summary>
+    public Guid? TenantId { get; set; }
 
     /// <summary>When the data subject filed the export request — propagated to <see cref="ExportCompletedEto"/>.</summary>
     public DateTimeOffset RequestedAt { get; set; }
@@ -80,7 +83,7 @@ public sealed class PersonalDataExportSaga : Saga
         Regulation = @event.Regulation;
         TenantId = @event.TenantId;
         RequestedAt = @event.RequestedAt;
-        metrics.RecordExportRequested(TenantId, Regulation);
+        metrics.RecordExportRequested(TenantId?.ToString(), Regulation);
 
         // Apply visibility gates + intersect with the subject's RequestedScopes list.
         // RequestedScopes naming an unknown / hidden provider is silently dropped (VULN-202:
@@ -89,7 +92,7 @@ public sealed class PersonalDataExportSaga : Saga
             RequestId: @event.RequestId,
             SubjectUserId: @event.UserId,
             CallerUserId: @event.UserId,
-            TenantId: TryParseTenantId(@event.TenantId),
+            TenantId: @event.TenantId,
             Regulation: @event.Regulation);
 
         IReadOnlyList<ProviderDescriptor> visible = await scopeResolver
@@ -108,14 +111,15 @@ public sealed class PersonalDataExportSaga : Saga
         {
             MarkCompleted();
             return new ExportCompletedEto(
-                Id,
-                UserId,
-                $"personal-data-export/{Id}",
+                RequestId: Id,
+                UserId: UserId,
+                ArchiveBlobReferenceId: $"personal-data-export/{Id}",
                 IsPartial: false,
                 MissingProviders: [],
                 Fragments: [],
-                Regulation,
-                RequestedAt);
+                Regulation: Regulation,
+                RequestedAt: RequestedAt,
+                TenantId: TenantId);
         }
 
         await context.ScheduleAsync(
@@ -140,7 +144,7 @@ public sealed class PersonalDataExportSaga : Saga
             @event.ContentType,
             @event.IntegrityTag));
         bool expected = PendingProviders.Remove(@event.ProviderName);
-        metrics.RecordFragmentReceived(TenantId, expected ? @event.ProviderName : "unknown", Regulation);
+        metrics.RecordFragmentReceived(TenantId?.ToString(), expected ? @event.ProviderName : "unknown", Regulation);
 
         // Multi-fragment providers (Documents, attachments) emit one Prepared event per
         // fragment but only count once against ExpectedCount via PendingProviders.Remove.
@@ -153,14 +157,15 @@ public sealed class PersonalDataExportSaga : Saga
 
         MarkCompleted();
         return new ExportCompletedEto(
-            Id,
-            UserId,
-            PrivacyExportContainerNames.ArchiveBlobReferenceId(Id),
+            RequestId: Id,
+            UserId: UserId,
+            ArchiveBlobReferenceId: PrivacyExportContainerNames.ArchiveBlobReferenceId(Id),
             IsPartial: false,
             MissingProviders: [],
             Fragments: ReceivedFragments.AsReadOnly(),
-            Regulation,
-            RequestedAt);
+            Regulation: Regulation,
+            RequestedAt: RequestedAt,
+            TenantId: TenantId);
     }
 
     /// <summary>
@@ -169,21 +174,17 @@ public sealed class PersonalDataExportSaga : Saga
     /// </summary>
     public ExportCompletedEto Handle(ExportTimedOutEvent @event, PrivacyMetrics metrics)
     {
-        metrics.RecordExportCompleted(TenantId, "timeout", TimeSpan.Zero, Regulation);
+        metrics.RecordExportCompleted(TenantId?.ToString(), "timeout", TimeSpan.Zero, Regulation);
         MarkCompleted();
         return new ExportCompletedEto(
-            Id,
-            UserId,
-            PrivacyExportContainerNames.ArchiveBlobReferenceId(Id),
+            RequestId: Id,
+            UserId: UserId,
+            ArchiveBlobReferenceId: PrivacyExportContainerNames.ArchiveBlobReferenceId(Id),
             IsPartial: true,
             MissingProviders: PendingProviders.AsReadOnly(),
             Fragments: ReceivedFragments.AsReadOnly(),
-            Regulation,
-            RequestedAt);
+            Regulation: Regulation,
+            RequestedAt: RequestedAt,
+            TenantId: TenantId);
     }
-
-    // Eto-side TenantId is still typed as string? (legacy schema). The Guid? migration
-    // ships as a separate breaking pass alongside metrics widening; until then we try-parse.
-    private static Guid? TryParseTenantId(string? value) =>
-        Guid.TryParse(value, out Guid parsed) ? parsed : null;
 }

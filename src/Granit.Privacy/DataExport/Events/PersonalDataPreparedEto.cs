@@ -22,4 +22,5 @@ public sealed record PersonalDataPreparedEto(
     BlobReference BlobReferenceId,
     string EntryPath,
     string ContentType,
-    string IntegrityTag) : IIntegrationEvent;
+    string IntegrityTag,
+    Guid? TenantId = null) : IIntegrationEvent;

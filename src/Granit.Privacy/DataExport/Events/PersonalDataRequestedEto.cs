@@ -13,9 +13,11 @@ namespace Granit.Privacy.DataExport.Events;
 /// <param name="UserId">Data subject whose data is being exported.</param>
 /// <param name="RequestedAt">When the subject filed the request.</param>
 /// <param name="Regulation">Regulation code under which the request is processed.</param>
-/// <param name="TenantId">Tenant scope, as currently typed in this Eto
-/// (<see cref="string"/>?). Will widen to <see cref="Guid"/>? in a follow-up alongside
-/// the metrics-signature migration.</param>
+/// <param name="TenantId">Tenant scope. CLAUDE.md §IMultiTenant requires
+/// <see cref="Guid"/>? — never <see cref="string"/> — and the EF row is already
+/// <see cref="Guid"/>?. Carried through saga + assembly so the background-job
+/// handler can reopen the tenant scope via <c>ICurrentTenant.Change</c> (closes
+/// VULN-002 ahead of the P6.3 background-job dispatch).</param>
 /// <param name="RequestedFormat">Wire format requested by the subject (default JSON).</param>
 /// <param name="RequestedScopes">Subset of provider names the subject asked for.
 /// <see langword="null"/> means "all scopes visible to me" (Takeout-style default).
@@ -27,6 +29,6 @@ public sealed record PersonalDataRequestedEto(
     Guid UserId,
     DateTimeOffset RequestedAt,
     string Regulation,
-    string? TenantId = null,
+    Guid? TenantId = null,
     string RequestedFormat = "JSON",
     IReadOnlyList<string>? RequestedScopes = null) : IIntegrationEvent;

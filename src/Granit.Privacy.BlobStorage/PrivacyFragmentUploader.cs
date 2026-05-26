@@ -49,7 +49,7 @@ public sealed partial class PrivacyFragmentUploader(
             RequestId: request.RequestId,
             SubjectUserId: request.UserId,
             CallerUserId: request.UserId,
-            TenantId: null,
+            TenantId: request.TenantId,
             Regulation: request.Regulation);
 
         int published = 0;
@@ -73,7 +73,8 @@ public sealed partial class PrivacyFragmentUploader(
                     BlobReferenceId: blob,
                     EntryPath: fragment.EntryPath,
                     ContentType: fragment.ContentType,
-                    IntegrityTag: fragment.IntegrityTag),
+                    IntegrityTag: fragment.IntegrityTag,
+                    TenantId: request.TenantId),
                 cancellationToken).ConfigureAwait(false);
 
             LogFragmentPrepared(logger, TProvider.ProviderName, request.UserId, request.RequestId, fragment.EntryPath, kind);
@@ -92,7 +93,8 @@ public sealed partial class PrivacyFragmentUploader(
                     BlobReferenceId: BlobReference.Create($"{PrivacyExportContainerNames.EmptyFragmentPrefix}{request.RequestId}"),
                     EntryPath: $"{TProvider.ProviderName}.empty",
                     ContentType: "application/octet-stream",
-                    IntegrityTag: string.Empty),
+                    IntegrityTag: string.Empty,
+                    TenantId: request.TenantId),
                 cancellationToken).ConfigureAwait(false);
         }
     }

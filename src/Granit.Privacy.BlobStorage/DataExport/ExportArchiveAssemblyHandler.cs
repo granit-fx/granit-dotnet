@@ -137,7 +137,7 @@ public sealed partial class ExportArchiveAssemblyHandler(
 
             TimeSpan duration = Stopwatch.GetElapsedTime(startTimestamp);
             metrics.RecordArchiveAssembled(
-                tenantId: null, status: finalState.ToString(), @event.IsPartial, duration, @event.Regulation);
+                tenantId: @event.TenantId?.ToString(), status: finalState.ToString(), @event.IsPartial, duration, @event.Regulation);
             LogArchiveAssembled(logger, @event.RequestId, @event.Fragments.Count, emptyProviders.Count, (long)duration.TotalMilliseconds);
         }
         catch (PrivacyExportSizeLimitExceededException ex)
@@ -151,7 +151,7 @@ public sealed partial class ExportArchiveAssemblyHandler(
                 cancellationToken).ConfigureAwait(false);
             TimeSpan duration = Stopwatch.GetElapsedTime(startTimestamp);
             metrics.RecordArchiveAssembled(
-                tenantId: null,
+                tenantId: @event.TenantId?.ToString(),
                 status: ExportRequestState.SizeLimitExceeded.ToString(),
                 @event.IsPartial,
                 duration,

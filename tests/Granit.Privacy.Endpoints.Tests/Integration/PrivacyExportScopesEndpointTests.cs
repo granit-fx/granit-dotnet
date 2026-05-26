@@ -84,6 +84,38 @@ public sealed class PrivacyExportScopesEndpointTests
     }
 
     [Fact]
+    public async Task PostExports_PropagatesTenantIdAsGuidOnEto()
+    {
+        await using PrivacyEndpointsTestServer server = await PrivacyEndpointsTestServer.CreateAsync();
+        var tenantId = Guid.NewGuid();
+        server.CurrentTenant.IsAvailable.Returns(true);
+        server.CurrentTenant.Id.Returns(tenantId);
+
+        HttpResponseMessage response = await server.AuthenticatedClient.PostAsync(
+            "/privacy/exports", content: null, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+        await server.EventBus.Received(1).PublishAsync(
+            Arg.Is<PersonalDataRequestedEto>(e => e.TenantId == tenantId),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task PostExports_WhenTenantUnavailable_PublishesEtoWithNullTenantId()
+    {
+        await using PrivacyEndpointsTestServer server = await PrivacyEndpointsTestServer.CreateAsync();
+        // Default in PrivacyEndpointsTestServer.CreateAsync: IsAvailable returns false.
+
+        HttpResponseMessage response = await server.AuthenticatedClient.PostAsync(
+            "/privacy/exports", content: null, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+        await server.EventBus.Received(1).PublishAsync(
+            Arg.Is<PersonalDataRequestedEto>(e => e.TenantId == null),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task PostExports_WithEmptyScopesArray_TreatedAsAllVisible()
     {
         await using PrivacyEndpointsTestServer server = await PrivacyEndpointsTestServer.CreateAsync();

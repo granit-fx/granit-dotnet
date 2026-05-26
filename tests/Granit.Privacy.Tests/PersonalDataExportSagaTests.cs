@@ -231,9 +231,59 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         [
             "RequestId", "ProviderName", "FragmentKind", "SourceContainer",
             "BlobReferenceId", "EntryPath", "ContentType", "IntegrityTag",
-            "EqualityContract",
+            "TenantId", "EqualityContract",
         ];
         properties.Select(p => p.Name).ShouldAllBe(name => allowedProperties.Contains(name));
+    }
+
+    // -------------------------------------------------------------------------
+    // TenantId propagation (saga state → ExportCompletedEto)
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task Start_StoresTenantIdOnSagaState_FromIncomingEto()
+    {
+        PersonalDataExportSaga saga = new();
+        IMessageContext context = Substitute.For<IMessageContext>();
+        IPrivacyScopeResolver scopeResolver = BuildScopeResolver("identity");
+        var tenantId = Guid.NewGuid();
+        PersonalDataRequestedEto evt = new(
+            Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR", TenantId: tenantId);
+
+        await saga.Start(evt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+
+        saga.TenantId.ShouldBe(tenantId);
+    }
+
+    [Fact]
+    public async Task Start_PropagatesTenantIdToExportCompletedEto_WhenNoProviders()
+    {
+        PersonalDataExportSaga saga = new();
+        IMessageContext context = Substitute.For<IMessageContext>();
+        var tenantId = Guid.NewGuid();
+        PersonalDataRequestedEto evt = new(
+            Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR", TenantId: tenantId);
+
+        ExportCompletedEto? result = await saga.Start(evt, BuildScopeResolver(), DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result!.TenantId.ShouldBe(tenantId);
+    }
+
+    [Fact]
+    public async Task HandleTimeout_PropagatesTenantIdToExportCompletedEto()
+    {
+        PersonalDataExportSaga saga = new();
+        IMessageContext context = Substitute.For<IMessageContext>();
+        IPrivacyScopeResolver scopeResolver = BuildScopeResolver("auth");
+        var tenantId = Guid.NewGuid();
+        PersonalDataRequestedEto startEvt = new(
+            Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR", TenantId: tenantId);
+        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+
+        ExportCompletedEto result = saga.Handle(new ExportTimedOutEvent(startEvt.RequestId), _metrics);
+
+        result.TenantId.ShouldBe(tenantId);
     }
 
     // -------------------------------------------------------------------------
