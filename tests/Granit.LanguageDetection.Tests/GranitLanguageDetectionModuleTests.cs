@@ -29,13 +29,12 @@ public sealed class GranitLanguageDetectionModuleTests
     [Fact]
     public void DI_resolves_ILanguageDetector_to_the_composite_even_when_providers_are_registered()
     {
-        // Regression for the audit's BREAKING finding #1: previously the composite
-        // descriptor was registered as ILanguageDetector via TryAddSingleton and a
-        // concrete provider then registered as ILanguageDetector via TryAddEnumerable.
-        // The DI container returned the LAST descriptor on a non-IEnumerable resolve,
-        // silently bypassing the composite. The fix splits the provider marker
-        // (ILanguageDetectorProvider) from the consumer-facing facade (ILanguageDetector)
-        // — this test pins the contract.
+        // Pins the marker-split contract: providers register under
+        // ILanguageDetectorProvider (fanned into IEnumerable<>), the composite is the
+        // sole ILanguageDetector. Without the split, a concrete provider registered
+        // via TryAddEnumerable<ILanguageDetector> would become the last descriptor for
+        // ILanguageDetector and the DI container's non-IEnumerable resolve would
+        // return it instead of the composite, silently bypassing the priority chain.
 
         ServiceCollection services = [];
         services.AddMetrics();
@@ -65,12 +64,11 @@ public sealed class GranitLanguageDetectionModuleTests
     [Fact]
     public void AddGranitLanguageDetection_strips_any_prior_ILanguageDetector_binding()
     {
-        // Regression for the audit's VULN-301: a stray
-        // services.AddSingleton<ILanguageDetector, MyDetector>() registered BEFORE
-        // AddGranitLanguageDetection() used to slip past TryAddSingleton and silently
-        // replace the composite (last-wins in the DI container). The fix removes any
-        // pre-existing ILanguageDetector descriptor so the composite always wins; custom
-        // detectors must register under ILanguageDetectorProvider.
+        // A stray services.AddSingleton<ILanguageDetector, MyDetector>() registered
+        // BEFORE AddGranitLanguageDetection() used to slip past TryAddSingleton and
+        // silently replace the composite (last-wins in the DI container). The fix
+        // strips any pre-existing ILanguageDetector descriptor so the composite always
+        // wins; custom detectors must register under ILanguageDetectorProvider.
 
         ServiceCollection services = [];
         services.AddMetrics();

@@ -33,9 +33,9 @@ public sealed class GranitLanguageDetectionTrigramModuleTests
         ServiceProvider sp = services.BuildServiceProvider();
 
         // Concrete detectors register under ILanguageDetectorProvider so the composite
-        // picks them up via IEnumerable<ILanguageDetectorProvider>. The audit's
-        // BREAKING finding #1 (composite bypass) regressed because the trigram detector
-        // was registered as ILanguageDetector — locking the right marker here.
+        // picks them up via IEnumerable<ILanguageDetectorProvider>. Registering them
+        // as ILanguageDetector instead would silently bypass the composite — this test
+        // locks the correct marker.
         IEnumerable<ILanguageDetectorProvider> providers = sp.GetServices<ILanguageDetectorProvider>();
         providers.OfType<TrigramLanguageDetector>().Count().ShouldBe(1);
     }
