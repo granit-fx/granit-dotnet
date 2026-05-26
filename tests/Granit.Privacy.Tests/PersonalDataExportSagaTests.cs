@@ -2,7 +2,6 @@ using System.Diagnostics.Metrics;
 using Granit.Domain.ValueObjects;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
-using Granit.Privacy.DataExport.Internal;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,15 +31,18 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     private static IOptions<GranitPrivacyOptions> DefaultOptions() =>
         Microsoft.Extensions.Options.Options.Create(new GranitPrivacyOptions { ExportTimeoutMinutes = 5 });
 
-    private static DataProviderRegistry BuildRegistry(params string[] providers)
+    private static IPrivacyScopeResolver BuildScopeResolver(params string[] providers)
     {
-        DataProviderRegistry registry = new();
-        foreach (string p in providers)
-        {
-            registry.Register(p);
-        }
+        IReadOnlyList<ProviderDescriptor> descriptors = [.. providers.Select(name =>
+            new ProviderDescriptor(
+                ProviderName: name,
+                DisplayKey: $"Privacy.Scopes.{name}",
+                FeatureName: null))];
 
-        return registry;
+        IPrivacyScopeResolver resolver = Substitute.For<IPrivacyScopeResolver>();
+        resolver.ListVisibleAsync(Arg.Any<PrivacyExportContext>(), Arg.Any<CancellationToken>())
+            .Returns(descriptors);
+        return resolver;
     }
 
     private static PersonalDataPreparedEto StagedFragmentEto(
@@ -64,12 +66,12 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     {
         PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
-        DataProviderRegistry registry = BuildRegistry("patients", "billing");
+        IPrivacyScopeResolver scopeResolver = BuildScopeResolver("patients", "billing");
         var requestId = Guid.NewGuid();
         var userId = Guid.NewGuid();
         PersonalDataRequestedEto evt = new(requestId, userId, DateTimeOffset.UtcNow, "EU_GDPR");
 
-        await saga.Start(evt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(evt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         saga.Id.ShouldBe(requestId);
         saga.UserId.ShouldBe(userId);
@@ -83,11 +85,11 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     {
         PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
-        DataProviderRegistry registry = BuildRegistry("patients", "billing");
+        IPrivacyScopeResolver scopeResolver = BuildScopeResolver("patients", "billing");
         var requestId = Guid.NewGuid();
         PersonalDataRequestedEto evt = new(requestId, Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
-        await saga.Start(evt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(evt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         // ScheduleAsync is an extension method that calls PublishAsync with DeliveryOptions.
         // NSubstitute cannot intercept extension methods, so we verify the underlying PublishAsync call.
@@ -101,9 +103,9 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     {
         PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
-        DataProviderRegistry registry = BuildRegistry("patients", "billing", "appointments");
+        IPrivacyScopeResolver scopeResolver = BuildScopeResolver("patients", "billing", "appointments");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         ExportCompletedEto? result1 = saga.Handle(
             StagedFragmentEto(startEvt.RequestId, "patients", "blob-1", "patients.json"), _metrics);
@@ -121,9 +123,9 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     {
         PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
-        DataProviderRegistry registry = BuildRegistry("patients", "billing");
+        IPrivacyScopeResolver scopeResolver = BuildScopeResolver("patients", "billing");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         saga.Handle(StagedFragmentEto(startEvt.RequestId, "patients", "blob-patients", "patients.json"), _metrics);
         ExportCompletedEto? result = saga.Handle(
@@ -146,9 +148,9 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         // PersonalDataPreparedEto events; the saga only deducts from PendingProviders once.
         PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
-        DataProviderRegistry registry = BuildRegistry("documents");
+        IPrivacyScopeResolver scopeResolver = BuildScopeResolver("documents");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         saga.Handle(StagedFragmentEto(startEvt.RequestId, "documents", "blob-1", "Documents/a.pdf"), _metrics);
         ExportCompletedEto? second = saga.Handle(StagedFragmentEto(startEvt.RequestId, "documents", "blob-2", "Documents/b.pdf"), _metrics);
@@ -172,9 +174,9 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     {
         PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
-        DataProviderRegistry registry = BuildRegistry("patients", "billing", "appointments");
+        IPrivacyScopeResolver scopeResolver = BuildScopeResolver("patients", "billing", "appointments");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         saga.Handle(StagedFragmentEto(startEvt.RequestId, "patients", "blob-patients", "patients.json"), _metrics);
         saga.Handle(StagedFragmentEto(startEvt.RequestId, "billing", "blob-billing", "billing.json"), _metrics);
@@ -195,10 +197,10 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     {
         PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
-        DataProviderRegistry emptyRegistry = new();
         PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
-        ExportCompletedEto? result = await saga.Start(evt, emptyRegistry, DefaultOptions(), context, _metrics);
+        // No providers registered → resolver returns empty list, saga completes immediately.
+        ExportCompletedEto? result = await saga.Start(evt, BuildScopeResolver(), DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result!.IsPartial.ShouldBeFalse();
@@ -245,10 +247,10 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         IOptions<GranitPrivacyOptions> options = Microsoft.Extensions.Options.Options.Create(
             new GranitPrivacyOptions { ExportTimeoutMinutes = 10 });
-        DataProviderRegistry registry = BuildRegistry("auth");
+        IPrivacyScopeResolver scopeResolver = BuildScopeResolver("auth");
         PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
-        await saga.Start(evt, registry, options, context, _metrics);
+        await saga.Start(evt, scopeResolver, options, context, _metrics, TestContext.Current.CancellationToken);
 
         // ScheduleAsync(message, TimeSpan) sets ScheduleDelay (relative), not ScheduledTime (absolute).
         await context.Received(1).PublishAsync(
@@ -267,9 +269,9 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     {
         PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
-        DataProviderRegistry registry = BuildRegistry("auth");
+        IPrivacyScopeResolver scopeResolver = BuildScopeResolver("auth");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         ExportCompletedEto? result = saga.Handle(
             StagedFragmentEto(startEvt.RequestId, "auth", "blob-auth", "auth.json"), _metrics);

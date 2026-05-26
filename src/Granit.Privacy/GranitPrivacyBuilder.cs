@@ -22,8 +22,14 @@ public sealed class GranitPrivacyBuilder(IServiceCollection services)
     /// </remarks>
     public IServiceCollection Services { get; } = services;
 
-    /// <summary>Data provider names to register at startup.</summary>
+    /// <summary>Data provider names registered name-only (legacy / minimal metadata).</summary>
     internal List<string> DataProviderNames { get; } = [];
+
+    /// <summary>
+    /// Fully-described data provider registrations captured by
+    /// <see cref="AddDataProvider{TProvider}"/>. Drive the scope selector visibility gates.
+    /// </summary>
+    internal List<DataExport.ProviderRegistration> DataProviderRegistrations { get; } = [];
 
     /// <summary>Legal document definitions to register at startup.</summary>
     internal List<LegalDocumentDefinition> LegalDocuments { get; } = [];
@@ -54,8 +60,13 @@ public sealed class GranitPrivacyBuilder(IServiceCollection services)
     public GranitPrivacyBuilder AddDataProvider<TProvider>()
         where TProvider : class, IPrivacyDataProvider
     {
-        RegisterDataProvider(TProvider.ProviderName);
         Services.AddScoped<TProvider>();
+        DataProviderRegistrations.Add(new DataExport.ProviderRegistration(
+            ProviderName: TProvider.ProviderName,
+            DisplayKey: TProvider.DisplayKey,
+            FeatureName: TProvider.FeatureName,
+            HasDataProbe: static (sp, ctx, ct) =>
+                sp.GetRequiredService<TProvider>().HasDataAsync(ctx, ct)));
         return this;
     }
 

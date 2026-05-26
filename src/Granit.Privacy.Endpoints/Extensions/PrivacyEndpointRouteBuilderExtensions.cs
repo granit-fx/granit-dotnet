@@ -278,6 +278,18 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
     private static void MapExportEndpoints(RouteGroupBuilder group)
     {
+        group.MapGet("/exports/scopes", HandleListExportScopesAsync)
+             .RequireAuthorization(PrivacyPermissions.Export.Execute)
+             .WithName("ListPrivacyExportScopes")
+             .WithSummary("Lists the export scopes visible to the current user.")
+             .WithDescription(
+                 "Returns one entry per IPrivacyDataProvider the subject can include in an export, after applying "
+                 + "the framework visibility gates: module loaded, HasDataAsync probe (Takeout-style "
+                 + "\"if you never used it, it doesn't appear\"), and the host IPrivacyScopeVisibilityPolicy. "
+                 + "Use the returned ProviderName values to populate the POST /privacy/exports `Scopes` field; "
+                 + "unknown / hidden scopes in that POST are silently skipped.")
+             .Produces<IReadOnlyList<PrivacyExportScopeResponse>>();
+
         group.MapPost("/exports", HandleRequestExportAsync)
              .RequireAuthorization(PrivacyPermissions.Export.Execute)
              .WithName("RequestPrivacyExport")
@@ -285,9 +297,10 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .WithDescription(
                  "Triggers the scatter-gather export saga (GDPR Art. 15/20). Each registered data provider "
                  + "prepares its fragment asynchronously. The saga assembles fragments into a downloadable archive. "
-                 + "Poll GET /export/{requestId} for status, or wire a Granit.Notifications handler on "
-                 + "ExportCompletedEto to notify the user when the archive is ready. "
-                 + "Use the ArchiveBlobReferenceId with the BlobStorage download endpoint to obtain a pre-signed URL.")
+                 + "The optional `Scopes` array narrows the export to a subset of provider scopes (see "
+                 + "GET /privacy/exports/scopes); omitting it exports everything visible to the subject. "
+                 + "Poll GET /exports/{requestId} for status, or wire a Granit.Notifications handler on "
+                 + "ExportCompletedEto to notify the user when the archive is ready.")
              .Produces<PrivacyExportRequestResponse>(StatusCodes.Status202Accepted);
 
         group.MapGet("/exports/{requestId:guid}", HandleGetExportStatusAsync)
@@ -421,6 +434,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
     // -------------------------------------------------------------------------
 
     private static async Task<Results<Accepted<PrivacyExportRequestResponse>, ProblemHttpResult>> HandleRequestExportAsync(
+        [FromBody] PrivacyExportRequest? body,
         [FromServices] ICurrentUserService currentUser,
         [FromServices] IDistributedEventBus eventBus,
         [FromServices] IExportRequestTrackerWriter tracker,
@@ -441,12 +455,24 @@ public static class PrivacyEndpointRouteBuilderExtensions
         string? tenantId = ResolveTenantId(currentTenant);
         string regulation = await ResolveRegulationAsync(regulationResolver, cancellationToken).ConfigureAwait(false);
 
+        // Null / empty Scopes → "everything visible" (Takeout default). Unknown / hidden
+        // entries are silently dropped by the saga via the visibility resolver (VULN-202).
+        IReadOnlyList<string>? requestedScopes = body?.Scopes is { Count: > 0 } scopes ? scopes : null;
+
         await tracker
             .RecordRequestAsync(requestId, userId, now, cancellationToken)
             .ConfigureAwait(false);
 
         await eventBus
-            .PublishAsync(new PersonalDataRequestedEto(requestId, userId, now, regulation, tenantId), cancellationToken)
+            .PublishAsync(
+                new PersonalDataRequestedEto(
+                    RequestId: requestId,
+                    UserId: userId,
+                    RequestedAt: now,
+                    Regulation: regulation,
+                    TenantId: tenantId,
+                    RequestedScopes: requestedScopes),
+                cancellationToken)
             .ConfigureAwait(false);
 
         metrics.RecordExportRequested(tenantId, regulation);
@@ -454,6 +480,45 @@ public static class PrivacyEndpointRouteBuilderExtensions
         return TypedResults.Accepted(
             $"/privacy/export/{requestId}",
             new PrivacyExportRequestResponse(requestId, now));
+    }
+
+    private static async Task<Results<Ok<IReadOnlyList<PrivacyExportScopeResponse>>, ProblemHttpResult>> HandleListExportScopesAsync(
+        [FromServices] ICurrentUserService currentUser,
+        [FromServices] IPrivacyScopeResolver scopeResolver,
+        [FromServices] ICurrentTenant currentTenant,
+        [FromServices] IPrivacyRegulationResolver? regulationResolver,
+        [FromServices] IGuidGenerator guidGenerator,
+        CancellationToken cancellationToken)
+    {
+        if (!TryGetUserId(currentUser, out Guid userId))
+        {
+            return UserNotAuthenticated();
+        }
+
+        Guid? tenantGuid = currentTenant.IsAvailable ? currentTenant.Id : null;
+        string regulation = await ResolveRegulationAsync(regulationResolver, cancellationToken).ConfigureAwait(false);
+
+        // RequestId is synthetic here — we're not actually starting an export, just probing
+        // visibility. Subject == Caller (self-service); admin "on behalf of" flows are deferred.
+        PrivacyExportContext probeContext = new(
+            RequestId: guidGenerator.Create(),
+            SubjectUserId: userId,
+            CallerUserId: userId,
+            TenantId: tenantGuid,
+            Regulation: regulation);
+
+        IReadOnlyList<ProviderDescriptor> visible = await scopeResolver
+            .ListVisibleAsync(probeContext, cancellationToken)
+            .ConfigureAwait(false);
+
+        IReadOnlyList<PrivacyExportScopeResponse> response = [.. visible.Select(d => new PrivacyExportScopeResponse(
+            ProviderName: d.ProviderName,
+            DisplayKey: d.DisplayKey,
+            FeatureName: d.FeatureName,
+            DefaultSelected: d.DefaultSelected,
+            EstimatedSizeBytes: d.EstimatedSizeBytes))];
+
+        return TypedResults.Ok(response);
     }
 
     private static async Task<Results<Ok<PrivacyExportStatusResponse>, ProblemHttpResult>> HandleGetExportStatusAsync(

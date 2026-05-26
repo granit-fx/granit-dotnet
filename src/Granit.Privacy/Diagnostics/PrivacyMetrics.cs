@@ -28,6 +28,7 @@ public sealed class PrivacyMetrics
     private readonly Counter<long> _archivesAssembled;
     private readonly Histogram<double> _exportDuration;
     private readonly Histogram<double> _archiveAssemblyDuration;
+    private readonly Histogram<double> _scopeProbeDuration;
 
     public PrivacyMetrics(IMeterFactory meterFactory)
     {
@@ -82,6 +83,11 @@ public sealed class PrivacyMetrics
             "granit.privacy.export.archive.duration",
             unit: "s",
             description: "Duration of export archive assembly in seconds.");
+
+        _scopeProbeDuration = meter.CreateHistogram<double>(
+            "granit.privacy.scope.probe.duration",
+            unit: "ms",
+            description: "Duration of IPrivacyDataProvider.HasDataAsync probes during scope visibility resolution.");
     }
 
     /// <summary>Records an export request.</summary>
@@ -147,6 +153,18 @@ public sealed class PrivacyMetrics
     /// <summary>Records an opt-out revocation.</summary>
     public void RecordOptOutRevoked(string? tenantId, string? regulation = null) =>
         _optOutRevocations.Add(1, CreateTags(tenantId, regulation));
+
+    /// <summary>
+    /// Records the duration of a single <see cref="DataExport.IPrivacyDataProvider.HasDataAsync"/>
+    /// probe during scope visibility resolution. Tagged by <c>provider_name</c> +
+    /// <c>tenant_id</c> only — never by request id (unbounded cardinality, VULN-204).
+    /// </summary>
+    public void RecordScopeProbeDuration(Guid? tenantId, string providerName, TimeSpan duration) =>
+        _scopeProbeDuration.Record(duration.TotalMilliseconds, new TagList
+        {
+            { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
+            { "provider_name", providerName },
+        });
 
     private static TagList CreateTags(string? tenantId, string? regulation) => new()
     {

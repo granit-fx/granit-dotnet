@@ -69,19 +69,40 @@ public sealed class PersonalDataExportSaga : Saga
     // handler discovery. An `Async`-suffixed name compiles to a silent no-op handler.
     public async Task<ExportCompletedEto?> Start(
         PersonalDataRequestedEto @event,
-        IDataProviderRegistry registry,
+        IPrivacyScopeResolver scopeResolver,
         IOptions<GranitPrivacyOptions> options,
         IMessageContext context,
-        PrivacyMetrics metrics)
+        PrivacyMetrics metrics,
+        CancellationToken cancellationToken)
     {
         Id = @event.RequestId;
         UserId = @event.UserId;
         Regulation = @event.Regulation;
         TenantId = @event.TenantId;
         RequestedAt = @event.RequestedAt;
-        ExpectedCount = registry.Count;
         metrics.RecordExportRequested(TenantId, Regulation);
-        PendingProviders = [.. registry.GetAll()];
+
+        // Apply visibility gates + intersect with the subject's RequestedScopes list.
+        // RequestedScopes naming an unknown / hidden provider is silently dropped (VULN-202:
+        // never echo unknown scope names back). Null means "all visible to me" — Takeout default.
+        PrivacyExportContext exportContext = new(
+            RequestId: @event.RequestId,
+            SubjectUserId: @event.UserId,
+            CallerUserId: @event.UserId,
+            TenantId: TryParseTenantId(@event.TenantId),
+            Regulation: @event.Regulation);
+
+        IReadOnlyList<ProviderDescriptor> visible = await scopeResolver
+            .ListVisibleAsync(exportContext, cancellationToken)
+            .ConfigureAwait(false);
+
+        IEnumerable<string> selected = @event.RequestedScopes is null
+            ? visible.Select(d => d.ProviderName)
+            : visible.Select(d => d.ProviderName)
+                .Intersect(@event.RequestedScopes, StringComparer.OrdinalIgnoreCase);
+
+        PendingProviders = [.. selected];
+        ExpectedCount = PendingProviders.Count;
 
         if (ExpectedCount == 0)
         {
@@ -160,4 +181,9 @@ public sealed class PersonalDataExportSaga : Saga
             Regulation,
             RequestedAt);
     }
+
+    // Eto-side TenantId is still typed as string? (legacy schema). The Guid? migration
+    // ships as a separate breaking pass alongside metrics widening; until then we try-parse.
+    private static Guid? TryParseTenantId(string? value) =>
+        Guid.TryParse(value, out Guid parsed) ? parsed : null;
 }

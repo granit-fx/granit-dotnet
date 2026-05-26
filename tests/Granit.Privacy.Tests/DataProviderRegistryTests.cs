@@ -40,7 +40,7 @@ public sealed class DataProviderRegistryTests
     [Fact]
     public void Register_NullOrWhitespace_ThrowsArgumentException()
     {
-        Action actNull = () => _sut.Register(null!);
+        Action actNull = () => _sut.Register((string)null!);
         Action actEmpty = () => _sut.Register("");
         Action actWhitespace = () => _sut.Register("   ");
 

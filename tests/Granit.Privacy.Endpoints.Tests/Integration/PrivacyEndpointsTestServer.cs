@@ -51,6 +51,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
     public ICurrentUserService CurrentUser { get; }
     public IExportRequestTrackerWriter ExportWriter { get; }
     public IExportRequestTrackerReader ExportReader { get; }
+    public IPrivacyScopeResolver ScopeResolver { get; }
     public IDeletionRequestTrackerWriter DeletionWriter { get; }
     public IDeletionRequestTrackerReader DeletionReader { get; }
     public ILegalDocumentRegistry DocumentRegistry { get; }
@@ -75,6 +76,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         ICurrentUserService currentUser,
         IExportRequestTrackerWriter exportWriter,
         IExportRequestTrackerReader exportReader,
+        IPrivacyScopeResolver scopeResolver,
         IDeletionRequestTrackerWriter deletionWriter,
         IDeletionRequestTrackerReader deletionReader,
         ILegalDocumentRegistry documentRegistry,
@@ -98,6 +100,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         CurrentUser = currentUser;
         ExportWriter = exportWriter;
         ExportReader = exportReader;
+        ScopeResolver = scopeResolver;
         DeletionWriter = deletionWriter;
         DeletionReader = deletionReader;
         DocumentRegistry = documentRegistry;
@@ -125,6 +128,9 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
 
         IExportRequestTrackerWriter exportWriter = Substitute.For<IExportRequestTrackerWriter>();
         IExportRequestTrackerReader exportReader = Substitute.For<IExportRequestTrackerReader>();
+        IPrivacyScopeResolver scopeResolver = Substitute.For<IPrivacyScopeResolver>();
+        scopeResolver.ListVisibleAsync(Arg.Any<PrivacyExportContext>(), Arg.Any<CancellationToken>())
+            .Returns((IReadOnlyList<ProviderDescriptor>)[]);
         IDeletionRequestTrackerWriter deletionWriter = Substitute.For<IDeletionRequestTrackerWriter>();
         IDeletionRequestTrackerReader deletionReader = Substitute.For<IDeletionRequestTrackerReader>();
         ILegalDocumentRegistry documentRegistry = Substitute.For<ILegalDocumentRegistry>();
@@ -193,6 +199,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(currentUser);
         builder.Services.AddSingleton(exportWriter);
         builder.Services.AddSingleton(exportReader);
+        builder.Services.AddSingleton(scopeResolver);
         builder.Services.AddSingleton(deletionWriter);
         builder.Services.AddSingleton(deletionReader);
         builder.Services.AddSingleton(documentRegistry);
@@ -237,7 +244,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
 
         return new PrivacyEndpointsTestServer(
             app, authenticatedClient, anonymousClient,
-            currentUser, exportWriter, exportReader,
+            currentUser, exportWriter, exportReader, scopeResolver,
             deletionWriter, deletionReader,
             documentRegistry, agreementChecker, agreementStoreReader, agreementStoreWriter,
             regulationResolver, optOutWriter, optOutReader, purposeRegistry,

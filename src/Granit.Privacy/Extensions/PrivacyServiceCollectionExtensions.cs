@@ -47,6 +47,11 @@ public static class PrivacyServiceCollectionExtensions
             dataProviderRegistry.Register(providerName);
         }
 
+        foreach (ProviderRegistration registration in builder.DataProviderRegistrations)
+        {
+            dataProviderRegistry.Register(registration);
+        }
+
         foreach (LegalDocumentDefinition document in builder.LegalDocuments)
         {
             legalDocumentRegistry.Register(document);
@@ -57,6 +62,11 @@ public static class PrivacyServiceCollectionExtensions
         services.TryAddSingleton<IDataProviderRegistry>(dataProviderRegistry);
         services.TryAddSingleton(legalDocumentRegistry);
         services.TryAddSingleton<IProcessingPurposeRegistry>(purposeRegistry);
+
+        // Scope-visibility infrastructure. Default policy is fail-open (every provider that
+        // has data stays visible) — hosts override via services.AddSingleton<IPrivacyScopeVisibilityPolicy, ...>.
+        services.TryAddSingleton<IPrivacyScopeVisibilityPolicy, AllowAllPrivacyScopeVisibilityPolicy>();
+        services.TryAddScoped<IPrivacyScopeResolver, PrivacyScopeResolver>();
 
         // When Granit.Privacy.EntityFrameworkCore is wired (ILegalDocumentReader registered),
         // use the composite registry (DB-first, static-fallback with distributed cache).

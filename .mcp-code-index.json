@@ -37265,7 +37265,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Events/PersonalDataRequestedEto.cs",
-      "line": 10,
+      "line": 25,
       "members": []
     },
     {
@@ -37319,7 +37319,7 @@
       "kind": "interface",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/IDataProviderRegistry.cs",
-      "line": 8,
+      "line": 10,
       "members": [
         {
           "name": "Register",
@@ -37328,10 +37328,22 @@
           "returnType": "void"
         },
         {
+          "name": "Register",
+          "kind": "method",
+          "signature": "Register(ProviderRegistration registration)",
+          "returnType": "void"
+        },
+        {
           "name": "GetAll",
           "kind": "method",
           "signature": "GetAll()",
           "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "GetAllRegistrations",
+          "kind": "method",
+          "signature": "GetAllRegistrations()",
+          "returnType": "IReadOnlyList<ProviderRegistration>"
         }
       ]
     },
@@ -37402,6 +37414,38 @@
       ]
     },
     {
+      "name": "IPrivacyScopeResolver",
+      "fqn": "Granit.Privacy.DataExport.IPrivacyScopeResolver",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyScopeResolver.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "ListVisibleAsync",
+          "kind": "method",
+          "signature": "ListVisibleAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyList<ProviderDescriptor>>"
+        }
+      ]
+    },
+    {
+      "name": "IPrivacyScopeVisibilityPolicy",
+      "fqn": "Granit.Privacy.DataExport.IPrivacyScopeVisibilityPolicy",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyScopeVisibilityPolicy.cs",
+      "line": 33,
+      "members": [
+        {
+          "name": "IsVisibleAsync",
+          "kind": "method",
+          "signature": "IsVisibleAsync(ProviderDescriptor descriptor, PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
       "name": "PersonalDataExportSaga",
       "fqn": "Granit.Privacy.DataExport.PersonalDataExportSaga",
       "kind": "class",
@@ -37430,7 +37474,7 @@
         {
           "name": "Start",
           "kind": "method",
-          "signature": "Start(PersonalDataRequestedEto @event, IDataProviderRegistry registry, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics)",
+          "signature": "Start(PersonalDataRequestedEto @event, IPrivacyScopeResolver scopeResolver, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics, CancellationToken cancellationToken)",
           "returnType": "string? TenantId { get; set; } public DateTimeOffset RequestedAt { get; set; } public Task<ExportCompletedEto?>"
         }
       ]
@@ -37457,6 +37501,24 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/PrivacyExportContext.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "ProviderDescriptor",
+      "fqn": "Granit.Privacy.DataExport.ProviderDescriptor",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/ProviderDescriptor.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "ProviderRegistration",
+      "fqn": "Granit.Privacy.DataExport.ProviderRegistration",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/ProviderRegistration.cs",
       "line": 17,
       "members": []
     },
@@ -37586,6 +37648,12 @@
           "kind": "method",
           "signature": "RecordOptOutRevoked(string? tenantId, string? regulation = null)",
           "returnType": "void"
+        },
+        {
+          "name": "RecordScopeProbeDuration",
+          "kind": "method",
+          "signature": "RecordScopeProbeDuration(Guid? tenantId, string providerName, TimeSpan duration)",
+          "returnType": "void"
         }
       ]
     },
@@ -37694,12 +37762,30 @@
       "members": []
     },
     {
+      "name": "PrivacyExportRequest",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyExportRequest",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyExportRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "PrivacyExportRequestResponse",
       "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyExportRequestResponse",
       "kind": "record",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyExportRequestResponse.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportScopeResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyExportScopeResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyExportScopeResponse.cs",
+      "line": 15,
       "members": []
     },
     {

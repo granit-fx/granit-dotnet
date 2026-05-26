@@ -75,6 +75,7 @@ public sealed class PrivacySagaWolverineCodegenTests
             .ConfigureServices(services =>
             {
                 services.AddSingleton<IDataProviderRegistry>(new DataProviderRegistry());
+                services.AddSingleton(Substitute.For<IPrivacyScopeResolver>());
                 services.AddSingleton(Substitute.For<IDeletionRequestTrackerWriter>());
                 services.AddSingleton(TimeProvider.System);
                 services.AddSingleton(Substitute.For<ILegalDocumentRegistry>());
