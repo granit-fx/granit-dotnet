@@ -37,6 +37,36 @@ builder.Services.AddGranitIndexingBackend<Guid, MyHitResponse>(
     row => new MyHitResponse(row.Key, row.Summary ?? string.Empty, row.Tags));
 ```
 
+## Alternative: fold into a host-owned DbContext
+
+Hosts that prefer one consolidated DbContext (single migration tree, single
+connection scope) can skip `AddGranitIndexingEntityFrameworkCore` and call
+`modelBuilder.ConfigureIndexingModule(...)` from their own `OnModelCreating`:
+
+```csharp
+public sealed class AppDbContext(
+    DbContextOptions<AppDbContext> options,
+    ICurrentTenant currentTenant,
+    IDataFilter? dataFilter = null)
+    : GranitDbContext(options, currentTenant, dataFilter)
+{
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+    {
+        // ... host entities ...
+        modelBuilder.ConfigureIndexingModule(
+            indexedKeyTypes: [typeof(Guid)],
+            defaultDictionary: "english",
+            embeddingDimensions: 1536, // null when not using Granit.Indexing.Embeddings
+            isPostgres: true);
+    }
+}
+```
+
+The folded path applies the same conventions (audit fields, soft delete, tenant
+filter) via the host's `ApplyGranitConventions` — no extra wiring required. The
+isolated `IndexingDbContext` path remains supported in parallel; pick the one
+that matches your migration strategy.
+
 ## Migrations
 
 This package ships no EF migrations. Consumer hosts own them.

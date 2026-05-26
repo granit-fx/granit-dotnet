@@ -1,5 +1,5 @@
-using System.Reflection;
 using Granit.DataFiltering;
+using Granit.Indexing.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -20,7 +20,15 @@ namespace Granit.Indexing.EntityFrameworkCore;
 /// <b>Per-key-type shape.</b> Consumers pass every key type they index to
 /// <c>AddGranitIndexingEntityFrameworkCore</c>; the DbContext enumerates registrations
 /// from <see cref="IndexingDbContextSchema"/> at <see cref="OnGranitModelCreating"/>
-/// time and maps one <see cref="IndexedEntryRow{TKey}"/> per registered key type.
+/// time and delegates the model-building to
+/// <c>ModelBuilderExtensions.ConfigureIndexingModule</c>.
+/// </para>
+/// <para>
+/// <b>Alternative folding path.</b> Hosts that prefer a single consolidated DbContext
+/// (single migration tree, single connection scope) can skip
+/// <c>AddGranitIndexingEntityFrameworkCore</c> entirely and call
+/// <c>modelBuilder.ConfigureIndexingModule([typeof(Guid), ...])</c> directly from
+/// their own <see cref="DbContext.OnModelCreating"/>.
 /// </para>
 /// </remarks>
 public sealed class IndexingDbContext : GranitDbContext
@@ -47,83 +55,14 @@ public sealed class IndexingDbContext : GranitDbContext
     {
         bool isPostgres = string.Equals(Database.ProviderName, GranitDbProviders.Postgres, StringComparison.Ordinal);
 
-        if (isPostgres && EmbeddingDimensions.HasValue)
-        {
-            modelBuilder.HasPostgresExtension("vector");
-        }
-
-        // Rebuild-job checkpoint table — always mapped so the
-        // EfRebuildCheckpointStore impl works without a separate DbContext.
-        modelBuilder.ApplyConfiguration(new Configurations.IndexingRebuildCheckpointRowConfiguration());
-
-        foreach (Type keyType in IndexedKeyTypes)
-        {
-            ApplyConfigurationMethod
-                .MakeGenericMethod(typeof(IndexedEntryRow<>).MakeGenericType(keyType))
-                .Invoke(modelBuilder, [Activator.CreateInstance(typeof(Configurations.IndexedEntryRowConfiguration<>).MakeGenericType(keyType))!]);
-
-            if (isPostgres)
-            {
-                HasGeneratedTsVectorColumnMethod
-                    .MakeGenericMethod(keyType)
-                    .Invoke(null, [modelBuilder, DefaultDictionary]);
-
-                if (EmbeddingDimensions.HasValue)
-                {
-                    HasEmbeddingColumnMethod
-                        .MakeGenericMethod(keyType)
-                        .Invoke(null, [modelBuilder, EmbeddingDimensions.Value]);
-                }
-                else
-                {
-                    IgnoreEmbeddingColumnMethod
-                        .MakeGenericMethod(keyType)
-                        .Invoke(null, [modelBuilder]);
-                }
-            }
-            else
-            {
-                // Non-Postgres providers (in-memory / SQLite test rigs) don't have tsvector
-                // or pgvector; unmap both so EF Core's relational provider doesn't try to
-                // emit columns it cannot translate.
-                IgnoreSearchVectorMethod
-                    .MakeGenericMethod(keyType)
-                    .Invoke(null, [modelBuilder]);
-                IgnoreEmbeddingColumnMethod
-                    .MakeGenericMethod(keyType)
-                    .Invoke(null, [modelBuilder]);
-            }
-        }
+        modelBuilder.ConfigureIndexingModule(
+            IndexedKeyTypes,
+            DefaultDictionary,
+            EmbeddingDimensions,
+            isPostgres);
 
         modelBuilder.ApplyGranitConventions(currentTenant: null, dataFilter: null);
     }
-
-    private static readonly MethodInfo ApplyConfigurationMethod = typeof(ModelBuilder)
-        .GetMethods()
-        .Single(m => m.Name == nameof(ModelBuilder.ApplyConfiguration) && m.IsGenericMethod && m.GetParameters().Length == 1);
-
-    private static readonly MethodInfo HasGeneratedTsVectorColumnMethod =
-        typeof(Extensions.ModelBuilderExtensions).GetMethod(
-            nameof(Extensions.ModelBuilderExtensions.HasGeneratedTsVectorColumn),
-            BindingFlags.Static | BindingFlags.Public)!;
-
-    private static readonly MethodInfo HasEmbeddingColumnMethod =
-        typeof(Extensions.ModelBuilderExtensions).GetMethod(
-            nameof(Extensions.ModelBuilderExtensions.HasEmbeddingColumn),
-            BindingFlags.Static | BindingFlags.Public)!;
-
-    private static readonly MethodInfo IgnoreEmbeddingColumnMethod =
-        typeof(Extensions.ModelBuilderExtensions).GetMethod(
-            nameof(Extensions.ModelBuilderExtensions.IgnoreEmbeddingColumn),
-            BindingFlags.Static | BindingFlags.Public)!;
-
-    private static readonly MethodInfo IgnoreSearchVectorMethod =
-        typeof(IndexingDbContext).GetMethod(
-            nameof(IgnoreSearchVector),
-            BindingFlags.Static | BindingFlags.NonPublic)!;
-
-    private static void IgnoreSearchVector<TKey>(ModelBuilder modelBuilder) =>
-        modelBuilder.Entity<IndexedEntryRow<TKey>>().Ignore(e => e.SearchVector);
 }
 
 /// <summary>

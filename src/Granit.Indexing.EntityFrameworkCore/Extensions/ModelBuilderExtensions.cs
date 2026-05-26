@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,6 +14,149 @@ namespace Granit.Indexing.EntityFrameworkCore.Extensions;
 /// </remarks>
 public static class ModelBuilderExtensions
 {
+    /// <summary>
+    /// Applies the Granit Indexing module's entity configurations to a host-owned
+    /// <see cref="ModelBuilder"/> — the <c>IndexedEntryRow&lt;TKey&gt;</c> table for each
+    /// registered key type, plus the rebuild-job checkpoint table. Use this when the
+    /// host wants the indexing entities folded into its consolidated DbContext instead
+    /// of running the isolated <c>IndexingDbContext</c>. Both code paths are supported.
+    /// </summary>
+    /// <param name="modelBuilder">EF Core model builder.</param>
+    /// <param name="indexedKeyTypes">
+    /// CLR types of the indexed-entry keys (e.g. <c>typeof(Guid)</c>). One table is
+    /// created per registered type. Must contain at least one type.
+    /// </param>
+    /// <param name="defaultDictionary">
+    /// Postgres text-search dictionary for the generated <c>tsvector</c> column. Defaults
+    /// to <c>english</c> — override per-deployment for other corpora. Ignored on
+    /// non-Postgres providers (the column is unmapped).
+    /// </param>
+    /// <param name="embeddingDimensions">
+    /// Vector dimensionality when the host opts into <c>Granit.Indexing.Embeddings</c>.
+    /// When <see langword="null"/>, the embedding column is unmapped. On Postgres, the
+    /// <c>vector</c> extension is also registered (<c>HasPostgresExtension("vector")</c>).
+    /// </param>
+    /// <param name="isPostgres">
+    /// Whether the host DbContext targets Npgsql. Controls whether the Postgres-specific
+    /// generated columns (<c>tsvector</c>, <c>vector(N)</c>) are emitted. Default
+    /// <see langword="true"/>; pass <see langword="false"/> for SQLite / in-memory test
+    /// rigs where the generated columns can't be translated.
+    /// </param>
+    /// <remarks>
+    /// <para>
+    /// Mirrors the pattern in <c>Granit.Auditing.EntityFrameworkCore.ConfigureAuditingModule</c>,
+    /// <c>Granit.Presence.EntityFrameworkCore.ConfigurePresenceModule</c>, etc. The
+    /// isolated <c>IndexingDbContext</c> calls this internally — single source of truth.
+    /// </para>
+    /// <para>
+    /// <b>Caller responsibilities</b> when using this in a folded host DbContext:
+    /// </para>
+    /// <list type="bullet">
+    /// <item>Add <c>options.UseNpgsql(cs, npg =&gt; npg.UseVector())</c> if embeddings are
+    /// active — without it Npgsql throws on the <c>vector</c> column type.</item>
+    /// <item>Pair the EF tenant filter wiring (<c>ApplyGranitConventions</c>) as usual.</item>
+    /// <item>Migrations live in the host's migration project; the isolated DbContext's
+    /// migrations are NOT run when this method is used.</item>
+    /// </list>
+    /// </remarks>
+    public static ModelBuilder ConfigureIndexingModule(
+        this ModelBuilder modelBuilder,
+        IEnumerable<Type> indexedKeyTypes,
+        string defaultDictionary = "english",
+        int? embeddingDimensions = null,
+        bool isPostgres = true)
+    {
+        ArgumentNullException.ThrowIfNull(modelBuilder);
+        ArgumentNullException.ThrowIfNull(indexedKeyTypes);
+        ArgumentException.ThrowIfNullOrEmpty(defaultDictionary);
+
+        Type[] keys = [.. indexedKeyTypes];
+        if (keys.Length == 0)
+        {
+            throw new ArgumentException(
+                "At least one TKey must be supplied — Granit.Indexing maps one table per key type.",
+                nameof(indexedKeyTypes));
+        }
+
+        if (isPostgres && embeddingDimensions.HasValue)
+        {
+            modelBuilder.HasPostgresExtension("vector");
+        }
+
+        modelBuilder.ApplyConfiguration(new Configurations.IndexingRebuildCheckpointRowConfiguration());
+
+        foreach (Type keyType in keys)
+        {
+            ApplyConfigurationMethod
+                .MakeGenericMethod(typeof(IndexedEntryRow<>).MakeGenericType(keyType))
+                .Invoke(modelBuilder, [Activator.CreateInstance(typeof(Configurations.IndexedEntryRowConfiguration<>).MakeGenericType(keyType))!]);
+
+            if (isPostgres)
+            {
+                HasGeneratedTsVectorColumnMethod
+                    .MakeGenericMethod(keyType)
+                    .Invoke(null, [modelBuilder, defaultDictionary]);
+
+                if (embeddingDimensions.HasValue)
+                {
+                    HasEmbeddingColumnMethod
+                        .MakeGenericMethod(keyType)
+                        .Invoke(null, [modelBuilder, embeddingDimensions.Value]);
+                }
+                else
+                {
+                    IgnoreEmbeddingColumnMethod
+                        .MakeGenericMethod(keyType)
+                        .Invoke(null, [modelBuilder]);
+                }
+            }
+            else
+            {
+                IgnoreSearchVectorMethod
+                    .MakeGenericMethod(keyType)
+                    .Invoke(null, [modelBuilder]);
+                IgnoreEmbeddingColumnMethod
+                    .MakeGenericMethod(keyType)
+                    .Invoke(null, [modelBuilder]);
+            }
+        }
+
+        return modelBuilder;
+    }
+
+    private static readonly MethodInfo ApplyConfigurationMethod = typeof(ModelBuilder)
+        .GetMethods()
+        .Single(m => m.Name == nameof(ModelBuilder.ApplyConfiguration) && m.IsGenericMethod && m.GetParameters().Length == 1);
+
+    private static readonly MethodInfo HasGeneratedTsVectorColumnMethod =
+        typeof(ModelBuilderExtensions).GetMethod(
+            nameof(HasGeneratedTsVectorColumn),
+            BindingFlags.Static | BindingFlags.Public)!;
+
+    private static readonly MethodInfo HasEmbeddingColumnMethod =
+        typeof(ModelBuilderExtensions).GetMethod(
+            nameof(HasEmbeddingColumn),
+            BindingFlags.Static | BindingFlags.Public)!;
+
+    private static readonly MethodInfo IgnoreEmbeddingColumnMethod =
+        typeof(ModelBuilderExtensions).GetMethod(
+            nameof(IgnoreEmbeddingColumn),
+            BindingFlags.Static | BindingFlags.Public)!;
+
+    private static readonly MethodInfo IgnoreSearchVectorMethod =
+        typeof(ModelBuilderExtensions).GetMethod(
+            nameof(IgnoreSearchVector),
+            BindingFlags.Static | BindingFlags.NonPublic)!;
+
+    internal static EntityTypeBuilder<IndexedEntryRow<TKey>> IgnoreSearchVector<TKey>(
+        this ModelBuilder modelBuilder)
+    {
+        ArgumentNullException.ThrowIfNull(modelBuilder);
+        EntityTypeBuilder<IndexedEntryRow<TKey>> entity = modelBuilder.Entity<IndexedEntryRow<TKey>>();
+        entity.Ignore(e => e.SearchVector);
+        return entity;
+    }
+
     /// <summary>
     /// Configures <see cref="IndexedEntryRow{TKey}.SearchVector"/> as a Postgres
     /// <c>tsvector</c> column generated from <see cref="IndexedEntryRow{TKey}.Content"/>
