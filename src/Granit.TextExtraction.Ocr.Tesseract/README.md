@@ -63,6 +63,19 @@ services.AddTesseractOcrExtractor(o =>
   pipeline never throws on OCR failure so a broken image doesn't tank the rest of
   the document.
 
+## Modern Linux + libdl
+
+On Ubuntu 24.04 / Debian 13 (glibc ≥ 2.34) `libdl` was merged into `libc` —
+the standalone `libdl.so` symlink only ships with `libc6-dev`. The Charlesw
+NuGet declares `[DllImport("libdl")]` with the bare name, so without a fix
+P/Invoke fails to resolve and the loader throws `DllNotFoundException`
+listing a dozen probed paths. `DefaultTesseractRecognizer` installs a
+`NativeLibrary.SetDllImportResolver` on the Tesseract assembly the first
+time it builds an engine — it rewrites the bare `libdl` lookup to
+`libdl.so.2` (always present in `libc6`). Hosts that ship a custom
+`ITesseractRecognizer` should mirror that call site if they target modern
+Linux.
+
 ## Native-library search path
 
 The Charlesw `Tesseract` NuGet uses its own `InteropDotNet.LibraryLoader` on

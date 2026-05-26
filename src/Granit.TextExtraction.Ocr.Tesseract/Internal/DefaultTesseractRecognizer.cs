@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Runtime.InteropServices;
 using Granit.TextExtraction.Ocr.Tesseract.Options;
 using Microsoft.Extensions.Options;
 using Tesseract;
@@ -11,6 +13,8 @@ namespace Granit.TextExtraction.Ocr.Tesseract.Internal;
 /// </summary>
 internal sealed class DefaultTesseractRecognizer : ITesseractRecognizer, IDisposable
 {
+    private static int _nativeResolverInstalled;
+
     private readonly TesseractOcrOptions _options;
     private readonly Lock _gate = new();
     private TesseractEngine? _engine;
@@ -38,6 +42,7 @@ internal sealed class DefaultTesseractRecognizer : ITesseractRecognizer, IDispos
 
             if (_engine is null)
             {
+                InstallNativeResolverOnce();
                 ApplyLibrarySearchPath();
                 _engine = new TesseractEngine(
                     _options.DataPath ?? throw new InvalidOperationException(
@@ -68,6 +73,49 @@ internal sealed class DefaultTesseractRecognizer : ITesseractRecognizer, IDispos
         {
             TesseractEnviornment.CustomSearchPath = _options.LibrarySearchPath;
         }
+    }
+
+    private static void InstallNativeResolverOnce()
+    {
+        // Modern Linux (Ubuntu 24.04 / Debian 13 with glibc ≥ 2.34) merged libdl into
+        // libc — the standalone `libdl.so` symlink no longer ships with libc6, only
+        // with libc6-dev. The Charlesw NuGet's `[DllImport("libdl")]` therefore fails
+        // to resolve at runtime, and InteropDotNet's loader probes path-after-path
+        // for `libdl[.so]` / `liblibdl[.so]` before throwing DllNotFoundException.
+        // Bridge via a per-assembly DllImportResolver that points the bare name at
+        // the versioned ABI which is always present in libc6.
+        //
+        // No-op on Windows / macOS — their loaders handle libdl differently or not
+        // at all (Windows uses Kernel32, macOS dyld is bundled).
+        if (Interlocked.CompareExchange(ref _nativeResolverInstalled, 1, 0) != 0)
+        {
+            return;
+        }
+
+        if (!OperatingSystem.IsLinux())
+        {
+            return;
+        }
+
+        try
+        {
+            NativeLibrary.SetDllImportResolver(typeof(TesseractEngine).Assembly, ResolveTesseractNative);
+        }
+        catch (InvalidOperationException)
+        {
+            // Another caller in the same process installed a resolver first — accept
+            // their wiring and skip ours. Setting the flag above prevents a retry loop.
+        }
+    }
+
+    private static IntPtr ResolveTesseractNative(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+    {
+        if (string.Equals(libraryName, "libdl", StringComparison.Ordinal)
+            && NativeLibrary.TryLoad("libdl.so.2", assembly, searchPath, out IntPtr handle))
+        {
+            return handle;
+        }
+        return IntPtr.Zero;
     }
 
     public void Dispose()
