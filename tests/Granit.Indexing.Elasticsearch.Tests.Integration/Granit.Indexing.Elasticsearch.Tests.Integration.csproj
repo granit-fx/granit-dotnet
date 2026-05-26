@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <!-- Excluded from the CI unit-test job; requires the Elasticsearch Testcontainer. -->
+    <IsTestProject Condition="'$(SkipIntegrationTests)' == 'true'">false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Testcontainers.Elasticsearch" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Indexing.Elasticsearch\Granit.Indexing.Elasticsearch.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Indexing\Granit.Indexing.csproj" />
+  </ItemGroup>
+
+</Project>

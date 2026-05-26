@@ -1161,6 +1161,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Indexing.Elasticsearch",
+      "deps": [
+        "Granit.Indexing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Indexing.EntityFrameworkCore",
       "deps": [
         "Granit.Indexing",
@@ -25750,6 +25757,121 @@
       "file": "src/Granit.Indexing/Diagnostics/IndexingMetrics.cs",
       "line": 17,
       "members": []
+    },
+    {
+      "name": "ElasticsearchTenancyStrategy",
+      "fqn": "Granit.Indexing.Elasticsearch.ElasticsearchTenancyStrategy",
+      "kind": "enum",
+      "project": "Granit.Indexing.Elasticsearch",
+      "file": "src/Granit.Indexing.Elasticsearch/ElasticsearchTenancyStrategy.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Indexing.Elasticsearch.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Indexing.Elasticsearch",
+      "file": "src/Granit.Indexing.Elasticsearch/Extensions/ServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitIndexingElasticsearch",
+          "kind": "method",
+          "signature": "AddGranitIndexingElasticsearch(this IServiceCollection services, Action<ElasticsearchClientSettings>? configureClient, params Type[] indexedKeyTypes)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIndexingElasticsearchModule",
+      "fqn": "Granit.Indexing.Elasticsearch.GranitIndexingElasticsearchModule",
+      "kind": "class",
+      "project": "Granit.Indexing.Elasticsearch",
+      "file": "src/Granit.Indexing.Elasticsearch/GranitIndexingElasticsearchModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IndexedEntryDocument",
+      "fqn": "Granit.Indexing.Elasticsearch.IndexedEntryDocument",
+      "kind": "class",
+      "project": "Granit.Indexing.Elasticsearch",
+      "file": "src/Granit.Indexing.Elasticsearch/IndexedEntryDocument.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Key",
+          "kind": "property",
+          "signature": "string Key",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "IndexingElasticsearchOptions",
+      "fqn": "Granit.Indexing.Elasticsearch.Options.IndexingElasticsearchOptions",
+      "kind": "class",
+      "project": "Granit.Indexing.Elasticsearch",
+      "file": "src/Granit.Indexing.Elasticsearch/Options/IndexingElasticsearchOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Uri",
+          "kind": "property",
+          "signature": "string Uri",
+          "returnType": "string"
+        },
+        {
+          "name": "ApiKey",
+          "kind": "property",
+          "signature": "string? ApiKey",
+          "returnType": "string?"
+        },
+        {
+          "name": "IndexPrefix",
+          "kind": "property",
+          "signature": "string IndexPrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "BulkBatchSize",
+          "kind": "property",
+          "signature": "int BulkBatchSize",
+          "returnType": "int"
+        },
+        {
+          "name": "StoreFullContentInIndex",
+          "kind": "property",
+          "signature": "bool StoreFullContentInIndex",
+          "returnType": "bool"
+        },
+        {
+          "name": "UseSimpleQueryString",
+          "kind": "property",
+          "signature": "bool UseSimpleQueryString",
+          "returnType": "bool"
+        },
+        {
+          "name": "LanguageAnalyzers",
+          "kind": "property",
+          "signature": "IDictionary<string, string> LanguageAnalyzers",
+          "returnType": "IDictionary<string, string>"
+        },
+        {
+          "name": "DefaultAnalyzer",
+          "kind": "property",
+          "signature": "string DefaultAnalyzer",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "ModelBuilderExtensions",

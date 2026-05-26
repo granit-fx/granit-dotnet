@@ -109,6 +109,7 @@ Dernière mise à jour : 2026-05-26 (ajout du dataset Franc pour `Granit.Languag
 | AWSSDK.SecretsManager | 4.0.4.24 | Amazon Web Services, Inc. |
 | AWSSDK.SimpleEmailV2 | 4.0.13 | Amazon Web Services, Inc. |
 | AWSSDK.SimpleNotificationService | 4.0.2.34 | Amazon Web Services, Inc. |
+| Elastic.Clients.Elasticsearch | 8.18.0 | Copyright Elasticsearch B.V. |
 | Fido2 | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.AspNet | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.Models | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
@@ -187,6 +188,7 @@ Dernière mise à jour : 2026-05-26 (ajout du dataset Franc pour `Granit.Languag
 | Microsoft.EntityFrameworkCore.Sqlite | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.Extensions.TimeProvider.Testing | 10.6.0 | (c) Microsoft Corporation |
 | Microsoft.NET.Test.Sdk | 18.5.1 | (c) Microsoft Corporation |
+| Testcontainers.Elasticsearch | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
 | Testcontainers.Keycloak | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
 | Testcontainers.MsSql | 4.11.0 | Copyright (c) 2019-2025 Andre Hofmeister |
 | Testcontainers.PostgreSql | 4.12.0 | Copyright (c) 2019-2025 Andre Hofmeister |

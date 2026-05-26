@@ -134,6 +134,7 @@
       "src/Granit.Imaging.AI/Granit.Imaging.AI.csproj",
       "src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj",
       "src/Granit.Imaging/Granit.Imaging.csproj",
+      "src/Granit.Indexing.Elasticsearch/Granit.Indexing.Elasticsearch.csproj",
       "src/Granit.Indexing.EntityFrameworkCore/Granit.Indexing.EntityFrameworkCore.csproj",
       "src/Granit.Indexing.Privacy/Granit.Indexing.Privacy.csproj",
       "src/Granit.Indexing/Granit.Indexing.csproj",

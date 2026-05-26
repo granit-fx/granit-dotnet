@@ -187,6 +187,7 @@
         "tests/Granit.MultiTenancy.Tests",
         "tests/Granit.Html.AngleSharp.Tests",
         "tests/Granit.Html.Tests",
+        "tests/Granit.Indexing.Elasticsearch.Tests",
         "tests/Granit.Indexing.EntityFrameworkCore.Tests",
         "tests/Granit.Indexing.Privacy.Tests",
         "tests/Granit.Indexing.Tests",
@@ -324,6 +325,7 @@
       "projects": [
         "tests/Granit.Authorization.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.BackgroundJobs.Tests.Integration",
+        "tests/Granit.Indexing.Elasticsearch.Tests.Integration",
         "tests/Granit.Indexing.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.Caching.Tests.Integration",
         "tests/Granit.Http.ODataExposure.Tests.Integration",

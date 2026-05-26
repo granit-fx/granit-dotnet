@@ -200,8 +200,12 @@
     <PackageVersion Include="System.Text.Json" Version="9.*" />
     <PackageVersion Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="3.*" />
   </ItemGroup>
+  <ItemGroup Label="Search">
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.*" />
+  </ItemGroup>
   <ItemGroup Label="Tests">
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.*" />
+    <PackageVersion Include="Testcontainers.Elasticsearch" Version="4.*" />
     <PackageVersion Include="Testcontainers.Keycloak" Version="4.*" />
     <PackageVersion Include="Testcontainers.MsSql" Version="4.11.*" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.*" />

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Indexing.Elasticsearch</PackageId>
+    <Description>Elasticsearch 8.x backend for Granit.Indexing — opt-in BM25 search over per-language analyzers with shared / per-tenant index strategies. Replaces the default EF/tsvector implementations at registration time.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Indexing.Elasticsearch.Tests" />
+    <InternalsVisibleTo Include="Granit.Indexing.Elasticsearch.Tests.Integration" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Elastic.Clients.Elasticsearch" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Indexing\Granit.Indexing.csproj" />
+  </ItemGroup>
+
+</Project>
