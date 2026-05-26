@@ -237,5 +237,33 @@ internal sealed class S3BlobClient : IBlobStoreProvider, IPresignedUrlProvider, 
     }
 
     /// <inheritdoc/>
+    public async Task<MultipartWriteStream> OpenWriteMultipartAsync(
+        string bucket,
+        string objectKey,
+        string contentType,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(bucket);
+        ArgumentException.ThrowIfNullOrEmpty(objectKey);
+        ArgumentException.ThrowIfNullOrEmpty(contentType);
+
+        using Activity? activity = BlobStorageS3ActivitySource.Source.StartActivity("S3.InitiateMultipart");
+        activity?.SetTag(BlobStorageS3ActivitySource.TagBucket, bucket);
+        activity?.SetTag(BlobStorageS3ActivitySource.TagObjectKey, objectKey);
+        activity?.SetTag(BlobStorageS3ActivitySource.TagContentType, contentType);
+
+        InitiateMultipartUploadResponse initiateResponse = await _s3
+            .InitiateMultipartUploadAsync(new InitiateMultipartUploadRequest
+            {
+                BucketName = bucket,
+                Key = objectKey,
+                ContentType = contentType,
+            }, cancellationToken)
+            .ConfigureAwait(false);
+
+        return new S3MultipartWriteStream(_s3, bucket, objectKey, initiateResponse.UploadId);
+    }
+
+    /// <inheritdoc/>
     public void Dispose() => _s3.Dispose();
 }
