@@ -86,6 +86,15 @@ The archive assembler:
    `Completed`, `PartiallyCompleted` (saga timed out), or `SizeLimitExceeded`
    (archive exceeded `ExportMaxSizeMb`)
 
+## Bucket lifecycle policies
+
+Personal-data exports are persistent objects under GDPR Art. 12(3) and need an
+explicit retention ceiling on the storage account. The framework does NOT
+auto-delete on its own — host operators configure the lifecycle policy to
+match their compliance posture. Reference Terraform / Bicep snippets for S3,
+Azure Blob, and GCS, plus the planned tag-based completion lifecycle, live in
+[Lifecycle.md](Lifecycle.md).
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).
