@@ -16,7 +16,7 @@ public sealed class IndexingMetricsTests
         using MeterListener listener = new();
         listener.InstrumentPublished = (i, l) =>
         {
-            if (i.Meter.Name == IndexingMetrics.MeterName && i.Name == "granit.indexing.entry.indexed")
+            if (factory.Meters.Contains(i.Meter) && i.Name == "granit.indexing.entry.indexed")
             {
                 l.EnableMeasurementEvents(i);
             }
@@ -42,7 +42,7 @@ public sealed class IndexingMetricsTests
         using MeterListener listener = new();
         listener.InstrumentPublished = (i, l) =>
         {
-            if (i.Meter.Name == IndexingMetrics.MeterName && i.Name == "granit.indexing.search.queries")
+            if (factory.Meters.Contains(i.Meter) && i.Name == "granit.indexing.search.queries")
             {
                 l.EnableMeasurementEvents(i);
             }
@@ -62,13 +62,16 @@ public sealed class IndexingMetricsTests
     {
         // Avoid noisy zero-deltas in dashboards: the convention across Granit metrics is
         // not to emit a measurement when the delta is zero (or negative for counters).
+        // Scope the listener to instruments from THIS factory's meter — DefaultSearchService
+        // tests run in parallel and also publish to "granit.indexing.search.authorization_filtered"
+        // (with non-zero deltas like 16/32/64), which would otherwise leak into the assertion.
         using TestMeterFactory factory = new();
         List<long> measurements = [];
 
         using MeterListener listener = new();
         listener.InstrumentPublished = (i, l) =>
         {
-            if (i.Name == "granit.indexing.search.authorization_filtered")
+            if (factory.Meters.Contains(i.Meter) && i.Name == "granit.indexing.search.authorization_filtered")
             {
                 l.EnableMeasurementEvents(i);
             }

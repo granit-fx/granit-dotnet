@@ -6,6 +6,8 @@ internal sealed class TestMeterFactory : IMeterFactory
 {
     private readonly List<Meter> _meters = [];
 
+    public IReadOnlyList<Meter> Meters => _meters;
+
     public Meter Create(MeterOptions options)
     {
         Meter meter = new(options);
