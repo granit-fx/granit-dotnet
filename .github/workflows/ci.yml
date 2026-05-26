@@ -113,6 +113,26 @@ jobs:
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
           restore-keys: nuget-${{ runner.os }}-
 
+      # libtesseract is a runtime native dep for Granit.TextExtraction.Ocr.Tesseract's
+      # integration suite. Without TESSDATA_PREFIX set the live OCR tests skip
+      # themselves — dev machines that lack the system package still run the unit
+      # suite; the integration shard installs them and flips the switch.
+      #
+      # The Charlesw `Tesseract` NuGet (5.x) hard-codes the names
+      # `libleptonica-1.82.0` and `libtesseract50` when probing the loader path.
+      # apt ships `liblept.so.5` / `libtesseract.so.5` so we symlink the canonical
+      # names into place — without it, P/Invoke throws DllNotFoundException at the
+      # first OCR call.
+      - name: Install libtesseract (integration shard only)
+        if: matrix.shard.name == 'integration'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libtesseract5 tesseract-ocr-eng tesseract-ocr-fra
+          sudo ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
+          sudo ln -sf /usr/lib/x86_64-linux-gnu/libtesseract.so.5 /usr/lib/x86_64-linux-gnu/libtesseract50.so
+          echo "TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata" >> "$GITHUB_ENV"
+
       - name: Build shard
         run: >
           dotnet build .github/shard-filters/${{ matrix.shard.name }}.slnf

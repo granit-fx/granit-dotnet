@@ -24,6 +24,11 @@ Linux (Debian / Ubuntu):
 
 ```bash
 apt-get install -y libtesseract5 tesseract-ocr-eng tesseract-ocr-fra
+# The Charlesw Tesseract NuGet probes for "libleptonica-1.82.0" and
+# "libtesseract50" by name — the apt packages ship liblept.so.5 and
+# libtesseract.so.5 instead, so symlink the canonical names:
+ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
+ln -sf /usr/lib/x86_64-linux-gnu/libtesseract.so.5 /usr/lib/x86_64-linux-gnu/libtesseract50.so
 ```
 
 The traineddata path is then `/usr/share/tesseract-ocr/5/tessdata/`. Each language
@@ -46,3 +51,20 @@ adds ~10–30 MB.
 `TesseractEngine` (Tesseract is not thread-safe). For high-throughput workloads,
 register a custom `ITesseractRecognizer` that pools multiple engines before
 calling `AddTesseractOcrExtractor`.
+
+## Running the live OCR test suite locally
+
+The unit suite (`tests/Granit.TextExtraction.Ocr.Tesseract.Tests`) mocks the
+recognizer and runs everywhere. The live suite
+(`tests/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration`) drives the real
+native engine and is opt-in via the `TESSDATA_PREFIX` env var — without it the
+tests skip themselves so a missing system package doesn't block the unit run:
+
+```bash
+sudo apt-get install -y libtesseract5 tesseract-ocr-eng
+export TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+dotnet test tests/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration
+```
+
+CI installs the deps on the `integration` shard automatically; see
+`.github/workflows/ci.yml`.
