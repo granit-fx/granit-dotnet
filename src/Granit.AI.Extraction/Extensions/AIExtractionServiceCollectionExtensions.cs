@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.AI.Extraction.Internal;
 using Granit.AI.Extraction.Options;
+using Granit.AI.Extraction.RateLimiting;
+using Granit.AI.Extraction.Redaction;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -21,11 +23,28 @@ public static class AIExtractionServiceCollectionExtensions
     /// <returns>The builder for chaining.</returns>
     public static IHostApplicationBuilder AddGranitAIExtraction(this IHostApplicationBuilder builder)
     {
-        builder.Services
+        AddGranitAIExtractionCore(builder.Services);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers the cross-cutting services consumed by every AI-feature package
+    /// (rate limiter, content-redactor seam, extraction options). Called both from
+    /// <see cref="AddGranitAIExtraction(IHostApplicationBuilder)"/> and from
+    /// <c>GranitAIExtractionModule.ConfigureServices</c> so module-scanned hosts and
+    /// hand-wired hosts end up with the same defaults.
+    /// </summary>
+    internal static IServiceCollection AddGranitAIExtractionCore(IServiceCollection services)
+    {
+        services
             .AddOptions<ExtractionOptions>()
             .BindConfiguration(ExtractionOptions.SectionName);
 
-        return builder;
+        services.TryAddSingleton(TimeProvider.System);
+        services.TryAddSingleton<IAICallRateLimiter, AICallRateLimiter>();
+        services.TryAddSingleton<IAIContentRedactor, NoOpAIContentRedactor>();
+
+        return services;
     }
 
     /// <summary>

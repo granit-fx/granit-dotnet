@@ -1161,6 +1161,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Indexing.AI",
+      "deps": [
+        "Granit.AI.Extraction",
+        "Granit.Indexing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Indexing.Elasticsearch",
       "deps": [
         "Granit.Indexing"
@@ -1187,6 +1195,14 @@
       "name": "Granit.LanguageDetection",
       "deps": [
         "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.LanguageDetection.AI",
+      "deps": [
+        "Granit.AI.Extraction",
+        "Granit.LanguageDetection"
       ],
       "framework": "net10.0"
     },
@@ -3098,7 +3114,7 @@
       "kind": "class",
       "project": "Granit.AI.Extraction",
       "file": "src/Granit.AI.Extraction/Extensions/AIExtractionServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitAIExtraction",
@@ -3139,8 +3155,15 @@
       "kind": "class",
       "project": "Granit.AI.Extraction",
       "file": "src/Granit.AI.Extraction/GranitAIExtractionModule.cs",
-      "line": 14,
-      "members": []
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IDocumentExtractor",
@@ -3183,6 +3206,63 @@
           "kind": "property",
           "signature": "int TimeoutSeconds",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "AICallRateLimiter",
+      "fqn": "Granit.AI.Extraction.RateLimiting.AICallRateLimiter",
+      "kind": "class",
+      "project": "Granit.AI.Extraction",
+      "file": "src/Granit.AI.Extraction/RateLimiting/AICallRateLimiter.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "IAICallRateLimiter",
+      "fqn": "Granit.AI.Extraction.RateLimiting.IAICallRateLimiter",
+      "kind": "interface",
+      "project": "Granit.AI.Extraction",
+      "file": "src/Granit.AI.Extraction/RateLimiting/IAICallRateLimiter.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "TryAcquireAsync",
+          "kind": "method",
+          "signature": "TryAcquireAsync(string bucketKey, int maxCallsPerHour, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
+      "name": "IAIContentRedactor",
+      "fqn": "Granit.AI.Extraction.Redaction.IAIContentRedactor",
+      "kind": "interface",
+      "project": "Granit.AI.Extraction",
+      "file": "src/Granit.AI.Extraction/Redaction/IAIContentRedactor.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "Redact",
+          "kind": "method",
+          "signature": "Redact(string content)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "NoOpAIContentRedactor",
+      "fqn": "Granit.AI.Extraction.Redaction.NoOpAIContentRedactor",
+      "kind": "class",
+      "project": "Granit.AI.Extraction",
+      "file": "src/Granit.AI.Extraction/Redaction/NoOpAIContentRedactor.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Redact",
+          "kind": "method",
+          "signature": "Redact(string content)",
+          "returnType": "string"
         }
       ]
     },
@@ -25750,6 +25830,141 @@
       "members": []
     },
     {
+      "name": "IndexingAIMetrics",
+      "fqn": "Granit.Indexing.AI.Diagnostics.IndexingAIMetrics",
+      "kind": "class",
+      "project": "Granit.Indexing.AI",
+      "file": "src/Granit.Indexing.AI/Diagnostics/IndexingAIMetrics.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Indexing.AI.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Indexing.AI",
+      "file": "src/Granit.Indexing.AI/Extensions/ServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitIndexingAISummarizer",
+          "kind": "method",
+          "signature": "AddGranitIndexingAISummarizer(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIndexingAIModule",
+      "fqn": "Granit.Indexing.AI.GranitIndexingAIModule",
+      "kind": "class",
+      "project": "Granit.Indexing.AI",
+      "file": "src/Granit.Indexing.AI/GranitIndexingAIModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IndexingAIOptions",
+      "fqn": "Granit.Indexing.AI.Options.IndexingAIOptions",
+      "kind": "class",
+      "project": "Granit.Indexing.AI",
+      "file": "src/Granit.Indexing.AI/Options/IndexingAIOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "WorkspaceName",
+          "kind": "property",
+          "signature": "string WorkspaceName",
+          "returnType": "string"
+        },
+        {
+          "name": "MaxAICallsPerHourPerTenant",
+          "kind": "property",
+          "signature": "int MaxAICallsPerHourPerTenant",
+          "returnType": "int"
+        },
+        {
+          "name": "RedactPIIBeforeLLMCall",
+          "kind": "property",
+          "signature": "bool RedactPIIBeforeLLMCall",
+          "returnType": "bool"
+        },
+        {
+          "name": "MaxContentLength",
+          "kind": "property",
+          "signature": "int MaxContentLength",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxSummaryLength",
+          "kind": "property",
+          "signature": "int MaxSummaryLength",
+          "returnType": "int"
+        },
+        {
+          "name": "TimeoutSeconds",
+          "kind": "property",
+          "signature": "int TimeoutSeconds",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "DefaultAIAutoSummaryPromptBuilder",
+      "fqn": "Granit.Indexing.AI.Prompts.DefaultAIAutoSummaryPromptBuilder",
+      "kind": "class",
+      "project": "Granit.Indexing.AI",
+      "file": "src/Granit.Indexing.AI/Prompts/DefaultAIAutoSummaryPromptBuilder.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Build",
+          "kind": "method",
+          "signature": "Build(string content, int maxSummaryLength)",
+          "returnType": "IReadOnlyList<ChatMessage>"
+        }
+      ]
+    },
+    {
+      "name": "IAIAutoSummaryPromptBuilder",
+      "fqn": "Granit.Indexing.AI.Prompts.IAIAutoSummaryPromptBuilder",
+      "kind": "interface",
+      "project": "Granit.Indexing.AI",
+      "file": "src/Granit.Indexing.AI/Prompts/IAIAutoSummaryPromptBuilder.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Build",
+          "kind": "method",
+          "signature": "Build(string content, int maxSummaryLength)",
+          "returnType": "IReadOnlyList<ChatMessage>"
+        }
+      ]
+    },
+    {
+      "name": "SummaryResponse",
+      "fqn": "Granit.Indexing.AI.Schema.SummaryResponse",
+      "kind": "class",
+      "project": "Granit.Indexing.AI",
+      "file": "src/Granit.Indexing.AI/Schema/SummaryResponse.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Summary",
+          "kind": "property",
+          "signature": "string Summary",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "AuthorizedResult",
       "fqn": "Granit.Indexing.AuthorizedResult",
       "kind": "record",
@@ -26386,6 +26601,135 @@
           "kind": "method",
           "signature": "CreateConverter(Type typeToConvert, JsonSerializerOptions options)",
           "returnType": "JsonConverter"
+        }
+      ]
+    },
+    {
+      "name": "LanguageDetectionAIMetrics",
+      "fqn": "Granit.LanguageDetection.AI.Diagnostics.LanguageDetectionAIMetrics",
+      "kind": "class",
+      "project": "Granit.LanguageDetection.AI",
+      "file": "src/Granit.LanguageDetection.AI/Diagnostics/LanguageDetectionAIMetrics.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.LanguageDetection.AI.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.LanguageDetection.AI",
+      "file": "src/Granit.LanguageDetection.AI/Extensions/ServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitLanguageDetectionAI",
+          "kind": "method",
+          "signature": "AddGranitLanguageDetectionAI(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitLanguageDetectionAIModule",
+      "fqn": "Granit.LanguageDetection.AI.GranitLanguageDetectionAIModule",
+      "kind": "class",
+      "project": "Granit.LanguageDetection.AI",
+      "file": "src/Granit.LanguageDetection.AI/GranitLanguageDetectionAIModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "LanguageDetectionAIOptions",
+      "fqn": "Granit.LanguageDetection.AI.Options.LanguageDetectionAIOptions",
+      "kind": "class",
+      "project": "Granit.LanguageDetection.AI",
+      "file": "src/Granit.LanguageDetection.AI/Options/LanguageDetectionAIOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "WorkspaceName",
+          "kind": "property",
+          "signature": "string WorkspaceName",
+          "returnType": "string"
+        },
+        {
+          "name": "MaxAICallsPerHourPerTenant",
+          "kind": "property",
+          "signature": "int MaxAICallsPerHourPerTenant",
+          "returnType": "int"
+        },
+        {
+          "name": "RedactPIIBeforeLLMCall",
+          "kind": "property",
+          "signature": "bool RedactPIIBeforeLLMCall",
+          "returnType": "bool"
+        },
+        {
+          "name": "MaxContentLength",
+          "kind": "property",
+          "signature": "int MaxContentLength",
+          "returnType": "int"
+        },
+        {
+          "name": "TimeoutSeconds",
+          "kind": "property",
+          "signature": "int TimeoutSeconds",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "DefaultAILanguageDetectionPromptBuilder",
+      "fqn": "Granit.LanguageDetection.AI.Prompts.DefaultAILanguageDetectionPromptBuilder",
+      "kind": "class",
+      "project": "Granit.LanguageDetection.AI",
+      "file": "src/Granit.LanguageDetection.AI/Prompts/DefaultAILanguageDetectionPromptBuilder.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Build",
+          "kind": "method",
+          "signature": "Build(string content)",
+          "returnType": "IReadOnlyList<ChatMessage>"
+        }
+      ]
+    },
+    {
+      "name": "IAILanguageDetectionPromptBuilder",
+      "fqn": "Granit.LanguageDetection.AI.Prompts.IAILanguageDetectionPromptBuilder",
+      "kind": "interface",
+      "project": "Granit.LanguageDetection.AI",
+      "file": "src/Granit.LanguageDetection.AI/Prompts/IAILanguageDetectionPromptBuilder.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Build",
+          "kind": "method",
+          "signature": "Build(string content)",
+          "returnType": "IReadOnlyList<ChatMessage>"
+        }
+      ]
+    },
+    {
+      "name": "LanguageDetectionResponse",
+      "fqn": "Granit.LanguageDetection.AI.Schema.LanguageDetectionResponse",
+      "kind": "class",
+      "project": "Granit.LanguageDetection.AI",
+      "file": "src/Granit.LanguageDetection.AI/Schema/LanguageDetectionResponse.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Language",
+          "kind": "property",
+          "signature": "string Language",
+          "returnType": "string"
         }
       ]
     },

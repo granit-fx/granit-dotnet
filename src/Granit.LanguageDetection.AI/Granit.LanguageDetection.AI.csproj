@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.LanguageDetection.AI</PackageId>
+    <Description>AI-backed ILanguageDetectorProvider for Granit.LanguageDetection. One-shot IChatClient call with structured output, instruction-isolation wrapping, optional PII redaction, and per-tenant call-rate ceiling. Registered at priority 200, wins over the pure-managed Trigram detector when both are wired.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.LanguageDetection.AI.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI.Extraction\Granit.AI.Extraction.csproj" />
+    <ProjectReference Include="..\Granit.LanguageDetection\Granit.LanguageDetection.csproj" />
+  </ItemGroup>
+
+</Project>

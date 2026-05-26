@@ -10,12 +10,12 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="NSubstitute" />
-    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.Testing" />
     <PackageReference Include="coverlet.collector" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.AI.Extraction\Granit.AI.Extraction.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Indexing.AI\Granit.Indexing.AI.csproj" />
   </ItemGroup>
 
 </Project>
