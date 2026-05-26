@@ -1,5 +1,7 @@
 using Granit.Privacy.BlobStorage.DataExport;
+using Granit.Privacy.BlobStorage.DataExport.Internal;
 using Granit.Privacy.BlobStorage.Streaming;
+using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Security;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -31,9 +33,12 @@ public static class ServiceCollectionExtensions
     {
         services.AddHttpClient(StagedFragmentBuilder.HttpClientName);
         services.AddHttpClient(ExportArchiveAssemblyHandler.HttpClientName);
+        services.AddHttpClient(PrivacyExportAssemblyService.HttpClientName);
         services.TryAddSingleton<IExportHmacSigner, EphemeralExportHmacSigner>();
+        services.TryAddSingleton<IExportAssemblyCheckpointStore, InMemoryExportAssemblyCheckpointStore>();
         services.TryAddScoped<IStagedFragmentBuilder, StagedFragmentBuilder>();
         services.TryAddScoped<IBlobBackedExportSource, BlobBackedExportSource>();
+        services.TryAddScoped<IPrivacyExportAssemblyService, PrivacyExportAssemblyService>();
         services.TryAddScoped<PrivacyFragmentUploader>();
         services.TryAddScoped<ExportArchiveAssemblyHandler>();
         return services;

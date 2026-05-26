@@ -19,11 +19,23 @@ public sealed class GranitPrivacyOptions
     public int ExportTimeoutMinutes { get; set; } = 5;
 
     /// <summary>
-    /// Maximum size in megabytes for the export archive.
+    /// Maximum size in megabytes for the export archive (legacy single-archive cap,
+    /// honoured by the staging-fragment flow). Sharded assembly uses
+    /// <see cref="ExportShardMaxSizeMb"/> per-shard and is bounded only by the host's
+    /// storage budget.
     /// Default: 100 MB.
     /// </summary>
     [Range(1, 500)]
     public int ExportMaxSizeMb { get; set; } = 100;
+
+    /// <summary>
+    /// Maximum compressed bytes per shard before the sharded assembler rolls over
+    /// to a new archive. Default 2 GB — Takeout-comparable. A single export entry
+    /// larger than this cap is allowed to land alone in its own shard (ZIP64
+    /// covers it) rather than being split mid-stream.
+    /// </summary>
+    [Range(64, 51_200)]
+    public int ExportShardMaxSizeMb { get; set; } = 2_048;
 
     /// <summary>
     /// Time-to-live, in minutes, of the presigned URLs that the archive assembler

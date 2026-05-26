@@ -36904,7 +36904,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BackgroundJobs",
       "file": "src/Granit.Privacy.BackgroundJobs/GranitPrivacyBackgroundJobsModule.cs",
-      "line": 15,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36937,6 +36937,62 @@
       "project": "Granit.Privacy.BackgroundJobs",
       "file": "src/Granit.Privacy.BackgroundJobs/Jobs/DeletionDeadlineEnforcerJob.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportAssemblyJob",
+      "fqn": "Granit.Privacy.BackgroundJobs.Jobs.PrivacyExportAssemblyJob",
+      "kind": "record",
+      "project": "Granit.Privacy.BackgroundJobs",
+      "file": "src/Granit.Privacy.BackgroundJobs/Jobs/PrivacyExportAssemblyJob.cs",
+      "line": 34,
+      "members": [
+        {
+          "name": "RequestId",
+          "kind": "property",
+          "signature": "Guid RequestId",
+          "returnType": "Guid"
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyExportAssemblyJobHandler",
+      "fqn": "Granit.Privacy.BackgroundJobs.Jobs.PrivacyExportAssemblyJobHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.BackgroundJobs",
+      "file": "src/Granit.Privacy.BackgroundJobs/Jobs/PrivacyExportAssemblyJobHandler.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PrivacyExportAssemblyJob job, ICurrentTenant currentTenant, IPrivacyExportAssemblyService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "Exports",
+      "fqn": "Granit.Privacy.BackgroundJobs.Permissions.Exports",
+      "kind": "class",
+      "project": "Granit.Privacy.BackgroundJobs",
+      "file": "src/Granit.Privacy.BackgroundJobs/Permissions/PrivacyExportPermissions.cs",
+      "line": 29,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportPermissions",
+      "fqn": "Granit.Privacy.BackgroundJobs.Permissions.PrivacyExportPermissions",
+      "kind": "class",
+      "project": "Granit.Privacy.BackgroundJobs",
+      "file": "src/Granit.Privacy.BackgroundJobs/Permissions/PrivacyExportPermissions.cs",
+      "line": 23,
       "members": []
     },
     {
@@ -37020,7 +37076,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/Extensions/ServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitPrivacyBlobStorage",
@@ -37339,6 +37395,15 @@
       "members": []
     },
     {
+      "name": "ExportAssemblyCheckpoint",
+      "fqn": "Granit.Privacy.DataExport.ExportAssemblyCheckpoint",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IExportAssemblyCheckpointStore.cs",
+      "line": 67,
+      "members": []
+    },
+    {
       "name": "ExportRequestState",
       "fqn": "Granit.Privacy.DataExport.ExportRequestState",
       "kind": "enum",
@@ -37418,6 +37483,34 @@
       ]
     },
     {
+      "name": "IExportAssemblyCheckpointStore",
+      "fqn": "Granit.Privacy.DataExport.IExportAssemblyCheckpointStore",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IExportAssemblyCheckpointStore.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(Guid requestId, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ExportAssemblyCheckpoint?>"
+        },
+        {
+          "name": "SetAsync",
+          "kind": "method",
+          "signature": "SetAsync(Guid requestId, Guid? tenantId, ExportAssemblyCheckpoint checkpoint, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ClearAsync",
+          "kind": "method",
+          "signature": "ClearAsync(Guid requestId, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IExportRequestTrackerReader",
       "fqn": "Granit.Privacy.DataExport.IExportRequestTrackerReader",
       "kind": "interface",
@@ -37480,6 +37573,22 @@
           "kind": "method",
           "signature": "ExportAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
           "returnType": "IAsyncEnumerable<ExportFragment>"
+        }
+      ]
+    },
+    {
+      "name": "IPrivacyExportAssemblyService",
+      "fqn": "Granit.Privacy.DataExport.IPrivacyExportAssemblyService",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyExportAssemblyService.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "AssembleAsync",
+          "kind": "method",
+          "signature": "AssembleAsync(ExportCompletedEto completion, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -39016,6 +39125,12 @@
           "returnType": "int"
         },
         {
+          "name": "ExportShardMaxSizeMb",
+          "kind": "property",
+          "signature": "int ExportShardMaxSizeMb",
+          "returnType": "int"
+        },
+        {
           "name": "ArchiveAssemblyDownloadUrlExpiryMinutes",
           "kind": "property",
           "signature": "int ArchiveAssemblyDownloadUrlExpiryMinutes",
@@ -39053,7 +39168,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/Options/GranitPrivacyOptions.cs",
-      "line": 81,
+      "line": 93,
       "members": []
     },
     {
