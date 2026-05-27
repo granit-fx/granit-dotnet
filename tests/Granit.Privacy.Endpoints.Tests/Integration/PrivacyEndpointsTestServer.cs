@@ -39,6 +39,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
 
     private const string AuthenticatedRole = "authenticated";
     private const string ExportRole = "export";
+    private const string ExportOnBehalfOfRole = "export-on-behalf-of";
     private const string DeletionRole = "deletion";
     private const string PurposesReadRole = "purposes-read";
     private const string AgreementsReadRole = "agreements-read";
@@ -52,6 +53,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
     public ICurrentUserService CurrentUser { get; }
     public IExportRequestTrackerWriter ExportWriter { get; }
     public IExportRequestTrackerReader ExportReader { get; }
+    public IPrivacyExportAuditWriter AuditWriter { get; }
     public IPrivacyScopeResolver ScopeResolver { get; }
     public IDeletionRequestTrackerWriter DeletionWriter { get; }
     public IDeletionRequestTrackerReader DeletionReader { get; }
@@ -77,6 +79,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         ICurrentUserService currentUser,
         IExportRequestTrackerWriter exportWriter,
         IExportRequestTrackerReader exportReader,
+        IPrivacyExportAuditWriter auditWriter,
         IPrivacyScopeResolver scopeResolver,
         IDeletionRequestTrackerWriter deletionWriter,
         IDeletionRequestTrackerReader deletionReader,
@@ -101,6 +104,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         CurrentUser = currentUser;
         ExportWriter = exportWriter;
         ExportReader = exportReader;
+        AuditWriter = auditWriter;
         ScopeResolver = scopeResolver;
         DeletionWriter = deletionWriter;
         DeletionReader = deletionReader;
@@ -188,6 +192,8 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(PrivacyPermissions.Exports.Execute,
                 policy => policy.RequireRole(ExportRole))
+            .AddPolicy(PrivacyPermissions.Exports.OnBehalfOf,
+                policy => policy.RequireRole(ExportOnBehalfOfRole))
             .AddPolicy(PrivacyPermissions.Deletions.Execute,
                 policy => policy.RequireRole(DeletionRole))
             .AddPolicy(PrivacyPermissions.Purposes.Read,
@@ -247,7 +253,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         await app.StartAsync().ConfigureAwait(false);
 
         string allRoles = string.Join(",",
-            AuthenticatedRole, ExportRole, DeletionRole,
+            AuthenticatedRole, ExportRole, ExportOnBehalfOfRole, DeletionRole,
             PurposesReadRole, AgreementsReadRole, AgreementsCreateRole);
 
         HttpClient authenticatedClient = app.GetTestClient();
@@ -257,7 +263,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
 
         return new PrivacyEndpointsTestServer(
             app, authenticatedClient, anonymousClient,
-            currentUser, exportWriter, exportReader, scopeResolver,
+            currentUser, exportWriter, exportReader, auditWriter, scopeResolver,
             deletionWriter, deletionReader,
             documentRegistry, agreementChecker, agreementStoreReader, agreementStoreWriter,
             regulationResolver, optOutWriter, optOutReader, purposeRegistry,

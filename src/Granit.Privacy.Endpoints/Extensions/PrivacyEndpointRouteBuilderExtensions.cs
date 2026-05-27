@@ -293,6 +293,24 @@ public static class PrivacyEndpointRouteBuilderExtensions
                  + "unknown / hidden scopes in that POST are silently skipped.")
              .Produces<IReadOnlyList<PrivacyExportScopeResponse>>();
 
+        group.MapPost("/exports/on-behalf-of", HandleRequestExportOnBehalfOfAsync)
+             .RequireAuthorization(PrivacyPermissions.Exports.OnBehalfOf)
+             .RequireGranitRateLimiting(PrivacyExportRateLimitPolicies.ExportCreate)
+             .WithMetadata(new IdempotentAttribute { Required = false })
+             .WithName("RequestPrivacyExportOnBehalfOf")
+             .WithSummary("Requests a personal data export on behalf of another data subject (admin DSR).")
+             .WithDescription(
+                 "Admin-driven counterpart to POST /privacy/exports — gated by the dedicated "
+                 + "Privacy.Exports.OnBehalfOf permission so RBAC can hand it to a narrow operator "
+                 + "role without unlocking it for every authenticated user. The body's SubjectUserId "
+                 + "identifies the data subject; the authenticated caller is recorded separately on "
+                 + "the audit row so the substitution is fully reconstructable for GDPR Art. 30 ROPA. "
+                 + "Shares the privacy-export-create rate-limit policy (partitioned by the caller).")
+             .Produces<PrivacyExportRequestResponse>(StatusCodes.Status202Accepted)
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
+             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+             .ProducesProblem(StatusCodes.Status429TooManyRequests);
+
         group.MapPost("/exports", HandleRequestExportAsync)
              .RequireAuthorization(PrivacyPermissions.Exports.Execute)
              .RequireGranitRateLimiting(PrivacyExportRateLimitPolicies.ExportCreate)
@@ -496,6 +514,78 @@ public static class PrivacyEndpointRouteBuilderExtensions
                 RequestId: requestId,
                 CallerUserId: userId,
                 SubjectUserId: userId,
+                TenantId: tenantId,
+                Regulation: regulation,
+                ResolvedScopes: requestedScopes ?? [],
+                ClientIp: PseudonymizeIpAddress(httpContext.Connection.RemoteIpAddress?.ToString()),
+                UserAgent: httpContext.Request.Headers.UserAgent.ToString(),
+                CorrelationId: httpContext.TraceIdentifier,
+                Timestamp: now),
+            cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Accepted(
+            $"/privacy/export/{requestId}",
+            new PrivacyExportRequestResponse(requestId, now));
+    }
+
+    private static async Task<Results<Accepted<PrivacyExportRequestResponse>, ProblemHttpResult>> HandleRequestExportOnBehalfOfAsync(
+        [FromBody] PrivacyExportOnBehalfOfRequest body,
+        HttpContext httpContext,
+        [FromServices] ICurrentUserService currentUser,
+        [FromServices] IDistributedEventBus eventBus,
+        [FromServices] IExportRequestTrackerWriter tracker,
+        [FromServices] IPrivacyExportAuditWriter auditWriter,
+        [FromServices] PrivacyMetrics metrics,
+        [FromServices] TimeProvider timeProvider,
+        [FromServices] ICurrentTenant currentTenant,
+        [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IPrivacyRegulationResolver? regulationResolver,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(body);
+
+        if (!TryGetUserId(currentUser, out Guid callerUserId))
+        {
+            return UserNotAuthenticated();
+        }
+
+        // SubjectUserId non-empty + scope bounds are enforced by
+        // PrivacyExportOnBehalfOfRequestValidator at the FluentValidation auto-filter
+        // pass — the handler is only reached on a clean body.
+
+        Guid requestId = guidGenerator.Create();
+        DateTimeOffset now = timeProvider.GetUtcNow();
+        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+        string regulation = await ResolveRegulationAsync(regulationResolver, cancellationToken).ConfigureAwait(false);
+
+        IReadOnlyList<string>? requestedScopes = body.Scopes is { Count: > 0 } scopes ? scopes : null;
+
+        // The saga's PersonalDataRequestedEto.UserId names the data subject — providers
+        // and the visibility resolver key off it for HasData probes etc. The caller's
+        // identity only matters for the audit row (Art. 30 ROPA).
+        await tracker
+            .RecordRequestAsync(requestId, body.SubjectUserId, now, cancellationToken)
+            .ConfigureAwait(false);
+
+        await eventBus
+            .PublishAsync(
+                new PersonalDataRequestedEto(
+                    RequestId: requestId,
+                    UserId: body.SubjectUserId,
+                    RequestedAt: now,
+                    Regulation: regulation,
+                    TenantId: tenantId,
+                    RequestedScopes: requestedScopes),
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        metrics.RecordExportRequested(tenantId, regulation);
+
+        await auditWriter.WriteExportRequestedAsync(
+            new PrivacyExportRequestedAudit(
+                RequestId: requestId,
+                CallerUserId: callerUserId,
+                SubjectUserId: body.SubjectUserId,
                 TenantId: tenantId,
                 Regulation: regulation,
                 ResolvedScopes: requestedScopes ?? [],

@@ -38298,6 +38298,15 @@
       "members": []
     },
     {
+      "name": "PrivacyExportOnBehalfOfRequest",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyExportOnBehalfOfRequest",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyExportOnBehalfOfRequest.cs",
+      "line": 27,
+      "members": []
+    },
+    {
       "name": "PrivacyExportRequest",
       "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyExportRequest",
       "kind": "record",
