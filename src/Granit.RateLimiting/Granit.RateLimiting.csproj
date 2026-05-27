@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.RateLimiting</PackageId>
-    <Description>Per-tenant rate limiting for Granit. Sliding window, fixed window, token bucket algorithms via Redis. Plan-based quotas via Granit.Features integration. ASP.NET Core middleware (429 + Retry-After) and Wolverine behavior.</Description>
+    <Description>Framework-pure, per-tenant rate limiting core for Granit. Sliding window, fixed window, and token bucket algorithms over Redis Lua, in-memory fallback, and plan-based quotas via Granit.Features. HTTP-agnostic — use Granit.Http.RateLimiting for the ASP.NET Core filter and Granit.RateLimiting.Wolverine for the messaging middleware.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -11,16 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="StackExchange.Redis" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
-    <ProjectReference Include="..\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
     <ProjectReference Include="..\Granit.Features\Granit.Features.csproj" />
   </ItemGroup>
 

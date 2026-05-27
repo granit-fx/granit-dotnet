@@ -1,5 +1,4 @@
 using Granit.RateLimiting.Exceptions;
-using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
@@ -20,26 +19,5 @@ public sealed class RateLimitExceptionTests
         ex.Remaining.ShouldBe(0);
         ex.Message.ShouldContain("api");
         ex.Message.ShouldContain("42");
-    }
-
-    [Fact]
-    public void StatusCodeMapper_MapsRateLimitExceededException_To429()
-    {
-        var mapper = new RateLimitExceptionStatusCodeMapper();
-        var ex = new RateLimitExceededException("api", TimeSpan.FromSeconds(1), 100, 0);
-
-        int? statusCode = mapper.TryGetStatusCode(ex);
-
-        statusCode.ShouldBe(StatusCodes.Status429TooManyRequests);
-    }
-
-    [Fact]
-    public void StatusCodeMapper_ReturnsNull_ForOtherExceptions()
-    {
-        var mapper = new RateLimitExceptionStatusCodeMapper();
-
-        int? statusCode = mapper.TryGetStatusCode(new InvalidOperationException());
-
-        statusCode.ShouldBeNull();
     }
 }

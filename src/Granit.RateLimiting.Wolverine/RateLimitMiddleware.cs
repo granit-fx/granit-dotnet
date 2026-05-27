@@ -1,6 +1,6 @@
 using Granit.RateLimiting.Abstractions;
-using Granit.RateLimiting.Attributes;
 using Granit.RateLimiting.Exceptions;
+using Granit.RateLimiting.Wolverine.Attributes;
 
 namespace Granit.RateLimiting.Wolverine;
 

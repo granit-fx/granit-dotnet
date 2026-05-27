@@ -28,6 +28,7 @@
     <Project Path="src/Granit.Http.ODataExposure/Granit.Http.ODataExposure.csproj" />
     <Project Path="src/Granit.Http.OutputCaching.StackExchangeRedis/Granit.Http.OutputCaching.StackExchangeRedis.csproj" />
     <Project Path="src/Granit.Http.OutputCaching/Granit.Http.OutputCaching.csproj" />
+    <Project Path="src/Granit.Http.RateLimiting/Granit.Http.RateLimiting.csproj" />
     <Project Path="src/Granit.Http.Resilience/Granit.Http.Resilience.csproj" />
     <Project Path="src/Granit.Http.ResponseCompression/Granit.Http.ResponseCompression.csproj" />
     <Project Path="src/Granit.Http.Security/Granit.Http.Security.csproj" />
@@ -51,6 +52,7 @@
     <Project Path="src/Granit.Observability/Granit.Observability.csproj" />
     <Project Path="src/Granit.Oidc.TokenManagement/Granit.Oidc.TokenManagement.csproj" />
     <Project Path="src/Granit.Oidc/Granit.Oidc.csproj" />
+    <Project Path="src/Granit.RateLimiting.Wolverine/Granit.RateLimiting.Wolverine.csproj" />
     <Project Path="src/Granit.RateLimiting/Granit.RateLimiting.csproj" />
     <Project Path="src/Granit.Scheduling.BackgroundJobs/Granit.Scheduling.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Scheduling.Endpoints/Granit.Scheduling.Endpoints.csproj" />
@@ -339,6 +341,7 @@
     <Project Path="tests/Granit.Http.ODataExposure.Tests/Granit.Http.ODataExposure.Tests.csproj" />
     <Project Path="tests/Granit.Http.OutputCaching.StackExchangeRedis.Tests/Granit.Http.OutputCaching.StackExchangeRedis.Tests.csproj" />
     <Project Path="tests/Granit.Http.OutputCaching.Tests/Granit.Http.OutputCaching.Tests.csproj" />
+    <Project Path="tests/Granit.Http.RateLimiting.Tests/Granit.Http.RateLimiting.Tests.csproj" />
     <Project Path="tests/Granit.Http.Resilience.Tests/Granit.Http.Resilience.Tests.csproj" />
     <Project Path="tests/Granit.Http.ResponseCompression.Tests/Granit.Http.ResponseCompression.Tests.csproj" />
     <Project Path="tests/Granit.Http.Security.Tests/Granit.Http.Security.Tests.csproj" />
@@ -363,6 +366,7 @@
     <Project Path="tests/Granit.Oidc.Tests/Granit.Oidc.Tests.csproj" />
     <Project Path="tests/Granit.Oidc.TokenManagement.Tests/Granit.Oidc.TokenManagement.Tests.csproj" />
     <Project Path="tests/Granit.RateLimiting.Tests/Granit.RateLimiting.Tests.csproj" />
+    <Project Path="tests/Granit.RateLimiting.Wolverine.Tests/Granit.RateLimiting.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Scheduling.BackgroundJobs.Tests/Granit.Scheduling.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Scheduling.Endpoints.Tests/Granit.Scheduling.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Scheduling.EntityFrameworkCore.Tests/Granit.Scheduling.EntityFrameworkCore.Tests.csproj" />

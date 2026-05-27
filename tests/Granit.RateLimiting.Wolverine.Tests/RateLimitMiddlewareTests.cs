@@ -1,11 +1,10 @@
 using System.Diagnostics.Metrics;
 using Granit.MultiTenancy;
 using Granit.RateLimiting.Abstractions;
-using Granit.RateLimiting.Attributes;
 using Granit.RateLimiting.Diagnostics;
 using Granit.RateLimiting.Exceptions;
 using Granit.RateLimiting.Options;
-using Granit.RateLimiting.Wolverine;
+using Granit.RateLimiting.Wolverine.Attributes;
 using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -14,7 +13,7 @@ using Shouldly;
 using Xunit;
 using MsOptions = Microsoft.Extensions.Options.Options;
 
-namespace Granit.RateLimiting.Tests;
+namespace Granit.RateLimiting.Wolverine.Tests;
 
 public sealed class RateLimitMiddlewareTests : IDisposable
 {

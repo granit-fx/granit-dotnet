@@ -46,6 +46,7 @@
       "src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj",
       "src/Granit.Http.Cookies/Granit.Http.Cookies.csproj",
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
+      "src/Granit.Http.RateLimiting/Granit.Http.RateLimiting.csproj",
       "src/Granit.Http.Resilience/Granit.Http.Resilience.csproj",
       "src/Granit.Http.SecurityHeaders.Abstractions/Granit.Http.SecurityHeaders.Abstractions.csproj",
       "src/Granit.Http.SecurityHeaders/Granit.Http.SecurityHeaders.csproj",

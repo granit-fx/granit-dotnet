@@ -1,7 +1,5 @@
-using Granit.Http.ExceptionHandling;
 using Granit.RateLimiting.Abstractions;
 using Granit.RateLimiting.Diagnostics;
-using Granit.RateLimiting.Exceptions;
 using Granit.RateLimiting.Extensions;
 using Granit.RateLimiting.Options;
 using Microsoft.Extensions.Configuration;
@@ -42,19 +40,6 @@ public sealed class RateLimitingServiceCollectionExtensionsTests
 
         sp.GetService<IOptions<GranitRateLimitingOptions>>().ShouldNotBeNull();
         sp.GetService<RateLimitingMetrics>().ShouldNotBeNull();
-    }
-
-    [Fact]
-    public void AddGranitRateLimiting_RegistersExceptionStatusCodeMapper()
-    {
-        ServiceCollection services = CreateServices();
-
-        services.AddGranitRateLimiting();
-
-        ServiceProvider sp = services.BuildServiceProvider();
-
-        IEnumerable<IExceptionStatusCodeMapper> mappers = sp.GetServices<IExceptionStatusCodeMapper>();
-        mappers.ShouldContain(m => m is RateLimitExceptionStatusCodeMapper);
     }
 
     [Fact]

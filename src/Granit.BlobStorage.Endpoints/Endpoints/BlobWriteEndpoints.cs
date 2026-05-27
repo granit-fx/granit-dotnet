@@ -1,7 +1,7 @@
 using Granit.BlobStorage.Endpoints.Dtos;
 using Granit.BlobStorage.Endpoints.Permissions;
 using Granit.Http.Idempotency.Attributes;
-using Granit.RateLimiting.AspNetCore;
+using Granit.Http.RateLimiting.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

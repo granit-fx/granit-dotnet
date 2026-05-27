@@ -1,10 +1,10 @@
 using System.Security.Claims;
+using Granit.Http.RateLimiting.AspNetCore;
 using Granit.Presence.Abstractions;
 using Granit.Presence.Domain;
 using Granit.Presence.Endpoints.Dtos;
 using Granit.Presence.Endpoints.Internal;
 using Granit.Presence.Endpoints.Permissions;
-using Granit.RateLimiting.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

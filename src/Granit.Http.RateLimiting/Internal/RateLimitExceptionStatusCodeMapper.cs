@@ -1,7 +1,8 @@
 using Granit.Http.ExceptionHandling;
+using Granit.RateLimiting.Exceptions;
 using Microsoft.AspNetCore.Http;
 
-namespace Granit.RateLimiting.Exceptions;
+namespace Granit.Http.RateLimiting.Internal;
 
 /// <summary>
 /// Maps <see cref="RateLimitExceededException"/> to HTTP 429 Too Many Requests.

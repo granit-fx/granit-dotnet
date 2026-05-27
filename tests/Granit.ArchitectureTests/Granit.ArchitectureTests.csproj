@@ -129,6 +129,7 @@
     <ProjectReference Include="..\..\src\Granit.Http.ODataExposure\Granit.Http.ODataExposure.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.OutputCaching\Granit.Http.OutputCaching.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.OutputCaching.StackExchangeRedis\Granit.Http.OutputCaching.StackExchangeRedis.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.RateLimiting\Granit.Http.RateLimiting.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Resilience\Granit.Http.Resilience.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ResponseCompression\Granit.Http.ResponseCompression.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Security\Granit.Http.Security.csproj" />
@@ -227,6 +228,7 @@
     <ProjectReference Include="..\..\src\Granit.QueryEngine.AspNetCore\Granit.QueryEngine.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine.EntityFrameworkCore\Granit.QueryEngine.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.RateLimiting\Granit.RateLimiting.csproj" />
+    <ProjectReference Include="..\..\src\Granit.RateLimiting.Wolverine\Granit.RateLimiting.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Scheduling\Granit.Scheduling.csproj" />
     <ProjectReference Include="..\..\src\Granit.Scheduling.BackgroundJobs\Granit.Scheduling.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Scheduling.Endpoints\Granit.Scheduling.Endpoints.csproj" />

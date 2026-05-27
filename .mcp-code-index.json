@@ -452,8 +452,8 @@
         "Granit.Authorization",
         "Granit.BlobStorage",
         "Granit.Http.Abstractions",
+        "Granit.Http.RateLimiting",
         "Granit.QueryEngine.AspNetCore",
-        "Granit.RateLimiting",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -867,8 +867,8 @@
         "Granit.DataExchange.Abstractions",
         "Granit.Entities.Abstractions",
         "Granit.Http.Abstractions",
+        "Granit.Http.RateLimiting",
         "Granit.QueryEngine.Abstractions",
-        "Granit.RateLimiting",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -885,6 +885,14 @@
       "deps": [
         "Granit.Caching.StackExchangeRedis",
         "Granit.Http.OutputCaching"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Http.RateLimiting",
+      "deps": [
+        "Granit.RateLimiting",
+        "Granit.Http.ExceptionHandling"
       ],
       "framework": "net10.0"
     },
@@ -1775,8 +1783,8 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Http.Abstractions",
+        "Granit.Http.RateLimiting",
         "Granit.Presence",
-        "Granit.RateLimiting",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -1866,9 +1874,9 @@
         "Granit.Http.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.Http.Cookies",
+        "Granit.Http.RateLimiting",
         "Granit.Privacy",
         "Granit.Privacy.Regulations",
-        "Granit.RateLimiting",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -1957,8 +1965,14 @@
       "name": "Granit.RateLimiting",
       "deps": [
         "Granit",
-        "Granit.Http.ExceptionHandling",
         "Granit.Features"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.RateLimiting.Wolverine",
+      "deps": [
+        "Granit.RateLimiting"
       ],
       "framework": "net10.0"
     },
@@ -20313,6 +20327,63 @@
           "kind": "property",
           "signature": "bool RequireTls",
           "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "RateLimitEndpointExtensions",
+      "fqn": "Granit.Http.RateLimiting.AspNetCore.RateLimitEndpointExtensions",
+      "kind": "class",
+      "project": "Granit.Http.RateLimiting",
+      "file": "src/Granit.Http.RateLimiting/AspNetCore/RateLimitEndpointExtensions.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "RateLimitingApplicationBuilderExtensions",
+      "fqn": "Granit.Http.RateLimiting.Extensions.RateLimitingApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.RateLimiting",
+      "file": "src/Granit.Http.RateLimiting/Extensions/RateLimitingApplicationBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "UseGranitRateLimiting",
+          "kind": "method",
+          "signature": "UseGranitRateLimiting(this IApplicationBuilder app)",
+          "returnType": "IApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "RateLimitingHttpServiceCollectionExtensions",
+      "fqn": "Granit.Http.RateLimiting.Extensions.RateLimitingHttpServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Http.RateLimiting",
+      "file": "src/Granit.Http.RateLimiting/Extensions/RateLimitingHttpServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitHttpRateLimiting",
+          "kind": "method",
+          "signature": "AddGranitHttpRateLimiting(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpRateLimitingModule",
+      "fqn": "Granit.Http.RateLimiting.GranitHttpRateLimitingModule",
+      "kind": "class",
+      "project": "Granit.Http.RateLimiting",
+      "file": "src/Granit.Http.RateLimiting/GranitHttpRateLimitingModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },
@@ -41021,31 +41092,6 @@
       "members": []
     },
     {
-      "name": "RateLimitEndpointExtensions",
-      "fqn": "Granit.RateLimiting.AspNetCore.RateLimitEndpointExtensions",
-      "kind": "class",
-      "project": "Granit.RateLimiting",
-      "file": "src/Granit.RateLimiting/AspNetCore/RateLimitEndpointExtensions.cs",
-      "line": 12,
-      "members": []
-    },
-    {
-      "name": "RateLimitedAttribute",
-      "fqn": "Granit.RateLimiting.Attributes.RateLimitedAttribute",
-      "kind": "class",
-      "project": "Granit.RateLimiting",
-      "file": "src/Granit.RateLimiting/Attributes/RateLimitedAttribute.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "PolicyName",
-          "kind": "property",
-          "signature": "string PolicyName",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "RateLimitingMetrics",
       "fqn": "Granit.RateLimiting.Diagnostics.RateLimitingMetrics",
       "kind": "class",
@@ -41071,28 +41117,12 @@
       "members": []
     },
     {
-      "name": "RateLimitingApplicationBuilderExtensions",
-      "fqn": "Granit.RateLimiting.Extensions.RateLimitingApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.RateLimiting",
-      "file": "src/Granit.RateLimiting/Extensions/RateLimitingApplicationBuilderExtensions.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "UseGranitRateLimiting",
-          "kind": "method",
-          "signature": "UseGranitRateLimiting(this IApplicationBuilder app)",
-          "returnType": "IApplicationBuilder"
-        }
-      ]
-    },
-    {
       "name": "RateLimitingServiceCollectionExtensions",
       "fqn": "Granit.RateLimiting.Extensions.RateLimitingServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.RateLimiting",
       "file": "src/Granit.RateLimiting/Extensions/RateLimitingServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitRateLimiting",
@@ -41108,7 +41138,7 @@
       "kind": "class",
       "project": "Granit.RateLimiting",
       "file": "src/Granit.RateLimiting/GranitRateLimitingModule.cs",
-      "line": 16,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -41260,11 +41290,36 @@
       ]
     },
     {
+      "name": "RateLimitedAttribute",
+      "fqn": "Granit.RateLimiting.Wolverine.Attributes.RateLimitedAttribute",
+      "kind": "class",
+      "project": "Granit.RateLimiting.Wolverine",
+      "file": "src/Granit.RateLimiting.Wolverine/Attributes/RateLimitedAttribute.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "PolicyName",
+          "kind": "property",
+          "signature": "string PolicyName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitRateLimitingWolverineModule",
+      "fqn": "Granit.RateLimiting.Wolverine.GranitRateLimitingWolverineModule",
+      "kind": "class",
+      "project": "Granit.RateLimiting.Wolverine",
+      "file": "src/Granit.RateLimiting.Wolverine/GranitRateLimitingWolverineModule.cs",
+      "line": 20,
+      "members": []
+    },
+    {
       "name": "RateLimitMiddleware",
       "fqn": "Granit.RateLimiting.Wolverine.RateLimitMiddleware",
       "kind": "class",
-      "project": "Granit.RateLimiting",
-      "file": "src/Granit.RateLimiting/Wolverine/RateLimitMiddleware.cs",
+      "project": "Granit.RateLimiting.Wolverine",
+      "file": "src/Granit.RateLimiting.Wolverine/RateLimitMiddleware.cs",
       "line": 21,
       "members": [
         {

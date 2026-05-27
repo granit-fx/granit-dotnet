@@ -1,10 +1,11 @@
+using Granit.RateLimiting;
 using Granit.RateLimiting.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 
-namespace Granit.RateLimiting.AspNetCore;
+namespace Granit.Http.RateLimiting.AspNetCore;
 
 /// <summary>
 /// Extension methods for applying rate limiting to ASP.NET Core endpoints.

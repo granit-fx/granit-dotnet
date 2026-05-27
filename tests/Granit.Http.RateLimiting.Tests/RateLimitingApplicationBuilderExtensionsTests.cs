@@ -1,9 +1,9 @@
-using Granit.RateLimiting.Extensions;
+using Granit.Http.RateLimiting.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Shouldly;
 using Xunit;
 
-namespace Granit.RateLimiting.Tests;
+namespace Granit.Http.RateLimiting.Tests;
 
 public sealed class RateLimitingApplicationBuilderExtensionsTests
 {

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Http.RateLimiting</PackageId>
+    <Description>ASP.NET Core binding for Granit.RateLimiting. Per-endpoint rate limiting filter (.RequireGranitRateLimiting) emitting 429 + Retry-After and X-RateLimit-* headers, plus RFC 7807 mapping of RateLimitExceededException to HTTP 429.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Http.RateLimiting.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.RateLimiting\Granit.RateLimiting.csproj" />
+    <ProjectReference Include="..\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
+  </ItemGroup>
+
+</Project>

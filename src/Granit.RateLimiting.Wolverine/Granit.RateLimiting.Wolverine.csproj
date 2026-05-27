@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.RateLimiting.Wolverine</PackageId>
+    <Description>Wolverine binding for Granit.RateLimiting. Pipeline middleware enforcing the [RateLimited] attribute on message types before the handler runs, throwing RateLimitExceededException (handled by Wolverine retry policy) when the per-tenant quota is exceeded.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.RateLimiting.Wolverine.Tests" />
+  </ItemGroup>
+
+  <!--
+    No WolverineFx reference: the middleware is discovered by Wolverine convention
+    (public static BeforeAsync) and uses no Wolverine types, so the host's WolverineFx
+    is sufficient. This keeps the package off the Wolverine compile-time coupling
+    (WolverineCouplingTests) — same rationale as Granit's ICommandSender seam.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.RateLimiting\Granit.RateLimiting.csproj" />
+  </ItemGroup>
+
+</Project>

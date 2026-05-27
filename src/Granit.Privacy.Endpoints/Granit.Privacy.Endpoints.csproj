@@ -21,9 +21,9 @@
     <ProjectReference Include="..\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.Http.Cookies\Granit.Http.Cookies.csproj" />
+    <ProjectReference Include="..\Granit.Http.RateLimiting\Granit.Http.RateLimiting.csproj" />
     <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
     <ProjectReference Include="..\Granit.Privacy.Regulations\Granit.Privacy.Regulations.csproj" />
-    <ProjectReference Include="..\Granit.RateLimiting\Granit.RateLimiting.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
       <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
   </ItemGroup>

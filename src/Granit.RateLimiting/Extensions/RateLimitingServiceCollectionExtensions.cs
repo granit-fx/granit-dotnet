@@ -1,8 +1,6 @@
 using Granit.Diagnostics;
-using Granit.Http.ExceptionHandling;
 using Granit.RateLimiting.Abstractions;
 using Granit.RateLimiting.Diagnostics;
-using Granit.RateLimiting.Exceptions;
 using Granit.RateLimiting.Internal;
 using Granit.RateLimiting.Options;
 using Microsoft.Extensions.Configuration;
@@ -118,9 +116,6 @@ public static class RateLimitingServiceCollectionExtensions
         // Core services
         services.TryAddScoped<TenantPartitionedRateLimiter>();
         services.TryAddSingleton<RateLimitingMetrics>();
-
-        // Exception status code mapping (429)
-        services.AddSingleton<IExceptionStatusCodeMapper, RateLimitExceptionStatusCodeMapper>();
 
         // ActivitySource registration
         GranitActivitySourceRegistry.Register(RateLimitingActivitySource.Name);

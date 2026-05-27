@@ -27,17 +27,6 @@ public sealed class GranitRateLimitingModuleTests
     public void Module_IsSealed() => typeof(GranitRateLimitingModule).IsSealed.ShouldBeTrue();
 
     [Fact]
-    public void Module_DependsOnExceptionHandling()
-    {
-        var attrs = (DependsOnAttribute[])typeof(GranitRateLimitingModule)
-            .GetCustomAttributes(typeof(DependsOnAttribute), false);
-
-        Type[] dependedTypes = attrs.SelectMany(a => a.DependedTypes).ToArray();
-
-        dependedTypes.ShouldContain(typeof(Granit.Http.ExceptionHandling.GranitHttpExceptionHandlingModule));
-    }
-
-    [Fact]
     public void Module_DependsOnFeatures()
     {
         var attrs = (DependsOnAttribute[])typeof(GranitRateLimitingModule)

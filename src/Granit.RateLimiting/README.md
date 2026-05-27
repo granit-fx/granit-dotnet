@@ -1,6 +1,15 @@
 # Granit.RateLimiting
 
-Per-tenant rate limiting for Granit APIs. Sliding window, fixed window, and token bucket algorithms via Redis Lua scripts. Plan-based quotas via Granit.Features integration. ASP.NET Core endpoint filter (429 + Retry-After) and Wolverine middleware.
+Framework-pure, per-tenant rate limiting core for Granit. Sliding window, fixed window, and token
+bucket algorithms via Redis Lua scripts, with an in-memory fallback. Plan-based quotas via
+`Granit.Features` integration.
+
+This package is **HTTP-agnostic** — it contains the counter stores, algorithms, quota providers, and
+the `TenantPartitionedRateLimiter`. Pick the binding for your transport:
+
+- **`Granit.Http.RateLimiting`** — ASP.NET Core endpoint filter (`.RequireGranitRateLimiting("policy")`,
+  429 + `Retry-After`).
+- **`Granit.RateLimiting.Wolverine`** — Wolverine message middleware + `[RateLimited]` attribute.
 
 Part of the [granit](https://granit-fx.dev) framework.
 
@@ -13,9 +22,7 @@ dotnet add package Granit.RateLimiting
 ## Dependencies
 
 - `Granit`
-- `Granit.Http.ExceptionHandling`
 - `Granit.Features`
-- `Granit.Users`
 
 ## Documentation
 

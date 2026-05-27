@@ -1,8 +1,8 @@
-using Granit.RateLimiting.Attributes;
+using Granit.RateLimiting.Wolverine.Attributes;
 using Shouldly;
 using Xunit;
 
-namespace Granit.RateLimiting.Tests;
+namespace Granit.RateLimiting.Wolverine.Tests;
 
 public sealed class RateLimitedAttributeTests
 {

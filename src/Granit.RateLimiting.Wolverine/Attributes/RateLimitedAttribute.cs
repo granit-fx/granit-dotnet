@@ -1,8 +1,8 @@
-namespace Granit.RateLimiting.Attributes;
+namespace Granit.RateLimiting.Wolverine.Attributes;
 
 /// <summary>
 /// Marks a Wolverine message type as subject to rate limiting.
-/// The <see cref="Wolverine.RateLimitMiddleware"/> reads this attribute to determine which
+/// The <see cref="RateLimitMiddleware"/> reads this attribute to determine which
 /// policy to enforce before the handler executes.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]

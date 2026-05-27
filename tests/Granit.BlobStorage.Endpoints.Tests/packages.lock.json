@@ -345,8 +345,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.BlobStorage": "[0.1.0-dev, )",
           "Granit.Http.Abstractions": "[0.1.0-dev, )",
+          "Granit.Http.RateLimiting": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.RateLimiting": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
@@ -430,6 +430,13 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.http.ratelimiting": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
+          "Granit.RateLimiting": "[0.1.0-dev, )"
+        }
+      },
       "granit.http.securityheaders.abstractions": {
         "type": "Project"
       },
@@ -474,7 +481,6 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Features": "[0.1.0-dev, )",
-          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "StackExchange.Redis": "[2.*, )"
         }
       },
@@ -676,8 +682,8 @@
       "StackExchange.Redis": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.10",
-        "contentHash": "PsVrFkNoOdjIGOXg2+duLS02mzEtOCsE++dNvRiO+gaejKBUuHYBLbTvGR+nL/5ik+vtLKqHZTirNQ5p9qaN+A==",
+        "resolved": "2.13.17",
+        "contentHash": "P7o7ZDBAmBrOLQEw8Pt44iIA08ioj48smRxn4Jp6yzCu6P3DOSU6lj7f+IOtN3pPvSgC9YufvM92ycukEEBCYQ==",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
           "Pipelines.Sockets.Unofficial": "2.2.16",
