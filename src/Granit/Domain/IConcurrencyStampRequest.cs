@@ -15,7 +15,8 @@ namespace Granit.Domain;
 /// entity.Name = request.Name; // EF Core already knows OriginalValue
 ///
 /// // Disconnected scenario (CQRS command, new DbContext):
-/// dbContext.Entry(entity).Property(e =&gt; e.ConcurrencyStamp).OriginalValue = request.ConcurrencyStamp;
+/// // dbContext.SetConcurrencyStampOriginalValue(entity, request);
+/// // (ConcurrencyStampExtensions in Granit.Persistence.EntityFrameworkCore)
 /// </code>
 /// <para>
 /// If the stamp in the database differs from the original value, EF Core throws

@@ -15609,7 +15609,7 @@
       "kind": "interface",
       "project": "Granit",
       "file": "src/Granit/Domain/IConcurrencyAware.cs",
-      "line": 26,
+      "line": 28,
       "members": []
     },
     {
@@ -15618,7 +15618,7 @@
       "kind": "interface",
       "project": "Granit",
       "file": "src/Granit/Domain/IConcurrencyStampRequest.cs",
-      "line": 26,
+      "line": 27,
       "members": []
     },
     {
@@ -34995,6 +34995,15 @@
           "returnType": "bool"
         }
       ]
+    },
+    {
+      "name": "ConcurrencyStampExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.ConcurrencyStampExtensions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/ConcurrencyStampExtensions.cs",
+      "line": 26,
+      "members": []
     },
     {
       "name": "DbContextOptionsBuilderExtensions",

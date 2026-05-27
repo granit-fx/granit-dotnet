@@ -58,6 +58,8 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         // Audit columns inherited from AuditedAggregateRoot — already configured
         // by ApplyGranitConventions (CreatedAt, CreatedBy, ModifiedAt, ModifiedBy
-        // dimensions, plus IConcurrencyAware token). Nothing to declare here.
+        // dimensions). User does not implement IConcurrencyAware; auth concurrency
+        // is handled by LocalIdentity via ASP.NET Identity's own ConcurrencyStamp.
+        // Nothing to declare here.
     }
 }

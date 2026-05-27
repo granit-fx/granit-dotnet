@@ -1,4 +1,5 @@
 using Granit.Domain;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -188,6 +189,86 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
         // Assert — EF Core detects mismatch between OriginalValue and DB value
         await Should.ThrowAsync<DbUpdateConcurrencyException>(
             () => context2.SaveChangesAsync(TestContext.Current.CancellationToken));
+    }
+
+    // ========================================================================
+    // Disconnected update — via SetConcurrencyStampOriginalValue helper
+    // ========================================================================
+
+    [Fact]
+    public async Task SetConcurrencyStampOriginalValue_WithStaleStamp_ThrowsDbUpdateConcurrencyException()
+    {
+        // Arrange — create entity, rotate its stamp so the captured one is stale
+        var entityId = Guid.NewGuid();
+        using TestDbContext context1 = CreateContext();
+        TestConcurrencyEntity entity = new()
+        {
+            Id = entityId,
+            Name = "Original",
+        };
+        context1.Entities.Add(entity);
+        await context1.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        string staleStamp = entity.ConcurrencyStamp;
+
+        entity.Name = "Updated once";
+        await context1.SaveChangesAsync(TestContext.Current.CancellationToken);
+        entity.ConcurrencyStamp.ShouldNotBe(staleStamp, "stamp must have rotated");
+
+        // Disconnected update via the helper instead of the raw Entry(...).OriginalValue expression
+        using TestDbContext context2 = CreateContext(ensureCreated: false);
+        TestConcurrencyEntity disconnected = (await context2.Entities.FindAsync([entityId], TestContext.Current.CancellationToken))!;
+
+        context2.SetConcurrencyStampOriginalValue(disconnected, staleStamp);
+
+        // Act
+        disconnected.Name = "Disconnected update";
+
+        // Assert
+        await Should.ThrowAsync<DbUpdateConcurrencyException>(
+            () => context2.SaveChangesAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task SetConcurrencyStampOriginalValue_WithCurrentStamp_Succeeds()
+    {
+        // Arrange
+        var entityId = Guid.NewGuid();
+        using TestDbContext context1 = CreateContext();
+        TestConcurrencyEntity entity = new()
+        {
+            Id = entityId,
+            Name = "Original",
+        };
+        context1.Entities.Add(entity);
+        await context1.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        string currentStamp = entity.ConcurrencyStamp;
+
+        // Disconnected update carrying the up-to-date stamp
+        using TestDbContext context2 = CreateContext(ensureCreated: false);
+        TestConcurrencyEntity disconnected = (await context2.Entities.FindAsync([entityId], TestContext.Current.CancellationToken))!;
+
+        context2.SetConcurrencyStampOriginalValue(disconnected, currentStamp);
+        disconnected.Name = "Disconnected update";
+
+        // Act — matching stamp → no conflict
+        await context2.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert — saved and stamp rotated by the interceptor
+        disconnected.Name.ShouldBe("Disconnected update");
+        disconnected.ConcurrencyStamp.ShouldNotBe(currentStamp);
+    }
+
+    [Fact]
+    public void SetConcurrencyStampOriginalValue_NullOrEmptyStamp_Throws()
+    {
+        using TestDbContext context = CreateContext();
+        TestConcurrencyEntity entity = new() { Id = Guid.NewGuid(), Name = "x" };
+        context.Entities.Add(entity);
+
+        Should.Throw<ArgumentException>(() =>
+            context.SetConcurrencyStampOriginalValue(entity, string.Empty));
     }
 
     // ========================================================================
