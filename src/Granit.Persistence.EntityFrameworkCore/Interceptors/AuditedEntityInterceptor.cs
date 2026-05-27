@@ -96,10 +96,14 @@ public sealed class AuditedEntityInterceptor(
         entry.Property(e => e.CreatedAt).IsModified = false;
         entry.Property(e => e.CreatedBy).IsModified = false;
 
-        if (entry.Entity is AuditedEntity audited)
+        // Both the AuditedEntity and AuditedAggregateRoot hierarchies implement
+        // IModificationAuditedObject. Pivoting on the interface (rather than on a
+        // single base class) is required because the two hierarchies are disjoint:
+        // an aggregate root is a CreationAuditedEntity but never an AuditedEntity.
+        if (entry.Entity is IModificationAuditedObject modificationAudited)
         {
-            audited.ModifiedAt = now;
-            audited.ModifiedBy = userId;
+            modificationAudited.ModifiedAt = now;
+            modificationAudited.ModifiedBy = userId;
         }
     }
 }

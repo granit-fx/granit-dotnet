@@ -249,6 +249,137 @@ public sealed class AuditedEntityInterceptorTests
     }
 
     // -------------------------------------------------------------------------
+    // AuditedAggregateRoot (création + modification)
+    // -------------------------------------------------------------------------
+    // Régression : la hiérarchie AggregateRoot est disjointe de la hiérarchie
+    // Entity. ModifiedAt/ModifiedBy étaient laissés null sur les agrégats parce
+    // que l'intercepteur castait vers AuditedEntity (qu'un agrégat n'est jamais).
+    // Le pivot sur IModificationAuditedObject couvre désormais les deux.
+
+    [Fact]
+    public async Task SaveChangesAsync_AuditedAggregateRoot_OnAdd_SetsCreatedFields()
+    {
+        // Arrange
+        await using TestDbContext context = CreateContext();
+        TestAuditedAggregateRoot aggregate = new() { Name = "Aggregate" };
+        context.AuditedAggregateRoots.Add(aggregate);
+
+        // Act
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        aggregate.CreatedAt.ShouldBe(FixedNow);
+        aggregate.CreatedBy.ShouldBe("user-test-123");
+        aggregate.Id.ShouldBe(FixedGuid);
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_AuditedAggregateRoot_OnModify_SetsModifiedFields()
+    {
+        // Arrange
+        await using TestDbContext context = CreateContext();
+        TestAuditedAggregateRoot aggregate = new()
+        {
+            Id = Guid.NewGuid(),
+            Name = "Original",
+            CreatedAt = FixedNow.AddDays(-1),
+            CreatedBy = "original-user"
+        };
+        context.AuditedAggregateRoots.Add(aggregate);
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Modifier l'agrégat
+        aggregate.Name = "Modified";
+        context.Entry(aggregate).State = EntityState.Modified;
+
+        // Act
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert — c'est le cœur de la régression corrigée
+        aggregate.ModifiedAt.ShouldBe(FixedNow);
+        aggregate.ModifiedBy.ShouldBe("user-test-123");
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_AuditedAggregateRoot_OnModify_DoesNotOverwriteCreatedFields()
+    {
+        // Arrange
+        await using TestDbContext context = CreateContext();
+        TestAuditedAggregateRoot aggregate = new()
+        {
+            Id = Guid.NewGuid(),
+            Name = "Original"
+        };
+        context.AuditedAggregateRoots.Add(aggregate);
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        DateTimeOffset originalCreatedAt = aggregate.CreatedAt;
+        string originalCreatedBy = aggregate.CreatedBy;
+
+        // Avancer le temps pour le Modify
+        _clock.Now.Returns(FixedNow.AddHours(1));
+
+        // Modifier l'agrégat
+        aggregate.Name = "Modified";
+        context.Entry(aggregate).State = EntityState.Modified;
+
+        // Act
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert — les champs de création restent protégés sur un agrégat aussi
+        aggregate.CreatedAt.ShouldBe(originalCreatedAt);
+        aggregate.CreatedBy.ShouldBe(originalCreatedBy);
+        aggregate.ModifiedAt.ShouldBe(FixedNow.AddHours(1));
+    }
+
+    // -------------------------------------------------------------------------
+    // FullAuditedAggregateRoot (création + modification + soft delete)
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task SaveChangesAsync_FullAuditedAggregateRoot_OnAdd_SetsCreatedFields()
+    {
+        // Arrange
+        await using TestDbContext context = CreateContext();
+        TestFullAuditedAggregateRoot aggregate = new() { Title = "Full" };
+        context.FullAuditedAggregateRoots.Add(aggregate);
+
+        // Act
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        aggregate.CreatedAt.ShouldBe(FixedNow);
+        aggregate.CreatedBy.ShouldBe("user-test-123");
+        aggregate.Id.ShouldBe(FixedGuid);
+        aggregate.IsDeleted.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_FullAuditedAggregateRoot_OnModify_SetsModifiedFields()
+    {
+        // Arrange
+        await using TestDbContext context = CreateContext();
+        TestFullAuditedAggregateRoot aggregate = new()
+        {
+            Id = Guid.NewGuid(),
+            Title = "Original"
+        };
+        context.FullAuditedAggregateRoots.Add(aggregate);
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Modifier l'agrégat
+        aggregate.Title = "Updated";
+        context.Entry(aggregate).State = EntityState.Modified;
+
+        // Act
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        aggregate.ModifiedAt.ShouldBe(FixedNow);
+        aggregate.ModifiedBy.ShouldBe("user-test-123");
+    }
+
+    // -------------------------------------------------------------------------
     // IMultiTenant — injection automatique du TenantId
     // -------------------------------------------------------------------------
 
@@ -332,6 +463,16 @@ public sealed class AuditedEntityInterceptorTests
         public string Title { get; set; } = string.Empty;
     }
 
+    private sealed class TestAuditedAggregateRoot : AuditedAggregateRoot
+    {
+        public string Name { get; set; } = string.Empty;
+    }
+
+    private sealed class TestFullAuditedAggregateRoot : FullAuditedAggregateRoot
+    {
+        public string Title { get; set; } = string.Empty;
+    }
+
     private sealed class TestMultiTenantEntity : CreationAuditedEntity, IMultiTenant
     {
         public string Name { get; set; } = string.Empty;
@@ -343,6 +484,8 @@ public sealed class AuditedEntityInterceptorTests
         public DbSet<TestCreationAuditedEntity> CreationAuditedEntities => Set<TestCreationAuditedEntity>();
         public DbSet<TestAuditedEntity> AuditedEntities => Set<TestAuditedEntity>();
         public DbSet<TestFullAuditedEntity> FullAuditedEntities => Set<TestFullAuditedEntity>();
+        public DbSet<TestAuditedAggregateRoot> AuditedAggregateRoots => Set<TestAuditedAggregateRoot>();
+        public DbSet<TestFullAuditedAggregateRoot> FullAuditedAggregateRoots => Set<TestFullAuditedAggregateRoot>();
         public DbSet<TestMultiTenantEntity> MultiTenantEntities => Set<TestMultiTenantEntity>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -352,6 +495,20 @@ public sealed class AuditedEntityInterceptorTests
             modelBuilder.Entity<TestAuditedEntity>().Property(e => e.Id).ValueGeneratedNever();
             modelBuilder.Entity<TestFullAuditedEntity>().Property(e => e.Id).ValueGeneratedNever();
             modelBuilder.Entity<TestMultiTenantEntity>().Property(e => e.Id).ValueGeneratedNever();
+
+            // Aggregate roots expose event collections that are not persisted columns.
+            modelBuilder.Entity<TestAuditedAggregateRoot>(b =>
+            {
+                b.Property(e => e.Id).ValueGeneratedNever();
+                b.Ignore(e => e.DomainEvents);
+                b.Ignore(e => e.IntegrationEvents);
+            });
+            modelBuilder.Entity<TestFullAuditedAggregateRoot>(b =>
+            {
+                b.Property(e => e.Id).ValueGeneratedNever();
+                b.Ignore(e => e.DomainEvents);
+                b.Ignore(e => e.IntegrationEvents);
+            });
         }
     }
 }

@@ -15626,6 +15626,15 @@
       "members": []
     },
     {
+      "name": "IModificationAuditedObject",
+      "fqn": "Granit.Domain.IModificationAuditedObject",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/Domain/IModificationAuditedObject.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "IMultiTenant",
       "fqn": "Granit.Domain.IMultiTenant",
       "kind": "interface",

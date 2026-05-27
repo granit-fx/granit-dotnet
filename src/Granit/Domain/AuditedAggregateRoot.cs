@@ -4,7 +4,7 @@ namespace Granit.Domain;
 /// Aggregate root with full audit trail (creation + modification).
 /// Inherits from <see cref="CreationAuditedAggregateRoot"/> and adds ModifiedAt/ModifiedBy.
 /// </summary>
-public abstract class AuditedAggregateRoot : CreationAuditedAggregateRoot
+public abstract class AuditedAggregateRoot : CreationAuditedAggregateRoot, IModificationAuditedObject
 {
     /// <summary>Last modification timestamp (UTC).</summary>
     public DateTimeOffset? ModifiedAt { get; set; }

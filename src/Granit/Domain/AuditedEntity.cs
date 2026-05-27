@@ -4,7 +4,7 @@ namespace Granit.Domain;
 /// Entity with full audit trail (creation + modification).
 /// Inherits from <see cref="CreationAuditedEntity"/> and adds ModifiedAt/ModifiedBy.
 /// </summary>
-public abstract class AuditedEntity : CreationAuditedEntity
+public abstract class AuditedEntity : CreationAuditedEntity, IModificationAuditedObject
 {
     /// <summary>Last modification timestamp (UTC).</summary>
     public DateTimeOffset? ModifiedAt { get; set; }
