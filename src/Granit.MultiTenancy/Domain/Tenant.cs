@@ -12,7 +12,7 @@ namespace Granit.MultiTenancy.Domain;
 /// All state transitions go through behavior methods that enforce invariants
 /// and raise domain events dispatched by <c>DomainEventDispatcherInterceptor</c>.
 /// </remarks>
-public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo
+public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo, IConcurrencyAware
 {
     /// <summary>Display name of the tenant (max 256 characters).</summary>
     public string Name { get; private set; } = string.Empty;
@@ -39,6 +39,16 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo
 
     // Explicit interface: Entity.Id is Guid, ITenantInfo.Id is Guid?
     Guid? ITenantInfo.Id => Id;
+
+    /// <summary>
+    /// Optimistic-concurrency token (ADR-061). Auto-managed by <c>ConcurrencyStampInterceptor</c>
+    /// and configured as an EF Core concurrency token by <c>ApplyGranitConventions</c>. Guards
+    /// against concurrent admin edits (details, custom domain, activation) racing on the same row.
+    /// </summary>
+    public string ConcurrencyStamp { get; private set; } = string.Empty;
+
+    /// <inheritdoc/>
+    string IConcurrencyAware.ConcurrencyStamp { get => ConcurrencyStamp; set => ConcurrencyStamp = value; }
 
     /// <summary>
     /// Private constructor for EF Core materialization.

@@ -32,7 +32,7 @@ namespace Granit.Authorization.Domain;
 /// <c>TenantId = null</c> and <c>ClientId = null</c> cannot duplicate each other.
 /// </para>
 /// </remarks>
-public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
+public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant, IConcurrencyAware
 {
     /// <summary>Human-readable role name, e.g. <c>"TenantAdministrator"</c>. Max 256 characters.</summary>
     public string Name { get; private set; } = string.Empty;
@@ -92,6 +92,16 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
         get => TenantId;
         set => TenantId = value;
     }
+
+    /// <summary>
+    /// Optimistic-concurrency token (ADR-061). Auto-managed by <c>ConcurrencyStampInterceptor</c>
+    /// and configured as an EF Core concurrency token by <c>ApplyGranitConventions</c>. Guards
+    /// against concurrent admin edits silently overwriting one another.
+    /// </summary>
+    public string ConcurrencyStamp { get; private set; } = string.Empty;
+
+    /// <inheritdoc/>
+    string IConcurrencyAware.ConcurrencyStamp { get => ConcurrencyStamp; set => ConcurrencyStamp = value; }
 
     /// <summary>
     /// Creates a new <see cref="RoleMetadata"/> and raises a <see cref="RoleCreatedEvent"/>

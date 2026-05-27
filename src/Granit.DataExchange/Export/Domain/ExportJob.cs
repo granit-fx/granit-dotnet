@@ -10,7 +10,7 @@ namespace Granit.DataExchange.Export.Domain;
 /// Inherits <see cref="AuditedAggregateRoot"/> for ISO 27001-compliant audit trail
 /// (CreatedAt, CreatedBy, ModifiedAt, ModifiedBy).
 /// </remarks>
-public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant
+public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant, IConcurrencyAware
 {
     // Parameterless constructor required by EF Core materializer.
     private ExportJob() { }
@@ -88,6 +88,16 @@ public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant
 
     /// <inheritdoc />
     Guid? IMultiTenant.TenantId { get => TenantId; set => TenantId = value; }
+
+    /// <summary>
+    /// Optimistic-concurrency token (ADR-061). Auto-managed by <c>ConcurrencyStampInterceptor</c>
+    /// and configured as an EF Core concurrency token by <c>ApplyGranitConventions</c>. Guards
+    /// against a duplicate worker clobbering a concurrently-advanced job status.
+    /// </summary>
+    public string ConcurrencyStamp { get; private set; } = string.Empty;
+
+    /// <inheritdoc/>
+    string IConcurrencyAware.ConcurrencyStamp { get => ConcurrencyStamp; set => ConcurrencyStamp = value; }
 
     /// <summary>
     /// Transitions to <see cref="ExportJobStatus.Exporting"/>.

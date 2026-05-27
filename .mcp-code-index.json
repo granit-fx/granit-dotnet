@@ -7697,6 +7697,12 @@
           "returnType": "string? Description { get; private set; } public bool IsSystem { get; private set; } public bool IsOrphaned { get; private set; } public DateTimeOffset? OrphanedAt { get; private set; } private"
         },
         {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string name, MultiTenancySides multiTenancySide, Guid? tenantId, string? clientId = null, string? description = null, bool isSystem = false)",
+          "returnType": "RoleMetadata"
+        },
+        {
           "name": "MarkAsOrphaned",
           "kind": "method",
           "signature": "MarkAsOrphaned(DateTimeOffset now)",
@@ -13017,6 +13023,12 @@
           "kind": "property",
           "signature": "BlobReference? BlobReference",
           "returnType": "BlobReference?"
+        },
+        {
+          "name": "ConcurrencyStamp",
+          "kind": "property",
+          "signature": "string ConcurrencyStamp",
+          "returnType": "string"
         }
       ]
     },
@@ -13658,6 +13670,12 @@
           "kind": "property",
           "signature": "IReadOnlyList<ImportColumnMapping>? Mappings",
           "returnType": "IReadOnlyList<ImportColumnMapping>?"
+        },
+        {
+          "name": "ConcurrencyStamp",
+          "kind": "property",
+          "signature": "string ConcurrencyStamp",
+          "returnType": "string"
         }
       ]
     },
@@ -29361,6 +29379,12 @@
           "kind": "property",
           "signature": "string? CustomDomain",
           "returnType": "string?"
+        },
+        {
+          "name": "ConcurrencyStamp",
+          "kind": "property",
+          "signature": "string ConcurrencyStamp",
+          "returnType": "string"
         },
         {
           "name": "Create",

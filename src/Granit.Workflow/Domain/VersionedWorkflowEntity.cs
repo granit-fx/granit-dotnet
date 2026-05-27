@@ -31,7 +31,7 @@ namespace Granit.Workflow.Domain;
 /// by implementing the static abstract member explicitly.
 /// </para>
 /// </remarks>
-public abstract class VersionedWorkflowEntity : AuditedAggregateRoot, IVersionedEntity, IWorkflowStateful
+public abstract class VersionedWorkflowEntity : AuditedAggregateRoot, IVersionedEntity, IWorkflowStateful, IConcurrencyAware
 {
     /// <summary>
     /// Initializes a new instance for EF Core materialization.
@@ -52,6 +52,13 @@ public abstract class VersionedWorkflowEntity : AuditedAggregateRoot, IVersioned
     /// <inheritdoc/>
     public bool IsPublished { get; private set; }
 
+    /// <summary>
+    /// Optimistic-concurrency token (ADR-061). Auto-managed by <c>ConcurrencyStampInterceptor</c>
+    /// and configured as an EF Core concurrency token by <c>ApplyGranitConventions</c>. Guards
+    /// every derived workflow entity against two concurrent lifecycle transitions racing.
+    /// </summary>
+    public string ConcurrencyStamp { get; private set; } = string.Empty;
+
     // Explicit interface implementations for interceptor write access.
     // VersioningInterceptor writes VersionId/Version via IVersioned cast.
     // WorkflowTransitionInterceptor writes IsPublished via IPublishable cast.
@@ -68,6 +75,9 @@ public abstract class VersionedWorkflowEntity : AuditedAggregateRoot, IVersioned
 
     /// <inheritdoc/>
     bool IPublishable.IsPublished { get => IsPublished; set => IsPublished = value; }
+
+    /// <inheritdoc/>
+    string IConcurrencyAware.ConcurrencyStamp { get => ConcurrencyStamp; set => ConcurrencyStamp = value; }
 
     /// <inheritdoc/>
     static string IWorkflowStateful.StatusPropertyName => nameof(LifecycleStatus);
