@@ -115,6 +115,7 @@
     <ProjectReference Include="..\..\src\Granit.Features\Granit.Features.csproj" />
     <ProjectReference Include="..\..\src\Granit.Features.Endpoints\Granit.Features.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Features.EntityFrameworkCore\Granit.Features.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Features.Wolverine\Granit.Features.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
@@ -125,6 +126,7 @@
     <ProjectReference Include="..\..\src\Granit.Http.Cookies.Klaro\Granit.Http.Cookies.Klaro.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Cors\Granit.Http.Cors.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.Features\Granit.Http.Features.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Idempotency\Granit.Http.Idempotency.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ODataExposure\Granit.Http.ODataExposure.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.OutputCaching\Granit.Http.OutputCaching.csproj" />

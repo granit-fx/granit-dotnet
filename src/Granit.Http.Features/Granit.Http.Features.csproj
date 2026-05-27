@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Http.Features</PackageId>
+    <Description>ASP.NET Core binding for Granit.Features. Minimal-API endpoint filter (.RequiresFeature) that returns HTTP 403 (FeatureNotEnabledException) when a required feature is disabled for the current tenant/plan context.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Http.Features.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Features\Granit.Features.csproj" />
+  </ItemGroup>
+
+</Project>

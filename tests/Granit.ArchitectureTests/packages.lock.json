@@ -2174,6 +2174,12 @@
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
+      "granit.features.wolverine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Features": "[0.1.0-dev, )"
+        }
+      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
@@ -2252,6 +2258,12 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.features": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Features": "[0.1.0-dev, )"
         }
       },
       "granit.http.idempotency": {
@@ -3167,8 +3179,7 @@
       "granit.ratelimiting.wolverine": {
         "type": "Project",
         "dependencies": {
-          "Granit.RateLimiting": "[0.1.0-dev, )",
-          "WolverineFx": "[5.*, )"
+          "Granit.RateLimiting": "[0.1.0-dev, )"
         }
       },
       "granit.scheduling": {

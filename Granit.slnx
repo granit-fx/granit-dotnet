@@ -24,6 +24,7 @@
     <Project Path="src/Granit.Http.Bulkhead/Granit.Http.Bulkhead.csproj" />
     <Project Path="src/Granit.Http.Cors/Granit.Http.Cors.csproj" />
     <Project Path="src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj" />
+    <Project Path="src/Granit.Http.Features/Granit.Http.Features.csproj" />
     <Project Path="src/Granit.Http.Idempotency/Granit.Http.Idempotency.csproj" />
     <Project Path="src/Granit.Http.ODataExposure/Granit.Http.ODataExposure.csproj" />
     <Project Path="src/Granit.Http.OutputCaching.StackExchangeRedis/Granit.Http.OutputCaching.StackExchangeRedis.csproj" />
@@ -138,6 +139,7 @@
     <Project Path="src/Granit.DocumentGeneration/Granit.DocumentGeneration.csproj" />
     <Project Path="src/Granit.Features.Endpoints/Granit.Features.Endpoints.csproj" />
     <Project Path="src/Granit.Features.EntityFrameworkCore/Granit.Features.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Features.Wolverine/Granit.Features.Wolverine.csproj" />
     <Project Path="src/Granit.Features/Granit.Features.csproj" />
     <Project Path="src/Granit.Localization.AI/Granit.Localization.AI.csproj" />
     <Project Path="src/Granit.Localization.Endpoints/Granit.Localization.Endpoints.csproj" />
@@ -336,6 +338,7 @@
     <Project Path="tests/Granit.Http.Bulkhead.Tests/Granit.Http.Bulkhead.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cors.Tests/Granit.Http.Cors.Tests.csproj" />
     <Project Path="tests/Granit.Http.ExceptionHandling.Tests/Granit.Http.ExceptionHandling.Tests.csproj" />
+    <Project Path="tests/Granit.Http.Features.Tests/Granit.Http.Features.Tests.csproj" />
     <Project Path="tests/Granit.Http.Idempotency.Tests/Granit.Http.Idempotency.Tests.csproj" />
     <Project Path="tests/Granit.Http.ODataExposure.Tests.Integration/Granit.Http.ODataExposure.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Http.ODataExposure.Tests/Granit.Http.ODataExposure.Tests.csproj" />
@@ -458,6 +461,7 @@
     <Project Path="tests/Granit.DocumentGeneration.Tests/Granit.DocumentGeneration.Tests.csproj" />
     <Project Path="tests/Granit.Features.Endpoints.Tests/Granit.Features.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Features.EntityFrameworkCore.Tests/Granit.Features.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Features.Wolverine.Tests/Granit.Features.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Features.Tests/Granit.Features.Tests.csproj" />
     <Project Path="tests/Granit.Localization.AI.Tests/Granit.Localization.AI.Tests.csproj" />
     <Project Path="tests/Granit.Localization.Endpoints.Tests/Granit.Localization.Endpoints.Tests.csproj" />

@@ -2,13 +2,9 @@
 
   <PropertyGroup>
     <PackageId>Granit.Features</PackageId>
-    <Description>SaaS feature management module for Granit. Multi-level resolution (Default, Plan, Tenant), IHybridCache, [RequiresFeature] for ASP.NET Core and Wolverine, IFeatureLimitGuard for numeric limits.</Description>
+    <Description>Framework-pure SaaS feature management core for Granit. Multi-level resolution (Default, Plan, Tenant), IHybridCache, IFeatureChecker, IFeatureLimitGuard for numeric limits. HTTP-agnostic — use Granit.Http.Features for the Minimal-API filter and Granit.Features.Wolverine for the message middleware.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Features.Tests" />

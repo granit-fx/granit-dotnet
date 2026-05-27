@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Features.Wolverine</PackageId>
+    <Description>Wolverine binding for Granit.Features. Pipeline middleware enforcing the [RequiresFeature] attribute on message types before the handler runs, throwing FeatureNotEnabledException when a required feature is disabled for the current tenant/plan context.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Features.Wolverine.Tests" />
+  </ItemGroup>
+
+  <!--
+    No WolverineFx reference: the middleware is discovered by Wolverine convention
+    (public static BeforeAsync) and uses no Wolverine types, so the host's WolverineFx
+    is sufficient. Keeps the package off the Wolverine compile-time coupling
+    (WolverineCouplingTests) — same rationale as Granit.RateLimiting.Wolverine.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Features\Granit.Features.csproj" />
+  </ItemGroup>
+
+</Project>

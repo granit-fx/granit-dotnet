@@ -1,7 +1,8 @@
+using Granit.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Granit.Features.AspNetCore;
+namespace Granit.Http.Features.AspNetCore;
 
 /// <summary>
 /// Minimal API endpoint filter that enforces a feature check before the endpoint handler runs.

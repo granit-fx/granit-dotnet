@@ -1,11 +1,11 @@
 using Granit.Features.Exceptions;
-using Granit.Features.Wolverine;
+using Granit.Features.Wolverine.Attributes;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Features.Tests.Wolverine;
+namespace Granit.Features.Wolverine.Tests;
 
 public sealed class RequiresFeatureMiddlewareTests
 {

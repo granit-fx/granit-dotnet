@@ -1,6 +1,14 @@
 # Granit.Features
 
-SaaS Feature Management module for Granit. Multi-level resolution (Default → Plan → Tenant), hybrid cache, [RequiresFeature] for ASP.NET Core and Wolverine, IFeatureLimitGuard for numeric limits.
+Framework-pure SaaS Feature Management core for Granit. Multi-level resolution
+(Default → Plan → Tenant), hybrid cache, `IFeatureChecker`, `IFeatureLimitGuard` for numeric
+limits.
+
+This package is **HTTP-agnostic**. Pick the binding for your transport:
+
+- **`Granit.Http.Features`** — Minimal-API endpoint filter (`.RequiresFeature("name")`, 403 when
+  disabled).
+- **`Granit.Features.Wolverine`** — Wolverine message middleware + `[RequiresFeature]` attribute.
 
 Part of the [granit](https://granit-fx.dev) framework.
 

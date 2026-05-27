@@ -1,5 +1,6 @@
-using Granit.Features.AspNetCore;
+using Granit.Features;
 using Granit.Features.Exceptions;
+using Granit.Http.Features.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -7,7 +8,7 @@ using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Features.Tests.AspNetCore;
+namespace Granit.Http.Features.Tests.AspNetCore;
 
 public sealed class RequiresFeatureEndpointFilterTests
 {

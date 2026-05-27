@@ -1,3 +1,5 @@
+using Granit.Features.Wolverine.Attributes;
+
 namespace Granit.Features.Wolverine;
 
 /// <summary>

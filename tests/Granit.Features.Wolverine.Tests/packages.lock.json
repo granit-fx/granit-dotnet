@@ -306,6 +306,12 @@
           "Granit.Localization": "[0.1.0-dev, )"
         }
       },
+      "granit.features.wolverine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Features": "[0.1.0-dev, )"
+        }
+      },
       "granit.localization": {
         "type": "Project",
         "dependencies": {

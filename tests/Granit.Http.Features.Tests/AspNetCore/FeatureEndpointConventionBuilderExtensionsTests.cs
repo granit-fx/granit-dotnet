@@ -1,9 +1,9 @@
-using Granit.Features.AspNetCore;
+using Granit.Http.Features.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Features.Tests.AspNetCore;
+namespace Granit.Http.Features.Tests.AspNetCore;
 
 public sealed class FeatureEndpointConventionBuilderExtensionsTests
 {

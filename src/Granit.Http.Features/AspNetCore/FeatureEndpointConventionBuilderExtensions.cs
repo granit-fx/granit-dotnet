@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace Granit.Features.AspNetCore;
+namespace Granit.Http.Features.AspNetCore;
 
 /// <summary>
 /// Extension methods for applying feature checks to Minimal API endpoint groups and routes.

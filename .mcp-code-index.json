@@ -765,6 +765,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Features.Wolverine",
+      "deps": [
+        "Granit.Features"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Guids",
       "deps": [
         "Granit.Timing"
@@ -848,6 +855,13 @@
       "name": "Granit.Http.ExceptionHandling",
       "deps": [
         "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Http.Features",
+      "deps": [
+        "Granit.Features"
       ],
       "framework": "net10.0"
     },
@@ -17782,22 +17796,6 @@
       ]
     },
     {
-      "name": "FeatureEndpointConventionBuilderExtensions",
-      "fqn": "Granit.Features.AspNetCore.FeatureEndpointConventionBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Features",
-      "file": "src/Granit.Features/AspNetCore/FeatureEndpointConventionBuilderExtensions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "RequiresFeature",
-          "kind": "method",
-          "signature": "RequiresFeature(this IEndpointConventionBuilder builder, string featureName)",
-          "returnType": "IEndpointConventionBuilder"
-        }
-      ]
-    },
-    {
       "name": "FeatureCacheInvalidationHandler",
       "fqn": "Granit.Features.Cache.FeatureCacheInvalidationHandler",
       "kind": "class",
@@ -18353,34 +18351,6 @@
       ]
     },
     {
-      "name": "RequiresFeatureAttribute",
-      "fqn": "Granit.Features.RequiresFeatureAttribute",
-      "kind": "class",
-      "project": "Granit.Features",
-      "file": "src/Granit.Features/RequiresFeatureAttribute.cs",
-      "line": 41,
-      "members": [
-        {
-          "name": "FeatureName",
-          "kind": "property",
-          "signature": "string FeatureName",
-          "returnType": "string"
-        },
-        {
-          "name": "IsReusable",
-          "kind": "property",
-          "signature": "bool IsReusable",
-          "returnType": "bool"
-        },
-        {
-          "name": "CreateInstance",
-          "kind": "method",
-          "signature": "CreateInstance(IServiceProvider serviceProvider)",
-          "returnType": "IFilterMetadata"
-        }
-      ]
-    },
-    {
       "name": "IFeatureValueProvider",
       "fqn": "Granit.Features.ValueProviders.IFeatureValueProvider",
       "kind": "interface",
@@ -18438,12 +18408,37 @@
       ]
     },
     {
+      "name": "RequiresFeatureAttribute",
+      "fqn": "Granit.Features.Wolverine.Attributes.RequiresFeatureAttribute",
+      "kind": "class",
+      "project": "Granit.Features.Wolverine",
+      "file": "src/Granit.Features.Wolverine/Attributes/RequiresFeatureAttribute.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "FeatureName",
+          "kind": "property",
+          "signature": "string FeatureName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitFeaturesWolverineModule",
+      "fqn": "Granit.Features.Wolverine.GranitFeaturesWolverineModule",
+      "kind": "class",
+      "project": "Granit.Features.Wolverine",
+      "file": "src/Granit.Features.Wolverine/GranitFeaturesWolverineModule.cs",
+      "line": 19,
+      "members": []
+    },
+    {
       "name": "RequiresFeatureMiddleware",
       "fqn": "Granit.Features.Wolverine.RequiresFeatureMiddleware",
       "kind": "class",
-      "project": "Granit.Features",
-      "file": "src/Granit.Features/Wolverine/RequiresFeatureMiddleware.cs",
-      "line": 17,
+      "project": "Granit.Features.Wolverine",
+      "file": "src/Granit.Features.Wolverine/RequiresFeatureMiddleware.cs",
+      "line": 19,
       "members": [
         {
           "name": "BeforeAsync",
@@ -19773,6 +19768,31 @@
       "project": "Granit.Http.ExceptionHandling",
       "file": "src/Granit.Http.ExceptionHandling/Options/ExceptionHandlingOptions.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "FeatureEndpointConventionBuilderExtensions",
+      "fqn": "Granit.Http.Features.AspNetCore.FeatureEndpointConventionBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Features",
+      "file": "src/Granit.Http.Features/AspNetCore/FeatureEndpointConventionBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "RequiresFeature",
+          "kind": "method",
+          "signature": "RequiresFeature(this IEndpointConventionBuilder builder, string featureName)",
+          "returnType": "IEndpointConventionBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpFeaturesModule",
+      "fqn": "Granit.Http.Features.GranitHttpFeaturesModule",
+      "kind": "class",
+      "project": "Granit.Http.Features",
+      "file": "src/Granit.Http.Features/GranitHttpFeaturesModule.cs",
+      "line": 17,
       "members": []
     },
     {
