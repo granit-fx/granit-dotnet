@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AI.Extraction.StackExchangeRedis</PackageId>
+    <Description>Redis-backed IAICallRateLimiter for Granit.AI.Extraction. Replaces the per-instance in-memory limiter with a distributed sliding-window (Lua, server-side TIME) so the per-tenant LLM call ceiling is enforced once across all replicas — closing the denial-of-wallet gap of the in-process default.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AI.Extraction.StackExchangeRedis.Tests.Integration" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI.Extraction\Granit.AI.Extraction.csproj" />
+  </ItemGroup>
+
+</Project>

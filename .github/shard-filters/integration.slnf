@@ -2,6 +2,8 @@
   "solution": {
     "path": "../../Granit.slnx",
     "projects": [
+      "src/Granit.AI.Extraction.StackExchangeRedis/Granit.AI.Extraction.StackExchangeRedis.csproj",
+      "src/Granit.AI.Extraction/Granit.AI.Extraction.csproj",
       "src/Granit.AI/Granit.AI.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
@@ -76,6 +78,7 @@
       "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
+      "tests/Granit.AI.Extraction.StackExchangeRedis.Tests.Integration/Granit.AI.Extraction.StackExchangeRedis.Tests.Integration.csproj",
       "tests/Granit.Authorization.EntityFrameworkCore.Tests.Integration/Granit.Authorization.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.BackgroundJobs.Tests.Integration/Granit.BackgroundJobs.Tests.Integration.csproj",
       "tests/Granit.Caching.Tests.Integration/Granit.Caching.Tests.Integration.csproj",

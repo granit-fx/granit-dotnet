@@ -6,6 +6,7 @@
       "src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj",
       "src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj",
       "src/Granit.AI.EntityFrameworkCore/Granit.AI.EntityFrameworkCore.csproj",
+      "src/Granit.AI.Extraction.StackExchangeRedis/Granit.AI.Extraction.StackExchangeRedis.csproj",
       "src/Granit.AI.Extraction/Granit.AI.Extraction.csproj",
       "src/Granit.AI.Mcp/Granit.AI.Mcp.csproj",
       "src/Granit.AI.Ollama/Granit.AI.Ollama.csproj",
