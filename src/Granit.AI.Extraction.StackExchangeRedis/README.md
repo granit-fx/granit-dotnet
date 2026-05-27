@@ -68,8 +68,21 @@ builder.Services.AddGranitAIExtractionRedisRateLimiter();
 
 ## Relationship to `Granit.RateLimiting`
 
-This is intentionally **not** built on `Granit.RateLimiting`: that module is HTTP-bound
-(`FrameworkReference Microsoft.AspNetCore.App`, 429 middleware) and pulling it in would
-drag ASP.NET Core into the AI path. The ~15-line sliding-window Lua here is duplicated on
-purpose to keep `Granit.AI.Extraction` HTTP-free. Once `Granit.RateLimiting` is split
-into a framework-pure core (tracked separately), this limiter can migrate onto it.
+This package intentionally **does not** build on `Granit.RateLimiting`. The ~20-line
+sliding-window Lua here is duplicated on purpose.
+
+`Granit.RateLimiting` has since been split into a framework-pure core (#2366), so the
+original objection — that depending on it dragged ASP.NET Core into the AI path — no longer
+holds. Reuse was reconsidered (#2364 follow-up) and **deliberately declined**:
+
+- Its `RedisRateLimitCounterStore` is `internal`; reuse would have to go through the
+  `IRateLimitCounterStore` DI seam, coupling this limiter's fail-open/closed behaviour to
+  `GranitRateLimitingOptions` instead of its own `AIRateLimitingRedisOptions`.
+- Even framework-pure, the core transitively pulls `Granit.Features` → `Granit.Caching` +
+  `Granit.Localization` — i.e. the SaaS feature-flag, cache, and localization stacks — into
+  any app that just wants a distributed AI call limiter. That is the wrong abstraction for
+  a self-contained ~20-line algorithm that never changes.
+
+Cheaper to keep the duplication than to take on that coupling. If a third Redis
+sliding-window consumer appears, extract a minimal shared primitive (StackExchange.Redis
+only) rather than reaching for `Granit.RateLimiting`.
