@@ -17,9 +17,11 @@ namespace Granit.Domain;
 /// </para>
 /// <para>
 /// <b>Disconnected updates (CQRS):</b> when the entity is not loaded from the same
-/// <c>DbContext</c>, set the original stamp received from the client before saving:
+/// <c>DbContext</c>, set the original stamp received from the client before saving via
+/// <c>ConcurrencyStampExtensions.SetConcurrencyStampOriginalValue</c>
+/// (in <c>Granit.Persistence.EntityFrameworkCore</c>):
 /// <code>
-/// dbContext.Entry(entity).Property(e =&gt; e.ConcurrencyStamp).OriginalValue = request.ConcurrencyStamp;
+/// dbContext.SetConcurrencyStampOriginalValue(entity, request.ConcurrencyStamp);
 /// </code>
 /// </para>
 /// </remarks>
