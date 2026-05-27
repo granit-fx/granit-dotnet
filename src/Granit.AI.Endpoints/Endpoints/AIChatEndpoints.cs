@@ -117,14 +117,21 @@ internal static class AIChatEndpoints
         }
         catch (Exception ex) when (ex is AIWorkspaceNotFoundException or AIProviderNotRegisteredException)
         {
+            // Do not echo ex.Message into the response body — return a stable, generic
+            // problem detail. The exception type already distinguishes the two config
+            // faults for server-side telemetry without leaking internal wiring detail.
             httpContext.Response.StatusCode = StatusCodes.Status502BadGateway;
             httpContext.Response.ContentType = "application/problem+json";
             await JsonSerializer.SerializeAsync(
                 httpContext.Response.Body,
-                new { detail = ex.Message, status = 502 },
+                new { detail = "The requested AI workspace is not available.", status = 502 },
                 cancellationToken: cancellationToken).ConfigureAwait(false);
             return;
         }
+
+        // CreateAsync builds a fresh client per call (no cache). A using declaration here
+        // disposes it on every exit path of the method (early returns + fall-through).
+        using IChatClient _ = chatClient;
 
         var messages = request.Messages
             .Select(m => new ChatMessage(MapRole(m.Role), m.Content))

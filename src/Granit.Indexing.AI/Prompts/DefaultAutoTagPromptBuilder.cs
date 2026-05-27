@@ -1,4 +1,5 @@
 using System.Globalization;
+using Granit.AI.Extraction.Prompting;
 using Microsoft.Extensions.AI;
 
 namespace Granit.Indexing.AI.Prompts;
@@ -55,7 +56,7 @@ public sealed class DefaultAutoTagPromptBuilder : IAutoTagPromptBuilder
         return
         [
             new ChatMessage(ChatRole.System, systemPrompt),
-            new ChatMessage(ChatRole.User, $"<untrusted_document>{content}</untrusted_document>"),
+            new ChatMessage(ChatRole.User, UntrustedDocumentEnvelope.Wrap(content)),
         ];
     }
 }

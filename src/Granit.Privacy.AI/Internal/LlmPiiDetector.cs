@@ -44,7 +44,9 @@ internal sealed partial class LlmPiiDetector(
 
         try
         {
-            IChatClient chatClient = await chatClientFactory
+            // CreateAsync builds a fresh client per call (no cache) — dispose
+            // deterministically so the HttpMessageHandler doesn't linger until GC.
+            using IChatClient chatClient = await chatClientFactory
                 .CreateAsync(privacyOptions.WorkspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 
@@ -113,7 +115,10 @@ internal sealed partial class LlmPiiDetector(
         }
         catch (Exception ex)
         {
-            LogScanFailed(ex.Message);
+            // NEVER log ex.Message here: this is a PII detector, so the scanned text is
+            // PII by definition, and providers can echo the prompt payload in transport
+            // exception messages. Log the exception type only.
+            LogScanFailed(ex.GetType().Name);
             return FailResult(privacyOptions);
         }
     }
@@ -142,8 +147,8 @@ internal sealed partial class LlmPiiDetector(
     [LoggerMessage(Level = LogLevel.Information, Message = "PII scan completed: containsPii={ContainsPii}, itemCount={ItemCount}")]
     private partial void LogScanCompleted(bool containsPii, int itemCount);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "PII scan failed, returning fallback result per configured FailMode: {ErrorMessage}")]
-    private partial void LogScanFailed(string errorMessage);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "PII scan failed (exception type: {ExceptionType}), returning fallback result per configured FailMode")]
+    private partial void LogScanFailed(string exceptionType);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "PII scan timed out after {TimeoutSeconds}s, returning fallback result per configured FailMode")]
     private partial void LogScanTimeout(int timeoutSeconds);

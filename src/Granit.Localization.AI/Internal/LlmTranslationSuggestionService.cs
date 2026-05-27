@@ -48,7 +48,9 @@ internal sealed partial class LlmTranslationSuggestionService(
 
         try
         {
-            IChatClient chatClient = await chatClientFactory
+            // CreateAsync builds a fresh client per call (no cache) — dispose
+            // deterministically so the HttpMessageHandler doesn't linger until GC.
+            using IChatClient chatClient = await chatClientFactory
                 .CreateAsync(localizationOptions.WorkspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 
@@ -99,12 +101,14 @@ internal sealed partial class LlmTranslationSuggestionService(
         }
         catch (JsonException ex)
         {
-            LogDeserializationFailed(key, ex.Message);
+            // Type only — a JSON parse message embeds a fragment of the LLM response.
+            LogDeserializationFailed(key, ex.GetType().Name);
             return [];
         }
         catch (Exception ex)
         {
-            LogTranslationFailed(key, ex.Message);
+            // Type only — providers can echo the prompt payload in 4xx messages.
+            LogTranslationFailed(key, ex.GetType().Name);
             return [];
         }
     }
@@ -160,12 +164,12 @@ internal sealed partial class LlmTranslationSuggestionService(
     [LoggerMessage(Level = LogLevel.Warning, Message = "Translation timed out for key {Key} after {TimeoutSeconds}s")]
     private partial void LogTranslationTimeout(string key, int timeoutSeconds);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Translation failed for key {Key}: {ErrorMessage}")]
-    private partial void LogTranslationFailed(string key, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Translation failed for key {Key} (exception type: {ExceptionType})")]
+    private partial void LogTranslationFailed(string key, string exceptionType);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Deserialization of translation response returned null")]
     private partial void LogDeserializationNull();
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to deserialize translation response for key {Key}: {ErrorMessage}")]
-    private partial void LogDeserializationFailed(string key, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to deserialize translation response for key {Key} (exception type: {ExceptionType})")]
+    private partial void LogDeserializationFailed(string key, string exceptionType);
 }

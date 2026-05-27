@@ -1,9 +1,17 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.Indexing.AI.Options;
 
 /// <summary>
 /// Configuration options for <c>Granit.Indexing.AI</c>. Bound from the
 /// <see cref="SectionName"/> section of <c>appsettings.json</c>.
 /// </summary>
+/// <remarks>
+/// Validated at startup via <c>ValidateDataAnnotations().ValidateOnStart()</c>: an
+/// out-of-range value aborts host boot instead of silently degrading every summarizer /
+/// auto-tagger call to a no-op (which would be indistinguishable from a real LLM failure
+/// and inflate the injection counters with false positives).
+/// </remarks>
 public sealed class IndexingAIOptions
 {
     /// <summary>Configuration section name.</summary>
@@ -13,6 +21,7 @@ public sealed class IndexingAIOptions
     /// AI workspace name resolved via <c>IAIChatClientFactory.CreateAsync(name)</c>.
     /// Default: <c>"default"</c>.
     /// </summary>
+    [Required(AllowEmptyStrings = false)]
     public string WorkspaceName { get; set; } = "default";
 
     /// <summary>
@@ -20,6 +29,7 @@ public sealed class IndexingAIOptions
     /// <c>null</c> (graceful skip — caller persists the entry without a summary)
     /// instead of throwing. Default: <c>1_000</c>.
     /// </summary>
+    [Range(1, int.MaxValue)]
     public int MaxAICallsPerHourPerTenant { get; set; } = 1_000;
 
     /// <summary>
@@ -33,6 +43,7 @@ public sealed class IndexingAIOptions
     /// LLM call. Caps cost on very long documents — the summarizer is meant to
     /// produce a SERP snippet, not exhaustively cover the body. Default: <c>8_192</c>.
     /// </summary>
+    [Range(64, 131_072)]
     public int MaxContentLength { get; set; } = 8_192;
 
     /// <summary>
@@ -40,12 +51,14 @@ public sealed class IndexingAIOptions
     /// the cap are truncated and tagged with a metric so the host can review prompt
     /// adherence. Default: <c>500</c>.
     /// </summary>
+    [Range(1, 10_000)]
     public int MaxSummaryLength { get; set; } = 500;
 
     /// <summary>
     /// Per-call timeout. Above this the summarizer returns <c>null</c> so the
     /// indexing pipeline keeps flowing on a stalled LLM. Default: <c>20</c>.
     /// </summary>
+    [Range(1, 300)]
     public int TimeoutSeconds { get; set; } = 20;
 
     /// <summary>
@@ -55,6 +68,7 @@ public sealed class IndexingAIOptions
     /// the same tenant. Calls above the cap return an empty tag list (graceful
     /// skip) instead of throwing. Default: <c>500</c>.
     /// </summary>
+    [Range(1, int.MaxValue)]
     public int MaxAutoTagCallsPerHourPerTenant { get; set; } = 500;
 
     /// <summary>
@@ -63,6 +77,7 @@ public sealed class IndexingAIOptions
     /// the document's gist, not the full body — to keep token cost in check.
     /// Default: <c>4_096</c>.
     /// </summary>
+    [Range(64, 131_072)]
     public int MaxAutoTagContentLength { get; set; } = 4_096;
 
     /// <summary>
@@ -70,5 +85,6 @@ public sealed class IndexingAIOptions
     /// the LLM proposes. Mirrors the <c>maxTags</c> caller parameter — whichever
     /// is smaller wins. Default: <c>10</c>.
     /// </summary>
+    [Range(1, 1_000)]
     public int MaxAutoTagsReturned { get; set; } = 10;
 }

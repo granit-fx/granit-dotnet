@@ -38,7 +38,9 @@ public static class AIExtractionServiceCollectionExtensions
     {
         services
             .AddOptions<ExtractionOptions>()
-            .BindConfiguration(ExtractionOptions.SectionName);
+            .BindConfiguration(ExtractionOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.TryAddSingleton(TimeProvider.System);
         services.TryAddSingleton<IAICallRateLimiter, AICallRateLimiter>();

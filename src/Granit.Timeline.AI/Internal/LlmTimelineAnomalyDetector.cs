@@ -63,7 +63,9 @@ internal sealed partial class LlmTimelineAnomalyDetector(
         await _concurrencyLimiter.WaitAsync(ct).ConfigureAwait(false);
         try
         {
-            IChatClient chatClient = await chatClientFactory
+            // CreateAsync builds a fresh client per call (no cache) — dispose
+            // deterministically so the HttpMessageHandler doesn't linger until GC.
+            using IChatClient chatClient = await chatClientFactory
                 .CreateAsync(config.WorkspaceName, ct)
                 .ConfigureAwait(false);
 

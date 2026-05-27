@@ -67,7 +67,9 @@ public abstract partial class AITemplateDataEnricher<TData>(
 
         try
         {
-            IChatClient chatClient = await chatClientFactory
+            // CreateAsync builds a fresh client per call (no cache) — dispose
+            // deterministically so the HttpMessageHandler doesn't linger until GC.
+            using IChatClient chatClient = await chatClientFactory
                 .CreateAsync(opts.WorkspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 

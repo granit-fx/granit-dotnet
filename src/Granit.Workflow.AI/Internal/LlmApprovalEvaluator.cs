@@ -41,7 +41,9 @@ internal sealed partial class LlmApprovalEvaluator(
 
         try
         {
-            IChatClient chatClient = await chatClientFactory
+            // CreateAsync builds a fresh client per call (no cache) — dispose
+            // deterministically so the HttpMessageHandler doesn't linger until GC.
+            using IChatClient chatClient = await chatClientFactory
                 .CreateAsync(workflowOptions.WorkspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 
@@ -85,12 +87,14 @@ internal sealed partial class LlmApprovalEvaluator(
         }
         catch (JsonException ex)
         {
-            LogJsonError(entityType, transition, ex.Message);
+            // Type only — a JSON parse message embeds a fragment of the LLM response.
+            LogJsonError(entityType, transition, ex.GetType().Name);
             return new RiskAssessment(1.0, "Failed to parse LLM response.", []);
         }
         catch (Exception ex)
         {
-            LogError(entityType, transition, ex.Message);
+            // Type only — providers can echo the prompt payload in 4xx messages.
+            LogError(entityType, transition, ex.GetType().Name);
             return new RiskAssessment(1.0, "Risk evaluation failed due to an internal error.", []);
         }
     }
@@ -139,9 +143,9 @@ internal sealed partial class LlmApprovalEvaluator(
     [LoggerMessage(Level = LogLevel.Error, Message = "Risk evaluation timed out for {EntityType} transition {Transition} after {TimeoutSeconds}s")]
     private partial void LogTimeout(string entityType, string transition, int timeoutSeconds);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to parse LLM risk JSON for {EntityType} transition {Transition}: {ErrorMessage}")]
-    private partial void LogJsonError(string entityType, string transition, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to parse LLM risk JSON for {EntityType} transition {Transition} (exception type: {ExceptionType})")]
+    private partial void LogJsonError(string entityType, string transition, string exceptionType);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Risk evaluation failed for {EntityType} transition {Transition}: {ErrorMessage}")]
-    private partial void LogError(string entityType, string transition, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Error, Message = "Risk evaluation failed for {EntityType} transition {Transition} (exception type: {ExceptionType})")]
+    private partial void LogError(string entityType, string transition, string exceptionType);
 }

@@ -59,7 +59,9 @@ internal sealed partial class LlmImageAnalyzer(
 
         try
         {
-            IChatClient client = await chatClientFactory
+            // CreateAsync builds a fresh client per call (no cache) — dispose
+            // deterministically so the HttpMessageHandler doesn't linger until GC.
+            using IChatClient client = await chatClientFactory
                 .CreateAsync(opts.WorkspaceName, cancellationToken)
                 .ConfigureAwait(false);
 

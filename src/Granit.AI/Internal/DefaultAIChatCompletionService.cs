@@ -29,7 +29,9 @@ internal sealed class DefaultAIChatCompletionService(
             return null;
         }
 
-        IChatClient chatClient = await chatClientFactory
+        // CreateAsync builds a fresh client per call (no cache) — dispose
+        // deterministically so the HttpMessageHandler doesn't linger until GC.
+        using IChatClient chatClient = await chatClientFactory
             .CreateAsync(workspaceName, cancellationToken)
             .ConfigureAwait(false);
 

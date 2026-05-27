@@ -108,15 +108,18 @@ public sealed class DefaultDocumentExtractorTests
     }
 
     [Fact]
-    public async Task ExtractAsync_LLMFailure_ReturnsFailed()
+    public async Task ExtractAsync_LLMFailure_ReturnsFailed_without_leaking_provider_message()
     {
-        // Arrange
+        // The provider exception message may echo the prompt payload (PII). Neither the
+        // returned ErrorMessage nor the log may contain it — only a generic failure
+        // reason. See VULN-201 / issue #2305.
+        const string leakyProviderMessage = "Provider unavailable: prompt was 'SSN 123-45-6789'";
         _chatClient
             .GetResponseAsync(
                 Arg.Any<IEnumerable<ChatMessage>>(),
                 Arg.Any<ChatOptions?>(),
                 Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("Provider unavailable"));
+            .ThrowsAsync(new InvalidOperationException(leakyProviderMessage));
 
         // Act
         ExtractionResult<InvoiceData> result = await _sut.ExtractAsync("Some document content", TestContext.Current.CancellationToken);
@@ -125,7 +128,8 @@ public sealed class DefaultDocumentExtractorTests
         result.Status.ShouldBe(ExtractionStatus.Failed);
         result.Data.ShouldBeNull();
         result.ErrorMessage.ShouldNotBeNull();
-        result.ErrorMessage.ShouldContain("Provider unavailable");
+        result.ErrorMessage.ShouldNotContain("SSN 123-45-6789");
+        result.ErrorMessage.ShouldNotContain("Provider unavailable");
     }
 
     [Fact]

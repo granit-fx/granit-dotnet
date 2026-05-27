@@ -61,7 +61,9 @@ internal sealed partial class LlmLogAnalyzer(
             using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(config.TimeoutSeconds));
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
-            IChatClient client = await chatClientFactory
+            // CreateAsync builds a fresh client per call (no cache) — dispose
+            // deterministically so the HttpMessageHandler doesn't linger until GC.
+            using IChatClient client = await chatClientFactory
                 .CreateAsync(config.WorkspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 

@@ -43,7 +43,9 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
 
         try
         {
-            IChatClient chatClient = await chatClientFactory
+            // CreateAsync builds a fresh client per call (no cache) — dispose
+            // deterministically so the HttpMessageHandler doesn't linger until GC.
+            using IChatClient chatClient = await chatClientFactory
                 .CreateAsync(extractionOptions.WorkspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 
@@ -87,8 +89,10 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
         }
         catch (JsonException ex)
         {
-            LogDeserializationFailed(typeof(TResult).Name, ex.Message);
-            return ExtractionResult.Failed<TResult>($"Failed to deserialize LLM response: {ex.Message}");
+            // Never log or surface ex.Message: a JSON parse error embeds a fragment of
+            // the (LLM-produced, possibly PII-bearing) response. Type only.
+            LogDeserializationFailed(typeof(TResult).Name, ex.GetType().Name);
+            return ExtractionResult.Failed<TResult>("Failed to deserialize the LLM response.");
         }
         catch (OperationCanceledException)
         {
@@ -96,8 +100,10 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
         }
         catch (Exception ex)
         {
-            LogExtractionFailed(typeof(TResult).Name, ex.Message);
-            return ExtractionResult.Failed<TResult>($"Extraction failed: {ex.Message}");
+            // Never log or surface ex.Message: some IChatClient providers echo the prompt
+            // payload in transport exception messages (4xx content-policy / schema reject).
+            LogExtractionFailed(typeof(TResult).Name, ex.GetType().Name);
+            return ExtractionResult.Failed<TResult>("Extraction failed due to a transport or provider error.");
         }
     }
 
@@ -127,8 +133,8 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
     [LoggerMessage(Level = LogLevel.Warning, Message = "Low confidence extraction for {TypeName}: {Confidence:F2} < threshold {Threshold:F2}")]
     private partial void LogLowConfidence(string typeName, double confidence, double threshold);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Extraction failed for {TypeName}: {ErrorMessage}")]
-    private partial void LogExtractionFailed(string typeName, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Error, Message = "Extraction failed for {TypeName} (exception type: {ExceptionType})")]
+    private partial void LogExtractionFailed(string typeName, string exceptionType);
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Extraction timed out for {TypeName} after {TimeoutSeconds}s")]
     private partial void LogExtractionTimeout(string typeName, int timeoutSeconds);
@@ -136,6 +142,6 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
     [LoggerMessage(Level = LogLevel.Error, Message = "Deserialization returned null for {TypeName}")]
     private partial void LogDeserializationNull(string typeName);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to deserialize LLM response for {TypeName}: {ErrorMessage}")]
-    private partial void LogDeserializationFailed(string typeName, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to deserialize LLM response for {TypeName} (exception type: {ExceptionType})")]
+    private partial void LogDeserializationFailed(string typeName, string exceptionType);
 }

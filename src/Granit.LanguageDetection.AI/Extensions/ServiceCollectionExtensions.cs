@@ -1,3 +1,4 @@
+using Granit.AI.Extraction.Redaction;
 using Granit.Diagnostics;
 using Granit.LanguageDetection.AI.Diagnostics;
 using Granit.LanguageDetection.AI.Internal;
@@ -5,6 +6,7 @@ using Granit.LanguageDetection.AI.Options;
 using Granit.LanguageDetection.AI.Prompts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.LanguageDetection.AI.Extensions;
 
@@ -52,7 +54,10 @@ public static class ServiceCollectionExtensions
         // Warn at startup when RedactPIIBeforeLLMCall is enabled but the registered
         // IAIContentRedactor is the identity NoOpAIContentRedactor — otherwise the
         // option name is misleading and PII flows raw to the LLM with no masking.
-        services.AddHostedService<RedactionConfigurationStartupCheck>();
+        // Uses the shared Granit.AI.Extraction probe (same trap across every AI feature).
+        services.AddAIRedactionStartupWarning(
+            "Granit.LanguageDetection.AI",
+            sp => sp.GetRequiredService<IOptions<LanguageDetectionAIOptions>>().Value.RedactPIIBeforeLLMCall);
 
         return services;
     }

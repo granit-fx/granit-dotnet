@@ -23,7 +23,9 @@ public static class LocalizationAIHostApplicationBuilderExtensions
     {
         builder.Services
             .AddOptions<LocalizationAIOptions>()
-            .BindConfiguration(LocalizationAIOptions.SectionName);
+            .BindConfiguration(LocalizationAIOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         builder.Services.TryAddSingleton<ITranslationSuggestionService, LlmTranslationSuggestionService>();
 

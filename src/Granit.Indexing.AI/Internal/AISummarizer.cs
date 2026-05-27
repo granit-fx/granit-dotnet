@@ -2,6 +2,7 @@ using System.Text.Json;
 using Granit.AI;
 using Granit.AI.Extraction.RateLimiting;
 using Granit.AI.Extraction.Redaction;
+using Granit.AI.Extraction.Sampling;
 using Granit.Indexing.AI.Diagnostics;
 using Granit.Indexing.AI.Options;
 using Granit.Indexing.AI.Prompts;
@@ -115,9 +116,7 @@ internal sealed partial class AISummarizer : ISummarizer
             return null;
         }
 
-        string sample = content.Length > _options.MaxContentLength
-            ? content[.._options.MaxContentLength]
-            : content;
+        string sample = AIContentSampler.TruncateOnCodePoint(content, _options.MaxContentLength);
 
         if (_options.RedactPIIBeforeLLMCall)
         {
@@ -131,7 +130,9 @@ internal sealed partial class AISummarizer : ISummarizer
 
         try
         {
-            IChatClient chatClient = await _chatClientFactory
+            // CreateAsync builds a fresh client per call (no cache) — dispose
+            // deterministically so the HttpMessageHandler doesn't linger until GC.
+            using IChatClient chatClient = await _chatClientFactory
                 .CreateAsync(_options.WorkspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 
@@ -160,8 +161,10 @@ internal sealed partial class AISummarizer : ISummarizer
         }
         catch (Exception ex)
         {
+            // Never log ex.Message — providers can echo the prompt payload (PII) in 4xx
+            // exception messages, which would bypass the IAIContentRedactor seam.
             _metrics.RecordSummarizerFailed(tenantId, "transport");
-            LogTransportFailure(tenantId ?? "global", ex.Message);
+            LogTransportFailure(tenantId ?? "global", ex.GetType().Name);
             return null;
         }
     }
@@ -188,7 +191,7 @@ internal sealed partial class AISummarizer : ISummarizer
         }
 
         _metrics.RecordSummarizerTruncated(tenantId);
-        return parsed.Summary[.._options.MaxSummaryLength];
+        return AIContentSampler.TruncateOnCodePoint(parsed.Summary, _options.MaxSummaryLength);
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI summarizer throttled for tenant {TenantId}")]
@@ -197,6 +200,6 @@ internal sealed partial class AISummarizer : ISummarizer
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI summarizer timed out for tenant {TenantId} after {TimeoutSeconds}s")]
     private partial void LogTimeout(string tenantId, int timeoutSeconds);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "AI summarizer transport failure for tenant {TenantId}: {ErrorMessage}")]
-    private partial void LogTransportFailure(string tenantId, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "AI summarizer transport failure for tenant {TenantId} (exception type: {ExceptionType})")]
+    private partial void LogTransportFailure(string tenantId, string exceptionType);
 }

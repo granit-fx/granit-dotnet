@@ -2,6 +2,7 @@ using System.Text.Json;
 using Granit.AI;
 using Granit.AI.Extraction.RateLimiting;
 using Granit.AI.Extraction.Redaction;
+using Granit.AI.Extraction.Sampling;
 using Granit.Indexing.AI.Diagnostics;
 using Granit.Indexing.AI.Options;
 using Granit.Indexing.AI.Prompts;
@@ -136,9 +137,7 @@ internal sealed partial class AIAutoTagger : IAutoTagger
             return [];
         }
 
-        string sample = content.Length > _options.MaxAutoTagContentLength
-            ? content[.._options.MaxAutoTagContentLength]
-            : content;
+        string sample = AIContentSampler.TruncateOnCodePoint(content, _options.MaxAutoTagContentLength);
 
         if (_options.RedactPIIBeforeLLMCall)
         {
@@ -154,7 +153,9 @@ internal sealed partial class AIAutoTagger : IAutoTagger
 
         try
         {
-            IChatClient chatClient = await _chatClientFactory
+            // CreateAsync builds a fresh client per call (no cache) — dispose
+            // deterministically so the HttpMessageHandler doesn't linger until GC.
+            using IChatClient chatClient = await _chatClientFactory
                 .CreateAsync(_options.WorkspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 
@@ -183,8 +184,10 @@ internal sealed partial class AIAutoTagger : IAutoTagger
         }
         catch (Exception ex)
         {
+            // Never log ex.Message — providers can echo the prompt payload (PII) in 4xx
+            // exception messages, which would bypass the IAIContentRedactor seam.
             _metrics.RecordAutoTaggerFailed(tenantId, "transport");
-            LogTransportFailure(tenantId ?? "global", ex.Message);
+            LogTransportFailure(tenantId ?? "global", ex.GetType().Name);
             return [];
         }
     }
@@ -251,8 +254,8 @@ internal sealed partial class AIAutoTagger : IAutoTagger
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI auto-tagger timed out for tenant {TenantId} after {TimeoutSeconds}s")]
     private partial void LogTimeout(string tenantId, int timeoutSeconds);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "AI auto-tagger transport failure for tenant {TenantId}: {ErrorMessage}")]
-    private partial void LogTransportFailure(string tenantId, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "AI auto-tagger transport failure for tenant {TenantId} (exception type: {ExceptionType})")]
+    private partial void LogTransportFailure(string tenantId, string exceptionType);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI auto-tagger dropped {DroppedCount} out-of-candidate tag(s) for tenant {TenantId}")]
     private partial void LogOutOfCandidate(string tenantId, int droppedCount);

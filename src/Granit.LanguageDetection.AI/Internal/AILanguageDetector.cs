@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Granit.AI;
 using Granit.AI.Extraction.RateLimiting;
 using Granit.AI.Extraction.Redaction;
+using Granit.AI.Extraction.Sampling;
 using Granit.LanguageDetection.AI.Diagnostics;
 using Granit.LanguageDetection.AI.Options;
 using Granit.LanguageDetection.AI.Prompts;
@@ -115,7 +116,7 @@ internal sealed partial class AILanguageDetector : ILanguageDetectorProvider
             return null;
         }
 
-        string sample = TruncateOnCodePoint(content, _options.MaxContentLength);
+        string sample = AIContentSampler.TruncateOnCodePoint(content, _options.MaxContentLength);
 
         if (_options.RedactPIIBeforeLLMCall)
         {
@@ -171,27 +172,6 @@ internal sealed partial class AILanguageDetector : ILanguageDetectorProvider
             LogTransportFailure(tenantId ?? LanguageDetectionAIMetrics.GlobalTenant, ex.GetType().Name);
             return null;
         }
-    }
-
-    private static string TruncateOnCodePoint(string content, int maxChars)
-    {
-        if (content.Length <= maxChars)
-        {
-            return content;
-        }
-
-        int cut = maxChars;
-
-        // Avoid slicing in the middle of a surrogate pair — a lone surrogate produces
-        // invalid UTF-16 that the transport serializer either rejects or replaces with
-        // U+FFFD, biasing detection on CJK / emoji-heavy corpora and creating false
-        // injection-detection signals downstream.
-        if (cut > 0 && char.IsHighSurrogate(content[cut - 1]))
-        {
-            cut--;
-        }
-
-        return content[..cut];
     }
 
     private string? ParseAndValidate(string? responseText, string? tenantId)

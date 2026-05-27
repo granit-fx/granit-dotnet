@@ -49,7 +49,9 @@ internal sealed partial class LlmTransitionAdvisor(
 
         try
         {
-            IChatClient chatClient = await chatClientFactory
+            // CreateAsync builds a fresh client per call (no cache) — dispose
+            // deterministically so the HttpMessageHandler doesn't linger until GC.
+            using IChatClient chatClient = await chatClientFactory
                 .CreateAsync(workflowOptions.WorkspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 
@@ -98,12 +100,14 @@ internal sealed partial class LlmTransitionAdvisor(
         }
         catch (JsonException ex)
         {
-            LogJsonError(entityType, ex.Message);
+            // Type only — a JSON parse message embeds a fragment of the LLM response.
+            LogJsonError(entityType, ex.GetType().Name);
             return null;
         }
         catch (Exception ex)
         {
-            LogError(entityType, ex.Message);
+            // Type only — providers can echo the prompt payload in 4xx messages.
+            LogError(entityType, ex.GetType().Name);
             return null;
         }
     }
@@ -156,9 +160,9 @@ internal sealed partial class LlmTransitionAdvisor(
     [LoggerMessage(Level = LogLevel.Error, Message = "Transition recommendation timed out for {EntityType} after {TimeoutSeconds}s")]
     private partial void LogTimeout(string entityType, int timeoutSeconds);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to parse LLM recommendation JSON for {EntityType}: {ErrorMessage}")]
-    private partial void LogJsonError(string entityType, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to parse LLM recommendation JSON for {EntityType} (exception type: {ExceptionType})")]
+    private partial void LogJsonError(string entityType, string exceptionType);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Transition recommendation failed for {EntityType}: {ErrorMessage}")]
-    private partial void LogError(string entityType, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Error, Message = "Transition recommendation failed for {EntityType} (exception type: {ExceptionType})")]
+    private partial void LogError(string entityType, string exceptionType);
 }

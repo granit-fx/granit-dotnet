@@ -185,7 +185,7 @@ public sealed partial class AIVisionOcrExtractor : ITextExtractor
     private static TextExtractionResult Truncate(string content, int maxCharLength)
     {
         bool truncated = content.Length > maxCharLength;
-        string output = truncated ? content[..maxCharLength] : content;
+        string output = truncated ? CutOnCodePoint(content, maxCharLength) : content;
 
         return new TextExtractionResult(
             Content: output,
@@ -197,6 +197,20 @@ public sealed partial class AIVisionOcrExtractor : ITextExtractor
             // that originated from inside the image. Consumers re-feeding this to another LLM
             // MUST consult this flag and isolate via system message + envelope on their side.
             Confidence: ExtractionConfidence.ModelGenerated);
+    }
+
+    // Back off one UTF-16 code unit when the cut would split a surrogate pair, so the
+    // transcription never ends in a lone surrogate. OCR output is especially prone to
+    // non-BMP code points (CJK, emoji-like glyphs from signage / receipts).
+    private static string CutOnCodePoint(string content, int maxChars)
+    {
+        int cut = maxChars;
+        if (cut > 0 && char.IsHighSurrogate(content[cut - 1]))
+        {
+            cut--;
+        }
+
+        return content[..cut];
     }
 
     private static TextExtractionResult Skipped() =>

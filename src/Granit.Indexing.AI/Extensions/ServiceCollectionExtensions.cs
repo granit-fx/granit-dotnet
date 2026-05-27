@@ -1,3 +1,4 @@
+using Granit.AI.Extraction.Redaction;
 using Granit.Diagnostics;
 using Granit.Indexing.AI.Diagnostics;
 using Granit.Indexing.AI.Internal;
@@ -5,6 +6,7 @@ using Granit.Indexing.AI.Options;
 using Granit.Indexing.AI.Prompts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Indexing.AI.Extensions;
 
@@ -76,9 +78,26 @@ public static class ServiceCollectionExtensions
     {
         GranitActivitySourceRegistry.Register(IndexingAIMetrics.MeterName);
 
+        // ValidateOnStart aborts host boot on an out-of-range option rather than
+        // silently degrading every call (which would inflate the injection counters).
         services.AddOptions<IndexingAIOptions>()
-            .BindConfiguration(IndexingAIOptions.SectionName);
+            .BindConfiguration(IndexingAIOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.TryAddSingleton<IndexingAIMetrics>();
+
+        // Warn at startup when RedactPIIBeforeLLMCall is enabled but only the identity
+        // NoOpAIContentRedactor is registered. RegisterCommon runs once per wired feature
+        // (summarizer / auto-tagger) — gate on a marker so the probe is added exactly once.
+        if (!services.Any(d => d.ServiceType == typeof(RedactionWarningMarker)))
+        {
+            services.AddSingleton<RedactionWarningMarker>();
+            services.AddAIRedactionStartupWarning(
+                "Granit.Indexing.AI",
+                sp => sp.GetRequiredService<IOptions<IndexingAIOptions>>().Value.RedactPIIBeforeLLMCall);
+        }
     }
+
+    private sealed class RedactionWarningMarker;
 }

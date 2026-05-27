@@ -3233,7 +3233,7 @@
       "kind": "class",
       "project": "Granit.AI.Extraction",
       "file": "src/Granit.AI.Extraction/Options/ExtractionOptions.cs",
-      "line": 9,
+      "line": 13,
       "members": [
         {
           "name": "WorkspaceName",
@@ -3252,6 +3252,22 @@
           "kind": "property",
           "signature": "int TimeoutSeconds",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "UntrustedDocumentEnvelope",
+      "fqn": "Granit.AI.Extraction.Prompting.UntrustedDocumentEnvelope",
+      "kind": "class",
+      "project": "Granit.AI.Extraction",
+      "file": "src/Granit.AI.Extraction/Prompting/UntrustedDocumentEnvelope.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "Wrap",
+          "kind": "method",
+          "signature": "Wrap(string content)",
+          "returnType": "string"
         }
       ]
     },
@@ -3277,6 +3293,22 @@
           "kind": "method",
           "signature": "TryAcquireAsync(string bucketKey, int maxCallsPerHour, CancellationToken cancellationToken = default)",
           "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
+      "name": "AIRedactionStartupCheckExtensions",
+      "fqn": "Granit.AI.Extraction.Redaction.AIRedactionStartupCheckExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Extraction",
+      "file": "src/Granit.AI.Extraction/Redaction/AIRedactionStartupCheckExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddAIRedactionStartupWarning",
+          "kind": "method",
+          "signature": "AddAIRedactionStartupWarning(this IServiceCollection services, string featureName, Func<IServiceProvider, bool> redactionEnabled)",
+          "returnType": "IServiceCollection"
         }
       ]
     },
@@ -3308,6 +3340,22 @@
           "name": "Redact",
           "kind": "method",
           "signature": "Redact(string content)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "AIContentSampler",
+      "fqn": "Granit.AI.Extraction.Sampling.AIContentSampler",
+      "kind": "class",
+      "project": "Granit.AI.Extraction",
+      "file": "src/Granit.AI.Extraction/Sampling/AIContentSampler.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "TruncateOnCodePoint",
+          "kind": "method",
+          "signature": "TruncateOnCodePoint(string content, int maxChars)",
           "returnType": "string"
         }
       ]
@@ -25936,7 +25984,7 @@
       "kind": "class",
       "project": "Granit.Indexing.AI",
       "file": "src/Granit.Indexing.AI/Extensions/ServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitIndexingAISummarizer",
@@ -25968,7 +26016,7 @@
       "kind": "class",
       "project": "Granit.Indexing.AI",
       "file": "src/Granit.Indexing.AI/Options/IndexingAIOptions.cs",
-      "line": 7,
+      "line": 15,
       "members": [
         {
           "name": "WorkspaceName",
@@ -26032,7 +26080,7 @@
       "kind": "class",
       "project": "Granit.Indexing.AI",
       "file": "src/Granit.Indexing.AI/Prompts/DefaultAIAutoSummaryPromptBuilder.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "Build",
@@ -26048,7 +26096,7 @@
       "kind": "class",
       "project": "Granit.Indexing.AI",
       "file": "src/Granit.Indexing.AI/Prompts/DefaultAutoTagPromptBuilder.cs",
-      "line": 25,
+      "line": 26,
       "members": [
         {
           "name": "Build",
@@ -27147,7 +27195,7 @@
       "kind": "class",
       "project": "Granit.LanguageDetection.AI",
       "file": "src/Granit.LanguageDetection.AI/Extensions/ServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitLanguageDetectionAI",
@@ -27219,7 +27267,7 @@
       "kind": "class",
       "project": "Granit.LanguageDetection.AI",
       "file": "src/Granit.LanguageDetection.AI/Prompts/DefaultAILanguageDetectionPromptBuilder.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "Build",
@@ -27437,7 +27485,7 @@
       "kind": "class",
       "project": "Granit.Localization.AI",
       "file": "src/Granit.Localization.AI/Options/LocalizationAIOptions.cs",
-      "line": 9,
+      "line": 13,
       "members": [
         {
           "name": "WorkspaceName",

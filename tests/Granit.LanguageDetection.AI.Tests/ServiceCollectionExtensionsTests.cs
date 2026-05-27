@@ -1,3 +1,4 @@
+using Granit.AI.Extraction.Redaction;
 using Granit.LanguageDetection.AI.Extensions;
 using Granit.LanguageDetection.AI.Internal;
 using Granit.LanguageDetection.AI.Options;
@@ -5,6 +6,7 @@ using Granit.LanguageDetection.AI.Prompts;
 using Granit.LanguageDetection.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
@@ -115,13 +117,14 @@ public sealed class ServiceCollectionExtensionsTests
     {
         // The startup probe is the user-visible signal that the NoOpAIContentRedactor
         // identity default is leaving PII unredacted while RedactPIIBeforeLLMCall=true.
-        // If a future refactor drops the registration, this test catches it before the
-        // first production incident.
+        // It is registered via the shared Granit.AI.Extraction probe (factory-based, so
+        // ImplementationType is null) — assert by resolving the hosted-service set.
         ServiceCollection services = BuildBaseServices();
-
         services.AddGranitLanguageDetectionAI();
+        ServiceProvider sp = services.BuildServiceProvider();
 
-        services.Any(d => d.ImplementationType == typeof(RedactionConfigurationStartupCheck))
+        sp.GetServices<IHostedService>()
+            .Any(h => h.GetType().Name == "AIRedactionStartupCheck")
             .ShouldBeTrue();
     }
 
@@ -136,6 +139,10 @@ public sealed class ServiceCollectionExtensionsTests
         services.AddLogging();
         services.AddMetrics();
         services.AddGranitLanguageDetection();
+        // GranitLanguageDetectionAIModule DependsOn GranitAIExtractionModule, which
+        // registers the redactor seam consumed by the shared startup probe. Mirror that
+        // here since the unit test calls AddGranitLanguageDetectionAI() directly.
+        services.AddSingleton<IAIContentRedactor, NoOpAIContentRedactor>();
         return services;
     }
 }
