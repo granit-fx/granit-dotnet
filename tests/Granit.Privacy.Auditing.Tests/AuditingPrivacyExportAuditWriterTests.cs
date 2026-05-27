@@ -71,7 +71,10 @@ public sealed class AuditingPrivacyExportAuditWriterTests
         AuditingPrivacyExportAuditWriter sut = new(writer);
 
         await sut.WriteShardDownloadedAsync(new PrivacyExportShardDownloadedAudit(
-            RequestId, SubjectId, TenantId,
+            RequestId,
+            DownloaderUserId: SubjectId,
+            SubjectUserId: SubjectId,
+            TenantId,
             ShardIndex: 2,
             ClientIp: "203.0.113.0",
             UserAgent: "Mozilla/5.0",
@@ -82,7 +85,8 @@ public sealed class AuditingPrivacyExportAuditWriterTests
         await writer.Received(1).WriteAsync(Arg.Is<AuditEntry>(e =>
             e.Category == AuditCategory.DataAccess
             && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "ShardIndex" && p.NewValue == "2")
-            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "AuthMethod" && p.NewValue == "Bearer")),
+            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "AuthMethod" && p.NewValue == "Bearer")
+            && e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "SubjectUserId")),
             Arg.Any<CancellationToken>());
     }
 

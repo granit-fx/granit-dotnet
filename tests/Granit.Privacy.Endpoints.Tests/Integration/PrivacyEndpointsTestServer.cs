@@ -55,6 +55,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
     public IExportRequestTrackerReader ExportReader { get; }
     public IPrivacyExportAuditWriter AuditWriter { get; }
     public IPrivacyScopeResolver ScopeResolver { get; }
+    public IPrivacySubjectValidator SubjectValidator { get; }
     public IDeletionRequestTrackerWriter DeletionWriter { get; }
     public IDeletionRequestTrackerReader DeletionReader { get; }
     public ILegalDocumentRegistry DocumentRegistry { get; }
@@ -81,6 +82,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         IExportRequestTrackerReader exportReader,
         IPrivacyExportAuditWriter auditWriter,
         IPrivacyScopeResolver scopeResolver,
+        IPrivacySubjectValidator subjectValidator,
         IDeletionRequestTrackerWriter deletionWriter,
         IDeletionRequestTrackerReader deletionReader,
         ILegalDocumentRegistry documentRegistry,
@@ -106,6 +108,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         ExportReader = exportReader;
         AuditWriter = auditWriter;
         ScopeResolver = scopeResolver;
+        SubjectValidator = subjectValidator;
         DeletionWriter = deletionWriter;
         DeletionReader = deletionReader;
         DocumentRegistry = documentRegistry;
@@ -137,6 +140,11 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         IPrivacyScopeResolver scopeResolver = Substitute.For<IPrivacyScopeResolver>();
         scopeResolver.ListVisibleAsync(Arg.Any<PrivacyExportContext>(), Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<ProviderDescriptor>)[]);
+        IPrivacySubjectValidator subjectValidator = Substitute.For<IPrivacySubjectValidator>();
+        // Default: accept every subject (existing happy-path tests rely on the validator
+        // not vetoing). Cross-tenant probe tests override per-subject with .Returns(false).
+        subjectValidator.SubjectExistsInCurrentTenantAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(true);
         IDeletionRequestTrackerWriter deletionWriter = Substitute.For<IDeletionRequestTrackerWriter>();
         IDeletionRequestTrackerReader deletionReader = Substitute.For<IDeletionRequestTrackerReader>();
         ILegalDocumentRegistry documentRegistry = Substitute.For<ILegalDocumentRegistry>();
@@ -192,7 +200,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(PrivacyPermissions.Exports.Execute,
                 policy => policy.RequireRole(ExportRole))
-            .AddPolicy(PrivacyPermissions.Exports.OnBehalfOf,
+            .AddPolicy(PrivacyPermissions.Exports.ExecuteOnBehalfOf,
                 policy => policy.RequireRole(ExportOnBehalfOfRole))
             .AddPolicy(PrivacyPermissions.Deletions.Execute,
                 policy => policy.RequireRole(DeletionRole))
@@ -219,6 +227,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(Substitute.For<Granit.RateLimiting.Abstractions.IRateLimitQuotaProvider>());
         builder.Services.AddSingleton<Granit.RateLimiting.TenantPartitionedRateLimiter>();
         builder.Services.AddSingleton(scopeResolver);
+        builder.Services.AddSingleton(subjectValidator);
         builder.Services.AddSingleton(deletionWriter);
         builder.Services.AddSingleton(deletionReader);
         builder.Services.AddSingleton(documentRegistry);
@@ -263,7 +272,7 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
 
         return new PrivacyEndpointsTestServer(
             app, authenticatedClient, anonymousClient,
-            currentUser, exportWriter, exportReader, auditWriter, scopeResolver,
+            currentUser, exportWriter, exportReader, auditWriter, scopeResolver, subjectValidator,
             deletionWriter, deletionReader,
             documentRegistry, agreementChecker, agreementStoreReader, agreementStoreWriter,
             regulationResolver, optOutWriter, optOutReader, purposeRegistry,

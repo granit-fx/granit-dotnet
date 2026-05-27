@@ -49,4 +49,18 @@ public sealed class PrivacyEndpointsOptions
     /// endpoints. Defaults to 5 minutes.
     /// </summary>
     public TimeSpan DownloadStepUpMaxAge { get; set; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// Whether the anonymous <c>POST /privacy/opt-out</c> request honours the resolved
+    /// <c>ICurrentTenant</c> when writing the opt-out record. Defaults to
+    /// <see langword="false"/> — anonymous opt-out records are stored tenant-less to
+    /// prevent an unauthenticated caller from selecting an arbitrary tenant via a
+    /// spoofable resolver (e.g. <c>X-Tenant-Id</c> header). Hosts running with a
+    /// non-spoofable resolver (subdomain, mTLS SAN) may opt back in.
+    /// </summary>
+    /// <remarks>
+    /// Even when disabled, the visitor's authenticated re-issue of the opt-out
+    /// rebinds the record to their own tenant.
+    /// </remarks>
+    public bool BindAnonymousOptOutToCurrentTenant { get; set; }
 }

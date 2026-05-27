@@ -67,6 +67,7 @@ public sealed class BlobBackedPrivacyExportDownloadResolverTests
             .Returns(new ExportRequestStatus(
                 RequestId,
                 UserId,
+                UserId,
                 ExportRequestState.Pending,
                 RequestedAt: DateTimeOffset.UtcNow,
                 CompletedAt: null,
@@ -89,6 +90,7 @@ public sealed class BlobBackedPrivacyExportDownloadResolverTests
         tracker.GetStatusAsync(RequestId, Arg.Any<CancellationToken>())
             .Returns(new ExportRequestStatus(
                 RequestId,
+                UserId,
                 UserId,
                 ExportRequestState.Completed,
                 RequestedAt: DateTimeOffset.UtcNow,
@@ -115,6 +117,7 @@ public sealed class BlobBackedPrivacyExportDownloadResolverTests
         tracker.GetStatusAsync(RequestId, Arg.Any<CancellationToken>())
             .Returns(new ExportRequestStatus(
                 RequestId,
+                UserId,
                 UserId,
                 ExportRequestState.Completed,
                 RequestedAt: DateTimeOffset.UtcNow,

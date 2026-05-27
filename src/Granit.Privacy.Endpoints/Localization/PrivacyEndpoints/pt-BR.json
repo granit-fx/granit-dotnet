@@ -2,7 +2,7 @@
   "culture": "pt-BR",
   "texts": {
     "Granit:Validation:PrivacyExportTooManyScopes": "Muitos escopos solicitados em uma única exportação. O limite é 64.",
-    "Permission:Privacy.Exports.OnBehalfOf": "Solicitar exportação de dados pessoais em nome de outro titular (DSR de administrador)",
+    "Permission:Privacy.Exports.ExecuteOnBehalfOf": "Solicitar exportação de dados pessoais em nome de outro titular (DSR de administrador)",
     "PrivacyEndpoints:Workspace.Agreements": "Agreements",
     "PrivacyEndpoints:Workspace.Purposes": "Purposes",
     "PrivacyEndpoints:Workspace.Section": "Privacy"

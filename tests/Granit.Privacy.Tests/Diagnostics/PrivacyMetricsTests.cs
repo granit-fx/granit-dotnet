@@ -56,7 +56,7 @@ public sealed class PrivacyMetricsTests : IDisposable
     }
 
     [Fact]
-    public void RecordFragmentReceived_RecordsProviderTag()
+    public void RecordFragmentReceived_RecordsProviderNameTag()
     {
         using var collector = new MetricCollector<long>(
             _meterFactory, PrivacyMetrics.MeterName, "granit.privacy.export.fragments.received");
@@ -67,7 +67,7 @@ public sealed class PrivacyMetricsTests : IDisposable
         snapshot.ShouldHaveSingleItem();
         snapshot[0].Value.ShouldBe(1);
         snapshot[0].Tags["tenant_id"].ShouldBe(TenantA.ToString());
-        snapshot[0].Tags["provider"].ShouldBe("identity-provider");
+        snapshot[0].Tags["provider_name"].ShouldBe("identity-provider");
     }
 
     [Fact]

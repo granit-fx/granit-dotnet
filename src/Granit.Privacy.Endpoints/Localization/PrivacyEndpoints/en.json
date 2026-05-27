@@ -6,7 +6,7 @@
     "Permission:Privacy.Agreements.Read": "View legal documents and consent status",
     "Permission:Privacy.Deletions.Execute": "Request personal data deletion",
     "Permission:Privacy.Exports.Execute": "Request personal data export",
-    "Permission:Privacy.Exports.OnBehalfOf": "Request personal data export on behalf of another data subject (admin DSR)",
+    "Permission:Privacy.Exports.ExecuteOnBehalfOf": "Request personal data export on behalf of another data subject (admin DSR)",
     "Permission:Privacy.LegalDocuments.Create": "Create new legal document drafts",
     "Permission:Privacy.LegalDocuments.Manage": "Edit, publish, and archive legal documents",
     "Permission:Privacy.LegalDocuments.Read": "View legal document versions and history",

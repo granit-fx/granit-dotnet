@@ -60,9 +60,30 @@ public sealed partial class DeletionDeadlineEnforcementService(
             await trackerWriter.MarkExecutedAsync(request.RequestId, now, cancellationToken).ConfigureAwait(false);
 
             metrics.RecordDeletionExecuted(request.TenantId, regulation);
+
+            // Surface the slip between scheduled deadline and actual execution so
+            // operators can alert when the daily enforcer misses its window
+            // (GDPR Art. 17 "without undue delay"). Slip > a tenant-specific
+            // threshold also triggers a warning log so an investigator has a
+            // structured artefact next to the metric.
+            TimeSpan slip = now - request.ScheduledDeletionAt;
+            metrics.RecordDeletionDeadlineSlip(request.TenantId, slip, regulation);
+            if (slip > SignificantSlipThreshold)
+            {
+                Log.DeadlineSlipDetected(logger, request.RequestId, request.UserId, (long)slip.TotalSeconds);
+            }
+
             Log.DeletionEnforced(logger, request.RequestId, request.UserId);
         }
     }
+
+    /// <summary>
+    /// Slip threshold above which the enforcer logs a warning beside the
+    /// histogram. One hour is a pragmatic default — the job runs daily, so any
+    /// slip beyond an hour means the day's window was missed by a noticeable
+    /// fraction.
+    /// </summary>
+    private static readonly TimeSpan SignificantSlipThreshold = TimeSpan.FromHours(1);
 
     private static partial class Log
     {
@@ -71,5 +92,10 @@ public sealed partial class DeletionDeadlineEnforcementService(
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Enforced deletion for request {RequestId}, user {UserId}")]
         public static partial void DeletionEnforced(ILogger logger, Guid requestId, Guid userId);
+
+        [LoggerMessage(
+            Level = LogLevel.Warning,
+            Message = "Deletion deadline missed by {SlipSeconds}s for request {RequestId}, user {UserId} (GDPR Art. 17 — investigate enforcer job health)")]
+        public static partial void DeadlineSlipDetected(ILogger logger, Guid requestId, Guid userId, long slipSeconds);
     }
 }

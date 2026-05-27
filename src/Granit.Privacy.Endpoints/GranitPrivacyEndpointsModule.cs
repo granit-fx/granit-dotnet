@@ -53,6 +53,7 @@ public sealed class GranitPrivacyEndpointsModule : GranitModule
         context.Services
             .AddOptions<GpcDiscoveryOptions>()
             .BindConfiguration(GpcDiscoveryOptions.SectionName)
+            .ValidateDataAnnotations()
             .ValidateOnStart();
         context.Services.AddSingleton<IValidateOptions<GpcDiscoveryOptions>, GpcDiscoveryOptionsValidator>();
     }

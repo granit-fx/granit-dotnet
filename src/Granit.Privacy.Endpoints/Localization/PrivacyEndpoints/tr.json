@@ -6,7 +6,7 @@
     "Permission:Privacy.Agreements.Read": "Yasal belgeleri ve onay durumunu görüntüle",
     "Permission:Privacy.Deletions.Execute": "Kişisel veri silme talep et",
     "Permission:Privacy.Exports.Execute": "Kişisel veri dışa aktarımı talep et",
-    "Permission:Privacy.Exports.OnBehalfOf": "Başka bir veri sahibi adına kişisel veri ihracatı talep et (yönetici DSR)",
+    "Permission:Privacy.Exports.ExecuteOnBehalfOf": "Başka bir veri sahibi adına kişisel veri ihracatı talep et (yönetici DSR)",
     "Permission:Privacy.LegalDocuments.Create": "Yeni yasal belge taslakları oluştur",
     "Permission:Privacy.LegalDocuments.Manage": "Yasal belgeleri düzenle, yayınla ve arşivle",
     "Permission:Privacy.LegalDocuments.Read": "Yasal belgelerin sürümlerini ve geçmişini görüntüle",

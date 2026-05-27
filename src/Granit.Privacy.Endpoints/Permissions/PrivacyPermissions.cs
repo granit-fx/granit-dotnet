@@ -16,12 +16,13 @@ public static class PrivacyPermissions
         public const string Execute = "Privacy.Exports.Execute";
 
         /// <summary>
-        /// Request a personal data export on behalf of another subject (admin DSR path).
-        /// Constant is declared but the corresponding endpoint surface is gated to a
-        /// future iteration — the framework's current export handlers refuse any
-        /// request where caller ≠ subject regardless of which permission is granted.
+        /// Request a personal data export on behalf of another data subject (admin DSR path).
+        /// Gates <c>POST /privacy/exports/on-behalf-of</c> — distinct from the self-service
+        /// <see cref="Execute"/> so RBAC can hand it to a narrow operator role (DPO,
+        /// support engineer with documented legal basis) without unlocking it for every
+        /// authenticated user.
         /// </summary>
-        public const string OnBehalfOf = "Privacy.Exports.OnBehalfOf";
+        public const string ExecuteOnBehalfOf = "Privacy.Exports.ExecuteOnBehalfOf";
     }
 
     /// <summary>Permissions for personal data deletion (GDPR Art. 17).</summary>

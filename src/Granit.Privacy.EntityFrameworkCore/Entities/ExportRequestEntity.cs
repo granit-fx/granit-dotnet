@@ -12,8 +12,16 @@ namespace Granit.Privacy.EntityFrameworkCore.Entities;
 /// </summary>
 public sealed class ExportRequestEntity : Entity, IMultiTenant
 {
-    /// <summary>Data subject whose personal data was requested.</summary>
+    /// <summary>Data subject whose personal data was requested. The archive belongs to this user.</summary>
     public Guid UserId { get; set; }
+
+    /// <summary>
+    /// User who triggered the request. Equal to <see cref="UserId"/> for self-service exports;
+    /// distinct when the request was created via <c>POST /privacy/exports/on-behalf-of</c>
+    /// (admin DSR). Nullable for backward compatibility with rows written before this column
+    /// existed — read paths treat <see langword="null"/> as "self-service" (caller == subject).
+    /// </summary>
+    public Guid? CallerUserId { get; set; }
 
     /// <summary>Current lifecycle state of the request.</summary>
     public ExportRequestState State { get; set; }

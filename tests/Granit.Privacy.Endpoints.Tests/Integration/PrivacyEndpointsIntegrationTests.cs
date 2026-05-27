@@ -114,7 +114,9 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
         result.RequestedAt.ShouldBe(PrivacyEndpointsTestServer.FixedNow);
 
         await _server.ExportWriter.Received(1).RecordRequestAsync(
-            requestId, PrivacyEndpointsTestServer.TestUserId,
+            requestId,
+            PrivacyEndpointsTestServer.TestUserId,
+            PrivacyEndpointsTestServer.TestUserId,
             PrivacyEndpointsTestServer.FixedNow,
             Arg.Any<CancellationToken>());
     }
@@ -125,6 +127,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
         var requestId = Guid.NewGuid();
         ExportRequestStatus status = new(
             requestId,
+            PrivacyEndpointsTestServer.TestUserId,
             PrivacyEndpointsTestServer.TestUserId,
             ExportRequestState.Pending,
             PrivacyEndpointsTestServer.FixedNow,
@@ -167,7 +170,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
         var requestId = Guid.NewGuid();
         var otherUserId = Guid.NewGuid();
         ExportRequestStatus status = new(
-            requestId, otherUserId, ExportRequestState.Pending,
+            requestId, otherUserId, otherUserId, ExportRequestState.Pending,
             PrivacyEndpointsTestServer.FixedNow, null, null, []);
 
         _server.ExportReader
@@ -186,6 +189,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
         var requestId = Guid.NewGuid();
         ExportRequestStatus status = new(
             requestId,
+            PrivacyEndpointsTestServer.TestUserId,
             PrivacyEndpointsTestServer.TestUserId,
             ExportRequestState.Completed,
             PrivacyEndpointsTestServer.FixedNow,

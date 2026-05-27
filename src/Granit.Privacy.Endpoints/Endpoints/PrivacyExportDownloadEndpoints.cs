@@ -114,7 +114,7 @@ internal static class PrivacyExportDownloadEndpoints
                 _ => (await downloadResolver.OpenManifestAsync(requestId, cancellationToken).ConfigureAwait(false), ManifestShardSentinel),
             };
 
-            await WriteShardDownloadAuditAsync(auditWriter, httpContext, currentTenant, requestId, userId, auditedShardIndex, timeProvider, cancellationToken).ConfigureAwait(false);
+            await WriteShardDownloadAuditAsync(auditWriter, httpContext, currentTenant, requestId, userId, status!.SubjectUserId, auditedShardIndex, timeProvider, cancellationToken).ConfigureAwait(false);
             return ToFileResult(payload);
         }
         catch (PrivacyExportNotReadyException)
@@ -151,7 +151,7 @@ internal static class PrivacyExportDownloadEndpoints
         {
             PrivacyExportDownloadPayload payload = await downloadResolver
                 .OpenManifestAsync(requestId, cancellationToken).ConfigureAwait(false);
-            await WriteShardDownloadAuditAsync(auditWriter, httpContext, currentTenant, requestId, userId, ManifestShardSentinel, timeProvider, cancellationToken).ConfigureAwait(false);
+            await WriteShardDownloadAuditAsync(auditWriter, httpContext, currentTenant, requestId, userId, status!.SubjectUserId, ManifestShardSentinel, timeProvider, cancellationToken).ConfigureAwait(false);
             return ToFileResult(payload);
         }
         catch (PrivacyExportNotReadyException)
@@ -189,7 +189,7 @@ internal static class PrivacyExportDownloadEndpoints
         {
             PrivacyExportDownloadPayload payload = await downloadResolver
                 .OpenShardAsync(requestId, shardIndex, cancellationToken).ConfigureAwait(false);
-            await WriteShardDownloadAuditAsync(auditWriter, httpContext, currentTenant, requestId, userId, shardIndex, timeProvider, cancellationToken).ConfigureAwait(false);
+            await WriteShardDownloadAuditAsync(auditWriter, httpContext, currentTenant, requestId, userId, status!.SubjectUserId, shardIndex, timeProvider, cancellationToken).ConfigureAwait(false);
             return ToFileResult(payload);
         }
         catch (ArgumentOutOfRangeException)
@@ -216,9 +216,12 @@ internal static class PrivacyExportDownloadEndpoints
         Guid requestId,
         Guid callerUserId)
     {
-        // 404 if the export doesn't exist OR belongs to another subject — the same
-        // status code keeps tenant/user enumeration through the download path closed.
-        if (status is null || status.UserId != callerUserId)
+        // Download endpoints are SUBJECT-ONLY by design: the admin who triggered
+        // an on-behalf-of DSR can observe completion via GET /exports/{id} (status
+        // read), but only the data subject can receive the actual archive bytes —
+        // the data goes to the subject's notification email, not back to the
+        // operator. 404 hides the existence of subjects in other tenants.
+        if (status is null || status!.SubjectUserId != callerUserId)
         {
             return TypedResults.Problem(
                 detail: $"Export request '{requestId}' not found.",
@@ -251,6 +254,7 @@ internal static class PrivacyExportDownloadEndpoints
         HttpContext httpContext,
         ICurrentTenant currentTenant,
         Guid requestId,
+        Guid downloaderUserId,
         Guid subjectUserId,
         int shardIndex,
         TimeProvider timeProvider,
@@ -258,6 +262,7 @@ internal static class PrivacyExportDownloadEndpoints
         auditWriter.WriteShardDownloadedAsync(
             new PrivacyExportShardDownloadedAudit(
                 RequestId: requestId,
+                DownloaderUserId: downloaderUserId,
                 SubjectUserId: subjectUserId,
                 TenantId: currentTenant.IsAvailable ? currentTenant.Id : null,
                 ShardIndex: shardIndex,

@@ -6,7 +6,7 @@
     "Permission:Privacy.Agreements.Read": "Rechtliche Dokumente und Einwilligungsstatus anzeigen",
     "Permission:Privacy.Deletions.Execute": "Löschung personenbezogener Daten anfordern",
     "Permission:Privacy.Exports.Execute": "Export personenbezogener Daten anfordern",
-    "Permission:Privacy.Exports.OnBehalfOf": "Datenexport im Auftrag einer anderen betroffenen Person anfordern (Admin-DSR)",
+    "Permission:Privacy.Exports.ExecuteOnBehalfOf": "Datenexport im Auftrag einer anderen betroffenen Person anfordern (Admin-DSR)",
     "Permission:Privacy.LegalDocuments.Create": "Neue Entwürfe rechtlicher Dokumente erstellen",
     "Permission:Privacy.LegalDocuments.Manage": "Rechtliche Dokumente bearbeiten, veröffentlichen und archivieren",
     "Permission:Privacy.LegalDocuments.Read": "Versionen und Historie rechtlicher Dokumente anzeigen",

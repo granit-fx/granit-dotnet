@@ -32,7 +32,7 @@ public sealed class PrivacyBlobStorageEndpointTests
         IExportRequestTrackerReader tracker = Substitute.For<IExportRequestTrackerReader>();
         tracker.GetStatusAsync(requestId, Arg.Any<CancellationToken>())
             .Returns(new ExportRequestStatus(
-                requestId, CallerId, ExportRequestState.Completed,
+                requestId, CallerId, CallerId, ExportRequestState.Completed,
                 RequestedAt: DateTimeOffset.UtcNow,
                 CompletedAt: DateTimeOffset.UtcNow,
                 ArchiveBlobReferenceId: archiveBlobId.ToString(),
@@ -65,7 +65,7 @@ public sealed class PrivacyBlobStorageEndpointTests
         IExportRequestTrackerReader tracker = Substitute.For<IExportRequestTrackerReader>();
         tracker.GetStatusAsync(requestId, Arg.Any<CancellationToken>())
             .Returns(new ExportRequestStatus(
-                requestId, CallerId, ExportRequestState.PartiallyCompleted,
+                requestId, CallerId, CallerId, ExportRequestState.PartiallyCompleted,
                 DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, archiveBlobId.ToString(), ["auditing"]));
 
         IBlobStorage blobStorage = Substitute.For<IBlobStorage>();
@@ -105,7 +105,7 @@ public sealed class PrivacyBlobStorageEndpointTests
         IExportRequestTrackerReader tracker = Substitute.For<IExportRequestTrackerReader>();
         tracker.GetStatusAsync(requestId, Arg.Any<CancellationToken>())
             .Returns(new ExportRequestStatus(
-                requestId, OtherUserId, ExportRequestState.Completed,
+                requestId, OtherUserId, OtherUserId, ExportRequestState.Completed,
                 DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, Guid.NewGuid().ToString(), []));
 
         await using TestHarness harness = await TestHarness.CreateAsync(tracker, Substitute.For<IBlobStorage>());
@@ -124,7 +124,7 @@ public sealed class PrivacyBlobStorageEndpointTests
         IExportRequestTrackerReader tracker = Substitute.For<IExportRequestTrackerReader>();
         tracker.GetStatusAsync(requestId, Arg.Any<CancellationToken>())
             .Returns(new ExportRequestStatus(
-                requestId, CallerId, ExportRequestState.Pending,
+                requestId, CallerId, CallerId, ExportRequestState.Pending,
                 DateTimeOffset.UtcNow, null, null, []));
 
         await using TestHarness harness = await TestHarness.CreateAsync(tracker, Substitute.For<IBlobStorage>());
@@ -143,7 +143,7 @@ public sealed class PrivacyBlobStorageEndpointTests
         IExportRequestTrackerReader tracker = Substitute.For<IExportRequestTrackerReader>();
         tracker.GetStatusAsync(requestId, Arg.Any<CancellationToken>())
             .Returns(new ExportRequestStatus(
-                requestId, CallerId, ExportRequestState.SizeLimitExceeded,
+                requestId, CallerId, CallerId, ExportRequestState.SizeLimitExceeded,
                 DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, []));
 
         await using TestHarness harness = await TestHarness.CreateAsync(tracker, Substitute.For<IBlobStorage>());

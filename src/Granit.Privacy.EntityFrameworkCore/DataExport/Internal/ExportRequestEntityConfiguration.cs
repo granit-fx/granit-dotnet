@@ -18,6 +18,10 @@ internal sealed class ExportRequestEntityConfiguration : IEntityTypeConfiguratio
         builder.Property(e => e.UserId)
             .IsRequired();
 
+        // Nullable — pre-existing rows have no caller distinct from the subject;
+        // EF reads them as null and the read paths treat null as "caller == subject".
+        builder.Property(e => e.CallerUserId);
+
         builder.Property(e => e.State)
             .HasMaxLength(30)
             .IsRequired();
@@ -36,5 +40,12 @@ internal sealed class ExportRequestEntityConfiguration : IEntityTypeConfiguratio
         builder.HasIndex(e => new { e.TenantId, e.UserId, e.RequestedAt })
             .IsDescending(false, false, true)
             .HasDatabaseName($"ix_{GranitPrivacyDbProperties.DbTablePrefix}export_requests_user_timeline");
+
+        // Caller timeline lookup — surfaces admin-DSR rows on the operator's listing
+        // ("exports I triggered"). Partial-style filter on the nullable column keeps
+        // the index narrow for the self-service-only workload where Caller is null.
+        builder.HasIndex(e => new { e.TenantId, e.CallerUserId, e.RequestedAt })
+            .IsDescending(false, false, true)
+            .HasDatabaseName($"ix_{GranitPrivacyDbProperties.DbTablePrefix}export_requests_caller_timeline");
     }
 }

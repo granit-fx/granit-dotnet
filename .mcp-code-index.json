@@ -37120,24 +37120,6 @@
       ]
     },
     {
-      "name": "Exports",
-      "fqn": "Granit.Privacy.BackgroundJobs.Permissions.Exports",
-      "kind": "class",
-      "project": "Granit.Privacy.BackgroundJobs",
-      "file": "src/Granit.Privacy.BackgroundJobs/Permissions/PrivacyExportPermissions.cs",
-      "line": 29,
-      "members": []
-    },
-    {
-      "name": "PrivacyExportPermissions",
-      "fqn": "Granit.Privacy.BackgroundJobs.Permissions.PrivacyExportPermissions",
-      "kind": "class",
-      "project": "Granit.Privacy.BackgroundJobs",
-      "file": "src/Granit.Privacy.BackgroundJobs/Permissions/PrivacyExportPermissions.cs",
-      "line": 23,
-      "members": []
-    },
-    {
       "name": "DeletionDeadlineEnforcementService",
       "fqn": "Granit.Privacy.BackgroundJobs.Services.DeletionDeadlineEnforcementService",
       "kind": "class",
@@ -37209,7 +37191,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/Extensions/ServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitPrivacyBlobStorage",
@@ -37549,7 +37531,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
-      "line": 162,
+      "line": 169,
       "members": []
     },
     {
@@ -37567,7 +37549,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
-      "line": 207,
+      "line": 214,
       "members": []
     },
     {
@@ -37576,7 +37558,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
-      "line": 137,
+      "line": 144,
       "members": []
     },
     {
@@ -37594,7 +37576,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
-      "line": 187,
+      "line": 194,
       "members": []
     },
     {
@@ -37603,7 +37585,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Audit/IPrivacyExportAuditWriter.cs",
-      "line": 111,
+      "line": 117,
       "members": []
     },
     {
@@ -37700,8 +37682,15 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/ExportRequestStatus.cs",
-      "line": 18,
-      "members": []
+      "line": 21,
+      "members": [
+        {
+          "name": "UserId",
+          "kind": "property",
+          "signature": "Guid UserId",
+          "returnType": "Guid"
+        }
+      ]
     },
     {
       "name": "ExportFragment",
@@ -37825,7 +37814,7 @@
         {
           "name": "RecordRequestAsync",
           "kind": "method",
-          "signature": "RecordRequestAsync(Guid requestId, Guid userId, DateTimeOffset requestedAt, CancellationToken cancellationToken = default)",
+          "signature": "RecordRequestAsync(Guid requestId, Guid subjectUserId, Guid callerUserId, DateTimeOffset requestedAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
@@ -37931,6 +37920,22 @@
           "kind": "method",
           "signature": "IsVisibleAsync(ProviderDescriptor descriptor, PrivacyExportContext context, CancellationToken cancellationToken)",
           "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
+      "name": "IPrivacySubjectValidator",
+      "fqn": "Granit.Privacy.DataExport.IPrivacySubjectValidator",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacySubjectValidator.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "SubjectExistsInCurrentTenantAsync",
+          "kind": "method",
+          "signature": "SubjectExistsInCurrentTenantAsync(Guid subjectUserId, CancellationToken cancellationToken)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -38134,7 +38139,7 @@
         {
           "name": "RecordFragmentReceived",
           "kind": "method",
-          "signature": "RecordFragmentReceived(Guid? tenantId, string provider, string? regulation = null)",
+          "signature": "RecordFragmentReceived(Guid? tenantId, string providerName, string? regulation = null)",
           "returnType": "void"
         },
         {
@@ -38190,6 +38195,12 @@
           "kind": "method",
           "signature": "RecordScopeProbeDuration(Guid? tenantId, string providerName, TimeSpan duration)",
           "returnType": "void"
+        },
+        {
+          "name": "RecordDeletionDeadlineSlip",
+          "kind": "method",
+          "signature": "RecordDeletionDeadlineSlip(Guid? tenantId, TimeSpan slip, string? regulation = null)",
+          "returnType": "void"
         }
       ]
     },
@@ -38215,7 +38226,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Discovery/GpcDiscoveryOptions.cs",
-      "line": 30,
+      "line": 32,
       "members": [
         {
           "name": "Enabled",
@@ -38459,7 +38470,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 42,
+      "line": 43,
       "members": []
     },
     {
@@ -38468,7 +38479,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 28,
+      "line": 29,
       "members": []
     },
     {
@@ -38486,7 +38497,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 52,
+      "line": 53,
       "members": []
     },
     {
@@ -38504,7 +38515,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 35,
+      "line": 36,
       "members": []
     },
     {
@@ -38514,6 +38525,15 @@
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/PrivacyExportRateLimitPolicies.cs",
       "line": 23,
+      "members": []
+    },
+    {
+      "name": "PrivacyOptOutRateLimitPolicies",
+      "fqn": "Granit.Privacy.Endpoints.PrivacyOptOutRateLimitPolicies",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/PrivacyOptOutRateLimitPolicies.cs",
+      "line": 16,
       "members": []
     },
     {
@@ -39494,7 +39514,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/OptOut/OptOutRecord.cs",
-      "line": 15,
+      "line": 19,
       "members": []
     },
     {

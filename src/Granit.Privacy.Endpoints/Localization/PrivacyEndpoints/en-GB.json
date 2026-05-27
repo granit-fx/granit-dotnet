@@ -2,7 +2,7 @@
   "culture": "en-GB",
   "texts": {
     "Granit:Validation:PrivacyExportTooManyScopes": "Too many scopes requested in a single export. The limit is 64.",
-    "Permission:Privacy.Exports.OnBehalfOf": "Request personal data export on behalf of another data subject (admin DSR)",
+    "Permission:Privacy.Exports.ExecuteOnBehalfOf": "Request personal data export on behalf of another data subject (admin DSR)",
     "PrivacyEndpoints:Workspace.Agreements": "Agreements",
     "PrivacyEndpoints:Workspace.Purposes": "Purposes",
     "PrivacyEndpoints:Workspace.Section": "Privacy"

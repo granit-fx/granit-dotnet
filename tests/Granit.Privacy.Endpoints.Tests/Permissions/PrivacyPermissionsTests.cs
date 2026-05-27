@@ -18,8 +18,8 @@ public sealed class PrivacyPermissionsTests
         PrivacyPermissions.Deletions.Execute.ShouldBe("Privacy.Deletions.Execute");
 
     [Fact]
-    public void Exports_OnBehalfOf_FollowsThreeSegmentConvention() =>
-        PrivacyPermissions.Exports.OnBehalfOf.ShouldBe("Privacy.Exports.OnBehalfOf");
+    public void Exports_ExecuteOnBehalfOf_FollowsThreeSegmentConvention() =>
+        PrivacyPermissions.Exports.ExecuteOnBehalfOf.ShouldBe("Privacy.Exports.ExecuteOnBehalfOf");
 
     [Fact]
     public void Agreements_Read_FollowsThreeSegmentConvention() =>
@@ -31,7 +31,7 @@ public sealed class PrivacyPermissionsTests
 
     [Theory]
     [InlineData("Privacy.Exports.Execute")]
-    [InlineData("Privacy.Exports.OnBehalfOf")]
+    [InlineData("Privacy.Exports.ExecuteOnBehalfOf")]
     [InlineData("Privacy.Deletions.Execute")]
     [InlineData("Privacy.Agreements.Read")]
     [InlineData("Privacy.Agreements.Create")]
@@ -43,7 +43,7 @@ public sealed class PrivacyPermissionsTests
 
     [Theory]
     [InlineData("Privacy.Exports.Execute")]
-    [InlineData("Privacy.Exports.OnBehalfOf")]
+    [InlineData("Privacy.Exports.ExecuteOnBehalfOf")]
     [InlineData("Privacy.Deletions.Execute")]
     [InlineData("Privacy.Agreements.Read")]
     [InlineData("Privacy.Agreements.Create")]

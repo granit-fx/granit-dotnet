@@ -18,9 +18,17 @@ namespace Granit.Privacy.DataExport;
 public interface IExportRequestTrackerWriter
 {
     /// <summary>Records a new export request in <see cref="ExportRequestState.Pending"/> state.</summary>
+    /// <param name="requestId">Saga / tracker correlation id.</param>
+    /// <param name="subjectUserId">Data subject the export targets.</param>
+    /// <param name="callerUserId">User who filed the request — equal to
+    /// <paramref name="subjectUserId"/> for self-service, distinct for admin DSR
+    /// (<c>POST /privacy/exports/on-behalf-of</c>).</param>
+    /// <param name="requestedAt">Request timestamp (UTC).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task RecordRequestAsync(
         Guid requestId,
-        Guid userId,
+        Guid subjectUserId,
+        Guid callerUserId,
         DateTimeOffset requestedAt,
         CancellationToken cancellationToken = default);
 

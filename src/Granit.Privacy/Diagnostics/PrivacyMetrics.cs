@@ -29,6 +29,7 @@ public sealed class PrivacyMetrics
     private readonly Histogram<double> _exportDuration;
     private readonly Histogram<double> _archiveAssemblyDuration;
     private readonly Histogram<double> _scopeProbeDuration;
+    private readonly Histogram<double> _deletionDeadlineSlip;
 
     public PrivacyMetrics(IMeterFactory meterFactory)
     {
@@ -88,6 +89,14 @@ public sealed class PrivacyMetrics
             "granit.privacy.scope.probe.duration",
             unit: "ms",
             description: "Duration of IPrivacyDataProvider.HasDataAsync probes during scope visibility resolution.");
+
+        _deletionDeadlineSlip = meter.CreateHistogram<double>(
+            "granit.privacy.deletion.deadline_slip",
+            unit: "s",
+            description:
+                "Seconds between a deferred deletion's scheduled deadline and its actual execution. "
+                + "Non-zero values mean the daily DeletionDeadlineEnforcerJob missed the window (GDPR Art. 17 "
+                + "\"without undue delay\"). Operators should alert when p95 > a tenant-specific threshold.");
     }
 
     /// <summary>Records an export request.</summary>
@@ -95,12 +104,12 @@ public sealed class PrivacyMetrics
         _exportRequests.Add(1, CreateTags(tenantId, regulation));
 
     /// <summary>Records a fragment received from a data provider.</summary>
-    public void RecordFragmentReceived(Guid? tenantId, string provider, string? regulation = null) =>
+    public void RecordFragmentReceived(Guid? tenantId, string providerName, string? regulation = null) =>
         _fragmentsReceived.Add(1, new TagList
         {
             { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
             { TagRegulation, regulation ?? DefaultRegulation },
-            { "provider", provider },
+            { "provider_name", providerName },
         });
 
     /// <summary>Records a deletion request.</summary>
@@ -157,7 +166,7 @@ public sealed class PrivacyMetrics
     /// <summary>
     /// Records the duration of a single <see cref="DataExport.IPrivacyDataProvider.HasDataAsync"/>
     /// probe during scope visibility resolution. Tagged by <c>provider_name</c> +
-    /// <c>tenant_id</c> only — never by request id (unbounded cardinality, VULN-204).
+    /// <c>tenant_id</c> only — never by request id (unbounded cardinality risk).
     /// </summary>
     public void RecordScopeProbeDuration(Guid? tenantId, string providerName, TimeSpan duration) =>
         _scopeProbeDuration.Record(duration.TotalMilliseconds, new TagList
@@ -165,6 +174,17 @@ public sealed class PrivacyMetrics
             { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
             { "provider_name", providerName },
         });
+
+    /// <summary>
+    /// Records the slippage between a deferred deletion's scheduled deadline and the
+    /// moment the enforcement job actually executed it. A clamped-to-zero value covers
+    /// early execution; positive values indicate the daily enforcer missed the deadline
+    /// (job outage, scheduler backlog, persistence lag).
+    /// </summary>
+    public void RecordDeletionDeadlineSlip(Guid? tenantId, TimeSpan slip, string? regulation = null) =>
+        _deletionDeadlineSlip.Record(
+            slip.TotalSeconds < 0 ? 0 : slip.TotalSeconds,
+            CreateTags(tenantId, regulation));
 
     private static TagList CreateTags(Guid? tenantId, string? regulation) => new()
     {

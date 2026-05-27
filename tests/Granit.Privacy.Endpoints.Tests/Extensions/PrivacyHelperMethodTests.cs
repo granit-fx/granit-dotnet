@@ -274,7 +274,7 @@ public sealed class PrivacyHelperMethodTests
             ? ["ProviderA"]
             : [];
 
-        var status = new ExportRequestStatus(requestId, userId, state, requestedAt, completedAt, archiveRef, missingProviders);
+        var status = new ExportRequestStatus(requestId, userId, userId, state, requestedAt, completedAt, archiveRef, missingProviders);
 
         PrivacyExportStatusResponse response =
             PrivacyEndpointRouteBuilderExtensions.MapExportStatus(status);

@@ -6,7 +6,7 @@
     "Permission:Privacy.Agreements.Read": "Juridische documenten en toestemmingsstatus bekijken",
     "Permission:Privacy.Deletions.Execute": "Verwijdering van persoonsgegevens aanvragen",
     "Permission:Privacy.Exports.Execute": "Export van persoonsgegevens aanvragen",
-    "Permission:Privacy.Exports.OnBehalfOf": "Persoonsgegevensexport aanvragen namens een andere betrokkene (admin-DSR)",
+    "Permission:Privacy.Exports.ExecuteOnBehalfOf": "Persoonsgegevensexport aanvragen namens een andere betrokkene (admin-DSR)",
     "Permission:Privacy.LegalDocuments.Create": "Nieuwe concepten van juridische documenten maken",
     "Permission:Privacy.LegalDocuments.Manage": "Juridische documenten bewerken, publiceren en archiveren",
     "Permission:Privacy.LegalDocuments.Read": "Versies en geschiedenis van juridische documenten bekijken",

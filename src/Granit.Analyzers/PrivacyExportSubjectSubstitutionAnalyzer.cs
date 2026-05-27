@@ -6,16 +6,16 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Granit.Analyzers;
 
 /// <summary>
-/// GR-SEC003 — Flags constructions of <c>Granit.Privacy.DataExport.PrivacyExportContext</c>
+/// GRSEC005 — Flags constructions of <c>Granit.Privacy.DataExport.PrivacyExportContext</c>
 /// where <c>SubjectUserId</c> and <c>CallerUserId</c> are bound to different symbols.
 /// </summary>
 /// <remarks>
 /// <para>
-/// The framework's v1 privacy-export pipeline is strictly self-service: only the data
-/// subject can export their own data. Construction sites that pass distinct identifiers
-/// for caller and subject are reserved for the future <c>Privacy.Exports.OnBehalfOf</c>
-/// path (admin DSR), which must verify the permission and audit the substitution
-/// before the context reaches a provider.
+/// The default privacy-export pipeline is self-service: the data subject exports their
+/// own data. Construction sites that pass distinct identifiers for caller and subject
+/// belong to the admin DSR path gated by <c>Privacy.Exports.ExecuteOnBehalfOf</c>, which
+/// must verify the permission and audit the substitution before the context reaches a
+/// provider.
 /// </para>
 /// <para>
 /// This analyzer fires when the two argument expressions resolve to different local
@@ -48,16 +48,16 @@ public sealed class PrivacyExportSubjectSubstitutionAnalyzer : SingleRuleAnalyze
         DiagnosticId,
         title: "PrivacyExportContext subject must equal caller",
         messageFormat: "PrivacyExportContext is being constructed with SubjectUserId ({0}) "
-            + "different from CallerUserId ({1}); v1 of the export pipeline is self-service only. "
+            + "different from CallerUserId ({1}); the export pipeline is self-service by default. "
             + "Pass the same identifier for both, or suppress GRSEC005 once a "
-            + "Privacy.Exports.OnBehalfOf permission check guards this construction.",
+            + "Privacy.Exports.ExecuteOnBehalfOf permission check guards this construction.",
         category: "Security",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Self-service exports must construct PrivacyExportContext with caller "
             + "equal to subject. Mismatched identifiers are reserved for the admin DSR path "
-            + "(Privacy.Exports.OnBehalfOf), which has to verify the permission and audit the "
-            + "substitution before the context reaches a provider.");
+            + "(Privacy.Exports.ExecuteOnBehalfOf), which has to verify the permission and "
+            + "audit the substitution before the context reaches a provider.");
 
     /// <inheritdoc/>
     protected override DiagnosticDescriptor Rule => _rule;

@@ -6,7 +6,7 @@
     "Permission:Privacy.Agreements.Read": "Visa juridiska dokument och samtycksstatus",
     "Permission:Privacy.Deletions.Execute": "Begär radering av personuppgifter",
     "Permission:Privacy.Exports.Execute": "Begär export av personuppgifter",
-    "Permission:Privacy.Exports.OnBehalfOf": "Begär export av personuppgifter för en annan registrerad (admin-DSR)",
+    "Permission:Privacy.Exports.ExecuteOnBehalfOf": "Begär export av personuppgifter för en annan registrerad (admin-DSR)",
     "Permission:Privacy.LegalDocuments.Create": "Skapa nya utkast till juridiska dokument",
     "Permission:Privacy.LegalDocuments.Manage": "Redigera, publicera och arkivera juridiska dokument",
     "Permission:Privacy.LegalDocuments.Read": "Visa versioner och historik för juridiska dokument",

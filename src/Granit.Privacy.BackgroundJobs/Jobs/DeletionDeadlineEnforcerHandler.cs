@@ -6,7 +6,7 @@ namespace Granit.Privacy.BackgroundJobs.Jobs;
 /// Handles <see cref="DeletionDeadlineEnforcerJob"/> by delegating to
 /// <see cref="DeletionDeadlineEnforcementService"/> for expired deferred deletion processing.
 /// </summary>
-public class DeletionDeadlineEnforcerHandler
+public sealed class DeletionDeadlineEnforcerHandler
 {
     public static Task HandleAsync(
         DeletionDeadlineEnforcerJob _,

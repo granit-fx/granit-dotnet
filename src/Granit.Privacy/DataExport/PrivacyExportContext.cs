@@ -8,8 +8,8 @@ namespace Granit.Privacy.DataExport;
 /// <param name="RequestId">Correlation id of the export request — also the saga key.</param>
 /// <param name="SubjectUserId">Data subject whose data is being exported (GDPR Art. 4(1)).</param>
 /// <param name="CallerUserId">Identity that initiated the request. Equals <see cref="SubjectUserId"/>
-/// for self-service exports (<c>Privacy.Exports.Execute</c>); differs only for admin DSR
-/// flows (<c>Privacy.Exports.OnBehalfOf</c>, planned for v1.1).</param>
+/// for self-service exports (<c>Privacy.Exports.Execute</c>); differs for admin DSR flows
+/// (<c>Privacy.Exports.ExecuteOnBehalfOf</c>).</param>
 /// <param name="TenantId">Tenant scope the request runs under. <see langword="null"/> when the
 /// host has no multi-tenancy. Background handlers MUST open
 /// <c>ICurrentTenant.Change(TenantId)</c> before resolving scoped services.</param>
@@ -23,12 +23,11 @@ public sealed record PrivacyExportContext(
 {
     /// <summary>
     /// Returns <see langword="true"/> when caller and subject are the same identity —
-    /// the framework's default and the only mode supported in v1. Call sites that
-    /// construct a context where <see cref="SubjectUserId"/> differs from
-    /// <see cref="CallerUserId"/> MUST have validated the
-    /// <c>Privacy.Exports.OnBehalfOf</c> permission first (planned for v1.1); the
-    /// upcoming subject-substitution analyzer flags any construction site that
-    /// passes mismatched ids without an explicit bypass.
+    /// the framework's default self-service mode. Call sites that construct a context
+    /// where <see cref="SubjectUserId"/> differs from <see cref="CallerUserId"/> MUST
+    /// have validated the <c>Privacy.Exports.ExecuteOnBehalfOf</c> permission first;
+    /// the <c>GRSEC005</c> analyzer flags any construction site that passes mismatched
+    /// ids without an explicit bypass.
     /// </summary>
     public bool IsSelfService => SubjectUserId == CallerUserId;
 }

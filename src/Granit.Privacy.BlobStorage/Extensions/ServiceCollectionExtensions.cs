@@ -1,5 +1,6 @@
 using Granit.Privacy.BlobStorage.DataExport;
 using Granit.Privacy.BlobStorage.DataExport.Internal;
+using Granit.Privacy.BlobStorage.Internal;
 using Granit.Privacy.BlobStorage.Streaming;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Security;
@@ -31,7 +32,11 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddGranitPrivacyBlobStorage(this IServiceCollection services)
     {
-        services.AddHttpClient(StagedFragmentBuilder.HttpClientName);
+        // Explicit 30s timeout: the default 100s lets a slow blob-staging PUT tie up
+        // upload slots through provider degradation. The assembly service uses its own
+        // longer-running window for the manifest fetch path.
+        services.AddHttpClient(StagedFragmentBuilder.HttpClientName, client =>
+            client.Timeout = TimeSpan.FromSeconds(30));
         services.AddHttpClient(PrivacyExportAssemblyService.HttpClientName);
         services.TryAddSingleton<EphemeralExportHmacSigner>();
         services.TryAddSingleton<IExportHmacSigner>(sp => sp.GetRequiredService<EphemeralExportHmacSigner>());
@@ -42,6 +47,11 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IPrivacyExportAssemblyService, PrivacyExportAssemblyService>();
         services.TryAddScoped<IPrivacyExportDownloadResolver, BlobBackedPrivacyExportDownloadResolver>();
         services.TryAddScoped<PrivacyFragmentUploader>();
+
+        // Fail-fast guard: the in-memory ephemeral signer breaks shard verification
+        // on any multi-replica or restart scenario. Hosts running outside Development
+        // MUST register a shared-state signer (Vault-backed) BEFORE the host starts.
+        services.AddHostedService<EphemeralExportHmacSignerStartupGuard>();
         return services;
     }
 }

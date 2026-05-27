@@ -26,9 +26,9 @@ internal sealed class PrivacyPermissionDefinitionProvider : IPermissionDefinitio
             MultiTenancySides.Both);
 
         group.AddPermission(
-            PrivacyPermissions.Exports.OnBehalfOf,
+            PrivacyPermissions.Exports.ExecuteOnBehalfOf,
             LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
-                "Permission:Privacy.Exports.OnBehalfOf"),
+                "Permission:Privacy.Exports.ExecuteOnBehalfOf"),
             MultiTenancySides.Both);
 
         group.AddPermission(
@@ -53,6 +53,24 @@ internal sealed class PrivacyPermissionDefinitionProvider : IPermissionDefinitio
             PrivacyPermissions.Agreements.Create,
             LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
                 "Permission:Privacy.Agreements.Create"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            PrivacyPermissions.LegalDocuments.Read,
+            LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
+                "Permission:Privacy.LegalDocuments.Read"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            PrivacyPermissions.LegalDocuments.Create,
+            LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
+                "Permission:Privacy.LegalDocuments.Create"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            PrivacyPermissions.LegalDocuments.Manage,
+            LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
+                "Permission:Privacy.LegalDocuments.Manage"),
             MultiTenancySides.Both);
     }
 }

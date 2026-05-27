@@ -26,5 +26,24 @@ public static class PrivacyExportRateLimitPolicies
     /// Rate-limit policy guarding <c>POST /privacy/exports</c> — caps how often a
     /// data subject can spin up a fresh personal-data export.
     /// </summary>
+    /// <remarks>
+    /// Expected partition key: <c>subject_user_id</c> (the authenticated caller).
+    /// Hosts MUST NOT collapse this with <see cref="ExportCreateOnBehalfOf"/>
+    /// — an admin partition shared with self-service either DoS's the operator
+    /// (caller-partitioned, 1/24h) or lets the operator burn a victim subject's
+    /// self-service quota (subject-partitioned).
+    /// </remarks>
     public const string ExportCreate = "privacy-export-create";
+
+    /// <summary>
+    /// Rate-limit policy guarding <c>POST /privacy/exports/on-behalf-of</c> —
+    /// caps how often an operator can spin up admin-driven DSR exports.
+    /// </summary>
+    /// <remarks>
+    /// Expected partition key: <c>caller_user_id</c> (the operator's identity),
+    /// sized for legitimate support-desk throughput (typical: token-bucket
+    /// 20/hour). Distinct from <see cref="ExportCreate"/> so the self-service
+    /// quota stays untouched by admin activity and vice-versa.
+    /// </remarks>
+    public const string ExportCreateOnBehalfOf = "privacy-export-create-on-behalf-of";
 }

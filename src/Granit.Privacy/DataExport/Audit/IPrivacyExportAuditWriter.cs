@@ -99,7 +99,13 @@ public sealed record PrivacyExportCompletedAudit(
 /// Audit payload for a single shard download from the BFF endpoint.
 /// </summary>
 /// <param name="RequestId">Saga / tracker correlation id.</param>
-/// <param name="SubjectUserId">Data subject who downloaded their shard.</param>
+/// <param name="DownloaderUserId">User who actually issued the download — typically
+/// equal to <paramref name="SubjectUserId"/> for self-service, but distinct when
+/// the export was triggered via <c>POST /privacy/exports/on-behalf-of</c> and the
+/// admin retrieves a manifest.</param>
+/// <param name="SubjectUserId">Data subject the archive belongs to (from the
+/// tracker row). Captured separately so ROPA can reconstruct subject vs.
+/// downloader without a cross-table join.</param>
 /// <param name="TenantId">Tenant context.</param>
 /// <param name="ShardIndex">Zero-based shard index served. <c>-1</c> for the manifest download.</param>
 /// <param name="ClientIp">Pseudonymised client IP.</param>
@@ -110,6 +116,7 @@ public sealed record PrivacyExportCompletedAudit(
 /// <param name="Timestamp">Download timestamp (UTC).</param>
 public sealed record PrivacyExportShardDownloadedAudit(
     Guid RequestId,
+    Guid DownloaderUserId,
     Guid SubjectUserId,
     Guid? TenantId,
     int ShardIndex,

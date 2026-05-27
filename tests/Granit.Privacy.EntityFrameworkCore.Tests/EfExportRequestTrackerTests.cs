@@ -41,14 +41,47 @@ public sealed class EfExportRequestTrackerTests : IAsyncDisposable
         var requestId = Guid.NewGuid();
         var userId = Guid.NewGuid();
 
-        await _sut.RecordRequestAsync(requestId, userId, Now, TestContext.Current.CancellationToken);
+        await _sut.RecordRequestAsync(requestId, userId, userId, Now, TestContext.Current.CancellationToken);
 
         ExportRequestStatus? status = await _sut.GetStatusAsync(requestId, TestContext.Current.CancellationToken);
 
         status.ShouldNotBeNull();
-        status.UserId.ShouldBe(userId);
+        status.SubjectUserId.ShouldBe(userId);
+        status.CallerUserId.ShouldBe(userId);
         status.State.ShouldBe(ExportRequestState.Pending);
         status.RequestedAt.ShouldBe(Now);
+    }
+
+    [Fact]
+    public async Task RecordRequestAsync_OnBehalfOf_PreservesCallerVsSubjectOnReadBack()
+    {
+        var requestId = Guid.NewGuid();
+        var subject = Guid.NewGuid();
+        var caller = Guid.NewGuid();
+
+        await _sut.RecordRequestAsync(requestId, subject, caller, Now, TestContext.Current.CancellationToken);
+
+        ExportRequestStatus? status = await _sut.GetStatusAsync(requestId, TestContext.Current.CancellationToken);
+
+        status.ShouldNotBeNull();
+        status.SubjectUserId.ShouldBe(subject);
+        status.CallerUserId.ShouldBe(caller);
+    }
+
+    [Fact]
+    public async Task GetByUserAsync_SurfacesRowsWhereCallerIsAdminOperator()
+    {
+        var subject = Guid.NewGuid();
+        var operatorUserId = Guid.NewGuid();
+
+        await _sut.RecordRequestAsync(Guid.NewGuid(), subject, operatorUserId, Now, TestContext.Current.CancellationToken);
+
+        IReadOnlyList<ExportRequestStatus> bySubject = await _sut.GetByUserAsync(subject, TestContext.Current.CancellationToken);
+        IReadOnlyList<ExportRequestStatus> byOperator = await _sut.GetByUserAsync(operatorUserId, TestContext.Current.CancellationToken);
+
+        bySubject.Count.ShouldBe(1);
+        byOperator.Count.ShouldBe(1);
+        bySubject[0].RequestId.ShouldBe(byOperator[0].RequestId);
     }
 
     [Fact]
@@ -65,9 +98,9 @@ public sealed class EfExportRequestTrackerTests : IAsyncDisposable
         var userA = Guid.NewGuid();
         var userB = Guid.NewGuid();
 
-        await _sut.RecordRequestAsync(Guid.NewGuid(), userA, Now.AddDays(-1), TestContext.Current.CancellationToken);
-        await _sut.RecordRequestAsync(Guid.NewGuid(), userA, Now, TestContext.Current.CancellationToken);
-        await _sut.RecordRequestAsync(Guid.NewGuid(), userB, Now, TestContext.Current.CancellationToken);
+        await _sut.RecordRequestAsync(Guid.NewGuid(), userA, userA, Now.AddDays(-1), TestContext.Current.CancellationToken);
+        await _sut.RecordRequestAsync(Guid.NewGuid(), userA, userA, Now, TestContext.Current.CancellationToken);
+        await _sut.RecordRequestAsync(Guid.NewGuid(), userB, userB, Now, TestContext.Current.CancellationToken);
 
         IReadOnlyList<ExportRequestStatus> result = await _sut.GetByUserAsync(userA, TestContext.Current.CancellationToken);
 
@@ -80,7 +113,8 @@ public sealed class EfExportRequestTrackerTests : IAsyncDisposable
     public async Task MarkCompletedAsync_SetsState_BlobReference_AndCompletedAt()
     {
         var requestId = Guid.NewGuid();
-        await _sut.RecordRequestAsync(requestId, Guid.NewGuid(), Now, TestContext.Current.CancellationToken);
+        var userId = Guid.NewGuid();
+        await _sut.RecordRequestAsync(requestId, userId, userId, Now, TestContext.Current.CancellationToken);
 
         _time.Set(Now.AddMinutes(5));
         await _sut.MarkCompletedAsync(
@@ -103,7 +137,8 @@ public sealed class EfExportRequestTrackerTests : IAsyncDisposable
     public async Task MarkCompletedAsync_NullMissingProviders_StoresEmptyList()
     {
         var requestId = Guid.NewGuid();
-        await _sut.RecordRequestAsync(requestId, Guid.NewGuid(), Now, TestContext.Current.CancellationToken);
+        var userId = Guid.NewGuid();
+        await _sut.RecordRequestAsync(requestId, userId, userId, Now, TestContext.Current.CancellationToken);
 
         await _sut.MarkCompletedAsync(
             requestId, ExportRequestState.Completed, "ref", missingProviders: null,

@@ -126,7 +126,10 @@ public sealed class AuditingPrivacyExportAuditWriter(IAuditingWriter auditingWri
         auditingWriter.WriteAsync(new AuditEntry
         {
             Timestamp = data.Timestamp,
-            UserId = data.SubjectUserId.ToString("D", CultureInfo.InvariantCulture),
+            // The AuditEntry.UserId is the principal who performed the action —
+            // the downloader, not the subject. Subject is preserved separately
+            // in the property changes for ROPA reconstruction.
+            UserId = data.DownloaderUserId.ToString("D", CultureInfo.InvariantCulture),
             Category = AuditCategory.DataAccess,
             IpAddress = data.ClientIp,
             UserAgent = data.UserAgent,
@@ -137,6 +140,7 @@ public sealed class AuditingPrivacyExportAuditWriter(IAuditingWriter auditingWri
                 AuditChangeType.Modified,
                 [
                     new AuditPropertyChange { PropertyName = "Phase", NewValue = "shard-downloaded" },
+                    new AuditPropertyChange { PropertyName = "SubjectUserId", NewValue = data.SubjectUserId.ToString("D", CultureInfo.InvariantCulture) },
                     new AuditPropertyChange { PropertyName = "ShardIndex", NewValue = data.ShardIndex.ToString(CultureInfo.InvariantCulture) },
                     new AuditPropertyChange { PropertyName = "AuthMethod", NewValue = data.AuthMethod ?? "" },
                 ])],

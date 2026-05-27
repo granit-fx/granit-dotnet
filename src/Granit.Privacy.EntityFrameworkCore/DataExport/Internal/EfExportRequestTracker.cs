@@ -36,9 +36,12 @@ internal sealed class EfExportRequestTracker<TContext>(
     public async Task<IReadOnlyList<ExportRequestStatus>> GetByUserAsync(
         Guid userId, CancellationToken cancellationToken = default)
     {
+        // Surface both halves of the relationship: rows where the caller is the
+        // data subject (self-service exports), and rows where the caller triggered
+        // an on-behalf-of export targeting someone else (admin DSR operator view).
         IReadOnlyList<ExportRequestEntity> rows = await ListAsync(
             Spec.For<ExportRequestEntity>()
-                .Where(e => e.UserId == userId)
+                .Where(e => e.UserId == userId || e.CallerUserId == userId)
                 .OrderByDescending(e => e.RequestedAt),
             cancellationToken).ConfigureAwait(false);
 
@@ -47,14 +50,16 @@ internal sealed class EfExportRequestTracker<TContext>(
 
     public Task RecordRequestAsync(
         Guid requestId,
-        Guid userId,
+        Guid subjectUserId,
+        Guid callerUserId,
         DateTimeOffset requestedAt,
         CancellationToken cancellationToken = default)
     {
         ExportRequestEntity entity = new()
         {
             Id = requestId,
-            UserId = userId,
+            UserId = subjectUserId,
+            CallerUserId = callerUserId == subjectUserId ? null : callerUserId,
             State = ExportRequestState.Pending,
             RequestedAt = requestedAt,
         };
@@ -92,6 +97,7 @@ internal sealed class EfExportRequestTracker<TContext>(
         new(
             entity.Id,
             entity.UserId,
+            entity.CallerUserId ?? entity.UserId,
             entity.State,
             entity.RequestedAt,
             entity.CompletedAt,

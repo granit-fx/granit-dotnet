@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.Privacy.Endpoints.Discovery;
 
 /// <summary>
@@ -61,5 +63,6 @@ public sealed class GpcDiscoveryOptions
     /// Default: 86400 (1 day) — matches the day-level granularity of
     /// <see cref="LastUpdate"/>. Must be &gt;= 0.
     /// </summary>
+    [Range(0, int.MaxValue)]
     public int CacheMaxAgeSeconds { get; set; } = 86_400;
 }

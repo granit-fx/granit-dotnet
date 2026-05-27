@@ -73,6 +73,11 @@ public static class PrivacyServiceCollectionExtensions
         // with the IAuditingWriter-backed adapter via DI overrides.
         services.TryAddSingleton<IPrivacyExportAuditWriter, NullPrivacyExportAuditWriter>();
 
+        // Backward-compatible default — accepts every subject id. Hosts exposing
+        // POST /privacy/exports/on-behalf-of MUST override with a tenant-bound
+        // impl (see UseUserLookupForPrivacySubjectValidation in Granit.Privacy.Endpoints).
+        services.TryAddSingleton<IPrivacySubjectValidator, NullPrivacySubjectValidator>();
+
         // When Granit.Privacy.EntityFrameworkCore is wired (ILegalDocumentReader registered),
         // use the composite registry (DB-first, static-fallback with distributed cache).
         // Otherwise, use the static registry directly.

@@ -6,7 +6,7 @@
     "Permission:Privacy.Agreements.Read": "कानूनी दस्तावेज़ और सहमति स्थिति देखें",
     "Permission:Privacy.Deletions.Execute": "व्यक्तिगत डेटा हटाने का अनुरोध करें",
     "Permission:Privacy.Exports.Execute": "व्यक्तिगत डेटा निर्यात का अनुरोध करें",
-    "Permission:Privacy.Exports.OnBehalfOf": "किसी अन्य डेटा विषय की ओर से व्यक्तिगत डेटा निर्यात का अनुरोध करें (व्यवस्थापक DSR)",
+    "Permission:Privacy.Exports.ExecuteOnBehalfOf": "किसी अन्य डेटा विषय की ओर से व्यक्तिगत डेटा निर्यात का अनुरोध करें (व्यवस्थापक DSR)",
     "Permission:Privacy.LegalDocuments.Create": "नए कानूनी दस्तावेज़ ड्राफ़्ट बनाएं",
     "Permission:Privacy.LegalDocuments.Manage": "कानूनी दस्तावेज़ों को संपादित करें, प्रकाशित करें और संग्रहीत करें",
     "Permission:Privacy.LegalDocuments.Read": "कानूनी दस्तावेज़ संस्करण और इतिहास देखें",

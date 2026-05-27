@@ -157,13 +157,19 @@ public static class PrivacyEndpointRouteBuilderExtensions
     {
         group.MapPost("/opt-out", HandleOptOutAsync)
              .AllowAnonymous()
+             .RequireGranitRateLimiting(PrivacyOptOutRateLimitPolicies.OptOutCreate)
              .WithName("RequestOptOut")
              .WithSummary("Opts out of data sale/sharing (CCPA).")
              .WithDescription(
                  "Records a 'Do Not Sell or Share My Personal Information' request. "
                  + "Supports both authenticated users and anonymous visitors (CCPA compliance). "
-                 + "For anonymous visitors, a _optout_id HTTP-Only cookie is set to track the opt-out.")
+                 + "For anonymous visitors, a _optout_id HTTP-Only cookie is set to track the opt-out. "
+                 + "Anonymous opt-outs are stored tenant-less by default (PrivacyEndpointsOptions."
+                 + nameof(PrivacyEndpointsOptions.BindAnonymousOptOutToCurrentTenant) + ") to prevent "
+                 + "tenant injection via a spoofable resolver. Rate-limited via the "
+                 + "`privacy-optout-create` policy.")
              .Produces<PrivacyOptOutStatusResponse>(StatusCodes.Status201Created)
+             .ProducesProblem(StatusCodes.Status429TooManyRequests)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
         group.MapGet("/opt-out/status", HandleGetOptOutStatusAsync)
@@ -187,6 +193,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
         [FromServices] TimeProvider timeProvider,
         [FromServices] PrivacyMetrics metrics,
         [FromServices] IGranitCookieManager cookieManager,
+        [FromServices] IOptions<PrivacyEndpointsOptions> endpointOptions,
         CancellationToken cancellationToken)
     {
         if (optOutWriter is null)
@@ -199,7 +206,6 @@ public static class PrivacyEndpointRouteBuilderExtensions
         Guid recordId = guidGenerator.Create();
         DateTimeOffset now = timeProvider.GetUtcNow();
         string regulation = await ResolveRegulationAsync(regulationResolver, cancellationToken).ConfigureAwait(false);
-        Guid? tenantId = ResolveTenantId(currentTenant);
 
         // Determine identity — authenticated user or anonymous visitor
         Guid? userId = TryGetUserIdOrNull(httpContext);
@@ -214,6 +220,15 @@ public static class PrivacyEndpointRouteBuilderExtensions
             await cookieManager.SetCookieAsync(httpContext, OptOutConstants.CookieName, anonymousTrackId)
                 .ConfigureAwait(false);
         }
+
+        // Anonymous flows must not trust ICurrentTenant by default — many hosts resolve
+        // tenancy from an attacker-controllable header (X-Tenant-Id) for cross-cutting
+        // routes, which would let an unauthenticated client poison an arbitrary tenant's
+        // opt-out store. Authenticated calls keep their tenant context.
+        bool trustsAnonymousTenant = endpointOptions.Value.BindAnonymousOptOutToCurrentTenant;
+        Guid? tenantId = userId is not null || trustsAnonymousTenant
+            ? ResolveTenantId(currentTenant)
+            : null;
 
         // Idempotency: return existing opt-out if already active
         if (optOutReader is not null)
@@ -294,21 +309,24 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .Produces<IReadOnlyList<PrivacyExportScopeResponse>>();
 
         group.MapPost("/exports/on-behalf-of", HandleRequestExportOnBehalfOfAsync)
-             .RequireAuthorization(PrivacyPermissions.Exports.OnBehalfOf)
-             .RequireGranitRateLimiting(PrivacyExportRateLimitPolicies.ExportCreate)
+             .RequireAuthorization(PrivacyPermissions.Exports.ExecuteOnBehalfOf)
+             .RequireGranitRateLimiting(PrivacyExportRateLimitPolicies.ExportCreateOnBehalfOf)
              .WithMetadata(new IdempotentAttribute { Required = false })
              .WithName("RequestPrivacyExportOnBehalfOf")
              .WithSummary("Requests a personal data export on behalf of another data subject (admin DSR).")
              .WithDescription(
                  "Admin-driven counterpart to POST /privacy/exports — gated by the dedicated "
-                 + "Privacy.Exports.OnBehalfOf permission so RBAC can hand it to a narrow operator "
-                 + "role without unlocking it for every authenticated user. The body's SubjectUserId "
-                 + "identifies the data subject; the authenticated caller is recorded separately on "
-                 + "the audit row so the substitution is fully reconstructable for GDPR Art. 30 ROPA. "
-                 + "Shares the privacy-export-create rate-limit policy (partitioned by the caller).")
+                 + "Privacy.Exports.ExecuteOnBehalfOf permission so RBAC can hand it to a narrow "
+                 + "operator role without unlocking it for every authenticated user. The body's "
+                 + "SubjectUserId identifies the data subject; the authenticated caller is recorded "
+                 + "separately on the audit row so the substitution is fully reconstructable for "
+                 + "GDPR Art. 30 ROPA. Uses the dedicated `privacy-export-create-on-behalf-of` "
+                 + "rate-limit policy (distinct from the self-service `privacy-export-create`). "
+                 + "The subject id is validated against the caller's tenant via "
+                 + "IPrivacySubjectValidator — a subject absent from the tenant returns 404 (same "
+                 + "status as a non-existent request id, so cross-tenant existence cannot be probed).")
              .Produces<PrivacyExportRequestResponse>(StatusCodes.Status202Accepted)
-             .ProducesProblem(StatusCodes.Status401Unauthorized)
-             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+             .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapPost("/exports", HandleRequestExportAsync)
@@ -488,11 +506,13 @@ public static class PrivacyEndpointRouteBuilderExtensions
         string regulation = await ResolveRegulationAsync(regulationResolver, cancellationToken).ConfigureAwait(false);
 
         // Null / empty Scopes → "everything visible" (Takeout default). Unknown / hidden
-        // entries are silently dropped by the saga via the visibility resolver (VULN-202).
+        // entries are silently dropped by the saga via the visibility resolver.
         IReadOnlyList<string>? requestedScopes = body?.Scopes is { Count: > 0 } scopes ? scopes : null;
 
+        // Self-service: caller == subject. The tracker collapses equal pair to a null
+        // CallerUserId so the row is indistinguishable from pre-CallerUserId rows.
         await tracker
-            .RecordRequestAsync(requestId, userId, now, cancellationToken)
+            .RecordRequestAsync(requestId, userId, userId, now, cancellationToken)
             .ConfigureAwait(false);
 
         await eventBus
@@ -540,6 +560,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
         [FromServices] ICurrentTenant currentTenant,
         [FromServices] IGuidGenerator guidGenerator,
         [FromServices] IPrivacyRegulationResolver? regulationResolver,
+        [FromServices] IPrivacySubjectValidator subjectValidator,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(body);
@@ -553,6 +574,19 @@ public static class PrivacyEndpointRouteBuilderExtensions
         // PrivacyExportOnBehalfOfRequestValidator at the FluentValidation auto-filter
         // pass — the handler is only reached on a clean body.
 
+        // Tenant-bound subject existence check. A subject the caller cannot see in
+        // its current tenant returns 404 (NOT 403) — same status as a non-existent
+        // request id, so cross-tenant subject probing yields no signal.
+        bool subjectExists = await subjectValidator
+            .SubjectExistsInCurrentTenantAsync(body.SubjectUserId, cancellationToken)
+            .ConfigureAwait(false);
+        if (!subjectExists)
+        {
+            return TypedResults.Problem(
+                detail: $"Subject '{body.SubjectUserId}' not found.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
+
         Guid requestId = guidGenerator.Create();
         DateTimeOffset now = timeProvider.GetUtcNow();
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
@@ -562,9 +596,10 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
         // The saga's PersonalDataRequestedEto.UserId names the data subject — providers
         // and the visibility resolver key off it for HasData probes etc. The caller's
-        // identity only matters for the audit row (Art. 30 ROPA).
+        // identity is persisted both on the tracker row (so the admin sees the export
+        // on their listing) and on the audit row (Art. 30 ROPA).
         await tracker
-            .RecordRequestAsync(requestId, body.SubjectUserId, now, cancellationToken)
+            .RecordRequestAsync(requestId, body.SubjectUserId, callerUserId, now, cancellationToken)
             .ConfigureAwait(false);
 
         await eventBus
@@ -654,7 +689,10 @@ public static class PrivacyEndpointRouteBuilderExtensions
             .GetStatusAsync(requestId, cancellationToken)
             .ConfigureAwait(false);
 
-        if (status is null || status.UserId != userId)
+        // Caller can see status when they are the subject OR the operator who triggered
+        // the admin DSR — keeps the operational visibility loop closed for support teams
+        // without giving them a download path (that stays subject-only).
+        if (status is null || (status.SubjectUserId != userId && status.CallerUserId != userId))
         {
             return TypedResults.Problem(
                 detail: $"Export request '{requestId}' not found.",

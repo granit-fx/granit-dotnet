@@ -33,12 +33,17 @@ public static class PrivacyAIHostApplicationBuilderExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        if (builder.Environment.IsProduction())
+        // Fail-open silently skips PII redaction whenever the LLM is unavailable —
+        // anything mirroring production data (staging, pre-prod, performance,
+        // sandbox) must reject it the same way Production does. Only Development
+        // is allowed to opt in.
+        if (!builder.Environment.IsDevelopment())
         {
             optionsBuilder.Validate(
                 opts => opts.FailMode != PiiDetectionFailMode.Open,
-                "AI:Privacy:FailMode 'Open' is forbidden in production — "
-                + "PII may go undetected, violating GDPR Art. 25 (Privacy by Design). "
+                "AI:Privacy:FailMode 'Open' is only permitted in the Development "
+                + "environment — outside it, PII would silently go undetected on LLM "
+                + "unavailability, violating GDPR Art. 25 (Privacy by Design). "
                 + "Use 'Closed' instead.");
         }
 

@@ -7,7 +7,7 @@ namespace Granit.Privacy.Endpoints.Dtos;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Gated by the dedicated <c>Privacy.Exports.OnBehalfOf</c> permission — distinct
+/// Gated by the dedicated <c>Privacy.Exports.ExecuteOnBehalfOf</c> permission — distinct
 /// from the self-service <c>Privacy.Exports.Execute</c> so RBAC policies can
 /// grant the admin path to a narrow operator role without unlocking it for
 /// every authenticated user.

@@ -6,7 +6,7 @@
     "Permission:Privacy.Agreements.Read": "查看法律文件和同意状态",
     "Permission:Privacy.Deletions.Execute": "请求删除个人数据",
     "Permission:Privacy.Exports.Execute": "请求导出个人数据",
-    "Permission:Privacy.Exports.OnBehalfOf": "代表另一数据主体请求个人数据导出(管理员 DSR)",
+    "Permission:Privacy.Exports.ExecuteOnBehalfOf": "代表另一数据主体请求个人数据导出(管理员 DSR)",
     "Permission:Privacy.LegalDocuments.Create": "创建新的法律文档草稿",
     "Permission:Privacy.LegalDocuments.Manage": "编辑、发布和归档法律文档",
     "Permission:Privacy.LegalDocuments.Read": "查看法律文档的版本和历史记录",

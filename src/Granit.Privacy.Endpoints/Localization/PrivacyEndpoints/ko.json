@@ -6,7 +6,7 @@
     "Permission:Privacy.Agreements.Read": "법적 문서 및 동의 상태 조회",
     "Permission:Privacy.Deletions.Execute": "개인 데이터 삭제 요청",
     "Permission:Privacy.Exports.Execute": "개인 데이터 내보내기 요청",
-    "Permission:Privacy.Exports.OnBehalfOf": "다른 정보주체를 대신하여 개인 데이터 내보내기 요청 (관리자 DSR)",
+    "Permission:Privacy.Exports.ExecuteOnBehalfOf": "다른 정보주체를 대신하여 개인 데이터 내보내기 요청 (관리자 DSR)",
     "Permission:Privacy.LegalDocuments.Create": "새 법적 문서 초안 작성",
     "Permission:Privacy.LegalDocuments.Manage": "법적 문서 편집, 게시 및 보관",
     "Permission:Privacy.LegalDocuments.Read": "법적 문서 버전 및 이력 조회",
