@@ -13,7 +13,7 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// </summary>
 /// <remarks>
 /// Under <c>Segregated</c> + host-admin scope, delivery attempts are materialised across
-/// host + every tenant returned by <see cref="ITenantEnumerator"/>. Delivery volumes grow
+/// host + every tenant returned by <see cref="ITenantsAccessor"/>. Delivery volumes grow
 /// faster than subscription counts (every webhook delivery writes a row, ISO 27001 3-year
 /// retention), so admin dashboards using this source should always paginate and filter on
 /// <c>OccurredAt</c>. A Postgres cross-schema view is recommended for deployments with
@@ -26,14 +26,14 @@ internal sealed class EfWebhookDeliveryAttemptQueryableSource : IQueryableSource
     private readonly IDbContextFactory<WebhooksHostDbContext> _hostFactory;
     private readonly IDbContextFactory<WebhooksTenantDbContext>? _tenantFactory;
     private readonly ICurrentTenant _currentTenant;
-    private readonly ITenantEnumerator _tenantEnumerator;
+    private readonly ITenantsAccessor _tenantsAccessor;
     private DbContext? _context;
     private List<WebhookDeliveryAttempt>? _materialized;
 
     public EfWebhookDeliveryAttemptQueryableSource(
         WebhooksEntityFrameworkCoreOptions options,
         ICurrentTenant currentTenant,
-        ITenantEnumerator tenantEnumerator,
+        ITenantsAccessor tenantsAccessor,
         IDbContextFactory<WebhooksHostDbContext> hostFactory,
         IDbContextFactory<WebhooksTenantDbContext>? tenantFactory = null)
     {
@@ -42,7 +42,7 @@ internal sealed class EfWebhookDeliveryAttemptQueryableSource : IQueryableSource
         _hostFactory = hostFactory;
         _tenantFactory = tenantFactory;
         _currentTenant = currentTenant;
-        _tenantEnumerator = tenantEnumerator;
+        _tenantsAccessor = tenantsAccessor;
     }
 
     public IQueryable<WebhookDeliveryAttempt> GetQueryable()
@@ -89,7 +89,7 @@ internal sealed class EfWebhookDeliveryAttemptQueryableSource : IQueryableSource
             return results;
         }
 
-        IReadOnlyList<(Guid Id, string Name)> tenants = _tenantEnumerator
+        IReadOnlyList<(Guid Id, string Name)> tenants = _tenantsAccessor
             .GetAllAsync().GetAwaiter().GetResult();
 
         foreach ((Guid id, string name) in tenants)

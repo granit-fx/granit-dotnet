@@ -9,7 +9,7 @@ namespace Granit.MultiTenancy;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Default registration is <see cref="NullTenantEnumerator"/>, which returns an empty
+/// Default registration is <see cref="NullTenantsAccessor"/>, which returns an empty
 /// list — graceful fallback for single-tenant deployments that do not load
 /// <c>Granit.MultiTenancy</c>. The full <c>Granit.MultiTenancy</c> registration replaces
 /// the default with an adapter over <c>ITenantReader</c>.
@@ -21,13 +21,13 @@ namespace Granit.MultiTenancy;
 /// <c>ITenantReader</c> directly and accept the package dependency.
 /// </para>
 /// </remarks>
-public interface ITenantEnumerator
+public interface ITenantsAccessor
 {
     /// <summary>
     /// Returns the identifier and display name of every tenant in the system.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>An empty list when no tenants exist or when the default
-    /// <see cref="NullTenantEnumerator"/> is in effect.</returns>
+    /// <see cref="NullTenantsAccessor"/> is in effect.</returns>
     Task<IReadOnlyList<(Guid Id, string Name)>> GetAllAsync(CancellationToken cancellationToken = default);
 }

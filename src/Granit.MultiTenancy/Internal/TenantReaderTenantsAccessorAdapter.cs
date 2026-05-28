@@ -4,16 +4,16 @@ namespace Granit.MultiTenancy.Internal;
 
 /// <summary>
 /// Adapts the rich <see cref="ITenantReader"/> aggregate query to the lightweight
-/// <see cref="ITenantEnumerator"/> primitive exposed by base <c>Granit</c>.
+/// <see cref="ITenantsAccessor"/> primitive exposed by base <c>Granit</c>.
 /// </summary>
 /// <remarks>
 /// Registered by <c>AddGranitMultiTenancy</c> as a <c>Replace</c> on the default
-/// <c>NullTenantEnumerator</c>. Soft-dep modules (Webhooks, Identity.Federated,
+/// <c>NullTenantsAccessor</c>. Soft-dep modules (Webhooks, Identity.Federated,
 /// future Notifications/Auditing under Segregated host-admin paths) inject
-/// <see cref="ITenantEnumerator"/> directly and remain free of any
+/// <see cref="ITenantsAccessor"/> directly and remain free of any
 /// <c>Granit.MultiTenancy</c> package reference.
 /// </remarks>
-internal sealed class TenantReaderEnumeratorAdapter(ITenantReader reader) : ITenantEnumerator
+internal sealed class TenantReaderTenantsAccessorAdapter(ITenantReader reader) : ITenantsAccessor
 {
     public async Task<IReadOnlyList<(Guid Id, string Name)>> GetAllAsync(
         CancellationToken cancellationToken = default)
