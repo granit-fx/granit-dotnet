@@ -526,10 +526,13 @@ jobs:
           dotnet nuget add source \
             "https://gitlab.digitaldynamics.be/api/v4/projects/11/packages/nuget/index.json" \
             --name gitlab_granit_business
+          # GitLab's NuGet endpoint is sometimes slow on large packages — bump from
+          # the 300s default to 900s so transient PUT stalls don't fail the publish.
           dotnet nuget push "nupkgs/*.nupkg" \
             --source gitlab_granit_business \
             --api-key "$GITLAB_NUGET_TOKEN" \
-            --skip-duplicate
+            --skip-duplicate \
+            --timeout 900
 
   # nuget.org — release packages on version tags
   publish-nuget:
