@@ -17,6 +17,8 @@ internal static class VaultHashiCorpActivitySource
         public const string TransitEncrypt = "vault.transit.encrypt";
         public const string TransitDecrypt = "vault.transit.decrypt";
         public const string TransitRewrap = "vault.transit.rewrap";
+        public const string TransitMac = "vault.transit.mac";
+        public const string TransitVerify = "vault.transit.verify";
 #pragma warning disable GRSEC003 // Operation names, not secrets
         public const string DbObtainCredentials = "vault.db.obtain-credentials";
         public const string DbRenewLease = "vault.db.renew-lease";

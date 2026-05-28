@@ -13,10 +13,29 @@ dotnet add package Granit.Vault.Aws
 ## Features
 
 - **KMS transit encryption**: `ITransitEncryptionService` backed by AWS KMS symmetric encryption
+- **KMS HMAC**: `ITransitMacService` via `GenerateMac` / `VerifyMac` on `HMAC_256` keys. AWS KMS does not version HMAC keys in place, so rolling rotation uses a `CurrentAlias` + `PreviousAlias` pair.
 - **Secrets Manager**: `IDatabaseCredentialProvider` with automatic rotation detection
 - **String encryption**: `IStringEncryptionProvider` for column-level data encryption
 - **Health check**: KMS key reachability probe
 - **IAM roles**: Default credential chain (ECS/EKS), access keys for local dev
+
+### MAC configuration
+
+```jsonc
+{
+  "Vault": {
+    "Aws": { "Mac": {
+      "CurrentAlias":  "alias/granit/privacy-export-mac-current",
+      "PreviousAlias": "alias/granit/privacy-export-mac-previous"   // optional but recommended
+    }}
+  }
+}
+```
+
+**Rotation runbook**: provision a new `HMAC_256` key, point `PreviousAlias` at the
+outgoing key, point `CurrentAlias` at the new key. Verify continues to accept the
+previous tag throughout the grace window. Both `VerifyMac` calls (current + previous)
+are always issued — constant-time fallback to defeat timing oracles.
 
 ## Configuration
 

@@ -17,6 +17,8 @@ internal static class VaultGoogleCloudActivitySource
         public const string KmsEncrypt = "cloudkms.encrypt";
         public const string KmsDecrypt = "cloudkms.decrypt";
         public const string KmsGetKey = "cloudkms.get-key";
+        public const string KmsMac = "cloudkms.mac";
+        public const string KmsVerify = "cloudkms.verify";
 #pragma warning disable GRSEC003 // Operation names, not secrets
         public const string SecretsObtain = "secretmanager.obtain";
         public const string SecretsCheck = "secretmanager.check-rotation";

@@ -261,6 +261,7 @@
     <Project Path="src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj" />
     <Project Path="src/Granit.Privacy.Regulations.Cookies/Granit.Privacy.Regulations.Cookies.csproj" />
     <Project Path="src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj" />
+    <Project Path="src/Granit.Privacy.Vault/Granit.Privacy.Vault.csproj" />
     <Project Path="src/Granit.Privacy/Granit.Privacy.csproj" />
   </Folder>
   <Folder Name="/src/Notifications/">
@@ -587,6 +588,7 @@
     <Project Path="tests/Granit.Privacy.BackgroundJobs.Tests/Granit.Privacy.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.BackgroundJobs.Wolverine.Tests/Granit.Privacy.BackgroundJobs.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.BlobStorage.Tests/Granit.Privacy.BlobStorage.Tests.csproj" />
+    <Project Path="tests/Granit.Privacy.Vault.Tests/Granit.Privacy.Vault.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Endpoints.Tests/Granit.Privacy.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.EntityFrameworkCore.Tests/Granit.Privacy.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Notifications.Tests/Granit.Privacy.Notifications.Tests.csproj" />

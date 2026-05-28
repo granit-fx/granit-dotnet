@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Privacy.Vault</PackageId>
+    <Description>Vault-backed IExportHmacSigner / IExportContentSigner for Granit.Privacy. Replaces the in-process EphemeralExportHmacSigner with a shared-state, restart-surviving signer driven by any Granit.Vault provider (HashiCorp Transit, AWS KMS, GCP KMS, Azure Managed HSM, or the portable secret-backed fallback).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Privacy.Vault.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.BlobStorage\Granit.Privacy.BlobStorage.csproj" />
+    <ProjectReference Include="..\Granit.Vault\Granit.Vault.csproj" />
+  </ItemGroup>
+
+</Project>

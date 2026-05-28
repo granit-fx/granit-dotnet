@@ -64,6 +64,13 @@ public static class AwsVaultServiceCollectionExtensions
         // KMS transit encryption
         services.AddSingleton<ITransitEncryptionService, KmsTransitEncryptionService>();
 
+        // KMS HMAC (separate options section because the rotation model is alias-based
+        // rather than the single-key spec used by encryption).
+        services.AddOptions<AwsKmsMacOptions>()
+            .BindConfiguration(AwsKmsMacOptions.SectionName)
+            .ValidateDataAnnotations();
+        services.AddSingleton<ITransitMacService, AwsKmsMacService>();
+
         // String encryption provider (synchronous bridge)
         services.AddSingleton<IStringEncryptionProvider, KmsStringEncryptionProvider>();
 

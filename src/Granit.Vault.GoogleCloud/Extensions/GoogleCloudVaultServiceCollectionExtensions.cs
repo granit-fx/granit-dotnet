@@ -67,6 +67,13 @@ public static class GoogleCloudVaultServiceCollectionExtensions
         // Cloud KMS transit encryption
         services.AddSingleton<ITransitEncryptionService, CloudKmsTransitEncryptionService>();
 
+        // Cloud KMS HMAC (separate options because the resource model is a CryptoKey
+        // with purpose=MAC, distinct from the encryption key)
+        services.AddOptions<GoogleCloudKmsMacOptions>()
+            .BindConfiguration(GoogleCloudKmsMacOptions.SectionName)
+            .ValidateDataAnnotations();
+        services.AddSingleton<ITransitMacService, GoogleCloudKmsMacService>();
+
         // String encryption provider (synchronous bridge)
         services.AddSingleton<IStringEncryptionProvider, CloudKmsStringEncryptionProvider>();
 

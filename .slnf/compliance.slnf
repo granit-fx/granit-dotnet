@@ -48,6 +48,7 @@
       "src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj",
       "src/Granit.Privacy.Regulations.Cookies/Granit.Privacy.Regulations.Cookies.csproj",
       "src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj",
+      "src/Granit.Privacy.Vault/Granit.Privacy.Vault.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.QueryEngine.AspNetCore/Granit.QueryEngine.AspNetCore.csproj",
@@ -57,6 +58,7 @@
       "src/Granit.Templating/Granit.Templating.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",
+      "src/Granit.Vault/Granit.Vault.csproj",
       "src/Granit.Wolverine/Granit.Wolverine.csproj",
       "src/Granit.Workflow.Abstractions/Granit.Workflow.Abstractions.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
@@ -81,7 +83,8 @@
       "tests/Granit.Privacy.Notifications.Tests/Granit.Privacy.Notifications.Tests.csproj",
       "tests/Granit.Privacy.Regulations.Cookies.Tests/Granit.Privacy.Regulations.Cookies.Tests.csproj",
       "tests/Granit.Privacy.Regulations.Tests/Granit.Privacy.Regulations.Tests.csproj",
-      "tests/Granit.Privacy.Tests/Granit.Privacy.Tests.csproj"
+      "tests/Granit.Privacy.Tests/Granit.Privacy.Tests.csproj",
+      "tests/Granit.Privacy.Vault.Tests/Granit.Privacy.Vault.Tests.csproj"
     ]
   }
 }

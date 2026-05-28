@@ -40,6 +40,7 @@ public static class HashiCorpVaultServiceCollectionExtensions
         services.AddHostedService(sp => sp.GetRequiredService<VaultCredentialLeaseManager>());
 
         services.AddScoped<ITransitEncryptionService, HashiCorpTransitEncryptionService>();
+        services.AddScoped<ITransitMacService, HashiCorpTransitMacService>();
 
         // String encryption provider (synchronous bridge)
         services.AddSingleton<IStringEncryptionProvider, HashiCorpVaultStringEncryptionProvider>();

@@ -17,6 +17,8 @@ internal static class VaultAwsActivitySource
         public const string KmsEncrypt = "kms.encrypt";
         public const string KmsDecrypt = "kms.decrypt";
         public const string KmsDescribeKey = "kms.describe-key";
+        public const string KmsMac = "kms.mac";
+        public const string KmsVerify = "kms.verify";
 #pragma warning disable GRSEC003 // Operation names, not secrets
         public const string SecretsObtain = "secrets.obtain";
         public const string SecretsCheck = "secrets.check-rotation";

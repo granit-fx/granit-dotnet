@@ -71,6 +71,28 @@ public static class AzureKeyVaultServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Registers the Managed HSM-backed <see cref="ITransitMacService"/>. Call AFTER
+    /// <see cref="AddGranitVaultAzure"/>; Managed HSM is a separate Azure resource so
+    /// the host configures it as an opt-in for callers (privacy, webhook signing) that
+    /// need MAC.
+    /// </summary>
+    /// <remarks>
+    /// Azure Key Vault Standard tier has no HMAC primitive — register
+    /// <see cref="Granit.Vault.Extensions.SecretBackedMacServiceCollectionExtensions.AddGranitSecretBackedMacService"/>
+    /// instead, with the secret stored in the standard Key Vault.
+    /// </remarks>
+    public static IServiceCollection AddGranitVaultAzureManagedHsmMac(this IServiceCollection services)
+    {
+        services.AddOptions<AzureManagedHsmMacOptions>()
+            .BindConfiguration(AzureManagedHsmMacOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddSingleton<ITransitMacService, AzureManagedHsmMacService>();
+        return services;
+    }
+
     /// <summary>Adds an Azure Key Vault health check.</summary>
     public static IHealthChecksBuilder AddGranitAzureKeyVaultHealthCheck(
         this IHealthChecksBuilder builder,

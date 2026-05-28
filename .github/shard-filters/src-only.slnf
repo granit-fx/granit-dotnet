@@ -222,6 +222,7 @@
       "src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj",
       "src/Granit.Privacy.Regulations.Cookies/Granit.Privacy.Regulations.Cookies.csproj",
       "src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj",
+      "src/Granit.Privacy.Vault/Granit.Privacy.Vault.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
       "src/Granit.QueryEngine.AI/Granit.QueryEngine.AI.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",

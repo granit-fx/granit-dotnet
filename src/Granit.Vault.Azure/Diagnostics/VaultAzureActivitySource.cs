@@ -17,6 +17,8 @@ internal static class VaultAzureActivitySource
         public const string AkvEncrypt = "akv.encrypt";
         public const string AkvDecrypt = "akv.decrypt";
         public const string AkvGetKey = "akv.get-key";
+        public const string AkvMac = "akv.mac";
+        public const string AkvVerify = "akv.verify";
 #pragma warning disable GRSEC003 // Operation names, not secrets
         public const string AkvGetSecret = "akv.get-secret";
         public const string AkvCheckRotation = "akv.check-rotation";

@@ -15,6 +15,7 @@ dotnet add package Granit.Vault
 | Interface | Purpose |
 | --------- | ------- |
 | `ITransitEncryptionService` | Encrypt/decrypt strings via a transit engine |
+| `ITransitMacService` | HMAC-style integrity tags (sign/verify) backed by a vault |
 | `IDatabaseCredentialProvider` | Dynamic database credentials with automatic rotation |
 | `ISecretStore` | Read arbitrary secrets (mTLS certificates, signing keys, SMTP creds, API keys) |
 | `IStringEncryptionProvider` | Column-level string encryption (from `Granit.Encryption`) |
@@ -70,6 +71,47 @@ catch (SecretVaultTransientException)
     // let Polly retry…
 }
 ```
+
+## `ITransitMacService` — vault-backed MAC
+
+Provider-agnostic HMAC primitive. The tag string is opaque — callers MUST NOT parse it.
+
+```csharp
+public sealed class WebhookSigner(ITransitMacService mac)
+{
+    public async Task<string> SignAsync(byte[] body, CancellationToken ct)
+    {
+        TransitMacResult result = await mac.MacAsync("granit-webhook-mac", body, ct);
+        return result.Mac; // store / send verbatim
+    }
+
+    public Task<bool> VerifyAsync(byte[] body, string tag, CancellationToken ct) =>
+        mac.VerifyAsync("granit-webhook-mac", body, tag, ct);
+}
+```
+
+`VerifyAsync` accepts tags signed under any key version still inside the provider's
+rotation window — versioned providers (HashiCorp, GCP, Azure HSM) use the native
+`min_decryption_version` / enabled-version semantics; alias-based providers (AWS KMS)
+expose a `CurrentAlias` / `PreviousAlias` pair.
+
+### `SecretBackedMacService` — portable fallback
+
+When the underlying provider has no native HMAC primitive (Azure Key Vault Standard
+tier), register the secret-backed fallback instead:
+
+```csharp
+services.AddGranitSecretBackedMacService(o =>
+{
+    o.CurrentSecretName  = "granit/mac/current";
+    o.PreviousSecretName = "granit/mac/previous"; // optional — rolling rotation
+    o.RefreshInterval    = TimeSpan.FromMinutes(5);
+});
+```
+
+The 32-byte key is pulled from any registered `ISecretStore` and cached in process
+memory (`CryptographicOperations.ZeroMemory` on dispose / refresh). Trust-boundary
+trade-off documented inline on the DI extension.
 
 ## Providers
 

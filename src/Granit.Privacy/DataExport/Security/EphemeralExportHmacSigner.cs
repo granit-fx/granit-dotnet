@@ -1,6 +1,4 @@
-using System.Globalization;
 using System.Security.Cryptography;
-using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Privacy.DataExport.Security;
@@ -137,29 +135,7 @@ public sealed partial class EphemeralExportHmacSigner : IExportHmacSigner, IExpo
         _disposed = true;
     }
 
-    private static byte[] Canonicalize(in ExportHmacParameters p)
-    {
-        // Deterministic, length-prefixed concatenation prevents canonicalisation ambiguity
-        // (e.g. two distinct inputs hashing to the same bytes via field-boundary collision).
-        StringBuilder sb = new(512);
-        AppendField(sb, p.RequestId.ToString("N", CultureInfo.InvariantCulture));
-        AppendField(sb, p.SubjectUserId.ToString("N", CultureInfo.InvariantCulture));
-        AppendField(sb, p.ProviderName);
-        AppendField(sb, p.FragmentKind);
-        AppendField(sb, p.SourceContainer);
-        AppendField(sb, p.SourceBlobId.ToString("N", CultureInfo.InvariantCulture));
-        AppendField(sb, p.EntryPath);
-        AppendField(sb, p.ExpiresAt.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture));
-        return Encoding.UTF8.GetBytes(sb.ToString());
-
-        static void AppendField(StringBuilder sb, string value)
-        {
-            sb.Append(value.Length.ToString(CultureInfo.InvariantCulture));
-            sb.Append(':');
-            sb.Append(value);
-            sb.Append('|');
-        }
-    }
+    private static byte[] Canonicalize(in ExportHmacParameters p) => ExportHmacCanonicalizer.Canonicalize(p);
 
     private static string Base64UrlEncode(ReadOnlySpan<byte> bytes) =>
         Convert.ToBase64String(bytes)

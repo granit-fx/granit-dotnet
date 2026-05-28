@@ -1932,6 +1932,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Privacy.Vault",
+      "deps": [
+        "Granit.Privacy",
+        "Granit.Privacy.BlobStorage",
+        "Granit.Vault"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.QueryEngine",
       "deps": [
         "Granit",
@@ -38406,8 +38415,24 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Security/EphemeralExportHmacSigner.cs",
-      "line": 21,
+      "line": 19,
       "members": []
+    },
+    {
+      "name": "ExportHmacCanonicalizer",
+      "fqn": "Granit.Privacy.DataExport.Security.ExportHmacCanonicalizer",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/Security/ExportHmacCanonicalizer.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Canonicalize",
+          "kind": "method",
+          "signature": "Canonicalize(in ExportHmacParameters parameters)",
+          "returnType": "byte[]"
+        }
+      ]
     },
     {
       "name": "IExportContentSigner",
@@ -40405,6 +40430,69 @@
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/Settings/PrivacySettingNames.cs",
       "line": 13,
+      "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Privacy.Vault.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Privacy.Vault",
+      "file": "src/Granit.Privacy.Vault/Extensions/ServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitPrivacyVaultExportSigner",
+          "kind": "method",
+          "signature": "AddGranitPrivacyVaultExportSigner(this IServiceCollection services, Action<VaultExportSignerOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitPrivacyVaultModule",
+      "fqn": "Granit.Privacy.Vault.GranitPrivacyVaultModule",
+      "kind": "class",
+      "project": "Granit.Privacy.Vault",
+      "file": "src/Granit.Privacy.Vault/GranitPrivacyVaultModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "VaultExportSignerOptions",
+      "fqn": "Granit.Privacy.Vault.Options.VaultExportSignerOptions",
+      "kind": "class",
+      "project": "Granit.Privacy.Vault",
+      "file": "src/Granit.Privacy.Vault/Options/VaultExportSignerOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "FragmentKeyName",
+          "kind": "property",
+          "signature": "string FragmentKeyName",
+          "returnType": "string"
+        },
+        {
+          "name": "ContentKeyName",
+          "kind": "property",
+          "signature": "string ContentKeyName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "VaultExportHmacSigner",
+      "fqn": "Granit.Privacy.Vault.VaultExportHmacSigner",
+      "kind": "class",
+      "project": "Granit.Privacy.Vault",
+      "file": "src/Granit.Privacy.Vault/VaultExportHmacSigner.cs",
+      "line": 33,
       "members": []
     },
     {
@@ -47319,6 +47407,22 @@
       ]
     },
     {
+      "name": "AwsKmsMacOptions",
+      "fqn": "Granit.Vault.Aws.Options.AwsKmsMacOptions",
+      "kind": "class",
+      "project": "Granit.Vault.Aws",
+      "file": "src/Granit.Vault.Aws/Options/AwsKmsMacOptions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "CurrentAlias",
+          "kind": "property",
+          "signature": "string CurrentAlias",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "AwsVaultOptions",
       "fqn": "Granit.Vault.Aws.Options.AwsVaultOptions",
       "kind": "class",
@@ -47431,6 +47535,28 @@
       ]
     },
     {
+      "name": "AzureManagedHsmMacOptions",
+      "fqn": "Granit.Vault.Azure.Options.AzureManagedHsmMacOptions",
+      "kind": "class",
+      "project": "Granit.Vault.Azure",
+      "file": "src/Granit.Vault.Azure/Options/AzureManagedHsmMacOptions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "HsmUri",
+          "kind": "property",
+          "signature": "string HsmUri",
+          "returnType": "string"
+        },
+        {
+          "name": "KeyName",
+          "kind": "property",
+          "signature": "string KeyName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "SecretStoreActivityTags",
       "fqn": "Granit.Vault.Diagnostics.SecretStoreActivityTags",
       "kind": "class",
@@ -47476,6 +47602,38 @@
           "kind": "method",
           "signature": "RecordSecretCacheHit(string? tenantId, string provider)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MacKeyNotFoundException",
+      "fqn": "Granit.Vault.Exceptions.MacKeyNotFoundException",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Exceptions/MacKeyNotFoundException.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "MacKeyNotFoundException",
+          "kind": "method",
+          "signature": "MacKeyNotFoundException(string keyName, Exception? innerException = null)",
+          "returnType": "string KeyName { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "MacVerificationException",
+      "fqn": "Granit.Vault.Exceptions.MacVerificationException",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Exceptions/MacVerificationException.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MacVerificationException",
+          "kind": "method",
+          "signature": "MacVerificationException(string keyName, string message, Exception? innerException = null)",
+          "returnType": "string KeyName { get; } public"
         }
       ]
     },
@@ -47569,6 +47727,22 @@
       ]
     },
     {
+      "name": "SecretBackedMacServiceCollectionExtensions",
+      "fqn": "Granit.Vault.Extensions.SecretBackedMacServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Extensions/SecretBackedMacServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitSecretBackedMacService",
+          "kind": "method",
+          "signature": "AddGranitSecretBackedMacService(this IServiceCollection services, Action<SecretBackedMacOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "SecretStoreServiceCollectionExtensions",
       "fqn": "Granit.Vault.Extensions.SecretStoreServiceCollectionExtensions",
       "kind": "class",
@@ -47612,6 +47786,22 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GoogleCloudKmsMacOptions",
+      "fqn": "Granit.Vault.GoogleCloud.Options.GoogleCloudKmsMacOptions",
+      "kind": "class",
+      "project": "Granit.Vault.GoogleCloud",
+      "file": "src/Granit.Vault.GoogleCloud/Options/GoogleCloudKmsMacOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "CryptoKeyId",
+          "kind": "property",
+          "signature": "string CryptoKeyId",
+          "returnType": "string"
         }
       ]
     },
@@ -47861,6 +48051,28 @@
       ]
     },
     {
+      "name": "ITransitMacService",
+      "fqn": "Granit.Vault.ITransitMacService",
+      "kind": "interface",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/ITransitMacService.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "MacAsync",
+          "kind": "method",
+          "signature": "MacAsync(string keyName, ReadOnlyMemory<byte> input, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TransitMacResult>"
+        },
+        {
+          "name": "VerifyAsync",
+          "kind": "method",
+          "signature": "VerifyAsync(string keyName, ReadOnlyMemory<byte> input, string mac, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
       "name": "ReEncryptionOptions",
       "fqn": "Granit.Vault.Options.ReEncryptionOptions",
       "kind": "class",
@@ -47879,6 +48091,28 @@
           "kind": "property",
           "signature": "int BatchSize",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "SecretBackedMacOptions",
+      "fqn": "Granit.Vault.Options.SecretBackedMacOptions",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Options/SecretBackedMacOptions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "CurrentSecretName",
+          "kind": "property",
+          "signature": "string CurrentSecretName",
+          "returnType": "string"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "string? PreviousSecretName { get; set; } public TimeSpan RefreshInterval { get; set; } = TimeSpan."
         }
       ]
     },
@@ -47974,12 +48208,30 @@
       "members": []
     },
     {
+      "name": "SecretBackedMacService",
+      "fqn": "Granit.Vault.Services.SecretBackedMacService",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Services/SecretBackedMacService.cs",
+      "line": 30,
+      "members": []
+    },
+    {
       "name": "VaultLocalizationResource",
       "fqn": "Granit.Vault.VaultLocalizationResource",
       "kind": "class",
       "project": "Granit.Vault",
       "file": "src/Granit.Vault/VaultLocalizationResource.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Vault.struct",
+      "kind": "record",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/ITransitMacService.cs",
+      "line": 65,
       "members": []
     },
     {
