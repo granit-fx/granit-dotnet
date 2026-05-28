@@ -30,8 +30,19 @@ public sealed class IdentityEfCoreDiRegistrationTests
         builder.Services.AddSingleton(Substitute.For<IGuidGenerator>());
         builder.Services.AddSingleton(Substitute.For<IUserDirectoryWriter>());
 
-        // New options-based registration — no more generic on the consuming DbContext.
-        builder.AddGranitIdentityFederatedEntityFrameworkCore(opts => opts.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+        // EfCoreUserCacheStore depends on the soft-dep ITenantEnumerator primitive (base
+        // Granit). The default NullTenantEnumerator is registered by AddGranit<T>(), but
+        // this test bypasses the module loader — stub it explicitly.
+        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
+        enumerator.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<(Guid, string)>>([]));
+        builder.Services.AddSingleton(enumerator);
+
+        // Phase B options-based registration — Shared mode default.
+        builder.AddGranitIdentityFederatedEntityFrameworkCore(opts =>
+        {
+            opts.Configure = b => b.UseInMemoryDatabase(Guid.NewGuid().ToString());
+        });
 
         ServiceProvider provider = builder.Services.BuildServiceProvider();
 
@@ -44,8 +55,8 @@ public sealed class IdentityEfCoreDiRegistrationTests
         IUserCacheStore store = provider.GetRequiredService<IUserCacheStore>();
         store.ShouldBeOfType<EfCoreUserCacheStore>();
 
-        IDbContextFactory<IdentityFederatedDbContext> factory =
-            provider.GetRequiredService<IDbContextFactory<IdentityFederatedDbContext>>();
+        IDbContextFactory<IdentityFederatedHostDbContext> factory =
+            provider.GetRequiredService<IDbContextFactory<IdentityFederatedHostDbContext>>();
         factory.ShouldNotBeNull();
     }
 }

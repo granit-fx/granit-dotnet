@@ -5,7 +5,7 @@ namespace Granit.Identity.Federated.EntityFrameworkCore.Internal;
 
 /// <summary>EF Core model builder extensions for the Identity.Federated module.</summary>
 /// <remarks>
-/// Called by <see cref="IdentityFederatedDbContext"/>. Internal since the dedicated
+/// Called by <see cref="IdentityFederatedHostDbContext"/>. Internal since the dedicated
 /// DbContext landed in Epic #2382 V2 — consuming apps no longer fold the model into
 /// their own context.
 /// </remarks>

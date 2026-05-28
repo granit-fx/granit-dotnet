@@ -1,6 +1,8 @@
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.EntityFrameworkCore.Internal;
 using Granit.Identity.Federated.Internal;
+using Granit.MultiTenancy;
+using Granit.Persistence.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
@@ -30,11 +32,16 @@ public sealed class EfCoreUserCacheStoreTests : IDisposable
 
     private EfCoreUserCacheStore CreateStore()
     {
-        DbContextOptions<IdentityFederatedDbContext> options = new DbContextOptionsBuilder<IdentityFederatedDbContext>()
+        DbContextOptions<IdentityFederatedHostDbContext> options = new DbContextOptionsBuilder<IdentityFederatedHostDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        TestIdentityFederatedDbContextFactory factory = new(options, _filter.Filter);
-        return new EfCoreUserCacheStore(factory, Hasher);
+        TestIdentityFederatedHostDbContextFactory factory = new(options, _filter.Filter);
+        IdentityFederatedContextResolver resolver = new(DualScopeStorageMode.Shared, factory);
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        ITenantEnumerator tenantEnumerator = Substitute.For<ITenantEnumerator>();
+        tenantEnumerator.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<(Guid, string)>>([]));
+        return new EfCoreUserCacheStore(resolver, Hasher, currentTenant, tenantEnumerator);
     }
 
     private static FederatedIdentity CreateEntry(

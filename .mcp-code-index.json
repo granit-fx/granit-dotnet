@@ -22298,12 +22298,12 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Extensions/IdentityFederatedEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitIdentityFederatedEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitIdentityFederatedEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitIdentityFederatedEntityFrameworkCore(this IHostApplicationBuilder builder, Action<IdentityFederatedEntityFrameworkCoreOptions> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -22332,6 +22332,22 @@
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityFederatedEntityFrameworkCoreModule.cs",
       "line": 30,
       "members": []
+    },
+    {
+      "name": "IdentityFederatedEntityFrameworkCoreOptions",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Options.IdentityFederatedEntityFrameworkCoreOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Options/IdentityFederatedEntityFrameworkCoreOptions.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "StorageMode",
+          "kind": "property",
+          "signature": "DualScopeStorageMode StorageMode",
+          "returnType": "DualScopeStorageMode"
+        }
+      ]
     },
     {
       "name": "GranitIdentityFederatedEntraIdBackgroundJobsModule",
