@@ -5,8 +5,9 @@ using Granit.Identity.Federated.EntityFrameworkCore.Internal;
 using Granit.Identity.Federated.Internal;
 using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -15,41 +16,36 @@ namespace Granit.Identity.Federated.EntityFrameworkCore.Tests;
 public sealed class IdentityEfCoreDiRegistrationTests
 {
     [Fact]
-    public void AddGranitIdentityEntityFrameworkCore_ReplacesNullImplementations()
+    public void AddGranitIdentityFederatedEntityFrameworkCore_ReplacesNullImplementations()
     {
-        var services = new ServiceCollection();
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
 
-        // Simulate what AddGranitIdentity() does
-        services.AddGranitIdentity();
+        // Simulate what AddGranitIdentity() does on the service collection.
+        builder.Services.AddGranitIdentity();
 
-        // Add dependencies required by CachedUserLookupService
-        services.AddSingleton(TimeProvider.System);
-        services.AddSingleton(NSubstitute.Substitute.For<ICurrentTenant>());
-        services.AddSingleton(NSubstitute.Substitute.For<IUserLookupHasher>());
-        services.AddSingleton(NSubstitute.Substitute.For<IGuidGenerator>());
-        services.AddSingleton(NSubstitute.Substitute.For<IUserDirectoryWriter>());
-        services.AddLogging();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        // Dependencies expected by CachedUserLookupService.
+        builder.Services.AddSingleton(TimeProvider.System);
+        builder.Services.AddSingleton(Substitute.For<ICurrentTenant>());
+        builder.Services.AddSingleton(Substitute.For<IUserLookupHasher>());
+        builder.Services.AddSingleton(Substitute.For<IGuidGenerator>());
+        builder.Services.AddSingleton(Substitute.For<IUserDirectoryWriter>());
 
-        // Register EF Core context
-        services.AddDbContext<TestDbContext>(options =>
-            options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+        // New options-based registration — no more generic on the consuming DbContext.
+        builder.AddGranitIdentityFederatedEntityFrameworkCore(opts => opts.UseInMemoryDatabase(Guid.NewGuid().ToString()));
 
-        // Register EF Core identity services
-        services.AddGranitIdentityEntityFrameworkCore<TestDbContext>();
+        ServiceProvider provider = builder.Services.BuildServiceProvider();
 
-        ServiceProvider provider = services.BuildServiceProvider();
-
-        // IUserLookupService should be CachedUserLookupService, not NullUserLookupService
         IUserLookupService lookupService = provider.GetRequiredService<IUserLookupService>();
         lookupService.ShouldBeOfType<CachedUserLookupService>();
 
-        // IUserCacheStats should be EfCoreUserCacheStats, not NullUserCacheStats
         IUserCacheStats stats = provider.GetRequiredService<IUserCacheStats>();
         stats.ShouldBeOfType<EfCoreUserCacheStats>();
 
-        // IUserCacheStore should be registered
         IUserCacheStore store = provider.GetRequiredService<IUserCacheStore>();
-        store.ShouldBeOfType<EfCoreUserCacheStore<TestDbContext>>();
+        store.ShouldBeOfType<EfCoreUserCacheStore>();
+
+        IDbContextFactory<IdentityFederatedDbContext> factory =
+            provider.GetRequiredService<IDbContextFactory<IdentityFederatedDbContext>>();
+        factory.ShouldNotBeNull();
     }
 }

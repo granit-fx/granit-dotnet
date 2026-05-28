@@ -8,9 +8,12 @@ using Xunit;
 
 namespace Granit.Identity.Federated.EntityFrameworkCore.Tests;
 
-public sealed class EfCoreUserCacheStoreTests
+public sealed class EfCoreUserCacheStoreTests : IDisposable
 {
     private static readonly IUserLookupHasher Hasher = CreateHasher();
+    private readonly TestDataFilter _filter = new();
+
+    public void Dispose() => _filter.Dispose();
 
     private static IUserLookupHasher CreateHasher()
     {
@@ -25,13 +28,14 @@ public sealed class EfCoreUserCacheStoreTests
         return hasher;
     }
 
-    private static EfCoreUserCacheStore<TestDbContext> CreateStore(TestDbContext context) =>
-        new(context, Hasher);
-
-    private static TestDbContext CreateContext() =>
-        new(new DbContextOptionsBuilder<TestDbContext>()
+    private EfCoreUserCacheStore CreateStore()
+    {
+        DbContextOptions<IdentityFederatedDbContext> options = new DbContextOptionsBuilder<IdentityFederatedDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options);
+            .Options;
+        TestIdentityFederatedDbContextFactory factory = new(options, _filter.Filter);
+        return new EfCoreUserCacheStore(factory, Hasher);
+    }
 
     private static FederatedIdentity CreateEntry(
         string externalUserId = "user-1",
@@ -55,8 +59,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task FindByExternalIdAsync_ReturnsNull_WhenNotFound()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
 
         FederatedIdentity? result = await store.FindByExternalIdAsync(
             "nonexistent", null, TestContext.Current.CancellationToken);
@@ -67,8 +70,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task UpsertAsync_InsertsNewEntry()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
         FederatedIdentity entry = CreateEntry();
 
         await store.UpsertAsync(entry, TestContext.Current.CancellationToken);
@@ -82,8 +84,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task UpsertAsync_UpdatesExistingEntry()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
         FederatedIdentity entry = CreateEntry();
         await store.UpsertAsync(entry, TestContext.Current.CancellationToken);
 
@@ -100,8 +101,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task FindByExternalIdsAsync_ReturnsBatchResults()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
 
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
         await store.UpsertAsync(CreateEntry("user-2", username: "jane"), TestContext.Current.CancellationToken);
@@ -115,8 +115,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task FindFirstByExternalIdAsync_ReturnsEntryRegardlessOfTenant()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
         var tenantId = Guid.NewGuid();
 
         await store.UpsertAsync(CreateEntry("user-1", tenantId: tenantId), TestContext.Current.CancellationToken);
@@ -131,8 +130,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task MultiTenantIsolation_SameUserDifferentTenants()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
         var tenant1 = Guid.NewGuid();
         var tenant2 = Guid.NewGuid();
 
@@ -155,8 +153,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task UpsertManyAsync_InsertsAndUpdatesInBatch()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
 
         // Pre-insert one entry
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
@@ -180,8 +177,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task GetCountAsync_ReturnsCorrectCount()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
 
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
         await store.UpsertAsync(CreateEntry("user-2"), TestContext.Current.CancellationToken);
@@ -193,8 +189,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task GetStaleCountAsync_CountsStaleEntries()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
 
         FederatedIdentity fresh = CreateEntry("user-fresh");
         fresh.LastSyncedAt = DateTimeOffset.UtcNow;
@@ -213,8 +208,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task GetSyncRangeAsync_ReturnsOldestAndNewest()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
 
         FederatedIdentity old = CreateEntry("user-old");
         old.LastSyncedAt = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
@@ -234,8 +228,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task GetSyncRangeAsync_ReturnsNulls_WhenEmpty()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
 
         (DateTimeOffset? oldest, DateTimeOffset? newest) = await store.GetSyncRangeAsync(
             null, TestContext.Current.CancellationToken);
@@ -247,8 +240,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task DeleteByExternalIdAsync_RemovesEntry()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
 
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
         await store.DeleteByExternalIdAsync("user-1", null, TestContext.Current.CancellationToken);
@@ -261,8 +253,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task DeleteAllByTenantAsync_RemovesAllTenantEntries()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
         var tenantId = Guid.NewGuid();
 
         await store.UpsertAsync(CreateEntry("user-1", tenantId: tenantId), TestContext.Current.CancellationToken);
@@ -281,8 +272,7 @@ public sealed class EfCoreUserCacheStoreTests
     [Fact]
     public async Task PseudonymizeAsync_ReplacesPersonalData()
     {
-        await using TestDbContext context = CreateContext();
-        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
+        EfCoreUserCacheStore store = CreateStore();
 
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
         await store.PseudonymizeAsync("user-1", null, TestContext.Current.CancellationToken);

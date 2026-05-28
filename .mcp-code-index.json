@@ -1029,7 +1029,8 @@
       "name": "Granit.Identity.Federated.EntityFrameworkCore",
       "deps": [
         "Granit.Identity.Federated",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.MultiTenancy"
       ],
       "framework": "net10.0"
     },
@@ -22278,31 +22279,6 @@
       ]
     },
     {
-      "name": "IUserCacheDbContext",
-      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.DbContext.IUserCacheDbContext",
-      "kind": "interface",
-      "project": "Granit.Identity.Federated.EntityFrameworkCore",
-      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/DbContext/IUserCacheDbContext.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "UserCacheModelBuilderExtensions",
-      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.DbContext.UserCacheModelBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Identity.Federated.EntityFrameworkCore",
-      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/DbContext/UserCacheModelBuilderExtensions.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "ConfigureIdentityModule",
-          "kind": "method",
-          "signature": "ConfigureIdentityModule(this ModelBuilder builder)",
-          "returnType": "ModelBuilder"
-        }
-      ]
-    },
-    {
       "name": "IdentityEfCoreApplicationBuilderExtensions",
       "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Extensions.IdentityEfCoreApplicationBuilderExtensions",
       "kind": "class",
@@ -22319,13 +22295,20 @@
       ]
     },
     {
-      "name": "IdentityEfCoreServiceCollectionExtensions",
-      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Extensions.IdentityEfCoreServiceCollectionExtensions",
+      "name": "IdentityFederatedEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Extensions.IdentityFederatedEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
-      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Extensions/IdentityEfCoreServiceCollectionExtensions.cs",
-      "line": 13,
-      "members": []
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Extensions/IdentityFederatedEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "AddGranitIdentityFederatedEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitIdentityFederatedEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
     },
     {
       "name": "GranitIdentityDbProperties",
@@ -22349,7 +22332,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityFederatedEntityFrameworkCoreModule.cs",
-      "line": 19,
+      "line": 21,
       "members": []
     },
     {
