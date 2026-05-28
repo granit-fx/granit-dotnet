@@ -7,7 +7,10 @@
     "Granit:Validation:PresenceIdleSecondsTooLarge": "निष्क्रिय अवधि अधिकतम अनुमत मान से अधिक है।",
     "Granit:Validation:PresenceOverrideUntilInPast": "ओवरराइड की समाप्ति भविष्य में होनी चाहिए।",
     "Granit:Validation:PresenceOverrideUntilTooFar": "ओवरराइड की समाप्ति भविष्य में बहुत दूर है।",
+    "Granit:Validation:PresenceRoomMetadataTooLarge": "मेटाडेटा अनुमत अधिकतम आकार से अधिक है।",
     "Granit:Validation:PresenceUntilWithoutOverride": "जब मैनुअल स्थिति उपलब्ध हो तो समाप्ति प्रदान नहीं की जा सकती।",
+    "Permission:Presence.Rooms.Join": "साझा संसाधन (CMS पृष्ठ, डैशबोर्ड, …) में शामिल हों और अपनी उपस्थिति दूसरों को दिखाएँ",
+    "Permission:Presence.Rooms.Read": "देखें कि साझा संसाधन (CMS पृष्ठ, डैशबोर्ड, …) में अभी कौन सक्रिय है",
     "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
     "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
     "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"

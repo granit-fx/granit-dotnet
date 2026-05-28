@@ -23,4 +23,10 @@ internal static class PresenceActivitySource
     internal const string QueryEffective = "presence.query_effective";
     internal const string SetOverride = "presence.set_override";
     internal const string GateNotification = "presence.gate_notification";
+
+    // ──── Resource-room operations ────
+
+    internal const string RoomJoin = "Granit.Presence.Room.Join";
+    internal const string RoomLeave = "Granit.Presence.Room.Leave";
+    internal const string RoomGet = "Granit.Presence.Room.Get";
 }

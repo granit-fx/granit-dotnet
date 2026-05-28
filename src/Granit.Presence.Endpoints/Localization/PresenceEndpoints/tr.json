@@ -7,7 +7,10 @@
     "Granit:Validation:PresenceIdleSecondsTooLarge": "Boşta kalma süresi izin verilen maksimum değeri aşıyor.",
     "Granit:Validation:PresenceOverrideUntilInPast": "Geçersiz kılma sona erme tarihi gelecekte olmalıdır.",
     "Granit:Validation:PresenceOverrideUntilTooFar": "Geçersiz kılma sona erme tarihi gelecekte çok uzak.",
+    "Granit:Validation:PresenceRoomMetadataTooLarge": "Meta veriler izin verilen maksimum boyutu aşıyor.",
     "Granit:Validation:PresenceUntilWithoutOverride": "Manuel durum Müsait olduğunda sona erme tarihi sağlanamaz.",
+    "Permission:Presence.Rooms.Join": "Paylaşılan bir kaynağa (CMS sayfası, gösterge tablosu, …) katılın ve varlığımı diğerlerine yayınlayın",
+    "Permission:Presence.Rooms.Read": "Paylaşılan bir kaynakta (CMS sayfası, gösterge tablosu, …) şu anda kimin etkin olduğunu görüntüleyin",
     "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
     "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
     "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"

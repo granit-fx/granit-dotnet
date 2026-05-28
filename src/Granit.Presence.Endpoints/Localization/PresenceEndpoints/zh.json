@@ -7,7 +7,10 @@
     "Granit:Validation:PresenceIdleSecondsTooLarge": "空闲时间超过允许的最大值。",
     "Granit:Validation:PresenceOverrideUntilInPast": "覆盖的到期时间必须在将来。",
     "Granit:Validation:PresenceOverrideUntilTooFar": "覆盖的到期时间在将来过于遥远。",
+    "Granit:Validation:PresenceRoomMetadataTooLarge": "元数据超出允许的最大大小。",
     "Granit:Validation:PresenceUntilWithoutOverride": "当手动状态为“可用”时不能提供到期时间。",
+    "Permission:Presence.Rooms.Join": "加入共享资源（CMS 页面、仪表板等）并向其他用户广播我的在线状态",
+    "Permission:Presence.Rooms.Read": "查看当前在共享资源（CMS 页面、仪表板等）上活跃的其他用户",
     "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
     "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
     "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"

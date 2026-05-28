@@ -7,7 +7,10 @@
     "Granit:Validation:PresenceIdleSecondsTooLarge": "A duração de inactividade excede o valor máximo permitido.",
     "Granit:Validation:PresenceOverrideUntilInPast": "A expiração da substituição deve estar no futuro.",
     "Granit:Validation:PresenceOverrideUntilTooFar": "A expiração da substituição está demasiado distante no futuro.",
+    "Granit:Validation:PresenceRoomMetadataTooLarge": "Os metadados excedem o tamanho máximo permitido.",
     "Granit:Validation:PresenceUntilWithoutOverride": "Não pode ser fornecida uma expiração quando o estado manual é Disponível.",
+    "Permission:Presence.Rooms.Join": "Entrar num recurso partilhado (página CMS, painel, …) e divulgar a minha presença",
+    "Permission:Presence.Rooms.Read": "Ver quem está atualmente ativo num recurso partilhado (página CMS, painel, …)",
     "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
     "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
     "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"

@@ -19,11 +19,23 @@ public sealed class PresenceMetrics
     private const string TagTo = "to";
     private const string TagStatus = "status";
     private const string TagHasUntil = "has_until";
+    private const string TagResourceKind = "resource_kind";
+    private const string TagReason = "reason";
+
+    /// <summary>Reasons emitted by <see cref="RecordRoomLeave"/>.</summary>
+    public const string ReasonExplicit = "explicit";
+
+    /// <summary>Reasons emitted by <see cref="RecordRoomLeave"/>.</summary>
+    public const string ReasonStale = "stale";
 
     private readonly Counter<long> _heartbeatReceived;
     private readonly Counter<long> _statusChanged;
     private readonly Counter<long> _overrideSet;
     private readonly Counter<long> _notificationGated;
+    private readonly Counter<long> _roomJoin;
+    private readonly Counter<long> _roomLeave;
+    private readonly Histogram<int> _roomSize;
+    private readonly Histogram<int> _roomMetadataBytes;
 
     /// <summary>Initializes the meter and all instruments.</summary>
     public PresenceMetrics(IMeterFactory meterFactory)
@@ -47,6 +59,24 @@ public sealed class PresenceMetrics
         _notificationGated = meter.CreateCounter<long>(
             "granit.presence.notification.gated",
             description: "Number of notification deliveries suppressed by the presence gate.");
+
+        _roomJoin = meter.CreateCounter<long>(
+            "granit.presence.room.join",
+            description: "Number of join heartbeats received against a resource room.");
+
+        _roomLeave = meter.CreateCounter<long>(
+            "granit.presence.room.leave",
+            description: "Number of leaves from a resource room (explicit or stale eviction).");
+
+        _roomSize = meter.CreateHistogram<int>(
+            "granit.presence.room.size",
+            unit: "{participants}",
+            description: "Participant count observed when a resource room is fetched or mutated.");
+
+        _roomMetadataBytes = meter.CreateHistogram<int>(
+            "granit.presence.room.metadata.bytes",
+            unit: "By",
+            description: "Size in bytes of metadata supplied on a resource room join.");
     }
 
     /// <summary>Records a single heartbeat received from a client.</summary>
@@ -80,5 +110,40 @@ public sealed class PresenceMetrics
         {
             { TagTenantId, tenantId ?? DefaultTenant },
             { "channel", channelName },
+        });
+
+    /// <summary>Records a successful join (or re-heartbeat) into a resource room.</summary>
+    public void RecordRoomJoin(string? tenantId, string resourceKind) =>
+        _roomJoin.Add(1, new TagList
+        {
+            { TagResourceKind, resourceKind },
+            { TagTenantId, tenantId ?? DefaultTenant },
+        });
+
+    /// <summary>
+    /// Records a leave from a resource room. <paramref name="reason"/> SHOULD be one of
+    /// <see cref="ReasonExplicit"/> / <see cref="ReasonStale"/>.
+    /// </summary>
+    public void RecordRoomLeave(string? tenantId, string resourceKind, string reason) =>
+        _roomLeave.Add(1, new TagList
+        {
+            { TagResourceKind, resourceKind },
+            { TagTenantId, tenantId ?? DefaultTenant },
+            { TagReason, reason },
+        });
+
+    /// <summary>Records the size of a resource room observed at a join / leave / get.</summary>
+    public void RecordRoomSize(string? tenantId, string resourceKind, int participantCount) =>
+        _roomSize.Record(participantCount, new TagList
+        {
+            { TagResourceKind, resourceKind },
+            { TagTenantId, tenantId ?? DefaultTenant },
+        });
+
+    /// <summary>Records the metadata payload size in bytes on a room join.</summary>
+    public void RecordRoomMetadataBytes(string resourceKind, int byteCount) =>
+        _roomMetadataBytes.Record(byteCount, new TagList
+        {
+            { TagResourceKind, resourceKind },
         });
 }

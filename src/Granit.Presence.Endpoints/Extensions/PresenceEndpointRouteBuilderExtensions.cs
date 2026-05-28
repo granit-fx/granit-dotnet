@@ -61,6 +61,15 @@ public static class PresenceEndpointRouteBuilderExtensions
         group.MapQueryEndpoints()
             .RequireAuthorization(PresencePermissions.Users.Read);
 
+        // Resource-scoped rooms live under the same prefix but carry their own OpenAPI tag.
+        // Per-route RequireAuthorization is applied at the endpoint declaration so each verb
+        // can require a different permission (Presence.Rooms.Read vs .Join).
+        endpoints
+            .MapGranitGroup(options.RoutePrefix)
+            .WithTags(options.RoomsTagName)
+            .RequireAuthorization()
+            .MapRoomEndpoints();
+
         return group;
     }
 }

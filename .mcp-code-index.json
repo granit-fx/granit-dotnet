@@ -36735,6 +36735,90 @@
       ]
     },
     {
+      "name": "IResourcePresenceTracker",
+      "fqn": "Granit.Presence.Abstractions.IResourcePresenceTracker",
+      "kind": "interface",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/IResourcePresenceTracker.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "JoinAsync",
+          "kind": "method",
+          "signature": "JoinAsync(ResourceRef resource, Guid userId, string? metadata = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ResourceRoom>"
+        },
+        {
+          "name": "LeaveAsync",
+          "kind": "method",
+          "signature": "LeaveAsync(ResourceRef resource, Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(ResourceRef resource, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ResourceRoom>"
+        }
+      ]
+    },
+    {
+      "name": "IResourcePresenceVisibilityPolicy",
+      "fqn": "Granit.Presence.Abstractions.IResourcePresenceVisibilityPolicy",
+      "kind": "interface",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/IResourcePresenceVisibilityPolicy.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "CanReadRoomAsync",
+          "kind": "method",
+          "signature": "CanReadRoomAsync(Guid callerUserId, ResourceRef resource, CancellationToken cancellationToken)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "FilterVisibleParticipantsAsync",
+          "kind": "method",
+          "signature": "FilterVisibleParticipantsAsync(Guid callerUserId, ResourceRef resource, IReadOnlyCollection<Guid> participantUserIds, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlySet<Guid>>"
+        }
+      ]
+    },
+    {
+      "name": "ResourcePresenceEntry",
+      "fqn": "Granit.Presence.Abstractions.ResourcePresenceEntry",
+      "kind": "record",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/ResourcePresenceEntry.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "ResourceRoom",
+      "fqn": "Granit.Presence.Abstractions.ResourceRoom",
+      "kind": "record",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/ResourceRoom.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Presence.Abstractions.struct",
+      "kind": "record",
+      "project": "Granit.Presence",
+      "file": "src/Granit.Presence/Abstractions/ResourceRef.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "Validate",
+          "kind": "method",
+          "signature": "Validate()",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "PresenceMetrics",
       "fqn": "Granit.Presence.Diagnostics.PresenceMetrics",
       "kind": "class",
@@ -36758,6 +36842,30 @@
           "name": "RecordNotificationGated",
           "kind": "method",
           "signature": "RecordNotificationGated(string? tenantId, string channelName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRoomJoin",
+          "kind": "method",
+          "signature": "RecordRoomJoin(string? tenantId, string resourceKind)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRoomLeave",
+          "kind": "method",
+          "signature": "RecordRoomLeave(string? tenantId, string resourceKind, string reason)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRoomSize",
+          "kind": "method",
+          "signature": "RecordRoomSize(string? tenantId, string resourceKind, int participantCount)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRoomMetadataBytes",
+          "kind": "method",
+          "signature": "RecordRoomMetadataBytes(string resourceKind, int byteCount)",
           "returnType": "void"
         }
       ]
@@ -36851,12 +36959,39 @@
       "members": []
     },
     {
+      "name": "HeartbeatRoomRequest",
+      "fqn": "Granit.Presence.Endpoints.Dtos.HeartbeatRoomRequest",
+      "kind": "record",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Dtos/HeartbeatRoomRequest.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "PresenceResponse",
       "fqn": "Granit.Presence.Endpoints.Dtos.PresenceResponse",
       "kind": "record",
       "project": "Granit.Presence.Endpoints",
       "file": "src/Granit.Presence.Endpoints/Dtos/PresenceResponse.cs",
       "line": 16,
+      "members": []
+    },
+    {
+      "name": "ResourcePresenceParticipantResponse",
+      "fqn": "Granit.Presence.Endpoints.Dtos.ResourcePresenceParticipantResponse",
+      "kind": "record",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Dtos/ResourceRoomResponse.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "ResourceRoomResponse",
+      "fqn": "Granit.Presence.Endpoints.Dtos.ResourceRoomResponse",
+      "kind": "record",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Dtos/ResourceRoomResponse.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -36919,6 +37054,12 @@
           "kind": "property",
           "signature": "string TagName",
           "returnType": "string"
+        },
+        {
+          "name": "RoomsTagName",
+          "kind": "property",
+          "signature": "string RoomsTagName",
+          "returnType": "string"
         }
       ]
     },
@@ -36938,6 +37079,15 @@
       "project": "Granit.Presence.Endpoints",
       "file": "src/Granit.Presence.Endpoints/Permissions/PresenceRateLimitPolicies.cs",
       "line": 18,
+      "members": []
+    },
+    {
+      "name": "Rooms",
+      "fqn": "Granit.Presence.Endpoints.Permissions.Rooms",
+      "kind": "class",
+      "project": "Granit.Presence.Endpoints",
+      "file": "src/Granit.Presence.Endpoints/Permissions/PresencePermissions.cs",
+      "line": 26,
       "members": []
     },
     {

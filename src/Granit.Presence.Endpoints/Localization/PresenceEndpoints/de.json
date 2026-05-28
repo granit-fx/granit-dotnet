@@ -7,7 +7,10 @@
     "Granit:Validation:PresenceIdleSecondsTooLarge": "Die Leerlaufzeit überschreitet den maximal zulässigen Wert.",
     "Granit:Validation:PresenceOverrideUntilInPast": "Das Ablaufdatum der Übersteuerung muss in der Zukunft liegen.",
     "Granit:Validation:PresenceOverrideUntilTooFar": "Das Ablaufdatum der Übersteuerung liegt zu weit in der Zukunft.",
+    "Granit:Validation:PresenceRoomMetadataTooLarge": "Metadaten überschreiten die maximal zulässige Größe.",
     "Granit:Validation:PresenceUntilWithoutOverride": "Ein Ablaufdatum kann nicht angegeben werden, wenn der manuelle Status Verfügbar ist.",
+    "Permission:Presence.Rooms.Join": "Einer gemeinsamen Ressource (CMS-Seite, Dashboard, …) beitreten und meine Anwesenheit teilen",
+    "Permission:Presence.Rooms.Read": "Anzeigen, wer eine gemeinsame Ressource (CMS-Seite, Dashboard, …) gerade verwendet",
     "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
     "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
     "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"

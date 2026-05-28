@@ -7,7 +7,10 @@
     "Granit:Validation:PresenceIdleSecondsTooLarge": "Czas bezczynności przekracza maksymalną dozwoloną wartość.",
     "Granit:Validation:PresenceOverrideUntilInPast": "Wygaśnięcie nadpisania musi być w przyszłości.",
     "Granit:Validation:PresenceOverrideUntilTooFar": "Wygaśnięcie nadpisania jest zbyt odległe w przyszłości.",
+    "Granit:Validation:PresenceRoomMetadataTooLarge": "Metadane przekraczają maksymalny dozwolony rozmiar.",
     "Granit:Validation:PresenceUntilWithoutOverride": "Nie można podać wygaśnięcia, gdy status ręczny to Dostępny.",
+    "Permission:Presence.Rooms.Join": "Dołącz do współdzielonego zasobu (strona CMS, pulpit, …) i nadawaj swoją obecność",
+    "Permission:Presence.Rooms.Read": "Zobacz, kto jest obecnie aktywny we współdzielonym zasobie (strona CMS, pulpit, …)",
     "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
     "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
     "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
