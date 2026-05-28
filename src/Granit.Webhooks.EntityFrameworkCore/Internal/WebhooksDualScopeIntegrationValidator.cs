@@ -87,12 +87,14 @@ internal sealed partial class WebhooksDualScopeIntegrationValidator(
 
     private List<string>? TryFindFoldedWebhooksEntities(Type dbContextType)
     {
-        // Resolve the SharedDatabase keyed factory — always registered by
-        // AddGranitIsolatedDbContext, and the cheapest path (no search_path / no tenant
-        // dispatch). The factory builds DbContextOptions from the configureShared delegate;
-        // we never open a connection, only compile the model.
+        // The keyed IDbContextFactory<T> registered by AddGranitIsolatedDbContext is scoped
+        // (EF Core default). Resolving it through the root provider trips CallSiteValidator
+        // when the host enables ValidateScopes (default in dev). Open a per-call scope so
+        // the resolution is legal regardless of the consumer's ServiceProviderOptions.
+        using IServiceScope scope = serviceProvider.CreateScope();
+
         Type factoryType = typeof(IDbContextFactory<>).MakeGenericType(dbContextType);
-        object? factory = serviceProvider.GetKeyedService(factoryType, TenantIsolationStrategy.SharedDatabase);
+        object? factory = scope.ServiceProvider.GetKeyedService(factoryType, TenantIsolationStrategy.SharedDatabase);
         if (factory is null)
         {
             LogNoSharedFactory(dbContextType.Name);

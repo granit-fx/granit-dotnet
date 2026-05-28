@@ -60,7 +60,25 @@ public sealed class WebhooksDualScopeIntegrationValidatorTests
         ex.Message.ShouldContain("WebhookSubscription");
     }
 
-    private static ServiceProvider BuildProvider<TContext>()
+    /// <summary>
+    /// Reproduces the dev-host boot path: the validator is registered as a hosted
+    /// service and runs against the root provider, which has <c>ValidateScopes = true</c>
+    /// by default. Resolving the scoped keyed <see cref="IDbContextFactory{TContext}"/>
+    /// directly used to throw "Cannot resolve scoped service ... from root provider".
+    /// </summary>
+    [Fact]
+    public async Task StartAsync_RootProviderWithValidateScopes_DoesNotThrow()
+    {
+        ServiceProvider sp = BuildProvider<CleanIsolatedDbContext>(validateScopes: true);
+        var sut = new WebhooksDualScopeIntegrationValidator(
+            markers: sp.GetServices<IsolatedDbContextMarker>(),
+            serviceProvider: sp,
+            logger: NullLogger<WebhooksDualScopeIntegrationValidator>.Instance);
+
+        await sut.StartAsync(TestContext.Current.CancellationToken);
+    }
+
+    private static ServiceProvider BuildProvider<TContext>(bool validateScopes = false)
         where TContext : DbContext
     {
         IServiceCollection services = new ServiceCollection();
@@ -77,7 +95,10 @@ public sealed class WebhooksDualScopeIntegrationValidatorTests
             typeof(TContext),
             new HashSet<TenantIsolationStrategy> { TenantIsolationStrategy.SharedDatabase }));
 
-        return services.BuildServiceProvider();
+        return services.BuildServiceProvider(new ServiceProviderOptions
+        {
+            ValidateScopes = validateScopes,
+        });
     }
 
     private sealed class InMemoryDbContextFactory<TContext> : IDbContextFactory<TContext>
