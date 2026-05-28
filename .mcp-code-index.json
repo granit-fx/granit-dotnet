@@ -13562,6 +13562,15 @@
       "members": []
     },
     {
+      "name": "ImportDefinitionServiceCollectionExtensions",
+      "fqn": "Granit.DataExchange.Extensions.ImportDefinitionServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Extensions/ImportDefinitionServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.DataExchange.Extensions.ServiceCollectionExtensions",
       "kind": "class",
@@ -13583,7 +13592,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Abstractions",
       "file": "src/Granit.DataExchange.Abstractions/GranitDataExchangeAbstractionsModule.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -13900,8 +13909,8 @@
       "name": "ChildCollectionBuilder",
       "fqn": "Granit.DataExchange.Import.Mapping.ChildCollectionBuilder",
       "kind": "class",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Mapping/ChildCollectionBuilder.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/ChildCollectionBuilder.cs",
       "line": 9,
       "members": []
     },
@@ -13925,8 +13934,8 @@
       "name": "IImportDefinitionDescriptor",
       "fqn": "Granit.DataExchange.Import.Mapping.IImportDefinitionDescriptor",
       "kind": "interface",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Mapping/IImportDefinitionDescriptor.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/IImportDefinitionDescriptor.cs",
       "line": 12,
       "members": [
         {
@@ -14019,8 +14028,8 @@
       "name": "ImportDefinition",
       "fqn": "Granit.DataExchange.Import.Mapping.ImportDefinition",
       "kind": "class",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Mapping/ImportDefinition.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/ImportDefinition.cs",
       "line": 31,
       "members": [
         {
@@ -14077,8 +14086,8 @@
       "name": "ImportDefinitionBuilder",
       "fqn": "Granit.DataExchange.Import.Mapping.ImportDefinitionBuilder",
       "kind": "class",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Mapping/ImportDefinitionBuilder.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/ImportDefinitionBuilder.cs",
       "line": 10,
       "members": []
     },
@@ -14086,8 +14095,8 @@
       "name": "ImportFieldMetadata",
       "fqn": "Granit.DataExchange.Import.Mapping.ImportFieldMetadata",
       "kind": "record",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Mapping/ImportFieldMetadata.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/ImportFieldMetadata.cs",
       "line": 12,
       "members": []
     },
@@ -14126,8 +14135,8 @@
       "name": "PropertyMapping",
       "fqn": "Granit.DataExchange.Import.Mapping.PropertyMapping",
       "kind": "class",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Mapping/PropertyMapping.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/PropertyMapping.cs",
       "line": 6,
       "members": [
         {
@@ -14148,8 +14157,8 @@
       "name": "PropertyMappingBuilder",
       "fqn": "Granit.DataExchange.Import.Mapping.PropertyMappingBuilder",
       "kind": "class",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Mapping/PropertyMappingBuilder.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/PropertyMappingBuilder.cs",
       "line": 6,
       "members": []
     },
@@ -23292,7 +23301,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/GranitIdentityModule.cs",
-      "line": 27,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
@@ -23705,6 +23714,22 @@
           "kind": "method",
           "signature": "PseudonymizeByIdAsync(string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "UserImportDefinition",
+      "fqn": "Granit.Identity.Imports.UserImportDefinition",
+      "kind": "class",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Imports/UserImportDefinition.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
