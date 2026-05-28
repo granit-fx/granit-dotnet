@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Granit.Exceptions;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Templating.Endpoints.Dtos;
 using Granit.Templating.Endpoints.Internal;
 using Granit.Templating.Endpoints.Options;
@@ -41,9 +42,9 @@ public static class TemplatingEndpointRouteBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Registers 16 endpoints:
+    /// Registers the following endpoints:
     /// <list type="bullet">
-    /// <item><c>GET /</c> — paginated list with filters (including <c>categoryId</c>)</item>
+    /// <item><c>GET /</c> + <c>GET /meta</c> — paginated list and query metadata, powered by the Query Engine</item>
     /// <item><c>GET /{name}</c> — detail (draft + published)</item>
     /// <item><c>POST /</c> — create a new draft</item>
     /// <item><c>PUT /{name}</c> — update an existing draft</item>
@@ -85,14 +86,9 @@ public static class TemplatingEndpointRouteBuilderExtensions
 
         RouteGroupBuilder templateGroup = group.MapGranitGroup("templates");
 
-        templateGroup.MapGet("/", HandleListAsync)
-             .RequireAuthorization(TemplatingPermissions.Templates.Read)
-             .WithName("ListTemplates")
-             .WithSummary("Returns a paginated list of templates with filters.")
-             .WithDescription("Returns templates with optional filtering by category, status, and search term. Each item includes the template name, current lifecycle status, category, and last modification date. Content is not included — use the detail endpoint for full content.")
-             .Produces<TemplateListResponse>()
-             .ProducesProblem(StatusCodes.Status400BadRequest)
-             .ProducesProblem(StatusCodes.Status501NotImplemented);
+        // GET / and GET /meta — paginated list + query metadata, powered by the Query Engine.
+        templateGroup.MapGranitQuery<TemplateSummary>(configure: q =>
+            q.AuthorizationPolicy = TemplatingPermissions.Templates.Read);
 
         templateGroup.MapGet("/{name}", HandleGetDetailAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Read)
@@ -255,63 +251,6 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
         return group;
-    }
-
-    // -------------------------------------------------------------------------
-    // GET / — List templates
-    // -------------------------------------------------------------------------
-
-    private static async Task<Results<Ok<TemplateListResponse>, ProblemHttpResult>> HandleListAsync(
-        HttpContext context,
-        [AsParameters] TemplateListQueryParameters parameters,
-        CancellationToken cancellationToken)
-    {
-        IDocumentTemplateStoreReader? storeReader =
-            context.RequestServices.GetService<IDocumentTemplateStoreReader>();
-
-        if (storeReader is null)
-        {
-            return StoreNotRegistered();
-        }
-
-        ProblemHttpResult? error = ValidatePagination(parameters.Page, parameters.PageSize);
-        if (error is not null)
-        {
-            return error;
-        }
-
-        if (parameters.Culture is not null)
-        {
-            ProblemHttpResult? cultureError = ValidateBcp47(parameters.Culture);
-            if (cultureError is not null)
-            {
-                return cultureError;
-            }
-        }
-
-        TemplateListFilter filter = new(
-            Page: parameters.Page,
-            PageSize: parameters.PageSize,
-            Search: parameters.Search,
-            Status: parameters.Status,
-            Culture: parameters.Culture,
-            CategoryId: parameters.CategoryId);
-
-        PagedTemplateResult result = await storeReader.ListTemplatesAsync(filter, cancellationToken).ConfigureAwait(false);
-
-        var items = result.Items
-            .Select(s => new TemplateListItemResponse(
-                s.Name,
-                s.Culture,
-                s.MimeType,
-                s.CurrentStatus,
-                s.LastModifiedAt,
-                s.LastModifiedBy,
-                s.HasPublishedVersion,
-                s.LayoutName))
-            .ToList();
-
-        return TypedResults.Ok(new TemplateListResponse(items, result.TotalCount));
     }
 
     // -------------------------------------------------------------------------

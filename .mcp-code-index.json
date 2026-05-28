@@ -2084,6 +2084,8 @@
     {
       "name": "Granit.Templating",
       "deps": [
+        "Granit.DataExchange.Abstractions",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing",
         "Granit.Workflow"
       ],
@@ -2102,6 +2104,7 @@
       "deps": [
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Templating",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
@@ -12107,7 +12110,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/TenantAwareHeadlessBrowser.cs",
-      "line": 36,
+      "line": 47,
       "members": [
         {
           "name": "Capabilities",
@@ -42952,24 +42955,6 @@
       "members": []
     },
     {
-      "name": "TemplateListItemResponse",
-      "fqn": "Granit.Templating.Endpoints.Dtos.TemplateListItemResponse",
-      "kind": "record",
-      "project": "Granit.Templating.Endpoints",
-      "file": "src/Granit.Templating.Endpoints/Dtos/TemplateListItemResponse.cs",
-      "line": 5,
-      "members": []
-    },
-    {
-      "name": "TemplateListResponse",
-      "fqn": "Granit.Templating.Endpoints.Dtos.TemplateListResponse",
-      "kind": "record",
-      "project": "Granit.Templating.Endpoints",
-      "file": "src/Granit.Templating.Endpoints/Dtos/TemplateListResponse.cs",
-      "line": 8,
-      "members": []
-    },
-    {
       "name": "TemplatePreviewRequest",
       "fqn": "Granit.Templating.Endpoints.Dtos.TemplatePreviewRequest",
       "kind": "record",
@@ -43029,7 +43014,7 @@
       "kind": "class",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Extensions/TemplatingEndpointRouteBuilderExtensions.cs",
-      "line": 36,
+      "line": 37,
       "members": [
         {
           "name": "MapGranitTemplating",
@@ -43045,7 +43030,7 @@
       "kind": "class",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/GranitTemplatingEndpointsModule.cs",
-      "line": 32,
+      "line": 34,
       "members": [
         {
           "name": "ConfigureServices",
@@ -43135,7 +43120,7 @@
       "kind": "class",
       "project": "Granit.Templating.EntityFrameworkCore",
       "file": "src/Granit.Templating.EntityFrameworkCore/Extensions/TemplatingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitTemplatingEntityFrameworkCore",
@@ -43219,12 +43204,34 @@
       ]
     },
     {
+      "name": "TemplateSummaryExportDefinition",
+      "fqn": "Granit.Templating.Exports.TemplateSummaryExportDefinition",
+      "kind": "class",
+      "project": "Granit.Templating",
+      "file": "src/Granit.Templating/Exports/TemplateSummaryExportDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "QueryDefinitionName",
+          "kind": "property",
+          "signature": "string? QueryDefinitionName",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.Templating.Extensions.ServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Extensions/ServiceCollectionExtensions.cs",
-      "line": 20,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitTemplating",
@@ -43493,6 +43500,28 @@
       "members": []
     },
     {
+      "name": "TemplateSummaryQueryDefinition",
+      "fqn": "Granit.Templating.Queries.TemplateSummaryQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Templating",
+      "file": "src/Granit.Templating/Queries/TemplateSummaryQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(TemplateLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
+        }
+      ]
+    },
+    {
       "name": "TemplateParseException",
       "fqn": "Granit.Templating.Scriban.Exceptions.TemplateParseException",
       "kind": "class",
@@ -43593,12 +43622,6 @@
           "kind": "method",
           "signature": "TryGetDraftAsync(TemplateKey key, CancellationToken cancellationToken = default)",
           "returnType": "Task<TemplateRevision?>"
-        },
-        {
-          "name": "ListTemplatesAsync",
-          "kind": "method",
-          "signature": "ListTemplatesAsync(TemplateListFilter filter, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PagedTemplateResult>"
         },
         {
           "name": "GetHistoryAsync",
@@ -43721,30 +43744,12 @@
       ]
     },
     {
-      "name": "PagedTemplateResult",
-      "fqn": "Granit.Templating.Store.PagedTemplateResult",
-      "kind": "record",
-      "project": "Granit.Templating",
-      "file": "src/Granit.Templating/Store/PagedTemplateResult.cs",
-      "line": 8,
-      "members": []
-    },
-    {
       "name": "TemplateCategory",
       "fqn": "Granit.Templating.Store.TemplateCategory",
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/TemplateCategory.cs",
       "line": 6,
-      "members": []
-    },
-    {
-      "name": "TemplateListFilter",
-      "fqn": "Granit.Templating.Store.TemplateListFilter",
-      "kind": "record",
-      "project": "Granit.Templating",
-      "file": "src/Granit.Templating/Store/TemplateListFilter.cs",
-      "line": 8,
       "members": []
     },
     {
@@ -43762,7 +43767,7 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/TemplateSummary.cs",
-      "line": 8,
+      "line": 12,
       "members": []
     },
     {

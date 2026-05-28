@@ -1,4 +1,14 @@
 {
   "culture": "pt-BR",
-  "texts": {}
+  "texts": {
+    "Template.Columns.Name": "Name",
+    "Template.Columns.Culture": "Culture",
+    "Template.Columns.MimeType": "MIME Type",
+    "Template.Columns.Status": "Status",
+    "Template.Columns.HasPublishedVersion": "Has Published Version",
+    "Template.Columns.LayoutName": "Layout",
+    "Template.Columns.Category": "Category",
+    "Template.Columns.LastModifiedAt": "Last Modified",
+    "Template.Columns.LastModifiedBy": "Last Modified By"
+  }
 }

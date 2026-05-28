@@ -17,7 +17,9 @@ namespace Granit.Templating.EntityFrameworkCore.Tests;
 
 /// <summary>
 /// Additional tests for <see cref="EfDocumentTemplateStore"/> covering
-/// TryGetDraftAsync, ListTemplatesAsync (with filters), and edge cases.
+/// TryGetDraftAsync and edge cases, plus projection tests for
+/// <see cref="EfTemplateSummaryQueryableSource"/> (powers the
+/// <c>GET /templates</c> Query Engine endpoint).
 /// </summary>
 public sealed class EfDocumentTemplateStoreAdditionalTests
 {
@@ -127,24 +129,24 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
     }
 
     // -------------------------------------------------------------------------
-    // ListTemplatesAsync
+    // EfTemplateSummaryQueryableSource — projection over TemplateRevisionEntity
     // -------------------------------------------------------------------------
 
+    private static EfTemplateSummaryQueryableSource CreateQueryableSource(string dbName) =>
+        new(new InMemoryContextFactory(dbName), GranitDesignTime.CurrentTenant);
+
     [Fact]
-    public async Task ListTemplatesAsync_EmptyStore_ReturnsEmptyResult()
+    public void TemplateSummary_EmptyStore_ReturnsEmptyQueryable()
     {
-        EfDocumentTemplateStore store = CreateStore(NewDb());
+        EfTemplateSummaryQueryableSource source = CreateQueryableSource(NewDb());
 
-        PagedTemplateResult result = await store.ListTemplatesAsync(
-            new TemplateListFilter(),
-            TestContext.Current.CancellationToken);
+        List<TemplateSummary> summaries = [.. source.GetQueryable()];
 
-        result.Items.ShouldBeEmpty();
-        result.TotalCount.ShouldBe(0);
+        summaries.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task ListTemplatesAsync_ExcludesArchivedRevisions()
+    public async Task TemplateSummary_ExcludesArchivedRevisions()
     {
         string db = NewDb();
         EfDocumentTemplateStore store = CreateStore(db);
@@ -160,18 +162,16 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         await store.PublishAsync(key, "dave",
             TestContext.Current.CancellationToken);
 
-        PagedTemplateResult result = await store.ListTemplatesAsync(
-            new TemplateListFilter(),
-            TestContext.Current.CancellationToken);
+        List<TemplateSummary> summaries = [.. CreateQueryableSource(db).GetQueryable()];
 
-        // Only published v2 should appear (archived v1 is excluded).
-        result.TotalCount.ShouldBe(1);
-        result.Items[0].Name.ShouldBe("Billing.Invoice");
-        result.Items[0].HasPublishedVersion.ShouldBeTrue();
+        // Only one logical template row — published v2 (archived v1 excluded).
+        summaries.Count.ShouldBe(1);
+        summaries[0].Name.ShouldBe("Billing.Invoice");
+        summaries[0].HasPublishedVersion.ShouldBeTrue();
     }
 
     [Fact]
-    public async Task ListTemplatesAsync_WithSearchFilter_FiltersResults()
+    public async Task TemplateSummary_DistinctTemplates_ProduceOneRowEach()
     {
         string db = NewDb();
         EfDocumentTemplateStore store = CreateStore(db);
@@ -181,16 +181,14 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         await store.SaveDraftAsync(new TemplateKey("Notifications.Welcome"), "<p>v1</p>", "text/html", "alice",
             cancellationToken: TestContext.Current.CancellationToken);
 
-        PagedTemplateResult result = await store.ListTemplatesAsync(
-            new TemplateListFilter(Search: "Billing"),
-            TestContext.Current.CancellationToken);
+        List<TemplateSummary> summaries = [.. CreateQueryableSource(db).GetQueryable()];
 
-        result.TotalCount.ShouldBe(1);
-        result.Items[0].Name.ShouldBe("Billing.Invoice");
+        summaries.Count.ShouldBe(2);
+        summaries.Select(s => s.Name).ShouldBe(["Billing.Invoice", "Notifications.Welcome"], ignoreOrder: true);
     }
 
     [Fact]
-    public async Task ListTemplatesAsync_WithStatusFilter_FiltersResults()
+    public async Task TemplateSummary_DraftAndPublished_ResolveToDraftStatus()
     {
         string db = NewDb();
         EfDocumentTemplateStore store = CreateStore(db);
@@ -202,16 +200,19 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         await store.PublishAsync(new TemplateKey("Published.One"), "bob",
             TestContext.Current.CancellationToken);
 
-        PagedTemplateResult draftOnly = await store.ListTemplatesAsync(
-            new TemplateListFilter(Status: WorkflowLifecycleStatus.Draft),
-            TestContext.Current.CancellationToken);
+        List<TemplateSummary> summaries = [.. CreateQueryableSource(db).GetQueryable()];
 
-        draftOnly.TotalCount.ShouldBe(1);
-        draftOnly.Items[0].Name.ShouldBe("Draft.Only");
+        TemplateSummary draft = summaries.Single(s => s.Name == "Draft.Only");
+        draft.CurrentStatus.ShouldBe(WorkflowLifecycleStatus.Draft);
+        draft.HasPublishedVersion.ShouldBeFalse();
+
+        TemplateSummary published = summaries.Single(s => s.Name == "Published.One");
+        published.CurrentStatus.ShouldBe(WorkflowLifecycleStatus.Published);
+        published.HasPublishedVersion.ShouldBeTrue();
     }
 
     [Fact]
-    public async Task ListTemplatesAsync_WithCultureFilter_FiltersResults()
+    public async Task TemplateSummary_CulturesProduceSeparateRows()
     {
         string db = NewDb();
         EfDocumentTemplateStore store = CreateStore(db);
@@ -221,22 +222,18 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         await store.SaveDraftAsync(new TemplateKey("Invoice", "en"), "<p>EN</p>", "text/html", "alice",
             cancellationToken: TestContext.Current.CancellationToken);
 
-        PagedTemplateResult result = await store.ListTemplatesAsync(
-            new TemplateListFilter(Culture: "fr"),
-            TestContext.Current.CancellationToken);
+        List<TemplateSummary> summaries = [.. CreateQueryableSource(db).GetQueryable()];
 
-        result.TotalCount.ShouldBe(1);
-        result.Items[0].Culture.ShouldBe("fr");
+        summaries.Count.ShouldBe(2);
+        summaries.Select(s => s.Culture).ShouldBe(["fr", "en"], ignoreOrder: true);
     }
 
     [Fact]
-    public async Task ListTemplatesAsync_WithCategoryFilter_FiltersResults()
+    public async Task TemplateSummary_CategoryIdSurfacedFromLatestRevision()
     {
         string db = NewDb();
-        EfDocumentTemplateStore store = CreateStore(db);
         var categoryId = Guid.NewGuid();
 
-        // Seed directly with category.
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
         ctx.TemplateRevisions.AddRange(
             TemplateRevisionEntity.Create(
@@ -254,39 +251,11 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
                 mimeType: "text/html"));
         await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        PagedTemplateResult result = await store.ListTemplatesAsync(
-            new TemplateListFilter(CategoryId: categoryId),
-            TestContext.Current.CancellationToken);
+        List<TemplateSummary> summaries = [.. CreateQueryableSource(db).GetQueryable()];
 
-        result.TotalCount.ShouldBe(1);
-        result.Items[0].Name.ShouldBe("WithCategory");
-    }
-
-    [Fact]
-    public async Task ListTemplatesAsync_Pagination_ReturnsCorrectPage()
-    {
-        string db = NewDb();
-        EfDocumentTemplateStore store = CreateStore(db);
-
-        // Create 3 templates.
-        await store.SaveDraftAsync(new TemplateKey("A.Template"), "<p>A</p>", "text/html", "alice",
-            cancellationToken: TestContext.Current.CancellationToken);
-        await store.SaveDraftAsync(new TemplateKey("B.Template"), "<p>B</p>", "text/html", "alice",
-            cancellationToken: TestContext.Current.CancellationToken);
-        await store.SaveDraftAsync(new TemplateKey("C.Template"), "<p>C</p>", "text/html", "alice",
-            cancellationToken: TestContext.Current.CancellationToken);
-
-        PagedTemplateResult page1 = await store.ListTemplatesAsync(
-            new TemplateListFilter(Page: 1, PageSize: 2),
-            TestContext.Current.CancellationToken);
-
-        PagedTemplateResult page2 = await store.ListTemplatesAsync(
-            new TemplateListFilter(Page: 2, PageSize: 2),
-            TestContext.Current.CancellationToken);
-
-        page1.TotalCount.ShouldBe(3);
-        page1.Items.Count.ShouldBe(2);
-        page2.Items.Count.ShouldBe(1);
+        summaries.Count.ShouldBe(2);
+        summaries.Single(s => s.Name == "WithCategory").CategoryId.ShouldBe(categoryId);
+        summaries.Single(s => s.Name == "WithoutCategory").CategoryId.ShouldBeNull();
     }
 
     // -------------------------------------------------------------------------

@@ -1,6 +1,15 @@
 {
   "culture": "en",
   "texts": {
-    "Template:TransitionDenied": "The template lifecycle transition from '{0}' to '{1}' was denied."
+    "Template:TransitionDenied": "The template lifecycle transition from '{0}' to '{1}' was denied.",
+    "Template.Columns.Name": "Name",
+    "Template.Columns.Culture": "Culture",
+    "Template.Columns.MimeType": "MIME Type",
+    "Template.Columns.Status": "Status",
+    "Template.Columns.HasPublishedVersion": "Has Published Version",
+    "Template.Columns.LayoutName": "Layout",
+    "Template.Columns.Category": "Category",
+    "Template.Columns.LastModifiedAt": "Last Modified",
+    "Template.Columns.LastModifiedBy": "Last Modified By"
   }
 }

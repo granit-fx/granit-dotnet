@@ -89,117 +89,11 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     }
 
     // =========================================================================
-    // GET / — List templates
+    // GET / + GET /meta — paginated list + query metadata
+    // (provided by MapGranitQuery<TemplateSummary>; backed by IQueryableSource<TemplateSummary>
+    //  registered by Granit.Templating.EntityFrameworkCore — exercised in the EF integration
+    //  test suite rather than here, so this file no longer mocks the list contract.)
     // =========================================================================
-
-    [Fact]
-    public async Task ListTemplates_WhenStoreNotRegistered_Returns501()
-    {
-        await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
-
-        HttpResponseMessage response = await client.GetAsync(
-            Prefix,
-            TestContext.Current.CancellationToken);
-
-        response.StatusCode.ShouldBe(HttpStatusCode.NotImplemented);
-    }
-
-    [Fact]
-    public async Task ListTemplates_WithDefaults_Returns200()
-    {
-        _storeReader.ListTemplatesAsync(Arg.Any<TemplateListFilter>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedTemplateResult([], 0));
-
-        HttpResponseMessage response = await _adminClient.GetAsync(
-            Prefix,
-            TestContext.Current.CancellationToken);
-
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        TemplateListResponse? result =
-            await response.Content.ReadFromJsonAsync<TemplateListResponse>(
-                TestContext.Current.CancellationToken);
-        result.ShouldNotBeNull();
-        result.Items.ShouldBeEmpty();
-        result.TotalCount.ShouldBe(0);
-    }
-
-    [Fact]
-    public async Task ListTemplates_WithResults_ReturnsMappedItems()
-    {
-        var summary = new TemplateSummary
-        {
-            Name = "Billing.Invoice",
-            Culture = "fr",
-            MimeType = "text/html",
-            CurrentStatus = WorkflowLifecycleStatus.Draft,
-            LastModifiedAt = DateTimeOffset.UtcNow,
-            LastModifiedBy = "user-1",
-            HasPublishedVersion = false,
-        };
-        _storeReader.ListTemplatesAsync(Arg.Any<TemplateListFilter>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedTemplateResult([summary], 1));
-
-        HttpResponseMessage response = await _adminClient.GetAsync(
-            Prefix,
-            TestContext.Current.CancellationToken);
-
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        TemplateListResponse? result =
-            await response.Content.ReadFromJsonAsync<TemplateListResponse>(
-                TestContext.Current.CancellationToken);
-        result.ShouldNotBeNull();
-        result.TotalCount.ShouldBe(1);
-        result.Items.Count.ShouldBe(1);
-        result.Items[0].Name.ShouldBe("Billing.Invoice");
-        result.Items[0].Culture.ShouldBe("fr");
-    }
-
-    [Fact]
-    public async Task ListTemplates_WithInvalidPage_Returns400()
-    {
-        HttpResponseMessage response = await _adminClient.GetAsync(
-            $"{Prefix}?page=0",
-            TestContext.Current.CancellationToken);
-
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task ListTemplates_WithPageSizeOver100_Returns400()
-    {
-        HttpResponseMessage response = await _adminClient.GetAsync(
-            $"{Prefix}?pageSize=101",
-            TestContext.Current.CancellationToken);
-
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task ListTemplates_WithInvalidCulture_Returns400()
-    {
-        HttpResponseMessage response = await _adminClient.GetAsync(
-            $"{Prefix}?culture=en:invalid",
-            TestContext.Current.CancellationToken);
-
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task ListTemplates_PassesFilterToStore()
-    {
-        _storeReader.ListTemplatesAsync(Arg.Any<TemplateListFilter>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedTemplateResult([], 0));
-
-        await _adminClient.GetAsync(
-            $"{Prefix}?page=2&pageSize=10&search=invoice&culture=fr",
-            TestContext.Current.CancellationToken);
-
-        await _storeReader.Received(1).ListTemplatesAsync(
-            Arg.Is<TemplateListFilter>(f =>
-                f.Page == 2 && f.PageSize == 10 && f.Search == "invoice" && f.Culture == "fr"),
-            Arg.Any<CancellationToken>());
-    }
 
     // =========================================================================
     // GET /{name} — Template detail
@@ -1056,18 +950,6 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
-    public async Task ListTemplates_WithWrongRole_Returns403()
-    {
-        using HttpClient client = BuildClient(_app, "regular-user");
-
-        HttpResponseMessage response = await client.GetAsync(
-            Prefix,
-            TestContext.Current.CancellationToken);
-
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
-    }
-
     // =========================================================================
     // Route prefix tests
     // =========================================================================
@@ -1095,9 +977,6 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton<IValidator<SaveTemplateRequest>, SaveTemplateRequestValidator>();
         builder.Services.AddSingleton(CreateTestUserService());
 
-        _storeReader.ListTemplatesAsync(Arg.Any<TemplateListFilter>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedTemplateResult([], 0));
-
         await using WebApplication app = builder.Build();
         app.MapGranitTemplating(opts =>
         {
@@ -1107,12 +986,14 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         using HttpClient client = BuildClient(app, ManageRole);
 
+        // Probe a route that doesn't depend on the Query Engine wiring (variables endpoint
+        // returns 200 unconditionally for a valid template name).
         HttpResponseMessage notFound = await client.GetAsync(
-            "/templating/templates",
+            "/templating/templates/Billing.Invoice/variables",
             TestContext.Current.CancellationToken);
 
         HttpResponseMessage ok = await client.GetAsync(
-            "/custom-templates/templates",
+            "/custom-templates/templates/Billing.Invoice/variables",
             TestContext.Current.CancellationToken);
 
         notFound.StatusCode.ShouldBe(HttpStatusCode.NotFound);

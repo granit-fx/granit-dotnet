@@ -1,4 +1,14 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "Template.Columns.Name": "Nom",
+    "Template.Columns.Culture": "Culture",
+    "Template.Columns.MimeType": "Type MIME",
+    "Template.Columns.Status": "Statut",
+    "Template.Columns.HasPublishedVersion": "Version publiée",
+    "Template.Columns.LayoutName": "Mise en page",
+    "Template.Columns.Category": "Catégorie",
+    "Template.Columns.LastModifiedAt": "Dernière modification",
+    "Template.Columns.LastModifiedBy": "Modifié par"
+  }
 }

@@ -1,4 +1,5 @@
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Store;
 using Granit.Workflow.EntityFrameworkCore.Extensions;
@@ -64,6 +65,8 @@ public static class TemplatingEntityFrameworkCoreHostApplicationBuilderExtension
         builder.Services.AddScoped<EfTemplateCategoryStore>();
         builder.Services.AddScoped<ITemplateCategoryStoreReader>(sp => sp.GetRequiredService<EfTemplateCategoryStore>());
         builder.Services.AddScoped<ITemplateCategoryStoreWriter>(sp => sp.GetRequiredService<EfTemplateCategoryStore>());
+
+        builder.Services.AddScoped<IQueryableSource<TemplateSummary>, EfTemplateSummaryQueryableSource>();
 
         return builder;
     }

@@ -1,6 +1,15 @@
 {
   "culture": "it",
   "texts": {
-    "Template:TransitionDenied": "La transizione del ciclo di vita del modello da '{0}' a '{1}' è stata rifiutata."
+    "Template:TransitionDenied": "La transizione del ciclo di vita del modello da '{0}' a '{1}' è stata rifiutata.",
+    "Template.Columns.Name": "Name",
+    "Template.Columns.Culture": "Culture",
+    "Template.Columns.MimeType": "MIME Type",
+    "Template.Columns.Status": "Status",
+    "Template.Columns.HasPublishedVersion": "Has Published Version",
+    "Template.Columns.LayoutName": "Layout",
+    "Template.Columns.Category": "Category",
+    "Template.Columns.LastModifiedAt": "Last Modified",
+    "Template.Columns.LastModifiedBy": "Last Modified By"
   }
 }

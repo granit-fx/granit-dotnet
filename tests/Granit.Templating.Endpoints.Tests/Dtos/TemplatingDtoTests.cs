@@ -1,5 +1,4 @@
 using Granit.Templating.Endpoints.Dtos;
-using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;
 
@@ -84,46 +83,6 @@ public sealed class TemplatingDtoTests
         response.Culture.ShouldBe("fr");
         response.Draft.ShouldBeNull();
         response.Published.ShouldBeNull();
-    }
-
-    // -------------------------------------------------------------------------
-    // TemplateListResponse
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public void TemplateListResponse_AllProperties_SetCorrectly()
-    {
-        TemplateListItemResponse item = new(
-            "Billing.Invoice", null, "text/html",
-            WorkflowLifecycleStatus.Published,
-            DateTimeOffset.UtcNow, "alice", true, null);
-
-        TemplateListResponse response = new([item], 1);
-
-        response.Items.Count.ShouldBe(1);
-        response.TotalCount.ShouldBe(1);
-    }
-
-    // -------------------------------------------------------------------------
-    // TemplateListItemResponse
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public void TemplateListItemResponse_AllProperties_SetCorrectly()
-    {
-        DateTimeOffset lastModified = DateTimeOffset.UtcNow;
-        TemplateListItemResponse item = new(
-            "Billing.Invoice", "fr-BE", "text/html",
-            WorkflowLifecycleStatus.Draft,
-            lastModified, "bob", false, null);
-
-        item.Name.ShouldBe("Billing.Invoice");
-        item.Culture.ShouldBe("fr-BE");
-        item.MimeType.ShouldBe("text/html");
-        item.CurrentStatus.ShouldBe(WorkflowLifecycleStatus.Draft);
-        item.LastModifiedAt.ShouldBe(lastModified);
-        item.LastModifiedBy.ShouldBe("bob");
-        item.HasPublishedVersion.ShouldBeFalse();
     }
 
     // -------------------------------------------------------------------------
