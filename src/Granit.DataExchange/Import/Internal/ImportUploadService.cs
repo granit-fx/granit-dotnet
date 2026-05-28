@@ -1,5 +1,4 @@
 using Granit.DataExchange.Import.Domain;
-using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Domain.ValueObjects;
 using Granit.Guids;

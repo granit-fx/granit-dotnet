@@ -1,6 +1,6 @@
+using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Internal;
-using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Guids;
 using Granit.Timing;

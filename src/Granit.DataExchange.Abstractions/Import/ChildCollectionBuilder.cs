@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Granit.DataExchange.Import.Mapping;
+namespace Granit.DataExchange.Import;
 
 /// <summary>
 /// Fluent builder for configuring child collection properties in a parent/child import.

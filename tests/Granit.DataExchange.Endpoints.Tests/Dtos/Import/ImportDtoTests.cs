@@ -1,4 +1,5 @@
 using Granit.DataExchange.Endpoints.Dtos.Import;
+using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Reporting;

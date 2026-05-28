@@ -1,6 +1,7 @@
 using Granit.AI;
 using Granit.DataExchange.AI.Internal;
 using Granit.DataExchange.AI.Options;
+using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Mapping;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;

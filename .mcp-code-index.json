@@ -12827,7 +12827,7 @@
       "kind": "record",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Dtos/Import/ImportPreviewResponse.cs",
-      "line": 8,
+      "line": 9,
       "members": []
     },
     {
@@ -13672,6 +13672,15 @@
       ]
     },
     {
+      "name": "ChildCollectionBuilder",
+      "fqn": "Granit.DataExchange.Import.ChildCollectionBuilder",
+      "kind": "class",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/ChildCollectionBuilder.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "ImportJob",
       "fqn": "Granit.DataExchange.Import.Domain.ImportJob",
       "kind": "class",
@@ -13835,6 +13844,22 @@
       ]
     },
     {
+      "name": "IImportDefinitionDescriptor",
+      "fqn": "Granit.DataExchange.Import.IImportDefinitionDescriptor",
+      "kind": "interface",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/IImportDefinitionDescriptor.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "GetFieldMetadata",
+          "kind": "method",
+          "signature": "GetFieldMetadata()",
+          "returnType": "string Name { get; } Type EntityType { get; } int MaxFileSizeMb { get; } IReadOnlyList<string> AllowedMimeTypes { get; } IReadOnlyList<ImportFieldMetadata>"
+        }
+      ]
+    },
+    {
       "name": "IRecordIdentityResolver",
       "fqn": "Granit.DataExchange.Import.Identity.IRecordIdentityResolver",
       "kind": "interface",
@@ -13866,6 +13891,82 @@
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Import/Identity/RecordOperation.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "ImportDefinition",
+      "fqn": "Granit.DataExchange.Import.ImportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/ImportDefinition.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(TEntity)",
+          "returnType": "string Name { get; } public Type EntityType =>"
+        },
+        {
+          "name": "MaxFileSizeMb",
+          "kind": "property",
+          "signature": "int MaxFileSizeMb",
+          "returnType": "int"
+        },
+        {
+          "name": "AllowedMimeTypes",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> AllowedMimeTypes",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "GetFieldMetadata",
+          "kind": "method",
+          "signature": "GetFieldMetadata()",
+          "returnType": "IReadOnlyList<ImportFieldMetadata>"
+        },
+        {
+          "name": "GetBusinessKeyProperties",
+          "kind": "method",
+          "signature": "GetBusinessKeyProperties()",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "GetExcludedOnUpdateProperties",
+          "kind": "method",
+          "signature": "GetExcludedOnUpdateProperties()",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "GetGroupByColumn",
+          "kind": "method",
+          "signature": "GetGroupByColumn()",
+          "returnType": "string?"
+        },
+        {
+          "name": "GetHasExternalId",
+          "kind": "method",
+          "signature": "GetHasExternalId()",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ImportDefinitionBuilder",
+      "fqn": "Granit.DataExchange.Import.ImportDefinitionBuilder",
+      "kind": "class",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/ImportDefinitionBuilder.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "ImportFieldMetadata",
+      "fqn": "Granit.DataExchange.Import.ImportFieldMetadata",
+      "kind": "record",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/ImportFieldMetadata.cs",
+      "line": 12,
       "members": []
     },
     {
@@ -13906,15 +14007,6 @@
       "members": []
     },
     {
-      "name": "ChildCollectionBuilder",
-      "fqn": "Granit.DataExchange.Import.Mapping.ChildCollectionBuilder",
-      "kind": "class",
-      "project": "Granit.DataExchange.Abstractions",
-      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/ChildCollectionBuilder.cs",
-      "line": 9,
-      "members": []
-    },
-    {
       "name": "IDataMapper",
       "fqn": "Granit.DataExchange.Import.Mapping.IDataMapper",
       "kind": "interface",
@@ -13927,22 +14019,6 @@
           "kind": "method",
           "signature": "MapAsync(RawImportRow row, IReadOnlyList<ImportColumnMapping> mappings, ImportOptions options, CancellationToken cancellationToken = default)",
           "returnType": "Task<MappingResult<TEntity>>"
-        }
-      ]
-    },
-    {
-      "name": "IImportDefinitionDescriptor",
-      "fqn": "Granit.DataExchange.Import.Mapping.IImportDefinitionDescriptor",
-      "kind": "interface",
-      "project": "Granit.DataExchange.Abstractions",
-      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/IImportDefinitionDescriptor.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "GetFieldMetadata",
-          "kind": "method",
-          "signature": "GetFieldMetadata()",
-          "returnType": "string Name { get; } Type EntityType { get; } int MaxFileSizeMb { get; } IReadOnlyList<string> AllowedMimeTypes { get; } IReadOnlyList<ImportFieldMetadata>"
         }
       ]
     },
@@ -14025,82 +14101,6 @@
       "members": []
     },
     {
-      "name": "ImportDefinition",
-      "fqn": "Granit.DataExchange.Import.Mapping.ImportDefinition",
-      "kind": "class",
-      "project": "Granit.DataExchange.Abstractions",
-      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/ImportDefinition.cs",
-      "line": 31,
-      "members": [
-        {
-          "name": "typeof",
-          "kind": "method",
-          "signature": "typeof(TEntity)",
-          "returnType": "string Name { get; } public Type EntityType =>"
-        },
-        {
-          "name": "MaxFileSizeMb",
-          "kind": "property",
-          "signature": "int MaxFileSizeMb",
-          "returnType": "int"
-        },
-        {
-          "name": "AllowedMimeTypes",
-          "kind": "property",
-          "signature": "IReadOnlyList<string> AllowedMimeTypes",
-          "returnType": "IReadOnlyList<string>"
-        },
-        {
-          "name": "GetFieldMetadata",
-          "kind": "method",
-          "signature": "GetFieldMetadata()",
-          "returnType": "IReadOnlyList<ImportFieldMetadata>"
-        },
-        {
-          "name": "GetBusinessKeyProperties",
-          "kind": "method",
-          "signature": "GetBusinessKeyProperties()",
-          "returnType": "IReadOnlyList<string>"
-        },
-        {
-          "name": "GetExcludedOnUpdateProperties",
-          "kind": "method",
-          "signature": "GetExcludedOnUpdateProperties()",
-          "returnType": "IReadOnlyList<string>"
-        },
-        {
-          "name": "GetGroupByColumn",
-          "kind": "method",
-          "signature": "GetGroupByColumn()",
-          "returnType": "string?"
-        },
-        {
-          "name": "GetHasExternalId",
-          "kind": "method",
-          "signature": "GetHasExternalId()",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
-      "name": "ImportDefinitionBuilder",
-      "fqn": "Granit.DataExchange.Import.Mapping.ImportDefinitionBuilder",
-      "kind": "class",
-      "project": "Granit.DataExchange.Abstractions",
-      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/ImportDefinitionBuilder.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "ImportFieldMetadata",
-      "fqn": "Granit.DataExchange.Import.Mapping.ImportFieldMetadata",
-      "kind": "record",
-      "project": "Granit.DataExchange.Abstractions",
-      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/ImportFieldMetadata.cs",
-      "line": 12,
-      "members": []
-    },
-    {
       "name": "MappingConfidence",
       "fqn": "Granit.DataExchange.Import.Mapping.MappingConfidence",
       "kind": "enum",
@@ -14130,37 +14130,6 @@
           "returnType": "bool"
         }
       ]
-    },
-    {
-      "name": "PropertyMapping",
-      "fqn": "Granit.DataExchange.Import.Mapping.PropertyMapping",
-      "kind": "class",
-      "project": "Granit.DataExchange.Abstractions",
-      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/PropertyMapping.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "PropertyPath",
-          "kind": "property",
-          "signature": "required string PropertyPath",
-          "returnType": "required string"
-        },
-        {
-          "name": "ToFieldMetadata",
-          "kind": "method",
-          "signature": "ToFieldMetadata()",
-          "returnType": "bool IsRequired { get; init; } public string? Format { get; init; } public bool IsChildCollection { get; init; } internal ImportFieldMetadata"
-        }
-      ]
-    },
-    {
-      "name": "PropertyMappingBuilder",
-      "fqn": "Granit.DataExchange.Import.Mapping.PropertyMappingBuilder",
-      "kind": "class",
-      "project": "Granit.DataExchange.Abstractions",
-      "file": "src/Granit.DataExchange.Abstractions/Import/Mapping/PropertyMappingBuilder.cs",
-      "line": 6,
-      "members": []
     },
     {
       "name": "SemanticMappingSuggestion",
@@ -14388,6 +14357,37 @@
           "returnType": "ImportUploadResult"
         }
       ]
+    },
+    {
+      "name": "PropertyMapping",
+      "fqn": "Granit.DataExchange.Import.PropertyMapping",
+      "kind": "class",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/PropertyMapping.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "PropertyPath",
+          "kind": "property",
+          "signature": "required string PropertyPath",
+          "returnType": "required string"
+        },
+        {
+          "name": "ToFieldMetadata",
+          "kind": "method",
+          "signature": "ToFieldMetadata()",
+          "returnType": "bool IsRequired { get; init; } public string? Format { get; init; } public bool IsChildCollection { get; init; } internal ImportFieldMetadata"
+        }
+      ]
+    },
+    {
+      "name": "PropertyMappingBuilder",
+      "fqn": "Granit.DataExchange.Import.PropertyMappingBuilder",
+      "kind": "class",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/PropertyMappingBuilder.cs",
+      "line": 6,
+      "members": []
     },
     {
       "name": "ICorrectionFileGenerator",
@@ -23719,10 +23719,10 @@
     },
     {
       "name": "UserImportDefinition",
-      "fqn": "Granit.Identity.Imports.UserImportDefinition",
+      "fqn": "Granit.Identity.Import.UserImportDefinition",
       "kind": "class",
       "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Imports/UserImportDefinition.cs",
+      "file": "src/Granit.Identity/Import/UserImportDefinition.cs",
       "line": 16,
       "members": [
         {

@@ -1,11 +1,11 @@
-namespace Granit.DataExchange.Import.Mapping;
+namespace Granit.DataExchange.Import;
 
 /// <summary>
 /// Non-generic view of an <see cref="ImportDefinition{TEntity}"/> for runtime resolution by name.
 /// </summary>
 /// <remarks>
 /// Registered as a singleton alongside the generic <see cref="ImportDefinition{TEntity}"/> by
-/// <see cref="Extensions.ServiceCollectionExtensions.AddImportDefinition{TEntity,TDefinition}"/>.
+/// <see cref="Extensions.ImportDefinitionServiceCollectionExtensions.AddImportDefinition{TEntity,TDefinition}"/>.
 /// Endpoints and other services can enumerate <c>IEnumerable&lt;IImportDefinitionDescriptor&gt;</c>
 /// to find a definition by name without compile-time knowledge of the entity type.
 /// </remarks>

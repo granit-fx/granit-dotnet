@@ -1,6 +1,6 @@
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
+using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Identity;
-using Granit.DataExchange.Import.Mapping;
 using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 

@@ -5,6 +5,7 @@ using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.DataExchange.Endpoints.Extensions;
 using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Export;
+using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Messages;

@@ -3,6 +3,7 @@ using System.Text.Json;
 using Granit.AI;
 using Granit.AI.Internal;
 using Granit.DataExchange.AI.Options;
+using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Mapping;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;

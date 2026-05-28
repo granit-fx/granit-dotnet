@@ -1,4 +1,4 @@
-namespace Granit.DataExchange.Import.Mapping;
+namespace Granit.DataExchange.Import;
 
 /// <summary>
 /// Immutable metadata about a single importable property, built from <see cref="PropertyMappingBuilder"/>.

@@ -1,4 +1,4 @@
-using Granit.DataExchange.Import.Mapping;
+using Granit.DataExchange.Import;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Tests.Infrastructure;
 

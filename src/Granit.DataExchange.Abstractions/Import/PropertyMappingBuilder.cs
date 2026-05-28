@@ -1,4 +1,4 @@
-namespace Granit.DataExchange.Import.Mapping;
+namespace Granit.DataExchange.Import;
 
 /// <summary>
 /// Fluent builder for configuring how a single property is imported.

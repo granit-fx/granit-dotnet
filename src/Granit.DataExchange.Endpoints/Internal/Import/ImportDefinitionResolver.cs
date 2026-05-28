@@ -1,3 +1,4 @@
+using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Mapping;
 
 namespace Granit.DataExchange.Endpoints.Internal.Import;

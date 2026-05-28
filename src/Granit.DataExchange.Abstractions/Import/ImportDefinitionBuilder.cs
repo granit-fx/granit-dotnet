@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Granit.DataExchange.Import.Mapping;
+namespace Granit.DataExchange.Import;
 
 /// <summary>
 /// Fluent builder for declaring importable properties, business keys, and grouping

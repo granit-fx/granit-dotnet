@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
+using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Identity;
-using Granit.DataExchange.Import.Mapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Import.Identity;

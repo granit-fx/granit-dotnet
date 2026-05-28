@@ -1,3 +1,4 @@
+using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Mapping;
 using Shouldly;
 using Xunit;

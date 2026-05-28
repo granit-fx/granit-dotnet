@@ -4,6 +4,7 @@ using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Extensions;
 using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Export;
+using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Parsing;
 using Granit.DataExchange.Import.Pipeline;

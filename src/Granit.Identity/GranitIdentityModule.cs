@@ -5,6 +5,7 @@ using Granit.Identity.Domain;
 using Granit.Identity.Entities;
 using Granit.Identity.Exports;
 using Granit.Identity.Extensions;
+using Granit.Identity.Import;
 using Granit.Identity.Queries;
 using Granit.Modularity;
 using Granit.QueryEngine;
@@ -36,6 +37,7 @@ public sealed class GranitIdentityModule : GranitModule
         // companion package; this module exposes the abstractions only.
         context.Services.AddQueryDefinition<User, UserQueryDefinition>();
         context.Services.AddExportDefinition<User, UserExportDefinition>();
+        context.Services.AddImportDefinition<User, UserImportDefinition>();
         context.Services.AddEntityDefinition<User, UserEntityDefinition>();
     }
 }

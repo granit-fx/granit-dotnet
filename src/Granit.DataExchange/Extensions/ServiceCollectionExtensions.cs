@@ -78,24 +78,6 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers an import definition for the specified entity type.
-    /// </summary>
-    /// <typeparam name="TEntity">The target entity type.</typeparam>
-    /// <typeparam name="TDefinition">The import definition implementation.</typeparam>
-    /// <param name="services">The service collection.</param>
-    /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddImportDefinition<TEntity, TDefinition>(
-        this IServiceCollection services)
-        where TEntity : class
-        where TDefinition : ImportDefinition<TEntity>
-    {
-        services.AddSingleton<ImportDefinition<TEntity>, TDefinition>();
-        services.AddSingleton<IImportDefinitionDescriptor>(sp =>
-            sp.GetRequiredService<ImportDefinition<TEntity>>());
-        return services;
-    }
-
-    /// <summary>
     /// Registers the core data export pipeline infrastructure.
     /// </summary>
     /// <remarks>

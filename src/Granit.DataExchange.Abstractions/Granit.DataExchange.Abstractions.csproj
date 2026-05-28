@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.DataExchange.Abstractions</PackageId>
-    <Description>Inter-module contracts for Granit.DataExchange: declarative ExportDefinition base class, builders, descriptors, auto-source/extra-field hooks. Reference this package from any module that declares exports; reference Granit.DataExchange only from hosts that execute them.</Description>
+    <Description>Inter-module contracts for Granit.DataExchange: declarative ExportDefinition and ImportDefinition base classes, builders, descriptors, auto-source/extra-field hooks. Reference this package from any module that declares exports or imports; reference Granit.DataExchange only from hosts that execute them.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

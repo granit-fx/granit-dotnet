@@ -1,4 +1,4 @@
-namespace Granit.DataExchange.Import.Mapping;
+namespace Granit.DataExchange.Import;
 
 /// <summary>
 /// Base class for declaring how an entity type is imported.

@@ -1,4 +1,4 @@
-namespace Granit.DataExchange.Import.Mapping;
+namespace Granit.DataExchange.Import;
 
 /// <summary>
 /// Metadata about a target entity property, used for mapping suggestions.
