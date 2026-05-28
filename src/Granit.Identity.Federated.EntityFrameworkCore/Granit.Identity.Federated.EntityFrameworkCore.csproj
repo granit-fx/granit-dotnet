@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Granit.Identity.Federated.EntityFrameworkCore</PackageId>
-    <Description>EF Core persistence for Granit.Identity user cache. Provides IUserCacheDbContext, EfCoreUserCacheStore, and EfCoreUserCacheStats implementations.</Description>
+    <Description>EF Core persistence for Granit.Identity.Federated user cache. Owns a dedicated IdentityFederatedDbContext (promoted out of the legacy IUserCacheDbContext interface pattern by Epic #2382 V2). Provides EfCoreUserCacheStore and EfCoreUserCacheStats.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

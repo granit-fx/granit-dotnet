@@ -1,18 +1,22 @@
 using Granit.Identity.Federated.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.Identity.Federated.EntityFrameworkCore.DbContext;
+namespace Granit.Identity.Federated.EntityFrameworkCore.Internal;
 
-/// <summary>EF Core model builder extensions for the Identity module.</summary>
-public static class UserCacheModelBuilderExtensions
+/// <summary>EF Core model builder extensions for the Identity.Federated module.</summary>
+/// <remarks>
+/// Called by <see cref="IdentityFederatedDbContext"/>. Internal since the dedicated
+/// DbContext landed in Epic #2382 V2 — consuming apps no longer fold the model into
+/// their own context.
+/// </remarks>
+internal static class UserCacheModelBuilderExtensions
 {
     /// <summary>
-    /// Applies all entity configurations for the Granit Identity module.
+    /// Applies all entity configurations for the Granit.Identity.Federated module.
     /// </summary>
     /// <remarks>
     /// Configures the <see cref="FederatedIdentity"/> entity: table name, column constraints,
     /// and indexes for efficient lookup and search.
-    /// Call this from <c>OnModelCreating</c> in the host application's DbContext.
     /// </remarks>
     public static ModelBuilder ConfigureIdentityModule(this ModelBuilder builder)
     {
