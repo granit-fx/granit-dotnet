@@ -4,6 +4,7 @@ using Granit.MultiTenancy;
 using Granit.Persistence.MultiTenancy;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.EntityFrameworkCore.Internal;
+using Granit.Webhooks.EntityFrameworkCore.Options;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;

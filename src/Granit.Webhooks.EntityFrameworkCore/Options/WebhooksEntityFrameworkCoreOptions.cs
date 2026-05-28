@@ -1,12 +1,13 @@
 using Granit.Persistence.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.Webhooks.EntityFrameworkCore;
+namespace Granit.Webhooks.EntityFrameworkCore.Options;
 
 /// <summary>
-/// Configuration shape for <see cref="Extensions.WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions
-/// .AddGranitWebhooksEntityFrameworkCore"/>. Carries the dual-scope storage choice and the
-/// EF Core <see cref="DbContextOptionsBuilder"/> callbacks per context.
+/// Configuration shape for
+/// <c>WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions.AddGranitWebhooksEntityFrameworkCore</c>.
+/// Carries the dual-scope storage choice and the EF Core
+/// <see cref="DbContextOptionsBuilder"/> callbacks per context.
 /// </summary>
 /// <remarks>
 /// <para>

@@ -21,4 +21,14 @@ public static class PresencePermissions
         /// <summary>Grants the right to read another user's presence snapshot (single or batch).</summary>
         public const string Read = "Presence.Users.Read";
     }
+
+    /// <summary>Permissions covering resource-scoped presence rooms (multi-user awareness).</summary>
+    public static class Rooms
+    {
+        /// <summary>Grants the right to read a resource room — the list of users currently present.</summary>
+        public const string Read = "Presence.Rooms.Read";
+
+        /// <summary>Grants the right to join (heartbeat) or leave a resource room.</summary>
+        public const string Join = "Presence.Rooms.Join";
+    }
 }

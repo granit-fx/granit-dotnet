@@ -3050,6 +3050,25 @@
           "Microsoft.EntityFrameworkCore.SqlServer": "[10.*, )"
         }
       },
+      "granit.presence": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.presence.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
+          "Granit.Http.RateLimiting": "[0.1.0-dev, )",
+          "Granit.Presence": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
       "granit.privacy": {
         "type": "Project",
         "dependencies": {

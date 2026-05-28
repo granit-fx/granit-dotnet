@@ -101,6 +101,7 @@
       "src/Granit.Settings.EntityFrameworkCore/Granit.Settings.EntityFrameworkCore.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
+      "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",
       "src/Granit.Wolverine.Encryption/Granit.Wolverine.Encryption.csproj",

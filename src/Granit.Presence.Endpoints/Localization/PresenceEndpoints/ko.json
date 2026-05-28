@@ -7,7 +7,10 @@
     "Granit:Validation:PresenceIdleSecondsTooLarge": "유휴 시간이 허용된 최대값을 초과합니다.",
     "Granit:Validation:PresenceOverrideUntilInPast": "재정의 만료는 미래여야 합니다.",
     "Granit:Validation:PresenceOverrideUntilTooFar": "재정의 만료가 미래에 너무 멉니다.",
+    "Granit:Validation:PresenceRoomMetadataTooLarge": "메타데이터가 허용되는 최대 크기를 초과합니다.",
     "Granit:Validation:PresenceUntilWithoutOverride": "수동 상태가 '사용 가능'일 때는 만료를 제공할 수 없습니다.",
+    "Permission:Presence.Rooms.Join": "공유 리소스(CMS 페이지, 대시보드 등)에 참여하고 내 존재를 다른 사용자에게 알립니다",
+    "Permission:Presence.Rooms.Read": "공유 리소스(CMS 페이지, 대시보드 등)에서 현재 활동 중인 다른 사용자를 봅니다",
     "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
     "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
     "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
