@@ -29,14 +29,6 @@ public interface IDocumentTemplateStoreReader
         TemplateKey key, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Returns a paginated, filterable list of template summaries for admin views.
-    /// </summary>
-    /// <param name="filter">Filter and pagination parameters.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    Task<PagedTemplateResult> ListTemplatesAsync(
-        TemplateListFilter filter, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Returns the full revision history for the given key, ordered by creation date (newest first).
     /// </summary>
     /// <param name="key">Template key.</param>

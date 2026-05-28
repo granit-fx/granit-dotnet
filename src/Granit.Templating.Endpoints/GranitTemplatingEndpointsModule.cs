@@ -2,6 +2,7 @@ using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
+using Granit.QueryEngine.AspNetCore;
 using Granit.Templating.Endpoints.Internal;
 using Granit.Templating.Endpoints.Workspaces;
 using Granit.Validation;
@@ -26,6 +27,7 @@ namespace Granit.Templating.Endpoints;
 [DependsOn(
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitAuthorizationModule),
+    typeof(GranitQueryEngineAspNetCoreModule),
     typeof(GranitTemplatingModule),
     typeof(GranitValidationModule),
     typeof(GranitWorkspacesAbstractionsModule))]

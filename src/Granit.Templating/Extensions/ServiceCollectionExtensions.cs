@@ -1,12 +1,16 @@
 using System.Reflection;
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.QueryEngine.Extensions;
 using Granit.Templating.Diagnostics;
 using Granit.Templating.Enrichment;
+using Granit.Templating.Exports;
 using Granit.Templating.GlobalContext;
 using Granit.Templating.Internal;
 using Granit.Templating.Layouts;
 using Granit.Templating.Layouts.Internal;
 using Granit.Templating.Pipeline;
+using Granit.Templating.Queries;
 using Granit.Templating.Resolvers;
 using Granit.Templating.Store;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,6 +55,10 @@ public static class ServiceCollectionExtensions
         // Layout registry — built from all AddTemplateLayout() registrations
         services.TryAddSingleton<ILayoutRegistry>(sp =>
             new LayoutRegistry(sp.GetServices<LayoutRegistration>()));
+
+        // Query + Export definitions (ADR-020: owned by the base module).
+        services.AddQueryDefinition<TemplateSummary, TemplateSummaryQueryDefinition>();
+        services.AddExportDefinition<TemplateSummary, TemplateSummaryExportDefinition>();
 
         return services;
     }
