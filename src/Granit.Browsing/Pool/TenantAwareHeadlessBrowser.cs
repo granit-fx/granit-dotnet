@@ -7,6 +7,7 @@ using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Browsing.Pool;
@@ -32,6 +33,15 @@ namespace Granit.Browsing.Pool;
 /// resolving <c>TenantAwareHeadlessBrowser</c> as <see cref="IHeadlessBrowser"/> /
 /// <see cref="IHeadlessBrowserPool"/> in F8 / F9.
 /// </para>
+/// <para>
+/// <see cref="ILocalEventBus"/> and <see cref="IPermissionChecker"/> are both scoped in
+/// the framework, so the decorator can't capture them directly without tripping
+/// <c>ValidateScopes</c> (and, worse, leaking the first scope ever resolved across all
+/// subsequent requests). The constructor therefore accepts an
+/// <see cref="IServiceScopeFactory"/> and routes each publish / permission check through
+/// <see cref="ScopedLocalEventBus"/> / <see cref="ScopedPermissionChecker"/>, which
+/// create a fresh DI scope per call.
+/// </para>
 /// </remarks>
 public sealed class TenantAwareHeadlessBrowser : IHeadlessBrowser
 {
@@ -39,8 +49,8 @@ public sealed class TenantAwareHeadlessBrowser : IHeadlessBrowser
     private readonly ICurrentTenant _currentTenant;
     private readonly BrowsingMetrics _metrics;
     private readonly IGuidGenerator _guidGenerator;
-    private readonly ILocalEventBus? _eventBus;
-    private readonly IPermissionChecker? _permissionChecker;
+    private readonly ScopedLocalEventBus? _eventBus;
+    private readonly ScopedPermissionChecker? _permissionChecker;
     private readonly IClock _clock;
     private readonly ILogger<TenantAwareHeadlessBrowser> _logger;
 
@@ -52,8 +62,7 @@ public sealed class TenantAwareHeadlessBrowser : IHeadlessBrowser
         IGuidGenerator guidGenerator,
         IClock clock,
         ILogger<TenantAwareHeadlessBrowser> logger,
-        ILocalEventBus? eventBus = null,
-        IPermissionChecker? permissionChecker = null)
+        IServiceScopeFactory? scopeFactory = null)
     {
         ArgumentNullException.ThrowIfNull(inner);
         ArgumentNullException.ThrowIfNull(currentTenant);
@@ -68,8 +77,8 @@ public sealed class TenantAwareHeadlessBrowser : IHeadlessBrowser
         _guidGenerator = guidGenerator;
         _clock = clock;
         _logger = logger;
-        _eventBus = eventBus;
-        _permissionChecker = permissionChecker;
+        _eventBus = ScopedLocalEventBus.TryCreate(scopeFactory);
+        _permissionChecker = ScopedPermissionChecker.TryCreate(scopeFactory);
     }
 
     /// <inheritdoc/>

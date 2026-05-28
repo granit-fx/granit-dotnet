@@ -1,8 +1,7 @@
 using Granit.Authorization;
 using Granit.Browsing.Capabilities;
 using Granit.Browsing.Diagnostics;
-using Granit.Browsing.Playwright.Extensions;
-using Granit.Browsing.Playwright.Options;
+using Granit.Browsing.PuppeteerSharp.Extensions;
 using Granit.Browsing.Sandbox;
 using Granit.Events;
 using Granit.Guids;
@@ -18,31 +17,32 @@ using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Browsing.Playwright.Tests;
+namespace Granit.Browsing.PuppeteerSharp.Tests;
 
-public sealed class PlaywrightScopeValidationTests
+public sealed class PuppeteerScopeValidationTests
 {
     [Fact]
-    public void AddGranitBrowsingPlaywright_should_pass_scope_validation_with_scoped_local_event_bus()
+    public void AddGranitBrowsingPuppeteerSharp_should_pass_scope_validation_with_scoped_local_event_bus()
     {
-        // Regression: PlaywrightHeadlessBrowser is singleton (owns the browser pool)
+        // Regression: PuppeteerHeadlessBrowser is a singleton (owns the browser pool)
         // and previously captured the scoped ILocalEventBus directly — failing
-        // ValidateScopes (default in Development). The fix routes events through a
-        // singleton-safe wrapper backed by IServiceScopeFactory.
+        // ValidateScopes (default in Development) and crashing host startup. The fix
+        // routes events through a singleton-safe wrapper backed by IServiceScopeFactory.
         ServiceProvider provider = BuildProvider(addAuthorization: false, addEventBus: true);
 
+        // Resolving via a scope mirrors how ASP.NET Core uses the container at request time.
         using IServiceScope scope = provider.CreateScope();
         Should.NotThrow(() => scope.ServiceProvider.GetRequiredService<IHeadlessBrowser>());
     }
 
     [Fact]
-    public void AddGranitBrowsingPlaywright_should_pass_scope_validation_with_scoped_permission_checker()
+    public void AddGranitBrowsingPuppeteerSharp_should_pass_scope_validation_with_scoped_permission_checker()
     {
-        // Regression: PlaywrightPdfViewerCapability is a singleton (factory-registered
-        // via ActivatorUtilities) and previously captured the scoped IPermissionChecker
-        // directly. ValidateScopes can't introspect factory delegates, so the bug only
-        // surfaced at first resolve — under a real authorization registration the
-        // resolution would either throw or silently leak the first scope's checker.
+        // Regression: PuppeteerPdfViewerCapability is a singleton (TryAddSingleton)
+        // and previously captured the scoped IPermissionChecker directly — failing
+        // ValidateScopes at startup as soon as Granit.Authorization was wired into the
+        // host. The fix probes once at construction and routes checks through a
+        // singleton-safe wrapper backed by IServiceScopeFactory.
         ServiceProvider provider = BuildProvider(addAuthorization: true, addEventBus: false);
 
         using IServiceScope scope = provider.CreateScope();
@@ -75,12 +75,8 @@ public sealed class PlaywrightScopeValidationTests
             services.TryAddScoped(_ => Substitute.For<IPermissionChecker>());
         }
 
-        services.AddGranitBrowsingPlaywright(
-            configurePlaywright: opts =>
-            {
-                opts.SkipBrowserInstall = true;
-                opts.Engine = BrowserEngine.Chromium;
-            });
+        services.AddGranitBrowsingPuppeteerSharp(
+            configurePuppeteer: opts => opts.SkipChromiumDownload = true);
 
         return services.BuildServiceProvider(
             new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });

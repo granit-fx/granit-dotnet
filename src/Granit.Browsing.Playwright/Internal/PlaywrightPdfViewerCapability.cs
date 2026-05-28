@@ -7,6 +7,7 @@ using Granit.Browsing.Permissions;
 using Granit.IO;
 using Granit.IO.Options;
 using Granit.MultiTenancy;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using UglyToad.PdfPig;
@@ -21,15 +22,46 @@ namespace Granit.Browsing.Playwright.Internal;
 /// URL pointing at a securely-staged temp file (under the temp-file root) and counts pages with PdfPig
 /// instead of the fragile substring heuristic.
 /// </summary>
-internal sealed partial class PlaywrightPdfViewerCapability(
-    BrowsingMetrics metrics,
-    ITempFileFactory tempFileFactory,
-    IOptions<TempFileOptions> tempFileOptions,
-    IBrowserSandboxProfile sandbox,
-    ILogger<PlaywrightPdfViewerCapability> logger,
-    ICurrentTenant? currentTenant = null,
-    IPermissionChecker? permissionChecker = null) : IPdfViewerCapability
+/// <remarks>
+/// Registered as a singleton via a factory delegate, so the constructor must not capture
+/// <see cref="IPermissionChecker"/> directly (it is scoped, and capturing it would leak
+/// the first scope ever resolved). The scope factory is wrapped in
+/// <see cref="ScopedPermissionChecker"/>, which creates a fresh DI scope per check.
+/// </remarks>
+internal sealed partial class PlaywrightPdfViewerCapability : IPdfViewerCapability
 {
+    private readonly BrowsingMetrics _metrics;
+    private readonly ITempFileFactory _tempFileFactory;
+    private readonly IOptions<TempFileOptions> _tempFileOptions;
+    private readonly IBrowserSandboxProfile _sandbox;
+    private readonly ILogger<PlaywrightPdfViewerCapability> _logger;
+    private readonly ICurrentTenant? _currentTenant;
+    private readonly ScopedPermissionChecker? _permissionChecker;
+
+    public PlaywrightPdfViewerCapability(
+        BrowsingMetrics metrics,
+        ITempFileFactory tempFileFactory,
+        IOptions<TempFileOptions> tempFileOptions,
+        IBrowserSandboxProfile sandbox,
+        ILogger<PlaywrightPdfViewerCapability> logger,
+        ICurrentTenant? currentTenant = null,
+        IServiceScopeFactory? scopeFactory = null)
+    {
+        ArgumentNullException.ThrowIfNull(metrics);
+        ArgumentNullException.ThrowIfNull(tempFileFactory);
+        ArgumentNullException.ThrowIfNull(tempFileOptions);
+        ArgumentNullException.ThrowIfNull(sandbox);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _metrics = metrics;
+        _tempFileFactory = tempFileFactory;
+        _tempFileOptions = tempFileOptions;
+        _sandbox = sandbox;
+        _logger = logger;
+        _currentTenant = currentTenant;
+        _permissionChecker = ScopedPermissionChecker.TryCreate(scopeFactory);
+    }
+
     /// <inheritdoc/>
     public async Task<IPdfDocumentPage> OpenPdfAsync(IBrowserPage page, Stream pdf, CancellationToken cancellationToken = default)
     {
@@ -46,7 +78,7 @@ internal sealed partial class PlaywrightPdfViewerCapability(
                 $"Native PDF viewer is Chromium-only. Active engine: {page.EngineName}.");
         }
 
-        _ = sandbox; // referenced via fields; preserved for future profile checks.
+        _ = _sandbox; // referenced via fields; preserved for future profile checks.
 
         using Activity? activity = BrowsingActivitySource.Source.StartActivity(BrowsingActivitySource.PdfViewerOpen);
 
@@ -58,7 +90,7 @@ internal sealed partial class PlaywrightPdfViewerCapability(
 
         int pageCount = CountPages(bytes);
 
-        ITempFile tempFile = await tempFileFactory
+        ITempFile tempFile = await _tempFileFactory
             .CreateAsync("pdf-viewer", "pdf", cancellationToken)
             .ConfigureAwait(false);
 
@@ -70,9 +102,9 @@ internal sealed partial class PlaywrightPdfViewerCapability(
 
             string resolvedPath = Path.GetFullPath(tempFile.Path);
             string root = Path.GetFullPath(
-                string.IsNullOrWhiteSpace(tempFileOptions.Value.RootDirectory)
+                string.IsNullOrWhiteSpace(_tempFileOptions.Value.RootDirectory)
                     ? Path.Combine(Path.GetTempPath(), "granit")
-                    : tempFileOptions.Value.RootDirectory!);
+                    : _tempFileOptions.Value.RootDirectory!);
             if (!resolvedPath.StartsWith(root, StringComparison.Ordinal))
             {
                 throw new SandboxViolationException(
@@ -84,9 +116,9 @@ internal sealed partial class PlaywrightPdfViewerCapability(
             // wired. The framework permission `Granit.Browsing.Pages.UseFileScheme`
             // explicitly gates this capability — the PDF viewer is the only path inside
             // the framework that opens a local file in a browser context.
-            if (permissionChecker is not null)
+            if (_permissionChecker is not null)
             {
-                bool granted = await permissionChecker
+                bool granted = await _permissionChecker
                     .IsGrantedAsync(BrowsingPermissions.Pages.UseFileScheme, cancellationToken)
                     .ConfigureAwait(false);
                 if (!granted)
@@ -109,7 +141,7 @@ internal sealed partial class PlaywrightPdfViewerCapability(
             await playwrightPage.WaitForLoadStateAsync(LoadState.Load, timeout: TimeSpan.FromSeconds(15),
                 cancellationToken).ConfigureAwait(false);
 
-            var result = new PlaywrightPdfDocumentPage(playwrightPage, pageCount, metrics, tempFile, logger, currentTenant);
+            var result = new PlaywrightPdfDocumentPage(playwrightPage, pageCount, _metrics, tempFile, _logger, _currentTenant);
             fileOwned = false;
             return result;
         }

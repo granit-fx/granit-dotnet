@@ -8,6 +8,7 @@ using Granit.Events;
 using Granit.Guids;
 using Granit.Http.Security;
 using Granit.Timing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -59,7 +60,7 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
         IHostEnvironment hostEnvironment,
         IClock clock,
         IGuidGenerator guidGenerator,
-        ILocalEventBus? eventBus = null)
+        IServiceScopeFactory? scopeFactory = null)
     {
         ArgumentNullException.ThrowIfNull(browsingOptions);
         ArgumentNullException.ThrowIfNull(puppeteerOptions);
@@ -82,7 +83,9 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
         _hostEnvironment = hostEnvironment;
         _clock = clock;
         _guidGenerator = guidGenerator;
-        _eventBus = eventBus;
+        // Wrap the scope factory so each event publish creates a fresh DI scope —
+        // ILocalEventBus is scoped and would fail ValidateScopes if captured directly.
+        _eventBus = ScopedLocalEventBus.TryCreate(scopeFactory);
 
         int permits = browsingOptions.Value.MaxBrowsers * browsingOptions.Value.MaxPagesPerBrowser;
         _pageSemaphore = new SemaphoreSlim(permits, permits);

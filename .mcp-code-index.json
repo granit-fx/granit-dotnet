@@ -8517,6 +8517,22 @@
       ]
     },
     {
+      "name": "ScopedPermissionChecker",
+      "fqn": "Granit.Authorization.ScopedPermissionChecker",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/ScopedPermissionChecker.cs",
+      "line": 33,
+      "members": [
+        {
+          "name": "TryCreate",
+          "kind": "method",
+          "signature": "TryCreate(IServiceScopeFactory? scopeFactory)",
+          "returnType": "ScopedPermissionChecker?"
+        }
+      ]
+    },
+    {
       "name": "struct",
       "fqn": "Granit.Authorization.struct",
       "kind": "record",
@@ -12110,7 +12126,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pool/TenantAwareHeadlessBrowser.cs",
-      "line": 47,
+      "line": 46,
       "members": [
         {
           "name": "Capabilities",
@@ -17623,6 +17639,22 @@
           "kind": "method",
           "signature": "DispatchAsync(IReadOnlyList<IDomainEvent> domainEvents, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ScopedLocalEventBus",
+      "fqn": "Granit.Events.ScopedLocalEventBus",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Events/ScopedLocalEventBus.cs",
+      "line": 34,
+      "members": [
+        {
+          "name": "TryCreate",
+          "kind": "method",
+          "signature": "TryCreate(IServiceScopeFactory? scopeFactory)",
+          "returnType": "ScopedLocalEventBus?"
         }
       ]
     },

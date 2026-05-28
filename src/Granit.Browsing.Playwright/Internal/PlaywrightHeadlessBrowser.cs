@@ -83,7 +83,7 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
         _guidGenerator = guidGenerator;
         // Wrap the scope factory so each event publish creates a fresh DI scope —
         // ILocalEventBus is scoped and would fail ValidateScopes if captured directly.
-        _eventBus = scopeFactory is null ? null : new ScopedLocalEventBus(scopeFactory);
+        _eventBus = ScopedLocalEventBus.TryCreate(scopeFactory);
 
         int permits = _browsingOptions.Value.MaxBrowsers * _browsingOptions.Value.MaxPagesPerBrowser;
         _pageSemaphore = new SemaphoreSlim(permits, permits);

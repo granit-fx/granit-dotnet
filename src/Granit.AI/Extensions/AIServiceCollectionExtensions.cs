@@ -117,7 +117,7 @@ public static class AIServiceCollectionExtensions
                 typeof(ISettingManager),
                 sp => new AISettingsCredentialsGuard(
                     (ISettingManager)sp.GetRequiredService(existing.ImplementationType),
-                    sp.GetRequiredService<IPermissionChecker>()),
+                    ResolvePermissionChecker(sp, existing.Lifetime)),
                 existing.Lifetime));
             return;
         }
@@ -128,7 +128,7 @@ public static class AIServiceCollectionExtensions
                 typeof(ISettingManager),
                 sp => new AISettingsCredentialsGuard(
                     (ISettingManager)existing.ImplementationFactory(sp),
-                    sp.GetRequiredService<IPermissionChecker>()),
+                    ResolvePermissionChecker(sp, existing.Lifetime)),
                 existing.Lifetime));
             return;
         }
@@ -137,7 +137,20 @@ public static class AIServiceCollectionExtensions
         {
             services.AddSingleton<ISettingManager>(sp => new AISettingsCredentialsGuard(
                 instance,
-                sp.GetRequiredService<IPermissionChecker>()));
+                ResolvePermissionChecker(sp, ServiceLifetime.Singleton)));
         }
     }
+
+    /// <summary>
+    /// Returns an <see cref="IPermissionChecker"/> safe to capture in a constructor whose
+    /// owning service has the given <paramref name="guardLifetime"/>. For Singleton owners
+    /// the scoped <see cref="IPermissionChecker"/> would be a captive dependency, so we
+    /// route through <see cref="ScopedPermissionChecker"/> (a singleton-safe wrapper that
+    /// creates a fresh DI scope per check). For Scoped / Transient owners direct
+    /// resolution is correct.
+    /// </summary>
+    private static IPermissionChecker ResolvePermissionChecker(IServiceProvider sp, ServiceLifetime guardLifetime) =>
+        guardLifetime == ServiceLifetime.Singleton
+            ? new ScopedPermissionChecker(sp.GetRequiredService<IServiceScopeFactory>())
+            : sp.GetRequiredService<IPermissionChecker>();
 }
