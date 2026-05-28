@@ -1,3 +1,5 @@
+using Granit.MultiTenancy;
+using Granit.MultiTenancy.Stores;
 using Granit.Persistence.MultiTenancy;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
@@ -7,98 +9,172 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// EF Core implementation of <see cref="IWebhookStatsReader"/>. Provides aggregate
-/// statistics for the webhook administration dashboard, dispatching through
-/// <see cref="WebhooksContextResolver"/> so the same reader serves both
-/// <c>Shared</c> and <c>Segregated</c> storage modes.
+/// EF Core implementation of <see cref="IWebhookStatsReader"/>. Aggregates dashboard
+/// statistics across whatever scope the current request belongs to.
 /// </summary>
 /// <remarks>
-/// Under <see cref="DualScopeStorageMode.Segregated"/>, the reader aggregates across the
-/// host context and the active tenant context — the cross-tenant host-admin view that
-/// iterates every tenant schema is deferred to a follow-up PR (Phase 2C of #2377). Today
-/// a host admin viewing stats under <c>Segregated</c> sees only host-scope counts.
+/// <para>
+/// <b>Shared.</b> Single-context aggregation, every row visible to the active scope.
+/// </para>
+/// <para>
+/// <b>Segregated + tenant scope.</b> Sums host stats and active-tenant stats — a tenant
+/// dashboard sees its own subscriptions plus host SIEM forwards relevant to its events.
+/// </para>
+/// <para>
+/// <b>Segregated + host-admin scope</b> (Phase 2C). Iterates every tenant returned by
+/// <see cref="ITenantReader"/> via <see cref="ICurrentTenant.Change"/>, opens that tenant's
+/// isolated context, and sums into the host aggregate. <b>O(N) connections per stats call,
+/// N = number of tenants</b> — acceptable for the admin dashboard which is read rarely;
+/// a Postgres cross-schema materialised view is the documented optimisation path for
+/// deployments with hundreds of tenants.
+/// </para>
 /// </remarks>
 internal sealed class EfWebhookStatsReader(
     WebhooksContextResolver resolver,
-    IClock clock) : IWebhookStatsReader
+    ICurrentTenant currentTenant,
+    IClock clock,
+    ITenantReader? tenantReader = null) : IWebhookStatsReader
 {
     public async Task<WebhookStats> GetStatsAsync(CancellationToken cancellationToken = default)
     {
         DateTimeOffset cutoff = clock.Now.AddHours(-24);
+        StatsAccumulator acc = new();
 
-        IReadOnlyList<IWebhooksDbContext> contexts = await resolver
-            .OpenAllAsync(cancellationToken).ConfigureAwait(false);
-        try
+        if (resolver.StorageMode == DualScopeStorageMode.Segregated && !currentTenant.IsAvailable)
         {
-            int totalSubscriptions = 0;
-            int activeCount = 0;
-            int suspendedCount = 0;
-            int deactivatedCount = 0;
-            int deliveriesLast24h = 0;
-            int successCountLast24h = 0;
-            double durationSumMs = 0;
-            int durationSamples = 0;
-
-            foreach (IWebhooksDbContext db in contexts)
+            await AggregateAcrossAllTenantsAsync(acc, cutoff, cancellationToken).ConfigureAwait(false);
+        }
+        else
+        {
+            IReadOnlyList<IWebhooksDbContext> contexts = await resolver
+                .OpenAllAsync(cancellationToken).ConfigureAwait(false);
+            try
             {
-                List<WebhookSubscriptionStatus> statuses = await db.WebhookSubscriptions
-                    .AsNoTracking()
-                    .Select(s => s.Status)
-                    .ToListAsync(cancellationToken)
-                    .ConfigureAwait(false);
-
-                totalSubscriptions += statuses.Count;
-                activeCount += statuses.Count(s => s == WebhookSubscriptionStatus.Active);
-                suspendedCount += statuses.Count(s => s == WebhookSubscriptionStatus.Suspended);
-                deactivatedCount += statuses.Count(s => s == WebhookSubscriptionStatus.Deactivated);
-
-                var deliveryStats = await db.WebhookDeliveryAttempts
-                    .AsNoTracking()
-                    .Where(d => d.OccurredAt >= cutoff)
-                    .GroupBy(_ => 1)
-                    .Select(g => new
-                    {
-                        Total = g.Count(),
-                        SuccessCount = g.Count(d => d.IsSuccess),
-                        DurationSum = (double?)g
-                            .Where(d => d.HttpStatusCode != null)
-                            .Sum(d => (long?)d.DurationMs) ?? 0.0,
-                        DurationSamples = g.Count(d => d.HttpStatusCode != null),
-                    })
-                    .FirstOrDefaultAsync(cancellationToken)
-                    .ConfigureAwait(false);
-
-                if (deliveryStats is not null)
+                foreach (IWebhooksDbContext db in contexts)
                 {
-                    deliveriesLast24h += deliveryStats.Total;
-                    successCountLast24h += deliveryStats.SuccessCount;
-                    durationSumMs += deliveryStats.DurationSum;
-                    durationSamples += deliveryStats.DurationSamples;
+                    await AggregateAsync(db, cutoff, acc, cancellationToken).ConfigureAwait(false);
                 }
             }
+            finally
+            {
+                await DisposeAllAsync(contexts).ConfigureAwait(false);
+            }
+        }
 
-            double successRateLast24h = deliveriesLast24h > 0
-                ? Math.Round((double)successCountLast24h / deliveriesLast24h * 100, 2)
+        return acc.Build();
+    }
+
+    private async Task AggregateAcrossAllTenantsAsync(
+        StatsAccumulator acc,
+        DateTimeOffset cutoff,
+        CancellationToken cancellationToken)
+    {
+        // Host context: scope already host-admin, open directly.
+        await using (IWebhooksDbContext host = await resolver
+            .OpenForScopeAsync(tenantId: null, cancellationToken).ConfigureAwait(false))
+        {
+            await AggregateAsync(host, cutoff, acc, cancellationToken).ConfigureAwait(false);
+        }
+
+        if (tenantReader is null)
+        {
+            // Without ITenantReader we cannot enumerate tenants — host counts only.
+            // Granit.MultiTenancy.EntityFrameworkCore must be registered for cross-tenant aggregation.
+            return;
+        }
+
+        IReadOnlyList<TenantData> tenants = await tenantReader
+            .GetAllAsync(cancellationToken).ConfigureAwait(false);
+
+        foreach (TenantData tenant in tenants)
+        {
+            using (currentTenant.Change(tenant.Id, tenant.Name))
+            {
+                await using IWebhooksDbContext db = await resolver
+                    .OpenForScopeAsync(tenant.Id, cancellationToken).ConfigureAwait(false);
+                await AggregateAsync(db, cutoff, acc, cancellationToken).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private static async Task AggregateAsync(
+        IWebhooksDbContext db,
+        DateTimeOffset cutoff,
+        StatsAccumulator acc,
+        CancellationToken cancellationToken)
+    {
+        List<WebhookSubscriptionStatus> statuses = await db.WebhookSubscriptions
+            .AsNoTracking()
+            .Select(s => s.Status)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        acc.Subscriptions += statuses.Count;
+        acc.Active += statuses.Count(s => s == WebhookSubscriptionStatus.Active);
+        acc.Suspended += statuses.Count(s => s == WebhookSubscriptionStatus.Suspended);
+        acc.Deactivated += statuses.Count(s => s == WebhookSubscriptionStatus.Deactivated);
+
+        var deliveryStats = await db.WebhookDeliveryAttempts
+            .AsNoTracking()
+            .Where(d => d.OccurredAt >= cutoff)
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                Total = g.Count(),
+                SuccessCount = g.Count(d => d.IsSuccess),
+                DurationSum = (double?)g
+                    .Where(d => d.HttpStatusCode != null)
+                    .Sum(d => (long?)d.DurationMs) ?? 0.0,
+                DurationSamples = g.Count(d => d.HttpStatusCode != null),
+            })
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        if (deliveryStats is not null)
+        {
+            acc.Deliveries += deliveryStats.Total;
+            acc.SuccessCount += deliveryStats.SuccessCount;
+            acc.DurationSum += deliveryStats.DurationSum;
+            acc.DurationSamples += deliveryStats.DurationSamples;
+        }
+    }
+
+    private static async ValueTask DisposeAllAsync(IReadOnlyList<IWebhooksDbContext> contexts)
+    {
+        foreach (IWebhooksDbContext db in contexts)
+        {
+            await db.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    private sealed class StatsAccumulator
+    {
+        public int Subscriptions { get; set; }
+        public int Active { get; set; }
+        public int Suspended { get; set; }
+        public int Deactivated { get; set; }
+        public int Deliveries { get; set; }
+        public int SuccessCount { get; set; }
+        public double DurationSum { get; set; }
+        public int DurationSamples { get; set; }
+
+        public WebhookStats Build()
+        {
+            double successRate = Deliveries > 0
+                ? Math.Round((double)SuccessCount / Deliveries * 100, 2)
                 : 0.0;
-            double avgResponseTimeMsLast24h = durationSamples > 0
-                ? Math.Round(durationSumMs / durationSamples, 2)
+            double avgResponse = DurationSamples > 0
+                ? Math.Round(DurationSum / DurationSamples, 2)
                 : 0.0;
 
             return new WebhookStats(
-                totalSubscriptions,
-                activeCount,
-                suspendedCount,
-                deactivatedCount,
-                deliveriesLast24h,
-                successRateLast24h,
-                avgResponseTimeMsLast24h);
-        }
-        finally
-        {
-            foreach (IWebhooksDbContext db in contexts)
-            {
-                await db.DisposeAsync().ConfigureAwait(false);
-            }
+                Subscriptions,
+                Active,
+                Suspended,
+                Deactivated,
+                Deliveries,
+                successRate,
+                avgResponse);
         }
     }
 }

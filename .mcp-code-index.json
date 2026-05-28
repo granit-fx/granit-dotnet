@@ -2413,7 +2413,8 @@
       "name": "Granit.Webhooks.EntityFrameworkCore",
       "deps": [
         "Granit.Webhooks",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.MultiTenancy"
       ],
       "framework": "net10.0"
     },
@@ -48859,7 +48860,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/GranitWebhooksEntityFrameworkCoreModule.cs",
-      "line": 20,
+      "line": 23,
       "members": []
     },
     {

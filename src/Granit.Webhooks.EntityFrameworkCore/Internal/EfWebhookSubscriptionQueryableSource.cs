@@ -1,4 +1,5 @@
 using Granit.MultiTenancy;
+using Granit.MultiTenancy.Stores;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.MultiTenancy;
 using Granit.QueryEngine;
@@ -19,10 +20,16 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// returned cross-tenant.
 /// </para>
 /// <para>
-/// <b>Segregated mode.</b> When a tenant context is active, opens the tenant-isolated
-/// context. Cross-tenant host-admin browsing requires a <c>UNION ALL</c> across the host
-/// context and every tenant schema — deferred to a follow-up PR (Phase 2C of #2377);
-/// <see cref="GetQueryable"/> throws <see cref="NotSupportedException"/> on that path.
+/// <b>Segregated + tenant scope.</b> Opens the tenant-isolated context only.
+/// </para>
+/// <para>
+/// <b>Segregated + host-admin scope.</b> Materialises across the host context plus every
+/// tenant returned by <see cref="ITenantReader"/> via <see cref="ICurrentTenant.Change"/>,
+/// then exposes the result as an in-memory <see cref="IQueryable{T}"/>. Filters, ordering
+/// and paging applied by <c>Granit.QueryEngine</c> downstream run in LINQ-to-Objects, not
+/// translated to SQL — acceptable for the admin browse use case (small subscription
+/// volumes per tenant). A Postgres cross-schema materialised view is the documented
+/// optimisation path for deployments with thousands of subscriptions per tenant.
 /// </para>
 /// </remarks>
 internal sealed class EfWebhookSubscriptionQueryableSource : IQueryableSource<WebhookSubscription>, IDisposable
@@ -31,28 +38,32 @@ internal sealed class EfWebhookSubscriptionQueryableSource : IQueryableSource<We
     private readonly bool _bypassTenantFilter;
     private readonly IDbContextFactory<WebhooksHostDbContext> _hostFactory;
     private readonly IDbContextFactory<WebhooksTenantDbContext>? _tenantFactory;
+    private readonly ICurrentTenant _currentTenant;
+    private readonly ITenantReader? _tenantReader;
     private DbContext? _context;
+    private List<WebhookSubscription>? _materialized;
 
     public EfWebhookSubscriptionQueryableSource(
         WebhooksEntityFrameworkCoreOptions options,
         ICurrentTenant currentTenant,
         IDbContextFactory<WebhooksHostDbContext> hostFactory,
-        IDbContextFactory<WebhooksTenantDbContext>? tenantFactory = null)
+        IDbContextFactory<WebhooksTenantDbContext>? tenantFactory = null,
+        ITenantReader? tenantReader = null)
     {
         _storageMode = options.StorageMode;
         _bypassTenantFilter = !currentTenant.IsAvailable;
         _hostFactory = hostFactory;
         _tenantFactory = tenantFactory;
+        _currentTenant = currentTenant;
+        _tenantReader = tenantReader;
     }
 
     public IQueryable<WebhookSubscription> GetQueryable()
     {
         if (_storageMode == DualScopeStorageMode.Segregated && _bypassTenantFilter)
         {
-            throw new NotSupportedException(
-                "Cross-tenant host-admin browse of webhook subscriptions under DualScopeStorageMode.Segregated " +
-                "requires UNION ALL across host and every tenant schema — deferred to Phase 2C of Epic #2377. " +
-                "Use DualScopeStorageMode.Shared if cross-tenant admin browsing is required today.");
+            _materialized ??= MaterialiseAcrossAllTenants();
+            return _materialized.AsQueryable();
         }
 
         _context ??= OpenContext();
@@ -73,4 +84,42 @@ internal sealed class EfWebhookSubscriptionQueryableSource : IQueryableSource<We
         DualScopeStorageMode.Segregated => _tenantFactory!.CreateDbContext(),
         _ => throw new InvalidOperationException($"Unknown DualScopeStorageMode: {_storageMode}."),
     };
+
+    private List<WebhookSubscription> MaterialiseAcrossAllTenants()
+    {
+        List<WebhookSubscription> results = [];
+
+        // Host context — all rows there are platform subscriptions.
+        using (WebhooksHostDbContext host = _hostFactory.CreateDbContext())
+        {
+            results.AddRange(host.WebhookSubscriptions
+                .AsNoTracking()
+                .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+                .ToList());
+        }
+
+        if (_tenantReader is null || _tenantFactory is null)
+        {
+            // Cross-tenant aggregation requires both ITenantReader (to enumerate tenants)
+            // and the tenant factory (registered only under Segregated). Host-only result
+            // is the best we can do.
+            return results;
+        }
+
+        IReadOnlyList<TenantData> tenants = _tenantReader
+            .GetAllAsync().GetAwaiter().GetResult();
+
+        foreach (TenantData tenant in tenants)
+        {
+            using (_currentTenant.Change(tenant.Id, tenant.Name))
+            using (WebhooksTenantDbContext tenantCtx = _tenantFactory.CreateDbContext())
+            {
+                results.AddRange(tenantCtx.WebhookSubscriptions
+                    .AsNoTracking()
+                    .ToList());
+            }
+        }
+
+        return results;
+    }
 }
