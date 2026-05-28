@@ -36,7 +36,7 @@ public sealed class WebhooksEntityFrameworkCoreOptions
     public DualScopeStorageMode StorageMode { get; set; } = DualScopeStorageMode.Shared;
 
     /// <summary>
-    /// EF Core configuration for the single shared <c>WebhooksDbContext</c>.
+    /// EF Core configuration for the single shared <c>WebhooksHostDbContext</c>.
     /// Consulted when <see cref="StorageMode"/> is <see cref="DualScopeStorageMode.Shared"/>.
     /// </summary>
     public Action<DbContextOptionsBuilder>? Configure { get; set; }
@@ -49,17 +49,17 @@ public sealed class WebhooksEntityFrameworkCoreOptions
     public Action<DbContextOptionsBuilder>? ConfigureHost { get; set; }
 
     /// <summary>
-    /// EF Core configuration for the tenant-isolated context under
-    /// <c>TenantIsolationStrategy.SchemaPerTenant</c>. The string argument is the active
-    /// tenant schema name. Consulted when <see cref="StorageMode"/> is
-    /// <see cref="DualScopeStorageMode.Segregated"/>.
+    /// EF Core configuration for <c>WebhooksTenantDbContext</c> under
+    /// <c>TenantIsolationStrategy.SchemaPerTenant</c>. The active tenant schema is set
+    /// per request by <c>TenantSchemaConnectionInterceptor</c> — this callback only
+    /// supplies the provider + base connection string.
     /// </summary>
-    public Action<DbContextOptionsBuilder, string>? ConfigureSchemaPerTenant { get; set; }
+    public Action<DbContextOptionsBuilder>? ConfigureSchemaPerTenant { get; set; }
 
     /// <summary>
-    /// EF Core configuration for the tenant-isolated context under
-    /// <c>TenantIsolationStrategy.DatabasePerTenant</c>. Consulted when
-    /// <see cref="StorageMode"/> is <see cref="DualScopeStorageMode.Segregated"/>.
+    /// EF Core configuration for <c>WebhooksTenantDbContext</c> under
+    /// <c>TenantIsolationStrategy.DatabasePerTenant</c>. The string argument is the per-tenant
+    /// connection string resolved via <c>ITenantConnectionStringProvider</c>.
     /// </summary>
-    public Action<DbContextOptionsBuilder>? ConfigureDatabasePerTenant { get; set; }
+    public Action<DbContextOptionsBuilder, string>? ConfigureDatabasePerTenant { get; set; }
 }

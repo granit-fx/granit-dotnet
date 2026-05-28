@@ -1,4 +1,3 @@
-using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.Persistence.MultiTenancy;
@@ -24,67 +23,29 @@ public static class WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Must be called after <c>AddGranitWebhooks()</c>. Registers:
-    /// </para>
-    /// <list type="bullet">
-    ///   <item><see cref="EfWebhookSubscriptionStore"/> — replaces <c>InMemoryWebhookSubscriptionStore</c> for both <see cref="IWebhookSubscriptionReader"/> and <see cref="IWebhookSubscriptionWriter"/>.</item>
-    ///   <item><see cref="EfWebhookDeliveryStore"/> — replaces <c>NullWebhookDeliveryWriter</c> (enables ISO 27001 audit trail).</item>
-    ///   <item><see cref="Internal.WebhooksDbContext"/> — registered via <c>IDbContextFactory</c> for thread-safe usage in Wolverine handlers.</item>
-    /// </list>
-    /// <para>
-    /// <b>Storage mode (ADR-063).</b> Webhooks is a dual-scope module: platform-managed
-    /// subscriptions (<c>TenantId == null</c>) and tenant-managed subscriptions
-    /// (<c>TenantId == &lt;tenant&gt;</c>) are functionally distinct but share the same
-    /// entity shape. <see cref="WebhooksEntityFrameworkCoreOptions.StorageMode"/> selects
-    /// the physical layout:
+    /// Must be called after <c>AddGranitWebhooks()</c>. The
+    /// <see cref="WebhooksEntityFrameworkCoreOptions.StorageMode"/> option chooses how
+    /// host-scope and tenant-scope subscriptions are laid out — see ADR-063.
     /// </para>
     /// <list type="bullet">
     ///   <item>
-    ///     <see cref="DualScopeStorageMode.Shared"/> (default) — single host table, row-level
-    ///     filter on <c>TenantId</c>. Tables live in <see cref="GranitDbDefaults.HostDbSchema"/>
-    ///     (see <see cref="GranitWebhooksDbProperties.DbSchema"/>). Backwards compatible with
-    ///     deployments that existed before ADR-063 shipped.
+    ///     <see cref="DualScopeStorageMode.Shared"/> (default) — single host table; tenant
+    ///     rows carry <c>TenantId</c> and are filtered by a row-level query filter. Set
+    ///     <see cref="WebhooksEntityFrameworkCoreOptions.Configure"/>.
     ///   </item>
     ///   <item>
-    ///     <see cref="DualScopeStorageMode.Segregated"/> — host rows in a host-pinned context,
-    ///     tenant rows in an isolated context (per-tenant schema or per-tenant database).
-    ///     <b>Implementation pending — Phase 2B of Epic #2377.</b> Requested today,
-    ///     registration throws <see cref="NotSupportedException"/>.
+    ///     <see cref="DualScopeStorageMode.Segregated"/> — host rows in
+    ///     <see cref="WebhooksHostDbContext"/>, tenant rows in the isolated
+    ///     <see cref="WebhooksTenantDbContext"/>. Set
+    ///     <see cref="WebhooksEntityFrameworkCoreOptions.ConfigureHost"/> plus at least one
+    ///     of <see cref="WebhooksEntityFrameworkCoreOptions.ConfigureSchemaPerTenant"/> or
+    ///     <see cref="WebhooksEntityFrameworkCoreOptions.ConfigureDatabasePerTenant"/>.
     ///   </item>
     /// </list>
-    /// <para>
-    /// <b>Folding into the consuming app's own <see cref="DbContext"/></b> (under
-    /// <see cref="DualScopeStorageMode.Shared"/>): call
-    /// <see cref="WebhooksModelBuilderExtensions.ConfigureWebhooksModule"/> on a
-    /// <b>host-scoped</b> DbContext (registered via <c>AddGranitDbContext&lt;T&gt;</c>) —
-    /// never on a tenant-isolated DbContext (<c>AddGranitIsolatedDbContext&lt;T&gt;</c>).
-    /// Folding into an isolated DbContext under <c>SchemaPerTenant</c> or
-    /// <c>DatabasePerTenant</c> creates the table in each tenant's schema while
-    /// <see cref="Internal.WebhooksDbContext"/> still qualifies queries against
-    /// <c>host.webhooks_subscriptions</c>, leading to a <c>42P01 relation does not exist</c>
-    /// error at the first request. The internal
-    /// <c>WebhooksDualScopeIntegrationValidator</c> fails fast at host startup if this
-    /// misconfiguration is detected.
-    /// </para>
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
-    /// <param name="configure">
-    /// Configuration callback for the <see cref="WebhooksEntityFrameworkCoreOptions"/>.
-    /// </param>
+    /// <param name="configure">Configuration callback for the <see cref="WebhooksEntityFrameworkCoreOptions"/>.</param>
     /// <returns>The builder for chaining.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="configure"/> is <c>null</c>.</exception>
-    /// <exception cref="InvalidOperationException">
-    /// When <see cref="WebhooksEntityFrameworkCoreOptions.StorageMode"/> is
-    /// <see cref="DualScopeStorageMode.Shared"/> and
-    /// <see cref="WebhooksEntityFrameworkCoreOptions.Configure"/> is <c>null</c>, or when
-    /// <see cref="DualScopeStorageMode.Segregated"/> is combined with
-    /// <see cref="TenantIsolationStrategy.SharedDatabase"/> (rejected by ADR-063).
-    /// </exception>
-    /// <exception cref="NotSupportedException">
-    /// When <see cref="WebhooksEntityFrameworkCoreOptions.StorageMode"/> is
-    /// <see cref="DualScopeStorageMode.Segregated"/> — implementation lands in Phase 2B
-    /// of Epic #2377.
-    /// </exception>
     public static IHostApplicationBuilder AddGranitWebhooksEntityFrameworkCore(
         this IHostApplicationBuilder builder,
         Action<WebhooksEntityFrameworkCoreOptions> configure)
@@ -98,6 +59,9 @@ public static class WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions
         TenantIsolationStrategy strategy = ResolveTenantIsolationStrategy(builder.Configuration);
         DualScopeValidation.ValidateStorageMode(options.StorageMode, strategy, moduleName: "Webhooks");
 
+        // Singleton: options carry the storage choice consulted by every scoped service.
+        builder.Services.AddSingleton(options);
+
         switch (options.StorageMode)
         {
             case DualScopeStorageMode.Shared:
@@ -105,11 +69,8 @@ public static class WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions
                 break;
 
             case DualScopeStorageMode.Segregated:
-                throw new NotSupportedException(
-                    "WebhooksEntityFrameworkCoreOptions.StorageMode = DualScopeStorageMode.Segregated " +
-                    "is not yet implemented. The framework primitive shipped in granit-dotnet #2386; " +
-                    "the Webhooks context split lands in Phase 2B of Epic #2377. " +
-                    "Set StorageMode to DualScopeStorageMode.Shared (the default) to keep the current behaviour.");
+                RegisterSegregatedMode(builder, options);
+                break;
 
             default:
                 throw new ArgumentOutOfRangeException(
@@ -117,6 +78,8 @@ public static class WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions
                     options.StorageMode,
                     "Unknown DualScopeStorageMode value.");
         }
+
+        RegisterStores(builder.Services);
 
         return builder;
     }
@@ -133,28 +96,63 @@ public static class WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions
                 "that configures the EF Core provider and connection string for the shared host context.");
         }
 
-        builder.Services.AddGranitDbContext<WebhooksDbContext>(options.Configure);
+        builder.Services.AddGranitDbContext<WebhooksHostDbContext>(options.Configure);
         builder.Services.AddHostedService<WebhooksDualScopeIntegrationValidator>();
 
-        builder.Services.AddScoped<EfWebhookSubscriptionStore>();
-        builder.Services.Replace(
-            ServiceDescriptor.Scoped<IWebhookSubscriptionReader>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
-        builder.Services.Replace(
-            ServiceDescriptor.Scoped<IWebhookSubscriptionWriter>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
-        builder.Services.Replace(
-            ServiceDescriptor.Scoped<IWebhookSigningKeyReader>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
-        builder.Services.Replace(
-            ServiceDescriptor.Scoped<IWebhookSigningKeyWriter>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
+        builder.Services.AddScoped(sp => new WebhooksContextResolver(
+            DualScopeStorageMode.Shared,
+            hostFactory: sp.GetRequiredService<IDbContextFactory<WebhooksHostDbContext>>(),
+            tenantFactory: null));
+    }
 
-        builder.Services.Replace(
-            ServiceDescriptor.Scoped<IWebhookDeliveryWriter, EfWebhookDeliveryStore>());
-        builder.Services.Replace(
-            ServiceDescriptor.Scoped<IWebhookDeliveryReader, EfWebhookDeliveryStore>());
+    private static void RegisterSegregatedMode(
+        IHostApplicationBuilder builder,
+        WebhooksEntityFrameworkCoreOptions options)
+    {
+        if (options.ConfigureHost is null)
+        {
+            throw new InvalidOperationException(
+                "WebhooksEntityFrameworkCoreOptions.ConfigureHost must be set when StorageMode is " +
+                "DualScopeStorageMode.Segregated. Provide an Action<DbContextOptionsBuilder> for the " +
+                "host-pinned WebhooksHostDbContext.");
+        }
 
-        builder.Services.Replace(
-            ServiceDescriptor.Scoped<IWebhookStatsReader, EfWebhookStatsReader>());
-        builder.Services.AddScoped<IQueryableSource<WebhookSubscription>, EfWebhookSubscriptionQueryableSource>();
-        builder.Services.AddScoped<IQueryableSource<WebhookDeliveryAttempt>, EfWebhookDeliveryAttemptQueryableSource>();
+        if (options.ConfigureSchemaPerTenant is null && options.ConfigureDatabasePerTenant is null)
+        {
+            throw new InvalidOperationException(
+                "WebhooksEntityFrameworkCoreOptions: at least one of ConfigureSchemaPerTenant or " +
+                "ConfigureDatabasePerTenant must be set when StorageMode is DualScopeStorageMode.Segregated, " +
+                "matching the active TenantIsolationStrategy.");
+        }
+
+        builder.Services.AddGranitDbContext<WebhooksHostDbContext>(options.ConfigureHost);
+
+        builder.Services.AddGranitIsolatedDbContext<WebhooksTenantDbContext>(
+            configureShared: _ => { /* SharedDatabase already rejected by DualScopeValidation. */ },
+            configureDatabasePerTenant: options.ConfigureDatabasePerTenant,
+            configureSchemaPerTenant: options.ConfigureSchemaPerTenant);
+
+        builder.Services.AddScoped(sp => new WebhooksContextResolver(
+            DualScopeStorageMode.Segregated,
+            hostFactory: sp.GetRequiredService<IDbContextFactory<WebhooksHostDbContext>>(),
+            tenantFactory: sp.GetRequiredService<IDbContextFactory<WebhooksTenantDbContext>>()));
+    }
+
+    private static void RegisterStores(IServiceCollection services)
+    {
+        services.AddScoped<EfWebhookSubscriptionStore>();
+        services.Replace(ServiceDescriptor.Scoped<IWebhookSubscriptionReader>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
+        services.Replace(ServiceDescriptor.Scoped<IWebhookSubscriptionWriter>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
+        services.Replace(ServiceDescriptor.Scoped<IWebhookSigningKeyReader>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
+        services.Replace(ServiceDescriptor.Scoped<IWebhookSigningKeyWriter>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
+
+        services.Replace(ServiceDescriptor.Scoped<IWebhookDeliveryWriter, EfWebhookDeliveryStore>());
+        services.Replace(ServiceDescriptor.Scoped<IWebhookDeliveryReader, EfWebhookDeliveryStore>());
+
+        services.Replace(ServiceDescriptor.Scoped<IWebhookStatsReader, EfWebhookStatsReader>());
+
+        services.AddScoped<IQueryableSource<WebhookSubscription>, EfWebhookSubscriptionQueryableSource>();
+        services.AddScoped<IQueryableSource<WebhookDeliveryAttempt>, EfWebhookDeliveryAttemptQueryableSource>();
     }
 
     private static TenantIsolationStrategy ResolveTenantIsolationStrategy(IConfiguration configuration)

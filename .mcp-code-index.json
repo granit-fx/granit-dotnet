@@ -48811,7 +48811,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/Extensions/WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitWebhooksEntityFrameworkCore",

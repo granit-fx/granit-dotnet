@@ -2,8 +2,6 @@ using System.Security.Cryptography;
 using Granit.Domain.ValueObjects;
 using Granit.Exceptions;
 using Granit.Guids;
-using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
@@ -17,70 +15,104 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// <summary>
 /// EF Core implementation of <see cref="IWebhookSubscriptionReader"/>,
 /// <see cref="IWebhookSubscriptionWriter"/>, <see cref="IWebhookSigningKeyReader"/>, and
-/// <see cref="IWebhookSigningKeyWriter"/> backed by PostgreSQL.
+/// <see cref="IWebhookSigningKeyWriter"/>. Dispatches every read and write through
+/// <see cref="WebhooksContextResolver"/> so the same store serves both
+/// <see cref="Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared"/> (single
+/// context) and <see cref="Granit.Persistence.MultiTenancy.DualScopeStorageMode.Segregated"/>
+/// (host context + tenant context) deployments.
 /// </summary>
 internal sealed class EfWebhookSubscriptionStore(
-    IDbContextFactory<WebhooksDbContext> contextFactory,
-    ICurrentTenant currentTenant,
+    WebhooksContextResolver resolver,
     IGuidGenerator guidGenerator,
     IWebhookSecretProtector secretProtector,
     IClock clock,
-    IOptions<WebhooksOptions> options)
-    : EfStoreBase<WebhookSubscription, WebhooksDbContext>(contextFactory, currentTenant),
-      IWebhookSubscriptionReader,
-      IWebhookSubscriptionWriter,
-      IWebhookSigningKeyReader,
-      IWebhookSigningKeyWriter
+    IOptions<WebhooksOptions> options) :
+    IWebhookSubscriptionReader,
+    IWebhookSubscriptionWriter,
+    IWebhookSigningKeyReader,
+    IWebhookSigningKeyWriter
 {
-    // Locally-held copy of the factory so we can spin up DbContexts for queries that need
-    // .Include(s => s.SigningKeys) without going through the EfStoreBase Query() pipeline.
-    // The base class already captures contextFactory; using the parameter directly here would
-    // raise CS9107 (double capture).
-    private readonly IDbContextFactory<WebhooksDbContext> _contextFactory = contextFactory;
     /// <inheritdoc/>
     public async Task<IReadOnlyList<WebhookSubscription>> GetActiveSubscriptionsAsync(
         string eventType,
         Guid? tenantId,
         CancellationToken cancellationToken = default)
     {
-        await using WebhooksDbContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<IWebhooksDbContext> contexts = await resolver
+            .OpenAllAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            List<WebhookSubscription> results = [];
+            foreach (IWebhooksDbContext db in contexts)
+            {
+                List<WebhookSubscription> partial = await db.WebhookSubscriptions
+                    .Include(s => s.SigningKeys)
+                    .Where(s => s.Status == WebhookSubscriptionStatus.Active
+                             && s.EventType == eventType
+                             && (s.TenantId == null || s.TenantId == tenantId))
+                    .ToListAsync(cancellationToken).ConfigureAwait(false);
+                results.AddRange(partial);
+            }
 
-        List<WebhookSubscription> subs = await db.WebhookSubscriptions
-            .Include(s => s.SigningKeys)
-            .Where(s => s.Status == WebhookSubscriptionStatus.Active
-                     && s.EventType == eventType
-                     && (s.TenantId == null || s.TenantId == tenantId))
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-
-        return subs;
+            return results;
+        }
+        finally
+        {
+            await DisposeAllAsync(contexts).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
-    public new async Task<WebhookSubscription?> FindByIdAsync(
+    public async Task<WebhookSubscription?> FindByIdAsync(
         Guid subscriptionId,
         CancellationToken cancellationToken = default)
     {
-        await using WebhooksDbContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<IWebhooksDbContext> contexts = await resolver
+            .OpenForUnknownScopeAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            foreach (IWebhooksDbContext db in contexts)
+            {
+                WebhookSubscription? hit = await db.WebhookSubscriptions
+                    .Include(s => s.SigningKeys)
+                    .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken)
+                    .ConfigureAwait(false);
+                if (hit is not null)
+                {
+                    return hit;
+                }
+            }
 
-        return await db.WebhookSubscriptions
-            .Include(s => s.SigningKeys)
-            .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken)
-            .ConfigureAwait(false);
+            return null;
+        }
+        finally
+        {
+            await DisposeAllAsync(contexts).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
     public async Task<IReadOnlyList<WebhookSubscription>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        await using WebhooksDbContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<IWebhooksDbContext> contexts = await resolver
+            .OpenAllAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            List<WebhookSubscription> results = [];
+            foreach (IWebhooksDbContext db in contexts)
+            {
+                List<WebhookSubscription> partial = await db.WebhookSubscriptions
+                    .Include(s => s.SigningKeys)
+                    .ToListAsync(cancellationToken).ConfigureAwait(false);
+                results.AddRange(partial);
+            }
 
-        List<WebhookSubscription> subs = await db.WebhookSubscriptions
-            .Include(s => s.SigningKeys)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-
-        return subs;
+            return results;
+        }
+        finally
+        {
+            await DisposeAllAsync(contexts).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
@@ -105,7 +137,10 @@ internal sealed class EfWebhookSubscriptionStore(
             tenantId,
             signingSecretHint: WebhookSecretHint.From(plainSecret));
 
-        await AddAsync(subscription, cancellationToken).ConfigureAwait(false);
+        await using IWebhooksDbContext db = await resolver
+            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        db.WebhookSubscriptions.Add(subscription);
+        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return new WebhookSubscriptionCreatedResult(subscription, plainSecret);
     }
@@ -115,19 +150,11 @@ internal sealed class EfWebhookSubscriptionStore(
         Guid subscriptionId,
         HttpsUrl targetUrl,
         CancellationToken cancellationToken = default) =>
-        WriteAsync(async db =>
-        {
-            WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
-            subscription.UpdateTargetUrl(targetUrl);
-        }, cancellationToken);
+        WriteByIdAsync(subscriptionId, (_, subscription) => subscription.UpdateTargetUrl(targetUrl), cancellationToken);
 
     /// <inheritdoc/>
     public Task ActivateAsync(Guid subscriptionId, CancellationToken cancellationToken = default) =>
-        WriteAsync(async db =>
-        {
-            WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
-            subscription.Activate();
-        }, cancellationToken);
+        WriteByIdAsync(subscriptionId, (_, subscription) => subscription.Activate(), cancellationToken);
 
     /// <inheritdoc/>
     public Task SuspendAsync(
@@ -135,30 +162,25 @@ internal sealed class EfWebhookSubscriptionStore(
         string suspendedBy,
         string reason,
         CancellationToken cancellationToken = default) =>
-        WriteAsync(async db =>
-        {
-            WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
-            subscription.Suspend(clock.Now, suspendedBy, reason);
-        }, cancellationToken);
+        WriteByIdAsync(
+            subscriptionId,
+            (_, subscription) => subscription.Suspend(clock.Now, suspendedBy, reason),
+            cancellationToken);
 
     /// <inheritdoc/>
     public Task DeactivateAsync(
         Guid subscriptionId,
         string reason,
         CancellationToken cancellationToken = default) =>
-        WriteAsync(async db =>
-        {
-            WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
-            subscription.Deactivate(reason);
-        }, cancellationToken);
+        WriteByIdAsync(subscriptionId, (_, subscription) => subscription.Deactivate(reason), cancellationToken);
 
     /// <inheritdoc/>
     public Task DeleteAsync(Guid subscriptionId, CancellationToken cancellationToken = default) =>
-        WriteAsync(async db =>
-        {
-            WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
-            db.WebhookSubscriptions.Remove(subscription);
-        }, cancellationToken);
+        WriteByIdAsync(
+            subscriptionId,
+            (db, subscription) => db.WebhookSubscriptions.Remove(subscription),
+            cancellationToken,
+            includeSigningKeys: false);
 
     /// <inheritdoc/>
     public async Task<WebhookSigningKeyRotatedResult> RotateSigningKeyAsync(
@@ -173,19 +195,12 @@ internal sealed class EfWebhookSubscriptionStore(
 
         TimeSpan grace = retiredKeyGracePeriod ?? options.Value.RetiredKeyGracePeriod;
         Guid newKeyId = guidGenerator.Create();
-
         string hint = WebhookSecretHint.From(plainSecret);
 
-        await WriteAsync(async db =>
-        {
-            WebhookSubscription subscription = await db.WebhookSubscriptions
-                .Include(s => s.SigningKeys)
-                .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken)
-                .ConfigureAwait(false)
-                ?? throw new EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
-
-            subscription.RotateSigningKey(newKeyId, protectedSecret, clock.Now, grace, newSigningSecretHint: hint);
-        }, cancellationToken).ConfigureAwait(false);
+        await WriteByIdAsync(
+            subscriptionId,
+            (_, subscription) => subscription.RotateSigningKey(newKeyId, protectedSecret, clock.Now, grace, newSigningSecretHint: hint),
+            cancellationToken).ConfigureAwait(false);
 
         return new WebhookSigningKeyRotatedResult(newKeyId, plainSecret);
     }
@@ -195,45 +210,69 @@ internal sealed class EfWebhookSubscriptionStore(
         Guid subscriptionId,
         Guid keyId,
         CancellationToken cancellationToken = default) =>
-        WriteAsync(async db =>
-        {
-            WebhookSubscription subscription = await db.WebhookSubscriptions
-                .Include(s => s.SigningKeys)
-                .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken)
-                .ConfigureAwait(false)
-                ?? throw new EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
-
-            bool revoked = subscription.RevokeSigningKey(keyId, clock.Now);
-            if (!revoked)
+        WriteByIdAsync(
+            subscriptionId,
+            (_, subscription) =>
             {
-                throw new EntityNotFoundException(typeof(WebhookSigningKey), keyId);
-            }
-        }, cancellationToken);
+                bool revoked = subscription.RevokeSigningKey(keyId, clock.Now);
+                if (!revoked)
+                {
+                    throw new EntityNotFoundException(typeof(WebhookSigningKey), keyId);
+                }
+            },
+            cancellationToken);
 
     /// <inheritdoc/>
     public async Task<IReadOnlyList<WebhookSigningKey>> GetForSubscriptionAsync(
         Guid subscriptionId,
         CancellationToken cancellationToken = default)
     {
-        await using WebhooksDbContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<IWebhooksDbContext> contexts = await resolver
+            .OpenForUnknownScopeAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            List<WebhookSigningKey> results = [];
+            foreach (IWebhooksDbContext db in contexts)
+            {
+                List<WebhookSigningKey> partial = await db.WebhookSigningKeys
+                    .Where(k => k.SubscriptionId == subscriptionId)
+                    .ToListAsync(cancellationToken).ConfigureAwait(false);
+                results.AddRange(partial);
+            }
 
-        List<WebhookSigningKey> keys = await db.WebhookSigningKeys
-            .Where(k => k.SubscriptionId == subscriptionId)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-
-        return keys;
+            return results;
+        }
+        finally
+        {
+            await DisposeAllAsync(contexts).ConfigureAwait(false);
+        }
     }
 
     async Task<WebhookSigningKey?> IWebhookSigningKeyReader.FindByIdAsync(
         Guid keyId,
         CancellationToken cancellationToken)
     {
-        await using WebhooksDbContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<IWebhooksDbContext> contexts = await resolver
+            .OpenForUnknownScopeAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            foreach (IWebhooksDbContext db in contexts)
+            {
+                WebhookSigningKey? hit = await db.WebhookSigningKeys
+                    .FirstOrDefaultAsync(k => k.Id == keyId, cancellationToken)
+                    .ConfigureAwait(false);
+                if (hit is not null)
+                {
+                    return hit;
+                }
+            }
 
-        return await db.WebhookSigningKeys
-            .FirstOrDefaultAsync(k => k.Id == keyId, cancellationToken).ConfigureAwait(false);
+            return null;
+        }
+        finally
+        {
+            await DisposeAllAsync(contexts).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
@@ -243,21 +282,32 @@ internal sealed class EfWebhookSubscriptionStore(
         DateTimeOffset notificationDedupeBefore,
         CancellationToken cancellationToken = default)
     {
-        await using WebhooksDbContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<IWebhooksDbContext> contexts = await resolver
+            .OpenAllAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            List<WebhookSigningKey> results = [];
+            foreach (IWebhooksDbContext db in contexts)
+            {
+                List<WebhookSigningKey> partial = await db.WebhookSigningKeys
+                    .Where(k => (k.Status == WebhookSigningKeyStatus.Active
+                              || k.Status == WebhookSigningKeyStatus.Retired)
+                             && k.RevokedAt == null
+                             && k.ExpiresAt != null
+                             && k.ExpiresAt > now
+                             && k.ExpiresAt <= cutoff
+                             && (k.LastRotationNotificationAt == null
+                                 || k.LastRotationNotificationAt < notificationDedupeBefore))
+                    .ToListAsync(cancellationToken).ConfigureAwait(false);
+                results.AddRange(partial);
+            }
 
-        List<WebhookSigningKey> keys = await db.WebhookSigningKeys
-            .Where(k => (k.Status == WebhookSigningKeyStatus.Active
-                      || k.Status == WebhookSigningKeyStatus.Retired)
-                     && k.RevokedAt == null
-                     && k.ExpiresAt != null
-                     && k.ExpiresAt > now
-                     && k.ExpiresAt <= cutoff
-                     && (k.LastRotationNotificationAt == null
-                         || k.LastRotationNotificationAt < notificationDedupeBefore))
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-
-        return keys;
+            return results;
+        }
+        finally
+        {
+            await DisposeAllAsync(contexts).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
@@ -266,30 +316,69 @@ internal sealed class EfWebhookSubscriptionStore(
         Guid keyId,
         DateTimeOffset notifiedAt,
         CancellationToken cancellationToken = default) =>
-        WriteAsync(async db =>
-        {
-            WebhookSubscription subscription = await db.WebhookSubscriptions
-                .Include(s => s.SigningKeys)
-                .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken)
-                .ConfigureAwait(false)
-                ?? throw new EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
-
-            bool stamped = subscription.StampRotationNotification(keyId, notifiedAt);
-            if (!stamped)
+        WriteByIdAsync(
+            subscriptionId,
+            (_, subscription) =>
             {
-                throw new EntityNotFoundException(typeof(WebhookSigningKey), keyId);
-            }
-        }, cancellationToken);
+                bool stamped = subscription.StampRotationNotification(keyId, notifiedAt);
+                if (!stamped)
+                {
+                    throw new EntityNotFoundException(typeof(WebhookSigningKey), keyId);
+                }
+            },
+            cancellationToken);
 
-    private static async Task<WebhookSubscription> FindOrThrowAsync(
-        WebhooksDbContext context,
+    /// <summary>
+    /// Fetch-then-dispatch helper for any mutation keyed on a subscription <see cref="Guid"/>.
+    /// Probes both host and tenant contexts under <c>Segregated</c>, applies the mutation
+    /// in the owning context, then saves.
+    /// </summary>
+    private async Task WriteByIdAsync(
         Guid subscriptionId,
-        CancellationToken cancellationToken)
+        Action<IWebhooksDbContext, WebhookSubscription> mutate,
+        CancellationToken cancellationToken,
+        bool includeSigningKeys = true)
     {
-        WebhookSubscription? subscription = await context.WebhookSubscriptions
-            .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<IWebhooksDbContext> contexts = await resolver
+            .OpenForUnknownScopeAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            foreach (IWebhooksDbContext db in contexts)
+            {
+                IQueryable<WebhookSubscription> query = db.WebhookSubscriptions;
+                if (includeSigningKeys)
+                {
+                    query = query.Include(s => s.SigningKeys);
+                }
 
-        return subscription ?? throw new EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
+                WebhookSubscription? subscription = await query
+                    .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken)
+                    .ConfigureAwait(false);
+
+                if (subscription is null)
+                {
+                    continue;
+                }
+
+                mutate(db, subscription);
+                await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
+            throw new EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
+        }
+        finally
+        {
+            await DisposeAllAsync(contexts).ConfigureAwait(false);
+        }
+    }
+
+    private static async ValueTask DisposeAllAsync(IReadOnlyList<IWebhooksDbContext> contexts)
+    {
+        foreach (IWebhooksDbContext db in contexts)
+        {
+            await db.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     private static string GenerateSigningSecret() =>

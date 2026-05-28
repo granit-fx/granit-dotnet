@@ -1,6 +1,6 @@
 using Granit.Guids;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.MultiTenancy;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
@@ -19,14 +19,14 @@ public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
 {
     private static readonly DateTimeOffset Now = new(2026, 3, 19, 12, 0, 0, TimeSpan.Zero);
 
-    private readonly DbContextOptions<WebhooksDbContext> _options;
-    private readonly IDbContextFactory<WebhooksDbContext> _contextFactory;
+    private readonly DbContextOptions<WebhooksHostDbContext> _options;
+    private readonly IDbContextFactory<WebhooksHostDbContext> _contextFactory;
     private readonly EfWebhookSubscriptionStore _sut;
     private readonly TestDataFilter _dataFilter = new();
 
     public EfWebhookSubscriptionStoreTests()
     {
-        _options = new DbContextOptionsBuilder<WebhooksDbContext>()
+        _options = new DbContextOptionsBuilder<WebhooksHostDbContext>()
             .UseInMemoryDatabase(databaseName: $"webhooks-sub-{Guid.NewGuid()}")
             .Options;
 
@@ -43,12 +43,13 @@ public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
         _contextFactory = new TestWebhooksDbContextFactory(_options, _dataFilter.Filter);
         IOptions<WebhooksOptions> webhooksOptions =
             Microsoft.Extensions.Options.Options.Create(new WebhooksOptions());
-        _sut = new EfWebhookSubscriptionStore(_contextFactory, Substitute.For<ICurrentTenant>(), guidGenerator, secretProtector, clock, webhooksOptions);
+        WebhooksContextResolver resolver = new(DualScopeStorageMode.Shared, _contextFactory);
+        _sut = new EfWebhookSubscriptionStore(resolver, guidGenerator, secretProtector, clock, webhooksOptions);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await using (WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter))
+        await using (WebhooksHostDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter))
         {
             await context.Database.EnsureDeletedAsync();
         }
@@ -159,7 +160,7 @@ public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
         await _sut.DeactivateAsync(subscription.Id, "User requested", TestContext.Current.CancellationToken);
 
         // Assert
-        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
+        await using WebhooksHostDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         WebhookSubscription? updated = await context.WebhookSubscriptions.FindAsync([subscription.Id], TestContext.Current.CancellationToken);
         updated!.Status.ShouldBe(WebhookSubscriptionStatus.Deactivated);
         updated.DeactivationReason.ShouldBe("User requested");
@@ -195,7 +196,7 @@ public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
 
     private async Task SeedSubscriptions(params WebhookSubscription[] subscriptions)
     {
-        await using WebhooksDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
+        await using WebhooksHostDbContext context = new(_options, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         context.WebhookSubscriptions.AddRange(subscriptions);
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
     }

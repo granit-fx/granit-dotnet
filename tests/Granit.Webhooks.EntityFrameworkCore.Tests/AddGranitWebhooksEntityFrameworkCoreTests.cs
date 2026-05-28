@@ -65,7 +65,7 @@ public sealed class AddGranitWebhooksEntityFrameworkCoreTests
         deliveryWriter.ImplementationType.ShouldBe(typeof(EfWebhookDeliveryStore));
 
         ServiceDescriptor? dbContextFactory = builder.Services
-            .FirstOrDefault(d => d.ServiceType == typeof(IDbContextFactory<WebhooksDbContext>));
+            .FirstOrDefault(d => d.ServiceType == typeof(IDbContextFactory<WebhooksHostDbContext>));
         dbContextFactory.ShouldNotBeNull();
     }
 
@@ -95,7 +95,7 @@ public sealed class AddGranitWebhooksEntityFrameworkCoreTests
     [Theory]
     [InlineData(nameof(TenantIsolationStrategy.SchemaPerTenant))]
     [InlineData(nameof(TenantIsolationStrategy.DatabasePerTenant))]
-    public void Segregated_WithPhysicalIsolationStrategy_PassesValidationThenThrowsNotSupported(string strategyName)
+    public void Segregated_WithPhysicalIsolationStrategy_RegistersBothFactories(string strategyName)
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -103,17 +103,62 @@ public sealed class AddGranitWebhooksEntityFrameworkCoreTests
             ["MultiTenancy:TenantIsolation:Strategy"] = strategyName,
         });
 
-        // Validation passes (no ADR-063 rejection), then registration throws NotSupported
-        // because Phase 2B is not yet implemented.
-        NotSupportedException ex = Should.Throw<NotSupportedException>(() =>
+        builder.AddGranitWebhooksEntityFrameworkCore(opts =>
+        {
+            opts.StorageMode = DualScopeStorageMode.Segregated;
+            opts.ConfigureHost = b => b.UseInMemoryDatabase("host");
+            opts.ConfigureSchemaPerTenant = b => b.UseInMemoryDatabase("tenant-schema");
+            opts.ConfigureDatabasePerTenant = (b, _) => b.UseInMemoryDatabase("tenant-db");
+        });
+
+        ServiceDescriptor? hostFactory = builder.Services
+            .FirstOrDefault(d => d.ServiceType == typeof(IDbContextFactory<WebhooksHostDbContext>));
+        hostFactory.ShouldNotBeNull();
+
+        // Tenant factory is keyed by isolation strategy under AddGranitIsolatedDbContext.
+        bool hasTenantMarker = builder.Services
+            .Any(d => d.ServiceType.FullName?.Contains("WebhooksTenantDbContext") == true);
+        hasTenantMarker.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Segregated_WithoutConfigureHost_Throws()
+    {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["MultiTenancy:TenantIsolation:Strategy"] = nameof(TenantIsolationStrategy.SchemaPerTenant),
+        });
+
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
+            builder.AddGranitWebhooksEntityFrameworkCore(opts =>
+            {
+                opts.StorageMode = DualScopeStorageMode.Segregated;
+                opts.ConfigureSchemaPerTenant = b => b.UseInMemoryDatabase("tenant");
+                // ConfigureHost intentionally null
+            }));
+
+        ex.Message.ShouldContain("ConfigureHost");
+    }
+
+    [Fact]
+    public void Segregated_WithoutAnyTenantCallback_Throws()
+    {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["MultiTenancy:TenantIsolation:Strategy"] = nameof(TenantIsolationStrategy.SchemaPerTenant),
+        });
+
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
             builder.AddGranitWebhooksEntityFrameworkCore(opts =>
             {
                 opts.StorageMode = DualScopeStorageMode.Segregated;
                 opts.ConfigureHost = b => b.UseInMemoryDatabase("host");
-                opts.ConfigureSchemaPerTenant = (b, _) => b.UseInMemoryDatabase("tenant");
+                // Neither tenant callback set
             }));
 
-        ex.Message.ShouldContain("Segregated");
-        ex.Message.ShouldContain("#2377");
+        ex.Message.ShouldContain("ConfigureSchemaPerTenant");
+        ex.Message.ShouldContain("ConfigureDatabasePerTenant");
     }
 }

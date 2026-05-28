@@ -10,22 +10,30 @@ using Microsoft.Extensions.Logging;
 namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// Fail-fast guard that detects when a tenant-isolated <see cref="DbContext"/> folds the
-/// Webhooks model via <see cref="Extensions.WebhooksModelBuilderExtensions.ConfigureWebhooksModule"/>.
+/// Fail-fast guard for the <c>Shared</c> storage mode: detects when a tenant-isolated
+/// <see cref="DbContext"/> outside Granit.Webhooks folds the Webhooks model via
+/// <see cref="Extensions.WebhooksModelBuilderExtensions.ConfigureWebhooksModule"/>.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Webhooks is a dual-scope module: tables live in the <i>host</i> schema and tenant
-/// isolation is enforced via the <c>MultiTenant</c> row-level query filter. Folding
-/// <c>ConfigureWebhooksModule()</c> into an isolated DbContext under <c>SchemaPerTenant</c>
-/// or <c>DatabasePerTenant</c> creates the table in the wrong place — runtime queries
-/// then fail with PostgreSQL 42P01 (<i>relation does not exist</i>).
+/// Under <see cref="Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared"/> Webhooks tables
+/// live in the host schema and tenant isolation is enforced via the <c>MultiTenant</c>
+/// row-level query filter. Folding <c>ConfigureWebhooksModule()</c> into a consumer's
+/// isolated DbContext under <c>SchemaPerTenant</c> or <c>DatabasePerTenant</c> creates
+/// the table in the wrong place — runtime queries then fail with PostgreSQL 42P01.
 /// </para>
 /// <para>
-/// Runs once at <c>host.StartAsync()</c>. For each <see cref="IsolatedDbContextMarker"/>,
-/// resolves the always-registered <see cref="TenantIsolationStrategy.SharedDatabase"/>
-/// keyed factory (cheap — no real DB I/O, only model compilation), inspects the model's
-/// entity types, and throws if any Webhooks aggregate is configured.
+/// Under <see cref="Granit.Persistence.MultiTenancy.DualScopeStorageMode.Segregated"/> this validator
+/// is not registered: Webhooks itself owns an isolated <c>WebhooksTenantDbContext</c>,
+/// so the heuristic "Webhooks entities in an isolated context = misconfiguration" no
+/// longer holds.
+/// </para>
+/// <para>
+/// Runs once at <c>host.StartAsync()</c>. For each <see cref="IsolatedDbContextMarker"/>
+/// belonging to a consumer DbContext, resolves the always-registered
+/// <see cref="TenantIsolationStrategy.SharedDatabase"/> keyed factory (cheap — no real
+/// DB I/O, only model compilation), inspects the model's entity types, and throws if any
+/// Webhooks aggregate is configured.
 /// </para>
 /// </remarks>
 internal sealed partial class WebhooksDualScopeIntegrationValidator(
@@ -33,6 +41,12 @@ internal sealed partial class WebhooksDualScopeIntegrationValidator(
     IServiceProvider serviceProvider,
     ILogger<WebhooksDualScopeIntegrationValidator> logger) : IHostedService
 {
+    private static readonly HashSet<Type> WebhooksOwnedContexts =
+    [
+        typeof(WebhooksTenantDbContext),
+    ];
+
+
     private static readonly HashSet<Type> WebhooksAggregates =
     [
         typeof(WebhookSubscription),
@@ -47,6 +61,13 @@ internal sealed partial class WebhooksDualScopeIntegrationValidator(
 
         foreach (IsolatedDbContextMarker marker in markers)
         {
+            // Skip Webhooks's own isolated tenant context — it legitimately holds the
+            // module's entities under DualScopeStorageMode.Segregated.
+            if (WebhooksOwnedContexts.Contains(marker.DbContextType))
+            {
+                continue;
+            }
+
             List<string>? folded = TryFindFoldedWebhooksEntities(marker.DbContextType);
             if (folded is { Count: > 0 })
             {
