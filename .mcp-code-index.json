@@ -1029,8 +1029,7 @@
       "name": "Granit.Identity.Federated.EntityFrameworkCore",
       "deps": [
         "Granit.Identity.Federated",
-        "Granit.Persistence.EntityFrameworkCore",
-        "Granit.MultiTenancy"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -22332,7 +22331,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityFederatedEntityFrameworkCoreModule.cs",
-      "line": 21,
+      "line": 30,
       "members": []
     },
     {
