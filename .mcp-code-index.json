@@ -48761,7 +48761,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/Extensions/WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitWebhooksEntityFrameworkCore",
@@ -49461,7 +49461,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Extensions/WolverineHostApplicationBuilderExtensions.cs",
-      "line": 25,
+      "line": 26,
       "members": [
         {
           "name": "AddGranitWolverine",

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Wolverine;
 using Wolverine.ErrorHandling;
@@ -160,6 +161,15 @@ public static class WolverineHostApplicationBuilderExtensions
             opts.Policies.AddMiddleware<TenantContextBehavior>();
             opts.Policies.AddMiddleware<UserContextBehavior>();
             opts.Policies.AddMiddleware<TraceContextBehavior>();
+
+            // Wolverine's default `MessageSuccessLogLevel` is Information — one line per
+            // handled envelope. Fan-out flows (privacy export scatter-gather, bulk
+            // notification dispatch) push hundreds of those into Aspire's Logs/Structured
+            // view in a few seconds and the dashboard's virtualized renderer chokes the
+            // browser. Demote to Debug so the per-envelope success traces stay opt-in via
+            // `"Wolverine": "Debug"` in appsettings; warnings, errors and retries still
+            // surface at their original levels.
+            opts.Policies.MessageSuccessLogLevel(LogLevel.Debug);
 
             configure?.Invoke(opts);
 
