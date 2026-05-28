@@ -48811,12 +48811,12 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/Extensions/WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitWebhooksEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitWebhooksEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitWebhooksEntityFrameworkCore(this IHostApplicationBuilder builder, Action<WebhooksEntityFrameworkCoreOptions> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -48859,8 +48859,24 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/GranitWebhooksEntityFrameworkCoreModule.cs",
-      "line": 17,
+      "line": 20,
       "members": []
+    },
+    {
+      "name": "WebhooksEntityFrameworkCoreOptions",
+      "fqn": "Granit.Webhooks.EntityFrameworkCore.WebhooksEntityFrameworkCoreOptions",
+      "kind": "class",
+      "project": "Granit.Webhooks.EntityFrameworkCore",
+      "file": "src/Granit.Webhooks.EntityFrameworkCore/WebhooksEntityFrameworkCoreOptions.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "StorageMode",
+          "kind": "property",
+          "signature": "DualScopeStorageMode StorageMode",
+          "returnType": "DualScopeStorageMode"
+        }
+      ]
     },
     {
       "name": "WebhookDeliveryFailureThresholdExceededEto",
