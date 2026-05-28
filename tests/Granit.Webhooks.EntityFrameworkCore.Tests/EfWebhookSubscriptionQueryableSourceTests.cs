@@ -49,6 +49,7 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
         var sut = new EfWebhookSubscriptionQueryableSource(
             opts,
             tenantA,
+            EmptyEnumerator(),
             new TenantScopedDbContextFactory(_options, tenantA, _filter));
 
         // Act
@@ -75,6 +76,7 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
         var sut = new EfWebhookSubscriptionQueryableSource(
             opts,
             host,
+            EmptyEnumerator(),
             new TenantScopedDbContextFactory(_options, host, _filter));
 
         // Act
@@ -113,6 +115,15 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
             protectedSecret: "protected-secret",
             createdAt: DateTimeOffset.UtcNow,
             tenantId: tenantId);
+
+
+    private static ITenantEnumerator EmptyEnumerator()
+    {
+        ITenantEnumerator e = Substitute.For<ITenantEnumerator>();
+        e.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<(Guid, string)>>([]));
+        return e;
+    }
 
     private sealed class TenantScopedDbContextFactory(
         DbContextOptions<WebhooksHostDbContext> options,

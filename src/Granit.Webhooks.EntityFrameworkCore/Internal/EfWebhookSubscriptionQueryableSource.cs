@@ -1,5 +1,4 @@
 using Granit.MultiTenancy;
-using Granit.MultiTenancy.Stores;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.MultiTenancy;
 using Granit.QueryEngine;
@@ -24,12 +23,19 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// </para>
 /// <para>
 /// <b>Segregated + host-admin scope.</b> Materialises across the host context plus every
-/// tenant returned by <see cref="ITenantReader"/> via <see cref="ICurrentTenant.Change"/>,
-/// then exposes the result as an in-memory <see cref="IQueryable{T}"/>. Filters, ordering
-/// and paging applied by <c>Granit.QueryEngine</c> downstream run in LINQ-to-Objects, not
-/// translated to SQL — acceptable for the admin browse use case (small subscription
-/// volumes per tenant). A Postgres cross-schema materialised view is the documented
-/// optimisation path for deployments with thousands of subscriptions per tenant.
+/// tenant returned by <see cref="ITenantEnumerator"/> via
+/// <see cref="ICurrentTenant.Change"/>, then exposes the result as an in-memory
+/// <see cref="IQueryable{T}"/>. Filters, ordering and paging applied by
+/// <c>Granit.QueryEngine</c> downstream run in LINQ-to-Objects, not translated to SQL —
+/// acceptable for the admin browse use case (small subscription volumes per tenant).
+/// A Postgres cross-schema materialised view is the documented optimisation path for
+/// deployments with thousands of subscriptions per tenant.
+/// </para>
+/// <para>
+/// Soft-dep on <see cref="ITenantEnumerator"/>: the default
+/// <c>NullTenantEnumerator</c> returns an empty list when <c>Granit.MultiTenancy</c> is
+/// not loaded, so single-tenant deployments still get a host-only result without a hard
+/// package dependency.
 /// </para>
 /// </remarks>
 internal sealed class EfWebhookSubscriptionQueryableSource : IQueryableSource<WebhookSubscription>, IDisposable
@@ -39,23 +45,23 @@ internal sealed class EfWebhookSubscriptionQueryableSource : IQueryableSource<We
     private readonly IDbContextFactory<WebhooksHostDbContext> _hostFactory;
     private readonly IDbContextFactory<WebhooksTenantDbContext>? _tenantFactory;
     private readonly ICurrentTenant _currentTenant;
-    private readonly ITenantReader? _tenantReader;
+    private readonly ITenantEnumerator _tenantEnumerator;
     private DbContext? _context;
     private List<WebhookSubscription>? _materialized;
 
     public EfWebhookSubscriptionQueryableSource(
         WebhooksEntityFrameworkCoreOptions options,
         ICurrentTenant currentTenant,
+        ITenantEnumerator tenantEnumerator,
         IDbContextFactory<WebhooksHostDbContext> hostFactory,
-        IDbContextFactory<WebhooksTenantDbContext>? tenantFactory = null,
-        ITenantReader? tenantReader = null)
+        IDbContextFactory<WebhooksTenantDbContext>? tenantFactory = null)
     {
         _storageMode = options.StorageMode;
         _bypassTenantFilter = !currentTenant.IsAvailable;
         _hostFactory = hostFactory;
         _tenantFactory = tenantFactory;
         _currentTenant = currentTenant;
-        _tenantReader = tenantReader;
+        _tenantEnumerator = tenantEnumerator;
     }
 
     public IQueryable<WebhookSubscription> GetQueryable()
@@ -98,20 +104,18 @@ internal sealed class EfWebhookSubscriptionQueryableSource : IQueryableSource<We
                 .ToList());
         }
 
-        if (_tenantReader is null || _tenantFactory is null)
+        if (_tenantFactory is null)
         {
-            // Cross-tenant aggregation requires both ITenantReader (to enumerate tenants)
-            // and the tenant factory (registered only under Segregated). Host-only result
-            // is the best we can do.
             return results;
         }
 
-        IReadOnlyList<TenantData> tenants = _tenantReader
+        IReadOnlyList<(Guid Id, string Name)> tenants = _tenantEnumerator
             .GetAllAsync().GetAwaiter().GetResult();
 
-        foreach (TenantData tenant in tenants)
+        // Empty under NullTenantEnumerator — host-only result, no exception.
+        foreach ((Guid id, string name) in tenants)
         {
-            using (_currentTenant.Change(tenant.Id, tenant.Name))
+            using (_currentTenant.Change(id, name))
             using (WebhooksTenantDbContext tenantCtx = _tenantFactory.CreateDbContext())
             {
                 results.AddRange(tenantCtx.WebhookSubscriptions

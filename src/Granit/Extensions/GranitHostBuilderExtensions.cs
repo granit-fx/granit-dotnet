@@ -101,6 +101,7 @@ public static class GranitHostBuilderExtensions
             moduleAssemblies);
 
         builder.Services.TryAddSingleton<ICurrentTenant>(NullTenantContext.Instance);
+        builder.Services.TryAddSingleton<ITenantEnumerator>(NullTenantEnumerator.Instance);
 
         ConfigureJsonDefaults(builder);
 
@@ -126,6 +127,7 @@ public static class GranitHostBuilderExtensions
             moduleAssemblies);
 
         builder.Services.TryAddSingleton<ICurrentTenant>(NullTenantContext.Instance);
+        builder.Services.TryAddSingleton<ITenantEnumerator>(NullTenantEnumerator.Instance);
 
         ConfigureJsonDefaults(builder);
 

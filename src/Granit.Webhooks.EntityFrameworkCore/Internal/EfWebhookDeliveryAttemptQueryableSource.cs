@@ -1,5 +1,4 @@
 using Granit.MultiTenancy;
-using Granit.MultiTenancy.Stores;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.MultiTenancy;
 using Granit.QueryEngine;
@@ -14,10 +13,11 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// </summary>
 /// <remarks>
 /// Under <c>Segregated</c> + host-admin scope, delivery attempts are materialised across
-/// host + every tenant schema. Delivery volumes grow faster than subscription counts
-/// (every webhook delivery writes a row, ISO 27001 3-year retention), so admin dashboards
-/// using this source should always paginate and filter on <c>OccurredAt</c>. A Postgres
-/// cross-schema view is recommended for deployments with high delivery volume.
+/// host + every tenant returned by <see cref="ITenantEnumerator"/>. Delivery volumes grow
+/// faster than subscription counts (every webhook delivery writes a row, ISO 27001 3-year
+/// retention), so admin dashboards using this source should always paginate and filter on
+/// <c>OccurredAt</c>. A Postgres cross-schema view is recommended for deployments with
+/// high delivery volume.
 /// </remarks>
 internal sealed class EfWebhookDeliveryAttemptQueryableSource : IQueryableSource<WebhookDeliveryAttempt>, IDisposable
 {
@@ -26,23 +26,23 @@ internal sealed class EfWebhookDeliveryAttemptQueryableSource : IQueryableSource
     private readonly IDbContextFactory<WebhooksHostDbContext> _hostFactory;
     private readonly IDbContextFactory<WebhooksTenantDbContext>? _tenantFactory;
     private readonly ICurrentTenant _currentTenant;
-    private readonly ITenantReader? _tenantReader;
+    private readonly ITenantEnumerator _tenantEnumerator;
     private DbContext? _context;
     private List<WebhookDeliveryAttempt>? _materialized;
 
     public EfWebhookDeliveryAttemptQueryableSource(
         WebhooksEntityFrameworkCoreOptions options,
         ICurrentTenant currentTenant,
+        ITenantEnumerator tenantEnumerator,
         IDbContextFactory<WebhooksHostDbContext> hostFactory,
-        IDbContextFactory<WebhooksTenantDbContext>? tenantFactory = null,
-        ITenantReader? tenantReader = null)
+        IDbContextFactory<WebhooksTenantDbContext>? tenantFactory = null)
     {
         _storageMode = options.StorageMode;
         _bypassTenantFilter = !currentTenant.IsAvailable;
         _hostFactory = hostFactory;
         _tenantFactory = tenantFactory;
         _currentTenant = currentTenant;
-        _tenantReader = tenantReader;
+        _tenantEnumerator = tenantEnumerator;
     }
 
     public IQueryable<WebhookDeliveryAttempt> GetQueryable()
@@ -84,17 +84,17 @@ internal sealed class EfWebhookDeliveryAttemptQueryableSource : IQueryableSource
                 .ToList());
         }
 
-        if (_tenantReader is null || _tenantFactory is null)
+        if (_tenantFactory is null)
         {
             return results;
         }
 
-        IReadOnlyList<TenantData> tenants = _tenantReader
+        IReadOnlyList<(Guid Id, string Name)> tenants = _tenantEnumerator
             .GetAllAsync().GetAwaiter().GetResult();
 
-        foreach (TenantData tenant in tenants)
+        foreach ((Guid id, string name) in tenants)
         {
-            using (_currentTenant.Change(tenant.Id, tenant.Name))
+            using (_currentTenant.Change(id, name))
             using (WebhooksTenantDbContext tenantCtx = _tenantFactory.CreateDbContext())
             {
                 results.AddRange(tenantCtx.WebhookDeliveryAttempts

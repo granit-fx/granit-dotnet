@@ -19,7 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Webhooks\Granit.Webhooks.csproj" />
     <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
   </ItemGroup>
 
 </Project>

@@ -67,6 +67,11 @@ public static class MultiTenancyServiceCollectionExtensions
         // Granit.MultiTenancy.EntityFrameworkCore is in the module tree.
         services.TryAddScoped<ITenantReader, NullTenantReader>();
 
+        // Replace the NullTenantEnumerator registered by AddGranit<T>() with the adapter
+        // that bridges to ITenantReader. Soft-dep modules (Webhooks, Identity.Federated,
+        // etc.) inject ITenantEnumerator without referencing Granit.MultiTenancy.
+        services.Replace(ServiceDescriptor.Scoped<ITenantEnumerator, TenantReaderEnumeratorAdapter>());
+
         // Resolvers: CustomDomain (25) → Domain (50) → Header (100) → JWT (200) → QueryString (300)
         // Registered as scoped: DomainTenantResolver depends on ITenantReader (scoped, EF Core).
         // All resolvers aligned to scoped for consistency.

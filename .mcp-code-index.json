@@ -2413,8 +2413,7 @@
       "name": "Granit.Webhooks.EntityFrameworkCore",
       "deps": [
         "Granit.Webhooks",
-        "Granit.Persistence.EntityFrameworkCore",
-        "Granit.MultiTenancy"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -29871,6 +29870,15 @@
       "members": []
     },
     {
+      "name": "ITenantEnumerator",
+      "fqn": "Granit.MultiTenancy.ITenantEnumerator",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/ITenantEnumerator.cs",
+      "line": 24,
+      "members": []
+    },
+    {
       "name": "ITenantInfo",
       "fqn": "Granit.MultiTenancy.ITenantInfo",
       "kind": "interface",
@@ -48860,7 +48868,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/GranitWebhooksEntityFrameworkCoreModule.cs",
-      "line": 23,
+      "line": 32,
       "members": []
     },
     {

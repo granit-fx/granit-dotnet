@@ -1,5 +1,4 @@
 using Granit.MultiTenancy;
-using Granit.MultiTenancy.Stores;
 using Granit.Persistence.MultiTenancy;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
@@ -22,18 +21,22 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// </para>
 /// <para>
 /// <b>Segregated + host-admin scope</b> (Phase 2C). Iterates every tenant returned by
-/// <see cref="ITenantReader"/> via <see cref="ICurrentTenant.Change"/>, opens that tenant's
-/// isolated context, and sums into the host aggregate. <b>O(N) connections per stats call,
-/// N = number of tenants</b> — acceptable for the admin dashboard which is read rarely;
-/// a Postgres cross-schema materialised view is the documented optimisation path for
-/// deployments with hundreds of tenants.
+/// the framework-primitive <see cref="ITenantEnumerator"/> via
+/// <see cref="ICurrentTenant.Change"/>, opens that tenant's isolated context, and sums
+/// into the host aggregate. <b>O(N) connections per stats call, N = number of tenants</b>
+/// — acceptable for the admin dashboard which is read rarely; a Postgres cross-schema
+/// materialised view is the documented optimisation path for deployments with hundreds
+/// of tenants. Soft-dep on <see cref="ITenantEnumerator"/> means this module never
+/// references the <c>Granit.MultiTenancy</c> package directly — the default
+/// <c>NullTenantEnumerator</c> returns an empty list, gracefully degrading to host-only
+/// aggregation when no multi-tenancy stack is loaded.
 /// </para>
 /// </remarks>
 internal sealed class EfWebhookStatsReader(
     WebhooksContextResolver resolver,
     ICurrentTenant currentTenant,
-    IClock clock,
-    ITenantReader? tenantReader = null) : IWebhookStatsReader
+    ITenantEnumerator tenantEnumerator,
+    IClock clock) : IWebhookStatsReader
 {
     public async Task<WebhookStats> GetStatsAsync(CancellationToken cancellationToken = default)
     {
@@ -76,22 +79,17 @@ internal sealed class EfWebhookStatsReader(
             await AggregateAsync(host, cutoff, acc, cancellationToken).ConfigureAwait(false);
         }
 
-        if (tenantReader is null)
-        {
-            // Without ITenantReader we cannot enumerate tenants — host counts only.
-            // Granit.MultiTenancy.EntityFrameworkCore must be registered for cross-tenant aggregation.
-            return;
-        }
-
-        IReadOnlyList<TenantData> tenants = await tenantReader
+        IReadOnlyList<(Guid Id, string Name)> tenants = await tenantEnumerator
             .GetAllAsync(cancellationToken).ConfigureAwait(false);
 
-        foreach (TenantData tenant in tenants)
+        // Empty under NullTenantEnumerator (no Granit.MultiTenancy package loaded) —
+        // the foreach short-circuits and host counts stand alone, no exception thrown.
+        foreach ((Guid id, string name) in tenants)
         {
-            using (currentTenant.Change(tenant.Id, tenant.Name))
+            using (currentTenant.Change(id, name))
             {
                 await using IWebhooksDbContext db = await resolver
-                    .OpenForScopeAsync(tenant.Id, cancellationToken).ConfigureAwait(false);
+                    .OpenForScopeAsync(id, cancellationToken).ConfigureAwait(false);
                 await AggregateAsync(db, cutoff, acc, cancellationToken).ConfigureAwait(false);
             }
         }

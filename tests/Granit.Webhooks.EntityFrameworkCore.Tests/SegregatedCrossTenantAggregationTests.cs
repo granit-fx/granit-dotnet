@@ -1,7 +1,6 @@
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.MultiTenancy;
-using Granit.MultiTenancy.Stores;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.MultiTenancy;
 using Granit.Timing;
@@ -19,7 +18,7 @@ namespace Granit.Webhooks.EntityFrameworkCore.Tests;
 /// scope, <see cref="EfWebhookSubscriptionQueryableSource"/>,
 /// <see cref="EfWebhookDeliveryAttemptQueryableSource"/> and
 /// <see cref="EfWebhookStatsReader"/> iterate every tenant via
-/// <see cref="ITenantReader"/> + <see cref="ICurrentTenant.Change"/>.
+/// <see cref="ITenantEnumerator"/> + <see cref="ICurrentTenant.Change"/>.
 /// </summary>
 public sealed class SegregatedCrossTenantAggregationTests
 {
@@ -46,14 +45,14 @@ public sealed class SegregatedCrossTenantAggregationTests
         IDbContextFactory<WebhooksHostDbContext> hostFactory = StubHostFactory(hostOpts);
         ICurrentTenant currentTenant = NewSwitchableTenant(initiallyAvailable: false);
         IDbContextFactory<WebhooksTenantDbContext> tenantFactory = StubTenantFactory(tenantOpts, currentTenant);
-        ITenantReader tenantReader = StubTenantReader(_tenantA, _tenantB);
+        ITenantEnumerator tenantEnumerator = StubTenantEnumerator(_tenantA, _tenantB);
 
         EfWebhookSubscriptionQueryableSource sut = new(
             new WebhooksEntityFrameworkCoreOptions { StorageMode = DualScopeStorageMode.Segregated },
             currentTenant,
+            tenantEnumerator,
             hostFactory,
-            tenantFactory,
-            tenantReader);
+            tenantFactory);
 
         WebhookSubscription[] result = [.. sut.GetQueryable()];
 
@@ -79,13 +78,13 @@ public sealed class SegregatedCrossTenantAggregationTests
         IDbContextFactory<WebhooksHostDbContext> hostFactory = StubHostFactory(hostOpts);
         ICurrentTenant currentTenant = NewSwitchableTenant(initiallyAvailable: false);
         IDbContextFactory<WebhooksTenantDbContext> tenantFactory = StubTenantFactory(tenantOpts, currentTenant);
-        ITenantReader tenantReader = StubTenantReader(_tenantA, _tenantB);
+        ITenantEnumerator tenantEnumerator = StubTenantEnumerator(_tenantA, _tenantB);
         WebhooksContextResolver resolver = new(DualScopeStorageMode.Segregated, hostFactory, tenantFactory);
 
         IClock clock = Substitute.For<IClock>();
         clock.Now.Returns(new DateTimeOffset(2026, 5, 28, 12, 0, 0, TimeSpan.Zero));
 
-        EfWebhookStatsReader sut = new(resolver, currentTenant, clock, tenantReader);
+        EfWebhookStatsReader sut = new(resolver, currentTenant, tenantEnumerator, clock);
 
         Webhooks.Abstractions.WebhookStats stats = await sut.GetStatsAsync(TestContext.Current.CancellationToken);
 
@@ -94,7 +93,7 @@ public sealed class SegregatedCrossTenantAggregationTests
     }
 
     [Fact]
-    public async Task SubscriptionQueryable_HostAdmin_NoTenantReader_ReturnsHostOnly()
+    public async Task SubscriptionQueryable_HostAdmin_EmptyTenantEnumerator_ReturnsHostOnly()
     {
         DbContextOptions<WebhooksHostDbContext> hostOpts = InMemoryHostOptions("subs-host-noreader");
         DbContextOptions<WebhooksTenantDbContext> tenantOpts = InMemoryTenantOptions("subs-tenant-noreader");
@@ -106,13 +105,13 @@ public sealed class SegregatedCrossTenantAggregationTests
         ICurrentTenant currentTenant = NewSwitchableTenant(initiallyAvailable: false);
         IDbContextFactory<WebhooksTenantDbContext> tenantFactory = StubTenantFactory(tenantOpts, currentTenant);
 
-        // No ITenantReader → fallback to host-only.
+        // NullTenantEnumerator-style stub (empty list) → fallback to host-only.
         EfWebhookSubscriptionQueryableSource sut = new(
             new WebhooksEntityFrameworkCoreOptions { StorageMode = DualScopeStorageMode.Segregated },
             currentTenant,
+            tenantEnumerator: StubTenantEnumerator() /* empty */,
             hostFactory,
-            tenantFactory,
-            tenantReader: null);
+            tenantFactory);
 
         WebhookSubscription[] result = [.. sut.GetQueryable()];
 
@@ -177,21 +176,13 @@ public sealed class SegregatedCrossTenantAggregationTests
         return factory;
     }
 
-    private static ITenantReader StubTenantReader(params Guid[] tenantIds)
+    private static ITenantEnumerator StubTenantEnumerator(params Guid[] tenantIds)
     {
-        ITenantReader reader = Substitute.For<ITenantReader>();
-        TenantData[] tenants = [.. tenantIds.Select(id => new TenantData(
-            Id: id,
-            Name: $"tenant-{id}",
-            Identifier: $"tenant-{id}",
-            ContactEmail: null,
-            Activated: true,
-            Jurisdiction: null,
-            CreatedAt: DateTimeOffset.UtcNow,
-            CustomDomain: null))];
-        reader.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<TenantData>>(tenants));
-        return reader;
+        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
+        (Guid Id, string Name)[] tenants = [.. tenantIds.Select(id => (id, $"tenant-{id}"))];
+        enumerator.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<(Guid, string)>>(tenants));
+        return enumerator;
     }
 
     private static ICurrentTenant NewSwitchableTenant(bool initiallyAvailable)
