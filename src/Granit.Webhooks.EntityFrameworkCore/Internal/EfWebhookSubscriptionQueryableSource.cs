@@ -3,6 +3,7 @@ using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.Webhooks.Domain;
+using Granit.Webhooks.EntityFrameworkCore.Options;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Webhooks.EntityFrameworkCore.Internal;

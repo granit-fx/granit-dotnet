@@ -48818,7 +48818,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/Extensions/WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitWebhooksEntityFrameworkCore",
@@ -48871,11 +48871,11 @@
     },
     {
       "name": "WebhooksEntityFrameworkCoreOptions",
-      "fqn": "Granit.Webhooks.EntityFrameworkCore.WebhooksEntityFrameworkCoreOptions",
+      "fqn": "Granit.Webhooks.EntityFrameworkCore.Options.WebhooksEntityFrameworkCoreOptions",
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/Options/WebhooksEntityFrameworkCoreOptions.cs",
-      "line": 31,
+      "line": 32,
       "members": [
         {
           "name": "StorageMode",
