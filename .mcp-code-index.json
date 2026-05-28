@@ -722,6 +722,34 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.EntityMerge",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.EntityMerge.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.EntityMerge.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.EntityMerge.EntityFrameworkCore",
+      "deps": [
+        "Granit",
+        "Granit.Encryption",
+        "Granit.EntityMerge",
+        "Granit.Persistence",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Guids",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Events",
       "deps": [
         "Granit"
@@ -1321,34 +1349,6 @@
         "Granit.Authorization",
         "Granit.Mcp",
         "Granit.Validation"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Mergeable",
-      "deps": [
-        "Granit"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Mergeable.BackgroundJobs",
-      "deps": [
-        "Granit.BackgroundJobs",
-        "Granit.Mergeable.EntityFrameworkCore"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Mergeable.EntityFrameworkCore",
-      "deps": [
-        "Granit",
-        "Granit.Encryption",
-        "Granit.Mergeable",
-        "Granit.Persistence",
-        "Granit.Persistence.EntityFrameworkCore",
-        "Granit.Guids",
-        "Granit.Timing"
       ],
       "framework": "net10.0"
     },
@@ -17393,6 +17393,355 @@
       "members": []
     },
     {
+      "name": "GranitEntityMergeBackgroundJobsModule",
+      "fqn": "Granit.EntityMerge.BackgroundJobs.GranitEntityMergeBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.EntityMerge.BackgroundJobs",
+      "file": "src/Granit.EntityMerge.BackgroundJobs/GranitEntityMergeBackgroundJobsModule.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MergeIdempotencyCleanupHandler",
+      "fqn": "Granit.EntityMerge.BackgroundJobs.Jobs.MergeIdempotencyCleanupHandler",
+      "kind": "class",
+      "project": "Granit.EntityMerge.BackgroundJobs",
+      "file": "src/Granit.EntityMerge.BackgroundJobs/Jobs/MergeIdempotencyCleanupHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(MergeIdempotencyCleanupJob _, IMergeIdempotencySweeper sweeper, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "MergeIdempotencyCleanupJob",
+      "fqn": "Granit.EntityMerge.BackgroundJobs.Jobs.MergeIdempotencyCleanupJob",
+      "kind": "record",
+      "project": "Granit.EntityMerge.BackgroundJobs",
+      "file": "src/Granit.EntityMerge.BackgroundJobs/Jobs/MergeIdempotencyCleanupJob.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "IMergeIdempotencySweeper",
+      "fqn": "Granit.EntityMerge.BackgroundJobs.Services.IMergeIdempotencySweeper",
+      "kind": "interface",
+      "project": "Granit.EntityMerge.BackgroundJobs",
+      "file": "src/Granit.EntityMerge.BackgroundJobs/Services/IMergeIdempotencySweeper.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IMergeable",
+      "fqn": "Granit.EntityMerge.Domain.IMergeable",
+      "kind": "interface",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/Domain/IMergeable.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "GetConflicts",
+          "kind": "method",
+          "signature": "GetConflicts(TSelf loser)",
+          "returnType": "IReadOnlyList<FieldConflict>"
+        },
+        {
+          "name": "MergeFrom",
+          "kind": "method",
+          "signature": "MergeFrom(TSelf loser, MergeFieldChoices choices)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "EntityMergeEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.EntityMerge.EntityFrameworkCore.Extensions.EntityMergeEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.EntityMerge.EntityFrameworkCore",
+      "file": "src/Granit.EntityMerge.EntityFrameworkCore/Extensions/EntityMergeEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitEntityMergeEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitEntityMergeEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "EntityMergeModelBuilderExtensions",
+      "fqn": "Granit.EntityMerge.EntityFrameworkCore.Extensions.EntityMergeModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.EntityMerge.EntityFrameworkCore",
+      "file": "src/Granit.EntityMerge.EntityFrameworkCore/Extensions/EntityMergeModelBuilderExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureEntityMergeModule",
+          "kind": "method",
+          "signature": "ConfigureEntityMergeModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitEntityMergeDbProperties",
+      "fqn": "Granit.EntityMerge.EntityFrameworkCore.GranitEntityMergeDbProperties",
+      "kind": "class",
+      "project": "Granit.EntityMerge.EntityFrameworkCore",
+      "file": "src/Granit.EntityMerge.EntityFrameworkCore/GranitEntityMergeDbProperties.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitEntityMergeEntityFrameworkCoreModule",
+      "fqn": "Granit.EntityMerge.EntityFrameworkCore.GranitEntityMergeEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.EntityMerge.EntityFrameworkCore",
+      "file": "src/Granit.EntityMerge.EntityFrameworkCore/GranitEntityMergeEntityFrameworkCoreModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "EntityMergeOptions",
+      "fqn": "Granit.EntityMerge.EntityFrameworkCore.Options.EntityMergeOptions",
+      "kind": "class",
+      "project": "Granit.EntityMerge.EntityFrameworkCore",
+      "file": "src/Granit.EntityMerge.EntityFrameworkCore/Options/EntityMergeOptions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan MergeTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(24)",
+          "returnType": "TimeSpan IdempotencyRetention { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "MergeException",
+      "fqn": "Granit.EntityMerge.Exceptions.MergeException",
+      "kind": "class",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/Exceptions/MergeException.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "EntityMergeServiceCollectionExtensions",
+      "fqn": "Granit.EntityMerge.Extensions.EntityMergeServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/Extensions/EntityMergeServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "FieldConflict",
+      "fqn": "Granit.EntityMerge.FieldConflict",
+      "kind": "record",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/FieldConflict.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "GranitEntityMergeModule",
+      "fqn": "Granit.EntityMerge.GranitEntityMergeModule",
+      "kind": "class",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/GranitEntityMergeModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "IMergeService",
+      "fqn": "Granit.EntityMerge.IMergeService",
+      "kind": "interface",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/IMergeService.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "MergePreviewAsync",
+          "kind": "method",
+          "signature": "MergePreviewAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)",
+          "returnType": "Task<MergeResult<TAggregate>>"
+        },
+        {
+          "name": "MergeAsync",
+          "kind": "method",
+          "signature": "MergeAsync(MergeRequest request, CancellationToken cancellationToken)",
+          "returnType": "Task<MergeResult<TAggregate>>"
+        }
+      ]
+    },
+    {
+      "name": "IMergeableAggregateAdapter",
+      "fqn": "Granit.EntityMerge.IMergeableAggregateAdapter",
+      "kind": "interface",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/IMergeableAggregateAdapter.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "LoadAsync",
+          "kind": "method",
+          "signature": "LoadAsync(Guid id, CancellationToken cancellationToken)",
+          "returnType": "Task<TAggregate?>"
+        },
+        {
+          "name": "PersistMergedPairAsync",
+          "kind": "method",
+          "signature": "PersistMergedPairAsync(TAggregate survivor, TAggregate loser, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ApplyTombstone",
+          "kind": "method",
+          "signature": "ApplyTombstone(TAggregate loser, Guid survivorId, DateTimeOffset mergedAt)",
+          "returnType": "void"
+        },
+        {
+          "name": "CollapseChainTombstonesAsync",
+          "kind": "method",
+          "signature": "CollapseChainTombstonesAsync(Guid newSurvivorId, Guid oldSurvivorId, CancellationToken cancellationToken)",
+          "returnType": "Task<int>"
+        },
+        {
+          "name": "RaiseMergedEvents",
+          "kind": "method",
+          "signature": "RaiseMergedEvents(TAggregate survivor, TAggregate loser, MergeRequest request, IReadOnlyDictionary<string, int> rewriteCounts, DateTimeOffset mergedAt)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IReferenceRewriter",
+      "fqn": "Granit.EntityMerge.IReferenceRewriter",
+      "kind": "interface",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/IReferenceRewriter.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "RewriteAsync",
+          "kind": "method",
+          "signature": "RewriteAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)",
+          "returnType": "string Description { get; } Task<int>"
+        },
+        {
+          "name": "CountAsync",
+          "kind": "method",
+          "signature": "CountAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "MergeFieldChoices",
+      "fqn": "Granit.EntityMerge.MergeFieldChoices",
+      "kind": "class",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/MergeFieldChoices.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Dictionary<string, WinnerSide>(StringComparer.Ordinal)",
+          "returnType": "MergeFieldChoices Empty { get; } ="
+        },
+        {
+          "name": "MergeFieldChoices",
+          "kind": "method",
+          "signature": "MergeFieldChoices(IReadOnlyDictionary<string, WinnerSide> choices)",
+          "returnType": "IReadOnlyDictionary<string, WinnerSide> Choices { get; } public"
+        },
+        {
+          "name": "NewBuilder",
+          "kind": "method",
+          "signature": "NewBuilder()",
+          "returnType": "MergeFieldChoicesBuilder"
+        }
+      ]
+    },
+    {
+      "name": "MergeFieldChoicesBuilder",
+      "fqn": "Granit.EntityMerge.MergeFieldChoicesBuilder",
+      "kind": "class",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/MergeFieldChoices.cs",
+      "line": 46,
+      "members": [
+        {
+          "name": "With",
+          "kind": "method",
+          "signature": "With(string fieldPath, WinnerSide side)",
+          "returnType": "MergeFieldChoicesBuilder"
+        }
+      ]
+    },
+    {
+      "name": "MergeRequest",
+      "fqn": "Granit.EntityMerge.MergeRequest",
+      "kind": "record",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/MergeRequest.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "MergeResult",
+      "fqn": "Granit.EntityMerge.MergeResult",
+      "kind": "record",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/MergeResult.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "WinnerSide",
+      "fqn": "Granit.EntityMerge.WinnerSide",
+      "kind": "enum",
+      "project": "Granit.EntityMerge",
+      "file": "src/Granit.EntityMerge/WinnerSide.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "EventsMetrics",
       "fqn": "Granit.Events.Diagnostics.EventsMetrics",
       "kind": "class",
@@ -28746,355 +29095,6 @@
       "project": "Granit.Mcp.Server",
       "file": "src/Granit.Mcp.Server/Permissions/McpPermissions.cs",
       "line": 16,
-      "members": []
-    },
-    {
-      "name": "GranitMergeableBackgroundJobsModule",
-      "fqn": "Granit.Mergeable.BackgroundJobs.GranitMergeableBackgroundJobsModule",
-      "kind": "class",
-      "project": "Granit.Mergeable.BackgroundJobs",
-      "file": "src/Granit.Mergeable.BackgroundJobs/GranitMergeableBackgroundJobsModule.cs",
-      "line": 23,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "MergeIdempotencyCleanupHandler",
-      "fqn": "Granit.Mergeable.BackgroundJobs.Jobs.MergeIdempotencyCleanupHandler",
-      "kind": "class",
-      "project": "Granit.Mergeable.BackgroundJobs",
-      "file": "src/Granit.Mergeable.BackgroundJobs/Jobs/MergeIdempotencyCleanupHandler.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(MergeIdempotencyCleanupJob _, IMergeIdempotencySweeper sweeper, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "MergeIdempotencyCleanupJob",
-      "fqn": "Granit.Mergeable.BackgroundJobs.Jobs.MergeIdempotencyCleanupJob",
-      "kind": "record",
-      "project": "Granit.Mergeable.BackgroundJobs",
-      "file": "src/Granit.Mergeable.BackgroundJobs/Jobs/MergeIdempotencyCleanupJob.cs",
-      "line": 13,
-      "members": []
-    },
-    {
-      "name": "IMergeIdempotencySweeper",
-      "fqn": "Granit.Mergeable.BackgroundJobs.Services.IMergeIdempotencySweeper",
-      "kind": "interface",
-      "project": "Granit.Mergeable.BackgroundJobs",
-      "file": "src/Granit.Mergeable.BackgroundJobs/Services/IMergeIdempotencySweeper.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "ExecuteAsync",
-          "kind": "method",
-          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IMergeable",
-      "fqn": "Granit.Mergeable.Domain.IMergeable",
-      "kind": "interface",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/Domain/IMergeable.cs",
-      "line": 29,
-      "members": [
-        {
-          "name": "GetConflicts",
-          "kind": "method",
-          "signature": "GetConflicts(TSelf loser)",
-          "returnType": "IReadOnlyList<FieldConflict>"
-        },
-        {
-          "name": "MergeFrom",
-          "kind": "method",
-          "signature": "MergeFrom(TSelf loser, MergeFieldChoices choices)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "MergeableEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.Mergeable.EntityFrameworkCore.Extensions.MergeableEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Mergeable.EntityFrameworkCore",
-      "file": "src/Granit.Mergeable.EntityFrameworkCore/Extensions/MergeableEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "AddGranitMergeableEntityFrameworkCore",
-          "kind": "method",
-          "signature": "AddGranitMergeableEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
-    },
-    {
-      "name": "MergeableModelBuilderExtensions",
-      "fqn": "Granit.Mergeable.EntityFrameworkCore.Extensions.MergeableModelBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Mergeable.EntityFrameworkCore",
-      "file": "src/Granit.Mergeable.EntityFrameworkCore/Extensions/MergeableModelBuilderExtensions.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "ConfigureMergeableModule",
-          "kind": "method",
-          "signature": "ConfigureMergeableModule(this ModelBuilder modelBuilder)",
-          "returnType": "ModelBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitMergeableDbProperties",
-      "fqn": "Granit.Mergeable.EntityFrameworkCore.GranitMergeableDbProperties",
-      "kind": "class",
-      "project": "Granit.Mergeable.EntityFrameworkCore",
-      "file": "src/Granit.Mergeable.EntityFrameworkCore/GranitMergeableDbProperties.cs",
-      "line": 22,
-      "members": [
-        {
-          "name": "DbTablePrefix",
-          "kind": "property",
-          "signature": "string DbTablePrefix",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitMergeableEntityFrameworkCoreModule",
-      "fqn": "Granit.Mergeable.EntityFrameworkCore.GranitMergeableEntityFrameworkCoreModule",
-      "kind": "class",
-      "project": "Granit.Mergeable.EntityFrameworkCore",
-      "file": "src/Granit.Mergeable.EntityFrameworkCore/GranitMergeableEntityFrameworkCoreModule.cs",
-      "line": 15,
-      "members": []
-    },
-    {
-      "name": "MergeableOptions",
-      "fqn": "Granit.Mergeable.EntityFrameworkCore.Options.MergeableOptions",
-      "kind": "class",
-      "project": "Granit.Mergeable.EntityFrameworkCore",
-      "file": "src/Granit.Mergeable.EntityFrameworkCore/Options/MergeableOptions.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "FromSeconds",
-          "kind": "method",
-          "signature": "FromSeconds(30)",
-          "returnType": "TimeSpan MergeTimeout { get; set; } = TimeSpan."
-        },
-        {
-          "name": "FromHours",
-          "kind": "method",
-          "signature": "FromHours(24)",
-          "returnType": "TimeSpan IdempotencyRetention { get; set; } = TimeSpan."
-        }
-      ]
-    },
-    {
-      "name": "MergeException",
-      "fqn": "Granit.Mergeable.Exceptions.MergeException",
-      "kind": "class",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/Exceptions/MergeException.cs",
-      "line": 8,
-      "members": []
-    },
-    {
-      "name": "MergeableServiceCollectionExtensions",
-      "fqn": "Granit.Mergeable.Extensions.MergeableServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/Extensions/MergeableServiceCollectionExtensions.cs",
-      "line": 12,
-      "members": []
-    },
-    {
-      "name": "FieldConflict",
-      "fqn": "Granit.Mergeable.FieldConflict",
-      "kind": "record",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/FieldConflict.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "GranitMergeableModule",
-      "fqn": "Granit.Mergeable.GranitMergeableModule",
-      "kind": "class",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/GranitMergeableModule.cs",
-      "line": 15,
-      "members": []
-    },
-    {
-      "name": "IMergeService",
-      "fqn": "Granit.Mergeable.IMergeService",
-      "kind": "interface",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/IMergeService.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "MergePreviewAsync",
-          "kind": "method",
-          "signature": "MergePreviewAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)",
-          "returnType": "Task<MergeResult<TAggregate>>"
-        },
-        {
-          "name": "MergeAsync",
-          "kind": "method",
-          "signature": "MergeAsync(MergeRequest request, CancellationToken cancellationToken)",
-          "returnType": "Task<MergeResult<TAggregate>>"
-        }
-      ]
-    },
-    {
-      "name": "IMergeableAggregateAdapter",
-      "fqn": "Granit.Mergeable.IMergeableAggregateAdapter",
-      "kind": "interface",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/IMergeableAggregateAdapter.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "LoadAsync",
-          "kind": "method",
-          "signature": "LoadAsync(Guid id, CancellationToken cancellationToken)",
-          "returnType": "Task<TAggregate?>"
-        },
-        {
-          "name": "PersistMergedPairAsync",
-          "kind": "method",
-          "signature": "PersistMergedPairAsync(TAggregate survivor, TAggregate loser, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        },
-        {
-          "name": "ApplyTombstone",
-          "kind": "method",
-          "signature": "ApplyTombstone(TAggregate loser, Guid survivorId, DateTimeOffset mergedAt)",
-          "returnType": "void"
-        },
-        {
-          "name": "CollapseChainTombstonesAsync",
-          "kind": "method",
-          "signature": "CollapseChainTombstonesAsync(Guid newSurvivorId, Guid oldSurvivorId, CancellationToken cancellationToken)",
-          "returnType": "Task<int>"
-        },
-        {
-          "name": "RaiseMergedEvents",
-          "kind": "method",
-          "signature": "RaiseMergedEvents(TAggregate survivor, TAggregate loser, MergeRequest request, IReadOnlyDictionary<string, int> rewriteCounts, DateTimeOffset mergedAt)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "IReferenceRewriter",
-      "fqn": "Granit.Mergeable.IReferenceRewriter",
-      "kind": "interface",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/IReferenceRewriter.cs",
-      "line": 29,
-      "members": [
-        {
-          "name": "RewriteAsync",
-          "kind": "method",
-          "signature": "RewriteAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)",
-          "returnType": "string Description { get; } Task<int>"
-        },
-        {
-          "name": "CountAsync",
-          "kind": "method",
-          "signature": "CountAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)",
-          "returnType": "Task<int>"
-        }
-      ]
-    },
-    {
-      "name": "MergeFieldChoices",
-      "fqn": "Granit.Mergeable.MergeFieldChoices",
-      "kind": "class",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/MergeFieldChoices.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new(Dictionary<string, WinnerSide>(StringComparer.Ordinal)",
-          "returnType": "MergeFieldChoices Empty { get; } ="
-        },
-        {
-          "name": "MergeFieldChoices",
-          "kind": "method",
-          "signature": "MergeFieldChoices(IReadOnlyDictionary<string, WinnerSide> choices)",
-          "returnType": "IReadOnlyDictionary<string, WinnerSide> Choices { get; } public"
-        },
-        {
-          "name": "NewBuilder",
-          "kind": "method",
-          "signature": "NewBuilder()",
-          "returnType": "MergeFieldChoicesBuilder"
-        }
-      ]
-    },
-    {
-      "name": "MergeFieldChoicesBuilder",
-      "fqn": "Granit.Mergeable.MergeFieldChoicesBuilder",
-      "kind": "class",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/MergeFieldChoices.cs",
-      "line": 46,
-      "members": [
-        {
-          "name": "With",
-          "kind": "method",
-          "signature": "With(string fieldPath, WinnerSide side)",
-          "returnType": "MergeFieldChoicesBuilder"
-        }
-      ]
-    },
-    {
-      "name": "MergeRequest",
-      "fqn": "Granit.Mergeable.MergeRequest",
-      "kind": "record",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/MergeRequest.cs",
-      "line": 17,
-      "members": []
-    },
-    {
-      "name": "MergeResult",
-      "fqn": "Granit.Mergeable.MergeResult",
-      "kind": "record",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/MergeResult.cs",
-      "line": 15,
-      "members": []
-    },
-    {
-      "name": "WinnerSide",
-      "fqn": "Granit.Mergeable.WinnerSide",
-      "kind": "enum",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/WinnerSide.cs",
-      "line": 4,
       "members": []
     },
     {

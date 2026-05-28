@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.EntityMerge.BackgroundJobs</PackageId>
+    <Description>Recurring background jobs for the Granit.EntityMerge orchestrator. Ships MergeIdempotencyCleanupJob — a cron-driven sweeper that deletes merge_idempotency rows older than EntityMergeOptions.IdempotencyRetention so the cache cannot grow unbounded and PII does not linger past the configured retention window (GDPR Art. 5(1)(e)).</Description>
+    <IsPackable>true</IsPackable>
+    <!-- EF1001: false positive — this assembly is an authorised internal consumer of EntityMergeDbContext via InternalsVisibleTo. -->
+    <NoWarn>$(NoWarn);EF1001</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.EntityMerge.BackgroundJobs.Tests" />
+    <!-- granit-business: Parties merge integration tests assert the cleanup
+         service's retention sweep against a real Postgres testcontainer. -->
+    <InternalsVisibleTo Include="Granit.Parties.EntityMerge.Tests.Integration" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.EntityMerge.EntityFrameworkCore\Granit.EntityMerge.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

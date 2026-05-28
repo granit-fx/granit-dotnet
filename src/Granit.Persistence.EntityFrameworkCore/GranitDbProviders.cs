@@ -18,7 +18,7 @@ namespace Granit.Persistence.EntityFrameworkCore;
 /// </code>
 /// </para>
 /// <para>
-/// Currently consumed by <c>MergeableConcurrencyLock</c>, <c>MeteringConcurrencyLock</c>,
+/// Currently consumed by <c>EntityMergeConcurrencyLock</c>, <c>MeteringConcurrencyLock</c>,
 /// and <c>PartiesPostgresMigrationExtensions</c>. Keep this list narrow — adding a provider
 /// here implies the framework has tested support for it; only PostgreSQL and SQL Server are
 /// first-class today.

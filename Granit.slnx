@@ -40,9 +40,9 @@
     <Project Path="src/Granit.Mcp.Client/Granit.Mcp.Client.csproj" />
     <Project Path="src/Granit.Mcp.Server/Granit.Mcp.Server.csproj" />
     <Project Path="src/Granit.Mcp/Granit.Mcp.csproj" />
-    <Project Path="src/Granit.Mergeable.BackgroundJobs/Granit.Mergeable.BackgroundJobs.csproj" />
-    <Project Path="src/Granit.Mergeable.EntityFrameworkCore/Granit.Mergeable.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.Mergeable/Granit.Mergeable.csproj" />
+    <Project Path="src/Granit.EntityMerge.BackgroundJobs/Granit.EntityMerge.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.EntityMerge.EntityFrameworkCore/Granit.EntityMerge.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.EntityMerge/Granit.EntityMerge.csproj" />
     <Project Path="src/Granit.MultiTenancy.Auditing/Granit.MultiTenancy.Auditing.csproj" />
     <Project Path="src/Granit.MultiTenancy.Authorization/Granit.MultiTenancy.Authorization.csproj" />
     <Project Path="src/Granit.MultiTenancy.Endpoints/Granit.MultiTenancy.Endpoints.csproj" />
@@ -355,9 +355,9 @@
     <Project Path="tests/Granit.Mcp.Client.Tests/Granit.Mcp.Client.Tests.csproj" />
     <Project Path="tests/Granit.Mcp.Server.Tests/Granit.Mcp.Server.Tests.csproj" />
     <Project Path="tests/Granit.Mcp.Tests/Granit.Mcp.Tests.csproj" />
-    <Project Path="tests/Granit.Mergeable.BackgroundJobs.Tests/Granit.Mergeable.BackgroundJobs.Tests.csproj" />
-    <Project Path="tests/Granit.Mergeable.EntityFrameworkCore.Tests/Granit.Mergeable.EntityFrameworkCore.Tests.csproj" />
-    <Project Path="tests/Granit.Mergeable.Tests/Granit.Mergeable.Tests.csproj" />
+    <Project Path="tests/Granit.EntityMerge.BackgroundJobs.Tests/Granit.EntityMerge.BackgroundJobs.Tests.csproj" />
+    <Project Path="tests/Granit.EntityMerge.EntityFrameworkCore.Tests/Granit.EntityMerge.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.EntityMerge.Tests/Granit.EntityMerge.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Auditing.Tests/Granit.MultiTenancy.Auditing.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Authorization.Tests/Granit.MultiTenancy.Authorization.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Endpoints.Tests/Granit.MultiTenancy.Endpoints.Tests.csproj" />

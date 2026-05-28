@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.EntityMerge.EntityFrameworkCore</PackageId>
+    <Description>EF Core orchestrator for the Granit.EntityMerge framework. Provides EfMergeService&lt;TAggregate&gt; (TransactionScope Serializable, advisory lock + FOR UPDATE, dry-run preview, Stripe-style idempotency, scatter-gather across registered IReferenceRewriter&lt;T&gt;s) and EntityMergeDbContext (idempotency cache table). Single-Postgres deployment assumption; no DTC.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.EntityMerge.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.EntityMerge.BackgroundJobs" />
+    <InternalsVisibleTo Include="Granit.EntityMerge.BackgroundJobs.Tests" />
+    <!-- granit-business: Parties merge integration tests wire EfMergeService<Party>
+         + EntityMergeDbContext directly against a Postgres testcontainer. -->
+    <InternalsVisibleTo Include="Granit.Parties.EntityMerge.Tests.Integration" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Encryption\Granit.Encryption.csproj" />
+    <ProjectReference Include="..\Granit.EntityMerge\Granit.EntityMerge.csproj" />
+    <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -3,7 +3,7 @@ namespace Granit.Domain;
 /// <summary>
 /// Tombstone state for an aggregate that has been absorbed into another instance via a merge.
 /// Independent of the merge behaviour (the merge orchestrator and per-aggregate <c>MergeFrom</c>
-/// methods live in <c>Granit.Mergeable</c>) so EF query filters, admin listings, audit views,
+/// methods live in <c>Granit.EntityMerge</c>) so EF query filters, admin listings, audit views,
 /// and a future un-merge endpoint can target this contract without taking a dependency on
 /// the merge module.
 /// </summary>

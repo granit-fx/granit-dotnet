@@ -38,7 +38,7 @@ public sealed partial class SectionNameConventionTests
         "Encryption",
         "Indexing",
         "Mcp",
-        "Mergeable",
+        "EntityMerge",
         "MultiTenancy",
         "Notifications",
         "Observability",
