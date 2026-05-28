@@ -38133,7 +38133,7 @@
       "kind": "interface",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/IPrivacyDataProvider.cs",
-      "line": 25,
+      "line": 37,
       "members": [
         {
           "name": "HasDataAsync",
@@ -38247,7 +38247,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/PersonalDataExportSaga.cs",
-      "line": 36,
+      "line": 37,
       "members": [
         {
           "name": "Id",
@@ -38270,7 +38270,7 @@
         {
           "name": "Start",
           "kind": "method",
-          "signature": "Start(PersonalDataRequestedEto @event, IPrivacyScopeResolver scopeResolver, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics, CancellationToken cancellationToken)",
+          "signature": "Start(PersonalDataRequestedEto @event, IPrivacyScopeResolver scopeResolver, ICurrentTenant currentTenant, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics, CancellationToken cancellationToken)",
           "returnType": "Guid? TenantId { get; set; } public DateTimeOffset RequestedAt { get; set; } public Task<ExportCompletedEto?>"
         }
       ]
@@ -38340,7 +38340,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/ProviderRegistration.cs",
-      "line": 17,
+      "line": 22,
       "members": []
     },
     {

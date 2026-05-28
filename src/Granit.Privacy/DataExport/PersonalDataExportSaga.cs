@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Options;
@@ -73,6 +74,7 @@ public sealed class PersonalDataExportSaga : Saga
     public async Task<ExportCompletedEto?> Start(
         PersonalDataRequestedEto @event,
         IPrivacyScopeResolver scopeResolver,
+        ICurrentTenant currentTenant,
         IOptions<GranitPrivacyOptions> options,
         IMessageContext context,
         PrivacyMetrics metrics,
@@ -84,6 +86,14 @@ public sealed class PersonalDataExportSaga : Saga
         TenantId = @event.TenantId;
         RequestedAt = @event.RequestedAt;
         metrics.RecordExportRequested(TenantId, Regulation);
+
+        // Anchor the tenant carried by the envelope payload before resolving any scoped
+        // service. TenantContextBehavior normally sets this from the X-Tenant-Id header,
+        // but the header can be missing on outbox replay, saga rehydration, local-queue
+        // paths, or inline tests — in which case PrivacyScopeResolver would resolve
+        // tenant-isolated DbContexts through the SharedDatabase fallback and query the
+        // wrong schema (42P01). The saga state's TenantId is the authoritative source.
+        using IDisposable _ = currentTenant.Change(@event.TenantId);
 
         // Apply visibility gates + intersect with the subject's RequestedScopes list.
         // RequestedScopes naming an unknown / hidden provider is silently dropped (VULN-202:

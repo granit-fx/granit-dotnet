@@ -66,7 +66,8 @@ public sealed class GranitPrivacyBuilder(IServiceCollection services)
             DisplayKey: TProvider.DisplayKey,
             FeatureName: TProvider.FeatureName,
             HasDataProbe: static (sp, ctx, ct) =>
-                sp.GetRequiredService<TProvider>().HasDataAsync(ctx, ct)));
+                sp.GetRequiredService<TProvider>().HasDataAsync(ctx, ct),
+            ProviderType: typeof(TProvider)));
         return this;
     }
 

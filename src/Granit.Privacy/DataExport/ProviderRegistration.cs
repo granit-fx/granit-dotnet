@@ -14,8 +14,14 @@ namespace Granit.Privacy.DataExport;
 /// <see cref="IServiceProvider"/> at scope-evaluation time and calls
 /// <see cref="IPrivacyDataProvider.HasDataAsync"/>. Captured by the builder so callers
 /// of <see cref="IPrivacyScopeResolver"/> don't need to know the concrete provider type.</param>
+/// <param name="ProviderType">Concrete <see cref="IPrivacyDataProvider"/> implementation
+/// type. Captured so startup validators (e.g. the tenant-isolated DbContext dependency
+/// check in <c>Granit.Privacy.EntityFrameworkCore</c>) can introspect the constructor
+/// without pulling the typed provider through DI. Legacy name-only registrations carry
+/// <see langword="null"/>.</param>
 public sealed record ProviderRegistration(
     string ProviderName,
     string DisplayKey,
     string? FeatureName,
-    Func<IServiceProvider, PrivacyExportContext, CancellationToken, ValueTask<bool>> HasDataProbe);
+    Func<IServiceProvider, PrivacyExportContext, CancellationToken, ValueTask<bool>> HasDataProbe,
+    Type? ProviderType = null);

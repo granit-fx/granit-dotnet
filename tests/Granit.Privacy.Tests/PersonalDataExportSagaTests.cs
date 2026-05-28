@@ -1,5 +1,6 @@
 using System.Diagnostics.Metrics;
 using Granit.Domain.ValueObjects;
+using Granit.MultiTenancy;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.Diagnostics;
@@ -27,6 +28,8 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     }
 
     public void Dispose() => _sp.Dispose();
+
+    private static readonly ICurrentTenant CurrentTenant = NullTenantContext.Instance;
 
     private static IOptions<GranitPrivacyOptions> DefaultOptions() =>
         Microsoft.Extensions.Options.Options.Create(new GranitPrivacyOptions { ExportTimeoutMinutes = 5 });
@@ -71,7 +74,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         var userId = Guid.NewGuid();
         PersonalDataRequestedEto evt = new(requestId, userId, DateTimeOffset.UtcNow, "EU_GDPR");
 
-        await saga.Start(evt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+        await saga.Start(evt, scopeResolver, CurrentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         saga.Id.ShouldBe(requestId);
         saga.UserId.ShouldBe(userId);
@@ -89,7 +92,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         var requestId = Guid.NewGuid();
         PersonalDataRequestedEto evt = new(requestId, Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
-        await saga.Start(evt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+        await saga.Start(evt, scopeResolver, CurrentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         // ScheduleAsync is an extension method that calls PublishAsync with DeliveryOptions.
         // NSubstitute cannot intercept extension methods, so we verify the underlying PublishAsync call.
@@ -105,7 +108,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         IPrivacyScopeResolver scopeResolver = BuildScopeResolver("patients", "billing", "appointments");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+        await saga.Start(startEvt, scopeResolver, CurrentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         ExportCompletedEto? result1 = saga.Handle(
             StagedFragmentEto(startEvt.RequestId, "patients", "blob-1", "patients.json"), _metrics);
@@ -125,7 +128,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         IPrivacyScopeResolver scopeResolver = BuildScopeResolver("patients", "billing");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+        await saga.Start(startEvt, scopeResolver, CurrentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         saga.Handle(StagedFragmentEto(startEvt.RequestId, "patients", "blob-patients", "patients.json"), _metrics);
         ExportCompletedEto? result = saga.Handle(
@@ -150,7 +153,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         IPrivacyScopeResolver scopeResolver = BuildScopeResolver("documents");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+        await saga.Start(startEvt, scopeResolver, CurrentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         saga.Handle(StagedFragmentEto(startEvt.RequestId, "documents", "blob-1", "Documents/a.pdf"), _metrics);
         ExportCompletedEto? second = saga.Handle(StagedFragmentEto(startEvt.RequestId, "documents", "blob-2", "Documents/b.pdf"), _metrics);
@@ -176,7 +179,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         IPrivacyScopeResolver scopeResolver = BuildScopeResolver("patients", "billing", "appointments");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+        await saga.Start(startEvt, scopeResolver, CurrentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         saga.Handle(StagedFragmentEto(startEvt.RequestId, "patients", "blob-patients", "patients.json"), _metrics);
         saga.Handle(StagedFragmentEto(startEvt.RequestId, "billing", "blob-billing", "billing.json"), _metrics);
@@ -200,7 +203,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
         // No providers registered → resolver returns empty list, saga completes immediately.
-        ExportCompletedEto? result = await saga.Start(evt, BuildScopeResolver(), DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+        ExportCompletedEto? result = await saga.Start(evt, BuildScopeResolver(), CurrentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result!.IsPartial.ShouldBeFalse();
@@ -250,7 +253,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         PersonalDataRequestedEto evt = new(
             Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR", TenantId: tenantId);
 
-        await saga.Start(evt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+        await saga.Start(evt, scopeResolver, CurrentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         saga.TenantId.ShouldBe(tenantId);
     }
@@ -264,7 +267,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         PersonalDataRequestedEto evt = new(
             Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR", TenantId: tenantId);
 
-        ExportCompletedEto? result = await saga.Start(evt, BuildScopeResolver(), DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+        ExportCompletedEto? result = await saga.Start(evt, BuildScopeResolver(), CurrentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result!.TenantId.ShouldBe(tenantId);
@@ -279,7 +282,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         var tenantId = Guid.NewGuid();
         PersonalDataRequestedEto startEvt = new(
             Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR", TenantId: tenantId);
-        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+        await saga.Start(startEvt, scopeResolver, CurrentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         ExportCompletedEto result = saga.Handle(new ExportTimedOutEvent(startEvt.RequestId), _metrics);
 
@@ -300,7 +303,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         IPrivacyScopeResolver scopeResolver = BuildScopeResolver("auth");
         PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
-        await saga.Start(evt, scopeResolver, options, context, _metrics, TestContext.Current.CancellationToken);
+        await saga.Start(evt, scopeResolver, CurrentTenant, options, context, _metrics, TestContext.Current.CancellationToken);
 
         // ScheduleAsync(message, TimeSpan) sets ScheduleDelay (relative), not ScheduledTime (absolute).
         await context.Received(1).PublishAsync(
@@ -321,11 +324,76 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         IPrivacyScopeResolver scopeResolver = BuildScopeResolver("auth");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.Start(startEvt, scopeResolver, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+        await saga.Start(startEvt, scopeResolver, CurrentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
 
         ExportCompletedEto? result = saga.Handle(
             StagedFragmentEto(startEvt.RequestId, "auth", "blob-auth", "auth.json"), _metrics);
 
         result!.ArchiveBlobReferenceId.Value.ShouldBe($"personal-data-export/{startEvt.RequestId}");
+    }
+
+    // -------------------------------------------------------------------------
+    // Tenant scope anchor — regression for the 42P01 bug when the envelope reaches
+    // the saga without TenantContextBehavior having set ICurrentTenant (outbox
+    // replay, saga rehydration, local-queue path, inline test invocation).
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task Start_AnchorsTenantFromEvent_BeforeResolvingProviders()
+    {
+        // Arrange: ICurrentTenant starts inactive — simulates the envelope reaching
+        // the saga without an X-Tenant-Id header restored by TenantContextBehavior.
+        RecordingCurrentTenant currentTenant = new();
+        Guid? observedDuringProbe = null;
+
+        IPrivacyScopeResolver scopeResolver = Substitute.For<IPrivacyScopeResolver>();
+        scopeResolver.ListVisibleAsync(Arg.Any<PrivacyExportContext>(), Arg.Any<CancellationToken>())
+            .Returns(_ =>
+            {
+                observedDuringProbe = currentTenant.Id;
+                return (IReadOnlyList<ProviderDescriptor>)[];
+            });
+
+        PersonalDataExportSaga saga = new();
+        IMessageContext context = Substitute.For<IMessageContext>();
+        var tenantId = Guid.NewGuid();
+        PersonalDataRequestedEto evt = new(
+            Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR", TenantId: tenantId);
+
+        currentTenant.Id.ShouldBeNull("baseline: no tenant active before saga.Start");
+
+        // Act
+        await saga.Start(evt, scopeResolver, currentTenant, DefaultOptions(), context, _metrics, TestContext.Current.CancellationToken);
+
+        // Assert: the scope was open during the scope-resolver invocation (i.e. before
+        // any tenant-isolated DbContext could be resolved by a provider's HasDataAsync)…
+        observedDuringProbe.ShouldBe(tenantId);
+
+        // …and restored after the saga method returns.
+        currentTenant.Id.ShouldBeNull();
+    }
+
+    private sealed class RecordingCurrentTenant : ICurrentTenant
+    {
+        public bool IsAvailable => Id.HasValue;
+        public Guid? Id { get; private set; }
+        public string? Name { get; private set; }
+
+        public IDisposable Change(Guid? id, string? name = null)
+        {
+            (Guid? previousId, string? previousName) = (Id, Name);
+            Id = id;
+            Name = name;
+            return new Restore(this, previousId, previousName);
+        }
+
+        private sealed class Restore(RecordingCurrentTenant owner, Guid? previousId, string? previousName) : IDisposable
+        {
+            public void Dispose()
+            {
+                owner.Id = previousId;
+                owner.Name = previousName;
+            }
+        }
     }
 }

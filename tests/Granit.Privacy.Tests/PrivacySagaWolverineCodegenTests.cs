@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using Granit.Privacy.DataExport;
@@ -76,6 +77,7 @@ public sealed class PrivacySagaWolverineCodegenTests
             {
                 services.AddSingleton<IDataProviderRegistry>(new DataProviderRegistry());
                 services.AddSingleton(Substitute.For<IPrivacyScopeResolver>());
+                services.AddSingleton<ICurrentTenant>(NullTenantContext.Instance);
                 services.AddSingleton(Substitute.For<IDeletionRequestTrackerWriter>());
                 services.AddSingleton(TimeProvider.System);
                 services.AddSingleton(Substitute.For<ILegalDocumentRegistry>());

@@ -51,6 +51,8 @@ public static class PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions
             configureSchemaPerTenant,
             configureTenantSchema);
 
+        builder.Services.AddHostedService<PrivacyTenantScopedProviderValidator>();
+
         builder.Services.AddScoped<EfLegalDocumentStore>();
         builder.Services.TryAddScoped<ILegalDocumentReader>(sp => sp.GetRequiredService<EfLegalDocumentStore>());
         builder.Services.TryAddScoped<ILegalDocumentWriter>(sp => sp.GetRequiredService<EfLegalDocumentStore>());

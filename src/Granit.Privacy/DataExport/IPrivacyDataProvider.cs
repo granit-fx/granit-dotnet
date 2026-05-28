@@ -21,6 +21,18 @@ namespace Granit.Privacy.DataExport;
 /// modules (Documents, attachments). Providers now stream one or more
 /// <see cref="ExportFragment"/> values via <see cref="ExportAsync"/>.
 /// </para>
+/// <para>
+/// <b>Tenant scope invariant.</b> Implementations that depend on a tenant-isolated
+/// <c>DbContext</c> (registered via <c>AddGranitIsolatedDbContext</c>) require an active
+/// <c>ICurrentTenant</c> at construction time, otherwise the DbContext silently falls
+/// back to the <c>SharedDatabase</c> keyed factory and queries the wrong schema
+/// (PostgreSQL 42P01). The framework already anchors the tenant for you on the two
+/// official orchestration paths: <c>PersonalDataExportSaga.Start</c> (HasData probe) and
+/// the per-provider Wolverine handlers (via <see cref="Events.PersonalDataRequestedEto.TenantId"/>
+/// restored on the receiving side by <c>TenantContextBehavior</c>). Custom orchestrators
+/// that resolve an <see cref="IPrivacyDataProvider"/> directly MUST do the same — open
+/// <c>currentTenant.Change(context.TenantId)</c> before resolving the provider.
+/// </para>
 /// </remarks>
 public interface IPrivacyDataProvider
 {
