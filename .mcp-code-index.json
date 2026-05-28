@@ -36075,6 +36075,22 @@
       ]
     },
     {
+      "name": "DualScopeValidation",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.DualScopeValidation",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/MultiTenancy/DualScopeValidation.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ValidateStorageMode",
+          "kind": "method",
+          "signature": "ValidateStorageMode(DualScopeStorageMode storageMode, TenantIsolationStrategy strategy, string moduleName)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "ITenantConnectionStringProvider",
       "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.ITenantConnectionStringProvider",
       "kind": "interface",
@@ -36466,6 +36482,15 @@
           "returnType": "InlineSpecification<T>"
         }
       ]
+    },
+    {
+      "name": "DualScopeStorageMode",
+      "fqn": "Granit.Persistence.MultiTenancy.DualScopeStorageMode",
+      "kind": "enum",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/MultiTenancy/DualScopeStorageMode.cs",
+      "line": 30,
+      "members": []
     },
     {
       "name": "SortExpression",
