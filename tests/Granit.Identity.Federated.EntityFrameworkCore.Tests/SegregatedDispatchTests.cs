@@ -16,7 +16,7 @@ namespace Granit.Identity.Federated.EntityFrameworkCore.Tests;
 /// Pins the Phase B Segregated dispatch contract: <see cref="EfCoreUserCacheStore"/>
 /// routes writes to the host context when <c>tenantId</c> is null and to the tenant
 /// context otherwise; <see cref="EfCoreUserCacheStore.FindFirstByExternalIdAsync"/>
-/// iterates every tenant returned by <see cref="ITenantEnumerator"/> under host-admin
+/// iterates every tenant returned by <see cref="ITenantsAccessor"/> under host-admin
 /// scope.
 /// </summary>
 public sealed class SegregatedDispatchTests : IDisposable
@@ -42,9 +42,9 @@ public sealed class SegregatedDispatchTests : IDisposable
         IdentityFederatedContextResolver resolver = new(DualScopeStorageMode.Segregated, hostFactory, tenantFactory);
 
         ICurrentTenant currentTenant = NewSwitchableTenant();
-        ITenantEnumerator enumerator = StubEnumerator(_tenantA, _tenantB);
+        ITenantsAccessor accessor = StubAccessor(_tenantA, _tenantB);
 
-        EfCoreUserCacheStore sut = new(resolver, StubHasher(), currentTenant, enumerator);
+        EfCoreUserCacheStore sut = new(resolver, StubHasher(), currentTenant, accessor);
 
         FederatedIdentity? result = await sut.FindFirstByExternalIdAsync(
             "federated-user-1", TestContext.Current.CancellationToken);
@@ -64,9 +64,9 @@ public sealed class SegregatedDispatchTests : IDisposable
         IdentityFederatedContextResolver resolver = new(DualScopeStorageMode.Segregated, hostFactory, tenantFactory);
 
         ICurrentTenant currentTenant = NewSwitchableTenant();
-        ITenantEnumerator enumerator = StubEnumerator(_tenantA);
+        ITenantsAccessor accessor = StubAccessor(_tenantA);
 
-        EfCoreUserCacheStore sut = new(resolver, StubHasher(), currentTenant, enumerator);
+        EfCoreUserCacheStore sut = new(resolver, StubHasher(), currentTenant, accessor);
 
         await sut.UpsertAsync(CreateEntry("tenant-A-user", _tenantA), TestContext.Current.CancellationToken);
 
@@ -89,9 +89,9 @@ public sealed class SegregatedDispatchTests : IDisposable
         IdentityFederatedContextResolver resolver = new(DualScopeStorageMode.Segregated, hostFactory, tenantFactory);
 
         ICurrentTenant currentTenant = NewSwitchableTenant();
-        ITenantEnumerator enumerator = StubEnumerator();
+        ITenantsAccessor accessor = StubAccessor();
 
-        EfCoreUserCacheStore sut = new(resolver, StubHasher(), currentTenant, enumerator);
+        EfCoreUserCacheStore sut = new(resolver, StubHasher(), currentTenant, accessor);
 
         await sut.UpsertAsync(CreateEntry("host-admin-user", tenantId: null), TestContext.Current.CancellationToken);
 
@@ -142,13 +142,13 @@ public sealed class SegregatedDispatchTests : IDisposable
         return hasher;
     }
 
-    private static ITenantEnumerator StubEnumerator(params Guid[] tenantIds)
+    private static ITenantsAccessor StubAccessor(params Guid[] tenantIds)
     {
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
+        ITenantsAccessor accessor = Substitute.For<ITenantsAccessor>();
         (Guid Id, string Name)[] tenants = [.. tenantIds.Select(id => (id, $"tenant-{id}"))];
-        enumerator.GetAllAsync(Arg.Any<CancellationToken>())
+        accessor.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<(Guid, string)>>(tenants));
-        return enumerator;
+        return accessor;
     }
 
     private static ICurrentTenant NewSwitchableTenant()

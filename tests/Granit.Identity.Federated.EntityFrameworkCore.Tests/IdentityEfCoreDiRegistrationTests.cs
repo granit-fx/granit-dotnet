@@ -30,13 +30,13 @@ public sealed class IdentityEfCoreDiRegistrationTests
         builder.Services.AddSingleton(Substitute.For<IGuidGenerator>());
         builder.Services.AddSingleton(Substitute.For<IUserDirectoryWriter>());
 
-        // EfCoreUserCacheStore depends on the soft-dep ITenantEnumerator primitive (base
-        // Granit). The default NullTenantEnumerator is registered by AddGranit<T>(), but
+        // EfCoreUserCacheStore depends on the soft-dep ITenantsAccessor primitive (base
+        // Granit). The default NullTenantsAccessor is registered by AddGranit<T>(), but
         // this test bypasses the module loader — stub it explicitly.
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
-        enumerator.GetAllAsync(Arg.Any<CancellationToken>())
+        ITenantsAccessor accessor = Substitute.For<ITenantsAccessor>();
+        accessor.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<(Guid, string)>>([]));
-        builder.Services.AddSingleton(enumerator);
+        builder.Services.AddSingleton(accessor);
 
         // Phase B options-based registration — Shared mode default.
         builder.AddGranitIdentityFederatedEntityFrameworkCore(opts =>

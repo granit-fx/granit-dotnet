@@ -38,10 +38,10 @@ public sealed class EfCoreUserCacheStoreTests : IDisposable
         TestIdentityFederatedHostDbContextFactory factory = new(options, _filter.Filter);
         IdentityFederatedContextResolver resolver = new(DualScopeStorageMode.Shared, factory);
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
-        ITenantEnumerator tenantEnumerator = Substitute.For<ITenantEnumerator>();
-        tenantEnumerator.GetAllAsync(Arg.Any<CancellationToken>())
+        ITenantsAccessor tenantsAccessor = Substitute.For<ITenantsAccessor>();
+        tenantsAccessor.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<(Guid, string)>>([]));
-        return new EfCoreUserCacheStore(resolver, Hasher, currentTenant, tenantEnumerator);
+        return new EfCoreUserCacheStore(resolver, Hasher, currentTenant, tenantsAccessor);
     }
 
     private static FederatedIdentity CreateEntry(

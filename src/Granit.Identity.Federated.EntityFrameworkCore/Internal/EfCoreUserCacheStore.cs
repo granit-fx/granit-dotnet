@@ -17,16 +17,16 @@ namespace Granit.Identity.Federated.EntityFrameworkCore.Internal;
 /// All read operations use <c>AsNoTracking</c> for performance. Under
 /// <see cref="DualScopeStorageMode.Segregated"/>, the cross-tenant
 /// <see cref="FindFirstByExternalIdAsync"/> path probes the host context plus every tenant
-/// returned by <see cref="ITenantEnumerator"/> via <see cref="ICurrentTenant.Change"/>.
-/// Soft-dep on <see cref="ITenantEnumerator"/> — single-tenant deployments running with
-/// the default <c>NullTenantEnumerator</c> see host-only results without a hard package
+/// returned by <see cref="ITenantsAccessor"/> via <see cref="ICurrentTenant.Change"/>.
+/// Soft-dep on <see cref="ITenantsAccessor"/> — single-tenant deployments running with
+/// the default <c>NullTenantsAccessor</c> see host-only results without a hard package
 /// dependency on <c>Granit.MultiTenancy</c>.
 /// </remarks>
 internal sealed class EfCoreUserCacheStore(
     IdentityFederatedContextResolver resolver,
     IUserLookupHasher hasher,
     ICurrentTenant currentTenant,
-    ITenantEnumerator tenantEnumerator) : IUserCacheStore
+    ITenantsAccessor tenantsAccessor) : IUserCacheStore
 {
     // -- Read --
 
@@ -71,8 +71,8 @@ internal sealed class EfCoreUserCacheStore(
             }
 
             // Host-admin lookup under Segregated: iterate every tenant known to the
-            // enumerator. Empty under NullTenantEnumerator — degrades to host-only.
-            IReadOnlyList<(Guid Id, string Name)> tenants = await tenantEnumerator
+            // accessor. Empty under NullTenantsAccessor — degrades to host-only.
+            IReadOnlyList<(Guid Id, string Name)> tenants = await tenantsAccessor
                 .GetAllAsync(cancellationToken).ConfigureAwait(false);
 
             foreach ((Guid id, string name) in tenants)
