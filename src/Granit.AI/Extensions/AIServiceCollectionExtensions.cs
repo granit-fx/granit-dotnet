@@ -104,42 +104,43 @@ public static class AIServiceCollectionExtensions
             return;
         }
 
-        if (existing.ImplementationType is not null)
+        Func<IServiceProvider, ISettingManager>? resolveInner = null;
+        ServiceLifetime guardLifetime = existing.Lifetime;
+
+        if (existing.ImplementationType is { } implType)
         {
             // Re-register the underlying implementation under its concrete type so the guard
             // can pull it via DI.
-            services.Add(new ServiceDescriptor(
-                existing.ImplementationType,
-                existing.ImplementationType,
-                existing.Lifetime));
+            services.Add(new ServiceDescriptor(implType, implType, existing.Lifetime));
+            resolveInner = sp => (ISettingManager)sp.GetRequiredService(implType);
+        }
+        else if (existing.ImplementationFactory is { } factory)
+        {
+            resolveInner = sp => (ISettingManager)factory(sp);
+        }
+        else if (existing.ImplementationInstance is ISettingManager instance)
+        {
+            resolveInner = _ => instance;
+            guardLifetime = ServiceLifetime.Singleton;
+        }
 
-            services.Add(new ServiceDescriptor(
-                typeof(ISettingManager),
-                sp => new AISettingsCredentialsGuard(
-                    (ISettingManager)sp.GetRequiredService(existing.ImplementationType),
-                    ResolvePermissionChecker(sp, existing.Lifetime)),
-                existing.Lifetime));
+        if (resolveInner is null)
+        {
             return;
         }
 
-        if (existing.ImplementationFactory is not null)
-        {
-            services.Add(new ServiceDescriptor(
-                typeof(ISettingManager),
-                sp => new AISettingsCredentialsGuard(
-                    (ISettingManager)existing.ImplementationFactory(sp),
-                    ResolvePermissionChecker(sp, existing.Lifetime)),
-                existing.Lifetime));
-            return;
-        }
-
-        if (existing.ImplementationInstance is ISettingManager instance)
-        {
-            services.AddSingleton<ISettingManager>(sp => new AISettingsCredentialsGuard(
-                instance,
-                ResolvePermissionChecker(sp, ServiceLifetime.Singleton)));
-        }
+        services.Add(BuildGuardDescriptor(resolveInner, guardLifetime));
     }
+
+    private static ServiceDescriptor BuildGuardDescriptor(
+        Func<IServiceProvider, ISettingManager> resolveInner,
+        ServiceLifetime lifetime) =>
+        new(
+            typeof(ISettingManager),
+            sp => new AISettingsCredentialsGuard(
+                resolveInner(sp),
+                ResolvePermissionChecker(sp, lifetime)),
+            lifetime);
 
     /// <summary>
     /// Returns an <see cref="IPermissionChecker"/> safe to capture in a constructor whose
