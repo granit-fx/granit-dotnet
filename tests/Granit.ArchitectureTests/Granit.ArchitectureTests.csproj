@@ -215,6 +215,8 @@
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.Migrations\Granit.Persistence.EntityFrameworkCore.Migrations.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.Postgres\Granit.Persistence.EntityFrameworkCore.Postgres.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.SqlServer\Granit.Persistence.EntityFrameworkCore.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Presence\Granit.Presence.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Presence.Endpoints\Granit.Presence.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy\Granit.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.AI\Granit.Privacy.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.BackgroundJobs\Granit.Privacy.BackgroundJobs.csproj" />

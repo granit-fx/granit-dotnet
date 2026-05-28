@@ -7,7 +7,10 @@
     "Granit:Validation:PresenceIdleSecondsTooLarge": "Idle duration exceeds the maximum allowed value.",
     "Granit:Validation:PresenceOverrideUntilInPast": "Override expiration must be in the future.",
     "Granit:Validation:PresenceOverrideUntilTooFar": "Override expiration is too far in the future.",
+    "Granit:Validation:PresenceRoomMetadataTooLarge": "Metadata exceeds the maximum allowed size.",
     "Granit:Validation:PresenceUntilWithoutOverride": "An expiration cannot be supplied when the manual status is Available.",
+    "Permission:Presence.Rooms.Join": "Join a shared resource (CMS page, dashboard, …) and broadcast my presence to others",
+    "Permission:Presence.Rooms.Read": "View who else is currently active in a shared resource (CMS page, dashboard, …)",
     "Permission:Presence.Self.Manage": "Set or clear my own presence status (Available, Busy, Do Not Disturb, Appear Offline)",
     "Permission:Presence.Users.Read": "View the presence status of other users",
     "PermissionGroup:Presence": "Presence"

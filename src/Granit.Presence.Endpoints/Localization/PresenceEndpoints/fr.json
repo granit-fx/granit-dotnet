@@ -7,7 +7,10 @@
     "Granit:Validation:PresenceIdleSecondsTooLarge": "La durée d'inactivité dépasse la valeur maximale autorisée.",
     "Granit:Validation:PresenceOverrideUntilInPast": "L'expiration de la surcharge doit être dans le futur.",
     "Granit:Validation:PresenceOverrideUntilTooFar": "L'expiration de la surcharge est trop éloignée dans le futur.",
+    "Granit:Validation:PresenceRoomMetadataTooLarge": "Les métadonnées dépassent la taille maximale autorisée.",
     "Granit:Validation:PresenceUntilWithoutOverride": "Une expiration ne peut pas être fournie lorsque le statut manuel est Disponible.",
+    "Permission:Presence.Rooms.Join": "Rejoindre une ressource partagée (page CMS, tableau de bord, …) et diffuser ma présence",
+    "Permission:Presence.Rooms.Read": "Voir qui consulte actuellement une ressource partagée (page CMS, tableau de bord, …)",
     "Permission:Presence.Self.Manage": "Définir ou effacer mon propre statut de disponibilité (Disponible, Occupé, Ne pas déranger, Apparaître hors ligne)",
     "Permission:Presence.Users.Read": "Consulter le statut de disponibilité des autres utilisateurs",
     "PermissionGroup:Presence": "Disponibilité"

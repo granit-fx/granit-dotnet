@@ -31,5 +31,17 @@ internal sealed class PresencePermissionDefinitionProvider : IPermissionDefiniti
             LocalizableString.Create<PresenceEndpointsLocalizationResource>(
                 "Permission:Presence.Users.Read"),
             MultiTenancySides.Both);
+
+        group.AddPermission(
+            PresencePermissions.Rooms.Read,
+            LocalizableString.Create<PresenceEndpointsLocalizationResource>(
+                "Permission:Presence.Rooms.Read"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            PresencePermissions.Rooms.Join,
+            LocalizableString.Create<PresenceEndpointsLocalizationResource>(
+                "Permission:Presence.Rooms.Join"),
+            MultiTenancySides.Both);
     }
 }

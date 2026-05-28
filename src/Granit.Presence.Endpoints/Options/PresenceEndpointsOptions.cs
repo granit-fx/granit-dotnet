@@ -13,4 +13,7 @@ public sealed class PresenceEndpointsOptions
 
     /// <summary>OpenAPI tag name for grouping presence endpoints. Default: <c>"Presence"</c>.</summary>
     public string TagName { get; set; } = "Presence";
+
+    /// <summary>OpenAPI tag name for the resource-room endpoints. Default: <c>"Presence - Rooms"</c>.</summary>
+    public string RoomsTagName { get; set; } = "Presence - Rooms";
 }

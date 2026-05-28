@@ -7,7 +7,10 @@
     "Granit:Validation:PresenceIdleSecondsTooLarge": "Doba nečinnosti překračuje maximální povolenou hodnotu.",
     "Granit:Validation:PresenceOverrideUntilInPast": "Vypršení platnosti přepsání musí být v budoucnosti.",
     "Granit:Validation:PresenceOverrideUntilTooFar": "Vypršení platnosti přepsání je příliš daleko v budoucnosti.",
+    "Granit:Validation:PresenceRoomMetadataTooLarge": "Metadata překračují maximální povolenou velikost.",
     "Granit:Validation:PresenceUntilWithoutOverride": "Vypršení platnosti nelze zadat, pokud je ruční stav Dostupný.",
+    "Permission:Presence.Rooms.Join": "Připojit se ke sdílenému prostředku (stránka CMS, řídicí panel, …) a sdělit ostatním svou přítomnost",
+    "Permission:Presence.Rooms.Read": "Zobrazit, kdo je aktuálně aktivní ve sdíleném prostředku (stránka CMS, řídicí panel, …)",
     "Permission:Presence.Self.Manage": "<!-- AUTO-TRANSLATED -->Set or clear my own presence status",
     "Permission:Presence.Users.Read": "<!-- AUTO-TRANSLATED -->View the presence status of other users",
     "PermissionGroup:Presence": "<!-- AUTO-TRANSLATED -->Presence"
