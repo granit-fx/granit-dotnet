@@ -30,6 +30,24 @@ public interface IAuditingReader
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Retrieves the audit trail for many entities in a single query, ordered
+    /// from most recent and capped at <paramref name="limit"/>. Powers the
+    /// parent-child timeline aggregation (see <see cref="IAuditChildResolver"/>)
+    /// — the caller assembles a <see cref="AuditEntityRef"/> set that mixes the
+    /// parent entity and its audited children.
+    /// </summary>
+    /// <remarks>
+    /// Intentionally not paginated. The federated timeline merger only fetches
+    /// top-K per source and cross-target pagination has no meaningful offset
+    /// semantics. An empty <paramref name="targets"/> collection yields an
+    /// empty result without issuing a query.
+    /// </remarks>
+    Task<IReadOnlyList<AuditEntry>> GetByEntitiesAsync(
+        IReadOnlyCollection<AuditEntityRef> targets,
+        int limit,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Retrieves all audit log entries matching a distributed tracing correlation ID.
     /// </summary>
     Task<List<AuditEntry>> GetByCorrelationIdAsync(

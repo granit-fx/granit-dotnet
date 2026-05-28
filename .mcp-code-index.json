@@ -4873,6 +4873,15 @@
       "members": []
     },
     {
+      "name": "AuditChildScope",
+      "fqn": "Granit.Auditing.AuditChildScope",
+      "kind": "record",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/AuditChildScope.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "AuthenticationAuditEntry",
       "fqn": "Granit.Auditing.AuthenticationAuditEntry",
       "kind": "class",
@@ -5332,6 +5341,22 @@
       ]
     },
     {
+      "name": "AuditChildResolverExtensions",
+      "fqn": "Granit.Auditing.Extensions.AuditChildResolverExtensions",
+      "kind": "class",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Extensions/AuditChildResolverExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ResolveAllAsync",
+          "kind": "method",
+          "signature": "ResolveAllAsync(this IEnumerable<IAuditChildResolver> resolvers, string parentEntityType, string parentEntityId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyCollection<AuditChildScope>>"
+        }
+      ]
+    },
+    {
       "name": "AuditEntityTypeAliasProviderExtensions",
       "fqn": "Granit.Auditing.Extensions.AuditEntityTypeAliasProviderExtensions",
       "kind": "class",
@@ -5392,6 +5417,22 @@
           "kind": "method",
           "signature": "PersistAsync(AuditingBatch batch, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IAuditChildResolver",
+      "fqn": "Granit.Auditing.IAuditChildResolver",
+      "kind": "interface",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/IAuditChildResolver.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(string parentEntityType, string parentEntityId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyCollection<AuditChildScope>>"
         }
       ]
     },
@@ -5468,6 +5509,12 @@
           "kind": "method",
           "signature": "GetByEntityAsync(string entityType, string entityId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
           "returnType": "Task<PagedResult<AuditEntry>>"
+        },
+        {
+          "name": "GetByEntitiesAsync",
+          "kind": "method",
+          "signature": "GetByEntitiesAsync(IReadOnlyCollection<AuditEntityRef> targets, int limit, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<AuditEntry>>"
         },
         {
           "name": "GetByCorrelationIdAsync",
@@ -5820,6 +5867,15 @@
       "project": "Granit.Auditing",
       "file": "src/Granit.Auditing/StaticAuditEntityTypeAliasProvider.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Auditing.struct",
+      "kind": "record",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/AuditEntityRef.cs",
+      "line": 10,
       "members": []
     },
     {

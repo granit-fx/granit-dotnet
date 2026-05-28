@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+using System.Reflection;
 using Granit.Auditing.Domain;
 using Granit.Auditing.Extensions;
 using Granit.Auditing.Options;
@@ -96,6 +98,76 @@ internal sealed class EfCoreAuditingReader(
     }
 
     /// <inheritdoc/>
+    public async Task<IReadOnlyList<AuditEntry>> GetByEntitiesAsync(
+        IReadOnlyCollection<AuditEntityRef> targets,
+        int limit,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(targets);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(limit);
+
+        if (targets.Count == 0)
+        {
+            return [];
+        }
+
+        // Group by EntityType so each scope becomes ONE predicate branch
+        // (ec.EntityType == type AND ids.Contains(ec.EntityId)) and the
+        // branches OR together. Strict pair semantics — no cross-type bleed,
+        // no reliance on Guid cross-table uniqueness as an implicit invariant.
+        Expression<Func<AuditEntityChange, bool>>? predicate = null;
+        ParameterExpression ecParam = Expression.Parameter(typeof(AuditEntityChange), "ec");
+
+        foreach (IGrouping<string, AuditEntityRef> group in targets.GroupBy(t => t.EntityType, StringComparer.Ordinal))
+        {
+            // Materialise to string[] so Npgsql translates Contains to a SQL
+            // IN-list (the same constraint observed at GetByEntityAsync above).
+            string[] ids = [.. group.Select(t => t.EntityId).Distinct(StringComparer.Ordinal)];
+            if (ids.Length == 0)
+            {
+                continue;
+            }
+
+            Expression<Func<AuditEntityChange, bool>> branch =
+                ec => ec.EntityType == group.Key && ids.Contains(ec.EntityId);
+
+            Expression rebound = ParameterRebinder.Replace(branch.Body, branch.Parameters[0], ecParam);
+            predicate = predicate is null
+                ? Expression.Lambda<Func<AuditEntityChange, bool>>(rebound, ecParam)
+                : Expression.Lambda<Func<AuditEntityChange, bool>>(
+                    Expression.OrElse(predicate.Body, rebound), ecParam);
+        }
+
+        if (predicate is null)
+        {
+            return [];
+        }
+
+        // Hoist the predicate into the outer .Any() — that subquery is what the
+        // covering index (EntityType, EntityId, AuditEntryId) was added for.
+        ParameterExpression entryParam = Expression.Parameter(typeof(AuditEntry), "e");
+        MemberExpression changes = Expression.Property(entryParam, nameof(AuditEntry.EntityChanges));
+        MethodCallExpression any = Expression.Call(AnyMethodInfo, changes, predicate);
+        var outer = Expression.Lambda<Func<AuditEntry, bool>>(any, entryParam);
+
+        await using AuditingDbContext dbContext = await dbContextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        // No FusionCache on the batch path — per-request target sets cause
+        // cache-key explosion and the merger only fetches top-K, so any hit
+        // rate would be coincidental at best.
+        return await dbContext.AuditEntries
+            .Include(e => e.EntityChanges)
+                .ThenInclude(ec => ec.PropertyChanges)
+            .Where(outer)
+            .OrderByDescending(e => e.Timestamp)
+            .Take(limit)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public async Task<List<AuditEntry>> GetByUserAsync(
         string userId,
         int limit,
@@ -136,5 +208,26 @@ internal sealed class EfCoreAuditingReader(
             .AsNoTracking()
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
+    }
+
+    private static readonly MethodInfo AnyMethodInfo = typeof(Enumerable)
+        .GetMethods(BindingFlags.Public | BindingFlags.Static)
+        .Single(m => m.Name == nameof(Enumerable.Any)
+            && m.GetParameters().Length == 2)
+        .MakeGenericMethod(typeof(AuditEntityChange));
+
+    /// <summary>
+    /// Rewrites every reference to <c>from</c> in an expression tree as
+    /// <c>to</c>. Lets us re-use the body of an <c>Expression{Func{T,bool}}</c>
+    /// under a fresh parameter when combining per-scope predicates via
+    /// <c>Expression.OrElse</c>.
+    /// </summary>
+    private sealed class ParameterRebinder(ParameterExpression from, ParameterExpression to) : ExpressionVisitor
+    {
+        public static Expression Replace(Expression body, ParameterExpression from, ParameterExpression to) =>
+            new ParameterRebinder(from, to).Visit(body);
+
+        protected override Expression VisitParameter(ParameterExpression node) =>
+            node == from ? to : base.VisitParameter(node);
     }
 }

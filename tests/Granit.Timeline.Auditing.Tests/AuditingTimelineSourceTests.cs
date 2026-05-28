@@ -22,7 +22,7 @@ public sealed class AuditingTimelineSourceTests
     private readonly IAuditingReader _auditing = Substitute.For<IAuditingReader>();
     private readonly AuditingTimelineSource _source;
 
-    public AuditingTimelineSourceTests() => _source = new AuditingTimelineSource(_auditing, []);
+    public AuditingTimelineSourceTests() => _source = new AuditingTimelineSource(_auditing, [], []);
 
     private static AuditingTimelineSource WithUserAlias(IAuditingReader auditing) =>
         new(auditing, [
@@ -31,7 +31,7 @@ public sealed class AuditingTimelineSourceTests
                 {
                     ["User"] = new HashSet<string>(StringComparer.Ordinal) { "LocalIdentity", "FederatedIdentity" },
                 }),
-        ]);
+        ], []);
 
     [Fact]
     public void SourceKey_IsAuditing() => _source.SourceKey.ShouldBe("auditing");
@@ -222,5 +222,151 @@ public sealed class AuditingTimelineSourceTests
             .GetEntryAsync("LocalIdentity", "user-42", auditId.ToString(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
+    }
+
+    // -------------------------------------------------------------------------
+    // Parent-child aggregation — IAuditChildResolver
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task GetEntriesAsync_NoResolvers_UsesCachedSingleEntityPath()
+    {
+        // No resolver registered → fast path goes through GetByEntityAsync
+        // (which is FusionCache-backed). The batch overload must NOT be hit.
+        var entry = new AuditEntry
+        {
+            Id = Guid.NewGuid(),
+            Timestamp = DateTimeOffset.UtcNow,
+            UserId = "u-1",
+            EntityChanges = [new AuditEntityChange { EntityType = "Page", EntityId = "page-1", ChangeType = AuditChangeType.Modified }],
+        };
+        _auditing.GetByEntityAsync("Page", "page-1", 1, 50, Arg.Any<CancellationToken>())
+            .Returns(new PagedResult<AuditEntry>([entry], 1, false));
+
+        IReadOnlyList<TimelineStreamEntry> result = await _source
+            .GetEntriesAsync("Page", "page-1", 50, TestContext.Current.CancellationToken);
+
+        result.Count.ShouldBe(1);
+        await _auditing.DidNotReceive().GetByEntitiesAsync(
+            Arg.Any<IReadOnlyCollection<AuditEntityRef>>(),
+            Arg.Any<int>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetEntriesAsync_WithChildResolver_UnionsParentAndChildAudits()
+    {
+        // Parent + 2 children — verifies (a) batch overload is invoked,
+        // (b) target set assembled correctly, (c) every returned entry projects.
+        AuditEntry parentEntry = MakeEntry("Page", "page-1", AuditChangeType.Modified);
+        AuditEntry version1Entry = MakeEntry("PageVersion", "v1", AuditChangeType.Created);
+        AuditEntry version2Entry = MakeEntry("PageVersion", "v2", AuditChangeType.Modified);
+
+        _auditing.GetByEntitiesAsync(
+                Arg.Any<IReadOnlyCollection<AuditEntityRef>>(),
+                50,
+                Arg.Any<CancellationToken>())
+            .Returns([parentEntry, version1Entry, version2Entry]);
+
+        FakeChildResolver resolver = new("Page", "page-1",
+            [new AuditChildScope("PageVersion", ["v1", "v2"])]);
+        AuditingTimelineSource source = new(_auditing, [], [resolver]);
+
+        IReadOnlyList<TimelineStreamEntry> result = await source
+            .GetEntriesAsync("Page", "page-1", 50, TestContext.Current.CancellationToken);
+
+        result.Count.ShouldBe(3);
+        await _auditing.Received(1).GetByEntitiesAsync(
+            Arg.Is<IReadOnlyCollection<AuditEntityRef>>(t =>
+                t.Contains(new AuditEntityRef("Page", "page-1")) &&
+                t.Contains(new AuditEntityRef("PageVersion", "v1")) &&
+                t.Contains(new AuditEntityRef("PageVersion", "v2"))),
+            50,
+            Arg.Any<CancellationToken>());
+        // Single-entity path is NOT hit when children are present.
+        await _auditing.DidNotReceive().GetByEntityAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetEntryAsync_AcceptsAuditTargetingResolvedChild()
+    {
+        // Audit row targets PageVersion v1, anchored under /timeline/Page/page-1.
+        // The security check must let it through because v1 IS a child of page-1.
+        var auditId = Guid.NewGuid();
+        var entry = new AuditEntry
+        {
+            Id = auditId,
+            Timestamp = DateTimeOffset.UtcNow,
+            UserId = "u-1",
+            EntityChanges = [new AuditEntityChange { EntityType = "PageVersion", EntityId = "v1", ChangeType = AuditChangeType.Modified }],
+        };
+        _auditing.GetByIdAsync(auditId, Arg.Any<CancellationToken>()).Returns(entry);
+
+        FakeChildResolver resolver = new("Page", "page-1",
+            [new AuditChildScope("PageVersion", ["v1"])]);
+        AuditingTimelineSource source = new(_auditing, [], [resolver]);
+
+        TimelineStreamEntry? result = await source
+            .GetEntryAsync("Page", "page-1", auditId.ToString(), TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.SourceId.ShouldBe(auditId.ToString("D"));
+        // Body reflects the child mutation, not a (missing) parent change.
+        using var payload = JsonDocument.Parse(result.Body);
+        payload.RootElement.GetProperty("entityType").GetString().ShouldBe("PageVersion");
+        payload.RootElement.GetProperty("entityId").GetString().ShouldBe("v1");
+    }
+
+    [Fact]
+    public async Task GetEntryAsync_RejectsAuditTargetingChildOfDifferentParent()
+    {
+        // Audit row targets PageVersion v1, anchored under /timeline/Page/page-2.
+        // Resolver returns v1 as child of page-1 only — security check must
+        // refuse, preventing cross-aggregate anchoring via forged URLs.
+        var auditId = Guid.NewGuid();
+        var entry = new AuditEntry
+        {
+            Id = auditId,
+            Timestamp = DateTimeOffset.UtcNow,
+            UserId = "u-1",
+            EntityChanges = [new AuditEntityChange { EntityType = "PageVersion", EntityId = "v1", ChangeType = AuditChangeType.Modified }],
+        };
+        _auditing.GetByIdAsync(auditId, Arg.Any<CancellationToken>()).Returns(entry);
+
+        // Resolver only yields children for page-1, not page-2.
+        FakeChildResolver resolver = new("Page", "page-2", []);
+        AuditingTimelineSource source = new(_auditing, [], [resolver]);
+
+        TimelineStreamEntry? result = await source
+            .GetEntryAsync("Page", "page-2", auditId.ToString(), TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
+    private static AuditEntry MakeEntry(string type, string id, AuditChangeType changeType) => new()
+    {
+        Id = Guid.NewGuid(),
+        Timestamp = DateTimeOffset.UtcNow,
+        UserId = "u-1",
+        Category = AuditCategory.DataMutation,
+        EntityChanges = [new AuditEntityChange { EntityType = type, EntityId = id, ChangeType = changeType }],
+    };
+
+    private sealed class FakeChildResolver(
+        string expectedParentType,
+        string expectedParentId,
+        IReadOnlyCollection<AuditChildScope> scopes) : IAuditChildResolver
+    {
+        public Task<IReadOnlyCollection<AuditChildScope>> ResolveAsync(
+            string parentEntityType, string parentEntityId, CancellationToken cancellationToken = default)
+        {
+            if (!string.Equals(parentEntityType, expectedParentType, StringComparison.Ordinal) ||
+                !string.Equals(parentEntityId, expectedParentId, StringComparison.Ordinal))
+            {
+                return Task.FromResult<IReadOnlyCollection<AuditChildScope>>([]);
+            }
+            return Task.FromResult(scopes);
+        }
     }
 }

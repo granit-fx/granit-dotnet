@@ -3,7 +3,6 @@ using System.Text.Json;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
 using Granit.Auditing.Extensions;
-using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 
 namespace Granit.Timeline.Auditing.Internal;
@@ -12,11 +11,14 @@ namespace Granit.Timeline.Auditing.Internal;
 /// Projects <see cref="AuditEntry"/> rows into the federated activity stream.
 /// Registered as <see cref="ITimelineSource"/> by
 /// <c>AddGranitTimelineAuditing</c>; once present, every audited mutation on
-/// an entity shows up in that entity's timeline without per-module wiring.
+/// an entity (or any of its audited children, via
+/// <see cref="IAuditChildResolver"/>) shows up in that entity's timeline
+/// without per-module wiring.
 /// </summary>
 internal sealed class AuditingTimelineSource(
     IAuditingReader auditing,
-    IEnumerable<IAuditEntityTypeAliasProvider> aliasProviders) : ITimelineSource
+    IEnumerable<IAuditEntityTypeAliasProvider> aliasProviders,
+    IEnumerable<IAuditChildResolver> childResolvers) : ITimelineSource
 {
     /// <inheritdoc/>
     public string SourceKey => "auditing";
@@ -30,13 +32,31 @@ internal sealed class AuditingTimelineSource(
     {
         IReadOnlySet<string> matchTypes = aliasProviders.Resolve(entityType);
 
-        // Single page sized to the merger's fetch budget — the reader only
-        // ever asks for top-K and merges across sources.
-        PagedResult<AuditEntry> result = await auditing
-            .GetByEntityAsync(entityType, entityId, page: 1, pageSize: limit, cancellationToken)
+        IReadOnlyCollection<AuditChildScope> children = await childResolvers
+            .ResolveAllAsync(entityType, entityId, cancellationToken)
             .ConfigureAwait(false);
 
-        return [.. result.Items.Select(e => Project(matchTypes, entityId, e))];
+        // Parent-only fast path keeps the cached GetByEntityAsync hot for
+        // entities with no child-resolver contribution. The batch overload
+        // intentionally skips FusionCache (per-request target sets cause
+        // cache-key explosion), so a no-children call should never go through
+        // it.
+        if (children.Count == 0)
+        {
+            Granit.QueryEngine.PagedResult<AuditEntry> page = await auditing
+                .GetByEntityAsync(entityType, entityId, page: 1, pageSize: limit, cancellationToken)
+                .ConfigureAwait(false);
+            return [.. page.Items.Select(e => Project(matchTypes, entityId, children, e))];
+        }
+
+        IReadOnlyCollection<AuditEntityRef> targets = children.ToTargets(
+            new AuditEntityRef(entityType, entityId));
+
+        IReadOnlyList<AuditEntry> entries = await auditing
+            .GetByEntitiesAsync(targets, limit, cancellationToken)
+            .ConfigureAwait(false);
+
+        return [.. entries.Select(e => Project(matchTypes, entityId, children, e))];
     }
 
     /// <inheritdoc/>
@@ -58,22 +78,44 @@ internal sealed class AuditingTimelineSource(
         }
 
         IReadOnlySet<string> matchTypes = aliasProviders.Resolve(entityType);
+        IReadOnlyCollection<AuditChildScope> children = await childResolvers
+            .ResolveAllAsync(entityType, entityId, cancellationToken)
+            .ConfigureAwait(false);
 
-        // Security: refuse to anchor an audit row that does not target this
-        // entity — the caller's URL claims an entity scope that must match
-        // either the canonical name or any aliased CLR name.
+        // Security: refuse to anchor an audit row that does not target the
+        // claimed entity OR any of its resolved children. Without the child
+        // branch, a forged URL like /timeline/Page/{otherPageId}?audit=X
+        // could anchor a PageVersion audit from a different aggregate.
         bool targetsEntity = entry.EntityChanges.Any(c =>
             matchTypes.Contains(c.EntityType) &&
             string.Equals(c.EntityId, entityId, StringComparison.Ordinal));
 
-        return targetsEntity ? Project(matchTypes, entityId, entry) : null;
+        bool targetsChild = !targetsEntity && entry.EntityChanges.Any(c =>
+            children.Any(scope =>
+                string.Equals(scope.ChildEntityType, c.EntityType, StringComparison.Ordinal) &&
+                scope.ChildEntityIds.Contains(c.EntityId)));
+
+        return targetsEntity || targetsChild
+            ? Project(matchTypes, entityId, children, entry)
+            : null;
     }
 
-    private static TimelineStreamEntry Project(IReadOnlySet<string> matchTypes, string entityId, AuditEntry entry)
+    private static TimelineStreamEntry Project(
+        IReadOnlySet<string> matchTypes,
+        string entityId,
+        IReadOnlyCollection<AuditChildScope> children,
+        AuditEntry entry)
     {
         AuditEntityChange? change = entry.EntityChanges.FirstOrDefault(c =>
             matchTypes.Contains(c.EntityType) &&
             string.Equals(c.EntityId, entityId, StringComparison.Ordinal));
+
+        // Child-aggregated audits don't match the parent ref — fall back to the
+        // child change so the body reflects what actually mutated.
+        change ??= entry.EntityChanges.FirstOrDefault(c =>
+            children.Any(scope =>
+                string.Equals(scope.ChildEntityType, c.EntityType, StringComparison.Ordinal) &&
+                scope.ChildEntityIds.Contains(c.EntityId)));
 
         return new TimelineStreamEntry
         {
@@ -98,6 +140,8 @@ internal sealed class AuditingTimelineSource(
         var payload = new
         {
             category = entry.Category.ToString(),
+            entityType = change?.EntityType,
+            entityId = change?.EntityId,
             changeType = change?.ChangeType.ToString(),
             changes = (change?.PropertyChanges ?? [])
                 .Select(p => new
