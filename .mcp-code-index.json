@@ -48850,7 +48850,7 @@
       "fqn": "Granit.Webhooks.EntityFrameworkCore.WebhooksEntityFrameworkCoreOptions",
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
-      "file": "src/Granit.Webhooks.EntityFrameworkCore/WebhooksEntityFrameworkCoreOptions.cs",
+      "file": "src/Granit.Webhooks.EntityFrameworkCore/Options/WebhooksEntityFrameworkCoreOptions.cs",
       "line": 31,
       "members": [
         {
