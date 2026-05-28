@@ -23,7 +23,7 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// </para>
 /// <para>
 /// <b>Segregated + host-admin scope.</b> Materialises across the host context plus every
-/// tenant returned by <see cref="ITenantEnumerator"/> via
+/// tenant returned by <see cref="ITenantsAccessor"/> via
 /// <see cref="ICurrentTenant.Change"/>, then exposes the result as an in-memory
 /// <see cref="IQueryable{T}"/>. Filters, ordering and paging applied by
 /// <c>Granit.QueryEngine</c> downstream run in LINQ-to-Objects, not translated to SQL —
@@ -32,8 +32,8 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// deployments with thousands of subscriptions per tenant.
 /// </para>
 /// <para>
-/// Soft-dep on <see cref="ITenantEnumerator"/>: the default
-/// <c>NullTenantEnumerator</c> returns an empty list when <c>Granit.MultiTenancy</c> is
+/// Soft-dep on <see cref="ITenantsAccessor"/>: the default
+/// <c>NullTenantsAccessor</c> returns an empty list when <c>Granit.MultiTenancy</c> is
 /// not loaded, so single-tenant deployments still get a host-only result without a hard
 /// package dependency.
 /// </para>
@@ -45,14 +45,14 @@ internal sealed class EfWebhookSubscriptionQueryableSource : IQueryableSource<We
     private readonly IDbContextFactory<WebhooksHostDbContext> _hostFactory;
     private readonly IDbContextFactory<WebhooksTenantDbContext>? _tenantFactory;
     private readonly ICurrentTenant _currentTenant;
-    private readonly ITenantEnumerator _tenantEnumerator;
+    private readonly ITenantsAccessor _tenantsAccessor;
     private DbContext? _context;
     private List<WebhookSubscription>? _materialized;
 
     public EfWebhookSubscriptionQueryableSource(
         WebhooksEntityFrameworkCoreOptions options,
         ICurrentTenant currentTenant,
-        ITenantEnumerator tenantEnumerator,
+        ITenantsAccessor tenantsAccessor,
         IDbContextFactory<WebhooksHostDbContext> hostFactory,
         IDbContextFactory<WebhooksTenantDbContext>? tenantFactory = null)
     {
@@ -61,7 +61,7 @@ internal sealed class EfWebhookSubscriptionQueryableSource : IQueryableSource<We
         _hostFactory = hostFactory;
         _tenantFactory = tenantFactory;
         _currentTenant = currentTenant;
-        _tenantEnumerator = tenantEnumerator;
+        _tenantsAccessor = tenantsAccessor;
     }
 
     public IQueryable<WebhookSubscription> GetQueryable()
@@ -109,10 +109,10 @@ internal sealed class EfWebhookSubscriptionQueryableSource : IQueryableSource<We
             return results;
         }
 
-        IReadOnlyList<(Guid Id, string Name)> tenants = _tenantEnumerator
+        IReadOnlyList<(Guid Id, string Name)> tenants = _tenantsAccessor
             .GetAllAsync().GetAwaiter().GetResult();
 
-        // Empty under NullTenantEnumerator — host-only result, no exception.
+        // Empty under NullTenantsAccessor — host-only result, no exception.
         foreach ((Guid id, string name) in tenants)
         {
             using (_currentTenant.Change(id, name))

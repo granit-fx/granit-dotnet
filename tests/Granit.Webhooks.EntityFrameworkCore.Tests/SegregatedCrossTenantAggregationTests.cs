@@ -18,7 +18,7 @@ namespace Granit.Webhooks.EntityFrameworkCore.Tests;
 /// scope, <see cref="EfWebhookSubscriptionQueryableSource"/>,
 /// <see cref="EfWebhookDeliveryAttemptQueryableSource"/> and
 /// <see cref="EfWebhookStatsReader"/> iterate every tenant via
-/// <see cref="ITenantEnumerator"/> + <see cref="ICurrentTenant.Change"/>.
+/// <see cref="ITenantsAccessor"/> + <see cref="ICurrentTenant.Change"/>.
 /// </summary>
 public sealed class SegregatedCrossTenantAggregationTests
 {
@@ -45,12 +45,12 @@ public sealed class SegregatedCrossTenantAggregationTests
         IDbContextFactory<WebhooksHostDbContext> hostFactory = StubHostFactory(hostOpts);
         ICurrentTenant currentTenant = NewSwitchableTenant(initiallyAvailable: false);
         IDbContextFactory<WebhooksTenantDbContext> tenantFactory = StubTenantFactory(tenantOpts, currentTenant);
-        ITenantEnumerator tenantEnumerator = StubTenantEnumerator(_tenantA, _tenantB);
+        ITenantsAccessor tenantsAccessor = StubTenantsAccessor(_tenantA, _tenantB);
 
         EfWebhookSubscriptionQueryableSource sut = new(
             new WebhooksEntityFrameworkCoreOptions { StorageMode = DualScopeStorageMode.Segregated },
             currentTenant,
-            tenantEnumerator,
+            tenantsAccessor,
             hostFactory,
             tenantFactory);
 
@@ -78,13 +78,13 @@ public sealed class SegregatedCrossTenantAggregationTests
         IDbContextFactory<WebhooksHostDbContext> hostFactory = StubHostFactory(hostOpts);
         ICurrentTenant currentTenant = NewSwitchableTenant(initiallyAvailable: false);
         IDbContextFactory<WebhooksTenantDbContext> tenantFactory = StubTenantFactory(tenantOpts, currentTenant);
-        ITenantEnumerator tenantEnumerator = StubTenantEnumerator(_tenantA, _tenantB);
+        ITenantsAccessor tenantsAccessor = StubTenantsAccessor(_tenantA, _tenantB);
         WebhooksContextResolver resolver = new(DualScopeStorageMode.Segregated, hostFactory, tenantFactory);
 
         IClock clock = Substitute.For<IClock>();
         clock.Now.Returns(new DateTimeOffset(2026, 5, 28, 12, 0, 0, TimeSpan.Zero));
 
-        EfWebhookStatsReader sut = new(resolver, currentTenant, tenantEnumerator, clock);
+        EfWebhookStatsReader sut = new(resolver, currentTenant, tenantsAccessor, clock);
 
         Webhooks.Abstractions.WebhookStats stats = await sut.GetStatsAsync(TestContext.Current.CancellationToken);
 
@@ -105,11 +105,11 @@ public sealed class SegregatedCrossTenantAggregationTests
         ICurrentTenant currentTenant = NewSwitchableTenant(initiallyAvailable: false);
         IDbContextFactory<WebhooksTenantDbContext> tenantFactory = StubTenantFactory(tenantOpts, currentTenant);
 
-        // NullTenantEnumerator-style stub (empty list) → fallback to host-only.
+        // NullTenantsAccessor-style stub (empty list) → fallback to host-only.
         EfWebhookSubscriptionQueryableSource sut = new(
             new WebhooksEntityFrameworkCoreOptions { StorageMode = DualScopeStorageMode.Segregated },
             currentTenant,
-            tenantEnumerator: StubTenantEnumerator() /* empty */,
+            tenantsAccessor: StubTenantsAccessor() /* empty */,
             hostFactory,
             tenantFactory);
 
@@ -176,9 +176,9 @@ public sealed class SegregatedCrossTenantAggregationTests
         return factory;
     }
 
-    private static ITenantEnumerator StubTenantEnumerator(params Guid[] tenantIds)
+    private static ITenantsAccessor StubTenantsAccessor(params Guid[] tenantIds)
     {
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
+        ITenantsAccessor enumerator = Substitute.For<ITenantsAccessor>();
         (Guid Id, string Name)[] tenants = [.. tenantIds.Select(id => (id, $"tenant-{id}"))];
         enumerator.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<(Guid, string)>>(tenants));

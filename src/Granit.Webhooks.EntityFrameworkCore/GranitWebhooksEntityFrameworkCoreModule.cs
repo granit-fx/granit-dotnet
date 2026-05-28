@@ -14,12 +14,12 @@ namespace Granit.Webhooks.EntityFrameworkCore;
 /// (Shared mode, default). Per ADR-063 the <c>StorageMode</c> option also accepts
 /// <c>DualScopeStorageMode.Segregated</c> for physical host/tenant separation —
 /// implementation completed across Phases 2B (#2377) and 2C (cross-tenant host-admin
-/// aggregation via <c>ITenantEnumerator</c>).
+/// aggregation via <c>ITenantsAccessor</c>).
 /// </para>
 /// <para>
 /// <c>Granit.MultiTenancy</c> is intentionally NOT a hard dependency: cross-tenant
-/// aggregation routes through the framework-primitive <c>ITenantEnumerator</c>
-/// (default <c>NullTenantEnumerator</c>) so single-tenant deployments can consume the
+/// aggregation routes through the framework-primitive <c>ITenantsAccessor</c>
+/// (default <c>NullTenantsAccessor</c>) so single-tenant deployments can consume the
 /// module without pulling the multi-tenant infrastructure. The full
 /// <c>Granit.MultiTenancy</c> registration replaces the default enumerator with an
 /// <c>ITenantReader</c>-backed adapter; without it, the Segregated host-admin browse

@@ -49,7 +49,7 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
         var sut = new EfWebhookSubscriptionQueryableSource(
             opts,
             tenantA,
-            EmptyEnumerator(),
+            EmptyAccessor(),
             new TenantScopedDbContextFactory(_options, tenantA, _filter));
 
         // Act
@@ -76,7 +76,7 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
         var sut = new EfWebhookSubscriptionQueryableSource(
             opts,
             host,
-            EmptyEnumerator(),
+            EmptyAccessor(),
             new TenantScopedDbContextFactory(_options, host, _filter));
 
         // Act
@@ -117,9 +117,9 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
             tenantId: tenantId);
 
 
-    private static ITenantEnumerator EmptyEnumerator()
+    private static ITenantsAccessor EmptyAccessor()
     {
-        ITenantEnumerator e = Substitute.For<ITenantEnumerator>();
+        ITenantsAccessor e = Substitute.For<ITenantsAccessor>();
         e.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<(Guid, string)>>([]));
         return e;

@@ -29852,15 +29852,6 @@
       "members": []
     },
     {
-      "name": "ITenantEnumerator",
-      "fqn": "Granit.MultiTenancy.ITenantEnumerator",
-      "kind": "interface",
-      "project": "Granit",
-      "file": "src/Granit/MultiTenancy/ITenantEnumerator.cs",
-      "line": 24,
-      "members": []
-    },
-    {
       "name": "ITenantInfo",
       "fqn": "Granit.MultiTenancy.ITenantInfo",
       "kind": "interface",
@@ -29884,6 +29875,15 @@
           "returnType": "Task<string>"
         }
       ]
+    },
+    {
+      "name": "ITenantsAccessor",
+      "fqn": "Granit.MultiTenancy.ITenantsAccessor",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/ITenantsAccessor.cs",
+      "line": 24,
+      "members": []
     },
     {
       "name": "TenantResolutionMiddleware",
