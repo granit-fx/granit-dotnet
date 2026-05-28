@@ -141,6 +141,34 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         result.PlainSecret.ShouldStartWith("whsec_");
     }
 
+    [Fact]
+    public async Task CreateAsync_PersistsSigningSecretHint_DerivedFromPlainSecret()
+    {
+        WebhookSubscriptionCreatedResult result = await _store.CreateAsync(
+            "https://example.com/hook", "test.event", null, TestContext.Current.CancellationToken);
+
+        result.Subscription.SigningSecretHint.ShouldNotBeNull();
+        result.Subscription.SigningSecretHint.ShouldBe(WebhookSecretHint.From(result.PlainSecret));
+        // Never expose the plaintext through the hint.
+        result.Subscription.SigningSecretHint.ShouldNotContain(result.PlainSecret[10..30]);
+    }
+
+    [Fact]
+    public async Task RotateSigningKeyAsync_RefreshesSigningSecretHintOnSubscription()
+    {
+        WebhookSubscriptionCreatedResult created = await _store.CreateAsync(
+            "https://example.com/hook", "test.event", null, TestContext.Current.CancellationToken);
+        string initialHint = created.Subscription.SigningSecretHint!;
+
+        WebhookSigningKeyRotatedResult rotated = await ((IWebhookSigningKeyWriter)_store)
+            .RotateSigningKeyAsync(created.Subscription.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
+
+        WebhookSubscription? updated = await _store.FindByIdAsync(created.Subscription.Id, TestContext.Current.CancellationToken);
+        updated!.SigningSecretHint.ShouldNotBeNull();
+        updated.SigningSecretHint.ShouldBe(WebhookSecretHint.From(rotated.PlainSecret));
+        updated.SigningSecretHint.ShouldNotBe(initialHint);
+    }
+
     // -------------------------------------------------------------------------
     // DeactivateAsync
     // -------------------------------------------------------------------------

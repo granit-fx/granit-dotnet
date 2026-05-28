@@ -5,6 +5,7 @@ using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.EntityFrameworkCore.Internal;
+using Granit.Webhooks.Internal;
 using Granit.Webhooks.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -171,6 +172,22 @@ public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
         await Should.ThrowAsync<Granit.Exceptions.EntityNotFoundException>(async () =>
             await _sut.DeactivateAsync(Guid.NewGuid(), "reason", TestContext.Current.CancellationToken));
     }
+
+    [Fact]
+    public async Task CreateAsync_persists_signing_secret_hint()
+    {
+        WebhookSubscriptionCreatedResult created = await _sut.CreateAsync(
+            "https://example.com/hook", "doc.uploaded", null, TestContext.Current.CancellationToken);
+
+        // Loaded back from the store to prove the hint round-trips through EF.
+        WebhookSubscription? roundTripped = await _sut.FindByIdAsync(
+            created.Subscription.Id, TestContext.Current.CancellationToken);
+
+        roundTripped.ShouldNotBeNull();
+        roundTripped!.SigningSecretHint.ShouldNotBeNull();
+        roundTripped.SigningSecretHint.ShouldBe(WebhookSecretHint.From(created.PlainSecret));
+    }
+
 
     // -------------------------------------------------------------------------
     // Helpers

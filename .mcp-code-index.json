@@ -48515,7 +48515,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, HttpsUrl targetUrl, string eventType, Guid signingKeyId, string protectedSecret, DateTimeOffset createdAt, Guid? tenantId = null)",
+          "signature": "Create(Guid id, HttpsUrl targetUrl, string eventType, Guid signingKeyId, string protectedSecret, DateTimeOffset createdAt, Guid? tenantId = null, string? signingSecretHint = null)",
           "returnType": "WebhookSubscription"
         },
         {
@@ -48546,7 +48546,7 @@
           "name": "RecordSuccess",
           "kind": "method",
           "signature": "RecordSuccess(DateTimeOffset at)",
-          "returnType": "string? DeactivationReason { get; private set; } public int ConsecutiveFailureCount { get; private set; } public DateTimeOffset? LastSuccessAt { get; private set; } public DateTimeOffset? SuspendedAt { get; private set; } public string? SuspendedBy { get; private set; } internal void"
+          "returnType": "string? SigningSecretHint { get; private set; } public string? DeactivationReason { get; private set; } public int ConsecutiveFailureCount { get; private set; } public DateTimeOffset? LastSuccessAt { get; private set; } public DateTimeOffset? SuspendedAt { get; private set; } public string? SuspendedBy { get; private set; } internal void"
         }
       ]
     },
@@ -48628,7 +48628,7 @@
       "kind": "record",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/Dtos/WebhookSubscriptionResponse.cs",
-      "line": 8,
+      "line": 23,
       "members": []
     },
     {

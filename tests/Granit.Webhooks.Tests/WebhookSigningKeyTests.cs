@@ -105,6 +105,47 @@ public sealed class WebhookSigningKeyTests
     }
 
     [Fact]
+    public void RotateSigningKey_WithHint_UpdatesSubscriptionSigningSecretHint()
+    {
+        var subscription = WebhookSubscription.Create(
+            Guid.NewGuid(),
+            "https://example.com/webhook",
+            "test.event",
+            Guid.NewGuid(),
+            "first-protected",
+            Now,
+            tenantId: null,
+            signingSecretHint: "whsec_aaaa****************aaaa");
+
+        subscription.RotateSigningKey(
+            Guid.NewGuid(),
+            "new-protected",
+            Now,
+            Grace,
+            newSigningSecretHint: "whsec_bbbb****************bbbb");
+
+        subscription.SigningSecretHint.ShouldBe("whsec_bbbb****************bbbb");
+    }
+
+    [Fact]
+    public void RotateSigningKey_WithoutHint_LeavesExistingSigningSecretHintUntouched()
+    {
+        var subscription = WebhookSubscription.Create(
+            Guid.NewGuid(),
+            "https://example.com/webhook",
+            "test.event",
+            Guid.NewGuid(),
+            "first-protected",
+            Now,
+            tenantId: null,
+            signingSecretHint: "whsec_aaaa****************aaaa");
+
+        subscription.RotateSigningKey(Guid.NewGuid(), "new-protected", Now, Grace);
+
+        subscription.SigningSecretHint.ShouldBe("whsec_aaaa****************aaaa");
+    }
+
+    [Fact]
     public void StampRotationNotification_RecordsTimestamp()
     {
         WebhookSubscription subscription = WithSigningKey(out _);

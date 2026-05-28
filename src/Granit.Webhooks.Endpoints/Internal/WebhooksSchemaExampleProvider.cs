@@ -36,6 +36,7 @@ internal sealed class WebhooksSchemaExampleProvider : ISchemaExampleProvider
                 ["lastSuccessAt"] = "2026-04-20T13:45:12+00:00",
                 ["createdAt"] = "2026-03-15T09:00:00+00:00",
                 ["modifiedAt"] = null,
+                ["signingSecretHint"] = "whsec_b46a****************5182",
             },
         };
 }

@@ -77,7 +77,8 @@ internal sealed class InMemoryWebhookSubscriptionStore(
             _guidGenerator.Create(),
             protectedSecret,
             _clock.Now,
-            tenantId);
+            tenantId,
+            signingSecretHint: WebhookSecretHint.From(plainSecret));
 
         _subscriptions[subscription.Id] = subscription;
 
@@ -181,7 +182,8 @@ internal sealed class InMemoryWebhookSubscriptionStore(
             newKeyId,
             protectedSecret,
             _clock.Now,
-            grace);
+            grace,
+            newSigningSecretHint: WebhookSecretHint.From(plainSecret));
 
         return new WebhookSigningKeyRotatedResult(newKey.Id, plainSecret);
     }

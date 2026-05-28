@@ -7,6 +7,7 @@ using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
+using Granit.Webhooks.Internal;
 using Granit.Webhooks.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -101,7 +102,8 @@ internal sealed class EfWebhookSubscriptionStore(
             guidGenerator.Create(),
             protectedSecret,
             clock.Now,
-            tenantId);
+            tenantId,
+            signingSecretHint: WebhookSecretHint.From(plainSecret));
 
         await AddAsync(subscription, cancellationToken).ConfigureAwait(false);
 
@@ -172,6 +174,8 @@ internal sealed class EfWebhookSubscriptionStore(
         TimeSpan grace = retiredKeyGracePeriod ?? options.Value.RetiredKeyGracePeriod;
         Guid newKeyId = guidGenerator.Create();
 
+        string hint = WebhookSecretHint.From(plainSecret);
+
         await WriteAsync(async db =>
         {
             WebhookSubscription subscription = await db.WebhookSubscriptions
@@ -180,7 +184,7 @@ internal sealed class EfWebhookSubscriptionStore(
                 .ConfigureAwait(false)
                 ?? throw new EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
 
-            subscription.RotateSigningKey(newKeyId, protectedSecret, clock.Now, grace);
+            subscription.RotateSigningKey(newKeyId, protectedSecret, clock.Now, grace, newSigningSecretHint: hint);
         }, cancellationToken).ConfigureAwait(false);
 
         return new WebhookSigningKeyRotatedResult(newKeyId, plainSecret);

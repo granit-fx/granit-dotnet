@@ -29,6 +29,20 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
     /// Creates a new active <see cref="WebhookSubscription"/> with an initial
     /// <see cref="WebhookSigningKeyStatus.Active"/> signing key.
     /// </summary>
+    /// <param name="id">Identifier for the new subscription.</param>
+    /// <param name="targetUrl">HTTPS endpoint that will receive webhook POST requests.</param>
+    /// <param name="eventType">Logical event type the subscription listens for.</param>
+    /// <param name="signingKeyId">Identifier for the initial signing key.</param>
+    /// <param name="protectedSecret">Opaque protected signing secret (format defined by <see cref="Abstractions.IWebhookSecretProtector"/>).</param>
+    /// <param name="createdAt">Creation timestamp (provided by an <see cref="Granit.Timing.IClock"/>).</param>
+    /// <param name="tenantId">Tenant the subscription belongs to, or <c>null</c> for global.</param>
+    /// <param name="signingSecretHint">
+    /// Optional Stripe-style masked preview of the plaintext signing secret
+    /// (e.g. <c>whsec_b46a****************5182</c>). Computed from the plaintext
+    /// at the call site and persisted as non-sensitive metadata so admin UIs can
+    /// render a stable hint after creation. <c>null</c> for legacy callers that
+    /// don't surface the hint.
+    /// </param>
     public static WebhookSubscription Create(
         Guid id,
         HttpsUrl targetUrl,
@@ -36,7 +50,8 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
         Guid signingKeyId,
         string protectedSecret,
         DateTimeOffset createdAt,
-        Guid? tenantId = null)
+        Guid? tenantId = null,
+        string? signingSecretHint = null)
     {
         var subscription = new WebhookSubscription
         {
@@ -45,6 +60,7 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
             EventType = eventType,
             TenantId = tenantId,
             Status = WebhookSubscriptionStatus.Active,
+            SigningSecretHint = signingSecretHint,
         };
 
         subscription._signingKeys.Add(WebhookSigningKey.Create(
@@ -87,6 +103,16 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
 
     /// <summary>Current lifecycle status of the subscription.</summary>
     public WebhookSubscriptionStatus Status { get; private set; } = WebhookSubscriptionStatus.Active;
+
+    /// <summary>
+    /// Stripe-style masked preview of the plaintext signing secret currently in
+    /// effect (e.g. <c>whsec_b46a****************5182</c>). Refreshed on every
+    /// <see cref="RotateSigningKey"/> to match the new active key. Non-sensitive
+    /// metadata: exposes ~32 bits out of the secret's 256 bits of entropy. <c>null</c>
+    /// for subscriptions created before the hint was introduced.
+    /// Current format is exactly 30 characters; column allows up to 32.
+    /// </summary>
+    public string? SigningSecretHint { get; private set; }
 
     /// <summary>
     /// Human-readable reason for suspension or deactivation.
@@ -219,12 +245,18 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
     /// <param name="newProtectedSecret">Opaque protected secret for the new key.</param>
     /// <param name="now">Current timestamp (provided by an <see cref="Granit.Timing.IClock"/>).</param>
     /// <param name="retiredKeyGracePeriod">Grace period during which the previously-active key remains accepted in verification.</param>
+    /// <param name="newSigningSecretHint">
+    /// Optional masked preview of the new plaintext secret. Refreshed on the
+    /// subscription so admin UIs surface the most recent active hint. Pass
+    /// <c>null</c> to leave the existing hint untouched (legacy callers).
+    /// </param>
     /// <returns>The newly-created active key.</returns>
     internal WebhookSigningKey RotateSigningKey(
         Guid newKeyId,
         string newProtectedSecret,
         DateTimeOffset now,
-        TimeSpan retiredKeyGracePeriod)
+        TimeSpan retiredKeyGracePeriod,
+        string? newSigningSecretHint = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(newProtectedSecret);
 
@@ -240,6 +272,11 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
             now);
 
         _signingKeys.Add(newKey);
+
+        if (newSigningSecretHint is not null)
+        {
+            SigningSecretHint = newSigningSecretHint;
+        }
 
         return newKey;
     }

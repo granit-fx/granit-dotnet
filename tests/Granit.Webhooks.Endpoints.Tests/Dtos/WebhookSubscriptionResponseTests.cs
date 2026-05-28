@@ -18,6 +18,7 @@ public sealed class WebhookSubscriptionResponseTests
         DateTimeOffset lastSuccessAt = DateTimeOffset.UtcNow.AddHours(-1);
         DateTimeOffset createdAt = DateTimeOffset.UtcNow.AddDays(-7);
         DateTimeOffset modifiedAt = DateTimeOffset.UtcNow;
+        string hint = "whsec_b46a****************5182";
 
         var response = new WebhookSubscriptionResponse(
             id,
@@ -27,7 +28,8 @@ public sealed class WebhookSubscriptionResponseTests
             failureCount,
             lastSuccessAt,
             createdAt,
-            modifiedAt);
+            modifiedAt,
+            hint);
 
         response.Id.ShouldBe(id);
         response.TargetUrl.ShouldBe(targetUrl);
@@ -37,6 +39,7 @@ public sealed class WebhookSubscriptionResponseTests
         response.LastSuccessAt.ShouldBe(lastSuccessAt);
         response.CreatedAt.ShouldBe(createdAt);
         response.ModifiedAt.ShouldBe(modifiedAt);
+        response.SigningSecretHint.ShouldBe(hint);
     }
 
     [Fact]
@@ -50,9 +53,11 @@ public sealed class WebhookSubscriptionResponseTests
             0,
             null,
             DateTimeOffset.UtcNow,
+            null,
             null);
 
         response.LastSuccessAt.ShouldBeNull();
         response.ModifiedAt.ShouldBeNull();
+        response.SigningSecretHint.ShouldBeNull();
     }
 }

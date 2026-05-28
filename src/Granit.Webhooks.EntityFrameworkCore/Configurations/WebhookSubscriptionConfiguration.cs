@@ -58,6 +58,14 @@ internal sealed class WebhookSubscriptionConfiguration : IEntityTypeConfiguratio
         builder.Property(e => e.SuspendedBy)
             .HasMaxLength(450);
 
+        // Non-sensitive masked preview (e.g. "whsec_b46a****************5182") shown
+        // in admin UIs. Refreshed on every signing-key rotation. Nullable for rows
+        // created before the hint was introduced. Current format is exactly 30 chars
+        // (6 prefix + 4 + 16 mask + 4); 32 leaves a small headroom for minor format
+        // tweaks without bloating the column.
+        builder.Property(e => e.SigningSecretHint)
+            .HasMaxLength(32);
+
         // Audit fields from AuditedEntity / CreationAuditedEntity.
         builder.Property(e => e.CreatedAt).IsRequired();
         builder.Property(e => e.CreatedBy).HasMaxLength(450);

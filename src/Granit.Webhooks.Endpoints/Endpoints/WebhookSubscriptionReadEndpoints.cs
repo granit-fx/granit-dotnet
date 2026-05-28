@@ -53,5 +53,6 @@ internal static class WebhookSubscriptionReadEndpoints
             subscription.ConsecutiveFailureCount,
             subscription.LastSuccessAt,
             subscription.CreatedAt,
-            subscription.ModifiedAt);
+            subscription.ModifiedAt,
+            subscription.SigningSecretHint);
 }
