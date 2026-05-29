@@ -16,7 +16,7 @@ namespace Granit.Settings.EntityFrameworkCore.Tests;
 public sealed class SettingRecordConfigurationTests
 {
     private sealed class TestSettingsDbContext(DbContextOptions<TestSettingsDbContext> options)
-        : DbContext(options), ISettingsDbContext
+        : DbContext(options)
     {
         public DbSet<SettingRecord> SettingRecords { get; set; } = null!;
 

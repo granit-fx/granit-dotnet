@@ -5,13 +5,13 @@
 // Each test uses an isolated database name to prevent state leakage.
 // =============================================================================
 
+using Granit.Encryption;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Settings.Definitions;
 using Granit.Settings.Domain;
-using Granit.Settings.EntityFrameworkCore.Extensions;
 using Granit.Settings.EntityFrameworkCore.Internal;
 using Granit.Settings.Values;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
@@ -23,29 +23,25 @@ public sealed class EfCoreSettingStoreTests
     // Test infrastructure
     // -------------------------------------------------------------------------
 
-    private sealed class TestSettingsDbContext(DbContextOptions<TestSettingsDbContext> options)
-        : DbContext(options), ISettingsDbContext
+    private sealed class TestSettingsDbContextFactory(string dbName)
+        : IDbContextFactory<SettingsDbContext>
     {
-        public DbSet<SettingRecord> SettingRecords { get; set; } = null!;
+        private readonly DbContextOptions<SettingsDbContext> _options = new DbContextOptionsBuilder<SettingsDbContext>()
+            .UseInMemoryDatabase(dbName)
+            .Options;
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.ConfigureSettingsModule();
-        }
+        public SettingsDbContext CreateDbContext()
+            => new(_options, GranitDesignTime.CurrentTenant);
     }
 
-    private static EfCoreSettingStore<TestSettingsDbContext> CreateStore(string dbName)
+    private sealed class PassthroughEncryption : IStringEncryptionService
     {
-        ServiceCollection services = new();
-        services.AddDbContext<TestSettingsDbContext>(options =>
-            options.UseInMemoryDatabase(dbName));
-
-        ServiceProvider sp = services.BuildServiceProvider();
-        return new EfCoreSettingStore<TestSettingsDbContext>(
-            sp.GetRequiredService<IServiceScopeFactory>(),
-            new SettingDefinitionManager([]));
+        public string Encrypt(string plainText) => plainText;
+        public string? Decrypt(string cipherText) => cipherText;
     }
+
+    private static EfCoreSettingStore CreateStore(string dbName)
+        => new(new TestSettingsDbContextFactory(dbName), new SettingDefinitionManager([]), new PassthroughEncryption());
 
     private static async Task SeedAsync(
         string dbName,
@@ -55,12 +51,8 @@ public sealed class EfCoreSettingStoreTests
         string? value,
         CancellationToken cancellationToken = default)
     {
-        ServiceCollection services = new();
-        services.AddDbContext<TestSettingsDbContext>(options =>
-            options.UseInMemoryDatabase(dbName));
-        await using ServiceProvider sp = services.BuildServiceProvider();
-        await using TestSettingsDbContext context =
-            sp.GetRequiredService<TestSettingsDbContext>();
+        TestSettingsDbContextFactory factory = new(dbName);
+        await using SettingsDbContext context = factory.CreateDbContext();
 
         context.SettingRecords.Add(new SettingRecord
         {
@@ -86,7 +78,7 @@ public sealed class EfCoreSettingStoreTests
         await SeedAsync(db, "App.Theme", "G", null, "dark",
             TestContext.Current.CancellationToken);
 
-        EfCoreSettingStore<TestSettingsDbContext> store = CreateStore(db);
+        EfCoreSettingStore store = CreateStore(db);
         SettingValue? result = await store.GetOrNullAsync(
             "App.Theme", "G", null, TestContext.Current.CancellationToken);
 
@@ -100,7 +92,7 @@ public sealed class EfCoreSettingStoreTests
     [Fact]
     public async Task GetOrNullAsync_NoRecord_ReturnsNull()
     {
-        EfCoreSettingStore<TestSettingsDbContext> store = CreateStore(Guid.NewGuid().ToString());
+        EfCoreSettingStore store = CreateStore(Guid.NewGuid().ToString());
 
         SettingValue? result = await store.GetOrNullAsync(
             "App.Theme", "G", null, TestContext.Current.CancellationToken);
@@ -118,7 +110,7 @@ public sealed class EfCoreSettingStoreTests
         await SeedAsync(db, "App.Theme", "T", tenantId.ToString(), "light-tenant",
             TestContext.Current.CancellationToken);
 
-        EfCoreSettingStore<TestSettingsDbContext> store = CreateStore(db);
+        EfCoreSettingStore store = CreateStore(db);
         SettingValue? tenantResult = await store.GetOrNullAsync(
             "App.Theme", "T", tenantId.ToString(), TestContext.Current.CancellationToken);
 
@@ -141,7 +133,7 @@ public sealed class EfCoreSettingStoreTests
         await SeedAsync(db, "App.Theme", "G", null, "light",
             TestContext.Current.CancellationToken); // different provider — must not appear
 
-        EfCoreSettingStore<TestSettingsDbContext> store = CreateStore(db);
+        EfCoreSettingStore store = CreateStore(db);
         IReadOnlyList<SettingValue> result = await store.GetListAsync(
             "T", tenantId.ToString(), TestContext.Current.CancellationToken);
 
@@ -153,7 +145,7 @@ public sealed class EfCoreSettingStoreTests
     [Fact]
     public async Task GetListAsync_Empty_ReturnsEmptyList()
     {
-        EfCoreSettingStore<TestSettingsDbContext> store = CreateStore(Guid.NewGuid().ToString());
+        EfCoreSettingStore store = CreateStore(Guid.NewGuid().ToString());
 
         IReadOnlyList<SettingValue> result = await store.GetListAsync(
             "G", null, TestContext.Current.CancellationToken);
@@ -169,7 +161,7 @@ public sealed class EfCoreSettingStoreTests
     public async Task SetAsync_NewRecord_Persists()
     {
         string db = Guid.NewGuid().ToString();
-        EfCoreSettingStore<TestSettingsDbContext> store = CreateStore(db);
+        EfCoreSettingStore store = CreateStore(db);
 
         await store.SetAsync("App.Theme", "G", null, "dark",
             TestContext.Current.CancellationToken);
@@ -187,7 +179,7 @@ public sealed class EfCoreSettingStoreTests
         await SeedAsync(db, "App.Theme", "G", null, "dark",
             TestContext.Current.CancellationToken);
 
-        EfCoreSettingStore<TestSettingsDbContext> store = CreateStore(db);
+        EfCoreSettingStore store = CreateStore(db);
         await store.SetAsync("App.Theme", "G", null, "light",
             TestContext.Current.CancellationToken);
 
@@ -201,7 +193,7 @@ public sealed class EfCoreSettingStoreTests
     public async Task SetAsync_IsIdempotent_NoDuplicates()
     {
         string db = Guid.NewGuid().ToString();
-        EfCoreSettingStore<TestSettingsDbContext> store = CreateStore(db);
+        EfCoreSettingStore store = CreateStore(db);
 
         await store.SetAsync("App.Theme", "G", null, "dark",
             TestContext.Current.CancellationToken);
@@ -226,7 +218,7 @@ public sealed class EfCoreSettingStoreTests
         await SeedAsync(db, "App.Theme", "G", null, "dark",
             TestContext.Current.CancellationToken);
 
-        EfCoreSettingStore<TestSettingsDbContext> store = CreateStore(db);
+        EfCoreSettingStore store = CreateStore(db);
         await store.DeleteAsync("App.Theme", "G", null,
             TestContext.Current.CancellationToken);
 
@@ -239,7 +231,7 @@ public sealed class EfCoreSettingStoreTests
     [Fact]
     public async Task DeleteAsync_UnknownRecord_DoesNotThrow()
     {
-        EfCoreSettingStore<TestSettingsDbContext> store = CreateStore(Guid.NewGuid().ToString());
+        EfCoreSettingStore store = CreateStore(Guid.NewGuid().ToString());
 
         Func<Task> act = () => store.DeleteAsync(
             "Ghost.Setting", "G", null, TestContext.Current.CancellationToken);
@@ -256,7 +248,7 @@ public sealed class EfCoreSettingStoreTests
         await SeedAsync(db, "App.Language", "G", null, "fr",
             TestContext.Current.CancellationToken);
 
-        EfCoreSettingStore<TestSettingsDbContext> store = CreateStore(db);
+        EfCoreSettingStore store = CreateStore(db);
         await store.DeleteAsync("App.Theme", "G", null,
             TestContext.Current.CancellationToken);
 

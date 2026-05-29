@@ -10,7 +10,7 @@ namespace Granit.Settings.EntityFrameworkCore.Tests;
 public sealed class ModelBuilderExtensionsTests
 {
     private sealed class TestDbContext(DbContextOptions<TestDbContext> options)
-        : DbContext(options), ISettingsDbContext
+        : DbContext(options)
     {
         public DbSet<SettingRecord> SettingRecords { get; set; } = null!;
 

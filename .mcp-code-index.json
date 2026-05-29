@@ -42825,7 +42825,14 @@
       "project": "Granit.Settings.EntityFrameworkCore",
       "file": "src/Granit.Settings.EntityFrameworkCore/Extensions/SettingsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
       "line": 14,
-      "members": []
+      "members": [
+        {
+          "name": "AddGranitSettingsEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitSettingsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<SettingsEntityFrameworkCoreOptions> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
     },
     {
       "name": "GranitSettingsDbProperties",
@@ -42853,12 +42860,12 @@
       "members": []
     },
     {
-      "name": "ISettingsDbContext",
-      "fqn": "Granit.Settings.EntityFrameworkCore.ISettingsDbContext",
-      "kind": "interface",
+      "name": "SettingsEntityFrameworkCoreOptions",
+      "fqn": "Granit.Settings.EntityFrameworkCore.Options.SettingsEntityFrameworkCoreOptions",
+      "kind": "class",
       "project": "Granit.Settings.EntityFrameworkCore",
-      "file": "src/Granit.Settings.EntityFrameworkCore/ISettingsDbContext.cs",
-      "line": 30,
+      "file": "src/Granit.Settings.EntityFrameworkCore/Options/SettingsEntityFrameworkCoreOptions.cs",
+      "line": 16,
       "members": []
     },
     {

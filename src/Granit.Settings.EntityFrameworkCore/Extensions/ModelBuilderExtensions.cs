@@ -12,8 +12,10 @@ public static class ModelBuilderExtensions
     /// Applies the <c>settings_setting_records</c> table configuration to the model.
     /// </summary>
     /// <remarks>
-    /// Call this method in <c>OnModelCreating</c> of the host application's DbContext
-    /// that implements <see cref="ISettingsDbContext"/>.
+    /// Call this method in <c>OnModelCreating</c> of the consuming application's
+    /// migration-owning <c>DbContext</c> — the framework's internal <c>SettingsDbContext</c>
+    /// is sealed; consumers fold the model into their own context for migration generation
+    /// per the standard Granit convention (framework packages NEVER ship EF migrations).
     /// </remarks>
     /// <param name="modelBuilder">The model builder.</param>
     /// <returns>The model builder for chaining.</returns>

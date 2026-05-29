@@ -4,14 +4,14 @@ using Granit.Persistence.EntityFrameworkCore;
 namespace Granit.Settings.EntityFrameworkCore;
 
 /// <summary>
-/// Granit module for EF Core persistence of settings.
-/// Registers <see cref="Internal.EfCoreSettingStore{TDbContext}"/> via
-/// <c>builder.AddGranitSettingsEfCore&lt;TDbContext&gt;()</c>.
+/// Granit module for EF Core persistence of settings backed by the dedicated
+/// <c>SettingsDbContext</c>.
 /// </summary>
 /// <remarks>
 /// Register via the host application's builder:
 /// <code>
-/// builder.AddGranitSettingsEfCore&lt;AppDbContext&gt;();
+/// builder.AddGranitSettingsEntityFrameworkCore(opts =>
+///     opts.Configure = db => db.UseNpgsql(connectionString));
 /// </code>
 /// </remarks>
 [DependsOn(

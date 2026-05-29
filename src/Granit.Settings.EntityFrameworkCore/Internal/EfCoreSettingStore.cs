@@ -3,34 +3,24 @@ using Granit.Settings.Definitions;
 using Granit.Settings.Domain;
 using Granit.Settings.Values;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Settings.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// EF Core implementation of <see cref="ISettingStoreReader"/> and <see cref="ISettingStoreWriter"/>.
-/// Persists setting values in the host application's DbContext
-/// (table <c>settings_setting_records</c>) with ISO 27001 audit trail.
+/// EF Core implementation of <see cref="ISettingStoreReader"/> and
+/// <see cref="ISettingStoreWriter"/>. Persists setting values in the dedicated
+/// <see cref="SettingsDbContext"/> (table <c>settings_setting_records</c>) with ISO 27001
+/// audit trail via the standard Granit auto-interceptors.
 /// </summary>
 /// <remarks>
-/// <para>
-/// Registered as a Singleton. Uses <see cref="IServiceScopeFactory"/> to create
-/// a dedicated scope per database operation, ensuring thread safety and correct
-/// EF Core Scoped context lifetime.
-/// </para>
-/// <para>
-/// The host DbContext must implement <see cref="ISettingsDbContext"/> and have
-/// <c>AuditedEntityInterceptor</c> wired in its factory for ISO 27001 audit trail compliance.
-/// </para>
+/// Scoped: opens a fresh <see cref="SettingsDbContext"/> per operation via the registered
+/// <see cref="IDbContextFactory{TContext}"/> — thread-safe for concurrent reads/writes.
 /// </remarks>
-internal sealed class EfCoreSettingStore<TDbContext>(
-    IServiceScopeFactory scopeFactory,
-    SettingDefinitionManager definitions) : ISettingStoreReader, ISettingStoreWriter
-    where TDbContext : DbContext, ISettingsDbContext
+internal sealed class EfCoreSettingStore(
+    IDbContextFactory<SettingsDbContext> contextFactory,
+    SettingDefinitionManager definitions,
+    IStringEncryptionService encryption) : ISettingStoreReader, ISettingStoreWriter
 {
-    private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
-    private readonly SettingDefinitionManager _definitions = definitions;
-
     /// <inheritdoc/>
     public async Task<SettingValue?> GetOrNullAsync(
         string name,
@@ -38,8 +28,8 @@ internal sealed class EfCoreSettingStore<TDbContext>(
         string? providerKey,
         CancellationToken cancellationToken = default)
     {
-        await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
-        TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        await using SettingsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         SettingRecord? record = await context.SettingRecords
             .AsNoTracking()
@@ -53,9 +43,8 @@ internal sealed class EfCoreSettingStore<TDbContext>(
         }
 
         string? value = record.Value;
-        if (value is not null && _definitions.GetOrNull(name) is { IsEncrypted: true })
+        if (value is not null && definitions.GetOrNull(name) is { IsEncrypted: true })
         {
-            IStringEncryptionService encryption = scope.ServiceProvider.GetRequiredService<IStringEncryptionService>();
             value = encryption.Decrypt(value);
         }
 
@@ -68,23 +57,21 @@ internal sealed class EfCoreSettingStore<TDbContext>(
         string? providerKey,
         CancellationToken cancellationToken = default)
     {
-        await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
-        TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        await using SettingsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         List<SettingRecord> records = await context.SettingRecords
             .AsNoTracking()
             .Where(r => r.ProviderName == providerName && r.ProviderKey == providerKey)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        IStringEncryptionService? encryption = null;
         List<SettingValue> result = new(records.Count);
 
         foreach (SettingRecord r in records)
         {
             string? value = r.Value;
-            if (value is not null && _definitions.GetOrNull(r.Name) is { IsEncrypted: true })
+            if (value is not null && definitions.GetOrNull(r.Name) is { IsEncrypted: true })
             {
-                encryption ??= scope.ServiceProvider.GetRequiredService<IStringEncryptionService>();
                 value = encryption.Decrypt(value);
             }
 
@@ -102,13 +89,12 @@ internal sealed class EfCoreSettingStore<TDbContext>(
         string? value,
         CancellationToken cancellationToken = default)
     {
-        await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
-        TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        await using SettingsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         string? persistedValue = value;
-        if (persistedValue is not null && _definitions.GetOrNull(name) is { IsEncrypted: true })
+        if (persistedValue is not null && definitions.GetOrNull(name) is { IsEncrypted: true })
         {
-            IStringEncryptionService encryption = scope.ServiceProvider.GetRequiredService<IStringEncryptionService>();
             persistedValue = encryption.Encrypt(persistedValue);
         }
 
@@ -142,8 +128,8 @@ internal sealed class EfCoreSettingStore<TDbContext>(
         string? providerKey,
         CancellationToken cancellationToken = default)
     {
-        await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
-        TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        await using SettingsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         SettingRecord? existing = await context.SettingRecords
             .FirstOrDefaultAsync(

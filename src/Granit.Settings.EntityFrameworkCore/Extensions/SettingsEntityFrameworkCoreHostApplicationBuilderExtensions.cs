@@ -1,7 +1,7 @@
-using Granit.Settings.Definitions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Settings.EntityFrameworkCore.Internal;
+using Granit.Settings.EntityFrameworkCore.Options;
 using Granit.Settings.Values;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -14,37 +14,43 @@ namespace Granit.Settings.EntityFrameworkCore.Extensions;
 public static class SettingsEntityFrameworkCoreHostApplicationBuilderExtensions
 {
     /// <summary>
-    /// Replaces the default <c>InMemorySettingStore</c> with <see cref="EfCoreSettingStore{TDbContext}"/>,
-    /// persisting setting values in the host application's existing DbContext.
+    /// Replaces the default <c>InMemorySettingStore</c> with the EF Core implementation
+    /// backed by the dedicated <c>SettingsDbContext</c>.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// <typeparamref name="TDbContext"/> must implement <see cref="ISettingsDbContext"/>
-    /// and call <c>modelBuilder.ConfigureSettingsModule()</c> in <c>OnModelCreating</c>.
-    /// </para>
-    /// <para>
-    /// The <c>AuditedEntityInterceptor</c> from <c>Granit.Persistence</c> must be wired
-    /// to <typeparamref name="TDbContext"/> by the host application to ensure the ISO 27001
-    /// 3-year audit trail is populated on every write.
-    /// </para>
+    /// Migration ownership: the host runs migrations against its own
+    /// <see cref="Microsoft.EntityFrameworkCore.DbContext"/> by folding the model via
+    /// <see cref="ModelBuilderExtensions.ConfigureSettingsModule"/> — per the standard
+    /// Granit convention (framework packages NEVER ship EF migrations).
     /// </remarks>
-    /// <typeparam name="TDbContext">
-    /// The host application's DbContext implementing <see cref="ISettingsDbContext"/>.
-    /// </typeparam>
     /// <param name="builder">The host application builder.</param>
+    /// <param name="configure">Configuration callback for
+    /// <see cref="SettingsEntityFrameworkCoreOptions"/>.</param>
     /// <returns>The builder for chaining.</returns>
-    public static IHostApplicationBuilder AddGranitSettingsEfCore<TDbContext>(
-        this IHostApplicationBuilder builder)
-        where TDbContext : DbContext, ISettingsDbContext
+    /// <exception cref="ArgumentNullException">When <paramref name="builder"/> or
+    /// <paramref name="configure"/> is <c>null</c>.</exception>
+    public static IHostApplicationBuilder AddGranitSettingsEntityFrameworkCore(
+        this IHostApplicationBuilder builder,
+        Action<SettingsEntityFrameworkCoreOptions> configure)
     {
-        builder.Services.AddSingleton<EfCoreSettingStore<TDbContext>>(sp =>
-            new EfCoreSettingStore<TDbContext>(
-                sp.GetRequiredService<IServiceScopeFactory>(),
-                sp.GetRequiredService<SettingDefinitionManager>()));
-        builder.Services.Replace(ServiceDescriptor.Singleton<ISettingStoreReader>(sp =>
-            sp.GetRequiredService<EfCoreSettingStore<TDbContext>>()));
-        builder.Services.Replace(ServiceDescriptor.Singleton<ISettingStoreWriter>(sp =>
-            sp.GetRequiredService<EfCoreSettingStore<TDbContext>>()));
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        SettingsEntityFrameworkCoreOptions options = new();
+        configure(options);
+
+        if (options.Configure is null)
+        {
+            throw new InvalidOperationException(
+                "SettingsEntityFrameworkCoreOptions.Configure must be set. " +
+                "Provide an Action<DbContextOptionsBuilder> that configures the EF Core " +
+                "provider and connection string for SettingsDbContext.");
+        }
+
+        builder.Services.AddGranitDbContext<SettingsDbContext>(options.Configure);
+
+        builder.Services.Replace(ServiceDescriptor.Scoped<ISettingStoreReader, EfCoreSettingStore>());
+        builder.Services.Replace(ServiceDescriptor.Scoped<ISettingStoreWriter, EfCoreSettingStore>());
 
         return builder;
     }
