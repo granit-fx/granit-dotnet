@@ -428,12 +428,29 @@ public static class ModelBuilderExtensions
             }
         }
 
-        // Now that no FK or navigation references them, the value object entity types can be
-        // removed. ApplySingleValueObjectConverters runs next and wraps each promoted SVO
-        // scalar property with the matching primitive ValueConverter.
-        foreach (IMutableEntityType valueObjectEntityType in valueObjectEntityTypes)
+        // RemoveEntityType alone is not enough: an earlier convention that calls
+        // modelBuilder.Entity<T>() on the OWNER (the IConcurrencyAware / soft-delete passes
+        // above) re-fires EF navigation discovery, and model FINALIZATION then re-materialises
+        // these phantom value object entity types — with their shadow-FK graph
+        // (OpenGraph → OgImage → ImageDimensions) — straight off the still-present CLR
+        // navigation properties. Finalization then fails binding e.g.
+        // ImageDimensions(int width, int height).
+        //
+        // The model-level Ignore(type) adds the CLR type to the model's ignored set so NO
+        // later convention can re-add it. Restrict it to MULTI-FIELD value objects: a
+        // SingleValueObject<T> must stay visible as a scalar property so the next pass
+        // (ApplySingleValueObjectConverters) can wrap it with its primitive converter —
+        // Ignore(type) would hide that property and drop the column.
+        foreach (Type valueObjectClrType in valueObjectClrTypes)
         {
-            modelBuilder.Model.RemoveEntityType(valueObjectEntityType.ClrType);
+            if (GetSingleValueObjectBase(valueObjectClrType) is null)
+            {
+                modelBuilder.Ignore(valueObjectClrType);                 // multi-field VO → keep it out for good
+            }
+            else
+            {
+                modelBuilder.Model.RemoveEntityType(valueObjectClrType); // SVO → just un-map the phantom
+            }
         }
     }
 
