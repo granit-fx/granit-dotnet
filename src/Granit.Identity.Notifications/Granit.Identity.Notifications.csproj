@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Identity.Notifications</PackageId>
+    <Description>Recipient resolution bridge for Granit notifications. Implements IRecipientResolver over the Identity module's IIdentityUserReader — one adapter covering local (OpenIddict) and every federated provider (Keycloak, EntraID, Cognito, Google). Reads the canonical User aggregate's first-class contact fields and falls back to configurable provider metadata keys for phone number and locale.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Identity.Notifications.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Identity\Granit.Identity.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

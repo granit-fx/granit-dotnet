@@ -113,6 +113,7 @@
     <Project Path="src/Granit.Identity.Local.Notifications/Granit.Identity.Local.Notifications.csproj" />
     <Project Path="src/Granit.Identity.Local.Privacy/Granit.Identity.Local.Privacy.csproj" />
     <Project Path="src/Granit.Identity.Local/Granit.Identity.Local.csproj" />
+    <Project Path="src/Granit.Identity.Notifications/Granit.Identity.Notifications.csproj" />
     <Project Path="src/Granit.Identity/Granit.Identity.csproj" />
     <Project Path="src/Granit.OpenIddict.BackgroundJobs/Granit.OpenIddict.BackgroundJobs.csproj" />
     <Project Path="src/Granit.OpenIddict.Endpoints/Granit.OpenIddict.Endpoints.csproj" />
@@ -435,6 +436,7 @@
     <Project Path="tests/Granit.Identity.Local.Notifications.Tests/Granit.Identity.Local.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.Privacy.Tests/Granit.Identity.Local.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.Tests/Granit.Identity.Local.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.Notifications.Tests/Granit.Identity.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Tests/Granit.Identity.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.BackgroundJobs.Tests/Granit.OpenIddict.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.Endpoints.Tests/Granit.OpenIddict.Endpoints.Tests.csproj" />

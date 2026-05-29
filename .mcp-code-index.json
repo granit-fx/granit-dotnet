@@ -1188,6 +1188,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Notifications",
+      "deps": [
+        "Granit.Identity",
+        "Granit.Notifications.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Imaging",
       "deps": [
         "Granit"
@@ -26288,6 +26296,60 @@
       "file": "src/Granit.Identity/Models/IdentityUserUpdate.cs",
       "line": 22,
       "members": []
+    },
+    {
+      "name": "IdentityNotificationsServiceCollectionExtensions",
+      "fqn": "Granit.Identity.Notifications.Extensions.IdentityNotificationsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Notifications",
+      "file": "src/Granit.Identity.Notifications/Extensions/IdentityNotificationsServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitIdentityRecipientResolver",
+          "kind": "method",
+          "signature": "AddGranitIdentityRecipientResolver(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityNotificationsModule",
+      "fqn": "Granit.Identity.Notifications.GranitIdentityNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Notifications",
+      "file": "src/Granit.Identity.Notifications/GranitIdentityNotificationsModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IdentityRecipientResolverOptions",
+      "fqn": "Granit.Identity.Notifications.Options.IdentityRecipientResolverOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Notifications",
+      "file": "src/Granit.Identity.Notifications/Options/IdentityRecipientResolverOptions.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "PhoneNumberMetadataKeys",
+          "kind": "property",
+          "signature": "IList<string> PhoneNumberMetadataKeys",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "PreferredCultureMetadataKeys",
+          "kind": "property",
+          "signature": "IList<string> PreferredCultureMetadataKeys",
+          "returnType": "IList<string>"
+        }
+      ]
     },
     {
       "name": "UserLookupHasherOptions",
