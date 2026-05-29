@@ -16049,6 +16049,28 @@
       ]
     },
     {
+      "name": "AbsoluteUrl",
+      "fqn": "Granit.Domain.ValueObjects.AbsoluteUrl",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/AbsoluteUrl.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string value)",
+          "returnType": "required string Value { get; init; } public AbsoluteUrl"
+        },
+        {
+          "name": "AbsoluteUrl",
+          "kind": "method",
+          "signature": "AbsoluteUrl(string value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
       "name": "BlobReference",
       "fqn": "Granit.Domain.ValueObjects.BlobReference",
       "kind": "class",
