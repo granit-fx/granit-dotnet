@@ -40,7 +40,7 @@ public sealed class AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsT
 
         _builder.Services.AddGranitAuditing();
         _builder.AddGranitAuditingEntityFrameworkCore(
-            options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+            opts => opts.Configure = db => db.UseInMemoryDatabase(Guid.NewGuid().ToString()));
 
         _sp = _builder.Services.BuildServiceProvider();
     }
@@ -61,7 +61,7 @@ public sealed class AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsT
 
         builder.Services.AddGranitAuditing();
         IHostApplicationBuilder result = builder.AddGranitAuditingEntityFrameworkCore(
-            options => options.UseInMemoryDatabase("chaining-test"));
+            opts => opts.Configure = db => db.UseInMemoryDatabase("chaining-test"));
 
         result.ShouldBeSameAs(builder);
     }
@@ -247,9 +247,9 @@ public sealed class AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsT
 
         builder.Services.AddGranitAuditing();
         builder.AddGranitAuditingEntityFrameworkCore(
-            o => o.UseInMemoryDatabase("dup-1"));
+            opts => opts.Configure = db => db.UseInMemoryDatabase("dup-1"));
         builder.AddGranitAuditingEntityFrameworkCore(
-            o => o.UseInMemoryDatabase("dup-2"));
+            opts => opts.Configure = db => db.UseInMemoryDatabase("dup-2"));
 
         int metricsCount = builder.Services
             .Count(d => d.ServiceType == typeof(AuditingMetrics));
@@ -270,7 +270,7 @@ public sealed class AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsT
 
         builder.Services.AddGranitAuditing();
         builder.AddGranitAuditingEntityFrameworkCore(
-            o => o.UseInMemoryDatabase("existing-accessor"));
+            opts => opts.Configure = db => db.UseInMemoryDatabase("existing-accessor"));
 
         using ServiceProvider sp = builder.Services.BuildServiceProvider();
         IHttpContextAccessor resolved = sp.GetRequiredService<IHttpContextAccessor>();

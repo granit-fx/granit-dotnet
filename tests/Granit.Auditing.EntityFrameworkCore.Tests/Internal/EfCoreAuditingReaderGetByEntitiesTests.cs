@@ -11,20 +11,20 @@ using Shouldly;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
 
-#pragma warning disable EF1001 // Internal EF Core API usage — required to construct AuditingDbContext directly.
+#pragma warning disable EF1001 // Internal EF Core API usage — required to construct AuditingHostDbContext directly.
 
 namespace Granit.Auditing.EntityFrameworkCore.Tests.Internal;
 
 public sealed class EfCoreAuditingReaderGetByEntitiesTests : IDisposable
 {
-    private readonly DbContextOptions<AuditingDbContext> _dbOptions;
+    private readonly DbContextOptions<AuditingHostDbContext> _dbOptions;
     private readonly FusionCache _cache = new(new FusionCacheOptions());
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly IOptions<AuditingOptions> _options = Microsoft.Extensions.Options.Options.Create(new AuditingOptions());
 
     public EfCoreAuditingReaderGetByEntitiesTests()
     {
-        _dbOptions = new DbContextOptionsBuilder<AuditingDbContext>()
+        _dbOptions = new DbContextOptionsBuilder<AuditingHostDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
     }
@@ -156,14 +156,14 @@ public sealed class EfCoreAuditingReaderGetByEntitiesTests : IDisposable
 
     private EfCoreAuditingReader NewReader()
     {
-        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
-        return new EfCoreAuditingReader(factory, _cache, _currentTenant, [], _options);
+        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
+        return new EfCoreAuditingReader(new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory), _cache, _currentTenant, StubEmptyTenantsAccessor(), [], _options);
     }
 
     private async Task SeedEntryWithEntityChangeAsync(
         Guid entryId, string entityType, string entityId, DateTimeOffset? timestamp = null)
     {
-        await using AuditingDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant);
+        await using AuditingHostDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant);
         var entry = new AuditEntry
         {
             Id = entryId,
@@ -183,9 +183,17 @@ public sealed class EfCoreAuditingReaderGetByEntitiesTests : IDisposable
         await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
     }
 
-    private sealed class TestDbContextFactory(DbContextOptions<AuditingDbContext> options)
-        : IDbContextFactory<AuditingDbContext>
+    private sealed class TestDbContextFactory(DbContextOptions<AuditingHostDbContext> options)
+        : IDbContextFactory<AuditingHostDbContext>
     {
-        public AuditingDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
+        public AuditingHostDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
+    }
+
+    private static ITenantsAccessor StubEmptyTenantsAccessor()
+    {
+        ITenantsAccessor accessor = Substitute.For<ITenantsAccessor>();
+        accessor.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<(Guid Id, string Name)>>([]));
+        return accessor;
     }
 }

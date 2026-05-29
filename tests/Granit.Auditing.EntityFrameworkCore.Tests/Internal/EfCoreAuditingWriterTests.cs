@@ -15,12 +15,12 @@ public sealed class EfCoreAuditingWriterTests
     [Fact]
     public async Task WriteAsync_PersistsEntry()
     {
-        DbContextOptions<AuditingDbContext> dbOptions = new DbContextOptionsBuilder<AuditingDbContext>()
+        DbContextOptions<AuditingHostDbContext> dbOptions = new DbContextOptionsBuilder<AuditingHostDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
-        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(dbOptions);
-        EfCoreAuditingWriter writer = new(factory);
+        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(dbOptions);
+        EfCoreAuditingWriter writer = new(new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory));
 
         AuditEntry entry = new()
         {
@@ -32,7 +32,7 @@ public sealed class EfCoreAuditingWriterTests
 
         await writer.WriteAsync(entry, TestContext.Current.CancellationToken);
 
-        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant);
+        await using AuditingHostDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant);
         AuditEntry? persisted = await verifyCtx.AuditEntries.FindAsync([entry.Id], TestContext.Current.CancellationToken);
         persisted.ShouldNotBeNull();
         persisted.UserId.ShouldBe("user-1");
@@ -42,12 +42,12 @@ public sealed class EfCoreAuditingWriterTests
     [Fact]
     public async Task WriteAsync_WithEntityChanges_PersistsHierarchy()
     {
-        DbContextOptions<AuditingDbContext> dbOptions = new DbContextOptionsBuilder<AuditingDbContext>()
+        DbContextOptions<AuditingHostDbContext> dbOptions = new DbContextOptionsBuilder<AuditingHostDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
-        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(dbOptions);
-        EfCoreAuditingWriter writer = new(factory);
+        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(dbOptions);
+        EfCoreAuditingWriter writer = new(new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory));
 
         var entryId = Guid.NewGuid();
         var changeId = Guid.NewGuid();
@@ -84,7 +84,7 @@ public sealed class EfCoreAuditingWriterTests
 
         await writer.WriteAsync(entry, TestContext.Current.CancellationToken);
 
-        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant);
+        await using AuditingHostDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant);
         AuditEntry? persisted = await verifyCtx.AuditEntries
             .Include(e => e.EntityChanges)
             .ThenInclude(ec => ec.PropertyChanges)
@@ -98,20 +98,20 @@ public sealed class EfCoreAuditingWriterTests
     [Fact]
     public async Task WriteAsync_NullEntry_ThrowsArgumentNullException()
     {
-        DbContextOptions<AuditingDbContext> dbOptions = new DbContextOptionsBuilder<AuditingDbContext>()
+        DbContextOptions<AuditingHostDbContext> dbOptions = new DbContextOptionsBuilder<AuditingHostDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
-        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(dbOptions);
-        EfCoreAuditingWriter writer = new(factory);
+        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(dbOptions);
+        EfCoreAuditingWriter writer = new(new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory));
 
         await Should.ThrowAsync<ArgumentNullException>(() =>
             writer.WriteAsync(null!, TestContext.Current.CancellationToken));
     }
 
-    private sealed class TestDbContextFactory(DbContextOptions<AuditingDbContext> options)
-        : IDbContextFactory<AuditingDbContext>
+    private sealed class TestDbContextFactory(DbContextOptions<AuditingHostDbContext> options)
+        : IDbContextFactory<AuditingHostDbContext>
     {
-        public AuditingDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
+        public AuditingHostDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
     }
 }
