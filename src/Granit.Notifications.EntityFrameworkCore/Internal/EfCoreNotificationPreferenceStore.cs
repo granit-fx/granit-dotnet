@@ -1,60 +1,81 @@
-using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
-using Granit.Persistence;
-using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Notifications.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core implementation of <see cref="INotificationPreferenceReader"/> and
-/// <see cref="INotificationPreferenceWriter"/> backed by PostgreSQL.
+/// <see cref="INotificationPreferenceWriter"/>. Dispatches through
+/// <see cref="NotificationsContextResolver"/>.
 /// </summary>
-internal sealed class EfCoreNotificationPreferenceStore(
-    IDbContextFactory<NotificationsDbContext> contextFactory,
-    ICurrentTenant currentTenant)
-    : EfStoreBase<NotificationPreference, NotificationsDbContext>(contextFactory, currentTenant), INotificationPreferenceReader, INotificationPreferenceWriter
+internal sealed class EfCoreNotificationPreferenceStore(NotificationsContextResolver resolver)
+    : INotificationPreferenceReader, INotificationPreferenceWriter
 {
     /// <inheritdoc/>
-    public Task<IReadOnlyList<NotificationPreference>> GetListAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>
-        ListAsync(
-            Spec.For<NotificationPreference>()
-                .Where(p => p.UserId == userId && p.TenantId == tenantId),
-            cancellationToken);
+    public async Task<IReadOnlyList<NotificationPreference>> GetListAsync(
+        string userId, Guid? tenantId, CancellationToken cancellationToken = default)
+    {
+        await using INotificationsDbContext db = await resolver
+            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        return await db.Preferences
+            .Where(p => p.UserId == userId && p.TenantId == tenantId)
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
-    public Task<NotificationPreference?> GetAsync(string userId, string notificationTypeName, string channelName, Guid? tenantId, CancellationToken cancellationToken = default) =>
-        FirstOrDefaultAsync(p => p.UserId == userId && p.NotificationTypeName == notificationTypeName && p.ChannelName == channelName && p.TenantId == tenantId, cancellationToken);
+    public async Task<NotificationPreference?> GetAsync(
+        string userId, string notificationTypeName, string channelName, Guid? tenantId,
+        CancellationToken cancellationToken = default)
+    {
+        await using INotificationsDbContext db = await resolver
+            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        return await db.Preferences
+            .FirstOrDefaultAsync(
+                p => p.UserId == userId
+                  && p.NotificationTypeName == notificationTypeName
+                  && p.ChannelName == channelName
+                  && p.TenantId == tenantId,
+                cancellationToken).ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
     public async Task SetAsync(NotificationPreference preference, CancellationToken cancellationToken = default)
     {
-        await WriteAsync(async db =>
-        {
-            NotificationPreference? existing = await db.Preferences
-                .FirstOrDefaultAsync(p => p.UserId == preference.UserId && p.NotificationTypeName == preference.NotificationTypeName && p.ChannelName == preference.ChannelName && p.TenantId == preference.TenantId, cancellationToken)
-                .ConfigureAwait(false);
+        ArgumentNullException.ThrowIfNull(preference);
 
-            if (existing is not null)
-            {
-                existing.IsEnabled = preference.IsEnabled;
-                existing.ModifiedAt = preference.ModifiedAt;
-                existing.ModifiedBy = preference.ModifiedBy;
-            }
-            else
-            {
-                db.Preferences.Add(preference);
-            }
-        }, cancellationToken).ConfigureAwait(false);
+        await using INotificationsDbContext db = await resolver
+            .OpenForScopeAsync(preference.TenantId, cancellationToken).ConfigureAwait(false);
+
+        NotificationPreference? existing = await db.Preferences
+            .FirstOrDefaultAsync(
+                p => p.UserId == preference.UserId
+                  && p.NotificationTypeName == preference.NotificationTypeName
+                  && p.ChannelName == preference.ChannelName
+                  && p.TenantId == preference.TenantId,
+                cancellationToken).ConfigureAwait(false);
+
+        if (existing is not null)
+        {
+            existing.IsEnabled = preference.IsEnabled;
+            existing.ModifiedAt = preference.ModifiedAt;
+            existing.ModifiedBy = preference.ModifiedBy;
+        }
+        else
+        {
+            db.Preferences.Add(preference);
+        }
+
+        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public async Task<bool> IsChannelEnabledAsync(string userId, string notificationTypeName, string channelName, Guid? tenantId, CancellationToken cancellationToken = default)
+    public async Task<bool> IsChannelEnabledAsync(
+        string userId, string notificationTypeName, string channelName, Guid? tenantId,
+        CancellationToken cancellationToken = default)
     {
-        NotificationPreference? preference = await FirstOrDefaultAsync(
-            p => p.UserId == userId && p.NotificationTypeName == notificationTypeName && p.ChannelName == channelName && p.TenantId == tenantId,
-            cancellationToken).ConfigureAwait(false);
+        NotificationPreference? preference = await GetAsync(
+            userId, notificationTypeName, channelName, tenantId, cancellationToken).ConfigureAwait(false);
         return preference?.IsEnabled ?? true; // Default: enabled
     }
 }

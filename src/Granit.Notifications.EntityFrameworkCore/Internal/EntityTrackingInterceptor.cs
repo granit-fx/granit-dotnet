@@ -1,5 +1,6 @@
 using Granit.Domain;
 using Granit.Notifications.Abstractions;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -11,9 +12,14 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// EF Core SaveChanges interceptor that detects modifications on <see cref="ITrackedEntity"/>
 /// and publishes notifications to entity followers via automatic change tracking.
 /// </summary>
+/// <remarks>
+/// Implements <see cref="IGranitAutoInterceptor"/> so it is automatically picked up by
+/// <c>UseGranitInterceptors(sp)</c> on every Granit-registered DbContext — no manual
+/// <c>AddInterceptors</c> call needed.
+/// </remarks>
 internal sealed class EntityTrackingInterceptor(
     INotificationPublisher notificationPublisher,
-    IClock clock) : SaveChangesInterceptor
+    IClock clock) : SaveChangesInterceptor, IGranitAutoInterceptor
 {
     /// <inheritdoc/>
     public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
