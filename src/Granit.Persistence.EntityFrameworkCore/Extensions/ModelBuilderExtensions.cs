@@ -1,10 +1,12 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.Json;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.ValueConverters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -26,6 +28,10 @@ public static class ModelBuilderExtensions
     private static readonly MethodInfo ConfigureMergeTombstoneMethod =
         typeof(ModelBuilderExtensions)
             .GetMethod(nameof(ConfigureMergeTombstone), BindingFlags.Static | BindingFlags.NonPublic)!; // NOSONAR S3011 - intentional: generic EF Core property configuration requires reflection
+
+    private static readonly MethodInfo ApplyJsonValueObjectConverterMethod =
+        typeof(ModelBuilderExtensions)
+            .GetMethod(nameof(ApplyJsonValueObjectConverter), BindingFlags.Static | BindingFlags.NonPublic)!; // NOSONAR S3011 - intentional: generic value converter over the property CLR type requires reflection
 
     /// <summary>
     /// Applies Granit conventions to all entity types in the model:
@@ -58,6 +64,18 @@ public static class ModelBuilderExtensions
     ///     property with <see cref="PersistAsIntAttribute"/>; <see cref="FlagsAttribute"/>
     ///     enums are skipped automatically. Explicit
     ///     <c>HasConversion&lt;...&gt;()</c> calls in entity configurations always win.
+    ///   </item>
+    ///   <item><b>Value object conventions</b>:
+    ///     Types deriving from <c>Granit.Domain.ValueObject</c> have no identity and must
+    ///     never be mapped as entities. Any that EF Core auto-discovered as entity types
+    ///     (because they appear as reference-typed properties) are un-mapped and re-attached
+    ///     to their owner: <c>SingleValueObject&lt;T&gt;</c> as a scalar column wrapping the
+    ///     underlying primitive, multi-field value objects (e.g. <c>OpenGraph</c>,
+    ///     <c>ImageDimensions</c>) as a JSON-serialized column (marked with
+    ///     <see cref="GranitPersistenceAnnotationNames.JsonSerialized"/> so the PostgreSQL
+    ///     provider upgrades it to <c>jsonb</c>). To store a multi-field value object as flat
+    ///     columns instead, declare it explicitly with <c>builder.ComplexProperty(...)</c> —
+    ///     the convention then leaves it untouched (it is no longer an entity type).
     ///   </item>
     /// </list>
     /// </summary>
@@ -179,11 +197,13 @@ public static class ModelBuilderExtensions
                 .Invoke(null, [modelBuilder]);
         }
 
-        // --- SingleValueObject<T> conventions ---
-        // 1. Remove any SingleValueObject<T> types that EF Core auto-discovered as entity
-        //    types. These are value objects (e.g. PlanId, InvoiceId) used as scalar
-        //    properties on entities — they must NOT be treated as entities themselves.
-        RemoveSingleValueObjectEntityTypes(modelBuilder);
+        // --- Value object conventions ---
+        // 1. Remove any ValueObject type that EF Core auto-discovered as an entity type.
+        //    Value objects (e.g. PlanId, OpenGraph, ImageDimensions) have no identity and
+        //    must NOT be treated as entities. Each is re-attached to its owner as a column:
+        //    SingleValueObject<T> as a scalar (primitive converter applied in step 2);
+        //    multi-field value objects as a JSON-serialized column (jsonb on PostgreSQL).
+        RemoveValueObjectEntityTypes(modelBuilder);
 
         // 2. Auto-apply value converters for properties whose CLR type inherits from
         //    SingleValueObject<T>, mapping them to the underlying primitive column type.
@@ -320,71 +340,124 @@ public static class ModelBuilderExtensions
         return underlying.IsEnum ? underlying : null;
     }
 
-    // Removes any SingleValueObject<T> subclass that EF Core auto-discovered as an entity type.
-    // When a class property (e.g. Subscription.PlanId of type PlanId : SingleValueObject<Guid>)
-    // is not explicitly configured via builder.Property(), EF Core's convention scanner treats
-    // the CLR type as a navigation target and adds it as an entity type — which then fails
-    // validation because no primary key is defined. This step removes those phantom entities
-    // so the subsequent converter step can safely map the property as a scalar column.
+    // Removes any ValueObject subclass that EF Core auto-discovered as an entity type.
+    // When a reference-typed property whose CLR type is a value object (e.g.
+    // Subscription.PlanId : SingleValueObject<Guid>, or SeoMetadata.OpenGraph : ValueObject)
+    // is not explicitly configured, EF Core's convention scanner treats the CLR type as a
+    // navigation target and adds it as an entity type — which then fails validation because
+    // value objects have no key and no parameterless constructor (e.g.
+    // "No suitable constructor was found for the type 'ImageDimensions'"). This step un-maps
+    // those phantom entities so the property survives as a column instead:
+    //   - SingleValueObject<T>    → scalar column (primitive converter applied next by
+    //                               ApplySingleValueObjectConverters).
+    //   - multi-field ValueObject → JSON-serialized column (jsonb on PostgreSQL) — the value
+    //                               object lives entirely inside the blob, including nested
+    //                               value objects (OpenGraph → OgImage → ImageDimensions).
     //
-    // Convention also detaches any auto-discovered foreign key whose principal is an SVO type
-    // (e.g. Party.AvatarTempId : BlobReference creates an auto-FK that EF refuses to release
-    // when we call RemoveEntityType). The underlying scalar column survives and is then wrapped
-    // by ApplySingleValueObjectConverters with the matching ValueConverter.
-    private static void RemoveSingleValueObjectEntityTypes(ModelBuilder modelBuilder)
+    // Ignoring the navigation also detaches the auto-discovered foreign key that EF refuses to
+    // release when we call RemoveEntityType (e.g. Party.AvatarTempId : BlobReference). Walking
+    // the value object entity types themselves as owners clears the FKs between nested value
+    // objects (OpenGraph → OgImage) before those types are removed.
+    //
+    // Note: value objects mapped explicitly as EF complex types (builder.ComplexProperty(...))
+    // are not entity types, so they never appear here and the convention leaves them untouched.
+    private static void RemoveValueObjectEntityTypes(ModelBuilder modelBuilder)
     {
-        var svoEntityTypes = modelBuilder.Model.GetEntityTypes()
-            .Where(et => GetSingleValueObjectBase(et.ClrType) is not null)
+        var valueObjectEntityTypes = modelBuilder.Model.GetEntityTypes()
+            .Where(et => typeof(ValueObject).IsAssignableFrom(et.ClrType))
             .ToList();
 
-        if (svoEntityTypes.Count == 0)
+        if (valueObjectEntityTypes.Count == 0)
         {
             return;
         }
 
-        HashSet<Type> svoClrTypes = [.. svoEntityTypes.Select(et => et.ClrType)];
+        HashSet<Type> valueObjectClrTypes = [.. valueObjectEntityTypes.Select(et => et.ClrType)];
 
-        foreach (IMutableEntityType ownerEntityType in modelBuilder.Model.GetEntityTypes()
-            .Where(et => !svoClrTypes.Contains(et.ClrType))
-            .ToList())
+        // Walk every entity type — including the value object entity types themselves, whose
+        // navigations to nested value objects (OpenGraph → OgImage) must also be stripped so
+        // RemoveEntityType is never blocked by a dangling foreign key.
+        foreach (IMutableEntityType ownerEntityType in modelBuilder.Model.GetEntityTypes().ToList())
         {
-            // Capture the SVO-typed CLR properties EF auto-discovered as navigations
-            // on this owner (e.g. Party.AvatarTempId : BlobReference). We will
-            // re-attach them as scalar properties once the navigation is gone.
-            List<System.Reflection.PropertyInfo> svoClrProperties = [.. ownerEntityType
+            // Capture the value-object-typed CLR properties EF auto-discovered as navigations
+            // on this owner. On a real entity they are re-attached as columns; on a value
+            // object owner (itself slated for removal) they only need detaching.
+            List<System.Reflection.PropertyInfo> valueObjectClrProperties = [.. ownerEntityType
                 .GetNavigations()
-                .Where(nav => svoClrTypes.Contains(nav.TargetEntityType.ClrType))
+                .Where(nav => valueObjectClrTypes.Contains(nav.TargetEntityType.ClrType))
                 .Select(nav => nav.PropertyInfo)
                 .OfType<System.Reflection.PropertyInfo>()];
 
-            if (svoClrProperties.Count == 0)
+            if (valueObjectClrProperties.Count == 0)
             {
                 continue;
             }
 
-            // Use the builder API for both steps: `Ignore(name)` strips the
-            // auto-discovered navigation (and its backing FK) cleanly, then
-            // `Property(name)` re-registers the same CLR member as a scalar.
-            // Doing this at builder level avoids the IMutable* surface's
-            // navigation/property name conflicts and lets EF Core re-validate
-            // the model after each step.
+            // Use the builder API for both steps: `Ignore(name)` strips the auto-discovered
+            // navigation (and its backing FK) cleanly, then `Property(name)` re-registers the
+            // same CLR member as a column. Doing this at builder level avoids the IMutable*
+            // surface's navigation/property name conflicts and lets EF Core re-validate the
+            // model after each step.
             Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder ownerBuilder =
                 modelBuilder.Entity(ownerEntityType.ClrType);
 
-            foreach (System.Reflection.PropertyInfo clrProperty in svoClrProperties)
+            bool ownerIsValueObject = valueObjectClrTypes.Contains(ownerEntityType.ClrType);
+
+            foreach (System.Reflection.PropertyInfo clrProperty in valueObjectClrProperties)
             {
                 ownerBuilder.Ignore(clrProperty.Name);
-                ownerBuilder.Property(clrProperty.PropertyType, clrProperty.Name);
+
+                // A value object owner is removed wholesale below — only the navigation needs
+                // detaching. A real entity keeps the data, re-attached as a column.
+                if (ownerIsValueObject)
+                {
+                    continue;
+                }
+
+                Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder propertyBuilder =
+                    ownerBuilder.Property(clrProperty.PropertyType, clrProperty.Name);
+
+                // SingleValueObject<T> maps to its underlying primitive (ApplySingleValueObjectConverters,
+                // next step). A multi-field value object has no single primitive — serialize it to JSON.
+                if (GetSingleValueObjectBase(clrProperty.PropertyType) is null)
+                {
+                    ApplyJsonValueObjectConverterMethod // NOSONAR S3011 - intentional: generic value converter over the property CLR type requires reflection
+                        .MakeGenericMethod(clrProperty.PropertyType)
+                        .Invoke(null, [propertyBuilder.Metadata]);
+                }
             }
         }
 
-        // Now that no FK or navigation references them, the SVO entity types can be
-        // removed. ApplySingleValueObjectConverters runs next and wraps each promoted
-        // scalar property with the matching ValueConverter.
-        foreach (IMutableEntityType svoEntityType in svoEntityTypes)
+        // Now that no FK or navigation references them, the value object entity types can be
+        // removed. ApplySingleValueObjectConverters runs next and wraps each promoted SVO
+        // scalar property with the matching primitive ValueConverter.
+        foreach (IMutableEntityType valueObjectEntityType in valueObjectEntityTypes)
         {
-            modelBuilder.Model.RemoveEntityType(svoEntityType.ClrType);
+            modelBuilder.Model.RemoveEntityType(valueObjectEntityType.ClrType);
         }
+    }
+
+    // Wraps a multi-field value object property with a JSON ValueConverter (+ deep-equality
+    // ValueComparer for change tracking) and flags it with the JsonSerialized annotation so the
+    // PostgreSQL provider upgrades the column to jsonb. Mirrors HasJsonConversion<T> but operates
+    // on the IMutableProperty directly because the convention re-attaches the property through the
+    // non-generic builder. STJ defaults are used (matches HasJsonConversion's default).
+    private static void ApplyJsonValueObjectConverter<T>(IMutableProperty property)
+    {
+        ValueConverter<T, string> converter = new(
+            v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => JsonSerializer.Deserialize<T>(v, (JsonSerializerOptions?)null)!);
+
+        // Lambdas become Expression<> trees in the ValueComparer ctor, so constructs disallowed
+        // in expression trees (pattern matching, switch expressions) cannot appear here.
+        ValueComparer<T> comparer = new(
+            (a, b) => JsonSerializer.Serialize(a, (JsonSerializerOptions?)null) == JsonSerializer.Serialize(b, (JsonSerializerOptions?)null),
+            v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null).GetHashCode(StringComparison.Ordinal),
+            v => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(v, (JsonSerializerOptions?)null), (JsonSerializerOptions?)null)!);
+
+        property.SetValueConverter(converter);
+        property.SetValueComparer(comparer);
+        property.SetAnnotation(GranitPersistenceAnnotationNames.JsonSerialized, true);
     }
 
     // Scans all entity properties for SingleValueObject<T> types and applies a ValueConverter

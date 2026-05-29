@@ -5,14 +5,14 @@ using Granit.Auditing.Events;
 using Granit.Auditing.Messages;
 using Granit.Events;
 using Granit.Guids;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Auditing.EntityFrameworkCore.Internal.Services;
 
 /// <summary>
-/// Persists <see cref="AuditingBatch"/> messages synchronously to the
-/// <see cref="AuditingDbContext"/> for strict ISO 27001 compliance.
+/// Persists <see cref="AuditingBatch"/> messages synchronously through the
+/// <see cref="AuditingContextResolver"/> for strict ISO 27001 compliance — under
+/// Segregated mode the batch lands in the right DB based on <c>batch.TenantId</c>.
 /// </summary>
 internal sealed class StrictAuditingPublisher(
     IServiceScopeFactory scopeFactory,
@@ -24,14 +24,15 @@ internal sealed class StrictAuditingPublisher(
         long startTimestamp = Stopwatch.GetTimestamp();
 
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-        IDbContextFactory<AuditingDbContext> dbContextFactory =
-            scope.ServiceProvider.GetRequiredService<IDbContextFactory<AuditingDbContext>>();
+        AuditingContextResolver resolver = scope.ServiceProvider
+            .GetRequiredService<AuditingContextResolver>();
         IGuidGenerator guidGenerator = scope.ServiceProvider.GetRequiredService<IGuidGenerator>();
 
-        await using AuditingDbContext dbContext = await dbContextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
         AuditEntry entry = AuditingBatchMapper.ToEntity(batch, guidGenerator);
+
+        await using IAuditingDbContext dbContext = await resolver
+            .OpenForScopeAsync(entry.TenantId, cancellationToken).ConfigureAwait(false);
+
         dbContext.AuditEntries.Add(entry);
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

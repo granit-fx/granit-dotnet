@@ -1,17 +1,23 @@
 using System.Security.Cryptography;
 using System.Text;
 using Granit.Auditing.Domain;
+using Granit.MultiTenancy;
+using Granit.Persistence.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Auditing.EntityFrameworkCore.Internal.Services;
 
 /// <summary>
-/// EF Core implementation of <see cref="IAuditingCleaner"/>.
-/// Uses <c>ExecuteDeleteAsync</c> and <c>ExecuteUpdateAsync</c> for bulk efficiency.
+/// EF Core implementation of <see cref="IAuditingCleaner"/>. Uses <c>ExecuteDeleteAsync</c>
+/// and <c>ExecuteUpdateAsync</c> for bulk efficiency. Under <c>Segregated</c>, retention
+/// purges and GDPR pseudonymization fan out across every candidate context — a pseudonymized
+/// user may have audit rows in either the host DB (host-admin scope) or in a tenant DB.
 /// </summary>
 internal sealed partial class EfCoreAuditingCleaner(
-    IDbContextFactory<AuditingDbContext> dbContextFactory,
+    AuditingContextResolver resolver,
+    ITenantsAccessor tenantsAccessor,
+    ICurrentTenant currentTenant,
     ILogger<EfCoreAuditingCleaner> logger) : IAuditingCleaner
 {
     private const string PseudonymizedUserName = "[pseudonymized]";
@@ -23,15 +29,22 @@ internal sealed partial class EfCoreAuditingCleaner(
         int batchSize,
         CancellationToken cancellationToken = default)
     {
-        await using AuditingDbContext dbContext = await dbContextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        int total = 0;
 
-        return await dbContext.AuditEntries
+        // Always purge in the current scope's context (matches the prior behaviour:
+        // retention runs as a scheduled job under whatever tenant scope it was invoked).
+        await using IAuditingDbContext dbContext = await resolver
+            .OpenForScopeAsync(currentTenant.IsAvailable ? currentTenant.Id : null, cancellationToken)
+            .ConfigureAwait(false);
+
+        total += await dbContext.AuditEntries
             .Where(e => e.Category == category && e.Timestamp < cutoff)
             .OrderBy(e => e.Id)
             .Take(batchSize)
             .ExecuteDeleteAsync(cancellationToken)
             .ConfigureAwait(false);
+
+        return total;
     }
 
     /// <inheritdoc/>
@@ -42,11 +55,48 @@ internal sealed partial class EfCoreAuditingCleaner(
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
 
         string hashedUserId = HashUserId(userId);
+        int total = 0;
 
-        await using AuditingDbContext dbContext = await dbContextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        if (resolver.StorageMode == DualScopeStorageMode.Segregated && !currentTenant.IsAvailable)
+        {
+            // GDPR Art. 17 pseudonymization initiated from host-admin scope — fan out
+            // across host + every tenant so no tenant DB retains identifying audit data
+            // for the targeted user.
+            total += await ExecutePseudonymizationAsync(
+                tenantId: null, userId, hashedUserId, cancellationToken).ConfigureAwait(false);
 
-        int count = await dbContext.AuditEntries
+            IReadOnlyList<(Guid Id, string Name)> tenants = await tenantsAccessor
+                .GetAllAsync(cancellationToken).ConfigureAwait(false);
+            foreach ((Guid id, string name) in tenants)
+            {
+                using (currentTenant.Change(id, name))
+                {
+                    total += await ExecutePseudonymizationAsync(
+                        tenantId: id, userId, hashedUserId, cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+        else
+        {
+            total += await ExecutePseudonymizationAsync(
+                tenantId: currentTenant.IsAvailable ? currentTenant.Id : null,
+                userId, hashedUserId, cancellationToken).ConfigureAwait(false);
+        }
+
+        LogPseudonymizationCompleted(total, hashedUserId);
+        return total;
+    }
+
+    private async Task<int> ExecutePseudonymizationAsync(
+        Guid? tenantId,
+        string userId,
+        string hashedUserId,
+        CancellationToken cancellationToken)
+    {
+        await using IAuditingDbContext dbContext = await resolver
+            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+
+        return await dbContext.AuditEntries
             .Where(e => e.UserId == userId)
             .ExecuteUpdateAsync(
                 s => s
@@ -56,10 +106,6 @@ internal sealed partial class EfCoreAuditingCleaner(
                     .SetProperty(e => e.UserAgent, (string?)null),
                 cancellationToken)
             .ConfigureAwait(false);
-
-        LogPseudonymizationCompleted(count, hashedUserId);
-
-        return count;
     }
 
     internal static string HashUserId(string userId)

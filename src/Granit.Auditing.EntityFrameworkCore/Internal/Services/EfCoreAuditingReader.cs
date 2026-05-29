@@ -4,7 +4,7 @@ using Granit.Auditing.Domain;
 using Granit.Auditing.Extensions;
 using Granit.Auditing.Options;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.MultiTenancy;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -13,13 +13,24 @@ using ZiggyCreatures.Caching.Fusion;
 namespace Granit.Auditing.EntityFrameworkCore.Internal.Services;
 
 /// <summary>
-/// EF Core implementation of <see cref="IAuditingReader"/> with FusionCache
-/// for immutable audit entries and short-lived entity query results.
+/// EF Core implementation of <see cref="IAuditingReader"/> with FusionCache for immutable
+/// audit entries and short-lived entity query results. Dispatches through
+/// <see cref="AuditingContextResolver"/>.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Tenant-scoped reads hit the right physical context and use a tenant-prefixed cache key.
+/// Host-admin reads (no ambient tenant) under <c>Shared</c> mode bypass the MultiTenant
+/// filter on the single host context. Under <c>Segregated</c> mode they materialise across
+/// the host context plus every tenant returned by <see cref="ITenantsAccessor"/> via
+/// <see cref="ICurrentTenant.Change"/> — cross-tenant SOC2 review remains possible.
+/// </para>
+/// </remarks>
 internal sealed class EfCoreAuditingReader(
-    IDbContextFactory<AuditingDbContext> dbContextFactory,
+    AuditingContextResolver resolver,
     IFusionCache cache,
     ICurrentTenant currentTenant,
+    ITenantsAccessor tenantsAccessor,
     IEnumerable<IAuditEntityTypeAliasProvider> aliasProviders,
     IOptions<AuditingOptions> options) : IAuditingReader
 {
@@ -37,14 +48,13 @@ internal sealed class EfCoreAuditingReader(
             return maybe.Value;
         }
 
-        await using AuditingDbContext dbContext = await dbContextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        AuditEntry? entry = await dbContext.AuditEntries
-            .Include(e => e.EntityChanges)
-                .ThenInclude(ec => ec.PropertyChanges)
-            .FirstOrDefaultAsync(e => e.Id == id, cancellationToken)
-            .ConfigureAwait(false);
+        AuditEntry? entry = await ResolveAcrossScopesAsync(
+            async db => await db.AuditEntries
+                .Include(e => e.EntityChanges)
+                    .ThenInclude(ec => ec.PropertyChanges)
+                .FirstOrDefaultAsync(e => e.Id == id, cancellationToken).ConfigureAwait(false),
+            firstNonNull: true,
+            cancellationToken).ConfigureAwait(false);
 
         if (entry is not null)
         {
@@ -70,28 +80,26 @@ internal sealed class EfCoreAuditingReader(
             return maybe.Value!;
         }
 
-        await using AuditingDbContext dbContext = await dbContextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        // Resolve every CLR type the audit log may have stamped for this
-        // canonical name (ADR-051 split persistence). Materialise to string[]
-        // because Npgsql translates Contains on arrays/lists to a SQL IN-list
-        // but does not recognise IReadOnlySet<string> — the query would fall
-        // back to client evaluation (silently empty on InMemory in tests, hard
-        // failure on Postgres at runtime).
         string[] matchTypes = [.. aliasProviders.Resolve(entityType)];
 
-        IQueryable<AuditEntry> queryable = dbContext.AuditEntries
-            .Include(e => e.EntityChanges)
-                .ThenInclude(ec => ec.PropertyChanges)
-            .Where(e => e.EntityChanges.Any(ec =>
-                matchTypes.Contains(ec.EntityType) && ec.EntityId == entityId))
-            .AsNoTracking();
+        // Tenant-scoped or Shared mode → single context; Segregated + host-admin →
+        // materialise across all contexts, then in-memory paginate.
+        IReadOnlyList<AuditEntry> allMatching = await CollectAcrossScopesAsync(
+            async db => await db.AuditEntries
+                .Include(e => e.EntityChanges)
+                    .ThenInclude(ec => ec.PropertyChanges)
+                .Where(e => e.EntityChanges.Any(ec =>
+                    matchTypes.Contains(ec.EntityType) && ec.EntityId == entityId))
+                .AsNoTracking()
+                .ToListAsync(cancellationToken).ConfigureAwait(false),
+            cancellationToken).ConfigureAwait(false);
 
-        PagedResult<AuditEntry> result = await queryable
-            .OrderByDescending(e => e.Timestamp)
-            .ToPagedResultAsync(page, pageSize, cancellationToken)
-            .ConfigureAwait(false);
+        List<AuditEntry> ordered = [.. allMatching.OrderByDescending(e => e.Timestamp)];
+        int totalCount = ordered.Count;
+        int skip = (page - 1) * pageSize;
+        IReadOnlyList<AuditEntry> items = ordered.Skip(skip).Take(pageSize).ToList();
+
+        PagedResult<AuditEntry> result = new(items, totalCount, HasMore: (skip + pageSize) < totalCount);
 
         await cache.SetAsync(cacheKey, result, new FusionCacheEntryOptions { Duration = _options.CacheEntityQueryTtl }, token: cancellationToken).ConfigureAwait(false);
         return result;
@@ -112,16 +120,12 @@ internal sealed class EfCoreAuditingReader(
         }
 
         // Group by EntityType so each scope becomes ONE predicate branch
-        // (ec.EntityType == type AND ids.Contains(ec.EntityId)) and the
-        // branches OR together. Strict pair semantics — no cross-type bleed,
-        // no reliance on Guid cross-table uniqueness as an implicit invariant.
+        // (ec.EntityType == type AND ids.Contains(ec.EntityId)) and the branches OR together.
         Expression<Func<AuditEntityChange, bool>>? predicate = null;
         ParameterExpression ecParam = Expression.Parameter(typeof(AuditEntityChange), "ec");
 
         foreach (IGrouping<string, AuditEntityRef> group in targets.GroupBy(t => t.EntityType, StringComparer.Ordinal))
         {
-            // Materialise to string[] so Npgsql translates Contains to a SQL
-            // IN-list (the same constraint observed at GetByEntityAsync above).
             string[] ids = [.. group.Select(t => t.EntityId).Distinct(StringComparer.Ordinal)];
             if (ids.Length == 0)
             {
@@ -143,28 +147,21 @@ internal sealed class EfCoreAuditingReader(
             return [];
         }
 
-        // Hoist the predicate into the outer .Any() — that subquery is what the
-        // covering index (EntityType, EntityId, AuditEntryId) was added for.
         ParameterExpression entryParam = Expression.Parameter(typeof(AuditEntry), "e");
         MemberExpression changes = Expression.Property(entryParam, nameof(AuditEntry.EntityChanges));
         MethodCallExpression any = Expression.Call(AnyMethodInfo, changes, predicate);
         var outer = Expression.Lambda<Func<AuditEntry, bool>>(any, entryParam);
 
-        await using AuditingDbContext dbContext = await dbContextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<AuditEntry> all = await CollectAcrossScopesAsync(
+            async db => await db.AuditEntries
+                .Include(e => e.EntityChanges)
+                    .ThenInclude(ec => ec.PropertyChanges)
+                .Where(outer)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken).ConfigureAwait(false),
+            cancellationToken).ConfigureAwait(false);
 
-        // No FusionCache on the batch path — per-request target sets cause
-        // cache-key explosion and the merger only fetches top-K, so any hit
-        // rate would be coincidental at best.
-        return await dbContext.AuditEntries
-            .Include(e => e.EntityChanges)
-                .ThenInclude(ec => ec.PropertyChanges)
-            .Where(outer)
-            .OrderByDescending(e => e.Timestamp)
-            .Take(limit)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
+        return [.. all.OrderByDescending(e => e.Timestamp).Take(limit)];
     }
 
     /// <inheritdoc/>
@@ -176,18 +173,16 @@ internal sealed class EfCoreAuditingReader(
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(limit);
 
-        await using AuditingDbContext dbContext = await dbContextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<AuditEntry> all = await CollectAcrossScopesAsync(
+            async db => await db.AuditEntries
+                .Include(e => e.EntityChanges)
+                    .ThenInclude(ec => ec.PropertyChanges)
+                .Where(e => e.UserId == userId)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken).ConfigureAwait(false),
+            cancellationToken).ConfigureAwait(false);
 
-        return await dbContext.AuditEntries
-            .Include(e => e.EntityChanges)
-                .ThenInclude(ec => ec.PropertyChanges)
-            .Where(e => e.UserId == userId)
-            .OrderByDescending(e => e.Timestamp)
-            .Take(limit)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
+        return [.. all.OrderByDescending(e => e.Timestamp).Take(limit)];
     }
 
     /// <inheritdoc/>
@@ -197,17 +192,106 @@ internal sealed class EfCoreAuditingReader(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(correlationId);
 
-        await using AuditingDbContext dbContext = await dbContextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<AuditEntry> all = await CollectAcrossScopesAsync(
+            async db => await db.AuditEntries
+                .Include(e => e.EntityChanges)
+                    .ThenInclude(ec => ec.PropertyChanges)
+                .Where(e => e.CorrelationId == correlationId)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken).ConfigureAwait(false),
+            cancellationToken).ConfigureAwait(false);
 
-        return await dbContext.AuditEntries
-            .Include(e => e.EntityChanges)
-                .ThenInclude(ec => ec.PropertyChanges)
-            .Where(e => e.CorrelationId == correlationId)
-            .OrderByDescending(e => e.Timestamp)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken)
+        return [.. all.OrderByDescending(e => e.Timestamp)];
+    }
+
+    /// <summary>
+    /// Runs <paramref name="query"/> against the appropriate context(s) and returns the
+    /// first non-null result (used for id-based lookups). Under Segregated + host-admin
+    /// scope, iterates host + every tenant; otherwise opens a single context for the
+    /// caller's scope.
+    /// </summary>
+    private async Task<TResult?> ResolveAcrossScopesAsync<TResult>(
+        Func<IAuditingDbContext, Task<TResult?>> query,
+        bool firstNonNull,
+        CancellationToken cancellationToken)
+        where TResult : class
+    {
+        if (resolver.StorageMode == DualScopeStorageMode.Segregated && !currentTenant.IsAvailable)
+        {
+            IReadOnlyList<IAuditingDbContext> contexts = await resolver
+                .OpenAllAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                foreach (IAuditingDbContext ctx in contexts)
+                {
+                    TResult? hit = await query(ctx).ConfigureAwait(false);
+                    if (hit is not null && firstNonNull)
+                    {
+                        return hit;
+                    }
+                }
+                return null;
+            }
+            finally
+            {
+                await DisposeAllAsync(contexts).ConfigureAwait(false);
+            }
+        }
+
+        await using IAuditingDbContext singleDb = await resolver
+            .OpenForScopeAsync(currentTenant.IsAvailable ? currentTenant.Id : null, cancellationToken)
             .ConfigureAwait(false);
+        return await query(singleDb).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Materialises a list-returning query across all candidate contexts. Under
+    /// <c>Segregated</c> + host-admin scope, iterates host + every tenant via
+    /// <see cref="ITenantsAccessor"/> + <see cref="ICurrentTenant.Change"/>. Otherwise runs
+    /// once against the caller's scope.
+    /// </summary>
+    private async Task<IReadOnlyList<AuditEntry>> CollectAcrossScopesAsync(
+        Func<IAuditingDbContext, Task<List<AuditEntry>>> query,
+        CancellationToken cancellationToken)
+    {
+        if (resolver.StorageMode == DualScopeStorageMode.Segregated && !currentTenant.IsAvailable)
+        {
+            List<AuditEntry> results = [];
+
+            // Host portion first.
+            await using (IAuditingDbContext hostCtx = await resolver
+                .OpenForScopeAsync(tenantId: null, cancellationToken).ConfigureAwait(false))
+            {
+                results.AddRange(await query(hostCtx).ConfigureAwait(false));
+            }
+
+            IReadOnlyList<(Guid Id, string Name)> tenants = await tenantsAccessor
+                .GetAllAsync(cancellationToken).ConfigureAwait(false);
+            foreach ((Guid id, string name) in tenants)
+            {
+                using (currentTenant.Change(id, name))
+                await using (IAuditingDbContext tenantCtx = await resolver
+                    .OpenForScopeAsync(id, cancellationToken).ConfigureAwait(false))
+                {
+                    results.AddRange(await query(tenantCtx).ConfigureAwait(false));
+                }
+            }
+
+            return results;
+        }
+
+        await using IAuditingDbContext singleDb = await resolver
+            .OpenForScopeAsync(currentTenant.IsAvailable ? currentTenant.Id : null, cancellationToken)
+            .ConfigureAwait(false);
+        return await query(singleDb).ConfigureAwait(false);
+    }
+
+    private static async Task DisposeAllAsync(IReadOnlyList<IAuditingDbContext> contexts)
+    {
+        foreach (IAuditingDbContext ctx in contexts)
+        {
+            await ctx.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     private static readonly MethodInfo AnyMethodInfo = typeof(Enumerable)
@@ -217,10 +301,9 @@ internal sealed class EfCoreAuditingReader(
         .MakeGenericMethod(typeof(AuditEntityChange));
 
     /// <summary>
-    /// Rewrites every reference to <c>from</c> in an expression tree as
-    /// <c>to</c>. Lets us re-use the body of an <c>Expression{Func{T,bool}}</c>
-    /// under a fresh parameter when combining per-scope predicates via
-    /// <c>Expression.OrElse</c>.
+    /// Rewrites every reference to <c>from</c> in an expression tree as <c>to</c>. Lets us
+    /// re-use the body of an <c>Expression&lt;Func&lt;T, bool&gt;&gt;</c> under a fresh
+    /// parameter when combining per-scope predicates via <c>Expression.OrElse</c>.
     /// </summary>
     private sealed class ParameterRebinder(ParameterExpression from, ParameterExpression to) : ExpressionVisitor
     {
