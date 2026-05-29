@@ -12,7 +12,7 @@ namespace Granit.Auditing;
 /// Successful authentications land in <see cref="AuditCategory.PrivilegedAccess"/>
 /// (ISO 27001 A.12.4.3 — "what privileged actors successfully did") and failed
 /// attempts in <see cref="AuditCategory.AccessDenied"/> (A.12.4.1). Both default
-/// to ~7 year retention via <see cref="Options.AuditingOptions"/>.
+/// to ~7 year retention via <c>AuditingOptions</c>.
 /// </para>
 /// <para>
 /// Authentication details are persisted as a synthetic

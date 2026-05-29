@@ -12,7 +12,7 @@ public enum AuditPersistenceMode
     /// </summary>
     /// <remarks>
     /// Secure by default: this is the zero value so an unconfigured
-    /// <see cref="Granit.Auditing.Options.AuditingOptions.PersistenceMode"/> never silently
+    /// <c>AuditingOptions.PersistenceMode</c> never silently
     /// falls back to a lossy mode. Opt into <see cref="Async"/> explicitly for throughput.
     /// </remarks>
     Strict = 0,

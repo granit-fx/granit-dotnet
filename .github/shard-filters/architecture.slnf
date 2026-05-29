@@ -13,6 +13,7 @@
       "src/Granit.AI/Granit.AI.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
+      "src/Granit.Auditing.Abstractions/Granit.Auditing.Abstractions.csproj",
       "src/Granit.Auditing.ConfigurationChanges/Granit.Auditing.ConfigurationChanges.csproj",
       "src/Granit.Auditing.Endpoints/Granit.Auditing.Endpoints.csproj",
       "src/Granit.Auditing.EntityFrameworkCore/Granit.Auditing.EntityFrameworkCore.csproj",

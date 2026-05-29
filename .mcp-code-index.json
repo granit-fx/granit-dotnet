@@ -99,10 +99,19 @@
       "name": "Granit.Auditing",
       "deps": [
         "Granit",
+        "Granit.Auditing.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Auditing.Abstractions",
+      "deps": [
+        "Granit",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -4875,8 +4884,8 @@
       "name": "AuditIgnoreAttribute",
       "fqn": "Granit.Auditing.Attributes.AuditIgnoreAttribute",
       "kind": "class",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Attributes/AuditIgnoreAttribute.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Attributes/AuditIgnoreAttribute.cs",
       "line": 11,
       "members": []
     },
@@ -4884,8 +4893,8 @@
       "name": "AuditChildScope",
       "fqn": "Granit.Auditing.AuditChildScope",
       "kind": "record",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/AuditChildScope.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/AuditChildScope.cs",
       "line": 17,
       "members": []
     },
@@ -4893,8 +4902,8 @@
       "name": "AuthenticationAuditEntry",
       "fqn": "Granit.Auditing.AuthenticationAuditEntry",
       "kind": "class",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/AuthenticationAuditEntry.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/AuthenticationAuditEntry.cs",
       "line": 25,
       "members": [
         {
@@ -5003,8 +5012,8 @@
       "name": "AuditCategory",
       "fqn": "Granit.Auditing.Domain.AuditCategory",
       "kind": "enum",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Domain/AuditCategory.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Domain/AuditCategory.cs",
       "line": 15,
       "members": []
     },
@@ -5012,8 +5021,8 @@
       "name": "AuditChangeType",
       "fqn": "Granit.Auditing.Domain.AuditChangeType",
       "kind": "enum",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Domain/AuditChangeType.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Domain/AuditChangeType.cs",
       "line": 6,
       "members": []
     },
@@ -5021,8 +5030,8 @@
       "name": "AuditEntityChange",
       "fqn": "Granit.Auditing.Domain.AuditEntityChange",
       "kind": "class",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Domain/AuditEntityChange.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Domain/AuditEntityChange.cs",
       "line": 8,
       "members": [
         {
@@ -5049,8 +5058,8 @@
       "name": "AuditEntry",
       "fqn": "Granit.Auditing.Domain.AuditEntry",
       "kind": "class",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Domain/AuditEntry.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Domain/AuditEntry.cs",
       "line": 14,
       "members": [
         {
@@ -5071,8 +5080,8 @@
       "name": "AuditPersistenceMode",
       "fqn": "Granit.Auditing.Domain.AuditPersistenceMode",
       "kind": "enum",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Domain/AuditPersistenceMode.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Domain/AuditPersistenceMode.cs",
       "line": 6,
       "members": []
     },
@@ -5080,8 +5089,8 @@
       "name": "AuditPropertyChange",
       "fqn": "Granit.Auditing.Domain.AuditPropertyChange",
       "kind": "class",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Domain/AuditPropertyChange.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Domain/AuditPropertyChange.cs",
       "line": 8,
       "members": [
         {
@@ -5343,8 +5352,8 @@
       "name": "AuditEntryPersistedEto",
       "fqn": "Granit.Auditing.Events.AuditEntryPersistedEto",
       "kind": "record",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Events/AuditEntryPersistedEto.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Events/AuditEntryPersistedEto.cs",
       "line": 16,
       "members": []
     },
@@ -5384,8 +5393,8 @@
       "name": "AuditChildResolverExtensions",
       "fqn": "Granit.Auditing.Extensions.AuditChildResolverExtensions",
       "kind": "class",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Extensions/AuditChildResolverExtensions.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Extensions/AuditChildResolverExtensions.cs",
       "line": 8,
       "members": [
         {
@@ -5400,8 +5409,8 @@
       "name": "AuditEntityTypeAliasProviderExtensions",
       "fqn": "Granit.Auditing.Extensions.AuditEntityTypeAliasProviderExtensions",
       "kind": "class",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Extensions/AuditEntityTypeAliasProviderExtensions.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Extensions/AuditEntityTypeAliasProviderExtensions.cs",
       "line": 7,
       "members": [
         {
@@ -5448,8 +5457,8 @@
       "name": "IAuditBatchPersister",
       "fqn": "Granit.Auditing.IAuditBatchPersister",
       "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/IAuditBatchPersister.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/IAuditBatchPersister.cs",
       "line": 12,
       "members": [
         {
@@ -5464,8 +5473,8 @@
       "name": "IAuditChildResolver",
       "fqn": "Granit.Auditing.IAuditChildResolver",
       "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/IAuditChildResolver.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/IAuditChildResolver.cs",
       "line": 23,
       "members": [
         {
@@ -5480,8 +5489,8 @@
       "name": "IAuditEntityTypeAliasProvider",
       "fqn": "Granit.Auditing.IAuditEntityTypeAliasProvider",
       "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/IAuditEntityTypeAliasProvider.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/IAuditEntityTypeAliasProvider.cs",
       "line": 26,
       "members": [
         {
@@ -5496,8 +5505,8 @@
       "name": "IAuditEntryPublisher",
       "fqn": "Granit.Auditing.IAuditEntryPublisher",
       "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/IAuditEntryPublisher.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/IAuditEntryPublisher.cs",
       "line": 13,
       "members": [
         {
@@ -5512,8 +5521,8 @@
       "name": "IAuditingCleaner",
       "fqn": "Granit.Auditing.IAuditingCleaner",
       "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/IAuditingCleaner.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/IAuditingCleaner.cs",
       "line": 12,
       "members": [
         {
@@ -5534,8 +5543,8 @@
       "name": "IAuditingReader",
       "fqn": "Granit.Auditing.IAuditingReader",
       "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/IAuditingReader.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/IAuditingReader.cs",
       "line": 14,
       "members": [
         {
@@ -5574,8 +5583,8 @@
       "name": "IAuditingWriter",
       "fqn": "Granit.Auditing.IAuditingWriter",
       "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/IAuditingWriter.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/IAuditingWriter.cs",
       "line": 13,
       "members": [
         {
@@ -5590,8 +5599,8 @@
       "name": "AuditEntityChangeSnapshot",
       "fqn": "Granit.Auditing.Messages.AuditEntityChangeSnapshot",
       "kind": "record",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Messages/AuditEntityChangeSnapshot.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Messages/AuditEntityChangeSnapshot.cs",
       "line": 12,
       "members": []
     },
@@ -5599,8 +5608,8 @@
       "name": "AuditPropertyChangeSnapshot",
       "fqn": "Granit.Auditing.Messages.AuditPropertyChangeSnapshot",
       "kind": "record",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Messages/AuditPropertyChangeSnapshot.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Messages/AuditPropertyChangeSnapshot.cs",
       "line": 9,
       "members": []
     },
@@ -5608,8 +5617,8 @@
       "name": "AuditingBatch",
       "fqn": "Granit.Auditing.Messages.AuditingBatch",
       "kind": "record",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Messages/AuditingBatch.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/Messages/AuditingBatch.cs",
       "line": 18,
       "members": []
     },
@@ -5904,8 +5913,8 @@
       "name": "StaticAuditEntityTypeAliasProvider",
       "fqn": "Granit.Auditing.StaticAuditEntityTypeAliasProvider",
       "kind": "class",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/StaticAuditEntityTypeAliasProvider.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/StaticAuditEntityTypeAliasProvider.cs",
       "line": 11,
       "members": []
     },
@@ -5913,8 +5922,8 @@
       "name": "struct",
       "fqn": "Granit.Auditing.struct",
       "kind": "record",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/AuditEntityRef.cs",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/AuditEntityRef.cs",
       "line": 10,
       "members": []
     },

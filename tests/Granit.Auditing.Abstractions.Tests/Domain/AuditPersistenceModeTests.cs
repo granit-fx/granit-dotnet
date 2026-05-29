@@ -2,7 +2,7 @@ using Granit.Auditing.Domain;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Auditing.Tests.Domain;
+namespace Granit.Auditing.Abstractions.Tests.Domain;
 
 public sealed class AuditPersistenceModeTests
 {

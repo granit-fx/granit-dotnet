@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Auditing.Abstractions</PackageId>
+    <Description>Inter-module contracts for Granit.Auditing: the audit trail domain model (AuditEntry, AuditEntityChange, AuditPropertyChange, AuditCategory, AuditChangeType, AuditPersistenceMode), read/write/cleanup/publish contracts (IAuditingReader, IAuditingWriter, IAuditingCleaner, IAuditEntryPublisher, IAuditBatchPersister), the timeline aggregation contracts (IAuditChildResolver, IAuditEntityTypeAliasProvider, AuditEntityRef, AuditChildScope), the bus messages (AuditingBatch + snapshots), the AuditEntryPersistedEto integration event, and AuditIgnoreAttribute. Pull this package to emit or read audit entries without taking a dependency on the Granit.Auditing runtime (workers, query/export definitions, DI wiring).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Auditing.Abstractions.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

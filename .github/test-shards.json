@@ -259,6 +259,7 @@
       "name": "security",
       "label": "Security & Compliance",
       "projects": [
+        "tests/Granit.Auditing.Abstractions.Tests",
         "tests/Granit.Auditing.ConfigurationChanges.Tests",
         "tests/Granit.Auditing.Endpoints.Tests",
         "tests/Granit.Auditing.EntityFrameworkCore.Tests",
