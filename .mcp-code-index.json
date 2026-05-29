@@ -5154,6 +5154,22 @@
       ]
     },
     {
+      "name": "AuditingHealthChecksBuilderExtensions",
+      "fqn": "Granit.Auditing.Endpoints.Extensions.AuditingHealthChecksBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Extensions/AuditingHealthChecksBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitAuditingChannelHealthCheck",
+          "kind": "method",
+          "signature": "AddGranitAuditingChannelHealthCheck(this IHealthChecksBuilder builder, string name = \"auditing-channel\", HealthStatus? failureStatus = null, IEnumerable<string>? tags = null, TimeSpan? timeout = null)",
+          "returnType": "IHealthChecksBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitAuditingEndpointsModule",
       "fqn": "Granit.Auditing.Endpoints.GranitAuditingEndpointsModule",
       "kind": "class",

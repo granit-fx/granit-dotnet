@@ -12,7 +12,7 @@ public sealed class AuditingOptionsTests
     {
         AuditingOptions options = new();
 
-        options.PersistenceMode.ShouldBe(AuditPersistenceMode.Async);
+        options.PersistenceMode.ShouldBe(AuditPersistenceMode.Strict);
         options.EnablePropertyTracking.ShouldBeTrue();
         options.CleanupBatchSize.ShouldBe(10_000);
         options.CleanupInterval.ShouldBe(TimeSpan.FromHours(24));

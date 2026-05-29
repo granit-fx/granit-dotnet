@@ -19,7 +19,20 @@ namespace Granit.Auditing.Internal.Services;
 /// and persists them via <see cref="IAuditBatchPersister"/>.
 /// </summary>
 /// <remarks>
-/// Only active in <see cref="AuditPersistenceMode.Async"/> mode.
+/// <para>
+/// Only active in <see cref="AuditPersistenceMode.Async"/> mode; a no-op otherwise.
+/// </para>
+/// <para>
+/// On graceful shutdown (SIGTERM), <see cref="StopAsync"/> completes the channel and the
+/// worker drains every buffered batch before exiting, so no audit entries are lost during a
+/// rolling deploy. The drain is bounded by the host <c>ShutdownTimeout</c> — whose .NET
+/// default is only <b>5 seconds</b>. Under load this is shorter than the Kubernetes
+/// <c>terminationGracePeriodSeconds</c> (default 30s), so consuming apps that run in
+/// <see cref="AuditPersistenceMode.Async"/> SHOULD raise it to give the drain a real window,
+/// e.g. <c>services.Configure&lt;HostOptions&gt;(o =&gt; o.ShutdownTimeout = TimeSpan.FromSeconds(25));</c>
+/// (kept below the pod grace period). An ungraceful kill (SIGKILL / OOMKilled) still loses
+/// the buffer — <see cref="AuditPersistenceMode.Strict"/> is the durable mode.
+/// </para>
 /// </remarks>
 internal sealed partial class AuditingPersistenceWorker(
     Channel<AuditingBatch> channel,
@@ -40,15 +53,45 @@ internal sealed partial class AuditingPersistenceWorker(
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (options.Value.PersistenceMode == AuditPersistenceMode.Async)
+        // In Strict mode the channel is never written to (the interceptor persists
+        // synchronously), so there is nothing to consume — stay idle instead of parking
+        // a reader on a channel that will never receive a batch.
+        if (options.Value.PersistenceMode != AuditPersistenceMode.Async)
         {
-            LogAsyncModeWarning();
+            return;
         }
 
-        await foreach (AuditingBatch batch in channel.Reader.ReadAllAsync(stoppingToken))
+        LogAsyncModeWarning();
+
+        try
         {
-            await PersistWithRetryAsync(batch, stoppingToken).ConfigureAwait(false);
+            await foreach (AuditingBatch batch in channel.Reader.ReadAllAsync(stoppingToken).ConfigureAwait(false))
+            {
+                await PersistWithRetryAsync(batch, stoppingToken).ConfigureAwait(false);
+            }
         }
+        catch (OperationCanceledException)
+        {
+            // Shutdown requested — fall through and drain whatever is still buffered.
+        }
+
+        // Graceful drain: StopAsync has completed the writer, so no new batches arrive.
+        // Persist the remainder with an uncancellable token so the drain is not aborted by
+        // the already-signalled stopping token (it is still bounded by the host
+        // ShutdownTimeout, after which the process exits and terminates this worker).
+        while (channel.Reader.TryRead(out AuditingBatch? batch))
+        {
+            await PersistWithRetryAsync(batch, CancellationToken.None).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        // Stop accepting new batches so the drain loop in ExecuteAsync can terminate
+        // naturally once the buffer is emptied.
+        channel.Writer.TryComplete();
+        await base.StopAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private async Task PersistWithRetryAsync(AuditingBatch batch, CancellationToken stoppingToken)

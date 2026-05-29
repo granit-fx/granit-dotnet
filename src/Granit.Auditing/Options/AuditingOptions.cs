@@ -14,11 +14,12 @@ public sealed class AuditingOptions
 
     /// <summary>
     /// Controls how audit entries are persisted after capture.
-    /// <see cref="AuditPersistenceMode.Async"/> uses a background channel (best performance).
-    /// <see cref="AuditPersistenceMode.Strict"/> persists synchronously (ISO 27001 strict).
-    /// Default: <see cref="AuditPersistenceMode.Async"/>.
+    /// <see cref="AuditPersistenceMode.Strict"/> persists synchronously (ISO 27001 strict, durable).
+    /// <see cref="AuditPersistenceMode.Async"/> uses a background channel (best performance, buffered).
+    /// Default: <see cref="AuditPersistenceMode.Strict"/> — secure by default; opt into
+    /// <see cref="AuditPersistenceMode.Async"/> for throughput-sensitive workloads.
     /// </summary>
-    public AuditPersistenceMode PersistenceMode { get; set; } = AuditPersistenceMode.Async;
+    public AuditPersistenceMode PersistenceMode { get; set; } = AuditPersistenceMode.Strict;
 
     /// <summary>
     /// Whether to capture property-level old/new values in <see cref="AuditPropertyChange"/>.

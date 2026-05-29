@@ -107,6 +107,40 @@ public sealed class AuditingPersistenceWorkerTests : IDisposable
     }
 
     [Fact]
+    public async Task StopAsync_DrainsBufferedBatches_WithoutExplicitComplete()
+    {
+        // Producer never completes the channel — a graceful shutdown (SIGTERM) must
+        // complete it and drain every buffered batch so none are lost on a rolling deploy.
+        await _channel.Writer.WriteAsync(CreateBatch(), TestContext.Current.CancellationToken);
+        await _channel.Writer.WriteAsync(CreateBatch(), TestContext.Current.CancellationToken);
+        await _channel.Writer.WriteAsync(CreateBatch(), TestContext.Current.CancellationToken);
+
+        AuditingPersistenceWorker worker = CreateWorker();
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        await worker.StartAsync(ct);
+        await Task.Delay(200, ct);
+        await worker.StopAsync(ct);
+
+        await _persister.Received(3).PersistAsync(Arg.Any<AuditingBatch>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_IsNoOp_InStrictMode()
+    {
+        // In Strict mode the interceptor persists synchronously and never feeds the channel,
+        // so the worker must not consume anything that happens to be buffered.
+        await _channel.Writer.WriteAsync(CreateBatch(), TestContext.Current.CancellationToken);
+
+        AuditingPersistenceWorker worker = CreateWorker(AuditPersistenceMode.Strict);
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        await worker.StartAsync(ct);
+        await Task.Delay(200, ct);
+        await worker.StopAsync(ct);
+
+        await _persister.DidNotReceive().PersistAsync(Arg.Any<AuditingBatch>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task ExecuteAsync_RetriesOnTransientFailure()
     {
         _persister.PersistAsync(Arg.Any<AuditingBatch>(), Arg.Any<CancellationToken>())

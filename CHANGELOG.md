@@ -7,6 +7,22 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Changed (framework — BREAKING: behavior)
+
+- **Auditing now persists synchronously (`Strict`) by default.** `AuditPersistenceMode.Strict` is now both the default value of `AuditingOptions.PersistenceMode` *and* the enum's zero value, so an unconfigured options instance is durable by default — the right posture for an ISO 27001 / GDPR audit trail. The previous default (`Async`) buffers entries in an in-memory channel and could silently drop them on shutdown. Only entity-change capture (via the EF Core interceptor) is affected; explicit writes through `IAuditingWriter` were already synchronous. Throughput-sensitive apps must now opt into async buffering explicitly. Reordering the enum's underlying int values is wire-safe (the enum is persisted/serialized by name).
+
+  **Migration** — to keep the previous async-buffered behavior:
+
+  ```json
+  "Auditing": { "PersistenceMode": "Async" }
+  ```
+
+  When running in `Async` mode under Kubernetes, also raise the host shutdown timeout so the graceful drain (below) can flush the buffer before SIGKILL — the .NET default is only 5s, well under the typical 30s `terminationGracePeriodSeconds`:
+
+  ```csharp
+  builder.Services.Configure<HostOptions>(o => o.ShutdownTimeout = TimeSpan.FromSeconds(25));
+  ```
+
 ### Changed (framework — BREAKING: appsettings)
 
 - **`SectionName` homogenization across the framework.** Every `public const string SectionName` on a Granit options class now follows the same convention: a colon-separated, ASP.NET-style hierarchical path aligned on the project namespace after stripping the internal `Granit` prefix (`Granit.Foo.Bar.Baz` → `"Foo:Bar:Baz"`). Three classes of legacy values were eliminated: (1) the `Granit:` root prefix (which was leaking the code namespace into config — `"Granit:ApiKeys"`, `"Granit:IO:TempFiles"`, `"Granit:Templating:App"`, `"Granit:DataExchange:BlobStorage"`); (2) PascalCase-glued compound names that hid a real hierarchy (`"WolverinePostgresql"`, `"WolverineSqlServer"`, `"GranitMigrations"`, `"TenantSchema"`, every `"*Endpoints"` umbrella, every `Http.*` flat name); (3) vendor-rooted or wrong-segmented names under `Notifications.*` and `Identity.Federated.*` (`"AzureCommunicationServices:Email"`, `"Notifications:Smtp"`, `"KeycloakAdmin"`, `"EntraIdAdmin"`, `"CognitoAdmin"`, `"Identity:UserCacheHasher"`, …). One real binding collision was also fixed: `ImportOptions` and the root data-exchange config both bound to `"DataExchange"`, silently shadowing one another — `ImportOptions` now lives at `"DataExchange:Import"` and `ExportOptions` at `"DataExchange:Export"`. `TenantIsolationOptions` (which had no `SectionName` const and was bound to the literal `"TenantIsolation"`) now exposes the const and binds to `"MultiTenancy:TenantIsolation"`, aligned with `MultiTenancy:TenantSchema`. The convention is enforced going forward by `Granit.ArchitectureTests.SectionNameConventionTests` (forbids `Granit:` root, forbids flat compound names, requires SectionName uniqueness). Every renamed section also has its `*OptionsTests.SectionName.ShouldBe(...)` assertion updated, every test that builds an in-memory `IConfiguration` for a service-collection extension was migrated to the new prefix (otherwise the binder fails silently and tests assert default values), and the `templates/granit-api-full/appsettings.json` was repointed (`"Cors"` → `"Http:Cors"`). The Keycloak JwtBearer rename (`"Keycloak"` → `"Authentication:Keycloak"`) shipped earlier in this release is part of the same sweep.
@@ -163,6 +179,8 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Added
 
+- **Auditing — graceful drain for the async persistence worker.** On SIGTERM the `AuditingPersistenceWorker` completes the channel and drains every buffered batch before exiting, eliminating audit-trail gaps on rolling deploys (bounded by the host `ShutdownTimeout`; an ungraceful SIGKILL/OOMKilled still loses the buffer — use `Strict` for hard durability). The worker is also a no-op in `Strict` mode instead of parking an idle channel reader.
+- **Auditing — `AddGranitAuditingChannelHealthCheck()` on `IHealthChecksBuilder`** (`Granit.Auditing.Endpoints`) — reports `Degraded` at ≥80% channel fill and `Unhealthy` when the bounded channel is saturated (producers blocked on backpressure), letting Kubernetes readiness probes detect a stuck audit persister. Reports `Healthy` in `Strict` mode (channel unused). Opt-in, `["readiness"]` tag, 10s timeout.
 - Initialisation du repository granit-dotnet
 - Structure solution .NET 10 avec Central Package Management
 - Projets : Abstractions, Security, Persistence, Vault, Observability
