@@ -684,7 +684,6 @@
       "granit.webhooks.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
-          "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Webhooks": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",

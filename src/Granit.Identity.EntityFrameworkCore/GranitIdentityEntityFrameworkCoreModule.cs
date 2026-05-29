@@ -10,7 +10,7 @@ namespace Granit.Identity.EntityFrameworkCore;
 /// </summary>
 /// <remarks>
 /// The DbContext is registered when the host calls
-/// <see cref="Extensions.IdentityEntityFrameworkCoreServiceCollectionExtensions.AddGranitIdentityEntityFrameworkCore"/>
+/// <see cref="Extensions.IdentityEntityFrameworkCoreHostApplicationBuilderExtensions.AddGranitIdentityEntityFrameworkCore"/>
 /// — this module class only declares the framework dependency edge.
 /// Migrations are owned by the consuming app per the framework convention
 /// (no migrations live inside framework packages).

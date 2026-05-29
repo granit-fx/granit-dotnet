@@ -10,25 +10,31 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Identity.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// Isolated EF Core <see cref="DbContext"/> for the canonical
-/// <see cref="User"/> aggregate (ADR-051). Lives in <c>Granit.Identity</c>
-/// (foundation) so every Granit app, even tiny ones without
-/// <c>Granit.Parties</c>, gets the user table.
+/// Host-pinned EF Core DbContext that backs the canonical <see cref="User"/> aggregate
+/// (ADR-051) for every user whose physical placement is the host schema.
 /// </summary>
 /// <remarks>
-/// Inherits from <see cref="GranitDbContext"/> so the multi-tenant filter is
-/// parameterised (per-request) instead of inlined into the compiled SQL.
+/// <para>
+/// Under <see cref="Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared"/> this is
+/// the single context that serves both host-admin and tenant users; the <c>MultiTenant</c>
+/// row-level filter enforces per-tenant isolation.
+/// </para>
+/// <para>
+/// Under <see cref="Granit.Persistence.MultiTenancy.DualScopeStorageMode.Segregated"/> this
+/// context holds <i>only</i> host-admin users (<c>TenantId == null</c>) and tenant users
+/// live in the companion <see cref="IdentityTenantDbContext"/>.
+/// </para>
 /// </remarks>
-internal sealed class IdentityDbContext(
-    DbContextOptions<IdentityDbContext> options,
+internal sealed class IdentityHostDbContext(
+    DbContextOptions<IdentityHostDbContext> options,
     IStringEncryptionService encryption,
     ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : GranitDbContext(options, currentTenant, dataFilter)
+    : GranitDbContext(options, currentTenant, dataFilter), IIdentityDbContext
 {
     private readonly IStringEncryptionService _encryption = encryption;
 
-    /// <summary>The <see cref="User"/> table.</summary>
+    /// <inheritdoc/>
     public DbSet<User> Users => Set<User>();
 
     /// <inheritdoc />

@@ -1,3 +1,4 @@
+using Granit.DataFiltering;
 using Granit.Encryption;
 using Granit.Identity.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore;
@@ -10,46 +11,49 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Granit.Identity.EntityFrameworkCore.Tests;
 
 /// <summary>
-/// Creates <see cref="IdentityDbContext"/> instances backed by SQLite
-/// in-memory for fast, isolated relational tests. Mirrors the pattern
-/// used by every other <c>*.EntityFrameworkCore.Tests</c> project — see
-/// <c>Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests</c> for the
-/// same shape against a different DbContext.
+/// Creates <see cref="IdentityHostDbContext"/> instances backed by SQLite in-memory for
+/// fast, isolated relational tests. Mirrors the pattern used by every other
+/// <c>*.EntityFrameworkCore.Tests</c> project.
 /// </summary>
-internal sealed class TestDbContextFactory : IDbContextFactory<IdentityDbContext>, IDisposable
+internal sealed class TestDbContextFactory : IDbContextFactory<IdentityHostDbContext>, IDisposable
 {
     private readonly SqliteConnection _connection;
-    private readonly DbContextOptions<IdentityDbContext> _options;
+    private readonly DbContextOptions<IdentityHostDbContext> _options;
+    private readonly IDataFilter? _dataFilter;
 
-    private TestDbContextFactory(SqliteConnection connection, DbContextOptions<IdentityDbContext> options)
+    private TestDbContextFactory(
+        SqliteConnection connection,
+        DbContextOptions<IdentityHostDbContext> options,
+        IDataFilter? dataFilter)
     {
         _connection = connection;
         _options = options;
+        _dataFilter = dataFilter;
     }
 
-    public DbContextOptions<IdentityDbContext> Options => _options;
+    public DbContextOptions<IdentityHostDbContext> Options => _options;
 
-    public static TestDbContextFactory Create()
+    public static TestDbContextFactory Create(IDataFilter? dataFilter = null)
     {
         SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
-        DbContextOptionsBuilder<IdentityDbContext> optionsBuilder = new();
+        DbContextOptionsBuilder<IdentityHostDbContext> optionsBuilder = new();
         optionsBuilder.UseSqlite(connection);
         optionsBuilder.ReplaceService<IModelCustomizer, SqliteCompatibleModelCustomizer>();
 
-        DbContextOptions<IdentityDbContext> options = optionsBuilder.Options;
+        DbContextOptions<IdentityHostDbContext> options = optionsBuilder.Options;
 
-        // Create the schema once for the connection lifetime.
-        using (IdentityDbContext db = new(options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant))
+        using (IdentityHostDbContext db = new(options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant, dataFilter))
         {
             db.Database.EnsureCreated();
         }
 
-        return new TestDbContextFactory(connection, options);
+        return new TestDbContextFactory(connection, options, dataFilter);
     }
 
-    public IdentityDbContext CreateDbContext() => new(_options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant);
+    public IdentityHostDbContext CreateDbContext()
+        => new(_options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant, _dataFilter);
 
     public void Dispose() => _connection.Dispose();
 
@@ -61,9 +65,9 @@ internal sealed class TestDbContextFactory : IDbContextFactory<IdentityDbContext
 }
 
 /// <summary>
-/// Model customizer that remaps PostgreSQL-specific types
-/// (<see cref="DateTimeOffset"/>) to SQLite-compatible types with value
-/// converters. Same shape as the existing companion test factories.
+/// Model customizer that remaps PostgreSQL-specific types (<see cref="DateTimeOffset"/>)
+/// to SQLite-compatible types with value converters. Same shape as the existing companion
+/// test factories.
 /// </summary>
 internal sealed class SqliteCompatibleModelCustomizer(ModelCustomizerDependencies dependencies)
     : RelationalModelCustomizer(dependencies)
