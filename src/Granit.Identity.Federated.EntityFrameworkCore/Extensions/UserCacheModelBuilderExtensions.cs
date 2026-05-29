@@ -1,15 +1,18 @@
 using Granit.Identity.Federated.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.Identity.Federated.EntityFrameworkCore.Internal;
+namespace Granit.Identity.Federated.EntityFrameworkCore.Extensions;
 
-/// <summary>EF Core model builder extensions for the Identity.Federated module.</summary>
+/// <summary>EF Core model builder extensions for the Granit.Identity.Federated module.</summary>
 /// <remarks>
-/// Called by <see cref="IdentityFederatedHostDbContext"/>. Internal since the dedicated
-/// DbContext landed in Epic #2382 V2 — consuming apps no longer fold the model into
-/// their own context.
+/// Called by <see cref="Internal.IdentityFederatedHostDbContext"/> and
+/// <see cref="Internal.IdentityFederatedTenantDbContext"/>, AND publicly exposed so
+/// consuming applications can fold the federated user-cache model into their own
+/// host-owned <see cref="DbContext"/> when they own the migration set (the framework
+/// ships no migrations per the standard Granit pattern — same shape as
+/// <c>Granit.Webhooks.EntityFrameworkCore.Extensions.WebhooksModelBuilderExtensions</c>).
 /// </remarks>
-internal static class UserCacheModelBuilderExtensions
+public static class UserCacheModelBuilderExtensions
 {
     /// <summary>
     /// Applies all entity configurations for the Granit.Identity.Federated module.

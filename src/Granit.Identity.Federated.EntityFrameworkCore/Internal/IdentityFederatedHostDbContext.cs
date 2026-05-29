@@ -1,5 +1,6 @@
 using Granit.DataFiltering;
 using Granit.Identity.Federated.Domain;
+using Granit.Identity.Federated.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

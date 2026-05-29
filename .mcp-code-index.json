@@ -22795,6 +22795,22 @@
       ]
     },
     {
+      "name": "UserCacheModelBuilderExtensions",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Extensions.UserCacheModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Extensions/UserCacheModelBuilderExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureIdentityModule",
+          "kind": "method",
+          "signature": "ConfigureIdentityModule(this ModelBuilder builder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitIdentityDbProperties",
       "fqn": "Granit.Identity.Federated.EntityFrameworkCore.GranitIdentityDbProperties",
       "kind": "class",
