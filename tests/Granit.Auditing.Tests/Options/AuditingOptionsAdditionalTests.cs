@@ -58,7 +58,6 @@ public sealed class AuditingOptionsAdditionalTests
             PersistenceMode = AuditPersistenceMode.Strict,
             EnablePropertyTracking = false,
             CleanupBatchSize = 5000,
-            CleanupInterval = TimeSpan.FromHours(12),
             CacheEntryTtl = TimeSpan.FromMinutes(60),
             CacheEntityQueryTtl = TimeSpan.FromMinutes(5),
         };
@@ -66,7 +65,6 @@ public sealed class AuditingOptionsAdditionalTests
         options.PersistenceMode.ShouldBe(AuditPersistenceMode.Strict);
         options.EnablePropertyTracking.ShouldBeFalse();
         options.CleanupBatchSize.ShouldBe(5000);
-        options.CleanupInterval.ShouldBe(TimeSpan.FromHours(12));
         options.CacheEntryTtl.ShouldBe(TimeSpan.FromMinutes(60));
         options.CacheEntityQueryTtl.ShouldBe(TimeSpan.FromMinutes(5));
     }

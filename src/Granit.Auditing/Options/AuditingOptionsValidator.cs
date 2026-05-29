@@ -4,13 +4,12 @@ namespace Granit.Auditing.Options;
 
 /// <summary>
 /// Validates <see cref="AuditingOptions"/> at startup to reject negative or zero
-/// <see cref="TimeSpan"/> values for retention periods and cleanup interval.
+/// <see cref="TimeSpan"/> values for retention periods and cache TTLs.
 /// </summary>
 internal sealed class AuditingOptionsValidator
     : IValidateOptions<AuditingOptions>
 {
     private static readonly TimeSpan MinimumRetention = TimeSpan.FromDays(1);
-    private static readonly TimeSpan MinimumInterval = TimeSpan.FromMinutes(1);
 
     public ValidateOptionsResult Validate(string? name, AuditingOptions options)
     {
@@ -21,7 +20,6 @@ internal sealed class AuditingOptionsValidator
         ValidateRetention(failures, options.DataAccessRetention, nameof(AuditingOptions.DataAccessRetention));
         ValidateRetention(failures, options.AccessDeniedRetention, nameof(AuditingOptions.AccessDeniedRetention));
 
-        ValidatePositiveTimeSpan(failures, options.CleanupInterval, nameof(AuditingOptions.CleanupInterval), MinimumInterval);
         ValidatePositiveTimeSpan(failures, options.CacheEntryTtl, nameof(AuditingOptions.CacheEntryTtl), TimeSpan.FromSeconds(1));
         ValidatePositiveTimeSpan(failures, options.CacheEntityQueryTtl, nameof(AuditingOptions.CacheEntityQueryTtl), TimeSpan.FromSeconds(1));
 

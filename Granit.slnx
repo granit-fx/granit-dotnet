@@ -244,6 +244,7 @@
   </Folder>
   <Folder Name="/src/Compliance/">
     <Project Path="src/Granit.Auditing.Abstractions/Granit.Auditing.Abstractions.csproj" />
+    <Project Path="src/Granit.Auditing.BackgroundJobs/Granit.Auditing.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Auditing.ConfigurationChanges/Granit.Auditing.ConfigurationChanges.csproj" />
     <Project Path="src/Granit.Auditing.Endpoints/Granit.Auditing.Endpoints.csproj" />
     <Project Path="src/Granit.Auditing.EntityFrameworkCore/Granit.Auditing.EntityFrameworkCore.csproj" />
@@ -578,6 +579,7 @@
   </Folder>
   <Folder Name="/tests/Compliance/">
     <Project Path="tests/Granit.Auditing.Abstractions.Tests/Granit.Auditing.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.Auditing.BackgroundJobs.Tests/Granit.Auditing.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.ConfigurationChanges.Tests/Granit.Auditing.ConfigurationChanges.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.Endpoints.Tests/Granit.Auditing.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.EntityFrameworkCore.Tests/Granit.Auditing.EntityFrameworkCore.Tests.csproj" />

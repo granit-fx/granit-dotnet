@@ -71,11 +71,6 @@ public sealed class AuditingOptions
     public TimeSpan CacheEntityQueryTtl { get; set; } = TimeSpan.FromMinutes(2);
 
     /// <summary>
-    /// Interval between cleanup runs. Default: 24 hours.
-    /// </summary>
-    public TimeSpan CleanupInterval { get; set; } = TimeSpan.FromHours(24);
-
-    /// <summary>
     /// Maximum number of entries deleted per cleanup batch.
     /// Prevents long-running transactions. Default: 10,000.
     /// </summary>

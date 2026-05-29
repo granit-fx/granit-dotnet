@@ -74,19 +74,6 @@ public sealed class AuditingOptionsValidatorTests
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public void Validate_NegativeOrZeroCleanupInterval_Fails(double minutes)
-    {
-        AuditingOptions options = new() { CleanupInterval = TimeSpan.FromMinutes(minutes) };
-
-        ValidateOptionsResult result = _validator.Validate(null, options);
-
-        result.Failed.ShouldBeTrue();
-        result.FailureMessage.ShouldContain(nameof(AuditingOptions.CleanupInterval));
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-1)]
     public void Validate_NegativeOrZeroCacheEntryTtl_Fails(double seconds)
     {
         AuditingOptions options = new() { CacheEntryTtl = TimeSpan.FromSeconds(seconds) };
@@ -117,7 +104,6 @@ public sealed class AuditingOptionsValidatorTests
         {
             ConfigurationChangeRetention = TimeSpan.Zero,
             DataMutationRetention = TimeSpan.FromDays(-1),
-            CleanupInterval = TimeSpan.Zero,
         };
 
         ValidateOptionsResult result = _validator.Validate(null, options);
@@ -125,7 +111,6 @@ public sealed class AuditingOptionsValidatorTests
         result.Failed.ShouldBeTrue();
         result.FailureMessage.ShouldContain(nameof(AuditingOptions.ConfigurationChangeRetention));
         result.FailureMessage.ShouldContain(nameof(AuditingOptions.DataMutationRetention));
-        result.FailureMessage.ShouldContain(nameof(AuditingOptions.CleanupInterval));
     }
 
     [Fact]
@@ -138,16 +123,6 @@ public sealed class AuditingOptionsValidatorTests
             DataAccessRetention = TimeSpan.FromDays(1),
             AccessDeniedRetention = TimeSpan.FromDays(1),
         };
-
-        ValidateOptionsResult result = _validator.Validate(null, options);
-
-        result.Succeeded.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Validate_MinimumCleanupIntervalOneMinute_Succeeds()
-    {
-        AuditingOptions options = new() { CleanupInterval = TimeSpan.FromMinutes(1) };
 
         ValidateOptionsResult result = _validator.Validate(null, options);
 

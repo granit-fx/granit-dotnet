@@ -4,55 +4,35 @@ using Granit.Auditing.Domain;
 using Granit.Auditing.Options;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Auditing.Internal.Services;
+namespace Granit.Auditing.BackgroundJobs.Internal;
 
 /// <summary>
-/// Background service that periodically purges expired audit log entries
-/// based on per-category retention periods.
+/// Purges expired audit log entries per category retention, in batches. A fresh
+/// DI scope is opened per batch so the EF Core change tracker never accumulates
+/// across a large purge.
 /// </summary>
-internal sealed partial class AuditingCleanupWorker(
+internal sealed partial class AuditRetentionCleanupService(
     IServiceScopeFactory scopeFactory,
-    IOptionsMonitor<AuditingOptions> optionsMonitor,
+    IOptions<AuditingOptions> options,
     IClock clock,
     AuditingMetrics metrics,
-    ILogger<AuditingCleanupWorker> logger) : BackgroundService
+    ILogger<AuditRetentionCleanupService> logger) : IAuditRetentionCleanupService
 {
     /// <inheritdoc/>
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        // Initial delay to let the application stabilize.
-        await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken).ConfigureAwait(false);
-
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            try
-            {
-                await PurgeExpiredEntriesAsync(stoppingToken).ConfigureAwait(false);
-            }
-            catch (Exception ex) when (ex is not OperationCanceledException)
-            {
-                LogCleanupFailed(ex);
-            }
-
-            await Task.Delay(optionsMonitor.CurrentValue.CleanupInterval, stoppingToken).ConfigureAwait(false);
-        }
-    }
-
-    private async Task PurgeExpiredEntriesAsync(CancellationToken cancellationToken)
+    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         using Activity? activity = AuditingActivitySource.Source.StartActivity(AuditingActivitySource.Cleanup);
         activity?.SetTag("tenant_id", "global");
 
-        AuditingOptions options = optionsMonitor.CurrentValue;
+        AuditingOptions opts = options.Value;
         LogCleanupStarted();
 
         foreach (AuditCategory category in Enum.GetValues<AuditCategory>())
         {
-            DateTimeOffset cutoff = clock.Now - options.GetRetention(category);
+            DateTimeOffset cutoff = clock.Now - opts.GetRetention(category);
             long totalPurged = 0;
             int batchPurged;
 
@@ -62,12 +42,12 @@ internal sealed partial class AuditingCleanupWorker(
                 IAuditingCleaner cleaner = scope.ServiceProvider.GetRequiredService<IAuditingCleaner>();
 
                 batchPurged = await cleaner.PurgeAsync(
-                    category, cutoff, options.CleanupBatchSize, cancellationToken)
+                    category, cutoff, opts.CleanupBatchSize, cancellationToken)
                     .ConfigureAwait(false);
 
                 totalPurged += batchPurged;
             }
-            while (batchPurged == options.CleanupBatchSize);
+            while (batchPurged == opts.CleanupBatchSize);
 
             if (totalPurged > 0)
             {
@@ -85,8 +65,4 @@ internal sealed partial class AuditingCleanupWorker(
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Audit log cleanup '{Category}': purged {Count} entries (cutoff: {Cutoff})")]
     private partial void LogCategoryPurged(string category, long count, DateTimeOffset cutoff);
-
-    [LoggerMessage(Level = LogLevel.Error,
-        Message = "Audit log cleanup failed")]
-    private partial void LogCleanupFailed(Exception exception);
 }

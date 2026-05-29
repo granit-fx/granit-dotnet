@@ -64,9 +64,11 @@ public static class AuditingServiceCollectionExtensions
         // Channel publisher (concrete type — IAuditEntryPublisher is wired by the persistence layer).
         services.AddScoped<ChannelAuditingPublisher>();
 
-        // Background workers.
+        // Async persistence worker (drains the channel in AuditPersistenceMode.Async).
+        // Retention cleanup runs as a distributed recurring job in
+        // Granit.Auditing.BackgroundJobs (AuditRetentionCleanupJob) — not a per-pod
+        // hosted service — so a multi-replica deployment purges exactly once per schedule.
         services.AddHostedService<AuditingPersistenceWorker>();
-        services.AddHostedService<AuditingCleanupWorker>();
 
         // Query + Export definitions (ADR-020: owned by the base module).
         services.AddQueryDefinition<AuditEntry, AuditEntryQueryDefinition>();

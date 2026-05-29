@@ -116,6 +116,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Auditing.BackgroundJobs",
+      "deps": [
+        "Granit.Auditing.EntityFrameworkCore",
+        "Granit.BackgroundJobs"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Auditing.ConfigurationChanges",
       "deps": [
         "Granit.Auditing",
@@ -4915,6 +4923,63 @@
       ]
     },
     {
+      "name": "GranitAuditingBackgroundJobsModule",
+      "fqn": "Granit.Auditing.BackgroundJobs.GranitAuditingBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Auditing.BackgroundJobs",
+      "file": "src/Granit.Auditing.BackgroundJobs/GranitAuditingBackgroundJobsModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IAuditRetentionCleanupService",
+      "fqn": "Granit.Auditing.BackgroundJobs.IAuditRetentionCleanupService",
+      "kind": "interface",
+      "project": "Granit.Auditing.BackgroundJobs",
+      "file": "src/Granit.Auditing.BackgroundJobs/IAuditRetentionCleanupService.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AuditRetentionCleanupHandler",
+      "fqn": "Granit.Auditing.BackgroundJobs.Jobs.AuditRetentionCleanupHandler",
+      "kind": "class",
+      "project": "Granit.Auditing.BackgroundJobs",
+      "file": "src/Granit.Auditing.BackgroundJobs/Jobs/AuditRetentionCleanupHandler.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(AuditRetentionCleanupJob _, IAuditRetentionCleanupService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AuditRetentionCleanupJob",
+      "fqn": "Granit.Auditing.BackgroundJobs.Jobs.AuditRetentionCleanupJob",
+      "kind": "record",
+      "project": "Granit.Auditing.BackgroundJobs",
+      "file": "src/Granit.Auditing.BackgroundJobs/Jobs/AuditRetentionCleanupJob.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "GranitAuditingConfigurationChangesModule",
       "fqn": "Granit.Auditing.ConfigurationChanges.GranitAuditingConfigurationChangesModule",
       "kind": "class",
@@ -5768,12 +5833,6 @@
           "kind": "method",
           "signature": "FromMinutes(2)",
           "returnType": "TimeSpan CacheEntityQueryTtl { get; set; } = TimeSpan."
-        },
-        {
-          "name": "FromHours",
-          "kind": "method",
-          "signature": "FromHours(24)",
-          "returnType": "TimeSpan CleanupInterval { get; set; } = TimeSpan."
         },
         {
           "name": "CleanupBatchSize",

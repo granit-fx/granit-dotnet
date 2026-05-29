@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Auditing.Tests" />
+    <InternalsVisibleTo Include="Granit.Auditing.BackgroundJobs" />
     <InternalsVisibleTo Include="Granit.Auditing.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.Auditing.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Auditing.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.Auditing. Distributed, cluster-wide audit-log retention cleanup via the Granit.BackgroundJobs recurring job pattern — replaces the per-pod hosted-service cleanup so a multi-replica deployment purges expired entries exactly once per schedule.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Auditing.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Auditing.EntityFrameworkCore\Granit.Auditing.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+  </ItemGroup>
+
+</Project>
