@@ -24,7 +24,8 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
     public EfCoreNotificationDeliveryStoreTests()
     {
         _clock.Now.Returns(_ => _now);
-        _store = new EfCoreNotificationDeliveryStore(_factory, _clock);
+        NotificationsContextResolver resolver = new(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, _factory);
+        _store = new EfCoreNotificationDeliveryStore(resolver, _clock);
     }
 
     public void Dispose() => _factory.Dispose();
@@ -42,7 +43,7 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
             errorMessage: null,
             TestContext.Current.CancellationToken);
 
-        await using NotificationsDbContext db = _factory.CreateDbContext();
+        await using NotificationsHostDbContext db = _factory.CreateDbContext();
         NotificationDeliveryAttempt? result = await db.DeliveryAttempts
             .AsNoTracking()
             .SingleAsync(a => a.DeliveryId == claim.DeliveryId, TestContext.Current.CancellationToken);
@@ -88,7 +89,7 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
             null,
             TestContext.Current.CancellationToken);
 
-        await using NotificationsDbContext db = _factory.CreateDbContext();
+        await using NotificationsHostDbContext db = _factory.CreateDbContext();
         List<NotificationDeliveryAttempt> all = await db.DeliveryAttempts
             .Where(a => a.NotificationId == notificationId)
             .AsNoTracking()
@@ -149,7 +150,7 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
 
         // Between resume and the next Complete, the row keeps the prior attempt's audit fields
         // (ISO 27001: never zero out failure context — the next Complete will overwrite it).
-        await using NotificationsDbContext db = _factory.CreateDbContext();
+        await using NotificationsHostDbContext db = _factory.CreateDbContext();
         NotificationDeliveryAttempt midFlight = await db.DeliveryAttempts
             .AsNoTracking()
             .SingleAsync(a => a.DeliveryId == first.DeliveryId, TestContext.Current.CancellationToken);
@@ -280,7 +281,7 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
 
         deleted.ShouldBe(2);
 
-        await using NotificationsDbContext db = _factory.CreateDbContext();
+        await using NotificationsHostDbContext db = _factory.CreateDbContext();
         List<NotificationDeliveryAttempt> remaining = await db.DeliveryAttempts
             .ToListAsync(TestContext.Current.CancellationToken);
         remaining.Count.ShouldBe(1);
@@ -304,7 +305,7 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
 
         deleted.ShouldBe(3);
 
-        await using NotificationsDbContext db = _factory.CreateDbContext();
+        await using NotificationsHostDbContext db = _factory.CreateDbContext();
         int remaining = await db.DeliveryAttempts.CountAsync(TestContext.Current.CancellationToken);
         remaining.ShouldBe(2);
     }

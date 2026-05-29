@@ -5,10 +5,8 @@
 // channel enabled check with default-true fallback.
 // =============================================================================
 
-using Granit.MultiTenancy;
 using Granit.Notifications.Domain;
 using Granit.Notifications.EntityFrameworkCore.Internal;
-using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -21,7 +19,8 @@ public sealed class EfCoreNotificationPreferenceStoreTests : IDisposable
 
     public EfCoreNotificationPreferenceStoreTests()
     {
-        _store = new EfCoreNotificationPreferenceStore(_factory, Substitute.For<ICurrentTenant>());
+        NotificationsContextResolver resolver = new(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, _factory);
+        _store = new EfCoreNotificationPreferenceStore(resolver);
     }
 
     public void Dispose() => _factory.Dispose();

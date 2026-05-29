@@ -6,10 +6,8 @@
 // =============================================================================
 
 using Granit.Guids;
-using Granit.MultiTenancy;
 using Granit.Notifications.Domain;
 using Granit.Notifications.EntityFrameworkCore.Internal;
-using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -22,7 +20,8 @@ public sealed class EfCoreNotificationSubscriptionStoreTests : IDisposable
 
     public EfCoreNotificationSubscriptionStoreTests()
     {
-        _store = new EfCoreNotificationSubscriptionStore(_factory, Substitute.For<ICurrentTenant>(), new SimpleGuidGenerator());
+        NotificationsContextResolver resolver = new(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, _factory);
+        _store = new EfCoreNotificationSubscriptionStore(resolver, new SimpleGuidGenerator());
     }
 
     public void Dispose() => _factory.Dispose();
