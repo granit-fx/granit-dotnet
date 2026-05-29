@@ -16159,6 +16159,40 @@
       ]
     },
     {
+      "name": "ImageDimensions",
+      "fqn": "Granit.Domain.ValueObjects.ImageDimensions",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/ImageDimensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "IsLandscape",
+          "kind": "property",
+          "signature": "bool IsLandscape",
+          "returnType": "bool"
+        },
+        {
+          "name": "IsPortrait",
+          "kind": "property",
+          "signature": "bool IsPortrait",
+          "returnType": "bool"
+        },
+        {
+          "name": "IsSquare",
+          "kind": "property",
+          "signature": "bool IsSquare",
+          "returnType": "bool"
+        },
+        {
+          "name": "TotalPixels",
+          "kind": "property",
+          "signature": "long TotalPixels",
+          "returnType": "long"
+        }
+      ]
+    },
+    {
       "name": "ICryptoShreddingAuditRecorder",
       "fqn": "Granit.Encryption.CryptoShredding.ICryptoShreddingAuditRecorder",
       "kind": "interface",
