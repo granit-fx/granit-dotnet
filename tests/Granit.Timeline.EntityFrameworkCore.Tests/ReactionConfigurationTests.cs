@@ -15,10 +15,10 @@ public sealed class ReactionConfigurationTests
     {
         SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
-        DbContextOptions<TimelineDbContext> options = new DbContextOptionsBuilder<TimelineDbContext>()
+        DbContextOptions<TimelineHostDbContext> options = new DbContextOptionsBuilder<TimelineHostDbContext>()
             .UseSqlite(connection)
             .Options;
-        using TimelineDbContext ctx = new(options, GranitDesignTime.CurrentTenant);
+        using TimelineHostDbContext ctx = new(options, GranitDesignTime.CurrentTenant);
         return ctx.Model.FindEntityType(typeof(Reaction))
             ?? throw new InvalidOperationException("Reaction entity type missing from model");
     }

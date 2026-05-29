@@ -2,11 +2,12 @@
 // Tests — EfCoreTimelineStore
 // =============================================================================
 // Verifies CRUD operations, SystemLog immutability guard, and attachment handling
-// against a SQLite in-memory database.
+// against a SQLite in-memory database wrapped in a Shared-mode TimelineContextResolver.
 // =============================================================================
 
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Persistence.MultiTenancy;
 using Granit.Timeline.Domain;
 using Granit.Timeline.EntityFrameworkCore.Internal;
 using Granit.Timeline.Options;
@@ -21,12 +22,17 @@ namespace Granit.Timeline.EntityFrameworkCore.Tests;
 
 public sealed class EfCoreTimelineStoreTests : IDisposable
 {
-    private readonly TestDbContextFactory _factory = TestDbContextFactory.Create();
+    private readonly TestDataFilter _filter = new();
+    private readonly TestDbContextFactory _factory;
+    private readonly TimelineContextResolver _resolver;
     private readonly EfCoreTimelineStore _store;
     private readonly IClock _clock;
 
     public EfCoreTimelineStoreTests()
     {
+        _factory = TestDbContextFactory.Create(_filter.Filter);
+        _resolver = new TimelineContextResolver(DualScopeStorageMode.Shared, _factory, tenantFactory: null);
+
         _clock = Substitute.For<IClock>();
         _clock.Now.Returns(DateTimeOffset.UtcNow);
 
@@ -41,11 +47,15 @@ public sealed class EfCoreTimelineStoreTests : IDisposable
         tenant.IsAvailable.Returns(false);
 
         _store = new EfCoreTimelineStore(
-            _factory, _clock, userService, guidGenerator, tenant,
+            _resolver, _clock, userService, guidGenerator, tenant,
             Microsoft.Extensions.Options.Options.Create(new TimelineOptions()));
     }
 
-    public void Dispose() => _factory.Dispose();
+    public void Dispose()
+    {
+        _factory.Dispose();
+        _filter.Dispose();
+    }
 
     [Fact]
     public async Task PostEntryAsync_Comment_PersistsEntry()
@@ -62,8 +72,7 @@ public sealed class EfCoreTimelineStoreTests : IDisposable
         entry.AuthorName.ShouldBe("Test User");
         entry.IsDeleted.ShouldBeFalse();
 
-        // Verify persistence via a fresh DbContext
-        await using TimelineDbContext db = _factory.CreateDbContext();
+        await using TimelineHostDbContext db = _factory.CreateDbContext();
         TimelineEntry? persisted = await db.TimelineEntries.FindAsync([entry.Id], TestContext.Current.CancellationToken);
         persisted.ShouldNotBeNull();
         persisted!.Body.ShouldBe("Hello world");
@@ -93,8 +102,7 @@ public sealed class EfCoreTimelineStoreTests : IDisposable
 
         await _store.DeleteEntryAsync(entry.Id, TestContext.Current.CancellationToken);
 
-        // Verify soft-delete via a fresh DbContext (bypass query filter)
-        await using TimelineDbContext db = _factory.CreateDbContext();
+        await using TimelineHostDbContext db = _factory.CreateDbContext();
         TimelineEntry? persisted = await db.TimelineEntries
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(e => e.Id == entry.Id, TestContext.Current.CancellationToken);
@@ -140,8 +148,7 @@ public sealed class EfCoreTimelineStoreTests : IDisposable
         attachment.ContentType.ShouldBe("application/pdf");
         attachment.SizeBytes.ShouldBe(1024);
 
-        // Verify persistence
-        await using TimelineDbContext db = _factory.CreateDbContext();
+        await using TimelineHostDbContext db = _factory.CreateDbContext();
         TimelineAttachment? persisted = await db.TimelineAttachments.FindAsync([attachment.Id], TestContext.Current.CancellationToken);
         persisted.ShouldNotBeNull();
         persisted!.FileName.ShouldBe("report.pdf");
