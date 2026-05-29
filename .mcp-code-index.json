@@ -46166,12 +46166,12 @@
       "kind": "class",
       "project": "Granit.Timeline.EntityFrameworkCore",
       "file": "src/Granit.Timeline.EntityFrameworkCore/Extensions/TimelineEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitTimelineEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitTimelineEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitTimelineEntityFrameworkCore(this IHostApplicationBuilder builder, Action<TimelineEntityFrameworkCoreOptions> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
