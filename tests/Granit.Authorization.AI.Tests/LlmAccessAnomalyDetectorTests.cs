@@ -2,49 +2,36 @@ using Granit.AI;
 using Granit.AI.Internal;
 using Granit.Authorization.AI.Internal;
 using Granit.Authorization.AI.Options;
-using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
+using LlmRiskResponse = Granit.Authorization.AI.Internal.LlmAccessAnomalyDetector.LlmRiskResponse;
 
 namespace Granit.Authorization.AI.Tests;
 
 public sealed class LlmAccessAnomalyDetectorTests
 {
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
+    private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
     private readonly IOptions<AuthorizationAIOptions> _options = Microsoft.Extensions.Options.Options.Create(
-        new AuthorizationAIOptions { WorkspaceName = "default", TimeoutSeconds = 5 });
+        new AuthorizationAIOptions { WorkspaceName = "default", TimeoutSeconds = 5, UnavailableRiskScore = 0.5 });
 
-    private LlmAccessAnomalyDetector CreateDetector(ILogger<LlmAccessAnomalyDetector>? logger = null) =>
-        new(_chatClientFactory, _options, logger ?? NullLogger<LlmAccessAnomalyDetector>.Instance);
+    private LlmAccessAnomalyDetector CreateDetector() =>
+        new(_structured, _options, NullLogger<LlmAccessAnomalyDetector>.Instance);
 
-    private void SetupChatResponse(string responseJson)
-    {
-        _chatClientFactory.CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(_chatClient);
+    private void CompletionReturns(StructuredCompletionStatus status, LlmRiskResponse? value = null) =>
+        _structured
+            .CompleteAsync<LlmRiskResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmRiskResponse> { Status = status, Value = value });
 
-        var chatMessage = new ChatMessage(ChatRole.Assistant, responseJson);
-        var chatResponse = new ChatResponse(chatMessage);
-
-        _chatClient.GetResponseAsync(
-                Arg.Any<IList<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(chatResponse);
-    }
+    private void Succeeds(LlmRiskResponse value) => CompletionReturns(StructuredCompletionStatus.Succeeded, value);
 
     [Fact]
     public async Task EvaluateAccessAsync_NormalAccess_ReturnsLowRisk()
     {
-        SetupChatResponse("""{ "score": 0.1, "reasoning": "Normal access pattern", "riskFactors": [] }""");
+        Succeeds(new LlmRiskResponse(0.1, "Normal access pattern", []));
 
-        LlmAccessAnomalyDetector detector = CreateDetector();
-
-        AccessRiskScore result = await detector.EvaluateAccessAsync(
+        AccessRiskScore result = await CreateDetector().EvaluateAccessAsync(
             "user-123", "Documents.Read", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Score.ShouldBe(0.1);
@@ -55,13 +42,10 @@ public sealed class LlmAccessAnomalyDetectorTests
     [Fact]
     public async Task EvaluateAccessAsync_SuspiciousAccess_ReturnsHighRisk()
     {
-        SetupChatResponse("""
-            { "score": 0.85, "reasoning": "Unusual admin access at 3 AM", "riskFactors": ["off-hours access", "elevated permission request"] }
-            """);
+        Succeeds(new LlmRiskResponse(0.85, "Unusual admin access at 3 AM",
+            ["off-hours access", "elevated permission request"]));
 
-        LlmAccessAnomalyDetector detector = CreateDetector();
-
-        AccessRiskScore result = await detector.EvaluateAccessAsync(
+        AccessRiskScore result = await CreateDetector().EvaluateAccessAsync(
             "user-456", "Admin.FullControl", "access at 3 AM from new IP",
             cancellationToken: TestContext.Current.CancellationToken);
 
@@ -69,18 +53,37 @@ public sealed class LlmAccessAnomalyDetectorTests
         result.Reasoning.ShouldBe("Unusual admin access at 3 AM");
         result.RiskFactors.Count.ShouldBe(2);
         result.RiskFactors.ShouldContain("off-hours access");
-        result.RiskFactors.ShouldContain("elevated permission request");
     }
 
     [Fact]
-    public async Task EvaluateAccessAsync_LLMFailure_ReturnsUncertaintyScore()
+    public async Task EvaluateAccessAsync_ScoreOutOfRange_ClampedToValidRange()
     {
-        _chatClientFactory.CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("LLM service unavailable"));
+        Succeeds(new LlmRiskResponse(1.5, "Over max", []));
 
-        LlmAccessAnomalyDetector detector = CreateDetector();
+        AccessRiskScore result = await CreateDetector().EvaluateAccessAsync(
+            "user-1", "Documents.Read", cancellationToken: TestContext.Current.CancellationToken);
 
-        AccessRiskScore result = await detector.EvaluateAccessAsync(
+        result.Score.ShouldBe(1.0);
+    }
+
+    [Fact]
+    public async Task EvaluateAccessAsync_NullReasoningAndFactors_UsesDefaults()
+    {
+        Succeeds(new LlmRiskResponse(0.4, null, null));
+
+        AccessRiskScore result = await CreateDetector().EvaluateAccessAsync(
+            "user-1", "Documents.Read", cancellationToken: TestContext.Current.CancellationToken);
+
+        result.Reasoning.ShouldBe("No reasoning provided");
+        result.RiskFactors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task EvaluateAccessAsync_TransportFailure_ReturnsUncertaintyScore()
+    {
+        CompletionReturns(StructuredCompletionStatus.TransportFailure);
+
+        AccessRiskScore result = await CreateDetector().EvaluateAccessAsync(
             "user-789", "Documents.Write", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Score.ShouldBe(0.5);
@@ -89,77 +92,86 @@ public sealed class LlmAccessAnomalyDetectorTests
     }
 
     [Fact]
-    public async Task EvaluateAccessAsync_NullUserId_ThrowsArgumentNullException()
+    public async Task EvaluateAccessAsync_SchemaViolation_ReturnsUncertaintyScore()
     {
-        LlmAccessAnomalyDetector detector = CreateDetector();
+        CompletionReturns(StructuredCompletionStatus.SchemaViolation);
 
-        await Should.ThrowAsync<ArgumentNullException>(
-            () => detector.EvaluateAccessAsync(null!, "Documents.Read",
-                cancellationToken: TestContext.Current.CancellationToken));
-    }
-
-    [Fact]
-    public async Task EvaluateAccessAsync_NullPermission_ThrowsArgumentNullException()
-    {
-        LlmAccessAnomalyDetector detector = CreateDetector();
-
-        await Should.ThrowAsync<ArgumentNullException>(
-            () => detector.EvaluateAccessAsync("user-123", null!,
-                cancellationToken: TestContext.Current.CancellationToken));
-    }
-
-    [Fact]
-    public void ParseResponse_WithMarkdownFences_ParsesCorrectly()
-    {
-        const string response = """
-            ```json
-            { "score": 0.5, "reasoning": "Moderate risk", "riskFactors": ["unusual time"] }
-            ```
-            """;
-
-        AccessRiskScore result = LlmAccessAnomalyDetector.ParseResponse(response);
+        AccessRiskScore result = await CreateDetector().EvaluateAccessAsync(
+            "user-1", "Documents.Read", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Score.ShouldBe(0.5);
-        result.Reasoning.ShouldBe("Moderate risk");
-        result.RiskFactors.Count.ShouldBe(1);
+        result.Reasoning.ShouldContain("unavailable");
     }
 
     [Fact]
-    public void ParseResponse_ScoreOutOfRange_ClampedToValidRange()
+    public async Task EvaluateAccessAsync_FailClosedConfig_ReturnsHighRiskOnUnavailable()
     {
-        const string response = """{ "score": 1.5, "reasoning": "Over max", "riskFactors": [] }""";
+        IOptions<AuthorizationAIOptions> failClosed = Microsoft.Extensions.Options.Options.Create(
+            new AuthorizationAIOptions { WorkspaceName = "default", TimeoutSeconds = 5, UnavailableRiskScore = 1.0 });
+        _structured
+            .CompleteAsync<LlmRiskResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmRiskResponse> { Status = StructuredCompletionStatus.TransportFailure });
 
-        AccessRiskScore result = LlmAccessAnomalyDetector.ParseResponse(response);
+        var detector = new LlmAccessAnomalyDetector(_structured, failClosed, NullLogger<LlmAccessAnomalyDetector>.Instance);
+
+        AccessRiskScore result = await detector.EvaluateAccessAsync(
+            "user-1", "Documents.Read", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Score.ShouldBe(1.0);
     }
 
     [Fact]
-    public void ParseResponse_NullResponse_ReturnsZeroScore()
+    public async Task EvaluateAccessAsync_PseudonymizesUserId_AndPassesPermissionAsContent()
     {
-        AccessRiskScore result = LlmAccessAnomalyDetector.ParseResponse("null");
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<LlmRiskResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmRiskResponse>
+            {
+                Status = StructuredCompletionStatus.Succeeded,
+                Value = new LlmRiskResponse(0.1, "ok", []),
+            });
 
-        result.Score.ShouldBe(0.0);
-        result.Reasoning.ShouldContain("Unable to parse");
+        await CreateDetector().EvaluateAccessAsync("user-1", "Admin.Access", "off-hours login", TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Content.ShouldBe("Admin.Access");
+        captured.Context.ShouldNotBeNull();
+        // User id must be pseudonymized, never raw, before leaving the process.
+        captured.Context.ShouldContain(kv => kv.Key == "User ID" && kv.Value == LlmInputSanitizer.PseudonymizeUserId("user-1"));
+        captured.Context.ShouldNotContain(kv => kv.Value == "user-1");
+        captured.Context.ShouldContain(kv => kv.Key == "Additional context" && kv.Value == "off-hours login");
     }
 
     [Fact]
-    public void BuildPrompt_WithContext_IncludesContext()
+    public async Task EvaluateAccessAsync_WithoutContext_OmitsAdditionalContext()
     {
-        string prompt = LlmAccessAnomalyDetector.BuildPrompt("user-1", "Admin.Access", "off-hours login");
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<LlmRiskResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmRiskResponse>
+            {
+                Status = StructuredCompletionStatus.Succeeded,
+                Value = new LlmRiskResponse(0.1, "ok", []),
+            });
 
-        prompt.ShouldContain("off-hours login");
-        prompt.ShouldContain(LlmInputSanitizer.PseudonymizeUserId("user-1"));
-        prompt.ShouldContain("Admin.Access");
+        await CreateDetector().EvaluateAccessAsync("user-1", "Documents.Read", cancellationToken: TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Context.ShouldNotBeNull();
+        captured.Context.Count.ShouldBe(1);
+        captured.Context.ShouldNotContain(kv => kv.Key == "Additional context");
     }
 
     [Fact]
-    public void BuildPrompt_WithoutContext_OmitsContextPart()
-    {
-        string prompt = LlmAccessAnomalyDetector.BuildPrompt("user-1", "Documents.Read", null);
+    public async Task EvaluateAccessAsync_NullUserId_ThrowsArgumentNullException() =>
+        await Should.ThrowAsync<ArgumentNullException>(
+            () => CreateDetector().EvaluateAccessAsync(null!, "Documents.Read",
+                cancellationToken: TestContext.Current.CancellationToken));
 
-        prompt.ShouldNotContain("Additional context:");
-        prompt.ShouldContain(LlmInputSanitizer.PseudonymizeUserId("user-1"));
-        prompt.ShouldContain("Documents.Read");
-    }
+    [Fact]
+    public async Task EvaluateAccessAsync_NullPermission_ThrowsArgumentNullException() =>
+        await Should.ThrowAsync<ArgumentNullException>(
+            () => CreateDetector().EvaluateAccessAsync("user-123", null!,
+                cancellationToken: TestContext.Current.CancellationToken));
 }
