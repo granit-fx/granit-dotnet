@@ -78,3 +78,6 @@ temp/
 fuzz/**/corpus/
 fuzz/**/findings/
 fuzz/**/crashes/
+
+# Temp audit report (local only)
+AUDIT-microservices-k8s.md
