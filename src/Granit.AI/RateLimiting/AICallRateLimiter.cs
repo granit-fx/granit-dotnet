@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace Granit.AI.Extraction.RateLimiting;
+namespace Granit.AI.RateLimiting;
 
 /// <summary>
 /// In-memory sliding-window <see cref="IAICallRateLimiter"/>. Per-bucket queue of

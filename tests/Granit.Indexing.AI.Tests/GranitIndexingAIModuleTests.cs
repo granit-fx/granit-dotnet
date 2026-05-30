@@ -14,13 +14,13 @@ public sealed class GranitIndexingAIModuleTests
     }
 
     [Fact]
-    public void Module_declares_DependsOn_AIExtraction_and_Indexing()
+    public void Module_declares_DependsOn_AI_and_Indexing()
     {
         var attr = (DependsOnAttribute?)Attribute.GetCustomAttribute(
             typeof(GranitIndexingAIModule), typeof(DependsOnAttribute));
 
         attr.ShouldNotBeNull();
-        attr.DependedTypes.ShouldContain(typeof(Granit.AI.Extraction.GranitAIExtractionModule));
+        attr.DependedTypes.ShouldContain(typeof(Granit.AI.GranitAIModule));
         attr.DependedTypes.ShouldContain(typeof(GranitIndexingModule));
     }
 }

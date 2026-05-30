@@ -1,4 +1,4 @@
-namespace Granit.AI.Extraction.Redaction;
+namespace Granit.AI.Redaction;
 
 /// <summary>
 /// Default <see cref="IAIContentRedactor"/>: identity. Returns content as-is.

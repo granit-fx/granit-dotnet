@@ -1,4 +1,4 @@
-namespace Granit.AI.Extraction.Prompting;
+namespace Granit.AI.Prompting;
 
 /// <summary>
 /// Builds the <c>&lt;untrusted_document&gt;</c> instruction-isolation envelope shared by

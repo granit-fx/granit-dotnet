@@ -1,7 +1,7 @@
-using Granit.AI.Extraction.Sampling;
+using Granit.AI.Sampling;
 using Shouldly;
 
-namespace Granit.AI.Extraction.Tests.Sampling;
+namespace Granit.AI.Tests.Sampling;
 
 public sealed class AIContentSamplerTests
 {

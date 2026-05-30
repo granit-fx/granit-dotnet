@@ -1,4 +1,4 @@
-namespace Granit.AI.Extraction.Redaction;
+namespace Granit.AI.Redaction;
 
 /// <summary>
 /// Seam that wraps free-text content before it is sent to an LLM, redacting or

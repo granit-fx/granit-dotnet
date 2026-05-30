@@ -1,7 +1,7 @@
-using Granit.AI.Extraction.Prompting;
+using Granit.AI.Prompting;
 using Shouldly;
 
-namespace Granit.AI.Extraction.Tests.Prompting;
+namespace Granit.AI.Tests.Prompting;
 
 public sealed class UntrustedDocumentEnvelopeTests
 {

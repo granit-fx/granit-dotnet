@@ -1,4 +1,4 @@
-using Granit.AI.Extraction.Prompting;
+using Granit.AI.Prompting;
 using Microsoft.Extensions.AI;
 
 namespace Granit.LanguageDetection.AI.Prompts;

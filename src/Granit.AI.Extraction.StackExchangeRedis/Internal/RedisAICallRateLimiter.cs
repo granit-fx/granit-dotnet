@@ -1,5 +1,5 @@
-using Granit.AI.Extraction.RateLimiting;
 using Granit.AI.Extraction.StackExchangeRedis.Options;
+using Granit.AI.RateLimiting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;

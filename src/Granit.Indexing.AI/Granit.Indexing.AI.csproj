@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.AI.Extraction\Granit.AI.Extraction.csproj" />
+    <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
     <ProjectReference Include="..\Granit.Indexing\Granit.Indexing.csproj" />
   </ItemGroup>
 

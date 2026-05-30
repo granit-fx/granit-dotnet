@@ -1,8 +1,8 @@
-using Granit.AI.Extraction.RateLimiting;
+using Granit.AI.RateLimiting;
 using Microsoft.Extensions.Time.Testing;
 using Shouldly;
 
-namespace Granit.AI.Extraction.Tests;
+namespace Granit.AI.Tests;
 
 public sealed class AICallRateLimiterTests
 {

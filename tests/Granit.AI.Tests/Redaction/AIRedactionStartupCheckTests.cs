@@ -1,10 +1,10 @@
-using Granit.AI.Extraction.Redaction;
+using Granit.AI.Redaction;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Shouldly;
 
-namespace Granit.AI.Extraction.Tests.Redaction;
+namespace Granit.AI.Tests.Redaction;
 
 public sealed class AIRedactionStartupCheckTests
 {

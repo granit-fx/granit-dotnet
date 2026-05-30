@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.AI.Extraction.StackExchangeRedis</PackageId>
-    <Description>Redis-backed IAICallRateLimiter for Granit.AI.Extraction. Replaces the per-instance in-memory limiter with a distributed sliding-window (Lua, server-side TIME) so the per-tenant LLM call ceiling is enforced once across all replicas — closing the denial-of-wallet gap of the in-process default.</Description>
+    <Description>Redis-backed IAICallRateLimiter for the Granit.AI feature family. Replaces the per-instance in-memory limiter with a distributed sliding-window (Lua, server-side TIME) so the per-tenant LLM call ceiling is enforced once across all replicas — closing the denial-of-wallet gap of the in-process default. (Package rename to Granit.AI.StackExchangeRedis pending — ADR-064.)</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.AI.Extraction\Granit.AI.Extraction.csproj" />
+    <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
   </ItemGroup>
 
 </Project>

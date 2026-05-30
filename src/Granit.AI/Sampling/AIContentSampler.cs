@@ -1,4 +1,4 @@
-namespace Granit.AI.Extraction.Sampling;
+namespace Granit.AI.Sampling;
 
 /// <summary>
 /// Helpers for sampling free-text content before an LLM call.

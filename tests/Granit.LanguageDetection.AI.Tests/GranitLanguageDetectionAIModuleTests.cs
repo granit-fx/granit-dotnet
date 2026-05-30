@@ -14,13 +14,13 @@ public sealed class GranitLanguageDetectionAIModuleTests
     }
 
     [Fact]
-    public void Module_declares_DependsOn_AIExtraction_and_LanguageDetection()
+    public void Module_declares_DependsOn_AI_and_LanguageDetection()
     {
         var attr = (DependsOnAttribute?)Attribute.GetCustomAttribute(
             typeof(GranitLanguageDetectionAIModule), typeof(DependsOnAttribute));
 
         attr.ShouldNotBeNull();
-        attr.DependedTypes.ShouldContain(typeof(Granit.AI.Extraction.GranitAIExtractionModule));
+        attr.DependedTypes.ShouldContain(typeof(Granit.AI.GranitAIModule));
         attr.DependedTypes.ShouldContain(typeof(GranitLanguageDetectionModule));
     }
 }

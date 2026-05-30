@@ -1,4 +1,4 @@
-using Granit.AI.Extraction.Redaction;
+using Granit.AI.Redaction;
 using Granit.LanguageDetection.AI.Extensions;
 using Granit.LanguageDetection.AI.Internal;
 using Granit.LanguageDetection.AI.Options;

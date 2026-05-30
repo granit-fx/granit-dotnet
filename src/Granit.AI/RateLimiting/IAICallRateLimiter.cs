@@ -1,4 +1,4 @@
-namespace Granit.AI.Extraction.RateLimiting;
+namespace Granit.AI.RateLimiting;
 
 /// <summary>
 /// Per-bucket sliding-window cap on outbound LLM calls. Bucket keys are caller-defined

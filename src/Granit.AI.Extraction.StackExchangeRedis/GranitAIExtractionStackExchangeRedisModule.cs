@@ -8,7 +8,7 @@ namespace Granit.AI.Extraction.StackExchangeRedis;
 
 /// <summary>
 /// Granit module that swaps the in-memory <c>IAICallRateLimiter</c> registered by
-/// <c>Granit.AI.Extraction</c> for the distributed <see cref="Internal.RedisAICallRateLimiter"/>,
+/// <c>Granit.AI</c> for the distributed <see cref="Internal.RedisAICallRateLimiter"/>,
 /// so the per-tenant LLM call ceiling is enforced once across every replica.
 /// </summary>
 /// <remarks>
@@ -24,7 +24,7 @@ namespace Granit.AI.Extraction.StackExchangeRedis;
 /// <c>services.AddGranitAIExtractionRedisRateLimiter()</c> explicitly instead.
 /// </para>
 /// </remarks>
-[DependsOn(typeof(GranitAIExtractionModule))]
+[DependsOn(typeof(GranitAIModule))]
 public sealed class GranitAIExtractionStackExchangeRedisModule : GranitModule
 {
     /// <inheritdoc/>

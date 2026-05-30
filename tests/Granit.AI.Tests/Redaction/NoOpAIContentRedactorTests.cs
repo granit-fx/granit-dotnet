@@ -1,7 +1,7 @@
-using Granit.AI.Extraction.Redaction;
+using Granit.AI.Redaction;
 using Shouldly;
 
-namespace Granit.AI.Extraction.Tests;
+namespace Granit.AI.Tests;
 
 public sealed class NoOpAIContentRedactorTests
 {

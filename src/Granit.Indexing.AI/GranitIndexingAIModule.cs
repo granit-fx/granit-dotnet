@@ -1,4 +1,4 @@
-using Granit.AI.Extraction;
+using Granit.AI;
 using Granit.Indexing.AI.Extensions;
 using Granit.Modularity;
 
@@ -8,12 +8,13 @@ namespace Granit.Indexing.AI;
 /// Granit module for the AI-backed summarizer (and future AI auto-tagger).
 /// </summary>
 /// <remarks>
-/// Depends on <see cref="GranitAIExtractionModule"/> (for the rate limiter +
-/// content-redactor seam) and <see cref="GranitIndexingModule"/> (for the
-/// <see cref="ISummarizer"/> contract). Hosts wire in a concrete AI provider package
-/// (<c>Granit.AI.OpenAI</c>, <c>Granit.AI.Anthropic</c>, …) separately.
+/// Depends on <see cref="GranitAIModule"/> (for the shared AI plumbing — rate limiter,
+/// content sampler, content-redactor seam, untrusted-document envelope) and
+/// <see cref="GranitIndexingModule"/> (for the <see cref="ISummarizer"/> contract). Hosts
+/// wire in a concrete AI provider package (<c>Granit.AI.OpenAI</c>, <c>Granit.AI.Anthropic</c>,
+/// …) separately.
 /// </remarks>
-[DependsOn(typeof(GranitAIExtractionModule), typeof(GranitIndexingModule))]
+[DependsOn(typeof(GranitAIModule), typeof(GranitIndexingModule))]
 public sealed class GranitIndexingAIModule : GranitModule
 {
     /// <inheritdoc/>

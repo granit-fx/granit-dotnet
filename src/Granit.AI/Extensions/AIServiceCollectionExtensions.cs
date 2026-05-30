@@ -4,6 +4,8 @@ using Granit.AI.Exports;
 using Granit.AI.Internal;
 using Granit.AI.Options;
 using Granit.AI.Queries;
+using Granit.AI.RateLimiting;
+using Granit.AI.Redaction;
 using Granit.AI.Tenancy;
 using Granit.AI.Workspaces;
 using Granit.Authorization;
@@ -67,6 +69,13 @@ public static class AIServiceCollectionExtensions
             .BindConfiguration(Options.AIQuotaOptions.SectionName);
 
         builder.Services.TryAddSingleton<IAIQuotaGuard, InMemoryAIQuotaGuard>();
+
+        // Shared AI plumbing (ADR-064): framework-wide home for the per-tenant call rate
+        // limiter and the content-redactor seam, so AI-feature packages no longer depend on
+        // Granit.AI.Extraction for them. AIContentSampler is a static helper (no registration).
+        builder.Services.TryAddSingleton(TimeProvider.System);
+        builder.Services.TryAddSingleton<IAICallRateLimiter, AICallRateLimiter>();
+        builder.Services.TryAddSingleton<IAIContentRedactor, NoOpAIContentRedactor>();
 
         // Structured output primitive (ADR-064): the canonical typed-output path.
         builder.Services

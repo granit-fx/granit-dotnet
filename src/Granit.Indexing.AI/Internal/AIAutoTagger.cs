@@ -1,8 +1,8 @@
 using System.Text.Json;
 using Granit.AI;
-using Granit.AI.Extraction.RateLimiting;
-using Granit.AI.Extraction.Redaction;
-using Granit.AI.Extraction.Sampling;
+using Granit.AI.RateLimiting;
+using Granit.AI.Redaction;
+using Granit.AI.Sampling;
 using Granit.Indexing.AI.Diagnostics;
 using Granit.Indexing.AI.Options;
 using Granit.Indexing.AI.Prompts;

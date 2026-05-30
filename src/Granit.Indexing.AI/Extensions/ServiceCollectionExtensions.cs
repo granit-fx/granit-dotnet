@@ -1,4 +1,4 @@
-using Granit.AI.Extraction.Redaction;
+using Granit.AI.Redaction;
 using Granit.Diagnostics;
 using Granit.Indexing.AI.Diagnostics;
 using Granit.Indexing.AI.Internal;

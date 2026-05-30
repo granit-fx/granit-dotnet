@@ -357,14 +357,6 @@
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
         }
       },
-      "granit.ai.extraction": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.AI": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
-        }
-      },
       "granit.authorization": {
         "type": "Project",
         "dependencies": {
@@ -447,7 +439,7 @@
       "granit.languagedetection.ai": {
         "type": "Project",
         "dependencies": {
-          "Granit.AI.Extraction": "[0.1.0-dev, )",
+          "Granit.AI": "[0.1.0-dev, )",
           "Granit.LanguageDetection": "[0.1.0-dev, )"
         }
       },

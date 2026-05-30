@@ -1,7 +1,7 @@
 using System.Diagnostics.Metrics;
 using Granit.AI;
-using Granit.AI.Extraction.RateLimiting;
-using Granit.AI.Extraction.Redaction;
+using Granit.AI.RateLimiting;
+using Granit.AI.Redaction;
 using Granit.LanguageDetection.AI.Diagnostics;
 using Granit.LanguageDetection.AI.Internal;
 using Granit.LanguageDetection.AI.Options;

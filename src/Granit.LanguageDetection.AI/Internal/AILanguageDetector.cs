@@ -1,9 +1,9 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Granit.AI;
-using Granit.AI.Extraction.RateLimiting;
-using Granit.AI.Extraction.Redaction;
-using Granit.AI.Extraction.Sampling;
+using Granit.AI.RateLimiting;
+using Granit.AI.Redaction;
+using Granit.AI.Sampling;
 using Granit.LanguageDetection.AI.Diagnostics;
 using Granit.LanguageDetection.AI.Options;
 using Granit.LanguageDetection.AI.Prompts;

@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.AI.Extraction.Redaction;
+namespace Granit.AI.Redaction;
 
 /// <summary>
 /// Registration helper for the shared <see cref="AIRedactionStartupCheck"/>.

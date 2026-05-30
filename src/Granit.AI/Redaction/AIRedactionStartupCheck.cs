@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.AI.Extraction.Redaction;
+namespace Granit.AI.Redaction;
 
 /// <summary>
 /// Startup probe that warns when an AI feature has PII redaction enabled in its options

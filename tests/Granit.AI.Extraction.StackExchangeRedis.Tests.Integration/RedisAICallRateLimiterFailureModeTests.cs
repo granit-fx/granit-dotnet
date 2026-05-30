@@ -1,6 +1,6 @@
-using Granit.AI.Extraction.RateLimiting;
 using Granit.AI.Extraction.StackExchangeRedis.Extensions;
 using Granit.AI.Extraction.StackExchangeRedis.Options;
+using Granit.AI.RateLimiting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
