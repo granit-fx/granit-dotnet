@@ -1,15 +1,13 @@
-using System.Text.Json;
 using Granit.AI;
-using Granit.AI.Internal;
 using Granit.BlobStorage.AI.Options;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.BlobStorage.AI.Internal;
 
 /// <summary>
-/// LLM-based blob classifier that also participates in the <see cref="IBlobValidator"/> pipeline.
+/// LLM-based blob classifier that also participates in the <see cref="IBlobValidator"/> pipeline,
+/// built on the <see cref="IStructuredCompletion"/> primitive (ADR-064).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -21,10 +19,13 @@ namespace Granit.BlobStorage.AI.Internal;
 /// <para>
 /// As <see cref="IAIBlobClassifier"/>: provides classification on demand outside the pipeline.
 /// </para>
+/// <para>
+/// Classification is fail-soft: any unavailable / unusable AI response yields
+/// <see cref="UnknownClassification"/>. The quota guard is applied by the primitive.
+/// </para>
 /// </remarks>
 internal sealed partial class AIBlobClassifierService(
-    IAIChatClientFactory chatClientFactory,
-    IAIQuotaGuard quotaGuard,
+    IStructuredCompletion structuredCompletion,
     IOptions<BlobStorageAIOptions> options,
     ILogger<AIBlobClassifierService> logger) : IAIBlobClassifier, IBlobValidator
 {
@@ -33,11 +34,6 @@ internal sealed partial class AIBlobClassifierService(
         Confidence: 0.0,
         DetectedTags: [],
         ContainsPiiInFileName: false);
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-    };
 
     /// <inheritdoc/>
     public int Order => 100;
@@ -53,46 +49,40 @@ internal sealed partial class AIBlobClassifierService(
 
         BlobStorageAIOptions config = options.Value;
 
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(config.TimeoutSeconds));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+
+        var request = new StructuredCompletionRequest
+        {
+            Instruction = ClassificationInstruction,
+            Content = fileName,
+            ContentLabel = "Filename",
+            Context = [new("Content type", contentType)],
+            WorkspaceName = config.WorkspaceName,
+        };
+
         try
         {
-            AIQuotaResult quota = await quotaGuard.CheckAsync(cancellationToken).ConfigureAwait(false);
-            if (!quota.IsAllowed)
+            StructuredCompletionResult<ClassificationJson> result = await structuredCompletion
+                .CompleteAsync<ClassificationJson>(request, linkedCts.Token)
+                .ConfigureAwait(false);
+
+            if (result.Status != StructuredCompletionStatus.Succeeded)
             {
-                LogQuotaExceeded(logger, fileName, quota.Reason ?? "quota exceeded");
+                LogClassificationUnavailable(logger, fileName, result.Status.ToString());
                 return UnknownClassification;
             }
 
-            // CreateAsync builds a fresh client per call (no cache) — dispose
-            // deterministically so the HttpMessageHandler doesn't linger until GC.
-            using IChatClient chatClient = await chatClientFactory
-                .CreateAsync(config.WorkspaceName, cancellationToken)
-                .ConfigureAwait(false);
-
-            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(config.TimeoutSeconds));
-            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
-                cancellationToken, timeoutCts.Token);
-
-            string prompt = BuildClassificationPrompt(fileName, contentType);
-
-            ChatResponse response = await chatClient.GetResponseAsync(
-                prompt, cancellationToken: linkedCts.Token).ConfigureAwait(false);
-
-            string responseText = response.Text ?? string.Empty;
-
-            return ParseClassificationResponse(responseText);
+            ClassificationJson parsed = result.Value!;
+            return new BlobClassification(
+                Category: parsed.Category ?? "unknown",
+                Confidence: Math.Clamp(parsed.Confidence, 0.0, 1.0),
+                DetectedTags: parsed.Tags ?? [],
+                ContainsPiiInFileName: parsed.ContainsPiiInFileName);
         }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
             LogClassificationTimeout(logger, fileName, config.TimeoutSeconds);
-            return UnknownClassification;
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            LogClassificationFailure(logger, fileName, ex);
             return UnknownClassification;
         }
     }
@@ -120,64 +110,26 @@ internal sealed partial class AIBlobClassifierService(
         return BlobValidationResult.Success();
     }
 
-    internal static string BuildClassificationPrompt(string fileName, string contentType)
-    {
-        var pb = new PromptBuilder(maxInputLength: 1_000);
+    internal const string ClassificationInstruction =
+        """
+        Classify the file described by the supplied metadata. Choose a category from:
+        invoice, identity_document, photo, contract, report, spreadsheet, presentation, archive, code, other.
+        Provide a confidence between 0.0 and 1.0 and any descriptive tags. For containsPiiInFileName,
+        report true when the filename contains patterns resembling social security numbers, email
+        addresses, phone numbers, national ID numbers, or full personal names.
+        """;
 
-        pb.AppendInstruction("""
-            Classify this file based on the metadata below.
-            Return JSON only, no markdown fences: {"category": "<string>", "confidence": <0.0-1.0>, "tags": ["<string>"], "containsPiiInFileName": <true|false>}
-            Categories: invoice, identity_document, photo, contract, report, spreadsheet, presentation, archive, code, other.
-            For PII detection, check if the filename contains patterns resembling: social security numbers, email addresses, phone numbers, national ID numbers, or full personal names.
-            """);
-
-        pb.AppendUserData("Filename", fileName);
-        pb.AppendUserData("Content type", contentType);
-
-        return pb.Build();
-    }
-
-    internal static BlobClassification ParseClassificationResponse(string responseText)
-    {
-        string trimmed = LlmResponseHelper.StripMarkdownCodeFences(responseText);
-
-        try
-        {
-            ClassificationJson? parsed = JsonSerializer.Deserialize<ClassificationJson>(trimmed, JsonOptions);
-
-            if (parsed is null)
-            {
-                return UnknownClassification;
-            }
-
-            return new BlobClassification(
-                Category: parsed.Category ?? "unknown",
-                Confidence: Math.Clamp(parsed.Confidence, 0.0, 1.0),
-                DetectedTags: parsed.Tags ?? [],
-                ContainsPiiInFileName: parsed.ContainsPiiInFileName);
-        }
-        catch (JsonException)
-        {
-            return UnknownClassification;
-        }
-    }
-
-    [LoggerMessage(Level = LogLevel.Warning, Message = "AI blob classification skipped for '{FileName}': {Reason}")]
-    private static partial void LogQuotaExceeded(ILogger logger, string fileName, string reason);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "AI blob classification unavailable ({Status}) for file '{FileName}' — treated as unknown")]
+    private static partial void LogClassificationUnavailable(ILogger logger, string fileName, string status);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI blob classification timed out after {TimeoutSeconds}s for file '{FileName}'")]
     private static partial void LogClassificationTimeout(ILogger logger, string fileName, int timeoutSeconds);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "AI blob classification failed for file '{FileName}'")]
-    private static partial void LogClassificationFailure(ILogger logger, string fileName, Exception exception);
-
     [LoggerMessage(Level = LogLevel.Warning, Message = "PII detected in filename '{FileName}' — upload rejected")]
     private static partial void LogPiiDetected(ILogger logger, string fileName);
 
-    /// <summary>
-    /// Internal DTO for deserializing the LLM JSON response.
-    /// </summary>
-    private sealed record ClassificationJson(
+    /// <summary>Internal DTO for deserializing the LLM JSON response.</summary>
+    internal sealed record ClassificationJson(
         string? Category,
         double Confidence,
         List<string>? Tags,

@@ -2,15 +2,12 @@ using Granit.AI;
 using Granit.BlobStorage.AI.Internal;
 using Granit.BlobStorage.AI.Options;
 using Granit.BlobStorage.Domain;
-using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
-
+using ClassificationJson = Granit.BlobStorage.AI.Internal.AIBlobClassifierService.ClassificationJson;
 using MsOptions = Microsoft.Extensions.Options.Options;
 
 namespace Granit.BlobStorage.AI.Tests;
@@ -20,80 +17,56 @@ public sealed class AIBlobClassifierServiceTests
     private static readonly DateTimeOffset Now = new(2026, 3, 16, 12, 0, 0, TimeSpan.Zero);
     private static readonly Guid TestTenantId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
 
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
-    private readonly IAIQuotaGuard _quotaGuard = Substitute.For<IAIQuotaGuard>();
+    private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
     private readonly IOptions<BlobStorageAIOptions> _options = MsOptions.Create(new BlobStorageAIOptions());
-    private readonly ILogger<AIBlobClassifierService> _logger = NullLogger<AIBlobClassifierService>.Instance;
 
-    public AIBlobClassifierServiceTests()
-    {
-        _chatClientFactory
-            .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(_chatClient);
+    private AIBlobClassifierService CreateSut(IOptions<BlobStorageAIOptions>? opts = null) =>
+        new(_structured, opts ?? _options, NullLogger<AIBlobClassifierService>.Instance);
 
-        _quotaGuard.CheckAsync(Arg.Any<CancellationToken>()).Returns(AIQuotaResult.Allowed);
-    }
+    private void Succeeds(ClassificationJson value) =>
+        _structured
+            .CompleteAsync<ClassificationJson>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<ClassificationJson> { Status = StructuredCompletionStatus.Succeeded, Value = value });
 
-    private AIBlobClassifierService CreateSut() => new(_chatClientFactory, _quotaGuard, _options, _logger);
-
-    private static BlobDescriptor MakeDescriptor(string fileName, string contentType) =>
-        BlobDescriptor.Create(
-            id: Guid.NewGuid(),
-            tenantId: TestTenantId,
-            containerName: "uploads",
-            objectKey: $"{TestTenantId}/uploads/2026/03/some-id",
-            request: new BlobUploadRequest(fileName, contentType, 10_000_000L),
-            createdAt: Now);
+    private void Fails(StructuredCompletionStatus status) =>
+        _structured
+            .CompleteAsync<ClassificationJson>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<ClassificationJson> { Status = status });
 
     private static BlobValidationContext MakeContext(string fileName, string contentType) =>
         new()
         {
-            Descriptor = MakeDescriptor(fileName, contentType),
+            Descriptor = BlobDescriptor.Create(
+                id: Guid.NewGuid(),
+                tenantId: TestTenantId,
+                containerName: "uploads",
+                objectKey: $"{TestTenantId}/uploads/2026/03/some-id",
+                request: new BlobUploadRequest(fileName, contentType, 10_000_000L),
+                createdAt: Now),
             ActualSizeBytes = 1024,
-            OpenPartialStreamAsync = (_, _) =>
-                Task.FromResult<Stream>(new MemoryStream(Array.Empty<byte>())),
+            OpenPartialStreamAsync = (_, _) => Task.FromResult<Stream>(new MemoryStream([])),
         };
 
     [Fact]
     public async Task ClassifyAsync_ValidResponse_ReturnsClassification()
     {
-        AIBlobClassifierService sut = CreateSut();
-        string json = """{"category": "invoice", "confidence": 0.95, "tags": ["financial", "document"], "containsPiiInFileName": false}""";
+        Succeeds(new ClassificationJson("invoice", 0.95, ["financial", "document"], false));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(
-                [new ChatMessage(ChatRole.Assistant, json)]));
-
-        BlobClassification result = await sut.ClassifyAsync(
+        BlobClassification result = await CreateSut().ClassifyAsync(
             "invoice-2026-03.pdf", "application/pdf", TestContext.Current.CancellationToken);
 
         result.Category.ShouldBe("invoice");
         result.Confidence.ShouldBe(0.95);
         result.DetectedTags.ShouldContain("financial");
-        result.DetectedTags.ShouldContain("document");
         result.ContainsPiiInFileName.ShouldBeFalse();
     }
 
     [Fact]
     public async Task ClassifyAsync_DetectsPiiInFileName()
     {
-        AIBlobClassifierService sut = CreateSut();
-        string json = """{"category": "identity_document", "confidence": 0.88, "tags": ["personal"], "containsPiiInFileName": true}""";
+        Succeeds(new ClassificationJson("identity_document", 0.88, ["personal"], true));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(
-                [new ChatMessage(ChatRole.Assistant, json)]));
-
-        BlobClassification result = await sut.ClassifyAsync(
+        BlobClassification result = await CreateSut().ClassifyAsync(
             "john-doe-ssn-123456789.pdf", "application/pdf", TestContext.Current.CancellationToken);
 
         result.ContainsPiiInFileName.ShouldBeTrue();
@@ -101,18 +74,34 @@ public sealed class AIBlobClassifierServiceTests
     }
 
     [Fact]
-    public async Task ClassifyAsync_LLMFailure_ReturnsUnknown()
+    public async Task ClassifyAsync_ClampsConfidenceAbove1()
     {
-        AIBlobClassifierService sut = CreateSut();
+        Succeeds(new ClassificationJson("photo", 1.5, [], false));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("LLM unavailable"));
+        BlobClassification result = await CreateSut().ClassifyAsync(
+            "p.jpg", "image/jpeg", TestContext.Current.CancellationToken);
 
-        BlobClassification result = await sut.ClassifyAsync(
+        result.Confidence.ShouldBe(1.0);
+    }
+
+    [Fact]
+    public async Task ClassifyAsync_NullCategoryAndTags_DefaultsApplied()
+    {
+        Succeeds(new ClassificationJson(null, 0.5, null, false));
+
+        BlobClassification result = await CreateSut().ClassifyAsync(
+            "x.bin", "application/octet-stream", TestContext.Current.CancellationToken);
+
+        result.Category.ShouldBe("unknown");
+        result.DetectedTags.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task ClassifyAsync_Unavailable_ReturnsUnknown()
+    {
+        Fails(StructuredCompletionStatus.TransportFailure);
+
+        BlobClassification result = await CreateSut().ClassifyAsync(
             "report.pdf", "application/pdf", TestContext.Current.CancellationToken);
 
         result.Category.ShouldBe("unknown");
@@ -122,23 +111,43 @@ public sealed class AIBlobClassifierServiceTests
     }
 
     [Fact]
+    public async Task ClassifyAsync_SchemaViolation_ReturnsUnknown()
+    {
+        Fails(StructuredCompletionStatus.SchemaViolation);
+
+        BlobClassification result = await CreateSut().ClassifyAsync(
+            "report.pdf", "application/pdf", TestContext.Current.CancellationToken);
+
+        result.Category.ShouldBe("unknown");
+    }
+
+    [Fact]
+    public async Task ClassifyAsync_PassesFileNameAsContentAndContentTypeAsContext()
+    {
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<ClassificationJson>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<ClassificationJson>
+            {
+                Status = StructuredCompletionStatus.Succeeded,
+                Value = new ClassificationJson("other", 0.1, [], false),
+            });
+
+        await CreateSut().ClassifyAsync("test.pdf", "application/pdf", TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Content.ShouldBe("test.pdf");
+        captured.Context.ShouldNotBeNull();
+        captured.Context.ShouldContain(kv => kv.Key == "Content type" && kv.Value == "application/pdf");
+    }
+
+    [Fact]
     public async Task ValidateAsync_ReturnsValidResult()
     {
-        AIBlobClassifierService sut = CreateSut();
-        string json = """{"category": "photo", "confidence": 0.92, "tags": ["image"], "containsPiiInFileName": false}""";
+        Succeeds(new ClassificationJson("photo", 0.92, ["image"], false));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(
-                [new ChatMessage(ChatRole.Assistant, json)]));
-
-        BlobValidationContext context = MakeContext("vacation-photo.jpg", "image/jpeg");
-
-        BlobValidationResult result = await sut.ValidateAsync(
-            context, TestContext.Current.CancellationToken);
+        BlobValidationResult result = await CreateSut().ValidateAsync(
+            MakeContext("vacation-photo.jpg", "image/jpeg"), TestContext.Current.CancellationToken);
 
         result.IsValid.ShouldBeTrue();
     }
@@ -146,21 +155,10 @@ public sealed class AIBlobClassifierServiceTests
     [Fact]
     public async Task ValidateAsync_PiiDetected_ReturnsFailure()
     {
-        AIBlobClassifierService sut = CreateSut();
-        string json = """{"category": "identity_document", "confidence": 0.9, "tags": ["personal"], "containsPiiInFileName": true}""";
+        Succeeds(new ClassificationJson("identity_document", 0.9, ["personal"], true));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(
-                [new ChatMessage(ChatRole.Assistant, json)]));
-
-        BlobValidationContext context = MakeContext("john-doe-ssn-123456789.pdf", "application/pdf");
-
-        BlobValidationResult result = await sut.ValidateAsync(
-            context, TestContext.Current.CancellationToken);
+        BlobValidationResult result = await CreateSut().ValidateAsync(
+            MakeContext("john-doe-ssn-123456789.pdf", "application/pdf"), TestContext.Current.CancellationToken);
 
         result.IsValid.ShouldBeFalse();
         result.FailureReason.ShouldNotBeNull();
@@ -170,83 +168,14 @@ public sealed class AIBlobClassifierServiceTests
     [Fact]
     public async Task ValidateAsync_PiiDetected_ButDisabled_ReturnsValid()
     {
-        IOptions<BlobStorageAIOptions> disabledPiiOptions = MsOptions.Create(
-            new BlobStorageAIOptions { EnablePiiDetection = false });
-        var sut = new AIBlobClassifierService(_chatClientFactory, _quotaGuard, disabledPiiOptions, _logger);
+        Succeeds(new ClassificationJson("identity_document", 0.9, ["personal"], true));
 
-        string json = """{"category": "identity_document", "confidence": 0.9, "tags": ["personal"], "containsPiiInFileName": true}""";
-
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(
-                [new ChatMessage(ChatRole.Assistant, json)]));
-
-        BlobValidationContext context = MakeContext("john-doe-ssn-123456789.pdf", "application/pdf");
-
-        BlobValidationResult result = await sut.ValidateAsync(
-            context, TestContext.Current.CancellationToken);
+        BlobValidationResult result = await CreateSut(MsOptions.Create(new BlobStorageAIOptions { EnablePiiDetection = false }))
+            .ValidateAsync(MakeContext("john-doe-ssn-123456789.pdf", "application/pdf"), TestContext.Current.CancellationToken);
 
         result.IsValid.ShouldBeTrue();
     }
 
     [Fact]
-    public void Order_Is100() =>
-        CreateSut().Order.ShouldBe(100);
-
-    [Fact]
-    public void ParseClassificationResponse_ValidJson_ReturnsClassification()
-    {
-        string json = """{"category": "contract", "confidence": 0.85, "tags": ["legal"], "containsPiiInFileName": false}""";
-
-        BlobClassification result = AIBlobClassifierService.ParseClassificationResponse(json);
-
-        result.Category.ShouldBe("contract");
-        result.Confidence.ShouldBe(0.85);
-        result.DetectedTags.ShouldContain("legal");
-    }
-
-    [Fact]
-    public void ParseClassificationResponse_MarkdownFencedJson_ReturnsClassification()
-    {
-        string json = """
-            ```json
-            {"category": "invoice", "confidence": 0.9, "tags": [], "containsPiiInFileName": false}
-            ```
-            """;
-
-        BlobClassification result = AIBlobClassifierService.ParseClassificationResponse(json);
-
-        result.Category.ShouldBe("invoice");
-    }
-
-    [Fact]
-    public void ParseClassificationResponse_InvalidJson_ReturnsUnknown()
-    {
-        BlobClassification result = AIBlobClassifierService.ParseClassificationResponse("not valid json");
-
-        result.Category.ShouldBe("unknown");
-        result.Confidence.ShouldBe(0.0);
-    }
-
-    [Fact]
-    public void ParseClassificationResponse_ClampsConfidenceAbove1()
-    {
-        string json = """{"category": "photo", "confidence": 1.5, "tags": [], "containsPiiInFileName": false}""";
-
-        BlobClassification result = AIBlobClassifierService.ParseClassificationResponse(json);
-
-        result.Confidence.ShouldBe(1.0);
-    }
-
-    [Fact]
-    public void BuildClassificationPrompt_ContainsFileNameAndContentType()
-    {
-        string prompt = AIBlobClassifierService.BuildClassificationPrompt("test.pdf", "application/pdf");
-
-        prompt.ShouldContain("test.pdf");
-        prompt.ShouldContain("application/pdf");
-    }
+    public void Order_Is100() => CreateSut().Order.ShouldBe(100);
 }
