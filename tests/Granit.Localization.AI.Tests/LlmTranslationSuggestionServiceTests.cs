@@ -1,19 +1,17 @@
 using Granit.AI;
 using Granit.Localization.AI.Internal;
 using Granit.Localization.AI.Options;
-using Microsoft.Extensions.AI;
+using Granit.Localization.AI.Schema;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
 
 namespace Granit.Localization.AI.Tests;
 
 public sealed class LlmTranslationSuggestionServiceTests
 {
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
+    private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
     private readonly IOptions<LocalizationAIOptions> _options = Microsoft.Extensions.Options.Options.Create(new LocalizationAIOptions
     {
         WorkspaceName = "test",
@@ -22,43 +20,36 @@ public sealed class LlmTranslationSuggestionServiceTests
 
     private readonly LlmTranslationSuggestionService _sut;
 
-    public LlmTranslationSuggestionServiceTests()
-    {
-        _chatClientFactory
-            .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(_chatClient);
-
+    public LlmTranslationSuggestionServiceTests() =>
         _sut = new LlmTranslationSuggestionService(
-            _chatClientFactory,
+            _structured,
             _options,
             NullLogger<LlmTranslationSuggestionService>.Instance);
-    }
+
+    private static StructuredCompletionResult<TranslationsResponse> Ok(params (string Culture, string Value)[] items) =>
+        new()
+        {
+            Status = StructuredCompletionStatus.Succeeded,
+            Value = new TranslationsResponse
+            {
+                Translations = [.. items.Select(i => new TranslationItem { Culture = i.Culture, Value = i.Value })],
+            },
+        };
+
+    private void Respond(StructuredCompletionResult<TranslationsResponse> result) =>
+        _structured
+            .CompleteAsync<TranslationsResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(result);
 
     [Fact]
-    public async Task SuggestTranslationsAsync_ValidResponse_ReturnsSuggestions()
+    public async Task SuggestTranslationsAsync_well_formed_response_returns_one_suggestion_per_culture()
     {
-        // Arrange
-        const string jsonResponse = """{"fr": "Soumettre", "de": "Absenden", "es": "Enviar"}""";
+        Respond(Ok(("fr", "Soumettre"), ("de", "Absenden"), ("es", "Enviar")));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse)));
-
-        string[] targetCultures = ["fr", "de", "es"];
-
-        // Act
         IReadOnlyList<TranslationSuggestion> result = await _sut.SuggestTranslationsAsync(
-            "Login:SubmitButton",
-            "Submit",
-            "en",
-            targetCultures,
-            TranslationContext.UiLabel,
-            TestContext.Current.CancellationToken);
+            "Login:SubmitButton", "Submit", "en", ["fr", "de", "es"],
+            TranslationContext.UiLabel, TestContext.Current.CancellationToken);
 
-        // Assert
         result.Count.ShouldBe(3);
         result.ShouldContain(s => s.Culture == "fr" && s.Value == "Soumettre");
         result.ShouldContain(s => s.Culture == "de" && s.Value == "Absenden");
@@ -66,144 +57,108 @@ public sealed class LlmTranslationSuggestionServiceTests
     }
 
     [Fact]
-    public async Task SuggestTranslationsAsync_LLMFailure_ReturnsEmptyList()
+    public async Task SuggestTranslationsAsync_routes_source_text_as_content_and_target_cultures_as_instruction()
     {
-        // Arrange
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("Provider unavailable"));
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<TranslationsResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(Ok(("fr", "Soumettre")));
 
-        string[] targetCultures = ["fr", "de"];
+        await _sut.SuggestTranslationsAsync(
+            "Login:SubmitButton", "Submit", "en", ["fr"],
+            TranslationContext.UiLabel, TestContext.Current.CancellationToken);
 
-        // Act
-        IReadOnlyList<TranslationSuggestion> result = await _sut.SuggestTranslationsAsync(
-            "Error:NotFound",
-            "Not found",
-            "en",
-            targetCultures,
-            TranslationContext.ErrorMessage,
-            TestContext.Current.CancellationToken);
-
-        // Assert
-        result.ShouldBeEmpty();
+        captured.ShouldNotBeNull();
+        // Untrusted source value flows through the sanitized Content channel...
+        captured.Content.ShouldBe("Submit");
+        // ...while the developer-controlled instruction names the requested cultures.
+        captured.Instruction!.ShouldContain("fr");
+        captured.WorkspaceName.ShouldBe("test");
+        // Key and source culture are carried as labelled context, not folded into Content.
+        captured.Context.ShouldNotBeNull();
+        captured.Context.ShouldContain(kv => kv.Value == "en");
+        captured.Context.ShouldContain(kv => kv.Value == "Login:SubmitButton");
     }
 
     [Fact]
-    public async Task SuggestTranslationsAsync_PreservesPlaceholders()
+    public async Task SuggestTranslationsAsync_preserves_placeholders_in_returned_value()
     {
-        // Arrange
-        const string jsonResponse = """{"fr": "Bonjour {0}, vous avez {1} messages"}""";
+        Respond(Ok(("fr", "Bonjour {0}, vous avez {1} messages")));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse)));
-
-        string[] targetCultures = ["fr"];
-
-        // Act
         IReadOnlyList<TranslationSuggestion> result = await _sut.SuggestTranslationsAsync(
-            "Greeting:Welcome",
-            "Hello {0}, you have {1} messages",
-            "en",
-            targetCultures,
-            TranslationContext.Notification,
-            TestContext.Current.CancellationToken);
+            "Greeting:Welcome", "Hello {0}, you have {1} messages", "en", ["fr"],
+            TranslationContext.Notification, TestContext.Current.CancellationToken);
 
-        // Assert
         result.Count.ShouldBe(1);
         result[0].Value.ShouldContain("{0}");
         result[0].Value.ShouldContain("{1}");
     }
 
     [Fact]
-    public async Task SuggestTranslationsAsync_EmptyTargetCultures_ReturnsEmptyList()
+    public async Task SuggestTranslationsAsync_empty_target_cultures_returns_empty_without_calling_the_model()
     {
-        // Arrange
-        string[] targetCultures = [];
-
-        // Act
         IReadOnlyList<TranslationSuggestion> result = await _sut.SuggestTranslationsAsync(
-            "Some:Key",
-            "Some value",
-            "en",
-            targetCultures,
-            TranslationContext.UiLabel,
-            TestContext.Current.CancellationToken);
+            "Some:Key", "Some value", "en", [],
+            TranslationContext.UiLabel, TestContext.Current.CancellationToken);
 
-        // Assert
         result.ShouldBeEmpty();
-
-        // Verify no LLM call was made
-        await _chatClient
-            .DidNotReceive()
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>());
+        await _structured
+            .DidNotReceiveWithAnyArgs()
+            .CompleteAsync<TranslationsResponse>(default!, TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public async Task SuggestTranslationsAsync_InvalidJson_ReturnsEmptyList()
+    public async Task SuggestTranslationsAsync_drops_cultures_outside_the_requested_set()
     {
-        // Arrange
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, "not valid json at all")));
+        // Model echoes an extra culture nobody asked for — server-side intersection discards it.
+        Respond(Ok(("fr", "Soumettre"), ("zz", "injected")));
 
-        string[] targetCultures = ["fr"];
-
-        // Act
         IReadOnlyList<TranslationSuggestion> result = await _sut.SuggestTranslationsAsync(
-            "Some:Key",
-            "Some value",
-            "en",
-            targetCultures,
+            "Action:Submit", "Submit", "en", ["fr"],
             cancellationToken: TestContext.Current.CancellationToken);
 
-        // Assert
-        result.ShouldBeEmpty();
+        result.Count.ShouldBe(1);
+        result[0].Culture.ShouldBe("fr");
     }
 
     [Fact]
-    public async Task SuggestTranslationsAsync_MarkdownCodeFences_StripsAndParses()
+    public async Task SuggestTranslationsAsync_re_keys_returned_culture_to_the_requested_casing()
     {
-        // Arrange
-        const string jsonWithFences = """
-            ```json
-            {"nl": "Verzenden"}
-            ```
-            """;
+        Respond(Ok(("FR", "Soumettre")));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonWithFences)));
-
-        string[] targetCultures = ["nl"];
-
-        // Act
         IReadOnlyList<TranslationSuggestion> result = await _sut.SuggestTranslationsAsync(
-            "Action:Send",
-            "Send",
-            "en",
-            targetCultures,
-            TranslationContext.UiLabel,
-            TestContext.Current.CancellationToken);
+            "Action:Submit", "Submit", "en", ["fr"],
+            cancellationToken: TestContext.Current.CancellationToken);
 
-        // Assert
         result.Count.ShouldBe(1);
-        result[0].Culture.ShouldBe("nl");
-        result[0].Value.ShouldBe("Verzenden");
+        result[0].Culture.ShouldBe("fr");
+    }
+
+    [Fact]
+    public async Task SuggestTranslationsAsync_deduplicates_repeated_culture_entries()
+    {
+        Respond(Ok(("fr", "Soumettre"), ("fr", "Envoyer")));
+
+        IReadOnlyList<TranslationSuggestion> result = await _sut.SuggestTranslationsAsync(
+            "Action:Submit", "Submit", "en", ["fr"],
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        result.Count.ShouldBe(1);
+        result[0].Value.ShouldBe("Soumettre");
+    }
+
+    [Theory]
+    [InlineData(StructuredCompletionStatus.ModelRefused)]
+    [InlineData(StructuredCompletionStatus.SchemaViolation)]
+    [InlineData(StructuredCompletionStatus.TransportFailure)]
+    public async Task SuggestTranslationsAsync_non_success_status_returns_empty_list(StructuredCompletionStatus status)
+    {
+        Respond(new StructuredCompletionResult<TranslationsResponse> { Status = status });
+
+        IReadOnlyList<TranslationSuggestion> result = await _sut.SuggestTranslationsAsync(
+            "Some:Key", "Some value", "en", ["fr"],
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        result.ShouldBeEmpty();
     }
 }

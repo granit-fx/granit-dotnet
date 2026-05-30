@@ -28455,6 +28455,44 @@
       ]
     },
     {
+      "name": "TranslationItem",
+      "fqn": "Granit.Localization.AI.Schema.TranslationItem",
+      "kind": "class",
+      "project": "Granit.Localization.AI",
+      "file": "src/Granit.Localization.AI/Schema/TranslationsResponse.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "Culture",
+          "kind": "property",
+          "signature": "string Culture",
+          "returnType": "string"
+        },
+        {
+          "name": "Value",
+          "kind": "property",
+          "signature": "string Value",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "TranslationsResponse",
+      "fqn": "Granit.Localization.AI.Schema.TranslationsResponse",
+      "kind": "class",
+      "project": "Granit.Localization.AI",
+      "file": "src/Granit.Localization.AI/Schema/TranslationsResponse.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Translations",
+          "kind": "property",
+          "signature": "List<TranslationItem> Translations",
+          "returnType": "List<TranslationItem>"
+        }
+      ]
+    },
+    {
       "name": "TranslationContext",
       "fqn": "Granit.Localization.AI.TranslationContext",
       "kind": "enum",

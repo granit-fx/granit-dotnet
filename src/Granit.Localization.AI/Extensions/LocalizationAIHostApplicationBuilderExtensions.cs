@@ -27,7 +27,9 @@ public static class LocalizationAIHostApplicationBuilderExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        builder.Services.TryAddSingleton<ITranslationSuggestionService, LlmTranslationSuggestionService>();
+        // Scoped, not singleton: the service depends on the scoped IStructuredCompletion
+        // primitive (ADR-064), so a singleton here would capture a stale scope.
+        builder.Services.TryAddScoped<ITranslationSuggestionService, LlmTranslationSuggestionService>();
 
         return builder;
     }
