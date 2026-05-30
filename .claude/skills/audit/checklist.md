@@ -1174,6 +1174,301 @@ Ref: `CLAUDE.md §Documentation site`
 
 ---
 
+## 15. Microservices & Kubernetes compatibility (`--scope microservices`)
+
+A Granit module is a library, but it is consumed by services that run as **multiple
+replicas in a Kubernetes cluster**, behind an ingress, with secrets from Vault and
+config from the environment. This category is a **deep, cross-cutting analysis** of
+whether a module behaves correctly when (a) more than one instance runs at once,
+(b) any instance can be killed (SIGTERM) at any moment, (c) external dependencies
+(DB, bus, blob store, other services) are reachable only over the network, and
+(d) nothing may be assumed about the local filesystem or host.
+
+> This is the most analytical scope. Do not stop at "the checkbox is checked" —
+> reason about runtime behavior under N replicas and pod churn. Flag the _concrete
+> failure scenario_ (e.g. "recurring job fires on every replica → N× duplicate
+> emails"), not just the missing pattern. Read git history before flagging — many
+> single-instance shortcuts are deliberate for a reason documented in a prior fix.
+
+### 15a. Statelessness & horizontal scalability
+
+The cardinal rule: **any instance must be able to serve any request, and N
+instances must produce the same result as 1.**
+
+- [ ] No mutable `static` / singleton field that accumulates per-request or
+  per-tenant state (in-memory counters, dictionaries, queues used as work buffers)
+- [ ] No in-process-only cache treated as a source of truth — `IMemoryCache` is a
+  per-pod optimization only; cross-replica consistency needs FusionCache **with a
+  backplane** (Redis) or a distributed cache
+- [ ] No `AsyncLocal`/`ThreadLocal` state that can leak across pooled threads
+  between requests — explicitly verify `ICurrentTenant` resolution does not bleed
+  across replicas/requests (known leak: see [[project_current_tenant_asynclocal_leak]],
+  repro `MultiTenantFilterParameterizationReproTests`)
+- [ ] No in-memory session / sticky-session assumption — auth/BFF state must be in
+  a shared store (distributed cache / signed cookie), not pod memory
+- [ ] No reliance on a process-wide lock (`lock`, `SemaphoreSlim`) to serialize
+  work that must be serialized **cluster-wide** — needs a distributed lock
+- [ ] Singletons holding a connection/channel (bus, DB, blob client) are
+  replica-safe and reconnect after a network blip
+
+**How to detect:** `grep` for `static .*(Dictionary|List|Queue|HashSet|=\s*new)`
+in non-test code; `MCP detect_antipatterns`; inspect `IMemoryCache` usages and ask
+"what breaks if replica B doesn't have this entry?".
+
+### 15b. Background jobs, schedulers & singleton work (CRITICAL)
+
+The most common multi-replica bug: work that must run **once** runs **per replica**.
+
+- [ ] Recurring jobs (`[RecurringJob]` / `IBackgroundJob`) rely on the distributed
+  scheduler so a cron fires **once cluster-wide**, not once per pod — never an
+  in-process `Timer`/`PeriodicTimer`/`BackgroundService` loop for scheduled work
+- [ ] Any "run on startup / on leader only" work uses leader election or a
+  distributed lock, not "every replica does it"
+- [ ] Job handlers are **idempotent** — safe if the scheduler double-fires after a
+  pod restart (at-least-once)
+- [ ] Long-running jobs honor `CancellationToken` so they abort on SIGTERM
+
+**Failure scenario to write up:** "3 replicas × `privacy-purge` cron ⇒ purge runs
+3× concurrently ⇒ race / triple audit entries." Severity ARCHITECTURE.
+
+### 15c. Inter-module communication: contracts, messaging, idempotency
+
+In a modular monolith a direct method call into another module's class is the
+tempting shortcut — but it is exactly the strong coupling + in-process latency that
+**blocks** a module from ever becoming a standalone service. Audit the boundary as
+if the call already crossed the network.
+
+**Strict contracts — never expose internal domain classes across a module boundary:**
+
+- [ ] A module is consumed only through its **`Granit.{Module}.Abstractions`
+  contracts** (interfaces, `*Request`/`*Response`, `*Eto`/`*Event` records) — never
+  by referencing its `Granit.{Module}` domain/EF entities, `AggregateRoot`s, or
+  `internal` services from another module
+- [ ] EF entities are **never** returned across a boundary (HTTP or in-proc) —
+  always projected to a `*Response`/contract record (already §3d / §13; re-flag here
+  as a _coupling_ defect, since a leaked entity ties the consumer to the schema)
+- [ ] No `<ProjectReference>` from module A onto module B's base/EF assemblies — only
+  onto B's `*.Abstractions` (verify with `MCP get_project_graph`)
+
+**Prefer async events over synchronous calls:**
+
+- [ ] A module's state changes are **published as events** through a mediator that is
+  swappable for a real broker — local (`ILocalEventBus`, in-process) for same-pod
+  flows, distributed (`IDistributedEventBus` → `*Eto` over Wolverine) for anything
+  that must survive becoming a separate service. The choice is deliberate, not
+  accidental (CLAUDE.md §Events, §Notifications routing)
+- [ ] The in-memory mediator is an **abstraction over the bus**, so swapping to
+  RabbitMQ/Kafka is a wiring change, not a code rewrite — no handler reaches around
+  the bus into another module directly
+
+**At-least-once delivery (under pod churn):**
+
+- [ ] Distributed events (`*Eto`) are published via the **Wolverine durable
+  outbox** (Transactional Outbox), so a message survives a pod crash between DB
+  commit and publish — atomic with the `SaveChanges` that produced it
+- [ ] Inbound message handlers are **idempotent** (dedup by message id / natural
+  key) — at-least-once means a handler can see the same message twice
+- [ ] No ordering assumption across partitions/replicas unless explicitly enforced
+- [ ] Outbox/inbox tables live in the module's isolated DbContext, not a shared one
+
+**If a synchronous query into another module is unavoidable:**
+
+- [ ] It goes through a contract abstraction with **resilience baked in** (§15g —
+  `IHttpClientFactory` + standard resilience handler: timeout, retry, circuit
+  breaker), because the day B is extracted, that call becomes a K8s network hop
+
+### 15d. Configuration & secrets (12-factor)
+
+Config and secrets must be injectable per environment without rebuilding the image.
+
+- [ ] Options bound from configuration (`SectionName` + `IOptions<T>`), overridable
+  via env vars (`Granit__{Module}__{Key}`) — no compiled-in environment values
+- [ ] **No hardcoded** hosts, URLs, ports, file paths, or connection strings; fix
+  the registration site so SDK/cluster defaults align (see
+  [[feedback_sdk_defaults_over_hardcoding]])
+- [ ] **No secrets** in `appsettings*.json` or source — DB passwords, API keys,
+  signing keys come from Vault / `ExternalSecret`-mounted env or files
+- [ ] No `localhost`/`127.0.0.1`/`file://` defaults that only work on a dev box
+- [ ] Feature toggles / endpoints overridable via `*Options` (e.g. `TagName`,
+  health paths) rather than constants
+
+**How to detect:** `grep -nE 'https?://(localhost|127\.0\.0\.1)|Password=|ApiKey|/home/|C:\\\\'`
+across the module's `src` and `appsettings*.json`.
+
+### 15e. Lifecycle: graceful startup & shutdown
+
+Kubernetes sends SIGTERM, waits `terminationGracePeriodSeconds`, then SIGKILL. The
+module must drain cleanly.
+
+- [ ] In-flight work respects the host `CancellationToken` / `IHostApplicationLifetime`
+  — no fire-and-forget `Task.Run` that is lost on shutdown
+- [ ] `IHostedService`/`BackgroundService` implement `StopAsync` to drain (finish or
+  re-enqueue) rather than drop work
+- [ ] No `async void`, no `.Result`/`.Wait()` (deadlock + un-cancellable on drain) —
+  already an anti-pattern (§2c), re-flag here through the shutdown lens
+- [ ] Heavy one-time startup (migrations, warmup) is gated by the **startup probe**
+  (§10d) and ideally moved to an init container / job, not run inline on every
+  replica's hot path
+- [ ] `IDisposable`/`IAsyncDisposable` released on shutdown (bus channels, file
+  handles, DB connections)
+
+### 15f. Health probes for the module's dependencies (k8s)
+
+Builds on §10c/§10d, but from the _probe-correctness_ angle:
+
+- [ ] The module **registers its own granular health contributions** via the
+  `AddGranit*HealthCheck()` pattern, tagged `"readiness"` / `"startup"` so they are
+  composed into the host's `/health/ready`, `/health/live`, `/health/startup`
+  endpoints — a module that ships no health check for its own critical dependency is
+  a gap (the host can't probe what the module never declared)
+- [ ] The module contributes a **readiness** check for each external dependency it
+  needs to serve traffic (its DbContext, blob backend, message broker, downstream
+  service) — so k8s holds traffic until the dep is reachable
+- [ ] Liveness check is **dependency-free** (a failing DB must not restart the pod —
+  that is a readiness concern); only deadlock/unrecoverable state fails liveness
+- [ ] Startup probe covers slow init (migrations) so liveness doesn't kill a
+  still-booting pod
+- [ ] Probes are cheap + time-bounded (10s defensive timeout, `CachedHealthCheck`
+  to avoid stampede across rapid kubelet polls) and leak **no PII/secrets/connection
+  strings** (ISO 27001 / GDPR)
+
+### 15g. Resilience to network failure
+
+Everything is a remote call; the network is unreliable.
+
+- [ ] `HttpClient` obtained from `IHttpClientFactory` (never `new HttpClient()`)
+  **with the standard resilience handler** (`AddStandardResilienceHandler` / Polly):
+  timeout, retry-with-jitter, circuit breaker
+- [ ] DB / bus / blob calls have bounded timeouts — no unbounded `await` that hangs
+  a request thread when a dependency is down
+- [ ] Retries are only on **idempotent** operations, or paired with dedup
+- [ ] Transient-fault handling does not mask a poisoned message into an infinite
+  retry loop (dead-letter / max-attempts)
+
+### 15h. Persistence in a distributed deployment
+
+- [ ] **Isolated DbContext per module** (already §6a) — this is what makes
+  DB-per-service / independent scaling possible; flag any shared DbContext
+- [ ] Migrations are **not** auto-applied by every replica at boot (race →
+  duplicate/locked migrations); they belong in a migration job / init container
+  with single-runner semantics (framework packages ship **no** migrations — the
+  app owns them: [[feedback_no_migrations_in_framework]])
+- [ ] Optimistic concurrency (`IConcurrencyAware`, ADR-061
+  [[project_optimistic_concurrency_adr_061]]) on entities with concurrent writers
+  across replicas — last-writer-wins silent loss is a multi-replica data bug
+- [ ] Connection-pool sizing is documented/aware that _effective_ connections =
+  `MaxPoolSize × replica_count` (PostgreSQL/Npgsql default — see
+  [[project_postgres_default_db]]); a module that opens many contexts per request
+  amplifies this
+- [ ] No advisory assumption of a single writer (e.g. in-app sequence generation)
+  without a DB-backed/distributed guarantee
+
+### 15h-bis. Inter-module data ownership & decoupling (CRITICAL — the EF Core trap)
+
+This is usually the **strongest coupling point** in a .NET/EF Core framework and the
+single biggest blocker to extracting a module as a service: shared data. A module
+that owns its data can become a microservice; one whose tables are entangled with
+another's cannot. Audit data ownership ruthlessly.
+
+**No physical cross-module references — reference by ID, never by navigation:**
+
+- [ ] An entity references another module's entity **only by its identifier**
+  (`Guid OtherThingId`), **never** by an EF navigation property
+  (`public OtherThing Thing { get; set; }`) or a configured FK that crosses the
+  module boundary — a physical FK welds the two schemas together
+- [ ] No `HasOne/WithMany`/`HasForeignKey` in a module's `*Configuration.cs` that
+  targets another module's entity type
+- [ ] No LINQ query `.Include()`-ing or `.Join()`-ing across two modules' tables —
+  cross-module reads go through the other module's contract/event projection, not a
+  SQL join (a join assumes one physical database forever)
+
+**Schema / database segregation:**
+
+- [ ] Each module's tables are **physically separable** — own DbContext (§6a/§15h)
+  AND own schema (or own database) so the module can run against a separate
+  connection string with no shared-table dependency (per-module / per-tenant schema
+  isolation is what makes the split possible — see [[project_postgres_default_db]])
+- [ ] No table is written by more than one module's DbContext (shared write surface =
+  hidden coupling); a table read by another module is exposed via contract, not a
+  second mapping
+- [ ] Tenant isolation (`IMultiTenant`, `Guid? TenantId`) is enforced by the module's
+  own filter, not by a shared/global query filter another module also depends on
+
+**No cross-module distributed transactions — embrace eventual consistency:**
+
+- [ ] A single `SaveChanges`/`SaveChangesAsync` **never spans two modules'
+  DbContexts** — there is no two-phase commit across services; a flow that mutates
+  module A and module B must be split into A-commits-then-publishes-event,
+  B-reacts-and-commits
+- [ ] Multi-module workflows use the **Transactional Outbox + eventual consistency**
+  (publish `*Eto` atomically with A's commit via the Wolverine outbox; B consumes
+  idempotently — §15c) rather than a synchronous "update both in one transaction"
+- [ ] Where a saga/process-manager coordinates multi-step cross-module work,
+  compensating actions exist for partial failure (no relational rollback will save
+  you once the modules are separate services)
+
+**How to detect:** `MCP get_project_graph` for cross-module `<ProjectReference>` onto
+non-`Abstractions` assemblies; `MCP find_references` from one module's entities into
+another; `grep` each `*Configuration.cs` for `HasForeignKey`/`HasOne` whose target
+type lives in a different `Granit.{Module}`; scan for `.Include(`/`.Join(` bridging
+two modules; check whether any two DbContexts map the same table name.
+
+### 15i. Observability across service boundaries
+
+- [ ] `ActivitySource` per module registered via `GranitActivitySourceRegistry`
+  (§10b) so spans propagate W3C `traceparent` across services
+- [ ] Outbound calls (HTTP, bus) propagate trace context; inbound handlers continue
+  the trace rather than starting a fresh root
+- [ ] Metrics tagged with `tenant_id` (coalesced `"global"`) and exportable via OTLP
+  (`IMeterFactory`, never `new Meter`) — §10a
+- [ ] Logs are structured (`[LoggerMessage]`), carry correlation/trace ids, and
+  contain **no PII/secrets** (security baseline) — greppable across pods in a log
+  aggregator
+- [ ] No reliance on local log files as the record of truth (pods are ephemeral —
+  stdout/OTLP only)
+
+### 15j. Container & filesystem assumptions
+
+- [ ] No persistent state on the local filesystem — durable data goes to the blob
+  abstraction (S3/Azure), DB, or cache, never a pod-local path that vanishes on
+  reschedule; temp/scratch files must be ephemeral and cleaned up
+- [ ] No assumption of a fixed hostname, pod name, ordinal, or stable IP (unless the
+  consuming service is explicitly a StatefulSet — note it, don't assume)
+- [ ] No hardcoded thread-pool / memory sizing that fights cgroup limits — rely on
+  .NET 10 container-aware defaults; flag manual `ThreadPool.SetMinThreads` /
+  `GCHeapHardLimit` overrides that ignore the limit
+- [ ] No process-affinity or "warm singleton" assumption that breaks when the pod
+  is rescheduled to another node
+
+### Severity guidance (microservices scope)
+
+| Scenario | Severity |
+|----------|----------|
+| Cross-module FK / navigation property between two modules' entities | ARCHITECTURE |
+| `SaveChanges` spans two modules' DbContexts (distributed transaction) | ARCHITECTURE |
+| Cross-module `.Include()`/`.Join()` over another module's tables | ARCHITECTURE |
+| Module exposes / returns its domain or EF entities across a boundary | ARCHITECTURE |
+| `<ProjectReference>` onto another module's base/EF assembly (not Abstractions) | ARCHITECTURE |
+| Two modules write the same physical table (shared write surface) | ARCHITECTURE |
+| Singleton/recurring work runs per-replica (duplicate side effects) | ARCHITECTURE |
+| Distributed event published without outbox (lost on crash) | ARCHITECTURE |
+| Non-idempotent message handler under at-least-once delivery | ARCHITECTURE |
+| Secret/connection string in source or `appsettings` | BREAKING |
+| In-memory cache used as source of truth across replicas | ARCHITECTURE |
+| Migrations auto-applied by every replica at boot | ARCHITECTURE |
+| `new HttpClient()` / no resilience on external call | CONVENTION |
+| Module ships no health check for its own critical dependency | CONVENTION |
+| Liveness probe depends on an external dependency | CONVENTION |
+| Hardcoded `localhost`/path/URL default | CONVENTION |
+| Missing trace-context propagation on outbound call | CLEANUP |
+| No graceful-shutdown drain on a hosted service | CONVENTION |
+
+Ref: `CLAUDE.md §Anti-patterns`, `§Background Jobs`, `§Events`, `§Multi-tenancy`,
+`§Security baseline`; global `CLAUDE.md §Security baseline` (Vault/ExternalSecret);
+ADR-061; `docs-site/…/core/diagnostics.mdx`.
+
+---
+
 ## Suppressions
 
 Do NOT flag:

@@ -1,7 +1,7 @@
 ---
 name: audit
 description: "Framework architect: audit Granit .NET modules against framework conventions, architecture rules, and CLAUDE.md standards. Checks module anatomy, DDD, naming, OpenAPI, persistence, validation, events, metrics, localization, documentation, and cross-cutting concerns. Invoke to verify convention compliance before merge or during tech-debt sprints."
-argument-hint: "[help | all | <module> | pr] [--fix] [--scope {anatomy|code|naming|http|openapi|persistence|ddd|validation|events|metrics|localization|deps|compliance|all}] [--base <branch>]"
+argument-hint: "[help | all | <module> | pr] [--fix] [--scope {anatomy|code|naming|http|openapi|persistence|ddd|validation|events|metrics|localization|deps|compliance|microservices|all}] [--base <branch>]"
 ---
 
 # Framework Audit — Granit .NET
@@ -75,6 +75,7 @@ FLAGS
     localization  17-culture JSON completeness
     deps          [DependsOn], project references, circular refs
     compliance    GDPR, ISO 27001, security, analyzers
+    microservices Multi-replica safety, k8s probes/lifecycle, outbox, config/secrets
     docs          Module doc pages, code samples, cross-refs, counters
     all           Everything (default)
   --base <branch>             Base branch for PR mode (default: develop)
@@ -97,6 +98,7 @@ EXAMPLES
   /audit all --scope openapi
   /audit Encryption --scope ddd --fix
   /audit Analytics --scope layer-purity
+  /audit BackgroundJobs --scope microservices
 ```
 
 **Stop here** — do NOT proceed with an actual audit.
@@ -268,6 +270,12 @@ After auditing individual modules, perform cross-cutting checks:
 11. **Architecture test coverage** — verify `Granit.ArchitectureTests` covers the module
 12. **Documentation coverage** — every module has a doc page in `docs-site/`,
    code samples use current names, `PACKAGE_COUNT` in `constants.ts` is accurate
+13. **Microservices/k8s readiness** — across modules, look for the recurring
+   multi-replica hazards (`--scope microservices`, checklist §15): per-replica
+   scheduled work, distributed events without an outbox, non-idempotent handlers,
+   in-memory caches used as source of truth, migrations applied at boot, and
+   liveness probes coupled to external dependencies. These patterns tend to repeat
+   module-to-module, so call them out as a cross-cutting cluster, not one-offs.
 
 ### Context window discipline
 
