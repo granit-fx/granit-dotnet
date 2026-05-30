@@ -3243,6 +3243,15 @@
       ]
     },
     {
+      "name": "ExtractionRequest",
+      "fqn": "Granit.AI.Extraction.ExtractionRequest",
+      "kind": "record",
+      "project": "Granit.AI.Extraction",
+      "file": "src/Granit.AI.Extraction/ExtractionRequest.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "ExtractionResult",
       "fqn": "Granit.AI.Extraction.ExtractionResult",
       "kind": "class",
@@ -3291,6 +3300,12 @@
       "file": "src/Granit.AI.Extraction/IDocumentExtractor.cs",
       "line": 12,
       "members": [
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(ExtractionRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ExtractionResult<TResult>>"
+        },
         {
           "name": "ExtractAsync",
           "kind": "method",

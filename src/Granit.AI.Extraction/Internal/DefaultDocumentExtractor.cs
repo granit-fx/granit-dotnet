@@ -29,12 +29,14 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
         ResponseFormat = ChatResponseFormat.ForJsonSchema<TResult>(),
     };
 
+    private const string DefaultInstruction = "Extract structured data from the following document.";
+
     /// <inheritdoc />
     public async Task<ExtractionResult<TResult>> ExtractAsync(
-        string content,
+        ExtractionRequest request,
         CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(content);
+        ArgumentNullException.ThrowIfNull(request);
 
         ExtractionOptions extractionOptions = options.Value;
 
@@ -51,13 +53,14 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
 
             var messages = new List<ChatMessage>
             {
-                new(ChatRole.User, BuildPrompt(content)),
+                new(ChatRole.User, BuildPrompt(request)),
             };
 
             ChatResponse response = await chatClient
                 .GetResponseAsync(messages, StructuredOutputOptions, linkedCts.Token)
                 .ConfigureAwait(false);
 
+            string? modelId = response.ModelId;
             string responseText = response.Text ?? string.Empty;
 
             TResult? data = JsonSerializer.Deserialize<TResult>(responseText, SerializerOptions);
@@ -65,7 +68,7 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
             if (data is null)
             {
                 LogDeserializationNull(typeof(TResult).Name);
-                return ExtractionResult.Failed<TResult>("Deserialization returned null.");
+                return ExtractionResult.Failed<TResult>("Deserialization returned null.", modelId);
             }
 
             double confidence = EstimateConfidence(response);
@@ -75,11 +78,11 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
             {
                 warnings.Add($"Confidence score ({confidence:F2}) is below the review threshold ({extractionOptions.ReviewThreshold:F2}).");
                 LogLowConfidence(typeof(TResult).Name, confidence, extractionOptions.ReviewThreshold);
-                return ExtractionResult.NeedsReview(data, confidence, warnings);
+                return ExtractionResult.NeedsReview(data, confidence, warnings, modelId);
             }
 
             LogExtractionSucceeded(typeof(TResult).Name, confidence);
-            return ExtractionResult.Success(data, confidence);
+            return ExtractionResult.Success(data, confidence, modelId: modelId);
         }
         catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
@@ -107,14 +110,23 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
         }
     }
 
-    private static string BuildPrompt(string content) =>
-        $"""
-         Extract structured data from the following document.
-         Document:
-         ---
-         {content}
-         ---
-         """;
+    private static string BuildPrompt(ExtractionRequest request)
+    {
+        var builder = new PromptBuilder();
+
+        builder.AppendInstruction(string.IsNullOrWhiteSpace(request.Instruction)
+            ? DefaultInstruction
+            : request.Instruction);
+
+        if (request.Context is { Count: > 0 })
+        {
+            builder.AppendUserDataMap("Context", request.Context);
+        }
+
+        builder.AppendUserTextBlock(request.ContentLabel ?? "Document", request.Content);
+
+        return builder.Build();
+    }
 
     private static double EstimateConfidence(ChatResponse response)
     {

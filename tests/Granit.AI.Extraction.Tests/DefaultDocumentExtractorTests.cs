@@ -27,7 +27,9 @@ public sealed class DefaultDocumentExtractorTests
         TimeoutSeconds = 30,
     });
 
-    private readonly DefaultDocumentExtractor<InvoiceData> _sut;
+    // Typed as the interface so ExtractAsync(string) resolves to the default-interface-method
+    // that delegates to the ExtractAsync(ExtractionRequest) implementation.
+    private readonly IDocumentExtractor<InvoiceData> _sut;
 
     public DefaultDocumentExtractorTests()
     {
@@ -85,7 +87,7 @@ public sealed class DefaultDocumentExtractorTests
             TimeoutSeconds = 30,
         });
 
-        var extractor = new DefaultDocumentExtractor<InvoiceData>(
+        IDocumentExtractor<InvoiceData> extractor = new DefaultDocumentExtractor<InvoiceData>(
             _chatClientFactory,
             highThresholdOptions,
             NullLogger<DefaultDocumentExtractor<InvoiceData>>.Instance);
@@ -180,5 +182,139 @@ public sealed class DefaultDocumentExtractorTests
 
     [Fact]
     public async Task ExtractAsync_NullContent_ThrowsArgumentNullException() =>
-        await Should.ThrowAsync<ArgumentNullException>(() => _sut.ExtractAsync(null!, TestContext.Current.CancellationToken));
+        await Should.ThrowAsync<ArgumentNullException>(() => _sut.ExtractAsync((string)null!, TestContext.Current.CancellationToken));
+
+    [Fact]
+    public async Task ExtractAsync_CustomInstruction_FlowsIntoPromptWithContentInDataBlock()
+    {
+        // Arrange
+        const string jsonResponse = """{"supplier":"Acme Corp","amount":100,"currency":"EUR"}""";
+        const string customInstruction = "Generate SEO metadata for the page below in French.";
+        const string untrustedContent = "Page body authored by the editor.";
+
+        List<ChatMessage>? capturedMessages = null;
+        _chatClient
+            .GetResponseAsync(
+                Arg.Do<IEnumerable<ChatMessage>>(m => capturedMessages = m.ToList()),
+                Arg.Any<ChatOptions?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse))
+            {
+                FinishReason = ChatFinishReason.Stop,
+            });
+
+        // Act
+        await _sut.ExtractAsync(
+            new ExtractionRequest
+            {
+                Instruction = customInstruction,
+                Content = untrustedContent,
+                ContentLabel = "Page content",
+            },
+            TestContext.Current.CancellationToken);
+
+        // Assert
+        capturedMessages.ShouldNotBeNull();
+        string prompt = capturedMessages.Single().Text;
+        prompt.ShouldContain(customInstruction);
+        prompt.ShouldContain("Page content");
+        prompt.ShouldContain("<data>");
+        prompt.ShouldContain(untrustedContent);
+    }
+
+    [Fact]
+    public async Task ExtractAsync_DefaultsToGenericInstruction_WhenInstructionBlank()
+    {
+        // Arrange
+        const string jsonResponse = """{"supplier":"Acme Corp","amount":100,"currency":"EUR"}""";
+
+        List<ChatMessage>? capturedMessages = null;
+        _chatClient
+            .GetResponseAsync(
+                Arg.Do<IEnumerable<ChatMessage>>(m => capturedMessages = m.ToList()),
+                Arg.Any<ChatOptions?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse))
+            {
+                FinishReason = ChatFinishReason.Stop,
+            });
+
+        // Act — string overload (default-interface-method) routes through the generic instruction
+        await _sut.ExtractAsync("Invoice from Acme Corp", TestContext.Current.CancellationToken);
+
+        // Assert
+        capturedMessages.ShouldNotBeNull();
+        capturedMessages.Single().Text.ShouldContain("Extract structured data from the following document.");
+    }
+
+    [Fact]
+    public async Task ExtractAsync_ResponseModelId_FlowsIntoResult()
+    {
+        // Arrange
+        const string jsonResponse = """{"supplier":"Acme Corp","amount":100,"currency":"EUR"}""";
+
+        _chatClient
+            .GetResponseAsync(
+                Arg.Any<IEnumerable<ChatMessage>>(),
+                Arg.Any<ChatOptions?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse))
+            {
+                FinishReason = ChatFinishReason.Stop,
+                ModelId = "gpt-4o-mini-2024-07-18",
+            });
+
+        // Act
+        ExtractionResult<InvoiceData> result = await _sut.ExtractAsync(
+            new ExtractionRequest { Content = "Some document" },
+            TestContext.Current.CancellationToken);
+
+        // Assert
+        result.Status.ShouldBe(ExtractionStatus.Succeeded);
+        result.ModelId.ShouldBe("gpt-4o-mini-2024-07-18");
+    }
+
+    [Fact]
+    public async Task ExtractAsync_WithContext_SanitizesAndDelimitsEachSection()
+    {
+        // Arrange
+        const string jsonResponse = """{"supplier":"Acme Corp","amount":100,"currency":"EUR"}""";
+
+        List<ChatMessage>? capturedMessages = null;
+        _chatClient
+            .GetResponseAsync(
+                Arg.Do<IEnumerable<ChatMessage>>(m => capturedMessages = m.ToList()),
+                Arg.Any<ChatOptions?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse))
+            {
+                FinishReason = ChatFinishReason.Stop,
+            });
+
+        // Act
+        ExtractionResult<InvoiceData> result = await _sut.ExtractAsync(
+            new ExtractionRequest
+            {
+                Instruction = "Generate SEO metadata.",
+                Content = "The page body.",
+                ContentLabel = "Page content",
+                Context =
+                [
+                    new("Title", "Home page"),
+                    new("Locale", "fr-FR"),
+                ],
+            },
+            TestContext.Current.CancellationToken);
+
+        // Assert
+        result.Status.ShouldBe(ExtractionStatus.Succeeded);
+        capturedMessages.ShouldNotBeNull();
+        string prompt = capturedMessages.Single().Text;
+        prompt.ShouldContain("Context");
+        prompt.ShouldContain("Title");
+        prompt.ShouldContain("Home page");
+        prompt.ShouldContain("Locale");
+        prompt.ShouldContain("fr-FR");
+        prompt.ShouldContain("Page content");
+    }
 }
