@@ -26,7 +26,7 @@ public sealed class LlmQueryPayloadTests
             Page = 2,
             PageSize = 25,
             Sort = "-name",
-            Filter = new Dictionary<string, string> { ["name.eq"] = "test" },
+            Filter = [new LlmFilterClause { Key = "name.eq", Value = "test" }],
             QuickFilters = ["Active"],
             GroupBy = "status",
         };
@@ -36,8 +36,19 @@ public sealed class LlmQueryPayloadTests
         dto.Sort.ShouldBe("-name");
         dto.Filter.ShouldNotBeNull();
         dto.Filter.Count.ShouldBe(1);
+        dto.Filter[0].Key.ShouldBe("name.eq");
+        dto.Filter[0].Value.ShouldBe("test");
         dto.QuickFilters.ShouldNotBeNull();
         dto.QuickFilters.Count.ShouldBe(1);
         dto.GroupBy.ShouldBe("status");
+    }
+
+    [Fact]
+    public void FilterClause_defaults_to_empty_strings()
+    {
+        LlmFilterClause clause = new();
+
+        clause.Key.ShouldBe(string.Empty);
+        clause.Value.ShouldBe(string.Empty);
     }
 }

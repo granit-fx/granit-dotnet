@@ -4,69 +4,56 @@ using Granit.QueryEngine.AI.Options;
 using Granit.QueryEngine.Filtering;
 using Granit.QueryEngine.Meta;
 using Granit.Timing;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
 
 namespace Granit.QueryEngine.AI.Tests;
 
 public sealed class LlmNaturalLanguageQueryTranslatorTests
 {
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
+    private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
     private readonly IOptions<QueryEngineAIOptions> _options = Microsoft.Extensions.Options.Options.Create(new QueryEngineAIOptions());
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly LlmNaturalLanguageQueryTranslator _sut;
 
     public LlmNaturalLanguageQueryTranslatorTests()
     {
-        _chatClientFactory
-            .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(_chatClient);
-
         _clock.Now.Returns(new DateTimeOffset(2026, 3, 16, 0, 0, 0, TimeSpan.Zero));
 
         _sut = new LlmNaturalLanguageQueryTranslator(
-            _chatClientFactory,
+            _structured,
             _options,
             NullLogger<LlmNaturalLanguageQueryTranslator>.Instance,
             _clock);
     }
 
+    internal static List<LlmFilterClause> Clauses(params (string Key, string Value)[] clauses) =>
+        [.. clauses.Select(c => new LlmFilterClause { Key = c.Key, Value = c.Value })];
+
+    private void Respond(LlmQueryPayload payload) =>
+        _structured
+            .CompleteAsync<LlmQueryPayload>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmQueryPayload> { Status = StructuredCompletionStatus.Succeeded, Value = payload });
+
+    private void RespondWith(StructuredCompletionStatus status) =>
+        _structured
+            .CompleteAsync<LlmQueryPayload>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmQueryPayload> { Status = status });
+
     [Fact]
     public async Task TranslateAsync_ValidResponse_ReturnsQueryRequest()
     {
-        // Arrange
-        const string jsonText = """
-            {
-                "sort": "-createdAt",
-                "filter": {
-                    "status.eq": "active",
-                    "amount.gte": "1000"
-                }
-            }
-            """;
+        Respond(new LlmQueryPayload
+        {
+            Sort = "-createdAt",
+            Filter = Clauses(("status.eq", "active"), ("amount.gte", "1000")),
+        });
 
-        var response = new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonText));
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(response);
-
-        QueryMetadata metadata = CreateTestMetadata();
-
-        // Act
         QueryRequest? result = await _sut.TranslateAsync(
-            "show active items over 1000, newest first",
-            metadata,
-            TestContext.Current.CancellationToken);
+            "show active items over 1000, newest first", CreateTestMetadata(), TestContext.Current.CancellationToken);
 
-        // Assert
         result.ShouldNotBeNull();
         result.Sort.ShouldBe("-createdAt");
         result.Filter.ShouldNotBeNull();
@@ -75,159 +62,105 @@ public sealed class LlmNaturalLanguageQueryTranslatorTests
         result.Filter["amount.gte"].ShouldBe("1000");
     }
 
-    [Fact]
-    public async Task TranslateAsync_LLMFailure_ReturnsNull()
+    [Theory]
+    [InlineData(StructuredCompletionStatus.ModelRefused)]
+    [InlineData(StructuredCompletionStatus.SchemaViolation)]
+    [InlineData(StructuredCompletionStatus.TransportFailure)]
+    public async Task TranslateAsync_NonSuccessStatus_ReturnsNull(StructuredCompletionStatus status)
     {
-        // Arrange
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("LLM unavailable"));
+        RespondWith(status);
 
-        QueryMetadata metadata = CreateTestMetadata();
-
-        // Act
         QueryRequest? result = await _sut.TranslateAsync(
-            "show all items",
-            metadata,
-            TestContext.Current.CancellationToken);
+            "show all items", CreateTestMetadata(), TestContext.Current.CancellationToken);
 
-        // Assert
         result.ShouldBeNull();
     }
 
     [Fact]
-    public async Task TranslateAsync_InvalidJson_ReturnsNull()
+    public async Task TranslateAsync_StripsFilterClausesOutsideTheMetadataWhitelist()
     {
-        // Arrange
-        var response = new ChatResponse(new ChatMessage(ChatRole.Assistant, "this is not valid json at all"));
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(response);
+        // "ssn.eq" is not a filterable field — the model cannot smuggle it past validation (LLM02).
+        Respond(new LlmQueryPayload
+        {
+            Filter = Clauses(("status.eq", "active"), ("ssn.eq", "123-45-6789")),
+        });
 
-        QueryMetadata metadata = CreateTestMetadata();
-
-        // Act
         QueryRequest? result = await _sut.TranslateAsync(
-            "show all items",
-            metadata,
-            TestContext.Current.CancellationToken);
+            "active items", CreateTestMetadata(), TestContext.Current.CancellationToken);
 
-        // Assert
-        result.ShouldBeNull();
-    }
-
-    [Fact]
-    public async Task TranslateAsync_EmptyInput_ReturnsNull()
-    {
-        // Arrange
-        QueryMetadata metadata = CreateTestMetadata();
-
-        // Act
-        QueryRequest? result = await _sut.TranslateAsync(
-            "",
-            metadata,
-            TestContext.Current.CancellationToken);
-
-        // Assert
-        result.ShouldBeNull();
-    }
-
-    [Fact]
-    public async Task TranslateAsync_MarkdownFencedResponse_ParsesCorrectly()
-    {
-        // Arrange
-        const string jsonText = """
-            ```json
-            {
-                "sort": "name",
-                "filter": { "name.contains": "alice" }
-            }
-            ```
-            """;
-
-        var response = new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonText));
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(response);
-
-        QueryMetadata metadata = CreateTestMetadata();
-
-        // Act
-        QueryRequest? result = await _sut.TranslateAsync(
-            "find alice",
-            metadata,
-            TestContext.Current.CancellationToken);
-
-        // Assert
         result.ShouldNotBeNull();
-        result.Sort.ShouldBe("name");
         result.Filter.ShouldNotBeNull();
-        result.Filter["name.contains"].ShouldBe("alice");
+        result.Filter.Count.ShouldBe(1);
+        result.Filter.ContainsKey("status.eq").ShouldBeTrue();
+        result.Filter.ContainsKey("ssn.eq").ShouldBeFalse();
     }
 
     [Fact]
-    public async Task TranslateAsync_WhitespaceInput_ReturnsNull()
+    public async Task TranslateAsync_CollapsesDuplicateFilterClauseKeys()
     {
-        // Arrange
-        QueryMetadata metadata = CreateTestMetadata();
+        Respond(new LlmQueryPayload
+        {
+            Filter = Clauses(("status.eq", "active"), ("status.eq", "inactive")),
+        });
 
-        // Act
         QueryRequest? result = await _sut.TranslateAsync(
-            "   ",
-            metadata,
-            TestContext.Current.CancellationToken);
+            "active items", CreateTestMetadata(), TestContext.Current.CancellationToken);
 
-        // Assert
-        result.ShouldBeNull();
+        result.ShouldNotBeNull();
+        result.Filter.ShouldNotBeNull();
+        result.Filter.Count.ShouldBe(1);
+        result.Filter["status.eq"].ShouldBe("active");
     }
 
     [Fact]
-    public void BuildSystemPrompt_IncludesFilterableFields()
+    public async Task TranslateAsync_EmptyInput_ReturnsNullWithoutCallingTheModel()
     {
-        // Arrange
-        QueryMetadata metadata = CreateTestMetadata();
+        QueryRequest? result = await _sut.TranslateAsync("", CreateTestMetadata(), TestContext.Current.CancellationToken);
 
-        // Act
-        string prompt = _sut.BuildSystemPrompt(metadata);
+        result.ShouldBeNull();
+        await _structured
+            .DidNotReceiveWithAnyArgs()
+            .CompleteAsync<LlmQueryPayload>(default!, TestContext.Current.CancellationToken);
+    }
 
-        // Assert
+    [Fact]
+    public async Task TranslateAsync_WhitespaceInput_ReturnsNullWithoutCallingTheModel()
+    {
+        QueryRequest? result = await _sut.TranslateAsync("   ", CreateTestMetadata(), TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+        await _structured
+            .DidNotReceiveWithAnyArgs()
+            .CompleteAsync<LlmQueryPayload>(default!, TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task TranslateAsync_RoutesQueryAsContentAndSchemaAsInstruction()
+    {
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<LlmQueryPayload>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmQueryPayload> { Status = StructuredCompletionStatus.Succeeded, Value = new LlmQueryPayload() });
+
+        await _sut.TranslateAsync("find alice", CreateTestMetadata(), TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        // The untrusted phrase is the content; the field schema is developer-controlled instruction.
+        captured.Content.ShouldBe("find alice");
+        captured.Instruction.ShouldNotBeNull();
+        captured.Instruction.ShouldContain("status");
+        captured.Instruction.ShouldContain("amount");
+    }
+
+    [Fact]
+    public void BuildInstruction_IncludesFilterableFields()
+    {
+        string prompt = _sut.BuildInstruction(CreateTestMetadata());
+
         prompt.ShouldContain("status");
         prompt.ShouldContain("amount");
         prompt.ShouldContain("eq");
         prompt.ShouldContain("gte");
-    }
-
-    [Fact]
-    public void StripMarkdownFences_RemovesFences()
-    {
-        const string input = """
-            ```json
-            {"sort": "name"}
-            ```
-            """;
-
-        string result = LlmNaturalLanguageQueryTranslator.StripMarkdownFences(input);
-
-        result.ShouldBe("{\"sort\": \"name\"}");
-    }
-
-    [Fact]
-    public void StripMarkdownFences_PlainJsonUnchanged()
-    {
-        const string input = """{"sort": "name"}""";
-
-        string result = LlmNaturalLanguageQueryTranslator.StripMarkdownFences(input);
-
-        result.ShouldBe("{\"sort\": \"name\"}");
     }
 
     private static QueryMetadata CreateTestMetadata() =>

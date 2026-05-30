@@ -3,7 +3,6 @@ using Granit.QueryEngine.AI.Internal;
 using Granit.QueryEngine.AI.Options;
 using Granit.QueryEngine.Meta;
 using Granit.Timing;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -13,55 +12,49 @@ namespace Granit.QueryEngine.AI.Tests;
 
 public sealed class LlmNaturalLanguageQueryTranslatorAdditionalTests
 {
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
+    private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
     private readonly IOptions<QueryEngineAIOptions> _options = Microsoft.Extensions.Options.Options.Create(new QueryEngineAIOptions());
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly LlmNaturalLanguageQueryTranslator _sut;
 
     public LlmNaturalLanguageQueryTranslatorAdditionalTests()
     {
-        _chatClientFactory
-            .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(_chatClient);
-
         _clock.Now.Returns(new DateTimeOffset(2026, 3, 21, 0, 0, 0, TimeSpan.Zero));
 
         _sut = new LlmNaturalLanguageQueryTranslator(
-            _chatClientFactory,
+            _structured,
             _options,
             NullLogger<LlmNaturalLanguageQueryTranslator>.Instance,
             _clock);
     }
 
-    [Fact]
-    public void BuildSystemPrompt_includes_date_filters()
-    {
-        QueryMetadata metadata = CreateMetadataWithDateFilters();
+    private void Respond(LlmQueryPayload payload) =>
+        _structured
+            .CompleteAsync<LlmQueryPayload>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmQueryPayload> { Status = StructuredCompletionStatus.Succeeded, Value = payload });
 
-        string prompt = _sut.BuildSystemPrompt(metadata);
+    [Fact]
+    public void BuildInstruction_includes_date_filters()
+    {
+        string prompt = _sut.BuildInstruction(CreateMetadataWithDateFilters());
 
         prompt.ShouldContain("createdAt");
         prompt.ShouldContain("Today");
     }
 
     [Fact]
-    public void BuildSystemPrompt_includes_group_by_fields()
+    public void BuildInstruction_includes_group_by_fields()
     {
-        QueryMetadata metadata = CreateMetadataWithGroupBy();
-
-        string prompt = _sut.BuildSystemPrompt(metadata);
+        string prompt = _sut.BuildInstruction(CreateMetadataWithGroupBy());
 
         prompt.ShouldContain("category");
         prompt.ShouldContain("group-by");
     }
 
     [Fact]
-    public void BuildSystemPrompt_includes_sortable_fields()
+    public void BuildInstruction_includes_sortable_fields()
     {
-        QueryMetadata metadata = CreateMetadataWithSortableFields();
-
-        string prompt = _sut.BuildSystemPrompt(metadata);
+        string prompt = _sut.BuildInstruction(CreateMetadataWithSortableFields());
 
         prompt.ShouldContain("name");
         prompt.ShouldContain("createdAt");
@@ -69,32 +62,26 @@ public sealed class LlmNaturalLanguageQueryTranslatorAdditionalTests
     }
 
     [Fact]
-    public void BuildSystemPrompt_includes_current_date()
+    public void BuildInstruction_includes_current_date()
     {
-        QueryMetadata metadata = CreateMinimalMetadata();
-
-        string prompt = _sut.BuildSystemPrompt(metadata);
+        string prompt = _sut.BuildInstruction(CreateMinimalMetadata());
 
         prompt.ShouldContain("2026-03-21");
     }
 
     [Fact]
-    public void BuildSystemPrompt_includes_quick_filters()
+    public void BuildInstruction_includes_quick_filters()
     {
-        QueryMetadata metadata = CreateMetadataWithQuickFilters();
-
-        string prompt = _sut.BuildSystemPrompt(metadata);
+        string prompt = _sut.BuildInstruction(CreateMetadataWithQuickFilters());
 
         prompt.ShouldContain("active");
         prompt.ShouldContain("Active Items");
     }
 
     [Fact]
-    public void BuildSystemPrompt_empty_metadata_includes_schema()
+    public void BuildInstruction_empty_metadata_still_describes_the_output_fields_and_rules()
     {
-        QueryMetadata metadata = CreateMinimalMetadata();
-
-        string prompt = _sut.BuildSystemPrompt(metadata);
+        string prompt = _sut.BuildInstruction(CreateMinimalMetadata());
 
         prompt.ShouldContain("page");
         prompt.ShouldContain("filter");
@@ -104,19 +91,7 @@ public sealed class LlmNaturalLanguageQueryTranslatorAdditionalTests
     [Fact]
     public async Task TranslateAsync_response_with_quickFilters_is_mapped()
     {
-        const string jsonText = """
-            {
-                "quickFilters": ["active", "recent"]
-            }
-            """;
-
-        ChatResponse response = new(new ChatMessage(ChatRole.Assistant, jsonText));
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(response);
+        Respond(new LlmQueryPayload { QuickFilters = ["active", "recent"] });
 
         QueryMetadata metadata = CreateMinimalMetadata() with
         {
@@ -128,9 +103,7 @@ public sealed class LlmNaturalLanguageQueryTranslatorAdditionalTests
         };
 
         QueryRequest? result = await _sut.TranslateAsync(
-            "show active recent items",
-            metadata,
-            TestContext.Current.CancellationToken);
+            "show active recent items", metadata, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.QuickFilters.ShouldNotBeNull();
@@ -140,27 +113,10 @@ public sealed class LlmNaturalLanguageQueryTranslatorAdditionalTests
     [Fact]
     public async Task TranslateAsync_response_with_empty_filter_maps_to_null()
     {
-        const string jsonText = """
-            {
-                "filter": {},
-                "quickFilters": []
-            }
-            """;
-
-        ChatResponse response = new(new ChatMessage(ChatRole.Assistant, jsonText));
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(response);
-
-        QueryMetadata metadata = CreateMinimalMetadata();
+        Respond(new LlmQueryPayload { Filter = [], QuickFilters = [] });
 
         QueryRequest? result = await _sut.TranslateAsync(
-            "show all",
-            metadata,
-            TestContext.Current.CancellationToken);
+            "show all", CreateMinimalMetadata(), TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.Filter.ShouldBeNull();
@@ -168,35 +124,9 @@ public sealed class LlmNaturalLanguageQueryTranslatorAdditionalTests
     }
 
     [Fact]
-    public void StripMarkdownFences_handles_bare_backticks_without_json_suffix()
-    {
-        const string input = """
-            ```
-            {"sort": "name"}
-            ```
-            """;
-
-        string result = LlmNaturalLanguageQueryTranslator.StripMarkdownFences(input);
-
-        result.ShouldBe("{\"sort\": \"name\"}");
-    }
-
-    [Fact]
     public async Task TranslateAsync_response_with_groupBy_is_mapped()
     {
-        const string jsonText = """
-            {
-                "groupBy": "category"
-            }
-            """;
-
-        ChatResponse response = new(new ChatMessage(ChatRole.Assistant, jsonText));
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(response);
+        Respond(new LlmQueryPayload { GroupBy = "category" });
 
         QueryMetadata metadata = CreateMinimalMetadata() with
         {
@@ -204,9 +134,7 @@ public sealed class LlmNaturalLanguageQueryTranslatorAdditionalTests
         };
 
         QueryRequest? result = await _sut.TranslateAsync(
-            "group by category",
-            metadata,
-            TestContext.Current.CancellationToken);
+            "group by category", metadata, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.GroupBy.ShouldBe("category");
@@ -215,27 +143,10 @@ public sealed class LlmNaturalLanguageQueryTranslatorAdditionalTests
     [Fact]
     public async Task TranslateAsync_response_with_page_and_pageSize_is_mapped()
     {
-        const string jsonText = """
-            {
-                "page": 3,
-                "pageSize": 50
-            }
-            """;
-
-        ChatResponse response = new(new ChatMessage(ChatRole.Assistant, jsonText));
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(response);
-
-        QueryMetadata metadata = CreateMinimalMetadata();
+        Respond(new LlmQueryPayload { Page = 3, PageSize = 50 });
 
         QueryRequest? result = await _sut.TranslateAsync(
-            "page 3 with 50 items",
-            metadata,
-            TestContext.Current.CancellationToken);
+            "page 3 with 50 items", CreateMinimalMetadata(), TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.Page.ShouldBe(3);

@@ -1,36 +1,32 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
-using System.Text.Json;
 using Granit.AI;
-using Granit.AI.Internal;
 using Granit.MultiTenancy;
 using Granit.QueryEngine.AI.Diagnostics;
 using Granit.QueryEngine.AI.Options;
 using Granit.QueryEngine.Meta;
 using Granit.Timing;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.QueryEngine.AI.Internal;
 
 /// <summary>
-/// LLM-backed implementation of <see cref="INaturalLanguageQueryTranslator"/>.
-/// Sends query metadata to the LLM as schema context and parses the structured JSON response.
+/// LLM-backed <see cref="INaturalLanguageQueryTranslator"/> built on the
+/// <see cref="IStructuredCompletion"/> primitive (ADR-064). The query schema and available
+/// fields are folded into the developer-controlled instruction; the user's phrase travels as
+/// untrusted, sanitized content. The model's output is whitelisted against the metadata
+/// (CWE-20 / OWASP LLM02) before it becomes a <see cref="QueryRequest"/>.
 /// </summary>
 internal sealed partial class LlmNaturalLanguageQueryTranslator(
-    IAIChatClientFactory chatClientFactory,
+    IStructuredCompletion structuredCompletion,
     IOptions<QueryEngineAIOptions> options,
     ILogger<LlmNaturalLanguageQueryTranslator> logger,
     IClock clock,
     QueryEngineAIMetrics? metrics = null,
     ICurrentTenant? currentTenant = null) : INaturalLanguageQueryTranslator
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-    };
-
     /// <inheritdoc/>
     public async Task<QueryRequest?> TranslateAsync(
         string naturalLanguage,
@@ -46,65 +42,39 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
         long startTimestamp = Stopwatch.GetTimestamp();
         string? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id?.ToString() : null;
 
+        QueryEngineAIOptions opts = options.Value;
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(opts.TimeoutSeconds));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+
+        var request = new StructuredCompletionRequest
+        {
+            Instruction = BuildInstruction(metadata),
+            Content = naturalLanguage,
+            ContentLabel = "Query",
+            WorkspaceName = opts.WorkspaceName,
+        };
+
         try
         {
-            QueryEngineAIOptions opts = options.Value;
-
-            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(opts.TimeoutSeconds));
-            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
-
-            // CreateAsync builds a fresh client per call (no cache) — dispose
-            // deterministically so the HttpMessageHandler doesn't linger until GC.
-            using IChatClient chatClient = await chatClientFactory
-                .CreateAsync(opts.WorkspaceName, linkedCts.Token)
+            StructuredCompletionResult<LlmQueryPayload> result = await structuredCompletion
+                .CompleteAsync<LlmQueryPayload>(request, linkedCts.Token)
                 .ConfigureAwait(false);
 
-            string systemPrompt = BuildSystemPrompt(metadata);
-
-            // Sanitize user input via PromptBuilder to mitigate prompt injection
-            var userPb = new PromptBuilder(maxInputLength: 2_000);
-            userPb.AppendUserTextBlock("Query", naturalLanguage);
-
-            List<ChatMessage> messages =
-            [
-                new(ChatRole.System, systemPrompt),
-                new(ChatRole.User, userPb.Build()),
-            ];
-
-            ChatResponse response = await chatClient
-                .GetResponseAsync(messages, cancellationToken: linkedCts.Token)
-                .ConfigureAwait(false);
-
-            string rawJson = response.Text ?? string.Empty;
-            string json = StripMarkdownFences(rawJson);
-
-            QueryRequest? request = TryDeserializeAndConvert(json, metadata, out bool deserializedToNull);
-            if (deserializedToNull)
+            if (result.Status != StructuredCompletionStatus.Succeeded)
             {
-                LogInvalidResponse(logger, naturalLanguage.Length);
-                metrics?.RecordTranslationFailed(tenantId, "invalid_response");
+                LogInvalidResponse(logger, naturalLanguage.Length, result.Status.ToString());
+                metrics?.RecordTranslationFailed(tenantId, MapFailureReason(result.Status));
                 return null;
             }
 
             metrics?.RecordTranslationExecuted(tenantId, "success");
-            return request;
+            return ValidateAndConvert(result.Value!, metadata);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
             LogTimeout(logger, naturalLanguage.Length);
             metrics?.RecordTranslationFailed(tenantId, "timeout");
-            return null;
-        }
-        catch (JsonException ex)
-        {
-            LogJsonParseError(logger, naturalLanguage.Length, ex);
-            metrics?.RecordTranslationFailed(tenantId, "json_parse_error");
-            return null;
-        }
-        catch (Exception ex)
-        {
-            LogTranslationError(logger, naturalLanguage.Length, ex);
-            metrics?.RecordTranslationFailed(tenantId, "error");
             return null;
         }
         finally
@@ -114,22 +84,23 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
         }
     }
 
-    internal string BuildSystemPrompt(QueryMetadata metadata)
+    private static string MapFailureReason(StructuredCompletionStatus status) => status switch
+    {
+        StructuredCompletionStatus.TransportFailure => "error",
+        _ => "invalid_response",
+    };
+
+    internal string BuildInstruction(QueryMetadata metadata)
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine("You are a query translator. Convert the user's natural language phrase into a JSON object matching this schema:");
-        sb.AppendLine();
-        sb.AppendLine("```json");
-        sb.AppendLine("{");
-        sb.AppendLine("  \"page\": <int or null>,");
-        sb.AppendLine("  \"pageSize\": <int or null>,");
-        sb.AppendLine("  \"sort\": \"<comma-separated fields, prefix - for desc>\" or null,");
-        sb.AppendLine("  \"filter\": { \"<field.operator>\": \"<value>\", ... } or null,");
-        sb.AppendLine("  \"quickFilters\": [\"<name>\", ...] or null,");
-        sb.AppendLine("  \"groupBy\": \"<field>\" or null");
-        sb.AppendLine("}");
-        sb.AppendLine("```");
+        sb.AppendLine("You are a query translator. Convert the user's natural-language phrase (in the data block)");
+        sb.AppendLine("into the structured query format. Produce only the fields you need, omitting the rest:");
+        sb.AppendLine("- page / pageSize: integers for pagination.");
+        sb.AppendLine("- sort: comma-separated field names, prefix - for descending (e.g. \"-createdAt,lastName\").");
+        sb.AppendLine("- filter: a list of clauses, each a \"key\" of the form \"fieldName.operator\" and a string \"value\".");
+        sb.AppendLine("- quickFilters: names drawn from the available quick-filter list.");
+        sb.AppendLine("- groupBy: a single field name.");
         sb.AppendLine();
 
         // Filterable fields
@@ -201,41 +172,18 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
         }
 
         sb.AppendLine("Filter key format: \"fieldName.operator\" (e.g. \"status.eq\", \"amount.gte\", \"name.contains\").");
-        sb.AppendLine($"Current date: {clock.Now:yyyy-MM-dd}. Use this for relative date references (\"this week\", \"last month\").");
+        sb.Append(CultureInfo.InvariantCulture, $"Current date: {clock.Now:yyyy-MM-dd}. ");
+        sb.AppendLine("Use this for relative date references (\"this week\", \"last month\").");
         sb.AppendLine();
         sb.AppendLine("Rules:");
-        sb.AppendLine("- Return ONLY valid JSON, no explanation.");
         sb.AppendLine("- Use only the fields and operators listed above.");
-        sb.AppendLine("- Omit properties that are not needed (use null).");
+        sb.AppendLine("- Omit properties that are not needed.");
         sb.AppendLine("- For date ranges, use gte/lte operators with ISO 8601 dates.");
 
         return sb.ToString();
     }
 
-    internal static string StripMarkdownFences(string text) =>
-        LlmResponseHelper.StripMarkdownCodeFences(text);
-
-    /// <summary>
-    /// Deserializes an LLM JSON payload into a validated <see cref="QueryRequest"/>.
-    /// Returns <c>null</c> when deserialization yields a <c>null</c> payload (signalled via
-    /// <paramref name="deserializedToNull"/> = <c>true</c>) so callers can distinguish that case
-    /// from a valid empty result. Throws <see cref="JsonException"/> on malformed JSON — the
-    /// production caller catches it; the fuzz harness intentionally swallows it.
-    /// </summary>
-    internal static QueryRequest? TryDeserializeAndConvert(string json, QueryMetadata metadata, out bool deserializedToNull)
-    {
-        LlmQueryPayload? dto = JsonSerializer.Deserialize<LlmQueryPayload>(json, JsonOptions);
-        if (dto is null)
-        {
-            deserializedToNull = true;
-            return null;
-        }
-
-        deserializedToNull = false;
-        return ValidateAndConvert(dto, metadata);
-    }
-
-    private static QueryRequest? ValidateAndConvert(LlmQueryPayload dto, QueryMetadata metadata)
+    private static QueryRequest ValidateAndConvert(LlmQueryPayload dto, QueryMetadata metadata)
     {
         // Build whitelist of allowed filter keys from metadata (CWE-20, LLM02)
         var allowedFilterKeys = metadata.FilterableFields
@@ -254,16 +202,20 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
             .Select(f => f.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        // Validate and strip non-whitelisted fields from LLM output
-        Dictionary<string, string>? validatedFilter = dto.Filter is { Count: > 0 }
-            ? dto.Filter
-                .Where(kv => allowedFilterKeys.Contains(kv.Key))
-                .ToDictionary(kv => kv.Key, kv => kv.Value)
-            : null;
-
-        if (validatedFilter is { Count: 0 })
+        // Validate and strip non-whitelisted clauses; the list may carry duplicate keys, so
+        // collapse them (first wins) before building the dictionary the domain expects.
+        Dictionary<string, string>? validatedFilter = null;
+        if (dto.Filter is { Count: > 0 })
         {
-            validatedFilter = null;
+            validatedFilter = dto.Filter
+                .Where(c => !string.IsNullOrEmpty(c.Key) && allowedFilterKeys.Contains(c.Key))
+                .GroupBy(c => c.Key, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.First().Key, g => g.First().Value, StringComparer.OrdinalIgnoreCase);
+
+            if (validatedFilter.Count == 0)
+            {
+                validatedFilter = null;
+            }
         }
 
         // Validate sort fields
@@ -288,7 +240,7 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
 
         // Validate quick filters
         List<string>? validatedQuickFilters = dto.QuickFilters is { Count: > 0 }
-            ? dto.QuickFilters.Where(qf => allowedQuickFilters.Contains(qf)).ToList()
+            ? dto.QuickFilters.Where(allowedQuickFilters.Contains).ToList()
             : null;
 
         if (validatedQuickFilters is { Count: 0 })
@@ -307,15 +259,9 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
         };
     }
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "NLQ translation returned invalid response (input length: {InputLength})")]
-    private static partial void LogInvalidResponse(ILogger logger, int inputLength);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "NLQ translation returned a non-success status {Status} (input length: {InputLength})")]
+    private static partial void LogInvalidResponse(ILogger logger, int inputLength, string status);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "NLQ translation timed out (input length: {InputLength})")]
     private static partial void LogTimeout(ILogger logger, int inputLength);
-
-    [LoggerMessage(Level = LogLevel.Warning, Message = "NLQ translation failed to parse JSON (input length: {InputLength})")]
-    private static partial void LogJsonParseError(ILogger logger, int inputLength, Exception exception);
-
-    [LoggerMessage(Level = LogLevel.Error, Message = "NLQ translation failed (input length: {InputLength})")]
-    private static partial void LogTranslationError(ILogger logger, int inputLength, Exception exception);
 }
