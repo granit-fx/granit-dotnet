@@ -1,58 +1,44 @@
 using Granit.AI;
 using Granit.Privacy.AI.Internal;
 using Granit.Privacy.AI.Options;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
+using LlmPiiItem = Granit.Privacy.AI.Internal.LlmPiiDetector.LlmPiiItem;
+using LlmPiiResponse = Granit.Privacy.AI.Internal.LlmPiiDetector.LlmPiiResponse;
 
 namespace Granit.Privacy.AI.Tests;
 
 public sealed class LlmPiiDetectorTests
 {
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
+    private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
     private readonly IOptions<PrivacyAIOptions> _options = Microsoft.Extensions.Options.Options.Create(new PrivacyAIOptions
     {
         WorkspaceName = "test-privacy",
         TimeoutSeconds = 15,
+        FailMode = PiiDetectionFailMode.Closed,
     });
 
-    private readonly LlmPiiDetector _sut;
-
-    public LlmPiiDetectorTests()
-    {
-        _chatClientFactory
-            .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(_chatClient);
-
-        _sut = new LlmPiiDetector(
-            _chatClientFactory,
-            _options,
+    private LlmPiiDetector CreateDetector(PrivacyAIOptions? opts = null) =>
+        new(_structured, opts is null ? _options : Microsoft.Extensions.Options.Options.Create(opts),
             NullLogger<LlmPiiDetector>.Instance);
-    }
+
+    private void CompletionReturns(StructuredCompletionStatus status, LlmPiiResponse? value = null) =>
+        _structured
+            .CompleteAsync<LlmPiiResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmPiiResponse> { Status = status, Value = value });
+
+    private void Succeeds(LlmPiiResponse value) => CompletionReturns(StructuredCompletionStatus.Succeeded, value);
 
     [Fact]
     public async Task ScanAsync_DetectsEmail()
     {
-        // Arrange
-        const string jsonResponse = """{"containsPii":true,"items":[{"type":"Email","description":"Found email address in the text"}]}""";
+        Succeeds(new LlmPiiResponse(true, [new LlmPiiItem("Email", "Found email address in the text")]));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse)));
+        PiiDetectionResult result = await CreateDetector().ScanAsync(
+            "Party me at john@example.com for details.", TestContext.Current.CancellationToken);
 
-        // Act
-        PiiDetectionResult result = await _sut.ScanAsync(
-            "Party me at john@example.com for details.",
-            TestContext.Current.CancellationToken);
-
-        // Assert
         result.ContainsPii.ShouldBeTrue();
         result.Items.ShouldHaveSingleItem();
         result.Items[0].Type.ShouldBe(PiiType.Email);
@@ -62,31 +48,16 @@ public sealed class LlmPiiDetectorTests
     [Fact]
     public async Task ScanAsync_DetectsMultiplePiiTypes()
     {
-        // Arrange
-        const string jsonResponse = """
-            {
-                "containsPii": true,
-                "items": [
-                    {"type": "PersonName", "description": "Found person name"},
-                    {"type": "PhoneNumber", "description": "Found phone number"},
-                    {"type": "NationalId", "description": "Found national ID number"}
-                ]
-            }
-            """;
+        Succeeds(new LlmPiiResponse(true,
+        [
+            new LlmPiiItem("PersonName", "Found person name"),
+            new LlmPiiItem("PhoneNumber", "Found phone number"),
+            new LlmPiiItem("NationalId", "Found national ID number"),
+        ]));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse)));
+        PiiDetectionResult result = await CreateDetector().ScanAsync(
+            "John Doe, phone 555-0123, SSN ...", TestContext.Current.CancellationToken);
 
-        // Act
-        PiiDetectionResult result = await _sut.ScanAsync(
-            "John Doe, phone 555-0123, SSN 123-45-6789",
-            TestContext.Current.CancellationToken);
-
-        // Assert
         result.ContainsPii.ShouldBeTrue();
         result.Items.Count.ShouldBe(3);
         result.Items.ShouldContain(i => i.Type == PiiType.PersonName);
@@ -97,125 +68,100 @@ public sealed class LlmPiiDetectorTests
     [Fact]
     public async Task ScanAsync_NoPii_ReturnsClean()
     {
-        // Arrange
-        const string jsonResponse = """{"containsPii":false,"items":[]}""";
+        Succeeds(new LlmPiiResponse(false, []));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse)));
+        PiiDetectionResult result = await CreateDetector().ScanAsync(
+            "The quarterly revenue report shows a 15% increase.", TestContext.Current.CancellationToken);
 
-        // Act
-        PiiDetectionResult result = await _sut.ScanAsync(
-            "The quarterly revenue report shows a 15% increase.",
-            TestContext.Current.CancellationToken);
-
-        // Assert
         result.ContainsPii.ShouldBeFalse();
         result.Items.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task ScanAsync_LLMFailure_FailClosed_AssumesPiiPresent()
-    {
-        // Arrange — default FailMode is Closed
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("Provider unavailable"));
-
-        // Act
-        PiiDetectionResult result = await _sut.ScanAsync(
-            "Some text to scan.",
-            TestContext.Current.CancellationToken);
-
-        // Assert — fail-closed: assume PII present when detection fails
-        result.ContainsPii.ShouldBeTrue();
-        result.Items.Count.ShouldBe(1);
-    }
-
-    [Fact]
-    public async Task ScanAsync_NullText_ThrowsArgumentNullException()
-    {
-        // Act & Assert
-        await Should.ThrowAsync<ArgumentNullException>(
-            () => _sut.ScanAsync(null!, TestContext.Current.CancellationToken));
-    }
-
-    [Fact]
-    public async Task ScanAsync_MarkdownCodeFences_StripsAndParses()
-    {
-        // Arrange
-        const string jsonWithFences = """
-            ```json
-            {"containsPii":true,"items":[{"type":"Email","description":"Found email"}]}
-            ```
-            """;
-
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonWithFences)));
-
-        // Act
-        PiiDetectionResult result = await _sut.ScanAsync(
-            "Party: test@example.com",
-            TestContext.Current.CancellationToken);
-
-        // Assert
-        result.ContainsPii.ShouldBeTrue();
-        result.Items.ShouldHaveSingleItem();
-        result.Items[0].Type.ShouldBe(PiiType.Email);
-    }
-
-    [Fact]
     public async Task ScanAsync_UnknownPiiType_MapsToOther()
     {
-        // Arrange
-        const string jsonResponse = """{"containsPii":true,"items":[{"type":"Biometric","description":"Found biometric data"}]}""";
+        Succeeds(new LlmPiiResponse(true, [new LlmPiiItem("Biometric", "Found biometric data")]));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse)));
+        PiiDetectionResult result = await CreateDetector().ScanAsync(
+            "Fingerprint data stored.", TestContext.Current.CancellationToken);
 
-        // Act
-        PiiDetectionResult result = await _sut.ScanAsync(
-            "Fingerprint data stored.",
-            TestContext.Current.CancellationToken);
-
-        // Assert
-        result.ContainsPii.ShouldBeTrue();
         result.Items.ShouldHaveSingleItem();
         result.Items[0].Type.ShouldBe(PiiType.Other);
         result.Items[0].Description.ShouldBe("Found biometric data");
     }
 
     [Fact]
-    public async Task ScanAsync_UsesConfiguredWorkspace()
+    public async Task ScanAsync_RedactsPiiEchoedIntoDescription()
     {
-        // Arrange
-        const string jsonResponse = """{"containsPii":false,"items":[]}""";
+        // The model may echo actual PII into descriptions despite the instruction; the
+        // detector must redact it post-LLM.
+        Succeeds(new LlmPiiResponse(true, [new LlmPiiItem("Email", "Found email john.doe@example.com in sentence 1")]));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse)));
+        PiiDetectionResult result = await CreateDetector().ScanAsync("x", TestContext.Current.CancellationToken);
 
-        // Act
-        await _sut.ScanAsync("test", TestContext.Current.CancellationToken);
-
-        // Assert — verify the configured workspace name was used
-        await _chatClientFactory.Received(1).CreateAsync("test-privacy", Arg.Any<CancellationToken>());
+        result.Items[0].Description.ShouldContain("[REDACTED]");
+        result.Items[0].Description.ShouldNotContain("john.doe@example.com");
     }
+
+    [Fact]
+    public async Task ScanAsync_TransportFailure_FailClosed_AssumesPiiPresent()
+    {
+        CompletionReturns(StructuredCompletionStatus.TransportFailure);
+
+        PiiDetectionResult result = await CreateDetector().ScanAsync("Some text.", TestContext.Current.CancellationToken);
+
+        result.ContainsPii.ShouldBeTrue(); // fail-closed default
+        result.Items.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task ScanAsync_SchemaViolation_FailClosed_AssumesPiiPresent()
+    {
+        CompletionReturns(StructuredCompletionStatus.SchemaViolation);
+
+        PiiDetectionResult result = await CreateDetector().ScanAsync("Some text.", TestContext.Current.CancellationToken);
+
+        result.ContainsPii.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task ScanAsync_FailOpenConfig_AssumesNoPiiOnFailure()
+    {
+        CompletionReturns(StructuredCompletionStatus.TransportFailure);
+
+        PiiDetectionResult result = await CreateDetector(new PrivacyAIOptions
+        {
+            WorkspaceName = "test-privacy",
+            TimeoutSeconds = 15,
+            FailMode = PiiDetectionFailMode.Open,
+        }).ScanAsync("Some text.", TestContext.Current.CancellationToken);
+
+        result.ContainsPii.ShouldBeFalse();
+        result.Items.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task ScanAsync_PassesContentAndConfiguredWorkspace()
+    {
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<LlmPiiResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmPiiResponse>
+            {
+                Status = StructuredCompletionStatus.Succeeded,
+                Value = new LlmPiiResponse(false, []),
+            });
+
+        await CreateDetector().ScanAsync("scan me", TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Content.ShouldBe("scan me");
+        captured.WorkspaceName.ShouldBe("test-privacy");
+        captured.Instruction!.ShouldContain("PII");
+    }
+
+    [Fact]
+    public async Task ScanAsync_NullText_ThrowsArgumentNullException() =>
+        await Should.ThrowAsync<ArgumentNullException>(
+            () => CreateDetector().ScanAsync(null!, TestContext.Current.CancellationToken));
 }
