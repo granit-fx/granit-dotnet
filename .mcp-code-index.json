@@ -28220,13 +28220,13 @@
       "kind": "class",
       "project": "Granit.LanguageDetection.AI",
       "file": "src/Granit.LanguageDetection.AI/Prompts/DefaultAILanguageDetectionPromptBuilder.cs",
-      "line": 16,
+      "line": 12,
       "members": [
         {
-          "name": "Build",
+          "name": "BuildInstruction",
           "kind": "method",
-          "signature": "Build(string content)",
-          "returnType": "IReadOnlyList<ChatMessage>"
+          "signature": "BuildInstruction()",
+          "returnType": "string"
         }
       ]
     },
@@ -28236,13 +28236,13 @@
       "kind": "interface",
       "project": "Granit.LanguageDetection.AI",
       "file": "src/Granit.LanguageDetection.AI/Prompts/IAILanguageDetectionPromptBuilder.cs",
-      "line": 10,
+      "line": 14,
       "members": [
         {
-          "name": "Build",
+          "name": "BuildInstruction",
           "kind": "method",
-          "signature": "Build(string content)",
-          "returnType": "IReadOnlyList<ChatMessage>"
+          "signature": "BuildInstruction()",
+          "returnType": "string"
         }
       ]
     },
