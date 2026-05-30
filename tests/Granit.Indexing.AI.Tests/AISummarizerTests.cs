@@ -6,8 +6,8 @@ using Granit.Indexing.AI.Diagnostics;
 using Granit.Indexing.AI.Internal;
 using Granit.Indexing.AI.Options;
 using Granit.Indexing.AI.Prompts;
+using Granit.Indexing.AI.Schema;
 using Granit.MultiTenancy;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Diagnostics.Metrics.Testing;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -24,9 +24,7 @@ public sealed class AISummarizerTests
     public async Task SummarizeAsync_returns_null_when_content_is_empty()
     {
         Harness harness = new();
-        AISummarizer summarizer = BuildSummarizer(harness);
-
-        string? result = await summarizer.SummarizeAsync("   ", language: null, TestContext.Current.CancellationToken);
+        string? result = await BuildSummarizer(harness).SummarizeAsync("   ", null, TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -35,13 +33,10 @@ public sealed class AISummarizerTests
     public async Task SummarizeAsync_returns_summary_on_successful_call()
     {
         Harness harness = new();
-        harness.RespondWith("""{"summary": "A short summary."}""");
-        AISummarizer summarizer = BuildSummarizer(harness);
+        harness.RespondWithSummary("A short summary.");
 
-        string? result = await summarizer.SummarizeAsync(
-            "Long document body that the LLM will boil down for SERP display.",
-            language: "en",
-            TestContext.Current.CancellationToken);
+        string? result = await BuildSummarizer(harness).SummarizeAsync(
+            "Long document body that the LLM will boil down for SERP display.", "en", TestContext.Current.CancellationToken);
 
         result.ShouldBe("A short summary.");
     }
@@ -49,19 +44,11 @@ public sealed class AISummarizerTests
     [Fact]
     public async Task SummarizeAsync_truncates_and_records_metric_when_response_exceeds_cap()
     {
-        // The schema cap is enforced server-side AND client-side: even if the LLM ignores
-        // the prompt's length constraint, the summarizer never returns a longer string
-        // than MaxSummaryLength. The truncated metric lets ops alert on prompt-adherence
-        // drift without parsing log payloads.
         Harness harness = new();
         harness.Options.MaxSummaryLength = 20;
-        harness.RespondWith("""{"summary": "this is way longer than twenty characters of output"}""");
-        AISummarizer summarizer = BuildSummarizer(harness);
+        harness.RespondWithSummary("this is way longer than twenty characters of output");
 
-        string? result = await summarizer.SummarizeAsync(
-            "Long body to summarize",
-            language: null,
-            TestContext.Current.CancellationToken);
+        string? result = await BuildSummarizer(harness).SummarizeAsync("Long body to summarize", null, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.Length.ShouldBe(20);
@@ -73,26 +60,22 @@ public sealed class AISummarizerTests
     {
         Harness harness = new();
         harness.RateLimiter.Saturated = true;
-        AISummarizer summarizer = BuildSummarizer(harness);
 
-        string? result = await summarizer.SummarizeAsync(
-            "Long body to summarize that would normally trigger a call",
-            language: null,
-            TestContext.Current.CancellationToken);
+        string? result = await BuildSummarizer(harness).SummarizeAsync(
+            "Long body to summarize that would normally trigger a call", null, TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
         harness.CollectThrottledCount().ShouldBe(1);
-        await harness.ChatClient.DidNotReceiveWithAnyArgs().GetResponseAsync(default!, default, TestContext.Current.CancellationToken);
+        await harness.Structured.DidNotReceiveWithAnyArgs().CompleteAsync<SummaryResponse>(default!, TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public async Task SummarizeAsync_returns_null_and_emits_injection_metric_when_response_is_unparsable_json()
+    public async Task SummarizeAsync_returns_null_and_emits_injection_metric_on_schema_violation()
     {
         Harness harness = new();
-        harness.RespondWith("absolutely not json");
-        AISummarizer summarizer = BuildSummarizer(harness);
+        harness.RespondWith(StructuredCompletionStatus.SchemaViolation);
 
-        string? result = await summarizer.SummarizeAsync("body", language: null, TestContext.Current.CancellationToken);
+        string? result = await BuildSummarizer(harness).SummarizeAsync("body", null, TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
         harness.CollectInjectionCount().ShouldBe(1);
@@ -101,14 +84,10 @@ public sealed class AISummarizerTests
     [Fact]
     public async Task SummarizeAsync_returns_null_when_model_returns_empty_summary()
     {
-        // An empty summary is a valid model decision (e.g. document is gibberish). The
-        // summarizer treats it as "no summary available" rather than persisting an empty
-        // string into IndexedEntry.Summary.
         Harness harness = new();
-        harness.RespondWith("""{"summary": ""}""");
-        AISummarizer summarizer = BuildSummarizer(harness);
+        harness.RespondWithSummary("");
 
-        string? result = await summarizer.SummarizeAsync("body", language: null, TestContext.Current.CancellationToken);
+        string? result = await BuildSummarizer(harness).SummarizeAsync("body", null, TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -117,19 +96,15 @@ public sealed class AISummarizerTests
     public async Task SummarizeAsync_routes_content_through_redactor_when_PII_redaction_is_enabled()
     {
         Harness harness = new();
-        harness.RespondWith("""{"summary": "ok"}""");
-        AISummarizer summarizer = BuildSummarizer(harness);
+        harness.RespondWithSummary("ok");
 
-        await summarizer.SummarizeAsync(
-            "Contact me at jdoe@example.com please.",
-            language: null,
-            TestContext.Current.CancellationToken);
+        await BuildSummarizer(harness).SummarizeAsync("Contact me at jdoe@example.com please.", null, TestContext.Current.CancellationToken);
 
         harness.Redactor.Received(1).Redact(Arg.Any<string>());
     }
 
     private static AISummarizer BuildSummarizer(Harness h) => new(
-        h.ChatClientFactory,
+        h.Structured,
         new DefaultAIAutoSummaryPromptBuilder(),
         h.RateLimiter,
         h.Redactor,
@@ -140,8 +115,7 @@ public sealed class AISummarizerTests
 
     private sealed class Harness
     {
-        public IAIChatClientFactory ChatClientFactory { get; } = Substitute.For<IAIChatClientFactory>();
-        public IChatClient ChatClient { get; } = Substitute.For<IChatClient>();
+        public IStructuredCompletion Structured { get; } = Substitute.For<IStructuredCompletion>();
         public FakeRateLimiter RateLimiter { get; } = new();
         public IAIContentRedactor Redactor { get; } = Substitute.For<IAIContentRedactor>();
         public IndexingAIOptions Options { get; } = new();
@@ -154,24 +128,24 @@ public sealed class AISummarizerTests
         {
             var meterFactory = new TestMeterFactory();
             Metrics = new IndexingAIMetrics(meterFactory);
-            ChatClientFactory.CreateAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-                .Returns(Task.FromResult(ChatClient));
             Redactor.Redact(Arg.Any<string>()).Returns(call => call.ArgAt<string>(0));
 
-            ThrottledCollector = new MetricCollector<long>(
-                meterFactory.Meter, "granit.indexing.ai.summarizer.calls.throttled");
-            InjectionCollector = new MetricCollector<long>(
-                meterFactory.Meter, "granit.indexing.ai.summarizer.injection_attempt");
-            TruncatedCollector = new MetricCollector<long>(
-                meterFactory.Meter, "granit.indexing.ai.summarizer.truncated");
+            ThrottledCollector = new MetricCollector<long>(meterFactory.Meter, "granit.indexing.ai.summarizer.calls.throttled");
+            InjectionCollector = new MetricCollector<long>(meterFactory.Meter, "granit.indexing.ai.summarizer.injection_attempt");
+            TruncatedCollector = new MetricCollector<long>(meterFactory.Meter, "granit.indexing.ai.summarizer.truncated");
         }
 
-        public void RespondWith(string text)
-        {
-            var response = new ChatResponse(new ChatMessage(ChatRole.Assistant, text));
-            ChatClient.GetResponseAsync(Arg.Any<IEnumerable<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
-                .Returns(Task.FromResult(response));
-        }
+        public void RespondWithSummary(string summary) =>
+            Structured.CompleteAsync<SummaryResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+                .Returns(new StructuredCompletionResult<SummaryResponse>
+                {
+                    Status = StructuredCompletionStatus.Succeeded,
+                    Value = new SummaryResponse { Summary = summary },
+                });
+
+        public void RespondWith(StructuredCompletionStatus status) =>
+            Structured.CompleteAsync<SummaryResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+                .Returns(new StructuredCompletionResult<SummaryResponse> { Status = status });
 
         public long CollectThrottledCount() => ThrottledCollector.GetMeasurementSnapshot().Sum(m => m.Value);
         public long CollectInjectionCount() => InjectionCollector.GetMeasurementSnapshot().Sum(m => m.Value);

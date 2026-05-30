@@ -1,23 +1,22 @@
-using Microsoft.Extensions.AI;
-
 namespace Granit.Indexing.AI.Prompts;
 
 /// <summary>
-/// Builds the chat-message sequence handed to the LLM for auto-tagging. Overridable
-/// per-provider so hosts can tune system instructions, few-shot examples, or domain
+/// Builds the developer-controlled task instruction handed to the LLM for auto-tagging.
+/// Overridable per-provider so hosts can tune the instruction, few-shot examples, or domain
 /// glossaries without forking the auto-tagger.
 /// </summary>
+/// <remarks>
+/// The untrusted document body is supplied and isolated separately by the
+/// <see cref="Granit.AI.IStructuredCompletion"/> primitive (sanitized <c>&lt;data&gt;</c> block)
+/// and the response is pinned by the JSON schema — so the builder only contributes the
+/// instruction text (which lists the authoritative candidate set).
+/// </remarks>
 public interface IAutoTagPromptBuilder
 {
     /// <summary>
-    /// Builds the (system + user) message pair. <paramref name="content"/> is the
-    /// (possibly redacted, possibly truncated) document body. <paramref name="candidates"/>
-    /// is the tenant's full tag universe — the model is instructed to pick a subset.
-    /// <paramref name="maxTags"/> communicates the per-call cap so the prompt can
-    /// constrain the model upstream.
+    /// Builds the developer-controlled instruction. <paramref name="candidates"/> is the
+    /// tenant's full tag universe (the model is told to pick a subset); <paramref name="maxTags"/>
+    /// is the per-call cap.
     /// </summary>
-    IReadOnlyList<ChatMessage> Build(
-        string content,
-        IReadOnlyList<string> candidates,
-        int maxTags);
+    string BuildInstruction(IReadOnlyList<string> candidates, int maxTags);
 }

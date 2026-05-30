@@ -27033,13 +27033,13 @@
       "kind": "class",
       "project": "Granit.Indexing.AI",
       "file": "src/Granit.Indexing.AI/Prompts/DefaultAIAutoSummaryPromptBuilder.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
-          "name": "Build",
+          "name": "BuildInstruction",
           "kind": "method",
-          "signature": "Build(string content, int maxSummaryLength)",
-          "returnType": "IReadOnlyList<ChatMessage>"
+          "signature": "BuildInstruction(int maxSummaryLength)",
+          "returnType": "string"
         }
       ]
     },
@@ -27049,13 +27049,13 @@
       "kind": "class",
       "project": "Granit.Indexing.AI",
       "file": "src/Granit.Indexing.AI/Prompts/DefaultAutoTagPromptBuilder.cs",
-      "line": 26,
+      "line": 22,
       "members": [
         {
-          "name": "Build",
+          "name": "BuildInstruction",
           "kind": "method",
-          "signature": "Build(string content, IReadOnlyList<string> candidates, int maxTags)",
-          "returnType": "IReadOnlyList<ChatMessage>"
+          "signature": "BuildInstruction(IReadOnlyList<string> candidates, int maxTags)",
+          "returnType": "string"
         }
       ]
     },
@@ -27065,13 +27065,13 @@
       "kind": "interface",
       "project": "Granit.Indexing.AI",
       "file": "src/Granit.Indexing.AI/Prompts/IAIAutoSummaryPromptBuilder.cs",
-      "line": 10,
+      "line": 14,
       "members": [
         {
-          "name": "Build",
+          "name": "BuildInstruction",
           "kind": "method",
-          "signature": "Build(string content, int maxSummaryLength)",
-          "returnType": "IReadOnlyList<ChatMessage>"
+          "signature": "BuildInstruction(int maxSummaryLength)",
+          "returnType": "string"
         }
       ]
     },
@@ -27081,13 +27081,13 @@
       "kind": "interface",
       "project": "Granit.Indexing.AI",
       "file": "src/Granit.Indexing.AI/Prompts/IAutoTagPromptBuilder.cs",
-      "line": 10,
+      "line": 14,
       "members": [
         {
-          "name": "Build",
+          "name": "BuildInstruction",
           "kind": "method",
-          "signature": "Build(string content, IReadOnlyList<string> candidates, int maxTags)",
-          "returnType": "IReadOnlyList<ChatMessage>"
+          "signature": "BuildInstruction(IReadOnlyList<string> candidates, int maxTags)",
+          "returnType": "string"
         }
       ]
     },

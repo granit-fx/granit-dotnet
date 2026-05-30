@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Granit.AI;
 using Granit.AI.RateLimiting;
 using Granit.AI.Redaction;
@@ -8,61 +7,37 @@ using Granit.Indexing.AI.Options;
 using Granit.Indexing.AI.Prompts;
 using Granit.Indexing.AI.Schema;
 using Granit.MultiTenancy;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Indexing.AI.Internal;
 
 /// <summary>
-/// <see cref="IAutoTagger"/> backed by a one-shot LLM call. Returns a subset of the
-/// consumer-supplied candidate tag universe.
+/// <see cref="IAutoTagger"/> backed by a one-shot LLM call via the <see cref="IStructuredCompletion"/>
+/// primitive (ADR-064). Returns a subset of the consumer-supplied candidate tag universe.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>⚠ Suggestion-only UX contract.</b> User-facing UI MUST require explicit
-/// confirmation before applying suggested tags. The 'suggestion-only' guarantee is a
-/// UX contract — in bulk-approve flows, this defence becomes ineffective.
+/// <b>⚠ Suggestion-only UX contract.</b> User-facing UI MUST require explicit confirmation
+/// before applying suggested tags.
 /// </para>
 /// <para>
-/// <b>Server-side intersection (non-negotiable).</b> The auto-tagger filters the LLM
-/// response through <c>response.Tags.Intersect(candidates)</c> BEFORE returning. Out-of-
-/// candidate IDs are dropped silently — they cannot reach the consumer module under any
-/// circumstance. A prompt-injection payload that proposes <c>"delete-everything"</c>
-/// gets discarded, and the <c>granit.indexing.ai.autotag.out_of_candidate</c> metric
-/// captures the attempt for ops alerting.
+/// <b>Server-side intersection (non-negotiable).</b> The auto-tagger filters the response
+/// through <c>candidates</c> BEFORE returning. Out-of-candidate IDs are dropped silently and
+/// captured on the <c>granit.indexing.ai.autotag.out_of_candidate</c> metric — a hostile prompt
+/// that proposes <c>"delete-everything"</c> cannot reach the consumer.
 /// </para>
 /// <para>
-/// <b>Defence-in-depth against prompt injection (OWASP LLM01 / LLM02).</b> Three layers
-/// in addition to the intersection:
+/// <b>Defence-in-depth (OWASP LLM01 / LLM02).</b> In addition to the intersection: the dev
+/// instruction lists the authoritative candidate set, the primitive isolates the document in a
+/// sanitized <c>&lt;data&gt;</c> block and pins the JSON schema, and an optional PII redaction
+/// pass runs when <see cref="IndexingAIOptions.RedactPIIBeforeLLMCall"/> is set.
 /// </para>
-/// <list type="bullet">
-///   <item>Instruction-isolation wrapping via <see cref="IAutoTagPromptBuilder"/>.</item>
-///   <item>JSON-schema pinning via <c>ChatResponseFormat.ForJsonSchema&lt;AutoTagResponse&gt;</c>.</item>
-///   <item>Optional PII redaction through <see cref="IAIContentRedactor"/> when
-///         <see cref="IndexingAIOptions.RedactPIIBeforeLLMCall"/> is set.</item>
-/// </list>
-/// <para>
-/// <b>Graceful skip.</b> Every failure mode — rate-limit denial, timeout, transport
-/// error, schema reject, empty candidate list — returns an empty list rather than
-/// throwing. The caller persists the entry without auto-tags; manual tagging still
-/// works.
-/// </para>
+/// <para><b>Graceful skip.</b> Every failure mode returns an empty list rather than throwing.</para>
 /// </remarks>
 internal sealed partial class AIAutoTagger : IAutoTagger
 {
-    private static readonly JsonSerializerOptions SerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
-
-    private static readonly ChatOptions StructuredOutputOptions = new()
-    {
-        ResponseFormat = ChatResponseFormat.ForJsonSchema<AutoTagResponse>(),
-    };
-
-    private readonly IAIChatClientFactory _chatClientFactory;
+    private readonly IStructuredCompletion _structuredCompletion;
     private readonly IAutoTagPromptBuilder _promptBuilder;
     private readonly IAICallRateLimiter _rateLimiter;
     private readonly IAIContentRedactor _redactor;
@@ -72,7 +47,7 @@ internal sealed partial class AIAutoTagger : IAutoTagger
     private readonly ILogger<AIAutoTagger> _logger;
 
     public AIAutoTagger(
-        IAIChatClientFactory chatClientFactory,
+        IStructuredCompletion structuredCompletion,
         IAutoTagPromptBuilder promptBuilder,
         IAICallRateLimiter rateLimiter,
         IAIContentRedactor redactor,
@@ -81,7 +56,7 @@ internal sealed partial class AIAutoTagger : IAutoTagger
         ICurrentTenant currentTenant,
         ILogger<AIAutoTagger> logger)
     {
-        ArgumentNullException.ThrowIfNull(chatClientFactory);
+        ArgumentNullException.ThrowIfNull(structuredCompletion);
         ArgumentNullException.ThrowIfNull(promptBuilder);
         ArgumentNullException.ThrowIfNull(rateLimiter);
         ArgumentNullException.ThrowIfNull(redactor);
@@ -89,7 +64,7 @@ internal sealed partial class AIAutoTagger : IAutoTagger
         ArgumentNullException.ThrowIfNull(metrics);
         ArgumentNullException.ThrowIfNull(currentTenant);
         ArgumentNullException.ThrowIfNull(logger);
-        _chatClientFactory = chatClientFactory;
+        _structuredCompletion = structuredCompletion;
         _promptBuilder = promptBuilder;
         _rateLimiter = rateLimiter;
         _redactor = redactor;
@@ -151,21 +126,36 @@ internal sealed partial class AIAutoTagger : IAutoTagger
 
         _metrics.RecordAutoTaggerAttempted(tenantId);
 
+        var request = new StructuredCompletionRequest
+        {
+            Instruction = _promptBuilder.BuildInstruction(candidateList, effectiveCap),
+            Content = sample,
+            ContentLabel = "Document",
+            WorkspaceName = _options.WorkspaceName,
+        };
+
         try
         {
-            // CreateAsync builds a fresh client per call (no cache) — dispose
-            // deterministically so the HttpMessageHandler doesn't linger until GC.
-            using IChatClient chatClient = await _chatClientFactory
-                .CreateAsync(_options.WorkspaceName, linkedCts.Token)
+            StructuredCompletionResult<AutoTagResponse> result = await _structuredCompletion
+                .CompleteAsync<AutoTagResponse>(request, linkedCts.Token)
                 .ConfigureAwait(false);
 
-            IReadOnlyList<ChatMessage> messages = _promptBuilder.Build(sample, candidateList, effectiveCap);
+            switch (result.Status)
+            {
+                case StructuredCompletionStatus.Succeeded:
+                    return Intersect(result.Value!, candidateList, effectiveCap, tenantId);
 
-            ChatResponse response = await chatClient
-                .GetResponseAsync(messages, StructuredOutputOptions, linkedCts.Token)
-                .ConfigureAwait(false);
+                case StructuredCompletionStatus.ModelRefused:
+                case StructuredCompletionStatus.SchemaViolation:
+                    _metrics.RecordAutoTaggerInjection(tenantId);
+                    return [];
 
-            return Intersect(response.Text, candidateList, effectiveCap, tenantId);
+                case StructuredCompletionStatus.TransportFailure:
+                default:
+                    _metrics.RecordAutoTaggerFailed(tenantId, "transport");
+                    LogTransportFailure(tenantId ?? "global", result.Status.ToString());
+                    return [];
+            }
         }
         catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
@@ -173,45 +163,20 @@ internal sealed partial class AIAutoTagger : IAutoTagger
             LogTimeout(tenantId ?? "global", _options.TimeoutSeconds);
             return [];
         }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (JsonException)
-        {
-            _metrics.RecordAutoTaggerInjection(tenantId);
-            return [];
-        }
-        catch (Exception ex)
-        {
-            // Never log ex.Message — providers can echo the prompt payload (PII) in 4xx
-            // exception messages, which would bypass the IAIContentRedactor seam.
-            _metrics.RecordAutoTaggerFailed(tenantId, "transport");
-            LogTransportFailure(tenantId ?? "global", ex.GetType().Name);
-            return [];
-        }
     }
 
     private List<string> Intersect(
-        string? responseText,
+        AutoTagResponse parsed,
         IReadOnlyList<string> candidates,
         int cap,
         string? tenantId)
     {
-        if (string.IsNullOrWhiteSpace(responseText))
-        {
-            _metrics.RecordAutoTaggerInjection(tenantId);
-            return [];
-        }
-
-        AutoTagResponse? parsed = JsonSerializer.Deserialize<AutoTagResponse>(responseText, SerializerOptions);
-        if (parsed is null || parsed.Tags.Length == 0)
+        if (parsed.Tags.Length == 0)
         {
             return [];
         }
 
-        // Server-side intersection — the non-negotiable safety net. Hash set lookup
-        // keeps the O(n + m) cost bounded even when the candidate list is large.
+        // Server-side intersection — the non-negotiable safety net.
         HashSet<string> allowed = new(candidates, StringComparer.Ordinal);
         List<string> kept = new(Math.Min(parsed.Tags.Length, cap));
         HashSet<string> deduped = new(StringComparer.Ordinal);
@@ -219,12 +184,7 @@ internal sealed partial class AIAutoTagger : IAutoTagger
 
         foreach (string tag in parsed.Tags)
         {
-            if (string.IsNullOrEmpty(tag))
-            {
-                dropped++;
-                continue;
-            }
-            if (!allowed.Contains(tag))
+            if (string.IsNullOrEmpty(tag) || !allowed.Contains(tag))
             {
                 dropped++;
                 continue;
@@ -254,8 +214,8 @@ internal sealed partial class AIAutoTagger : IAutoTagger
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI auto-tagger timed out for tenant {TenantId} after {TimeoutSeconds}s")]
     private partial void LogTimeout(string tenantId, int timeoutSeconds);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "AI auto-tagger transport failure for tenant {TenantId} (exception type: {ExceptionType})")]
-    private partial void LogTransportFailure(string tenantId, string exceptionType);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "AI auto-tagger transport failure for tenant {TenantId} ({Status})")]
+    private partial void LogTransportFailure(string tenantId, string status);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI auto-tagger dropped {DroppedCount} out-of-candidate tag(s) for tenant {TenantId}")]
     private partial void LogOutOfCandidate(string tenantId, int droppedCount);

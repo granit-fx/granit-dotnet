@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Granit.AI;
 using Granit.AI.RateLimiting;
 using Granit.AI.Redaction;
@@ -8,44 +7,28 @@ using Granit.Indexing.AI.Options;
 using Granit.Indexing.AI.Prompts;
 using Granit.Indexing.AI.Schema;
 using Granit.MultiTenancy;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Indexing.AI.Internal;
 
 /// <summary>
-/// <see cref="ISummarizer"/> backed by a one-shot LLM call. Produces a SERP-style
-/// snippet for indexed entries whose <c>Summary</c> would otherwise be null.
+/// <see cref="ISummarizer"/> backed by a one-shot LLM call via the <see cref="IStructuredCompletion"/>
+/// primitive (ADR-064). Produces a SERP-style snippet for indexed entries whose <c>Summary</c>
+/// would otherwise be null.
 /// </summary>
 /// <remarks>
+/// <para><b>Graceful skip.</b> Every failure mode returns <c>null</c> rather than throwing.</para>
 /// <para>
-/// <b>Graceful skip.</b> Every failure mode — rate-limit denial, timeout, transport
-/// error, schema reject — returns <c>null</c> rather than throwing. The caller
-/// persists the entry without a summary; the search pipeline still ranks by the body.
-/// </para>
-/// <para>
-/// <b>Defence-in-depth against prompt injection (OWASP LLM01).</b> Instruction-isolation
-/// wrapping via <see cref="IAIAutoSummaryPromptBuilder"/>, JSON-schema pinning via
-/// <c>ChatResponseFormat.ForJsonSchema</c>, and a hard cap on the returned summary
-/// length. Over-length responses are truncated and emit a metric so the host can spot
-/// a prompt-adherence drift.
+/// <b>Defence-in-depth (OWASP LLM01).</b> The primitive isolates the document in a sanitized
+/// <c>&lt;data&gt;</c> block and pins the JSON schema; the detector keeps a per-tenant rate
+/// limiter, optional PII redaction, and a hard cap on the returned summary length (over-length
+/// responses are truncated and emit a metric).
 /// </para>
 /// </remarks>
 internal sealed partial class AISummarizer : ISummarizer
 {
-    private static readonly JsonSerializerOptions SerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
-
-    private static readonly ChatOptions StructuredOutputOptions = new()
-    {
-        ResponseFormat = ChatResponseFormat.ForJsonSchema<SummaryResponse>(),
-    };
-
-    private readonly IAIChatClientFactory _chatClientFactory;
+    private readonly IStructuredCompletion _structuredCompletion;
     private readonly IAIAutoSummaryPromptBuilder _promptBuilder;
     private readonly IAICallRateLimiter _rateLimiter;
     private readonly IAIContentRedactor _redactor;
@@ -55,7 +38,7 @@ internal sealed partial class AISummarizer : ISummarizer
     private readonly ILogger<AISummarizer> _logger;
 
     public AISummarizer(
-        IAIChatClientFactory chatClientFactory,
+        IStructuredCompletion structuredCompletion,
         IAIAutoSummaryPromptBuilder promptBuilder,
         IAICallRateLimiter rateLimiter,
         IAIContentRedactor redactor,
@@ -64,7 +47,7 @@ internal sealed partial class AISummarizer : ISummarizer
         ICurrentTenant currentTenant,
         ILogger<AISummarizer> logger)
     {
-        ArgumentNullException.ThrowIfNull(chatClientFactory);
+        ArgumentNullException.ThrowIfNull(structuredCompletion);
         ArgumentNullException.ThrowIfNull(promptBuilder);
         ArgumentNullException.ThrowIfNull(rateLimiter);
         ArgumentNullException.ThrowIfNull(redactor);
@@ -72,7 +55,7 @@ internal sealed partial class AISummarizer : ISummarizer
         ArgumentNullException.ThrowIfNull(metrics);
         ArgumentNullException.ThrowIfNull(currentTenant);
         ArgumentNullException.ThrowIfNull(logger);
-        _chatClientFactory = chatClientFactory;
+        _structuredCompletion = structuredCompletion;
         _promptBuilder = promptBuilder;
         _rateLimiter = rateLimiter;
         _redactor = redactor;
@@ -95,11 +78,8 @@ internal sealed partial class AISummarizer : ISummarizer
             return null;
         }
 
-        // The default prompt builder folds language hinting into the wrapped system
-        // instruction implicitly via the model's own language detection. Hosts wiring a
-        // language-aware prompt builder can read the hint from a downstream context
-        // (e.g. AsyncLocal) — kept off the public seam to avoid a per-call parameter
-        // explosion as new AI hints get added in I-F3.3 / I-F4.x.
+        // Language hinting is left to the model's own detection / a host-supplied prompt builder
+        // — kept off the public seam to avoid a per-call parameter explosion.
         _ = language;
 
         string? tenantId = _currentTenant.Id?.ToString();
@@ -128,21 +108,36 @@ internal sealed partial class AISummarizer : ISummarizer
 
         _metrics.RecordSummarizerAttempted(tenantId);
 
+        var request = new StructuredCompletionRequest
+        {
+            Instruction = _promptBuilder.BuildInstruction(_options.MaxSummaryLength),
+            Content = sample,
+            ContentLabel = "Document",
+            WorkspaceName = _options.WorkspaceName,
+        };
+
         try
         {
-            // CreateAsync builds a fresh client per call (no cache) — dispose
-            // deterministically so the HttpMessageHandler doesn't linger until GC.
-            using IChatClient chatClient = await _chatClientFactory
-                .CreateAsync(_options.WorkspaceName, linkedCts.Token)
+            StructuredCompletionResult<SummaryResponse> result = await _structuredCompletion
+                .CompleteAsync<SummaryResponse>(request, linkedCts.Token)
                 .ConfigureAwait(false);
 
-            IReadOnlyList<ChatMessage> messages = _promptBuilder.Build(sample, _options.MaxSummaryLength);
+            switch (result.Status)
+            {
+                case StructuredCompletionStatus.Succeeded:
+                    return CapSummary(result.Value!, tenantId);
 
-            ChatResponse response = await chatClient
-                .GetResponseAsync(messages, StructuredOutputOptions, linkedCts.Token)
-                .ConfigureAwait(false);
+                case StructuredCompletionStatus.ModelRefused:
+                case StructuredCompletionStatus.SchemaViolation:
+                    _metrics.RecordSummarizerInjection(tenantId);
+                    return null;
 
-            return ParseAndCap(response.Text, tenantId);
+                case StructuredCompletionStatus.TransportFailure:
+                default:
+                    _metrics.RecordSummarizerFailed(tenantId, "transport");
+                    LogTransportFailure(tenantId ?? "global", result.Status.ToString());
+                    return null;
+            }
         }
         catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
@@ -150,37 +145,11 @@ internal sealed partial class AISummarizer : ISummarizer
             LogTimeout(tenantId ?? "global", _options.TimeoutSeconds);
             return null;
         }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (JsonException)
-        {
-            _metrics.RecordSummarizerInjection(tenantId);
-            return null;
-        }
-        catch (Exception ex)
-        {
-            // Never log ex.Message — providers can echo the prompt payload (PII) in 4xx
-            // exception messages, which would bypass the IAIContentRedactor seam.
-            _metrics.RecordSummarizerFailed(tenantId, "transport");
-            LogTransportFailure(tenantId ?? "global", ex.GetType().Name);
-            return null;
-        }
     }
 
-    private string? ParseAndCap(string? responseText, string? tenantId)
+    private string? CapSummary(SummaryResponse parsed, string? tenantId)
     {
-        if (string.IsNullOrWhiteSpace(responseText))
-        {
-            _metrics.RecordSummarizerInjection(tenantId);
-            return null;
-        }
-
-        SummaryResponse? parsed = JsonSerializer.Deserialize<SummaryResponse>(
-            responseText, SerializerOptions);
-
-        if (parsed is null || string.IsNullOrEmpty(parsed.Summary))
+        if (string.IsNullOrEmpty(parsed.Summary))
         {
             return null;
         }
@@ -200,6 +169,6 @@ internal sealed partial class AISummarizer : ISummarizer
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI summarizer timed out for tenant {TenantId} after {TimeoutSeconds}s")]
     private partial void LogTimeout(string tenantId, int timeoutSeconds);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "AI summarizer transport failure for tenant {TenantId} (exception type: {ExceptionType})")]
-    private partial void LogTransportFailure(string tenantId, string exceptionType);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "AI summarizer transport failure for tenant {TenantId} ({Status})")]
+    private partial void LogTransportFailure(string tenantId, string status);
 }
