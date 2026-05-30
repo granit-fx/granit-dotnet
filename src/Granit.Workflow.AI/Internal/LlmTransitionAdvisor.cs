@@ -1,28 +1,20 @@
-using System.Text.Json;
 using Granit.AI;
-using Granit.AI.Internal;
 using Granit.Workflow.AI.Options;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Workflow.AI.Internal;
 
 /// <summary>
-/// LLM-based implementation of <see cref="IAITransitionAdvisor"/> that uses
-/// <see cref="IAIChatClientFactory"/> to recommend workflow transitions.
+/// LLM-based implementation of <see cref="IAITransitionAdvisor"/> built on the
+/// <see cref="IStructuredCompletion"/> primitive (ADR-064). Recommends the best next
+/// workflow transition, validating the recommendation against the allowed set.
 /// </summary>
 internal sealed partial class LlmTransitionAdvisor(
-    IAIChatClientFactory chatClientFactory,
+    IStructuredCompletion structuredCompletion,
     IOptions<WorkflowAIOptions> options,
     ILogger<LlmTransitionAdvisor> logger) : IAITransitionAdvisor
 {
-    private static readonly JsonSerializerOptions SerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
-
     /// <inheritdoc />
     public async Task<TransitionRecommendation?> RecommendAsync(
         string entityType,
@@ -47,30 +39,37 @@ internal sealed partial class LlmTransitionAdvisor(
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(workflowOptions.TimeoutSeconds));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
+        var request = new StructuredCompletionRequest
+        {
+            Instruction = $"""
+                You are a workflow advisor. Recommend the best next workflow transition.
+                Allowed transitions: {string.Join(", ", allowedTransitions)}.
+                Respond with recommendedTransition (one of the allowed transitions above), a brief
+                reasoning, and a confidence between 0.0 and 1.0.
+                """,
+            Content = entityContext,
+            ContentLabel = "Entity context",
+            Context = [new("Entity type", entityType), new("Current state", currentState)],
+            WorkspaceName = workflowOptions.WorkspaceName,
+        };
+
         try
         {
-            // CreateAsync builds a fresh client per call (no cache) — dispose
-            // deterministically so the HttpMessageHandler doesn't linger until GC.
-            using IChatClient chatClient = await chatClientFactory
-                .CreateAsync(workflowOptions.WorkspaceName, linkedCts.Token)
+            StructuredCompletionResult<LlmRecommendationResponse> response = await structuredCompletion
+                .CompleteAsync<LlmRecommendationResponse>(request, linkedCts.Token)
                 .ConfigureAwait(false);
 
-            string prompt = BuildPrompt(entityType, currentState, entityContext, allowedTransitions);
-
-            List<ChatMessage> messages = [new ChatMessage(ChatRole.User, prompt)];
-
-            ChatResponse response = await chatClient
-                .GetResponseAsync(messages, cancellationToken: linkedCts.Token)
-                .ConfigureAwait(false);
-
-            string responseText = response.Text ?? string.Empty;
-            responseText = LlmResponseHelper.StripMarkdownCodeFences(responseText);
-
-            LlmRecommendationResponse? result = JsonSerializer.Deserialize<LlmRecommendationResponse>(responseText, SerializerOptions);
-
-            if (result is null || string.IsNullOrWhiteSpace(result.RecommendedTransition))
+            if (response.Status != StructuredCompletionStatus.Succeeded)
             {
-                LogDeserializationFailed(entityType);
+                LogRecommendationUnavailable(entityType, response.Status.ToString());
+                return null;
+            }
+
+            LlmRecommendationResponse result = response.Value!;
+
+            if (string.IsNullOrWhiteSpace(result.RecommendedTransition))
+            {
+                LogRecommendationUnavailable(entityType, "EmptyRecommendation");
                 return null;
             }
 
@@ -81,7 +80,6 @@ internal sealed partial class LlmTransitionAdvisor(
             }
 
             double confidence = Math.Clamp(result.Confidence, 0.0, 1.0);
-
             LogRecommendationSucceeded(entityType, currentState, result.RecommendedTransition, confidence);
 
             return new TransitionRecommendation(
@@ -94,53 +92,9 @@ internal sealed partial class LlmTransitionAdvisor(
             LogTimeout(entityType, workflowOptions.TimeoutSeconds);
             return null;
         }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (JsonException ex)
-        {
-            // Type only — a JSON parse message embeds a fragment of the LLM response.
-            LogJsonError(entityType, ex.GetType().Name);
-            return null;
-        }
-        catch (Exception ex)
-        {
-            // Type only — providers can echo the prompt payload in 4xx messages.
-            LogError(entityType, ex.GetType().Name);
-            return null;
-        }
     }
 
-    private static string BuildPrompt(
-        string entityType,
-        string currentState,
-        string entityContext,
-        IReadOnlyList<string> allowedTransitions)
-    {
-        var pb = new PromptBuilder(maxInputLength: 10_000);
-
-        pb.AppendInstruction("You are a workflow advisor. Recommend the best next workflow transition.");
-        pb.AppendInstruction(string.Empty);
-        pb.AppendUserData("Entity type", entityType);
-        pb.AppendUserData("Current state", currentState);
-        pb.AppendInstruction($"Allowed transitions: {string.Join(", ", allowedTransitions)}");
-        pb.AppendInstruction(string.Empty);
-        pb.AppendUserTextBlock("Entity context", entityContext);
-        pb.AppendInstruction("""
-
-            Respond with a JSON object containing:
-            - "recommendedTransition": one of the allowed transitions listed above
-            - "reasoning": a brief explanation of why this transition is recommended
-            - "confidence": a number between 0.0 and 1.0 indicating your confidence
-
-            Return ONLY valid JSON, no markdown, no explanation.
-            """);
-
-        return pb.Build();
-    }
-
-    private sealed record LlmRecommendationResponse(
+    internal sealed record LlmRecommendationResponse(
         string? RecommendedTransition,
         string? Reasoning,
         double Confidence);
@@ -154,15 +108,9 @@ internal sealed partial class LlmTransitionAdvisor(
     [LoggerMessage(Level = LogLevel.Warning, Message = "LLM recommended transition '{RecommendedTransition}' is not in the allowed set for {EntityType}")]
     private partial void LogInvalidRecommendation(string entityType, string recommendedTransition);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to deserialize LLM recommendation response for {EntityType}")]
-    private partial void LogDeserializationFailed(string entityType);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Transition recommendation unavailable for {EntityType} ({Status})")]
+    private partial void LogRecommendationUnavailable(string entityType, string status);
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Transition recommendation timed out for {EntityType} after {TimeoutSeconds}s")]
     private partial void LogTimeout(string entityType, int timeoutSeconds);
-
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to parse LLM recommendation JSON for {EntityType} (exception type: {ExceptionType})")]
-    private partial void LogJsonError(string entityType, string exceptionType);
-
-    [LoggerMessage(Level = LogLevel.Error, Message = "Transition recommendation failed for {EntityType} (exception type: {ExceptionType})")]
-    private partial void LogError(string entityType, string exceptionType);
 }

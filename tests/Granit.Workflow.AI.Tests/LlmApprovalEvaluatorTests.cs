@@ -1,61 +1,40 @@
 using Granit.AI;
 using Granit.Workflow.AI.Internal;
 using Granit.Workflow.AI.Options;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
+using LlmRiskResponse = Granit.Workflow.AI.Internal.LlmApprovalEvaluator.LlmRiskResponse;
 
 namespace Granit.Workflow.AI.Tests;
 
 public sealed class LlmApprovalEvaluatorTests
 {
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
-    private readonly IOptions<WorkflowAIOptions> _options = Microsoft.Extensions.Options.Options.Create(new WorkflowAIOptions
-    {
-        WorkspaceName = "test",
-        TimeoutSeconds = 10,
-        AutoApprovalThreshold = 0.3,
-    });
+    private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
+    private readonly IOptions<WorkflowAIOptions> _options = Microsoft.Extensions.Options.Options.Create(
+        new WorkflowAIOptions { WorkspaceName = "test", TimeoutSeconds = 10, AutoApprovalThreshold = 0.3 });
 
-    private readonly LlmApprovalEvaluator _sut;
+    private LlmApprovalEvaluator CreateSut() => new(_structured, _options, NullLogger<LlmApprovalEvaluator>.Instance);
 
-    public LlmApprovalEvaluatorTests()
-    {
-        _chatClientFactory
-            .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(_chatClient);
+    private void Succeeds(LlmRiskResponse value) =>
+        _structured
+            .CompleteAsync<LlmRiskResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmRiskResponse> { Status = StructuredCompletionStatus.Succeeded, Value = value });
 
-        _sut = new LlmApprovalEvaluator(
-            _chatClientFactory,
-            _options,
-            NullLogger<LlmApprovalEvaluator>.Instance);
-    }
+    private void Fails(StructuredCompletionStatus status) =>
+        _structured
+            .CompleteAsync<LlmRiskResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmRiskResponse> { Status = status });
 
     [Fact]
     public async Task EvaluateRiskAsync_ValidLowRiskResponse_ReturnsLowRiskScore()
     {
-        // Arrange
-        const string jsonResponse = """{"riskScore":0.15,"reasoning":"Standard document publication.","riskFactors":["Minor formatting inconsistency"]}""";
+        Succeeds(new LlmRiskResponse(0.15, "Standard document publication.", ["Minor formatting inconsistency"]));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse)));
+        RiskAssessment result = await CreateSut().EvaluateRiskAsync(
+            "Document", "Publish", """{"status":"reviewed"}""", TestContext.Current.CancellationToken);
 
-        // Act
-        RiskAssessment result = await _sut.EvaluateRiskAsync(
-            "Document",
-            "Publish",
-            """{"title":"Quarterly Report","status":"reviewed"}""",
-            TestContext.Current.CancellationToken);
-
-        // Assert
         result.RiskScore.ShouldBe(0.15);
         result.Reasoning.ShouldBe("Standard document publication.");
         result.RiskFactors.Count.ShouldBe(1);
@@ -65,103 +44,74 @@ public sealed class LlmApprovalEvaluatorTests
     [Fact]
     public async Task EvaluateRiskAsync_ValidHighRiskResponse_ReturnsHighRiskScore()
     {
-        // Arrange
-        const string jsonResponse = """{"riskScore":0.85,"reasoning":"Financial data requires review.","riskFactors":["Missing approval chain","Amount exceeds threshold","Compliance flag"]}""";
+        Succeeds(new LlmRiskResponse(0.85, "Financial data requires review.",
+            ["Missing approval chain", "Amount exceeds threshold", "Compliance flag"]));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse)));
+        RiskAssessment result = await CreateSut().EvaluateRiskAsync(
+            "Invoice", "Approve", """{"amount":50000}""", TestContext.Current.CancellationToken);
 
-        // Act
-        RiskAssessment result = await _sut.EvaluateRiskAsync(
-            "Invoice",
-            "Approve",
-            """{"amount":50000,"currency":"EUR"}""",
-            TestContext.Current.CancellationToken);
-
-        // Assert
         result.RiskScore.ShouldBe(0.85);
         result.RiskFactors.Count.ShouldBe(3);
     }
 
     [Fact]
-    public async Task EvaluateRiskAsync_InvalidJson_ReturnsMaxRisk()
+    public async Task EvaluateRiskAsync_SchemaViolation_ReturnsMaxRisk()
     {
-        // Arrange
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, "not valid json")));
+        Fails(StructuredCompletionStatus.SchemaViolation);
 
-        // Act
-        RiskAssessment result = await _sut.EvaluateRiskAsync(
-            "Document",
-            "Publish",
-            "{}",
-            TestContext.Current.CancellationToken);
+        RiskAssessment result = await CreateSut().EvaluateRiskAsync(
+            "Document", "Publish", "{}", TestContext.Current.CancellationToken);
 
-        // Assert
         result.RiskScore.ShouldBe(1.0);
-        result.Reasoning.ShouldContain("parse");
+        result.Reasoning.ShouldContain("maximum risk");
     }
 
     [Fact]
-    public async Task EvaluateRiskAsync_LlmFailure_ReturnsMaxRisk()
+    public async Task EvaluateRiskAsync_TransportFailure_ReturnsMaxRisk()
     {
-        // Arrange
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("Provider unavailable"));
+        Fails(StructuredCompletionStatus.TransportFailure);
 
-        // Act
-        RiskAssessment result = await _sut.EvaluateRiskAsync(
-            "Invoice",
-            "Approve",
-            "{}",
-            TestContext.Current.CancellationToken);
+        RiskAssessment result = await CreateSut().EvaluateRiskAsync(
+            "Invoice", "Approve", "{}", TestContext.Current.CancellationToken);
 
-        // Assert
         result.RiskScore.ShouldBe(1.0);
-        result.Reasoning.ShouldContain("failed");
+        result.Reasoning.ShouldContain("maximum risk");
     }
 
     [Fact]
     public async Task EvaluateRiskAsync_RiskScoreAboveOne_ClampedToOne()
     {
-        // Arrange
-        const string jsonResponse = """{"riskScore":2.5,"reasoning":"Very risky.","riskFactors":[]}""";
+        Succeeds(new LlmRiskResponse(2.5, "Very risky.", []));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse)));
+        RiskAssessment result = await CreateSut().EvaluateRiskAsync(
+            "Document", "Delete", "{}", TestContext.Current.CancellationToken);
 
-        // Act
-        RiskAssessment result = await _sut.EvaluateRiskAsync(
-            "Document",
-            "Delete",
-            "{}",
-            TestContext.Current.CancellationToken);
-
-        // Assert
         result.RiskScore.ShouldBe(1.0);
     }
 
     [Fact]
-    public async Task EvaluateRiskAsync_NullEntityType_ThrowsArgumentNullException()
+    public async Task EvaluateRiskAsync_PassesContextToPrimitive()
     {
-        // Act & Assert
-        await Should.ThrowAsync<ArgumentNullException>(() =>
-            _sut.EvaluateRiskAsync(null!, "Publish", "{}", TestContext.Current.CancellationToken));
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<LlmRiskResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(new StructuredCompletionResult<LlmRiskResponse>
+            {
+                Status = StructuredCompletionStatus.Succeeded,
+                Value = new LlmRiskResponse(0.2, "ok", []),
+            });
+
+        await CreateSut().EvaluateRiskAsync("Invoice", "Approve", "the context", TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Content.ShouldBe("the context");
+        captured.Context.ShouldNotBeNull();
+        captured.Context.ShouldContain(kv => kv.Key == "Entity type" && kv.Value == "Invoice");
+        captured.Context.ShouldContain(kv => kv.Key == "Transition" && kv.Value == "Approve");
     }
+
+    [Fact]
+    public async Task EvaluateRiskAsync_NullEntityType_ThrowsArgumentNullException() =>
+        await Should.ThrowAsync<ArgumentNullException>(() =>
+            CreateSut().EvaluateRiskAsync(null!, "Publish", "{}", TestContext.Current.CancellationToken));
 }
