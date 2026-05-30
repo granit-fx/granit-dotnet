@@ -3218,6 +3218,15 @@
       ]
     },
     {
+      "name": "ExtractionRequest",
+      "fqn": "Granit.AI.Extraction.ExtractionRequest",
+      "kind": "record",
+      "project": "Granit.AI.Extraction",
+      "file": "src/Granit.AI.Extraction/ExtractionRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "ExtractionResult",
       "fqn": "Granit.AI.Extraction.ExtractionResult",
       "kind": "class",
