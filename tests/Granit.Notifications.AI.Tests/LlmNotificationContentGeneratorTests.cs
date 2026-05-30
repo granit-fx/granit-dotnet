@@ -2,12 +2,11 @@ using System.Text.Json;
 using Granit.AI;
 using Granit.Notifications.AI.Internal;
 using Granit.Notifications.AI.Options;
-using Microsoft.Extensions.AI;
+using Granit.Notifications.AI.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
 
@@ -17,19 +16,11 @@ namespace Granit.Notifications.AI.Tests;
 
 public sealed class LlmNotificationContentGeneratorTests
 {
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
+    private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
     private readonly IOptions<NotificationsAIOptions> _options = MsOptions.Create(new NotificationsAIOptions());
     private readonly ILogger<LlmNotificationContentGenerator> _logger = NullLogger<LlmNotificationContentGenerator>.Instance;
 
-    public LlmNotificationContentGeneratorTests()
-    {
-        _chatClientFactory
-            .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(_chatClient);
-    }
-
-    private LlmNotificationContentGenerator CreateSut() => new(_chatClientFactory, _options, _logger);
+    private LlmNotificationContentGenerator CreateSut() => new(_structured, _options, _logger);
 
     private static NotificationDeliveryContext MakeContext(
         string typeName = "order.completed",
@@ -47,118 +38,81 @@ public sealed class LlmNotificationContentGeneratorTests
             Culture = culture,
         };
 
+    private static StructuredCompletionResult<NotificationContentResponse> Ok(string subject, string body) =>
+        new()
+        {
+            Status = StructuredCompletionStatus.Succeeded,
+            Value = new NotificationContentResponse { Subject = subject, Body = body },
+        };
+
+    private void Respond(StructuredCompletionResult<NotificationContentResponse> result) =>
+        _structured
+            .CompleteAsync<NotificationContentResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(result);
+
     [Fact]
     public async Task GenerateAsync_ValidResponse_ReturnsContent()
     {
-        LlmNotificationContentGenerator sut = CreateSut();
-        string json = """{"subject": "Order Completed", "body": "Your order ORD-001 has been completed."}""";
+        Respond(Ok("Order Completed", "Your order ORD-001 has been completed."));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(
-                [new ChatMessage(ChatRole.Assistant, json)]));
-
-        NotificationContent? result = await sut.GenerateAsync(
-            MakeContext(), TestContext.Current.CancellationToken);
+        NotificationContent? result = await CreateSut().GenerateAsync(MakeContext(), TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.Subject.ShouldBe("Order Completed");
         result.Body.ShouldBe("Your order ORD-001 has been completed.");
     }
 
-    [Fact]
-    public async Task GenerateAsync_LLMFailure_ReturnsNull()
+    [Theory]
+    [InlineData(StructuredCompletionStatus.ModelRefused)]
+    [InlineData(StructuredCompletionStatus.SchemaViolation)]
+    [InlineData(StructuredCompletionStatus.TransportFailure)]
+    public async Task GenerateAsync_NonSuccessStatus_ReturnsNull(StructuredCompletionStatus status)
     {
-        LlmNotificationContentGenerator sut = CreateSut();
+        Respond(new StructuredCompletionResult<NotificationContentResponse> { Status = status });
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("LLM unavailable"));
-
-        NotificationContent? result = await sut.GenerateAsync(
-            MakeContext(), TestContext.Current.CancellationToken);
+        NotificationContent? result = await CreateSut().GenerateAsync(MakeContext(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
 
     [Fact]
-    public async Task GenerateAsync_InvalidJsonResponse_ReturnsNull()
+    public async Task GenerateAsync_BlankSubject_ReturnsNull()
     {
-        LlmNotificationContentGenerator sut = CreateSut();
+        Respond(Ok("", "Some body"));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(
-                [new ChatMessage(ChatRole.Assistant, "not valid json")]));
-
-        NotificationContent? result = await sut.GenerateAsync(
-            MakeContext(), TestContext.Current.CancellationToken);
+        NotificationContent? result = await CreateSut().GenerateAsync(MakeContext(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
 
     [Fact]
-    public void ParseContentResponse_ValidJson_ReturnsContent()
+    public async Task GenerateAsync_BlankBody_ReturnsNull()
     {
-        string json = """{"subject": "Alert", "body": "Something happened."}""";
+        Respond(Ok("Some subject", "   "));
 
-        NotificationContent? result = LlmNotificationContentGenerator.ParseContentResponse(json);
-
-        result.ShouldNotBeNull();
-        result.Subject.ShouldBe("Alert");
-        result.Body.ShouldBe("Something happened.");
-    }
-
-    [Fact]
-    public void ParseContentResponse_MarkdownFencedJson_ReturnsContent()
-    {
-        string json = """
-            ```json
-            {"subject": "Alert", "body": "Something happened."}
-            ```
-            """;
-
-        NotificationContent? result = LlmNotificationContentGenerator.ParseContentResponse(json);
-
-        result.ShouldNotBeNull();
-        result.Subject.ShouldBe("Alert");
-    }
-
-    [Fact]
-    public void ParseContentResponse_MissingSubject_ReturnsNull()
-    {
-        string json = """{"subject": "", "body": "Some body"}""";
-
-        NotificationContent? result = LlmNotificationContentGenerator.ParseContentResponse(json);
+        NotificationContent? result = await CreateSut().GenerateAsync(MakeContext(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
 
     [Fact]
-    public void ParseContentResponse_InvalidJson_ReturnsNull()
+    public async Task GenerateAsync_RoutesDataAsContentAndTypeCultureAsInstructionContext()
     {
-        NotificationContent? result = LlmNotificationContentGenerator.ParseContentResponse("not json");
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<NotificationContentResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(Ok("S", "B"));
 
-        result.ShouldBeNull();
-    }
+        await CreateSut().GenerateAsync(
+            MakeContext(typeName: "user.registered", culture: "fr"), TestContext.Current.CancellationToken);
 
-    [Fact]
-    public void BuildContentPrompt_ContainsNotificationTypeAndCulture()
-    {
-        NotificationDeliveryContext context = MakeContext(typeName: "user.registered", culture: "fr");
-
-        string prompt = LlmNotificationContentGenerator.BuildContentPrompt(context);
-
-        prompt.ShouldContain("user.registered");
-        prompt.ShouldContain("fr");
+        captured.ShouldNotBeNull();
+        // Untrusted business data flows through the Content channel...
+        captured.Content.ShouldContain("ORD-001");
+        // ...the locale is developer-controlled instruction...
+        captured.Instruction!.ShouldContain("fr");
+        // ...and the notification type travels as labelled context.
+        captured.Context.ShouldNotBeNull();
+        captured.Context.ShouldContain(kv => kv.Value == "user.registered");
     }
 }

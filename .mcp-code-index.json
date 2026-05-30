@@ -30883,6 +30883,44 @@
       ]
     },
     {
+      "name": "ChannelSelectionResponse",
+      "fqn": "Granit.Notifications.AI.Schema.ChannelSelectionResponse",
+      "kind": "class",
+      "project": "Granit.Notifications.AI",
+      "file": "src/Granit.Notifications.AI/Schema/ChannelSelectionResponse.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Channels",
+          "kind": "property",
+          "signature": "List<string> Channels",
+          "returnType": "List<string>"
+        }
+      ]
+    },
+    {
+      "name": "NotificationContentResponse",
+      "fqn": "Granit.Notifications.AI.Schema.NotificationContentResponse",
+      "kind": "class",
+      "project": "Granit.Notifications.AI",
+      "file": "src/Granit.Notifications.AI/Schema/NotificationContentResponse.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Subject",
+          "kind": "property",
+          "signature": "string Subject",
+          "returnType": "string"
+        },
+        {
+          "name": "Body",
+          "kind": "property",
+          "signature": "string Body",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "INotificationChannel",
       "fqn": "Granit.Notifications.Abstractions.INotificationChannel",
       "kind": "interface",

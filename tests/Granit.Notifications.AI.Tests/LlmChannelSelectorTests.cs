@@ -2,12 +2,11 @@ using System.Text.Json;
 using Granit.AI;
 using Granit.Notifications.AI.Internal;
 using Granit.Notifications.AI.Options;
-using Microsoft.Extensions.AI;
+using Granit.Notifications.AI.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
 
@@ -19,19 +18,11 @@ public sealed class LlmChannelSelectorTests
 {
     private static readonly IReadOnlyList<string> DefaultChannels = ["email", "push", "sms", "inapp"];
 
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
+    private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
     private readonly IOptions<NotificationsAIOptions> _options = MsOptions.Create(new NotificationsAIOptions());
     private readonly ILogger<LlmChannelSelector> _logger = NullLogger<LlmChannelSelector>.Instance;
 
-    public LlmChannelSelectorTests()
-    {
-        _chatClientFactory
-            .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(_chatClient);
-    }
-
-    private LlmChannelSelector CreateSut() => new(_chatClientFactory, _options, _logger);
+    private LlmChannelSelector CreateSut() => new(_structured, _options, _logger);
 
     private static NotificationDeliveryContext MakeContext(
         NotificationSeverity severity = NotificationSeverity.Info) =>
@@ -47,21 +38,24 @@ public sealed class LlmChannelSelectorTests
             Culture = "en",
         };
 
+    private static StructuredCompletionResult<ChannelSelectionResponse> Ok(params string[] channels) =>
+        new()
+        {
+            Status = StructuredCompletionStatus.Succeeded,
+            Value = new ChannelSelectionResponse { Channels = [.. channels] },
+        };
+
+    private void Respond(StructuredCompletionResult<ChannelSelectionResponse> result) =>
+        _structured
+            .CompleteAsync<ChannelSelectionResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(result);
+
     [Fact]
     public async Task SelectChannelsAsync_ValidResponse_ReturnsSelectedChannels()
     {
-        LlmChannelSelector sut = CreateSut();
-        string json = """["email", "push"]""";
+        Respond(Ok("email", "push"));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(
-                [new ChatMessage(ChatRole.Assistant, json)]));
-
-        IReadOnlyList<string> result = await sut.SelectChannelsAsync(
+        IReadOnlyList<string> result = await CreateSut().SelectChannelsAsync(
             MakeContext(), DefaultChannels, TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(2);
@@ -70,52 +64,13 @@ public sealed class LlmChannelSelectorTests
     }
 
     [Fact]
-    public async Task SelectChannelsAsync_LLMFailure_ReturnsAllAvailable()
+    public async Task SelectChannelsAsync_FiltersUnavailableChannels()
     {
-        LlmChannelSelector sut = CreateSut();
+        // Model invents "telegram" — dropped because it is not in the available set.
+        Respond(Ok("email", "telegram", "push"));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("LLM unavailable"));
-
-        IReadOnlyList<string> result = await sut.SelectChannelsAsync(
+        IReadOnlyList<string> result = await CreateSut().SelectChannelsAsync(
             MakeContext(), DefaultChannels, TestContext.Current.CancellationToken);
-
-        result.ShouldBe(DefaultChannels);
-    }
-
-    [Fact]
-    public async Task SelectChannelsAsync_EmptyAvailableChannels_ReturnsEmpty()
-    {
-        LlmChannelSelector sut = CreateSut();
-
-        IReadOnlyList<string> result = await sut.SelectChannelsAsync(
-            MakeContext(), [], TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public void ParseChannelSelectionResponse_ValidJson_ReturnsChannels()
-    {
-        string json = """["email", "sms"]""";
-
-        IReadOnlyList<string> result = LlmChannelSelector.ParseChannelSelectionResponse(json, DefaultChannels);
-
-        result.Count.ShouldBe(2);
-        result.ShouldContain("email");
-        result.ShouldContain("sms");
-    }
-
-    [Fact]
-    public void ParseChannelSelectionResponse_FiltersUnavailableChannels()
-    {
-        string json = """["email", "telegram", "push"]""";
-
-        IReadOnlyList<string> result = LlmChannelSelector.ParseChannelSelectionResponse(json, DefaultChannels);
 
         result.Count.ShouldBe(2);
         result.ShouldContain("email");
@@ -123,38 +78,62 @@ public sealed class LlmChannelSelectorTests
         result.ShouldNotContain("telegram");
     }
 
-    [Fact]
-    public void ParseChannelSelectionResponse_MarkdownFencedJson_ReturnsChannels()
+    [Theory]
+    [InlineData(StructuredCompletionStatus.ModelRefused)]
+    [InlineData(StructuredCompletionStatus.SchemaViolation)]
+    [InlineData(StructuredCompletionStatus.TransportFailure)]
+    public async Task SelectChannelsAsync_NonSuccessStatus_FallsBackToAllAvailable(StructuredCompletionStatus status)
     {
-        string json = """
-            ```json
-            ["email", "push"]
-            ```
-            """;
+        Respond(new StructuredCompletionResult<ChannelSelectionResponse> { Status = status });
 
-        IReadOnlyList<string> result = LlmChannelSelector.ParseChannelSelectionResponse(json, DefaultChannels);
+        IReadOnlyList<string> result = await CreateSut().SelectChannelsAsync(
+            MakeContext(), DefaultChannels, TestContext.Current.CancellationToken);
 
-        result.Count.ShouldBe(2);
+        result.ShouldBe(DefaultChannels);
     }
 
     [Fact]
-    public void ParseChannelSelectionResponse_InvalidJson_ReturnsEmpty()
+    public async Task SelectChannelsAsync_EmptySelectionAfterFiltering_FallsBackToAllAvailable()
     {
-        IReadOnlyList<string> result = LlmChannelSelector.ParseChannelSelectionResponse("not json", DefaultChannels);
+        // Everything the model returned is out-of-set, so the default-to-all guard kicks in.
+        Respond(Ok("telegram", "whatsapp"));
+
+        IReadOnlyList<string> result = await CreateSut().SelectChannelsAsync(
+            MakeContext(), DefaultChannels, TestContext.Current.CancellationToken);
+
+        result.ShouldBe(DefaultChannels);
+    }
+
+    [Fact]
+    public async Task SelectChannelsAsync_EmptyAvailableChannels_ReturnsEmptyWithoutCallingTheModel()
+    {
+        IReadOnlyList<string> result = await CreateSut().SelectChannelsAsync(
+            MakeContext(), [], TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
+        await _structured
+            .DidNotReceiveWithAnyArgs()
+            .CompleteAsync<ChannelSelectionResponse>(default!, TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void BuildChannelSelectionPrompt_ContainsSeverityAndChannels()
+    public async Task SelectChannelsAsync_RoutesAvailableChannelsAsInstructionAndContextAsContent()
     {
-        NotificationDeliveryContext context = MakeContext(NotificationSeverity.Fatal);
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<ChannelSelectionResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(Ok("email"));
 
-        string prompt = LlmChannelSelector.BuildChannelSelectionPrompt(context, DefaultChannels);
+        await CreateSut().SelectChannelsAsync(
+            MakeContext(NotificationSeverity.Fatal), DefaultChannels, TestContext.Current.CancellationToken);
 
-        prompt.ShouldContain("Fatal");
-        prompt.ShouldContain("email");
-        prompt.ShouldContain("push");
-        prompt.ShouldContain("order.completed");
+        captured.ShouldNotBeNull();
+        // Available channels are developer/framework-controlled guidance.
+        captured.Instruction.ShouldNotBeNull();
+        captured.Instruction.ShouldContain("email");
+        captured.Instruction.ShouldContain("push");
+        // The notification context is the analyzed content.
+        captured.Content.ShouldContain("order.completed");
+        captured.Content.ShouldContain("Fatal");
     }
 }

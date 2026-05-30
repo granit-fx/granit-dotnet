@@ -34,8 +34,10 @@ public static class NotificationsAIHostApplicationBuilderExtensions
             .AddOptions<NotificationsAIOptions>()
             .BindConfiguration(NotificationsAIOptions.SectionName);
 
-        builder.Services.AddSingleton<IAINotificationContentGenerator, LlmNotificationContentGenerator>();
-        builder.Services.AddSingleton<IAIChannelSelector, LlmChannelSelector>();
+        // Scoped, not singleton: both depend on the scoped IStructuredCompletion primitive
+        // (ADR-064), so a singleton here would capture a stale scope.
+        builder.Services.AddScoped<IAINotificationContentGenerator, LlmNotificationContentGenerator>();
+        builder.Services.AddScoped<IAIChannelSelector, LlmChannelSelector>();
 
         return builder;
     }

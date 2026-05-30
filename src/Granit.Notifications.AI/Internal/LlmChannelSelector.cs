@@ -1,25 +1,23 @@
+using System.Globalization;
 using System.Text.Json;
 using Granit.AI;
 using Granit.Notifications.AI.Options;
-using Microsoft.Extensions.AI;
+using Granit.Notifications.AI.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Notifications.AI.Internal;
 
 /// <summary>
-/// LLM-based channel selector that recommends optimal delivery channels based on context analysis.
+/// LLM-based channel selector that recommends optimal delivery channels via the
+/// <see cref="IStructuredCompletion"/> primitive (ADR-064). Falls back to the full available
+/// channel list whenever the model is unavailable or returns nothing usable.
 /// </summary>
 internal sealed partial class LlmChannelSelector(
-    IAIChatClientFactory chatClientFactory,
+    IStructuredCompletion structuredCompletion,
     IOptions<NotificationsAIOptions> options,
     ILogger<LlmChannelSelector> logger) : IAIChannelSelector
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-    };
-
     /// <inheritdoc/>
     public async Task<IReadOnlyList<string>> SelectChannelsAsync(
         NotificationDeliveryContext context,
@@ -36,109 +34,69 @@ internal sealed partial class LlmChannelSelector(
 
         NotificationsAIOptions config = options.Value;
 
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(config.TimeoutSeconds));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+
+        var request = new StructuredCompletionRequest
+        {
+            Instruction = BuildInstruction(availableChannels),
+            Content = BuildContent(context),
+            ContentLabel = "Notification",
+            WorkspaceName = config.WorkspaceName,
+        };
+
         try
         {
-            // CreateAsync builds a fresh client per call (no cache) — dispose
-            // deterministically so the HttpMessageHandler doesn't linger until GC.
-            using IChatClient chatClient = await chatClientFactory
-                .CreateAsync(config.WorkspaceName, cancellationToken)
+            StructuredCompletionResult<ChannelSelectionResponse> result = await structuredCompletion
+                .CompleteAsync<ChannelSelectionResponse>(request, linkedCts.Token)
                 .ConfigureAwait(false);
 
-            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(config.TimeoutSeconds));
-            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
-                cancellationToken, timeoutCts.Token);
+            if (result.Status != StructuredCompletionStatus.Succeeded)
+            {
+                LogChannelSelectionRejected(logger, context.NotificationTypeName, result.Status.ToString());
+                return availableChannels;
+            }
 
-            string prompt = BuildChannelSelectionPrompt(context, availableChannels);
+            List<string> selected = FilterToAvailable(result.Value!.Channels, availableChannels);
 
-            ChatResponse response = await chatClient.GetResponseAsync(
-                prompt, cancellationToken: linkedCts.Token).ConfigureAwait(false);
-
-            string responseText = response.Text ?? string.Empty;
-
-            IReadOnlyList<string> selected = ParseChannelSelectionResponse(responseText, availableChannels);
-
+            // Default-to-all: an empty (or fully-rejected) recommendation must not silently drop delivery.
             return selected.Count > 0 ? selected : availableChannels;
         }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
             LogChannelSelectionTimeout(logger, context.NotificationTypeName, config.TimeoutSeconds);
             return availableChannels;
         }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            LogChannelSelectionFailure(logger, context.NotificationTypeName, ex);
-            return availableChannels;
-        }
     }
 
-    internal static string BuildChannelSelectionPrompt(
-        NotificationDeliveryContext context,
-        IReadOnlyList<string> availableChannels)
+    private static List<string> FilterToAvailable(List<string> selected, IReadOnlyList<string> availableChannels)
+    {
+        HashSet<string> availableSet = new(availableChannels, StringComparer.OrdinalIgnoreCase);
+        return selected.Where(availableSet.Contains).ToList();
+    }
+
+    private static string BuildInstruction(IReadOnlyList<string> availableChannels)
     {
         string channelsJson = JsonSerializer.Serialize(availableChannels);
 
-        var pb = new PromptBuilder(maxInputLength: 5_000);
-
-        pb.AppendInstruction($"""
-            Recommend the optimal delivery channels from this list: {channelsJson}.
-            Return JSON only, no markdown fences: an array of channel names, e.g. ["email", "push"].
-            Only include channels from the available list. Order by priority (most important first).
+        return $"""
+            Recommend the optimal delivery channels for the notification described in the data block,
+            choosing only from this available list: {channelsJson}.
+            Order the result by priority (most important first) and include only channels from that list.
             For critical/fatal severity, prefer all real-time channels. For info, prefer less intrusive channels.
+            """;
+    }
+
+    private static string BuildContent(NotificationDeliveryContext context) =>
+        string.Create(CultureInfo.InvariantCulture, $"""
+            Notification type: {context.NotificationTypeName}
+            Severity: {context.Severity}
+            Time: {context.OccurredAt:O}
             """);
 
-        pb.AppendUserData("Notification type", context.NotificationTypeName);
-        pb.AppendUserData("Severity", context.Severity.ToString());
-        pb.AppendUserData("Time", context.OccurredAt.ToString("O"));
+    [LoggerMessage(Level = LogLevel.Warning, Message = "AI channel selection rejected (status: {Status}) for type '{NotificationTypeName}', falling back to all channels")]
+    private static partial void LogChannelSelectionRejected(ILogger logger, string notificationTypeName, string status);
 
-        return pb.Build();
-    }
-
-    internal static IReadOnlyList<string> ParseChannelSelectionResponse(
-        string responseText,
-        IReadOnlyList<string> availableChannels)
-    {
-        string trimmed = responseText.Trim();
-
-        // Strip markdown code fences if the LLM wraps the JSON anyway
-        if (trimmed.StartsWith("```", StringComparison.Ordinal))
-        {
-            int firstNewline = trimmed.IndexOf('\n');
-            int lastFence = trimmed.LastIndexOf("```", StringComparison.Ordinal);
-            if (firstNewline >= 0 && lastFence > firstNewline)
-            {
-                trimmed = trimmed[(firstNewline + 1)..lastFence].Trim();
-            }
-        }
-
-        try
-        {
-            List<string>? parsed = JsonSerializer.Deserialize<List<string>>(trimmed, JsonOptions);
-
-            if (parsed is null || parsed.Count == 0)
-            {
-                return [];
-            }
-
-            // Only keep channels that are actually available (case-insensitive)
-            HashSet<string> availableSet = new(availableChannels, StringComparer.OrdinalIgnoreCase);
-
-            return parsed
-                .Where(c => availableSet.Contains(c))
-                .ToList();
-        }
-        catch (JsonException)
-        {
-            return [];
-        }
-    }
-
-    [LoggerMessage(Level = LogLevel.Warning, Message = "AI channel selection timed out after {TimeoutSeconds}s for type '{NotificationTypeName}'")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "AI channel selection timed out after {TimeoutSeconds}s for type '{NotificationTypeName}', falling back to all channels")]
     private static partial void LogChannelSelectionTimeout(ILogger logger, string notificationTypeName, int timeoutSeconds);
-
-    [LoggerMessage(Level = LogLevel.Warning, Message = "AI channel selection failed for type '{NotificationTypeName}'")]
-    private static partial void LogChannelSelectionFailure(ILogger logger, string notificationTypeName, Exception exception);
 }
