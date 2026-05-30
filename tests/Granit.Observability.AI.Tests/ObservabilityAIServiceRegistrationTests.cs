@@ -15,7 +15,7 @@ public sealed class ObservabilityAIServiceRegistrationTests
     [Fact]
     public void AddGranitObservabilityAI_should_pass_scope_validation_with_scoped_chat_client_factory()
     {
-        // Regression: LlmLogAnalyzer captures IAIChatClientFactory (scoped). Registering
+        // Regression: LlmLogAnalyzer captures IStructuredCompletion (scoped). Registering
         // the analyzer as singleton breaks ValidateScopes (default in Development).
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(new HostApplicationBuilderSettings
         {
@@ -25,7 +25,7 @@ public sealed class ObservabilityAIServiceRegistrationTests
         builder.Services.AddLogging();
         builder.Services.AddMetrics();
 
-        builder.Services.TryAddScoped(_ => Substitute.For<IAIChatClientFactory>());
+        builder.Services.TryAddScoped(_ => Substitute.For<IStructuredCompletion>());
         builder.Services.TryAddSingleton<ICurrentTenant>(new NullTenantContext());
 
         builder.AddGranitObservabilityAI();
