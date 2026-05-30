@@ -4,7 +4,6 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
 
 namespace Granit.AI.Extraction.Tests;
@@ -18,167 +17,156 @@ public sealed record InvoiceData
 
 public sealed class DefaultDocumentExtractorTests
 {
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
+    private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
+
     private readonly IOptions<ExtractionOptions> _options = Microsoft.Extensions.Options.Options.Create(new ExtractionOptions
     {
         WorkspaceName = "test",
         ReviewThreshold = 0.7,
-        TimeoutSeconds = 30,
     });
 
-    private readonly DefaultDocumentExtractor<InvoiceData> _sut;
+    // Typed as the interface so ExtractAsync(string) resolves to the default-interface-method.
+    private readonly IDocumentExtractor<InvoiceData> _sut;
 
-    public DefaultDocumentExtractorTests()
-    {
-        _chatClientFactory
-            .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(_chatClient);
+    public DefaultDocumentExtractorTests() =>
+        _sut = new DefaultDocumentExtractor<InvoiceData>(_structured, _options, NullLogger<DefaultDocumentExtractor<InvoiceData>>.Instance);
 
-        _sut = new DefaultDocumentExtractor<InvoiceData>(
-            _chatClientFactory,
-            _options,
-            NullLogger<DefaultDocumentExtractor<InvoiceData>>.Instance);
-    }
+    private static readonly InvoiceData SampleInvoice = new() { Supplier = "Acme Corp", Amount = 1500.50m, Currency = "EUR" };
+
+    private void CompletionReturns(StructuredCompletionResult<InvoiceData> result) =>
+        _structured
+            .CompleteAsync<InvoiceData>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(result);
+
+    private static StructuredCompletionResult<InvoiceData> Succeeded(
+        ChatFinishReason? finishReason = null,
+        IReadOnlyDictionary<string, object?>? metadata = null,
+        string? modelId = null) =>
+        new()
+        {
+            Status = StructuredCompletionStatus.Succeeded,
+            Value = SampleInvoice,
+            FinishReason = finishReason ?? ChatFinishReason.Stop,
+            Metadata = metadata,
+            ModelId = modelId,
+        };
 
     [Fact]
-    public async Task ExtractAsync_ValidResponse_ReturnsSuccess()
+    public async Task ExtractAsync_Succeeded_ReturnsSuccessWithModelId()
     {
-        // Arrange
-        const string jsonResponse = """{"supplier":"Acme Corp","amount":1500.50,"currency":"EUR"}""";
+        CompletionReturns(Succeeded(modelId: "gpt-4o-mini-2024-07-18"));
 
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse))
-            {
-                FinishReason = ChatFinishReason.Stop,
-            });
+        ExtractionResult<InvoiceData> result = await _sut.ExtractAsync(
+            new ExtractionRequest { Content = "Invoice from Acme Corp" }, TestContext.Current.CancellationToken);
 
-        // Act
-        ExtractionResult<InvoiceData> result = await _sut.ExtractAsync("Invoice from Acme Corp, total 1500.50 EUR", TestContext.Current.CancellationToken);
-
-        // Assert
         result.Status.ShouldBe(ExtractionStatus.Succeeded);
-        result.Data.ShouldNotBeNull();
-        result.Data.Supplier.ShouldBe("Acme Corp");
-        result.Data.Amount.ShouldBe(1500.50m);
-        result.Data.Currency.ShouldBe("EUR");
+        result.Data.ShouldBe(SampleInvoice);
         result.ConfidenceScore.ShouldNotBeNull();
         result.ConfidenceScore.Value.ShouldBeGreaterThanOrEqualTo(0.7);
+        result.ModelId.ShouldBe("gpt-4o-mini-2024-07-18");
     }
 
     [Fact]
-    public async Task ExtractAsync_LowConfidence_ReturnsNeedsReview()
+    public async Task ExtractAsync_LowConfidenceMetadata_ReturnsNeedsReview()
     {
-        // Arrange
-        const string jsonResponse = """{"supplier":"Unknown","amount":0,"currency":"USD"}""";
+        CompletionReturns(Succeeded(metadata: new Dictionary<string, object?> { ["confidence"] = 0.5 }));
 
-        // No FinishReason.Stop and no confidence metadata -> default 0.75
-        // But we need below threshold, so set threshold high
-        IOptions<ExtractionOptions> highThresholdOptions = Microsoft.Extensions.Options.Options.Create(new ExtractionOptions
-        {
-            WorkspaceName = "test",
-            ReviewThreshold = 0.9,
-            TimeoutSeconds = 30,
-        });
+        ExtractionResult<InvoiceData> result = await _sut.ExtractAsync(
+            new ExtractionRequest { Content = "ambiguous" }, TestContext.Current.CancellationToken);
 
-        var extractor = new DefaultDocumentExtractor<InvoiceData>(
-            _chatClientFactory,
-            highThresholdOptions,
-            NullLogger<DefaultDocumentExtractor<InvoiceData>>.Instance);
-
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse)));
-
-        // Act
-        ExtractionResult<InvoiceData> result = await extractor.ExtractAsync("Some ambiguous document", TestContext.Current.CancellationToken);
-
-        // Assert
         result.Status.ShouldBe(ExtractionStatus.NeedsReview);
-        result.Data.ShouldNotBeNull();
-        result.Data.Supplier.ShouldBe("Unknown");
+        result.Data.ShouldBe(SampleInvoice);
+        result.ConfidenceScore.ShouldBe(0.5);
         result.Warnings.ShouldNotBeEmpty();
     }
 
     [Fact]
-    public async Task ExtractAsync_LLMFailure_ReturnsFailed_without_leaking_provider_message()
+    public async Task ExtractAsync_ModelRefused_ReturnsFailed()
     {
-        // The provider exception message may echo the prompt payload (PII). Neither the
-        // returned ErrorMessage nor the log may contain it — only a generic failure
-        // reason. See VULN-201 / issue #2305.
-        const string leakyProviderMessage = "Provider unavailable: prompt was 'SSN 123-45-6789'";
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException(leakyProviderMessage));
+        CompletionReturns(new StructuredCompletionResult<InvoiceData> { Status = StructuredCompletionStatus.ModelRefused });
 
-        // Act
-        ExtractionResult<InvoiceData> result = await _sut.ExtractAsync("Some document content", TestContext.Current.CancellationToken);
+        ExtractionResult<InvoiceData> result = await _sut.ExtractAsync(
+            new ExtractionRequest { Content = "x" }, TestContext.Current.CancellationToken);
 
-        // Assert
         result.Status.ShouldBe(ExtractionStatus.Failed);
         result.Data.ShouldBeNull();
-        result.ErrorMessage.ShouldNotBeNull();
-        result.ErrorMessage.ShouldNotContain("SSN 123-45-6789");
-        result.ErrorMessage.ShouldNotContain("Provider unavailable");
     }
 
     [Fact]
-    public async Task ExtractAsync_InvalidJson_ReturnsFailed()
+    public async Task ExtractAsync_SchemaViolation_ReturnsFailed_WithDeserializeMessage()
     {
-        // Arrange
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, "not valid json")));
+        CompletionReturns(new StructuredCompletionResult<InvoiceData> { Status = StructuredCompletionStatus.SchemaViolation });
 
-        // Act
-        ExtractionResult<InvoiceData> result = await _sut.ExtractAsync("Some document", TestContext.Current.CancellationToken);
+        ExtractionResult<InvoiceData> result = await _sut.ExtractAsync(
+            new ExtractionRequest { Content = "x" }, TestContext.Current.CancellationToken);
 
-        // Assert
         result.Status.ShouldBe(ExtractionStatus.Failed);
         result.ErrorMessage.ShouldNotBeNull();
         result.ErrorMessage.ShouldContain("deserialize");
     }
 
     [Fact]
-    public async Task ExtractAsync_PassesJsonSchemaResponseFormat()
+    public async Task ExtractAsync_TransportFailure_ReturnsFailed_WithPrimitiveSafeMessage()
     {
-        // Arrange
-        const string jsonResponse = """{"supplier":"Acme Corp","amount":100,"currency":"EUR"}""";
+        CompletionReturns(new StructuredCompletionResult<InvoiceData>
+        {
+            Status = StructuredCompletionStatus.TransportFailure,
+            ErrorMessage = "The AI request timed out after 30 seconds.",
+        });
 
-        ChatOptions? capturedOptions = null;
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Do<ChatOptions?>(o => capturedOptions = o),
-                Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse))
-            {
-                FinishReason = ChatFinishReason.Stop,
-            });
+        ExtractionResult<InvoiceData> result = await _sut.ExtractAsync(
+            new ExtractionRequest { Content = "x" }, TestContext.Current.CancellationToken);
 
-        // Act
-        await _sut.ExtractAsync("Some document", TestContext.Current.CancellationToken);
-
-        // Assert
-        capturedOptions.ShouldNotBeNull();
-        capturedOptions.ResponseFormat.ShouldNotBeNull();
-        capturedOptions.ResponseFormat.ShouldBeOfType<ChatResponseFormatJson>();
+        result.Status.ShouldBe(ExtractionStatus.Failed);
+        result.ErrorMessage.ShouldBe("The AI request timed out after 30 seconds.");
     }
 
     [Fact]
-    public async Task ExtractAsync_NullContent_ThrowsArgumentNullException() =>
-        await Should.ThrowAsync<ArgumentNullException>(() => _sut.ExtractAsync(null!, TestContext.Current.CancellationToken));
+    public async Task ExtractAsync_PassesRequestThroughToPrimitive_WithWorkspace()
+    {
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<InvoiceData>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(Succeeded());
+
+        await _sut.ExtractAsync(
+            new ExtractionRequest
+            {
+                Instruction = "Generate SEO metadata in French.",
+                Content = "Page body.",
+                ContentLabel = "Page content",
+                Context = [new("Title", "Home")],
+            },
+            TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Instruction.ShouldBe("Generate SEO metadata in French.");
+        captured.Content.ShouldBe("Page body.");
+        captured.ContentLabel.ShouldBe("Page content");
+        captured.Context.ShouldNotBeNull();
+        captured.WorkspaceName.ShouldBe("test"); // from ExtractionOptions
+    }
+
+    [Fact]
+    public async Task ExtractAsync_StringOverload_DelegatesToRequestOverload()
+    {
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<InvoiceData>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(Succeeded());
+
+        await _sut.ExtractAsync("Raw document text", TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Content.ShouldBe("Raw document text");
+        captured.Instruction.ShouldBeNull(); // generic instruction handled by the primitive
+    }
+
+    [Fact]
+    public async Task ExtractAsync_NullContent_StringOverload_ThrowsArgumentNullException() =>
+        await Should.ThrowAsync<ArgumentNullException>(() => _sut.ExtractAsync((string)null!, TestContext.Current.CancellationToken));
+
+    [Fact]
+    public async Task ExtractAsync_NullRequest_ThrowsArgumentNullException() =>
+        await Should.ThrowAsync<ArgumentNullException>(() => _sut.ExtractAsync((ExtractionRequest)null!, TestContext.Current.CancellationToken));
 }

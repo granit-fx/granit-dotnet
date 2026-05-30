@@ -27,12 +27,10 @@ public sealed class ExtractionOptions
     /// Confidence threshold below which the extraction status is set to
     /// <see cref="ExtractionStatus.NeedsReview"/>. Defaults to <c>0.7</c>.
     /// </summary>
+    /// <remarks>
+    /// The per-call timeout is owned by the underlying <see cref="Granit.AI.IStructuredCompletion"/>
+    /// primitive — configure it via <c>AI:StructuredCompletion:TimeoutSeconds</c>.
+    /// </remarks>
     [Range(0.0, 1.0)]
     public double ReviewThreshold { get; set; } = 0.7;
-
-    /// <summary>
-    /// Maximum time in seconds to wait for an extraction to complete. Defaults to <c>30</c>.
-    /// </summary>
-    [Range(1, 600)]
-    public int TimeoutSeconds { get; set; } = 30;
 }

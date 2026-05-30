@@ -3243,6 +3243,15 @@
       ]
     },
     {
+      "name": "ExtractionRequest",
+      "fqn": "Granit.AI.Extraction.ExtractionRequest",
+      "kind": "record",
+      "project": "Granit.AI.Extraction",
+      "file": "src/Granit.AI.Extraction/ExtractionRequest.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "ExtractionResult",
       "fqn": "Granit.AI.Extraction.ExtractionResult",
       "kind": "class",
@@ -3294,6 +3303,12 @@
         {
           "name": "ExtractAsync",
           "kind": "method",
+          "signature": "ExtractAsync(ExtractionRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ExtractionResult<TResult>>"
+        },
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
           "signature": "ExtractAsync(string content, CancellationToken cancellationToken = default)",
           "returnType": "Task<ExtractionResult<TResult>>"
         }
@@ -3318,12 +3333,6 @@
           "kind": "property",
           "signature": "double ReviewThreshold",
           "returnType": "double"
-        },
-        {
-          "name": "TimeoutSeconds",
-          "kind": "property",
-          "signature": "int TimeoutSeconds",
-          "returnType": "int"
         }
       ]
     },

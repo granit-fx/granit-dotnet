@@ -12,8 +12,9 @@ public static class ExtractionResult
     /// <param name="data">The extracted data.</param>
     /// <param name="confidence">Confidence score between 0.0 and 1.0.</param>
     /// <param name="warnings">Optional warnings.</param>
+    /// <param name="modelId">Identifier of the model that produced the result, if known.</param>
     /// <returns>A successful <see cref="ExtractionResult{TResult}"/>.</returns>
-    public static ExtractionResult<TResult> Success<TResult>(TResult data, double confidence, IReadOnlyList<string>? warnings = null)
+    public static ExtractionResult<TResult> Success<TResult>(TResult data, double confidence, IReadOnlyList<string>? warnings = null, string? modelId = null)
         where TResult : class =>
         new()
         {
@@ -21,6 +22,7 @@ public static class ExtractionResult
             Data = data,
             ConfidenceScore = confidence,
             Warnings = warnings ?? [],
+            ModelId = modelId,
         };
 
     /// <summary>
@@ -28,13 +30,15 @@ public static class ExtractionResult
     /// </summary>
     /// <typeparam name="TResult">The type of the extracted data.</typeparam>
     /// <param name="errorMessage">Description of the failure.</param>
+    /// <param name="modelId">Identifier of the model that produced the result, if known.</param>
     /// <returns>A failed <see cref="ExtractionResult{TResult}"/>.</returns>
-    public static ExtractionResult<TResult> Failed<TResult>(string errorMessage)
+    public static ExtractionResult<TResult> Failed<TResult>(string errorMessage, string? modelId = null)
         where TResult : class =>
         new()
         {
             Status = ExtractionStatus.Failed,
             ErrorMessage = errorMessage,
+            ModelId = modelId,
         };
 
     /// <summary>
@@ -44,8 +48,9 @@ public static class ExtractionResult
     /// <param name="data">The extracted data.</param>
     /// <param name="confidence">Confidence score between 0.0 and 1.0.</param>
     /// <param name="warnings">Warnings explaining why review is needed.</param>
+    /// <param name="modelId">Identifier of the model that produced the result, if known.</param>
     /// <returns>A <see cref="ExtractionResult{TResult}"/> with <see cref="ExtractionStatus.NeedsReview"/> status.</returns>
-    public static ExtractionResult<TResult> NeedsReview<TResult>(TResult data, double confidence, IReadOnlyList<string> warnings)
+    public static ExtractionResult<TResult> NeedsReview<TResult>(TResult data, double confidence, IReadOnlyList<string> warnings, string? modelId = null)
         where TResult : class =>
         new()
         {
@@ -53,6 +58,7 @@ public static class ExtractionResult
             Data = data,
             ConfidenceScore = confidence,
             Warnings = warnings,
+            ModelId = modelId,
         };
 }
 
@@ -86,4 +92,10 @@ public sealed record ExtractionResult<TResult> where TResult : class
     /// Warnings produced during extraction (e.g. missing optional fields, low-confidence fields).
     /// </summary>
     public IReadOnlyList<string> Warnings { get; init; } = [];
+
+    /// <summary>
+    /// Identifier of the model that produced this result, as reported by the provider.
+    /// <c>null</c> when the provider did not surface a model identifier (e.g. early failures).
+    /// </summary>
+    public string? ModelId { get; init; }
 }
