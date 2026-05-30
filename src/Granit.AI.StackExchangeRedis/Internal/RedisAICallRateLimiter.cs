@@ -1,10 +1,10 @@
-using Granit.AI.Extraction.StackExchangeRedis.Options;
 using Granit.AI.RateLimiting;
+using Granit.AI.StackExchangeRedis.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace Granit.AI.Extraction.StackExchangeRedis.Internal;
+namespace Granit.AI.StackExchangeRedis.Internal;
 
 /// <summary>
 /// Distributed <see cref="IAICallRateLimiter"/> backed by a Redis sorted-set sliding

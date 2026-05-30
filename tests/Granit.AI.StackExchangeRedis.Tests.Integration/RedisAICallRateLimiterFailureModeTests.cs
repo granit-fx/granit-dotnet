@@ -1,6 +1,6 @@
-using Granit.AI.Extraction.StackExchangeRedis.Extensions;
-using Granit.AI.Extraction.StackExchangeRedis.Options;
 using Granit.AI.RateLimiting;
+using Granit.AI.StackExchangeRedis.Extensions;
+using Granit.AI.StackExchangeRedis.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -9,7 +9,7 @@ using Shouldly;
 using StackExchange.Redis;
 using Xunit;
 
-namespace Granit.AI.Extraction.StackExchangeRedis.Tests.Integration;
+namespace Granit.AI.StackExchangeRedis.Tests.Integration;
 
 /// <summary>
 /// Redis-failure fallback behaviour. No container — the connection multiplexer is
@@ -58,7 +58,7 @@ public sealed class RedisAICallRateLimiterFailureModeTests
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging();
         services.AddSingleton(mux);
-        services.AddGranitAIExtractionRedisRateLimiter();
+        services.AddGranitAIRedisRateLimiter();
         services.Configure<AIRateLimitingRedisOptions>(o => o.AllowOnRedisFailure = allowOnFailure);
 
         return services.BuildServiceProvider();

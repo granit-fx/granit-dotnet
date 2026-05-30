@@ -59,13 +59,6 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.AI.Extraction.StackExchangeRedis",
-      "deps": [
-        "Granit.AI"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.AI.Mcp",
       "deps": [
         "Granit.AI",
@@ -83,6 +76,13 @@
     },
     {
       "name": "Granit.AI.OpenAI",
+      "deps": [
+        "Granit.AI"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.AI.StackExchangeRedis",
       "deps": [
         "Granit.AI"
       ],
@@ -3328,60 +3328,6 @@
       ]
     },
     {
-      "name": "ServiceCollectionExtensions",
-      "fqn": "Granit.AI.Extraction.StackExchangeRedis.Extensions.ServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.AI.Extraction.StackExchangeRedis",
-      "file": "src/Granit.AI.Extraction.StackExchangeRedis/Extensions/ServiceCollectionExtensions.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "AddGranitAIExtractionRedisRateLimiter",
-          "kind": "method",
-          "signature": "AddGranitAIExtractionRedisRateLimiter(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitAIExtractionStackExchangeRedisModule",
-      "fqn": "Granit.AI.Extraction.StackExchangeRedis.GranitAIExtractionStackExchangeRedisModule",
-      "kind": "class",
-      "project": "Granit.AI.Extraction.StackExchangeRedis",
-      "file": "src/Granit.AI.Extraction.StackExchangeRedis/GranitAIExtractionStackExchangeRedisModule.cs",
-      "line": 28,
-      "members": [
-        {
-          "name": "IsEnabled",
-          "kind": "method",
-          "signature": "IsEnabled(ServiceConfigurationContext context)",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
-      "name": "AIRateLimitingRedisOptions",
-      "fqn": "Granit.AI.Extraction.StackExchangeRedis.Options.AIRateLimitingRedisOptions",
-      "kind": "class",
-      "project": "Granit.AI.Extraction.StackExchangeRedis",
-      "file": "src/Granit.AI.Extraction.StackExchangeRedis/Options/AIRateLimitingRedisOptions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "Enabled",
-          "kind": "property",
-          "signature": "bool Enabled",
-          "returnType": "bool"
-        },
-        {
-          "name": "KeyPrefix",
-          "kind": "property",
-          "signature": "string KeyPrefix",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "GranitAIModule",
       "fqn": "Granit.AI.GranitAIModule",
       "kind": "class",
@@ -3971,6 +3917,60 @@
           "name": "TruncateOnCodePoint",
           "kind": "method",
           "signature": "TruncateOnCodePoint(string content, int maxChars)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.AI.StackExchangeRedis.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.AI.StackExchangeRedis",
+      "file": "src/Granit.AI.StackExchangeRedis/Extensions/ServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitAIRedisRateLimiter",
+          "kind": "method",
+          "signature": "AddGranitAIRedisRateLimiter(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIStackExchangeRedisModule",
+      "fqn": "Granit.AI.StackExchangeRedis.GranitAIStackExchangeRedisModule",
+      "kind": "class",
+      "project": "Granit.AI.StackExchangeRedis",
+      "file": "src/Granit.AI.StackExchangeRedis/GranitAIStackExchangeRedisModule.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "IsEnabled",
+          "kind": "method",
+          "signature": "IsEnabled(ServiceConfigurationContext context)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "AIRateLimitingRedisOptions",
+      "fqn": "Granit.AI.StackExchangeRedis.Options.AIRateLimitingRedisOptions",
+      "kind": "class",
+      "project": "Granit.AI.StackExchangeRedis",
+      "file": "src/Granit.AI.StackExchangeRedis/Options/AIRateLimitingRedisOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Enabled",
+          "kind": "property",
+          "signature": "bool Enabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "KeyPrefix",
+          "kind": "property",
+          "signature": "string KeyPrefix",
           "returnType": "string"
         }
       ]

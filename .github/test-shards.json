@@ -337,7 +337,7 @@
       "name": "integration",
       "label": "Integration Tests",
       "projects": [
-        "tests/Granit.AI.Extraction.StackExchangeRedis.Tests.Integration",
+        "tests/Granit.AI.StackExchangeRedis.Tests.Integration",
         "tests/Granit.Authorization.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.BackgroundJobs.Tests.Integration",
         "tests/Granit.Indexing.Elasticsearch.Tests.Integration",

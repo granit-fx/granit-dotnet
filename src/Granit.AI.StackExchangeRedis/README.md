@@ -1,4 +1,4 @@
-# Granit.AI.Extraction.StackExchangeRedis
+# Granit.AI.StackExchangeRedis
 
 Distributed, Redis-backed `IAICallRateLimiter` for the Granit AI feature family
 (`Granit.LanguageDetection.AI`, `Granit.Indexing.AI`, …).
@@ -50,7 +50,7 @@ one (DI registration order is not guaranteed across unrelated modules), wire it
 explicitly:
 
 ```csharp
-builder.Services.AddGranitAIExtractionRedisRateLimiter();
+builder.Services.AddGranitAIRedisRateLimiter();
 ```
 
 ## Behaviour notes

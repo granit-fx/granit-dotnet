@@ -1,13 +1,13 @@
-using Granit.AI.Extraction.StackExchangeRedis.Extensions;
-using Granit.AI.Extraction.StackExchangeRedis.Options;
 using Granit.AI.RateLimiting;
+using Granit.AI.StackExchangeRedis.Extensions;
+using Granit.AI.StackExchangeRedis.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using StackExchange.Redis;
 using Xunit;
 
-namespace Granit.AI.Extraction.StackExchangeRedis.Tests.Integration;
+namespace Granit.AI.StackExchangeRedis.Tests.Integration;
 
 public sealed class RedisAICallRateLimiterTests(RedisContainerFixture fixture) : IClassFixture<RedisContainerFixture>
 {
@@ -97,7 +97,7 @@ public sealed class RedisAICallRateLimiterTests(RedisContainerFixture fixture) :
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging();
         services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(connectionString));
-        services.AddGranitAIExtractionRedisRateLimiter();
+        services.AddGranitAIRedisRateLimiter();
         if (configure is not null)
         {
             services.Configure(configure);

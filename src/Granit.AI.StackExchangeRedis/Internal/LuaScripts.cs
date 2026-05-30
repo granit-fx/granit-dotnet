@@ -1,4 +1,4 @@
-namespace Granit.AI.Extraction.StackExchangeRedis.Internal;
+namespace Granit.AI.StackExchangeRedis.Internal;
 
 /// <summary>
 /// Redis Lua scripts for the AI call rate limiter. Uses <c>redis.call('TIME')</c> for

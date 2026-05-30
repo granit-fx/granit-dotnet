@@ -1,10 +1,10 @@
-using Granit.AI.Extraction.StackExchangeRedis.Internal;
-using Granit.AI.Extraction.StackExchangeRedis.Options;
 using Granit.AI.RateLimiting;
+using Granit.AI.StackExchangeRedis.Internal;
+using Granit.AI.StackExchangeRedis.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Granit.AI.Extraction.StackExchangeRedis.Extensions;
+namespace Granit.AI.StackExchangeRedis.Extensions;
 
 /// <summary>
 /// Registration helpers for the Redis-backed <see cref="IAICallRateLimiter"/>.
@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
     /// registered by <c>Granit.Caching.StackExchangeRedis</c>). Binds
     /// <see cref="AIRateLimitingRedisOptions"/> from configuration and validates it at startup.
     /// </remarks>
-    public static IServiceCollection AddGranitAIExtractionRedisRateLimiter(this IServiceCollection services)
+    public static IServiceCollection AddGranitAIRedisRateLimiter(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 

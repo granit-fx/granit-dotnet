@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Granit.AI.Extraction.StackExchangeRedis.Options;
+namespace Granit.AI.StackExchangeRedis.Options;
 
 /// <summary>
 /// Configuration for the Redis-backed <c>IAICallRateLimiter</c>. Bound from the

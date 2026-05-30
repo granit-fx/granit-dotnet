@@ -1,7 +1,7 @@
 using Testcontainers.Redis;
 using Xunit;
 
-namespace Granit.AI.Extraction.StackExchangeRedis.Tests.Integration;
+namespace Granit.AI.StackExchangeRedis.Tests.Integration;
 
 /// <summary>
 /// Shared fixture — starts a single Redis container once per test class.

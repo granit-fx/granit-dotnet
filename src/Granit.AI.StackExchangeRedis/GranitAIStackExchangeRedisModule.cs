@@ -1,10 +1,10 @@
-using Granit.AI.Extraction.StackExchangeRedis.Extensions;
-using Granit.AI.Extraction.StackExchangeRedis.Options;
+using Granit.AI.StackExchangeRedis.Extensions;
+using Granit.AI.StackExchangeRedis.Options;
 using Granit.Modularity;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 
-namespace Granit.AI.Extraction.StackExchangeRedis;
+namespace Granit.AI.StackExchangeRedis;
 
 /// <summary>
 /// Granit module that swaps the in-memory <c>IAICallRateLimiter</c> registered by
@@ -21,11 +21,11 @@ namespace Granit.AI.Extraction.StackExchangeRedis;
 /// <para>
 /// If the connection multiplexer is registered by a module that configures <em>after</em>
 /// this one (DI registration order is not guaranteed across unrelated modules), call
-/// <c>services.AddGranitAIExtractionRedisRateLimiter()</c> explicitly instead.
+/// <c>services.AddGranitAIRedisRateLimiter()</c> explicitly instead.
 /// </para>
 /// </remarks>
 [DependsOn(typeof(GranitAIModule))]
-public sealed class GranitAIExtractionStackExchangeRedisModule : GranitModule
+public sealed class GranitAIStackExchangeRedisModule : GranitModule
 {
     /// <inheritdoc/>
     public override bool IsEnabled(ServiceConfigurationContext context)
@@ -48,7 +48,7 @@ public sealed class GranitAIExtractionStackExchangeRedisModule : GranitModule
 
         if (redisRegistered)
         {
-            context.Services.AddGranitAIExtractionRedisRateLimiter();
+            context.Services.AddGranitAIRedisRateLimiter();
         }
     }
 }

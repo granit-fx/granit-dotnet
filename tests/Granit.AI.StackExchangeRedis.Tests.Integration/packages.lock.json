@@ -408,7 +408,7 @@
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
         }
       },
-      "granit.ai.extraction.stackexchangeredis": {
+      "granit.ai.stackexchangeredis": {
         "type": "Project",
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",

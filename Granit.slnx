@@ -302,7 +302,7 @@
     <Project Path="src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj" />
     <Project Path="src/Granit.AI.EntityFrameworkCore/Granit.AI.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.AI.Extraction/Granit.AI.Extraction.csproj" />
-    <Project Path="src/Granit.AI.Extraction.StackExchangeRedis/Granit.AI.Extraction.StackExchangeRedis.csproj" />
+    <Project Path="src/Granit.AI.StackExchangeRedis/Granit.AI.StackExchangeRedis.csproj" />
     <Project Path="src/Granit.AI.Mcp/Granit.AI.Mcp.csproj" />
     <Project Path="src/Granit.AI.Ollama/Granit.AI.Ollama.csproj" />
     <Project Path="src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj" />
@@ -638,7 +638,7 @@
     <Project Path="tests/Granit.AI.Endpoints.Tests/Granit.AI.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.AI.EntityFrameworkCore.Tests/Granit.AI.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.AI.Extraction.Tests/Granit.AI.Extraction.Tests.csproj" />
-    <Project Path="tests/Granit.AI.Extraction.StackExchangeRedis.Tests.Integration/Granit.AI.Extraction.StackExchangeRedis.Tests.Integration.csproj" />
+    <Project Path="tests/Granit.AI.StackExchangeRedis.Tests.Integration/Granit.AI.StackExchangeRedis.Tests.Integration.csproj" />
     <Project Path="tests/Granit.AI.Mcp.Tests/Granit.AI.Mcp.Tests.csproj" />
     <Project Path="tests/Granit.AI.Ollama.Tests/Granit.AI.Ollama.Tests.csproj" />
     <Project Path="tests/Granit.AI.OpenAI.Tests/Granit.AI.OpenAI.Tests.csproj" />
