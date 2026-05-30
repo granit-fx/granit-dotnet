@@ -1,22 +1,18 @@
 using Granit.AI;
 using Granit.DataExchange.AI.Internal;
 using Granit.DataExchange.AI.Options;
+using Granit.DataExchange.AI.Schema;
 using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Mapping;
-using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Shouldly;
 
 namespace Granit.DataExchange.AI.Tests;
 
 public sealed class AISemanticMappingServiceTests
 {
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
-    private readonly ILogger<AISemanticMappingService> _logger = NullLogger<AISemanticMappingService>.Instance;
+    private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
 
     private readonly DataExchangeAIOptions _options = new()
     {
@@ -35,94 +31,48 @@ public sealed class AISemanticMappingServiceTests
     ];
 
     private AISemanticMappingService CreateService() =>
-        new(_chatClientFactory, Microsoft.Extensions.Options.Options.Create(_options), _logger);
+        new(_structured, Microsoft.Extensions.Options.Options.Create(_options), NullLogger<AISemanticMappingService>.Instance);
 
-    private void SetupChatClient(string jsonResponse)
-    {
-        _chatClientFactory
-            .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(_chatClient);
+    private static StructuredCompletionResult<MappingSuggestionsResponse> Ok(params (string Source, string Target, double Score)[] items) =>
+        new()
+        {
+            Status = StructuredCompletionStatus.Succeeded,
+            Value = new MappingSuggestionsResponse
+            {
+                Mappings = [.. items.Select(i => new MappingSuggestionItem { Source = i.Source, Target = i.Target, Score = i.Score })],
+            },
+        };
 
-        var response = new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse));
-        _chatClient
-            .GetResponseAsync(
-                Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(response);
-    }
-
-    [Fact]
-    public void IsAvailable_ReturnsTrue()
-    {
-        AISemanticMappingService service = CreateService();
-
-        service.IsAvailable.ShouldBeTrue();
-    }
+    private void Respond(StructuredCompletionResult<MappingSuggestionsResponse> result) =>
+        _structured
+            .CompleteAsync<MappingSuggestionsResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(result);
 
     [Fact]
-    public async Task SuggestSemanticMappingsAsync_WithValidResponse_ReturnsMappings()
+    public void IsAvailable_ReturnsTrue() => CreateService().IsAvailable.ShouldBeTrue();
+
+    [Fact]
+    public async Task SuggestSemanticMappingsAsync_WithValidResponse_ReturnsMappingsSortedByScoreDescending()
     {
-        const string jsonResponse = """
-            [
-                {"source": "Email", "target": "Email", "score": 0.95},
-                {"source": "Full Name", "target": "FullName", "score": 0.90},
-                {"source": "Phone Number", "target": "PhoneNumber", "score": 0.85}
-            ]
-            """;
+        Respond(Ok(("Full Name", "FullName", 0.90), ("Email", "Email", 0.95), ("Phone Number", "PhoneNumber", 0.85)));
 
-        SetupChatClient(jsonResponse);
-
-        AISemanticMappingService service = CreateService();
-
-        IReadOnlyList<SemanticMappingSuggestion> result = await service
+        IReadOnlyList<SemanticMappingSuggestion> result = await CreateService()
             .SuggestSemanticMappingsAsync(_headers, _targetFields, TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(3);
         result[0].SourceColumn.ShouldBe("Email");
         result[0].TargetProperty.ShouldBe("Email");
         result[0].Score.ShouldBe(0.95);
-        result[1].SourceColumn.ShouldBe("Full Name");
-        result[1].TargetProperty.ShouldBe("FullName");
-        result[2].SourceColumn.ShouldBe("Phone Number");
-        result[2].TargetProperty.ShouldBe("PhoneNumber");
-
-        // Should be sorted by score descending
         result[0].Score.ShouldBeGreaterThanOrEqualTo(result[1].Score);
         result[1].Score.ShouldBeGreaterThanOrEqualTo(result[2].Score);
     }
 
     [Fact]
-    public async Task SuggestSemanticMappingsAsync_WithLLMFailure_ReturnsEmptyList()
-    {
-        _chatClientFactory
-            .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("LLM provider unavailable"));
-
-        AISemanticMappingService service = CreateService();
-
-        IReadOnlyList<SemanticMappingSuggestion> result = await service
-            .SuggestSemanticMappingsAsync(_headers, _targetFields, TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
-    }
-
-    [Fact]
     public async Task SuggestSemanticMappingsAsync_FiltersLowConfidence()
     {
-        const string jsonResponse = """
-            [
-                {"source": "Email", "target": "Email", "score": 0.95},
-                {"source": "Full Name", "target": "FullName", "score": 0.40},
-                {"source": "Phone Number", "target": "PhoneNumber", "score": 0.55}
-            ]
-            """;
+        Respond(Ok(("Email", "Email", 0.95), ("Full Name", "FullName", 0.40), ("Phone Number", "PhoneNumber", 0.55)));
 
-        SetupChatClient(jsonResponse);
-
-        AISemanticMappingService service = CreateService();
-
-        IReadOnlyList<SemanticMappingSuggestion> result = await service
+        IReadOnlyList<SemanticMappingSuggestion> result = await CreateService()
             .SuggestSemanticMappingsAsync(_headers, _targetFields, TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(1);
@@ -131,151 +81,114 @@ public sealed class AISemanticMappingServiceTests
     }
 
     [Fact]
-    public async Task SuggestSemanticMappingsAsync_WithEmptyHeaders_ReturnsEmptyList()
+    public async Task SuggestSemanticMappingsAsync_DropsMappingsOutsideTheKnownSchema()
     {
-        AISemanticMappingService service = CreateService();
+        // Model invents a source column and a target property nobody supplied — both discarded.
+        Respond(Ok(("Email", "Email", 0.95), ("Ghost Column", "FullName", 0.99), ("Phone Number", "GhostProperty", 0.99)));
 
-        IReadOnlyList<SemanticMappingSuggestion> result = await service
-            .SuggestSemanticMappingsAsync([], _targetFields, TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public async Task SuggestSemanticMappingsAsync_WithEmptyTargetFields_ReturnsEmptyList()
-    {
-        AISemanticMappingService service = CreateService();
-
-        IReadOnlyList<SemanticMappingSuggestion> result = await service
-            .SuggestSemanticMappingsAsync(_headers, [], TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public async Task SuggestSemanticMappingsAsync_WithMarkdownFencedResponse_ParsesCorrectly()
-    {
-        const string jsonResponse = """
-            ```json
-            [
-                {"source": "Email", "target": "Email", "score": 0.95}
-            ]
-            ```
-            """;
-
-        SetupChatClient(jsonResponse);
-
-        AISemanticMappingService service = CreateService();
-
-        IReadOnlyList<SemanticMappingSuggestion> result = await service
+        IReadOnlyList<SemanticMappingSuggestion> result = await CreateService()
             .SuggestSemanticMappingsAsync(_headers, _targetFields, TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(1);
         result[0].SourceColumn.ShouldBe("Email");
     }
 
-    [Fact]
-    public void BuildPrompt_ContainsHeadersAndFields()
+    [Theory]
+    [InlineData(StructuredCompletionStatus.ModelRefused)]
+    [InlineData(StructuredCompletionStatus.SchemaViolation)]
+    [InlineData(StructuredCompletionStatus.TransportFailure)]
+    public async Task SuggestSemanticMappingsAsync_NonSuccessStatus_ReturnsEmptyList(StructuredCompletionStatus status)
     {
-        string prompt = AISemanticMappingService.BuildPrompt(_headers, _targetFields, 0.6);
+        Respond(new StructuredCompletionResult<MappingSuggestionsResponse> { Status = status });
 
-        prompt.ShouldContain("Email");
-        prompt.ShouldContain("Full Name");
-        prompt.ShouldContain("Phone Number");
-        prompt.ShouldContain("Email Address");
-        prompt.ShouldContain("The user's email");
-        prompt.ShouldContain("FullName");
-        prompt.ShouldContain("PhoneNumber");
-        prompt.ShouldContain("0.6");
+        IReadOnlyList<SemanticMappingSuggestion> result = await CreateService()
+            .SuggestSemanticMappingsAsync(_headers, _targetFields, TestContext.Current.CancellationToken);
+
+        result.ShouldBeEmpty();
     }
 
     [Fact]
-    public void BuildPrompt_WithPreviewRows_IncludesSampleData()
+    public async Task SuggestSemanticMappingsAsync_WithEmptyHeaders_ReturnsEmptyWithoutCallingTheModel()
     {
-        IReadOnlyList<string[]> previewRows =
-        [
-            ["john@example.com", "John Doe", "+32 123 456"],
-            ["jane@example.com", "Jane Smith", "+32 789 012"],
-        ];
+        IReadOnlyList<SemanticMappingSuggestion> result = await CreateService()
+            .SuggestSemanticMappingsAsync([], _targetFields, TestContext.Current.CancellationToken);
 
-        string prompt = AISemanticMappingService.BuildPrompt(_headers, _targetFields, 0.6, previewRows);
-
-        prompt.ShouldContain("Sample data (first rows):");
-        prompt.ShouldContain("john@example.com");
-        prompt.ShouldContain("Jane Smith");
+        result.ShouldBeEmpty();
+        await _structured
+            .DidNotReceiveWithAnyArgs()
+            .CompleteAsync<MappingSuggestionsResponse>(default!, TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void BuildPrompt_WithoutPreviewRows_DoesNotContainSampleData()
+    public async Task SuggestSemanticMappingsAsync_WithEmptyTargetFields_ReturnsEmptyWithoutCallingTheModel()
     {
-        string prompt = AISemanticMappingService.BuildPrompt(_headers, _targetFields, 0.6, previewRows: null);
+        IReadOnlyList<SemanticMappingSuggestion> result = await CreateService()
+            .SuggestSemanticMappingsAsync(_headers, [], TestContext.Current.CancellationToken);
 
-        prompt.ShouldNotContain("Sample data");
+        result.ShouldBeEmpty();
+        await _structured
+            .DidNotReceiveWithAnyArgs()
+            .CompleteAsync<MappingSuggestionsResponse>(default!, TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public async Task SuggestSemanticMappingsAsync_WithPreviewRows_IgnoredWhenOptionDisabled()
+    public async Task SuggestSemanticMappingsAsync_RoutesHeadersAndTargetSchemaThroughTheRightChannels()
+    {
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<MappingSuggestionsResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(Ok(("Email", "Email", 0.95)));
+
+        await CreateService().SuggestSemanticMappingsAsync(_headers, _targetFields, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        // Untrusted source columns flow through the sanitized Content channel...
+        captured.Content.ShouldContain("Email");
+        captured.Content.ShouldContain("Phone Number");
+        // ...the developer-controlled target schema is the instruction.
+        captured.Instruction.ShouldNotBeNull();
+        captured.Instruction.ShouldContain("FullName");
+        captured.Instruction.ShouldContain("Email Address");
+        captured.WorkspaceName.ShouldBe("test-workspace");
+    }
+
+    [Fact]
+    public async Task SuggestSemanticMappingsAsync_PreviewRows_OmittedFromContentWhenOptionDisabled()
     {
         _options.IncludePreviewRows = false;
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<MappingSuggestionsResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(Ok(("COL1", "Email", 0.9)));
 
-        const string jsonResponse = """[{"source": "COL1", "target": "Email", "score": 0.9}]""";
-        SetupChatClient(jsonResponse);
-
-        AISemanticMappingService service = CreateService();
         IReadOnlyList<string[]> previewRows = [["john@example.com"]];
 
-        IReadOnlyList<SemanticMappingSuggestion> result = await service
+        IReadOnlyList<SemanticMappingSuggestion> result = await CreateService()
             .SuggestSemanticMappingsAsync(["COL1"], _targetFields, previewRows, TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(1);
-
-        // Verify the prompt does NOT contain sample data (option is disabled)
-        await _chatClient.Received(1).GetResponseAsync(
-            Arg.Is<IEnumerable<ChatMessage>>(msgs =>
-                !string.Join("", msgs.Select(m => m.Text)).Contains("Sample data")),
-            Arg.Any<ChatOptions?>(),
-            Arg.Any<CancellationToken>());
+        captured.ShouldNotBeNull();
+        captured.Content.ShouldNotContain("Sample data");
+        captured.Content.ShouldNotContain("john@example.com");
     }
 
     [Fact]
-    public async Task SuggestSemanticMappingsAsync_WithPreviewRows_IncludedWhenOptionEnabled()
+    public async Task SuggestSemanticMappingsAsync_PreviewRows_IncludedInContentWhenOptionEnabled()
     {
         _options.IncludePreviewRows = true;
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<MappingSuggestionsResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(Ok(("COL1", "Email", 0.9)));
 
-        const string jsonResponse = """[{"source": "COL1", "target": "Email", "score": 0.9}]""";
-        SetupChatClient(jsonResponse);
-
-        AISemanticMappingService service = CreateService();
         IReadOnlyList<string[]> previewRows = [["john@example.com"]];
 
-        IReadOnlyList<SemanticMappingSuggestion> result = await service
+        IReadOnlyList<SemanticMappingSuggestion> result = await CreateService()
             .SuggestSemanticMappingsAsync(["COL1"], _targetFields, previewRows, TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(1);
-
-        // Verify the prompt DOES contain sample data
-        await _chatClient.Received(1).GetResponseAsync(
-            Arg.Is<IEnumerable<ChatMessage>>(msgs =>
-                string.Join("", msgs.Select(m => m.Text)).Contains("Sample data")),
-            Arg.Any<ChatOptions?>(),
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public void ParseSuggestions_WithInvalidJson_ReturnsEmptyList()
-    {
-        IReadOnlyList<SemanticMappingSuggestion> result =
-            AISemanticMappingService.ParseSuggestions("not valid json");
-
-        result.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public void ParseSuggestions_WithEmptyArray_ReturnsEmptyList()
-    {
-        IReadOnlyList<SemanticMappingSuggestion> result =
-            AISemanticMappingService.ParseSuggestions("[]");
-
-        result.ShouldBeEmpty();
+        captured.ShouldNotBeNull();
+        captured.Content.ShouldContain("Sample data");
+        captured.Content.ShouldContain("john@example.com");
     }
 }

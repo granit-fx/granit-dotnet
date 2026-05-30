@@ -12889,6 +12889,44 @@
       ]
     },
     {
+      "name": "MappingSuggestionItem",
+      "fqn": "Granit.DataExchange.AI.Schema.MappingSuggestionItem",
+      "kind": "class",
+      "project": "Granit.DataExchange.AI",
+      "file": "src/Granit.DataExchange.AI/Schema/MappingSuggestionsResponse.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "Source",
+          "kind": "property",
+          "signature": "string Source",
+          "returnType": "string"
+        },
+        {
+          "name": "Target",
+          "kind": "property",
+          "signature": "string Target",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "MappingSuggestionsResponse",
+      "fqn": "Granit.DataExchange.AI.Schema.MappingSuggestionsResponse",
+      "kind": "class",
+      "project": "Granit.DataExchange.AI",
+      "file": "src/Granit.DataExchange.AI/Schema/MappingSuggestionsResponse.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Mappings",
+          "kind": "property",
+          "signature": "List<MappingSuggestionItem> Mappings",
+          "returnType": "List<MappingSuggestionItem>"
+        }
+      ]
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.DataExchange.BlobStorage.Extensions.ServiceCollectionExtensions",
       "kind": "class",

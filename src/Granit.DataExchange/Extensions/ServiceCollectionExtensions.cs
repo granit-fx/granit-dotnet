@@ -134,6 +134,10 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Replaces the default <see cref="ISemanticMappingService"/> with an AI-backed implementation.
     /// </summary>
+    /// <remarks>
+    /// Registered <b>Scoped</b>: realistic implementations call the scoped
+    /// <c>IStructuredCompletion</c> primitive (ADR-064), so a singleton here would capture a stale scope.
+    /// </remarks>
     /// <typeparam name="TService">The semantic mapping service implementation.</typeparam>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
@@ -141,7 +145,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services)
         where TService : class, ISemanticMappingService
     {
-        services.Replace(ServiceDescriptor.Singleton<ISemanticMappingService, TService>());
+        services.Replace(ServiceDescriptor.Scoped<ISemanticMappingService, TService>());
         return services;
     }
 }

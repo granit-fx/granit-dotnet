@@ -1,34 +1,37 @@
+using System.Globalization;
 using System.Text;
-using System.Text.Json;
 using Granit.AI;
-using Granit.AI.Internal;
 using Granit.DataExchange.AI.Options;
+using Granit.DataExchange.AI.Schema;
 using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Mapping;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.DataExchange.AI.Internal;
 
 /// <summary>
-/// AI-powered implementation of <see cref="ISemanticMappingService"/> that uses
-/// an LLM via <see cref="IAIChatClientFactory"/> to suggest column-to-property mappings.
+/// AI-powered implementation of <see cref="ISemanticMappingService"/> that suggests
+/// column-to-property mappings via the <see cref="IStructuredCompletion"/> primitive (ADR-064).
 /// </summary>
 /// <remarks>
-/// Only column headers and field metadata are sent to the LLM — never business data (GDPR safe).
-/// On failure, gracefully degrades to an empty result set.
+/// <para>
+/// Only column headers and (opt-in) preview rows travel as untrusted
+/// <see cref="StructuredCompletionRequest.Content"/>; the developer-controlled target schema and
+/// confidence threshold are the <see cref="StructuredCompletionRequest.Instruction"/>. By default
+/// no business data is sent (headers-only mode, GDPR-safe).
+/// </para>
+/// <para>
+/// On any non-success outcome the service gracefully degrades to an empty result set. Returned
+/// mappings are intersected with the known source columns and target properties, so a model that
+/// invents or echoes an out-of-schema name contributes nothing.
+/// </para>
 /// </remarks>
 internal sealed partial class AISemanticMappingService(
-    IAIChatClientFactory chatClientFactory,
+    IStructuredCompletion structuredCompletion,
     IOptions<DataExchangeAIOptions> options,
     ILogger<AISemanticMappingService> logger) : ISemanticMappingService
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-    };
-
     /// <inheritdoc/>
     public bool IsAvailable => true;
 
@@ -56,77 +59,75 @@ internal sealed partial class AISemanticMappingService(
 
         DataExchangeAIOptions opts = options.Value;
 
-        // Only include preview rows if the option is explicitly enabled (GDPR opt-in)
-        // Truncate to configured limit to prevent unbounded prompt size.
+        // Only include preview rows if the option is explicitly enabled (GDPR opt-in),
+        // truncated to the configured limit to bound prompt size.
         IReadOnlyList<string[]>? effectivePreview = GetEffectivePreview(opts, previewRows);
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(opts.TimeoutSeconds));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
+        var request = new StructuredCompletionRequest
+        {
+            Instruction = BuildInstruction(targetFields, opts.MinConfidenceScore),
+            Content = BuildContent(headers, effectivePreview),
+            ContentLabel = "Import sample",
+            WorkspaceName = opts.WorkspaceName,
+        };
+
         try
         {
-            // CreateAsync builds a fresh client per call (no cache) — dispose
-            // deterministically so the HttpMessageHandler doesn't linger until GC.
-            using IChatClient chatClient = await chatClientFactory
-                .CreateAsync(opts.WorkspaceName, linkedCts.Token)
+            StructuredCompletionResult<MappingSuggestionsResponse> result = await structuredCompletion
+                .CompleteAsync<MappingSuggestionsResponse>(request, linkedCts.Token)
                 .ConfigureAwait(false);
 
-            string prompt = BuildPrompt(headers, targetFields, opts.MinConfidenceScore, effectivePreview);
+            if (result.Status != StructuredCompletionStatus.Succeeded)
+            {
+                LogSemanticMappingRejected(result.Status.ToString());
+                return [];
+            }
 
-            ChatResponse response = await chatClient
-                .GetResponseAsync(prompt, cancellationToken: linkedCts.Token)
-                .ConfigureAwait(false);
-
-            string responseText = response.Text ?? string.Empty;
-
-            LogLlmResponseReceived(responseText.Length);
-
-            IReadOnlyList<SemanticMappingSuggestion> suggestions = ParseSuggestions(responseText);
-
-            // Validate LLM output against known properties and headers.
-            HashSet<string> validTargets = new(targetFields.Select(f => f.PropertyPath), StringComparer.OrdinalIgnoreCase);
-            HashSet<string> validSources = new(headers, StringComparer.OrdinalIgnoreCase);
-
-            var filtered = suggestions
-                .Where(s => s.Score >= opts.MinConfidenceScore
-                            && validTargets.Contains(s.TargetProperty)
-                            && validSources.Contains(s.SourceColumn))
-                .OrderByDescending(s => s.Score)
-                .ToList();
-
-            LogSuggestionsFiltered(suggestions.Count, filtered.Count, opts.MinConfidenceScore);
-
-            return filtered;
+            return Filter(result.Value!, headers, targetFields, opts.MinConfidenceScore);
         }
-        catch (Exception ex) when (ex is not OutOfMemoryException)
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
-            LogSemanticMappingFailed(ex);
+            LogSemanticMappingTimeout(opts.TimeoutSeconds);
             return [];
         }
     }
 
-    internal static string BuildPrompt(
+    /// <summary>
+    /// Projects the schema-pinned response onto the public surface: clamps scores, drops
+    /// below-threshold and out-of-schema entries, and orders by descending confidence.
+    /// </summary>
+    private List<SemanticMappingSuggestion> Filter(
+        MappingSuggestionsResponse response,
         IReadOnlyList<string> headers,
         IReadOnlyList<ImportFieldMetadata> targetFields,
-        double minConfidenceScore,
-        IReadOnlyList<string[]>? previewRows = null)
+        double minConfidenceScore)
+    {
+        HashSet<string> validTargets = new(targetFields.Select(f => f.PropertyPath), StringComparer.OrdinalIgnoreCase);
+        HashSet<string> validSources = new(headers, StringComparer.OrdinalIgnoreCase);
+
+        var filtered = response.Mappings
+            .Where(m => !string.IsNullOrEmpty(m.Source) && !string.IsNullOrEmpty(m.Target))
+            .Select(m => new SemanticMappingSuggestion(m.Source, m.Target, Math.Clamp(m.Score, 0.0, 1.0)))
+            .Where(s => s.Score >= minConfidenceScore
+                        && validTargets.Contains(s.TargetProperty)
+                        && validSources.Contains(s.SourceColumn))
+            .OrderByDescending(s => s.Score)
+            .ToList();
+
+        LogSuggestionsFiltered(response.Mappings.Count, filtered.Count, minConfidenceScore);
+
+        return filtered;
+    }
+
+    private static string BuildInstruction(IReadOnlyList<ImportFieldMetadata> targetFields, double minConfidenceScore)
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine("You are a data mapping assistant. Match source CSV/Excel columns to target entity properties.");
-        sb.AppendLine();
-
-        // Wrap user-controlled headers in a PromptBuilder data block
-        var headerPb = new PromptBuilder(maxInputLength: 10_000);
-        headerPb.AppendUserDataMap("Source columns", headers.Select(h => new KeyValuePair<string, string?>(h, null)));
-        sb.Append(headerPb.Build());
-
-        // Include preview rows when provided (opt-in, caller is responsible for GDPR compliance)
-        if (previewRows is { Count: > 0 })
-        {
-            AppendPreviewTable(sb, headers, previewRows);
-        }
-
+        sb.AppendLine("You are a data-mapping assistant. Match the source columns in the data block to the");
+        sb.AppendLine("target entity properties below, assigning each match a confidence score from 0.0 to 1.0.");
         sb.AppendLine();
         sb.AppendLine("Target properties:");
         sb.AppendLine("| Property | Type | Display Name | Description | Required |");
@@ -148,14 +149,27 @@ internal sealed partial class AISemanticMappingService(
         }
 
         sb.AppendLine();
-        sb.AppendLine("Return a JSON array of mappings. Each mapping has:");
-        sb.AppendLine("""- "source": exact source column name""");
-        sb.AppendLine("""- "target": exact target property path""");
-        sb.AppendLine("""- "score": confidence score 0.0 to 1.0""");
-        sb.AppendLine();
-        sb.Append($"Only include confident matches (score >= {minConfidenceScore:F1}). ");
-        sb.AppendLine("Return [] if no good matches found.");
-        sb.AppendLine("Return ONLY the JSON array, no markdown fences or extra text.");
+        sb.Append(CultureInfo.InvariantCulture, $"Only include confident matches (score >= {minConfidenceScore:F1}); ");
+        sb.AppendLine("use the exact source-column and target-property names. Return no mapping for columns you cannot place.");
+
+        return sb.ToString();
+    }
+
+    private static string BuildContent(IReadOnlyList<string> headers, IReadOnlyList<string[]>? previewRows)
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine("Source columns:");
+        foreach (string header in headers)
+        {
+            sb.Append("- ");
+            sb.AppendLine(SanitizeCellValue(header));
+        }
+
+        if (previewRows is { Count: > 0 })
+        {
+            AppendPreviewTable(sb, headers, previewRows);
+        }
 
         return sb.ToString();
     }
@@ -164,7 +178,7 @@ internal sealed partial class AISemanticMappingService(
     {
         sb.AppendLine();
         sb.AppendLine("Sample data (first rows):");
-        sb.AppendLine("| " + string.Join(" | ", headers) + " |");
+        sb.AppendLine("| " + string.Join(" | ", headers.Select(SanitizeCellValue)) + " |");
         sb.AppendLine("| " + string.Join(" | ", headers.Select(_ => "---")) + " |");
 
         foreach (string[] row in previewRows)
@@ -181,59 +195,12 @@ internal sealed partial class AISemanticMappingService(
         }
     }
 
-    internal static IReadOnlyList<SemanticMappingSuggestion> ParseSuggestions(string responseText)
-    {
-        string trimmed = LlmResponseHelper.StripMarkdownCodeFences(responseText);
-
-        // Find the JSON array boundaries
-        int startIndex = trimmed.IndexOf('[');
-        int endIndex = trimmed.LastIndexOf(']');
-
-        if (startIndex < 0 || endIndex < 0 || endIndex <= startIndex)
-        {
-            return [];
-        }
-
-        string jsonArray = trimmed[startIndex..(endIndex + 1)];
-
-        List<MappingDto>? dtos = JsonSerializer.Deserialize<List<MappingDto>>(jsonArray, JsonOptions);
-
-        if (dtos is null)
-        {
-            return [];
-        }
-
-        return dtos
-            .Where(d => d.Source is not null && d.Target is not null)
-            .Select(d => new SemanticMappingSuggestion(d.Source!, d.Target!, Math.Clamp(d.Score, 0.0, 1.0)))
-            .ToList();
-    }
-
     private static string SanitizeCellValue(string value) =>
         value.Replace("<", "&lt;", StringComparison.Ordinal)
              .Replace(">", "&gt;", StringComparison.Ordinal)
              .Replace("|", "\\|", StringComparison.Ordinal)
              .Replace("\n", " ", StringComparison.Ordinal)
              .Replace("\r", " ", StringComparison.Ordinal);
-
-    [LoggerMessage(Level = LogLevel.Debug, Message = "LLM response received for semantic mapping ({ResponseLength} chars)")]
-    private partial void LogLlmResponseReceived(int responseLength);
-
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Semantic mapping: {TotalCount} suggestions from LLM, {FilteredCount} after filtering (min score: {MinScore:F2})")]
-    private partial void LogSuggestionsFiltered(int totalCount, int filteredCount, double minScore);
-
-    [LoggerMessage(Level = LogLevel.Warning, Message = "AI semantic mapping failed, returning empty suggestions (graceful degradation)")]
-    private partial void LogSemanticMappingFailed(Exception exception);
-
-    /// <summary>
-    /// Internal DTO for deserializing the LLM JSON response.
-    /// </summary>
-    internal sealed class MappingDto
-    {
-        public string? Source { get; set; }
-        public string? Target { get; set; }
-        public double Score { get; set; }
-    }
 
     private static IReadOnlyList<string[]>? GetEffectivePreview(
         DataExchangeAIOptions opts, IReadOnlyList<string[]>? previewRows)
@@ -247,4 +214,13 @@ internal sealed partial class AISemanticMappingService(
             ? previewRows
             : previewRows.Take(opts.PreviewRowCount).ToList();
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Semantic mapping: {TotalCount} suggestions from LLM, {FilteredCount} after filtering (min score: {MinScore:F2})")]
+    private partial void LogSuggestionsFiltered(int totalCount, int filteredCount, double minScore);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "AI semantic mapping rejected (status: {Status}), returning empty suggestions (graceful degradation)")]
+    private partial void LogSemanticMappingRejected(string status);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "AI semantic mapping timed out after {TimeoutSeconds}s, returning empty suggestions (graceful degradation)")]
+    private partial void LogSemanticMappingTimeout(int timeoutSeconds);
 }
