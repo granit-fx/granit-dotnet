@@ -68,6 +68,15 @@ public static class AIServiceCollectionExtensions
 
         builder.Services.TryAddSingleton<IAIQuotaGuard, InMemoryAIQuotaGuard>();
 
+        // Structured output primitive (ADR-064): the canonical typed-output path.
+        builder.Services
+            .AddOptions<StructuredCompletionOptions>()
+            .BindConfiguration(StructuredCompletionOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        builder.Services.TryAddScoped<IStructuredCompletion, DefaultStructuredCompletion>();
+
         // Query + Export definitions (ADR-020: owned by the base module).
         builder.Services.AddQueryDefinition<AIUsageRecord, AIUsageRecordQueryDefinition>();
         builder.Services.AddExportDefinition<AIUsageRecord, AIUsageRecordExportDefinition>();

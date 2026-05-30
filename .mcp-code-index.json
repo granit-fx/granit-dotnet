@@ -3637,6 +3637,15 @@
       ]
     },
     {
+      "name": "IStructuredCompletion",
+      "fqn": "Granit.AI.IStructuredCompletion",
+      "kind": "interface",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/IStructuredCompletion.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "AIMcpServiceCollectionExtensions",
       "fqn": "Granit.AI.Mcp.Extensions.AIMcpServiceCollectionExtensions",
       "kind": "class",
@@ -3895,6 +3904,22 @@
       ]
     },
     {
+      "name": "StructuredCompletionOptions",
+      "fqn": "Granit.AI.Options.StructuredCompletionOptions",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Options/StructuredCompletionOptions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "TimeoutSeconds",
+          "kind": "property",
+          "signature": "int TimeoutSeconds",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
       "name": "AIPermissions",
       "fqn": "Granit.AI.Permissions.AIPermissions",
       "kind": "class",
@@ -3949,6 +3974,33 @@
           "returnType": "Type? LocalizationResourceType =>"
         }
       ]
+    },
+    {
+      "name": "StructuredCompletionRequest",
+      "fqn": "Granit.AI.StructuredCompletionRequest",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/StructuredCompletionRequest.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "StructuredCompletionResult",
+      "fqn": "Granit.AI.StructuredCompletionResult",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/StructuredCompletionResult.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "StructuredCompletionStatus",
+      "fqn": "Granit.AI.StructuredCompletionStatus",
+      "kind": "enum",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/StructuredCompletionStatus.cs",
+      "line": 7,
+      "members": []
     },
     {
       "name": "AICacheKey",
