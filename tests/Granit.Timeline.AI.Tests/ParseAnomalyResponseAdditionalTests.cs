@@ -1,69 +1,45 @@
 using Granit.Timeline.AI.Internal;
 using Shouldly;
 using Xunit;
+using AnomalyItemJson = Granit.Timeline.AI.Internal.LlmTimelineAnomalyDetector.AnomalyItemJson;
+using AnomalyResponseJson = Granit.Timeline.AI.Internal.LlmTimelineAnomalyDetector.AnomalyResponseJson;
 
 namespace Granit.Timeline.AI.Tests;
 
+/// <summary>
+/// Severity normalization and description filtering — now exercised through
+/// <see cref="LlmTimelineAnomalyDetector.BuildReport"/> (JSON parsing/fence-stripping is the
+/// primitive's responsibility).
+/// </summary>
 public sealed class ParseAnomalyResponseAdditionalTests
 {
-    [Fact]
-    public void ParseAnomalyResponse_NullSeverity_DefaultsToLow()
-    {
-        string json = """{"anomalies": [{"description": "Something odd", "severity": null}]}""";
-
-        AnomalyReport result = LlmTimelineAnomalyDetector.ParseAnomalyResponse(json);
-
-        result.HasAnomalies.ShouldBeTrue();
-        result.Anomalies[0].Severity.ShouldBe("Low");
-    }
+    private static AnomalyReport Build(string? description, string? severity) =>
+        LlmTimelineAnomalyDetector.BuildReport(new AnomalyResponseJson([new AnomalyItemJson(description, severity)]));
 
     [Fact]
-    public void ParseAnomalyResponse_UnknownSeverity_DefaultsToLow()
-    {
-        string json = """{"anomalies": [{"description": "Something odd", "severity": "Critical"}]}""";
-
-        AnomalyReport result = LlmTimelineAnomalyDetector.ParseAnomalyResponse(json);
-
-        result.HasAnomalies.ShouldBeTrue();
-        result.Anomalies[0].Severity.ShouldBe("Low");
-    }
+    public void BuildReport_NullSeverity_DefaultsToLow() =>
+        Build("Something odd", null).Anomalies[0].Severity.ShouldBe("Low");
 
     [Fact]
-    public void ParseAnomalyResponse_HighSeverity_NormalizedCorrectly()
-    {
-        string json = """{"anomalies": [{"description": "Privilege escalation", "severity": "high"}]}""";
-
-        AnomalyReport result = LlmTimelineAnomalyDetector.ParseAnomalyResponse(json);
-
-        result.Anomalies[0].Severity.ShouldBe("High");
-    }
+    public void BuildReport_UnknownSeverity_DefaultsToLow() =>
+        Build("Something odd", "Critical").Anomalies[0].Severity.ShouldBe("Low");
 
     [Fact]
-    public void ParseAnomalyResponse_LowSeverity_NormalizedCorrectly()
-    {
-        string json = """{"anomalies": [{"description": "Minor issue", "severity": "low"}]}""";
-
-        AnomalyReport result = LlmTimelineAnomalyDetector.ParseAnomalyResponse(json);
-
-        result.Anomalies[0].Severity.ShouldBe("Low");
-    }
+    public void BuildReport_HighSeverity_NormalizedCorrectly() =>
+        Build("Privilege escalation", "high").Anomalies[0].Severity.ShouldBe("High");
 
     [Fact]
-    public void ParseAnomalyResponse_MediumSeverity_NormalizedCorrectly()
-    {
-        string json = """{"anomalies": [{"description": "Bulk edits", "severity": "MEDIUM"}]}""";
-
-        AnomalyReport result = LlmTimelineAnomalyDetector.ParseAnomalyResponse(json);
-
-        result.Anomalies[0].Severity.ShouldBe("Medium");
-    }
+    public void BuildReport_MediumSeverity_NormalizedCorrectly() =>
+        Build("Bulk edits", "MEDIUM").Anomalies[0].Severity.ShouldBe("Medium");
 
     [Fact]
-    public void ParseAnomalyResponse_EmptyDescription_Filtered()
+    public void BuildReport_EmptyDescription_Filtered()
     {
-        string json = """{"anomalies": [{"description": "", "severity": "Low"}, {"description": "Valid", "severity": "High"}]}""";
-
-        AnomalyReport result = LlmTimelineAnomalyDetector.ParseAnomalyResponse(json);
+        AnomalyReport result = LlmTimelineAnomalyDetector.BuildReport(new AnomalyResponseJson(
+        [
+            new AnomalyItemJson("", "Low"),
+            new AnomalyItemJson("Valid", "High"),
+        ]));
 
         result.HasAnomalies.ShouldBeTrue();
         result.Anomalies.Count.ShouldBe(1);
@@ -71,32 +47,27 @@ public sealed class ParseAnomalyResponseAdditionalTests
     }
 
     [Fact]
-    public void ParseAnomalyResponse_WhitespaceDescription_Filtered()
+    public void BuildReport_WhitespaceDescription_Filtered()
     {
-        string json = """{"anomalies": [{"description": "   ", "severity": "Low"}]}""";
-
-        AnomalyReport result = LlmTimelineAnomalyDetector.ParseAnomalyResponse(json);
+        AnomalyReport result = Build("   ", "Low");
 
         result.HasAnomalies.ShouldBeFalse();
         result.Anomalies.ShouldBeEmpty();
     }
 
     [Fact]
-    public void ParseAnomalyResponse_NullAnomaliesProperty_ReturnsNoAnomalies()
-    {
-        string json = """{"anomalies": null}""";
-
-        AnomalyReport result = LlmTimelineAnomalyDetector.ParseAnomalyResponse(json);
-
-        result.HasAnomalies.ShouldBeFalse();
-    }
+    public void BuildReport_NullAnomaliesProperty_ReturnsNoAnomalies() =>
+        LlmTimelineAnomalyDetector.BuildReport(new AnomalyResponseJson(null)).HasAnomalies.ShouldBeFalse();
 
     [Fact]
-    public void ParseAnomalyResponse_MultipleAnomalies_AllParsed()
+    public void BuildReport_MultipleAnomalies_AllParsed()
     {
-        string json = """{"anomalies": [{"description": "A", "severity": "Low"}, {"description": "B", "severity": "Medium"}, {"description": "C", "severity": "High"}]}""";
-
-        AnomalyReport result = LlmTimelineAnomalyDetector.ParseAnomalyResponse(json);
+        AnomalyReport result = LlmTimelineAnomalyDetector.BuildReport(new AnomalyResponseJson(
+        [
+            new AnomalyItemJson("A", "Low"),
+            new AnomalyItemJson("B", "Medium"),
+            new AnomalyItemJson("C", "High"),
+        ]));
 
         result.Anomalies.Count.ShouldBe(3);
     }
