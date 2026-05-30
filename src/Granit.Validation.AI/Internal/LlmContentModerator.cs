@@ -1,30 +1,27 @@
-using System.Text.Json;
 using Granit.AI;
-using Granit.AI.Internal;
 using Granit.Validation.AI.Options;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Validation.AI.Internal;
 
 /// <summary>
-/// LLM-backed content moderator that analyzes text for policy violations.
+/// LLM-backed content moderator that analyzes text for policy violations via the
+/// <see cref="IStructuredCompletion"/> primitive (ADR-064).
 /// </summary>
 /// <remarks>
-/// Uses a fail-open design: when the LLM is unavailable or times out,
-/// content is accepted and a warning is logged for manual review.
+/// Mixed failure policy: a transport failure or timeout is <b>fail-open</b> (content
+/// accepted, warning logged) so moderation never blocks the request, while an
+/// unparseable / refused response is <b>fail-closed</b> (content rejected) to deny an
+/// adversarial bypass. The aggressive moderation timeout (kept low on purpose) is applied
+/// by the caller-side token; the primitive owns schema enforcement, usage tracking, and
+/// PII-safe error mapping.
 /// </remarks>
 internal sealed partial class LlmContentModerator(
-    IAIChatClientFactory chatClientFactory,
+    IStructuredCompletion structuredCompletion,
     IOptions<ValidationAIOptions> options,
     ILogger<LlmContentModerator> logger) : IAIContentModerator
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-    };
-
     /// <inheritdoc/>
     public async Task<ModerationResult> ModerateAsync(
         string text,
@@ -35,81 +32,63 @@ internal sealed partial class LlmContentModerator(
 
         ValidationAIOptions config = options.Value;
 
+        // Aggressive moderation timeout (must not block the request). Layered over the
+        // primitive's own timeout; whichever fires first cancels the call. When ours fires,
+        // the primitive rethrows the cancellation and we fail open below.
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(config.TimeoutSeconds));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, cancellationToken);
+
+        var request = new StructuredCompletionRequest
+        {
+            Instruction = ModerationInstruction,
+            Content = text,
+            ContentLabel = "Text to analyze",
+            Context = context is null ? null : [new("Context", context)],
+            WorkspaceName = config.WorkspaceName,
+        };
+
         try
         {
-            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(config.TimeoutSeconds));
-            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
-                timeoutCts.Token, cancellationToken);
-
-            // CreateAsync builds a fresh client per call (no cache) — dispose
-            // deterministically so the HttpMessageHandler doesn't linger until GC.
-            using IChatClient chatClient = await chatClientFactory
-                .CreateAsync(config.WorkspaceName, linkedCts.Token)
+            StructuredCompletionResult<LlmModerationResponse> result = await structuredCompletion
+                .CompleteAsync<LlmModerationResponse>(request, linkedCts.Token)
                 .ConfigureAwait(false);
 
-            string prompt = BuildPrompt(text, context);
+            switch (result.Status)
+            {
+                case StructuredCompletionStatus.Succeeded:
+                    return BuildResult(result.Value!, config.SeverityThreshold);
 
-            ChatResponse response = await chatClient.GetResponseAsync(
-                prompt, cancellationToken: linkedCts.Token).ConfigureAwait(false);
+                case StructuredCompletionStatus.TransportFailure:
+                    // Provider/transport problem — fail open so validation never blocks.
+                    LogModerationFailed();
+                    return AcceptWithWarning();
 
-            string responseText = response.Text ?? string.Empty;
-
-            return ParseResponse(responseText, config.SeverityThreshold);
+                case StructuredCompletionStatus.ModelRefused:
+                case StructuredCompletionStatus.SchemaViolation:
+                default:
+                    // Refused or unparseable output suggests adversarial manipulation — fail closed.
+                    LogModerationParseFailure();
+                    return new ModerationResult { IsAcceptable = false, Flags = [] };
+            }
         }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
             LogModerationTimeout(config.TimeoutSeconds);
             return AcceptWithWarning();
         }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (JsonException ex)
-        {
-            // Adversarial/malformed LLM output — fail-closed to prevent bypass
-            LogModerationParseFailure(ex);
-            return new ModerationResult { IsAcceptable = false, Flags = [] };
-        }
-        catch (Exception ex)
-        {
-            LogModerationFailed(ex);
-            return AcceptWithWarning();
-        }
     }
 
-    internal static string BuildPrompt(string text, string? context)
+    internal const string ModerationInstruction =
+        """
+        Analyze the supplied text for content policy violations and return a structured result.
+        For each violation add a flag whose category is one of:
+        Toxic, Harassment, PromptInjection, Spam, Violence, SelfHarm, Sexual, Other.
+        Set isAcceptable to false when any violation is present, with a brief description and a
+        severity between 0.0 and 1.0 per flag.
+        """;
+
+    private static ModerationResult BuildResult(LlmModerationResponse parsed, double severityThreshold)
     {
-        var pb = new PromptBuilder(maxInputLength: 50_000);
-
-        pb.AppendInstruction("""
-            Analyze the following text for content policy violations.
-            Return ONLY a JSON object with this exact structure (no markdown, no explanation):
-            { "isAcceptable": true/false, "flags": [{ "category": "Toxic|Harassment|PromptInjection|Spam|Violence|SelfHarm|Sexual|Other", "description": "brief description", "severity": 0.0-1.0 }] }
-            """);
-
-        if (context is not null)
-        {
-            pb.AppendUserData("Context", context);
-        }
-
-        pb.AppendUserTextBlock("Text to analyze", text);
-
-        return pb.Build();
-    }
-
-    internal static ModerationResult ParseResponse(string responseText, double severityThreshold)
-    {
-        string json = LlmResponseHelper.StripMarkdownCodeFences(responseText);
-
-        LlmModerationResponse? parsed = JsonSerializer.Deserialize<LlmModerationResponse>(json, JsonOptions);
-
-        if (parsed is null)
-        {
-            // Fail-closed: unparseable LLM response suggests adversarial manipulation
-            return new ModerationResult { IsAcceptable = false, Flags = [] };
-        }
-
         List<ModerationFlag> filteredFlags = [];
 
         if (parsed.Flags is not null)
@@ -140,13 +119,13 @@ internal sealed partial class LlmContentModerator(
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "AI content moderation failed — content accepted (fail-open), flagged for manual review")]
-    private partial void LogModerationFailed(Exception exception);
+    private partial void LogModerationFailed();
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "AI content moderation returned unparseable response — content rejected (fail-closed)")]
-    private partial void LogModerationParseFailure(Exception exception);
+        Message = "AI content moderation returned an unusable response — content rejected (fail-closed)")]
+    private partial void LogModerationParseFailure();
 
-    private sealed record LlmModerationResponse(bool IsAcceptable, List<LlmModerationFlag>? Flags);
+    internal sealed record LlmModerationResponse(bool IsAcceptable, List<LlmModerationFlag>? Flags);
 
-    private sealed record LlmModerationFlag(string? Category, string? Description, double Severity);
+    internal sealed record LlmModerationFlag(string? Category, string? Description, double Severity);
 }
