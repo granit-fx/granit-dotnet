@@ -35128,7 +35128,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Exports/OpenIddictApplicationExportDefinition.cs",
-      "line": 6,
+      "line": 7,
       "members": [
         {
           "name": "Name",
@@ -35144,7 +35144,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Exports/OpenIddictScopeExportDefinition.cs",
-      "line": 6,
+      "line": 7,
       "members": [
         {
           "name": "Name",
