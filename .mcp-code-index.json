@@ -32075,12 +32075,12 @@
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
       "file": "src/Granit.Notifications.EntityFrameworkCore/Extensions/NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitNotificationsEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitNotificationsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<NotificationsEntityFrameworkCoreOptions> configure)",
+          "signature": "AddGranitNotificationsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -32125,22 +32125,6 @@
       "file": "src/Granit.Notifications.EntityFrameworkCore/GranitNotificationsEntityFrameworkCoreModule.cs",
       "line": 20,
       "members": []
-    },
-    {
-      "name": "NotificationsEntityFrameworkCoreOptions",
-      "fqn": "Granit.Notifications.EntityFrameworkCore.Options.NotificationsEntityFrameworkCoreOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.EntityFrameworkCore",
-      "file": "src/Granit.Notifications.EntityFrameworkCore/Options/NotificationsEntityFrameworkCoreOptions.cs",
-      "line": 31,
-      "members": [
-        {
-          "name": "StorageMode",
-          "kind": "property",
-          "signature": "DualScopeStorageMode StorageMode",
-          "returnType": "DualScopeStorageMode"
-        }
-      ]
     },
     {
       "name": "EntityStateChangedData",

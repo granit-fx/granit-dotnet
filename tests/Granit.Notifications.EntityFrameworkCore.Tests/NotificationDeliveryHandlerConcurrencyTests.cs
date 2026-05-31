@@ -34,8 +34,7 @@ public sealed class NotificationDeliveryHandlerConcurrencyTests : IDisposable
     public NotificationDeliveryHandlerConcurrencyTests()
     {
         _clock.Now.Returns(_ => DateTimeOffset.UtcNow);
-        NotificationsContextResolver resolver = new(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, _factory);
-        _store = new EfCoreNotificationDeliveryStore(resolver, _clock);
+        _store = new EfCoreNotificationDeliveryStore(_factory, _clock);
 
         ServiceCollection svc = new();
         svc.AddMetrics();
@@ -65,7 +64,7 @@ public sealed class NotificationDeliveryHandlerConcurrencyTests : IDisposable
         _channel.SendCount.ShouldBe(1);
         (await _store.HasBeenDeliveredAsync(command.DeliveryId, TestContext.Current.CancellationToken)).ShouldBeTrue();
 
-        await using NotificationsHostDbContext db = _factory.CreateDbContext();
+        await using NotificationsDbContext db = _factory.CreateDbContext();
         (await db.DeliveryAttempts.AsNoTracking()
             .CountAsync(a => a.DeliveryId == command.DeliveryId, TestContext.Current.CancellationToken))
             .ShouldBe(1);

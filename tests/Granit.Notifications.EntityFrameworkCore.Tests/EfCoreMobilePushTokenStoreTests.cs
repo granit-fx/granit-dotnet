@@ -1,7 +1,9 @@
+using Granit.MultiTenancy;
 using Granit.Notifications.EntityFrameworkCore.Internal;
 using Granit.Notifications.MobilePush;
 using Granit.Notifications.MobilePush.Domain;
 using Granit.Notifications.MobilePush.Internal;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -20,8 +22,10 @@ public sealed class EfCoreMobilePushTokenStoreTests : IDisposable
 
     public EfCoreMobilePushTokenStoreTests()
     {
-        NotificationsContextResolver resolver = new(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, _factory);
-        _store = new EfCoreMobilePushTokenStore(resolver, new IdentityHasher());
+        _store = new EfCoreMobilePushTokenStore(
+            _factory,
+            Substitute.For<ICurrentTenant>(),
+            new IdentityHasher());
     }
 
     public void Dispose() => _factory.Dispose();

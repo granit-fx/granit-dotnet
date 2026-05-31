@@ -13,25 +13,25 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Granit.Notifications.EntityFrameworkCore.Tests;
 
 /// <summary>
-/// Creates <see cref="NotificationsHostDbContext"/> instances backed by SQLite in-memory
-/// for fast, isolated integration tests that support all relational operations (including
-/// <c>ExecuteUpdateAsync</c> / <c>ExecuteDeleteAsync</c>).
+/// Creates <see cref="NotificationsDbContext"/> instances backed by SQLite in-memory
+/// for fast, isolated integration tests that support all relational operations
+/// (including <c>ExecuteUpdateAsync</c> / <c>ExecuteDeleteAsync</c>).
 /// </summary>
 /// <remarks>
 /// The <see cref="IMultiTenant"/> query filter is disabled via a dedicated
-/// <see cref="DataFilter"/> instance so tests can insert/read rows under arbitrary tenant
-/// ids without setting up an ambient <c>ICurrentTenant</c>.
+/// <see cref="DataFilter"/> instance so tests can insert/read rows under
+/// arbitrary tenant ids without setting up an ambient <c>ICurrentTenant</c>.
 /// </remarks>
-internal sealed class TestDbContextFactory : IDbContextFactory<NotificationsHostDbContext>, IDisposable
+internal sealed class TestDbContextFactory : IDbContextFactory<NotificationsDbContext>, IDisposable
 {
     private readonly SqliteConnection _connection;
-    private readonly DbContextOptions<NotificationsHostDbContext> _options;
+    private readonly DbContextOptions<NotificationsDbContext> _options;
     private readonly IDataFilter _dataFilter;
     private readonly IDisposable _multiTenantDisabled;
 
     private TestDbContextFactory(
         SqliteConnection connection,
-        DbContextOptions<NotificationsHostDbContext> options,
+        DbContextOptions<NotificationsDbContext> options,
         IDataFilter dataFilter,
         IDisposable multiTenantDisabled)
     {
@@ -46,16 +46,17 @@ internal sealed class TestDbContextFactory : IDbContextFactory<NotificationsHost
         SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
-        DbContextOptionsBuilder<NotificationsHostDbContext> optionsBuilder = new();
+        DbContextOptionsBuilder<NotificationsDbContext> optionsBuilder = new();
         optionsBuilder.UseSqlite(connection);
         optionsBuilder.ReplaceService<IModelCustomizer, SqliteCompatibleModelCustomizer>();
 
-        DbContextOptions<NotificationsHostDbContext> options = optionsBuilder.Options;
+        DbContextOptions<NotificationsDbContext> options = optionsBuilder.Options;
 
         DataFilter dataFilter = new();
         IDisposable multiTenantDisabled = dataFilter.Disable<IMultiTenant>();
 
-        using (NotificationsHostDbContext db = new(options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant, dataFilter))
+        // Create the schema
+        using (NotificationsDbContext db = new(options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant, dataFilter))
         {
             db.Database.EnsureCreated();
         }
@@ -63,8 +64,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<NotificationsHost
         return new TestDbContextFactory(connection, options, dataFilter, multiTenantDisabled);
     }
 
-    public NotificationsHostDbContext CreateDbContext()
-        => new(_options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant, _dataFilter);
+    public NotificationsDbContext CreateDbContext() => new(_options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant, _dataFilter);
 
     public void Dispose()
     {
@@ -80,11 +80,10 @@ internal sealed class TestDbContextFactory : IDbContextFactory<NotificationsHost
 }
 
 /// <summary>
-/// Model customizer that remaps PostgreSQL-specific types (jsonb, DateTimeOffset) to
-/// SQLite-compatible types with value converters.
+/// Model customizer that remaps PostgreSQL-specific types (jsonb, DateTimeOffset)
+/// to SQLite-compatible types with value converters.
 /// </summary>
-internal sealed class SqliteCompatibleModelCustomizer(ModelCustomizerDependencies dependencies)
-    : RelationalModelCustomizer(dependencies)
+internal sealed class SqliteCompatibleModelCustomizer(ModelCustomizerDependencies dependencies) : RelationalModelCustomizer(dependencies)
 {
     private static readonly ValueConverter<JsonElement, string> JsonElementConverter = new(
         v => v.GetRawText(),
