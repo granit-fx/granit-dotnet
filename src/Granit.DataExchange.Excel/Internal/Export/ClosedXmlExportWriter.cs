@@ -31,6 +31,9 @@ internal sealed class ClosedXmlExportWriter : IExportWriter
     public string FileExtension => ".xlsx";
 
     /// <inheritdoc/>
+    public ExportFormatCapabilities Capabilities => ExportFormatCapabilities.TabularOnly;
+
+    /// <inheritdoc/>
     public async Task WriteAsync(
         Stream output,
         IReadOnlyList<ExportFieldDescriptor> fields,

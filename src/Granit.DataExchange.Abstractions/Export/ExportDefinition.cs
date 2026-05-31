@@ -106,6 +106,16 @@ public abstract class ExportDefinition<TEntity> : IExportDefinitionDescriptor
     /// </summary>
     public bool GetIncludeMetadata() => GetBuilder().IncludeMetadataFlag;
 
+    /// <summary>
+    /// Policy applied when the chosen export format cannot handle complex/hierarchical fields.
+    /// Override to <see cref="OnIncompatibleFieldPolicy.Skip"/> when a tabular export without
+    /// the complex fields is an acceptable fallback.
+    /// </summary>
+    public virtual OnIncompatibleFieldPolicy OnIncompatibleField => OnIncompatibleFieldPolicy.Throw;
+
     /// <inheritdoc/>
     bool IExportDefinitionDescriptor.IncludeMetadata => GetIncludeMetadata();
+
+    /// <inheritdoc/>
+    OnIncompatibleFieldPolicy IExportDefinitionDescriptor.OnIncompatibleField => OnIncompatibleField;
 }

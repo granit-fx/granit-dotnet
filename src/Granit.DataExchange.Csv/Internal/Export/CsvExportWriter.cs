@@ -31,6 +31,9 @@ internal sealed class CsvExportWriter : IExportWriter
     public string FileExtension => ".csv";
 
     /// <inheritdoc/>
+    public ExportFormatCapabilities Capabilities => ExportFormatCapabilities.TabularOnly;
+
+    /// <inheritdoc/>
     public async Task WriteAsync(
         Stream output,
         IReadOnlyList<ExportFieldDescriptor> fields,

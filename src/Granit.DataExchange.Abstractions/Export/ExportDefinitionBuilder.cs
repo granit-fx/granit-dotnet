@@ -106,6 +106,55 @@ public sealed class ExportDefinitionBuilder<TEntity> where TEntity : class
     }
 
     /// <summary>
+    /// Declares a complex (hierarchical) exportable field backed by an arbitrary value selector.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the complex value (object, collection, tree).</typeparam>
+    /// <param name="name">
+    /// Field name used as the <see cref="ExportFieldDescriptor.PropertyPath"/> and default column header.
+    /// Must be a valid identifier — dots are not allowed (use a flat name for the complex payload).
+    /// </param>
+    /// <param name="selector">Selector that extracts the complex value from the entity.</param>
+    /// <param name="configure">Optional fluent configuration (header, order).</param>
+    /// <remarks>
+    /// <para>
+    /// Unlike scalar <see cref="Field{TProp}(System.Linq.Expressions.Expression{System.Func{TEntity,TProp}},System.Action{ExportFieldBuilder}?)"/>,
+    /// <c>ComplexField</c> accepts any <c>Func&lt;TEntity, TValue&gt;</c> — no member-expression restriction.
+    /// </para>
+    /// <para>
+    /// The resulting field sets <see cref="ExportFieldDescriptor.RequiresHierarchy"/> to <c>true</c>.
+    /// Export writers that do not declare <c>SupportsHierarchy = true</c> in their capabilities
+    /// will throw <see cref="ExportProviderIncompatibleException"/> (default) or skip the field
+    /// depending on <see cref="ExportDefinition{TEntity}.OnIncompatibleField"/>.
+    /// </para>
+    /// </remarks>
+    public ExportDefinitionBuilder<TEntity> ComplexField<TValue>(
+        string name,
+        Func<TEntity, TValue> selector,
+        Action<ExportFieldBuilder>? configure = null)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentNullException.ThrowIfNull(selector);
+
+        ExportFieldBuilder builder = new();
+        configure?.Invoke(builder);
+
+        Func<object, object?> boxedSelector = entity => selector((TEntity)entity);
+
+        Fields.Add(new ExportFieldDescriptor(
+            PropertyPath: name,
+            ClrTypeName: typeof(TValue).Name,
+            Header: builder.HeaderValue,
+            Format: builder.FormatValue,
+            Order: builder.OrderValue != 0 ? builder.OrderValue : _autoOrder++,
+            IsNavigation: false,
+            RequiresHierarchy: true,
+            ValueSelector: boxedSelector,
+            SelectorType: typeof(TValue)));
+
+        return this;
+    }
+
+    /// <summary>
     /// Includes mapped extra properties (from <c>IMetadataMappingRegistry</c>)
     /// as additional export fields after the explicitly declared fields.
     /// </summary>

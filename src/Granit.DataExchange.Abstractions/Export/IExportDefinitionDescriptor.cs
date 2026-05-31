@@ -58,4 +58,24 @@ public interface IExportDefinitionDescriptor
     /// their values from EF Core shadow properties.
     /// </remarks>
     bool IncludeMetadata => false;
+
+    /// <summary>
+    /// Whether this definition declares at least one complex field that requires a hierarchical
+    /// (structured) export format.
+    /// </summary>
+    /// <remarks>
+    /// When <c>true</c>, tabular formats (CSV, XLSX) will be rejected or will skip the complex
+    /// fields depending on <see cref="OnIncompatibleField"/>.
+    /// </remarks>
+    bool HasComplexFields => GetFields().Any(f => f.RequiresHierarchy);
+
+    /// <summary>
+    /// Policy applied when the chosen export format cannot handle complex/hierarchical fields.
+    /// </summary>
+    /// <remarks>
+    /// Default: <see cref="OnIncompatibleFieldPolicy.Throw"/> — fail fast rather than silently
+    /// losing data. Override to <see cref="OnIncompatibleFieldPolicy.Skip"/> when a thin tabular
+    /// export without the complex fields is an acceptable fallback.
+    /// </remarks>
+    OnIncompatibleFieldPolicy OnIncompatibleField => OnIncompatibleFieldPolicy.Throw;
 }

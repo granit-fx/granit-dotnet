@@ -637,6 +637,20 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.DataExchange.Json",
+      "deps": [
+        "Granit.DataExchange"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.DataExchange.Xml",
+      "deps": [
+        "Granit.DataExchange"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.DataLookup",
       "deps": [
         "Granit",
@@ -13387,6 +13401,12 @@
           "kind": "method",
           "signature": "GetIncludeMetadata()",
           "returnType": "bool"
+        },
+        {
+          "name": "OnIncompatibleField",
+          "kind": "property",
+          "signature": "OnIncompatibleFieldPolicy OnIncompatibleField",
+          "returnType": "OnIncompatibleFieldPolicy"
         }
       ]
     },
@@ -13423,8 +13443,30 @@
       "kind": "record",
       "project": "Granit.DataExchange.Abstractions",
       "file": "src/Granit.DataExchange.Abstractions/Export/ExportFieldDescriptor.cs",
-      "line": 14,
+      "line": 30,
       "members": []
+    },
+    {
+      "name": "ExportFormatCapabilities",
+      "fqn": "Granit.DataExchange.Export.ExportFormatCapabilities",
+      "kind": "record",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/ExportFormatCapabilities.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(SupportsHierarchy: false)",
+          "returnType": "ExportFormatCapabilities TabularOnly ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(SupportsHierarchy: true)",
+          "returnType": "ExportFormatCapabilities Structured ="
+        }
+      ]
     },
     {
       "name": "ExportJobResult",
@@ -13489,6 +13531,15 @@
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/ExportPreset.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "ExportProviderIncompatibleException",
+      "fqn": "Granit.DataExchange.Export.ExportProviderIncompatibleException",
+      "kind": "class",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/ExportProviderIncompatibleException.cs",
+      "line": 7,
       "members": []
     },
     {
@@ -13557,6 +13608,18 @@
           "kind": "property",
           "signature": "bool IncludeMetadata",
           "returnType": "bool"
+        },
+        {
+          "name": "GetFields",
+          "kind": "method",
+          "signature": "GetFields()",
+          "returnType": "bool HasComplexFields =>"
+        },
+        {
+          "name": "OnIncompatibleField",
+          "kind": "property",
+          "signature": "OnIncompatibleFieldPolicy OnIncompatibleField",
+          "returnType": "OnIncompatibleFieldPolicy"
         }
       ]
     },
@@ -13726,7 +13789,7 @@
       "kind": "interface",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/IExportWriter.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "CanWrite",
@@ -13735,10 +13798,16 @@
           "returnType": "bool"
         },
         {
+          "name": "MimeType",
+          "kind": "property",
+          "signature": "string MimeType",
+          "returnType": "string"
+        },
+        {
           "name": "WriteAsync",
           "kind": "method",
           "signature": "WriteAsync(Stream output, IReadOnlyList<ExportFieldDescriptor> fields, IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows, CancellationToken cancellationToken = default)",
-          "returnType": "string MimeType { get; } string FileExtension { get; } Task"
+          "returnType": "Task"
         }
       ]
     },
@@ -13774,6 +13843,15 @@
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/Messages/ExportJobCompletedEto.cs",
       "line": 19,
+      "members": []
+    },
+    {
+      "name": "OnIncompatibleFieldPolicy",
+      "fqn": "Granit.DataExchange.Export.OnIncompatibleFieldPolicy",
+      "kind": "enum",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/OnIncompatibleFieldPolicy.cs",
+      "line": 7,
       "members": []
     },
     {
@@ -14745,6 +14823,38 @@
       ]
     },
     {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.DataExchange.Json.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.DataExchange.Json",
+      "file": "src/Granit.DataExchange.Json/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDataExchangeJson",
+          "kind": "method",
+          "signature": "AddGranitDataExchangeJson(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDataExchangeJsonModule",
+      "fqn": "Granit.DataExchange.Json.GranitDataExchangeJsonModule",
+      "kind": "class",
+      "project": "Granit.DataExchange.Json",
+      "file": "src/Granit.DataExchange.Json/GranitDataExchangeJsonModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "ExportJobQueryDefinition",
       "fqn": "Granit.DataExchange.Queries.ExportJobQueryDefinition",
       "kind": "class",
@@ -14773,6 +14883,38 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.DataExchange.Xml.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.DataExchange.Xml",
+      "file": "src/Granit.DataExchange.Xml/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDataExchangeXml",
+          "kind": "method",
+          "signature": "AddGranitDataExchangeXml(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDataExchangeXmlModule",
+      "fqn": "Granit.DataExchange.Xml.GranitDataExchangeXmlModule",
+      "kind": "class",
+      "project": "Granit.DataExchange.Xml",
+      "file": "src/Granit.DataExchange.Xml/GranitDataExchangeXmlModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

@@ -615,6 +615,168 @@ public sealed class ExportOrchestratorTests
         download.ShouldBeNull();
     }
 
+    // ── Complex field capability tests ──────────────────────────────────
+
+    [Fact]
+    public async Task ExportAsync_complex_field_with_tabular_writer_Throw_policy_throws()
+    {
+        // Arrange — definition with ComplexField, writer is tabular (SupportsHierarchy = false)
+        ExportOrchestrator sut = CreateOrchestrator(CreateTabularWriter());
+        ServiceCollection services = new();
+        services.AddSingleton<IExportDefinitionDescriptor>(new ComplexExportDefinition());
+        services.AddSingleton<IExportDataSource<TestEntity>>(new TestDataSource());
+        services.AddSingleton(Options.Create(new ExportOptions()));
+        ServiceProvider sp = services.BuildServiceProvider();
+
+        IExportWriter tabularWriter = CreateTabularWriter();
+        ExportOrchestrator sutComplex = new(
+            sp,
+            [tabularWriter],
+            _jobReader,
+            _jobWriter,
+            _commandSender,
+            _fileProvider,
+            _clock,
+            new SimpleGuidGenerator(),
+            _eventBus,
+            _distributedEventBus,
+            _currentTenant,
+            new NullExtraExportFieldProvider(),
+            new NullExportExtraValueResolver(),
+            _metrics,
+            NullLogger<ExportOrchestrator>.Instance);
+
+        ExportRequest request = new("Test.Complex", "csv", null, false, null, null, null, null);
+
+        // Act & Assert
+        await Should.ThrowAsync<ExportProviderIncompatibleException>(
+            () => sutComplex.ExportAsync(request, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task ExportAsync_complex_field_with_tabular_writer_Skip_policy_creates_job()
+    {
+        // Arrange — Skip policy: ExportAsync succeeds, job queued
+        ServiceCollection services = new();
+        services.AddSingleton<IExportDefinitionDescriptor>(new SkipComplexExportDefinition());
+        services.AddSingleton<IExportDataSource<TestEntity>>(new TestDataSource());
+        services.AddSingleton(Options.Create(new ExportOptions()));
+        ServiceProvider sp = services.BuildServiceProvider();
+
+        IExportWriter tabularWriter = CreateTabularWriter();
+        ExportOrchestrator sutComplex = new(
+            sp,
+            [tabularWriter],
+            _jobReader,
+            _jobWriter,
+            _commandSender,
+            _fileProvider,
+            _clock,
+            new SimpleGuidGenerator(),
+            _eventBus,
+            _distributedEventBus,
+            _currentTenant,
+            new NullExtraExportFieldProvider(),
+            new NullExportExtraValueResolver(),
+            _metrics,
+            NullLogger<ExportOrchestrator>.Instance);
+
+        ExportRequest request = new("Test.SkipComplex", "csv", null, false, null, null, null, null);
+
+        // Act — should NOT throw
+        ExportJobResult result = await sutComplex.ExportAsync(request, TestContext.Current.CancellationToken);
+
+        result.Status.ShouldBe(ExportJobStatus.Queued);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_complex_field_Skip_policy_strips_complex_fields()
+    {
+        // Arrange — Skip policy: ExecuteAsync strips complex fields from the output
+        var jobId = Guid.NewGuid();
+        ExportRequest request = new("Test.SkipComplex", "csv", null, false, null, null, null, null);
+        var job = ExportJob.Create(jobId, "Test.SkipComplex", "csv", request);
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+
+        ServiceCollection services = new();
+        services.AddSingleton<IExportDefinitionDescriptor>(new SkipComplexExportDefinition());
+        services.AddSingleton<IExportDataSource<TestEntity>>(new TestDataSource());
+        services.AddSingleton(Options.Create(new ExportOptions()));
+        ServiceProvider sp = services.BuildServiceProvider();
+
+        IReadOnlyList<ExportFieldDescriptor>? capturedFields = null;
+        IExportWriter captureWriter = CreateTabularWriter(captureFields: f => capturedFields = f);
+
+        ExportOrchestrator sutComplex = new(
+            sp,
+            [captureWriter],
+            _jobReader,
+            _jobWriter,
+            _commandSender,
+            _fileProvider,
+            _clock,
+            new SimpleGuidGenerator(),
+            _eventBus,
+            _distributedEventBus,
+            _currentTenant,
+            new NullExtraExportFieldProvider(),
+            new NullExportExtraValueResolver(),
+            _metrics,
+            NullLogger<ExportOrchestrator>.Instance);
+
+        // Act
+        await sutComplex.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+
+        // Assert — complex field stripped; only scalar fields remain
+        capturedFields.ShouldNotBeNull();
+        capturedFields!.ShouldAllBe(f => !f.RequiresHierarchy);
+        capturedFields.Any(f => f.PropertyPath == "Name").ShouldBeTrue();
+        capturedFields.Any(f => f.PropertyPath == "Tags").ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_complex_field_with_structured_writer_serializes_value()
+    {
+        // Arrange — structured writer (SupportsHierarchy = true): complex field passes through
+        var jobId = Guid.NewGuid();
+        ExportRequest request = new("Test.Complex", "json", null, false, null, null, null, null);
+        var job = ExportJob.Create(jobId, "Test.Complex", "json", request);
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+
+        ServiceCollection services = new();
+        services.AddSingleton<IExportDefinitionDescriptor>(new ComplexExportDefinition());
+        services.AddSingleton<IExportDataSource<TestEntity>>(new TestDataSource());
+        services.AddSingleton(Options.Create(new ExportOptions()));
+        ServiceProvider sp = services.BuildServiceProvider();
+
+        List<IReadOnlyDictionary<string, object?>> capturedRows = [];
+        IExportWriter structuredWriter = CreateStructuredWriter(captureRows: capturedRows);
+
+        ExportOrchestrator sutComplex = new(
+            sp,
+            [structuredWriter],
+            _jobReader,
+            _jobWriter,
+            _commandSender,
+            _fileProvider,
+            _clock,
+            new SimpleGuidGenerator(),
+            _eventBus,
+            _distributedEventBus,
+            _currentTenant,
+            new NullExtraExportFieldProvider(),
+            new NullExportExtraValueResolver(),
+            _metrics,
+            NullLogger<ExportOrchestrator>.Instance);
+
+        // Act
+        await sutComplex.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+
+        // Assert — complex field "Tags" is present in every row
+        capturedRows.Count.ShouldBe(2);
+        capturedRows.ShouldAllBe(r => r.ContainsKey("Tags"));
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────
 
     private ExportOrchestrator CreateOrchestrator(IExportWriter? writerOverride = null)
@@ -676,6 +838,52 @@ public sealed class ExportOrchestratorTests
             NullLogger<ExportOrchestrator>.Instance);
     }
 
+    private static IExportWriter CreateTabularWriter(Action<IReadOnlyList<ExportFieldDescriptor>>? captureFields = null)
+    {
+        IExportWriter writer = Substitute.For<IExportWriter>();
+        writer.CanWrite(Arg.Any<string>()).Returns(true);
+        writer.FileExtension.Returns(".csv");
+        writer.MimeType.Returns("text/csv");
+        writer.Capabilities.Returns(ExportFormatCapabilities.TabularOnly);
+        writer.WriteAsync(
+            Arg.Any<Stream>(),
+            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
+            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
+            Arg.Any<CancellationToken>())
+            .Returns(async call =>
+            {
+                captureFields?.Invoke(call.Arg<IReadOnlyList<ExportFieldDescriptor>>());
+                IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows =
+                    call.Arg<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>();
+                await foreach (IReadOnlyDictionary<string, object?> _ in rows) { }
+            });
+        return writer;
+    }
+
+    private static IExportWriter CreateStructuredWriter(List<IReadOnlyDictionary<string, object?>> captureRows)
+    {
+        IExportWriter writer = Substitute.For<IExportWriter>();
+        writer.CanWrite(Arg.Any<string>()).Returns(true);
+        writer.FileExtension.Returns(".json");
+        writer.MimeType.Returns("application/json");
+        writer.Capabilities.Returns(ExportFormatCapabilities.Structured);
+        writer.WriteAsync(
+            Arg.Any<Stream>(),
+            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
+            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
+            Arg.Any<CancellationToken>())
+            .Returns(async call =>
+            {
+                IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows =
+                    call.Arg<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>();
+                await foreach (IReadOnlyDictionary<string, object?> row in rows)
+                {
+                    captureRows.Add(row);
+                }
+            });
+        return writer;
+    }
+
     private static IExportWriter CreateCsvWriter()
     {
         IExportWriter writer = Substitute.For<IExportWriter>();
@@ -734,6 +942,7 @@ public sealed class ExportOrchestratorTests
         public string Name { get; set; } = string.Empty;
         public string? Email { get; set; }
         public TestCompany? Company { get; set; }
+        public List<string> Tags { get; set; } = [];
     }
 
     private sealed class TestCompany
@@ -809,6 +1018,27 @@ public sealed class ExportOrchestratorTests
             throw new NotSupportedException();
     }
 
+    private sealed class ComplexExportDefinition : ExportDefinition<TestEntity>
+    {
+        public override string Name => "Test.Complex";
+
+        protected override void Configure(ExportDefinitionBuilder<TestEntity> builder) =>
+            builder
+                .Field(e => e.Name)
+                .ComplexField("Tags", e => e.Tags);
+    }
+
+    private sealed class SkipComplexExportDefinition : ExportDefinition<TestEntity>
+    {
+        public override string Name => "Test.SkipComplex";
+        public override OnIncompatibleFieldPolicy OnIncompatibleField => OnIncompatibleFieldPolicy.Skip;
+
+        protected override void Configure(ExportDefinitionBuilder<TestEntity> builder) =>
+            builder
+                .Field(e => e.Name)
+                .ComplexField("Tags", e => e.Tags);
+    }
+
     private sealed class TestDataSource : IExportDataSource<TestEntity>
     {
         public IQueryable<TestEntity> GetQueryable() =>
@@ -819,12 +1049,14 @@ public sealed class ExportOrchestratorTests
                     Name = "Alice",
                     Email = "alice@test.com",
                     Company = new TestCompany { Name = "Acme Corp" },
+                    Tags = ["dotnet", "export"],
                 },
                 new()
                 {
                     Name = "Jane",
                     Email = "jane@test.com",
                     Company = null,
+                    Tags = [],
                 },
             }.AsQueryable();
     }

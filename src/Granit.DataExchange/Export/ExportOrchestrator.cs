@@ -45,8 +45,17 @@ public sealed partial class ExportOrchestrator(
     {
         _ = serviceProvider.GetRequiredService<IOptions<ExportOptions>>().Value; // Validated early; will carry threshold logic in a future version.
         // Validate early
-        _ = ResolveDefinition(request.DefinitionName);
-        _ = ResolveWriter(request.Format);
+        IExportDefinitionDescriptor definition = ResolveDefinition(request.DefinitionName);
+        IExportWriter writer = ResolveWriter(request.Format);
+
+        // Fast-fail when the format cannot handle complex fields (Throw policy)
+        if (definition.HasComplexFields
+            && !writer.Capabilities.SupportsHierarchy
+            && definition.OnIncompatibleField is OnIncompatibleFieldPolicy.Throw)
+        {
+            int complexCount = definition.GetFields().Count(f => f.RequiresHierarchy);
+            throw new ExportProviderIncompatibleException(request.Format, complexCount);
+        }
 
         // Create the job entity
         var job = ExportJob.Create(
@@ -90,6 +99,9 @@ public sealed partial class ExportOrchestrator(
             IExportDefinitionDescriptor definition = ResolveDefinition(request.DefinitionName);
             IExportWriter writer = ResolveWriter(request.Format);
             IReadOnlyList<ExportFieldDescriptor> fields = ResolveFields(definition, request.SelectedFields, request.IncludeIdForImport);
+
+            // Apply Skip policy: strip complex fields when writer cannot handle them
+            fields = FilterIncompatibleFields(definition, writer, fields, request.Format);
 
             // Project entity rows to flat dictionaries
             int rowCount = 0;
@@ -396,16 +408,25 @@ public sealed partial class ExportOrchestrator(
     {
         Dictionary<string, object?> row = new(fields.Count);
 
-        foreach (string propertyPath in fields.Select(field => field.PropertyPath))
+        foreach (ExportFieldDescriptor field in fields)
         {
-            if (extraPropertyNames is not null && extraPropertyNames.Contains(propertyPath))
+            string propertyPath = field.PropertyPath;
+            object? value;
+
+            if (field.ValueSelector is not null)
             {
-                row[propertyPath] = extraValueResolver.ResolveExtraValue(entity, propertyPath);
+                value = field.ValueSelector(entity);
+            }
+            else if (extraPropertyNames is not null && extraPropertyNames.Contains(propertyPath))
+            {
+                value = extraValueResolver.ResolveExtraValue(entity, propertyPath);
             }
             else
             {
-                row[propertyPath] = ResolvePropertyValue(entity, propertyPath);
+                value = ResolvePropertyValue(entity, propertyPath);
             }
+
+            row[propertyPath] = value;
         }
 
         return row;
@@ -434,6 +455,41 @@ public sealed partial class ExportOrchestrator(
         return current;
     }
 
+    private IReadOnlyList<ExportFieldDescriptor> FilterIncompatibleFields(
+        IExportDefinitionDescriptor definition,
+        IExportWriter writer,
+        IReadOnlyList<ExportFieldDescriptor> fields,
+        string format)
+    {
+        if (!definition.HasComplexFields || writer.Capabilities.SupportsHierarchy)
+        {
+            return fields;
+        }
+
+        // Throw policy: should have already been caught in ExportAsync; double-check at execute time
+        // (e.g. if the job was queued before the definition was updated)
+        if (definition.OnIncompatibleField is OnIncompatibleFieldPolicy.Throw)
+        {
+            int complexCount = fields.Count(f => f.RequiresHierarchy);
+            if (complexCount > 0)
+            {
+                throw new ExportProviderIncompatibleException(format, complexCount);
+            }
+
+            return fields;
+        }
+
+        // Skip policy: drop complex fields and warn
+        var filtered = fields.Where(f => !f.RequiresHierarchy).ToList();
+        int skippedCount = fields.Count - filtered.Count;
+        if (skippedCount > 0)
+        {
+            LogComplexFieldsSkipped(definition.Name, format, skippedCount);
+        }
+
+        return filtered.AsReadOnly();
+    }
+
     private static string SanitizeFileName(string definitionName)
     {
         char[] invalidChars = Path.GetInvalidFileNameChars();
@@ -451,4 +507,9 @@ public sealed partial class ExportOrchestrator(
 
     [LoggerMessage(4, LogLevel.Warning, "Export job {ExportJobId} not found")]
     private partial void LogJobNotFound(Guid exportJobId);
+
+    [LoggerMessage(5, LogLevel.Warning,
+        "Export definition '{DefinitionName}' has complex fields that are not supported by format '{Format}'. " +
+        "{SkippedCount} complex field(s) were skipped (OnIncompatibleField = Skip).")]
+    private partial void LogComplexFieldsSkipped(string definitionName, string format, int skippedCount);
 }

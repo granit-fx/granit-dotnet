@@ -249,6 +249,7 @@ public sealed class ExportDefinitionBuilderTests
         public string? Email { get; set; }
         public DateOnly? BirthDate { get; set; }
         public TestCompany? Company { get; set; }
+        public List<string> Tags { get; set; } = [];
     }
 
     private sealed class TestCompany
@@ -305,4 +306,142 @@ public sealed class ExportDefinitionBuilderTests
             // No fields configured
         }
     }
+
+    // ---- ComplexField ---------------------------------------------------
+
+    [Fact]
+    public void ComplexField_adds_descriptor_with_RequiresHierarchy_true()
+    {
+        ExportDefinitionBuilder<TestEntity> builder = new();
+
+        builder.ComplexField("Tags", e => e.Tags);
+
+        ExportFieldDescriptor field = builder.Fields.Single();
+        field.PropertyPath.ShouldBe("Tags");
+        field.RequiresHierarchy.ShouldBeTrue();
+        field.IsNavigation.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void ComplexField_stores_ValueSelector_and_SelectorType()
+    {
+        ExportDefinitionBuilder<TestEntity> builder = new();
+
+        builder.ComplexField("Tags", e => e.Tags);
+
+        ExportFieldDescriptor field = builder.Fields.Single();
+        field.ValueSelector.ShouldNotBeNull();
+        field.SelectorType.ShouldBe(typeof(List<string>));
+    }
+
+    [Fact]
+    public void ComplexField_ValueSelector_invoked_with_entity_returns_value()
+    {
+        ExportDefinitionBuilder<TestEntity> builder = new();
+        builder.ComplexField("Tags", e => e.Tags);
+
+        TestEntity entity = new() { Tags = ["dotnet", "export"] };
+        object? result = builder.Fields[0].ValueSelector!(entity);
+
+        result.ShouldBe(entity.Tags);
+    }
+
+    [Fact]
+    public void ComplexField_with_header_and_order()
+    {
+        ExportDefinitionBuilder<TestEntity> builder = new();
+
+        builder.ComplexField("Tags", e => e.Tags, f => f.Header("Tag List").Order(5));
+
+        ExportFieldDescriptor field = builder.Fields.Single();
+        field.Header.ShouldBe("Tag List");
+        field.Order.ShouldBe(5);
+    }
+
+    [Fact]
+    public void ComplexField_empty_name_throws()
+    {
+        ExportDefinitionBuilder<TestEntity> builder = new();
+
+        Should.Throw<ArgumentException>(() =>
+            builder.ComplexField(string.Empty, e => e.Tags));
+    }
+
+    [Fact]
+    public void ComplexField_null_selector_throws()
+    {
+        ExportDefinitionBuilder<TestEntity> builder = new();
+
+        Should.Throw<ArgumentNullException>(() =>
+            builder.ComplexField<List<string>>("Tags", null!));
+    }
+
+    [Fact]
+    public void ComplexField_autoorder_increments()
+    {
+        ExportDefinitionBuilder<TestEntity> builder = new();
+
+        builder.Field(e => e.Name);             // order 0
+        builder.ComplexField("Tags", e => e.Tags); // order 1
+
+        builder.Fields[0].Order.ShouldBe(0);
+        builder.Fields[1].Order.ShouldBe(1);
+    }
+
+    // ---- HasComplexFields / OnIncompatibleField -------------------------
+
+    [Fact]
+    public void HasComplexFields_false_when_no_complex_fields()
+    {
+        TestExportDefinition definition = new();
+
+        ((IExportDefinitionDescriptor)definition).HasComplexFields.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void HasComplexFields_true_when_complex_field_present()
+    {
+        ComplexDefinition definition = new();
+
+        ((IExportDefinitionDescriptor)definition).HasComplexFields.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void OnIncompatibleField_default_is_Throw()
+    {
+        TestExportDefinition definition = new();
+
+        definition.OnIncompatibleField.ShouldBe(OnIncompatibleFieldPolicy.Throw);
+    }
+
+    [Fact]
+    public void OnIncompatibleField_override_is_respected()
+    {
+        SkipComplexDefinition definition = new();
+
+        definition.OnIncompatibleField.ShouldBe(OnIncompatibleFieldPolicy.Skip);
+        ((IExportDefinitionDescriptor)definition).OnIncompatibleField.ShouldBe(OnIncompatibleFieldPolicy.Skip);
+    }
+
+    // ---- Extended test helpers ------------------------------------------
+
+    private sealed class ComplexDefinition : ExportDefinition<TestEntity>
+    {
+        public override string Name => "Test.Complex";
+
+        protected override void Configure(ExportDefinitionBuilder<TestEntity> builder) =>
+            builder
+                .Field(e => e.Name)
+                .ComplexField("Tags", e => e.Tags);
+    }
+
+    private sealed class SkipComplexDefinition : ExportDefinition<TestEntity>
+    {
+        public override string Name => "Test.SkipComplex";
+        public override OnIncompatibleFieldPolicy OnIncompatibleField => OnIncompatibleFieldPolicy.Skip;
+
+        protected override void Configure(ExportDefinitionBuilder<TestEntity> builder) =>
+            builder.ComplexField("Tags", e => e.Tags);
+    }
+
 }
