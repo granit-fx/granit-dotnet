@@ -3,9 +3,9 @@ namespace Granit.MultiTenancy;
 /// <summary>
 /// Enumerates every tenant known to the application. Soft-dep primitive analogous to
 /// <see cref="ICurrentTenant"/>: lives in base <c>Granit</c> so modules that need
-/// cross-tenant iteration (for host-admin aggregation under
-/// <c>DualScopeStorageMode.Segregated</c>, periodic cleanup jobs, etc.) can inject it
-/// without taking a hard dependency on the <c>Granit.MultiTenancy</c> package.
+/// cross-tenant iteration (periodic cleanup jobs, host-admin sweeps over tenant data,
+/// etc.) can inject it without taking a hard dependency on the
+/// <c>Granit.MultiTenancy</c> package.
 /// </summary>
 /// <remarks>
 /// <para>

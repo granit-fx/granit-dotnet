@@ -31,8 +31,8 @@ public static class IdentityFederatedEntityFrameworkCoreHostApplicationBuilderEx
     /// <para>
     /// Promotes the module out of the legacy interface-only pattern (<c>IUserCacheDbContext</c>),
     /// matching the dedicated-DbContext convention adopted across the framework. Per ADR-063
-    /// the module is dual-scope row-level; <c>DualScopeStorageMode.Segregated</c> support is
-    /// scheduled as a follow-up under Epic #2382.
+    /// the module is dual-scope row-level — host-federated and tenant-federated identities
+    /// coexist in this single DbContext with row-level <c>IMultiTenant</c> filtering.
     /// </para>
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
