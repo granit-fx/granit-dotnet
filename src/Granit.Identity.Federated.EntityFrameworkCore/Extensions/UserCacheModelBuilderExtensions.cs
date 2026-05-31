@@ -5,8 +5,7 @@ namespace Granit.Identity.Federated.EntityFrameworkCore.Extensions;
 
 /// <summary>EF Core model builder extensions for the Granit.Identity.Federated module.</summary>
 /// <remarks>
-/// Called by <see cref="Internal.IdentityFederatedHostDbContext"/> and
-/// <see cref="Internal.IdentityFederatedTenantDbContext"/>, AND publicly exposed so
+/// Called by <see cref="Internal.IdentityFederatedDbContext"/>, AND publicly exposed so
 /// consuming applications can fold the federated user-cache model into their own
 /// host-owned <see cref="DbContext"/> when they own the migration set (the framework
 /// ships no migrations per the standard Granit pattern — same shape as

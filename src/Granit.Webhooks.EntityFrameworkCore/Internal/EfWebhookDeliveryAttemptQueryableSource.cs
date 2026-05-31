@@ -1,109 +1,28 @@
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.Persistence.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.Webhooks.Domain;
-using Granit.Webhooks.EntityFrameworkCore.Options;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core implementation of <see cref="IQueryableSource{TEntity}"/> for <see cref="WebhookDeliveryAttempt"/>.
-/// Mirrors the dispatch contract of <see cref="EfWebhookSubscriptionQueryableSource"/>.
+/// When no tenant context is active (host admin), the multi-tenant query filter is
+/// bypassed so all delivery attempts are returned cross-tenant.
 /// </summary>
-/// <remarks>
-/// Under <c>Segregated</c> + host-admin scope, delivery attempts are materialised across
-/// host + every tenant returned by <see cref="ITenantsAccessor"/>. Delivery volumes grow
-/// faster than subscription counts (every webhook delivery writes a row, ISO 27001 3-year
-/// retention), so admin dashboards using this source should always paginate and filter on
-/// <c>OccurredAt</c>. A Postgres cross-schema view is recommended for deployments with
-/// high delivery volume.
-/// </remarks>
-internal sealed class EfWebhookDeliveryAttemptQueryableSource : IQueryableSource<WebhookDeliveryAttempt>, IDisposable
+internal sealed class EfWebhookDeliveryAttemptQueryableSource(
+    IDbContextFactory<WebhooksDbContext> contextFactory,
+    ICurrentTenant currentTenant) : IQueryableSource<WebhookDeliveryAttempt>
 {
-    private readonly DualScopeStorageMode _storageMode;
-    private readonly bool _bypassTenantFilter;
-    private readonly IDbContextFactory<WebhooksHostDbContext> _hostFactory;
-    private readonly IDbContextFactory<WebhooksTenantDbContext>? _tenantFactory;
-    private readonly ICurrentTenant _currentTenant;
-    private readonly ITenantsAccessor _tenantsAccessor;
-    private DbContext? _context;
-    private List<WebhookDeliveryAttempt>? _materialized;
-
-    public EfWebhookDeliveryAttemptQueryableSource(
-        WebhooksEntityFrameworkCoreOptions options,
-        ICurrentTenant currentTenant,
-        ITenantsAccessor tenantsAccessor,
-        IDbContextFactory<WebhooksHostDbContext> hostFactory,
-        IDbContextFactory<WebhooksTenantDbContext>? tenantFactory = null)
-    {
-        _storageMode = options.StorageMode;
-        _bypassTenantFilter = !currentTenant.IsAvailable;
-        _hostFactory = hostFactory;
-        _tenantFactory = tenantFactory;
-        _currentTenant = currentTenant;
-        _tenantsAccessor = tenantsAccessor;
-    }
+    private readonly WebhooksDbContext _context = contextFactory.CreateDbContext();
+    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
 
     public IQueryable<WebhookDeliveryAttempt> GetQueryable()
     {
-        if (_storageMode == DualScopeStorageMode.Segregated && _bypassTenantFilter)
-        {
-            _materialized ??= MaterialiseAcrossAllTenants();
-            return _materialized.AsQueryable();
-        }
-
-        _context ??= OpenContext();
-
-        IQueryable<WebhookDeliveryAttempt> query = ((IWebhooksDbContext)_context)
-            .WebhookDeliveryAttempts.AsNoTracking();
-
+        IQueryable<WebhookDeliveryAttempt> query = _context.WebhookDeliveryAttempts.AsNoTracking();
         return _bypassTenantFilter
             ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             : query;
-    }
-
-    public void Dispose() => _context?.Dispose();
-
-    private DbContext OpenContext() => _storageMode switch
-    {
-        DualScopeStorageMode.Shared => _hostFactory.CreateDbContext(),
-        DualScopeStorageMode.Segregated => _tenantFactory!.CreateDbContext(),
-        _ => throw new InvalidOperationException($"Unknown DualScopeStorageMode: {_storageMode}."),
-    };
-
-    private List<WebhookDeliveryAttempt> MaterialiseAcrossAllTenants()
-    {
-        List<WebhookDeliveryAttempt> results = [];
-
-        using (WebhooksHostDbContext host = _hostFactory.CreateDbContext())
-        {
-            results.AddRange(host.WebhookDeliveryAttempts
-                .AsNoTracking()
-                .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-                .ToList());
-        }
-
-        if (_tenantFactory is null)
-        {
-            return results;
-        }
-
-        IReadOnlyList<(Guid Id, string Name)> tenants = _tenantsAccessor
-            .GetAllAsync().GetAwaiter().GetResult();
-
-        foreach ((Guid id, string name) in tenants)
-        {
-            using (_currentTenant.Change(id, name))
-            using (WebhooksTenantDbContext tenantCtx = _tenantFactory.CreateDbContext())
-            {
-                results.AddRange(tenantCtx.WebhookDeliveryAttempts
-                    .AsNoTracking()
-                    .ToList());
-            }
-        }
-
-        return results;
     }
 }

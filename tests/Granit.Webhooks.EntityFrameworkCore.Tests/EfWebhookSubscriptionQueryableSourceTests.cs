@@ -1,10 +1,8 @@
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.MultiTenancy;
-using Granit.Persistence.MultiTenancy;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.EntityFrameworkCore.Internal;
-using Granit.Webhooks.EntityFrameworkCore.Options;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
@@ -23,12 +21,12 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
 {
     private readonly Guid _tenantA = Guid.NewGuid();
     private readonly Guid _tenantB = Guid.NewGuid();
-    private readonly DbContextOptions<WebhooksHostDbContext> _options;
+    private readonly DbContextOptions<WebhooksDbContext> _options;
     private readonly DataFilter _filter = new();
 
     public EfWebhookSubscriptionQueryableSourceTests()
     {
-        _options = new DbContextOptionsBuilder<WebhooksHostDbContext>()
+        _options = new DbContextOptionsBuilder<WebhooksDbContext>()
             .UseInMemoryDatabase(databaseName: $"webhooks-qs-{Guid.NewGuid()}")
             .Options;
     }
@@ -46,12 +44,9 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
         // Tenant A is active — both at the DbContext level (filter parameter) and at the
         // QueryableSource level (no bypass).
         ICurrentTenant tenantA = TenantStub(_tenantA, isAvailable: true);
-        WebhooksEntityFrameworkCoreOptions opts = new() { StorageMode = DualScopeStorageMode.Shared };
         var sut = new EfWebhookSubscriptionQueryableSource(
-            opts,
-            tenantA,
-            EmptyAccessor(),
-            new TenantScopedDbContextFactory(_options, tenantA, _filter));
+            new TenantScopedDbContextFactory(_options, tenantA, _filter),
+            tenantA);
 
         // Act
         WebhookSubscription[] result = [.. sut.GetQueryable()];
@@ -73,12 +68,9 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
         // No tenant — host admin path. IgnoreQueryFilters([MultiTenant]) bypasses the
         // row-level filter and returns every subscription.
         ICurrentTenant host = TenantStub(tenantId: null, isAvailable: false);
-        WebhooksEntityFrameworkCoreOptions opts = new() { StorageMode = DualScopeStorageMode.Shared };
         var sut = new EfWebhookSubscriptionQueryableSource(
-            opts,
-            host,
-            EmptyAccessor(),
-            new TenantScopedDbContextFactory(_options, host, _filter));
+            new TenantScopedDbContextFactory(_options, host, _filter),
+            host);
 
         // Act
         WebhookSubscription[] result = [.. sut.GetQueryable()];
@@ -94,7 +86,7 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
     private async Task SeedAcrossTenantsAsync(params WebhookSubscription[] subscriptions)
     {
         using IDisposable _ = _filter.Disable<IMultiTenant>();
-        await using WebhooksHostDbContext context = new(_options, TenantStub(tenantId: null, isAvailable: false), _filter);
+        await using WebhooksDbContext context = new(_options, TenantStub(tenantId: null, isAvailable: false), _filter);
         context.WebhookSubscriptions.AddRange(subscriptions);
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
     }
@@ -117,20 +109,11 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
             createdAt: DateTimeOffset.UtcNow,
             tenantId: tenantId);
 
-
-    private static ITenantsAccessor EmptyAccessor()
-    {
-        ITenantsAccessor e = Substitute.For<ITenantsAccessor>();
-        e.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<(Guid, string)>>([]));
-        return e;
-    }
-
     private sealed class TenantScopedDbContextFactory(
-        DbContextOptions<WebhooksHostDbContext> options,
+        DbContextOptions<WebhooksDbContext> options,
         ICurrentTenant currentTenant,
-        IDataFilter dataFilter) : IDbContextFactory<WebhooksHostDbContext>
+        IDataFilter dataFilter) : IDbContextFactory<WebhooksDbContext>
     {
-        public WebhooksHostDbContext CreateDbContext() => new(options, currentTenant, dataFilter);
+        public WebhooksDbContext CreateDbContext() => new(options, currentTenant, dataFilter);
     }
 }

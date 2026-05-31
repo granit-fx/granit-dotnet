@@ -22556,18 +22556,18 @@
       ]
     },
     {
-      "name": "IdentityEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Extensions.IdentityEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "name": "IdentityEntityFrameworkCoreServiceCollectionExtensions",
+      "fqn": "Granit.Identity.EntityFrameworkCore.Extensions.IdentityEntityFrameworkCoreServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityEntityFrameworkCoreServiceCollectionExtensions.cs",
+      "line": 15,
       "members": [
         {
           "name": "AddGranitIdentityEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitIdentityEntityFrameworkCore(this IHostApplicationBuilder builder, Action<IdentityEntityFrameworkCoreOptions> configure)",
-          "returnType": "IHostApplicationBuilder"
+          "signature": "AddGranitIdentityEntityFrameworkCore(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDbContext)",
+          "returnType": "IServiceCollection"
         }
       ]
     },
@@ -22611,22 +22611,6 @@
       "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentityEntityFrameworkCoreModule.cs",
       "line": 22,
       "members": []
-    },
-    {
-      "name": "IdentityEntityFrameworkCoreOptions",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Options.IdentityEntityFrameworkCoreOptions",
-      "kind": "class",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/Options/IdentityEntityFrameworkCoreOptions.cs",
-      "line": 32,
-      "members": [
-        {
-          "name": "StorageMode",
-          "kind": "property",
-          "signature": "DualScopeStorageMode StorageMode",
-          "returnType": "DualScopeStorageMode"
-        }
-      ]
     },
     {
       "name": "IdentityGroupMembershipChangedEto",
@@ -22975,12 +22959,12 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Extensions/IdentityFederatedEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitIdentityFederatedEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitIdentityFederatedEntityFrameworkCore(this IHostApplicationBuilder builder, Action<IdentityFederatedEntityFrameworkCoreOptions> configure)",
+          "signature": "AddGranitIdentityFederatedEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -22991,7 +22975,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Extensions/UserCacheModelBuilderExtensions.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureIdentityModule",
@@ -23025,22 +23009,6 @@
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityFederatedEntityFrameworkCoreModule.cs",
       "line": 30,
       "members": []
-    },
-    {
-      "name": "IdentityFederatedEntityFrameworkCoreOptions",
-      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Options.IdentityFederatedEntityFrameworkCoreOptions",
-      "kind": "class",
-      "project": "Granit.Identity.Federated.EntityFrameworkCore",
-      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Options/IdentityFederatedEntityFrameworkCoreOptions.cs",
-      "line": 30,
-      "members": [
-        {
-          "name": "StorageMode",
-          "kind": "property",
-          "signature": "DualScopeStorageMode StorageMode",
-          "returnType": "DualScopeStorageMode"
-        }
-      ]
     },
     {
       "name": "GranitIdentityFederatedEntraIdBackgroundJobsModule",
@@ -32059,12 +32027,12 @@
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
       "file": "src/Granit.Notifications.EntityFrameworkCore/Extensions/NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitNotificationsEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitNotificationsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<NotificationsEntityFrameworkCoreOptions> configure)",
+          "signature": "AddGranitNotificationsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -32109,22 +32077,6 @@
       "file": "src/Granit.Notifications.EntityFrameworkCore/GranitNotificationsEntityFrameworkCoreModule.cs",
       "line": 20,
       "members": []
-    },
-    {
-      "name": "NotificationsEntityFrameworkCoreOptions",
-      "fqn": "Granit.Notifications.EntityFrameworkCore.Options.NotificationsEntityFrameworkCoreOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.EntityFrameworkCore",
-      "file": "src/Granit.Notifications.EntityFrameworkCore/Options/NotificationsEntityFrameworkCoreOptions.cs",
-      "line": 31,
-      "members": [
-        {
-          "name": "StorageMode",
-          "kind": "property",
-          "signature": "DualScopeStorageMode StorageMode",
-          "returnType": "DualScopeStorageMode"
-        }
-      ]
     },
     {
       "name": "EntityStateChangedData",
@@ -46526,12 +46478,12 @@
       "kind": "class",
       "project": "Granit.Timeline.EntityFrameworkCore",
       "file": "src/Granit.Timeline.EntityFrameworkCore/Extensions/TimelineEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitTimelineEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitTimelineEntityFrameworkCore(this IHostApplicationBuilder builder, Action<TimelineEntityFrameworkCoreOptions> configure)",
+          "signature": "AddGranitTimelineEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -46576,22 +46528,6 @@
       "file": "src/Granit.Timeline.EntityFrameworkCore/GranitTimelineEntityFrameworkCoreModule.cs",
       "line": 18,
       "members": []
-    },
-    {
-      "name": "TimelineEntityFrameworkCoreOptions",
-      "fqn": "Granit.Timeline.EntityFrameworkCore.Options.TimelineEntityFrameworkCoreOptions",
-      "kind": "class",
-      "project": "Granit.Timeline.EntityFrameworkCore",
-      "file": "src/Granit.Timeline.EntityFrameworkCore/Options/TimelineEntityFrameworkCoreOptions.cs",
-      "line": 33,
-      "members": [
-        {
-          "name": "StorageMode",
-          "kind": "property",
-          "signature": "DualScopeStorageMode StorageMode",
-          "returnType": "DualScopeStorageMode"
-        }
-      ]
     },
     {
       "name": "ReactionToggleAction",
@@ -49724,12 +49660,12 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/Extensions/WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitWebhooksEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitWebhooksEntityFrameworkCore(this IHostApplicationBuilder builder, Action<WebhooksEntityFrameworkCoreOptions> configure)",
+          "signature": "AddGranitWebhooksEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -49772,24 +49708,8 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/GranitWebhooksEntityFrameworkCoreModule.cs",
-      "line": 32,
+      "line": 17,
       "members": []
-    },
-    {
-      "name": "WebhooksEntityFrameworkCoreOptions",
-      "fqn": "Granit.Webhooks.EntityFrameworkCore.Options.WebhooksEntityFrameworkCoreOptions",
-      "kind": "class",
-      "project": "Granit.Webhooks.EntityFrameworkCore",
-      "file": "src/Granit.Webhooks.EntityFrameworkCore/Options/WebhooksEntityFrameworkCoreOptions.cs",
-      "line": 32,
-      "members": [
-        {
-          "name": "StorageMode",
-          "kind": "property",
-          "signature": "DualScopeStorageMode StorageMode",
-          "returnType": "DualScopeStorageMode"
-        }
-      ]
     },
     {
       "name": "WebhookDeliveryFailureThresholdExceededEto",
