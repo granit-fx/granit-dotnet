@@ -1,40 +1,27 @@
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Internal;
-using Granit.MultiTenancy;
-using Granit.Persistence.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Identity.Federated.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// EF Core implementation of <see cref="IUserCacheStore"/>. Dispatches every read and
-/// write through <see cref="IdentityFederatedContextResolver"/> so the same store serves
-/// both <see cref="DualScopeStorageMode.Shared"/> (single context) and
-/// <see cref="DualScopeStorageMode.Segregated"/> (host context + tenant context)
-/// deployments.
+/// EF Core implementation of <see cref="IUserCacheStore"/>. Each operation opens its own
+/// <see cref="IdentityFederatedDbContext"/> via the injected factory.
 /// </summary>
 /// <remarks>
-/// All read operations use <c>AsNoTracking</c> for performance. Under
-/// <see cref="DualScopeStorageMode.Segregated"/>, the cross-tenant
-/// <see cref="FindFirstByExternalIdAsync"/> path probes the host context plus every tenant
-/// returned by <see cref="ITenantsAccessor"/> via <see cref="ICurrentTenant.Change"/>.
-/// Soft-dep on <see cref="ITenantsAccessor"/> — single-tenant deployments running with
-/// the default <c>NullTenantsAccessor</c> see host-only results without a hard package
-/// dependency on <c>Granit.MultiTenancy</c>.
+/// All read operations use <c>AsNoTracking</c> for performance.
 /// </remarks>
 internal sealed class EfCoreUserCacheStore(
-    IdentityFederatedContextResolver resolver,
-    IUserLookupHasher hasher,
-    ICurrentTenant currentTenant,
-    ITenantsAccessor tenantsAccessor) : IUserCacheStore
+    IDbContextFactory<IdentityFederatedDbContext> contextFactory,
+    IUserLookupHasher hasher) : IUserCacheStore
 {
     // -- Read --
 
     public async Task<FederatedIdentity?> FindByExternalIdAsync(
         string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         return await db.FederatedIdentities
             .AsNoTracking()
@@ -46,67 +33,20 @@ internal sealed class EfCoreUserCacheStore(
     public async Task<FederatedIdentity?> FindFirstByExternalIdAsync(
         string externalUserId, CancellationToken cancellationToken = default)
     {
-        // Scope unknown — probe host first, then under Segregated iterate every tenant.
-        // Under Shared OpenForUnknownScopeAsync returns the single context and the first
-        // foreach completes after one iteration.
-        IReadOnlyList<IIdentityFederatedDbContext> contexts = await resolver
-            .OpenForUnknownScopeAsync(cancellationToken).ConfigureAwait(false);
-        try
-        {
-            foreach (IIdentityFederatedDbContext db in contexts)
-            {
-                FederatedIdentity? hit = await db.FederatedIdentities
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(e => e.ExternalUserId == externalUserId, cancellationToken)
-                    .ConfigureAwait(false);
-                if (hit is not null)
-                {
-                    return hit;
-                }
-            }
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-            if (resolver.StorageMode != DualScopeStorageMode.Segregated)
-            {
-                return null;
-            }
-
-            // Host-admin lookup under Segregated: iterate every tenant known to the
-            // accessor. Empty under NullTenantsAccessor — degrades to host-only.
-            IReadOnlyList<(Guid Id, string Name)> tenants = await tenantsAccessor
-                .GetAllAsync(cancellationToken).ConfigureAwait(false);
-
-            foreach ((Guid id, string name) in tenants)
-            {
-                using (currentTenant.Change(id, name))
-                {
-                    await using IIdentityFederatedDbContext tenantDb = await resolver
-                        .OpenForScopeAsync(id, cancellationToken).ConfigureAwait(false);
-
-                    FederatedIdentity? hit = await tenantDb.FederatedIdentities
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(e => e.ExternalUserId == externalUserId, cancellationToken)
-                        .ConfigureAwait(false);
-
-                    if (hit is not null)
-                    {
-                        return hit;
-                    }
-                }
-            }
-
-            return null;
-        }
-        finally
-        {
-            await DisposeAllAsync(contexts).ConfigureAwait(false);
-        }
+        return await db.FederatedIdentities
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.ExternalUserId == externalUserId, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<IReadOnlyList<FederatedIdentity>> FindByExternalIdsAsync(
         IReadOnlyCollection<string> externalUserIds, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         return await db.FederatedIdentities
             .AsNoTracking()
@@ -117,6 +57,9 @@ internal sealed class EfCoreUserCacheStore(
     public async Task<(IReadOnlyList<FederatedIdentity> Items, int TotalCount)> SearchAsync(
         string term, Guid? tenantId, int page, int pageSize, CancellationToken cancellationToken = default)
     {
+        // Encrypted columns can't be LIKE-scanned. Admin search now only supports
+        // exact-match on email, resolved via the lookup hash. Anything else returns
+        // empty — the admin UI should direct operators to enter a full email.
         if (string.IsNullOrWhiteSpace(term) || !term.Contains('@'))
         {
             return ([], 0);
@@ -128,8 +71,8 @@ internal sealed class EfCoreUserCacheStore(
             return ([], 0);
         }
 
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         IQueryable<FederatedIdentity> query = db.FederatedIdentities
             .AsNoTracking()
@@ -151,8 +94,8 @@ internal sealed class EfCoreUserCacheStore(
 
     public async Task<int> GetCountAsync(Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         return await db.FederatedIdentities
             .AsNoTracking()
@@ -163,8 +106,8 @@ internal sealed class EfCoreUserCacheStore(
     public async Task<int> GetStaleCountAsync(
         Guid? tenantId, DateTimeOffset threshold, CancellationToken cancellationToken = default)
     {
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         return await db.FederatedIdentities
             .AsNoTracking()
@@ -175,8 +118,8 @@ internal sealed class EfCoreUserCacheStore(
     public async Task<IReadOnlyList<string>> FindStaleExternalIdsAsync(
         Guid? tenantId, DateTimeOffset threshold, int batchSize, CancellationToken cancellationToken = default)
     {
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         return await db.FederatedIdentities
             .AsNoTracking()
@@ -190,8 +133,8 @@ internal sealed class EfCoreUserCacheStore(
     public async Task<(DateTimeOffset? Oldest, DateTimeOffset? Newest)> GetSyncRangeAsync(
         Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         IQueryable<FederatedIdentity> query = db.FederatedIdentities
             .AsNoTracking()
@@ -212,10 +155,13 @@ internal sealed class EfCoreUserCacheStore(
 
     public async Task UpsertAsync(FederatedIdentity entry, CancellationToken cancellationToken = default)
     {
+        // Keep EmailHash in sync with Email so admin search finds the row. Callers
+        // may pre-compute this (CachedUserLookupService does), but the store also
+        // recomputes defensively so direct consumers of UpsertAsync stay correct.
         entry.EmailHash = hasher.ComputeEmailHash(entry.Email);
 
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(entry.TenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         FederatedIdentity? existing = await db.FederatedIdentities
             .FirstOrDefaultAsync(
@@ -248,6 +194,7 @@ internal sealed class EfCoreUserCacheStore(
             return;
         }
 
+        // Compute hashes up front so we don't hit the hasher per-entry under lock.
         foreach (FederatedIdentity entry in entries)
         {
             entry.EmailHash = hasher.ComputeEmailHash(entry.Email);
@@ -256,8 +203,8 @@ internal sealed class EfCoreUserCacheStore(
         HashSet<string> externalIds = [.. entries.Select(e => e.ExternalUserId)];
         Guid? tenantId = entries[0].TenantId;
 
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         Dictionary<string, FederatedIdentity> existingEntries = await db.FederatedIdentities
             .Where(e => e.TenantId == tenantId && externalIds.Contains(e.ExternalUserId))
@@ -289,8 +236,8 @@ internal sealed class EfCoreUserCacheStore(
     public async Task DeleteByExternalIdAsync(
         string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         List<FederatedIdentity> entries = await db.FederatedIdentities
             .Where(e => e.TenantId == tenantId && e.ExternalUserId == externalUserId)
@@ -302,8 +249,8 @@ internal sealed class EfCoreUserCacheStore(
 
     public async Task DeleteAllByTenantAsync(Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         List<FederatedIdentity> entries = await db.FederatedIdentities
             .Where(e => e.TenantId == tenantId)
@@ -316,8 +263,8 @@ internal sealed class EfCoreUserCacheStore(
     public async Task PseudonymizeAsync(
         string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        await using IIdentityFederatedDbContext db = await resolver
-            .OpenForScopeAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityFederatedDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         FederatedIdentity? entry = await db.FederatedIdentities
             .FirstOrDefaultAsync(
@@ -331,20 +278,14 @@ internal sealed class EfCoreUserCacheStore(
 
         entry.Username = "anonymized";
         entry.Email = "anonymized@anonymized.local";
-        // Null the hash — pseudonymised rows should not be discoverable via email lookup.
+        // Null the hash — pseudonymised rows should not be discoverable via email
+        // lookup, and every pseudonymised row sharing the same constant email would
+        // otherwise collide on the same hash (harmless, but noisy in the index).
         entry.EmailHash = null;
         entry.FirstName = "Anonymized";
         entry.LastName = "User";
         entry.Enabled = false;
 
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    private static async ValueTask DisposeAllAsync(IReadOnlyList<IIdentityFederatedDbContext> contexts)
-    {
-        foreach (IIdentityFederatedDbContext db in contexts)
-        {
-            await db.DisposeAsync().ConfigureAwait(false);
-        }
     }
 }
