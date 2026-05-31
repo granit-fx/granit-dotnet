@@ -49917,6 +49917,15 @@
       ]
     },
     {
+      "name": "WebhookSigningKeySnapshot",
+      "fqn": "Granit.Webhooks.Exports.WebhookSigningKeySnapshot",
+      "kind": "record",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Exports/WebhookSigningKeySnapshot.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "WebhookSubscriptionExportDefinition",
       "fqn": "Granit.Webhooks.Exports.WebhookSubscriptionExportDefinition",
       "kind": "class",
