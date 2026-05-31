@@ -22572,18 +22572,18 @@
       ]
     },
     {
-      "name": "IdentityEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Extensions.IdentityEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "name": "IdentityEntityFrameworkCoreServiceCollectionExtensions",
+      "fqn": "Granit.Identity.EntityFrameworkCore.Extensions.IdentityEntityFrameworkCoreServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityEntityFrameworkCoreServiceCollectionExtensions.cs",
+      "line": 15,
       "members": [
         {
           "name": "AddGranitIdentityEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitIdentityEntityFrameworkCore(this IHostApplicationBuilder builder, Action<IdentityEntityFrameworkCoreOptions> configure)",
-          "returnType": "IHostApplicationBuilder"
+          "signature": "AddGranitIdentityEntityFrameworkCore(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDbContext)",
+          "returnType": "IServiceCollection"
         }
       ]
     },
@@ -22627,22 +22627,6 @@
       "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentityEntityFrameworkCoreModule.cs",
       "line": 22,
       "members": []
-    },
-    {
-      "name": "IdentityEntityFrameworkCoreOptions",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Options.IdentityEntityFrameworkCoreOptions",
-      "kind": "class",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/Options/IdentityEntityFrameworkCoreOptions.cs",
-      "line": 32,
-      "members": [
-        {
-          "name": "StorageMode",
-          "kind": "property",
-          "signature": "DualScopeStorageMode StorageMode",
-          "returnType": "DualScopeStorageMode"
-        }
-      ]
     },
     {
       "name": "IdentityGroupMembershipChangedEto",

@@ -4,22 +4,14 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Identity.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// EF Core implementation of <see cref="IUserDirectoryWriter"/>. Dispatches through
-/// <see cref="IdentityContextResolver"/> so the same store serves both
-/// <see cref="Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared"/> (single
-/// context) and <see cref="Granit.Persistence.MultiTenancy.DualScopeStorageMode.Segregated"/>
-/// (host context + tenant context) deployments.
+/// EF Core implementation of <see cref="IUserDirectoryWriter"/>. Opens
+/// a short-lived <see cref="IdentityDbContext"/> per call (factory
+/// pattern, mirroring <see cref="EfUserDirectoryQueryableSource"/>) and
+/// delegates to <see cref="DbSet{TEntity}.AddAsync"/> +
+/// <see cref="DbContext.SaveChangesAsync(CancellationToken)"/>.
 /// </summary>
-/// <remarks>
-/// <para><b>Create</b> dispatches on <c>user.TenantId</c> — the caller has already set the
-/// scope on the aggregate, so the resolver routes directly to the correct context without a
-/// pre-fetch.</para>
-/// <para><b>Delete</b> takes an id only, so the writer fans out across every candidate
-/// context and issues <see cref="EntityFrameworkQueryableExtensions.ExecuteDeleteAsync"/>
-/// against each — the no-op on the non-matching context is cheap and tolerates the
-/// compensating-delete contract (deleting a row that was never created must not throw).</para>
-/// </remarks>
-internal sealed class EfUserDirectoryWriter(IdentityContextResolver resolver)
+internal sealed class EfUserDirectoryWriter(
+    IDbContextFactory<IdentityDbContext> contextFactory)
     : IUserDirectoryWriter
 {
     /// <inheritdoc />
@@ -27,8 +19,8 @@ internal sealed class EfUserDirectoryWriter(IdentityContextResolver resolver)
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        await using IIdentityDbContext context = await resolver
-            .OpenForScopeAsync(user.TenantId, cancellationToken).ConfigureAwait(false);
+        await using IdentityDbContext context =
+            await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         await context.Users.AddAsync(user, cancellationToken).ConfigureAwait(false);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -37,24 +29,12 @@ internal sealed class EfUserDirectoryWriter(IdentityContextResolver resolver)
     /// <inheritdoc />
     public async Task DeleteAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        IReadOnlyList<IIdentityDbContext> contexts = await resolver
-            .OpenForUnknownScopeAsync(cancellationToken).ConfigureAwait(false);
-        try
-        {
-            foreach (IIdentityDbContext db in contexts)
-            {
-                await db.Users
-                    .Where(u => u.Id == userId)
-                    .ExecuteDeleteAsync(cancellationToken)
-                    .ConfigureAwait(false);
-            }
-        }
-        finally
-        {
-            foreach (IIdentityDbContext db in contexts)
-            {
-                await db.DisposeAsync().ConfigureAwait(false);
-            }
-        }
+        await using IdentityDbContext context =
+            await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        await context.Users
+            .Where(u => u.Id == userId)
+            .ExecuteDeleteAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 }
