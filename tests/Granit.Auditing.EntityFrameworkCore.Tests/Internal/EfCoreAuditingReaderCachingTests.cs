@@ -18,14 +18,14 @@ namespace Granit.Auditing.EntityFrameworkCore.Tests.Internal;
 
 public sealed class EfCoreAuditingReaderCachingTests : IDisposable
 {
-    private readonly DbContextOptions<AuditingHostDbContext> _dbOptions;
+    private readonly DbContextOptions<AuditingDbContext> _dbOptions;
     private readonly FusionCache _cache = new(new FusionCacheOptions());
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly IOptions<AuditingOptions> _options = Microsoft.Extensions.Options.Options.Create(new AuditingOptions());
 
     public EfCoreAuditingReaderCachingTests()
     {
-        _dbOptions = new DbContextOptionsBuilder<AuditingHostDbContext>()
+        _dbOptions = new DbContextOptionsBuilder<AuditingDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
     }
@@ -39,15 +39,15 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
         var entryId = Guid.NewGuid();
         await SeedEntryAsync(entryId);
 
-        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory), _cache, _currentTenant, StubEmptyTenantsAccessor(), [], _options);
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [], _options);
 
         // Act — first call loads from DB
         AuditEntry? first = await reader.GetByIdAsync(entryId, TestContext.Current.CancellationToken);
         first.ShouldNotBeNull();
 
         // Delete from DB to prove second call comes from cache
-        await using (AuditingHostDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant))
+        await using (AuditingDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant))
         {
             ctx.AuditEntries.RemoveRange(ctx.AuditEntries);
             await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -65,8 +65,8 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
     public async Task GetByIdAsync_NotFound_DoesNotCache()
     {
         // Arrange
-        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory), _cache, _currentTenant, StubEmptyTenantsAccessor(), [], _options);
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [], _options);
 
         var missingId = Guid.NewGuid();
 
@@ -86,15 +86,15 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
         var entryId = Guid.NewGuid();
         await SeedEntryWithEntityChangeAsync(entryId, "Invoice", "INV-001");
 
-        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory), _cache, _currentTenant, StubEmptyTenantsAccessor(), [], _options);
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [], _options);
 
         // Act — first call loads from DB
         PagedResult<AuditEntry> first = await reader.GetByEntityAsync("Invoice", "INV-001", cancellationToken: TestContext.Current.CancellationToken);
         first.Items.Count.ShouldBe(1);
 
         // Delete from DB to prove second call comes from cache
-        await using (AuditingHostDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant))
+        await using (AuditingDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant))
         {
             ctx.AuditEntries.RemoveRange(ctx.AuditEntries);
             await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -117,8 +117,8 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
         await SeedEntryWithEntityChangeAsync(entryId1, "A:B", "C");
         await SeedEntryWithEntityChangeAsync(entryId2, "A", "B:C");
 
-        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory), _cache, _currentTenant, StubEmptyTenantsAccessor(), [], _options);
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [], _options);
 
         // Act
         PagedResult<AuditEntry> result1 = await reader.GetByEntityAsync("A:B", "C", cancellationToken: TestContext.Current.CancellationToken);
@@ -149,8 +149,8 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
                 ["User"] = new HashSet<string>(StringComparer.Ordinal) { "LocalIdentity", "FederatedIdentity" },
             });
 
-        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory), _cache, _currentTenant, StubEmptyTenantsAccessor(), [aliasProvider], _options);
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [aliasProvider], _options);
 
         // Act
         PagedResult<AuditEntry> result = await reader
@@ -178,8 +178,8 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
                 ["User"] = new HashSet<string>(StringComparer.Ordinal) { "LocalIdentity" },
             });
 
-        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory), _cache, _currentTenant, StubEmptyTenantsAccessor(), [aliasProvider], _options);
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [aliasProvider], _options);
 
         // Act
         PagedResult<AuditEntry> result = await reader
@@ -199,8 +199,8 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
         await SeedEntryWithEntityChangeAsync(Guid.NewGuid(), "LocalIdentity", SharedId);
         await SeedEntryWithEntityChangeAsync(Guid.NewGuid(), "User", SharedId);
 
-        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory), _cache, _currentTenant, StubEmptyTenantsAccessor(), [], _options);
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, [], _options);
 
         // Act
         PagedResult<AuditEntry> result = await reader
@@ -215,7 +215,7 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
 
     private async Task SeedEntryAsync(Guid id)
     {
-        await using AuditingHostDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant);
+        await using AuditingDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant);
         ctx.AuditEntries.Add(new AuditEntry
         {
             Id = id,
@@ -228,7 +228,7 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
 
     private async Task SeedEntryWithEntityChangeAsync(Guid entryId, string entityType, string entityId)
     {
-        await using AuditingHostDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant);
+        await using AuditingDbContext ctx = new(_dbOptions, GranitDesignTime.CurrentTenant);
         var entry = new AuditEntry
         {
             Id = entryId,
@@ -251,17 +251,9 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
     /// <summary>
     /// Minimal IDbContextFactory for testing — creates contexts with the shared InMemory options.
     /// </summary>
-    private sealed class TestDbContextFactory(DbContextOptions<AuditingHostDbContext> options)
-        : IDbContextFactory<AuditingHostDbContext>
+    private sealed class TestDbContextFactory(DbContextOptions<AuditingDbContext> options)
+        : IDbContextFactory<AuditingDbContext>
     {
-        public AuditingHostDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
-    }
-
-    private static ITenantsAccessor StubEmptyTenantsAccessor()
-    {
-        ITenantsAccessor accessor = Substitute.For<ITenantsAccessor>();
-        accessor.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<(Guid Id, string Name)>>([]));
-        return accessor;
+        public AuditingDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
     }
 }

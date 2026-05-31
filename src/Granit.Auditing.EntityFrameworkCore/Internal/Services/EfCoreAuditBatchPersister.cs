@@ -1,27 +1,26 @@
 using Granit.Auditing.Domain;
 using Granit.Auditing.Messages;
 using Granit.Guids;
+using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Auditing.EntityFrameworkCore.Internal.Services;
 
 /// <summary>
-/// EF Core implementation of <see cref="IAuditBatchPersister"/>. Maps an
-/// <see cref="AuditingBatch"/> to a persistable <see cref="AuditEntry"/> and saves it
-/// through <see cref="AuditingContextResolver"/> — entries with a tenant scope route to
-/// the tenant DB under Segregated; host-admin entries land in the host DB.
+/// EF Core implementation of <see cref="IAuditBatchPersister"/>.
+/// Maps an <see cref="AuditingBatch"/> to a persistable <see cref="AuditEntry"/>
+/// and saves it to the <see cref="AuditingDbContext"/>.
 /// </summary>
 internal sealed class EfCoreAuditBatchPersister(
-    AuditingContextResolver resolver,
+    IDbContextFactory<AuditingDbContext> dbContextFactory,
     IGuidGenerator guidGenerator) : IAuditBatchPersister
 {
     /// <inheritdoc/>
     public async Task PersistAsync(AuditingBatch batch, CancellationToken cancellationToken = default)
     {
+        await using AuditingDbContext dbContext = await dbContextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
         AuditEntry entry = AuditingBatchMapper.ToEntity(batch, guidGenerator);
-
-        await using IAuditingDbContext dbContext = await resolver
-            .OpenForScopeAsync(entry.TenantId, cancellationToken).ConfigureAwait(false);
-
         dbContext.AuditEntries.Add(entry);
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }

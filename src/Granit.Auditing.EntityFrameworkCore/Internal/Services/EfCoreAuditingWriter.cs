@@ -1,21 +1,22 @@
 using Granit.Auditing.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Auditing.EntityFrameworkCore.Internal.Services;
 
 /// <summary>
-/// EF Core implementation of <see cref="IAuditingWriter"/> for persisting explicit audit
-/// log entries (login events, access denied, config changes). Routes via
-/// <see cref="AuditingContextResolver"/> on <c>entry.TenantId</c>.
+/// EF Core implementation of <see cref="IAuditingWriter"/> for persisting
+/// explicit audit log entries (login events, access denied, config changes).
 /// </summary>
-internal sealed class EfCoreAuditingWriter(AuditingContextResolver resolver) : IAuditingWriter
+internal sealed class EfCoreAuditingWriter(
+    IDbContextFactory<AuditingDbContext> dbContextFactory) : IAuditingWriter
 {
     /// <inheritdoc/>
     public async Task WriteAsync(AuditEntry entry, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entry);
 
-        await using IAuditingDbContext dbContext = await resolver
-            .OpenForScopeAsync(entry.TenantId, cancellationToken).ConfigureAwait(false);
+        await using AuditingDbContext dbContext = await dbContextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         dbContext.AuditEntries.Add(entry);
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

@@ -2,7 +2,7 @@
 // StrictAuditingPublisherTests - Strict (synchronous) audit persistence
 // =============================================================================
 // Verifies:
-//   - Delegates to AuditingBatchMapper and persists to AuditingHostDbContext
+//   - Delegates to AuditingBatchMapper and persists to AuditingDbContext
 //   - Saves the entry within a scoped DbContext
 //   - Propagates cancellation
 // =============================================================================
@@ -40,7 +40,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
     public async Task PublishAsync_PersistsEntryToDatabase()
     {
         // Arrange
-        DbContextOptions<AuditingHostDbContext> dbOptions = new DbContextOptionsBuilder<AuditingHostDbContext>()
+        DbContextOptions<AuditingDbContext> dbOptions = new DbContextOptionsBuilder<AuditingDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
@@ -48,8 +48,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
         guidGenerator.Create().Returns(_ => Guid.NewGuid());
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IDbContextFactory<AuditingHostDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
-        services.AddSingleton(sp => new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, sp.GetRequiredService<IDbContextFactory<AuditingHostDbContext>>(), null));
+        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
         services.AddSingleton(guidGenerator);
         services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
@@ -63,7 +62,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
         await publisher.PublishAsync(batch, TestContext.Current.CancellationToken);
 
         // Assert
-        await using AuditingHostDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
+        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         int count = await verifyCtx.AuditEntries.CountAsync(TestContext.Current.CancellationToken);
         count.ShouldBe(1);
     }
@@ -72,7 +71,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
     public async Task PublishAsync_MapsAllFieldsCorrectly()
     {
         // Arrange
-        DbContextOptions<AuditingHostDbContext> dbOptions = new DbContextOptionsBuilder<AuditingHostDbContext>()
+        DbContextOptions<AuditingDbContext> dbOptions = new DbContextOptionsBuilder<AuditingDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
@@ -80,8 +79,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
         guidGenerator.Create().Returns(_ => Guid.NewGuid());
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IDbContextFactory<AuditingHostDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
-        services.AddSingleton(sp => new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, sp.GetRequiredService<IDbContextFactory<AuditingHostDbContext>>(), null));
+        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
         services.AddSingleton(guidGenerator);
         services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
@@ -113,7 +111,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
         await publisher.PublishAsync(batch, TestContext.Current.CancellationToken);
 
         // Assert
-        await using AuditingHostDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
+        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         AuditEntry persisted = await verifyCtx.AuditEntries
             .Include(e => e.EntityChanges)
             .ThenInclude(ec => ec.PropertyChanges)
@@ -137,7 +135,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
     public async Task PublishAsync_MultipleBatches_PersistsAll()
     {
         // Arrange
-        DbContextOptions<AuditingHostDbContext> dbOptions = new DbContextOptionsBuilder<AuditingHostDbContext>()
+        DbContextOptions<AuditingDbContext> dbOptions = new DbContextOptionsBuilder<AuditingDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
@@ -145,8 +143,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
         guidGenerator.Create().Returns(_ => Guid.NewGuid());
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IDbContextFactory<AuditingHostDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
-        services.AddSingleton(sp => new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, sp.GetRequiredService<IDbContextFactory<AuditingHostDbContext>>(), null));
+        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
         services.AddSingleton(guidGenerator);
         services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
@@ -162,7 +159,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
         }
 
         // Assert
-        await using AuditingHostDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
+        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         int count = await verifyCtx.AuditEntries.CountAsync(TestContext.Current.CancellationToken);
         count.ShouldBe(3);
     }
@@ -171,7 +168,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
     public async Task PublishAsync_WithEmptyEntityChanges_PersistsEntry()
     {
         // Arrange
-        DbContextOptions<AuditingHostDbContext> dbOptions = new DbContextOptionsBuilder<AuditingHostDbContext>()
+        DbContextOptions<AuditingDbContext> dbOptions = new DbContextOptionsBuilder<AuditingDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
@@ -179,8 +176,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
         guidGenerator.Create().Returns(_ => Guid.NewGuid());
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IDbContextFactory<AuditingHostDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
-        services.AddSingleton(sp => new AuditingContextResolver(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, sp.GetRequiredService<IDbContextFactory<AuditingHostDbContext>>(), null));
+        services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions, _dataFilter.Filter));
         services.AddSingleton(guidGenerator);
         services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
@@ -194,7 +190,7 @@ public sealed class StrictAuditingPublisherTests : IDisposable
         await publisher.PublishAsync(batch, TestContext.Current.CancellationToken);
 
         // Assert
-        await using AuditingHostDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
+        await using AuditingDbContext verifyCtx = new(dbOptions, GranitDesignTime.CurrentTenant, _dataFilter.Filter);
         AuditEntry entry = await verifyCtx.AuditEntries
             .Include(e => e.EntityChanges)
             .SingleAsync(TestContext.Current.CancellationToken);
@@ -226,10 +222,10 @@ public sealed class StrictAuditingPublisherTests : IDisposable
         return new AuditingMetrics(meterFactory, channel);
     }
 
-    private sealed class TestDbContextFactory(DbContextOptions<AuditingHostDbContext> options, Granit.DataFiltering.DataFilter dataFilter)
-        : IDbContextFactory<AuditingHostDbContext>
+    private sealed class TestDbContextFactory(DbContextOptions<AuditingDbContext> options, Granit.DataFiltering.DataFilter dataFilter)
+        : IDbContextFactory<AuditingDbContext>
     {
-        public AuditingHostDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant, dataFilter);
+        public AuditingDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant, dataFilter);
     }
 
     private sealed class TestMeterFactory : IMeterFactory

@@ -1,12 +1,10 @@
 using Granit.Auditing.Domain;
 using Granit.Auditing.EntityFrameworkCore.Internal;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
-using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -17,7 +15,7 @@ namespace Granit.Auditing.EntityFrameworkCore.Tests.Internal;
 public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
 {
     private readonly SqliteConnection _connection;
-    private readonly DbContextOptions<AuditingHostDbContext> _dbOptions;
+    private readonly DbContextOptions<AuditingDbContext> _dbOptions;
 
     public EfCoreAuditingCleanerTests()
     {
@@ -25,11 +23,11 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
         _connection = new SqliteConnection("DataSource=:memory:");
         _connection.Open();
 
-        _dbOptions = new DbContextOptionsBuilder<AuditingHostDbContext>()
+        _dbOptions = new DbContextOptionsBuilder<AuditingDbContext>()
             .UseSqlite(_connection)
             .Options;
 
-        using var ctx = new AuditingHostDbContext(_dbOptions, GranitDesignTime.CurrentTenant);
+        using var ctx = new AuditingDbContext(_dbOptions, GranitDesignTime.CurrentTenant);
         ctx.Database.EnsureCreated();
     }
 
@@ -40,7 +38,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
     public async Task PseudonymizeByUserAsync_ReplacesPersonalData()
     {
         // Seed two entries for the target user and one for another user.
-        await using (AuditingHostDbContext seedCtx = new(_dbOptions, GranitDesignTime.CurrentTenant))
+        await using (AuditingDbContext seedCtx = new(_dbOptions, GranitDesignTime.CurrentTenant))
         {
             seedCtx.AuditEntries.AddRange(
                 new AuditEntry
@@ -76,8 +74,8 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
             await seedCtx.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingCleaner cleaner = CreateCleaner(factory);
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingCleaner cleaner = new(factory, NullLogger<EfCoreAuditingCleaner>.Instance);
 
         int count = await cleaner.PseudonymizeByUserAsync(
             "user-to-erase", TestContext.Current.CancellationToken);
@@ -85,7 +83,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
         count.ShouldBe(2);
 
         // Verify pseudonymized entries.
-        await using AuditingHostDbContext verifyCtx = new(_dbOptions, GranitDesignTime.CurrentTenant);
+        await using AuditingDbContext verifyCtx = new(_dbOptions, GranitDesignTime.CurrentTenant);
         string expectedHash = EfCoreAuditingCleaner.HashUserId("user-to-erase");
 
         List<AuditEntry> pseudonymized = await verifyCtx.AuditEntries
@@ -112,8 +110,8 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
     [Fact]
     public async Task PseudonymizeByUserAsync_NoMatchingEntries_ReturnsZero()
     {
-        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingCleaner cleaner = CreateCleaner(factory);
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingCleaner cleaner = new(factory, NullLogger<EfCoreAuditingCleaner>.Instance);
 
         int count = await cleaner.PseudonymizeByUserAsync(
             "nonexistent-user", TestContext.Current.CancellationToken);
@@ -127,8 +125,8 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
     [InlineData("   ")]
     public async Task PseudonymizeByUserAsync_InvalidUserId_Throws(string? userId)
     {
-        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingCleaner cleaner = CreateCleaner(factory);
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingCleaner cleaner = new(factory, NullLogger<EfCoreAuditingCleaner>.Instance);
 
         await Should.ThrowAsync<ArgumentException>(() =>
             cleaner.PseudonymizeByUserAsync(userId!, TestContext.Current.CancellationToken));
@@ -157,7 +155,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
     [Fact]
     public async Task PseudonymizeByUserAsync_IsIdempotent()
     {
-        await using (AuditingHostDbContext seedCtx = new(_dbOptions, GranitDesignTime.CurrentTenant))
+        await using (AuditingDbContext seedCtx = new(_dbOptions, GranitDesignTime.CurrentTenant))
         {
             seedCtx.AuditEntries.Add(new AuditEntry
             {
@@ -172,8 +170,8 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
             await seedCtx.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        IDbContextFactory<AuditingHostDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingCleaner cleaner = CreateCleaner(factory);
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingCleaner cleaner = new(factory, NullLogger<EfCoreAuditingCleaner>.Instance);
 
         int firstPass = await cleaner.PseudonymizeByUserAsync(
             "user-to-erase", TestContext.Current.CancellationToken);
@@ -185,21 +183,9 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
         secondPass.ShouldBe(0);
     }
 
-    private sealed class TestDbContextFactory(DbContextOptions<AuditingHostDbContext> options)
-        : IDbContextFactory<AuditingHostDbContext>
+    private sealed class TestDbContextFactory(DbContextOptions<AuditingDbContext> options)
+        : IDbContextFactory<AuditingDbContext>
     {
-        public AuditingHostDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
+        public AuditingDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
     }
-
-    private static EfCoreAuditingCleaner CreateCleaner(IDbContextFactory<AuditingHostDbContext> factory)
-    {
-        AuditingContextResolver resolver = new(Granit.Persistence.MultiTenancy.DualScopeStorageMode.Shared, factory);
-        ITenantsAccessor tenantsAccessor = Substitute.For<ITenantsAccessor>();
-        tenantsAccessor.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<(Guid Id, string Name)>>([]));
-        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
-        currentTenant.IsAvailable.Returns(false);
-        return new EfCoreAuditingCleaner(resolver, tenantsAccessor, currentTenant, NullLogger<EfCoreAuditingCleaner>.Instance);
-    }
-
 }

@@ -5375,12 +5375,12 @@
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
       "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 26,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitAuditingEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitAuditingEntityFrameworkCore(this IHostApplicationBuilder builder, Action<AuditingEntityFrameworkCoreOptions> configure)",
+          "signature": "AddGranitAuditingEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -5455,22 +5455,6 @@
           "kind": "method",
           "signature": "SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)",
           "returnType": "InterceptionResult<int>"
-        }
-      ]
-    },
-    {
-      "name": "AuditingEntityFrameworkCoreOptions",
-      "fqn": "Granit.Auditing.EntityFrameworkCore.Options.AuditingEntityFrameworkCoreOptions",
-      "kind": "class",
-      "project": "Granit.Auditing.EntityFrameworkCore",
-      "file": "src/Granit.Auditing.EntityFrameworkCore/Options/AuditingEntityFrameworkCoreOptions.cs",
-      "line": 31,
-      "members": [
-        {
-          "name": "StorageMode",
-          "kind": "property",
-          "signature": "DualScopeStorageMode StorageMode",
-          "returnType": "DualScopeStorageMode"
         }
       ]
     },
