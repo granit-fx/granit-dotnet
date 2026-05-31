@@ -359,8 +359,17 @@ public static class ModelBuilderExtensions
     // the value object entity types themselves as owners clears the FKs between nested value
     // objects (OpenGraph → OgImage) before those types are removed.
     //
-    // Note: value objects mapped explicitly as EF complex types (builder.ComplexProperty(...))
-    // are not entity types, so they never appear here and the convention leaves them untouched.
+    // Two carve-outs:
+    //   - ComplexProperty(...): value objects mapped explicitly as EF complex types are not
+    //     entity types, so they never appear here and the convention leaves them untouched.
+    //   - OwnsOne(...): owned entity types DO surface in Model.GetEntityTypes(). Granit
+    //     reserves ValueObject persistence to two paths — convention (auto JSON / scalar) or
+    //     ComplexProperty (typed flat columns). Allowing OwnsOne would create a third path
+    //     that fragments the framework invariant codified by ADR-017 and ADR-058. The
+    //     convention fails fast at model build with a clear message directing the author to
+    //     one of the two supported paths, rather than silently overriding the explicit
+    //     configuration (which would discard per-property HasMaxLength / column-name / etc.
+    //     and surface only as schema drift or a runtime STJ deserialization error).
     private static void RemoveValueObjectEntityTypes(ModelBuilder modelBuilder)
     {
         var valueObjectEntityTypes = modelBuilder.Model.GetEntityTypes()
@@ -405,6 +414,25 @@ public static class ModelBuilderExtensions
 
             foreach (System.Reflection.PropertyInfo clrProperty in valueObjectClrProperties)
             {
+                // Fail fast on explicit OwnsOne(...) over a ValueObject subtype on a real entity
+                // owner: this would create a third VO persistence path beyond the two supported
+                // by ADR-017 / ADR-058 (convention auto-JSON / scalar, or ComplexProperty for
+                // typed flat columns). Silent-override the previous behavior — produced schema
+                // drift and late STJ failures with no diagnostic. A nested-VO owner stays on
+                // the existing detach-only path: nobody opts in to OwnsOne on a VO-inside-VO.
+                IMutableNavigation? nav = ownerEntityType.FindNavigation(clrProperty.Name);
+                if (!ownerIsValueObject && nav?.ForeignKey.IsOwnership == true)
+                {
+                    throw new InvalidOperationException(
+                        $"'{ownerEntityType.ClrType.Name}.{clrProperty.Name}' is a ValueObject " +
+                        $"subtype configured via OwnsOne(...). Granit reserves ValueObject " +
+                        $"persistence to two paths: (1) let ApplyGranitConventions auto-serialize " +
+                        $"to JSON (multi-field) or a scalar column (SingleValueObject<T>), or " +
+                        $"(2) map explicitly via ComplexProperty(...) for typed flat columns. " +
+                        $"Drop the OwnsOne call or switch to ComplexProperty. " +
+                        $"See ADR-017 (DDD VO strategy) and ADR-058 (JSON persistence policy).");
+                }
+
                 ownerBuilder.Ignore(clrProperty.Name);
 
                 // A value object owner is removed wholesale below — only the navigation needs
