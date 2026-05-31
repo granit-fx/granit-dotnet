@@ -4,6 +4,7 @@ using Granit.Commands;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Events;
+using Granit.DataExchange.Export.Exceptions;
 using Granit.DataExchange.Export.Messages;
 using Granit.Domain.ValueObjects;
 using Granit.Events;

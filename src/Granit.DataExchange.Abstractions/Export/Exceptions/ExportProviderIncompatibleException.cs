@@ -1,4 +1,4 @@
-namespace Granit.DataExchange.Export;
+namespace Granit.DataExchange.Export.Exceptions;
 
 /// <summary>
 /// Thrown when the chosen export format does not support complex/hierarchical fields
