@@ -2,13 +2,11 @@
 // Tests — EfCoreTimelineQuery
 // =============================================================================
 // Verifies paginated stream queries, ordering, soft-delete filtering, and
-// attachment inclusion against a SQLite in-memory database wrapped in a Shared-mode
-// TimelineContextResolver.
+// attachment inclusion against a SQLite in-memory database.
 // =============================================================================
 
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Persistence.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.Timeline.Domain;
 using Granit.Timeline.EntityFrameworkCore.Internal;
@@ -25,9 +23,7 @@ namespace Granit.Timeline.EntityFrameworkCore.Tests;
 
 public sealed class EfCoreTimelineQueryTests : IDisposable
 {
-    private readonly TestDataFilter _filter = new();
-    private readonly TestDbContextFactory _factory;
-    private readonly TimelineContextResolver _resolver;
+    private readonly TestDbContextFactory _factory = TestDbContextFactory.Create();
     private readonly EfCoreTimelineStore _store;
     private readonly EfCoreTimelineQuery _query;
     private readonly IClock _clock;
@@ -35,9 +31,6 @@ public sealed class EfCoreTimelineQueryTests : IDisposable
 
     public EfCoreTimelineQueryTests()
     {
-        _factory = TestDbContextFactory.Create(_filter.Filter);
-        _resolver = new TimelineContextResolver(DualScopeStorageMode.Shared, _factory, tenantFactory: null);
-
         _clock = Substitute.For<IClock>();
         _clock.Now.Returns(_ => DateTimeOffset.UtcNow.AddMinutes(_timeOffset++));
 
@@ -51,22 +44,12 @@ public sealed class EfCoreTimelineQueryTests : IDisposable
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(false);
 
-        ITenantsAccessor tenantsAccessor = Substitute.For<ITenantsAccessor>();
-        tenantsAccessor.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<(Guid Id, string Name)>>([]));
-
         IOptions<TimelineOptions> options = Microsoft.Extensions.Options.Options.Create(new TimelineOptions());
-        _store = new EfCoreTimelineStore(_resolver, _clock, userService, guidGenerator, tenant, options);
-        _query = new EfCoreTimelineQuery(
-            _resolver, _factory, tenant, tenantsAccessor, [], options,
-            NullLogger<EfCoreTimelineQuery>.Instance, tenantFactory: null);
+        _store = new EfCoreTimelineStore(_factory, _clock, userService, guidGenerator, tenant, options);
+        _query = new EfCoreTimelineQuery(_factory, [], options, NullLogger<EfCoreTimelineQuery>.Instance);
     }
 
-    public void Dispose()
-    {
-        _factory.Dispose();
-        _filter.Dispose();
-    }
+    public void Dispose() => _factory.Dispose();
 
     [Fact]
     public async Task GetStreamAsync_EmptyStream_ReturnsEmptyPage()

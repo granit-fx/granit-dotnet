@@ -11,34 +11,30 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Notifications.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// Tenant-isolated EF Core DbContext for Notifications under
-/// <see cref="Granit.Persistence.MultiTenancy.DualScopeStorageMode.Segregated"/>. Holds
-/// tenant-scoped notifications, preferences, subscriptions, delivery attempts, and push
-/// tokens. <c>DROP SCHEMA &lt;tenant&gt; CASCADE</c> lessivage on tenant offboarding is
-/// the RGPD Art. 17 primitive enabled by this layout — notification bodies carry PII.
+/// EF Core DbContext for notification persistence.
 /// </summary>
-internal sealed class NotificationsTenantDbContext(
-    DbContextOptions<NotificationsTenantDbContext> options,
+internal sealed class NotificationsDbContext(
+    DbContextOptions<NotificationsDbContext> options,
     IStringEncryptionService encryption,
     ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : GranitDbContext(options, currentTenant, dataFilter), INotificationsDbContext
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
     private readonly IStringEncryptionService _encryption = encryption;
 
-    /// <inheritdoc/>
+    /// <summary>In-app user notifications (inbox).</summary>
     public DbSet<UserNotification> UserNotifications => Set<UserNotification>();
 
-    /// <inheritdoc/>
+    /// <summary>Notification subscriptions (topic + entity followers).</summary>
     public DbSet<NotificationSubscription> Subscriptions => Set<NotificationSubscription>();
 
-    /// <inheritdoc/>
+    /// <summary>User notification preferences (opt-in/opt-out per channel).</summary>
     public DbSet<NotificationPreference> Preferences => Set<NotificationPreference>();
 
-    /// <inheritdoc/>
+    /// <summary>Immutable ISO 27001 audit trail of delivery attempts.</summary>
     public DbSet<NotificationDeliveryAttempt> DeliveryAttempts => Set<NotificationDeliveryAttempt>();
 
-    /// <inheritdoc/>
+    /// <summary>Mobile push device tokens.</summary>
     public DbSet<MobilePushToken> MobilePushTokens => Set<MobilePushToken>();
 
     /// <inheritdoc/>
