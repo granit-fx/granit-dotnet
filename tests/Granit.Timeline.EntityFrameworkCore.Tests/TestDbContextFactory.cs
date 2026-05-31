@@ -1,4 +1,3 @@
-using Granit.DataFiltering;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timeline.EntityFrameworkCore.Internal;
 using Microsoft.Data.Sqlite;
@@ -10,59 +9,51 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Granit.Timeline.EntityFrameworkCore.Tests;
 
 /// <summary>
-/// Creates <see cref="TimelineHostDbContext"/> instances backed by SQLite in-memory for
-/// fast, isolated integration tests that support all relational operations (including
-/// <c>ExecuteUpdateAsync</c> / <c>ExecuteDeleteAsync</c>).
+/// Creates <see cref="TimelineDbContext"/> instances backed by SQLite in-memory
+/// for fast, isolated integration tests that support all relational operations
+/// (including <c>ExecuteUpdateAsync</c> / <c>ExecuteDeleteAsync</c>).
 /// </summary>
-internal sealed class TestDbContextFactory : IDbContextFactory<TimelineHostDbContext>, IDisposable
+internal sealed class TestDbContextFactory : IDbContextFactory<TimelineDbContext>, IDisposable
 {
     private readonly SqliteConnection _connection;
-    private readonly DbContextOptions<TimelineHostDbContext> _options;
-    private readonly IDataFilter? _dataFilter;
+    private readonly DbContextOptions<TimelineDbContext> _options;
 
-    private TestDbContextFactory(
-        SqliteConnection connection,
-        DbContextOptions<TimelineHostDbContext> options,
-        IDataFilter? dataFilter)
+    private TestDbContextFactory(SqliteConnection connection, DbContextOptions<TimelineDbContext> options)
     {
         _connection = connection;
         _options = options;
-        _dataFilter = dataFilter;
     }
 
-    public DbContextOptions<TimelineHostDbContext> Options => _options;
-
-    public static TestDbContextFactory Create(IDataFilter? dataFilter = null)
+    public static TestDbContextFactory Create()
     {
         SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
-        DbContextOptionsBuilder<TimelineHostDbContext> optionsBuilder = new();
+        DbContextOptionsBuilder<TimelineDbContext> optionsBuilder = new();
         optionsBuilder.UseSqlite(connection);
         optionsBuilder.ReplaceService<IModelCustomizer, SqliteCompatibleModelCustomizer>();
 
-        DbContextOptions<TimelineHostDbContext> options = optionsBuilder.Options;
+        DbContextOptions<TimelineDbContext> options = optionsBuilder.Options;
 
-        using (TimelineHostDbContext db = new(options, GranitDesignTime.CurrentTenant, dataFilter))
+        // Create the schema
+        using (TimelineDbContext db = new(options, GranitDesignTime.CurrentTenant))
         {
             db.Database.EnsureCreated();
         }
 
-        return new TestDbContextFactory(connection, options, dataFilter);
+        return new TestDbContextFactory(connection, options);
     }
 
-    public TimelineHostDbContext CreateDbContext()
-        => new(_options, GranitDesignTime.CurrentTenant, _dataFilter);
+    public TimelineDbContext CreateDbContext() => new(_options, GranitDesignTime.CurrentTenant);
 
     public void Dispose() => _connection.Dispose();
 }
 
 /// <summary>
-/// Model customizer that remaps PostgreSQL-specific types (DateTimeOffset) to
-/// SQLite-compatible types with value converters.
+/// Model customizer that remaps PostgreSQL-specific types (DateTimeOffset)
+/// to SQLite-compatible types with value converters.
 /// </summary>
-internal sealed class SqliteCompatibleModelCustomizer(ModelCustomizerDependencies dependencies)
-    : RelationalModelCustomizer(dependencies)
+internal sealed class SqliteCompatibleModelCustomizer(ModelCustomizerDependencies dependencies) : RelationalModelCustomizer(dependencies)
 {
     private static readonly ValueConverter<DateTimeOffset, long> DateTimeOffsetConverter = new(
         v => v.ToUnixTimeMilliseconds(),

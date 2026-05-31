@@ -15,7 +15,7 @@ namespace Granit.Webhooks.EntityFrameworkCore;
 /// <para>
 /// These properties control the table prefix and schema used by all entity configurations
 /// in <c>Granit.Webhooks.EntityFrameworkCore</c>. Both the internal
-/// <c>WebhooksHostDbContext</c> and the host's <c>Configure*Module()</c> call read
+/// <c>WebhooksDbContext</c> and the host's <c>Configure*Module()</c> call read
 /// the same static values, ensuring migration-time and runtime SQL stay in sync.
 /// </para>
 /// <para>
