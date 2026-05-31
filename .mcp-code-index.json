@@ -46542,12 +46542,12 @@
       "kind": "class",
       "project": "Granit.Timeline.EntityFrameworkCore",
       "file": "src/Granit.Timeline.EntityFrameworkCore/Extensions/TimelineEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitTimelineEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitTimelineEntityFrameworkCore(this IHostApplicationBuilder builder, Action<TimelineEntityFrameworkCoreOptions> configure)",
+          "signature": "AddGranitTimelineEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -46592,22 +46592,6 @@
       "file": "src/Granit.Timeline.EntityFrameworkCore/GranitTimelineEntityFrameworkCoreModule.cs",
       "line": 18,
       "members": []
-    },
-    {
-      "name": "TimelineEntityFrameworkCoreOptions",
-      "fqn": "Granit.Timeline.EntityFrameworkCore.Options.TimelineEntityFrameworkCoreOptions",
-      "kind": "class",
-      "project": "Granit.Timeline.EntityFrameworkCore",
-      "file": "src/Granit.Timeline.EntityFrameworkCore/Options/TimelineEntityFrameworkCoreOptions.cs",
-      "line": 33,
-      "members": [
-        {
-          "name": "StorageMode",
-          "kind": "property",
-          "signature": "DualScopeStorageMode StorageMode",
-          "returnType": "DualScopeStorageMode"
-        }
-      ]
     },
     {
       "name": "ReactionToggleAction",
