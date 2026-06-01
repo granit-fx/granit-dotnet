@@ -20,6 +20,10 @@ public sealed class UserNotificationExportDefinition : ExportDefinition<UserNoti
             .Field(e => e.ReadAt, f => f.Format("O"))
             .Field(e => e.RelatedEntityType)
             .Field(e => e.RelatedEntityId)
-            .Field(e => e.TenantId);
+            .Field(e => e.TenantId)
+            // Data is the typed notification payload (JsonElement stored as jsonb).
+            // Requires a structured writer (JSON) — CSV/Excel exports throw
+            // ExportProviderIncompatibleException under the default Throw policy.
+            .ComplexField("Data", e => e.Data);
     }
 }

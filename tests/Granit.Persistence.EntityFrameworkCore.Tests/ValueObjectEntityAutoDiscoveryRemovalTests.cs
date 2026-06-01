@@ -66,6 +66,32 @@ public sealed class ValueObjectEntityAutoDiscoveryRemovalTests
     }
 
     [Fact]
+    public void ApplyGranitConventions_EntityWithExplicitOwnsOneOnValueObject_FailsFastWithGuidance()
+    {
+        // Arrange — explicit OwnsOne(...) on a ValueObject subtype is unsupported. The
+        // convention must fail fast at model build with a message directing the author to one
+        // of the two supported paths (convention auto-JSON / scalar, or ComplexProperty for
+        // typed flat columns). Silent-override would discard the per-property configuration
+        // (column names, HasMaxLength, etc.) and surface only as a runtime schema drift or
+        // STJ deserialization error.
+        using ExplicitOwnsOneDbContext context = new(new DbContextOptionsBuilder<ExplicitOwnsOneDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options);
+
+        // Act + Assert — touching context.Model triggers OnModelCreating.
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() => _ = context.Model);
+
+        // The message must name the offending pattern, point at the typed-columns alternative,
+        // cite the two ADRs, and locate the offending entity + property by name.
+        ex.Message.ShouldContain("OwnsOne");
+        ex.Message.ShouldContain("ComplexProperty");
+        ex.Message.ShouldContain("ADR-017");
+        ex.Message.ShouldContain("ADR-058");
+        ex.Message.ShouldContain(nameof(OwnsOneOwnerEntity));
+        ex.Message.ShouldContain(nameof(OwnsOneOwnerEntity.Location));
+    }
+
+    [Fact]
     public void ApplyGranitConventions_ValueObjectMappedAsComplexProperty_IsLeftUntouched()
     {
         // Arrange — opt out of the jsonb default by declaring the value object as an EF
@@ -145,6 +171,12 @@ public sealed class ValueObjectEntityAutoDiscoveryRemovalTests
         public GeoCoordinate Location { get; set; } = new();
     }
 
+    public sealed class OwnsOneOwnerEntity
+    {
+        public Guid Id { get; set; }
+        public GeoCoordinate Location { get; set; } = new();
+    }
+
     private sealed class SeoOwnerDbContext(DbContextOptions<SeoOwnerDbContext> options)
         : DbContext(options)
     {
@@ -164,6 +196,26 @@ public sealed class ValueObjectEntityAutoDiscoveryRemovalTests
             // Opt out of jsonb: map the value object as a complex type (flat columns).
             modelBuilder.Entity<ComplexOwnerEntity>()
                 .ComplexProperty(e => e.Location);
+
+            modelBuilder.ApplyGranitConventions();
+        }
+    }
+
+    private sealed class ExplicitOwnsOneDbContext(DbContextOptions<ExplicitOwnsOneDbContext> options)
+        : DbContext(options)
+    {
+        public DbSet<OwnsOneOwnerEntity> Owners => Set<OwnsOneOwnerEntity>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Unsupported third path: OwnsOne(...) on a ValueObject subtype with per-property
+            // configuration. The convention must reject this at model build time.
+            modelBuilder.Entity<OwnsOneOwnerEntity>()
+                .OwnsOne(e => e.Location, loc =>
+                {
+                    loc.Property(g => g.Latitude).HasColumnName("lat");
+                    loc.Property(g => g.Longitude).HasColumnName("lng");
+                });
 
             modelBuilder.ApplyGranitConventions();
         }

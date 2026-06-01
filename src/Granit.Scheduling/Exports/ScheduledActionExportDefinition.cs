@@ -12,6 +12,7 @@ public sealed class ScheduledActionExportDefinition : ExportDefinition<Scheduled
         builder
             .IncludeId()
             .Field(e => e.PayloadType)
+            .Field(e => e.PayloadJson)
             .Field(e => e.ExecuteAt, f => f.Format("O"))
             .Field(e => e.CorrelationId)
             .Field(e => e.Status)

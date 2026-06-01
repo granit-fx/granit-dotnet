@@ -7,7 +7,7 @@ namespace Granit.DataExchange.Export;
 public enum OnIncompatibleFieldPolicy
 {
     /// <summary>
-    /// Throw <see cref="ExportProviderIncompatibleException"/> immediately.
+    /// Throw <see cref="Exceptions.ExportProviderIncompatibleException"/> immediately.
     /// This is the default: fail fast rather than silently losing data.
     /// </summary>
     Throw,

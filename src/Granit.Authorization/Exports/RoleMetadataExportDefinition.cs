@@ -17,6 +17,8 @@ public sealed class RoleMetadataExportDefinition : ExportDefinition<RoleMetadata
             .Field(r => r.ClientId)
             .Field(r => r.Description)
             .Field(r => r.IsSystem)
+            .Field(r => r.IsOrphaned)
+            .Field(r => r.OrphanedAt, f => f.Format("O"))
             .Field(r => r.CreatedAt, f => f.Format("O"))
             .Field(r => r.CreatedBy)
             .Field(r => r.ModifiedAt, f => f.Format("O"))

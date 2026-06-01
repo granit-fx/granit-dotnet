@@ -123,7 +123,7 @@ public sealed class ExportDefinitionBuilder<TEntity> where TEntity : class
     /// <para>
     /// The resulting field sets <see cref="ExportFieldDescriptor.RequiresHierarchy"/> to <c>true</c>.
     /// Export writers that do not declare <c>SupportsHierarchy = true</c> in their capabilities
-    /// will throw <see cref="ExportProviderIncompatibleException"/> (default) or skip the field
+    /// will throw <see cref="Exceptions.ExportProviderIncompatibleException"/> (default) or skip the field
     /// depending on <see cref="ExportDefinition{TEntity}.OnIncompatibleField"/>.
     /// </para>
     /// </remarks>

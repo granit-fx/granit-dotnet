@@ -13359,6 +13359,15 @@
       "members": []
     },
     {
+      "name": "ExportProviderIncompatibleException",
+      "fqn": "Granit.DataExchange.Export.Exceptions.ExportProviderIncompatibleException",
+      "kind": "class",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/Exceptions/ExportProviderIncompatibleException.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "ExportDefinition",
       "fqn": "Granit.DataExchange.Export.ExportDefinition",
       "kind": "class",
@@ -13508,7 +13517,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/ExportOrchestrator.cs",
-      "line": 26,
+      "line": 27,
       "members": [
         {
           "name": "ExportAsync",
@@ -13531,15 +13540,6 @@
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/ExportPreset.cs",
       "line": 12,
-      "members": []
-    },
-    {
-      "name": "ExportProviderIncompatibleException",
-      "fqn": "Granit.DataExchange.Export.ExportProviderIncompatibleException",
-      "kind": "class",
-      "project": "Granit.DataExchange.Abstractions",
-      "file": "src/Granit.DataExchange.Abstractions/Export/ExportProviderIncompatibleException.cs",
-      "line": 7,
       "members": []
     },
     {
@@ -35128,7 +35128,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Exports/OpenIddictApplicationExportDefinition.cs",
-      "line": 6,
+      "line": 7,
       "members": [
         {
           "name": "Name",
@@ -35144,7 +35144,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Exports/OpenIddictScopeExportDefinition.cs",
-      "line": 6,
+      "line": 7,
       "members": [
         {
           "name": "Name",
@@ -49933,6 +49933,15 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "WebhookSigningKeySnapshot",
+      "fqn": "Granit.Webhooks.Exports.WebhookSigningKeySnapshot",
+      "kind": "record",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Exports/WebhookSigningKeySnapshot.cs",
+      "line": 13,
+      "members": []
     },
     {
       "name": "WebhookSubscriptionExportDefinition",
