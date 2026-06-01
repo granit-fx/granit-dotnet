@@ -35870,7 +35870,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/JsonPropertyBuilderExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": []
     },
     {
@@ -35888,7 +35888,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/ModelBuilderExtensions.cs",
-      "line": 18,
+      "line": 16,
       "members": [
         {
           "name": "ApplyGranitConventions",
@@ -37002,6 +37002,24 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "JsonValueObjectComparer",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.ValueConverters.JsonValueObjectComparer",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/ValueConverters/JsonValueObjectComparer.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "JsonValueObjectConverter",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.ValueConverters.JsonValueObjectConverter",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/ValueConverters/JsonValueObjectConverter.cs",
+      "line": 18,
+      "members": []
     },
     {
       "name": "GranitPersistenceModule",

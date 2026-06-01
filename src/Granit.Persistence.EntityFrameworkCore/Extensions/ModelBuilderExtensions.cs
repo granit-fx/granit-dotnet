@@ -1,12 +1,10 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text.Json;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.ValueConverters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -459,21 +457,16 @@ public static class ModelBuilderExtensions
     // PostgreSQL provider upgrades the column to jsonb. Mirrors HasJsonConversion<T> but operates
     // on the IMutableProperty directly because the convention re-attaches the property through the
     // non-generic builder. STJ defaults are used (matches HasJsonConversion's default).
+    //
+    // Named converter/comparer classes (not inline lambdas) are required: EF Core's snapshot
+    // generator can only reproduce a parameterless-constructor converter as
+    // `new JsonValueObjectConverter<T>()`. Inline lambdas fall back to HasConversion<string>()
+    // in the snapshot, producing a CLR-type mismatch between snapshot (string) and runtime
+    // (T) that raises a perpetual PendingModelChangesWarning.
     private static void ApplyJsonValueObjectConverter<T>(IMutableProperty property)
     {
-        ValueConverter<T, string> converter = new(
-            v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => JsonSerializer.Deserialize<T>(v, (JsonSerializerOptions?)null)!);
-
-        // Lambdas become Expression<> trees in the ValueComparer ctor, so constructs disallowed
-        // in expression trees (pattern matching, switch expressions) cannot appear here.
-        ValueComparer<T> comparer = new(
-            (a, b) => JsonSerializer.Serialize(a, (JsonSerializerOptions?)null) == JsonSerializer.Serialize(b, (JsonSerializerOptions?)null),
-            v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null).GetHashCode(StringComparison.Ordinal),
-            v => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(v, (JsonSerializerOptions?)null), (JsonSerializerOptions?)null)!);
-
-        property.SetValueConverter(converter);
-        property.SetValueComparer(comparer);
+        property.SetValueConverter(new JsonValueObjectConverter<T>());
+        property.SetValueComparer(new JsonValueObjectComparer<T>());
         property.SetAnnotation(GranitPersistenceAnnotationNames.JsonSerialized, true);
     }
 
