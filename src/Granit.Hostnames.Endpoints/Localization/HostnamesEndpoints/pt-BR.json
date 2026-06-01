@@ -5,6 +5,7 @@
     "HostnamesEndpoints:Workspace.Section": "Nomes de host gerenciados",
     "Permission:Hostnames.Hostnames.Read": "Ler nomes de host",
     "Permission:Hostnames.Hostnames.Manage": "Gerenciar nomes de host",
-    "PermissionGroup:Hostnames": "Nomes de host"
+    "PermissionGroup:Hostnames": "Nomes de host",
+    "Permission:Hostnames.Certificates.Report": "Reportar o estado do certificado"
   }
 }

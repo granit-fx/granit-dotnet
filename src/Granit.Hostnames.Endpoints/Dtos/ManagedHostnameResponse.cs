@@ -11,13 +11,15 @@ namespace Granit.Hostnames.Endpoints.Dtos;
 /// <param name="OwnerId">Owning resource identifier.</param>
 /// <param name="TenantId">Owning tenant; <c>null</c> for global hostnames.</param>
 /// <param name="IsPrimary">Whether this is the owner's canonical hostname.</param>
-/// <param name="Status">Lifecycle state string: <c>Pending</c>, <c>Verifying</c>, <c>Active</c>, or <c>Error</c>.</param>
+/// <param name="Status">DNS verification lifecycle state: <c>Pending</c>, <c>Verifying</c>, <c>Active</c>, or <c>Error</c>.</param>
 /// <param name="VerificationToken">TXT challenge token; <c>null</c> until verification starts.</param>
 /// <param name="ExpectedDnsRecords">DNS records the owner must configure; empty until verification starts.</param>
 /// <param name="LastCheckedAt">When the last DNS check ran; <c>null</c> before any check.</param>
 /// <param name="Conflicts">DNS conflicts from the last check; empty when verified.</param>
 /// <param name="FailedCheckCount">Consecutive DNS check failure count.</param>
 /// <param name="NextCheckAt">When the poller will retry; <c>null</c> when dormant.</param>
+/// <param name="CertificateStatus">SSL/TLS certificate provisioning state: <c>Unprovisioned</c>, <c>Provisioning</c>, <c>Secured</c>, or <c>Error</c>.</param>
+/// <param name="CertExpiresAt">When the active certificate expires; <c>null</c> until a certificate is secured.</param>
 /// <param name="CreatedAt">UTC timestamp when the hostname was registered.</param>
 /// <param name="CreatedBy">Identity that registered the hostname.</param>
 /// <param name="ModifiedAt">UTC timestamp of the last change; <c>null</c> if never modified.</param>
@@ -36,6 +38,8 @@ public sealed record ManagedHostnameResponse(
     IReadOnlyList<DnsConflict> Conflicts,
     int FailedCheckCount,
     DateTimeOffset? NextCheckAt,
+    string CertificateStatus,
+    DateTimeOffset? CertExpiresAt,
     DateTimeOffset CreatedAt,
     string CreatedBy,
     DateTimeOffset? ModifiedAt,

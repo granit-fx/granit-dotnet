@@ -118,6 +118,14 @@ public static class HostnamesEndpointRouteBuilderExtensions
             .Produces<ManagedHostnameResponse>(StatusCodes.Status202Accepted)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
+
+        group.MapPost("/{id:guid}/certificate-status", HandleReportCertificateStatusAsync)
+            .RequireAuthorization(HostnamesPermissions.Certificates.Report)
+            .WithName("ReportHostnameCertificateStatus")
+            .WithSummary("Reports the SSL/TLS certificate status from the edge provider.")
+            .WithDescription("Webhook endpoint called by the edge provider (e.g. Cloudflare, AWS) when the certificate state changes. Stores the new CertificateStatus and expiry date, and dispatches the appropriate integration event (HostnameCertificateSecuredEto or HostnameCertificateFailedEto). Returns 204 on success, 404 when not found. Requires the Hostnames.Certificates.Report permission.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound);
     }
 
     // ── Handlers ──────────────────────────────────────────────────────────────
@@ -327,6 +335,27 @@ public static class HostnamesEndpointRouteBuilderExtensions
         return TypedResults.Accepted((string?)null, MapToResponse(hostname));
     }
 
+    private static async Task<Results<NoContent, ProblemHttpResult>> HandleReportCertificateStatusAsync(
+        Guid id,
+        ReportCertificateStatusRequest body,
+        [FromServices] IManagedHostnameReader reader,
+        [FromServices] IManagedHostnameWriter writer,
+        CancellationToken cancellationToken)
+    {
+        ManagedHostname? hostname = await reader
+            .GetByIdAsync(id, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (hostname is null)
+        {
+            return HostnameNotFound(id);
+        }
+
+        hostname.ReportCertificateStatus(body.Status, body.ExpiresAt);
+        await writer.UpdateAsync(hostname, cancellationToken).ConfigureAwait(false);
+        return TypedResults.NoContent();
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static IReadOnlyList<ExpectedDnsRecord> BuildExpectedRecords(
@@ -355,6 +384,8 @@ public static class HostnamesEndpointRouteBuilderExtensions
             h.Conflicts,
             h.FailedCheckCount,
             h.NextCheckAt,
+            h.CertificateStatus.ToString(),
+            h.CertExpiresAt,
             h.CreatedAt,
             h.CreatedBy,
             h.ModifiedAt,

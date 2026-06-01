@@ -19660,6 +19660,15 @@
       "members": []
     },
     {
+      "name": "CertificateStatus",
+      "fqn": "Granit.Hostnames.Domain.CertificateStatus",
+      "kind": "enum",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Domain/CertificateStatus.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "DnsConflict",
       "fqn": "Granit.Hostnames.Domain.DnsConflict",
       "kind": "record",
@@ -19684,6 +19693,24 @@
       "project": "Granit.Hostnames",
       "file": "src/Granit.Hostnames/Domain/DnsRecordType.cs",
       "line": 4,
+      "members": []
+    },
+    {
+      "name": "HostnameCertificateFailedEto",
+      "fqn": "Granit.Hostnames.Domain.Events.HostnameCertificateFailedEto",
+      "kind": "record",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Domain/Events/HostnameCertificateFailedEto.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "HostnameCertificateSecuredEto",
+      "fqn": "Granit.Hostnames.Domain.Events.HostnameCertificateSecuredEto",
+      "kind": "record",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Domain/Events/HostnameCertificateSecuredEto.cs",
+      "line": 15,
       "members": []
     },
     {
@@ -19789,6 +19816,12 @@
           "returnType": "DateTimeOffset?"
         },
         {
+          "name": "CertificateStatus",
+          "kind": "property",
+          "signature": "CertificateStatus CertificateStatus",
+          "returnType": "CertificateStatus"
+        },
+        {
           "name": "Create",
           "kind": "method",
           "signature": "Create(Guid id, Hostname host, string ownerType, Guid ownerId, Guid? tenantId = null, bool isPrimary = false)",
@@ -19826,7 +19859,16 @@
       "kind": "record",
       "project": "Granit.Hostnames.Endpoints",
       "file": "src/Granit.Hostnames.Endpoints/Dtos/ManagedHostnameResponse.cs",
-      "line": 25,
+      "line": 27,
+      "members": []
+    },
+    {
+      "name": "ReportCertificateStatusRequest",
+      "fqn": "Granit.Hostnames.Endpoints.Dtos.ReportCertificateStatusRequest",
+      "kind": "record",
+      "project": "Granit.Hostnames.Endpoints",
+      "file": "src/Granit.Hostnames.Endpoints/Dtos/ReportCertificateStatusRequest.cs",
+      "line": 11,
       "members": []
     },
     {
@@ -19882,6 +19924,15 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "Certificates",
+      "fqn": "Granit.Hostnames.Endpoints.Permissions.Certificates",
+      "kind": "class",
+      "project": "Granit.Hostnames.Endpoints",
+      "file": "src/Granit.Hostnames.Endpoints/Permissions/HostnamesPermissions.cs",
+      "line": 23,
+      "members": []
     },
     {
       "name": "Hostnames",

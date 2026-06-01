@@ -18,4 +18,11 @@ public static class HostnamesPermissions
         /// <summary>Grants write access: create, delete, set/clear primary, availability check.</summary>
         public const string Manage = "Hostnames.Hostnames.Manage";
     }
+
+    /// <summary>Permissions for the certificate-status webhook endpoint.</summary>
+    public static class Certificates
+    {
+        /// <summary>Grants the edge provider the right to push certificate status updates.</summary>
+        public const string Report = "Hostnames.Certificates.Report";
+    }
 }

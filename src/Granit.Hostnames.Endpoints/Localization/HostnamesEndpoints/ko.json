@@ -5,6 +5,7 @@
     "HostnamesEndpoints:Workspace.Section": "관리되는 호스트 이름",
     "Permission:Hostnames.Hostnames.Read": "호스트 이름 읽기",
     "Permission:Hostnames.Hostnames.Manage": "호스트 이름 관리",
-    "PermissionGroup:Hostnames": "호스트 이름"
+    "PermissionGroup:Hostnames": "호스트 이름",
+    "Permission:Hostnames.Certificates.Report": "인증서 상태 보고"
   }
 }

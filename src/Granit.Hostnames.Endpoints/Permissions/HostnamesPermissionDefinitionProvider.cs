@@ -32,5 +32,12 @@ internal sealed class HostnamesPermissionDefinitionProvider : IPermissionDefinit
             LocalizableString.Create<HostnamesEndpointsLocalizationResource>(
                 "Permission:Hostnames.Hostnames.Manage"),
             MultiTenancySides.Host);
+
+        // Scoped to the edge provider API key — not shown in the admin permission UI.
+        group.AddPermission(
+            HostnamesPermissions.Certificates.Report,
+            LocalizableString.Create<HostnamesEndpointsLocalizationResource>(
+                "Permission:Hostnames.Certificates.Report"),
+            MultiTenancySides.Host);
     }
 }

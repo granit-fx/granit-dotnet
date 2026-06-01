@@ -5,6 +5,7 @@
     "HostnamesEndpoints:Workspace.Section": "Hanterade värdnamn",
     "Permission:Hostnames.Hostnames.Read": "Läsa värdnamn",
     "Permission:Hostnames.Hostnames.Manage": "Hantera värdnamn",
-    "PermissionGroup:Hostnames": "Värdnamn"
+    "PermissionGroup:Hostnames": "Värdnamn",
+    "Permission:Hostnames.Certificates.Report": "Rapportera certifikatstatus"
   }
 }

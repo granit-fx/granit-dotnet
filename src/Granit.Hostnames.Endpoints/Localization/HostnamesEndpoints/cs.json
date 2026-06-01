@@ -5,6 +5,7 @@
     "HostnamesEndpoints:Workspace.Section": "Spravované názvy hostitelů",
     "Permission:Hostnames.Hostnames.Read": "Číst názvy hostitelů",
     "Permission:Hostnames.Hostnames.Manage": "Spravovat názvy hostitelů",
-    "PermissionGroup:Hostnames": "Názvy hostitelů"
+    "PermissionGroup:Hostnames": "Názvy hostitelů",
+    "Permission:Hostnames.Certificates.Report": "Nahlásit stav certifikátu"
   }
 }
