@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Hostnames</PackageId>
+    <Description>Custom hostname management for Granit: register a hostname against any tenant resource and resolve host→owner for routing, with a globally unique host and an owner-agnostic model. Layer-pure base package; EF Core, endpoints, DNS verification and provider adapters ship in sibling packages.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

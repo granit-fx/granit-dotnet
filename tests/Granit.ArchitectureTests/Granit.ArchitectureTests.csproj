@@ -117,6 +117,7 @@
     <ProjectReference Include="..\..\src\Granit.Features.EntityFrameworkCore\Granit.Features.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Features.Wolverine\Granit.Features.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Hostnames\Granit.Hostnames.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ApiVersioning\Granit.Http.ApiVersioning.csproj" />
