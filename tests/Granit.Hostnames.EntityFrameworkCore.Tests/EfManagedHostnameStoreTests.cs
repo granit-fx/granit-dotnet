@@ -1,3 +1,5 @@
+using System.Diagnostics.Metrics;
+using Granit.Hostnames.Diagnostics;
 using Granit.Hostnames.Domain;
 using Granit.Hostnames.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy;
@@ -44,7 +46,10 @@ public sealed class EfManagedHostnameStoreTests
     private static EfManagedHostnameStore CreateStore(string dbName, Guid? tenantId = null)
     {
         ICurrentTenant tenant = MakeTenant(tenantId ?? TenantA);
-        return new(new InMemoryContextFactory(dbName, tenant), tenant);
+        IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
+        meterFactory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
+        var metrics = new HostnamesMetrics(meterFactory);
+        return new(new InMemoryContextFactory(dbName, tenant), tenant, metrics);
     }
 
     private static ManagedHostname MakeHostname(
