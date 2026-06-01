@@ -71,6 +71,9 @@
   <ItemGroup Label="Background Jobs">
     <PackageVersion Include="Cronos" Version="0.13.*" />
   </ItemGroup>
+  <ItemGroup Label="DNS">
+    <PackageVersion Include="DnsClient" Version="1.8.*" />
+  </ItemGroup>
   <ItemGroup Label="Validation">
     <PackageVersion Include="FluentValidation" Version="12.*" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.*" />

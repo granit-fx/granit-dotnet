@@ -84,6 +84,7 @@
       "granit.hostnames": {
         "type": "Project",
         "dependencies": {
+          "DnsClient": "[1.8.*, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )"
@@ -186,6 +187,12 @@
         "dependencies": {
           "Asp.Versioning.Mvc": "10.0.0"
         }
+      },
+      "DnsClient": {
+        "type": "CentralTransitive",
+        "requested": "[1.8.*, )",
+        "resolved": "1.8.0",
+        "contentHash": "RRwtaCXkXWsx0mmsReGDqCbRLtItfUbkRJlet1FpdciVhyMGKcPd57T1+8Jki9ojHlq9fntVhXQroOOgRak8DQ=="
       },
       "FluentValidation": {
         "type": "CentralTransitive",

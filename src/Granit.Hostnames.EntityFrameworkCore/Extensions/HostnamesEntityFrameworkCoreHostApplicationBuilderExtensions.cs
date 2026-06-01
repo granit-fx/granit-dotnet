@@ -1,5 +1,6 @@
 using Granit.Hostnames.Contracts;
 using Granit.Hostnames.EntityFrameworkCore.Internal;
+using Granit.Hostnames.Options;
 using Granit.Workflow.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,11 @@ public static class HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions
         this IHostApplicationBuilder builder,
         Action<DbContextOptionsBuilder> configure)
     {
+        builder.Services
+            .AddOptions<HostnamesOptions>()
+            .BindConfiguration(HostnamesOptions.SectionName)
+            .ValidateOnStart();
+
         // Register WorkflowTransitionInterceptor + IWorkflowHistoryQuery + IWorkflowTransitionRecorder
         // backed by HostnamesDbContext (which implements IWorkflowDbContext).
         builder.Services.AddGranitWorkflowEntityFrameworkCore<HostnamesDbContext>();

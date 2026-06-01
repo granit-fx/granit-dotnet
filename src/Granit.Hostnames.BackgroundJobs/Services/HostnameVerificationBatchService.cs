@@ -1,6 +1,8 @@
 using Granit.Hostnames.Contracts;
 using Granit.Hostnames.Domain;
+using Granit.Hostnames.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Hostnames.BackgroundJobs.Services;
 
@@ -14,12 +16,14 @@ public sealed partial class HostnameVerificationBatchService(
     IManagedHostnameWriter writer,
     IHostnameVerifier verifier,
     TimeProvider timeProvider,
+    IOptions<HostnamesOptions> options,
     ILogger<HostnameVerificationBatchService> logger)
 {
     private readonly IManagedHostnameReader _reader = reader;
     private readonly IManagedHostnameWriter _writer = writer;
     private readonly IHostnameVerifier _verifier = verifier;
     private readonly TimeProvider _timeProvider = timeProvider;
+    private readonly HostnamesOptions _options = options.Value;
     private readonly ILogger<HostnameVerificationBatchService> _logger = logger;
 
     public async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -27,7 +31,7 @@ public sealed partial class HostnameVerificationBatchService(
         DateTimeOffset now = _timeProvider.GetUtcNow();
 
         IReadOnlyList<ManagedHostname> due = await _reader
-            .ListDueForVerificationAsync(now, cancellationToken: cancellationToken)
+            .ListDueForVerificationAsync(now, _options.VerificationBatchSize, cancellationToken)
             .ConfigureAwait(false);
 
         if (due.Count == 0)

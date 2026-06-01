@@ -87,6 +87,7 @@
       "granit.hostnames": {
         "type": "Project",
         "dependencies": {
+          "DnsClient": "[1.8.*, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )"
@@ -128,6 +129,12 @@
         "requested": "[0.13.*, )",
         "resolved": "0.13.0",
         "contentHash": "Nkve+Yi0+ol3ntSBRHeW0ka9cJQ8vndSUvvkXqF9LVqwpoqWueyxu/HS275r98RDOmF7/mzRnZW5XXUBXob+TA=="
+      },
+      "DnsClient": {
+        "type": "CentralTransitive",
+        "requested": "[1.8.*, )",
+        "resolved": "1.8.0",
+        "contentHash": "RRwtaCXkXWsx0mmsReGDqCbRLtItfUbkRJlet1FpdciVhyMGKcPd57T1+8Jki9ojHlq9fntVhXQroOOgRak8DQ=="
       },
       "Microsoft.Extensions.Configuration.Binder": {
         "type": "CentralTransitive",

@@ -19528,7 +19528,7 @@
       "kind": "class",
       "project": "Granit.Hostnames.BackgroundJobs",
       "file": "src/Granit.Hostnames.BackgroundJobs/Services/HostnameVerificationBatchService.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -19835,7 +19835,7 @@
       "kind": "class",
       "project": "Granit.Hostnames.Endpoints",
       "file": "src/Granit.Hostnames.Endpoints/Extensions/HostnamesEndpointRouteBuilderExtensions.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "MapGranitHostnames",
@@ -19916,7 +19916,7 @@
       "kind": "class",
       "project": "Granit.Hostnames.EntityFrameworkCore",
       "file": "src/Granit.Hostnames.EntityFrameworkCore/Extensions/HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitHostnamesEntityFrameworkCore",
@@ -20021,13 +20021,35 @@
       "kind": "class",
       "project": "Granit.Hostnames",
       "file": "src/Granit.Hostnames/GranitHostnamesModule.cs",
-      "line": 21,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "HostnamesOptions",
+      "fqn": "Granit.Hostnames.Options.HostnamesOptions",
+      "kind": "class",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Options/HostnamesOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "IngressTarget",
+          "kind": "property",
+          "signature": "string? IngressTarget",
+          "returnType": "string?"
+        },
+        {
+          "name": "VerificationBatchSize",
+          "kind": "property",
+          "signature": "int VerificationBatchSize",
+          "returnType": "int"
         }
       ]
     },

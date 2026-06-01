@@ -324,6 +324,8 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
     public async Task VerifyNow_Known_Returns_202_And_Transitions_To_Verifying()
     {
         ManagedHostname hostname = MakeHostname();
+        hostname.BeginVerification("tok", [new ExpectedDnsRecord(DnsRecordType.Cname, "acme.com", "ingress.platform.example.com")]);
+        hostname.MarkFailed([], DateTimeOffset.UtcNow); // Error → verify-now calls RequestRecheck
         _reader.GetByIdAsync(FixedId, Arg.Any<CancellationToken>()).Returns(hostname);
 
         HttpResponseMessage response = await _authClient.PostAsync(

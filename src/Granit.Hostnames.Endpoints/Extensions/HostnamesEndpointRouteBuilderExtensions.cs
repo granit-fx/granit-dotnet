@@ -4,12 +4,14 @@ using Granit.Hostnames.Domain;
 using Granit.Hostnames.Endpoints.Dtos;
 using Granit.Hostnames.Endpoints.Options;
 using Granit.Hostnames.Endpoints.Permissions;
+using Granit.Hostnames.Options;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Hostnames.Endpoints.Extensions;
 
@@ -112,9 +114,10 @@ public static class HostnamesEndpointRouteBuilderExtensions
             .RequireAuthorization(HostnamesPermissions.Hostnames.Manage)
             .WithName("VerifyHostnameNow")
             .WithSummary("Manually triggers DNS verification for a hostname.")
-            .WithDescription("Resets any exponential backoff and immediately re-queues the hostname for verification (transitions to Verifying). The actual DNS check runs asynchronously via the verification poller. Returns 202 Accepted with the updated hostname record. Returns 404 when not found. Requires the Hostnames.Manage permission.")
+            .WithDescription("For Verifying, Error, or Active hostnames: resets exponential backoff and re-queues the DNS check (transitions to Verifying). For Pending hostnames: initializes verification by minting the challenge token and expected DNS records, then transitions to Verifying. Returns 409 when the hostname is Pending and the platform ingress target is not configured. Returns 202 Accepted with the updated hostname record. Returns 404 when not found. Requires the Hostnames.Manage permission.")
             .Produces<ManagedHostnameResponse>(StatusCodes.Status202Accepted)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
     }
 
     // ── Handlers ──────────────────────────────────────────────────────────────
@@ -177,6 +180,7 @@ public static class HostnamesEndpointRouteBuilderExtensions
         [FromServices] IManagedHostnameWriter writer,
         [FromServices] IManagedHostnameReader reader,
         [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IOptions<HostnamesOptions> hostnamesOptions,
         CancellationToken cancellationToken)
     {
         Hostname hostnameValue;
@@ -209,6 +213,15 @@ public static class HostnamesEndpointRouteBuilderExtensions
             body.OwnerId,
             body.TenantId,
             body.IsPrimary);
+
+        // When the platform ingress target is configured, mint the DNS challenge immediately
+        // so the API response already carries the records the customer must configure.
+        HostnamesOptions opts = hostnamesOptions.Value;
+        if (!string.IsNullOrEmpty(opts.IngressTarget))
+        {
+            string token = guidGenerator.Create().ToString("N");
+            hostname.BeginVerification(token, BuildExpectedRecords(hostname.Host.Value, token, opts));
+        }
 
         await writer.AddAsync(hostname, cancellationToken).ConfigureAwait(false);
 
@@ -279,6 +292,8 @@ public static class HostnamesEndpointRouteBuilderExtensions
         Guid id,
         [FromServices] IManagedHostnameReader reader,
         [FromServices] IManagedHostnameWriter writer,
+        [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IOptions<HostnamesOptions> hostnamesOptions,
         CancellationToken cancellationToken)
     {
         ManagedHostname? hostname = await reader
@@ -290,13 +305,36 @@ public static class HostnamesEndpointRouteBuilderExtensions
             return HostnameNotFound(id);
         }
 
-        hostname.RequestRecheck();
-        await writer.UpdateAsync(hostname, cancellationToken).ConfigureAwait(false);
+        if (hostname.Status == HostnameStatus.Pending)
+        {
+            HostnamesOptions opts = hostnamesOptions.Value;
+            if (string.IsNullOrEmpty(opts.IngressTarget))
+            {
+                return TypedResults.Problem(
+                    detail: "Hostname verification has not been initialized. Configure 'Hostnames:IngressTarget' or begin verification manually.",
+                    statusCode: StatusCodes.Status409Conflict);
+            }
 
+            string token = guidGenerator.Create().ToString("N");
+            hostname.BeginVerification(token, BuildExpectedRecords(hostname.Host.Value, token, opts));
+        }
+        else
+        {
+            hostname.RequestRecheck();
+        }
+
+        await writer.UpdateAsync(hostname, cancellationToken).ConfigureAwait(false);
         return TypedResults.Accepted((string?)null, MapToResponse(hostname));
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private static IReadOnlyList<ExpectedDnsRecord> BuildExpectedRecords(
+        string host, string token, HostnamesOptions opts) =>
+    [
+        new(DnsRecordType.Cname, host, opts.IngressTarget!),
+        new(DnsRecordType.Txt, $"{opts.TxtChallengePrefix}.{host}", $"granit-verify={token}"),
+    ];
 
     internal static ProblemHttpResult HostnameNotFound(Guid id) =>
         TypedResults.Problem(

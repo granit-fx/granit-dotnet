@@ -1,9 +1,12 @@
+using DnsClient;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.Hostnames.Contracts;
 using Granit.Hostnames.Diagnostics;
 using Granit.Hostnames.Domain;
 using Granit.Hostnames.Exports;
 using Granit.Hostnames.Queries;
+using Granit.Hostnames.Services;
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
 using Granit.Workflow;
@@ -31,5 +34,10 @@ public sealed class GranitHostnamesModule : GranitModule
 
         context.Services.AddQueryDefinition<ManagedHostname, ManagedHostnameQueryDefinition>();
         context.Services.AddExportDefinition<ManagedHostname, ManagedHostnameExportDefinition>();
+
+        // Default DNS verifier — uses the system resolver. Replace by registering a custom
+        // IHostnameVerifier before calling AddGranitHostnames().
+        context.Services.TryAddSingleton<ILookupClient>(_ => new LookupClient());
+        context.Services.TryAddSingleton<IHostnameVerifier, DnsHostnameVerifier>();
     }
 }
