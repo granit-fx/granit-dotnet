@@ -102,6 +102,17 @@ public sealed class ManagedHostname : AuditedAggregateRoot, IMultiTenant, IConcu
     /// <summary>DNS conflicts detected on the last check. Stored as JSON; empty when verified.</summary>
     public IReadOnlyList<DnsConflict> Conflicts { get; private set; } = [];
 
+    // ── Certificate ─────────────────────────────────────────────────────────
+
+    /// <summary>SSL/TLS certificate provisioning state. Updated by the edge provider webhook.</summary>
+    public CertificateStatus CertificateStatus { get; private set; } = CertificateStatus.Unprovisioned;
+
+    /// <summary>
+    /// When the active certificate expires; <c>null</c> until a certificate is secured.
+    /// Reset to <c>null</c> when the certificate enters <see cref="CertificateStatus.Error"/>.
+    /// </summary>
+    public DateTimeOffset? CertExpiresAt { get; private set; }
+
     // ── Backoff ─────────────────────────────────────────────────────────────
 
     /// <summary>Cumulative count of consecutive DNS check failures.</summary>
@@ -240,6 +251,32 @@ public sealed class ManagedHostname : AuditedAggregateRoot, IMultiTenant, IConcu
         Status = HostnameStatus.Verifying;
         FailedCheckCount = 0;
         NextCheckAt = null;
+    }
+
+    /// <summary>
+    /// Records a certificate status update from the edge provider.
+    /// Raises <see cref="HostnameCertificateSecuredEto"/> when <paramref name="status"/> is
+    /// <see cref="CertificateStatus.Secured"/>, or <see cref="HostnameCertificateFailedEto"/>
+    /// when it is <see cref="CertificateStatus.Error"/>.
+    /// </summary>
+    /// <param name="status">New certificate provisioning state.</param>
+    /// <param name="expiresAt">Certificate expiry timestamp (required when <paramref name="status"/> is <see cref="CertificateStatus.Secured"/>).</param>
+    public void ReportCertificateStatus(CertificateStatus status, DateTimeOffset? expiresAt = null)
+    {
+        CertificateStatus = status;
+        CertExpiresAt = status == CertificateStatus.Secured ? expiresAt : null;
+
+        switch (status)
+        {
+            case CertificateStatus.Secured:
+                AddDistributedEvent(new HostnameCertificateSecuredEto(
+                    Id, Host.Value, OwnerType, OwnerId, TenantId, expiresAt));
+                break;
+            case CertificateStatus.Error:
+                AddDistributedEvent(new HostnameCertificateFailedEto(
+                    Id, Host.Value, OwnerType, OwnerId, TenantId));
+                break;
+        }
     }
 
     /// <summary>Marks this hostname as the owner's canonical one.</summary>

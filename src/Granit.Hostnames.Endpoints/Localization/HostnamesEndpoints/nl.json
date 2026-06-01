@@ -5,6 +5,7 @@
     "HostnamesEndpoints:Workspace.Section": "Beheerde hostnamen",
     "Permission:Hostnames.Hostnames.Read": "Hostnamen raadplegen",
     "Permission:Hostnames.Hostnames.Manage": "Hostnamen beheren",
-    "PermissionGroup:Hostnames": "Hostnamen"
+    "PermissionGroup:Hostnames": "Hostnamen",
+    "Permission:Hostnames.Certificates.Report": "Certificaatstatus rapporteren"
   }
 }

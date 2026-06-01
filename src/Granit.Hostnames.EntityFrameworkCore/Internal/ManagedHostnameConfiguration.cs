@@ -68,6 +68,15 @@ internal sealed class ManagedHostnameConfiguration : IEntityTypeConfiguration<Ma
             nav.Property(c => c.Details).HasMaxLength(1024);
         });
 
+        // ── Certificate ───────────────────────────────────────────────────
+
+        // Persisted as varchar by the Granit enum convention ("Unprovisioned" = 13 chars + headroom).
+        builder.Property(e => e.CertificateStatus)
+            .IsRequired()
+            .HasMaxLength(20);
+
+        builder.Property(e => e.CertExpiresAt);
+
         builder.Property(e => e.LastCheckedAt);
         builder.Property(e => e.FailedCheckCount).IsRequired();
         builder.Property(e => e.NextCheckAt);

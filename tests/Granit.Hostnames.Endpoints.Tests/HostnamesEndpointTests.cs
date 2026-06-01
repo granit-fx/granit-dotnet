@@ -40,7 +40,8 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
             {
                 services.AddAuthorizationBuilder()
                     .AddPolicy(HostnamesPermissions.Hostnames.Read, p => p.RequireAuthenticatedUser())
-                    .AddPolicy(HostnamesPermissions.Hostnames.Manage, p => p.RequireAuthenticatedUser());
+                    .AddPolicy(HostnamesPermissions.Hostnames.Manage, p => p.RequireAuthenticatedUser())
+                    .AddPolicy(HostnamesPermissions.Certificates.Report, p => p.RequireAuthenticatedUser());
 
                 services.AddSingleton(_reader);
                 services.AddSingleton(_writer);
@@ -346,5 +347,66 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
             $"{Prefix}/{FixedId}/verify-now", null, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    // ── POST /{id}/certificate-status ─────────────────────────────────────────
+
+    [Fact]
+    public async Task ReportCertificateStatus_Secured_Returns_204_And_Updates_Hostname()
+    {
+        ManagedHostname hostname = MakeHostname();
+        _reader.GetByIdAsync(FixedId, Arg.Any<CancellationToken>()).Returns(hostname);
+
+        var request = new ReportCertificateStatusRequest(
+            CertificateStatus.Secured,
+            new DateTimeOffset(2026, 9, 1, 0, 0, 0, TimeSpan.Zero));
+
+        HttpResponseMessage response = await _authClient.PostAsJsonAsync(
+            $"{Prefix}/{FixedId}/certificate-status", request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        hostname.CertificateStatus.ShouldBe(CertificateStatus.Secured);
+        await _writer.Received(1).UpdateAsync(hostname, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ReportCertificateStatus_Error_Returns_204_And_Updates_Hostname()
+    {
+        ManagedHostname hostname = MakeHostname();
+        _reader.GetByIdAsync(FixedId, Arg.Any<CancellationToken>()).Returns(hostname);
+
+        var request = new ReportCertificateStatusRequest(CertificateStatus.Error);
+
+        HttpResponseMessage response = await _authClient.PostAsJsonAsync(
+            $"{Prefix}/{FixedId}/certificate-status", request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        hostname.CertificateStatus.ShouldBe(CertificateStatus.Error);
+        await _writer.Received(1).UpdateAsync(hostname, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ReportCertificateStatus_Unknown_Returns_404()
+    {
+        _reader.GetByIdAsync(FixedId, Arg.Any<CancellationToken>())
+            .Returns((ManagedHostname?)null);
+
+        var request = new ReportCertificateStatusRequest(CertificateStatus.Provisioning);
+
+        HttpResponseMessage response = await _authClient.PostAsJsonAsync(
+            $"{Prefix}/{FixedId}/certificate-status", request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task ReportCertificateStatus_Unauthenticated_Returns_401()
+    {
+        var request = new ReportCertificateStatusRequest(CertificateStatus.Provisioning);
+
+        HttpResponseMessage response = await _anonClient.PostAsJsonAsync(
+            $"{Prefix}/{FixedId}/certificate-status", request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 }

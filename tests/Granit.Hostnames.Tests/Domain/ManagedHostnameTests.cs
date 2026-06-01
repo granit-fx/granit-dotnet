@@ -218,4 +218,71 @@ public sealed class ManagedHostnameTests
         h2.RequestRecheck();
         h2.Status.ShouldBe(HostnameStatus.Verifying);
     }
+
+    // ── ReportCertificateStatus ───────────────────────────────────────────────
+
+    [Fact]
+    public void Create_defaults_certificate_status_to_unprovisioned()
+    {
+        var hostname = ManagedHostname.Create(Id, "acme.com", "cms.site", OwnerId);
+
+        hostname.CertificateStatus.ShouldBe(CertificateStatus.Unprovisioned);
+        hostname.CertExpiresAt.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ReportCertificateStatus_Secured_sets_status_and_expiry()
+    {
+        var hostname = ManagedHostname.Create(Id, "acme.com", "cms.site", OwnerId);
+        DateTimeOffset expires = Now.AddDays(90);
+
+        hostname.ReportCertificateStatus(CertificateStatus.Secured, expires);
+
+        hostname.CertificateStatus.ShouldBe(CertificateStatus.Secured);
+        hostname.CertExpiresAt.ShouldBe(expires);
+    }
+
+    [Fact]
+    public void ReportCertificateStatus_Secured_raises_HostnameCertificateSecuredEto()
+    {
+        var hostname = ManagedHostname.Create(Id, "acme.com", "cms.site", OwnerId, TenantId);
+        DateTimeOffset expires = Now.AddDays(90);
+
+        hostname.ReportCertificateStatus(CertificateStatus.Secured, expires);
+
+        Granit.Hostnames.Domain.Events.HostnameCertificateSecuredEto eto = hostname.IntegrationEvents
+            .OfType<Granit.Hostnames.Domain.Events.HostnameCertificateSecuredEto>()
+            .ShouldHaveSingleItem();
+        eto.HostnameId.ShouldBe(Id);
+        eto.Host.ShouldBe("acme.com");
+        eto.ExpiresAt.ShouldBe(expires);
+    }
+
+    [Fact]
+    public void ReportCertificateStatus_Error_clears_expiry_and_raises_HostnameCertificateFailedEto()
+    {
+        var hostname = ManagedHostname.Create(Id, "acme.com", "cms.site", OwnerId, TenantId);
+        hostname.ReportCertificateStatus(CertificateStatus.Secured, Now.AddDays(90));
+
+        hostname.ReportCertificateStatus(CertificateStatus.Error);
+
+        hostname.CertificateStatus.ShouldBe(CertificateStatus.Error);
+        hostname.CertExpiresAt.ShouldBeNull();
+        hostname.IntegrationEvents
+            .OfType<Granit.Hostnames.Domain.Events.HostnameCertificateFailedEto>()
+            .ShouldHaveSingleItem()
+            .HostnameId.ShouldBe(Id);
+    }
+
+    [Fact]
+    public void ReportCertificateStatus_Provisioning_raises_no_event()
+    {
+        var hostname = ManagedHostname.Create(Id, "acme.com", "cms.site", OwnerId);
+
+        hostname.ReportCertificateStatus(CertificateStatus.Provisioning);
+
+        hostname.CertificateStatus.ShouldBe(CertificateStatus.Provisioning);
+        hostname.CertExpiresAt.ShouldBeNull();
+        hostname.IntegrationEvents.ShouldBeEmpty();
+    }
 }

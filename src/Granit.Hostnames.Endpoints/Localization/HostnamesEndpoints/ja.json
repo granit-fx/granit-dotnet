@@ -5,6 +5,7 @@
     "HostnamesEndpoints:Workspace.Section": "管理対象ホスト名",
     "Permission:Hostnames.Hostnames.Read": "ホスト名の読み取り",
     "Permission:Hostnames.Hostnames.Manage": "ホスト名の管理",
-    "PermissionGroup:Hostnames": "ホスト名"
+    "PermissionGroup:Hostnames": "ホスト名",
+    "Permission:Hostnames.Certificates.Report": "証明書ステータスを報告する"
   }
 }
