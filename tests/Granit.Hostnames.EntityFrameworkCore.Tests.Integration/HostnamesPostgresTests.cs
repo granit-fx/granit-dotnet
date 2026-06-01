@@ -111,10 +111,10 @@ public sealed class HostnamesPostgresTests : IClassFixture<PostgresFixture>, IAs
         await _context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // SqlQuery<string> uses a parameterised query (safe from SQL injection).
-        // Table name is hardcoded to the default prefix — tests use the default.
+        // Column/table names use PascalCase — EF Core default without snake_case conventions.
         Guid id = hostname.Id;
         string? rawStatus = await _context.Database
-            .SqlQuery<string>($"SELECT status FROM hostname_managed_hostnames WHERE id = {id}")
+            .SqlQuery<string>($"""SELECT "Status" FROM hostname_managed_hostnames WHERE "Id" = {id}""")
             .FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 
         rawStatus.ShouldBe("Active");

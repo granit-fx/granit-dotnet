@@ -846,6 +846,18 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Hostnames.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Guids",
+        "Granit.Hostnames",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Hostnames.EntityFrameworkCore",
       "deps": [
         "Granit.Hostnames",
@@ -19604,6 +19616,114 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "CreateManagedHostnameRequest",
+      "fqn": "Granit.Hostnames.Endpoints.Dtos.CreateManagedHostnameRequest",
+      "kind": "record",
+      "project": "Granit.Hostnames.Endpoints",
+      "file": "src/Granit.Hostnames.Endpoints/Dtos/CreateManagedHostnameRequest.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "HostnameAvailabilityResponse",
+      "fqn": "Granit.Hostnames.Endpoints.Dtos.HostnameAvailabilityResponse",
+      "kind": "record",
+      "project": "Granit.Hostnames.Endpoints",
+      "file": "src/Granit.Hostnames.Endpoints/Dtos/HostnameAvailabilityResponse.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "ManagedHostnameResponse",
+      "fqn": "Granit.Hostnames.Endpoints.Dtos.ManagedHostnameResponse",
+      "kind": "record",
+      "project": "Granit.Hostnames.Endpoints",
+      "file": "src/Granit.Hostnames.Endpoints/Dtos/ManagedHostnameResponse.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "HostnamesEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Hostnames.Endpoints.Extensions.HostnamesEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Hostnames.Endpoints",
+      "file": "src/Granit.Hostnames.Endpoints/Extensions/HostnamesEndpointRouteBuilderExtensions.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "MapGranitHostnames",
+          "kind": "method",
+          "signature": "MapGranitHostnames(this IEndpointRouteBuilder endpoints, Action<HostnamesEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitHostnamesEndpointsModule",
+      "fqn": "Granit.Hostnames.Endpoints.GranitHostnamesEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Hostnames.Endpoints",
+      "file": "src/Granit.Hostnames.Endpoints/GranitHostnamesEndpointsModule.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "HostnamesEndpointsOptions",
+      "fqn": "Granit.Hostnames.Endpoints.Options.HostnamesEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Hostnames.Endpoints",
+      "file": "src/Granit.Hostnames.Endpoints/Options/HostnamesEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "Hostnames",
+      "fqn": "Granit.Hostnames.Endpoints.Permissions.Hostnames",
+      "kind": "class",
+      "project": "Granit.Hostnames.Endpoints",
+      "file": "src/Granit.Hostnames.Endpoints/Permissions/HostnamesPermissions.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "HostnamesPermissions",
+      "fqn": "Granit.Hostnames.Endpoints.Permissions.HostnamesPermissions",
+      "kind": "class",
+      "project": "Granit.Hostnames.Endpoints",
+      "file": "src/Granit.Hostnames.Endpoints/Permissions/HostnamesPermissions.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "HostnamesFeatures",
+      "fqn": "Granit.Hostnames.Endpoints.Workspaces.HostnamesFeatures",
+      "kind": "class",
+      "project": "Granit.Hostnames.Endpoints",
+      "file": "src/Granit.Hostnames.Endpoints/Workspaces/HostnamesFeatures.cs",
+      "line": 4,
+      "members": []
     },
     {
       "name": "HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions",
