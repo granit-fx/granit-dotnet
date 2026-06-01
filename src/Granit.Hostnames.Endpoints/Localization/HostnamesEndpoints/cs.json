@@ -1,0 +1,10 @@
+{
+  "culture": "cs",
+  "texts": {
+    "HostnamesEndpoints:Workspace.Item": "Názvy hostitelů",
+    "HostnamesEndpoints:Workspace.Section": "Spravované názvy hostitelů",
+    "Permission:Hostnames.Hostnames.Read": "Číst spravované názvy hostitelů",
+    "Permission:Hostnames.Hostnames.Manage": "Spravovat názvy hostitelů (vytvářet, mazat, nastavit primární)",
+    "PermissionGroup:Hostnames": "Názvy hostitelů"
+  }
+}

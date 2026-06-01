@@ -1,0 +1,10 @@
+{
+  "culture": "hi",
+  "texts": {
+    "HostnamesEndpoints:Workspace.Item": "होस्ट नाम",
+    "HostnamesEndpoints:Workspace.Section": "प्रबंधित होस्ट नाम",
+    "Permission:Hostnames.Hostnames.Read": "प्रबंधित होस्ट नाम पढ़ें",
+    "Permission:Hostnames.Hostnames.Manage": "प्रबंधित होस्ट नाम प्रबंधित करें (बनाएं, हटाएं, प्राथमिक सेट करें)",
+    "PermissionGroup:Hostnames": "होस्ट नाम"
+  }
+}

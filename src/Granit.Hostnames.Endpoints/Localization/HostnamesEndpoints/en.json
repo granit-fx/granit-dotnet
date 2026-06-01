@@ -1,0 +1,10 @@
+{
+  "culture": "en",
+  "texts": {
+    "HostnamesEndpoints:Workspace.Item": "Hostnames",
+    "HostnamesEndpoints:Workspace.Section": "Managed hostnames",
+    "Permission:Hostnames.Hostnames.Read": "Read managed hostnames",
+    "Permission:Hostnames.Hostnames.Manage": "Manage managed hostnames (create, delete, set primary)",
+    "PermissionGroup:Hostnames": "Hostnames"
+  }
+}

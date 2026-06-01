@@ -178,6 +178,7 @@
         "tests/Granit.Features.Wolverine.Tests",
         "tests/Granit.Hostnames.Tests",
         "tests/Granit.Hostnames.EntityFrameworkCore.Tests",
+        "tests/Granit.Hostnames.Endpoints.Tests",
         "tests/Granit.Html.AngleSharp.Tests",
         "tests/Granit.Html.Tests",
         "tests/Granit.Localization.Endpoints.Tests",

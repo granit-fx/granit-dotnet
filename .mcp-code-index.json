@@ -858,14 +858,6 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Hostnames.EntityFrameworkCore",
-      "deps": [
-        "Granit.Hostnames",
-        "Granit.Persistence.EntityFrameworkCore"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.Html",
       "deps": [
         "Granit"
@@ -19723,63 +19715,6 @@
       "project": "Granit.Hostnames.Endpoints",
       "file": "src/Granit.Hostnames.Endpoints/Workspaces/HostnamesFeatures.cs",
       "line": 4,
-      "members": []
-    },
-    {
-      "name": "HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.Hostnames.EntityFrameworkCore.Extensions.HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Hostnames.EntityFrameworkCore",
-      "file": "src/Granit.Hostnames.EntityFrameworkCore/Extensions/HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "AddGranitHostnamesEntityFrameworkCore",
-          "kind": "method",
-          "signature": "AddGranitHostnamesEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
-    },
-    {
-      "name": "HostnamesModelBuilderExtensions",
-      "fqn": "Granit.Hostnames.EntityFrameworkCore.Extensions.HostnamesModelBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Hostnames.EntityFrameworkCore",
-      "file": "src/Granit.Hostnames.EntityFrameworkCore/Extensions/HostnamesModelBuilderExtensions.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "ConfigureHostnamesModule",
-          "kind": "method",
-          "signature": "ConfigureHostnamesModule(this ModelBuilder modelBuilder)",
-          "returnType": "ModelBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitHostnamesDbProperties",
-      "fqn": "Granit.Hostnames.EntityFrameworkCore.GranitHostnamesDbProperties",
-      "kind": "class",
-      "project": "Granit.Hostnames.EntityFrameworkCore",
-      "file": "src/Granit.Hostnames.EntityFrameworkCore/GranitHostnamesDbProperties.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "DbTablePrefix",
-          "kind": "property",
-          "signature": "string DbTablePrefix",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitHostnamesEntityFrameworkCoreModule",
-      "fqn": "Granit.Hostnames.EntityFrameworkCore.GranitHostnamesEntityFrameworkCoreModule",
-      "kind": "class",
-      "project": "Granit.Hostnames.EntityFrameworkCore",
-      "file": "src/Granit.Hostnames.EntityFrameworkCore/GranitHostnamesEntityFrameworkCoreModule.cs",
-      "line": 20,
       "members": []
     },
     {

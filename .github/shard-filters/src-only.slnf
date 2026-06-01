@@ -97,6 +97,7 @@
       "src/Granit.Features.Wolverine/Granit.Features.Wolverine.csproj",
       "src/Granit.Features/Granit.Features.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",
+      "src/Granit.Hostnames.Endpoints/Granit.Hostnames.Endpoints.csproj",
       "src/Granit.Hostnames.EntityFrameworkCore/Granit.Hostnames.EntityFrameworkCore.csproj",
       "src/Granit.Hostnames/Granit.Hostnames.csproj",
       "src/Granit.Html.AngleSharp/Granit.Html.AngleSharp.csproj",

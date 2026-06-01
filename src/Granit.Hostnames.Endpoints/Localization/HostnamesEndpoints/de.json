@@ -1,0 +1,10 @@
+{
+  "culture": "de",
+  "texts": {
+    "HostnamesEndpoints:Workspace.Item": "Hostnamen",
+    "HostnamesEndpoints:Workspace.Section": "Verwaltete Hostnamen",
+    "Permission:Hostnames.Hostnames.Read": "Verwaltete Hostnamen lesen",
+    "Permission:Hostnames.Hostnames.Manage": "Verwaltete Hostnamen verwalten (erstellen, löschen, primär setzen)",
+    "PermissionGroup:Hostnames": "Hostnamen"
+  }
+}
