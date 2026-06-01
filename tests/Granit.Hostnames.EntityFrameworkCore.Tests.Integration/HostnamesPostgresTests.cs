@@ -114,9 +114,10 @@ public sealed class HostnamesPostgresTests : IClassFixture<PostgresFixture>, IAs
         // Column/table names use PascalCase — EF Core default without snake_case conventions.
         Guid id = hostname.Id;
         string? rawStatus = await _context.Database
-            .SqlQuery<string>($"""SELECT "Status" FROM hostname_managed_hostnames WHERE "Id" = {id}""")
+            .SqlQuery<string>($"""SELECT "Status" AS "Value" FROM hostname_managed_hostnames WHERE "Id" = {id}""")
             .FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 
-        rawStatus.ShouldBe("Active");
+        // Create() sets Status = Pending; Active is only reached after DNS verification.
+        rawStatus.ShouldBe("Pending");
     }
 }
