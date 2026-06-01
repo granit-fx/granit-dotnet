@@ -3,8 +3,8 @@
   "texts": {
     "HostnamesEndpoints:Workspace.Item": "Hostnames",
     "HostnamesEndpoints:Workspace.Section": "Managed hostnames",
-    "Permission:Hostnames.Hostnames.Read": "Read managed hostnames",
-    "Permission:Hostnames.Hostnames.Manage": "Manage managed hostnames (create, delete, set primary)",
+    "Permission:Hostnames.Hostnames.Read": "Read hostnames",
+    "Permission:Hostnames.Hostnames.Manage": "Manage hostnames",
     "PermissionGroup:Hostnames": "Hostnames"
   }
 }

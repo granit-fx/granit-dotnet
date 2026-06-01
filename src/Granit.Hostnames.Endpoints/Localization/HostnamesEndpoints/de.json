@@ -3,8 +3,8 @@
   "texts": {
     "HostnamesEndpoints:Workspace.Item": "Hostnamen",
     "HostnamesEndpoints:Workspace.Section": "Verwaltete Hostnamen",
-    "Permission:Hostnames.Hostnames.Read": "Verwaltete Hostnamen lesen",
-    "Permission:Hostnames.Hostnames.Manage": "Verwaltete Hostnamen verwalten (erstellen, löschen, primär setzen)",
+    "Permission:Hostnames.Hostnames.Read": "Hostnamen lesen",
+    "Permission:Hostnames.Hostnames.Manage": "Hostnamen verwalten",
     "PermissionGroup:Hostnames": "Hostnamen"
   }
 }

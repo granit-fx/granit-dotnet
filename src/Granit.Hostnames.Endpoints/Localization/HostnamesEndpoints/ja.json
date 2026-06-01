@@ -3,8 +3,8 @@
   "texts": {
     "HostnamesEndpoints:Workspace.Item": "ホスト名",
     "HostnamesEndpoints:Workspace.Section": "管理対象ホスト名",
-    "Permission:Hostnames.Hostnames.Read": "管理対象ホスト名の読み取り",
-    "Permission:Hostnames.Hostnames.Manage": "管理対象ホスト名の管理（作成、削除、プライマリ設定）",
+    "Permission:Hostnames.Hostnames.Read": "ホスト名の読み取り",
+    "Permission:Hostnames.Hostnames.Manage": "ホスト名の管理",
     "PermissionGroup:Hostnames": "ホスト名"
   }
 }

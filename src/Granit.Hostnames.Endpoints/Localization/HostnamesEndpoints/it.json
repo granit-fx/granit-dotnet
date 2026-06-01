@@ -3,8 +3,8 @@
   "texts": {
     "HostnamesEndpoints:Workspace.Item": "Nomi host",
     "HostnamesEndpoints:Workspace.Section": "Nomi host gestiti",
-    "Permission:Hostnames.Hostnames.Read": "Leggere i nomi host gestiti",
-    "Permission:Hostnames.Hostnames.Manage": "Gestire i nomi host gestiti (creare, eliminare, impostare principale)",
+    "Permission:Hostnames.Hostnames.Read": "Leggere i nomi host",
+    "Permission:Hostnames.Hostnames.Manage": "Gestire i nomi host",
     "PermissionGroup:Hostnames": "Nomi host"
   }
 }

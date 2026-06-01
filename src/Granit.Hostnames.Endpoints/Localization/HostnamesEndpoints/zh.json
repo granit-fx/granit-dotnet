@@ -3,8 +3,8 @@
   "texts": {
     "HostnamesEndpoints:Workspace.Item": "主机名",
     "HostnamesEndpoints:Workspace.Section": "托管主机名",
-    "Permission:Hostnames.Hostnames.Read": "读取托管主机名",
-    "Permission:Hostnames.Hostnames.Manage": "管理托管主机名（创建、删除、设置主要）",
+    "Permission:Hostnames.Hostnames.Read": "读取主机名",
+    "Permission:Hostnames.Hostnames.Manage": "管理主机名",
     "PermissionGroup:Hostnames": "主机名"
   }
 }

@@ -3,8 +3,8 @@
   "texts": {
     "HostnamesEndpoints:Workspace.Item": "Värdnamn",
     "HostnamesEndpoints:Workspace.Section": "Hanterade värdnamn",
-    "Permission:Hostnames.Hostnames.Read": "Läsa hanterade värdnamn",
-    "Permission:Hostnames.Hostnames.Manage": "Hantera värdnamn (skapa, ta bort, ange primärt)",
+    "Permission:Hostnames.Hostnames.Read": "Läsa värdnamn",
+    "Permission:Hostnames.Hostnames.Manage": "Hantera värdnamn",
     "PermissionGroup:Hostnames": "Värdnamn"
   }
 }

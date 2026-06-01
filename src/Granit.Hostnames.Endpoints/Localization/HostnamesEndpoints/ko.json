@@ -3,8 +3,8 @@
   "texts": {
     "HostnamesEndpoints:Workspace.Item": "호스트 이름",
     "HostnamesEndpoints:Workspace.Section": "관리되는 호스트 이름",
-    "Permission:Hostnames.Hostnames.Read": "관리되는 호스트 이름 읽기",
-    "Permission:Hostnames.Hostnames.Manage": "관리되는 호스트 이름 관리(생성, 삭제, 기본 설정)",
+    "Permission:Hostnames.Hostnames.Read": "호스트 이름 읽기",
+    "Permission:Hostnames.Hostnames.Manage": "호스트 이름 관리",
     "PermissionGroup:Hostnames": "호스트 이름"
   }
 }
