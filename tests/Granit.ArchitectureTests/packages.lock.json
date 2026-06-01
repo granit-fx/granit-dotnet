@@ -2227,6 +2227,14 @@
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
+      "granit.hostnames.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Hostnames": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
       "granit.html": {
         "type": "Project",
         "dependencies": {

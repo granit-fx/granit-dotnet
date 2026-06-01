@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Hostnames.EntityFrameworkCore</PackageId>
+    <Description>EF Core persistence layer for Granit.Hostnames. Provides HostnamesDbContext, EfManagedHostnameStore (reader + writer), and EfHostnameResolver with tenant-agnostic host lookup via IgnoreQueryFilters.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Hostnames.EntityFrameworkCore.Tests" />
+    <!-- Required by Castle.DynamicProxy (NSubstitute) to proxy internal types in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Hostnames\Granit.Hostnames.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

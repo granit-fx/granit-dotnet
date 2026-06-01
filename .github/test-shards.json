@@ -177,6 +177,7 @@
         "tests/Granit.Features.Tests",
         "tests/Granit.Features.Wolverine.Tests",
         "tests/Granit.Hostnames.Tests",
+        "tests/Granit.Hostnames.EntityFrameworkCore.Tests",
         "tests/Granit.Html.AngleSharp.Tests",
         "tests/Granit.Html.Tests",
         "tests/Granit.Localization.Endpoints.Tests",
@@ -342,6 +343,7 @@
       "projects": [
         "tests/Granit.AI.StackExchangeRedis.Tests.Integration",
         "tests/Granit.Authorization.EntityFrameworkCore.Tests.Integration",
+        "tests/Granit.Hostnames.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.BackgroundJobs.Tests.Integration",
         "tests/Granit.Indexing.Elasticsearch.Tests.Integration",
         "tests/Granit.Indexing.EntityFrameworkCore.Tests.Integration",
