@@ -1,0 +1,14 @@
+<!-- AUTO-TRANSLATED (manual, 2026-06-01) — REVIEW BEFORE PRODUCTION -->
+<title>Ověření názvu hostitele selhalo</title>
+<p>Dobrý den,</p>
+<p>Nepodařilo se nám ověřit název hostitele <strong>{{ model.host }}</strong>.</p>
+{{ if model.conflicts_display }}
+<p>Byly zjištěny následující problémy s DNS:</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p>Automaticky zopakujeme pokus dne <strong>{{ model.next_check_at | date.to_string '%d. %B %Y v %H:%M UTC' }}</strong>.</p>
+{{ else }}
+<p>Automatické pokusy byly pozastaveny po {{ model.failed_check_count }} po sobě jdoucích selháních. Použijte akci <em>Ověřit nyní</em> pro ruční kontrolu.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

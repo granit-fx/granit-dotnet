@@ -1,0 +1,14 @@
+<!-- AUTO-TRANSLATED (manual, 2026-06-01) — REVIEW BEFORE PRODUCTION -->
+<title>Verifiering av värdnamn misslyckades</title>
+<p>Hej,</p>
+<p>Vi kunde inte verifiera värdnamnet <strong>{{ model.host }}</strong>.</p>
+{{ if model.conflicts_display }}
+<p>Följande DNS-problem upptäcktes:</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p>Vi försöker automatiskt igen den <strong>{{ model.next_check_at | date.to_string '%d %B %Y kl. %H:%M UTC' }}</strong>.</p>
+{{ else }}
+<p>Automatiska försök har pausats efter {{ model.failed_check_count }} på varandra följande misslyckanden. Använd åtgärden <em>Verifiera nu</em> för att utlösa en manuell kontroll.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

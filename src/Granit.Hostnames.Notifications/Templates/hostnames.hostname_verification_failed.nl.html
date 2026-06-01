@@ -1,0 +1,14 @@
+<!-- AUTO-TRANSLATED (manual, 2026-06-01) — REVIEW BEFORE PRODUCTION -->
+<title>Verificatie van hostnaam mislukt</title>
+<p>Hallo,</p>
+<p>We konden de hostnaam <strong>{{ model.host }}</strong> niet verifiëren.</p>
+{{ if model.conflicts_display }}
+<p>De volgende DNS-problemen werden gedetecteerd:</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p>We proberen het automatisch opnieuw op <strong>{{ model.next_check_at | date.to_string '%d %B %Y om %H:%M UTC' }}</strong>.</p>
+{{ else }}
+<p>Automatische pogingen zijn onderbroken na {{ model.failed_check_count }} opeenvolgende mislukkingen. Gebruik de actie <em>Nu verifiëren</em> voor een handmatige controle.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

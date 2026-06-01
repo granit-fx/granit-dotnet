@@ -1,0 +1,13 @@
+<title>Échec de la vérification du nom d'hôte</title>
+<p>Bonjour,</p>
+<p>Nous n'avons pas pu vérifier le nom d'hôte <strong>{{ model.host }}</strong>.</p>
+{{ if model.conflicts_display }}
+<p>Les problèmes DNS suivants ont été détectés :</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p>Nous réessayerons automatiquement le <strong>{{ model.next_check_at | date.to_string '%d %B %Y à %H:%M UTC' }}</strong>.</p>
+{{ else }}
+<p>Les nouvelles tentatives automatiques ont été suspendues après {{ model.failed_check_count }} échecs consécutifs. Utilisez l'action <em>Vérifier maintenant</em> pour déclencher une vérification manuelle.</p>
+{{ end }}
+<p>Identifiant du nom d'hôte : <code>{{ model.hostname_id }}</code></p>

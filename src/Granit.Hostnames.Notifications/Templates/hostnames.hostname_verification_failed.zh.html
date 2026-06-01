@@ -1,0 +1,14 @@
+<!-- AUTO-TRANSLATED (manual, 2026-06-01) — REVIEW BEFORE PRODUCTION -->
+<title>主机名验证失败</title>
+<p>您好，</p>
+<p>我们无法验证主机名 <strong>{{ model.host }}</strong>。</p>
+{{ if model.conflicts_display }}
+<p>检测到以下 DNS 问题：</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p>我们将在 <strong>{{ model.next_check_at | date.to_string '%Y年%m月%d日 %H:%M UTC' }}</strong> 自动重试。</p>
+{{ else }}
+<p>在 {{ model.failed_check_count }} 次连续失败后，自动重试已暂停。请使用<em>立即验证</em>操作触发手动检查。</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

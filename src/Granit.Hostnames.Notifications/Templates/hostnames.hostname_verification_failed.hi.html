@@ -1,0 +1,14 @@
+<!-- AUTO-TRANSLATED (manual, 2026-06-01) — REVIEW BEFORE PRODUCTION -->
+<title>होस्टनाम सत्यापन विफल रहा</title>
+<p>नमस्ते,</p>
+<p>हम होस्टनाम <strong>{{ model.host }}</strong> को सत्यापित करने में असमर्थ थे।</p>
+{{ if model.conflicts_display }}
+<p>निम्नलिखित DNS समस्याएं पाई गईं:</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p>हम <strong>{{ model.next_check_at | date.to_string '%d %B %Y को %H:%M UTC' }}</strong> को स्वतः पुनः प्रयास करेंगे।</p>
+{{ else }}
+<p>{{ model.failed_check_count }} लगातार विफलताओं के बाद स्वचालित पुनः प्रयास रोक दिए गए हैं। मैन्युअल जांच के लिए <em>अभी सत्यापित करें</em> क्रिया का उपयोग करें।</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

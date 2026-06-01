@@ -1,0 +1,13 @@
+<title>Hostname verification failed</title>
+<p>Hi,</p>
+<p>We were unable to verify the hostname <strong>{{ model.host }}</strong>.</p>
+{{ if model.conflicts_display }}
+<p>The following DNS issues were detected:</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p>We will automatically retry on <strong>{{ model.next_check_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>.</p>
+{{ else }}
+<p>Automatic retries have been paused after {{ model.failed_check_count }} consecutive failures. Use the <em>Verify Now</em> action to trigger a manual recheck.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

@@ -1,0 +1,14 @@
+<!-- AUTO-TRANSLATED (manual, 2026-06-01) — REVIEW BEFORE PRODUCTION -->
+<title>Ana bilgisayar adı doğrulaması başarısız oldu</title>
+<p>Merhaba,</p>
+<p><strong>{{ model.host }}</strong> ana bilgisayar adını doğrulayamadık.</p>
+{{ if model.conflicts_display }}
+<p>Aşağıdaki DNS sorunları tespit edildi:</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p><strong>{{ model.next_check_at | date.to_string '%d %B %Y %H:%M UTC' }}</strong> tarihinde otomatik olarak yeniden denenecek.</p>
+{{ else }}
+<p>{{ model.failed_check_count }} ardışık başarısızlıktan sonra otomatik yeniden denemeler duraklatıldı. Manuel doğrulama başlatmak için <em>Şimdi Doğrula</em> işlemini kullanın.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

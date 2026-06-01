@@ -1,0 +1,14 @@
+<!-- AUTO-TRANSLATED (manual, 2026-06-01) — REVIEW BEFORE PRODUCTION -->
+<title>Weryfikacja nazwy hosta nie powiodła się</title>
+<p>Cześć,</p>
+<p>Nie udało nam się zweryfikować nazwy hosta <strong>{{ model.host }}</strong>.</p>
+{{ if model.conflicts_display }}
+<p>Wykryto następujące problemy z DNS:</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p>Automatycznie spróbujemy ponownie <strong>{{ model.next_check_at | date.to_string '%d %B %Y o %H:%M UTC' }}</strong>.</p>
+{{ else }}
+<p>Automatyczne próby zostały wstrzymane po {{ model.failed_check_count }} kolejnych błędach. Użyj akcji <em>Weryfikuj teraz</em>, aby uruchomić ręczne sprawdzenie.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

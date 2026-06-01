@@ -1,0 +1,14 @@
+<!-- AUTO-TRANSLATED (manual, 2026-06-01) — REVIEW BEFORE PRODUCTION -->
+<title>Verificación del nombre de host fallida</title>
+<p>Hola,</p>
+<p>No pudimos verificar el nombre de host <strong>{{ model.host }}</strong>.</p>
+{{ if model.conflicts_display }}
+<p>Se detectaron los siguientes problemas de DNS:</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p>Reintentaremos automáticamente el <strong>{{ model.next_check_at | date.to_string '%d de %B de %Y a las %H:%M UTC' }}</strong>.</p>
+{{ else }}
+<p>Los reintentos automáticos se han pausado tras {{ model.failed_check_count }} fallos consecutivos. Use la acción <em>Verificar ahora</em> para activar una comprobación manual.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

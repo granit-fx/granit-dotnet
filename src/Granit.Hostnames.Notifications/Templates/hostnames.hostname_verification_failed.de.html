@@ -1,0 +1,14 @@
+<!-- AUTO-TRANSLATED (manual, 2026-06-01) — REVIEW BEFORE PRODUCTION -->
+<title>Hostname-Verifizierung fehlgeschlagen</title>
+<p>Guten Tag,</p>
+<p>Wir konnten den Hostname <strong>{{ model.host }}</strong> nicht verifizieren.</p>
+{{ if model.conflicts_display }}
+<p>Folgende DNS-Probleme wurden festgestellt:</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p>Wir werden automatisch erneut versuchen am <strong>{{ model.next_check_at | date.to_string '%d. %B %Y um %H:%M UTC' }}</strong>.</p>
+{{ else }}
+<p>Automatische Wiederholungen wurden nach {{ model.failed_check_count }} aufeinanderfolgenden Fehlern pausiert. Verwenden Sie die Aktion <em>Jetzt prüfen</em>, um eine manuelle Überprüfung auszulösen.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

@@ -5,8 +5,8 @@
       "Elastic.Clients.Elasticsearch": {
         "type": "Direct",
         "requested": "[8.*, )",
-        "resolved": "8.19.22",
-        "contentHash": "yjnLvdraQt4qK/7wnLHzDP8rdqmXlN5q3Atc4BRtyv/Z0q99vKJ7P6hK/YtVs42vtmTJRGFRvtRMHx2ct66xgA==",
+        "resolved": "8.19.23",
+        "contentHash": "HTA5Lzk6agTbJW4ke60Tgyd6V1Xdpml/Q9SIphnfzeRRmai4zuR/2zn0BD6JPq12+eZdFsDies43975OprPulw==",
         "dependencies": {
           "Elastic.Esql": "0.11.0",
           "Elastic.Transport": "0.17.1"

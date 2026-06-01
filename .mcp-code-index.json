@@ -876,6 +876,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Hostnames.Notifications",
+      "deps": [
+        "Granit.Hostnames",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Html",
       "deps": [
         "Granit"
@@ -20028,6 +20037,116 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitHostnamesNotificationsModule",
+      "fqn": "Granit.Hostnames.Notifications.GranitHostnamesNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/GranitHostnamesNotificationsModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "HostnameVerificationFailedHandler",
+      "fqn": "Granit.Hostnames.Notifications.Handlers.HostnameVerificationFailedHandler",
+      "kind": "class",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/Handlers/HostnameVerificationFailedHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(HostnameVerificationFailedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "HostnameVerifiedHandler",
+      "fqn": "Granit.Hostnames.Notifications.Handlers.HostnameVerifiedHandler",
+      "kind": "class",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/Handlers/HostnameVerifiedHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(HostnameVerifiedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "HostnameVerificationFailedNotificationData",
+      "fqn": "Granit.Hostnames.Notifications.HostnameVerificationFailedNotificationData",
+      "kind": "record",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/HostnameVerificationFailedNotificationType.cs",
+      "line": 38,
+      "members": []
+    },
+    {
+      "name": "HostnameVerificationFailedNotificationType",
+      "fqn": "Granit.Hostnames.Notifications.HostnameVerificationFailedNotificationType",
+      "kind": "class",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/HostnameVerificationFailedNotificationType.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "HostnameVerificationFailedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "HostnameVerifiedNotificationData",
+      "fqn": "Granit.Hostnames.Notifications.HostnameVerifiedNotificationData",
+      "kind": "record",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/HostnameVerifiedNotificationType.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "HostnameVerifiedNotificationType",
+      "fqn": "Granit.Hostnames.Notifications.HostnameVerifiedNotificationType",
+      "kind": "class",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/HostnameVerifiedNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "HostnameVerifiedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },

@@ -1,0 +1,14 @@
+<!-- AUTO-TRANSLATED (manual, 2026-06-01) — REVIEW BEFORE PRODUCTION -->
+<title>ホスト名の確認に失敗しました</title>
+<p>こんにちは、</p>
+<p>ホスト名 <strong>{{ model.host }}</strong> を確認できませんでした。</p>
+{{ if model.conflicts_display }}
+<p>以下の DNS の問題が検出されました：</p>
+<pre>{{ model.conflicts_display }}</pre>
+{{ end }}
+{{ if model.next_check_at }}
+<p><strong>{{ model.next_check_at | date.to_string '%Y年%m月%d日 %H:%M UTC' }}</strong> に自動的に再試行します。</p>
+{{ else }}
+<p>{{ model.failed_check_count }} 回連続して失敗したため、自動再試行が一時停止されました。<em>今すぐ確認</em>アクションを使用して手動チェックを開始してください。</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>
