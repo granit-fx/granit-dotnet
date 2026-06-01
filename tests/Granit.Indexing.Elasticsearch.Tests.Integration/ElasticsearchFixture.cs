@@ -10,6 +10,10 @@ namespace Granit.Indexing.Elasticsearch.Tests.Integration;
 public sealed class ElasticsearchFixture : IAsyncLifetime
 {
     private readonly ElasticsearchContainer _container = new ElasticsearchBuilder("elasticsearch:8.15.3")
+        // Disable disk-based shard allocation: in CI the runner disk may be >85% full,
+        // triggering the high watermark and blocking even PRIMARY shard allocation →
+        // 503 unavailable_shards_exception after a 1-minute timeout on every IndexAsync.
+        .WithEnvironment("cluster.routing.allocation.disk.threshold_enabled", "false")
         .Build();
 
     public string Uri => _container.GetConnectionString();
