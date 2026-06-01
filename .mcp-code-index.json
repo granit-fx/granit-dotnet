@@ -19472,7 +19472,7 @@
       "fqn": "Granit.Hostnames.Contracts.IManagedHostnameReader",
       "kind": "interface",
       "project": "Granit.Hostnames",
-      "file": "src/Granit.Hostnames/Contracts/IManagedHostnameStore.cs",
+      "file": "src/Granit.Hostnames/Contracts/IManagedHostnameReader.cs",
       "line": 6,
       "members": [
         {
@@ -19500,8 +19500,8 @@
       "fqn": "Granit.Hostnames.Contracts.IManagedHostnameWriter",
       "kind": "interface",
       "project": "Granit.Hostnames",
-      "file": "src/Granit.Hostnames/Contracts/IManagedHostnameStore.cs",
-      "line": 24,
+      "file": "src/Granit.Hostnames/Contracts/IManagedHostnameWriter.cs",
+      "line": 6,
       "members": [
         {
           "name": "AddAsync",
@@ -19619,7 +19619,7 @@
       "kind": "class",
       "project": "Granit.Hostnames",
       "file": "src/Granit.Hostnames/GranitHostnamesModule.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",

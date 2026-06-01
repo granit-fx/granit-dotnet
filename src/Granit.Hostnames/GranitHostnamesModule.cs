@@ -1,4 +1,6 @@
 using Granit.DataExchange.Extensions;
+using Granit.Diagnostics;
+using Granit.Hostnames.Diagnostics;
 using Granit.Hostnames.Domain;
 using Granit.Hostnames.Exports;
 using Granit.Hostnames.Queries;
@@ -19,6 +21,8 @@ public sealed class GranitHostnamesModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
+
+        GranitActivitySourceRegistry.Register(HostnamesActivitySource.Name);
 
         context.Services.AddQueryDefinition<ManagedHostname, ManagedHostnameQueryDefinition>();
         context.Services.AddExportDefinition<ManagedHostname, ManagedHostnameExportDefinition>();
