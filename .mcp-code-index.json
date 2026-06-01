@@ -841,7 +841,16 @@
       "name": "Granit.Hostnames",
       "deps": [
         "Granit.DataExchange.Abstractions",
-        "Granit.QueryEngine.Abstractions"
+        "Granit.QueryEngine.Abstractions",
+        "Granit.Workflow"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Hostnames.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Hostnames"
       ],
       "framework": "net10.0"
     },
@@ -854,6 +863,15 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Hostnames.EntityFrameworkCore",
+      "deps": [
+        "Granit.Hostnames",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Workflow.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -19464,6 +19482,72 @@
       ]
     },
     {
+      "name": "GranitHostnamesBackgroundJobsModule",
+      "fqn": "Granit.Hostnames.BackgroundJobs.GranitHostnamesBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Hostnames.BackgroundJobs",
+      "file": "src/Granit.Hostnames.BackgroundJobs/GranitHostnamesBackgroundJobsModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "VerifyHostnamesHandler",
+      "fqn": "Granit.Hostnames.BackgroundJobs.Jobs.VerifyHostnamesHandler",
+      "kind": "class",
+      "project": "Granit.Hostnames.BackgroundJobs",
+      "file": "src/Granit.Hostnames.BackgroundJobs/Jobs/VerifyHostnamesHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(VerifyHostnamesJob _, HostnameVerificationBatchService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "VerifyHostnamesJob",
+      "fqn": "Granit.Hostnames.BackgroundJobs.Jobs.VerifyHostnamesJob",
+      "kind": "record",
+      "project": "Granit.Hostnames.BackgroundJobs",
+      "file": "src/Granit.Hostnames.BackgroundJobs/Jobs/VerifyHostnamesJob.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "HostnameVerificationBatchService",
+      "fqn": "Granit.Hostnames.BackgroundJobs.Services.HostnameVerificationBatchService",
+      "kind": "class",
+      "project": "Granit.Hostnames.BackgroundJobs",
+      "file": "src/Granit.Hostnames.BackgroundJobs/Services/HostnameVerificationBatchService.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "HostnameVerificationResult",
+      "fqn": "Granit.Hostnames.Contracts.HostnameVerificationResult",
+      "kind": "record",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Contracts/IHostnameVerifier.cs",
+      "line": 29,
+      "members": []
+    },
+    {
       "name": "IHostnameResolver",
       "fqn": "Granit.Hostnames.Contracts.IHostnameResolver",
       "kind": "interface",
@@ -19476,6 +19560,22 @@
           "kind": "method",
           "signature": "ResolveAsync(string host, CancellationToken cancellationToken = default)",
           "returnType": "Task<ResolvedHostname?>"
+        }
+      ]
+    },
+    {
+      "name": "IHostnameVerifier",
+      "fqn": "Granit.Hostnames.Contracts.IHostnameVerifier",
+      "kind": "interface",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Contracts/IHostnameVerifier.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "VerifyAsync",
+          "kind": "method",
+          "signature": "VerifyAsync(ManagedHostname hostname, CancellationToken cancellationToken = default)",
+          "returnType": "Task<HostnameVerificationResult>"
         }
       ]
     },
@@ -19503,6 +19603,12 @@
           "name": "ListByOwnerAsync",
           "kind": "method",
           "signature": "ListByOwnerAsync(string ownerType, Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ManagedHostname>>"
+        },
+        {
+          "name": "ListDueForVerificationAsync",
+          "kind": "method",
+          "signature": "ListDueForVerificationAsync(DateTimeOffset now, int batchSize = 100, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<ManagedHostname>>"
         }
       ]
@@ -19545,6 +19651,60 @@
       "members": []
     },
     {
+      "name": "DnsConflict",
+      "fqn": "Granit.Hostnames.Domain.DnsConflict",
+      "kind": "record",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Domain/DnsConflict.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "DnsConflictType",
+      "fqn": "Granit.Hostnames.Domain.DnsConflictType",
+      "kind": "enum",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Domain/DnsConflictType.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "DnsRecordType",
+      "fqn": "Granit.Hostnames.Domain.DnsRecordType",
+      "kind": "enum",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Domain/DnsRecordType.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "HostnameVerificationFailedEto",
+      "fqn": "Granit.Hostnames.Domain.Events.HostnameVerificationFailedEto",
+      "kind": "record",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Domain/Events/HostnameVerificationFailedEto.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "HostnameVerifiedEto",
+      "fqn": "Granit.Hostnames.Domain.Events.HostnameVerifiedEto",
+      "kind": "record",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Domain/Events/HostnameVerifiedEto.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "ExpectedDnsRecord",
+      "fqn": "Granit.Hostnames.Domain.ExpectedDnsRecord",
+      "kind": "record",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Domain/ExpectedDnsRecord.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "Hostname",
       "fqn": "Granit.Hostnames.Domain.Hostname",
       "kind": "class",
@@ -19581,8 +19741,14 @@
       "kind": "class",
       "project": "Granit.Hostnames",
       "file": "src/Granit.Hostnames/Domain/ManagedHostname.cs",
-      "line": 16,
+      "line": 19,
       "members": [
+        {
+          "name": "WorkflowDefinition",
+          "kind": "property",
+          "signature": "WorkflowDefinition<HostnameStatus> WorkflowDefinition",
+          "returnType": "WorkflowDefinition<HostnameStatus>"
+        },
         {
           "name": "OwnerType",
           "kind": "property",
@@ -19600,6 +19766,24 @@
           "kind": "property",
           "signature": "string ConcurrencyStamp",
           "returnType": "string"
+        },
+        {
+          "name": "VerificationToken",
+          "kind": "property",
+          "signature": "string? VerificationToken",
+          "returnType": "string?"
+        },
+        {
+          "name": "LastCheckedAt",
+          "kind": "property",
+          "signature": "DateTimeOffset? LastCheckedAt",
+          "returnType": "DateTimeOffset?"
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Hostname host, string ownerType, Guid ownerId, Guid? tenantId = null, bool isPrimary = false)",
+          "returnType": "ManagedHostname"
         },
         {
           "name": "ClearPrimary",
@@ -19633,7 +19817,7 @@
       "kind": "record",
       "project": "Granit.Hostnames.Endpoints",
       "file": "src/Granit.Hostnames.Endpoints/Dtos/ManagedHostnameResponse.cs",
-      "line": 17,
+      "line": 25,
       "members": []
     },
     {
@@ -19718,6 +19902,63 @@
       "members": []
     },
     {
+      "name": "HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Hostnames.EntityFrameworkCore.Extensions.HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Hostnames.EntityFrameworkCore",
+      "file": "src/Granit.Hostnames.EntityFrameworkCore/Extensions/HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitHostnamesEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitHostnamesEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "HostnamesModelBuilderExtensions",
+      "fqn": "Granit.Hostnames.EntityFrameworkCore.Extensions.HostnamesModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Hostnames.EntityFrameworkCore",
+      "file": "src/Granit.Hostnames.EntityFrameworkCore/Extensions/HostnamesModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureHostnamesModule",
+          "kind": "method",
+          "signature": "ConfigureHostnamesModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitHostnamesDbProperties",
+      "fqn": "Granit.Hostnames.EntityFrameworkCore.GranitHostnamesDbProperties",
+      "kind": "class",
+      "project": "Granit.Hostnames.EntityFrameworkCore",
+      "file": "src/Granit.Hostnames.EntityFrameworkCore/GranitHostnamesDbProperties.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitHostnamesEntityFrameworkCoreModule",
+      "fqn": "Granit.Hostnames.EntityFrameworkCore.GranitHostnamesEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Hostnames.EntityFrameworkCore",
+      "file": "src/Granit.Hostnames.EntityFrameworkCore/GranitHostnamesEntityFrameworkCoreModule.cs",
+      "line": 23,
+      "members": []
+    },
+    {
       "name": "ManagedHostnameExportDefinition",
       "fqn": "Granit.Hostnames.Exports.ManagedHostnameExportDefinition",
       "kind": "class",
@@ -19739,7 +19980,7 @@
       "kind": "class",
       "project": "Granit.Hostnames",
       "file": "src/Granit.Hostnames/GranitHostnamesModule.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",

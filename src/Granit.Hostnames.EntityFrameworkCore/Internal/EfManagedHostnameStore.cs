@@ -68,6 +68,29 @@ internal sealed class EfManagedHostnameStore(
                 .OrderBy(h => (object)h.Host.Value),
             cancellationToken);
 
+    /// <inheritdoc/>
+    public Task<IReadOnlyList<ManagedHostname>> ListDueForVerificationAsync(
+        DateTimeOffset now,
+        int batchSize = 100,
+        CancellationToken cancellationToken = default) =>
+        ReadAsync<IReadOnlyList<ManagedHostname>>(
+            async db =>
+            {
+                // Poller query: status ∈ {Verifying, Error} AND NextCheckAt ≤ now (non-null).
+                // Bypass tenant filter — the poller is a system job, not tenant-scoped.
+                List<ManagedHostname> results = await db.ManagedHostnames
+                    .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+                    .Where(h =>
+                        (h.Status == HostnameStatus.Verifying || h.Status == HostnameStatus.Error) &&
+                        h.NextCheckAt != null && h.NextCheckAt <= now)
+                    .OrderBy(h => h.NextCheckAt)
+                    .Take(batchSize)
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+                return results;
+            },
+            cancellationToken);
+
     // ── IManagedHostnameWriter ──────────────────────────────────────────
 
     /// <inheritdoc/>

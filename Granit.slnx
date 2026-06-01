@@ -17,6 +17,7 @@
     <Project Path="src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj" />
     <Project Path="src/Granit.Guids/Granit.Guids.csproj" />
     <Project Path="src/Granit.Hostnames/Granit.Hostnames.csproj" />
+    <Project Path="src/Granit.Hostnames.BackgroundJobs/Granit.Hostnames.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Hostnames.EntityFrameworkCore/Granit.Hostnames.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Hostnames.Endpoints/Granit.Hostnames.Endpoints.csproj" />
     <Project Path="src/Granit.Html.AngleSharp/Granit.Html.AngleSharp.csproj" />
@@ -338,6 +339,7 @@
     <Project Path="tests/Granit.Entities.Abstractions.Tests/Granit.Entities.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Guids.Tests/Granit.Guids.Tests.csproj" />
     <Project Path="tests/Granit.Hostnames.Tests/Granit.Hostnames.Tests.csproj" />
+    <Project Path="tests/Granit.Hostnames.BackgroundJobs.Tests/Granit.Hostnames.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Hostnames.EntityFrameworkCore.Tests/Granit.Hostnames.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Hostnames.EntityFrameworkCore.Tests.Integration/Granit.Hostnames.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Hostnames.Endpoints.Tests/Granit.Hostnames.Endpoints.Tests.csproj" />

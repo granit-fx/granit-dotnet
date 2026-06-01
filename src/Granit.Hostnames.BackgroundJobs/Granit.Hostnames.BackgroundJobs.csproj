@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Hostnames.BackgroundJobs</PackageId>
+    <Description>Recurring background jobs for Granit.Hostnames: DNS verification poller that re-checks hostnames in Verifying/Error state according to their per-domain exponential backoff schedule.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Hostnames.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Hostnames\Granit.Hostnames.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -48,6 +48,32 @@ internal sealed class ManagedHostnameConfiguration : IEntityTypeConfiguration<Ma
             .IsRequired()
             .IsConcurrencyToken();
 
+        // ── Verification ──────────────────────────────────────────────────
+
+        builder.Property(e => e.VerificationToken)
+            .HasMaxLength(128);
+
+        // ExpectedDnsRecords and Conflicts are stored as JSONB arrays.
+        // OwnsMany().ToJson() uses EF Core 8+ native JSON column support.
+        builder.OwnsMany(e => e.ExpectedDnsRecords, nav =>
+        {
+            nav.ToJson();
+            nav.Property(r => r.Name).HasMaxLength(253);
+            nav.Property(r => r.Value).HasMaxLength(512);
+        });
+
+        builder.OwnsMany(e => e.Conflicts, nav =>
+        {
+            nav.ToJson();
+            nav.Property(c => c.Details).HasMaxLength(1024);
+        });
+
+        builder.Property(e => e.LastCheckedAt);
+        builder.Property(e => e.FailedCheckCount).IsRequired();
+        builder.Property(e => e.NextCheckAt);
+
+        // ── Indexes ───────────────────────────────────────────────────────
+
         // The host is globally unique across all tenants — anti-hijacking: a second
         // owner cannot claim an already-registered host.
         builder.HasIndex(e => e.Host)
@@ -59,5 +85,12 @@ internal sealed class ManagedHostnameConfiguration : IEntityTypeConfiguration<Ma
         builder.HasIndex(e => new { e.OwnerType, e.OwnerId })
             .HasDatabaseName(
                 $"ix_{GranitHostnamesDbProperties.DbTablePrefix}managed_hostnames_owner");
+
+        // Poller query: find hostnames due for a DNS check (Status + NextCheckAt).
+        // Partial index would be ideal but EF Core doesn't support it without raw SQL;
+        // the index covers all rows — the WHERE clause filters in the query.
+        builder.HasIndex(e => new { e.Status, e.NextCheckAt })
+            .HasDatabaseName(
+                $"ix_{GranitHostnamesDbProperties.DbTablePrefix}managed_hostnames_poll");
     }
 }

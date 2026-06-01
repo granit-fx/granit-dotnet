@@ -1,4 +1,7 @@
 using Granit.Domain;
+using Granit.Hostnames.Domain.Events;
+using Granit.Workflow;
+using Granit.Workflow.Domain;
 
 namespace Granit.Hostnames.Domain;
 
@@ -9,16 +12,52 @@ namespace Granit.Hostnames.Domain;
 /// globally unique, which gives anti-hijacking for free (a second owner cannot claim a taken host).
 /// </summary>
 /// <remarks>
-/// In this foundation feature a hostname is <see cref="HostnameStatus.Active"/> on creation (trusted,
-/// admin-registered — matching unverified domain lists). The verification feature introduces the
-/// Pending → Verifying → Active state machine and the DNS challenge that gates <c>Active</c>.
+/// Implements <see cref="IWorkflowStateful"/> so the <c>WorkflowTransitionInterceptor</c> records
+/// every state transition in an immutable audit trail (ISO 27001). Transitions are system-driven
+/// (the DNS verifier); no human approval step is needed on the verification path.
 /// </remarks>
-public sealed class ManagedHostname : AuditedAggregateRoot, IMultiTenant, IConcurrencyAware
+public sealed class ManagedHostname : AuditedAggregateRoot, IMultiTenant, IConcurrencyAware, IWorkflowStateful
 {
+    /// <summary>Capped exponential backoff table (indexed by consecutive failure count, 1-based).</summary>
+    private static readonly TimeSpan[] BackoffTable =
+    [
+        TimeSpan.FromMinutes(1),   // 1st failure
+        TimeSpan.FromMinutes(5),   // 2nd
+        TimeSpan.FromMinutes(15),  // 3rd
+        TimeSpan.FromHours(1),     // 4th
+        TimeSpan.FromHours(6),     // 5th
+        TimeSpan.FromHours(24),    // 6th and beyond (cap)
+    ];
+
+    /// <summary>
+    /// After this many consecutive failures the poller stops picking up the domain automatically
+    /// (manual "verify now" required to re-enter the Verifying state).
+    /// </summary>
+    public const int DormancyThreshold = 20;
+
+    /// <summary>
+    /// Allowed workflow transitions for this aggregate (Pending → Verifying → Active/Error, retry, re-check).
+    /// </summary>
+    public static readonly WorkflowDefinition<HostnameStatus> WorkflowDefinition =
+        WorkflowDefinition<HostnameStatus>.Create(b => b
+            .InitialState(HostnameStatus.Pending)
+            .Transition(HostnameStatus.Pending, HostnameStatus.Verifying,
+                t => t.Named("begin-verification"))
+            .Transition(HostnameStatus.Verifying, HostnameStatus.Active,
+                t => t.Named("mark-verified"))
+            .Transition(HostnameStatus.Verifying, HostnameStatus.Error,
+                t => t.Named("mark-failed"))
+            .Transition(HostnameStatus.Error, HostnameStatus.Verifying,
+                t => t.Named("request-recheck"))
+            .Transition(HostnameStatus.Active, HostnameStatus.Verifying,
+                t => t.Named("request-recheck")));
+
     private ManagedHostname()
     {
         // Required by EF Core materialisation.
     }
+
+    // ── Identity & ownership ────────────────────────────────────────────────
 
     /// <summary>The fully-qualified hostname (globally unique, lower-case).</summary>
     public Hostname Host { get; private set; } = null!;
@@ -35,11 +74,47 @@ public sealed class ManagedHostname : AuditedAggregateRoot, IMultiTenant, IConcu
     /// <summary>Whether this is the canonical hostname among the owner's hostnames.</summary>
     public bool IsPrimary { get; private set; }
 
+    // ── Workflow state ──────────────────────────────────────────────────────
+
     /// <summary>Lifecycle state. See <see cref="HostnameStatus"/>.</summary>
     public HostnameStatus Status { get; private set; } = HostnameStatus.Pending;
 
     /// <summary>Optimistic-concurrency token (ADR-061). Auto-managed by the framework interceptor.</summary>
     public string ConcurrencyStamp { get; private set; } = string.Empty;
+
+    // ── Verification ────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// TXT challenge token placed at <c>_granit-challenge.{host}</c>.
+    /// Set by <see cref="BeginVerification"/>; <c>null</c> until then.
+    /// </summary>
+    public string? VerificationToken { get; private set; }
+
+    /// <summary>
+    /// DNS records the owner must configure (CNAME / A / TXT entries pointing to the platform).
+    /// Set by <see cref="BeginVerification"/>. Stored as JSON.
+    /// </summary>
+    public IReadOnlyList<ExpectedDnsRecord> ExpectedDnsRecords { get; private set; } = [];
+
+    /// <summary>When the last DNS check ran; <c>null</c> before any check.</summary>
+    public DateTimeOffset? LastCheckedAt { get; private set; }
+
+    /// <summary>DNS conflicts detected on the last check. Stored as JSON; empty when verified.</summary>
+    public IReadOnlyList<DnsConflict> Conflicts { get; private set; } = [];
+
+    // ── Backoff ─────────────────────────────────────────────────────────────
+
+    /// <summary>Cumulative count of consecutive DNS check failures.</summary>
+    public int FailedCheckCount { get; private set; }
+
+    /// <summary>
+    /// Earliest time the poller should retry. <c>null</c> when the domain is dormant
+    /// (exceeded <see cref="DormancyThreshold"/>); requires manual
+    /// <see cref="RequestRecheck"/> to re-enter <see cref="HostnameStatus.Verifying"/>.
+    /// </summary>
+    public DateTimeOffset? NextCheckAt { get; private set; }
+
+    // ── Interface implementations ───────────────────────────────────────────
 
     Guid? IMultiTenant.TenantId
     {
@@ -53,7 +128,16 @@ public sealed class ManagedHostname : AuditedAggregateRoot, IMultiTenant, IConcu
         set => ConcurrencyStamp = value;
     }
 
-    /// <summary>Registers a hostname for an owning resource.</summary>
+    static string IWorkflowStateful.StatusPropertyName => nameof(Status);
+    static string IWorkflowStateful.WorkflowEntityType => "ManagedHostname";
+    string IWorkflowStateful.GetWorkflowEntityId() => Id.ToString();
+
+    // ── Factory ─────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Registers a hostname for an owning resource. Starts in <see cref="HostnameStatus.Pending"/>
+    /// until <see cref="BeginVerification"/> is called.
+    /// </summary>
     /// <param name="id">Stable identifier (from <c>IGuidGenerator</c>).</param>
     /// <param name="host">The hostname (validated, lower-cased).</param>
     /// <param name="ownerType">Owner-resource discriminator (non-empty).</param>
@@ -79,8 +163,83 @@ public sealed class ManagedHostname : AuditedAggregateRoot, IMultiTenant, IConcu
             OwnerId = ownerId,
             TenantId = tenantId,
             IsPrimary = isPrimary,
-            Status = HostnameStatus.Active,
+            Status = HostnameStatus.Pending,
         };
+    }
+
+    // ── Behaviour ───────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Starts verification: mints the DNS challenge and expected records, transitions to
+    /// <see cref="HostnameStatus.Verifying"/>, resets the failure backoff.
+    /// </summary>
+    /// <param name="verificationToken">Unique TXT challenge value for <c>_granit-challenge.{host}</c>.</param>
+    /// <param name="expectedRecords">DNS records the owner must configure.</param>
+    public void BeginVerification(string verificationToken, IReadOnlyList<ExpectedDnsRecord> expectedRecords)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(verificationToken);
+        ArgumentNullException.ThrowIfNull(expectedRecords);
+
+        Status = HostnameStatus.Verifying;
+        VerificationToken = verificationToken;
+        ExpectedDnsRecords = expectedRecords;
+        FailedCheckCount = 0;
+        NextCheckAt = null;
+    }
+
+    /// <summary>
+    /// Marks verification as successful → <see cref="HostnameStatus.Active"/>.
+    /// Raises <see cref="HostnameVerifiedEto"/>.
+    /// </summary>
+    /// <param name="now">Current timestamp (from <c>TimeProvider</c>).</param>
+    public void MarkVerified(DateTimeOffset now)
+    {
+        Status = HostnameStatus.Active;
+        LastCheckedAt = now;
+        Conflicts = [];
+        FailedCheckCount = 0;
+        NextCheckAt = null;
+
+        AddDistributedEvent(new HostnameVerifiedEto(
+            Id, Host.Value, OwnerType, OwnerId, TenantId));
+    }
+
+    /// <summary>
+    /// Records a verification failure → <see cref="HostnameStatus.Error"/> with exponential backoff.
+    /// After <see cref="DormancyThreshold"/> failures <see cref="NextCheckAt"/> is set to <c>null</c>
+    /// (domain becomes dormant; requires manual <see cref="RequestRecheck"/>).
+    /// Raises <see cref="HostnameVerificationFailedEto"/>.
+    /// </summary>
+    /// <param name="conflicts">Detected DNS conflicts.</param>
+    /// <param name="now">Current timestamp (from <c>TimeProvider</c>).</param>
+    public void MarkFailed(IReadOnlyList<DnsConflict> conflicts, DateTimeOffset now)
+    {
+        ArgumentNullException.ThrowIfNull(conflicts);
+
+        Status = HostnameStatus.Error;
+        LastCheckedAt = now;
+        Conflicts = conflicts;
+        FailedCheckCount++;
+
+        NextCheckAt = FailedCheckCount >= DormancyThreshold
+            ? null
+            : now + BackoffDelay(FailedCheckCount);
+
+        AddDistributedEvent(new HostnameVerificationFailedEto(
+            Id, Host.Value, OwnerType, OwnerId, TenantId,
+            FailedCheckCount, Conflicts, NextCheckAt));
+    }
+
+    /// <summary>
+    /// Manually re-queues verification (resets backoff, transitions to
+    /// <see cref="HostnameStatus.Verifying"/>). Valid from any state — lets admins
+    /// restart a dormant or errored domain without waiting for the poller.
+    /// </summary>
+    public void RequestRecheck()
+    {
+        Status = HostnameStatus.Verifying;
+        FailedCheckCount = 0;
+        NextCheckAt = null;
     }
 
     /// <summary>Marks this hostname as the owner's canonical one.</summary>
@@ -88,4 +247,12 @@ public sealed class ManagedHostname : AuditedAggregateRoot, IMultiTenant, IConcu
 
     /// <summary>Clears the canonical flag.</summary>
     public void ClearPrimary() => IsPrimary = false;
+
+    // ── Helpers ─────────────────────────────────────────────────────────────
+
+    private static TimeSpan BackoffDelay(int failureCount)
+    {
+        int index = Math.Min(failureCount - 1, BackoffTable.Length - 1);
+        return BackoffTable[index];
+    }
 }

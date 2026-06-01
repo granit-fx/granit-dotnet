@@ -1,11 +1,13 @@
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Workflow.EntityFrameworkCore;
 
 namespace Granit.Hostnames.EntityFrameworkCore;
 
 /// <summary>
 /// Granit module for EF Core persistence of managed hostnames.
-/// Registers <c>HostnamesDbContext</c>, <c>EfManagedHostnameStore</c> and <c>EfHostnameResolver</c>.
+/// Registers <c>HostnamesDbContext</c>, <c>EfManagedHostnameStore</c>, <c>EfHostnameResolver</c>,
+/// and the <c>WorkflowTransitionInterceptor</c> for the hostname lifecycle audit trail.
 /// </summary>
 /// <remarks>
 /// Register via the host application's builder:
@@ -16,5 +18,6 @@ namespace Granit.Hostnames.EntityFrameworkCore;
 /// </remarks>
 [DependsOn(
     typeof(GranitHostnamesModule),
-    typeof(GranitPersistenceEntityFrameworkCoreModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule),
+    typeof(GranitWorkflowEntityFrameworkCoreModule))]
 public sealed class GranitHostnamesEntityFrameworkCoreModule : GranitModule;

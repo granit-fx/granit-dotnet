@@ -1,6 +1,6 @@
 using Granit.Hostnames.Contracts;
 using Granit.Hostnames.EntityFrameworkCore.Internal;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Workflow.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -20,7 +20,8 @@ public static class HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions
     /// <para>
     /// Registers <c>HostnamesDbContext</c>, <c>EfManagedHostnameStore</c> (as both
     /// <see cref="IManagedHostnameReader"/> and <see cref="IManagedHostnameWriter"/>),
-    /// and <c>EfHostnameResolver</c> as <see cref="IHostnameResolver"/>.
+    /// <c>EfHostnameResolver</c> as <see cref="IHostnameResolver"/>, and the
+    /// <c>WorkflowTransitionInterceptor</c> for the hostname lifecycle audit trail.
     /// </para>
     /// <para>
     /// Must be called after <c>AddGranitHostnames()</c>.
@@ -33,7 +34,15 @@ public static class HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions
         this IHostApplicationBuilder builder,
         Action<DbContextOptionsBuilder> configure)
     {
-        builder.Services.AddGranitDbContext<HostnamesDbContext>(configure);
+        // Register WorkflowTransitionInterceptor + IWorkflowHistoryQuery + IWorkflowTransitionRecorder
+        // backed by HostnamesDbContext (which implements IWorkflowDbContext).
+        builder.Services.AddGranitWorkflowEntityFrameworkCore<HostnamesDbContext>();
+
+        // Register the DbContext with the standard Granit interceptors AND the
+        // WorkflowTransitionInterceptor. Using AddGranitDbContext directly would miss the
+        // workflow interceptor (it is NOT a global auto-interceptor to avoid breaking
+        // DbContexts that don't have WorkflowTransitionRecord in their model).
+        builder.Services.AddGranitDbContextWithWorkflow<HostnamesDbContext>(configure);
 
         builder.Services.TryAddScoped<EfManagedHostnameStore>();
         builder.Services.TryAddScoped<IManagedHostnameReader>(

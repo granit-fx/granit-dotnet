@@ -5,10 +5,10 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.8.7",
-        "contentHash": "WNq9te/BnFmo6PCv9klAC5L6SAVgrZhOgBPJti61we+T2PzZPJUF90d8ZdyS9QdQN8Du4ac1ac2pRO84Mu70lg==",
+        "resolved": "4.0.8.8",
+        "contentHash": "8xBHfPzBJYV27dxsV6vILcmJMTEwT5Xe1uApBdsY+ej48IAomaMZy/4k0XzyT8xQD3U2Dd7UTSVdQvaRPDKbAg==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.3, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.4, 5.0.0)"
         }
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
@@ -32,8 +32,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.7.3",
-        "contentHash": "F7x7IREeF8nd5pQUz0bYQf7TyrREZBQBqUdswkeGf1BWg91uHT8/lvENTb8+cN5xLxbf+m06FANDOD+GK8NrHw=="
+        "resolved": "4.0.7.4",
+        "contentHash": "qNlzH2ygJ6JG8uefpvws782PnJlkVEwqRD5vz4fR8wFfwWU3ttyAjiwEOPEYcxl84mhQdYGI9gR+kroGFI2+wA=="
       },
       "Microsoft.EntityFrameworkCore.Abstractions": {
         "type": "Transitive",

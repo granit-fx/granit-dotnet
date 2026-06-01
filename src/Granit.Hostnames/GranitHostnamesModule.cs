@@ -6,6 +6,7 @@ using Granit.Hostnames.Exports;
 using Granit.Hostnames.Queries;
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
+using Granit.Workflow;
 
 namespace Granit.Hostnames;
 
@@ -15,6 +16,7 @@ namespace Granit.Hostnames;
 /// HTTP endpoints in <c>Granit.Hostnames.Endpoints</c>; DNS verification and provider adapters in
 /// their own sibling packages — by design for a layer-pure base package.
 /// </summary>
+[DependsOn(typeof(GranitWorkflowModule))]
 public sealed class GranitHostnamesModule : GranitModule
 {
     /// <inheritdoc/>

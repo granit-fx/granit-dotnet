@@ -107,6 +107,14 @@ public static class HostnamesEndpointRouteBuilderExtensions
             .WithDescription("Removes the IsPrimary flag from the specified hostname. Returns 204 on success, 404 when not found. Requires the Hostnames.Manage permission.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapPost("/{id:guid}/verify-now", HandleVerifyNowAsync)
+            .RequireAuthorization(HostnamesPermissions.Hostnames.Manage)
+            .WithName("VerifyHostnameNow")
+            .WithSummary("Manually triggers DNS verification for a hostname.")
+            .WithDescription("Resets any exponential backoff and immediately re-queues the hostname for verification (transitions to Verifying). The actual DNS check runs asynchronously via the verification poller. Returns 202 Accepted with the updated hostname record. Returns 404 when not found. Requires the Hostnames.Manage permission.")
+            .Produces<ManagedHostnameResponse>(StatusCodes.Status202Accepted)
+            .ProducesProblem(StatusCodes.Status404NotFound);
     }
 
     // ── Handlers ──────────────────────────────────────────────────────────────
@@ -267,6 +275,27 @@ public static class HostnamesEndpointRouteBuilderExtensions
         return TypedResults.NoContent();
     }
 
+    private static async Task<Results<Accepted<ManagedHostnameResponse>, ProblemHttpResult>> HandleVerifyNowAsync(
+        Guid id,
+        [FromServices] IManagedHostnameReader reader,
+        [FromServices] IManagedHostnameWriter writer,
+        CancellationToken cancellationToken)
+    {
+        ManagedHostname? hostname = await reader
+            .GetByIdAsync(id, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (hostname is null)
+        {
+            return HostnameNotFound(id);
+        }
+
+        hostname.RequestRecheck();
+        await writer.UpdateAsync(hostname, cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Accepted((string?)null, MapToResponse(hostname));
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     internal static ProblemHttpResult HostnameNotFound(Guid id) =>
@@ -282,6 +311,12 @@ public static class HostnamesEndpointRouteBuilderExtensions
             h.TenantId,
             h.IsPrimary,
             h.Status.ToString(),
+            h.VerificationToken,
+            h.ExpectedDnsRecords,
+            h.LastCheckedAt,
+            h.Conflicts,
+            h.FailedCheckCount,
+            h.NextCheckAt,
             h.CreatedAt,
             h.CreatedBy,
             h.ModifiedAt,

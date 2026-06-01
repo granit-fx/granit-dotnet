@@ -102,7 +102,7 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
         body.ShouldNotBeNull();
         body.Host.ShouldBe("acme.com");
         body.IsPrimary.ShouldBeTrue();
-        body.Status.ShouldBe("Active");
+        body.Status.ShouldBe("Pending");
     }
 
     [Fact]
@@ -332,5 +332,33 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         hostname.IsPrimary.ShouldBeFalse();
         await _writer.Received(1).UpdateAsync(hostname, Arg.Any<CancellationToken>());
+    }
+
+    // ── POST /{id}/verify-now ─────────────────────────────────────────────────
+
+    [Fact]
+    public async Task VerifyNow_Known_Returns_202_And_Transitions_To_Verifying()
+    {
+        ManagedHostname hostname = MakeHostname();
+        _reader.GetByIdAsync(FixedId, Arg.Any<CancellationToken>()).Returns(hostname);
+
+        HttpResponseMessage response = await _authClient.PostAsync(
+            $"{Prefix}/{FixedId}/verify-now", null, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+        hostname.Status.ShouldBe(HostnameStatus.Verifying);
+        await _writer.Received(1).UpdateAsync(hostname, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task VerifyNow_Unknown_Returns_404()
+    {
+        _reader.GetByIdAsync(FixedId, Arg.Any<CancellationToken>())
+            .Returns((ManagedHostname?)null);
+
+        HttpResponseMessage response = await _authClient.PostAsync(
+            $"{Prefix}/{FixedId}/verify-now", null, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 }

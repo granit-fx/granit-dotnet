@@ -18,4 +18,18 @@ public interface IManagedHostnameReader
         string ownerType,
         Guid ownerId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Lists hostnames that are due for a DNS check: status is <see cref="HostnameStatus.Verifying"/>
+    /// or <see cref="HostnameStatus.Error"/>, and <c>NextCheckAt ≤ <paramref name="now"/></c>.
+    /// Dormant domains (<c>NextCheckAt</c> is <c>null</c>) are excluded — they require a
+    /// manual <c>RequestRecheck</c>.
+    /// </summary>
+    /// <param name="now">Current timestamp; only entries due by this time are returned.</param>
+    /// <param name="batchSize">Maximum number of hostnames to return per invocation.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<IReadOnlyList<ManagedHostname>> ListDueForVerificationAsync(
+        DateTimeOffset now,
+        int batchSize = 100,
+        CancellationToken cancellationToken = default);
 }
