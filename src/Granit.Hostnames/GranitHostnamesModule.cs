@@ -7,6 +7,7 @@ using Granit.Hostnames.Queries;
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
 using Granit.Workflow;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Hostnames;
 
@@ -25,6 +26,8 @@ public sealed class GranitHostnamesModule : GranitModule
         ArgumentNullException.ThrowIfNull(context);
 
         GranitActivitySourceRegistry.Register(HostnamesActivitySource.Name);
+
+        context.Services.TryAddSingleton<HostnamesMetrics>();
 
         context.Services.AddQueryDefinition<ManagedHostname, ManagedHostnameQueryDefinition>();
         context.Services.AddExportDefinition<ManagedHostname, ManagedHostnameExportDefinition>();

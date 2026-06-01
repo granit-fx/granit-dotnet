@@ -20,8 +20,8 @@ namespace Granit.Hostnames.Endpoints.Dtos;
 /// <param name="NextCheckAt">When the poller will retry; <c>null</c> when dormant.</param>
 /// <param name="CreatedAt">UTC timestamp when the hostname was registered.</param>
 /// <param name="CreatedBy">Identity that registered the hostname.</param>
-/// <param name="LastModifiedAt">UTC timestamp of the last change; <c>null</c> if never modified.</param>
-/// <param name="LastModifiedBy">Identity that last modified the hostname; <c>null</c> if never modified.</param>
+/// <param name="ModifiedAt">UTC timestamp of the last change; <c>null</c> if never modified.</param>
+/// <param name="ModifiedBy">Identity that last modified the hostname; <c>null</c> if never modified.</param>
 public sealed record ManagedHostnameResponse(
     Guid Id,
     string Host,
@@ -38,5 +38,5 @@ public sealed record ManagedHostnameResponse(
     DateTimeOffset? NextCheckAt,
     DateTimeOffset CreatedAt,
     string CreatedBy,
-    DateTimeOffset? LastModifiedAt,
-    string? LastModifiedBy);
+    DateTimeOffset? ModifiedAt,
+    string? ModifiedBy);

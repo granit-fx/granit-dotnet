@@ -19651,6 +19651,15 @@
       "members": []
     },
     {
+      "name": "HostnamesMetrics",
+      "fqn": "Granit.Hostnames.Diagnostics.HostnamesMetrics",
+      "kind": "class",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Diagnostics/HostnamesMetrics.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "DnsConflict",
       "fqn": "Granit.Hostnames.Domain.DnsConflict",
       "kind": "record",
@@ -19959,6 +19968,38 @@
       "members": []
     },
     {
+      "name": "HostnameNotFoundException",
+      "fqn": "Granit.Hostnames.Exceptions.HostnameNotFoundException",
+      "kind": "class",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Exceptions/HostnameNotFoundException.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HostnameNotFoundException",
+          "kind": "method",
+          "signature": "HostnameNotFoundException(Guid id)",
+          "returnType": "Guid Id { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "HostnameTakenException",
+      "fqn": "Granit.Hostnames.Exceptions.HostnameTakenException",
+      "kind": "class",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Exceptions/HostnameTakenException.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HostnameTakenException",
+          "kind": "method",
+          "signature": "HostnameTakenException(string host)",
+          "returnType": "string Host { get; } public"
+        }
+      ]
+    },
+    {
       "name": "ManagedHostnameExportDefinition",
       "fqn": "Granit.Hostnames.Exports.ManagedHostnameExportDefinition",
       "kind": "class",
@@ -19980,7 +20021,7 @@
       "kind": "class",
       "project": "Granit.Hostnames",
       "file": "src/Granit.Hostnames/GranitHostnamesModule.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",

@@ -1,4 +1,5 @@
 using Granit.Hostnames.Contracts;
+using Granit.Hostnames.Diagnostics;
 using Granit.Hostnames.Domain;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,9 @@ namespace Granit.Hostnames.EntityFrameworkCore.Internal;
 /// <c>IgnoreQueryFilters([GranitFilterNames.MultiTenant])</c> and only matches
 /// <see cref="HostnameStatus.Active"/> entries.
 /// </remarks>
-internal sealed class EfHostnameResolver(IDbContextFactory<HostnamesDbContext> contextFactory)
+internal sealed class EfHostnameResolver(
+    IDbContextFactory<HostnamesDbContext> contextFactory,
+    HostnamesMetrics metrics)
     : IHostnameResolver
 {
     /// <inheritdoc/>
@@ -43,6 +46,8 @@ internal sealed class EfHostnameResolver(IDbContextFactory<HostnamesDbContext> c
                 h => h.Host == hostnameValue && h.Status == HostnameStatus.Active,
                 cancellationToken)
             .ConfigureAwait(false);
+
+        metrics.RecordResolved(match?.TenantId, resolved: match is not null);
 
         return match is null
             ? null

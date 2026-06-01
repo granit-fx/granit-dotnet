@@ -1,4 +1,5 @@
 using Granit.Hostnames.Contracts;
+using Granit.Hostnames.Diagnostics;
 using Granit.Hostnames.Domain;
 using Granit.MultiTenancy;
 using Granit.Persistence;
@@ -20,7 +21,8 @@ namespace Granit.Hostnames.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class EfManagedHostnameStore(
     IDbContextFactory<HostnamesDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ICurrentTenant currentTenant,
+    HostnamesMetrics metrics)
     : EfStoreBase<ManagedHostname, HostnamesDbContext>(contextFactory, currentTenant),
       IManagedHostnameReader,
       IManagedHostnameWriter
@@ -94,10 +96,13 @@ internal sealed class EfManagedHostnameStore(
     // ── IManagedHostnameWriter ──────────────────────────────────────────
 
     /// <inheritdoc/>
-    public new Task AddAsync(
+    public new async Task AddAsync(
         ManagedHostname hostname,
-        CancellationToken cancellationToken = default) =>
-        base.AddAsync(hostname, cancellationToken);
+        CancellationToken cancellationToken = default)
+    {
+        await base.AddAsync(hostname, cancellationToken).ConfigureAwait(false);
+        metrics.RecordCreated(hostname.TenantId);
+    }
 
     /// <inheritdoc/>
     public new Task UpdateAsync(
@@ -106,8 +111,11 @@ internal sealed class EfManagedHostnameStore(
         base.UpdateAsync(hostname, cancellationToken);
 
     /// <inheritdoc/>
-    public new Task DeleteAsync(
+    public new async Task DeleteAsync(
         ManagedHostname hostname,
-        CancellationToken cancellationToken = default) =>
-        base.DeleteAsync(hostname, cancellationToken);
+        CancellationToken cancellationToken = default)
+    {
+        await base.DeleteAsync(hostname, cancellationToken).ConfigureAwait(false);
+        metrics.RecordDeleted(hostname.TenantId);
+    }
 }

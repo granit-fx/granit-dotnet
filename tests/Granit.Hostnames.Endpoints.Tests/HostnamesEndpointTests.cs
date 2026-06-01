@@ -8,9 +8,7 @@ using Granit.Hostnames.Endpoints.Dtos;
 using Granit.Hostnames.Endpoints.Extensions;
 using Granit.Hostnames.Endpoints.Permissions;
 using Granit.Hostnames.Endpoints.Validators;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
+using Granit.Testing.Endpoints;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
@@ -20,13 +18,12 @@ namespace Granit.Hostnames.Endpoints.Tests;
 
 public sealed class HostnamesEndpointTests : IAsyncDisposable
 {
-    private const string AuthRole = "authenticated";
     private const string Prefix = "/hostnames";
 
     private readonly IManagedHostnameReader _reader = Substitute.For<IManagedHostnameReader>();
     private readonly IManagedHostnameWriter _writer = Substitute.For<IManagedHostnameWriter>();
     private readonly IGuidGenerator _guids = Substitute.For<IGuidGenerator>();
-    private readonly WebApplication _app;
+    private readonly GranitEndpointTestHost _host;
     private readonly HttpClient _authClient;
     private readonly HttpClient _anonClient;
 
@@ -38,44 +35,31 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
     {
         _guids.Create().Returns(FixedId);
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseTestServer();
+        _host = GranitEndpointTestHost.StartAsync(
+            configureServices: services =>
+            {
+                services.AddAuthorizationBuilder()
+                    .AddPolicy(HostnamesPermissions.Hostnames.Read, p => p.RequireAuthenticatedUser())
+                    .AddPolicy(HostnamesPermissions.Hostnames.Manage, p => p.RequireAuthenticatedUser());
 
-        builder.Services
-            .AddAuthentication(TestAuthHandler.SchemeName)
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
-                TestAuthHandler.SchemeName, _ => { });
+                services.AddSingleton(_reader);
+                services.AddSingleton(_writer);
+                services.AddSingleton(_guids);
+                services.AddScoped<IValidator<CreateManagedHostnameRequest>,
+                    CreateManagedHostnameRequestValidator>();
+            },
+            configureEndpoints: app => app.MapGranitHostnames())
+            .GetAwaiter().GetResult();
 
-        builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(HostnamesPermissions.Hostnames.Read, p => p.RequireAuthenticatedUser())
-            .AddPolicy(HostnamesPermissions.Hostnames.Manage, p => p.RequireAuthenticatedUser());
-
-        builder.Services.AddSingleton(_reader);
-        builder.Services.AddSingleton(_writer);
-        builder.Services.AddSingleton(_guids);
-        builder.Services.AddScoped<IValidator<CreateManagedHostnameRequest>,
-            CreateManagedHostnameRequestValidator>();
-
-        _app = builder.Build();
-        _app.MapGranitHostnames();
-        _app.StartAsync().GetAwaiter().GetResult();
-
-        _authClient = BuildClient(AuthRole);
-        _anonClient = _app.GetTestClient();
+        _authClient = _host.CreateAuthenticatedClient();
+        _anonClient = _host.CreateAnonymousClient();
     }
 
     public async ValueTask DisposeAsync()
     {
         _authClient.Dispose();
         _anonClient.Dispose();
-        await _app.DisposeAsync();
-    }
-
-    private HttpClient BuildClient(string role)
-    {
-        HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
-        return client;
+        await _host.DisposeAsync().ConfigureAwait(false);
     }
 
     private static ManagedHostname MakeHostname(
