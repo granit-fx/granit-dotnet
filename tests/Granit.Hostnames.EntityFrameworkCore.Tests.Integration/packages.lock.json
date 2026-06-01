@@ -427,6 +427,7 @@
       "granit.hostnames": {
         "type": "Project",
         "dependencies": {
+          "DnsClient": "[1.8.*, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )"
@@ -505,6 +506,12 @@
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )"
         }
+      },
+      "DnsClient": {
+        "type": "CentralTransitive",
+        "requested": "[1.8.*, )",
+        "resolved": "1.8.0",
+        "contentHash": "RRwtaCXkXWsx0mmsReGDqCbRLtItfUbkRJlet1FpdciVhyMGKcPd57T1+8Jki9ojHlq9fntVhXQroOOgRak8DQ=="
       },
       "Microsoft.EntityFrameworkCore": {
         "type": "CentralTransitive",
