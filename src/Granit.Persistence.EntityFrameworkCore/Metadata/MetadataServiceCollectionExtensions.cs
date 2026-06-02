@@ -25,10 +25,8 @@ public static class MetadataServiceCollectionExtensions
         services.TryAddSingleton<MetadataMappingRegistry>();
         services.TryAddSingleton<IMetadataMappingRegistry>(
             sp => sp.GetRequiredService<MetadataMappingRegistry>());
-        services.TryAddSingleton<MetadataSyncInterceptor>();
         services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<IGranitAutoInterceptor>(
-                sp => sp.GetRequiredService<MetadataSyncInterceptor>()));
+            ServiceDescriptor.Singleton<IGranitAutoInterceptor, MetadataSyncInterceptor>());
         services.TryAddEnumerable(
             ServiceDescriptor.Singleton<IHostedService, MetadataMappingRegistryInitializer>());
 
