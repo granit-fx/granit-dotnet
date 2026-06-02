@@ -1537,6 +1537,7 @@
       "granit.architecturetests.abstractions": {
         "type": "Project",
         "dependencies": {
+          "FluentValidation": "[12.*, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )",
           "Shouldly": "[4.*, )",
           "TngTech.ArchUnitNET": "[0.13.*, )",

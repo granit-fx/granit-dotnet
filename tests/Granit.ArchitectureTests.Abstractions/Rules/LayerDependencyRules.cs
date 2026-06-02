@@ -170,4 +170,37 @@ public static class LayerDependencyRules
             "Types following the *QueryableSource convention or *MetricDefinition (joined-metric Project hook) are exempt. " +
             $"Violators: {string.Join(", ", violators.Select(t => t.FullName))}");
     }
+
+    /// <summary>
+    /// Non-endpoint types (base domain, EF Core, BackgroundJobs) matching the given namespace prefix
+    /// must not depend on ASP.NET transport namespaces. Types in <c>.Endpoints</c> namespaces are exempt.
+    /// </summary>
+    public static void NonEndpointTypesShouldNotDependOnAspNetTransport(
+        ArchUnitNET.Domain.Architecture architecture,
+        string namespacePrefix,
+        string layerDescription)
+    {
+        string[] aspNetTransportNamespaces =
+        [
+            "Microsoft.AspNetCore.Http",
+            "Microsoft.AspNetCore.Routing",
+            "Microsoft.AspNetCore.Builder",
+            "Microsoft.AspNetCore.Mvc",
+        ];
+
+        IEnumerable<IType> nonEndpointTypes = architecture.Types
+            .Where(t => t.Namespace.FullName.StartsWith(namespacePrefix, StringComparison.Ordinal))
+            .Where(t => !t.Namespace.FullName.EndsWith(".Endpoints", StringComparison.Ordinal)
+                && !t.Namespace.FullName.Contains(".Endpoints.", StringComparison.Ordinal));
+
+        IEnumerable<IType> violators = nonEndpointTypes
+            .Where(t => t.Dependencies
+                .Any(d => aspNetTransportNamespaces.Any(ns =>
+                    d.Target.FullName.StartsWith(ns, StringComparison.Ordinal))));
+
+        violators.ShouldBeEmpty(
+            $"{layerDescription} non-endpoint types (base, EF Core, BackgroundJobs) must not depend " +
+            "on ASP.NET transport namespaces (Http, Routing, Builder, Mvc). " +
+            $"Violators: {string.Join(", ", violators.Select(t => t.FullName))}");
+    }
 }

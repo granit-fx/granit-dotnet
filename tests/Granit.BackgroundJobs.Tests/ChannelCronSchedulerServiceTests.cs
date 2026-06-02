@@ -5,7 +5,6 @@ using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
-using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -38,7 +37,7 @@ public sealed class ChannelCronSchedulerServiceTests
     }
 
     private ChannelCronSchedulerService CreateService() =>
-        new(_scopeFactory, _clock, NullLogger<ChannelCronSchedulerService>.Instance);
+        new(_scopeFactory, _clock, Substitute.For<IHostEnvironment>(), NullLogger<ChannelCronSchedulerService>.Instance);
 
     /// <summary>
     /// Starts the <see cref="BackgroundService"/> and waits for <c>ExecuteAsync</c> to complete.

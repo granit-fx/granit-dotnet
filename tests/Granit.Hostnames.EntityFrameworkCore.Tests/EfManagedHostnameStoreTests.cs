@@ -5,7 +5,6 @@ using Granit.Hostnames.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -148,7 +147,7 @@ public sealed class EfManagedHostnameStoreTests
         EfManagedHostnameStore store = CreateStore(nameof(ListByOwnerAsync_returns_empty_for_unknown_owner));
 
         IReadOnlyList<ManagedHostname> result = await store.ListByOwnerAsync(
-            "cms.site", Guid.NewGuid(), TestContext.Current.CancellationToken);
+            "cms.site", Guid.NewGuid(), cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
     }
@@ -165,7 +164,7 @@ public sealed class EfManagedHostnameStoreTests
         await store.AddAsync(MakeHostname("c.com", ownerId: otherOwner), TestContext.Current.CancellationToken);
 
         IReadOnlyList<ManagedHostname> result = await store.ListByOwnerAsync(
-            "cms.site", OwnerId, TestContext.Current.CancellationToken);
+            "cms.site", OwnerId, cancellationToken: TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(2);
         result.ShouldAllBe(h => h.OwnerId == OwnerId);
