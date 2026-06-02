@@ -45635,7 +45635,14 @@
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/TemplateRevision.cs",
       "line": 8,
-      "members": []
+      "members": [
+        {
+          "name": "RevisionId",
+          "kind": "property",
+          "signature": "required Guid RevisionId",
+          "returnType": "required Guid"
+        }
+      ]
     },
     {
       "name": "TemplateSummary",
