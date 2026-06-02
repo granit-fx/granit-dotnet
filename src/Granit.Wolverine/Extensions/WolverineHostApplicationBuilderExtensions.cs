@@ -106,7 +106,7 @@ public static class WolverineHostApplicationBuilderExtensions
         // Modules without Wolverine handlers must still register manually.
         builder.Services.AddGranitValidatorsFromWolverineHandlerModules();
 
-        builder.UseWolverine(opts =>
+        builder.Services.AddWolverine(ExtensionDiscovery.ManualOnly, opts =>
         {
             // Include all Granit module assemblies passed from the module system.
             // This is the primary discovery path — no timing dependency on DI registration.
