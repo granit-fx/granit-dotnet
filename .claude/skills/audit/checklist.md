@@ -126,6 +126,39 @@ Ref: `CLAUDE.md §Architecture`, `CLAUDE.md §Module anatomy`
 - [ ] `Jobs/` folder for background jobs (if applicable)
 - [ ] No cross-module internal references (GRMOD001 — compile error)
 
+#### `.Endpoints` internal file layout (STRICT)
+
+Every `*.Endpoints` project with more than 2 endpoints MUST follow the three-layer split:
+
+- [ ] `Extensions/*EndpointRouteBuilderExtensions.cs` is a **thin orchestrator only**
+  (~20–80 lines): creates the `RouteGroupBuilder`, sets auth/tags, and calls
+  `group.Map{Domain}ReadEndpoints()` / `group.Map{Domain}WriteEndpoints()` (or other
+  domain splits). It MUST NOT contain `async` handler methods.
+- [ ] `Endpoints/` subfolder exists with `internal static class *Endpoints` files —
+  one file per logical domain group (e.g. `TemplatingCrudEndpoints`,
+  `PrivacyDeletionEndpoints`). Handler methods live here, not in the extension class.
+- [ ] `Internal/*ResponseMapper.cs` exists when handlers share mapping helpers
+  (`ToResponse`, `*NotFound`, guard helpers). Never duplicate mapping logic across
+  two handler files.
+
+**Detection:**
+
+```bash
+# Flag any *EndpointRouteBuilderExtensions.cs that contains async handlers
+grep -lE 'private static async Task<' src/*/Extensions/*EndpointRouteBuilderExtensions.cs
+```
+
+Any match is a `CONVENTION` finding — refactor following the pattern in
+`Granit.Auditing.Endpoints` (reference impl).
+
+**Severity guidance:**
+
+| Finding | Severity |
+| ------- | -------- |
+| Async handler method directly in `*EndpointRouteBuilderExtensions.cs` | CONVENTION |
+| Extension class > 100 lines (handlers likely inlined) | CONVENTION |
+| No `Endpoints/` folder when module has ≥ 3 endpoints | CONVENTION |
+
 Ref: `CLAUDE.md §Architecture`, `docs-site/…/core/analyzers.mdx`
 
 ### 1c. DI registration
@@ -866,7 +899,7 @@ Use plain `Entity` (anemic, legitimate) when:
 Verify correct base class selection:
 
 | Base class | When |
-|------------|------|
+| ---------- | ---- |
 | `Entity` | No audit fields needed |
 | `CreationAuditedEntity` | Created tracking only |
 | `AuditedEntity` | Created + Modified tracking |
@@ -968,7 +1001,7 @@ Ref: `docs-site/…/data/entity-lifecycle-events.mdx`
 ### 10d. Health check paths
 
 | Probe | Path | Behavior |
-|-------|------|----------|
+| ----- | ---- | -------- |
 | Liveness | `/health/live` | Always 200, no dependency checks |
 | Readiness | `/health/ready` | Checks tagged `"readiness"` |
 | Startup | `/health/startup` | Checks tagged `"startup"` |
@@ -1065,7 +1098,7 @@ Ref: `docs-site/…/concepts/compliance.mdx`
 All analyzer violations must be resolved (not suppressed without justification):
 
 | Rule | Severity | What |
-|------|----------|------|
+| ---- | -------- | ---- |
 | GRMOD001 | Error | Cross-module internal reference |
 | GRMIGA001 | Error | `DropColumn` needs Contract-phase annotation |
 | GRMIGA002 | Error | `RenameColumn` not zero-downtime safe |
@@ -1106,7 +1139,7 @@ Every module with public API surface MUST have a documentation page in
 domain subdirectory:
 
 | Domain | Directory | Example modules |
-|--------|-----------|-----------------|
+| ------ | --------- | --------------- |
 | Core | `core/` | Validation, Observability, Diagnostics |
 | Data | `data/` | Persistence, BlobStorage, Caching, Encryption |
 | API | `api/` | Http, RateLimiting, Webhooks |
@@ -1443,7 +1476,7 @@ two modules; check whether any two DbContexts map the same table name.
 ### Severity guidance (microservices scope)
 
 | Scenario | Severity |
-|----------|----------|
+| -------- | -------- |
 | Cross-module FK / navigation property between two modules' entities | ARCHITECTURE |
 | `SaveChanges` spans two modules' DbContexts (distributed transaction) | ARCHITECTURE |
 | Cross-module `.Include()`/`.Join()` over another module's tables | ARCHITECTURE |
