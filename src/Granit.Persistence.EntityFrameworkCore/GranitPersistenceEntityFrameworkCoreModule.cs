@@ -13,8 +13,8 @@ namespace Granit.Persistence.EntityFrameworkCore;
 /// is not a direct dependency of this module.
 /// </summary>
 [DependsOn(
-    typeof(GranitHttpExceptionHandlingModule),
     typeof(GranitGuidsModule),
+    typeof(GranitHttpExceptionHandlingModule),
     typeof(GranitTimingModule))]
 public sealed class GranitPersistenceEntityFrameworkCoreModule : GranitModule
 {

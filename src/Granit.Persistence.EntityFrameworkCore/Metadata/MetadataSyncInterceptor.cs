@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
 using Granit.Domain;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -24,7 +25,7 @@ namespace Granit.Persistence.EntityFrameworkCore.Metadata;
 /// </para>
 /// </remarks>
 internal sealed class MetadataSyncInterceptor(
-    IMetadataMappingRegistry registry) : SaveChangesInterceptor
+    IMetadataMappingRegistry registry) : SaveChangesInterceptor, IGranitAutoInterceptor
 {
     private readonly ConcurrentDictionary<Type, HashSet<string>> _cache = new();
 

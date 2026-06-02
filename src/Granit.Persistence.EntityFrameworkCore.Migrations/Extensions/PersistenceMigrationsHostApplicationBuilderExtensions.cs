@@ -89,7 +89,7 @@ public static class PersistenceMigrationsHostApplicationBuilderExtensions
 
         // Migration batch executor. Commands are dispatched via ICommandSender (Granit.Wolverine
         // or another provider) and handled by RunMigrationBatchHandler.
-        builder.Services.AddScoped<MigrationBatchExecutor>();
+        builder.Services.AddScoped<IMigrationBatchExecutor, MigrationBatchExecutor>();
 
         // Hosted service — resumes pending and in-progress cycles at startup.
         builder.Services.AddHostedService<MigrationStartupService>();

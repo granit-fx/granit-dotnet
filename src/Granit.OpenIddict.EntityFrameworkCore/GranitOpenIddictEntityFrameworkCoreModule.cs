@@ -42,7 +42,8 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
 
         // LocalIdentity implements IHasMetadata — apps can extend user properties
         // by calling AddMetadataMappings<LocalIdentity> in their own module.
-        // The MetadataSyncInterceptor in Granit.Persistence handles sync automatically.
+        // AddMetadataInfrastructure registers MetadataSyncInterceptor as IGranitAutoInterceptor
+        // so UseGranitInterceptors picks it up on every DbContext automatically.
         context.Services.AddMetadataInfrastructure();
     }
 }

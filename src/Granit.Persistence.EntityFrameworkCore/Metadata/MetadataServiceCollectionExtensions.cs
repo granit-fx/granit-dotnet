@@ -1,4 +1,5 @@
 using Granit.Domain;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -25,6 +26,9 @@ public static class MetadataServiceCollectionExtensions
         services.TryAddSingleton<IMetadataMappingRegistry>(
             sp => sp.GetRequiredService<MetadataMappingRegistry>());
         services.TryAddSingleton<MetadataSyncInterceptor>();
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IGranitAutoInterceptor>(
+                sp => sp.GetRequiredService<MetadataSyncInterceptor>()));
         services.TryAddEnumerable(
             ServiceDescriptor.Singleton<IHostedService, MetadataMappingRegistryInitializer>());
 
