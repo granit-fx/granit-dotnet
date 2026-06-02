@@ -20,4 +20,12 @@ public interface IImportJobWriter
     /// <param name="job">The import job with updated state.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     Task UpdateAsync(ImportJob job, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates an existing import job with optimistic concurrency check.
+    /// </summary>
+    /// <param name="job">The import job with updated state.</param>
+    /// <param name="concurrencyStamp">Client-supplied stamp from the last read; must match the stored value.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task UpdateAsync(ImportJob job, string concurrencyStamp, CancellationToken cancellationToken = default);
 }

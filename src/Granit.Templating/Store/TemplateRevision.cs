@@ -36,4 +36,7 @@ public sealed class TemplateRevision
 
     /// <summary>Layout template name assigned by an administrator.</summary>
     public string? LayoutName { get; init; }
+
+    /// <summary>Opaque optimistic-concurrency token. Pass back in update requests to detect concurrent modifications (HTTP 409).</summary>
+    public required string ConcurrencyStamp { get; init; }
 }

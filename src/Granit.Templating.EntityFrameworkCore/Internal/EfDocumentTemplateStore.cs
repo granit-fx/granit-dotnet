@@ -2,6 +2,7 @@ using Granit.Exceptions;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.Exceptions;
 using Granit.Templating.Keys;
@@ -66,13 +67,34 @@ internal sealed class EfDocumentTemplateStore(
     }
 
     /// <inheritdoc/>
-    public async Task SaveDraftAsync(
+    public Task SaveDraftAsync(
         TemplateKey key,
         string content,
         string mimeType,
         string updatedBy,
         string? layoutName = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default) =>
+        SaveDraftCoreAsync(key, content, mimeType, updatedBy, layoutName, null, cancellationToken);
+
+    /// <inheritdoc/>
+    public Task SaveDraftAsync(
+        TemplateKey key,
+        string content,
+        string mimeType,
+        string updatedBy,
+        string? layoutName,
+        string? concurrencyStamp,
+        CancellationToken cancellationToken = default) =>
+        SaveDraftCoreAsync(key, content, mimeType, updatedBy, layoutName, concurrencyStamp, cancellationToken);
+
+    private async Task SaveDraftCoreAsync(
+        TemplateKey key,
+        string content,
+        string mimeType,
+        string updatedBy,
+        string? layoutName,
+        string? concurrencyStamp,
+        CancellationToken cancellationToken)
     {
         await using TemplatingDbContext ctx = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         TemplateRevisionEntity? existing = await ctx.TemplateRevisions
@@ -84,6 +106,11 @@ internal sealed class EfDocumentTemplateStore(
 
         if (existing is not null)
         {
+            if (concurrencyStamp is not null)
+            {
+                ctx.SetConcurrencyStampOriginalValue(existing, concurrencyStamp);
+            }
+
             // Update existing draft in place (only one draft per key)
             existing.UpdateDraft(content, mimeType, layoutName);
         }
@@ -280,6 +307,7 @@ internal sealed class EfDocumentTemplateStore(
                 PublishedAt = r.PublishedAt,
                 PublishedBy = r.PublishedBy,
                 LayoutName = r.LayoutName,
+                ConcurrencyStamp = r.ConcurrencyStamp,
             })
             .ToListAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -311,6 +339,7 @@ internal sealed class EfDocumentTemplateStore(
             PublishedAt = entity.PublishedAt,
             PublishedBy = entity.PublishedBy,
             LayoutName = entity.LayoutName,
+            ConcurrencyStamp = entity.ConcurrencyStamp,
         };
 
     private string CacheKey(TemplateKey key)

@@ -8,7 +8,7 @@ namespace Granit.Templating.Store;
 /// <remarks>
 /// Lifecycle:
 /// <list type="number">
-///   <item><see cref="SaveDraftAsync"/> — create or update the editable draft for a key.</item>
+///   <item><c>SaveDraftAsync</c> — create or update the editable draft for a key.</item>
 ///   <item><see cref="PublishAsync"/> — promote the current draft to <c>Published</c>,
 ///     archiving any previous published revision.</item>
 ///   <item><see cref="UnpublishAsync"/> — archive the published revision without promoting a new one.</item>
@@ -40,6 +40,29 @@ public interface IDocumentTemplateStoreWriter
         string mimeType,
         string updatedBy,
         string? layoutName = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Creates or replaces the draft for the given key with optimistic concurrency check.
+    /// </summary>
+    /// <remarks>
+    /// The stamp is validated only when an existing draft is found (update path).
+    /// When no draft exists yet (create path) the stamp is ignored.
+    /// </remarks>
+    /// <param name="key">Template key.</param>
+    /// <param name="content">Template source (HTML).</param>
+    /// <param name="mimeType">MIME type (e.g. <c>"text/html"</c>).</param>
+    /// <param name="updatedBy">Identity of the user saving the draft.</param>
+    /// <param name="layoutName">Optional layout template name.</param>
+    /// <param name="concurrencyStamp">Client-supplied stamp from the last read; validated against the stored draft.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task SaveDraftAsync(
+        TemplateKey key,
+        string content,
+        string mimeType,
+        string updatedBy,
+        string? layoutName,
+        string? concurrencyStamp,
         CancellationToken cancellationToken = default);
 
     /// <summary>

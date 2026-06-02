@@ -1,6 +1,7 @@
 using Granit.MultiTenancy.Domain;
 using Granit.MultiTenancy.Stores;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -132,6 +133,28 @@ internal sealed partial class EfCoreTenantStore(
     }
 
     /// <inheritdoc/>
+    public async Task UpdateAsync(
+        Guid id,
+        string name,
+        string? contactEmail,
+        string? jurisdiction,
+        string concurrencyStamp,
+        CancellationToken cancellationToken = default)
+    {
+        await WriteAsync(async db =>
+        {
+            Tenant tenant = await db.Tenants
+                .FirstAsync(t => t.Id == id, cancellationToken)
+                .ConfigureAwait(false);
+
+            db.SetConcurrencyStampOriginalValue(tenant, concurrencyStamp);
+            tenant.UpdateDetails(name, contactEmail, jurisdiction);
+        }, cancellationToken).ConfigureAwait(false);
+
+        LogTenantUpdated(id);
+    }
+
+    /// <inheritdoc/>
     public async Task ActivateAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await WriteAsync(async db =>
@@ -166,7 +189,7 @@ internal sealed partial class EfCoreTenantStore(
     // -------------------------------------------------------------------------
 
     private static TenantData ToData(Tenant tenant) =>
-        new(tenant.Id, tenant.Name, tenant.Identifier, tenant.ContactEmail, tenant.Activated, tenant.Jurisdiction, tenant.CreatedAt, tenant.CustomDomain);
+        new(tenant.Id, tenant.Name, tenant.Identifier, tenant.ContactEmail, tenant.Activated, tenant.Jurisdiction, tenant.CreatedAt, tenant.CustomDomain, tenant.ConcurrencyStamp);
 
     // -------------------------------------------------------------------------
     // Logging

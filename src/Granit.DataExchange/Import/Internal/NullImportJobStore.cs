@@ -30,4 +30,8 @@ internal sealed class NullImportJobStore : IImportJobReader, IImportJobWriter
     /// <inheritdoc/>
     public Task UpdateAsync(ImportJob job, CancellationToken cancellationToken = default) =>
         throw new NotImplementedException(Message);
+
+    /// <inheritdoc/>
+    public Task UpdateAsync(ImportJob job, string concurrencyStamp, CancellationToken cancellationToken = default) =>
+        throw new NotImplementedException(Message);
 }

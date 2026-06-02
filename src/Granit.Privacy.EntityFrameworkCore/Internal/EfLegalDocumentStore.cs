@@ -3,6 +3,7 @@ using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -53,4 +54,13 @@ internal sealed class EfLegalDocumentStore(
     Task ILegalDocumentWriter.UpdateAsync(
         LegalDocument document, CancellationToken cancellationToken) =>
         base.UpdateAsync(document, cancellationToken);
+
+    Task ILegalDocumentWriter.UpdateAsync(
+        LegalDocument document, string concurrencyStamp, CancellationToken cancellationToken) =>
+        WriteAsync(db =>
+        {
+            db.Set<LegalDocument>().Update(document);
+            db.SetConcurrencyStampOriginalValue(document, concurrencyStamp);
+            return Task.CompletedTask;
+        }, cancellationToken);
 }

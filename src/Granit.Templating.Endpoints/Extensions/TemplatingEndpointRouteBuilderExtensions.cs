@@ -153,10 +153,11 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .RequireAuthorization(TemplatingPermissions.Templates.Manage)
              .WithName("UpdateTemplateDraft")
              .WithSummary("Updates an existing template draft.")
-             .WithDescription("Replaces the draft revision content and metadata. Only the draft revision is affected — published and archived revisions are immutable. Creates a new draft if none exists. Returns 404 if the template does not exist.")
+             .WithDescription("Replaces the draft revision content and metadata. Only the draft revision is affected — published and archived revisions are immutable. Creates a new draft if none exists. Returns 409 if the concurrency stamp does not match the stored draft. Returns 404 if the template does not exist.")
              .Produces<TemplateDetailResponse>()
              .ProducesValidationProblem()
              .ProducesProblem(StatusCodes.Status400BadRequest)
+             .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
         templateGroup.MapDelete("/{name}/draft", HandleDeleteDraftAsync)
@@ -414,7 +415,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
         string userId = GetCurrentUserId(context);
         TemplateKey key = new(name, body.Culture);
 
-        await storeWriter.SaveDraftAsync(key, body.Content, body.MimeType, userId, body.LayoutName, cancellationToken).ConfigureAwait(false);
+        await storeWriter.SaveDraftAsync(key, body.Content, body.MimeType, userId, body.LayoutName, body.ConcurrencyStamp, cancellationToken).ConfigureAwait(false);
 
         TemplateRevision? draft = await storeReader.TryGetDraftAsync(key, cancellationToken).ConfigureAwait(false);
         Pipeline.TemplateDescriptor? published = await storeReader.TryGetPublishedAsync(key, cancellationToken).ConfigureAwait(false);
@@ -1140,7 +1141,8 @@ public static class TemplatingEndpointRouteBuilderExtensions
             revision.CreatedBy,
             revision.PublishedAt,
             revision.PublishedBy,
-            revision.LayoutName);
+            revision.LayoutName,
+            revision.ConcurrencyStamp);
 
     private static async Task<TemplateDetailResponse> BuildDetailResponseAsync(
         IDocumentTemplateStoreReader storeReader,

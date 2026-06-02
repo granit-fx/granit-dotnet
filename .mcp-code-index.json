@@ -13127,7 +13127,7 @@
       "kind": "record",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Dtos/Import/ConfirmMappingsRequest.cs",
-      "line": 8,
+      "line": 11,
       "members": []
     },
     {
@@ -13136,7 +13136,7 @@
       "kind": "record",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Dtos/Import/ImportJobResponse.cs",
-      "line": 8,
+      "line": 17,
       "members": []
     },
     {
@@ -14645,6 +14645,12 @@
           "name": "UpdateAsync",
           "kind": "method",
           "signature": "UpdateAsync(ImportJob job, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(ImportJob job, string concurrencyStamp, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -30959,7 +30965,7 @@
       "kind": "record",
       "project": "Granit.MultiTenancy.Endpoints",
       "file": "src/Granit.MultiTenancy.Endpoints/Dtos/TenantResponse.cs",
-      "line": 13,
+      "line": 14,
       "members": []
     },
     {
@@ -30968,7 +30974,7 @@
       "kind": "record",
       "project": "Granit.MultiTenancy.Endpoints",
       "file": "src/Granit.MultiTenancy.Endpoints/Dtos/UpdateTenantRequest.cs",
-      "line": 9,
+      "line": 12,
       "members": []
     },
     {
@@ -31709,6 +31715,12 @@
           "returnType": "Task"
         },
         {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Guid id, string name, string? contactEmail, string? jurisdiction, string concurrencyStamp, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
           "name": "ActivateAsync",
           "kind": "method",
           "signature": "ActivateAsync(Guid id, CancellationToken cancellationToken = default)",
@@ -31728,7 +31740,7 @@
       "kind": "record",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Stores/TenantData.cs",
-      "line": 16,
+      "line": 17,
       "members": []
     },
     {
@@ -40183,7 +40195,7 @@
       "kind": "record",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Dtos/LegalDocumentDetailResponse.cs",
-      "line": 4,
+      "line": 15,
       "members": []
     },
     {
@@ -40192,7 +40204,7 @@
       "kind": "record",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Dtos/LegalDocumentUpdateRequest.cs",
-      "line": 8,
+      "line": 11,
       "members": []
     },
     {
@@ -40921,6 +40933,12 @@
           "name": "UpdateAsync",
           "kind": "method",
           "signature": "UpdateAsync(LegalDocument document, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(LegalDocument document, string concurrencyStamp, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -44672,7 +44690,7 @@
       "kind": "record",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Dtos/SaveTemplateRequest.cs",
-      "line": 17,
+      "line": 22,
       "members": []
     },
     {
@@ -44735,7 +44753,7 @@
       "kind": "record",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Dtos/TemplateRevisionResponse.cs",
-      "line": 5,
+      "line": 15,
       "members": []
     },
     {
@@ -45406,6 +45424,12 @@
           "name": "SaveDraftAsync",
           "kind": "method",
           "signature": "SaveDraftAsync(TemplateKey key, string content, string mimeType, string updatedBy, string? layoutName = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "SaveDraftAsync",
+          "kind": "method",
+          "signature": "SaveDraftAsync(TemplateKey key, string content, string mimeType, string updatedBy, string? layoutName, string? concurrencyStamp, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {

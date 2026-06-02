@@ -3,6 +3,7 @@ using Granit.DataExchange.Import.Pipeline;
 using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
@@ -44,4 +45,13 @@ internal sealed class EfImportJobStore(
     /// <inheritdoc/>
     public new Task UpdateAsync(ImportJob job, CancellationToken cancellationToken = default) =>
         base.UpdateAsync(job, cancellationToken);
+
+    /// <inheritdoc/>
+    public Task UpdateAsync(ImportJob job, string concurrencyStamp, CancellationToken cancellationToken = default) =>
+        WriteAsync(db =>
+        {
+            db.Set<ImportJob>().Update(job);
+            db.SetConcurrencyStampOriginalValue(job, concurrencyStamp);
+            return Task.CompletedTask;
+        }, cancellationToken);
 }
