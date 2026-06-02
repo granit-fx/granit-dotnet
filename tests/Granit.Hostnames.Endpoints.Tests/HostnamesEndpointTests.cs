@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentValidation;
-using Granit.Guids;
 using Granit.Hostnames.Contracts;
 using Granit.Hostnames.Domain;
 using Granit.Hostnames.Endpoints.Dtos;
@@ -22,7 +21,7 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
 
     private readonly IManagedHostnameReader _reader = Substitute.For<IManagedHostnameReader>();
     private readonly IManagedHostnameWriter _writer = Substitute.For<IManagedHostnameWriter>();
-    private readonly IGuidGenerator _guids = Substitute.For<IGuidGenerator>();
+    private readonly IHostnameRegistrationService _service = Substitute.For<IHostnameRegistrationService>();
     private readonly GranitEndpointTestHost _host;
     private readonly HttpClient _authClient;
     private readonly HttpClient _anonClient;
@@ -33,8 +32,6 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
 
     public HostnamesEndpointTests()
     {
-        _guids.Create().Returns(FixedId);
-
         _host = GranitEndpointTestHost.StartAsync(
             configureServices: services =>
             {
@@ -45,7 +42,7 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
 
                 services.AddSingleton(_reader);
                 services.AddSingleton(_writer);
-                services.AddSingleton(_guids);
+                services.AddSingleton(_service);
                 services.AddScoped<IValidator<CreateManagedHostnameRequest>,
                     CreateManagedHostnameRequestValidator>();
             },
@@ -188,8 +185,9 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
     [Fact]
     public async Task Create_Valid_Returns_201_With_Location()
     {
-        _reader.FindByHostAsync("new.example.com", Arg.Any<CancellationToken>())
-            .Returns((ManagedHostname?)null);
+        ManagedHostname hostname = MakeHostname("new.example.com");
+        _service.RegisterAsync("new.example.com", "cms.site", OwnerId, TenantId, false, Arg.Any<CancellationToken>())
+            .Returns(new HostnameRegistrationResult(HostnameRegistrationOutcome.Succeeded, hostname));
 
         var request = new CreateManagedHostnameRequest(
             "new.example.com", "cms.site", OwnerId, TenantId);
@@ -211,8 +209,8 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
     [Fact]
     public async Task Create_DuplicateHost_Returns_409()
     {
-        _reader.FindByHostAsync("taken.example.com", Arg.Any<CancellationToken>())
-            .Returns(MakeHostname("taken.example.com"));
+        _service.RegisterAsync("taken.example.com", Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<Guid?>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns(new HostnameRegistrationResult(HostnameRegistrationOutcome.HostAlreadyTaken, null));
 
         var request = new CreateManagedHostnameRequest(
             "taken.example.com", "cms.site", OwnerId);
@@ -226,6 +224,7 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
     [Fact]
     public async Task Create_InvalidFqdn_Returns_400()
     {
+        // The endpoint pre-validates the FQDN before calling the service — service is not reached.
         var request = new CreateManagedHostnameRequest(
             "not!!valid", "cms.site", OwnerId);
 
@@ -322,31 +321,40 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
     // ── POST /{id}/verify-now ─────────────────────────────────────────────────
 
     [Fact]
-    public async Task VerifyNow_Known_Returns_202_And_Transitions_To_Verifying()
+    public async Task VerifyNow_Known_Returns_202()
     {
         ManagedHostname hostname = MakeHostname();
-        hostname.BeginVerification("tok", [new ExpectedDnsRecord(DnsRecordType.Cname, "acme.com", "ingress.platform.example.com")]);
-        hostname.MarkFailed([], DateTimeOffset.UtcNow); // Error → verify-now calls RequestRecheck
-        _reader.GetByIdAsync(FixedId, Arg.Any<CancellationToken>()).Returns(hostname);
+        _service.RequestVerificationAsync(FixedId, Arg.Any<CancellationToken>())
+            .Returns(new RequestVerificationResult(RequestVerificationOutcome.Succeeded, hostname));
 
         HttpResponseMessage response = await _authClient.PostAsync(
             $"{Prefix}/{FixedId}/verify-now", null, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
-        hostname.Status.ShouldBe(HostnameStatus.Verifying);
-        await _writer.Received(1).UpdateAsync(hostname, Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task VerifyNow_Unknown_Returns_404()
     {
-        _reader.GetByIdAsync(FixedId, Arg.Any<CancellationToken>())
-            .Returns((ManagedHostname?)null);
+        _service.RequestVerificationAsync(FixedId, Arg.Any<CancellationToken>())
+            .Returns(new RequestVerificationResult(RequestVerificationOutcome.NotFound, null));
 
         HttpResponseMessage response = await _authClient.PostAsync(
             $"{Prefix}/{FixedId}/verify-now", null, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task VerifyNow_IngressNotConfigured_Returns_409()
+    {
+        _service.RequestVerificationAsync(FixedId, Arg.Any<CancellationToken>())
+            .Returns(new RequestVerificationResult(RequestVerificationOutcome.IngressNotConfigured, null));
+
+        HttpResponseMessage response = await _authClient.PostAsync(
+            $"{Prefix}/{FixedId}/verify-now", null, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     // ── POST /{id}/certificate-status ─────────────────────────────────────────

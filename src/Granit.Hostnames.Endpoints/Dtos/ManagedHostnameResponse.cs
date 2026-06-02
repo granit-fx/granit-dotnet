@@ -24,6 +24,7 @@ namespace Granit.Hostnames.Endpoints.Dtos;
 /// <param name="CreatedBy">Identity that registered the hostname.</param>
 /// <param name="ModifiedAt">UTC timestamp of the last change; <c>null</c> if never modified.</param>
 /// <param name="ModifiedBy">Identity that last modified the hostname; <c>null</c> if never modified.</param>
+/// <param name="ConcurrencyStamp">Opaque optimistic-concurrency token. Pass back in mutating requests to detect concurrent modifications (HTTP 409).</param>
 public sealed record ManagedHostnameResponse(
     Guid Id,
     string Host,
@@ -43,4 +44,5 @@ public sealed record ManagedHostnameResponse(
     DateTimeOffset CreatedAt,
     string CreatedBy,
     DateTimeOffset? ModifiedAt,
-    string? ModifiedBy);
+    string? ModifiedBy,
+    string ConcurrencyStamp);

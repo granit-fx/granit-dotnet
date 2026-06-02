@@ -841,6 +841,7 @@
       "name": "Granit.Hostnames",
       "deps": [
         "Granit.DataExchange.Abstractions",
+        "Granit.Guids",
         "Granit.QueryEngine.Abstractions",
         "Granit.Workflow"
       ],
@@ -19548,6 +19549,24 @@
       ]
     },
     {
+      "name": "HostnameRegistrationOutcome",
+      "fqn": "Granit.Hostnames.Contracts.HostnameRegistrationOutcome",
+      "kind": "enum",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Contracts/IHostnameRegistrationService.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "HostnameRegistrationResult",
+      "fqn": "Granit.Hostnames.Contracts.HostnameRegistrationResult",
+      "kind": "record",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Contracts/IHostnameRegistrationService.cs",
+      "line": 21,
+      "members": []
+    },
+    {
       "name": "HostnameVerificationResult",
       "fqn": "Granit.Hostnames.Contracts.HostnameVerificationResult",
       "kind": "record",
@@ -19555,6 +19574,28 @@
       "file": "src/Granit.Hostnames/Contracts/IHostnameVerifier.cs",
       "line": 29,
       "members": []
+    },
+    {
+      "name": "IHostnameRegistrationService",
+      "fqn": "Granit.Hostnames.Contracts.IHostnameRegistrationService",
+      "kind": "interface",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Contracts/IHostnameRegistrationService.cs",
+      "line": 57,
+      "members": [
+        {
+          "name": "RegisterAsync",
+          "kind": "method",
+          "signature": "RegisterAsync(string host, string ownerType, Guid ownerId, Guid? tenantId = null, bool isPrimary = false, CancellationToken cancellationToken = default)",
+          "returnType": "Task<HostnameRegistrationResult>"
+        },
+        {
+          "name": "RequestVerificationAsync",
+          "kind": "method",
+          "signature": "RequestVerificationAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RequestVerificationResult>"
+        }
+      ]
     },
     {
       "name": "IHostnameResolver",
@@ -19649,6 +19690,24 @@
           "returnType": "Task"
         }
       ]
+    },
+    {
+      "name": "RequestVerificationOutcome",
+      "fqn": "Granit.Hostnames.Contracts.RequestVerificationOutcome",
+      "kind": "enum",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Contracts/IHostnameRegistrationService.cs",
+      "line": 26,
+      "members": []
+    },
+    {
+      "name": "RequestVerificationResult",
+      "fqn": "Granit.Hostnames.Contracts.RequestVerificationResult",
+      "kind": "record",
+      "project": "Granit.Hostnames",
+      "file": "src/Granit.Hostnames/Contracts/IHostnameRegistrationService.cs",
+      "line": 47,
+      "members": []
     },
     {
       "name": "ResolvedHostname",
@@ -19868,7 +19927,7 @@
       "kind": "record",
       "project": "Granit.Hostnames.Endpoints",
       "file": "src/Granit.Hostnames.Endpoints/Dtos/ManagedHostnameResponse.cs",
-      "line": 27,
+      "line": 28,
       "members": []
     },
     {
@@ -19886,7 +19945,7 @@
       "kind": "class",
       "project": "Granit.Hostnames.Endpoints",
       "file": "src/Granit.Hostnames.Endpoints/Extensions/HostnamesEndpointRouteBuilderExtensions.cs",
-      "line": 21,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitHostnames",
@@ -20081,7 +20140,7 @@
       "kind": "class",
       "project": "Granit.Hostnames",
       "file": "src/Granit.Hostnames/GranitHostnamesModule.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",

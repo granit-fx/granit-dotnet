@@ -10,6 +10,7 @@ using Granit.Hostnames.Services;
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
 using Granit.Workflow;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Hostnames;
@@ -39,5 +40,7 @@ public sealed class GranitHostnamesModule : GranitModule
         // IHostnameVerifier before calling AddGranitHostnames().
         context.Services.TryAddSingleton<ILookupClient>(_ => new LookupClient());
         context.Services.TryAddSingleton<IHostnameVerifier, DnsHostnameVerifier>();
+
+        context.Services.AddScoped<IHostnameRegistrationService, HostnameRegistrationService>();
     }
 }
