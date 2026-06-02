@@ -10,4 +10,4 @@ namespace Granit.DataExchange.Endpoints.Dtos.Import;
 /// <param name="ConcurrencyStamp">Stamp from the last read; must match the stored value (prevents lost updates).</param>
 public sealed record ConfirmMappingsRequest(
     IReadOnlyList<ImportColumnMapping> Mappings,
-    string ConcurrencyStamp = "") : IConcurrencyStampRequest;
+    string ConcurrencyStamp) : IConcurrencyStampRequest;
