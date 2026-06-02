@@ -26,11 +26,17 @@ namespace Granit.BackgroundJobs.Internal;
 internal sealed partial class ChannelCronSchedulerService(
     IServiceScopeFactory scopeFactory,
     IClock clock,
+    IHostEnvironment environment,
     ILogger<ChannelCronSchedulerService> logger) : BackgroundService
 {
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        if (!environment.IsDevelopment())
+        {
+            LogMultiReplicaWarning();
+        }
+
         // Small delay to let seed service run first.
         await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken).ConfigureAwait(false);
 
@@ -101,4 +107,10 @@ internal sealed partial class ChannelCronSchedulerService(
     [LoggerMessage(Level = LogLevel.Information,
         Message = "BackgroundJob '{JobName}' scheduled for first occurrence at {Next}")]
     private partial void LogJobScheduled(string jobName, DateTimeOffset next);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Using the in-process scheduler (Granit.BackgroundJobs without Wolverine) in a non-Development environment. " +
+                  "Recurring jobs may fire on every replica and scheduled state is not persisted across pod restarts. " +
+                  "Add Granit.BackgroundJobs.Wolverine for cluster-safe, durable scheduling.")]
+    private partial void LogMultiReplicaWarning();
 }

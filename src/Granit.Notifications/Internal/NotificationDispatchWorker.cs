@@ -33,29 +33,55 @@ internal sealed partial class NotificationDispatchWorker(
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await foreach (NotificationTrigger trigger in channel.Reader.ReadAllAsync(stoppingToken))
+        try
         {
-            try
+            await foreach (NotificationTrigger trigger in channel.Reader.ReadAllAsync(stoppingToken))
             {
-                await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-                NotificationFanoutHandler fanout =
-                    scope.ServiceProvider.GetRequiredService<NotificationFanoutHandler>();
-
-                IEnumerable<DeliverNotificationCommand> commands =
-                    await fanout.HandleAsync(trigger, stoppingToken).ConfigureAwait(false);
-
-                NotificationDeliveryHandler delivery =
-                    scope.ServiceProvider.GetRequiredService<NotificationDeliveryHandler>();
-
-                foreach (DeliverNotificationCommand command in commands)
-                {
-                    await DeliverWithRetryAsync(delivery, command, stoppingToken).ConfigureAwait(false);
-                }
+                await DispatchTriggerAsync(trigger, stoppingToken).ConfigureAwait(false);
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+        }
+        catch (OperationCanceledException)
+        {
+            // Shutdown requested — fall through to drain remaining buffered triggers.
+        }
+
+        // Graceful drain: StopAsync has completed the writer; no new triggers will arrive.
+        // Bounded by the host ShutdownTimeout (default 5 s) — raise it if needed.
+        while (channel.Reader.TryRead(out NotificationTrigger? trigger))
+        {
+            await DispatchTriggerAsync(trigger, CancellationToken.None).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        channel.Writer.TryComplete();
+        await base.StopAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task DispatchTriggerAsync(NotificationTrigger trigger, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+            NotificationFanoutHandler fanout =
+                scope.ServiceProvider.GetRequiredService<NotificationFanoutHandler>();
+
+            IEnumerable<DeliverNotificationCommand> commands =
+                await fanout.HandleAsync(trigger, cancellationToken).ConfigureAwait(false);
+
+            NotificationDeliveryHandler delivery =
+                scope.ServiceProvider.GetRequiredService<NotificationDeliveryHandler>();
+
+            foreach (DeliverNotificationCommand command in commands)
             {
-                LogFanoutFailed(trigger.NotificationTypeName, trigger.NotificationId, ex);
+                await DeliverWithRetryAsync(delivery, command, cancellationToken).ConfigureAwait(false);
             }
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogFanoutFailed(trigger.NotificationTypeName, trigger.NotificationId, ex);
         }
     }
 

@@ -23,7 +23,15 @@ public sealed class GranitBulkheadOptions
     /// <summary>Whether to use <c>Granit.Features</c> for plan-based quota resolution.</summary>
     public bool UseFeatureBasedQuotas { get; set; }
 
-    /// <summary>Named bulkhead policies. Each policy defines per-tenant concurrency and queue limits.</summary>
+    /// <summary>
+    /// Named bulkhead policies. Each policy defines per-tenant concurrency and queue limits.
+    /// </summary>
+    /// <remarks>
+    /// Limits are enforced <b>per replica</b>. In a multi-replica deployment the effective
+    /// cluster-wide concurrency for a tenant is <c>MaxConcurrency × replica_count</c>.
+    /// Size the per-replica limits accordingly (e.g. divide the desired cluster limit by the
+    /// expected replica count).
+    /// </remarks>
     [Required]
     public Dictionary<string, BulkheadPolicyOptions> Policies { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 

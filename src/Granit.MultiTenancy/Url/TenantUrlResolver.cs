@@ -27,6 +27,10 @@ internal sealed class TenantUrlResolver(
     ITenantReader tenantReader,
     IOptions<MultiTenancyOptions> options) : ITenantUrlResolver
 {
+    // Per-replica in-memory cache: entries are NOT invalidated across replicas. When a tenant's
+    // URL or custom domain changes, Evict() fires on the replica handling the request, while
+    // other replicas serve stale data for up to CacheDuration. This is intentional — URL
+    // resolution tolerates ~5 min eventual consistency and avoids a distributed cache dependency.
     private static readonly ConcurrentDictionary<Guid, (TenantUrlData Data, long ExpiresAtTicks)> Cache = new();
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
 

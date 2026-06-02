@@ -39,36 +39,79 @@ internal sealed partial class WebhookDispatchWorker(
         await Task.WhenAll(triggerTask, commandTask).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        // Seal the trigger channel. ProcessTriggersAsync drains any buffered triggers
+        // and then seals commandChannel, allowing ProcessCommandsAsync to drain cleanly.
+        triggerChannel.Writer.TryComplete();
+        await base.StopAsync(cancellationToken).ConfigureAwait(false);
+    }
+
     private async Task ProcessTriggersAsync(CancellationToken stoppingToken)
     {
-        await foreach (WebhookTrigger trigger in triggerChannel.Reader.ReadAllAsync(stoppingToken))
+        try
         {
-            try
+            await foreach (WebhookTrigger trigger in triggerChannel.Reader.ReadAllAsync(stoppingToken))
             {
-                await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-                WebhookFanoutHandler fanout =
-                    scope.ServiceProvider.GetRequiredService<WebhookFanoutHandler>();
-
-                IEnumerable<SendWebhookCommand> commands =
-                    await fanout.HandleAsync(trigger, stoppingToken).ConfigureAwait(false);
-
-                foreach (SendWebhookCommand command in commands)
-                {
-                    await commandChannel.Writer.WriteAsync(command, stoppingToken).ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex) when (ex is not OperationCanceledException)
-            {
-                LogFanoutFailed(trigger.EventType, trigger.EventId, ex);
+                await FanoutTriggerAsync(trigger, stoppingToken).ConfigureAwait(false);
             }
         }
+        catch (OperationCanceledException)
+        {
+            // Shutdown requested — drain remaining buffered triggers before sealing.
+        }
+
+        // Graceful drain: write resulting commands into commandChannel (writer still open).
+        while (triggerChannel.Reader.TryRead(out WebhookTrigger? trigger))
+        {
+            await FanoutTriggerAsync(trigger, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        // All triggers drained — seal commandChannel so ProcessCommandsAsync finishes.
+        commandChannel.Writer.TryComplete();
     }
 
     private async Task ProcessCommandsAsync(CancellationToken stoppingToken)
     {
-        await foreach (SendWebhookCommand command in commandChannel.Reader.ReadAllAsync(stoppingToken))
+        try
         {
-            await DeliverWithRetryAsync(command, stoppingToken).ConfigureAwait(false);
+            await foreach (SendWebhookCommand command in commandChannel.Reader.ReadAllAsync(stoppingToken))
+            {
+                await DeliverWithRetryAsync(command, stoppingToken).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Shutdown requested — drain commands produced by the trigger drain.
+            // ReadAllAsync(None) completes once ProcessTriggersAsync seals commandChannel.
+        }
+
+        await foreach (SendWebhookCommand command in commandChannel.Reader.ReadAllAsync(CancellationToken.None))
+        {
+            await DeliverWithRetryAsync(command, CancellationToken.None).ConfigureAwait(false);
+        }
+    }
+
+    private async Task FanoutTriggerAsync(WebhookTrigger trigger, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+            WebhookFanoutHandler fanout =
+                scope.ServiceProvider.GetRequiredService<WebhookFanoutHandler>();
+
+            IEnumerable<SendWebhookCommand> commands =
+                await fanout.HandleAsync(trigger, cancellationToken).ConfigureAwait(false);
+
+            foreach (SendWebhookCommand command in commands)
+            {
+                await commandChannel.Writer.WriteAsync(command, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogFanoutFailed(trigger.EventType, trigger.EventId, ex);
         }
     }
 

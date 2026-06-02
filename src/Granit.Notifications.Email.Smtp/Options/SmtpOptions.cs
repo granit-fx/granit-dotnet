@@ -9,6 +9,7 @@ public sealed class SmtpOptions
     public const string SectionName = "Notifications:Email:Smtp";
 
     /// <summary>SMTP server hostname.</summary>
+    [Required]
     public string Host { get; set; } = "localhost";
 
     /// <summary>SMTP server port.</summary>
