@@ -947,7 +947,8 @@
       "deps": [
         "Granit",
         "Granit.Http.ApiDocumentation",
-        "Granit.Http.Cookies"
+        "Granit.Http.Cookies",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },

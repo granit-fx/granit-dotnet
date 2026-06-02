@@ -19,4 +19,4 @@ public sealed record TenantResponse(
     bool Activated,
     string? Jurisdiction,
     DateTimeOffset CreatedAt,
-    string ConcurrencyStamp);
+    string ConcurrencyStamp = "");
