@@ -14,9 +14,15 @@ namespace Granit.Templating.Endpoints.Dtos;
 /// Layout template name assigned to this template.
 /// <c>null</c> means the code-level <c>ILayoutRegistry</c> default applies.
 /// </param>
+/// <param name="ConcurrencyStamp">
+/// Stamp from the last read of the draft revision.
+/// Provide when updating an existing draft to detect concurrent modifications (HTTP 409).
+/// Omit or pass <c>null</c> when creating the first draft for this template key.
+/// </param>
 public sealed record SaveTemplateRequest(
     string? Name,
     string? Culture,
     string Content,
     string MimeType = "text/html",
-    string? LayoutName = null);
+    string? LayoutName = null,
+    string? ConcurrencyStamp = null);

@@ -28,6 +28,17 @@ public interface ITenantWriter
     Task UpdateAsync(Guid id, string name, string? contactEmail, string? jurisdiction, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Updates an existing tenant's details with optimistic concurrency check.
+    /// </summary>
+    /// <param name="id">Tenant identifier.</param>
+    /// <param name="name">New display name.</param>
+    /// <param name="contactEmail">New contact email (or <c>null</c> to clear).</param>
+    /// <param name="jurisdiction">Privacy regulation code or ISO country code (or <c>null</c>).</param>
+    /// <param name="concurrencyStamp">Client-supplied stamp from the last read; must match the stored value.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task UpdateAsync(Guid id, string name, string? contactEmail, string? jurisdiction, string concurrencyStamp, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Activates a tenant.
     /// </summary>
     /// <param name="id">Tenant identifier.</param>

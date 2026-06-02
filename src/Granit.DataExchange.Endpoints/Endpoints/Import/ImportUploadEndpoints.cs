@@ -37,10 +37,11 @@ internal static class ImportUploadEndpoints
         group.MapPut("/{jobId:guid}/mappings", ConfirmMappingsAsync)
             .WithName("ConfirmImportMappings")
             .WithSummary("Confirms the column-to-property mappings for an import job.")
-            .WithDescription("Saves the user-confirmed column-to-property mappings and transitions the job to 'Mapped' status, making it eligible for execution or dry-run. At least one mapping is required. Returns 404 if the job does not exist.")
+            .WithDescription("Saves the user-confirmed column-to-property mappings and transitions the job to 'Mapped' status, making it eligible for execution or dry-run. At least one mapping is required. Returns 404 if the job does not exist. Returns 409 if the concurrency stamp does not match the stored value.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status409Conflict);
 
         return group;
     }
@@ -104,7 +105,7 @@ internal static class ImportUploadEndpoints
         }
 
         job.ConfirmMappings(request.Mappings);
-        await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
+        await jobWriter.UpdateAsync(job, request.ConcurrencyStamp, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();
     }

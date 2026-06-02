@@ -12,4 +12,10 @@ public interface ILegalDocumentWriter
 
     /// <summary>Updates an existing legal document.</summary>
     Task UpdateAsync(LegalDocument document, CancellationToken cancellationToken = default);
+
+    /// <summary>Updates an existing legal document with optimistic concurrency check.</summary>
+    /// <param name="document">The modified document entity.</param>
+    /// <param name="concurrencyStamp">Client-supplied stamp from the last read; must match the stored value.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task UpdateAsync(LegalDocument document, string concurrencyStamp, CancellationToken cancellationToken = default);
 }

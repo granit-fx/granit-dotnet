@@ -13,6 +13,7 @@ namespace Granit.MultiTenancy.Stores;
 /// <param name="Jurisdiction">Privacy regulation code or ISO country code, or <c>null</c>.</param>
 /// <param name="CreatedAt">Timestamp when the tenant was created.</param>
 /// <param name="CustomDomain">Optional custom domain for outbound URL generation (e.g., <c>"app.acme-corp.com"</c>).</param>
+/// <param name="ConcurrencyStamp">Opaque optimistic-concurrency token. Pass back in update requests to detect concurrent modifications (HTTP 409).</param>
 public sealed record TenantData(
     Guid Id,
     string Name,
@@ -21,4 +22,5 @@ public sealed record TenantData(
     bool Activated,
     string? Jurisdiction,
     DateTimeOffset CreatedAt,
-    string? CustomDomain = null);
+    string? CustomDomain = null,
+    string ConcurrencyStamp = "");

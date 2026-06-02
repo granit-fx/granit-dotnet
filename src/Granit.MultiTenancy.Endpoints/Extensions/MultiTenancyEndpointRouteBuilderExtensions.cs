@@ -89,9 +89,10 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
              .RequireAuthorization(MultiTenancyPermissions.Tenants.Update)
              .WithName("UpdateTenant")
              .WithSummary("Updates a tenant's details.")
-             .WithDescription("Updates the display name and contact email of an existing tenant. Returns 404 if the tenant does not exist. Requires the MultiTenancy.Tenants.Update permission.")
+             .WithDescription("Updates the display name and contact email of an existing tenant. Returns 404 if the tenant does not exist. Returns 409 if the concurrency stamp does not match the stored value. Requires the MultiTenancy.Tenants.Update permission.")
              .Produces(StatusCodes.Status204NoContent)
              .ProducesProblem(StatusCodes.Status404NotFound)
+             .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesValidationProblem();
     }
 
@@ -179,7 +180,7 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
         }
 
         await writer
-            .UpdateAsync(id, body.Name, body.ContactEmail, body.Jurisdiction, cancellationToken)
+            .UpdateAsync(id, body.Name, body.ContactEmail, body.Jurisdiction, body.ConcurrencyStamp, cancellationToken)
             .ConfigureAwait(false);
 
         return TypedResults.NoContent();
@@ -226,7 +227,7 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
     // -------------------------------------------------------------------------
 
     private static TenantResponse ToResponse(TenantData data) =>
-        new(data.Id, data.Name, data.Identifier, data.ContactEmail, data.Activated, data.Jurisdiction, data.CreatedAt);
+        new(data.Id, data.Name, data.Identifier, data.ContactEmail, data.Activated, data.Jurisdiction, data.CreatedAt, data.ConcurrencyStamp);
 
     private static ProblemHttpResult TenantNotFound(Guid id) =>
         TypedResults.Problem(

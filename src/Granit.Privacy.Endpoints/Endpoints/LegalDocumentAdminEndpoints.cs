@@ -50,10 +50,12 @@ internal static class LegalDocumentAdminEndpoints
             .WithSummary("Updates a legal document draft.")
             .WithDescription(
                 "Updates metadata of a legal document in Draft status. "
-                + "Returns 400 if the document is not in Draft status.")
+                + "Returns 400 if the document is not in Draft status. "
+                + "Returns 409 if the concurrency stamp does not match the stored value.")
             .Produces<LegalDocumentDetailResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesValidationProblem()
             .RequireAuthorization(PrivacyPermissions.LegalDocuments.Manage);
 
@@ -148,7 +150,7 @@ internal static class LegalDocumentAdminEndpoints
             return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
         }
 
-        await writer.UpdateAsync(document, cancellationToken).ConfigureAwait(false);
+        await writer.UpdateAsync(document, request.ConcurrencyStamp, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(ToResponse(document));
     }
@@ -185,5 +187,6 @@ internal static class LegalDocumentAdminEndpoints
             doc.TemplateName,
             doc.DocumentBlobId,
             doc.CreatedAt,
-            doc.ModifiedAt ?? doc.CreatedAt);
+            doc.ModifiedAt ?? doc.CreatedAt,
+            doc.ConcurrencyStamp);
 }
