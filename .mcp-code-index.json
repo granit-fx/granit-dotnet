@@ -19666,7 +19666,7 @@
         {
           "name": "ListByOwnerAsync",
           "kind": "method",
-          "signature": "ListByOwnerAsync(string ownerType, Guid ownerId, CancellationToken cancellationToken = default)",
+          "signature": "ListByOwnerAsync(string ownerType, Guid ownerId, int maxResults = 500, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<ManagedHostname>>"
         },
         {
@@ -20154,7 +20154,7 @@
       "kind": "class",
       "project": "Granit.Hostnames",
       "file": "src/Granit.Hostnames/GranitHostnamesModule.cs",
-      "line": 25,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
@@ -20293,6 +20293,24 @@
           "kind": "property",
           "signature": "int VerificationBatchSize",
           "returnType": "int"
+        },
+        {
+          "name": "VerificationConcurrency",
+          "kind": "property",
+          "signature": "int VerificationConcurrency",
+          "returnType": "int"
+        },
+        {
+          "name": "DnsQueryTimeoutSeconds",
+          "kind": "property",
+          "signature": "int DnsQueryTimeoutSeconds",
+          "returnType": "int"
+        },
+        {
+          "name": "CertificateWebhookSecret",
+          "kind": "property",
+          "signature": "string? CertificateWebhookSecret",
+          "returnType": "string?"
         }
       ]
     },

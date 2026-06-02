@@ -42,15 +42,15 @@ public sealed partial class HostnameVerificationBatchService(
 
         LogStartingBatch(due.Count);
 
-        foreach (ManagedHostname hostname in due)
-        {
-            if (cancellationToken.IsCancellationRequested)
+        await Parallel.ForEachAsync(
+            due,
+            new ParallelOptions
             {
-                break;
-            }
-
-            await VerifyOneAsync(hostname, now, cancellationToken).ConfigureAwait(false);
-        }
+                MaxDegreeOfParallelism = _options.VerificationConcurrency,
+                CancellationToken = cancellationToken,
+            },
+            (hostname, ct) => new ValueTask(VerifyOneAsync(hostname, now, ct)))
+            .ConfigureAwait(false);
     }
 
     private async Task VerifyOneAsync(

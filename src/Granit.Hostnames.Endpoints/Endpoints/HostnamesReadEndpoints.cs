@@ -19,7 +19,7 @@ internal static class HostnamesReadEndpoints
             .RequireAuthorization(HostnamesPermissions.Hostnames.Read)
             .WithName("ListManagedHostnames")
             .WithSummary("Lists the hostnames registered for an owning resource.")
-            .WithDescription("Returns all hostnames registered for the specified owner (ownerType + ownerId pair), ordered by host name. An empty list is returned when the owner has no registered hostnames. Requires the Hostnames.Read permission.")
+            .WithDescription("Returns hostnames registered for the specified owner (ownerType + ownerId pair), ordered by host name. At most maxResults entries are returned (capped at 500). An empty list is returned when the owner has no registered hostnames. Requires the Hostnames.Read permission.")
             .Produces<IReadOnlyList<ManagedHostnameResponse>>();
 
         group.MapGet("/availability", HandleAvailabilityAsync)
@@ -41,14 +41,20 @@ internal static class HostnamesReadEndpoints
         return group;
     }
 
+    private const int DefaultMaxResults = 100;
+    private const int AbsoluteMaxResults = 500;
+
     private static async Task<Ok<IReadOnlyList<ManagedHostnameResponse>>> HandleListByOwnerAsync(
         [FromQuery] string ownerType,
         [FromQuery] Guid ownerId,
         [FromServices] IManagedHostnameReader reader,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        [FromQuery] int maxResults = DefaultMaxResults)
     {
+        int capped = Math.Clamp(maxResults, 1, AbsoluteMaxResults);
+
         IReadOnlyList<ManagedHostname> hostnames = await reader
-            .ListByOwnerAsync(ownerType, ownerId, cancellationToken)
+            .ListByOwnerAsync(ownerType, ownerId, capped, cancellationToken)
             .ConfigureAwait(false);
 
         return TypedResults.Ok<IReadOnlyList<ManagedHostnameResponse>>(

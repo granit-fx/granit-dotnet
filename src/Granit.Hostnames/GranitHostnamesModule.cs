@@ -5,6 +5,7 @@ using Granit.Hostnames.Contracts;
 using Granit.Hostnames.Diagnostics;
 using Granit.Hostnames.Domain;
 using Granit.Hostnames.Exports;
+using Granit.Hostnames.Options;
 using Granit.Hostnames.Queries;
 using Granit.Hostnames.Services;
 using Granit.Modularity;
@@ -12,6 +13,7 @@ using Granit.QueryEngine.Extensions;
 using Granit.Workflow;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Hostnames;
 
@@ -36,9 +38,21 @@ public sealed class GranitHostnamesModule : GranitModule
         context.Services.AddQueryDefinition<ManagedHostname, ManagedHostnameQueryDefinition>();
         context.Services.AddExportDefinition<ManagedHostname, ManagedHostnameExportDefinition>();
 
-        // Default DNS verifier — uses the system resolver. Replace by registering a custom
-        // IHostnameVerifier before calling AddGranitHostnames().
-        context.Services.TryAddSingleton<ILookupClient>(_ => new LookupClient());
+        // Default DNS verifier — uses the system resolver with explicit bounds.
+        // Replace by registering a custom IHostnameVerifier before calling AddGranitHostnames().
+        context.Services.TryAddSingleton<ILookupClient>(sp =>
+        {
+            HostnamesOptions opts = sp.GetRequiredService<IOptions<HostnamesOptions>>().Value;
+            return new LookupClient(new LookupClientOptions
+            {
+                Timeout = TimeSpan.FromSeconds(opts.DnsQueryTimeoutSeconds),
+                Retries = 1,
+                UseCache = false,         // always query live — verification must see real DNS state
+                ThrowDnsErrors = false,   // DnsResponseException is handled in DnsHostnameVerifier
+                ContinueOnDnsError = true,
+                UseTcpFallback = true,    // required for TXT records that exceed UDP payload limits
+            });
+        });
         context.Services.TryAddSingleton<IHostnameVerifier, DnsHostnameVerifier>();
 
         context.Services.AddScoped<IHostnameRegistrationService, HostnameRegistrationService>();

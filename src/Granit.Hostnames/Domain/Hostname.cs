@@ -45,7 +45,9 @@ public sealed partial class Hostname : SingleValueObject<string>
     /// <summary>Implicit conversion from <see cref="string"/> (validates + normalises).</summary>
     public static implicit operator Hostname(string value) => Create(value);
 
-    [GeneratedRegex(@"^[a-z0-9]+(-[a-z0-9]+)*(\.[a-z0-9]+(-[a-z0-9]+)*)+$",
+    // Requires the TLD (last label) to start with a letter — rejects IPv4 literals such as
+    // 169.254.169.254 or 10.0.0.1 whose final label is all-numeric (RFC 1123 §2.1).
+    [GeneratedRegex(@"^[a-z0-9]+(-[a-z0-9]+)*(\.[a-z0-9]+(-[a-z0-9]+)*)*\.[a-z]([a-z0-9-]*[a-z0-9])?$",
         RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 1000)]
     private static partial Regex FqdnPattern();
 }

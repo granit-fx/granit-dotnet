@@ -13,10 +13,21 @@ public interface IManagedHostnameReader
     /// </summary>
     Task<ManagedHostname?> FindByHostAsync(string host, CancellationToken cancellationToken = default);
 
-    /// <summary>Lists the hostnames registered for an owning resource.</summary>
+    /// <summary>
+    /// Lists the hostnames registered for an owning resource.
+    /// Results are ordered by host name. At most <paramref name="maxResults"/> entries are returned.
+    /// </summary>
+    /// <param name="ownerType">Owner-resource discriminator.</param>
+    /// <param name="ownerId">Owning resource identifier.</param>
+    /// <param name="maxResults">
+    /// Upper bound on the number of entries returned. Capped at <c>500</c> by the EF store
+    /// regardless of the value passed here. Default: <c>500</c>.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task<IReadOnlyList<ManagedHostname>> ListByOwnerAsync(
         string ownerType,
         Guid ownerId,
+        int maxResults = 500,
         CancellationToken cancellationToken = default);
 
     /// <summary>

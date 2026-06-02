@@ -132,6 +132,18 @@ public sealed class ManagedHostnameTests
         hostname.IntegrationEvents.ShouldContain(e => e is Granit.Hostnames.Domain.Events.HostnameVerifiedEto);
     }
 
+    [Fact]
+    public void MarkVerified_clears_verification_token_and_expected_records()
+    {
+        var hostname = ManagedHostname.Create(Id, "acme.com", "cms.site", OwnerId);
+        hostname.BeginVerification("secret-token", SampleRecords);
+
+        hostname.MarkVerified(Now);
+
+        hostname.VerificationToken.ShouldBeNull();
+        hostname.ExpectedDnsRecords.ShouldBeEmpty();
+    }
+
     // ── MarkFailed ────────────────────────────────────────────────────────────
 
     [Fact]
@@ -284,5 +296,20 @@ public sealed class ManagedHostnameTests
         hostname.CertificateStatus.ShouldBe(CertificateStatus.Provisioning);
         hostname.CertExpiresAt.ShouldBeNull();
         hostname.IntegrationEvents.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void ReportCertificateStatus_is_idempotent_for_repeated_identical_status()
+    {
+        var hostname = ManagedHostname.Create(Id, "acme.com", "cms.site", OwnerId, TenantId);
+        DateTimeOffset expires = Now.AddDays(90);
+
+        hostname.ReportCertificateStatus(CertificateStatus.Secured, expires);
+        hostname.ReportCertificateStatus(CertificateStatus.Secured, expires); // duplicate delivery
+
+        // Only one SecuredEto should have been raised, not two.
+        hostname.IntegrationEvents
+            .OfType<Granit.Hostnames.Domain.Events.HostnameCertificateSecuredEto>()
+            .ShouldHaveSingleItem();
     }
 }

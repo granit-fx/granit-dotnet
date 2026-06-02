@@ -60,10 +60,12 @@ internal static class HostnamesWriteEndpoints
 
         group.MapPost("/{id:guid}/certificate-status", HandleReportCertificateStatusAsync)
             .RequireAuthorization(HostnamesPermissions.Certificates.Report)
+            .AddEndpointFilter<CertificateWebhookSignatureFilter>()
             .WithName("ReportHostnameCertificateStatus")
             .WithSummary("Reports the SSL/TLS certificate status from the edge provider.")
-            .WithDescription("Webhook endpoint called by the edge provider (e.g. Cloudflare, AWS) when the certificate state changes. Stores the new CertificateStatus and expiry date, and dispatches the appropriate integration event (HostnameCertificateSecuredEto or HostnameCertificateFailedEto). Returns 204 on success, 404 when not found. Requires the Hostnames.Certificates.Report permission.")
+            .WithDescription("Webhook endpoint called by the edge provider (e.g. Cloudflare, AWS) when the certificate state changes. The request must carry a valid HMAC-SHA-256 signature in the configured header when Hostnames:CertificateWebhookSecret is set. Stores the new CertificateStatus and expiry date, and dispatches the appropriate integration event (HostnameCertificateSecuredEto or HostnameCertificateFailedEto). Idempotent: repeated delivery of the same status does not re-raise events. Returns 204 on success, 404 when not found. Requires the Hostnames.Certificates.Report permission.")
             .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;

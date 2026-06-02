@@ -59,15 +59,19 @@ internal sealed class EfManagedHostnameStore(
             cancellationToken);
     }
 
+    private const int MaxListByOwnerResults = 500;
+
     /// <inheritdoc/>
     public Task<IReadOnlyList<ManagedHostname>> ListByOwnerAsync(
         string ownerType,
         Guid ownerId,
+        int maxResults = MaxListByOwnerResults,
         CancellationToken cancellationToken = default) =>
         ListAsync(
             Spec.For<ManagedHostname>()
                 .Where(h => h.OwnerType == ownerType && h.OwnerId == ownerId)
-                .OrderBy(h => (object)h.Host.Value),
+                .OrderBy(h => (object)h.Host.Value)
+                .Limit(Math.Min(maxResults, MaxListByOwnerResults)),
             cancellationToken);
 
     /// <inheritdoc/>

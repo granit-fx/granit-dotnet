@@ -113,7 +113,7 @@ public sealed class HostnamesEndpointTests : IAsyncDisposable
     [Fact]
     public async Task ListByOwner_Returns_200_With_List()
     {
-        _reader.ListByOwnerAsync("cms.site", OwnerId, Arg.Any<CancellationToken>())
+        _reader.ListByOwnerAsync("cms.site", OwnerId, Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns([MakeHostname(), MakeHostname("alias.acme.com")]);
 
         HttpResponseMessage response = await _authClient.GetAsync(

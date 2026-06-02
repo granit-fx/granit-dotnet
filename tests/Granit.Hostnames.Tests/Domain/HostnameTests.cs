@@ -30,6 +30,18 @@ public sealed class HostnameTests
         Should.Throw<ArgumentException>(() => Hostname.Create(input));
     }
 
+    [Theory]
+    [InlineData("169.254.169.254")] // AWS metadata endpoint
+    [InlineData("10.0.0.1")]        // RFC-1918 private
+    [InlineData("192.168.1.100")]   // RFC-1918 private
+    [InlineData("127.0.0.1")]       // loopback
+    [InlineData("8.8.8.8")]         // any all-numeric labels
+    public void Create_rejects_ip_address_literals(string input)
+    {
+        // RFC 1123 §2.1: the TLD must not be all-numeric.
+        Should.Throw<ArgumentException>(() => Hostname.Create(input));
+    }
+
     [Fact]
     public void Create_rejects_hostnames_over_253_characters()
     {

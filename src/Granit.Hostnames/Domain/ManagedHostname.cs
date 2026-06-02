@@ -210,6 +210,9 @@ public sealed class ManagedHostname : AuditedAggregateRoot, IMultiTenant, IConcu
         Conflicts = [];
         FailedCheckCount = 0;
         NextCheckAt = null;
+        // Challenge token served its purpose — clear to avoid retaining it indefinitely.
+        VerificationToken = null;
+        ExpectedDnsRecords = [];
 
         AddDistributedEvent(new HostnameVerifiedEto(
             Id, Host.Value, OwnerType, OwnerId, TenantId));
@@ -263,8 +266,17 @@ public sealed class ManagedHostname : AuditedAggregateRoot, IMultiTenant, IConcu
     /// <param name="expiresAt">Certificate expiry timestamp (required when <paramref name="status"/> is <see cref="CertificateStatus.Secured"/>).</param>
     public void ReportCertificateStatus(CertificateStatus status, DateTimeOffset? expiresAt = null)
     {
+        bool statusChanged = CertificateStatus != status;
+
         CertificateStatus = status;
         CertExpiresAt = status == CertificateStatus.Secured ? expiresAt : null;
+
+        // Guard: edge providers commonly retry webhook delivery. Only raise an integration
+        // event when the status actually changes to avoid duplicate downstream notifications.
+        if (!statusChanged)
+        {
+            return;
+        }
 
         switch (status)
         {
