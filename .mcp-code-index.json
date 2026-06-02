@@ -45518,13 +45518,7 @@
         {
           "name": "SaveDraftAsync",
           "kind": "method",
-          "signature": "SaveDraftAsync(TemplateKey key, string content, string mimeType, string updatedBy, string? layoutName = null, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "SaveDraftAsync",
-          "kind": "method",
-          "signature": "SaveDraftAsync(TemplateKey key, string content, string mimeType, string updatedBy, string? layoutName, string? concurrencyStamp, CancellationToken cancellationToken = default)",
+          "signature": "SaveDraftAsync(TemplateKey key, string content, string mimeType, string updatedBy, string? layoutName = null, string? concurrencyStamp = null, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
@@ -45635,7 +45629,14 @@
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/TemplateRevision.cs",
       "line": 8,
-      "members": []
+      "members": [
+        {
+          "name": "RevisionId",
+          "kind": "property",
+          "signature": "required Guid RevisionId",
+          "returnType": "required Guid"
+        }
+      ]
     },
     {
       "name": "TemplateSummary",

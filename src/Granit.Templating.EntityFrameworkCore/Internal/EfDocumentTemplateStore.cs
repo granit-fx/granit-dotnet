@@ -73,17 +73,7 @@ internal sealed class EfDocumentTemplateStore(
         string mimeType,
         string updatedBy,
         string? layoutName = null,
-        CancellationToken cancellationToken = default) =>
-        SaveDraftCoreAsync(key, content, mimeType, updatedBy, layoutName, null, cancellationToken);
-
-    /// <inheritdoc/>
-    public Task SaveDraftAsync(
-        TemplateKey key,
-        string content,
-        string mimeType,
-        string updatedBy,
-        string? layoutName,
-        string? concurrencyStamp,
+        string? concurrencyStamp = null,
         CancellationToken cancellationToken = default) =>
         SaveDraftCoreAsync(key, content, mimeType, updatedBy, layoutName, concurrencyStamp, cancellationToken);
 

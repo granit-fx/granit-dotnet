@@ -33,6 +33,11 @@ public interface IDocumentTemplateStoreWriter
     /// Optional layout template name. Overrides the code-level <c>ILayoutRegistry</c>
     /// default. Pass <c>null</c> to use the registry default.
     /// </param>
+    /// <param name="concurrencyStamp">
+    /// Client-supplied stamp from the last read. Validated only when an existing draft is found
+    /// (update path); ignored when creating the first draft for this key.
+    /// Pass <c>null</c> to skip the check.
+    /// </param>
     /// <param name="cancellationToken">Cancellation token.</param>
     Task SaveDraftAsync(
         TemplateKey key,
@@ -40,29 +45,7 @@ public interface IDocumentTemplateStoreWriter
         string mimeType,
         string updatedBy,
         string? layoutName = null,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Creates or replaces the draft for the given key with optimistic concurrency check.
-    /// </summary>
-    /// <remarks>
-    /// The stamp is validated only when an existing draft is found (update path).
-    /// When no draft exists yet (create path) the stamp is ignored.
-    /// </remarks>
-    /// <param name="key">Template key.</param>
-    /// <param name="content">Template source (HTML).</param>
-    /// <param name="mimeType">MIME type (e.g. <c>"text/html"</c>).</param>
-    /// <param name="updatedBy">Identity of the user saving the draft.</param>
-    /// <param name="layoutName">Optional layout template name.</param>
-    /// <param name="concurrencyStamp">Client-supplied stamp from the last read; validated against the stored draft.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    Task SaveDraftAsync(
-        TemplateKey key,
-        string content,
-        string mimeType,
-        string updatedBy,
-        string? layoutName,
-        string? concurrencyStamp,
+        string? concurrencyStamp = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>

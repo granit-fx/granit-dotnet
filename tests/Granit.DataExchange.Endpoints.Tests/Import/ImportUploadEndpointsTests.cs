@@ -261,7 +261,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        await _jobWriter.Received(1).UpdateAsync(Arg.Is<ImportJob>(j => j.Status == ImportJobStatus.Mapped), Arg.Any<CancellationToken>());
+        await _jobWriter.Received(1).UpdateAsync(Arg.Is<ImportJob>(j => j.Status == ImportJobStatus.Mapped), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

@@ -166,7 +166,7 @@ internal static class TemplatingCrudEndpoints
         string userId = GetCurrentUserId(context);
         TemplateKey key = new(body.Name, body.Culture);
 
-        await storeWriter.SaveDraftAsync(key, body.Content, body.MimeType, userId, body.LayoutName, cancellationToken).ConfigureAwait(false);
+        await storeWriter.SaveDraftAsync(key, body.Content, body.MimeType, userId, body.LayoutName, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         TemplateRevision? draft = await storeReader.TryGetDraftAsync(key, cancellationToken).ConfigureAwait(false);
         Pipeline.TemplateDescriptor? published = await storeReader.TryGetPublishedAsync(key, cancellationToken).ConfigureAwait(false);
