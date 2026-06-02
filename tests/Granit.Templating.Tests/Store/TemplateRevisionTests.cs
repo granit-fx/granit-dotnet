@@ -7,6 +7,8 @@ namespace Granit.Templating.Tests.Store;
 
 public sealed class TemplateRevisionTests
 {
+    private const string AnyStamp = "00000000-0000-0000-0000-000000000000";
+
     [Fact]
     public void AllRequiredProperties_CanBeSet()
     {
@@ -22,6 +24,7 @@ public sealed class TemplateRevisionTests
             Version = 1,
             CreatedAt = createdAt,
             CreatedBy = "alice",
+            ConcurrencyStamp = AnyStamp,
         };
 
         revision.RevisionId.ShouldBe(revisionId);
@@ -45,6 +48,7 @@ public sealed class TemplateRevisionTests
             Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "bob",
+            ConcurrencyStamp = AnyStamp,
         };
 
         revision.PublishedAt.ShouldBeNull();
@@ -67,6 +71,7 @@ public sealed class TemplateRevisionTests
             CreatedBy = "alice",
             PublishedAt = publishedAt,
             PublishedBy = "bob",
+            ConcurrencyStamp = AnyStamp,
         };
 
         revision.PublishedAt.ShouldBe(publishedAt);

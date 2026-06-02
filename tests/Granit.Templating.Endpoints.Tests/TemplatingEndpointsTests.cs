@@ -39,6 +39,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 {
     private const string Prefix = "/templating/templates";
     private const string ManageRole = "template-admin";
+    private const string AnyStamp = "00000000-0000-0000-0000-000000000000";
 
     private readonly IDocumentTemplateStoreReader _storeReader = Substitute.For<IDocumentTemplateStoreReader>();
     private readonly IDocumentTemplateStoreWriter _storeWriter = Substitute.For<IDocumentTemplateStoreWriter>();
@@ -139,6 +140,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "user-1",
+            ConcurrencyStamp = AnyStamp,
         };
         _storeReader.TryGetDraftAsync(
                 Arg.Is<TemplateKey>(k => k.Name == "Billing.Invoice"), Arg.Any<CancellationToken>())
@@ -173,6 +175,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "user-1",
+            ConcurrencyStamp = AnyStamp,
         };
         var publishedRevision = new TemplateRevision
         {
@@ -185,6 +188,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             CreatedBy = "user-1",
             PublishedAt = DateTimeOffset.UtcNow.AddHours(-1),
             PublishedBy = "user-1",
+            ConcurrencyStamp = AnyStamp,
         };
         var descriptor = new TemplateDescriptor
         {
@@ -264,6 +268,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test-user",
+            ConcurrencyStamp = AnyStamp,
         };
         _storeReader.TryGetDraftAsync(Arg.Any<TemplateKey>(), Arg.Any<CancellationToken>())
             .Returns(createdDraft);
@@ -355,6 +360,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test-user",
+            ConcurrencyStamp = AnyStamp,
         };
         _storeReader.TryGetDraftAsync(Arg.Any<TemplateKey>(), Arg.Any<CancellationToken>())
             .Returns(updatedDraft);
@@ -493,6 +499,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             CreatedBy = "test-user",
             PublishedAt = DateTimeOffset.UtcNow,
             PublishedBy = "test-user",
+            ConcurrencyStamp = AnyStamp,
         };
 
         _storeWriter.PublishAsync(Arg.Any<TemplateKey>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -668,6 +675,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "user-1",
+            ConcurrencyStamp = AnyStamp,
         };
         _storeReader.TryGetDraftAsync(Arg.Any<TemplateKey>(), Arg.Any<CancellationToken>())
             .Returns(draft);
@@ -763,6 +771,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 CreatedBy = "user-1",
                 PublishedAt = DateTimeOffset.UtcNow,
                 PublishedBy = "user-1",
+                ConcurrencyStamp = AnyStamp,
             },
             new()
             {
@@ -773,6 +782,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-7),
                 CreatedBy = "user-1",
+                ConcurrencyStamp = AnyStamp,
             },
         };
         _storeReader.GetHistoryAsync(Arg.Any<TemplateKey>(), Arg.Any<CancellationToken>())
@@ -805,6 +815,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-i),
                 CreatedBy = "user-1",
+                ConcurrencyStamp = AnyStamp,
             })
             .ToList();
         _storeReader.GetHistoryAsync(Arg.Any<TemplateKey>(), Arg.Any<CancellationToken>())
@@ -875,6 +886,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "user-1",
+            ConcurrencyStamp = AnyStamp,
         };
         _storeReader.GetHistoryAsync(Arg.Any<TemplateKey>(), Arg.Any<CancellationToken>())
             .Returns([revision]);
@@ -1045,6 +1057,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
+                ConcurrencyStamp = AnyStamp,
             });
 
         // Default test app has no ITemplateEngine registered
@@ -1070,6 +1083,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
+                ConcurrencyStamp = AnyStamp,
             });
 
         await using WebApplication app = await BuildAppWithEngineAsync(
@@ -1107,6 +1121,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
+                ConcurrencyStamp = AnyStamp,
             });
 
         await using WebApplication app = await BuildAppWithEngineAsync(
@@ -1138,6 +1153,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
+                ConcurrencyStamp = AnyStamp,
             });
 
         ITemplateEngine engine = Substitute.For<ITemplateEngine>();
@@ -1175,6 +1191,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
+                ConcurrencyStamp = AnyStamp,
             });
 
         ITemplateEngine engine = Substitute.For<ITemplateEngine>();
@@ -1228,6 +1245,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
+                ConcurrencyStamp = AnyStamp,
             });
 
         await using WebApplication app = await BuildAppWithEngineAsync(

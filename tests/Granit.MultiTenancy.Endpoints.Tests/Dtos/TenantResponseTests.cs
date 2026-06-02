@@ -6,13 +6,15 @@ namespace Granit.MultiTenancy.Endpoints.Tests.Dtos;
 
 public sealed class TenantResponseTests
 {
+    private const string AnyStamp = "00000000-0000-0000-0000-000000000000";
+
     [Fact]
     public void Constructor_MapsAllFields()
     {
         var id = Guid.NewGuid();
         DateTimeOffset createdAt = DateTimeOffset.UtcNow;
 
-        TenantResponse response = new(id, "Acme Corp", "acme-corp", "admin@acme.com", true, "BE", createdAt);
+        TenantResponse response = new(id, "Acme Corp", "acme-corp", "admin@acme.com", true, "BE", createdAt, AnyStamp);
 
         response.Id.ShouldBe(id);
         response.Name.ShouldBe("Acme Corp");
@@ -26,7 +28,7 @@ public sealed class TenantResponseTests
     [Fact]
     public void Constructor_NullContactEmail_IsValid()
     {
-        TenantResponse response = new(Guid.NewGuid(), "Acme", "acme", null, true, null, DateTimeOffset.UtcNow);
+        TenantResponse response = new(Guid.NewGuid(), "Acme", "acme", null, true, null, DateTimeOffset.UtcNow, AnyStamp);
 
         response.ContactEmail.ShouldBeNull();
     }

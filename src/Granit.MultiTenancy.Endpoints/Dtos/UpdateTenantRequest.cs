@@ -13,4 +13,4 @@ public sealed record UpdateTenantRequest(
     string Name,
     string? ContactEmail,
     string? Jurisdiction,
-    string ConcurrencyStamp = "") : IConcurrencyStampRequest;
+    string ConcurrencyStamp) : IConcurrencyStampRequest;

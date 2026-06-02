@@ -33,6 +33,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
 {
     private const string AdminRole = "granit-data-exchange-admin";
     private const string Prefix = "/data-exchange/import";
+    private const string AnyStamp = "00000000-0000-0000-0000-000000000000";
 
     private readonly IImportJobReader _jobReader = Substitute.For<IImportJobReader>();
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();
@@ -253,7 +254,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
 
         ConfirmMappingsRequest request = new([
             new ImportColumnMapping("Name", "Name", MappingConfidence.Manual),
-        ]);
+        ], AnyStamp);
 
         // Act
         HttpResponseMessage response = await _adminClient.PutAsJsonAsync(
@@ -270,7 +271,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         // Arrange
         var jobId = Guid.NewGuid();
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns((ImportJob?)null);
-        ConfirmMappingsRequest request = new([new ImportColumnMapping("Name", "Name", MappingConfidence.Manual)]);
+        ConfirmMappingsRequest request = new([new ImportColumnMapping("Name", "Name", MappingConfidence.Manual)], AnyStamp);
 
         // Act
         HttpResponseMessage response = await _adminClient.PutAsJsonAsync(
@@ -287,7 +288,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         var jobId = Guid.NewGuid();
         ImportJob job = BuildJob(jobId, ImportJobStatus.Previewed);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
-        ConfirmMappingsRequest request = new([]);
+        ConfirmMappingsRequest request = new([], AnyStamp);
 
         // Act
         HttpResponseMessage response = await _adminClient.PutAsJsonAsync(

@@ -38,5 +38,5 @@ public sealed class TemplateRevision
     public string? LayoutName { get; init; }
 
     /// <summary>Opaque optimistic-concurrency token. Pass back in update requests to detect concurrent modifications (HTTP 409).</summary>
-    public string ConcurrencyStamp { get; init; } = string.Empty;
+    public required string ConcurrencyStamp { get; init; }
 }

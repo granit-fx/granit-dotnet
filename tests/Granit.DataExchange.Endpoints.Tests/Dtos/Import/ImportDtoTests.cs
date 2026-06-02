@@ -101,7 +101,7 @@ public sealed class ImportDtoTests
             new("Nom", "LastName", MappingConfidence.Exact),
         ];
 
-        ConfirmMappingsRequest request = new(mappings);
+        ConfirmMappingsRequest request = new(mappings, "00000000-0000-0000-0000-000000000000");
 
         request.Mappings.Count.ShouldBe(2);
         request.Mappings[0].SourceColumn.ShouldBe("Email");

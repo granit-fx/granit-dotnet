@@ -9,11 +9,12 @@ namespace Granit.MultiTenancy.Endpoints.Tests.Validators;
 public sealed class UpdateTenantRequestValidatorTests
 {
     private readonly UpdateTenantRequestValidator _validator = new();
+    private const string AnyStamp = "00000000-0000-0000-0000-000000000000";
 
     [Fact]
     public void ValidRequest_Succeeds()
     {
-        UpdateTenantRequest request = new("Updated Name", "admin@acme.com", null);
+        UpdateTenantRequest request = new("Updated Name", "admin@acme.com", null, AnyStamp);
 
         ValidationResult result = _validator.Validate(request);
 
@@ -23,7 +24,7 @@ public sealed class UpdateTenantRequestValidatorTests
     [Fact]
     public void EmptyName_Fails()
     {
-        UpdateTenantRequest request = new("", "admin@acme.com", null);
+        UpdateTenantRequest request = new("", "admin@acme.com", null, AnyStamp);
 
         ValidationResult result = _validator.Validate(request);
 
@@ -34,7 +35,7 @@ public sealed class UpdateTenantRequestValidatorTests
     [Fact]
     public void NameTooLong_Fails()
     {
-        UpdateTenantRequest request = new(new string('A', 257), null, null);
+        UpdateTenantRequest request = new(new string('A', 257), null, null, AnyStamp);
 
         ValidationResult result = _validator.Validate(request);
 
@@ -45,7 +46,7 @@ public sealed class UpdateTenantRequestValidatorTests
     [Fact]
     public void InvalidEmail_Fails()
     {
-        UpdateTenantRequest request = new("Acme", "not-an-email", null);
+        UpdateTenantRequest request = new("Acme", "not-an-email", null, AnyStamp);
 
         ValidationResult result = _validator.Validate(request);
 
@@ -56,7 +57,7 @@ public sealed class UpdateTenantRequestValidatorTests
     [Fact]
     public void NullEmail_Succeeds()
     {
-        UpdateTenantRequest request = new("Acme", null, null);
+        UpdateTenantRequest request = new("Acme", null, null, AnyStamp);
 
         ValidationResult result = _validator.Validate(request);
 
@@ -66,7 +67,7 @@ public sealed class UpdateTenantRequestValidatorTests
     [Fact]
     public void JurisdictionTooLong_Fails()
     {
-        UpdateTenantRequest request = new("Acme", null, new string('A', 17));
+        UpdateTenantRequest request = new("Acme", null, new string('A', 17), AnyStamp);
 
         ValidationResult result = _validator.Validate(request);
 
