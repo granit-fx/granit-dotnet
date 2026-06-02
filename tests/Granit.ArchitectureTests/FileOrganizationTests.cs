@@ -16,7 +16,9 @@ public sealed class FileOrganizationTests
 
     [Fact]
     public void Module_classes_should_be_at_module_root() =>
-        FileOrganizationRules.ModuleClassesShouldBeAtModuleRoot(SrcDir, moduleFilePrefix: "Granit");
+        FileOrganizationRules.ModuleClassesShouldBeAtModuleRoot(SrcDir, moduleFilePrefix: "Granit",
+            // Base class lives in Granit/Modularity/ by design — not a module instance
+            "GranitModule");
 
     [Fact]
     public void Extension_classes_should_not_be_at_module_root() =>
