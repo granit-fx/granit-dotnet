@@ -4,7 +4,8 @@
     <PackageId>Granit.Http.Cookies.Klaro</PackageId>
     <Description>Klaro CMP integration for Granit.Http.Cookies: reads the Klaro consent cookie,
     maps Klaro services to GDPR categories, and implements IConsentResolver.
-    GDPR/ISO 27001 compliant.</Description>
+    GDPR/ISO 27001 compliant. DEPRECATED: use Granit.Http.Cookies.CookieConsent instead.</Description>
+    <PackageReleaseNotes>Deprecated. Use Granit.Http.Cookies.CookieConsent instead.</PackageReleaseNotes>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

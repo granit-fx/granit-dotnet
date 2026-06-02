@@ -107,6 +107,7 @@
       "src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj",
       "src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj",
       "src/Granit.Http.Bulkhead/Granit.Http.Bulkhead.csproj",
+      "src/Granit.Http.Cookies.CookieConsent/Granit.Http.Cookies.CookieConsent.csproj",
       "src/Granit.Http.Cookies.Endpoints/Granit.Http.Cookies.Endpoints.csproj",
       "src/Granit.Http.Cookies.Klaro/Granit.Http.Cookies.Klaro.csproj",
       "src/Granit.Http.Cookies/Granit.Http.Cookies.csproj",

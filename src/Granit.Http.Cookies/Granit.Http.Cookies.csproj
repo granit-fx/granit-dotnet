@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Http.Cookies.Tests" />
+    <InternalsVisibleTo Include="Granit.Http.Cookies.CookieConsent" />
     <InternalsVisibleTo Include="Granit.Http.Cookies.Klaro" />
   </ItemGroup>
 

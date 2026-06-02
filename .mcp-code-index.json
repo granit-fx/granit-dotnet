@@ -936,6 +936,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Http.Cookies.CookieConsent",
+      "deps": [
+        "Granit.Http.Cookies"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Http.Cookies.Endpoints",
       "deps": [
         "Granit",
@@ -20895,6 +20902,94 @@
       "file": "src/Granit.Http.Cookies/CookieCategory.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "CookieConsentServiceCollectionExtensions",
+      "fqn": "Granit.Http.Cookies.CookieConsent.Extensions.CookieConsentServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Cookies.CookieConsent",
+      "file": "src/Granit.Http.Cookies.CookieConsent/Extensions/CookieConsentServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitCookiesCookieConsent",
+          "kind": "method",
+          "signature": "AddGranitCookiesCookieConsent(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitCookiesBuilderExtensions",
+      "fqn": "Granit.Http.Cookies.CookieConsent.Extensions.GranitCookiesBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Cookies.CookieConsent",
+      "file": "src/Granit.Http.Cookies.CookieConsent/Extensions/GranitCookiesBuilderExtensions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "UseCookieConsent",
+          "kind": "method",
+          "signature": "UseCookieConsent(this GranitCookiesBuilder builder)",
+          "returnType": "GranitCookiesBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpCookiesCookieConsentModule",
+      "fqn": "Granit.Http.Cookies.CookieConsent.GranitHttpCookiesCookieConsentModule",
+      "kind": "class",
+      "project": "Granit.Http.Cookies.CookieConsent",
+      "file": "src/Granit.Http.Cookies.CookieConsent/GranitHttpCookiesCookieConsentModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "CookieConsentOptions",
+      "fqn": "Granit.Http.Cookies.CookieConsent.Options.CookieConsentOptions",
+      "kind": "class",
+      "project": "Granit.Http.Cookies.CookieConsent",
+      "file": "src/Granit.Http.Cookies.CookieConsent/Options/CookieConsentOptions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "CookieName",
+          "kind": "property",
+          "signature": "string CookieName",
+          "returnType": "string"
+        },
+        {
+          "name": "FunctionalCategoryName",
+          "kind": "property",
+          "signature": "string FunctionalCategoryName",
+          "returnType": "string"
+        },
+        {
+          "name": "AnalyticsCategoryName",
+          "kind": "property",
+          "signature": "string AnalyticsCategoryName",
+          "returnType": "string"
+        },
+        {
+          "name": "MarketingCategoryName",
+          "kind": "property",
+          "signature": "string MarketingCategoryName",
+          "returnType": "string"
+        },
+        {
+          "name": "SaleOrSharingCategoryName",
+          "kind": "property",
+          "signature": "string SaleOrSharingCategoryName",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "CookieConsentMode",
