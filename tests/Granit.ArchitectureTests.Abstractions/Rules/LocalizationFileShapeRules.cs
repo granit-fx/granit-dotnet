@@ -1,0 +1,105 @@
+using System.Text.Json;
+using Shouldly;
+
+namespace Granit.ArchitectureTests.Abstractions.Rules;
+
+/// <summary>
+/// Reusable rule: every localization JSON file must follow the framework envelope
+/// <c>{ "culture": "&lt;code&gt;", "texts": { ... } }</c>.
+/// </summary>
+public static class LocalizationFileShapeRules
+{
+    /// <summary>
+    /// Asserts that every <c>*.json</c> file under a <c>Localization/</c> folder within
+    /// <paramref name="srcDir"/> uses the framework culture envelope and that the declared
+    /// <c>"culture"</c> value matches the file's base name.
+    /// </summary>
+    public static void EveryLocalizationFileShouldUseCultureEnvelope(string srcDir, string repoRoot)
+    {
+        IReadOnlyList<string> files = [.. EnumerateLocalizationFiles(srcDir)];
+
+        files.ShouldNotBeEmpty(
+            "No localization JSON files discovered — the test cannot run. " +
+            "Expected at least one file under src/**/Localization/**/.");
+
+        List<string> violations = [];
+
+        foreach (string file in files)
+        {
+            string relativePath = Path.GetRelativePath(repoRoot, file);
+            string expectedCulture = Path.GetFileNameWithoutExtension(file);
+
+            JsonDocument document;
+            try
+            {
+                using FileStream stream = File.OpenRead(file);
+                document = JsonDocument.Parse(stream);
+            }
+            catch (JsonException ex)
+            {
+                violations.Add($"{relativePath}: invalid JSON ({ex.Message})");
+                continue;
+            }
+
+            using (document)
+            {
+                JsonElement root = document.RootElement;
+
+                if (root.ValueKind != JsonValueKind.Object)
+                {
+                    violations.Add($"{relativePath}: root must be a JSON object, was {root.ValueKind}");
+                    continue;
+                }
+
+                if (!root.TryGetProperty("culture", out JsonElement culture)
+                    || culture.ValueKind != JsonValueKind.String)
+                {
+                    violations.Add(
+                        $"{relativePath}: missing 'culture' string — wrap content in " +
+                        $"{{ \"culture\": \"{expectedCulture}\", \"texts\": {{ ... }} }}");
+                    continue;
+                }
+
+                if (!root.TryGetProperty("texts", out JsonElement texts)
+                    || texts.ValueKind != JsonValueKind.Object)
+                {
+                    violations.Add(
+                        $"{relativePath}: missing 'texts' object — wrap content in " +
+                        $"{{ \"culture\": \"{expectedCulture}\", \"texts\": {{ ... }} }}");
+                    continue;
+                }
+
+                string declaredCulture = culture.GetString()!;
+                if (!string.Equals(declaredCulture, expectedCulture, StringComparison.Ordinal))
+                {
+                    violations.Add(
+                        $"{relativePath}: 'culture' is \"{declaredCulture}\" but file is " +
+                        $"\"{expectedCulture}.json\" — they must match");
+                }
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            $"{violations.Count} localization JSON file(s) violate the framework envelope. " +
+            "Every src/**/Localization/**/*.json must be of the form " +
+            "{ \"culture\": \"<code>\", \"texts\": { ... } }:" + Environment.NewLine +
+            string.Join(Environment.NewLine, violations.Order(StringComparer.Ordinal)));
+    }
+
+    private static IEnumerable<string> EnumerateLocalizationFiles(string srcDir)
+    {
+        foreach (string file in Directory.EnumerateFiles(srcDir, "*.json", SearchOption.AllDirectories))
+        {
+            if (file.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)
+                || file.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar))
+            {
+                continue;
+            }
+
+            if (file.Replace(Path.DirectorySeparatorChar, '/').Contains("/Localization/", StringComparison.Ordinal))
+            {
+                yield return file;
+            }
+        }
+    }
+}

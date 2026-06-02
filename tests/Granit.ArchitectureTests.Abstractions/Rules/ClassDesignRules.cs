@@ -162,7 +162,13 @@ public static class ClassDesignRules
     /// <summary>
     /// Options classes must be sealed (unless they serve as base classes for other Options).
     /// </summary>
-    public static void OptionsClassesShouldBeSealed(ArchUnitNET.Domain.Architecture architecture, string typePrefix)
+    /// <param name="architecture">The loaded architecture graph to check.</param>
+    /// <param name="typePrefix">Namespace prefix of types to include (e.g. <c>"Granit."</c>).</param>
+    /// <param name="excludedTypeFullNames">Fully-qualified type names to exempt (e.g. inherited framework base classes).</param>
+    public static void OptionsClassesShouldBeSealed(
+        ArchUnitNET.Domain.Architecture architecture,
+        string typePrefix,
+        params string[] excludedTypeFullNames)
     {
         IEnumerable<Class> optionsClasses = architecture.Classes
             .Where(c => c.Name.EndsWith("Options", StringComparison.Ordinal)
@@ -177,8 +183,12 @@ public static class ClassDesignRules
                 .Select(d => d.Target.FullName))
             .ToHashSet(StringComparer.Ordinal);
 
+        HashSet<string> excluded = excludedTypeFullNames.ToHashSet(StringComparer.Ordinal);
+
         IEnumerable<Class> unsealed = optionsClasses
-            .Where(c => c.IsSealed != true && !baseOptionClasses.Contains(c.FullName));
+            .Where(c => c.IsSealed != true
+                && !baseOptionClasses.Contains(c.FullName)
+                && !excluded.Contains(c.FullName));
 
         unsealed.ShouldBeEmpty(
             "Options classes must be sealed. " +
