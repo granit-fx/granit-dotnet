@@ -1,6 +1,6 @@
 using Granit.Http.Cookies.Endpoints.Endpoints;
 using Granit.Http.Cookies.Endpoints.Options;
-using Microsoft.AspNetCore.Builder;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
@@ -24,7 +24,7 @@ public static class CookieConsentEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.RoutePrefix)
+            .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
         group.MapCookieConsentEndpoints();

@@ -52,7 +52,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
         return group;
     }
 
-    private static void RegisterOptOutCookie(ICookieRegistry registry) =>
+    internal static void RegisterOptOutCookie(ICookieRegistry registry) =>
         registry.Register(new CookieDefinition(
             OptOutConstants.CookieName,
             CookieCategory.StrictlyNecessary,

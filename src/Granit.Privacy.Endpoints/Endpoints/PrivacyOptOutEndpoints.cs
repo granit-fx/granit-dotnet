@@ -97,7 +97,7 @@ internal static class PrivacyOptOutEndpoints
         // opt-out store. Authenticated calls keep their tenant context.
         bool trustsAnonymousTenant = endpointOptions.Value.BindAnonymousOptOutToCurrentTenant;
         Guid? tenantId = userId is not null || trustsAnonymousTenant
-            ? ResolveTenantId(currentTenant)
+            ? PrivacyResponseMapper.ResolveTenantId(currentTenant)
             : null;
 
         // Idempotency: return existing opt-out if already active
@@ -152,6 +152,4 @@ internal static class PrivacyOptOutEndpoints
         return TypedResults.Ok(new PrivacyOptOutStatusResponse(isOptedOut, null, regulation));
     }
 
-    private static Guid? ResolveTenantId(ICurrentTenant currentTenant) =>
-        currentTenant.IsAvailable ? currentTenant.Id : null;
 }

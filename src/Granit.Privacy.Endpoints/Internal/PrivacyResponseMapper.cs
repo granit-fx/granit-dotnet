@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using Granit.MultiTenancy;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.Endpoints.Dtos;
@@ -83,6 +84,13 @@ internal static class PrivacyResponseMapper
         PrivacyRegulationProfile profile = await resolver.ResolveAsync(cancellationToken).ConfigureAwait(false);
         return profile.Regulation.Value;
     }
+
+    // -------------------------------------------------------------------------
+    // Tenant helpers
+    // -------------------------------------------------------------------------
+
+    internal static Guid? ResolveTenantId(ICurrentTenant currentTenant) =>
+        currentTenant.IsAvailable ? currentTenant.Id : null;
 
     // -------------------------------------------------------------------------
     // IP pseudonymization

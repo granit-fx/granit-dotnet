@@ -5,6 +5,7 @@ using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.Endpoints.Dtos;
 using Granit.Privacy.Endpoints.Extensions;
+using Granit.Privacy.Endpoints.Internal;
 using Granit.Privacy.Regulations;
 using Granit.Users;
 using Microsoft.AspNetCore.Http;
@@ -29,7 +30,7 @@ public sealed class PrivacyHelperMethodTests
         currentUser.IsAuthenticated.Returns(true);
         currentUser.UserId.Returns(expected.ToString());
 
-        bool result = PrivacyEndpointRouteBuilderExtensions.TryGetUserId(currentUser, out Guid userId);
+        bool result = PrivacyResponseMapper.TryGetUserId(currentUser, out Guid userId);
 
         result.ShouldBeTrue();
         userId.ShouldBe(expected);
@@ -42,7 +43,7 @@ public sealed class PrivacyHelperMethodTests
         currentUser.IsAuthenticated.Returns(false);
         currentUser.UserId.Returns((string?)null);
 
-        bool result = PrivacyEndpointRouteBuilderExtensions.TryGetUserId(currentUser, out Guid userId);
+        bool result = PrivacyResponseMapper.TryGetUserId(currentUser, out Guid userId);
 
         result.ShouldBeFalse();
         userId.ShouldBe(Guid.Empty);
@@ -55,7 +56,7 @@ public sealed class PrivacyHelperMethodTests
         currentUser.IsAuthenticated.Returns(true);
         currentUser.UserId.Returns((string?)null);
 
-        bool result = PrivacyEndpointRouteBuilderExtensions.TryGetUserId(currentUser, out Guid userId);
+        bool result = PrivacyResponseMapper.TryGetUserId(currentUser, out Guid userId);
 
         result.ShouldBeFalse();
         userId.ShouldBe(Guid.Empty);
@@ -68,7 +69,7 @@ public sealed class PrivacyHelperMethodTests
         currentUser.IsAuthenticated.Returns(true);
         currentUser.UserId.Returns("not-a-guid");
 
-        bool result = PrivacyEndpointRouteBuilderExtensions.TryGetUserId(currentUser, out Guid userId);
+        bool result = PrivacyResponseMapper.TryGetUserId(currentUser, out Guid userId);
 
         result.ShouldBeFalse();
         userId.ShouldBe(Guid.Empty);
@@ -88,7 +89,7 @@ public sealed class PrivacyHelperMethodTests
             "Bearer");
         httpContext.User = new ClaimsPrincipal(identity);
 
-        Guid? result = PrivacyEndpointRouteBuilderExtensions.TryGetUserIdOrNull(httpContext);
+        Guid? result = PrivacyResponseMapper.TryGetUserIdOrNull(httpContext);
 
         result.ShouldBe(expected);
     }
@@ -103,7 +104,7 @@ public sealed class PrivacyHelperMethodTests
             "Bearer");
         httpContext.User = new ClaimsPrincipal(identity);
 
-        Guid? result = PrivacyEndpointRouteBuilderExtensions.TryGetUserIdOrNull(httpContext);
+        Guid? result = PrivacyResponseMapper.TryGetUserIdOrNull(httpContext);
 
         result.ShouldBe(expected);
     }
@@ -114,7 +115,7 @@ public sealed class PrivacyHelperMethodTests
         var httpContext = new DefaultHttpContext();
         httpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
 
-        Guid? result = PrivacyEndpointRouteBuilderExtensions.TryGetUserIdOrNull(httpContext);
+        Guid? result = PrivacyResponseMapper.TryGetUserIdOrNull(httpContext);
 
         result.ShouldBeNull();
     }
@@ -128,7 +129,7 @@ public sealed class PrivacyHelperMethodTests
             "Bearer");
         httpContext.User = new ClaimsPrincipal(identity);
 
-        Guid? result = PrivacyEndpointRouteBuilderExtensions.TryGetUserIdOrNull(httpContext);
+        Guid? result = PrivacyResponseMapper.TryGetUserIdOrNull(httpContext);
 
         result.ShouldBeNull();
     }
@@ -140,7 +141,7 @@ public sealed class PrivacyHelperMethodTests
         var identity = new ClaimsIdentity([], "Bearer");
         httpContext.User = new ClaimsPrincipal(identity);
 
-        Guid? result = PrivacyEndpointRouteBuilderExtensions.TryGetUserIdOrNull(httpContext);
+        Guid? result = PrivacyResponseMapper.TryGetUserIdOrNull(httpContext);
 
         result.ShouldBeNull();
     }
@@ -152,7 +153,7 @@ public sealed class PrivacyHelperMethodTests
     [Fact]
     public void UserNotAuthenticated_ReturnsProblemHttpResult()
     {
-        ProblemHttpResult result = PrivacyEndpointRouteBuilderExtensions.UserNotAuthenticated();
+        ProblemHttpResult result = PrivacyResponseMapper.UserNotAuthenticated();
 
         result.ShouldNotBeNull();
         result.StatusCode.ShouldBe(StatusCodes.Status401Unauthorized);
@@ -170,7 +171,7 @@ public sealed class PrivacyHelperMethodTests
         currentTenant.IsAvailable.Returns(true);
         currentTenant.Id.Returns(tenantId);
 
-        Guid? result = PrivacyEndpointRouteBuilderExtensions.ResolveTenantId(currentTenant);
+        Guid? result = PrivacyResponseMapper.ResolveTenantId(currentTenant);
 
         result.ShouldBe(tenantId);
     }
@@ -181,7 +182,7 @@ public sealed class PrivacyHelperMethodTests
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         currentTenant.IsAvailable.Returns(false);
 
-        Guid? result = PrivacyEndpointRouteBuilderExtensions.ResolveTenantId(currentTenant);
+        Guid? result = PrivacyResponseMapper.ResolveTenantId(currentTenant);
 
         result.ShouldBeNull();
     }
@@ -193,7 +194,7 @@ public sealed class PrivacyHelperMethodTests
         currentTenant.IsAvailable.Returns(true);
         currentTenant.Id.Returns((Guid?)null);
 
-        Guid? result = PrivacyEndpointRouteBuilderExtensions.ResolveTenantId(currentTenant);
+        Guid? result = PrivacyResponseMapper.ResolveTenantId(currentTenant);
 
         result.ShouldBeNull();
     }
@@ -222,7 +223,7 @@ public sealed class PrivacyHelperMethodTests
     [Fact]
     public async Task ResolveRegulationAsync_ResolverNull_ReturnsEuGdpr()
     {
-        string result = await PrivacyEndpointRouteBuilderExtensions
+        string result = await PrivacyResponseMapper
             .ResolveRegulationAsync(null, CancellationToken.None);
 
         result.ShouldBe("EU_GDPR");
@@ -246,7 +247,7 @@ public sealed class PrivacyHelperMethodTests
         };
         resolver.ResolveAsync(Arg.Any<CancellationToken>()).Returns(profile);
 
-        string result = await PrivacyEndpointRouteBuilderExtensions
+        string result = await PrivacyResponseMapper
             .ResolveRegulationAsync(resolver, CancellationToken.None);
 
         result.ShouldBe("US_CCPA");
@@ -277,7 +278,7 @@ public sealed class PrivacyHelperMethodTests
         var status = new ExportRequestStatus(requestId, userId, userId, state, requestedAt, completedAt, archiveRef, missingProviders);
 
         PrivacyExportStatusResponse response =
-            PrivacyEndpointRouteBuilderExtensions.MapExportStatus(status);
+            PrivacyResponseMapper.MapExportStatus(status);
 
         response.RequestId.ShouldBe(requestId);
         response.State.ShouldBe(expectedState);
@@ -309,7 +310,7 @@ public sealed class PrivacyHelperMethodTests
             cancelledAt, executedAt, "EU_GDPR", null);
 
         PrivacyDeletionStatusResponse response =
-            PrivacyEndpointRouteBuilderExtensions.MapDeletionStatus(status);
+            PrivacyResponseMapper.MapDeletionStatus(status);
 
         response.RequestId.ShouldBe(requestId);
         response.State.ShouldBe(expectedState);
