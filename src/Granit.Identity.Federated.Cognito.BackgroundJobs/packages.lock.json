@@ -277,8 +277,8 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.8.8",
-        "contentHash": "8xBHfPzBJYV27dxsV6vILcmJMTEwT5Xe1uApBdsY+ej48IAomaMZy/4k0XzyT8xQD3U2Dd7UTSVdQvaRPDKbAg==",
+        "resolved": "4.0.9",
+        "contentHash": "VuEBulOlhbl5N0hzwcYK5zdGOdeugSFts8coPpt9xHSIijwzpufYrcraOf5swVPs5vSR+Ebi8hUktV5e+88uUA==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.7.4, 5.0.0)"
         }

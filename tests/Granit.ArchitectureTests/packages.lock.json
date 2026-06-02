@@ -2225,6 +2225,7 @@
         "dependencies": {
           "DnsClient": "[1.8.*, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )"
         }
@@ -3723,8 +3724,8 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.8.8",
-        "contentHash": "8xBHfPzBJYV27dxsV6vILcmJMTEwT5Xe1uApBdsY+ej48IAomaMZy/4k0XzyT8xQD3U2Dd7UTSVdQvaRPDKbAg==",
+        "resolved": "4.0.9",
+        "contentHash": "VuEBulOlhbl5N0hzwcYK5zdGOdeugSFts8coPpt9xHSIijwzpufYrcraOf5swVPs5vSR+Ebi8hUktV5e+88uUA==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.7.4, 5.0.0)"
         }
@@ -3732,8 +3733,8 @@
       "AWSSDK.KeyManagementService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.11.2",
-        "contentHash": "XpqF7wg5gN62RlFNxAfpOLH/v1UYcyOloq0VVrNP/pOheTNhEVVxz13ysnie2WvWCoRu51kQNeemC1WVMV8leA==",
+        "resolved": "4.0.12",
+        "contentHash": "aaFvN3Wu1LFbdx57PCvyyVjg/RFwvxeCn8zCzI0F8rCNR0tNw3JkDzjyEDbry4L6KJJJXa5m/waXEXPIMTP+qg==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.7.4, 5.0.0)"
         }
@@ -3741,8 +3742,8 @@
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.23.5",
-        "contentHash": "B7UPvqeZD/jIO1eMhCiNRfcvGChjP2yAHIj0NIIhXUVoH2u56YKkIR5CR7lmZfagJN8bCMMZpuxDbYBzgENZ0g==",
+        "resolved": "4.0.23.6",
+        "contentHash": "YIvO2mC1NQRfbjAw2MCla+GGpjOoEIYXX0hi9oGt1/Qqa4ZsSfSZVX7ohydgPPmlx2T62diZQo1MBlOBDfNFxg==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.7.4, 5.0.0)"
         }

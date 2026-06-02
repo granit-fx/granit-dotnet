@@ -407,8 +407,8 @@
       "AWSSDK.KeyManagementService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.11.2",
-        "contentHash": "XpqF7wg5gN62RlFNxAfpOLH/v1UYcyOloq0VVrNP/pOheTNhEVVxz13ysnie2WvWCoRu51kQNeemC1WVMV8leA==",
+        "resolved": "4.0.12",
+        "contentHash": "aaFvN3Wu1LFbdx57PCvyyVjg/RFwvxeCn8zCzI0F8rCNR0tNw3JkDzjyEDbry4L6KJJJXa5m/waXEXPIMTP+qg==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.7.4, 5.0.0)"
         }
