@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Granit.MultiTenancy;
 using Granit.Notifications.Endpoints.Dtos;
+using Granit.Notifications.Endpoints.Internal;
 using Granit.Notifications.Endpoints.Options;
 using Granit.Notifications.Endpoints.Permissions;
 using Granit.Notifications.MobilePush;
@@ -69,7 +70,7 @@ public static class MobilePushTokenEndpoints
         [FromServices] ICurrentTenant tenant,
         CancellationToken cancellationToken)
     {
-        string userId = GetUserId(user);
+        string userId = NotificationsResponseMapper.GetUserId(user);
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
 
         // Check if token already exists (upsert) — equality is on the encrypted
@@ -97,7 +98,7 @@ public static class MobilePushTokenEndpoints
         [FromServices] ICurrentTenant tenant,
         CancellationToken cancellationToken)
     {
-        string userId = GetUserId(user);
+        string userId = NotificationsResponseMapper.GetUserId(user);
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
 
         await tokenWriter.RemoveAsync(deviceToken, userId, tenantId, cancellationToken).ConfigureAwait(false);
@@ -111,7 +112,7 @@ public static class MobilePushTokenEndpoints
         [FromServices] ICurrentTenant tenant,
         CancellationToken cancellationToken)
     {
-        string userId = GetUserId(user);
+        string userId = NotificationsResponseMapper.GetUserId(user);
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
 
         IReadOnlyList<MobilePushToken> tokens = await tokenReader
@@ -125,8 +126,4 @@ public static class MobilePushTokenEndpoints
         return TypedResults.Ok(response);
     }
 
-    private static string GetUserId(ClaimsPrincipal user) =>
-        user.FindFirstValue(ClaimTypes.NameIdentifier)
-        ?? user.FindFirstValue("sub")
-        ?? throw new InvalidOperationException("User identifier claim not found.");
 }

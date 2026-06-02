@@ -18877,7 +18877,7 @@
       "kind": "class",
       "project": "Granit.Features.Endpoints",
       "file": "src/Granit.Features.Endpoints/Extensions/FeaturesEndpointRouteBuilderExtensions.cs",
-      "line": 20,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitFeatures",
@@ -21070,13 +21070,13 @@
       "kind": "class",
       "project": "Granit.Http.Cookies.Endpoints",
       "file": "src/Granit.Http.Cookies.Endpoints/Extensions/CookieConsentEndpointRouteBuilderExtensions.cs",
-      "line": 15,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitCookieConsent",
           "kind": "method",
           "signature": "MapGranitCookieConsent(this IEndpointRouteBuilder endpoints, Action<CookieConsentEndpointsOptions>? configure = null)",
-          "returnType": "IEndpointRouteBuilder"
+          "returnType": "RouteGroupBuilder"
         }
       ]
     },
@@ -29681,7 +29681,7 @@
       "kind": "class",
       "project": "Granit.Localization.Endpoints",
       "file": "src/Granit.Localization.Endpoints/Extensions/LocalizationEndpointRouteBuilderExtensions.cs",
-      "line": 36,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitLocalization",
@@ -31078,7 +31078,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.Endpoints",
       "file": "src/Granit.MultiTenancy.Endpoints/Extensions/MultiTenancyEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitMultiTenancy",
@@ -33028,7 +33028,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/Endpoints/MobilePushTokenEndpoints.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "MapGranitMobilePushTokens",
@@ -33044,7 +33044,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/Extensions/NotificationEndpointRouteBuilderExtensions.cs",
-      "line": 24,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitNotifications",
@@ -40443,7 +40443,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Extensions/PrivacyEndpointRouteBuilderExtensions.cs",
-      "line": 39,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitPrivacy",
@@ -44013,7 +44013,7 @@
       "kind": "class",
       "project": "Granit.Settings.Endpoints",
       "file": "src/Granit.Settings.Endpoints/Extensions/AdminSettingsEndpointRouteBuilderExtensions.cs",
-      "line": 20,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitGlobalSettings",
@@ -44029,7 +44029,7 @@
       "kind": "class",
       "project": "Granit.Settings.Endpoints",
       "file": "src/Granit.Settings.Endpoints/Extensions/UserSettingsEndpointRouteBuilderExtensions.cs",
-      "line": 19,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitUserSettings",
@@ -44884,7 +44884,7 @@
       "kind": "class",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Extensions/TemplatingEndpointRouteBuilderExtensions.cs",
-      "line": 37,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitTemplating",
@@ -48477,7 +48477,7 @@
       "kind": "class",
       "project": "Granit.Validation.Endpoints",
       "file": "src/Granit.Validation.Endpoints/Extensions/ValidationEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitValidation",

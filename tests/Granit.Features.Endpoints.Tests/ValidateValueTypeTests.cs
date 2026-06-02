@@ -1,5 +1,5 @@
 using Granit.Features.Definitions;
-using Granit.Features.Endpoints.Extensions;
+using Granit.Features.Endpoints.Internal;
 using Granit.Features.Exceptions;
 using Granit.Features.ValueTypes;
 using Shouldly;
@@ -24,7 +24,7 @@ public sealed class ValidateValueTypeTests
     {
         FeatureDefinition definition = new("App.Feature", "false", FeatureValueType.Toggle);
 
-        Action act = () => FeaturesEndpointRouteBuilderExtensions.ValidateValueType(definition, value);
+        Action act = () => FeaturesResponseMapper.ValidateValueType(definition, value);
 
         Should.NotThrow(act);
     }
@@ -40,7 +40,7 @@ public sealed class ValidateValueTypeTests
     {
         FeatureDefinition definition = new("App.Feature", "false", FeatureValueType.Toggle);
 
-        Action act = () => FeaturesEndpointRouteBuilderExtensions.ValidateValueType(definition, value);
+        Action act = () => FeaturesResponseMapper.ValidateValueType(definition, value);
 
         FeatureValueValidationException ex = Should.Throw<FeatureValueValidationException>(act);
         ex.FeatureName.ShouldBe("App.Feature");
@@ -59,7 +59,7 @@ public sealed class ValidateValueTypeTests
             NumericConstraint = new NumericConstraint(1, 10_000),
         };
 
-        Action act = () => FeaturesEndpointRouteBuilderExtensions.ValidateValueType(definition, "500");
+        Action act = () => FeaturesResponseMapper.ValidateValueType(definition, "500");
 
         Should.NotThrow(act);
     }
@@ -72,7 +72,7 @@ public sealed class ValidateValueTypeTests
             NumericConstraint = new NumericConstraint(1, 100),
         };
 
-        Action act = () => FeaturesEndpointRouteBuilderExtensions.ValidateValueType(definition, "999");
+        Action act = () => FeaturesResponseMapper.ValidateValueType(definition, "999");
 
         Should.Throw<FeatureValueValidationException>(act);
     }
@@ -85,7 +85,7 @@ public sealed class ValidateValueTypeTests
             NumericConstraint = new NumericConstraint(1, 100),
         };
 
-        Action act = () => FeaturesEndpointRouteBuilderExtensions.ValidateValueType(definition, "abc");
+        Action act = () => FeaturesResponseMapper.ValidateValueType(definition, "abc");
 
         Should.Throw<FeatureValueValidationException>(act);
     }
@@ -99,7 +99,7 @@ public sealed class ValidateValueTypeTests
     {
         FeatureDefinition definition = new("App.MaxUsers", "50", FeatureValueType.Numeric);
 
-        Action act = () => FeaturesEndpointRouteBuilderExtensions.ValidateValueType(definition, "999");
+        Action act = () => FeaturesResponseMapper.ValidateValueType(definition, "999");
 
         Should.NotThrow(act);
     }
@@ -109,7 +109,7 @@ public sealed class ValidateValueTypeTests
     {
         FeatureDefinition definition = new("App.MaxUsers", "50", FeatureValueType.Numeric);
 
-        Action act = () => FeaturesEndpointRouteBuilderExtensions.ValidateValueType(definition, "abc");
+        Action act = () => FeaturesResponseMapper.ValidateValueType(definition, "abc");
 
         FeatureValueValidationException ex = Should.Throw<FeatureValueValidationException>(act);
         ex.FeatureName.ShouldBe("App.MaxUsers");
@@ -128,7 +128,7 @@ public sealed class ValidateValueTypeTests
             SelectionValues = new SelectionValues(["light", "dark", "auto"]),
         };
 
-        Action act = () => FeaturesEndpointRouteBuilderExtensions.ValidateValueType(definition, "dark");
+        Action act = () => FeaturesResponseMapper.ValidateValueType(definition, "dark");
 
         Should.NotThrow(act);
     }
@@ -141,7 +141,7 @@ public sealed class ValidateValueTypeTests
             SelectionValues = new SelectionValues(["light", "dark", "auto"]),
         };
 
-        Action act = () => FeaturesEndpointRouteBuilderExtensions.ValidateValueType(definition, "neon");
+        Action act = () => FeaturesResponseMapper.ValidateValueType(definition, "neon");
 
         Should.Throw<FeatureValueValidationException>(act);
     }
@@ -151,7 +151,7 @@ public sealed class ValidateValueTypeTests
     {
         FeatureDefinition definition = new("App.Theme", "light", FeatureValueType.Selection);
 
-        Action act = () => FeaturesEndpointRouteBuilderExtensions.ValidateValueType(definition, "anything");
+        Action act = () => FeaturesResponseMapper.ValidateValueType(definition, "anything");
 
         Should.NotThrow(act);
     }
@@ -164,7 +164,7 @@ public sealed class ValidateValueTypeTests
     public void FeatureNotFound_Returns_ProblemHttpResult_With404()
     {
         Microsoft.AspNetCore.Http.HttpResults.ProblemHttpResult result =
-            FeaturesEndpointRouteBuilderExtensions.FeatureNotFound("Unknown.Feature");
+            FeaturesResponseMapper.FeatureNotFound();
 
         result.StatusCode.ShouldBe(404);
     }

@@ -2,7 +2,6 @@ using Granit.MultiTenancy;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Audit;
 using Granit.Privacy.DataExport.Exceptions;
-using Granit.Privacy.Endpoints.Extensions;
 using Granit.Privacy.Endpoints.Internal;
 using Granit.Privacy.Endpoints.Options;
 using Granit.Privacy.Endpoints.Permissions;
@@ -91,9 +90,9 @@ internal static class PrivacyExportDownloadEndpoints
         [FromServices] TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
-        if (!PrivacyEndpointRouteBuilderExtensions.TryGetUserId(currentUser, out Guid userId))
+        if (!PrivacyResponseMapper.TryGetUserId(currentUser, out Guid userId))
         {
-            return PrivacyEndpointRouteBuilderExtensions.UserNotAuthenticated();
+            return PrivacyResponseMapper.UserNotAuthenticated();
         }
 
         ExportRequestStatus? status = await tracker.GetStatusAsync(requestId, cancellationToken).ConfigureAwait(false);
@@ -135,9 +134,9 @@ internal static class PrivacyExportDownloadEndpoints
         [FromServices] TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
-        if (!PrivacyEndpointRouteBuilderExtensions.TryGetUserId(currentUser, out Guid userId))
+        if (!PrivacyResponseMapper.TryGetUserId(currentUser, out Guid userId))
         {
-            return PrivacyEndpointRouteBuilderExtensions.UserNotAuthenticated();
+            return PrivacyResponseMapper.UserNotAuthenticated();
         }
 
         ExportRequestStatus? status = await tracker.GetStatusAsync(requestId, cancellationToken).ConfigureAwait(false);
@@ -173,9 +172,9 @@ internal static class PrivacyExportDownloadEndpoints
         [FromServices] TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
-        if (!PrivacyEndpointRouteBuilderExtensions.TryGetUserId(currentUser, out Guid userId))
+        if (!PrivacyResponseMapper.TryGetUserId(currentUser, out Guid userId))
         {
-            return PrivacyEndpointRouteBuilderExtensions.UserNotAuthenticated();
+            return PrivacyResponseMapper.UserNotAuthenticated();
         }
 
         ExportRequestStatus? status = await tracker.GetStatusAsync(requestId, cancellationToken).ConfigureAwait(false);
@@ -266,7 +265,7 @@ internal static class PrivacyExportDownloadEndpoints
                 SubjectUserId: subjectUserId,
                 TenantId: currentTenant.IsAvailable ? currentTenant.Id : null,
                 ShardIndex: shardIndex,
-                ClientIp: PrivacyEndpointRouteBuilderExtensions.PseudonymizeIpAddress(httpContext.Connection.RemoteIpAddress?.ToString()),
+                ClientIp: PrivacyResponseMapper.PseudonymizeIpAddress(httpContext.Connection.RemoteIpAddress?.ToString()),
                 UserAgent: httpContext.Request.Headers.UserAgent.ToString(),
                 AuthMethod: httpContext.User.Identity?.AuthenticationType,
                 CorrelationId: httpContext.TraceIdentifier,

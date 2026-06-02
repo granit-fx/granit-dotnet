@@ -1,49 +1,20 @@
-// ---------------------------------------------------------------------------
-// LocalizationEndpointRouteBuilderExtensions.cs
-// Minimal API extensions for Granit localization:
-//   - MapGranitLocalization: GET /{prefix}/localization (SPA bootstrapping, anonymous)
-//   - MapGranitLocalizationOverrides: query-engine list/meta + CRUD
-//     under /{prefix}/localization/overrides
-//     (admin, requires Localization.Overrides.Manage permission)
-// ---------------------------------------------------------------------------
-
-using System.Globalization;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using Granit.Localization.Domain;
-using Granit.Localization.Endpoints.Dtos;
+using Granit.Localization.Endpoints.Endpoints;
 using Granit.Localization.Endpoints.Options;
 using Granit.Localization.Endpoints.Permissions;
-using Granit.Localization.Options;
-using Granit.QueryEngine;
 using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi;
 
 namespace Granit.Localization.Endpoints.Extensions;
 
 /// <summary>
 /// Extension methods for mapping Granit localization endpoints.
 /// </summary>
-public static partial class LocalizationEndpointRouteBuilderExtensions
+public static class LocalizationEndpointRouteBuilderExtensions
 {
-    // BCP 47 language tag: 2-8 alpha primary subtag, optional hyphen-separated subtags (1-8 alphanumeric).
-    [GeneratedRegex(@"^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{1,8})*$")]
-    private static partial Regex Bcp47Pattern();
-
-    // Column size constraints (must match LocalizationOverrideConfiguration).
-    private const int MaxResourceNameLength = 200;
-    private const int MaxKeyLength = 500;
-    private const int MaxValueLength = 4000;
-
     /// <summary>
     /// Maps <c>GET /{prefix}/localization</c> — returns all registered localization
     /// resources for the requested culture, plus the list of available languages.
@@ -65,44 +36,9 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
         LocalizationEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        endpoints
-            .MapGet(options.RoutePrefix, HandleGetLocalization)
-            .AllowAnonymous()
-            .WithName("GetLocalization")
-            .WithTags(options.TagName)
-            .WithSummary("Returns all localization resources for the requested culture.")
-            .WithDescription("Returns all localization resources (key-value pairs) for the requested culture, grouped by resource name. Accepts an optional cultureName query parameter (BCP 47 format); defaults to the Accept-Language header culture. Also returns the list of supported languages. Response is cached for 1 hour (Cache-Control: public, max-age=3600, Vary: Accept-Language). Anonymous — no authentication required.")
-            .Produces<ApplicationLocalizationResponse>()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .AddOpenApiOperationTransformer(DescribeCultureNameParam);
+        endpoints.MapLocalizationReadEndpoints(options.RoutePrefix, options.TagName);
 
         return endpoints;
-    }
-
-    private static Task DescribeCultureNameParam(
-        OpenApiOperation operation,
-        OpenApiOperationTransformerContext context,
-        CancellationToken cancellationToken)
-    {
-        if (operation.Parameters is null)
-        {
-            return Task.CompletedTask;
-        }
-
-        IEnumerable<IOpenApiParameter> cultureNameQueryParams = operation.Parameters
-            .Where(p => p.Name == "cultureName"
-                && p.In == ParameterLocation.Query
-                && p.Schema is OpenApiSchema);
-
-        foreach (IOpenApiParameter parameter in cultureNameQueryParams)
-        {
-            var schema = (OpenApiSchema)parameter.Schema!;
-            parameter.Description ??= "Optional BCP 47 culture tag (e.g. 'fr', 'fr-BE', 'zh-Hant-TW'). When omitted, the Accept-Language header is used.";
-            schema.Pattern ??= "^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{1,8})*$";
-            schema.Example ??= System.Text.Json.Nodes.JsonValue.Create("fr-BE");
-        }
-
-        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -119,11 +55,10 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
     /// </list>
     /// </para>
     /// <para>
-    /// The list/meta endpoints require <see cref="IQueryableSource{TEntity}"/> for
-    /// <see cref="LocalizationOverride"/> to be registered (provided by
-    /// <c>AddGranitLocalizationEntityFrameworkCore</c>). The PUT/DELETE endpoints require
-    /// <see cref="ILocalizationOverrideStoreWriter"/> to be registered (same call);
-    /// without it they return <c>501 Not Implemented</c>.
+    /// The list/meta endpoints require an <c>IQueryableSource&lt;LocalizationOverride&gt;</c>
+    /// to be registered (provided by <c>AddGranitLocalizationEntityFrameworkCore</c>).
+    /// The PUT/DELETE endpoints require <c>ILocalizationOverrideStoreWriter</c> to be registered
+    /// (same call); without it they return <c>501 Not Implemented</c>.
     /// </para>
     /// <para>
     /// All endpoints require the <c>Localization.Overrides.Manage</c> permission.
@@ -151,198 +86,9 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
             .RequireAuthorization(LocalizationOverridesPermissions.Overrides.Manage)
             .WithTags(options.TagName);
 
-        // Query-engine surface: GET / (list) + GET /meta (definition).
-        // Inherits the group's auth + tags so we don't need TagName / AuthorizationPolicy here.
         group.MapGranitQuery<LocalizationOverride>();
-
-        group.MapPut("/{resourceName}/{cultureName}/{key}", HandlePutOverrideAsync)
-             .WithName("PutLocalizationOverride")
-             .WithSummary("Creates or updates a translation override.")
-             .WithDescription("Sets a translation override for a specific resource, culture, and key. If an override already exists, it is replaced. The culture name must be a valid BCP 47 tag. Returns 501 if no override store is registered.")
-             .Produces(StatusCodes.Status204NoContent)
-             .ProducesProblem(StatusCodes.Status400BadRequest)
-             .ProducesProblem(StatusCodes.Status501NotImplemented);
-
-        group.MapDelete("/{resourceName}/{cultureName}/{key}", HandleDeleteOverrideAsync)
-             .WithName("DeleteLocalizationOverride")
-             .WithSummary("Removes a translation override.")
-             .WithDescription("Removes the translation override for the specified resource, culture, and key. The original value from the resource file becomes effective again. No-op if the override does not exist. Returns 501 if no override store is registered.")
-             .Produces(StatusCodes.Status204NoContent)
-             .ProducesProblem(StatusCodes.Status400BadRequest)
-             .ProducesProblem(StatusCodes.Status501NotImplemented);
+        group.MapLocalizationWriteEndpoints();
 
         return group;
-    }
-
-    // -------------------------------------------------------------------------
-    // Handlers — GET /{prefix}/localization
-    // -------------------------------------------------------------------------
-
-    private static Results<Ok<ApplicationLocalizationResponse>, ProblemHttpResult> HandleGetLocalization(
-        HttpContext context,
-        string? cultureName = null)
-    {
-        IOptions<GranitLocalizationOptions> options =
-            context.RequestServices.GetRequiredService<IOptions<GranitLocalizationOptions>>();
-        IStringLocalizerFactory localizerFactory =
-            context.RequestServices.GetRequiredService<IStringLocalizerFactory>();
-
-        if (!string.IsNullOrWhiteSpace(cultureName) && !Bcp47Pattern().IsMatch(cultureName))
-        {
-            return TypedResults.Problem(
-                detail: $"Culture name '{cultureName}' is not supported.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        CultureInfo culture = string.IsNullOrWhiteSpace(cultureName)
-            ? CultureInfo.CurrentUICulture
-            : CultureInfo.GetCultureInfo(cultureName);
-
-        CultureInfo previousCulture = CultureInfo.CurrentUICulture;
-        Dictionary<string, IReadOnlyDictionary<string, string>> resources;
-
-        try
-        {
-            CultureInfo.CurrentUICulture = culture;
-            resources = BuildResources(options.Value, localizerFactory);
-        }
-        finally
-        {
-            CultureInfo.CurrentUICulture = previousCulture;
-        }
-
-        List<LanguageInfoResponse> languages = [.. options.Value.Languages
-            .Select(l => new LanguageInfoResponse(l.CultureName, l.DisplayName, l.FlagIcon, l.IsDefault))];
-
-        context.Response.Headers.CacheControl = "public, max-age=3600";
-        context.Response.Headers.Vary = "Accept-Language";
-
-        return TypedResults.Ok(new ApplicationLocalizationResponse(culture.Name, resources, languages));
-    }
-
-    // -------------------------------------------------------------------------
-    // Handlers — CRUD /{prefix}/localization/overrides
-    // -------------------------------------------------------------------------
-
-    private static async Task<Results<NoContent, ProblemHttpResult>> HandlePutOverrideAsync(
-        HttpContext context,
-        string resourceName,
-        string cultureName,
-        string key,
-        SetLocalizationOverrideRequest body,
-        CancellationToken cancellationToken)
-    {
-        ILocalizationOverrideStoreWriter? storeWriter =
-            context.RequestServices.GetService<ILocalizationOverrideStoreWriter>();
-
-        if (storeWriter is null)
-        {
-            return StoreNotRegistered();
-        }
-
-        ProblemHttpResult? error = ValidateMaxLength(resourceName, nameof(resourceName), MaxResourceNameLength)
-            ?? ValidateBcp47(cultureName)
-            ?? ValidateMaxLength(key, nameof(key), MaxKeyLength);
-
-        if (error is not null)
-        {
-            return error;
-        }
-
-        if (string.IsNullOrWhiteSpace(body.Value))
-        {
-            return TypedResults.Problem(
-                detail: "Override value must not be empty.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        if (body.Value.Length > MaxValueLength)
-        {
-            return TypedResults.Problem(
-                detail: $"value must not exceed {MaxValueLength} characters.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        await storeWriter.SetOverrideAsync(resourceName, cultureName, key, body.Value, cancellationToken).ConfigureAwait(false);
-        return TypedResults.NoContent();
-    }
-
-    private static async Task<Results<NoContent, ProblemHttpResult>> HandleDeleteOverrideAsync(
-        HttpContext context,
-        string resourceName,
-        string cultureName,
-        string key,
-        CancellationToken cancellationToken)
-    {
-        ILocalizationOverrideStoreWriter? storeWriter =
-            context.RequestServices.GetService<ILocalizationOverrideStoreWriter>();
-
-        if (storeWriter is null)
-        {
-            return StoreNotRegistered();
-        }
-
-        ProblemHttpResult? error = ValidateMaxLength(resourceName, nameof(resourceName), MaxResourceNameLength)
-            ?? ValidateBcp47(cultureName)
-            ?? ValidateMaxLength(key, nameof(key), MaxKeyLength);
-
-        if (error is not null)
-        {
-            return error;
-        }
-
-        await storeWriter.RemoveOverrideAsync(resourceName, cultureName, key, cancellationToken).ConfigureAwait(false);
-        return TypedResults.NoContent();
-    }
-
-    // -------------------------------------------------------------------------
-    // Shared validation helpers
-    // -------------------------------------------------------------------------
-
-    private static ProblemHttpResult StoreNotRegistered() =>
-        TypedResults.Problem(
-            detail: "No localization override store is registered. Add GranitLocalizationDatabaseSourceEntityFrameworkCoreModule.",
-            statusCode: StatusCodes.Status501NotImplemented);
-
-    private static ProblemHttpResult? ValidateBcp47(string cultureName) =>
-        Bcp47Pattern().IsMatch(cultureName)
-            ? null
-            : TypedResults.Problem(
-                detail: $"Culture name '{cultureName}' is not a valid BCP 47 tag.",
-                statusCode: StatusCodes.Status400BadRequest);
-
-    private static ProblemHttpResult? ValidateMaxLength(string value, string paramName, int maxLength) =>
-        value.Length <= maxLength
-            ? null
-            : TypedResults.Problem(
-                detail: $"{paramName} must not exceed {maxLength} characters.",
-                statusCode: StatusCodes.Status400BadRequest);
-
-    // -------------------------------------------------------------------------
-    // Private helpers
-    // -------------------------------------------------------------------------
-
-    private static Dictionary<string, IReadOnlyDictionary<string, string>> BuildResources(
-        GranitLocalizationOptions options,
-        IStringLocalizerFactory localizerFactory)
-    {
-        Dictionary<string, IReadOnlyDictionary<string, string>> resources = new(StringComparer.Ordinal);
-
-        foreach (Type resourceType in options.Resources.GetAll().Select(resourceInfo => resourceInfo.ResourceType))
-        {
-            string name = resourceType
-                .GetCustomAttribute<LocalizationResourceNameAttribute>()?.Name
-                ?? resourceType.Name;
-
-            IStringLocalizer localizer = localizerFactory.Create(resourceType);
-
-            var translations = localizer
-                .GetAllStrings(includeParentCultures: true)
-                .ToDictionary(s => s.Name, s => s.Value, StringComparer.Ordinal);
-
-            resources[name] = translations;
-        }
-
-        return resources;
     }
 }
