@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-05-26 (ajout de `PDFtoImage` pour `Granit.TextExtraction.Pdf.Ocr`)
+Dernière mise à jour : 2026-06-03 (alignement des analyzers Roslyn — Microsoft.CodeAnalysis.* — sur le compilateur du SDK 5.3.0 via `VersionOverride`)
 
 ---
 
@@ -184,9 +184,9 @@ Dernière mise à jour : 2026-05-26 (ajout de `PDFtoImage` pour `Granit.TextExtr
 | coverlet.collector | 10.0.1 | (c) 2018 Toni Solarin-Sodara |
 | JunitXml.TestLogger | 7.1.0 | JunitXml.TestLogger Contributors |
 | Microsoft.AspNetCore.Mvc.Testing | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.CodeAnalysis.Analyzers | 3.11.0 | (c) Microsoft Corporation |
-| Microsoft.CodeAnalysis.CSharp | 5.0.0 | (c) Microsoft Corporation |
-| Microsoft.CodeAnalysis.CSharp.Workspaces | 5.0.0 | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis.Analyzers | 5.3.0 | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis.CSharp | 5.3.0 | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis.CSharp.Workspaces | 5.3.0 | (c) Microsoft Corporation |
 | Microsoft.EntityFrameworkCore.InMemory | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.EntityFrameworkCore.Sqlite | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.Extensions.TimeProvider.Testing | 10.6.0 | (c) Microsoft Corporation |

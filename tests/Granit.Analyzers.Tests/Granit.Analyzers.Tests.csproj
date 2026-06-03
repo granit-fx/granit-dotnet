@@ -11,7 +11,9 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <!-- Match the analyzer-under-test Roslyn (5.3.0 override in Granit.Analyzers) so the
+         test harness loads the same compiler version. See Directory.Packages.props. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" VersionOverride="5.3.0" />
   </ItemGroup>
 
   <ItemGroup>

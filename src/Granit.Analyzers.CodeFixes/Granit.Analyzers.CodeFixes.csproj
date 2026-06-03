@@ -10,8 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
+    <!-- Dev-only (IsPackable=false, loaded by `dotnet format`): opt up to the SDK compiler
+         (5.3.0) above the shipped-floor central pin. System.Composition.AttributedModel is
+         deliberately NOT overridden — it must track the central 9.x pin so `dotnet format`
+         can load these [Export]/[Shared] CodeFixes. See Directory.Packages.props. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" VersionOverride="5.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" VersionOverride="5.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

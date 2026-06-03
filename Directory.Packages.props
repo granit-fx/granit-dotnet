@@ -198,10 +198,28 @@
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.*" />
   </ItemGroup>
   <ItemGroup Label="Roslyn Analyzers">
-    <!-- Pinned to Roslyn 5.0 / Analyzers 3.x: bumping to 5.3 / 5.x pulls
-         System.Composition.AttributedModel 10.x, which breaks `dotnet format`
-         (the SDK ships with 9.x and fails to load the 10.x attribute assembly).
-         Revisit once dotnet format bundles a compatible System.Composition. -->
+    <!-- These central versions are the SHIPPED-package floor = the LOWEST Roslyn we support
+         (.NET 10 GA = 5.0). Granit.Analyzers and Granit.Localization.SourceGenerator ship as
+         analyzer packages (analyzers/dotnet/cs); an analyzer compiled against a newer Roslyn
+         than the consumer's SDK is rejected with CS9057. For the source generator that is a
+         HARD break (its generated code vanishes downstream), so it stays on this floor.
+
+         The dev-time analyzer/codefix projects opt UP to the SDK compiler (5.3.0) via
+         VersionOverride in their own .csproj (Granit.Analyzers, Granit.Analyzers.CodeFixes
+         and their test projects) — Granit.Analyzers only soft-disables on an older consumer
+         SDK (lint off, build fine), which we accept for the newer analyzer APIs. NEVER pin
+         the override above the running csc (SDK 10.0.201 = 5.3.0) or Granit's own build hits
+         CS9057. Keep these central entries on the floor — bumping them would also rewrite the
+         `requested` field of ~40 CentralTransitive Wolverine lockfiles for no runtime change.
+
+         System.Composition.AttributedModel is an INDEPENDENT constraint (not tied to the
+         Roslyn version): it must stay <= the System.Composition assembly bundled in the
+         running SDK's `dotnet format`, which loads our CodeFix [Export]/[Shared] attributes
+         (Granit.Analyzers.CodeFixes) from its OWN bundled copy and does not roll forward.
+         SDK 10.0.201 bundles 10.0.5; pinning AttributedModel to 10.0.8 makes `dotnet format`
+         crash with FileNotFoundException (System.Composition.AttributedModel, Version=10.0.0.8
+         at AnalyzerFinderHelpers.IsExportedForLanguage). 9.x is safe and is what
+         CodeAnalysis.CSharp.Workspaces 5.x depends on. Raise only to track the SDK's bundle. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.*" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.*" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.*" />
