@@ -12592,7 +12592,7 @@
       "kind": "class",
       "project": "Granit.Caching",
       "file": "src/Granit.Caching/Extensions/CachingServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitCaching",
@@ -18688,7 +18688,7 @@
       "kind": "class",
       "project": "Granit",
       "file": "src/Granit/Extensions/GranitHostBuilderExtensions.cs",
-      "line": 18,
+      "line": 17,
       "members": [
         {
           "name": "AddGranit",
@@ -29217,6 +29217,22 @@
       "file": "src/Granit.Indexing/SearchRequest.cs",
       "line": 31,
       "members": []
+    },
+    {
+      "name": "GranitJsonConverters",
+      "fqn": "Granit.Json.GranitJsonConverters",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Json/GranitJsonConverters.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitJsonConverters",
+          "kind": "method",
+          "signature": "AddGranitJsonConverters(this JsonSerializerOptions options)",
+          "returnType": "JsonSerializerOptions"
+        }
+      ]
     },
     {
       "name": "SingleValueObjectJsonConverterFactory",

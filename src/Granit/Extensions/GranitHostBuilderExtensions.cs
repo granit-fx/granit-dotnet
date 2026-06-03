@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Text.Json.Serialization;
 using Granit.Json;
 using Granit.Modularity;
 using Granit.MultiTenancy;
@@ -154,10 +153,7 @@ public static class GranitHostBuilderExtensions
         builder.Services.AddSingleton<GranitJsonDefaultsMarker>();
 
         builder.Services.ConfigureHttpJsonOptions(options =>
-        {
-            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            options.SerializerOptions.Converters.Add(new SingleValueObjectJsonConverterFactory());
-        });
+            options.SerializerOptions.AddGranitJsonConverters());
     }
 
     /// <summary>

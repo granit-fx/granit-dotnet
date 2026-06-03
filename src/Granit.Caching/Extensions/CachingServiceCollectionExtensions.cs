@@ -1,7 +1,9 @@
+using System.Text.Json;
 using Granit.Caching.Diagnostics;
 using Granit.Caching.Internal;
 using Granit.Caching.MultiTenancy;
 using Granit.Caching.Options;
+using Granit.Json;
 using Granit.MultiTenancy;
 using Granit.Timing.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -98,12 +100,20 @@ public static class CachingServiceCollectionExtensions
                     fc.EnableAutoRecovery = true;
                 });
 
-        // Replace the serializer with the encrypting decorator (per-type via CacheEncryptionResolver)
+        // Replace the serializer with the encrypting decorator (per-type via CacheEncryptionResolver).
+        // The L2 serializer uses the same canonical Granit JSON converters as the HTTP pipeline so
+        // domain value objects (SingleValueObject<T>, enums) round-trip through L2 identically — a
+        // cached *Response/projection carrying e.g. an AbsoluteUrl deserialises correctly. The
+        // host-supplied JsonOptions are copied (never mutated) before the converters are applied.
         services.AddSingleton<ZiggyCreatures.Caching.Fusion.Serialization.IFusionCacheSerializer>(sp =>
         {
             CachingOptions cachingOpts = sp.GetRequiredService<IOptions<CachingOptions>>().Value;
             ICacheValueEncryptor encryptor = sp.GetRequiredService<ICacheValueEncryptor>();
-            var jsonSerializer = new FusionCacheSystemTextJsonSerializer(cachingOpts.JsonOptions);
+            JsonSerializerOptions jsonOptions = cachingOpts.JsonOptions is null
+                ? new JsonSerializerOptions()
+                : new JsonSerializerOptions(cachingOpts.JsonOptions);
+            jsonOptions.AddGranitJsonConverters();
+            var jsonSerializer = new FusionCacheSystemTextJsonSerializer(jsonOptions);
             return new EncryptingFusionCacheSerializer(jsonSerializer, encryptor, cachingOpts);
         });
 
