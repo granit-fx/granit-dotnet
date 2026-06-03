@@ -62,6 +62,10 @@
     "Validation:RegularExpressionValidator": "'{PropertyName}' is not in the correct format.",
     "Validation:ReorderDeltaIllFormed": "Reorder delta must set exactly one of BeforeFieldName / AfterFieldName.",
     "Validation:ScalePrecisionValidator": "'{PropertyName}' must not be more than {ExpectedPrecision} digits in total, with allowance for {ExpectedScale} decimals.",
+    "Validation:ScopeRequired": "The 'scope' parameter is required.",
+    "Validation:SearchTermRequired": "The search term 'q' is required.",
+    "Validation:TargetIdRequired": "The 'targetId' parameter must not be empty.",
+    "Validation:TargetTypeRequired": "The 'targetType' parameter is required.",
     "Validation:TooManyDeltas": "Too many deltas in a single request.",
     "Validation:UrlMustBeHttps": "The URL must use HTTPS.",
     "Validation:ValidToAfterValidFrom": "'Valid to' must be after 'Valid from'."

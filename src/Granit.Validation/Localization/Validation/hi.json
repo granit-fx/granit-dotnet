@@ -62,6 +62,10 @@
     "Validation:RegularExpressionValidator": "'{PropertyName}' सही प्रारूप में नहीं है।",
     "Validation:ReorderDeltaIllFormed": "रीऑर्डर डेल्टा को BeforeFieldName / AfterFieldName में से ठीक एक सेट करना चाहिए।",
     "Validation:ScalePrecisionValidator": "'{PropertyName}' कुल {ExpectedPrecision} अंकों से अधिक नहीं होना चाहिए, {ExpectedScale} दशमलव की अनुमति के साथ।",
+    "Validation:ScopeRequired": "पैरामीटर 'scope' आवश्यक है।",
+    "Validation:SearchTermRequired": "खोज शब्द 'q' आवश्यक है।",
+    "Validation:TargetIdRequired": "पैरामीटर 'targetId' खाली नहीं हो सकता।",
+    "Validation:TargetTypeRequired": "पैरामीटर 'targetType' आवश्यक है।",
     "Validation:TooManyDeltas": "एकल अनुरोध में बहुत अधिक डेल्टा।",
     "Validation:UrlMustBeHttps": "URL को HTTPS का उपयोग करना चाहिए।",
     "Validation:ValidToAfterValidFrom": "'मान्य तक' 'मान्य से' के बाद होना चाहिए।"

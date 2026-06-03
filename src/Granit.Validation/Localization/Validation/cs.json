@@ -62,6 +62,10 @@
     "Validation:RegularExpressionValidator": "'{PropertyName}' nemá správný formát.",
     "Validation:ReorderDeltaIllFormed": "Delta změny pořadí musí nastavit přesně jednu z hodnot BeforeFieldName / AfterFieldName.",
     "Validation:ScalePrecisionValidator": "'{PropertyName}' nesmí mít celkem více než {ExpectedPrecision} číslic, z toho {ExpectedScale} desetinných míst.",
+    "Validation:ScopeRequired": "Parametr 'scope' je povinný.",
+    "Validation:SearchTermRequired": "Vyhledávací výraz 'q' je povinný.",
+    "Validation:TargetIdRequired": "Parametr 'targetId' nesmí být prázdný.",
+    "Validation:TargetTypeRequired": "Parametr 'targetType' je povinný.",
     "Validation:TooManyDeltas": "Příliš mnoho delt v jednom požadavku.",
     "Validation:UrlMustBeHttps": "Adresa URL musí používat HTTPS.",
     "Validation:ValidToAfterValidFrom": "'Platné do' musí být pozdější než 'Platné od'."

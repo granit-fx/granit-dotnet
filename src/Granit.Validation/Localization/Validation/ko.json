@@ -62,6 +62,10 @@
     "Validation:RegularExpressionValidator": "'{PropertyName}'의 형식이 올바르지 않습니다.",
     "Validation:ReorderDeltaIllFormed": "재정렬 델타는 BeforeFieldName 또는 AfterFieldName 중 정확히 하나를 설정해야 합니다.",
     "Validation:ScalePrecisionValidator": "'{PropertyName}'은(는) 총 {ExpectedPrecision}자리를 초과할 수 없으며 소수점 이하 {ExpectedScale}자리까지 허용됩니다.",
+    "Validation:ScopeRequired": "'scope' 매개변수는 필수입니다.",
+    "Validation:SearchTermRequired": "검색어 'q'는 필수입니다.",
+    "Validation:TargetIdRequired": "'targetId' 매개변수는 비어 있을 수 없습니다.",
+    "Validation:TargetTypeRequired": "'targetType' 매개변수는 필수입니다.",
     "Validation:TooManyDeltas": "단일 요청에 델타가 너무 많습니다.",
     "Validation:UrlMustBeHttps": "URL은 HTTPS를 사용해야 합니다.",
     "Validation:ValidToAfterValidFrom": "'유효 종료일'은 '유효 시작일' 이후여야 합니다."

@@ -62,6 +62,10 @@
     "Validation:RegularExpressionValidator": "'{PropertyName}' 的格式不正确。",
     "Validation:ReorderDeltaIllFormed": "重新排序增量必须仅设置 BeforeFieldName 或 AfterFieldName 之一。",
     "Validation:ScalePrecisionValidator": "'{PropertyName}' 总共不能超过 {ExpectedPrecision} 位数字，其中允许 {ExpectedScale} 位小数。",
+    "Validation:ScopeRequired": "参数 'scope' 是必需的。",
+    "Validation:SearchTermRequired": "搜索词 'q' 是必需的。",
+    "Validation:TargetIdRequired": "参数 'targetId' 不能为空。",
+    "Validation:TargetTypeRequired": "参数 'targetType' 是必需的。",
     "Validation:TooManyDeltas": "单个请求中的增量过多。",
     "Validation:UrlMustBeHttps": "URL 必须使用 HTTPS。",
     "Validation:ValidToAfterValidFrom": "'有效截止日期' 必须晚于 '有效起始日期'。"

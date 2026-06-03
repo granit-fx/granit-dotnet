@@ -62,6 +62,10 @@
     "Validation:RegularExpressionValidator": "'{PropertyName}' の形式が正しくありません。",
     "Validation:ReorderDeltaIllFormed": "並べ替えデルタは BeforeFieldName または AfterFieldName のいずれか1つだけを設定する必要があります。",
     "Validation:ScalePrecisionValidator": "'{PropertyName}' は合計 {ExpectedPrecision} 桁以内で、うち小数部は {ExpectedScale} 桁以内である必要があります。",
+    "Validation:ScopeRequired": "パラメータ 'scope' は必須です。",
+    "Validation:SearchTermRequired": "検索語 'q' は必須です。",
+    "Validation:TargetIdRequired": "パラメータ 'targetId' は空にできません。",
+    "Validation:TargetTypeRequired": "パラメータ 'targetType' は必須です。",
     "Validation:TooManyDeltas": "1つのリクエストにデルタが多すぎます。",
     "Validation:UrlMustBeHttps": "URL は HTTPS を使用する必要があります。",
     "Validation:ValidToAfterValidFrom": "'有効終了日' は '有効開始日' より後でなければなりません。"
