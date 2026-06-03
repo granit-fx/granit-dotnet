@@ -6025,7 +6025,7 @@
       "kind": "class",
       "project": "Granit.Auditing.Privacy",
       "file": "src/Granit.Auditing.Privacy/Extensions/PrivacyBuilderAuditingExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitAuditingPrivacyProvider",
@@ -24950,7 +24950,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Privacy",
       "file": "src/Granit.Identity.Federated.Privacy/Extensions/PrivacyBuilderIdentityFederatedExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitIdentityFederatedPrivacyProvider",
@@ -26976,7 +26976,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Privacy",
       "file": "src/Granit.Identity.Local.Privacy/Extensions/PrivacyBuilderIdentityLocalExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitIdentityLocalPrivacyProvider",
@@ -33914,7 +33914,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Privacy",
       "file": "src/Granit.Notifications.Privacy/Extensions/PrivacyBuilderNotificationsExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitNotificationsPrivacyProvider",

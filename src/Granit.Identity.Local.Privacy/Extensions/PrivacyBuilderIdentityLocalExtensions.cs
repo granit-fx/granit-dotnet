@@ -1,5 +1,6 @@
 using Granit.Identity.Local.Privacy.DataExport;
 using Granit.Privacy;
+using Granit.Privacy.BlobStorage.Extensions;
 
 namespace Granit.Identity.Local.Privacy.Extensions;
 
@@ -15,13 +16,18 @@ public static class PrivacyBuilderIdentityLocalExtensions
     /// the export saga expects fragments from.
     /// </summary>
     /// <remarks>
-    /// The matching Wolverine handler is discovered automatically. Requires
-    /// <see cref="GranitIdentityLocalPrivacyModule"/> to be loaded.
+    /// The matching Wolverine handler is discovered automatically. This call also wires the
+    /// <c>Granit.Privacy.BlobStorage</c> staging infrastructure the provider depends on
+    /// (<c>IStagedFragmentBuilder</c>, uploader, assembler) — registration is idempotent
+    /// (<c>TryAdd</c>), so the host no longer needs an explicit
+    /// <c>[DependsOn(GranitPrivacyBlobStorageModule)]</c>. The provider still requires the
+    /// <c>Granit.Identity.Local</c> identity stack (for <c>UserManager&lt;LocalIdentity&gt;</c>) to be loaded.
     /// </remarks>
     public static GranitPrivacyBuilder AddGranitIdentityLocalPrivacyProvider(
         this GranitPrivacyBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
+        builder.Services.AddGranitPrivacyBlobStorage();
         return builder.AddDataProvider<IdentityLocalPrivacyDataProvider>();
     }
 }
