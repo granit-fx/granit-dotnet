@@ -7,6 +7,7 @@
 
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.Options;
+using JasperFx.CodeGeneration;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
@@ -26,6 +27,10 @@ public sealed class WolverineMessagingOptionsTests
     [Fact]
     public void DefaultMaxRetryAttempts_IsThree() =>
         new WolverineMessagingOptions().MaxRetryAttempts.ShouldBe(3);
+
+    [Fact]
+    public void DefaultCodeGenerationMode_IsDynamic() =>
+        new WolverineMessagingOptions().CodeGenerationMode.ShouldBe(TypeLoadMode.Dynamic);
 
     [Fact]
     public void DefaultRetryDelays_AreFiveThirtyAndFiveMin()

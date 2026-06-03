@@ -51587,7 +51587,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Options/WolverineMessagingOptions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "FromSeconds",
@@ -51600,6 +51600,12 @@
           "kind": "property",
           "signature": "int MaxRetryAttempts",
           "returnType": "int"
+        },
+        {
+          "name": "CodeGenerationMode",
+          "kind": "property",
+          "signature": "TypeLoadMode CodeGenerationMode",
+          "returnType": "TypeLoadMode"
         }
       ]
     },

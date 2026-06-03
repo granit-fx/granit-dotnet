@@ -12,7 +12,9 @@ using Granit.Users;
 using Granit.Wolverine.Extensions;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.Options;
+using JasperFx.CodeGeneration;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -128,4 +130,40 @@ public sealed class GranitWolverineModuleTests
 
         callbackInvoked.ShouldBeTrue();
     }
+
+    // -------------------------------------------------------------------------
+    // Code-generation mode wiring (config → opts.CodeGeneration.TypeLoadMode).
+    // Inspects the captured WolverineOptions without building the host, so Static
+    // never triggers the missing-pre-generated-types startup throw.
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void AddGranitWolverine_DefaultsCodeGenerationModeToDynamic()
+    {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        builder.AddGranitWolverine();
+
+        ResolveWolverineOptions(builder).CodeGeneration.TypeLoadMode.ShouldBe(TypeLoadMode.Dynamic);
+    }
+
+    [Fact]
+    public void AddGranitWolverine_AppliesCodeGenerationModeFromConfig()
+    {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Wolverine:CodeGenerationMode"] = "Static",
+        });
+
+        builder.AddGranitWolverine();
+
+        ResolveWolverineOptions(builder).CodeGeneration.TypeLoadMode.ShouldBe(TypeLoadMode.Static);
+    }
+
+    private static global::Wolverine.WolverineOptions ResolveWolverineOptions(HostApplicationBuilder builder) =>
+        builder.Services
+            .Select(d => d.ImplementationInstance)
+            .OfType<WolverineOptionsHolder>()
+            .First()
+            .Options;
 }

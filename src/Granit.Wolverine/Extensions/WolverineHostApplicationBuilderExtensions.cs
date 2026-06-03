@@ -136,6 +136,12 @@ public static class WolverineHostApplicationBuilderExtensions
                 opts.Discovery.IncludeAssembly(entryAssembly);
             }
 
+            // Code-generation mode. Default Dynamic — runtime Roslyn via the transitively
+            // referenced WolverineFx.RuntimeCompilation. Consumers opt into Static for production
+            // via "Wolverine:CodeGenerationMode" AFTER running `dotnet run -- codegen write` in
+            // their build; Static has no runtime fallback, so a missing artifact throws at startup.
+            opts.CodeGeneration.TypeLoadMode = messagingOptions.CodeGenerationMode;
+
             // IDomainEvent — force local routing, never forward to external transports.
             // IIntegrationEvent routing is configured by the provider package.
             opts.PublishMessage<Events.IDomainEvent>()
