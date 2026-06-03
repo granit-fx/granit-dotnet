@@ -23,6 +23,9 @@
   <ItemGroup>
     <PackageReference Include="WolverineFx" />
     <PackageReference Include="WolverineFx.FluentValidation" />
+    <!-- v6 split Roslyn runtime codegen out of core WolverineFx; the host needs this for the
+         default TypeLoadMode.Dynamic. Auto-registers via [WolverineModule] (Automatic discovery). -->
+    <PackageReference Include="WolverineFx.RuntimeCompilation" />
     <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 

@@ -5,10 +5,10 @@
       "AWSSDK.SimpleNotificationService": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.2.35",
-        "contentHash": "cXaetDK4uc3Uo6+nEDilNvnHizM+vCQPaCYLcI5of0jC4+QdZJXmfTCspvue9usVponX1E6nTypc30t+fFa+Iw==",
+        "resolved": "4.0.2.36",
+        "contentHash": "a2djLbLVxSiQAqs/lQRbQCTpYDO/F22reQpWnYPcx1uNjw21rjcht6NusWcFCW3wzo4Un6GfPGUqhTsGM+ybJA==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.4, 5.0.0)"
+          "AWSSDK.Core": "[4.0.7.5, 5.0.0)"
         }
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
@@ -19,8 +19,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.7.4",
-        "contentHash": "qNlzH2ygJ6JG8uefpvws782PnJlkVEwqRD5vz4fR8wFfwWU3ttyAjiwEOPEYcxl84mhQdYGI9gR+kroGFI2+wA=="
+        "resolved": "4.0.7.5",
+        "contentHash": "kOx1nlnJic0Ao+tpCia/DxmttQCPuKLWbfuJuXSJnG03yur0TRfPDCvkrroZ/4yuy0fLomPf46vDYnpkk01J9w=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",

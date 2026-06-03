@@ -11,6 +11,10 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="WolverineFx" />
+    <!-- v6 moved Roslyn runtime codegen out of core WolverineFx; this bespoke codegen-test
+         host runs TypeLoadMode.Dynamic, so it needs the compiler package (auto-registers via
+         [WolverineModule]). Production hosts get it transitively through Granit.Wolverine. -->
+    <PackageReference Include="WolverineFx.RuntimeCompilation" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.Testing" />
