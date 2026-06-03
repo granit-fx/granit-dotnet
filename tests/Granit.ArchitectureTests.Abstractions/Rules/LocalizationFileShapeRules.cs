@@ -14,13 +14,30 @@ public static class LocalizationFileShapeRules
     /// <paramref name="srcDir"/> uses the framework culture envelope and that the declared
     /// <c>"culture"</c> value matches the file's base name.
     /// </summary>
-    public static void EveryLocalizationFileShouldUseCultureEnvelope(string srcDir, string repoRoot)
+    /// <param name="srcDir">The <c>src/</c> directory to scan recursively for localization files.</param>
+    /// <param name="repoRoot">Repository root, used to render violation paths relative to the repo.</param>
+    /// <param name="allowEmpty">
+    /// When <c>false</c> (default), the absence of any localization file fails the test — a canary
+    /// that catches a broken glob or relocated files in repos that <i>do</i> ship localization.
+    /// Pass <c>true</c> for minimalist consumers (e.g. an IoT/worker service) that legitimately
+    /// ship no localized strings; per-file envelope validation still runs for any file that appears.
+    /// </param>
+    public static void EveryLocalizationFileShouldUseCultureEnvelope(string srcDir, string repoRoot, bool allowEmpty = false)
     {
         IReadOnlyList<string> files = [.. EnumerateLocalizationFiles(srcDir)];
 
-        files.ShouldNotBeEmpty(
-            "No localization JSON files discovered — the test cannot run. " +
-            "Expected at least one file under src/**/Localization/**/.");
+        if (files.Count == 0)
+        {
+            if (allowEmpty)
+            {
+                return;
+            }
+
+            files.ShouldNotBeEmpty(
+                "No localization JSON files discovered — the test cannot run. " +
+                "Expected at least one file under src/**/Localization/**/. " +
+                "Pass allowEmpty: true for minimalist consumers that legitimately ship none.");
+        }
 
         List<string> violations = [];
 

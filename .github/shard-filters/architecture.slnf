@@ -266,6 +266,7 @@
       "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
+      "tests/Granit.ArchitectureTests.Abstractions.Tests/Granit.ArchitectureTests.Abstractions.Tests.csproj",
       "tests/Granit.ArchitectureTests.Abstractions/Granit.ArchitectureTests.Abstractions.csproj",
       "tests/Granit.ArchitectureTests/Granit.ArchitectureTests.csproj"
     ]

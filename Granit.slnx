@@ -664,6 +664,7 @@
   </Folder>
   <Folder Name="/tests/Architecture Tests/">
     <Project Path="tests/Granit.ArchitectureTests.Abstractions/Granit.ArchitectureTests.Abstractions.csproj" />
+    <Project Path="tests/Granit.ArchitectureTests.Abstractions.Tests/Granit.ArchitectureTests.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.ArchitectureTests/Granit.ArchitectureTests.csproj" />
   </Folder>
 </Solution>
