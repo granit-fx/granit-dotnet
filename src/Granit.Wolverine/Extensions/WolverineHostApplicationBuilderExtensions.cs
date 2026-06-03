@@ -134,12 +134,25 @@ public static class WolverineHostApplicationBuilderExtensions
             if (entryAssembly is not null)
             {
                 opts.Discovery.IncludeAssembly(entryAssembly);
+
+                // Point Wolverine's ApplicationAssembly at the host's entry assembly. UseWolverine()
+                // is invoked from THIS library, so Wolverine would otherwise infer
+                // ApplicationAssembly = Granit.Wolverine. `dotnet run -- codegen write` emits the
+                // handlers + HandlerRegistry into the ENTRY assembly, and Static mode loads
+                // pre-generated types from ApplicationAssembly — the two must point at the same
+                // assembly or Static never finds the registry (see the CodeGenerationMode note
+                // below for how that failure surfaces).
+                opts.ApplicationAssembly = entryAssembly;
             }
 
             // Code-generation mode. Default Dynamic — runtime Roslyn via the transitively
             // referenced WolverineFx.RuntimeCompilation. Consumers opt into Static for production
             // via "Wolverine:CodeGenerationMode" AFTER running `dotnet run -- codegen write` in
-            // their build; Static has no runtime fallback, so a missing artifact throws at startup.
+            // their build. Static loads pre-generated types only and does not regenerate them
+            // itself; a missing or misplaced artifact therefore breaks the optimization —
+            // surfacing as a startup failure, or (because RuntimeCompilation stays on the
+            // classpath) a silent fall-back to runtime Roslyn. AssertAllPreGeneratedTypesExist
+            // forces fail-fast.
             opts.CodeGeneration.TypeLoadMode = messagingOptions.CodeGenerationMode;
 
             // IDomainEvent — force local routing, never forward to external transports.

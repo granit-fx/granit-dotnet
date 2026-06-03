@@ -160,6 +160,19 @@ public sealed class GranitWolverineModuleTests
         ResolveWolverineOptions(builder).CodeGeneration.TypeLoadMode.ShouldBe(TypeLoadMode.Static);
     }
 
+    [Fact]
+    public void AddGranitWolverine_SetsApplicationAssembly_ToEntryAssembly()
+    {
+        // UseWolverine() runs from inside Granit.Wolverine, so without the explicit override
+        // Wolverine would infer ApplicationAssembly = Granit.Wolverine — and Static codegen
+        // would look for the pre-generated registry in the wrong assembly.
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        builder.AddGranitWolverine();
+
+        ResolveWolverineOptions(builder).ApplicationAssembly
+            .ShouldBe(System.Reflection.Assembly.GetEntryAssembly());
+    }
+
     private static global::Wolverine.WolverineOptions ResolveWolverineOptions(HostApplicationBuilder builder) =>
         builder.Services
             .Select(d => d.ImplementationInstance)
