@@ -189,6 +189,14 @@ public abstract class EfStoreBase<TEntity, TContext>
             entity, callerMember, callerFile, callerLine);
 
     // ── Read helpers ────────────────────────────────────────────────────
+    //
+    // These helpers are read-only: each opens a throwaway context that is disposed
+    // before the entity is returned, so the result is always detached. Writers
+    // re-attach explicitly via db.Set<T>().Update(entity) in a separate context, so
+    // change tracking here is pure overhead with no benefit — hence AsNoTracking().
+    // The read -> mutate -> UpdateAsync flow is unaffected (Update() works on a
+    // detached entity regardless of prior tracking state). Raw-context reads via
+    // ReadAsync(...) keep their caller-controlled tracking.
 
     /// <summary>
     /// Finds an entity by its primary key. Uses <c>FirstOrDefaultAsync</c> instead of
@@ -206,6 +214,7 @@ public abstract class EfStoreBase<TEntity, TContext>
     {
         await using TContext db = await _contextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
         return await Query(db)
+            .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Id == id, ct).ConfigureAwait(false);
     }
 
@@ -216,6 +225,7 @@ public abstract class EfStoreBase<TEntity, TContext>
     {
         await using TContext db = await _contextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
         return await Query(db)
+            .AsNoTracking()
             .FirstOrDefaultAsync(predicate, ct).ConfigureAwait(false);
     }
 
@@ -227,6 +237,7 @@ public abstract class EfStoreBase<TEntity, TContext>
         await using TContext db = await _contextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
         return await SpecificationEvaluator
             .Apply(Query(db), spec)
+            .AsNoTracking()
             .ToListAsync(ct).ConfigureAwait(false);
     }
 
@@ -240,6 +251,7 @@ public abstract class EfStoreBase<TEntity, TContext>
         await using TContext db = await _contextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
         return await SpecificationEvaluator
             .Apply(Query(db), spec)
+            .AsNoTracking()
             .ToPagedResultAsync(page, pageSize, ct).ConfigureAwait(false);
     }
 
