@@ -8,6 +8,7 @@ using Granit.Wolverine.Diagnostics;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.Middleware;
 using Granit.Wolverine.Options;
+using JasperFx.CodeGeneration.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -154,6 +155,18 @@ public static class WolverineHostApplicationBuilderExtensions
             // classpath) a silent fall-back to runtime Roslyn. AssertAllPreGeneratedTypesExist
             // forces fail-fast.
             opts.CodeGeneration.TypeLoadMode = messagingOptions.CodeGenerationMode;
+
+            // Service-location policy for code generation. Wolverine 6 defaults to NotAllowed,
+            // which ABORTS `codegen write` (Static) when a chain dependency can't be inlined —
+            // true for three framework registrations reached via the context-propagation
+            // middleware on every chain: ICurrentUserService + IWolverineUserContextSetter
+            // (scoped forwarding factories onto the shared WolverineCurrentUserService) and the
+            // internal INotificationPublisher impl. AllowedButWarn lets codegen fall back to
+            // runtime service location for those (everything else still inlines), so Static works
+            // without each consumer setting it. The cleaner long-term fix is to make those
+            // registrations inline-able (direct interface→concrete + InternalsVisibleTo
+            // "WolverineHandlers") so NotAllowed can be restored — tracked as a follow-up.
+            opts.ServiceLocationPolicy = ServiceLocationPolicy.AllowedButWarn;
 
             // IDomainEvent — force local routing, never forward to external transports.
             // IIntegrationEvent routing is configured by the provider package.

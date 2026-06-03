@@ -13,6 +13,7 @@ using Granit.Wolverine.Extensions;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.Options;
 using JasperFx.CodeGeneration;
+using JasperFx.CodeGeneration.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -171,6 +172,20 @@ public sealed class GranitWolverineModuleTests
 
         ResolveWolverineOptions(builder).ApplicationAssembly
             .ShouldBe(System.Reflection.Assembly.GetEntryAssembly());
+    }
+
+    [Fact]
+    public void AddGranitWolverine_RelaxesServiceLocationPolicy_ForStaticCodegen()
+    {
+        // Wolverine 6 defaults to ServiceLocationPolicy.NotAllowed, which aborts `codegen write`
+        // because the context-propagation middleware on every chain reaches framework services
+        // that can't be inlined (ICurrentUserService / IWolverineUserContextSetter forwarding
+        // factories, internal INotificationPublisher). AllowedButWarn keeps Static codegen usable.
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        builder.AddGranitWolverine();
+
+        ResolveWolverineOptions(builder).ServiceLocationPolicy
+            .ShouldBe(ServiceLocationPolicy.AllowedButWarn);
     }
 
     private static global::Wolverine.WolverineOptions ResolveWolverineOptions(HostApplicationBuilder builder) =>

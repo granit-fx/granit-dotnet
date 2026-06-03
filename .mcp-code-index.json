@@ -51507,7 +51507,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Extensions/WolverineHostApplicationBuilderExtensions.cs",
-      "line": 26,
+      "line": 27,
       "members": [
         {
           "name": "AddGranitWolverine",
