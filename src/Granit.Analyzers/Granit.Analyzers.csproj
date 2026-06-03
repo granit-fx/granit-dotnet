@@ -28,7 +28,12 @@
          central pin (5.0). On a consumer SDK older than 5.3 this only soft-disables the
          analyzer (CS9057, lint off, build unaffected). Keep <= the running csc. See the
          "Roslyn Analyzers" note in Directory.Packages.props. -->
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" VersionOverride="5.3.0" />
+    <!-- PrivateAssets=all: Roslyn is a COMPILE-TIME dependency only. The analyzer runs inside
+         the host compiler, which supplies Microsoft.CodeAnalysis.*; shipping it as a package
+         dependency would force every consumer to resolve Roslyn into its app graph. Without this,
+         the 5.3.0 override leaks into the nuspec and collides with Wolverine/JasperFx's exact
+         CSharp.Workspaces 5.0.0 (Common = 5.0.0) constraint -> NU1608 in consumer restore. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" VersionOverride="5.3.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" VersionOverride="5.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

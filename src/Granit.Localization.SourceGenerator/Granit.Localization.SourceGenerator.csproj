@@ -21,7 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <!-- PrivateAssets=all: compile-time only. A source generator runs in the host compiler, which
+         supplies Microsoft.CodeAnalysis.*. Leaking it as a package dependency drags Roslyn into
+         every consumer's graph; today it would float to the central 5.0 floor (harmless), but it
+         becomes the same NU1608 the moment that floor moves to 5.3 (see Granit.Analyzers). -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
