@@ -51,7 +51,14 @@ public sealed class OutgoingContextMiddleware(
     {
         if (currentTenant.Id.HasValue)
         {
-            envelope.Headers[TenantIdHeader] = currentTenant.Id.Value.ToString();
+            string tenantId = currentTenant.Id.Value.ToString();
+            envelope.Headers[TenantIdHeader] = tenantId;
+
+            // Mirror into Wolverine's native tenant slot (in addition to the custom header) so
+            // wolverine.* spans/metrics and any native multi-tenant routing observe the tenant
+            // without parsing X-Tenant-Id. TenantContextBehavior still restores ICurrentTenant
+            // from the header — this is purely additive for native observability.
+            envelope.TenantId = tenantId;
         }
 
         if (currentUserService.IsAuthenticated && currentUserService.UserId is { Length: > 0 } userId)

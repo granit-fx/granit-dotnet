@@ -167,6 +167,43 @@ public sealed class OutgoingContextMiddlewareTests : IDisposable
     }
 
     // -------------------------------------------------------------------------
+    // Native Wolverine tenant slot (mirrored in addition to X-Tenant-Id)
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void Before_WithTenant_SetsNativeEnvelopeTenantId()
+    {
+        var tenantId = Guid.NewGuid();
+
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.Id.Returns(tenantId);
+
+        ICurrentUserService userService = Substitute.For<ICurrentUserService>();
+        userService.IsAuthenticated.Returns(false);
+
+        OutgoingContextMiddleware middleware = new(tenant, userService);
+        Envelope envelope = CreateEnvelope();
+
+        middleware.Before(envelope);
+
+        envelope.TenantId.ShouldBe(tenantId.ToString());
+        envelope.Headers[OutgoingContextMiddleware.TenantIdHeader].ShouldBe(tenantId.ToString());
+    }
+
+    [Fact]
+    public void Before_WithNoTenant_DoesNotSetNativeEnvelopeTenantId()
+    {
+        (ICurrentTenant tenant, ICurrentUserService userService) = CreateNullContext();
+
+        OutgoingContextMiddleware middleware = new(tenant, userService);
+        Envelope envelope = CreateEnvelope();
+
+        middleware.Before(envelope);
+
+        envelope.TenantId.ShouldBeNull();
+    }
+
+    // -------------------------------------------------------------------------
     // traceparent header (W3C Trace Context propagation)
     // -------------------------------------------------------------------------
 
