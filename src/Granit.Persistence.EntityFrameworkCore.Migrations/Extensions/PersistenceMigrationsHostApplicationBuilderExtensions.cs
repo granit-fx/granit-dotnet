@@ -87,8 +87,9 @@ public static class PersistenceMigrationsHostApplicationBuilderExtensions
         // Bridge ITenantEnumerator → IDataSeedTenantProvider for DataSeeder tenant iteration.
         builder.Services.TryAddSingleton<IDataSeedTenantProvider, TenantEnumeratorDataSeedTenantProvider>();
 
-        // Migration batch executor. Commands are dispatched via ICommandSender (Granit.Wolverine
-        // or another provider) and handled by RunMigrationBatchHandler.
+        // Migration batch executor. The first command per cycle is dispatched via ICommandSender
+        // (Granit.Wolverine or another provider); RunMigrationBatchHandler cascades subsequent
+        // batches as Wolverine return-value messages.
         builder.Services.AddScoped<IMigrationBatchExecutor, MigrationBatchExecutor>();
 
         // Hosted service — resumes pending and in-progress cycles at startup.

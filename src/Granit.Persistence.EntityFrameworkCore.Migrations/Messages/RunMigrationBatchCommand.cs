@@ -2,8 +2,8 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Messages;
 
 /// <summary>
 /// Command that triggers the execution of a single data migration batch.
-/// Cascaded by <see cref="Handlers.RunMigrationBatchHandler"/> (via <see cref="Granit.Commands.ICommandSender"/>)
-/// until all rows have been processed.
+/// Cascaded by <see cref="Handlers.RunMigrationBatchHandler"/> as a Wolverine cascading
+/// message (returned from the handler) until all rows have been processed.
 /// </summary>
 /// <param name="CycleId">Identifier of the migration cycle to execute.</param>
 /// <param name="TenantId">

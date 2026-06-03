@@ -16,6 +16,13 @@
     <PackageReference Include="Bogus" />
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <!-- Boots a real Wolverine host to assert RunMigrationBatchHandler's cascade is woven
+         into the generated handler chain (outbox-enrolled path). v6 split Roslyn runtime
+         codegen out of core WolverineFx into WolverineFx.RuntimeCompilation; this bespoke
+         codegen-test host needs it explicitly (production hosts get it transitively through
+         Granit.Wolverine). -->
+    <PackageReference Include="WolverineFx" />
+    <PackageReference Include="WolverineFx.RuntimeCompilation" />
   </ItemGroup>
 
   <ItemGroup>

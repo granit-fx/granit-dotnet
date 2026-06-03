@@ -13,9 +13,10 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations;
 /// the default <see cref="ITenantDbIsolator"/> and <see cref="ITenantEnumerator"/> (no-ops).
 /// </para>
 /// <para>
-/// Migration batch commands are dispatched via <c>Granit.Commands.ICommandSender</c>,
-/// which must be provided by a messaging module (typically <c>Granit.Wolverine</c>).
-/// The handler <c>RunMigrationBatchHandler</c> executes a batch and cascades the next command.
+/// The first migration batch per cycle is dispatched via <c>Granit.Commands.ICommandSender</c>
+/// (from the startup hosted service), which must be provided by a messaging module (typically
+/// <c>Granit.Wolverine</c>). The handler <c>RunMigrationBatchHandler</c> then cascades each
+/// subsequent batch as a Wolverine return-value message, enrolled in the same handler outbox.
 /// </para>
 /// <para>
 /// <see cref="MigrationProgressDbContext"/> requires a provider-specific connection string

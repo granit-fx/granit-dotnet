@@ -37452,7 +37452,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/GranitPersistenceEntityFrameworkCoreMigrationsModule.cs",
-      "line": 28,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -37468,13 +37468,13 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Handlers/RunMigrationBatchHandler.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(RunMigrationBatchCommand command, IMigrationBatchExecutor executor, ICommandSender commandSender, CancellationToken cancellationToken)",
-          "returnType": "Task"
+          "signature": "HandleAsync(RunMigrationBatchCommand command, IMigrationBatchExecutor executor, CancellationToken cancellationToken)",
+          "returnType": "Task<RunMigrationBatchCommand?>"
         }
       ]
     },
