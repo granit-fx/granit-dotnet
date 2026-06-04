@@ -145,6 +145,7 @@ Concrete `*QueryDefinition` and `*ExportDefinition` live in **base module** `Gra
 
 - `*Request` for input, `*Response` for output. NEVER `*Dto`. Prefixed names (`WorkflowTransitionRequest`, not `TransitionRequest`) — OpenAPI flattens namespaces.
 - Errors: `TypedResults.Problem(detail, statusCode)` (RFC 7807). EF entities NEVER returned — always project to `*Response` records.
+- **Optional record params MUST have a default.** On a positional record, a constructor parameter with no default is `required` in the OpenAPI schema regardless of nullability (STJ `RespectRequiredConstructorParameters`, default on .NET 9+). So an *optional* field must be `string? FirstName = null`, not `string? FirstName` — the latter ships as `required` + `["null","string"]` and the front types it `string | null` instead of `firstName?`. Required field → non-nullable, no default (`string Email`). (#2546)
 
 ### OpenAPI endpoint metadata (5 elements MANDATORY)
 

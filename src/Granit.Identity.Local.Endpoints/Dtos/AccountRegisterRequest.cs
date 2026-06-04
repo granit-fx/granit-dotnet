@@ -10,5 +10,5 @@ namespace Granit.Identity.Local.Endpoints.Dtos;
 public sealed record AccountRegisterRequest(
     string Email,
     string Password,
-    string? FirstName,
-    string? LastName);
+    string? FirstName = null,
+    string? LastName = null);
