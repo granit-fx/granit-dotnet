@@ -293,16 +293,10 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task DeleteSession_TargetSessionExists_Returns204()
     {
-        string targetSessionId = "target-session-to-revoke";
+        const string targetSessionId = "target-session-to-revoke";
 
         BffTokenSet currentTokens = new(
             "access-token", null, null, BffEndpointsTestServer.FixedNow.AddHours(1))
-        {
-            UserId = "user-42",
-        };
-
-        BffTokenSet targetTokens = new(
-            "target-access-token", null, null, BffEndpointsTestServer.FixedNow.AddHours(1))
         {
             UserId = "user-42",
         };
@@ -313,14 +307,18 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
                 Arg.Any<CancellationToken>())
             .Returns(currentTokens);
 
-        _server.TokenStore.GetAsync(
+        _server.TokenStore.GetSessionIdsByUserAsync(
                 BffEndpointsTestServer.TestFrontendName,
-                targetSessionId,
+                "user-42",
                 Arg.Any<CancellationToken>())
-            .Returns(targetTokens);
+            .Returns((IReadOnlyList<string>)[TestSessionId, targetSessionId]);
+
+        // The client only ever holds the masked ID returned by the list endpoint;
+        // the endpoint resolves it back to the raw session ID server-side.
+        string maskedTargetId = BffSessionEndpoints.MaskSessionId(targetSessionId);
 
         HttpResponseMessage response = await SendAnonymousWithSessionAsync(
-            HttpMethod.Delete, $"/app/bff/sessions/{targetSessionId}");
+            HttpMethod.Delete, $"/app/bff/sessions/{maskedTargetId}");
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
@@ -345,14 +343,16 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
                 Arg.Any<CancellationToken>())
             .Returns(currentTokens);
 
-        _server.TokenStore.GetAsync(
+        // The caller has only their current session, so no session masks to the
+        // requested identifier.
+        _server.TokenStore.GetSessionIdsByUserAsync(
                 BffEndpointsTestServer.TestFrontendName,
-                "nonexistent-session",
+                "user-42",
                 Arg.Any<CancellationToken>())
-            .Returns((BffTokenSet?)null);
+            .Returns((IReadOnlyList<string>)[TestSessionId]);
 
         HttpResponseMessage response = await SendAnonymousWithSessionAsync(
-            HttpMethod.Delete, "/app/bff/sessions/nonexistent-session");
+            HttpMethod.Delete, "/app/bff/sessions/nonexistent-masked-id");
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -360,18 +360,12 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task DeleteSession_TargetBelongsToDifferentUser_Returns404()
     {
-        string targetSessionId = "other-user-session";
+        const string otherUserSessionId = "other-user-session-id-abcdef";
 
         BffTokenSet currentTokens = new(
             "access-token", null, null, BffEndpointsTestServer.FixedNow.AddHours(1))
         {
             UserId = "user-42",
-        };
-
-        BffTokenSet targetTokens = new(
-            "target-access-token", null, null, BffEndpointsTestServer.FixedNow.AddHours(1))
-        {
-            UserId = "different-user-99",
         };
 
         _server.TokenStore.GetAsync(
@@ -380,21 +374,64 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
                 Arg.Any<CancellationToken>())
             .Returns(currentTokens);
 
-        _server.TokenStore.GetAsync(
+        // The caller's session list never includes another user's session, so a
+        // foreign session's masked ID resolves to nothing on this account.
+        _server.TokenStore.GetSessionIdsByUserAsync(
                 BffEndpointsTestServer.TestFrontendName,
-                targetSessionId,
+                "user-42",
                 Arg.Any<CancellationToken>())
-            .Returns(targetTokens);
+            .Returns((IReadOnlyList<string>)[TestSessionId]);
+
+        string maskedOtherId = BffSessionEndpoints.MaskSessionId(otherUserSessionId);
 
         HttpResponseMessage response = await SendAnonymousWithSessionAsync(
-            HttpMethod.Delete, $"/app/bff/sessions/{targetSessionId}");
+            HttpMethod.Delete, $"/app/bff/sessions/{maskedOtherId}");
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
 
-        // Should not remove the session since it belongs to a different user
+        // Nothing is removed: the foreign session is not in the caller's list.
         await _server.TokenStore.DidNotReceive().RemoveAsync(
             BffEndpointsTestServer.TestFrontendName,
-            targetSessionId,
+            Arg.Any<string>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task DeleteSession_AmbiguousMaskedId_Returns409()
+    {
+        BffTokenSet currentTokens = new(
+            "access-token", null, null, BffEndpointsTestServer.FixedNow.AddHours(1))
+        {
+            UserId = "user-42",
+        };
+
+        _server.TokenStore.GetAsync(
+                BffEndpointsTestServer.TestFrontendName,
+                TestSessionId,
+                Arg.Any<CancellationToken>())
+            .Returns(currentTokens);
+
+        // Two distinct raw IDs that share the same first/last four characters mask
+        // identically; the endpoint must refuse rather than revoke the wrong one.
+        const string rawA = "abcdXXXXwxyz";
+        const string rawB = "abcdYYYYwxyz";
+        _server.TokenStore.GetSessionIdsByUserAsync(
+                BffEndpointsTestServer.TestFrontendName,
+                "user-42",
+                Arg.Any<CancellationToken>())
+            .Returns((IReadOnlyList<string>)[TestSessionId, rawA, rawB]);
+
+        string maskedId = BffSessionEndpoints.MaskSessionId(rawA);
+        BffSessionEndpoints.MaskSessionId(rawB).ShouldBe(maskedId);
+
+        HttpResponseMessage response = await SendAnonymousWithSessionAsync(
+            HttpMethod.Delete, $"/app/bff/sessions/{maskedId}");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+
+        await _server.TokenStore.DidNotReceive().RemoveAsync(
+            BffEndpointsTestServer.TestFrontendName,
+            Arg.Any<string>(),
             Arg.Any<CancellationToken>());
     }
 

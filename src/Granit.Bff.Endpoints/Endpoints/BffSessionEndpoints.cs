@@ -45,6 +45,7 @@ internal static partial class BffSessionEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
             .ExcludeFromDescription();
 
         group.MapDelete("/sessions", (HttpContext httpContext,
@@ -127,27 +128,45 @@ internal static partial class BffSessionEndpoints
             return TypedResults.Problem(detail: NoActiveSessionMessage, statusCode: StatusCodes.Status401Unauthorized);
         }
 
-#pragma warning disable GRSEC003
-        BffTokenSet? targetTokens = await tokenStore.GetAsync(frontend.Name, targetSessionId, cancellationToken)
+#pragma warning disable GRSEC003 // Reading tokens to resolve the calling user
+        BffTokenSet? currentTokens = await tokenStore.GetAsync(frontend.Name, currentSessionId, cancellationToken)
             .ConfigureAwait(false);
 #pragma warning restore GRSEC003
 
-        if (targetTokens is null)
+        if (currentTokens?.UserId is null)
+        {
+            return TypedResults.Problem(detail: NoActiveSessionMessage, statusCode: StatusCodes.Status401Unauthorized);
+        }
+
+        // The /sessions list masks session IDs — raw IDs are never exposed to the
+        // browser — so the caller can only return a masked ID. Resolve it back to
+        // the raw session ID by recomputing the mask over the caller's OWN sessions.
+        // Scoping the match to the current user means one user can never target
+        // another's session, and the raw session ID stays server-side.
+        IReadOnlyList<string> sessionIds = await tokenStore.GetSessionIdsByUserAsync(
+            frontend.Name, currentTokens.UserId, cancellationToken).ConfigureAwait(false);
+
+        var matches = sessionIds
+            .Where(id => string.Equals(MaskSessionId(id), targetSessionId, StringComparison.Ordinal))
+            .ToList();
+
+        if (matches.Count == 0)
         {
             return TypedResults.Problem(detail: "Session not found.", statusCode: StatusCodes.Status404NotFound);
         }
 
-        // Verify the target session belongs to the same user
-        BffTokenSet? currentTokens = await tokenStore.GetAsync(frontend.Name, currentSessionId, cancellationToken)
-            .ConfigureAwait(false);
-
-        if (currentTokens?.UserId is null || currentTokens.UserId != targetTokens.UserId)
+        // A masked ID surfaces only 8 characters of a 43-character identifier; a
+        // collision within a single user's sessions is astronomically unlikely,
+        // but refuse to guess rather than revoke the wrong device.
+        if (matches.Count > 1)
         {
-            return TypedResults.Problem(detail: "Session not found.", statusCode: StatusCodes.Status404NotFound);
+            return TypedResults.Problem(
+                detail: "Ambiguous session identifier.", statusCode: StatusCodes.Status409Conflict);
         }
 
-        await tokenStore.RemoveAsync(frontend.Name, targetSessionId, cancellationToken).ConfigureAwait(false);
-        LogSessionRevoked(logger, MaskSessionId(targetSessionId), frontend.Name);
+        string rawSessionId = matches[0];
+        await tokenStore.RemoveAsync(frontend.Name, rawSessionId, cancellationToken).ConfigureAwait(false);
+        LogSessionRevoked(logger, MaskSessionId(rawSessionId), frontend.Name);
 
         return TypedResults.NoContent();
     }

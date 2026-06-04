@@ -43252,6 +43252,28 @@
       ]
     },
     {
+      "name": "SafeTypeLoader",
+      "fqn": "Granit.Reflection.SafeTypeLoader",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Reflection/SafeTypeLoader.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "GetLoadableTypes",
+          "kind": "method",
+          "signature": "GetLoadableTypes(this Assembly assembly)",
+          "returnType": "IReadOnlyList<Type>"
+        },
+        {
+          "name": "GetLoadableExportedTypes",
+          "kind": "method",
+          "signature": "GetLoadableExportedTypes(this Assembly assembly)",
+          "returnType": "IReadOnlyList<Type>"
+        }
+      ]
+    },
+    {
       "name": "GranitSchedulingBackgroundJobsModule",
       "fqn": "Granit.Scheduling.BackgroundJobs.GranitSchedulingBackgroundJobsModule",
       "kind": "class",
