@@ -16,12 +16,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" />
-    <!-- This generator composes the ENTIRE module graph, including Granit.Privacy, which
-         declares Wolverine sagas and marks WolverineFx PrivateAssets=all (so Wolverine.dll
-         does not flow transitively). Building/reflecting over that graph for OpenAPI
-         generation requires Wolverine in the load context. Referenced privately, build-only.
-         Allow-listed in WolverineCouplingTests (build tool, not a domain leak). -->
-    <PackageReference Include="WolverineFx" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

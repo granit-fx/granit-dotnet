@@ -11,8 +11,8 @@
       "WolverineFx": {
         "type": "Direct",
         "requested": "[6.*, )",
-        "resolved": "6.4.1",
-        "contentHash": "GMTqJkd1h9bW6T+Ha8EHo1qaawtutC+HZrMHNjtR0f8U6BhWE/qRo39VXxWDrTO3gb067U0Teua9hskJ7TpE1w==",
+        "resolved": "6.4.3",
+        "contentHash": "kfyJrBtDcbYOmb6kwtTop8frW+Coqu7c3FGOF5HmSJL1zWW6Mi85gKU30ShcSnHQ27tqDrAmnDClnMJhmQb5cA==",
         "dependencies": {
           "JasperFx": "2.8.0",
           "JasperFx.Events": "2.8.0",

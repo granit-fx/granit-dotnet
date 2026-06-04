@@ -231,10 +231,7 @@
         }
       },
       "granit.localization.sourcegenerator": {
-        "type": "Project",
-        "dependencies": {
-          "Microsoft.CodeAnalysis.CSharp": "[5.0.*, )"
-        }
+        "type": "Project"
       },
       "Microsoft.CodeAnalysis.Analyzers": {
         "type": "CentralTransitive",

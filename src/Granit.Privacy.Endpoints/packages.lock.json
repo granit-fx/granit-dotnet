@@ -21,15 +21,78 @@
           "Asp.Versioning.Abstractions": "10.0.0"
         }
       },
+      "FastExpressionCompiler": {
+        "type": "Transitive",
+        "resolved": "5.4.1",
+        "contentHash": "nqMykMspK5cQd35Y8ulQzAujxCcCwZVUne32pC5xNpXqrbPCuKOPMWkKHJ3LveAZPm6dsVvump0TJ1SZ9RzfTQ=="
+      },
+      "ImTools": {
+        "type": "Transitive",
+        "resolved": "4.0.0",
+        "contentHash": "dms0JfLKC9AQbQX/EdpRjn59EjEvaCxIgv1z9YxbEQb5SiOVoo7vlIKdEySeEwUkWhN05rZnNpUpG+aw5VqPVQ=="
+      },
+      "JasperFx": {
+        "type": "Transitive",
+        "resolved": "2.8.0",
+        "contentHash": "r06TuAR7sdGDmhdrTVkPVkIGJoR0GH8PsBiPikLzowFo4LJSL3QJ1ttNUO/381n9STUKhhfKXboCL3rS+OIsnQ==",
+        "dependencies": {
+          "FastExpressionCompiler": "5.4.1",
+          "ImTools": "4.0.0",
+          "Microsoft.Bcl.TimeProvider": "10.0.0",
+          "Polly.Core": "8.6.5",
+          "Spectre.Console": "0.55.0"
+        }
+      },
+      "JasperFx.Events": {
+        "type": "Transitive",
+        "resolved": "2.8.0",
+        "contentHash": "H4k/jNeWwnE+1C94IIozp7I4FEVgzT2GR2d/RizSDkUyIYhoKVnfNBQvCSbNHkn7PqFulGmu8Nn2ovJJ9ezotQ==",
+        "dependencies": {
+          "JasperFx": "2.8.0"
+        }
+      },
+      "JasperFx.SourceGenerator": {
+        "type": "Transitive",
+        "resolved": "2.8.0",
+        "contentHash": "W4PIuA/qsAjekuCtKbuBzFEfgviRQ376THUkp+RQ0jz+dlEImhF0JTfu6h45q9nGVP1Rh0+Bq9B7T4ZKopvCkA=="
+      },
+      "Microsoft.Bcl.TimeProvider": {
+        "type": "Transitive",
+        "resolved": "10.0.0",
+        "contentHash": "bUubrBD6tRJE3V1kvRloYc6NymH3R5oFKjAS9e0ELNx6u0ZR+zjps9dDQyjgqN/rArzl7f+21KGszj3YRN7F2Q=="
+      },
       "Microsoft.OpenApi": {
         "type": "Transitive",
         "resolved": "2.0.0",
         "contentHash": "GGYLfzV/G/ct80OZ45JxnWP7NvMX1BCugn/lX7TH5o0lcVaviavsLMTxmFV2AybXWjbi3h6FF1vgZiTK6PXndw=="
       },
+      "NewId": {
+        "type": "Transitive",
+        "resolved": "4.0.1",
+        "contentHash": "jegBasNndmG21G3BmT51suFDCIz/sLN81j+IxmkZ4iWoaDi8LygeHiyNnYbXz5OQh9nCRJFIx1+PJrlYi1Gc9Q=="
+      },
       "Pipelines.Sockets.Unofficial": {
         "type": "Transitive",
         "resolved": "2.2.16",
         "contentHash": "nonu9l0YrZH6krVYbskBjE7uG0VMAnvOQ9PU+RmzUsy+++vHkqzzCkHRoP877OiA3iRTxJyNDLfpcU8hrJ3/YQ=="
+      },
+      "Polly.Core": {
+        "type": "Transitive",
+        "resolved": "8.6.5",
+        "contentHash": "t+sUVrIwvo7UmsgHGgOG9F0GDZSRIm47u2ylH17Gvcv1q5hNEwgD5GoBlFyc0kh/pebmPyrAgvGsR/65ZBaXlg=="
+      },
+      "Spectre.Console": {
+        "type": "Transitive",
+        "resolved": "0.55.0",
+        "contentHash": "2TVhUHFsDux0Z+y2Hv4bFsOMuON4SuotEEKkMparFkp5Rm259naaaEQrN4Sv6C1cbsiGKPjfkJDGgUp+hZPjTw==",
+        "dependencies": {
+          "Spectre.Console.Ansi": "0.55.0"
+        }
+      },
+      "Spectre.Console.Ansi": {
+        "type": "Transitive",
+        "resolved": "0.55.0",
+        "contentHash": "GIfgOvuF8MpU52bprhwtDEtx0gmVIGOepM8bw0lH/TSMD0rg1Xp+5Y53kPG8rFVdcpbNANlhDQ5mEVVPO3/2Tg=="
       },
       "System.IO.Hashing": {
         "type": "Transitive",
@@ -167,7 +230,8 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )"
+          "Granit.Workflow": "[0.1.0-dev, )",
+          "WolverineFx": "[6.*, )"
         }
       },
       "granit.privacy.regulations": {
@@ -309,6 +373,18 @@
         "dependencies": {
           "Pipelines.Sockets.Unofficial": "2.2.16",
           "System.IO.Hashing": "10.0.2"
+        }
+      },
+      "WolverineFx": {
+        "type": "CentralTransitive",
+        "requested": "[6.*, )",
+        "resolved": "6.4.3",
+        "contentHash": "kfyJrBtDcbYOmb6kwtTop8frW+Coqu7c3FGOF5HmSJL1zWW6Mi85gKU30ShcSnHQ27tqDrAmnDClnMJhmQb5cA==",
+        "dependencies": {
+          "JasperFx": "2.8.0",
+          "JasperFx.Events": "2.8.0",
+          "JasperFx.SourceGenerator": "2.8.0",
+          "NewId": "4.0.1"
         }
       },
       "ZiggyCreatures.FusionCache": {

@@ -17,14 +17,20 @@
          assembly it processes. When Granit.Privacy.BlobStorage references
          Granit.Privacy via ProjectReference, the SG analyzer flows through
          and runs again in BlobStorage, emitting a SECOND class with the same
-         FQN — CS0436 conflict. PrivateAssets="all" stops the analyzer from
-         propagating to downstream consumers; the SG still runs HERE (the
-         assembly declaring Wolverine handlers + sagas), and Privacy.BlobStorage
-         falls back to Wolverine's runtime reflection-based handler discovery
-         for its own handlers (the SG is a perf optimisation, not a
-         correctness requirement). -->
+         FQN — CS0436 conflict. PrivateAssets="analyzers" stops ONLY the source
+         generator from propagating to downstream consumers (the SG still runs
+         HERE, where the Wolverine handlers + sagas are declared) while letting
+         the Wolverine runtime assembly flow transitively.
+
+         It must NOT be PrivateAssets="all": Privacy's public surface (the export
+         and deletion sagas) references Wolverine types, so consumers that reflect
+         over Privacy's exported types — e.g. the OpenAPI generator, FluentValidation
+         and Wolverine's own discovery — need Wolverine loadable. Marking it "all"
+         blocked the runtime asset and crashed those scans with a FileNotFound for
+         Wolverine.dll (#2540). The WolverineCouplingTests guard only flags direct
+         package references, which this transitive flow does not introduce. -->
     <PackageReference Include="WolverineFx">
-      <PrivateAssets>all</PrivateAssets>
+      <PrivateAssets>analyzers</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 

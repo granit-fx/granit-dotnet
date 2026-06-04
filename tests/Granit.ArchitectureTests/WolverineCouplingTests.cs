@@ -31,10 +31,6 @@ public sealed class WolverineCouplingTests
         // Granit.Privacy defines Wolverine Sagas for scatter-gather export/deletion
         "Granit.Privacy",
         "Granit.Wolverine.Encryption",
-        // Build-only OpenAPI contract generator: composes the ENTIRE module graph (incl.
-        // Granit.Privacy's sagas) and reflects over it for doc generation, so Wolverine must
-        // be present in the load context. Not an adapter and not shipped — IsPackable=false.
-        "Granit.OpenApi.Generator",
     };
 
     [Fact]

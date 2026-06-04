@@ -23,18 +23,6 @@
         "resolved": "10.0.8",
         "contentHash": "fikrKwWqzn/72glL9bTNnuberYPrKldDdgyR1cnW9gbfUXN4oG4eg+uXkTUXuIPcEjwCeOTTTja0VpsHf50tWA=="
       },
-      "WolverineFx": {
-        "type": "Direct",
-        "requested": "[6.*, )",
-        "resolved": "6.4.3",
-        "contentHash": "kfyJrBtDcbYOmb6kwtTop8frW+Coqu7c3FGOF5HmSJL1zWW6Mi85gKU30ShcSnHQ27tqDrAmnDClnMJhmQb5cA==",
-        "dependencies": {
-          "JasperFx": "2.8.0",
-          "JasperFx.Events": "2.8.0",
-          "JasperFx.SourceGenerator": "2.8.0",
-          "NewId": "4.0.1"
-        }
-      },
       "Asp.Versioning.Abstractions": {
         "type": "Transitive",
         "resolved": "10.0.0",
@@ -976,7 +964,8 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )"
+          "Granit.Workflow": "[0.1.0-dev, )",
+          "WolverineFx": "[6.*, )"
         }
       },
       "granit.privacy.endpoints": {
@@ -1369,6 +1358,18 @@
         "dependencies": {
           "Pipelines.Sockets.Unofficial": "2.2.16",
           "System.IO.Hashing": "10.0.2"
+        }
+      },
+      "WolverineFx": {
+        "type": "CentralTransitive",
+        "requested": "[6.*, )",
+        "resolved": "6.4.3",
+        "contentHash": "kfyJrBtDcbYOmb6kwtTop8frW+Coqu7c3FGOF5HmSJL1zWW6Mi85gKU30ShcSnHQ27tqDrAmnDClnMJhmQb5cA==",
+        "dependencies": {
+          "JasperFx": "2.8.0",
+          "JasperFx.Events": "2.8.0",
+          "JasperFx.SourceGenerator": "2.8.0",
+          "NewId": "4.0.1"
         }
       },
       "ZiggyCreatures.FusionCache": {
