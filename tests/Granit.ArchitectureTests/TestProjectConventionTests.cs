@@ -17,12 +17,14 @@ public sealed class TestProjectConventionTests
         string testsDir = Path.Join(RepoRoot, "tests");
 
         // Auto-exclude analyzers and source generators (target netstandard2.0,
-        // cannot reference net10.0 test infrastructure)
+        // cannot reference net10.0 test infrastructure), and build-only tooling
+        // (IsPackable=false) — not shipped packages; covered by dedicated tests elsewhere.
         IEnumerable<string> srcPackages = Directory.GetDirectories(srcDir)
             .Select(Path.GetFileName)
             .Where(name => name!.StartsWith("Granit.", StringComparison.Ordinal))
             .Where(name => File.Exists(Path.Join(srcDir, name!, $"{name}.csproj")))
             .Where(name => !TargetsNetStandard(Path.Join(srcDir, name!, $"{name}.csproj")))
+            .Where(name => !IsBuildOnly(Path.Join(srcDir, name!, $"{name}.csproj")))
             .Cast<string>();
 
         List<string> missing = [];
@@ -77,6 +79,15 @@ public sealed class TestProjectConventionTests
         string content = File.ReadAllText(csprojPath);
         return content.Contains("<TargetFramework>netstandard", StringComparison.OrdinalIgnoreCase);
     }
+
+    /// <summary>
+    /// Returns <c>true</c> when the csproj is build-only (<c>IsPackable=false</c>) — e.g. the
+    /// OpenAPI contract generator tooling. These are not shipped packages and their behavior is
+    /// covered by dedicated tests elsewhere (e.g. <c>OpenApiGeneratorCompletenessTests</c>),
+    /// not a mirror <c>tests/</c> project.
+    /// </summary>
+    private static bool IsBuildOnly(string csprojPath) =>
+        File.ReadAllText(csprojPath).Contains("<IsPackable>false</IsPackable>", StringComparison.OrdinalIgnoreCase);
 
     private static string FindRepoRoot()
     {

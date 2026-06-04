@@ -1,0 +1,6 @@
+# Build-time OpenAPI artifacts are GENERATED, not source — never committed.
+# `dotnet build` emits Granit.OpenApi.Generator_<slug>.json here; CI publishes them
+# for granit-front to consume (openapi-typescript). Contract drift is caught downstream
+# by tsc on the regenerated types, not by a git diff here.
+*
+!.gitignore

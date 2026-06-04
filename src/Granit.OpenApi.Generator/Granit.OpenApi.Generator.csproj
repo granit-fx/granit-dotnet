@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- Build-only contract-artifact generator: composes every Granit.*.Endpoints
+         module and emits one OpenAPI document per module at build time. Never shipped. -->
+    <IsPackable>false</IsPackable>
+    <OutputType>Exe</OutputType>
+
+    <!-- Build-time OpenAPI generation (Microsoft.Extensions.ApiDescription.Server).
+         Emits one Granit.OpenApi.Generator_<slug>.json per registered document into
+         ./generated, plus an empty default doc (ignored — see generated/.gitignore). -->
+    <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+    <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)/generated</OpenApiDocumentsDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" />
+    <!-- This generator composes the ENTIRE module graph, including Granit.Privacy, which
+         declares Wolverine sagas and marks WolverineFx PrivateAssets=all (so Wolverine.dll
+         does not flow transitively). Building/reflecting over that graph for OpenAPI
+         generation requires Wolverine in the load context. Referenced privately, build-only.
+         Allow-listed in WolverineCouplingTests (build tool, not a domain leak). -->
+    <PackageReference Include="WolverineFx" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Direct dependency: AddGranitOpenApiDocument drives per-module slicing + the transformer chain. -->
+    <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
+    <ProjectReference Include="..\Granit.AI.Endpoints\Granit.AI.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Auditing.Endpoints\Granit.Auditing.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Authentication.ApiKeys.Endpoints\Granit.Authentication.ApiKeys.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Authorization.Endpoints\Granit.Authorization.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.BackgroundJobs.Endpoints\Granit.BackgroundJobs.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Bff.Endpoints\Granit.Bff.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.BlobStorage.Endpoints\Granit.BlobStorage.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.DataExchange.Endpoints\Granit.DataExchange.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.DataLookup.Endpoints\Granit.DataLookup.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Diagnostics.Endpoints\Granit.Diagnostics.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Features.Endpoints\Granit.Features.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Hostnames.Endpoints\Granit.Hostnames.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Http.Cookies.Endpoints\Granit.Http.Cookies.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Http.SecurityHeaders.Endpoints\Granit.Http.SecurityHeaders.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Identity.Endpoints\Granit.Identity.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Identity.Local.Endpoints\Granit.Identity.Local.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Localization.Endpoints\Granit.Localization.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.MultiTenancy.Endpoints\Granit.MultiTenancy.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.Endpoints\Granit.Notifications.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.OpenIddict.Endpoints\Granit.OpenIddict.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Presence.Endpoints\Granit.Presence.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.Endpoints\Granit.Privacy.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Scheduling.Endpoints\Granit.Scheduling.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Settings.Endpoints\Granit.Settings.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Templating.Endpoints\Granit.Templating.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Timeline.Endpoints\Granit.Timeline.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Validation.Endpoints\Granit.Validation.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Webhooks.Endpoints\Granit.Webhooks.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Workflow.Endpoints\Granit.Workflow.Endpoints.csproj" />
+  </ItemGroup>
+
+</Project>

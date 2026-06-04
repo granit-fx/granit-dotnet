@@ -1772,6 +1772,42 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.OpenApi.Generator",
+      "deps": [
+        "Granit.Http.ApiDocumentation",
+        "Granit.AI.Endpoints",
+        "Granit.Auditing.Endpoints",
+        "Granit.Authentication.ApiKeys.Endpoints",
+        "Granit.Authorization.Endpoints",
+        "Granit.BackgroundJobs.Endpoints",
+        "Granit.Bff.Endpoints",
+        "Granit.BlobStorage.Endpoints",
+        "Granit.DataExchange.Endpoints",
+        "Granit.DataLookup.Endpoints",
+        "Granit.Diagnostics.Endpoints",
+        "Granit.Features.Endpoints",
+        "Granit.Hostnames.Endpoints",
+        "Granit.Http.Cookies.Endpoints",
+        "Granit.Http.SecurityHeaders.Endpoints",
+        "Granit.Identity.Endpoints",
+        "Granit.Identity.Local.Endpoints",
+        "Granit.Localization.Endpoints",
+        "Granit.MultiTenancy.Endpoints",
+        "Granit.Notifications.Endpoints",
+        "Granit.OpenIddict.Endpoints",
+        "Granit.Presence.Endpoints",
+        "Granit.Privacy.Endpoints",
+        "Granit.Scheduling.Endpoints",
+        "Granit.Settings.Endpoints",
+        "Granit.Templating.Endpoints",
+        "Granit.Timeline.Endpoints",
+        "Granit.Validation.Endpoints",
+        "Granit.Webhooks.Endpoints",
+        "Granit.Workflow.Endpoints"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.OpenIddict",
       "deps": [
         "Granit.DataExchange.Abstractions",
@@ -20458,7 +20494,7 @@
       "kind": "class",
       "project": "Granit.Http.ApiDocumentation",
       "file": "src/Granit.Http.ApiDocumentation/Extensions/ApiDocumentationServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitApiDocumentation",
@@ -35582,6 +35618,15 @@
       "project": "Granit.Oidc",
       "file": "src/Granit.Oidc/OidcConstants.cs",
       "line": 52,
+      "members": []
+    },
+    {
+      "name": "GeneratorModule",
+      "fqn": "Granit.OpenApi.Generator.GeneratorModule",
+      "kind": "class",
+      "project": "Granit.OpenApi.Generator",
+      "file": "src/Granit.OpenApi.Generator/GeneratorModule.cs",
+      "line": 45,
       "members": []
     },
     {

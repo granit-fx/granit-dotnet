@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using Asp.Versioning;
 using Granit.Http.ApiDocumentation.Options;
 using Granit.Http.ApiDocumentation.Transformers;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -35,95 +36,151 @@ public static class ApiDocumentationServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        IConfigurationSection section = builder.Configuration.GetSection(ApiDocumentationOptions.SectionName);
-
-        // The .NET configuration binder appends to existing IList values instead of replacing them.
-        // Clearing MajorVersions before Bind prevents duplicates when config mirrors the default value.
-        ApiDocumentationOptions options = new();
-        options.MajorVersions = [];
-        section.Bind(options);
+        ApiDocumentationOptions options = ReadOptions(builder.Configuration);
         if (options.MajorVersions.Count == 0)
         {
             options.MajorVersions.Add(1);
         }
 
-        RegisterDocuments(builder.Services, options);
+        RegisterTransformerServices(builder.Services);
+
+        foreach (int majorVersion in options.MajorVersions)
+        {
+            ApiVersion apiVersion = new(majorVersion);
+            RegisterGranitDocument(
+                builder.Services,
+                documentName: $"v{majorVersion}",
+                title: options.Title,
+                version: apiVersion.ToString(),
+                options,
+                shouldInclude: null);
+        }
 
         return builder;
     }
 
-    private static void RegisterDocuments(
-        IServiceCollection services,
-        ApiDocumentationOptions options)
+    /// <summary>
+    /// Registers a single additional OpenAPI document with the full Granit transformer chain
+    /// (int32 normalization, problem-details schema, sorted tags, security schemes, …) and a custom
+    /// <paramref name="shouldInclude"/> predicate. Use this to slice the API surface into per-module
+    /// (or per-audience) documents while keeping every document faithful to the framework's served
+    /// OpenAPI — without it, a bare <c>AddOpenApi</c> emits the raw ASP.NET Core output (e.g.
+    /// <c>type: ["integer","string"]</c> on every <c>int</c>).
+    /// </summary>
+    /// <param name="builder">The host application builder.</param>
+    /// <param name="documentName">OpenAPI document name (e.g. a module slug). Becomes the route at <c>/openapi/{documentName}.json</c>.</param>
+    /// <param name="title">Document title shown in the OpenAPI info block and Scalar UI.</param>
+    /// <param name="shouldInclude">Predicate selecting which endpoints belong to this document — typically <c>d => d.GroupName == "&lt;slug&gt;"</c>.</param>
+    public static IHostApplicationBuilder AddGranitOpenApiDocument(
+        this IHostApplicationBuilder builder,
+        string documentName,
+        string title,
+        Func<ApiDescription, bool> shouldInclude)
     {
-        // Transformers must be registered before AddOpenApi to be resolved via DI.
-        services.AddTransient<JwtBearerSecuritySchemeTransformer>();
-        services.AddTransient<OAuth2SecuritySchemeTransformer>();
-        services.AddTransient<ProblemDetailsSchemaDocumentTransformer>();
-        services.AddTransient<InternalApiDocumentTransformer>();
-        services.AddTransient<SortedTagsDocumentTransformer>();
-        services.AddTransient<TenantHeaderOperationTransformer>();
-        services.AddTransient<WolverineOpenApiOperationTransformer>();
-        services.AddTransient<ProblemDetailsResponseOperationTransformer>();
-        services.AddTransient<DictionarySchemaExampleOperationTransformer>();
-        services.AddTransient<SecurityRequirementOperationTransformer>();
-        services.AddTransient<NullableIntSchemaOperationTransformer>();
-        services.AddTransient<ParameterDescriptionOperationTransformer>();
-        services.AddTransient<SchemaExampleSchemaTransformer>();
-        services.AddTransient<JsonElementSchemaTransformer>();
-        services.AddTransient<Int32SchemaTransformer>();
+        ArgumentException.ThrowIfNullOrWhiteSpace(documentName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+        ArgumentNullException.ThrowIfNull(shouldInclude);
+
+        RegisterTransformerServices(builder.Services);
+        RegisterGranitDocument(
+            builder.Services,
+            documentName,
+            title,
+            version: "1",
+            ReadOptions(builder.Configuration),
+            shouldInclude);
+
+        return builder;
+    }
+
+    private static ApiDocumentationOptions ReadOptions(IConfiguration configuration)
+    {
+        // The .NET configuration binder appends to existing IList values instead of replacing them.
+        // Clearing MajorVersions before Bind prevents duplicates when config mirrors the default value.
+        ApiDocumentationOptions options = new() { MajorVersions = [] };
+        configuration.GetSection(ApiDocumentationOptions.SectionName).Bind(options);
+        return options;
+    }
+
+    private static void RegisterTransformerServices(IServiceCollection services)
+    {
+        // Transformers must be registered before AddOpenApi to be resolved via DI. TryAdd keeps this
+        // idempotent so AddGranitApiDocumentation and AddGranitOpenApiDocument can both be called.
+        services.TryAddTransient<JwtBearerSecuritySchemeTransformer>();
+        services.TryAddTransient<OAuth2SecuritySchemeTransformer>();
+        services.TryAddTransient<ProblemDetailsSchemaDocumentTransformer>();
+        services.TryAddTransient<InternalApiDocumentTransformer>();
+        services.TryAddTransient<SortedTagsDocumentTransformer>();
+        services.TryAddTransient<TenantHeaderOperationTransformer>();
+        services.TryAddTransient<WolverineOpenApiOperationTransformer>();
+        services.TryAddTransient<ProblemDetailsResponseOperationTransformer>();
+        services.TryAddTransient<DictionarySchemaExampleOperationTransformer>();
+        services.TryAddTransient<SecurityRequirementOperationTransformer>();
+        services.TryAddTransient<NullableIntSchemaOperationTransformer>();
+        services.TryAddTransient<ParameterDescriptionOperationTransformer>();
+        services.TryAddTransient<SchemaExampleSchemaTransformer>();
+        services.TryAddTransient<JsonElementSchemaTransformer>();
+        services.TryAddTransient<Int32SchemaTransformer>();
 
         DiscoverSchemaExampleProviders(services);
+    }
 
-        foreach (int majorVersion in options.MajorVersions)
+    private static void RegisterGranitDocument(
+        IServiceCollection services,
+        string documentName,
+        string title,
+        string version,
+        ApiDocumentationOptions options,
+        Func<ApiDescription, bool>? shouldInclude)
+    {
+        services.AddOpenApi(documentName, openApiOptions =>
         {
-            string documentName = $"v{majorVersion}";
-            ApiVersion apiVersion = new(majorVersion);
-
-            services.AddOpenApi(documentName, openApiOptions =>
+            if (shouldInclude is not null)
             {
-                openApiOptions.AddDocumentTransformer((doc, ctx, cancellationToken) =>
+                openApiOptions.ShouldInclude = shouldInclude;
+            }
+
+            openApiOptions.AddDocumentTransformer((doc, ctx, cancellationToken) =>
+            {
+                doc.Info = new OpenApiInfo
                 {
-                    doc.Info = new OpenApiInfo
+                    Title = title,
+                    Version = version,
+                    Description = options.Description,
+                    Contact = options.ContactEmail is not null
+                        ? new OpenApiContact { Email = options.ContactEmail }
+                        : null,
+                };
+
+                if (!string.IsNullOrEmpty(options.LogoUrl))
+                {
+                    doc.Info.Extensions ??= new Dictionary<string, IOpenApiExtension>();
+                    doc.Info.Extensions["x-logo"] = new JsonNodeExtension(new JsonObject
                     {
-                        Title = options.Title,
-                        Version = apiVersion.ToString(),
-                        Description = options.Description,
-                        Contact = options.ContactEmail is not null
-                            ? new OpenApiContact { Email = options.ContactEmail }
-                            : null,
-                    };
+                        ["url"] = options.LogoUrl,
+                        ["altText"] = title,
+                    });
+                }
 
-                    if (!string.IsNullOrEmpty(options.LogoUrl))
-                    {
-                        doc.Info.Extensions ??= new Dictionary<string, IOpenApiExtension>();
-                        doc.Info.Extensions["x-logo"] = new JsonNodeExtension(new JsonObject
-                        {
-                            ["url"] = options.LogoUrl,
-                            ["altText"] = options.Title,
-                        });
-                    }
-
-                    return Task.CompletedTask;
-                });
-
-                openApiOptions.AddDocumentTransformer<ProblemDetailsSchemaDocumentTransformer>();
-                openApiOptions.AddDocumentTransformer<JwtBearerSecuritySchemeTransformer>();
-                openApiOptions.AddDocumentTransformer<OAuth2SecuritySchemeTransformer>();
-                openApiOptions.AddDocumentTransformer<InternalApiDocumentTransformer>();
-                openApiOptions.AddDocumentTransformer<SortedTagsDocumentTransformer>();
-                openApiOptions.AddOperationTransformer<TenantHeaderOperationTransformer>();
-                openApiOptions.AddOperationTransformer<WolverineOpenApiOperationTransformer>();
-                openApiOptions.AddOperationTransformer<ProblemDetailsResponseOperationTransformer>();
-                openApiOptions.AddOperationTransformer<DictionarySchemaExampleOperationTransformer>();
-                openApiOptions.AddOperationTransformer<SecurityRequirementOperationTransformer>();
-                openApiOptions.AddOperationTransformer<NullableIntSchemaOperationTransformer>();
-                openApiOptions.AddOperationTransformer<ParameterDescriptionOperationTransformer>();
-                openApiOptions.AddSchemaTransformer<SchemaExampleSchemaTransformer>();
-                openApiOptions.AddSchemaTransformer<JsonElementSchemaTransformer>();
-                openApiOptions.AddSchemaTransformer<Int32SchemaTransformer>();
+                return Task.CompletedTask;
             });
-        }
+
+            openApiOptions.AddDocumentTransformer<ProblemDetailsSchemaDocumentTransformer>();
+            openApiOptions.AddDocumentTransformer<JwtBearerSecuritySchemeTransformer>();
+            openApiOptions.AddDocumentTransformer<OAuth2SecuritySchemeTransformer>();
+            openApiOptions.AddDocumentTransformer<InternalApiDocumentTransformer>();
+            openApiOptions.AddDocumentTransformer<SortedTagsDocumentTransformer>();
+            openApiOptions.AddOperationTransformer<TenantHeaderOperationTransformer>();
+            openApiOptions.AddOperationTransformer<WolverineOpenApiOperationTransformer>();
+            openApiOptions.AddOperationTransformer<ProblemDetailsResponseOperationTransformer>();
+            openApiOptions.AddOperationTransformer<DictionarySchemaExampleOperationTransformer>();
+            openApiOptions.AddOperationTransformer<SecurityRequirementOperationTransformer>();
+            openApiOptions.AddOperationTransformer<NullableIntSchemaOperationTransformer>();
+            openApiOptions.AddOperationTransformer<ParameterDescriptionOperationTransformer>();
+            openApiOptions.AddSchemaTransformer<SchemaExampleSchemaTransformer>();
+            openApiOptions.AddSchemaTransformer<JsonElementSchemaTransformer>();
+            openApiOptions.AddSchemaTransformer<Int32SchemaTransformer>();
+        });
     }
 
     private static void DiscoverSchemaExampleProviders(IServiceCollection services)
@@ -142,8 +199,11 @@ public static class ApiDocumentationServiceCollectionExtensions
             {
                 types = assembly.GetExportedTypes();
             }
-            catch (ReflectionTypeLoadException)
+            catch (Exception ex) when (ex is ReflectionTypeLoadException or FileNotFoundException or FileLoadException or TypeLoadException)
             {
+                // An assembly in the load context references a dependency that is not present
+                // (e.g. a module exposing Wolverine-derived types when Wolverine is not flowed).
+                // Skip it — its example providers, if any, simply will not be discovered.
                 continue;
             }
 
