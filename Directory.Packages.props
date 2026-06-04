@@ -39,6 +39,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.*" />
     <PackageVersion Include="Microsoft.AspNetCore.OData" Version="9.4.*" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.*" />
+    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="10.*" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.*" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.*" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.*" />

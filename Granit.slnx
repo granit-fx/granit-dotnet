@@ -301,6 +301,7 @@
     <Project Path="src/Granit.Notifications.Zulip/Granit.Notifications.Zulip.csproj" />
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
   </Folder>
+  <Folder Name="/src/" />
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.Anthropic/Granit.AI.Anthropic.csproj" />
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
@@ -317,6 +318,7 @@
   <Folder Name="/src/Tooling/">
     <Project Path="src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj" />
     <Project Path="src/Granit.Analyzers/Granit.Analyzers.csproj" />
+    <Project Path="src/Granit.OpenApi.Generator/Granit.OpenApi.Generator.csproj" />
     <Project Path="src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Testing/Granit.Testing.csproj" />
   </Folder>
