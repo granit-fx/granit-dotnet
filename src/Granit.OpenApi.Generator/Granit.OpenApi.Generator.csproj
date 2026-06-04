@@ -16,11 +16,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" />
-    <!-- Granit.Privacy (base module) declares Wolverine sagas and marks WolverineFx
-         PrivateAssets=all, so Wolverine.dll does not flow transitively. Composing the
-         module graph reflects over Privacy's exported types, which fails to load without
-         Wolverine present. Reference it (private) purely so GetExportedTypes() resolves.
-         Follow-up: harden the framework's AppDomain type scans (see PR description). -->
+    <!-- This generator composes the ENTIRE module graph, including Granit.Privacy, which
+         declares Wolverine sagas and marks WolverineFx PrivateAssets=all (so Wolverine.dll
+         does not flow transitively). Building/reflecting over that graph for OpenAPI
+         generation requires Wolverine in the load context. Referenced privately, build-only.
+         Allow-listed in WolverineCouplingTests (build tool, not a domain leak). -->
     <PackageReference Include="WolverineFx" PrivateAssets="all" />
   </ItemGroup>
 
