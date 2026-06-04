@@ -19,4 +19,4 @@ public sealed record RoleCreateRequest(
     string Name,
     MultiTenancySides MultiTenancySides,
     Guid? TenantId,
-    string? Description);
+    string? Description = null);

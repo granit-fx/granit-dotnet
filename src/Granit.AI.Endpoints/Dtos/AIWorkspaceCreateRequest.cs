@@ -13,6 +13,6 @@ public sealed record AIWorkspaceCreateRequest(
     string Name,
     string Provider,
     string Model,
-    string? SystemPrompt,
-    float? Temperature,
-    int? MaxOutputTokens) : IAIWorkspaceMutableFields;
+    string? SystemPrompt = null,
+    float? Temperature = null,
+    int? MaxOutputTokens = null) : IAIWorkspaceMutableFields;

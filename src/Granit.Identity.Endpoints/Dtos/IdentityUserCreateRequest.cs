@@ -9,4 +9,4 @@ public sealed record IdentityUserCreateRequest(
     string? FirstName,
     string? LastName,
     bool Enabled,
-    string? TemporaryPassword);
+    string? TemporaryPassword = null);

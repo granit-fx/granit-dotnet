@@ -9,4 +9,4 @@ namespace Granit.Presence.Endpoints.Dtos;
 /// <param name="UntilUtc">Optional override expiration (UTC). Past values are rejected.</param>
 public sealed record SetPresenceRequest(
     ManualPresenceStatus ManualStatus,
-    DateTimeOffset? UntilUtc);
+    DateTimeOffset? UntilUtc = null);

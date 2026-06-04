@@ -9,6 +9,6 @@ namespace Granit.Templating.Endpoints.Dtos;
 /// <param name="SortOrder">Display order (default 0).</param>
 public sealed record SaveTemplateCategoryRequest(
     string Name,
-    string? Description,
-    string? Icon,
+    string? Description = null,
+    string? Icon = null,
     int SortOrder = 0);

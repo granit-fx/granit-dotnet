@@ -8,5 +8,5 @@ namespace Granit.Privacy.Endpoints.Dtos;
 public sealed record LegalDocumentCreateRequest(
     string DocumentId,
     string DisplayName,
-    string? Description,
-    string? TemplateName);
+    string? Description = null,
+    string? TemplateName = null);

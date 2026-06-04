@@ -8,4 +8,4 @@ namespace Granit.Validation.Endpoints.Dtos;
 /// Must match the <c>x-granit-validator</c> extension in the OpenAPI schema.
 /// </param>
 /// <param name="Value">The value to validate.</param>
-public sealed record ValidationFieldValidateRequest(string ErrorCode, string? Value);
+public sealed record ValidationFieldValidateRequest(string ErrorCode, string? Value = null);

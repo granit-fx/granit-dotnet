@@ -26,7 +26,7 @@ public sealed record CreateExportJobRequest(
     string Format,
     IReadOnlyList<string>? SelectedFields,
     bool IncludeIdForImport,
-    string? Sort,
-    IReadOnlyDictionary<string, string>? Filter,
-    IReadOnlyDictionary<string, string>? Presets,
-    string? Search);
+    string? Sort = null,
+    IReadOnlyDictionary<string, string>? Filter = null,
+    IReadOnlyDictionary<string, string>? Presets = null,
+    string? Search = null);

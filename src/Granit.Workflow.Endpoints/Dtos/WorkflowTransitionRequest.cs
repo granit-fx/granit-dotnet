@@ -7,4 +7,4 @@ namespace Granit.Workflow.Endpoints.Dtos;
 /// <param name="Comment">Optional regulatory comment or justification (ISO 27001 audit trail).</param>
 public sealed record WorkflowTransitionRequest(
     string TargetState,
-    string? Comment);
+    string? Comment = null);

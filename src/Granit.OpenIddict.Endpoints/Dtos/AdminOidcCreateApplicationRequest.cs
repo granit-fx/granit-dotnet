@@ -10,7 +10,7 @@ namespace Granit.OpenIddict.Endpoints.Dtos;
 #pragma warning disable GRSEC003 // ClientSecret is a DTO parameter, not a stored secret
 public sealed record AdminOidcCreateApplicationRequest(
     string ClientId,
-    string? DisplayName,
-    string? ClientSecret,
-    string? Type);
+    string? DisplayName = null,
+    string? ClientSecret = null,
+    string? Type = null);
 #pragma warning restore GRSEC003

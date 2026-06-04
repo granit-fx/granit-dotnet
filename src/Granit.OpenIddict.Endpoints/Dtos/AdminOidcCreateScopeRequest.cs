@@ -8,5 +8,5 @@ namespace Granit.OpenIddict.Endpoints.Dtos;
 /// <param name="Description">An optional human-readable description.</param>
 public sealed record AdminOidcCreateScopeRequest(
     string Name,
-    string? DisplayName,
-    string? Description);
+    string? DisplayName = null,
+    string? Description = null);

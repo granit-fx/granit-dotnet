@@ -10,5 +10,5 @@ namespace Granit.MultiTenancy.Endpoints.Dtos;
 public sealed record CreateTenantRequest(
     string Name,
     string Identifier,
-    string? ContactEmail,
-    string? Jurisdiction);
+    string? ContactEmail = null,
+    string? Jurisdiction = null);
