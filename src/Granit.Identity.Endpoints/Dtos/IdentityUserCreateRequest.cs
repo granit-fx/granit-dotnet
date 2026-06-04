@@ -6,7 +6,7 @@ namespace Granit.Identity.Endpoints.Dtos;
 public sealed record IdentityUserCreateRequest(
     string Username,
     string Email,
-    string? FirstName,
-    string? LastName,
-    bool Enabled,
+    string? FirstName = null,
+    string? LastName = null,
+    bool Enabled = false,
     string? TemporaryPassword = null);

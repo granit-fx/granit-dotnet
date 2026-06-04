@@ -11,7 +11,7 @@ public sealed class UpdateTenantRequestTests
     [Fact]
     public void Constructor_MapsAllFields()
     {
-        UpdateTenantRequest request = new("Updated Name", "updated@acme.com", "FR", AnyStamp);
+        UpdateTenantRequest request = new(Name: "Updated Name", ContactEmail: "updated@acme.com", Jurisdiction: "FR", ConcurrencyStamp: AnyStamp);
 
         request.Name.ShouldBe("Updated Name");
         request.ContactEmail.ShouldBe("updated@acme.com");
@@ -21,7 +21,7 @@ public sealed class UpdateTenantRequestTests
     [Fact]
     public void Constructor_NullContactEmail_IsValid()
     {
-        UpdateTenantRequest request = new("Acme", null, null, AnyStamp);
+        UpdateTenantRequest request = new(Name: "Acme", ContactEmail: null, Jurisdiction: null, ConcurrencyStamp: AnyStamp);
 
         request.ContactEmail.ShouldBeNull();
     }

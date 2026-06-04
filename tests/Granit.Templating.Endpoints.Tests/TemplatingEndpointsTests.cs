@@ -250,7 +250,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest("Billing.Invoice", null, "<h1>Hello</h1>"),
+            new SaveTemplateRequest(Name: "Billing.Invoice", Culture: null, Content: "<h1>Hello</h1>"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotImplemented);
@@ -277,7 +277,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         HttpResponseMessage response = await _adminClient.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest("Billing.Invoice", "fr", "<h1>Hello</h1>"),
+            new SaveTemplateRequest(Name: "Billing.Invoice", Culture: "fr", Content: "<h1>Hello</h1>"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -302,7 +302,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         HttpResponseMessage response = await _adminClient.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest(null, null, "<h1>Hello</h1>"),
+            new SaveTemplateRequest(Name: null, Culture: null, Content: "<h1>Hello</h1>"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -313,7 +313,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         HttpResponseMessage response = await _adminClient.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest("invalid", null, "<h1>Hello</h1>"),
+            new SaveTemplateRequest(Name: "invalid", Culture: null, Content: "<h1>Hello</h1>"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
@@ -324,7 +324,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         HttpResponseMessage response = await _adminClient.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest("Billing.Invoice", null, ""),
+            new SaveTemplateRequest(Name: "Billing.Invoice", Culture: null, Content: ""),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
@@ -342,7 +342,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         HttpResponseMessage response = await client.PutAsJsonAsync(
             $"{Prefix}/Billing.Invoice",
-            new SaveTemplateRequest(null, null, "<h1>Updated</h1>"),
+            new SaveTemplateRequest(Name: null, Culture: null, Content: "<h1>Updated</h1>"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotImplemented);
@@ -369,7 +369,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         HttpResponseMessage response = await _adminClient.PutAsJsonAsync(
             $"{Prefix}/Billing.Invoice",
-            new SaveTemplateRequest(null, "fr", "<h1>Updated</h1>"),
+            new SaveTemplateRequest(Name: null, Culture: "fr", Content: "<h1>Updated</h1>"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -394,7 +394,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         HttpResponseMessage response = await _adminClient.PutAsJsonAsync(
             $"{Prefix}/bad",
-            new SaveTemplateRequest(null, null, "<h1>Updated</h1>"),
+            new SaveTemplateRequest(Name: null, Culture: null, Content: "<h1>Updated</h1>"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -946,7 +946,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         HttpResponseMessage response = await _anonClient.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest("Billing.Invoice", null, "<h1>Hello</h1>"),
+            new SaveTemplateRequest(Name: "Billing.Invoice", Culture: null, Content: "<h1>Hello</h1>"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);

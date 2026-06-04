@@ -24,8 +24,8 @@ namespace Granit.DataExchange.Endpoints.Dtos.Export;
 public sealed record CreateExportJobRequest(
     string DefinitionName,
     string Format,
-    IReadOnlyList<string>? SelectedFields,
-    bool IncludeIdForImport,
+    IReadOnlyList<string>? SelectedFields = null,
+    bool IncludeIdForImport = false,
     string? Sort = null,
     IReadOnlyDictionary<string, string>? Filter = null,
     IReadOnlyDictionary<string, string>? Presets = null,

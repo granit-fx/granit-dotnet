@@ -13,7 +13,7 @@ public sealed class TemplatingDtoTests
     [Fact]
     public void SaveTemplateRequest_DefaultMimeType_IsTextHtml()
     {
-        SaveTemplateRequest request = new("Test.Template", null, "<p>Hello</p>");
+        SaveTemplateRequest request = new(Name: "Test.Template", Culture: null, Content: "<p>Hello</p>");
 
         request.MimeType.ShouldBe("text/html");
     }
@@ -21,7 +21,7 @@ public sealed class TemplatingDtoTests
     [Fact]
     public void SaveTemplateRequest_AllProperties_SetCorrectly()
     {
-        SaveTemplateRequest request = new("Billing.Invoice", "fr-BE", "<p>Facture</p>", "text/plain");
+        SaveTemplateRequest request = new(Name: "Billing.Invoice", Culture: "fr-BE", Content: "<p>Facture</p>", MimeType: "text/plain");
 
         request.Name.ShouldBe("Billing.Invoice");
         request.Culture.ShouldBe("fr-BE");
