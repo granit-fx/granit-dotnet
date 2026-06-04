@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using System.Reflection;
+using Granit.Reflection;
 
 namespace Granit.DataProtection;
 
@@ -72,17 +73,7 @@ public sealed class SensitivePropertyRegistry
 
     private static void ScanAssembly(Assembly assembly, Dictionary<string, SensitivePropertyEntry> map)
     {
-        Type[] types;
-        try
-        {
-            types = assembly.GetTypes();
-        }
-        catch (ReflectionTypeLoadException ex)
-        {
-            types = ex.Types.Where(t => t is not null).ToArray()!;
-        }
-
-        foreach (Type type in types)
+        foreach (Type type in assembly.GetLoadableTypes())
         {
             ScanType(type, map);
         }

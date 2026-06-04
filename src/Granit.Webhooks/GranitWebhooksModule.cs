@@ -4,6 +4,7 @@ using Granit.Guids;
 using Granit.Http.Resilience;
 using Granit.Http.Security;
 using Granit.Modularity;
+using Granit.Reflection;
 using Granit.Timing;
 using Granit.Webhooks.Definitions;
 using Granit.Webhooks.Extensions;
@@ -41,7 +42,7 @@ public sealed class GranitWebhooksModule : GranitModule
 
         foreach (Assembly assembly in context.ModuleAssemblies)
         {
-            IEnumerable<Type> providerTypes = assembly.GetTypes()
+            IEnumerable<Type> providerTypes = assembly.GetLoadableTypes()
                 .Where(t => t is { IsAbstract: false, IsInterface: false }
                     && typeof(IWebhookEventTypeDefinitionProvider).IsAssignableFrom(t));
 

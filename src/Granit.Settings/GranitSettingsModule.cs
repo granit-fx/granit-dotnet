@@ -5,6 +5,7 @@ using Granit.Encryption;
 using Granit.Events;
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
+using Granit.Reflection;
 using Granit.Settings.Definitions;
 using Granit.Settings.Domain;
 using Granit.Settings.Exports;
@@ -34,7 +35,7 @@ public sealed class GranitSettingsModule : GranitModule
 
         foreach (Assembly assembly in context.ModuleAssemblies)
         {
-            IEnumerable<Type> providerTypes = assembly.GetTypes()
+            IEnumerable<Type> providerTypes = assembly.GetLoadableTypes()
                 .Where(t => t is { IsAbstract: false, IsInterface: false }
                     && typeof(ISettingDefinitionProvider).IsAssignableFrom(t));
 

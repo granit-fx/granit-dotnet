@@ -8435,7 +8435,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/GranitAuthorizationModule.cs",
-      "line": 25,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -15448,7 +15448,7 @@
       "kind": "class",
       "project": "Granit",
       "file": "src/Granit/DataProtection/SensitivePropertyRegistry.cs",
-      "line": 28,
+      "line": 29,
       "members": [
         {
           "name": "IsSensitiveAtLevel",
@@ -15473,7 +15473,7 @@
       "kind": "record",
       "project": "Granit",
       "file": "src/Granit/DataProtection/SensitivePropertyRegistry.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "IsSensitiveAtLevel",
@@ -20494,7 +20494,7 @@
       "kind": "class",
       "project": "Granit.Http.ApiDocumentation",
       "file": "src/Granit.Http.ApiDocumentation/Extensions/ApiDocumentationServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitApiDocumentation",
@@ -30430,7 +30430,7 @@
       "kind": "class",
       "project": "Granit.Mcp",
       "file": "src/Granit.Mcp/McpToolTypeRegistry.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "Register",
@@ -43870,7 +43870,7 @@
       "kind": "class",
       "project": "Granit.Scheduling",
       "file": "src/Granit.Scheduling/ScheduledPayloadTypeRegistry.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "Resolve",
@@ -44377,7 +44377,7 @@
       "kind": "class",
       "project": "Granit.Settings",
       "file": "src/Granit.Settings/GranitSettingsModule.cs",
-      "line": 25,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -48872,7 +48872,7 @@
       "kind": "class",
       "project": "Granit.Validation",
       "file": "src/Granit.Validation/GranitValidationModule.cs",
-      "line": 34,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -51051,7 +51051,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/GranitWebhooksModule.cs",
-      "line": 35,
+      "line": 36,
       "members": [
         {
           "name": "ConfigureServices",

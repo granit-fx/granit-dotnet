@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Granit.Reflection;
 using ModelContextProtocol.Server;
 
 namespace Granit.Mcp;
@@ -40,7 +41,7 @@ public sealed class McpToolTypeRegistry
 
         foreach (System.Reflection.Assembly assembly in assemblies)
         {
-            foreach (Type type in assembly.GetTypes())
+            foreach (Type type in assembly.GetLoadableTypes())
             {
                 if (type is { IsAbstract: true } or { IsInterface: true })
                 {

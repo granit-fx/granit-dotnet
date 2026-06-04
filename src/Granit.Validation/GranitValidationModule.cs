@@ -4,6 +4,7 @@ using Granit.Http.ExceptionHandling;
 using Granit.Localization;
 using Granit.Localization.Options;
 using Granit.Modularity;
+using Granit.Reflection;
 using Granit.Validation.Extensions;
 using Granit.Validation.Internal;
 using Granit.Validation.JsonSchema;
@@ -59,7 +60,7 @@ public sealed class GranitValidationModule : GranitModule
         // Auto-discover IServerValidatorContributor from all loaded module assemblies.
         foreach (Assembly assembly in context.ModuleAssemblies)
         {
-            IEnumerable<Type> contributorTypes = assembly.GetTypes()
+            IEnumerable<Type> contributorTypes = assembly.GetLoadableTypes()
                 .Where(t => t is { IsAbstract: false, IsInterface: false }
                     && typeof(IServerValidatorContributor).IsAssignableFrom(t));
 

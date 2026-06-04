@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
+using Granit.Reflection;
 
 namespace Granit.Scheduling;
 
@@ -29,12 +30,7 @@ public sealed class ScheduledPayloadTypeRegistry
     public ScheduledPayloadTypeRegistry()
     {
         _typesByName = AppDomain.CurrentDomain.GetAssemblies()
-            .Where(a => !a.IsDynamic)
-            .SelectMany(a =>
-            {
-                try { return a.GetTypes(); }
-                catch { return []; }
-            })
+            .SelectMany(SafeTypeLoader.GetLoadableTypes)
             .Where(t => t.IsAssignableTo(typeof(IScheduledPayload))
                          && t is { IsAbstract: false, IsInterface: false })
             .ToFrozenDictionary(t => t.AssemblyQualifiedName!, t => t);

@@ -9,6 +9,7 @@ using Granit.DataExchange.Extensions;
 using Granit.Entities.Extensions;
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
+using Granit.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Authorization;
@@ -41,7 +42,7 @@ public sealed class GranitAuthorizationModule : GranitModule
 
         foreach (Assembly assembly in context.ModuleAssemblies)
         {
-            IEnumerable<Type> providerTypes = assembly.GetTypes()
+            IEnumerable<Type> providerTypes = assembly.GetLoadableTypes()
                 .Where(t => t is { IsAbstract: false, IsInterface: false }
                     && typeof(IPermissionDefinitionProvider).IsAssignableFrom(t));
 

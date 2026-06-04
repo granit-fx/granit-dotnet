@@ -1,4 +1,4 @@
-using System.Reflection;
+using Granit.Reflection;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export;
@@ -19,14 +19,7 @@ internal static class DbContextResolver
     {
         IEnumerable<Type> dbContextTypes = AppDomain.CurrentDomain.GetAssemblies()
             .Where(a => a.GetName().Name?.StartsWith("Granit", StringComparison.Ordinal) == true)
-            .SelectMany(a =>
-            {
-                try { return a.GetTypes(); }
-                catch (ReflectionTypeLoadException ex)
-                {
-                    return ex.Types.Where(t => t is not null).Cast<Type>();
-                }
-            })
+            .SelectMany(SafeTypeLoader.GetLoadableTypes)
             .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(DbContext)));
 
         foreach (Type dbContextType in dbContextTypes)

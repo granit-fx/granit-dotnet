@@ -1,5 +1,6 @@
 using System.Reflection;
 using Granit.BackgroundJobs.Domain;
+using Granit.Reflection;
 
 namespace Granit.BackgroundJobs.Internal;
 
@@ -18,7 +19,7 @@ internal static class RecurringJobDiscovery
 
         foreach (Assembly assembly in assemblies)
         {
-            foreach (Type type in GetLoadableTypes(assembly))
+            foreach (Type type in assembly.GetLoadableTypes())
             {
                 RecurringJobAttribute? attr = type.GetCustomAttribute<RecurringJobAttribute>();
                 if (attr is null)
@@ -40,17 +41,5 @@ internal static class RecurringJobDiscovery
         }
 
         return registrations;
-    }
-
-    private static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
-    {
-        try
-        {
-            return assembly.GetTypes();
-        }
-        catch (ReflectionTypeLoadException ex)
-        {
-            return ex.Types.Where(t => t is not null)!;
-        }
     }
 }

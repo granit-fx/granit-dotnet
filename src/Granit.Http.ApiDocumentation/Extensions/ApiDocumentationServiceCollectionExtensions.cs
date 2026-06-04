@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using Asp.Versioning;
 using Granit.Http.ApiDocumentation.Options;
 using Granit.Http.ApiDocumentation.Transformers;
+using Granit.Reflection;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -189,25 +190,7 @@ public static class ApiDocumentationServiceCollectionExtensions
 
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            if (assembly.IsDynamic)
-            {
-                continue;
-            }
-
-            Type[] types;
-            try
-            {
-                types = assembly.GetExportedTypes();
-            }
-            catch (Exception ex) when (ex is ReflectionTypeLoadException or FileNotFoundException or FileLoadException or TypeLoadException)
-            {
-                // An assembly in the load context references a dependency that is not present
-                // (e.g. a module exposing Wolverine-derived types when Wolverine is not flowed).
-                // Skip it — its example providers, if any, simply will not be discovered.
-                continue;
-            }
-
-            foreach (Type type in types.Where(t =>
+            foreach (Type type in assembly.GetLoadableExportedTypes().Where(t =>
                          t is { IsAbstract: false, IsInterface: false }
                          && interfaceType.IsAssignableFrom(t)))
             {

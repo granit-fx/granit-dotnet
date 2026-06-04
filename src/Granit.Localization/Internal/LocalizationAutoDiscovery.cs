@@ -12,6 +12,7 @@
 
 using System.Reflection;
 using Granit.Localization.Options;
+using Granit.Reflection;
 
 namespace Granit.Localization.Internal;
 
@@ -54,15 +55,7 @@ internal static class LocalizationAutoDiscovery
             return;
         }
 
-        Type[] types;
-        try
-        {
-            types = assembly.GetTypes();
-        }
-        catch (ReflectionTypeLoadException ex)
-        {
-            types = [.. ex.Types.OfType<Type>()];
-        }
+        IReadOnlyList<Type> types = assembly.GetLoadableTypes();
 
         foreach (Type type in types)
         {

@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
-using System.Reflection;
 using Granit.DataExchange.Export;
+using Granit.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
@@ -109,20 +109,8 @@ internal sealed partial class DbContextAutoExportDefinitionSource(
     private static IEnumerable<Type> ScanAssembliesForDbContexts() =>
         AppDomain.CurrentDomain.GetAssemblies()
             .Where(a => a.GetName().Name?.StartsWith("Granit", StringComparison.Ordinal) == true)
-            .SelectMany(GetAssemblyTypes)
+            .SelectMany(SafeTypeLoader.GetLoadableTypes)
             .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(DbContext)));
-
-    private static IEnumerable<Type> GetAssemblyTypes(Assembly assembly)
-    {
-        try
-        {
-            return assembly.GetTypes();
-        }
-        catch (ReflectionTypeLoadException ex)
-        {
-            return ex.Types.Where(t => t is not null).Cast<Type>();
-        }
-    }
 
     [LoggerMessage(1, LogLevel.Warning, "Failed to scan DbContext '{DbContextName}' for entity types")]
     private static partial void LogDbContextScanFailed(ILogger logger, string dbContextName, Exception ex);
