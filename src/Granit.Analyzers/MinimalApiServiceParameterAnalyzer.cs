@@ -6,9 +6,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Granit.Analyzers;
 
 /// <summary>
-/// GRAPI003 — Reports a warning when a minimal API endpoint handler has an interface-typed
+/// GRAPI003 — Reports an error when a minimal API endpoint handler has an interface-typed
 /// parameter without an explicit binding attribute (<c>[FromServices]</c>,
-/// <c>[FromQuery]</c>, <c>[FromBody]</c>, etc.).
+/// <c>[FromQuery]</c>, <c>[FromBody]</c>, etc.). The unbound parameter is mis-inferred as
+/// <c>[FromBody]</c> and throws at startup on GET/DELETE — a latent crash, not a style nit,
+/// hence error severity (on par with the data-loss and security rules).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -59,7 +61,7 @@ public sealed class MinimalApiServiceParameterAnalyzer : SingleRuleAnalyzerBase
         messageFormat: "Parameter '{0}' of interface type '{1}' must be decorated with [FromServices]. "
             + "Without it, ASP.NET Core may infer the parameter as [FromBody] and throw at startup.",
         category: "Api",
-        defaultSeverity: DiagnosticSeverity.Warning,
+        defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description: "In minimal API endpoint handlers (static methods returning an IResult-derived type), "
             + "parameters of interface type must have [FromServices] so that ASP.NET Core resolves them "
