@@ -8,7 +8,6 @@ using Granit.Authentication.ApiKeys.Endpoints.Extensions;
 using Granit.Authentication.ApiKeys.Endpoints.Permissions;
 using Granit.Authorization;
 using Granit.Guids;
-using Granit.QueryEngine;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -90,28 +89,9 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
     // GET /api-keys — List API keys
     // =========================================================================
 
-    [Fact]
-    public async Task ListApiKeys_ReturnsOkWithPagedResult()
-    {
-        ApiKeyEntry entry = CreateSampleEntry();
-        _adminStore.ListAsync(
-                null, null, null, false, 1, 20,
-                Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<ApiKeyEntry>([entry], 1, HasMore: false));
-
-        HttpResponseMessage response = await _adminClient.GetAsync(
-            Prefix,
-            TestContext.Current.CancellationToken);
-
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        PagedResult<ApiKeyResponse>? result =
-            await response.Content.ReadFromJsonAsync<PagedResult<ApiKeyResponse>>(
-                TestContext.Current.CancellationToken);
-        result.ShouldNotBeNull();
-        result.TotalCount.ShouldBe(1);
-        result.Items.Count.ShouldBe(1);
-        result.Items[0].Name.ShouldBe("Test Key");
-    }
+    // The list endpoint (GET /api-keys) is served by MapGranitQuery<ApiKeyEntry> over the
+    // query engine — its filtering/sorting/pagination/projection is covered by
+    // ApiKeyEntryQueryDefinitionTests. Here we only assert the group's auth boundary.
 
     [Fact]
     public async Task ListApiKeys_WithoutAuth_Returns401()
@@ -121,24 +101,6 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task ListApiKeys_WithFilters_PassesParametersToStore()
-    {
-        _adminStore.ListAsync(
-                "search", ApiKeyType.Secret, "live", true, 2, 10,
-                Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<ApiKeyEntry>([], 0, HasMore: false));
-
-        HttpResponseMessage response = await _adminClient.GetAsync(
-            $"{Prefix}?search=search&type=Secret&environment=live&includeRevoked=true&page=2&pageSize=10",
-            TestContext.Current.CancellationToken);
-
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        await _adminStore.Received(1).ListAsync(
-            "search", ApiKeyType.Secret, "live", true, 2, 10,
-            Arg.Any<CancellationToken>());
     }
 
     // =========================================================================

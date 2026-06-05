@@ -1,6 +1,8 @@
+using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -48,6 +50,9 @@ public static class ApiKeysEntityFrameworkCoreServiceCollectionExtensions
 
         services.TryAddScoped<IApiKeyStore, EfCoreApiKeyStore>();
         services.TryAddScoped<IApiKeyAdminStore, EfCoreApiKeyAdminStore>();
+
+        // Queryable source backing MapGranitQuery<ApiKeyEntry> (tenant filter honoured as-is).
+        services.TryAddScoped<IQueryableSource<ApiKeyEntry>, EfApiKeyEntryQueryableSource>();
 
         return services;
     }

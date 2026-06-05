@@ -1,7 +1,7 @@
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Authorization.Extensions;
-using Granit.QueryEngine;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,12 +17,12 @@ internal static class ApiKeyReadEndpoints
 {
     internal static RouteGroupBuilder MapReadEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/", ListAsync)
-            .WithName("ListApiKeys")
-            .WithSummary("Returns a paginated list of API keys.")
-            .WithDescription("Lists all API keys for the current tenant with optional filters on type, environment, search term, and revocation status. The raw secret is never returned — only the prefix and last four characters for identification.")
-            .Produces<PagedResult<ApiKeyResponse>>()
-            .AllowHostAccess();
+        // List + metadata: served by the query engine (filtering, sorting, search, pagination).
+        // GET /        → PagedResult<ApiKeyListItemResponse> (summary; never exposes the secret)
+        // GET /meta    → query metadata for client-driven grids
+        // Revoked keys are hidden by default (the "active" quick filter is default); request
+        // ?quickFilters=includeRevoked to include them. See ApiKeyEntryQueryDefinition.
+        group.MapGranitQuery<ApiKeyEntry>().AllowHostAccess();
 
         group.MapGet("/{id:guid}", GetByIdAsync)
             .WithName("GetApiKeyById")
@@ -33,27 +33,6 @@ internal static class ApiKeyReadEndpoints
             .AllowHostAccess();
 
         return group;
-    }
-
-    private static async Task<Ok<PagedResult<ApiKeyResponse>>> ListAsync(
-        [FromServices] IApiKeyAdminStore adminStore,
-        [AsParameters] ApiKeyListRequest request,
-        CancellationToken cancellationToken)
-    {
-        (int page, int pageSize) = QueryEngineDefaults.ClampPagination(request.Page, request.PageSize);
-
-        PagedResult<ApiKeyEntry> result = await adminStore.ListAsync(
-            request.Search,
-            request.Type,
-            request.Environment,
-            request.IncludeRevoked,
-            page,
-            pageSize,
-            cancellationToken).ConfigureAwait(false);
-
-        var items = result.Items.Select(ApiKeyResponse.FromEntry).ToList();
-
-        return TypedResults.Ok(new PagedResult<ApiKeyResponse>(items, result.TotalCount, result.HasMore));
     }
 
     private static async Task<Results<Ok<ApiKeyResponse>, ProblemHttpResult>> GetByIdAsync(

@@ -1,6 +1,11 @@
 using Granit.Authentication.ApiKeys.Diagnostics;
+using Granit.Authentication.ApiKeys.Domain;
+using Granit.Authentication.ApiKeys.Exports;
 using Granit.Authentication.ApiKeys.Internal;
 using Granit.Authentication.ApiKeys.Options;
+using Granit.Authentication.ApiKeys.Queries;
+using Granit.DataExchange.Extensions;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -25,6 +30,11 @@ public static class ApiKeyServiceCollectionExtensions
         services.TryAddSingleton<IApiKeyHasher, ApiKeyHasher>();
         services.TryAddSingleton<IApiKeyGenerator, ApiKeyGenerator>();
         services.TryAddSingleton<ApiKeysMetrics>();
+
+        // Query + Export primitives (ADR-020 pairing): the list endpoint is served by
+        // MapGranitQuery<ApiKeyEntry> over the query engine instead of a bespoke ListAsync.
+        services.AddQueryDefinition<ApiKeyEntry, ApiKeyEntryQueryDefinition>();
+        services.AddExportDefinition<ApiKeyEntry, ApiKeyEntryExportDefinition>();
 
         // Module-level options (lead time for expiring-soon scanner, pepper, etc.).
         // The scanner itself ships in Granit.Authentication.ApiKeys.BackgroundJobs;

@@ -1,7 +1,6 @@
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
@@ -18,51 +17,6 @@ internal sealed class EfCoreApiKeyAdminStore(
     /// <inheritdoc/>
     public new Task<ApiKeyEntry?> FindByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         base.FindByIdAsync(id, cancellationToken);
-
-    /// <inheritdoc/>
-    public Task<PagedResult<ApiKeyEntry>> ListAsync(
-        string? search = null,
-        ApiKeyType? type = null,
-        string? environment = null,
-        bool includeRevoked = false,
-        int page = 1,
-        int pageSize = 20,
-        CancellationToken cancellationToken = default) =>
-        ReadAsync(async db =>
-        {
-            IQueryable<ApiKeyEntry> query = db.ApiKeys.AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                query = query.Where(k => k.Name.Contains(search));
-            }
-
-            if (type.HasValue)
-            {
-                query = query.Where(k => k.Type == type.Value);
-            }
-
-            if (!string.IsNullOrWhiteSpace(environment))
-            {
-                query = query.Where(k => k.Environment == environment);
-            }
-
-            if (!includeRevoked)
-            {
-                query = query.Where(k => k.RevokedAt == null);
-            }
-
-            int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
-
-            List<ApiKeyEntry> items = await query
-                .OrderByDescending(k => k.CreatedAt)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            return new PagedResult<ApiKeyEntry>(items, totalCount, HasMore: (page - 1) * pageSize + items.Count < totalCount);
-        }, cancellationToken);
 
     /// <inheritdoc/>
     public Task CreateAsync(ApiKeyEntry entry, CancellationToken cancellationToken = default)

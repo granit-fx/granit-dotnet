@@ -1,7 +1,9 @@
+using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Extensions;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +39,9 @@ public sealed class ApiKeysEntityFrameworkCoreServiceCollectionExtensionsTests
         provider.GetService<IDbContextFactory<AuthenticationApiKeysDbContext>>().ShouldNotBeNull();
         provider.GetService<IApiKeyStore>().ShouldNotBeNull();
         provider.GetService<IApiKeyAdminStore>().ShouldNotBeNull();
+
+        // Backs MapGranitQuery<ApiKeyEntry> — registered by the extension.
+        services.ShouldContain(d => d.ServiceType == typeof(IQueryableSource<ApiKeyEntry>));
     }
 
     [Fact]
