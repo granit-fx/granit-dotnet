@@ -2,7 +2,6 @@ using Granit.Extensions;
 using Granit.Http.ApiDocumentation.Extensions;
 using Granit.Modularity;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -30,7 +29,7 @@ namespace Granit.OpenApi.Generation;
 /// annotate every application-service handler parameter with <c>[FromServices]</c>, which forces service
 /// binding regardless of registration. Where that discipline is not yet in place, pass the leaking
 /// contracts to <see cref="OpenApiContractServiceCollectionExtensions.AddContractServiceStubs"/> from
-/// the <paramref name="configure"/> hook — an explicit, self-documenting list, never a blanket mask.
+/// the <c>configure</c> hook — an explicit, self-documenting list, never a blanket mask.
 /// </para>
 /// </remarks>
 public static class OpenApiContractGenerator
