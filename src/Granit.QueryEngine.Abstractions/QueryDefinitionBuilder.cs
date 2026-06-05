@@ -39,6 +39,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     internal string? DefaultSortValue { get; private set; }
     internal LambdaExpression? ProjectionExpression { get; private set; }
     internal Type? ProjectionType { get; private set; }
+    internal LookupSourceDescriptor? LookupSourceValue { get; private set; }
 
     /// <summary>
     /// Declares a column on the target entity. Only explicitly declared columns are
@@ -409,6 +410,51 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
 
         ProjectionExpression = projection;
         ProjectionType = typeof(TDto);
+        return this;
+    }
+
+    /// <summary>
+    /// Declares that this query definition doubles as a data-lookup source — a typeahead
+    /// picker registered under <paramref name="name"/> in <c>Granit.DataLookup</c>. The
+    /// generated <c>QueryDefinitionLookupSource&lt;TEntity&gt;</c> reuses this definition's
+    /// global search, default sort, and pagination (including keyset/cursor) via
+    /// <see cref="IQueryEngine{TEntity}"/>, projecting each row to <c>{ value, label }</c>.
+    /// </summary>
+    /// <typeparam name="TValue">The lookup value type (typically the entity key).</typeparam>
+    /// <param name="name">Unique lookup registry key (e.g. <c>"tenants"</c>).</param>
+    /// <param name="value">Selector for the lookup value (typically the primary key).</param>
+    /// <param name="label">Selector for the human-readable, already-localized label.</param>
+    /// <param name="requiredPermission">Optional permission the caller must hold.</param>
+    /// <param name="scopeKeys">
+    /// Scope keys the caller must supply. Each SHOULD match a filterable column so its value
+    /// is applied as an equality filter (cascading pickers).
+    /// </param>
+    public QueryDefinitionBuilder<TEntity> AsLookup<TValue>(
+        string name,
+        Expression<Func<TEntity, TValue>> value,
+        Expression<Func<TEntity, string>> label,
+        string? requiredPermission = null,
+        IReadOnlyList<string>? scopeKeys = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(value);
+        ArgumentNullException.ThrowIfNull(label);
+
+        var boxed = Expression.Lambda<Func<TEntity, object>>(
+            Expression.Convert(value.Body, typeof(object)),
+            value.Parameters);
+
+        LookupSourceValue = new LookupSourceDescriptor
+        {
+            Name = name,
+            ValueSelector = value,
+            BoxedValueSelector = boxed,
+            LabelSelector = label,
+            ValueType = typeof(TValue),
+            RequiredPermission = requiredPermission,
+            ScopeKeys = scopeKeys ?? [],
+        };
+
         return this;
     }
 

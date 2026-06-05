@@ -163,4 +163,12 @@ public abstract class QueryDefinition<TEntity> : IQueryDefinitionDescriptor wher
     /// </summary>
     public LambdaExpression? GetProjectionExpression() =>
         GetBuilder().ProjectionExpression;
+
+    /// <summary>
+    /// Gets the lookup-source declaration (via
+    /// <see cref="QueryDefinitionBuilder{TEntity}.AsLookup{TValue}"/>), or <c>null</c> when
+    /// this definition is not exposed as a data-lookup source.
+    /// </summary>
+    public LookupSourceDescriptor? GetLookupSource() =>
+        GetBuilder().LookupSourceValue;
 }
