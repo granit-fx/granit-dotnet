@@ -901,6 +901,13 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.openapi.generation": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )"
+        }
+      },
       "granit.openiddict": {
         "type": "Project",
         "dependencies": {
