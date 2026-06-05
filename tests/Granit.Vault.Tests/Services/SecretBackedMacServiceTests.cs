@@ -78,9 +78,15 @@ public sealed class SecretBackedMacServiceTests : IDisposable
         byte[] input = Encoding.UTF8.GetBytes("hello");
 
         TransitMacResult tag = await sut.MacAsync("k", input, TestContext.Current.CancellationToken);
-        // Flip the last char of the base64 payload
-        char last = tag.Mac[^1];
-        string flipped = string.Concat(tag.Mac.AsSpan(0, tag.Mac.Length - 1), last == 'A' ? "B" : "A");
+        // Tamper a *significant* base64url character — NOT the last one. A 32-byte MAC encodes to 43
+        // base64url chars whose final char carries only 4 significant bits + 2 padding bits, so the
+        // 'A'<->'B' flip there toggles only a padding bit and decodes to the same MAC (~1/16 flake when
+        // the last char is 'A'). The first body char is fully significant, so flipping it always changes
+        // the decoded bytes.
+        int bodyStart = tag.Mac.LastIndexOf(':') + 1;
+        char original = tag.Mac[bodyStart];
+        string flipped = string.Concat(
+            tag.Mac.AsSpan(0, bodyStart), original == 'A' ? "B" : "A", tag.Mac.AsSpan(bodyStart + 1));
 
         (await sut.VerifyAsync("k", input, flipped, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
