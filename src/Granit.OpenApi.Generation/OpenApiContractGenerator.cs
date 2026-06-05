@@ -84,10 +84,13 @@ public static class OpenApiContractGenerator
         //     document names; leaving these causes the tool to attempt generation and then fail on (1).
         HashSet<string> slugSet = new(modules.Select(m => m.Slug), StringComparer.OrdinalIgnoreCase);
         Assembly openApiAssembly = typeof(OpenApiOptions).Assembly;
+
         for (int i = builder.Services.Count - 1; i >= 0; i--)
         {
             ServiceDescriptor d = builder.Services[i];
 
+            // (1) Keyed services from the OpenAPI assembly (OpenApiDocumentService, IOpenApiDocumentProvider,
+            //     OpenApiSchemaService, …). These are resolved at generation time — one set per document.
             if (d.IsKeyedService
                 && d.ServiceKey is string docKey
                 && !slugSet.Contains(docKey)
@@ -97,6 +100,26 @@ public static class OpenApiContractGenerator
                 continue;
             }
 
+            // (2) Non-keyed NamedService<OpenApiDocumentService> instances (internal, OpenAPI assembly).
+            //     OpenApiDocumentProvider.GetDocumentNames() iterates these to build its list; leaving
+            //     a "v1" entry here causes GetDocumentNames() to return "v1" even after (1) is stripped,
+            //     which then fails in GenerateAsync when the keyed service can't be resolved.
+            if (!d.IsKeyedService
+                && d.ImplementationInstance is not null
+                && d.ServiceType.Assembly == openApiAssembly)
+            {
+                PropertyInfo? nameProp = d.ImplementationInstance.GetType()
+                    .GetProperty("Name", BindingFlags.Public | BindingFlags.Instance);
+                if (nameProp?.GetValue(d.ImplementationInstance) is string svcName
+                    && !slugSet.Contains(svcName))
+                {
+                    builder.Services.RemoveAt(i);
+                    continue;
+                }
+            }
+
+            // (3) IConfigureNamedOptions<OpenApiOptions> for non-slug document names. A stale entry
+            //     here is harmless for GetDocumentNames() but keep removal for completeness.
             if (!d.IsKeyedService
                 && d.ServiceType == typeof(IConfigureOptions<OpenApiOptions>)
                 && d.ImplementationInstance is ConfigureNamedOptions<OpenApiOptions> namedOpts
