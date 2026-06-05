@@ -119,6 +119,7 @@ public static class ApiDocumentationServiceCollectionExtensions
         services.TryAddTransient<SecurityRequirementOperationTransformer>();
         services.TryAddTransient<NullableIntSchemaOperationTransformer>();
         services.TryAddTransient<ParameterDescriptionOperationTransformer>();
+        services.TryAddTransient<BinaryResponseContentTypeOperationTransformer>();
         services.TryAddTransient<SchemaExampleSchemaTransformer>();
         services.TryAddTransient<JsonElementSchemaTransformer>();
         services.TryAddTransient<Int32SchemaTransformer>();
@@ -178,6 +179,7 @@ public static class ApiDocumentationServiceCollectionExtensions
             openApiOptions.AddOperationTransformer<SecurityRequirementOperationTransformer>();
             openApiOptions.AddOperationTransformer<NullableIntSchemaOperationTransformer>();
             openApiOptions.AddOperationTransformer<ParameterDescriptionOperationTransformer>();
+            openApiOptions.AddOperationTransformer<BinaryResponseContentTypeOperationTransformer>();
             openApiOptions.AddSchemaTransformer<SchemaExampleSchemaTransformer>();
             openApiOptions.AddSchemaTransformer<JsonElementSchemaTransformer>();
             openApiOptions.AddSchemaTransformer<Int32SchemaTransformer>();

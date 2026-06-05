@@ -227,7 +227,7 @@ public static class QueryEndpointRouteBuilderExtensions
         })
 #pragma warning restore GRAPI001
         .WithName($"Query{entityName}")
-        .WithSummary($"Returns a filtered, sorted, and paginated list of {dtoName} entries projected from {entityName}.")
+        .WithSummary($"Returns a paged, filterable list of {dtoName} from {entityName}.")
         .WithDescription($"Executes a dynamic query against {entityName} using the Granit query engine and projects each row to {dtoName}. Accepts filter expressions, sort directives, column selection, pagination, and free-text search via query parameters. Returns a PagedResult<{dtoName}> by default. When the groupBy query parameter is specified, returns a GroupedResult<{dtoName}> with the same projection applied to the items inside each group.")
         .Produces<PagedResult<TDto>>()
         .Produces<GroupedResult<TDto>>(StatusCodes.Status200OK)

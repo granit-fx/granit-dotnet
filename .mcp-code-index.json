@@ -35721,7 +35721,7 @@
       "kind": "class",
       "project": "Granit.OpenApi.Generation",
       "file": "src/Granit.OpenApi.Generation/OpenApiContractGenerator.cs",
-      "line": 35,
+      "line": 37,
       "members": []
     },
     {
@@ -49007,7 +49007,7 @@
       "kind": "class",
       "project": "Granit.Validation",
       "file": "src/Granit.Validation/GranitValidationModule.cs",
-      "line": 35,
+      "line": 36,
       "members": [
         {
           "name": "ConfigureServices",

@@ -1,7 +1,9 @@
+using System.Reflection;
 using Granit.Extensions;
 using Granit.Http.ApiDocumentation.Extensions;
 using Granit.Modularity;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -72,6 +74,38 @@ public static class OpenApiContractGenerator
         }
 
         await builder.AddGranitAsync<TRootModule>().ConfigureAwait(false);
+
+        // GranitHttpApiDocumentationModule registers a "v1" document (and any other major-version
+        // documents) as part of normal module composition. Strip all OpenAPI service descriptors for
+        // document names not in the slug set so the generator emits exactly the set declared in
+        // `modules` — no spurious root artifact. Two registration shapes must be removed:
+        // (1) Keyed services (OpenApiDocumentService etc.) — resolved at generation time.
+        // (2) IConfigureNamedOptions<OpenApiOptions> — used by GetDocumentNames() to enumerate
+        //     document names; leaving these causes the tool to attempt generation and then fail on (1).
+        HashSet<string> slugSet = new(modules.Select(m => m.Slug), StringComparer.OrdinalIgnoreCase);
+        Assembly openApiAssembly = typeof(OpenApiOptions).Assembly;
+        for (int i = builder.Services.Count - 1; i >= 0; i--)
+        {
+            ServiceDescriptor d = builder.Services[i];
+
+            if (d.IsKeyedService
+                && d.ServiceKey is string docKey
+                && !slugSet.Contains(docKey)
+                && d.ServiceType.Assembly == openApiAssembly)
+            {
+                builder.Services.RemoveAt(i);
+                continue;
+            }
+
+            if (!d.IsKeyedService
+                && d.ServiceType == typeof(IConfigureOptions<OpenApiOptions>)
+                && d.ImplementationInstance is ConfigureNamedOptions<OpenApiOptions> namedOpts
+                && namedOpts.Name is not null   // null == ConfigureAll → keep
+                && !slugSet.Contains(namedOpts.Name))
+            {
+                builder.Services.RemoveAt(i);
+            }
+        }
 
         // Doc-gen neutralization: the OpenAPI document is built from endpoint metadata in the request
         // pipeline, never from hosted services or options validation. Strip all three so Host.StartAsync()

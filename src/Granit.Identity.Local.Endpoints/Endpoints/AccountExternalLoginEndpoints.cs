@@ -36,9 +36,9 @@ internal static partial class AccountExternalLoginEndpoints
             .WithName("ChallengeExternalLogin")
             .WithSummary("Initiates an OAuth flow with an external provider.")
             .WithDescription(
-                "Validates that the specified provider is registered in IExternalProviderRegistry "
-                + "and returns 200 with metadata for the frontend to initiate the redirect "
-                + "via the standard OAuth client flow. "
+                "Validates that the specified provider is registered in IExternalProviderRegistry. "
+                + "Returns 200 to confirm the provider is available; the frontend then initiates "
+                + "the OAuth redirect via the standard client challenge flow. "
                 + "Returns 400 if the provider is not configured.")
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)

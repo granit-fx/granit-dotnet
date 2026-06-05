@@ -10,6 +10,7 @@ using Granit.Validation.Internal;
 using Granit.Validation.JsonSchema;
 using Granit.Validation.OpenApi;
 using Granit.Validation.ServerValidation;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Validation;
@@ -77,11 +78,9 @@ public sealed class GranitValidationModule : GranitModule
         // and by Granit.Entities (manifest schema facet).
         context.Services.AddSingleton<IJsonSchemaWriter, JsonSchemaWriter>();
 
-        // Enrich OpenAPI schemas with FluentValidation constraints
-        // (maxLength, minLength, pattern, required, etc.)
-        context.Services.AddOpenApi(options =>
-        {
-            options.AddSchemaTransformer<FluentValidationSchemaTransformer>();
-        });
+        // Enrich OpenAPI schemas with FluentValidation constraints (maxLength, minLength, pattern,
+        // required, etc.) across ALL registered documents without creating a spurious "v1" document.
+        context.Services.ConfigureAll<OpenApiOptions>(options =>
+            options.AddSchemaTransformer<FluentValidationSchemaTransformer>());
     }
 }
