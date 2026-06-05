@@ -18,12 +18,27 @@ services.AddQueryableLookup<Tenant, TenantsDbContext>(
     requiredPermission: "Platform.Tenants.Read");
 ```
 
-## Roadmap
+## QueryDefinition-backed lookups
 
-PR 2 will add a higher-level `QueryDefinitionLookupSource<T>` that plugs directly into
-`Granit.QueryEngine` so module authors can write:
+`QueryDefinitionLookupSource<T>` plugs directly into `Granit.QueryEngine`, reusing a
+`QueryDefinition<T>`'s global search, sort, filters, and keyset/cursor pagination. Declare the
+lookup on the definition and register the source against its `DbContext`:
 
 ```csharp
-builder.AsLookup("tenants", value: t => t.Id, label: t => t.Name)
-       .WithRequiredPermission("Platform.Tenants.Read");
+// In the QueryDefinition (base module):
+protected override void Configure(QueryDefinitionBuilder<Tenant> builder) =>
+    builder
+        .Column(t => t.Name, c => c.Sortable().Filterable())
+        .GlobalSearch(t => t.Name)
+        .DefaultSort("Name")
+        .SupportsCursorPagination(t => t.Id)   // enables infinite-scroll (NextCursor)
+        .AsLookup("tenants", value: t => t.Id, label: t => t.Name,
+            requiredPermission: "Platform.Tenants.Read");
+
+// In the host/EF module:
+services.AddQueryDefinitionLookup<Tenant, TenantsDbContext>();
 ```
+
+`ContinuationToken` round-trips to the engine's keyset cursor, so paging through
+`GET /lookups/tenants?continuationToken=…` yields a true infinite-scroll feed. Scope keys map
+to equality filters on the matching filterable columns (cascading pickers).

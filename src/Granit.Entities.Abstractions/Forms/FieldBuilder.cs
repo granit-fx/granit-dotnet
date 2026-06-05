@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using Granit.DataLookup.Descriptors;
 using Granit.Entities.Visibility;
 
 namespace Granit.Entities.Forms;
@@ -24,6 +25,7 @@ public sealed class FieldBuilder<TEntity, TProperty>
     private string? _requiresPermission;
     private bool _readOnly;
     private VisibilityCondition? _visibleIf;
+    private LookupDescriptor? _lookup;
 
     internal FieldBuilder(Expression<Func<TEntity, TProperty>> propertySelector, int order)
     {
@@ -108,6 +110,43 @@ public sealed class FieldBuilder<TEntity, TProperty>
         return this;
     }
 
+    /// <summary>
+    /// Binds this field to a data-lookup source (typeahead picker) by registry name. The form
+    /// renders a server-backed picker instead of a free-text or plain <c>select</c> control.
+    /// Mirrors <c>ColumnBuilder.Lookup</c> on the query side, so a foreign-key field
+    /// (<c>tenantId</c>, <c>ownerId</c>…) resolves the same source in both the grid filter and
+    /// the edit form.
+    /// </summary>
+    /// <param name="name">Lookup registry key (e.g. <c>"tenants"</c>).</param>
+    /// <param name="kind">The lookup kind. Defaults to <see cref="LookupKind.QueryEngine"/>.</param>
+    /// <param name="requiredPermission">Optional permission the caller must hold.</param>
+    /// <param name="scopeKeys">Scope keys the picker must supply (cascading pickers).</param>
+    public FieldBuilder<TEntity, TProperty> Lookup(
+        string name,
+        LookupKind kind = LookupKind.QueryEngine,
+        string? requiredPermission = null,
+        IReadOnlyList<string>? scopeKeys = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        _lookup = new LookupDescriptor(
+            Name: name,
+            Kind: kind,
+            RequiredPermission: requiredPermission,
+            ScopeKeys: scopeKeys);
+        return this;
+    }
+
+    /// <summary>
+    /// Binds this field to a data-lookup source via a full <see cref="LookupDescriptor"/>. Use
+    /// when pointing to a custom URL or overriding the default search parameter.
+    /// </summary>
+    public FieldBuilder<TEntity, TProperty> Lookup(LookupDescriptor descriptor)
+    {
+        ArgumentNullException.ThrowIfNull(descriptor);
+        _lookup = descriptor;
+        return this;
+    }
+
     internal FieldDescriptor Build() =>
         new()
         {
@@ -121,6 +160,7 @@ public sealed class FieldBuilder<TEntity, TProperty>
             Order = _order,
             ReadOnly = _readOnly,
             VisibleIf = _visibleIf,
+            Lookup = _lookup,
         };
 
     /// <summary>
