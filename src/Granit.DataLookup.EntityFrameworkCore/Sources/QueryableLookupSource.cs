@@ -17,9 +17,9 @@ namespace Granit.DataLookup.EntityFrameworkCore.Sources;
 /// filters declared on the underlying <c>DbContext</c>.
 /// </para>
 /// <para>
-/// PR 2 will introduce a higher-level <c>QueryDefinitionLookupSource&lt;T&gt;</c> that
-/// layers on top of this primitive, reuses the QueryEngine search + sort infrastructure,
-/// and projects values server-side without materializing full entities.
+/// For lookups that should reuse an existing <c>Granit.QueryEngine</c> definition (its global
+/// search, sort, filters, and keyset/cursor pagination), prefer
+/// <see cref="QueryDefinitionLookupSource{T}"/> over this lower-level primitive.
 /// </para>
 /// </remarks>
 /// <typeparam name="T">The entity type exposed by this source.</typeparam>

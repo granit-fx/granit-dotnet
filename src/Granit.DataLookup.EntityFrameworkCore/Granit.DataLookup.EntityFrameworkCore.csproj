@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.DataLookup.EntityFrameworkCore</PackageId>
-    <Description>Entity Framework Core adapter for Granit.DataLookup. Provides QueryableLookupSource&lt;T&gt; that wraps an IQueryable&lt;T&gt; with value/label selectors and serves paginated lookup results honoring the current culture, tenant, and scope keys.</Description>
+    <Description>Entity Framework Core adapter for Granit.DataLookup. Provides QueryableLookupSource&lt;T&gt; (wraps an IQueryable&lt;T&gt; with value/label selectors) and QueryDefinitionLookupSource&lt;T&gt; (reuses a Granit.QueryEngine QueryDefinition for search, sort, and keyset/cursor pagination), serving paginated lookup results honoring the current culture, tenant, and scope keys.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Granit.DataLookup\Granit.DataLookup.csproj" />
     <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
     <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>
