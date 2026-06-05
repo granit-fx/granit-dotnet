@@ -33,8 +33,9 @@ internal sealed class ParameterDescriptionOperationTransformer : IOpenApiOperati
         // Reference data
         ["code"] = "Reference data code (e.g. ISO 3166-1 Alpha-2 for countries: 'BE', 'FR').",
 
-        // Background jobs
-        ["name"] = "Unique registered name of the background job.",
+        // Generic fallback — modules that need a more specific description add a per-endpoint
+        // AddOpenApiOperationTransformer that overrides this after the global pass.
+        ["name"] = "Unique registered name.",
 
         // Timeline & Workflow
         ["entityType"] = "Fully qualified entity type (e.g. 'Acme.Patients').",

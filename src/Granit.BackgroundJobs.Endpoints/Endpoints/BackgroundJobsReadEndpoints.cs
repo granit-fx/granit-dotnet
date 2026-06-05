@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.OpenApi;
 
 namespace Granit.BackgroundJobs.Endpoints.Endpoints;
 
@@ -28,7 +30,8 @@ internal static class BackgroundJobsReadEndpoints
             .WithSummary("Returns the status of a specific background job.")
             .WithDescription("Returns the detailed status of a single background job identified by its registered name. Includes execution state, last run time, next scheduled occurrence, and error information if the last run failed. Returns 404 if no job with the given name is registered.")
             .Produces<BackgroundJobStatus>()
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .AddOpenApiOperationTransformer(DescribeNameParam);
 
         return group;
     }
@@ -48,6 +51,19 @@ internal static class BackgroundJobsReadEndpoints
         var items = all.Skip(skip).Take(clampedPageSize).ToList();
 
         return TypedResults.Ok(new PagedResult<BackgroundJobStatus>(items, totalCount, HasMore: skip + items.Count < totalCount));
+    }
+
+    private static Task DescribeNameParam(
+        OpenApiOperation op,
+        OpenApiOperationTransformerContext _,
+        CancellationToken __)
+    {
+        IOpenApiParameter? param = op.Parameters?.FirstOrDefault(p => p.Name == "name");
+        if (param is not null)
+        {
+            param.Description = "Unique registered name of the background job.";
+        }
+        return Task.CompletedTask;
     }
 
     private static async Task<Results<Ok<BackgroundJobStatus>, ProblemHttpResult>> GetJobByNameAsync(

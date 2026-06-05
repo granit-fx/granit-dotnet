@@ -186,6 +186,7 @@
         "Granit.Timing",
         "Granit.Guids",
         "Granit.Http.ExceptionHandling",
+        "Granit.DataExchange.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit"
       ],
@@ -207,6 +208,7 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.QueryEngine",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Timing",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
@@ -217,7 +219,8 @@
       "name": "Granit.Authentication.ApiKeys.EntityFrameworkCore",
       "deps": [
         "Granit.Authentication.ApiKeys",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.QueryEngine.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -682,7 +685,8 @@
         "Granit",
         "Granit.DataLookup",
         "Granit.Persistence",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -747,6 +751,7 @@
       "deps": [
         "Granit",
         "Granit.DataExchange.Abstractions",
+        "Granit.DataLookup.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Workflow.Abstractions"
       ],
@@ -1772,9 +1777,17 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.OpenApi.Generation",
+      "deps": [
+        "Granit",
+        "Granit.Http.ApiDocumentation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.OpenApi.Generator",
       "deps": [
-        "Granit.Http.ApiDocumentation",
+        "Granit.OpenApi.Generation",
         "Granit.AI.Endpoints",
         "Granit.Auditing.Endpoints",
         "Granit.Authentication.ApiKeys.Endpoints",
@@ -4973,7 +4986,7 @@
       "kind": "class",
       "project": "Granit.Analyzers",
       "file": "src/Granit.Analyzers/MinimalApiServiceParameterAnalyzer.cs",
-      "line": 28,
+      "line": 30,
       "members": []
     },
     {
@@ -6354,6 +6367,15 @@
       ]
     },
     {
+      "name": "ApiKeyListItemResponse",
+      "fqn": "Granit.Authentication.ApiKeys.Dtos.ApiKeyListItemResponse",
+      "kind": "record",
+      "project": "Granit.Authentication.ApiKeys",
+      "file": "src/Granit.Authentication.ApiKeys/Dtos/ApiKeyListItemResponse.cs",
+      "line": 23,
+      "members": []
+    },
+    {
       "name": "ApiKeyCreateRequest",
       "fqn": "Granit.Authentication.ApiKeys.Endpoints.Dtos.ApiKeyCreateRequest",
       "kind": "record",
@@ -6507,7 +6529,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.EntityFrameworkCore",
       "file": "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/Extensions/ApiKeysEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitApiKeysEntityFrameworkCore",
@@ -6555,7 +6577,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.EntityFrameworkCore",
       "file": "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/GranitAuthenticationApiKeysEntityFrameworkCoreModule.cs",
-      "line": 16,
+      "line": 19,
       "members": []
     },
     {
@@ -6622,12 +6644,34 @@
       "members": []
     },
     {
+      "name": "ApiKeyEntryExportDefinition",
+      "fqn": "Granit.Authentication.ApiKeys.Exports.ApiKeyEntryExportDefinition",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys",
+      "file": "src/Granit.Authentication.ApiKeys/Exports/ApiKeyEntryExportDefinition.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "QueryDefinitionName",
+          "kind": "property",
+          "signature": "string? QueryDefinitionName",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
       "name": "ApiKeyServiceCollectionExtensions",
       "fqn": "Granit.Authentication.ApiKeys.Extensions.ApiKeyServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/Extensions/ApiKeyServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitApiKeyAuthentication",
@@ -6659,19 +6703,13 @@
       "kind": "interface",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/IApiKeyAdminStore.cs",
-      "line": 10,
+      "line": 9,
       "members": [
         {
           "name": "FindByIdAsync",
           "kind": "method",
           "signature": "FindByIdAsync(Guid id, CancellationToken cancellationToken = default)",
           "returnType": "Task<ApiKeyEntry?>"
-        },
-        {
-          "name": "ListAsync",
-          "kind": "method",
-          "signature": "ListAsync(string? search = null, ApiKeyType? type = null, string? environment = null, bool includeRevoked = false, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PagedResult<ApiKeyEntry>>"
         },
         {
           "name": "CreateAsync",
@@ -7028,6 +7066,22 @@
           "kind": "property",
           "signature": "int ExpirationLeadTimeDays",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "ApiKeyEntryQueryDefinition",
+      "fqn": "Granit.Authentication.ApiKeys.Queries.ApiKeyEntryQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys",
+      "file": "src/Granit.Authentication.ApiKeys/Queries/ApiKeyEntryQueryDefinition.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -15268,13 +15322,38 @@
       "members": []
     },
     {
+      "name": "QueryDefinitionLookupExtensions",
+      "fqn": "Granit.DataLookup.EntityFrameworkCore.Extensions.QueryDefinitionLookupExtensions",
+      "kind": "class",
+      "project": "Granit.DataLookup.EntityFrameworkCore",
+      "file": "src/Granit.DataLookup.EntityFrameworkCore/Extensions/QueryDefinitionLookupExtensions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "GranitDataLookupEntityFrameworkCoreModule",
       "fqn": "Granit.DataLookup.EntityFrameworkCore.GranitDataLookupEntityFrameworkCoreModule",
       "kind": "class",
       "project": "Granit.DataLookup.EntityFrameworkCore",
       "file": "src/Granit.DataLookup.EntityFrameworkCore/GranitDataLookupEntityFrameworkCoreModule.cs",
-      "line": 17,
+      "line": 20,
       "members": []
+    },
+    {
+      "name": "QueryDefinitionLookupSource",
+      "fqn": "Granit.DataLookup.EntityFrameworkCore.Sources.QueryDefinitionLookupSource",
+      "kind": "class",
+      "project": "Granit.DataLookup.EntityFrameworkCore",
+      "file": "src/Granit.DataLookup.EntityFrameworkCore/Sources/QueryDefinitionLookupSource.cs",
+      "line": 33,
+      "members": [
+        {
+          "name": "SearchAsync",
+          "kind": "method",
+          "signature": "SearchAsync(LookupQuery query, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<LookupResult>"
+        }
+      ]
     },
     {
       "name": "QueryableLookupSource",
@@ -17459,7 +17538,7 @@
       "kind": "class",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Forms/FieldBuilder.cs",
-      "line": 14,
+      "line": 15,
       "members": []
     },
     {
@@ -17468,7 +17547,7 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Forms/FieldDescriptor.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -35621,6 +35700,40 @@
       "members": []
     },
     {
+      "name": "OpenApiContractServiceCollectionExtensions",
+      "fqn": "Granit.OpenApi.Generation.Extensions.OpenApiContractServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.OpenApi.Generation",
+      "file": "src/Granit.OpenApi.Generation/Extensions/OpenApiContractServiceCollectionExtensions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddContractServiceStubs",
+          "kind": "method",
+          "signature": "AddContractServiceStubs(this IServiceCollection services, params ReadOnlySpan<Type> contracts)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "OpenApiContractGenerator",
+      "fqn": "Granit.OpenApi.Generation.OpenApiContractGenerator",
+      "kind": "class",
+      "project": "Granit.OpenApi.Generation",
+      "file": "src/Granit.OpenApi.Generation/OpenApiContractGenerator.cs",
+      "line": 35,
+      "members": []
+    },
+    {
+      "name": "OpenApiContractModule",
+      "fqn": "Granit.OpenApi.Generation.OpenApiContractModule",
+      "kind": "record",
+      "project": "Granit.OpenApi.Generation",
+      "file": "src/Granit.OpenApi.Generation/OpenApiContractModule.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "GeneratorModule",
       "fqn": "Granit.OpenApi.Generator.GeneratorModule",
       "kind": "class",
@@ -42747,6 +42860,22 @@
       ]
     },
     {
+      "name": "LookupSourceDescriptor",
+      "fqn": "Granit.QueryEngine.LookupSourceDescriptor",
+      "kind": "record",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/LookupSourceDescriptor.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "required string Name",
+          "returnType": "required string"
+        }
+      ]
+    },
+    {
       "name": "ColumnDefinition",
       "fqn": "Granit.QueryEngine.Meta.ColumnDefinition",
       "kind": "record",
@@ -42970,6 +43099,12 @@
           "kind": "method",
           "signature": "GetProjectionExpression()",
           "returnType": "LambdaExpression?"
+        },
+        {
+          "name": "GetLookupSource",
+          "kind": "method",
+          "signature": "GetLookupSource()",
+          "returnType": "LookupSourceDescriptor?"
         }
       ]
     },
