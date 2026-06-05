@@ -28,7 +28,7 @@ namespace Granit.OpenApi.Generation;
 /// interface parameter as a request body and throws on GET/DELETE. The correct fix is at the source —
 /// annotate every application-service handler parameter with <c>[FromServices]</c>, which forces service
 /// binding regardless of registration. Where that discipline is not yet in place, pass the leaking
-/// contracts to <see cref="OpenApiContractServiceCollectionExtensions.AddContractServiceStubs"/> from
+/// contracts to <see cref="Extensions.OpenApiContractServiceCollectionExtensions.AddContractServiceStubs"/> from
 /// the <c>configure</c> hook — an explicit, self-documenting list, never a blanket mask.
 /// </para>
 /// </remarks>

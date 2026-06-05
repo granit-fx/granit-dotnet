@@ -351,6 +351,7 @@
     <Project Path="tests/Granit.Html.Tests/Granit.Html.Tests.csproj" />
     <Project Path="tests/Granit.Http.Abstractions.Tests/Granit.Http.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Http.ApiDocumentation.Tests/Granit.Http.ApiDocumentation.Tests.csproj" />
+    <Project Path="tests/Granit.OpenApi.Generation.Tests/Granit.OpenApi.Generation.Tests.csproj" />
     <Project Path="tests/Granit.Http.ApiVersioning.Tests/Granit.Http.ApiVersioning.Tests.csproj" />
     <Project Path="tests/Granit.Http.Bulkhead.Tests/Granit.Http.Bulkhead.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cors.Tests/Granit.Http.Cors.Tests.csproj" />

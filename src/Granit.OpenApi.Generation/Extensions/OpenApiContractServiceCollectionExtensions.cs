@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Granit.OpenApi.Generation;
+namespace Granit.OpenApi.Generation.Extensions;
 
 /// <summary>Service-collection helpers for build-time OpenAPI contract generation.</summary>
 public static class OpenApiContractServiceCollectionExtensions

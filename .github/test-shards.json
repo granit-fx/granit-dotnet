@@ -125,6 +125,7 @@
         "tests/Granit.Http.ApiDocumentation.Tests",
         "tests/Granit.Http.ApiVersioning.Tests",
         "tests/Granit.Http.Bulkhead.Tests",
+        "tests/Granit.OpenApi.Generation.Tests",
         "tests/Granit.Http.Cookies.Endpoints.Tests",
         "tests/Granit.Http.Cookies.CookieConsent.Tests",
         "tests/Granit.Http.Cookies.Klaro.Tests",

@@ -17,6 +17,7 @@ using Granit.Identity.Local.Endpoints.Extensions;
 using Granit.Localization.Endpoints.Extensions;
 using Granit.MultiTenancy.Endpoints.Extensions;
 using Granit.Notifications.Endpoints.Extensions;
+using Granit.OpenApi.Generation;
 using Granit.OpenIddict.Endpoints.Extensions;
 using Granit.Presence.Endpoints.Extensions;
 using Granit.Privacy.Endpoints.Discovery;
@@ -27,7 +28,6 @@ using Granit.Templating.Endpoints.Extensions;
 using Granit.Timeline.Endpoints.Extensions;
 using Granit.Validation.Endpoints.Extensions;
 using Granit.Webhooks.Endpoints.Extensions;
-using Granit.OpenApi.Generation;
 using Granit.Workflow.Endpoints.Extensions;
 
 namespace Granit.OpenApi.Generator;
