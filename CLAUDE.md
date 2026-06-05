@@ -23,15 +23,9 @@ src/
 tests/{*.Tests, *.Tests.Integration, ArchitectureTests}
 ```
 
-> 📚 **Doc site** lives in the sibling repo [`granit-docs`](https://github.com/granit-fx/granit-docs) (`~/dev/granit-fx/granit-docs/`, published to <https://granit-fx.dev>).
-
 One project = one NuGet package. Namespace = project name. Zero circular refs. Discover packages via `ls src/`.
 
-**Layer purity — STRICT.** `.Endpoints` belongs only to types touching `Microsoft.AspNetCore.*`,
-`FluentValidation`, `ZiggyCreatures.Caching.Fusion`, or HTTP-bound options. `.EntityFrameworkCore`
-only to types touching `Microsoft.EntityFrameworkCore`. Domain orchestration (registries, runners,
-period resolvers, delta calculators, value-shape DTOs, declarative definitions) lives in the base
-`Granit.{Module}`. Enforced by `/audit --scope layer-purity`.
+**Layer purity — STRICT.** `.Endpoints` only for types touching `Microsoft.AspNetCore.*`, `FluentValidation`, `ZiggyCreatures.Caching.Fusion`, or HTTP-bound options. `.EntityFrameworkCore` only for types touching `Microsoft.EntityFrameworkCore`. Domain orchestration (registries, runners, period resolvers, delta calculators, value-shape DTOs, declarative definitions) lives in base `Granit.{Module}`. Enforced by `/audit --scope layer-purity`.
 
 ## Commands
 
@@ -51,26 +45,20 @@ dotnet test  tests/Granit.BlobStorage.Tests --no-build
 dotnet pack -c Release -o ./nupkgs
 ```
 
-**Dev-package feed.** Pre-release `0.1.0-dev.*` packages publish to the **GitLab Package Registry** (`gitlab.digitaldynamics.be/api/v4/projects/11/packages/nuget/index.json`) — GitHub Packages publish is paused (#2114). Downstream repos consume from there; CI creds via env var `NuGetPackageSourceCredentials_*` (never `--store-password-in-clear-text`).
+**Dev-package feed.** Pre-release `0.1.0-dev.*` publish to **GitLab Package Registry** (`gitlab.digitaldynamics.be/api/v4/projects/11/packages/nuget/index.json`) — GitHub Packages publish paused (#2114). CI creds via env var `NuGetPackageSourceCredentials_*` (never `--store-password-in-clear-text`).
 
-Doc site lives in the [`granit-docs`](https://github.com/granit-fx/granit-docs) sibling repo (`cd ../granit-docs && npx astro build`).
-
-Shard mapping is the source of truth at [`.github/test-shards.json`](.github/test-shards.json) — match a file's directory against that map, no duplicate table here.
+Shard mapping source of truth: [`.github/test-shards.json`](.github/test-shards.json) — match a file's directory against it.
 
 ## Code style
 
-Idiomatic modern C# 14 / .NET 10. Default to: primary constructors, collection expressions
-(`[x, y]`, `[]`), `field` keyword, file-scoped namespaces, pattern matching, `System.Threading.Lock`,
-`params ReadOnlySpan<T>`, native OpenAPI 3.1 (`AddOpenApi()` — never Swashbuckle/NSwag), Named Query
-Filters (`HasQueryFilter(name, expr)` — never unnamed), `IMeterFactory` (never `new Meter`),
-`ActivitySource` per module.
+Idiomatic modern C# 14 / .NET 10. Default to: primary constructors, collection expressions (`[x, y]`, `[]`), `field` keyword, file-scoped namespaces, pattern matching, `System.Threading.Lock`, `params ReadOnlySpan<T>`, native OpenAPI 3.1 (`AddOpenApi()` — never Swashbuckle/NSwag), Named Query Filters (`HasQueryFilter(name, expr)` — never unnamed), `IMeterFactory` (never `new Meter`), `ActivitySource` per module.
 
-`nameof(T)` on a type parameter returns `"T"` — use `typeof(T).Name` instead. `nameof(List<>)` works for unbound generics.
+`nameof(T)` on a type parameter returns `"T"` — use `typeof(T).Name`. `nameof(List<>)` works for unbound generics.
 
 ### Must-use patterns
 
-- `var` when type is apparent (IDE0008); expression body for single-statement methods
-- `[GeneratedRegex]` always; `[LoggerMessage]` always (no string interpolation in log calls)
+- `var` when type apparent (IDE0008); expression body for single-statement methods
+- `[GeneratedRegex]` always; `[LoggerMessage]` always (no interpolation in log calls)
 - `TimeProvider` / `IClock` — never `DateTime.Now`/`UtcNow`
 - `ConfigureAwait(false)` in library code; `CancellationToken` last param
 - `ArgumentNullException.ThrowIfNull()` / `ArgumentException.ThrowIfNullOrEmpty()`
@@ -89,7 +77,7 @@ Full reference: [`docs/guide/conventions/`](docs/guide/conventions/index.md).
 
 ### Permissions (STRICT)
 
-Format `[Group].[Resource].[Action]` (PascalCase, plural Resource). Loc keys: `PermissionGroup:{Group}` and `Permission:{Group}.{Resource}.{Action}`. Provider class `{Module}PermissionDefinitionProvider : IPermissionDefinitionProvider` (auto-discovered). Standard actions: `Read`, `Manage`, `Execute`, `Create` — domain-specific (`Upload`, `Revoke`, `Rotate`...) allowed when `Manage` is too coarse for least-privilege (ISO 27001 A.9.4).
+Format `[Group].[Resource].[Action]` (PascalCase, plural Resource). Loc keys: `PermissionGroup:{Group}` and `Permission:{Group}.{Resource}.{Action}`. Provider `{Module}PermissionDefinitionProvider : IPermissionDefinitionProvider` (auto-discovered). Standard actions: `Read`, `Manage`, `Execute`, `Create` — domain-specific (`Upload`, `Revoke`, `Rotate`...) allowed when `Manage` is too coarse for least-privilege (ISO 27001 A.9.4).
 
 ### Events (STRICT, archi-tested)
 
@@ -104,20 +92,20 @@ Past-tense verb + suffix. Generic lifecycle: `EntityCreatedEvent<T>`/`EntityCrea
 
 Wolverine discovers via `Assembly.ExportedTypes` and needs **public types with public ctors**.
 
-- Handlers MUST be `public class` (non-static) with `public static` Handle methods. NEVER `static class`, NEVER `internal`, NEVER `protected` ctor.
-- If a handler injects an `internal` service, make the service public or extract an interface.
-- SonarQube **S1118** is a false positive on these — mark **Won't Fix**.
+- Handlers MUST be `public class` (non-static) with `public static` Handle methods. NEVER `static class`, `internal`, or `protected` ctor.
+- Handler injecting an `internal` service → make the service public or extract an interface.
+- SonarQube **S1118** is a false positive here — mark **Won't Fix**.
 
 ### Background Jobs
 
-- `sealed record *Job : IBackgroundJob` with `[RecurringJob("cron", "name")]`, lives in `Granit.{Module}.BackgroundJobs/Jobs/`. Job name `{module-kebab}-{action-kebab}` (globally unique).
+- `sealed record *Job : IBackgroundJob` with `[RecurringJob("cron", "name")]`, in `Granit.{Module}.BackgroundJobs/Jobs/`. Job name `{module-kebab}-{action-kebab}` (globally unique).
 - Handler `{Action}Handler` — `public static partial class`. Same Wolverine visibility rules.
 - Dedicated `Granit.{Module}.BackgroundJobs` sub-project keeps base module free from `Granit.BackgroundJobs` dep. Never create a `.Wolverine` package for jobs (handled by `Granit.BackgroundJobs.Wolverine`).
-- NEVER use `*Command` suffix — commands are CQRS, jobs are scheduled work units.
+- NEVER `*Command` suffix — commands are CQRS, jobs are scheduled work units.
 
 ### `*.Notifications` packages
 
-Full conventions: [notifications/conventions.mdx](../granit-docs/src/content/docs/dotnet/infrastructure/notifications/conventions.mdx) (also at <https://granit-fx.dev/dotnet/infrastructure/notifications/conventions/>). Reference impls: `Granit.Privacy.Notifications`, `Granit.Identity.Local.Notifications`.
+Full conventions: [notifications/conventions.mdx](../granit-docs/src/content/docs/dotnet/infrastructure/notifications/conventions.mdx). Reference impls: `Granit.Privacy.Notifications`, `Granit.Identity.Local.Notifications`.
 
 Critical gotchas:
 
@@ -129,23 +117,19 @@ Critical gotchas:
 - Tests ship a manifest pinning theory test (one row per (notification, culture)) — copy from `Granit.Privacy.Notifications.Tests/Templates/EmbeddedTemplatesTests.cs`.
 - Framework baseline ships **EN + FR**. Other cultures generated by `scripts/translate-templates.py` with `<!-- AUTO-TRANSLATED -->` marker.
 
-> **Analytics / Dashboards conventions** (MetricDefinition, widget references,
-> Query↔Metric pairing) moved to `granit-business` along with the
-> `Granit.Analytics.Abstractions` and `Granit.Dashboards.Abstractions` packages
-> — those contracts are business concerns, not framework. See the
-> granit-business `CLAUDE.md` for the canonical rules.
+> **Analytics / Dashboards conventions** (MetricDefinition, widget references, Query↔Metric pairing) moved to `granit-business` with the `Granit.Analytics.Abstractions` / `Granit.Dashboards.Abstractions` packages — business concerns, not framework. See granit-business `CLAUDE.md`.
 
 ### Declarative definitions placement (Query/Export)
 
-Concrete `*QueryDefinition` and `*ExportDefinition` live in **base module** `Granit.{Module}` (in `Queries/`, `Exports/`). NEVER in `.Endpoints`, NEVER in `.EntityFrameworkCore`. Reference `Granit.{X}.Abstractions` (lightweight contracts), never `Granit.QueryEngine`/`Granit.DataExchange` directly. Each module owns its registrations — NEVER aggregate into a central `Granit.{X}.Definitions` package.
+Concrete `*QueryDefinition` / `*ExportDefinition` live in **base module** `Granit.{Module}` (`Queries/`, `Exports/`). NEVER in `.Endpoints` or `.EntityFrameworkCore`. Reference `Granit.{X}.Abstractions` (lightweight contracts), never `Granit.QueryEngine`/`Granit.DataExchange` directly. Each module owns its registrations — NEVER aggregate into a central `Granit.{X}.Definitions` package.
 
-**Pairing (STRICT, archi-tested):** every admin-visible entity MUST have both `QueryDefinition` AND `ExportDefinition`. Exemption list (`[INFRA]`): `tests/Granit.ArchitectureTests/PairingExemptions.cs` — each entry carries an inline justification.
+**Pairing (STRICT, archi-tested):** every admin-visible entity MUST have both `QueryDefinition` AND `ExportDefinition`. Exemptions (`[INFRA]`): `tests/Granit.ArchitectureTests/PairingExemptions.cs` — each with inline justification.
 
 ### DTOs & API responses
 
 - `*Request` for input, `*Response` for output. NEVER `*Dto`. Prefixed names (`WorkflowTransitionRequest`, not `TransitionRequest`) — OpenAPI flattens namespaces.
-- Errors: `TypedResults.Problem(detail, statusCode)` (RFC 7807). EF entities NEVER returned — always project to `*Response` records.
-- **A record param is `required` in OpenAPI iff it has no default** (STJ `RespectRequiredConstructorParameters`, .NET 9+) — independent of nullability. Choose per the field's contract: optional input (`*Request`) → `string? FirstName = null` (omittable, drops out of `required`); mandatory input → `string Email` (non-nullable, no default). On a `*Response` a value that is **always present but may be null** is *correctly* `required` + nullable — keep `string? Foo` **without** a default; add `= null` only when the field can be genuinely absent. Getting an optional input wrong ships it as required `string | null` instead of `firstName?`. (#2546)
+- Errors: `TypedResults.Problem(detail, statusCode)` (RFC 7807). EF entities NEVER returned — project to `*Response` records.
+- **A record param is `required` in OpenAPI iff it has no default** (STJ `RespectRequiredConstructorParameters`, .NET 9+) — independent of nullability. Optional input (`*Request`) → `string? FirstName = null` (omittable, drops from `required`); mandatory input → `string Email`. On a `*Response`, always-present-but-may-be-null is *correctly* `required` + nullable — keep `string? Foo` **without** default; add `= null` only when genuinely absent. Wrong optional input ships as required `string | null` instead of `firstName?`. (#2546)
 
 ### OpenAPI endpoint metadata (5 elements MANDATORY)
 
@@ -162,7 +146,7 @@ group.MapGet("/{id:guid}", GetByIdAsync)
 
 ### OpenAPI tags (STRICT)
 
-Every `*.Endpoints` module attaches `.WithTags(...)` on its root group. Format: `Title Case With Spaces` (e.g. `Blob Storage`, `Background Jobs`) — NEVER glued PascalCase, kebab-case, or snake_case. Multi-tag modules: `<Module> - <SubGroup>` (space-dash-space) — e.g. `AI - Workspaces`, `Identity - Webhook`. Expose via `TagName` property on `*EndpointsOptions` (overridable per-app). `Granit.Http.ApiDocumentation` auto-emits a sorted `document.Tags` array.
+Every `*.Endpoints` module attaches `.WithTags(...)` on its root group. Format: `Title Case With Spaces` (`Blob Storage`, `Background Jobs`) — NEVER glued PascalCase, kebab-case, or snake_case. Multi-tag: `<Module> - <SubGroup>` (space-dash-space) — `AI - Workspaces`, `Identity - Webhook`. Expose via `TagName` on `*EndpointsOptions` (overridable per-app). `Granit.Http.ApiDocumentation` auto-emits a sorted `document.Tags` array.
 
 ### Validation
 
@@ -174,9 +158,9 @@ Every `*.Endpoints` module attaches `.WithTags(...)` on its root group. Format: 
 ### Isolated DbContext (each `*.EntityFrameworkCore` package)
 
 1. `<ProjectReference>` to `Granit.Persistence` (+ `Granit.Persistence.EntityFrameworkCore`).
-2. **If the DbContext owns ≥1 `IMultiTenant` entity → inherit `GranitDbContext`** (forward `options, currentTenant, dataFilter` to base). The base class exposes `CurrentTenantId` / `IsMultiTenantFilterEnabled` as instance members so EF Core parameterises the tenant filter (`@ef_filter__CurrentTenantId`) instead of inlining a frozen constant — a closure-captured tenant leaks across requests (repro: `MultiTenantFilterParameterizationReproTests.cs`). For DbContexts with no `IMultiTenant` entity, inherit `DbContext` directly.
+2. **DbContext owning ≥1 `IMultiTenant` entity → inherit `GranitDbContext`** (forward `options, currentTenant, dataFilter` to base). Base exposes `CurrentTenantId` / `IsMultiTenantFilterEnabled` as instance members so EF Core parameterises the tenant filter (`@ef_filter__CurrentTenantId`) instead of inlining a frozen constant — a closure-captured tenant leaks across requests (repro: `MultiTenantFilterParameterizationReproTests.cs`). No `IMultiTenant` entity → inherit `DbContext` directly.
 3. Constructor-inject `ICurrentTenant?` and `IDataFilter?` (both optional, default `null`).
-4. Override `OnGranitModelCreating` (not `OnModelCreating`) on `GranitDbContext` derivatives. Call `modelBuilder.ApplyGranitConventions(currentTenant: null, dataFilter)` — the tenant filter is wired by the base; the other conventions (soft-delete, active, …) still come from `ApplyGranitConventions`. NO manual `HasQueryFilter`.
+4. Override `OnGranitModelCreating` (not `OnModelCreating`) on `GranitDbContext` derivatives. Call `modelBuilder.ApplyGranitConventions(currentTenant: null, dataFilter)` — tenant filter wired by base; other conventions (soft-delete, active, …) still from `ApplyGranitConventions`. NO manual `HasQueryFilter`.
 5. Wire interceptors via the `(sp, options)` overload of `AddDbContextFactory` (Scoped) — resolve `AuditedEntityInterceptor` / `SoftDeleteInterceptor`.
 6. `[DependsOn(typeof(GranitPersistenceModule))]` on module class.
 7. `IMultiTenant` entities use `Guid? TenantId` (never `string`).
@@ -185,9 +169,9 @@ Reference: [`docs/framework/data/persistence.md`](docs/framework/data/persistenc
 
 ### Enum persistence (STRICT)
 
-Every enum property on an entity is persisted as its **PascalCase string name in a `varchar` column** by `ApplyGranitConventions` — no `.HasConversion<string>()` boilerplate in `*Configuration.cs`. Default column width is `max(20, longestValueName + 4)`; an explicit `.HasMaxLength(N)` always wins. Rationale: lisibility for ops/SQL audits, refactor safety, symmetry with the wire format (`JsonStringEnumConverter`).
+Every enum property on an entity is persisted as its **PascalCase string name in a `varchar` column** by `ApplyGranitConventions` — no `.HasConversion<string>()` in `*Configuration.cs`. Default column width `max(20, longestValueName + 4)`; explicit `.HasMaxLength(N)` always wins. Rationale: ops/SQL-audit readability, refactor safety, symmetry with wire format (`JsonStringEnumConverter`).
 
-Opt out per-property with `[PersistAsInt]` (in `Granit.Domain`) — reserve for `[Flags]` bitmasks (auto-skipped anyway), high-write tables where 4 bytes/row matter, or pre-existing DB contracts. Document the reason inline. Migration helper `MigrationBuilderExtensions.AlterEnumColumnIntToString<TEnum>` emits the mandatory PostgreSQL `USING CASE` clause when cascading the convention into apps with existing int columns.
+Opt out per-property with `[PersistAsInt]` (in `Granit.Domain`) — reserve for `[Flags]` bitmasks (auto-skipped anyway), high-write tables where 4 bytes/row matter, or pre-existing DB contracts; document inline. Migration helper `MigrationBuilderExtensions.AlterEnumColumnIntToString<TEnum>` emits the mandatory PostgreSQL `USING CASE` clause when cascading into apps with existing int columns.
 
 ### DDD — AggregateRoot vs Entity
 
@@ -197,7 +181,7 @@ Aggregate Root rules (enforced by `DomainConventionTests`):
 
 - All properties `{ get; private set; }`. State changes via behavior methods (`MarkAsValid()`, `Revoke()`).
 - `public static Xxx Create(...)` factory + `private Xxx() { }` for EF Core materialization.
-- For `IMultiTenant` with private setter: add explicit `Guid? IMultiTenant.TenantId { get; set; }` for interceptor injection.
+- `IMultiTenant` with private setter: add explicit `Guid? IMultiTenant.TenantId { get; set; }` for interceptor injection.
 - Events via base class (`AddDomainEvent`/`AddDistributedEvent`) — NEVER manual `IDomainEventSource`.
 
 `SingleValueObject<T>`: `sealed`, `init` props, `Create()` with validation, implicit operators. EF converters auto-applied by `ApplyGranitConventions`. JSON via `SingleValueObjectJsonConverterFactory`. Reference: [ADR-017](../granit-docs/src/content/docs/dotnet/architecture/adr/017-ddd-aggregate-value-object-strategy.md).
@@ -212,9 +196,9 @@ Direct project ref with a `*Module` → declare it. Transitive → omit. `Granit
 
 ### Tests + CI sharding (MANDATORY)
 
-**Endpoint harness.** For `*.Endpoints` HTTP tests, use `Granit.Testing.Endpoints.GranitEndpointTestHost` — the canonical harness; replaces ~60 lines of `WebApplicationBuilder` boilerplate (reference impl: `Granit.Validation.Endpoints.Tests`, introduced in #2132).
+**Endpoint harness.** For `*.Endpoints` HTTP tests use `Granit.Testing.Endpoints.GranitEndpointTestHost` — canonical harness, replaces ~60 lines of `WebApplicationBuilder` boilerplate (reference: `Granit.Validation.Endpoints.Tests`, #2132).
 
-8 parallel shards (6 unit-test layers + `integration` + `architecture`). Each has a `.slnf` (auto-generated). When adding a test project: edit `.github/test-shards.json` (`*.Tests.Integration` → `integration` shard always; everything else → its domain shard), run `python3 scripts/generate-shard-filters.py`, commit both. Pre-push hook auto-regenerates and amends. **Without registration, CI silently skips the project.**
+8 parallel shards (6 unit-test layers + `integration` + `architecture`), each with an auto-generated `.slnf`. Adding a test project: edit `.github/test-shards.json` (`*.Tests.Integration` → `integration` shard always; else → its domain shard), run `python3 scripts/generate-shard-filters.py`, commit both. Pre-push hook auto-regenerates and amends. **Without registration, CI silently skips the project.**
 
 ## Anti-patterns
 
@@ -232,11 +216,11 @@ Direct project ref with a `*Module` → declare it. Transitive → omit. `Granit
 
 ## Documentation site
 
-Lives in the sibling repo [`granit-docs`](https://github.com/granit-fx/granit-docs) (`~/dev/granit-fx/granit-docs/`, Astro + Starlight, published to <https://granit-fx.dev>). When creating a new module: add `.mdx` in `reference/modules/`, bump `PACKAGE_COUNT` in `src/data/constants.ts`, cross-link from related pages. **Doc updates ship in a separate PR against `granit-docs`** — keep code and docs PRs decoupled.
+Sibling repo [`granit-docs`](https://github.com/granit-fx/granit-docs) (`~/dev/granit-fx/granit-docs/`, Astro + Starlight → <https://granit-fx.dev>). Build: `cd ../granit-docs && npx astro build`. New module: add `.mdx` in `reference/modules/`, bump `PACKAGE_COUNT` in `src/data/constants.ts`, cross-link related pages. **Doc updates ship in a separate PR against `granit-docs`** — keep code and docs PRs decoupled.
 
 ## MCP & Code index
 
-MCP tools (roslyn-lens, granit-tools) — see global `~/.claude/CLAUDE.md`. `.mcp-code-index.json` is auto-regenerated by the pre-push hook (script: `python3 scripts/generate-code-index.py`). **NEVER edit manually.**
+MCP tools (roslyn-lens, granit-tools) — see global `~/.claude/CLAUDE.md`. `.mcp-code-index.json` auto-regenerated by pre-push hook (`python3 scripts/generate-code-index.py`). **NEVER edit manually.**
 
 ## Definition of Done
 
