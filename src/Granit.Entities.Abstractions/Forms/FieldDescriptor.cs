@@ -1,3 +1,4 @@
+using Granit.DataLookup.Descriptors;
 using Granit.Entities.Visibility;
 
 namespace Granit.Entities.Forms;
@@ -54,4 +55,13 @@ public sealed record FieldDescriptor
     /// happens server-side.
     /// </summary>
     public VisibilityCondition? VisibleIf { get; init; }
+
+    /// <summary>
+    /// Optional data-lookup source (see <c>Granit.DataLookup</c>). When set, the form renders
+    /// a server-backed typeahead picker instead of a free-text/select control — the same
+    /// source a query column binds via <c>ColumnBuilder.Lookup</c>, so a foreign-key field
+    /// resolves consistently in both the grid filter and the edit form. <c>null</c> for
+    /// fields without a declared lookup.
+    /// </summary>
+    public LookupDescriptor? Lookup { get; init; }
 }
