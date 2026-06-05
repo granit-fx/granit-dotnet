@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.OpenApi.Generation</PackageId>
+    <Description>Build-time OpenAPI contract generator shared across Granit bounded contexts (framework and downstream repos). Composes Granit.*.Endpoints modules through the Granit module system and emits one OpenAPI 3.1 document per module — no running host, no infrastructure. Consumed by per-repo *.OpenApi.Generator build projects.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Granit umbrella (AddGranitAsync, the module-system bootstrap) + the ApiDocumentation
+         transformer chain (AddGranitOpenApiDocument drives per-module slicing). -->
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
+  </ItemGroup>
+
+</Project>

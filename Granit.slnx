@@ -318,6 +318,7 @@
   <Folder Name="/src/Tooling/">
     <Project Path="src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj" />
     <Project Path="src/Granit.Analyzers/Granit.Analyzers.csproj" />
+    <Project Path="src/Granit.OpenApi.Generation/Granit.OpenApi.Generation.csproj" />
     <Project Path="src/Granit.OpenApi.Generator/Granit.OpenApi.Generator.csproj" />
     <Project Path="src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Testing/Granit.Testing.csproj" />

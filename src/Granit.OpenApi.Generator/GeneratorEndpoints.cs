@@ -27,14 +27,10 @@ using Granit.Templating.Endpoints.Extensions;
 using Granit.Timeline.Endpoints.Extensions;
 using Granit.Validation.Endpoints.Extensions;
 using Granit.Webhooks.Endpoints.Extensions;
+using Granit.OpenApi.Generation;
 using Granit.Workflow.Endpoints.Extensions;
 
 namespace Granit.OpenApi.Generator;
-
-/// <summary>One generated OpenAPI document: a module slug and the routes mounted under it.</summary>
-/// <param name="Slug">Document name and <c>GroupName</c> stamped on the module's routes.</param>
-/// <param name="Map">Mounts the module's <c>MapGranit*</c> endpoints onto the supplied builder.</param>
-internal sealed record EndpointModule(string Slug, Action<IEndpointRouteBuilder> Map);
 
 /// <summary>
 /// The single source of truth pairing each <c>Granit.*.Endpoints</c> module with its slug and
@@ -43,7 +39,7 @@ internal sealed record EndpointModule(string Slug, Action<IEndpointRouteBuilder>
 /// </summary>
 internal static class GeneratorEndpoints
 {
-    public static readonly IReadOnlyList<EndpointModule> All =
+    public static readonly IReadOnlyList<OpenApiContractModule> All =
     [
         new("ai", e => e.MapGranitAI()),
         new("auditing", e => e.MapGranitAuditing()),
