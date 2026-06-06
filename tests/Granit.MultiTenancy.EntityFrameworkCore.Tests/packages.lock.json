@@ -375,6 +375,7 @@
           "Granit.DataLookup": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )"
         }
       },

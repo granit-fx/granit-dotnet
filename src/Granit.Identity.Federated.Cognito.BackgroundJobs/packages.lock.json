@@ -10,8 +10,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.7.5",
-        "contentHash": "kOx1nlnJic0Ao+tpCia/DxmttQCPuKLWbfuJuXSJnG03yur0TRfPDCvkrroZ/4yuy0fLomPf46vDYnpkk01J9w=="
+        "resolved": "4.0.8",
+        "contentHash": "JFq4sdtnlLePkISe5M0j1a5ushTrvwCGO1CNOGZaoBv33dscHls14m5dsPzyrN54xn924MtAP+s5xTdfNGNTUQ=="
       },
       "Microsoft.EntityFrameworkCore.Abstractions": {
         "type": "Transitive",
@@ -170,6 +170,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Workflow.Abstractions": "[0.1.0-dev, )"
         }
@@ -277,10 +278,10 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.9.1",
-        "contentHash": "ztAWMdKhnJcDNbk7COcfQKNF8keE59h7vp0VPNfavOEs6CdCmFls/p2YgQjVT74DSOBay2v1ruI4IIuBxkmxJw==",
+        "resolved": "4.0.9.2",
+        "contentHash": "1TVKTTJWBU7yiB/Awwrpqw8ehrBIO36awKcubbcNOP6JDjyD4BfGog/+QeHv8y8rmw8j1ZjRPO22fSld5Tllvg==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.7.5, 5.0.0)"
+          "AWSSDK.Core": "[4.0.8, 5.0.0)"
         }
       },
       "Cronos": {

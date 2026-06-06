@@ -167,8 +167,8 @@
       },
       "JasperFx": {
         "type": "Transitive",
-        "resolved": "2.8.0",
-        "contentHash": "r06TuAR7sdGDmhdrTVkPVkIGJoR0GH8PsBiPikLzowFo4LJSL3QJ1ttNUO/381n9STUKhhfKXboCL3rS+OIsnQ==",
+        "resolved": "2.8.2",
+        "contentHash": "I2ZBXWSr+neozZsqew+hCWCD6EECGZ8hKtak/UaKmXZeZ3NABA2xya3E9+8YVfHJgnqGDvEAy2HUphAN9n0JZg==",
         "dependencies": {
           "FastExpressionCompiler": "5.4.1",
           "ImTools": "4.0.0",
@@ -183,16 +183,16 @@
       },
       "JasperFx.Events": {
         "type": "Transitive",
-        "resolved": "2.8.0",
-        "contentHash": "H4k/jNeWwnE+1C94IIozp7I4FEVgzT2GR2d/RizSDkUyIYhoKVnfNBQvCSbNHkn7PqFulGmu8Nn2ovJJ9ezotQ==",
+        "resolved": "2.8.2",
+        "contentHash": "ZuoBHU9rWf92WyeKDETjLCaO8lLlNdkNFD2RHqqWlMrY3MqZG98iagv3LZgJ7Hu4l/5kHG38s1gM/f8zZEHjIA==",
         "dependencies": {
-          "JasperFx": "2.8.0"
+          "JasperFx": "2.8.2"
         }
       },
       "JasperFx.SourceGenerator": {
         "type": "Transitive",
-        "resolved": "2.8.0",
-        "contentHash": "W4PIuA/qsAjekuCtKbuBzFEfgviRQ376THUkp+RQ0jz+dlEImhF0JTfu6h45q9nGVP1Rh0+Bq9B7T4ZKopvCkA=="
+        "resolved": "2.8.2",
+        "contentHash": "bkpLFc8FPGGNfsAC5+wVI3NXPzkCpR+vf7GDnOl+kE/Qa+SyiunoiWlsUXzm50s8udDpYEhy3bPREI3OuKqGhw=="
       },
       "Microsoft.ApplicationInsights": {
         "type": "Transitive",
@@ -742,6 +742,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Workflow.Abstractions": "[0.1.0-dev, )"
         }
@@ -1053,12 +1054,12 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.4.3",
-        "contentHash": "kfyJrBtDcbYOmb6kwtTop8frW+Coqu7c3FGOF5HmSJL1zWW6Mi85gKU30ShcSnHQ27tqDrAmnDClnMJhmQb5cA==",
+        "resolved": "6.5.0",
+        "contentHash": "1l8FDOpTDzKxmf9x3vabCzK9Uv66MQpdJ+cg9l+UJSXeXZKaGQlbNX1RI1Ga/1UPFoQ8dmrC8EX9f/oreMZn3Q==",
         "dependencies": {
-          "JasperFx": "2.8.0",
-          "JasperFx.Events": "2.8.0",
-          "JasperFx.SourceGenerator": "2.8.0",
+          "JasperFx": "2.8.2",
+          "JasperFx.Events": "2.8.2",
+          "JasperFx.SourceGenerator": "2.8.2",
           "Microsoft.Extensions.Caching.Memory": "10.0.0",
           "Microsoft.Extensions.Configuration": "10.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "10.0.0",

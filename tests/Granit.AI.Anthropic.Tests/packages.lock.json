@@ -389,6 +389,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Workflow.Abstractions": "[0.1.0-dev, )"
         }
@@ -443,8 +444,8 @@
       "Anthropic": {
         "type": "CentralTransitive",
         "requested": "[12.*, )",
-        "resolved": "12.24.1",
-        "contentHash": "Fy0l4ZLEkWlmWFDPyRxjwfjzeZCZJkWbuV88HdCMKQYhHEFRqIBATcMUM224+//ouGOx8g//jfmgSsT5NA3GLQ==",
+        "resolved": "12.26.0",
+        "contentHash": "GiN/ibeqdLUepr3Dqh5g5myGTlt0gYZ/BZdZORywj2mpainjB61paDupWZ0UEF1bzujrxcJ0KACjokPcIufYyg==",
         "dependencies": {
           "Microsoft.Extensions.AI.Abstractions": "10.5.1"
         }
