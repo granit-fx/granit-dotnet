@@ -20,9 +20,9 @@ public interface ICurrentTenant
     string? Name { get; }
 
     /// <summary>
-    /// Privacy regulation code for the current tenant (e.g., <c>"EU_GDPR"</c>), or <c>null</c>.
+    /// ISO 3166 jurisdiction code for the current tenant (e.g. <c>"FR"</c>, <c>"CA-QC"</c>).
     /// Populated from <c>Tenant.Jurisdiction</c> when <c>ValidateTenantExistence</c> is enabled.
-    /// Falls back to <c>null</c> when running without the EF Core tenant store.
+    /// <c>null</c> when running without the EF Core tenant store or when no jurisdiction is configured.
     /// </summary>
     string? Jurisdiction { get; }
 
@@ -32,7 +32,7 @@ public interface ICurrentTenant
     /// </summary>
     /// <param name="id">Identifier of the tenant to activate, or <c>null</c> to deactivate.</param>
     /// <param name="name">Optional tenant name.</param>
-    /// <param name="jurisdiction">Optional privacy regulation code for the tenant.</param>
+    /// <param name="jurisdiction">Optional ISO 3166 jurisdiction code for the tenant.</param>
     /// <returns>Scope to dispose to restore the previous tenant.</returns>
     IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null);
 }

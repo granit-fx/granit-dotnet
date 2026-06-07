@@ -40630,7 +40630,7 @@
       "kind": "record",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyRegulationProfileResponse.cs",
-      "line": 6,
+      "line": 8,
       "members": []
     },
     {
@@ -41920,7 +41920,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Regulations",
       "file": "src/Granit.Privacy.Regulations/Extensions/PrivacyRegulationsServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitPrivacyRegulations",
@@ -41936,7 +41936,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Regulations",
       "file": "src/Granit.Privacy.Regulations/GranitPrivacyRegulationsBuilder.cs",
-      "line": 11,
+      "line": 12,
       "members": []
     },
     {
@@ -41967,6 +41967,38 @@
           "kind": "method",
           "signature": "ResolveAllAsync(CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<PrivacyRegulationProfile>>"
+        }
+      ]
+    },
+    {
+      "name": "IPrivacyJurisdictionMapProvider",
+      "fqn": "Granit.Privacy.Regulations.Jurisdiction.IPrivacyJurisdictionMapProvider",
+      "kind": "interface",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/Jurisdiction/IPrivacyJurisdictionMapProvider.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Define",
+          "kind": "method",
+          "signature": "Define(IDictionary<string, IReadOnlyList<PrivacyRegulation>> countryMap, IDictionary<string, IReadOnlyList<PrivacyRegulation>> regionMap)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IPrivacyJurisdictionResolver",
+      "fqn": "Granit.Privacy.Regulations.Jurisdiction.IPrivacyJurisdictionResolver",
+      "kind": "interface",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/Jurisdiction/IPrivacyJurisdictionResolver.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(string countryCode, string? regionCode = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PrivacyRegulation>>"
         }
       ]
     },

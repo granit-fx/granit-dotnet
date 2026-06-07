@@ -378,21 +378,24 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         public bool IsAvailable => Id.HasValue;
         public Guid? Id { get; private set; }
         public string? Name { get; private set; }
+        public string? Jurisdiction { get; private set; }
 
-        public IDisposable Change(Guid? id, string? name = null)
+        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
         {
-            (Guid? previousId, string? previousName) = (Id, Name);
+            (Guid? previousId, string? previousName, string? previousJurisdiction) = (Id, Name, Jurisdiction);
             Id = id;
             Name = name;
-            return new Restore(this, previousId, previousName);
+            Jurisdiction = jurisdiction;
+            return new Restore(this, previousId, previousName, previousJurisdiction);
         }
 
-        private sealed class Restore(RecordingCurrentTenant owner, Guid? previousId, string? previousName) : IDisposable
+        private sealed class Restore(RecordingCurrentTenant owner, Guid? previousId, string? previousName, string? previousJurisdiction) : IDisposable
         {
             public void Dispose()
             {
                 owner.Id = previousId;
                 owner.Name = previousName;
+                owner.Jurisdiction = previousJurisdiction;
             }
         }
     }

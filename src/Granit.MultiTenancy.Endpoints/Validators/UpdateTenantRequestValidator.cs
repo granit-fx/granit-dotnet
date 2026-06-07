@@ -11,7 +11,7 @@ internal sealed class UpdateTenantRequestValidator : GranitValidator<UpdateTenan
 {
     internal const int MaxNameLength = 256;
     internal const int MaxEmailLength = 256;
-    internal const int MaxJurisdictionLength = 16;
+    internal const int MaxJurisdictionCodeLength = 16;
 
     public UpdateTenantRequestValidator()
     {
@@ -25,7 +25,7 @@ internal sealed class UpdateTenantRequestValidator : GranitValidator<UpdateTenan
             .When(x => x.ContactEmail is not null);
 
         RuleFor(x => x.Jurisdiction)
-            .MaximumLength(MaxJurisdictionLength)
+            .MaximumLength(MaxJurisdictionCodeLength)
             .When(x => x.Jurisdiction is not null);
     }
 }

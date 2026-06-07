@@ -1,5 +1,7 @@
 using Granit.MultiTenancy;
 using Granit.Privacy.Regulations.Internal;
+using Granit.Privacy.Regulations.Jurisdiction;
+using Granit.Privacy.Regulations.Jurisdiction.Internal;
 using Granit.Privacy.Regulations.Options;
 using Granit.Privacy.Regulations.Profiles;
 using Granit.Privacy.Regulations.Profiles.Internal;
@@ -13,6 +15,8 @@ namespace Granit.Privacy.Regulations.Tests.Internal;
 public sealed class TenantBasedRegulationResolverTests
 {
     private readonly IRegulationProfileRegistry _registry;
+    private readonly DefaultPrivacyJurisdictionResolver _jurisdictionResolver =
+        new([new BuiltInPrivacyJurisdictionMapProvider()]);
 
     public TenantBasedRegulationResolverTests()
     {
@@ -36,7 +40,7 @@ public sealed class TenantBasedRegulationResolverTests
     public async Task ResolveAsync_PerTenantConfigOverride_TakesPrecedence()
     {
         var tenantId = Guid.NewGuid();
-        ICurrentTenant tenant = CreateTenant(tenantId, jurisdiction: null);
+        ICurrentTenant tenant = CreateTenant(tenantId, null);
 
         TenantBasedRegulationResolver resolver = CreateResolver(
             new PrivacyRegulationsOptions
@@ -55,10 +59,10 @@ public sealed class TenantBasedRegulationResolverTests
     }
 
     [Fact]
-    public async Task ResolveAsync_TenantJurisdiction_UsedWhenNoConfigOverride()
+    public async Task ResolveAsync_IsoJurisdiction_ResolvesToMatchingRegulation()
     {
         var tenantId = Guid.NewGuid();
-        ICurrentTenant tenant = CreateTenant(tenantId, jurisdiction: "BR_LGPD");
+        ICurrentTenant tenant = CreateTenant(tenantId, "BR");
 
         TenantBasedRegulationResolver resolver = CreateResolver(
             new PrivacyRegulationsOptions { DefaultRegulation = "EU_GDPR" },
@@ -66,14 +70,15 @@ public sealed class TenantBasedRegulationResolverTests
 
         PrivacyRegulationProfile profile = await resolver.ResolveAsync(TestContext.Current.CancellationToken);
 
+        // "BR" → BR_LGPD via IPrivacyJurisdictionResolver
         profile.Regulation.Value.ShouldBe("BR_LGPD");
     }
 
     [Fact]
-    public async Task ResolveAsync_ConfigOverrideTakesPrecedenceOverJurisdiction()
+    public async Task ResolveAsync_ConfigOverrideTakesPrecedenceOverIsoJurisdiction()
     {
         var tenantId = Guid.NewGuid();
-        ICurrentTenant tenant = CreateTenant(tenantId, jurisdiction: "BR_LGPD");
+        ICurrentTenant tenant = CreateTenant(tenantId, "BR");
 
         TenantBasedRegulationResolver resolver = CreateResolver(
             new PrivacyRegulationsOptions
@@ -95,7 +100,7 @@ public sealed class TenantBasedRegulationResolverTests
     public async Task ResolveAsync_NullJurisdiction_FallsBackToConfigDefault()
     {
         var tenantId = Guid.NewGuid();
-        ICurrentTenant tenant = CreateTenant(tenantId, jurisdiction: null);
+        ICurrentTenant tenant = CreateTenant(tenantId, null);
 
         TenantBasedRegulationResolver resolver = CreateResolver(
             new PrivacyRegulationsOptions { DefaultRegulation = "CH_NFADP" },
@@ -107,18 +112,92 @@ public sealed class TenantBasedRegulationResolverTests
     }
 
     [Fact]
-    public async Task ResolveAsync_NoTenantOverride_FallsBackToDefault()
+    public async Task ResolveAsync_IsoCodeResolvesToNothing_FallsBackToDefault()
     {
+        // "US" has no federal general privacy law → resolver returns [] → fallback to default
         var tenantId = Guid.NewGuid();
-        ICurrentTenant tenant = CreateTenant(tenantId, jurisdiction: null);
+        ICurrentTenant tenant = CreateTenant(tenantId, "US");
 
         TenantBasedRegulationResolver resolver = CreateResolver(
-            new PrivacyRegulationsOptions { DefaultRegulation = "US_CCPA" },
+            new PrivacyRegulationsOptions { DefaultRegulation = "EU_GDPR" },
             tenant);
 
         PrivacyRegulationProfile profile = await resolver.ResolveAsync(TestContext.Current.CancellationToken);
 
-        profile.Regulation.Value.ShouldBe("US_CCPA");
+        profile.Regulation.Value.ShouldBe("EU_GDPR");
+    }
+
+    [Fact]
+    public async Task ResolveAsync_RegionCode_TakesPrecedenceOverCountry()
+    {
+        // "CA-QC" → CA_QUEBEC_25 + CA_PIPEDA (region match)
+        var tenantId = Guid.NewGuid();
+        ICurrentTenant tenant = CreateTenant(tenantId, "CA-QC");
+
+        TenantBasedRegulationResolver resolver = CreateResolver(
+            new PrivacyRegulationsOptions { DefaultRegulation = "EU_GDPR" },
+            tenant);
+
+        IReadOnlyList<PrivacyRegulationProfile> profiles =
+            await resolver.ResolveAllAsync(TestContext.Current.CancellationToken);
+
+        profiles.Count.ShouldBe(2);
+        profiles.Select(p => p.Regulation.Value).ShouldContain("CA_QUEBEC_25");
+        profiles.Select(p => p.Regulation.Value).ShouldContain("CA_PIPEDA");
+    }
+
+    [Fact]
+    public async Task ResolveAsync_SwitzerlandIsoCode_MergesIntoCompositeProfile()
+    {
+        // "CH" → CH_NFADP + EU_GDPR; ResolveAsync merges them into a single composite
+        var tenantId = Guid.NewGuid();
+        ICurrentTenant tenant = CreateTenant(tenantId, "CH");
+
+        TenantBasedRegulationResolver resolver = CreateResolver(
+            new PrivacyRegulationsOptions { DefaultRegulation = "EU_GDPR" },
+            tenant);
+
+        PrivacyRegulationProfile profile = await resolver.ResolveAsync(TestContext.Current.CancellationToken);
+
+        // Merged profile covers both CH_NFADP and EU_GDPR
+        profile.ConsentModel.ShouldBe(ConsentModel.OptIn);
+    }
+
+    [Fact]
+    public async Task ResolveAllAsync_FranceIsoCode_ReturnsSingleProfile()
+    {
+        // "FR" → EU_GDPR only; ResolveAllAsync returns a single-element list
+        var tenantId = Guid.NewGuid();
+        ICurrentTenant tenant = CreateTenant(tenantId, "FR");
+
+        TenantBasedRegulationResolver resolver = CreateResolver(
+            new PrivacyRegulationsOptions { DefaultRegulation = "CH_NFADP" },
+            tenant);
+
+        IReadOnlyList<PrivacyRegulationProfile> profiles =
+            await resolver.ResolveAllAsync(TestContext.Current.CancellationToken);
+
+        profiles.Count.ShouldBe(1);
+        profiles[0].Regulation.Value.ShouldBe("EU_GDPR");
+    }
+
+    [Fact]
+    public async Task ResolveAsync_SwitzerlandIsoCode_ReturnsDualRegulation()
+    {
+        // "CH" → CH_NFADP + EU_GDPR (for EU data subjects)
+        var tenantId = Guid.NewGuid();
+        ICurrentTenant tenant = CreateTenant(tenantId, "CH");
+
+        TenantBasedRegulationResolver resolver = CreateResolver(
+            new PrivacyRegulationsOptions { DefaultRegulation = "EU_GDPR" },
+            tenant);
+
+        IReadOnlyList<PrivacyRegulationProfile> profiles =
+            await resolver.ResolveAllAsync(TestContext.Current.CancellationToken);
+
+        profiles.Count.ShouldBe(2);
+        profiles.Select(p => p.Regulation.Value).ShouldContain("CH_NFADP");
+        profiles.Select(p => p.Regulation.Value).ShouldContain("EU_GDPR");
     }
 
     [Fact]
@@ -159,7 +238,7 @@ public sealed class TenantBasedRegulationResolverTests
     }
 
     [Fact]
-    public async Task ResolveAllAsync_ReturnsSingleProfile()
+    public async Task ResolveAllAsync_SingleJurisdiction_ReturnsSingleProfile()
     {
         TenantBasedRegulationResolver resolver = CreateResolver(
             new PrivacyRegulationsOptions { DefaultRegulation = "EU_GDPR" });
@@ -172,10 +251,11 @@ public sealed class TenantBasedRegulationResolverTests
 
     private TenantBasedRegulationResolver CreateResolver(
         PrivacyRegulationsOptions options,
-        ICurrentTenant? currentTenant = null)
+        ICurrentTenant? currentTenant = null,
+        IPrivacyJurisdictionResolver? jurisdictionResolver = null)
     {
         IOptions<PrivacyRegulationsOptions> opts = Microsoft.Extensions.Options.Options.Create(options);
-        return new TenantBasedRegulationResolver(_registry, opts, currentTenant);
+        return new TenantBasedRegulationResolver(_registry, opts, jurisdictionResolver ?? _jurisdictionResolver, currentTenant);
     }
 
     private static ICurrentTenant CreateTenant(Guid tenantId, string? jurisdiction)

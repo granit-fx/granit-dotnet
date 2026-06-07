@@ -33,6 +33,7 @@ internal sealed class TenantEntityTypeConfiguration : IEntityTypeConfiguration<T
         builder.Property(e => e.Jurisdiction)
                .HasMaxLength(16);
 
+
         builder.Property(e => e.Activated)
                .IsRequired();
 

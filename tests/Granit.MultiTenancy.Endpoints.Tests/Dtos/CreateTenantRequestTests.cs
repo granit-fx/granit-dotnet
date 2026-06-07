@@ -9,12 +9,12 @@ public sealed class CreateTenantRequestTests
     [Fact]
     public void Constructor_MapsAllFields()
     {
-        CreateTenantRequest request = new("Acme Corp", "acme-corp", "admin@acme.com", "BE");
+        CreateTenantRequest request = new("Acme Corp", "acme-corp", "admin@acme.com", "FR");
 
         request.Name.ShouldBe("Acme Corp");
         request.Identifier.ShouldBe("acme-corp");
         request.ContactEmail.ShouldBe("admin@acme.com");
-        request.Jurisdiction.ShouldBe("BE");
+        request.Jurisdiction.ShouldBe("FR");
     }
 
     [Fact]

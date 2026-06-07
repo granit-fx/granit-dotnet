@@ -19,9 +19,9 @@ public interface ITenantInfo
     string? Identifier { get; }
 
     /// <summary>
-    /// Privacy regulation code or ISO country code for this tenant.
-    /// Used by <c>IPrivacyRegulationResolver</c> to determine the applicable regulation.
-    /// Null when no jurisdiction is configured.
+    /// ISO 3166 jurisdiction code for this tenant (e.g. <c>"FR"</c>, <c>"CA-QC"</c>, <c>"US-CA"</c>).
+    /// Used by <c>IPrivacyRegulationResolver</c> to determine the applicable regulation(s).
+    /// <c>null</c> when no jurisdiction is configured.
     /// </summary>
     string? Jurisdiction { get; }
 }

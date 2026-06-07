@@ -1,4 +1,6 @@
 using Granit.Privacy.Regulations.Internal;
+using Granit.Privacy.Regulations.Jurisdiction;
+using Granit.Privacy.Regulations.Jurisdiction.Internal;
 using Granit.Privacy.Regulations.Options;
 using Granit.Privacy.Regulations.Profiles;
 using Granit.Privacy.Regulations.Profiles.Internal;
@@ -57,6 +59,19 @@ public static class PrivacyRegulationsServiceCollectionExtensions
 
         // Deadline tracker
         services.TryAddSingleton<IResponseDeadlineTracker, DefaultResponseDeadlineTracker>();
+
+        // Jurisdiction resolver — built-in map + custom Tier 3 providers
+        var jurisdictionMapProviders = new List<IPrivacyJurisdictionMapProvider>
+        {
+            new BuiltInPrivacyJurisdictionMapProvider(),
+        };
+        foreach (IPrivacyJurisdictionMapProvider provider in builder.JurisdictionMapProviders)
+        {
+            jurisdictionMapProviders.Add(provider);
+        }
+
+        services.TryAddSingleton<IPrivacyJurisdictionResolver>(
+            new DefaultPrivacyJurisdictionResolver(jurisdictionMapProviders));
 
         return services;
     }

@@ -12,7 +12,7 @@ internal sealed class CreateTenantRequestValidator : GranitValidator<CreateTenan
     internal const int MaxNameLength = 256;
     internal const int MaxIdentifierLength = 64;
     internal const int MaxEmailLength = 256;
-    internal const int MaxJurisdictionLength = 16;
+    internal const int MaxJurisdictionCodeLength = 16;
     internal const string IdentifierPattern = @"^[a-z0-9-]+$";
 
     public CreateTenantRequestValidator()
@@ -32,7 +32,7 @@ internal sealed class CreateTenantRequestValidator : GranitValidator<CreateTenan
             .When(x => x.ContactEmail is not null);
 
         RuleFor(x => x.Jurisdiction)
-            .MaximumLength(MaxJurisdictionLength)
+            .MaximumLength(MaxJurisdictionCodeLength)
             .When(x => x.Jurisdiction is not null);
     }
 }

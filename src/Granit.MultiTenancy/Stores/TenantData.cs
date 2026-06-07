@@ -10,7 +10,7 @@ namespace Granit.MultiTenancy.Stores;
 /// <param name="Identifier">Unique slug/subdomain identifier.</param>
 /// <param name="ContactEmail">Optional contact email address.</param>
 /// <param name="Activated">Whether the tenant is active.</param>
-/// <param name="Jurisdiction">Privacy regulation code or ISO country code, or <c>null</c>.</param>
+/// <param name="Jurisdiction">ISO 3166 jurisdiction code (e.g. <c>"FR"</c>, <c>"CA-QC"</c>), or <c>null</c> when not configured.</param>
 /// <param name="CreatedAt">Timestamp when the tenant was created.</param>
 /// <param name="CustomDomain">Optional custom domain for outbound URL generation (e.g., <c>"app.acme-corp.com"</c>).</param>
 /// <param name="ConcurrencyStamp">Opaque optimistic-concurrency token. Pass back in update requests to detect concurrent modifications (HTTP 409).</param>

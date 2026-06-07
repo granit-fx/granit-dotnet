@@ -19,7 +19,7 @@ public sealed class TenantQueryDefinition : QueryDefinition<Tenant>
             .Column(t => t.Name, c => c.Label("Name").LabelKey("MultiTenancy.Columns.Name").Filterable().Sortable())
             .Column(t => t.Identifier, c => c.Label("Identifier").LabelKey("MultiTenancy.Columns.Identifier").Filterable().Sortable())
             .Column(t => t.ContactEmail, c => c.Label("Party Email").LabelKey("MultiTenancy.Columns.ContactEmail").Filterable())
-            .Column(t => t.Jurisdiction, c => c.Label("Jurisdiction").LabelKey("MultiTenancy.Columns.Jurisdiction").Filterable().Sortable())
+            .Column(t => t.Jurisdiction, c => c.Label("Jurisdiction").LabelKey("MultiTenancy.Columns.Jurisdiction").Filterable())
             .Column(t => t.Activated, c => c.Label("Activated").LabelKey("MultiTenancy.Columns.Activated").Filterable().Sortable())
             .Column(t => t.CustomDomain, c => c.Label("Custom Domain").LabelKey("MultiTenancy.Columns.CustomDomain").Filterable())
             .Column(t => t.IsDeleted, c => c.Label("Deleted").LabelKey("MultiTenancy.Columns.IsDeleted").Filterable().Sortable())

@@ -62,7 +62,7 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo, IConcurrency
     /// <param name="name">Display name (max 256 characters).</param>
     /// <param name="identifier">Unique slug/subdomain identifier (max 64 characters).</param>
     /// <param name="contactEmail">Optional contact email address.</param>
-    /// <param name="jurisdiction">Privacy regulation code or ISO country code (or <c>null</c>).</param>
+    /// <param name="jurisdiction">ISO 3166 jurisdiction code (e.g. <c>"FR"</c>, <c>"CA-QC"</c>), or <c>null</c> when not configured.</param>
     /// <returns>A new active <see cref="Tenant"/> instance.</returns>
     public static Tenant Create(
         Guid id,
@@ -89,11 +89,11 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo, IConcurrency
     }
 
     /// <summary>
-    /// Updates the tenant's display name, contact email, and jurisdiction.
+    /// Updates the tenant's display name, contact email, and jurisdictions.
     /// </summary>
     /// <param name="name">New display name.</param>
     /// <param name="contactEmail">New contact email (or <c>null</c> to clear).</param>
-    /// <param name="jurisdiction">Privacy regulation code or ISO country code (or <c>null</c>).</param>
+    /// <param name="jurisdiction">ISO 3166 jurisdiction code, or <c>null</c> to clear.</param>
     public void UpdateDetails(string name, string? contactEmail, string? jurisdiction)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);

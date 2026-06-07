@@ -109,7 +109,7 @@ public sealed class TenantResolutionMiddlewareTests
         await middleware.InvokeAsync(context, _ => { nextCalled = true; return Task.CompletedTask; });
 
         nextCalled.ShouldBeTrue();
-        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>());
+        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>());
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public sealed class TenantResolutionMiddlewareTests
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         IDisposable scope = Substitute.For<IDisposable>();
         var tenantId = Guid.NewGuid();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>()).Returns(scope);
 
         TenantResolverPipeline pipeline = PipelineReturning(new TenantInfo(tenantId, "Acme"));
         TenantResolutionMiddleware middleware = CreateMiddleware(currentTenant, pipeline);
@@ -128,7 +128,7 @@ public sealed class TenantResolutionMiddlewareTests
         await middleware.InvokeAsync(context, _ => { nextCalled = true; return Task.CompletedTask; });
 
         nextCalled.ShouldBeTrue();
-        currentTenant.Received(1).Change(tenantId, "Acme");
+        currentTenant.Received(1).Change(tenantId, "Acme", Arg.Any<string?>());
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public sealed class TenantResolutionMiddlewareTests
     {
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>()).Returns(scope);
 
         TenantResolverPipeline pipeline = PipelineReturning(new TenantInfo(Guid.NewGuid()));
         TenantResolutionMiddleware middleware = CreateMiddleware(currentTenant, pipeline);
@@ -159,7 +159,7 @@ public sealed class TenantResolutionMiddlewareTests
         await middleware.InvokeAsync(context, _ => { nextCalled = true; return Task.CompletedTask; });
 
         nextCalled.ShouldBeTrue();
-        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>());
+        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>());
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public sealed class TenantResolutionMiddlewareTests
     {
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>()).Returns(scope);
         var tenantId = Guid.NewGuid();
         TenantResolverPipeline pipeline = PipelineReturning(new TenantInfo(tenantId));
         TenantResolutionMiddleware middleware = CreateMiddleware(
@@ -192,7 +192,7 @@ public sealed class TenantResolutionMiddlewareTests
 
         await middleware.InvokeAsync(context, _ => Task.CompletedTask);
 
-        currentTenant.Received(1).Change(tenantId, Arg.Any<string?>());
+        currentTenant.Received(1).Change(tenantId, Arg.Any<string?>(), Arg.Any<string?>());
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public sealed class TenantResolutionMiddlewareTests
         await middleware.InvokeAsync(context, _ => Task.CompletedTask);
 
         context.Response.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
-        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>());
+        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>());
     }
 
     [Fact]
@@ -216,7 +216,7 @@ public sealed class TenantResolutionMiddlewareTests
     {
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>()).Returns(scope);
         var phantomId = Guid.NewGuid();
         TenantResolverPipeline pipeline = PipelineReturning(new TenantInfo(phantomId));
         TenantResolutionMiddleware middleware = CreateMiddleware(
@@ -225,7 +225,7 @@ public sealed class TenantResolutionMiddlewareTests
 
         await middleware.InvokeAsync(context, _ => Task.CompletedTask);
 
-        currentTenant.Received(1).Change(phantomId, Arg.Any<string?>());
+        currentTenant.Received(1).Change(phantomId, Arg.Any<string?>(), Arg.Any<string?>());
     }
 
     private static TenantResolutionMiddleware CreateMiddlewareWithPhantomRejection(
@@ -324,7 +324,7 @@ public sealed class TenantResolutionMiddlewareTests
         await middleware.InvokeAsync(context, _ => Task.CompletedTask);
 
         context.Response.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
-        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>());
+        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>());
         await gate.Received(1).CanImpersonateAsync(
             Arg.Any<ClaimsPrincipal>(), targetTenantId, Arg.Any<CancellationToken>());
     }
@@ -334,7 +334,7 @@ public sealed class TenantResolutionMiddlewareTests
     {
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>()).Returns(scope);
         var targetTenantId = Guid.NewGuid();
         TenantResolverPipeline pipeline = PipelineWithResolver(
             nameof(HeaderTenantResolver), new TenantInfo(targetTenantId));
@@ -355,7 +355,7 @@ public sealed class TenantResolutionMiddlewareTests
         await middleware.InvokeAsync(context, _ => Task.CompletedTask);
 
         context.Response.StatusCode.ShouldNotBe(StatusCodes.Status403Forbidden);
-        currentTenant.Received(1).Change(targetTenantId, Arg.Any<string?>());
+        currentTenant.Received(1).Change(targetTenantId, Arg.Any<string?>(), Arg.Any<string?>());
     }
 
     [Fact]
@@ -364,7 +364,7 @@ public sealed class TenantResolutionMiddlewareTests
         // JWT-only resolution is authoritative — no impersonation is taking place.
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>()).Returns(scope);
         var tenantId = Guid.NewGuid();
         TenantResolverPipeline pipeline = PipelineWithResolver(
             nameof(JwtClaimTenantResolver), new TenantInfo(tenantId));
@@ -392,7 +392,7 @@ public sealed class TenantResolutionMiddlewareTests
     {
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>()).Returns(scope);
         var tenantId = Guid.NewGuid();
         TenantResolverPipeline pipeline = PipelineWithResolver(
             nameof(HeaderTenantResolver), new TenantInfo(tenantId));
@@ -410,7 +410,7 @@ public sealed class TenantResolutionMiddlewareTests
 
         await gate.DidNotReceive().CanImpersonateAsync(
             Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>());
-        currentTenant.Received(1).Change(tenantId, Arg.Any<string?>());
+        currentTenant.Received(1).Change(tenantId, Arg.Any<string?>(), Arg.Any<string?>());
     }
 
     [Fact]
@@ -465,7 +465,7 @@ public sealed class TenantResolutionMiddlewareTests
         await middleware.InvokeAsync(context, _ => Task.CompletedTask);
 
         context.Response.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
-        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>());
+        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>());
         await gate.Received(1).CanImpersonateAsync(
             Arg.Any<ClaimsPrincipal>(), targetTenantId, Arg.Any<CancellationToken>());
     }
@@ -477,7 +477,7 @@ public sealed class TenantResolutionMiddlewareTests
         // cross-check is intentionally skipped for Tenant users.
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>()).Returns(scope);
         var headerTenantId = Guid.NewGuid();
         var claimTenantId = Guid.NewGuid();
         TenantResolverPipeline pipeline = PipelineWithResolver(
@@ -495,7 +495,7 @@ public sealed class TenantResolutionMiddlewareTests
         await middleware.InvokeAsync(context, _ => Task.CompletedTask);
 
         context.Response.StatusCode.ShouldNotBe(StatusCodes.Status403Forbidden);
-        currentTenant.Received(1).Change(headerTenantId, Arg.Any<string?>());
+        currentTenant.Received(1).Change(headerTenantId, Arg.Any<string?>(), Arg.Any<string?>());
         await gate.DidNotReceive().CanImpersonateAsync(
             Arg.Any<ClaimsPrincipal>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
@@ -506,7 +506,7 @@ public sealed class TenantResolutionMiddlewareTests
         // The gate is only consulted for authenticated principals with no tenant_id claim.
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>()).Returns(scope);
         var tenantId = Guid.NewGuid();
         TenantResolverPipeline pipeline = PipelineWithResolver(
             nameof(HeaderTenantResolver), new TenantInfo(tenantId));
@@ -604,7 +604,7 @@ public sealed class TenantResolutionMiddlewareTests
     {
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>()).Returns(scope);
         var tenantId = Guid.NewGuid();
         TenantResolverPipeline pipeline = PipelineWithResolver(
             nameof(HeaderTenantResolver), new TenantInfo(tenantId));
@@ -676,7 +676,7 @@ public sealed class TenantResolutionMiddlewareTests
         // Audit failure must NOT propagate. Request still proceeds (gate said allow).
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
+        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<string?>()).Returns(scope);
         var tenantId = Guid.NewGuid();
         TenantResolverPipeline pipeline = PipelineWithResolver(
             nameof(HeaderTenantResolver), new TenantInfo(tenantId));
@@ -705,7 +705,7 @@ public sealed class TenantResolutionMiddlewareTests
         await middleware.InvokeAsync(context, _ => { nextCalled = true; return Task.CompletedTask; });
 
         nextCalled.ShouldBeTrue();
-        currentTenant.Received(1).Change(tenantId, Arg.Any<string?>());
+        currentTenant.Received(1).Change(tenantId, Arg.Any<string?>(), Arg.Any<string?>());
     }
 
     private static TenantResolutionMiddleware CreateMiddlewareWithAudit(

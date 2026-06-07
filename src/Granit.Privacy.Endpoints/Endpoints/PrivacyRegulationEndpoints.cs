@@ -14,11 +14,12 @@ internal static class PrivacyRegulationEndpoints
     {
         group.MapGet("/regulation", HandleGetRegulationAsync)
              .WithName("GetApplicableRegulation")
-             .WithSummary("Returns the privacy regulation profile applicable to the current tenant.")
+             .WithSummary("Returns the effective privacy regulation profile for the current tenant.")
              .WithDescription(
-                 "Resolves the privacy regulation for the current tenant context via IPrivacyRegulationResolver. "
-                 + "Returns the full regulation profile including consent model, response timelines, breach notification "
-                 + "deadlines, age thresholds, cookie consent rules, and cross-border transfer requirements.")
+                 "Resolves the effective privacy regulation for the current tenant via IPrivacyRegulationResolver. "
+                 + "For multi-jurisdiction tenants, returns a composite profile (most restrictive rules win) "
+                 + "with contributingRegulations listing the source regulations. "
+                 + "Single-jurisdiction response is backward-compatible: contributingRegulations contains one entry.")
              .Produces<PrivacyRegulationProfileResponse>();
 
         return group;
@@ -28,12 +29,16 @@ internal static class PrivacyRegulationEndpoints
         [FromServices] IPrivacyRegulationResolver resolver,
         CancellationToken cancellationToken)
     {
+        IReadOnlyList<PrivacyRegulationProfile> contributing =
+            await resolver.ResolveAllAsync(cancellationToken).ConfigureAwait(false);
+
         PrivacyRegulationProfile profile = await resolver.ResolveAsync(cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(new PrivacyRegulationProfileResponse(
             profile.Regulation.Value,
             profile.DisplayName,
             profile.JurisdictionCode,
+            contributing.Select(p => p.Regulation.Value).ToList(),
             profile.ConsentModel.ToString(),
             profile.AvailableLegalBases.Select(b => b.Value).ToList(),
             profile.SubjectAccessRequestDays,

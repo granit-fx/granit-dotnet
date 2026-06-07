@@ -14,14 +14,14 @@ public sealed class TenantResponseTests
         var id = Guid.NewGuid();
         DateTimeOffset createdAt = DateTimeOffset.UtcNow;
 
-        TenantResponse response = new(id, "Acme Corp", "acme-corp", "admin@acme.com", true, "BE", createdAt, AnyStamp);
+        TenantResponse response = new(id, "Acme Corp", "acme-corp", "admin@acme.com", true, "FR", createdAt, AnyStamp);
 
         response.Id.ShouldBe(id);
         response.Name.ShouldBe("Acme Corp");
         response.Identifier.ShouldBe("acme-corp");
         response.ContactEmail.ShouldBe("admin@acme.com");
         response.Activated.ShouldBeTrue();
-        response.Jurisdiction.ShouldBe("BE");
+        response.Jurisdiction.ShouldBe("FR");
         response.CreatedAt.ShouldBe(createdAt);
     }
 

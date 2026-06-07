@@ -12,7 +12,7 @@ namespace Granit.Wolverine.Behaviors;
 /// <para>
 /// Reads the <c>X-Tenant-Id</c> header set by
 /// <see cref="Granit.Wolverine.Middleware.OutgoingContextMiddleware"/> on the publisher
-/// side and calls <see cref="ICurrentTenant.Change(Guid?, string?)"/> to activate the
+/// side and calls <see cref="ICurrentTenant.Change(Guid?, string?, string?)"/> to activate the
 /// tenant for the duration of the handler invocation.
 /// </para>
 /// <para>

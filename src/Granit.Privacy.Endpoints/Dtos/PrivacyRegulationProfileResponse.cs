@@ -1,12 +1,15 @@
 namespace Granit.Privacy.Endpoints.Dtos;
 
 /// <summary>
-/// Response returning the privacy regulation profile applicable to the current tenant.
+/// Response returning the effective privacy regulation profile for the current tenant.
+/// When multiple jurisdictions are declared, the profile represents the merged composite
+/// (most restrictive rules win). <see cref="ContributingRegulations"/> lists the source regulations.
 /// </summary>
 public sealed record PrivacyRegulationProfileResponse(
     string Regulation,
     string DisplayName,
     string JurisdictionCode,
+    IReadOnlyList<string> ContributingRegulations,
     string ConsentModel,
     IReadOnlyList<string> AvailableLegalBases,
     int SubjectAccessRequestDays,
