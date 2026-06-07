@@ -172,6 +172,7 @@ public sealed class AISummarizerTests
         public bool IsAvailable => Id.HasValue;
         public Guid? Id { get; } = id;
         public string? Name => null;
-        public IDisposable Change(Guid? id, string? name = null) => throw new NotSupportedException();
+        public string? Jurisdiction => null;
+        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null) => throw new NotSupportedException();
     }
 }

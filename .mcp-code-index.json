@@ -31092,9 +31092,15 @@
           "returnType": "string?"
         },
         {
+          "name": "Jurisdiction",
+          "kind": "property",
+          "signature": "string? Jurisdiction",
+          "returnType": "string?"
+        },
+        {
           "name": "Change",
           "kind": "method",
-          "signature": "Change(Guid? id, string? name = null)",
+          "signature": "Change(Guid? id, string? name = null, string? jurisdiction = null)",
           "returnType": "IDisposable"
         }
       ]
@@ -31480,8 +31486,8 @@
         {
           "name": "Change",
           "kind": "method",
-          "signature": "Change(Guid? id, string? name = null)",
-          "returnType": "bool IsAvailable { get; } Guid? Id { get; } string? Name { get; } IDisposable"
+          "signature": "Change(Guid? id, string? name = null, string? jurisdiction = null)",
+          "returnType": "bool IsAvailable { get; } Guid? Id { get; } string? Name { get; } string? Jurisdiction { get; } IDisposable"
         }
       ]
     },
@@ -31620,9 +31626,15 @@
           "returnType": "string?"
         },
         {
+          "name": "Jurisdiction",
+          "kind": "property",
+          "signature": "string? Jurisdiction",
+          "returnType": "string?"
+        },
+        {
           "name": "Change",
           "kind": "method",
-          "signature": "Change(Guid? id, string? name = null)",
+          "signature": "Change(Guid? id, string? name = null, string? jurisdiction = null)",
           "returnType": "IDisposable"
         }
       ]

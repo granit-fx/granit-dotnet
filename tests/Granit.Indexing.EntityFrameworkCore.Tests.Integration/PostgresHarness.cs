@@ -63,7 +63,8 @@ internal sealed class MutableTenant : ICurrentTenant
     public Guid? Id { get; set; }
     public bool IsAvailable => Id is not null;
     public string? Name => null;
-    public IDisposable Change(Guid? id, string? name = null)
+    public string? Jurisdiction => null;
+    public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
     {
         Guid? prev = Id;
         Id = id;

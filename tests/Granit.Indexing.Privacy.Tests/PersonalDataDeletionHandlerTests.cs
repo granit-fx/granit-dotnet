@@ -100,7 +100,8 @@ public sealed class PersonalDataDeletionHandlerTests
         public bool IsAvailable => id is not null;
         public Guid? Id => id;
         public string? Name => null;
-        public IDisposable Change(Guid? id, string? name = null) => Empty.Instance;
+        public string? Jurisdiction => null;
+        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null) => Empty.Instance;
 
         private sealed class Empty : IDisposable
         {

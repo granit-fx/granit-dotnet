@@ -52,7 +52,7 @@ public static class PrivacyRegulationsServiceCollectionExtensions
         var registry = new RegulationProfileRegistry(context.Build());
         services.TryAddSingleton<IRegulationProfileRegistry>(registry);
 
-        // Resolver (scoped — depends on ICurrentTenant)
+        // Resolver (scoped — depends on ICurrentTenant and optionally ITenantReader when available)
         services.TryAddScoped<IPrivacyRegulationResolver, TenantBasedRegulationResolver>();
 
         // Deadline tracker

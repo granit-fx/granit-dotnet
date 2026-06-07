@@ -7,7 +7,8 @@ namespace Granit.Privacy.Regulations.Internal;
 
 /// <summary>
 /// Default <see cref="IPrivacyRegulationResolver"/> implementation.
-/// Resolution chain: per-tenant config override → default regulation → throw.
+/// Resolution chain: ICurrentTenant.Jurisdiction (populated from DB by the middleware) →
+/// per-tenant config override → default regulation → throw.
 /// </summary>
 internal sealed class TenantBasedRegulationResolver(
     IRegulationProfileRegistry registry,
@@ -19,22 +20,29 @@ internal sealed class TenantBasedRegulationResolver(
         PrivacyRegulationsOptions opts = options.Value;
         string? regulationCode = null;
 
-        // 1. Per-tenant override from configuration
         if (currentTenant is { IsAvailable: true, Id: { } tenantId })
         {
-            string tenantKey = tenantId.ToString();
-            opts.TenantRegulations.TryGetValue(tenantKey, out regulationCode);
+            // 1. DB jurisdiction — already resolved by the middleware via FindByIdAsync and
+            //    stored on ICurrentTenant when ValidateTenantExistence is enabled.
+            regulationCode = currentTenant.Jurisdiction;
+
+            // 2. Config per-tenant override (operator escape hatch, takes precedence over DB)
+            if (opts.TenantRegulations.TryGetValue(tenantId.ToString(), out string? configCode))
+            {
+                regulationCode = configCode;
+            }
         }
 
-        // 2. Default regulation from configuration
+        // 3. Default regulation from configuration
         regulationCode ??= opts.DefaultRegulation;
 
         if (string.IsNullOrWhiteSpace(regulationCode))
         {
             throw new InvalidOperationException(
                 "No privacy regulation configured. " +
-                "Set 'Privacy:Regulations:DefaultRegulation' in appsettings.json " +
-                "or configure per-tenant regulations in 'Privacy:Regulations:TenantRegulations'.");
+                "Set 'Privacy:Regulations:DefaultRegulation' in appsettings.json, " +
+                "configure per-tenant regulations in 'Privacy:Regulations:TenantRegulations', " +
+                "or set the Jurisdiction field on the tenant.");
         }
 
         PrivacyRegulationProfile profile = registry.GetProfile(PrivacyRegulation.Create(regulationCode))

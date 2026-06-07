@@ -68,14 +68,15 @@ public sealed partial class TenantResolutionMiddleware(
             return;
         }
 
-        if (!await EnsureTenantExistsAsync(context, result).ConfigureAwait(false))
+        (bool exists, string? jurisdiction) = await EnsureTenantExistsAsync(context, result).ConfigureAwait(false);
+        if (!exists)
         {
             return;
         }
 
         _metrics.RecordResolutionSucceeded(result.Tenant.Id.ToString()!, result.ResolverType);
 
-        using IDisposable _ = _currentTenant.Change(result.Tenant.Id, result.Tenant.Name);
+        using IDisposable _ = _currentTenant.Change(result.Tenant.Id, result.Tenant.Name, jurisdiction);
         await next(context).ConfigureAwait(false);
     }
 
@@ -152,16 +153,20 @@ public sealed partial class TenantResolutionMiddleware(
 
     // Validate that the resolved tenant actually exists in the store. Prevents
     // phantom tenants (arbitrary GUIDs) from creating orphaned data.
-    private async Task<bool> EnsureTenantExistsAsync(HttpContext context, TenantResolutionResult result)
+    // Returns (true, jurisdiction) when the tenant exists, (false, null) for phantom tenants.
+    // When ValidateTenantExistence is disabled, skips the DB call and returns (true, null).
+    private async Task<(bool Exists, string? Jurisdiction)> EnsureTenantExistsAsync(HttpContext context, TenantResolutionResult result)
     {
         if (!_options.ValidateTenantExistence || !result.Tenant!.Id.HasValue)
         {
-            return true;
+            return (true, null);
         }
 
-        if (await _tenantReader.ExistsAsync(result.Tenant.Id.Value, context.RequestAborted).ConfigureAwait(false))
+        TenantData? data = await _tenantReader.FindByIdAsync(result.Tenant.Id.Value, context.RequestAborted).ConfigureAwait(false);
+
+        if (data is not null)
         {
-            return true;
+            return (true, data.Jurisdiction);
         }
 
         _metrics.RecordResolutionFailed();
@@ -170,7 +175,7 @@ public sealed partial class TenantResolutionMiddleware(
         // Don't reveal to an attacker why the tenant was rejected. Server-side
         // observability is provided by LogPhantomTenant.
         context.Response.StatusCode = StatusCodes.Status403Forbidden;
-        return false;
+        return (false, null);
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Tenant mismatch: resolved tenant {ResolvedTenantId} via {ResolverType} but JWT claim contains {JwtTenantId}. Request rejected.")]

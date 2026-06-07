@@ -58,8 +58,8 @@ public sealed class TenantResolutionMiddlewareTests
             ValidateTenantExistence = validateTenantExistence,
         });
         ITenantReader tenantReader = Substitute.For<ITenantReader>();
-        tenantReader.ExistsAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(true));
+        tenantReader.FindByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(ci => Task.FromResult<TenantData?>(new TenantData(ci.Arg<Guid>(), "Test", "test", null, true, null, DateTimeOffset.UtcNow)));
 
         // Default gate for tests that don't care: allow everything. The dedicated
         // host-impersonation tests below pass their own substitute.
@@ -237,8 +237,8 @@ public sealed class TenantResolutionMiddlewareTests
             ValidateTenantExistence = true,
         });
         ITenantReader tenantReader = Substitute.For<ITenantReader>();
-        tenantReader.ExistsAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(false)); // Tenant does NOT exist
+        tenantReader.FindByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<TenantData?>(null)); // Tenant does NOT exist
         return new TenantResolutionMiddleware(
             currentTenant,
             pipeline,
@@ -720,8 +720,8 @@ public sealed class TenantResolutionMiddlewareTests
             ValidateTenantExistence = false,
         });
         ITenantReader tenantReader = Substitute.For<ITenantReader>();
-        tenantReader.ExistsAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(true));
+        tenantReader.FindByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(ci => Task.FromResult<TenantData?>(new TenantData(ci.Arg<Guid>(), "Test", "test", null, true, null, DateTimeOffset.UtcNow)));
         return new TenantResolutionMiddleware(
             currentTenant,
             pipeline,

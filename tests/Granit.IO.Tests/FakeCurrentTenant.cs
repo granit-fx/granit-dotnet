@@ -11,7 +11,9 @@ internal sealed class FakeCurrentTenant(Guid? id = null, string? name = null) : 
 
     public string? Name { get; private set; } = name;
 
-    public IDisposable Change(Guid? id, string? name = null)
+    public string? Jurisdiction => null;
+
+    public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
     {
         Guid? previousId = Id;
         string? previousName = Name;

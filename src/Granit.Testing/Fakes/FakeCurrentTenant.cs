@@ -48,7 +48,14 @@ public sealed class FakeCurrentTenant : ICurrentTenant
     }
 
     /// <inheritdoc/>
-    public IDisposable Change(Guid? id, string? name = null)
+    public string? Jurisdiction
+    {
+        get => _state.Value?.Jurisdiction;
+        set => EnsureState().Jurisdiction = value;
+    }
+
+    /// <inheritdoc/>
+    public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
     {
         TenantState? previous = _state.Value;
         _state.Value = new TenantState
@@ -56,6 +63,7 @@ public sealed class FakeCurrentTenant : ICurrentTenant
             Id = id,
             Name = name,
             IsAvailable = id.HasValue,
+            Jurisdiction = jurisdiction,
         };
         return new ChangeScope(this, previous);
     }
@@ -67,6 +75,7 @@ public sealed class FakeCurrentTenant : ICurrentTenant
         public bool IsAvailable { get; set; }
         public Guid? Id { get; set; }
         public string? Name { get; set; }
+        public string? Jurisdiction { get; set; }
     }
 
     private sealed class ChangeScope(FakeCurrentTenant owner, TenantState? previous) : IDisposable

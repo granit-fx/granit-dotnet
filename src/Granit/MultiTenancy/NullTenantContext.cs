@@ -15,8 +15,9 @@ public sealed class NullTenantContext : ICurrentTenant
     public bool IsAvailable => false;
     public Guid? Id => null;
     public string? Name => null;
+    public string? Jurisdiction => null;
 
-    public IDisposable Change(Guid? id, string? name = null) => NullScope.Value;
+    public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null) => NullScope.Value;
 
     private sealed class NullScope : IDisposable
     {

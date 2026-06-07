@@ -780,7 +780,8 @@ public sealed class ModelBuilderExtensionsTests
         public bool IsAvailable => Id.HasValue;
         public Guid? Id { get; set; }
         public string? Name { get; set; }
-        public IDisposable Change(Guid? id, string? name = null) => throw new NotSupportedException();
+        public string? Jurisdiction => null;
+        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null) => throw new NotSupportedException();
     }
 
     // Mutable IDataFilter for tests: direct control without AsyncLocal.

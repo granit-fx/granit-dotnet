@@ -33,10 +33,10 @@ public sealed class TenantBasedRegulationResolverTests
     }
 
     [Fact]
-    public async Task ResolveAsync_PerTenantOverride_TakesPrecedence()
+    public async Task ResolveAsync_PerTenantConfigOverride_TakesPrecedence()
     {
         var tenantId = Guid.NewGuid();
-        ICurrentTenant tenant = CreateTenant(tenantId);
+        ICurrentTenant tenant = CreateTenant(tenantId, jurisdiction: null);
 
         TenantBasedRegulationResolver resolver = CreateResolver(
             new PrivacyRegulationsOptions
@@ -55,10 +55,62 @@ public sealed class TenantBasedRegulationResolverTests
     }
 
     [Fact]
+    public async Task ResolveAsync_TenantJurisdiction_UsedWhenNoConfigOverride()
+    {
+        var tenantId = Guid.NewGuid();
+        ICurrentTenant tenant = CreateTenant(tenantId, jurisdiction: "BR_LGPD");
+
+        TenantBasedRegulationResolver resolver = CreateResolver(
+            new PrivacyRegulationsOptions { DefaultRegulation = "EU_GDPR" },
+            tenant);
+
+        PrivacyRegulationProfile profile = await resolver.ResolveAsync(TestContext.Current.CancellationToken);
+
+        profile.Regulation.Value.ShouldBe("BR_LGPD");
+    }
+
+    [Fact]
+    public async Task ResolveAsync_ConfigOverrideTakesPrecedenceOverJurisdiction()
+    {
+        var tenantId = Guid.NewGuid();
+        ICurrentTenant tenant = CreateTenant(tenantId, jurisdiction: "BR_LGPD");
+
+        TenantBasedRegulationResolver resolver = CreateResolver(
+            new PrivacyRegulationsOptions
+            {
+                DefaultRegulation = "EU_GDPR",
+                TenantRegulations = new Dictionary<string, string>
+                {
+                    [tenantId.ToString()] = "US_CCPA",
+                },
+            },
+            tenant);
+
+        PrivacyRegulationProfile profile = await resolver.ResolveAsync(TestContext.Current.CancellationToken);
+
+        profile.Regulation.Value.ShouldBe("US_CCPA");
+    }
+
+    [Fact]
+    public async Task ResolveAsync_NullJurisdiction_FallsBackToConfigDefault()
+    {
+        var tenantId = Guid.NewGuid();
+        ICurrentTenant tenant = CreateTenant(tenantId, jurisdiction: null);
+
+        TenantBasedRegulationResolver resolver = CreateResolver(
+            new PrivacyRegulationsOptions { DefaultRegulation = "CH_NFADP" },
+            tenant);
+
+        PrivacyRegulationProfile profile = await resolver.ResolveAsync(TestContext.Current.CancellationToken);
+
+        profile.Regulation.Value.ShouldBe("CH_NFADP");
+    }
+
+    [Fact]
     public async Task ResolveAsync_NoTenantOverride_FallsBackToDefault()
     {
         var tenantId = Guid.NewGuid();
-        ICurrentTenant tenant = CreateTenant(tenantId);
+        ICurrentTenant tenant = CreateTenant(tenantId, jurisdiction: null);
 
         TenantBasedRegulationResolver resolver = CreateResolver(
             new PrivacyRegulationsOptions { DefaultRegulation = "US_CCPA" },
@@ -126,11 +178,12 @@ public sealed class TenantBasedRegulationResolverTests
         return new TenantBasedRegulationResolver(_registry, opts, currentTenant);
     }
 
-    private static ICurrentTenant CreateTenant(Guid tenantId)
+    private static ICurrentTenant CreateTenant(Guid tenantId, string? jurisdiction)
     {
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(true);
         tenant.Id.Returns(tenantId);
+        tenant.Jurisdiction.Returns(jurisdiction);
         return tenant;
     }
 }

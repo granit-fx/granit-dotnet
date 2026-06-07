@@ -15,7 +15,9 @@ public sealed class MutableCurrentTenant : ICurrentTenant
 
     public string? Name { get; private set; }
 
-    public IDisposable Change(Guid? id, string? name = null)
+    public string? Jurisdiction => null;
+
+    public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
     {
         Guid? previousId = Id;
         string? previousName = Name;

@@ -62,9 +62,12 @@ public sealed class CurrentTenant : ICurrentTenant
     public string? Name => CurrentInfo?.Name;
 
     /// <inheritdoc/>
-    public IDisposable Change(Guid? id, string? name = null)
+    public string? Jurisdiction => CurrentInfo?.Jurisdiction;
+
+    /// <inheritdoc/>
+    public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
     {
-        TenantInfo? newValue = id.HasValue ? new TenantInfo(id, name) : null;
+        TenantInfo? newValue = id.HasValue ? new TenantInfo(id, name, Identifier: null, jurisdiction) : null;
         HttpContext? httpContext = _httpContextAccessor?.HttpContext;
 
         return httpContext is not null

@@ -164,7 +164,10 @@ public sealed class GranitDbContextSvoMultiTenantOrderingTests : IAsyncLifetime
         public bool IsAvailable => Id.HasValue;
         public Guid? Id { get; set; }
         public string? Name { get; set; }
-        public IDisposable Change(Guid? id, string? name = null)
+
+        public string? Jurisdiction => throw new NotImplementedException();
+
+        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
             => throw new NotSupportedException();
     }
 
