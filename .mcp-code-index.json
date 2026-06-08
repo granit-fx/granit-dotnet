@@ -36048,7 +36048,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcCreateScopeRequest.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -36066,7 +36066,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcScopeResponse.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -36084,7 +36084,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcUpdateScopeRequest.cs",
-      "line": 8,
+      "line": 9,
       "members": []
     },
     {

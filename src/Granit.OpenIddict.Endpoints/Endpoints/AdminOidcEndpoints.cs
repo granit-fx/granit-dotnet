@@ -358,10 +358,9 @@ internal static class AdminOidcEndpoints
 
         await foreach (object scope in scopeManager.ListAsync(100, 0, cancellationToken).ConfigureAwait(false))
         {
-            string? name = await scopeManager.GetNameAsync(scope, cancellationToken).ConfigureAwait(false);
-            string? displayName = await scopeManager.GetDisplayNameAsync(scope, cancellationToken).ConfigureAwait(false);
-            string? description = await scopeManager.GetDescriptionAsync(scope, cancellationToken).ConfigureAwait(false);
-            results.Add(new AdminOidcScopeResponse(name, displayName, description));
+            var descriptor = new OpenIddictScopeDescriptor();
+            await scopeManager.PopulateAsync(descriptor, scope, cancellationToken).ConfigureAwait(false);
+            results.Add(ToScopeResponse(descriptor));
         }
 
         return TypedResults.Ok<IReadOnlyList<AdminOidcScopeResponse>>(results);
@@ -379,15 +378,19 @@ internal static class AdminOidcEndpoints
             Description = request.Description,
         };
 
+        foreach (string resource in request.Resources ?? [])
+        {
+            descriptor.Resources.Add(resource);
+        }
+
         object scope = await scopeManager.CreateAsync(descriptor, cancellationToken).ConfigureAwait(false);
 
-        string? name = await scopeManager.GetNameAsync(scope, cancellationToken).ConfigureAwait(false);
-        string? displayName = await scopeManager.GetDisplayNameAsync(scope, cancellationToken).ConfigureAwait(false);
-        string? description = await scopeManager.GetDescriptionAsync(scope, cancellationToken).ConfigureAwait(false);
+        var responseDescriptor = new OpenIddictScopeDescriptor();
+        await scopeManager.PopulateAsync(responseDescriptor, scope, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Created(
-            $"/admin/oidc/scopes/{name}",
-            new AdminOidcScopeResponse(name, displayName, description));
+            $"/admin/oidc/scopes/{responseDescriptor.Name}",
+            ToScopeResponse(responseDescriptor));
     }
 
     private static async Task<Results<Ok<AdminOidcScopeResponse>, ProblemHttpResult>> UpdateScopeAsync(
@@ -415,13 +418,21 @@ internal static class AdminOidcEndpoints
             descriptor.Description = request.Description;
         }
 
+        if (request.Resources is not null)
+        {
+            descriptor.Resources.Clear();
+            foreach (string resource in request.Resources)
+            {
+                descriptor.Resources.Add(resource);
+            }
+        }
+
         await scopeManager.UpdateAsync(scope, descriptor, cancellationToken).ConfigureAwait(false);
 
-        string? name = await scopeManager.GetNameAsync(scope, cancellationToken).ConfigureAwait(false);
-        string? displayName = await scopeManager.GetDisplayNameAsync(scope, cancellationToken).ConfigureAwait(false);
-        string? description = await scopeManager.GetDescriptionAsync(scope, cancellationToken).ConfigureAwait(false);
+        var responseDescriptor = new OpenIddictScopeDescriptor();
+        await scopeManager.PopulateAsync(responseDescriptor, scope, cancellationToken).ConfigureAwait(false);
 
-        return TypedResults.Ok(new AdminOidcScopeResponse(name, displayName, description));
+        return TypedResults.Ok(ToScopeResponse(responseDescriptor));
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> DeleteScopeAsync(
@@ -555,6 +566,13 @@ internal static class AdminOidcEndpoints
     }
 
     // ──── Helpers ────
+
+    private static AdminOidcScopeResponse ToScopeResponse(OpenIddictScopeDescriptor descriptor) =>
+        new(
+            descriptor.Name,
+            descriptor.DisplayName,
+            descriptor.Description,
+            [.. descriptor.Resources]);
 
     private static AdminOidcApplicationResponse ToResponse(
         OpenIddictApplicationDescriptor descriptor, Guid? tenantId) =>

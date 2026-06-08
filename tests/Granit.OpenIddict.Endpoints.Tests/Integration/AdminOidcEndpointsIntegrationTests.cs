@@ -330,19 +330,26 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         _server.ScopeManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(ToAsyncEnumerable<object>(scope1, scope2));
 
-        _server.ScopeManager.GetNameAsync(scope1, Arg.Any<CancellationToken>())
-            .Returns("openid");
-        _server.ScopeManager.GetDisplayNameAsync(scope1, Arg.Any<CancellationToken>())
-            .Returns("OpenID");
-        _server.ScopeManager.GetDescriptionAsync(scope1, Arg.Any<CancellationToken>())
-            .Returns("OpenID Connect scope");
+#pragma warning disable CA2012
+        _server.ScopeManager
+            .PopulateAsync(Arg.Any<OpenIddictScopeDescriptor>(), scope1, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictScopeDescriptor d = ci.ArgAt<OpenIddictScopeDescriptor>(0);
+                d.Name = "openid"; d.DisplayName = "OpenID"; d.Description = "OpenID Connect scope";
+                return new ValueTask();
+            });
 
-        _server.ScopeManager.GetNameAsync(scope2, Arg.Any<CancellationToken>())
-            .Returns("profile");
-        _server.ScopeManager.GetDisplayNameAsync(scope2, Arg.Any<CancellationToken>())
-            .Returns("Profile");
-        _server.ScopeManager.GetDescriptionAsync(scope2, Arg.Any<CancellationToken>())
-            .Returns("User profile scope");
+        _server.ScopeManager
+            .PopulateAsync(Arg.Any<OpenIddictScopeDescriptor>(), scope2, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictScopeDescriptor d = ci.ArgAt<OpenIddictScopeDescriptor>(0);
+                d.Name = "profile"; d.DisplayName = "Profile"; d.Description = "User profile scope";
+                d.Resources.Add("api://granit");
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
 
         HttpResponseMessage response = await _server.AuthenticatedClient
             .GetAsync("/admin/oidc/scopes", TestContext.Current.CancellationToken);
@@ -358,10 +365,12 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         result[0].Name.ShouldBe("openid");
         result[0].DisplayName.ShouldBe("OpenID");
         result[0].Description.ShouldBe("OpenID Connect scope");
+        result[0].Resources.ShouldBeEmpty();
 
         result[1].Name.ShouldBe("profile");
         result[1].DisplayName.ShouldBe("Profile");
         result[1].Description.ShouldBe("User profile scope");
+        result[1].Resources.ShouldBe(["api://granit"]);
     }
 
     [Fact]
@@ -382,14 +391,23 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             Arg.Any<OpenIddictScopeDescriptor>(),
             Arg.Any<CancellationToken>())
             .Returns(createdScope);
-        _server.ScopeManager.GetNameAsync(createdScope, Arg.Any<CancellationToken>())
-            .Returns("custom_scope");
-        _server.ScopeManager.GetDisplayNameAsync(createdScope, Arg.Any<CancellationToken>())
-            .Returns("Custom Scope");
-        _server.ScopeManager.GetDescriptionAsync(createdScope, Arg.Any<CancellationToken>())
-            .Returns("A custom OIDC scope");
 
-        AdminOidcCreateScopeRequest request = new("custom_scope", "Custom Scope", "A custom OIDC scope");
+#pragma warning disable CA2012
+        _server.ScopeManager
+            .PopulateAsync(Arg.Any<OpenIddictScopeDescriptor>(), createdScope, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictScopeDescriptor d = ci.ArgAt<OpenIddictScopeDescriptor>(0);
+                d.Name = "custom_scope"; d.DisplayName = "Custom Scope";
+                d.Description = "A custom OIDC scope";
+                d.Resources.Add("api://my-resource");
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+
+        AdminOidcCreateScopeRequest request = new(
+            "custom_scope", "Custom Scope", "A custom OIDC scope",
+            Resources: ["api://my-resource"]);
 
         HttpResponseMessage response = await _server.AuthenticatedClient
             .PostAsJsonAsync("/admin/oidc/scopes", request, TestContext.Current.CancellationToken);
@@ -404,6 +422,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         result.Name.ShouldBe("custom_scope");
         result.DisplayName.ShouldBe("Custom Scope");
         result.Description.ShouldBe("A custom OIDC scope");
+        result.Resources.ShouldBe(["api://my-resource"]);
     }
 
     [Fact]
