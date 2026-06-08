@@ -883,11 +883,11 @@
       },
       "WolverineFx.RDBMS": {
         "type": "Transitive",
-        "resolved": "6.5.0",
-        "contentHash": "MvpFP0+btXMtsYj5gDzmfArmSTinHJIpYDOXmN2lmkcNFy5OixAPLEW7HAa/Fd2LyL/VCUmj06rH/kx075idDA==",
+        "resolved": "6.5.1",
+        "contentHash": "5NwMf7eTkJGESGPF4XAaBjAvtdg4Kab+vc++MDvqxeFZscBRlLqe6K2VUbiEJ2gbonCAYuYGAfldvgokQGbU2Q==",
         "dependencies": {
           "Weasel.Core": "9.0.3",
-          "WolverineFx": "6.5.0"
+          "WolverineFx": "6.5.1"
         }
       },
       "xunit.analyzers": {
@@ -1332,8 +1332,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.5.0",
-        "contentHash": "1l8FDOpTDzKxmf9x3vabCzK9Uv66MQpdJ+cg9l+UJSXeXZKaGQlbNX1RI1Ga/1UPFoQ8dmrC8EX9f/oreMZn3Q==",
+        "resolved": "6.5.1",
+        "contentHash": "DGGnGnk9hqmldiuc6zdHrFu+g9Qb6D0+d7Y/u0+S7EMZnhhOzWmRS1cbDplQeb1EnXAgrB0XRw6cOGreO8w5uQ==",
         "dependencies": {
           "JasperFx": "2.8.2",
           "JasperFx.Events": "2.8.2",
@@ -1353,44 +1353,44 @@
       "WolverineFx.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.5.0",
-        "contentHash": "8M9ZvXaJ8zAqa7cCOrsTrFPnvHrAE64iqS1N1fJ+TMqSVFiLeiIkCBihQJ2+doOkOmGFiWiNoV/vxwemqFRolg==",
+        "resolved": "6.5.1",
+        "contentHash": "+sDSf2rKt4eLODr4e4T0sFyhz8tXng/akIhN2pWIEEePuArmX6V6IVgV8nrkeDgOMXpAWI2O/NolRMA+7fVqCw==",
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "10.0.2",
           "Microsoft.EntityFrameworkCore.Design": "10.0.2",
           "Microsoft.EntityFrameworkCore.Relational": "10.0.2",
           "Weasel.EntityFrameworkCore": "9.0.3",
-          "WolverineFx.RDBMS": "6.5.0"
+          "WolverineFx.RDBMS": "6.5.1"
         }
       },
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.5.0",
-        "contentHash": "j9QfmbjdszJqFT7YxcGn2nzHyrPsRoDt1DWN3T4fX1mnEtNMLGVvWM0UGN3B/QwsUtwNcxsPZOUOiQHOV3k3Og==",
+        "resolved": "6.5.1",
+        "contentHash": "bLiCMnS8H9Zo6G09Pnh5yKkfOQLxTDF8Z/ncAwypM8h1aZrlkyXjABFYSVQpK94YmM8W9xZ6gcqPIDRvaq3e0g==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "6.5.0"
+          "WolverineFx": "6.5.1"
         }
       },
       "WolverineFx.Postgresql": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.5.0",
-        "contentHash": "nlbV87Y4oE+pqovSc3Kwq6BK3M7VK08q71uShankptIEpBNWOT1cgE2981e4siDcNNBqOoCUBmrrZOEOToyjew==",
+        "resolved": "6.5.1",
+        "contentHash": "0Bw8r9FrGaBsq4bizANxeBv+b9nU6mFX81B/KiR6IqQXwseCNxhLiGVdLd9776oSouOeQdfEvVTDibYLo5/S3w==",
         "dependencies": {
           "Weasel.Postgresql": "9.0.3",
-          "WolverineFx.RDBMS": "6.5.0"
+          "WolverineFx.RDBMS": "6.5.1"
         }
       },
       "WolverineFx.RuntimeCompilation": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.5.0",
-        "contentHash": "fL8EyL7m/lWDE5TmUuj9koqEE7BwdXbdfuT7sUV+m1CQuaHMa6awLuMDdcg8w7EyhoAcYcJjtXf45aqXz9GlXg==",
+        "resolved": "6.5.1",
+        "contentHash": "Fu0gSst8ObkPBnuZe1axS4RJcEtcd09mYr4H9ga+sl4ZCySc/RMpJuKlSFMcPvJPCjqBVz6lcfhOLLfbp7i/vw==",
         "dependencies": {
           "JasperFx.RuntimeCompiler": "5.0.0",
-          "WolverineFx": "6.5.0"
+          "WolverineFx": "6.5.1"
         }
       },
       "ZiggyCreatures.FusionCache": {
