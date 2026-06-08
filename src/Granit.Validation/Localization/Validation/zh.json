@@ -38,6 +38,7 @@
     "Validation:InvalidMacAddress": "MAC 地址无效（格式示例：00:1A:2B:3C:4D:5E）。",
     "Validation:InvalidSepaCreditorIdentifier": "SEPA 债权人标识符（SCI）无效。",
     "Validation:InvalidSlug": "值不是有效的 slug（仅允许小写字母、数字和连字符）。",
+    "Validation:InvalidAbsoluteUri": "'{PropertyName}' 必须是有效的绝对 URI。",
     "Validation:InvalidUrl": "URL 无效（需要 http 或 https URL）。",
     "Validation:InvalidUuid": "UUID 无效（格式示例：550e8400-e29b-41d4-a716-446655440000）。",
     "Validation:LengthValidator": "'{PropertyName}' 必须在 {MinLength} 到 {MaxLength} 个字符之间。您输入了 {TotalLength} 个字符。",

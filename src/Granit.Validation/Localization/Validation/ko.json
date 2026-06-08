@@ -38,6 +38,7 @@
     "Validation:InvalidMacAddress": "MAC 주소가 유효하지 않습니다(예: 00:1A:2B:3C:4D:5E).",
     "Validation:InvalidSepaCreditorIdentifier": "SEPA 채권자 식별자(SCI)가 유효하지 않습니다.",
     "Validation:InvalidSlug": "값이 유효한 슬러그가 아닙니다(소문자, 숫자, 하이픈만 허용됩니다).",
+    "Validation:InvalidAbsoluteUri": "'{PropertyName}'은(는) 유효한 절대 URI여야 합니다.",
     "Validation:InvalidUrl": "URL이 유효하지 않습니다(http 또는 https URL 필요).",
     "Validation:InvalidUuid": "UUID가 유효하지 않습니다(예: 550e8400-e29b-41d4-a716-446655440000).",
     "Validation:LengthValidator": "'{PropertyName}'은(는) {MinLength}자에서 {MaxLength}자 사이여야 합니다. {TotalLength}자를 입력하셨습니다.",

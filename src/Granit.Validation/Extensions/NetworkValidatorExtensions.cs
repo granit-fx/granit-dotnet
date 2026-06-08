@@ -28,6 +28,18 @@ public static partial class NetworkValidatorExtensions
     private static partial Regex MacAddressRegex();
 
     /// <summary>
+    /// Validates an absolute URI (any scheme: <c>https://</c>, <c>http://</c>, <c>myapp://</c>, etc.).
+    /// </summary>
+    /// <remarks>
+    /// Suitable for OIDC redirect and post-logout redirect URIs, which may use custom schemes
+    /// (e.g. <c>com.example.app://callback</c>) in addition to standard HTTP(S) origins.
+    /// </remarks>
+    public static IRuleBuilderOptions<T, string?> AbsoluteUri<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
+        ruleBuilder
+            .Must(value => value != null && Uri.TryCreate(value.Trim(), UriKind.Absolute, out _))
+            .WithErrorCodeAndMessage("Validation:InvalidAbsoluteUri");
+
+    /// <summary>
     /// Validates a URL with a required <c>http</c> or <c>https</c> scheme per RFC 3986.
     /// </summary>
     /// <remarks>

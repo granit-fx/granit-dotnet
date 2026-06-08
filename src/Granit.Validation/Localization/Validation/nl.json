@@ -38,6 +38,7 @@
     "Validation:InvalidMacAddress": "Het MAC-adres is ongeldig (verwacht formaat: 00:1A:2B:3C:4D:5E).",
     "Validation:InvalidSepaCreditorIdentifier": "De SEPA Creditor Identifier (SCI) is ongeldig.",
     "Validation:InvalidSlug": "De waarde is geen geldige slug (alleen kleine letters, cijfers en koppeltekens toegestaan).",
+    "Validation:InvalidAbsoluteUri": "'{PropertyName}' moet een geldige absolute URI zijn.",
     "Validation:InvalidUrl": "De URL is ongeldig (een http- of https-URL wordt verwacht).",
     "Validation:InvalidUuid": "De UUID is ongeldig (verwacht formaat: 550e8400-e29b-41d4-a716-446655440000).",
     "Validation:LengthValidator": "'{PropertyName}' moet tussen {MinLength} en {MaxLength} tekens bevatten. U hebt {TotalLength} tekens ingevoerd.",

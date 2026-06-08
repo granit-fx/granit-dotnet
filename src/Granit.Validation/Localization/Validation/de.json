@@ -38,6 +38,7 @@
     "Validation:InvalidMacAddress": "Die MAC-Adresse ist ungültig (erwartetes Format: 00:1A:2B:3C:4D:5E).",
     "Validation:InvalidSepaCreditorIdentifier": "Die SEPA-Gläubiger-Identifikationsnummer (SCI) ist ungültig.",
     "Validation:InvalidSlug": "Der Wert ist kein gültiger Slug (nur Kleinbuchstaben, Ziffern und Bindestriche erlaubt).",
+    "Validation:InvalidAbsoluteUri": "'{PropertyName}' muss ein gültiger absoluter URI sein.",
     "Validation:InvalidUrl": "Die URL ist ungültig (eine http- oder https-URL wird erwartet).",
     "Validation:InvalidUuid": "Die UUID ist ungültig (erwartetes Format: 550e8400-e29b-41d4-a716-446655440000).",
     "Validation:LengthValidator": "'{PropertyName}' muss zwischen {MinLength} und {MaxLength} Zeichen lang sein. Sie haben {TotalLength} Zeichen eingegeben.",

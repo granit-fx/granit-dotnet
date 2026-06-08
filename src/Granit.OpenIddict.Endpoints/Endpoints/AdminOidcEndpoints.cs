@@ -3,6 +3,7 @@ using Granit.Entities;
 using Granit.Http.Idempotency.Attributes;
 using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Entities.OpenIddict;
+using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Permissions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 
 namespace Granit.OpenIddict.Endpoints.Endpoints;
@@ -25,14 +27,14 @@ internal static class AdminOidcEndpoints
             .WithMetadata(new EntityEndpointMetadata(typeof(GranitOpenIddictApplication), EntityEndpointKind.List))
             .WithName("ListOidcApplications")
             .WithSummary("Returns all OIDC applications.")
-            .WithDescription("Returns all registered OIDC client applications with their client ID, display name, type, and tenant association. Applications are either public (SPA, mobile) or confidential (server-side). Use this list to manage the registered clients in the admin panel.")
+            .WithDescription("Returns all registered OIDC client applications with their full configuration: client ID, display name, type, tenant, permissions, redirect URIs, consent type, and signing-key presence. Use this list to manage the registered clients in the admin panel.")
             .Produces<IReadOnlyList<AdminOidcApplicationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Applications.Read);
 
         apps.MapPost("/", CreateApplicationAsync)
             .WithName("CreateOidcApplication")
             .WithSummary("Creates a new OIDC application.")
-            .WithDescription("Registers a new OIDC client with the specified permissions and redirect URIs. For confidential clients, a client secret is generated and returned once in the response. Returns 409 Conflict if a client with the same client ID already exists.")
+            .WithDescription("Registers a new OIDC client with the specified permissions, redirect URIs, and consent policy. For confidential clients, a client secret is generated and returned once in the response. Returns 409 Conflict if a client with the same client ID already exists.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcApplicationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
@@ -41,7 +43,7 @@ internal static class AdminOidcEndpoints
         apps.MapPut("/{clientId}", UpdateApplicationAsync)
             .WithName("UpdateOidcApplication")
             .WithSummary("Updates an OIDC application.")
-            .WithDescription("Updates the display name or type of an existing OIDC application. Null fields are left unchanged. Returns 404 if the application does not exist.")
+            .WithDescription("Updates the configuration of an existing OIDC application. Only non-null fields are applied; null leaves the existing value unchanged. Pass an empty array to clear a collection. Returns 404 if the application does not exist.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcApplicationResponse>()
             .ProducesValidationProblem()
@@ -159,12 +161,10 @@ internal static class AdminOidcEndpoints
 
         await foreach (object app in applicationManager.ListAsync(100, 0, cancellationToken).ConfigureAwait(false))
         {
-            string? clientId = await applicationManager.GetClientIdAsync(app, cancellationToken).ConfigureAwait(false);
-            string? displayName = await applicationManager.GetDisplayNameAsync(app, cancellationToken).ConfigureAwait(false);
-            string? type = await applicationManager.GetApplicationTypeAsync(app, cancellationToken).ConfigureAwait(false);
-
+            var descriptor = new OpenIddictApplicationDescriptor();
+            await applicationManager.PopulateAsync(descriptor, app, cancellationToken).ConfigureAwait(false);
             Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
-            results.Add(new AdminOidcApplicationResponse(clientId, displayName, type, tenantId));
+            results.Add(ToResponse(descriptor, tenantId));
         }
 
         return TypedResults.Ok<IReadOnlyList<AdminOidcApplicationResponse>>(results);
@@ -180,6 +180,7 @@ internal static class AdminOidcEndpoints
             ClientId = request.ClientId,
             DisplayName = request.DisplayName,
             ApplicationType = request.Type ?? OpenIddictConstants.ApplicationTypes.Web,
+            ConsentType = request.ConsentType ?? OpenIddictConstants.ConsentTypes.Implicit,
         };
 
         if (!string.IsNullOrEmpty(request.ClientSecret))
@@ -192,16 +193,37 @@ internal static class AdminOidcEndpoints
             descriptor.ClientType = OpenIddictConstants.ClientTypes.Public;
         }
 
+        foreach (string permission in request.Permissions ?? [])
+        {
+            descriptor.Permissions.Add(permission);
+        }
+
+        foreach (string uri in request.RedirectUris ?? [])
+        {
+            descriptor.RedirectUris.Add(new Uri(uri));
+        }
+
+        foreach (string uri in request.PostLogoutRedirectUris ?? [])
+        {
+            descriptor.PostLogoutRedirectUris.Add(new Uri(uri));
+        }
+
+        if (!string.IsNullOrEmpty(request.SigningKeyJwk))
+        {
+            descriptor.JsonWebKeySet = BuildJsonWebKeySet(request.SigningKeyJwk);
+        }
+
+        descriptor.SetClientSide(request.ClientSide);
+
         object app = await applicationManager.CreateAsync(descriptor, cancellationToken).ConfigureAwait(false);
 
-        string? clientId = await applicationManager.GetClientIdAsync(app, cancellationToken).ConfigureAwait(false);
-        string? displayName = await applicationManager.GetDisplayNameAsync(app, cancellationToken).ConfigureAwait(false);
-        string? type = await applicationManager.GetApplicationTypeAsync(app, cancellationToken).ConfigureAwait(false);
+        var responseDescriptor = new OpenIddictApplicationDescriptor();
+        await applicationManager.PopulateAsync(responseDescriptor, app, cancellationToken).ConfigureAwait(false);
         Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
 
         return TypedResults.Created(
-            $"/admin/oidc/applications/{clientId}",
-            new AdminOidcApplicationResponse(clientId, displayName, type, tenantId));
+            $"/admin/oidc/applications/{request.ClientId}",
+            ToResponse(responseDescriptor, tenantId));
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> DeleteApplicationAsync(
@@ -272,13 +294,58 @@ internal static class AdminOidcEndpoints
             descriptor.ApplicationType = request.Type;
         }
 
+        if (request.ConsentType is not null)
+        {
+            descriptor.ConsentType = request.ConsentType;
+        }
+
+        if (request.Permissions is not null)
+        {
+            descriptor.Permissions.Clear();
+            foreach (string permission in request.Permissions)
+            {
+                descriptor.Permissions.Add(permission);
+            }
+        }
+
+        if (request.RedirectUris is not null)
+        {
+            descriptor.RedirectUris.Clear();
+            foreach (string uri in request.RedirectUris)
+            {
+                descriptor.RedirectUris.Add(new Uri(uri));
+            }
+        }
+
+        if (request.PostLogoutRedirectUris is not null)
+        {
+            descriptor.PostLogoutRedirectUris.Clear();
+            foreach (string uri in request.PostLogoutRedirectUris)
+            {
+                descriptor.PostLogoutRedirectUris.Add(new Uri(uri));
+            }
+        }
+
+        if (request.SigningKeyJwk is not null)
+        {
+            // Empty string = clear the key; non-empty = update
+            descriptor.JsonWebKeySet = !string.IsNullOrEmpty(request.SigningKeyJwk)
+                ? BuildJsonWebKeySet(request.SigningKeyJwk)
+                : null;
+        }
+
+        if (request.ClientSide is not null)
+        {
+            descriptor.SetClientSide(request.ClientSide.Value);
+        }
+
         await applicationManager.UpdateAsync(app, descriptor, cancellationToken).ConfigureAwait(false);
 
-        string? updatedDisplayName = await applicationManager.GetDisplayNameAsync(app, cancellationToken).ConfigureAwait(false);
-        string? updatedType = await applicationManager.GetApplicationTypeAsync(app, cancellationToken).ConfigureAwait(false);
-        Guid? tenantId = app is GranitOpenIddictApplication updatedGranitApp ? updatedGranitApp.TenantId : null;
+        var responseDescriptor = new OpenIddictApplicationDescriptor();
+        await applicationManager.PopulateAsync(responseDescriptor, app, cancellationToken).ConfigureAwait(false);
+        Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
 
-        return TypedResults.Ok(new AdminOidcApplicationResponse(clientId, updatedDisplayName, updatedType, tenantId));
+        return TypedResults.Ok(ToResponse(responseDescriptor, tenantId));
     }
 
     // ──── Scope handlers ────
@@ -485,5 +552,44 @@ internal static class AdminOidcEndpoints
         }
 
         return TypedResults.NoContent();
+    }
+
+    // ──── Helpers ────
+
+    private static AdminOidcApplicationResponse ToResponse(
+        OpenIddictApplicationDescriptor descriptor, Guid? tenantId) =>
+        new(
+            descriptor.ClientId,
+            descriptor.DisplayName,
+            descriptor.ApplicationType,
+            tenantId,
+            [.. descriptor.Permissions],
+            [.. descriptor.RedirectUris.Select(u => u.ToString())],
+            [.. descriptor.PostLogoutRedirectUris.Select(u => u.ToString())],
+            descriptor.ConsentType,
+            descriptor.GetClientSide(),
+            descriptor.JsonWebKeySet is not null);
+
+    /// <summary>
+    /// Builds a <see cref="JsonWebKeySet"/> from a JWK JSON string,
+    /// stripping private key parameters so only the public key is stored.
+    /// </summary>
+    private static JsonWebKeySet BuildJsonWebKeySet(string jwkJson)
+    {
+        var jwk = new JsonWebKey(jwkJson);
+
+        // Strip private key parameters — only store the public key
+        jwk.D = null;
+        jwk.P = null;
+        jwk.Q = null;
+        jwk.DP = null;
+        jwk.DQ = null;
+        jwk.QI = null;
+
+        jwk.Use = JsonWebKeyUseNames.Sig;
+
+        var jwks = new JsonWebKeySet();
+        jwks.Keys.Add(jwk);
+        return jwks;
     }
 }

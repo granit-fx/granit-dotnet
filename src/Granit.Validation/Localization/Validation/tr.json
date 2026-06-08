@@ -38,6 +38,7 @@
     "Validation:InvalidMacAddress": "MAC adresi geçersiz (beklenen biçim: 00:1A:2B:3C:4D:5E).",
     "Validation:InvalidSepaCreditorIdentifier": "SEPA Alacaklı Tanımlayıcısı (SCI) geçersiz.",
     "Validation:InvalidSlug": "Değer geçerli bir slug değil (yalnızca küçük harfler, rakamlar ve kısa çizgiler kullanılabilir).",
+    "Validation:InvalidAbsoluteUri": "'{PropertyName}' geçerli bir mutlak URI olmalıdır.",
     "Validation:InvalidUrl": "URL geçersiz (http veya https URL bekleniyor).",
     "Validation:InvalidUuid": "UUID geçersiz (beklenen biçim: 550e8400-e29b-41d4-a716-446655440000).",
     "Validation:LengthValidator": "'{PropertyName}' {MinLength} ile {MaxLength} karakter arasında olmalıdır. {TotalLength} karakter girdiniz.",

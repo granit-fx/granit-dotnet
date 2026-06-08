@@ -47,19 +47,29 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         _server.ApplicationManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(ToAsyncEnumerable<object>(app1, app2));
 
-        _server.ApplicationManager.GetClientIdAsync(app1, Arg.Any<CancellationToken>())
-            .Returns("client-1");
-        _server.ApplicationManager.GetDisplayNameAsync(app1, Arg.Any<CancellationToken>())
-            .Returns("App One");
-        _server.ApplicationManager.GetApplicationTypeAsync(app1, Arg.Any<CancellationToken>())
-            .Returns("web");
+#pragma warning disable CA2012 // NSubstitute mock setup intentionally doesn't await ValueTask
+        _server.ApplicationManager
+            .PopulateAsync(Arg.Any<OpenIddictApplicationDescriptor>(), app1, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictApplicationDescriptor d = ci.ArgAt<OpenIddictApplicationDescriptor>(0);
+                d.ClientId = "client-1";
+                d.DisplayName = "App One";
+                d.ApplicationType = "web";
+                return new ValueTask();
+            });
 
-        _server.ApplicationManager.GetClientIdAsync(app2, Arg.Any<CancellationToken>())
-            .Returns("client-2");
-        _server.ApplicationManager.GetDisplayNameAsync(app2, Arg.Any<CancellationToken>())
-            .Returns("App Two");
-        _server.ApplicationManager.GetApplicationTypeAsync(app2, Arg.Any<CancellationToken>())
-            .Returns("native");
+        _server.ApplicationManager
+            .PopulateAsync(Arg.Any<OpenIddictApplicationDescriptor>(), app2, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictApplicationDescriptor d = ci.ArgAt<OpenIddictApplicationDescriptor>(0);
+                d.ClientId = "client-2";
+                d.DisplayName = "App Two";
+                d.ApplicationType = "native";
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
 
         HttpResponseMessage response = await _server.AuthenticatedClient
             .GetAsync("/admin/oidc/applications", TestContext.Current.CancellationToken);
@@ -101,12 +111,18 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             Arg.Any<OpenIddictApplicationDescriptor>(),
             Arg.Any<CancellationToken>())
             .Returns(createdApp);
-        _server.ApplicationManager.GetClientIdAsync(createdApp, Arg.Any<CancellationToken>())
-            .Returns("new-client");
-        _server.ApplicationManager.GetDisplayNameAsync(createdApp, Arg.Any<CancellationToken>())
-            .Returns("New App");
-        _server.ApplicationManager.GetApplicationTypeAsync(createdApp, Arg.Any<CancellationToken>())
-            .Returns("web");
+#pragma warning disable CA2012 // NSubstitute mock setup intentionally doesn't await ValueTask
+        _server.ApplicationManager
+            .PopulateAsync(Arg.Any<OpenIddictApplicationDescriptor>(), createdApp, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictApplicationDescriptor d = ci.ArgAt<OpenIddictApplicationDescriptor>(0);
+                d.ClientId = "new-client";
+                d.DisplayName = "New App";
+                d.ApplicationType = "web";
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
 
         AdminOidcCreateApplicationRequest request = new("new-client", "New App", null, "web");
 

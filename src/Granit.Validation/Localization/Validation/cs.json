@@ -38,6 +38,7 @@
     "Validation:InvalidMacAddress": "MAC adresa je neplatná (očekávaný formát: 00:1A:2B:3C:4D:5E).",
     "Validation:InvalidSepaCreditorIdentifier": "Identifikátor věřitele SEPA (SCI) je neplatný.",
     "Validation:InvalidSlug": "Hodnota není platný slug (povolena jsou pouze malá písmena, číslice a pomlčky).",
+    "Validation:InvalidAbsoluteUri": "'{PropertyName}' musí být platné absolutní URI.",
     "Validation:InvalidUrl": "URL adresa je neplatná (očekávána adresa http nebo https).",
     "Validation:InvalidUuid": "UUID je neplatné (očekávaný formát: 550e8400-e29b-41d4-a716-446655440000).",
     "Validation:LengthValidator": "'{PropertyName}' musí mít délku {MinLength} až {MaxLength} znaků. Zadali jste {TotalLength} znaků.",

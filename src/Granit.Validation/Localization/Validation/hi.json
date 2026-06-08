@@ -38,6 +38,7 @@
     "Validation:InvalidMacAddress": "MAC पता अमान्य है (अपेक्षित प्रारूप: 00:1A:2B:3C:4D:5E)।",
     "Validation:InvalidSepaCreditorIdentifier": "SEPA क्रेडिटर आइडेंटिफ़ायर (SCI) अमान्य है।",
     "Validation:InvalidSlug": "यह मान एक मान्य स्लग नहीं है (केवल लोअरकेस अक्षर, अंक और हाइफ़न अनुमत हैं)।",
+    "Validation:InvalidAbsoluteUri": "'{PropertyName}' एक मान्य पूर्ण URI होना चाहिए।",
     "Validation:InvalidUrl": "URL अमान्य है (http या https URL अपेक्षित है)।",
     "Validation:InvalidUuid": "UUID अमान्य है (अपेक्षित प्रारूप: 550e8400-e29b-41d4-a716-446655440000)।",
     "Validation:LengthValidator": "'{PropertyName}' {MinLength} और {MaxLength} अक्षरों के बीच होना चाहिए। आपने {TotalLength} अक्षर दर्ज किए।",

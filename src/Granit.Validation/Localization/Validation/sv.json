@@ -38,6 +38,7 @@
     "Validation:InvalidMacAddress": "MAC-adressen är ogiltig (förväntat format: 00:1A:2B:3C:4D:5E).",
     "Validation:InvalidSepaCreditorIdentifier": "SEPA-borgenärsidentifieraren (SCI) är ogiltig.",
     "Validation:InvalidSlug": "Värdet är inte en giltig slug (bara små bokstäver, siffror och bindestreck tillåtna).",
+    "Validation:InvalidAbsoluteUri": "'{PropertyName}' måste vara en giltig absolut URI.",
     "Validation:InvalidUrl": "URL:en är ogiltig (en http- eller https-URL förväntas).",
     "Validation:InvalidUuid": "UUID är ogiltigt (förväntat format: 550e8400-e29b-41d4-a716-446655440000).",
     "Validation:LengthValidator": "'{PropertyName}' måste vara mellan {MinLength} och {MaxLength} tecken. Du angav {TotalLength} tecken.",

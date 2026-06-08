@@ -38,6 +38,7 @@
     "Validation:InvalidMacAddress": "MACアドレスが無効です（例：00:1A:2B:3C:4D:5E）。",
     "Validation:InvalidSepaCreditorIdentifier": "SEPA 債権者識別子（SCI）が無効です。",
     "Validation:InvalidSlug": "値が有効なスラッグではありません（小文字、数字、ハイフンのみ使用可能です）。",
+    "Validation:InvalidAbsoluteUri": "'{PropertyName}' は有効な絶対 URI でなければなりません。",
     "Validation:InvalidUrl": "URLが無効です（httpまたはhttpsのURLが必要です）。",
     "Validation:InvalidUuid": "UUIDが無効です（例：550e8400-e29b-41d4-a716-446655440000）。",
     "Validation:LengthValidator": "'{PropertyName}' は {MinLength} 文字以上 {MaxLength} 文字以下である必要があります。{TotalLength} 文字入力されました。",
