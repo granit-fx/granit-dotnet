@@ -43,12 +43,12 @@ public sealed class RoleEndpointsPermissionTestApplication : IAsyncLifetime
 {
     private readonly PostgresFixture _postgres = new();
     private WebApplication? _app;
-    private FakeCurrentTenant? _currentTenant;
+    private SharedCurrentTenant? _currentTenant;
 
     public HttpClient HttpClient =>
         _app?.GetTestClient() ?? throw new InvalidOperationException("Fixture not initialized.");
 
-    public FakeCurrentTenant CurrentTenant =>
+    public SharedCurrentTenant CurrentTenant =>
         _currentTenant ?? throw new InvalidOperationException("Fixture not initialized.");
 
     public IServiceProvider Services =>
@@ -78,7 +78,7 @@ public sealed class RoleEndpointsPermissionTestApplication : IAsyncLifetime
         builder.Services.AddGranitGuids();
         builder.Services.AddScoped<IGranitRoleOrchestrator, GranitRoleOrchestrator>();
 
-        _currentTenant = new FakeCurrentTenant();
+        _currentTenant = new SharedCurrentTenant();
         builder.Services.AddSingleton<ICurrentTenant>(_currentTenant);
 
         // Real permission pipeline — no PermissiveAuthorizationPolicyProvider here.

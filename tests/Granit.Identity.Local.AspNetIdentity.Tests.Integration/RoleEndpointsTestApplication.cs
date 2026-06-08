@@ -49,12 +49,12 @@ public sealed class RoleEndpointsTestApplication : IAsyncLifetime
 {
     private readonly PostgresFixture _postgres = new();
     private WebApplication? _app;
-    private FakeCurrentTenant? _currentTenant;
+    private SharedCurrentTenant? _currentTenant;
 
     public HttpClient HttpClient =>
         _app?.GetTestClient() ?? throw new InvalidOperationException("Fixture not initialized.");
 
-    public FakeCurrentTenant CurrentTenant =>
+    public SharedCurrentTenant CurrentTenant =>
         _currentTenant ?? throw new InvalidOperationException("Fixture not initialized.");
 
     public IServiceProvider Services =>
@@ -81,7 +81,7 @@ public sealed class RoleEndpointsTestApplication : IAsyncLifetime
         builder.Services.AddGranitGuids();
         builder.Services.AddScoped<IGranitRoleOrchestrator, GranitRoleOrchestrator>();
 
-        _currentTenant = new FakeCurrentTenant();
+        _currentTenant = new SharedCurrentTenant();
         builder.Services.AddSingleton<ICurrentTenant>(_currentTenant);
 
         // Tenant-scope roles require the tenant-aware normalizer to avoid colliding on

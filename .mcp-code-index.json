@@ -46176,6 +46176,22 @@
       "members": []
     },
     {
+      "name": "SharedCurrentTenant",
+      "fqn": "Granit.Testing.Fakes.SharedCurrentTenant",
+      "kind": "class",
+      "project": "Granit.Testing",
+      "file": "src/Granit.Testing/Fakes/SharedCurrentTenant.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "Change",
+          "kind": "method",
+          "signature": "Change(Guid? id, string? name = null, string? jurisdiction = null)",
+          "returnType": "bool IsAvailable { get; set; } public Guid? Id { get; set; } public string? Name { get; set; } public string? Jurisdiction { get; set; } public IDisposable"
+        }
+      ]
+    },
+    {
       "name": "GranitEntityFakerExtensions",
       "fqn": "Granit.Testing.Generators.GranitEntityFakerExtensions",
       "kind": "class",
