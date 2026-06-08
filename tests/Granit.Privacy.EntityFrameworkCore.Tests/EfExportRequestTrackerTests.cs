@@ -3,6 +3,7 @@ using Granit.MultiTenancy;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.EntityFrameworkCore.DataExport.Internal;
 using Granit.Privacy.EntityFrameworkCore.Internal;
+using Granit.Testing.Fakes;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;

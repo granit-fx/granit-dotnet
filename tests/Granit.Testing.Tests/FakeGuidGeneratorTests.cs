@@ -69,28 +69,37 @@ public sealed class FakeGuidGeneratorTests
     }
 
     [Fact]
-    public async Task AsyncLocal_Isolates_State_Across_Tasks()
+    public async Task Counter_PersistsAcross_Awaits()
     {
+        // AsyncLocal resets to 0 on each continuation — that was the bug.
+        // Interlocked.Increment advances the counter monotonically regardless of the
+        // synchronization context, so sequential calls always produce distinct GUIDs.
         FakeGuidGenerator generator = new();
-        var specificGuid = Guid.NewGuid();
 
-#pragma warning disable xUnit1051
-        var task1 = Task.Run(async () =>
-        {
-            generator.Enqueue(specificGuid);
-            await Task.Delay(50);
-            generator.Create().ShouldBe(specificGuid);
-        });
+        Guid first = generator.Create();
+        await Task.Delay(1, TestContext.Current.CancellationToken);
+        Guid second = generator.Create();
+        await Task.Delay(1, TestContext.Current.CancellationToken);
+        Guid third = generator.Create();
 
-        var task2 = Task.Run(async () =>
-        {
-            await Task.Delay(50);
-            // Should NOT see specificGuid from task1
-            Guid result = generator.Create();
-            result.ShouldNotBe(specificGuid);
-        });
+        first.ShouldNotBe(second, "counter must advance after await");
+        second.ShouldNotBe(third, "counter must continue advancing across awaits");
+        first.ShouldNotBe(third);
+    }
 
-        await Task.WhenAll(task1, task2);
-#pragma warning restore xUnit1051
+    [Fact]
+    public void Separate_Instances_Are_Independent()
+    {
+        // Isolation is guaranteed by each test creating its own instance, not by AsyncLocal.
+        FakeGuidGenerator gen1 = new();
+        FakeGuidGenerator gen2 = new();
+
+        gen1.Create(); // advance gen1 counter to 1
+        gen1.Create(); // advance gen1 counter to 2
+
+        Guid fromGen2 = gen2.Create(); // gen2 counter starts at 0 independently → 1
+
+        fromGen2.ShouldBe(new Guid(1, 0, 0, [0, 0, 0, 0, 0, 0, 0, 0]),
+            "gen2 counter is independent of gen1");
     }
 }
