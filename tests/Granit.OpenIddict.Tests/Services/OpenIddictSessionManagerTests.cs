@@ -1,5 +1,7 @@
 using System.Collections.Immutable;
 using System.Text.Json;
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
 using Granit.OpenIddict.Services;
@@ -20,14 +22,30 @@ public sealed class OpenIddictSessionManagerTests
     private readonly IOpenIddictApplicationManager _appManager = Substitute.For<IOpenIddictApplicationManager>();
     private readonly IFusionCache _cache = Substitute.For<IFusionCache>();
     private readonly IClock _clock = Substitute.For<IClock>();
+    private readonly IDataFilter _dataFilter = Substitute.For<IDataFilter>();
 
     public OpenIddictSessionManagerTests()
     {
         _clock.Now.Returns(FixedNow);
+        _dataFilter.Disable<IMultiTenant>().Returns(Substitute.For<IDisposable>());
     }
 
     private OpenIddictSessionManager CreateSut() =>
-        new(_tokenManager, _appManager, _cache, _clock);
+        new(_tokenManager, _appManager, _cache, _clock, _dataFilter);
+
+    // ── Multi-tenant filter bypass ────────────────────────────────────────
+
+    [Fact]
+    public async Task GetUserSessionsAsync_DisablesMultiTenantFilter()
+    {
+        const string userId = "user-mt";
+        _tokenManager.FindBySubjectAsync(userId, Arg.Any<CancellationToken>())
+            .Returns(ToAsyncEnumerable<object>());
+
+        await CreateSut().GetUserSessionsAsync(userId, TestContext.Current.CancellationToken);
+
+        _dataFilter.Received(1).Disable<IMultiTenant>();
+    }
 
     // ── Happy path ────────────────────────────────────────────────────────
 

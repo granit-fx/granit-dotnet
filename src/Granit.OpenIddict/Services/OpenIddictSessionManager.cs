@@ -1,5 +1,7 @@
 using System.Collections.Immutable;
 using System.Text.Json;
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Identity;
 using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
@@ -13,13 +15,18 @@ internal sealed class OpenIddictSessionManager(
     IOpenIddictTokenManager tokenManager,
     IOpenIddictApplicationManager applicationManager,
     IFusionCache cache,
-    IClock clock) : IIdentitySessionManager
+    IClock clock,
+    IDataFilter? dataFilter = null) : IIdentitySessionManager
 {
     public async Task<IReadOnlyList<IdentitySession>> GetUserSessionsAsync(
         string userId, CancellationToken cancellationToken = default)
     {
         var sessions = new List<IdentitySession>();
         var appNameCache = new Dictionary<string, string?>();
+
+        // GranitOpenIddictToken.TenantId is always null — OpenIddict never sets it.
+        // Disable the IMultiTenant filter so tenant users can see their own tokens.
+        using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
 
         await foreach (object token in tokenManager.FindBySubjectAsync(userId, cancellationToken))
         {
