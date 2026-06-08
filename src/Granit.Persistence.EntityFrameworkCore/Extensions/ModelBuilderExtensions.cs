@@ -192,7 +192,7 @@ public static class ModelBuilderExtensions
             typeof(ModelBuilderExtensions)
                 .GetMethod(nameof(ConfigureTranslation), BindingFlags.Static | BindingFlags.NonPublic)! // NOSONAR S3011 - intentional: generic EF Core convention pattern requires reflection
                 .MakeGenericMethod(clrType, parentType)
-                .Invoke(null, [modelBuilder]);
+                .Invoke(null, [modelBuilder, proxy]);
         }
 
         // --- Value object conventions ---
@@ -467,11 +467,32 @@ public static class ModelBuilderExtensions
         // SingleValueObject<T> must stay visible as a scalar property so the next pass
         // (ApplySingleValueObjectConverters) can wrap it with its primitive converter —
         // Ignore(type) would hide that property and drop the column.
+        //
+        // Exception: when a module author explicitly mapped the VO as a property column in a
+        // custom IEntityTypeConfiguration (e.g. WebManifest via HasConversion in
+        // SiteSeoDefaultsConfiguration), the navigation loop above found no raw navigation to
+        // process. No navigation → no risk of re-discovery during finalization → RemoveEntityType
+        // is sufficient and avoids the EF Core warning "entity type was first mapped explicitly
+        // and then ignored" that Ignore() emits in this scenario.
         foreach (Type valueObjectClrType in valueObjectClrTypes)
         {
             if (GetSingleValueObjectBase(valueObjectClrType) is null)
             {
-                modelBuilder.Ignore(valueObjectClrType);                 // multi-field VO → keep it out for good
+                // Check whether any non-VO entity still has a raw navigation to this VO type.
+                // If so, a later convention could re-discover it → Ignore() is needed.
+                // If not, the VO was already handled as a property column → RemoveEntityType suffices.
+                bool hasRemainingNavigation = modelBuilder.Model.GetEntityTypes()
+                    .Any(et => !valueObjectClrTypes.Contains(et.ClrType)
+                        && et.GetNavigations().Any(nav => nav.TargetEntityType.ClrType == valueObjectClrType));
+
+                if (hasRemainingNavigation)
+                {
+                    modelBuilder.Ignore(valueObjectClrType);                 // multi-field VO with live navigations → keep it out for good
+                }
+                else
+                {
+                    modelBuilder.Model.RemoveEntityType(valueObjectClrType); // no live navigations → RemoveEntityType is safe
+                }
             }
             else
             {
@@ -541,7 +562,11 @@ public static class ModelBuilderExtensions
     }
 
     // Configures a translation entity type: FK, cascade delete, unique index, Culture max length.
-    private static void ConfigureTranslation<TTranslation, TParent>(ModelBuilder modelBuilder)
+    // Also mirrors the parent's ISoftDeletable / IActive query filters onto the translation so
+    // that EF Core's filter consistency check (required principal end with a global query filter)
+    // is satisfied. Without these mirrors, EF Core warns that querying translations directly may
+    // return rows whose parent would be filtered out.
+    private static void ConfigureTranslation<TTranslation, TParent>(ModelBuilder modelBuilder, FilterProxy proxy)
         where TTranslation : class, ITranslation<TParent>
         where TParent : Entity
     {
@@ -562,6 +587,36 @@ public static class ModelBuilderExtensions
         // Unique index: one translation per (parent, culture)
         builder.HasIndex(t => new { t.ParentId, t.Culture })
             .IsUnique();
+
+        // Mirror the parent's filter interfaces on the translation entity. EF Core requires
+        // matching filters on both ends of a required relationship when the principal end has
+        // a global query filter. The filters navigate through the Parent reference so that
+        // direct DbSet<TTranslation> queries apply the same visibility rules as the parent.
+        ParameterExpression param = Expression.Parameter(typeof(TTranslation), "t");
+        MemberExpression parentProp = Expression.Property(param, nameof(ITranslation<TParent>.Parent));
+        // Guard against a null navigation in the SQL expression tree (required FK in practice,
+        // but EF Core needs the null branch to generate a valid SQL predicate).
+        Expression parentNull = Expression.Equal(parentProp, Expression.Constant(null, typeof(TParent)));
+
+        if (typeof(ISoftDeletable).IsAssignableFrom(typeof(TParent)))
+        {
+            Expression bypass = Expression.Not(Expression.Property(Expression.Constant(proxy), nameof(FilterProxy.SoftDeleteEnabled)));
+            PropertyInfo isDeletedProp = typeof(TParent).GetProperty(nameof(ISoftDeletable.IsDeleted))!; // NOSONAR S3011 - accessing a property known to exist on TParent via ISoftDeletable contract
+            Expression notDeleted = Expression.Not(Expression.Property(parentProp, isDeletedProp));
+            builder.HasQueryFilter(GranitFilterNames.SoftDelete,
+                Expression.Lambda<Func<TTranslation, bool>>(
+                    Expression.OrElse(bypass, Expression.OrElse(parentNull, notDeleted)), param));
+        }
+
+        if (typeof(IActive).IsAssignableFrom(typeof(TParent)))
+        {
+            Expression bypass = Expression.Not(Expression.Property(Expression.Constant(proxy), nameof(FilterProxy.ActiveEnabled)));
+            PropertyInfo activatedProp = typeof(TParent).GetProperty(nameof(IActive.Activated))!; // NOSONAR S3011 - accessing a property known to exist on TParent via IActive contract
+            Expression activated = Expression.Property(parentProp, activatedProp);
+            builder.HasQueryFilter(GranitFilterNames.Active,
+                Expression.Lambda<Func<TTranslation, bool>>(
+                    Expression.OrElse(bypass, Expression.OrElse(parentNull, activated)), param));
+        }
     }
 
     // Registers one named HasQueryFilter per applicable filter interface for TEntity (EF Core 10).
