@@ -125,6 +125,25 @@ public static class OpenIddictModelBuilderExtensions
             b.HasKey(c => c.Id);
         });
 
+        // AspNetCore Identity Version3: passkey (WebAuthn/FIDO2) credentials.
+        // IdentityDbContext.OnModelCreating adds this entity when SchemaVersion = Version3;
+        // we add it here too so that host DbContexts that do not inherit from IdentityDbContext
+        // (e.g. ShowcaseHostDbContext) include the table in their migration.
+        // For OpenIddictDbContext the ToTable call below overrides the default AspNetUserPasskeys name.
+        modelBuilder.Entity<IdentityUserPasskey<Guid>>(b =>
+        {
+            b.ToTable(prefix + "user_passkeys", schema);
+            b.HasKey(p => p.CredentialId);
+            b.HasOne<LocalIdentity>()
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            b.OwnsOne(p => p.Data, data =>
+            {
+                data.ToJson();
+            });
+        });
+
         // ──── OpenIddict conventions + table remapping ────
         // UseOpenIddict registers key/index conventions for the custom OpenIddict entities.
         // Must be called before ToTable remapping.

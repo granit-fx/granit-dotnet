@@ -58,6 +58,8 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
                 options.Lockout.MaxFailedAccessAttempts = lockoutOptions.MaxFailedAccessAttempts;
                 options.Lockout.DefaultLockoutTimeSpan = lockoutOptions.BaseLockoutDuration;
                 options.SignIn.RequireConfirmedEmail = true;
+                // Version3 adds IdentityUserPasskey — required for WebAuthn/passkey support.
+                options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
             })
             .AddEntityFrameworkStores<OpenIddictDbContext>()
             .AddDefaultTokenProviders();
