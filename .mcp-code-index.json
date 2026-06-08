@@ -36088,6 +36088,15 @@
       "members": []
     },
     {
+      "name": "OidcApplicationInfoResponse",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.OidcApplicationInfoResponse",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/OidcApplicationInfoResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "OpenIddictEndpointRouteBuilderExtensions",
       "fqn": "Granit.OpenIddict.Endpoints.Extensions.OpenIddictEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -36143,6 +36152,18 @@
           "name": "AdminTagName",
           "kind": "property",
           "signature": "string AdminTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "OidcRoutePrefix",
+          "kind": "property",
+          "signature": "string OidcRoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "OidcTagName",
+          "kind": "property",
+          "signature": "string OidcTagName",
           "returnType": "string"
         }
       ]

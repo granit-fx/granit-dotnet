@@ -632,6 +632,390 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     }
 
     // -------------------------------------------------------------------------
+    // GetApplication endpoint
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task GetApplication_ExistingApp_ReturnsApp()
+    {
+        GranitOpenIddictApplication app = new() { TenantId = Guid.Parse("11111111-1111-1111-1111-111111111111") };
+
+        _server.ApplicationManager.FindByClientIdAsync("my-client", Arg.Any<CancellationToken>())
+            .Returns(app);
+
+#pragma warning disable CA2012
+        _server.ApplicationManager
+            .PopulateAsync(Arg.Any<OpenIddictApplicationDescriptor>(), app, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictApplicationDescriptor d = ci.ArgAt<OpenIddictApplicationDescriptor>(0);
+                d.ClientId = "my-client";
+                d.DisplayName = "My App";
+                d.ApplicationType = "web";
+                d.ConsentType = OpenIddictConstants.ConsentTypes.Implicit;
+                d.Permissions.Add("ept:token");
+                d.RedirectUris.Add(new Uri("https://app.example.com/callback"));
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .GetAsync("/admin/oidc/applications/my-client", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        AdminOidcApplicationResponse? result = await response.Content
+            .ReadFromJsonAsync<AdminOidcApplicationResponse>(TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.ClientId.ShouldBe("my-client");
+        result.DisplayName.ShouldBe("My App");
+        result.Type.ShouldBe("web");
+        result.TenantId.ShouldBe(Guid.Parse("11111111-1111-1111-1111-111111111111"));
+        result.Permissions.ShouldContain("ept:token");
+        result.RedirectUris.ShouldContain("https://app.example.com/callback");
+    }
+
+    [Fact]
+    public async Task GetApplication_NotFound_Returns404()
+    {
+        _server.ApplicationManager.FindByClientIdAsync("nonexistent", Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .GetAsync("/admin/oidc/applications/nonexistent", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GetApplication_Anonymous_Returns401()
+    {
+        HttpResponseMessage response = await _server.AnonymousClient
+            .GetAsync("/admin/oidc/applications/my-client", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    // -------------------------------------------------------------------------
+    // UpdateApplication endpoint
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task UpdateApplication_ExistingApp_ReturnsUpdatedApp()
+    {
+        GranitOpenIddictApplication app = new() { TenantId = null };
+
+        _server.ApplicationManager.FindByClientIdAsync("update-client", Arg.Any<CancellationToken>())
+            .Returns(app);
+
+#pragma warning disable CA2012
+        _server.ApplicationManager
+            .PopulateAsync(Arg.Any<OpenIddictApplicationDescriptor>(), app, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictApplicationDescriptor d = ci.ArgAt<OpenIddictApplicationDescriptor>(0);
+                d.ClientId = "update-client";
+                d.DisplayName = "Updated Name";
+                d.ApplicationType = "web";
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+
+        AdminOidcUpdateApplicationRequest request = new(DisplayName: "Updated Name");
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PutAsJsonAsync("/admin/oidc/applications/update-client", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        AdminOidcApplicationResponse? result = await response.Content
+            .ReadFromJsonAsync<AdminOidcApplicationResponse>(TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.ClientId.ShouldBe("update-client");
+        result.DisplayName.ShouldBe("Updated Name");
+
+        await _server.ApplicationManager.Received(1)
+            .UpdateAsync(app, Arg.Any<OpenIddictApplicationDescriptor>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task UpdateApplication_ReplacesPermissionsWhenProvided()
+    {
+        GranitOpenIddictApplication app = new() { TenantId = null };
+
+        _server.ApplicationManager.FindByClientIdAsync("perm-client", Arg.Any<CancellationToken>())
+            .Returns(app);
+
+#pragma warning disable CA2012
+        _server.ApplicationManager
+            .PopulateAsync(Arg.Any<OpenIddictApplicationDescriptor>(), app, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictApplicationDescriptor d = ci.ArgAt<OpenIddictApplicationDescriptor>(0);
+                d.ClientId = "perm-client";
+                d.Permissions.Add("ept:token");
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+
+        AdminOidcUpdateApplicationRequest request = new(Permissions: ["ept:token", "gt:client_credentials"]);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PutAsJsonAsync("/admin/oidc/applications/perm-client", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        await _server.ApplicationManager.Received(1)
+            .UpdateAsync(
+                app,
+                Arg.Is<OpenIddictApplicationDescriptor>(d =>
+                    d.Permissions.Contains("ept:token") &&
+                    d.Permissions.Contains("gt:client_credentials")),
+                Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task UpdateApplication_NotFound_Returns404()
+    {
+        _server.ApplicationManager.FindByClientIdAsync("nonexistent", Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+
+        AdminOidcUpdateApplicationRequest request = new(DisplayName: "New Name");
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PutAsJsonAsync("/admin/oidc/applications/nonexistent", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task UpdateApplication_Anonymous_Returns401()
+    {
+        AdminOidcUpdateApplicationRequest request = new(DisplayName: "New Name");
+
+        HttpResponseMessage response = await _server.AnonymousClient
+            .PutAsJsonAsync("/admin/oidc/applications/my-client", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task UpdateApplication_InvalidRedirectUri_ReturnsValidationError()
+    {
+        AdminOidcUpdateApplicationRequest request = new(RedirectUris: ["not-a-valid-uri"]);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PutAsJsonAsync("/admin/oidc/applications/any-client", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
+    }
+
+    // -------------------------------------------------------------------------
+    // UpdateScope endpoint
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task UpdateScope_ExistingScope_ReturnsUpdatedScope()
+    {
+        object scope = new();
+
+        _server.ScopeManager.FindByNameAsync("openid", Arg.Any<CancellationToken>())
+            .Returns(scope);
+
+#pragma warning disable CA2012
+        _server.ScopeManager
+            .PopulateAsync(Arg.Any<OpenIddictScopeDescriptor>(), scope, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictScopeDescriptor d = ci.ArgAt<OpenIddictScopeDescriptor>(0);
+                d.Name = "openid";
+                d.DisplayName = "OpenID Connect";
+                d.Description = "Updated description";
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+
+        AdminOidcUpdateScopeRequest request = new(Description: "Updated description");
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PutAsJsonAsync("/admin/oidc/scopes/openid", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        AdminOidcScopeResponse? result = await response.Content
+            .ReadFromJsonAsync<AdminOidcScopeResponse>(TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.Name.ShouldBe("openid");
+        result.Description.ShouldBe("Updated description");
+
+        await _server.ScopeManager.Received(1)
+            .UpdateAsync(scope, Arg.Any<OpenIddictScopeDescriptor>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task UpdateScope_ClearsResourcesWhenEmptyArrayPassed()
+    {
+        object scope = new();
+
+        _server.ScopeManager.FindByNameAsync("profile", Arg.Any<CancellationToken>())
+            .Returns(scope);
+
+#pragma warning disable CA2012
+        _server.ScopeManager
+            .PopulateAsync(Arg.Any<OpenIddictScopeDescriptor>(), scope, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictScopeDescriptor d = ci.ArgAt<OpenIddictScopeDescriptor>(0);
+                d.Name = "profile";
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+
+        AdminOidcUpdateScopeRequest request = new(Resources: []);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PutAsJsonAsync("/admin/oidc/scopes/profile", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        await _server.ScopeManager.Received(1)
+            .UpdateAsync(
+                scope,
+                Arg.Is<OpenIddictScopeDescriptor>(d => d.Resources.Count == 0),
+                Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task UpdateScope_NotFound_Returns404()
+    {
+        _server.ScopeManager.FindByNameAsync("nonexistent", Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+
+        AdminOidcUpdateScopeRequest request = new(DisplayName: "New Name");
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PutAsJsonAsync("/admin/oidc/scopes/nonexistent", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task UpdateScope_Anonymous_Returns401()
+    {
+        AdminOidcUpdateScopeRequest request = new(DisplayName: "New Name");
+
+        HttpResponseMessage response = await _server.AnonymousClient
+            .PutAsJsonAsync("/admin/oidc/scopes/openid", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    // -------------------------------------------------------------------------
+    // CreateAuthorization endpoint
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task CreateAuthorization_ReturnsCreated()
+    {
+        object app = new();
+        object createdAuth = new();
+        var authId = Guid.NewGuid();
+
+        _server.ApplicationManager.FindByClientIdAsync("my-client", Arg.Any<CancellationToken>())
+            .Returns(app);
+        _server.ApplicationManager.GetIdAsync(app, Arg.Any<CancellationToken>())
+            .Returns("app-internal-id");
+
+        _server.AuthorizationManager
+            .CreateAsync(Arg.Any<OpenIddictAuthorizationDescriptor>(), Arg.Any<CancellationToken>())
+            .Returns(createdAuth);
+        _server.AuthorizationManager.GetIdAsync(createdAuth, Arg.Any<CancellationToken>())
+            .Returns(authId.ToString());
+
+        AdminOidcCreateAuthorizationRequest request = new(
+            Subject: "user-abc",
+            ClientId: "my-client",
+            Scopes: ["openid", "profile"]);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PostAsJsonAsync("/admin/oidc/authorizations", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        AdminOidcAuthorizationResponse? result = await response.Content
+            .ReadFromJsonAsync<AdminOidcAuthorizationResponse>(TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.Id.ShouldBe(authId);
+        result.Subject.ShouldBe("user-abc");
+        result.ClientId.ShouldBe("my-client");
+        result.Status.ShouldBe(OpenIddictConstants.Statuses.Valid);
+        result.Type.ShouldBe(OpenIddictConstants.AuthorizationTypes.Permanent);
+        result.Scopes.ShouldBe(["openid", "profile"], ignoreOrder: true);
+    }
+
+    [Fact]
+    public async Task CreateAuthorization_ClientNotFound_Returns404()
+    {
+        _server.ApplicationManager.FindByClientIdAsync("unknown-client", Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+
+        AdminOidcCreateAuthorizationRequest request = new(
+            Subject: "user-abc",
+            ClientId: "unknown-client",
+            Scopes: ["openid"]);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PostAsJsonAsync("/admin/oidc/authorizations", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task CreateAuthorization_EmptySubject_ReturnsValidationError()
+    {
+        AdminOidcCreateAuthorizationRequest request = new(
+            Subject: "",
+            ClientId: "my-client",
+            Scopes: ["openid"]);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PostAsJsonAsync("/admin/oidc/authorizations", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [Fact]
+    public async Task CreateAuthorization_Anonymous_Returns401()
+    {
+        AdminOidcCreateAuthorizationRequest request = new(
+            Subject: "user-abc",
+            ClientId: "my-client",
+            Scopes: ["openid"]);
+
+        HttpResponseMessage response = await _server.AnonymousClient
+            .PostAsJsonAsync("/admin/oidc/authorizations", request,
+                TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 

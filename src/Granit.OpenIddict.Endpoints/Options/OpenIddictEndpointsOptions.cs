@@ -16,4 +16,10 @@ public sealed class OpenIddictEndpointsOptions
 
     /// <summary>OpenAPI tag name for admin OIDC management endpoints. Default: <c>"OIDC Admin"</c>.</summary>
     public string AdminTagName { get; set; } = "OIDC Admin";
+
+    /// <summary>Route prefix for authenticated (non-admin) OIDC endpoints used by the consent page. Default: <c>"oidc"</c>.</summary>
+    public string OidcRoutePrefix { get; set; } = "oidc";
+
+    /// <summary>OpenAPI tag name for OIDC consent endpoints. Default: <c>"OIDC"</c>.</summary>
+    public string OidcTagName { get; set; } = "OIDC";
 }

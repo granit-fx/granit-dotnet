@@ -40,6 +40,13 @@ public static class OpenIddictEndpointRouteBuilderExtensions
 
         adminGroup.MapAdminOidcEndpoints();
 
+        // ──── Authenticated (non-admin) OIDC endpoints (/api/oidc) ────
+        endpoints
+            .MapGranitGroup(options.OidcRoutePrefix)
+            .WithTags(options.OidcTagName)
+            .RequireAuthorization()
+            .MapConsentOidcEndpoints();
+
         return adminGroup;
     }
 

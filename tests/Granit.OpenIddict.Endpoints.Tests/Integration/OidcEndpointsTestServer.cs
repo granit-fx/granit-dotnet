@@ -92,6 +92,8 @@ internal sealed class OidcEndpointsTestServer : IAsyncDisposable
                 policy => policy.RequireRole(AdminRole))
             .AddPolicy(OpenIddictPermissions.Authorizations.Read,
                 policy => policy.RequireRole(AdminRole))
+            .AddPolicy(OpenIddictPermissions.Authorizations.Create,
+                policy => policy.RequireRole(AdminRole))
             .AddPolicy(OpenIddictPermissions.Authorizations.Revoke,
                 policy => policy.RequireRole(AdminRole));
 
