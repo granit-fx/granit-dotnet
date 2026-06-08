@@ -24,5 +24,6 @@ public sealed class EndpointAuthorizationConventionTests
             "ConnectLogoutEndpoints",
             "ConnectUserInfoEndpoints",
             "ConnectIntrospectionEndpoints",
-            "ConnectRevocationEndpoints");
+            "ConnectRevocationEndpoints",
+            "ConnectVerifyEndpoints");
 }

@@ -27,7 +27,8 @@ public sealed class ApiConventionTests
             "ConnectAuthorizationEndpoints",
             "ConnectTokenEndpoints",
             "ConnectLogoutEndpoints",
-            "ConnectUserInfoEndpoints");
+            "ConnectUserInfoEndpoints",
+            "ConnectVerifyEndpoints");
 
     [Fact]
     public void Complex_results_unions_should_include_ProblemHttpResult() =>

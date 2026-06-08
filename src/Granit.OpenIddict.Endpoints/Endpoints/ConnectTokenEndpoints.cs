@@ -217,7 +217,7 @@ internal static partial class ConnectTokenEndpoints
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(code))
         {
-            LogTwoFactorMissingParams(logger, username ?? "(null)");
+            LogTwoFactorMissingParams(logger);
             metrics.RecordAuthenticationFailure(tenantId, "missing_params");
             return Results.Forbid(
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
@@ -420,8 +420,8 @@ internal static partial class ConnectTokenEndpoints
     [LoggerMessage(Level = LogLevel.Error, Message = "Token endpoint: failed to write authentication audit entry — token flow continues.")]
     private static partial void LogAuditWriteFailed(ILogger logger, Exception exception);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Two-factor grant: missing 'username' or 'code' parameter for user '{Username}'")]
-    private static partial void LogTwoFactorMissingParams(ILogger logger, string username);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Two-factor grant: missing required 'username' or 'code' parameter")]
+    private static partial void LogTwoFactorMissingParams(ILogger logger);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Two-factor grant: invalid code for user '{UserId}'")]
     private static partial void LogTwoFactorFailed(ILogger logger, string userId);
