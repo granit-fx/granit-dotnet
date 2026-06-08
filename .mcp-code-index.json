@@ -36034,6 +36034,15 @@
       "members": []
     },
     {
+      "name": "AdminOidcCreateAuthorizationRequest",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcCreateAuthorizationRequest",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcCreateAuthorizationRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "AdminOidcCreateScopeRequest",
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcCreateScopeRequest",
       "kind": "record",
@@ -36058,6 +36067,24 @@
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcScopeResponse.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "AdminOidcUpdateApplicationRequest",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcUpdateApplicationRequest",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcUpdateApplicationRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "AdminOidcUpdateScopeRequest",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcUpdateScopeRequest",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcUpdateScopeRequest.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -36144,6 +36171,18 @@
           "name": "PostLogoutRedirectPath",
           "kind": "property",
           "signature": "string PostLogoutRedirectPath",
+          "returnType": "string"
+        },
+        {
+          "name": "ConsentPath",
+          "kind": "property",
+          "signature": "string ConsentPath",
+          "returnType": "string"
+        },
+        {
+          "name": "DeviceVerificationPath",
+          "kind": "property",
+          "signature": "string DeviceVerificationPath",
           "returnType": "string"
         }
       ]
@@ -36498,7 +36537,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictOptions.cs",
-      "line": 130,
+      "line": 148,
       "members": [
         {
           "name": "WithFapi2Profile",
@@ -36622,7 +36661,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/Extensions/OpenIddictServerHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitOpenIddictServer",

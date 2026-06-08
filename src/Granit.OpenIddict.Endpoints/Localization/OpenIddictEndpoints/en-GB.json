@@ -6,6 +6,7 @@
     "OpenIddictEndpoints:Workspace.Scopes": "Scopes",
     "OpenIddictEndpoints:Workspace.Section": "OpenID Connect",
     "Permission:OpenIddict.Authorizations.Read": "Read OIDC authorisations",
+    "Permission:OpenIddict.Authorizations.Create": "Create OIDC authorisation",
     "Permission:OpenIddict.Authorizations.Revoke": "Revoke OIDC authorisations"
   }
 }

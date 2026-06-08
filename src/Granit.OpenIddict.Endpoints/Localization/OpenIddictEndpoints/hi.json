@@ -9,6 +9,7 @@
     "Permission:OpenIddict.Applications.Read": "OIDC एप्लिकेशन पढ़ें",
     "Permission:OpenIddict.Applications.Rotate": "एप्लिकेशन सीक्रेट रोटेट करें",
     "Permission:OpenIddict.Authorizations.Read": "OIDC प्राधिकरण पढ़ें",
+    "Permission:OpenIddict.Authorizations.Create": "OIDC प्राधिकरण बनाएं",
     "Permission:OpenIddict.Authorizations.Revoke": "OIDC प्राधिकरण निरस्त करें",
     "Permission:OpenIddict.Scopes.Manage": "OIDC स्कोप प्रबंधित करें (पढ़ें, अपडेट करें)",
     "Permission:OpenIddict.Scopes.Read": "OIDC स्कोप पढ़ें",

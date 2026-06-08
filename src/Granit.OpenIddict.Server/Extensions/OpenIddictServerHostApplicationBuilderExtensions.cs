@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenIddict.Abstractions;
+using OpenIddict.Server;
+using static OpenIddict.Server.OpenIddictServerEvents;
 
 #pragma warning disable GRSEC003 // OpenIddict permission/grant type constants, not secrets
 
@@ -100,6 +102,32 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             if (granitOptions.RequirePar)
             {
                 options.RequirePushedAuthorizationRequests();
+            }
+
+            // JAR enforcement (RFC 9101): reject unsigned authorization requests.
+            // Mandatory for FAPI 2.0 (set automatically via WithFapi2Profile).
+            // OpenIddict 7.x does not expose a dedicated builder method; enforced via a
+            // custom ValidateAuthorizationRequest event handler that rejects requests
+            // missing a signed 'request' JWT parameter.
+            if (granitOptions.RequireJar)
+            {
+                options.AddEventHandler(
+                    OpenIddictServerHandlerDescriptor
+                        .CreateBuilder<ValidateAuthorizationRequestContext>()
+                        .UseInlineHandler((ValidateAuthorizationRequestContext ctx) =>
+                        {
+                            // The 'request' parameter carries the JAR object (RFC 9101 §4).
+                            if (string.IsNullOrEmpty((string?)ctx.Request["request"]))
+                            {
+                                ctx.Reject(
+                                    error: OpenIddictConstants.Errors.InvalidRequest,
+                                    description: "A JWT-secured authorization request object is required (JAR, RFC 9101).");
+                            }
+                            return default;
+                        })
+                        .SetOrder(int.MinValue + 100)
+                        .SetType(OpenIddictServerHandlerType.Custom)
+                        .Build());
             }
 
             // ──── FAPI 2.0 hardening ────

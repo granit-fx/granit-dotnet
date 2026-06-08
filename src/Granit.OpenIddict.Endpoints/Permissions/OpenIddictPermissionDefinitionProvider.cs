@@ -59,6 +59,11 @@ internal sealed class OpenIddictPermissionDefinitionProvider : IPermissionDefini
                 "Permission:OpenIddict.Authorizations.Read"),
             MultiTenancySides.Both);
         group.AddPermission(
+            OpenIddictPermissions.Authorizations.Create,
+            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
+                "Permission:OpenIddict.Authorizations.Create"),
+            MultiTenancySides.Both);
+        group.AddPermission(
             OpenIddictPermissions.Authorizations.Revoke,
             LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
                 "Permission:OpenIddict.Authorizations.Revoke"),

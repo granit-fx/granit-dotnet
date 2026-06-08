@@ -73,6 +73,7 @@ public static class OpenIddictEndpointRouteBuilderExtensions
         endpoints.MapConnectTokenEndpoints();
         endpoints.MapConnectUserInfoEndpoints();
         endpoints.MapConnectLogoutEndpoints(options);
+        endpoints.MapConnectVerifyEndpoints(options);
 
         return endpoints;
     }

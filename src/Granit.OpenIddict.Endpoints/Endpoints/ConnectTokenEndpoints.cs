@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
 using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Endpoints.Internal;
@@ -62,6 +63,20 @@ internal static partial class ConnectTokenEndpoints
         if (request.IsClientCredentialsGrantType())
         {
             return HandleClientCredentials(context, request, metrics, tenantId);
+        }
+
+        if (request.GrantType == "urn:granit:grant_type:two_factor")
+        {
+            return await HandleTwoFactorAsync(
+                context, request, principalFactory, metrics, tenantId)
+                .ConfigureAwait(false);
+        }
+
+        if (request.GrantType == "urn:granit:grant_type:passkey")
+        {
+            return await HandlePasskeyAsync(
+                context, request, principalFactory, metrics, tenantId)
+                .ConfigureAwait(false);
         }
 
         LogUnsupportedGrantType(logger, request.GrantType ?? "(null)");
@@ -180,6 +195,164 @@ internal static partial class ConnectTokenEndpoints
             authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
+    private static async Task<IResult> HandleTwoFactorAsync(
+        HttpContext context,
+        OpenIddictRequest request,
+        OidcPrincipalFactory principalFactory,
+        OpenIddictMetrics metrics,
+        string? tenantId)
+    {
+        ILogger logger = context.RequestServices
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.OpenIddict.Endpoints.ConnectTokenEndpoints");
+
+        UserManager<LocalIdentity> userManager = context.RequestServices
+            .GetRequiredService<UserManager<LocalIdentity>>();
+
+        string? username = (string?)request["username"];
+        string? code = (string?)request["code"];
+        bool useRecoveryCode = string.Equals(
+            (string?)request["use_recovery_code"], "true",
+            StringComparison.OrdinalIgnoreCase);
+
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(code))
+        {
+            LogTwoFactorMissingParams(logger, username ?? "(null)");
+            metrics.RecordAuthenticationFailure(tenantId, "missing_params");
+            return Results.Forbid(
+                authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
+        }
+
+        LocalIdentity? user = await userManager.FindByNameAsync(username).ConfigureAwait(false);
+        if (user is null)
+        {
+            LogUserNotFound(logger, username);
+            metrics.RecordAuthenticationFailure(tenantId, "invalid_credentials");
+            await TryWriteAuthAuditAsync(context, logger,
+                method: "urn:granit:grant_type:two_factor", userId: null, userName: username,
+                failureReason: "invalid_credentials", tenantId).ConfigureAwait(false);
+            return Results.Forbid(
+                authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
+        }
+
+        bool valid;
+        if (useRecoveryCode)
+        {
+            IdentityResult result = await userManager
+                .RedeemTwoFactorRecoveryCodeAsync(user, code).ConfigureAwait(false);
+            valid = result.Succeeded;
+        }
+        else
+        {
+            valid = await userManager
+                .VerifyTwoFactorTokenAsync(user, userManager.Options.Tokens.AuthenticatorTokenProvider, code)
+                .ConfigureAwait(false);
+        }
+
+        if (!valid)
+        {
+            LogTwoFactorFailed(logger, user.Id.ToString());
+            metrics.RecordAuthenticationFailure(tenantId, "invalid_two_factor_code");
+            await TryWriteAuthAuditAsync(context, logger,
+                method: "urn:granit:grant_type:two_factor", userId: user.Id.ToString(), userName: user.UserName,
+                failureReason: "invalid_two_factor_code", tenantId).ConfigureAwait(false);
+            return Results.Forbid(
+                authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
+        }
+
+        ImmutableArray<string> scopes = request.GetScopes();
+        ClaimsPrincipal principal = await principalFactory.CreateUserPrincipalAsync(
+            user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
+            .ConfigureAwait(false);
+
+        metrics.RecordTokenIssued(tenantId, "urn:granit:grant_type:two_factor");
+        metrics.RecordAuthenticationSuccess(tenantId, "urn:granit:grant_type:two_factor");
+        LogTokenIssued(logger, user.Id.ToString(), "urn:granit:grant_type:two_factor");
+
+        await TryWriteAuthAuditAsync(context, logger,
+            method: "urn:granit:grant_type:two_factor",
+            userId: user.Id.ToString(),
+            userName: user.UserName,
+            failureReason: null,
+            tenantId).ConfigureAwait(false);
+
+        return Results.SignIn(principal,
+            authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
+    private static async Task<IResult> HandlePasskeyAsync(
+        HttpContext context,
+        OpenIddictRequest request,
+        OidcPrincipalFactory principalFactory,
+        OpenIddictMetrics metrics,
+        string? tenantId)
+    {
+        ILogger logger = context.RequestServices
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.OpenIddict.Endpoints.ConnectTokenEndpoints");
+
+        string? credentialJson = (string?)request["credential_json"];
+        if (string.IsNullOrEmpty(credentialJson))
+        {
+            LogPasskeyMissingCredential(logger);
+            metrics.RecordAuthenticationFailure(tenantId, "missing_params");
+            return Results.Forbid(
+                authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
+        }
+
+        IPasskeyService passkeyService = context.RequestServices
+            .GetRequiredService<IPasskeyService>();
+
+        GranitPasskeyAssertionResult assertion = await passkeyService
+            .CompleteAssertionAsync(credentialJson, context.RequestAborted)
+            .ConfigureAwait(false);
+
+        if (!assertion.Succeeded || assertion.UserId is null)
+        {
+            LogPasskeyAssertionFailed(logger);
+            metrics.RecordAuthenticationFailure(tenantId, "invalid_passkey");
+            await TryWriteAuthAuditAsync(context, logger,
+                method: "urn:granit:grant_type:passkey", userId: null, userName: null,
+                failureReason: "invalid_passkey", tenantId).ConfigureAwait(false);
+            return Results.Forbid(
+                authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
+        }
+
+        UserManager<LocalIdentity> userManager = context.RequestServices
+            .GetRequiredService<UserManager<LocalIdentity>>();
+
+        LocalIdentity? user = await userManager.FindByIdAsync(assertion.UserId).ConfigureAwait(false);
+        if (user is null)
+        {
+            LogUserNotFound(logger, assertion.UserId);
+            metrics.RecordAuthenticationFailure(tenantId, "invalid_credentials");
+            await TryWriteAuthAuditAsync(context, logger,
+                method: "urn:granit:grant_type:passkey", userId: assertion.UserId, userName: null,
+                failureReason: "invalid_credentials", tenantId).ConfigureAwait(false);
+            return Results.Forbid(
+                authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
+        }
+
+        ImmutableArray<string> scopes = request.GetScopes();
+        ClaimsPrincipal principal = await principalFactory.CreateUserPrincipalAsync(
+            user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
+            .ConfigureAwait(false);
+
+        metrics.RecordTokenIssued(tenantId, "urn:granit:grant_type:passkey");
+        metrics.RecordAuthenticationSuccess(tenantId, "urn:granit:grant_type:passkey");
+        LogTokenIssued(logger, user.Id.ToString(), "urn:granit:grant_type:passkey");
+
+        await TryWriteAuthAuditAsync(context, logger,
+            method: "urn:granit:grant_type:passkey",
+            userId: user.Id.ToString(),
+            userName: user.UserName,
+            failureReason: null,
+            tenantId).ConfigureAwait(false);
+
+        return Results.SignIn(principal,
+            authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
     /// <summary>
     /// Records an authentication audit row for the token endpoint. No-op when
     /// <see cref="IAuditingWriter"/> is not registered. Audit failures are
@@ -246,4 +419,16 @@ internal static partial class ConnectTokenEndpoints
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Token endpoint: failed to write authentication audit entry — token flow continues.")]
     private static partial void LogAuditWriteFailed(ILogger logger, Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Two-factor grant: missing 'username' or 'code' parameter for user '{Username}'")]
+    private static partial void LogTwoFactorMissingParams(ILogger logger, string username);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Two-factor grant: invalid code for user '{UserId}'")]
+    private static partial void LogTwoFactorFailed(ILogger logger, string userId);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Passkey grant: missing 'credential_json' parameter")]
+    private static partial void LogPasskeyMissingCredential(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Passkey grant: assertion verification failed")]
+    private static partial void LogPasskeyAssertionFailed(ILogger logger);
 }

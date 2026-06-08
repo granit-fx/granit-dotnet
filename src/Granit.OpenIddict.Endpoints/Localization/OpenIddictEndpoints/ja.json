@@ -9,6 +9,7 @@
     "Permission:OpenIddict.Applications.Read": "OIDCアプリケーションの閲覧",
     "Permission:OpenIddict.Applications.Rotate": "アプリケーションシークレットのローテーション",
     "Permission:OpenIddict.Authorizations.Read": "OIDC認可の閲覧",
+    "Permission:OpenIddict.Authorizations.Create": "OIDC認可の作成",
     "Permission:OpenIddict.Authorizations.Revoke": "OIDC認可の取り消し",
     "Permission:OpenIddict.Scopes.Manage": "OIDCスコープの管理（閲覧、編集）",
     "Permission:OpenIddict.Scopes.Read": "OIDCスコープの閲覧",

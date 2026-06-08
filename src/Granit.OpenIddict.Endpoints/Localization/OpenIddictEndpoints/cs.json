@@ -9,6 +9,7 @@
     "Permission:OpenIddict.Applications.Read": "Zobrazit OIDC aplikace",
     "Permission:OpenIddict.Applications.Rotate": "Rotovat tajné klíče aplikací",
     "Permission:OpenIddict.Authorizations.Read": "Zobrazit OIDC autorizace",
+    "Permission:OpenIddict.Authorizations.Create": "Vytvořit OIDC autorizaci",
     "Permission:OpenIddict.Authorizations.Revoke": "Odvolat OIDC autorizace",
     "Permission:OpenIddict.Scopes.Manage": "Spravovat OIDC scopy (zobrazit, upravit)",
     "Permission:OpenIddict.Scopes.Read": "Zobrazit OIDC scopy",

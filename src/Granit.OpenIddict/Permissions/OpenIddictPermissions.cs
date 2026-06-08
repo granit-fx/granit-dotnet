@@ -42,6 +42,9 @@ public static class OpenIddictPermissions
         /// <summary>Permission to list and view OIDC authorizations.</summary>
         public const string Read = "OpenIddict.Authorizations.Read";
 
+        /// <summary>Permission to create OIDC authorizations on behalf of a subject (admin consent).</summary>
+        public const string Create = "OpenIddict.Authorizations.Create";
+
         /// <summary>Permission to revoke OIDC authorizations.</summary>
         public const string Revoke = "OpenIddict.Authorizations.Revoke";
     }

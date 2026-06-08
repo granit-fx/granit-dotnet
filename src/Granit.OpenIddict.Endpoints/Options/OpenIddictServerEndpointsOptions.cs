@@ -27,4 +27,29 @@ public sealed class OpenIddictServerEndpointsOptions
     /// is specified in the OIDC request. Default: <c>"/"</c>.
     /// </summary>
     public string PostLogoutRedirectPath { get; set; } = "/";
+
+    /// <summary>
+    /// Path to redirect when an OIDC application requires explicit user consent.
+    /// The authorization handler appends a <c>returnUrl</c> query parameter containing
+    /// the full <c>/connect/authorize</c> URL so the consent page can redirect back
+    /// after the user grants or denies consent. Default: <c>"/consent"</c>.
+    /// </summary>
+    /// <remarks>
+    /// The consent page is responsible for showing the requested scopes and client name,
+    /// collecting the user's decision, and creating a permanent authorization via
+    /// <c>POST /admin/oidc/authorizations</c> before redirecting back to the
+    /// <c>returnUrl</c> (accept) or back with <c>error=access_denied</c> (deny).
+    /// </remarks>
+    public string ConsentPath { get; set; } = "/consent";
+
+    /// <summary>
+    /// Path to the device verification page for the OAuth 2.0 Device Authorization Grant
+    /// (RFC 8628). The OpenIddict passthrough calls this page when the user navigates to
+    /// <c>/connect/verify</c>. Default: <c>"/device"</c>.
+    /// </summary>
+    /// <remarks>
+    /// Set to an empty string to disable the built-in redirect and handle
+    /// <c>/connect/verify</c> entirely via custom middleware.
+    /// </remarks>
+    public string DeviceVerificationPath { get; set; } = "/device";
 }

@@ -38,6 +38,16 @@ internal static class AdminOidcEndpoints
             .ProducesValidationProblem()
             .RequireAuthorization(OpenIddictPermissions.Applications.Manage);
 
+        apps.MapPut("/{clientId}", UpdateApplicationAsync)
+            .WithName("UpdateOidcApplication")
+            .WithSummary("Updates an OIDC application.")
+            .WithDescription("Updates the display name or type of an existing OIDC application. Null fields are left unchanged. Returns 404 if the application does not exist.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces<AdminOidcApplicationResponse>()
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(OpenIddictPermissions.Applications.Manage);
+
         apps.MapDelete("/{clientId}", DeleteApplicationAsync)
             .WithName("DeleteOidcApplication")
             .WithSummary("Deletes an OIDC application.")
@@ -80,6 +90,16 @@ internal static class AdminOidcEndpoints
             .ProducesValidationProblem()
             .RequireAuthorization(OpenIddictPermissions.Scopes.Manage);
 
+        scopes.MapPut("/{scopeName}", UpdateScopeAsync)
+            .WithName("UpdateOidcScope")
+            .WithSummary("Updates an OIDC scope.")
+            .WithDescription("Updates the display name or description of an existing OIDC scope. Null fields are left unchanged. Returns 404 if the scope does not exist.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces<AdminOidcScopeResponse>()
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(OpenIddictPermissions.Scopes.Manage);
+
         scopes.MapDelete("/{scopeName}", DeleteScopeAsync)
             .WithName("DeleteOidcScope")
             .WithSummary("Deletes an OIDC scope.")
@@ -91,6 +111,16 @@ internal static class AdminOidcEndpoints
 
         // ──── Authorizations ────
         RouteGroupBuilder auths = group.MapGranitGroup("/oidc/authorizations");
+
+        auths.MapPost("/", CreateAuthorizationAsync)
+            .WithName("CreateOidcAuthorization")
+            .WithSummary("Creates an OIDC authorization on behalf of a subject.")
+            .WithDescription("Pre-grants consent for a subject (user ID) to a client application with the specified scopes. Useful for admin-driven consent flows where the user cannot complete the interactive consent page.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces<AdminOidcAuthorizationResponse>(StatusCodes.Status201Created)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(OpenIddictPermissions.Authorizations.Create);
 
         auths.MapGet("/", ListAuthorizationsAsync)
             .WithName("ListOidcAuthorizations")
@@ -217,6 +247,40 @@ internal static class AdminOidcEndpoints
     }
 #pragma warning restore GRSEC003
 
+    private static async Task<Results<Ok<AdminOidcApplicationResponse>, ProblemHttpResult>> UpdateApplicationAsync(
+        string clientId,
+        AdminOidcUpdateApplicationRequest request,
+        [FromServices] IOpenIddictApplicationManager applicationManager,
+        CancellationToken cancellationToken)
+    {
+        object? app = await applicationManager.FindByClientIdAsync(clientId, cancellationToken).ConfigureAwait(false);
+        if (app is null)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+        }
+
+        var descriptor = new OpenIddictApplicationDescriptor();
+        await applicationManager.PopulateAsync(descriptor, app, cancellationToken).ConfigureAwait(false);
+
+        if (request.DisplayName is not null)
+        {
+            descriptor.DisplayName = request.DisplayName;
+        }
+
+        if (request.Type is not null)
+        {
+            descriptor.ApplicationType = request.Type;
+        }
+
+        await applicationManager.UpdateAsync(app, descriptor, cancellationToken).ConfigureAwait(false);
+
+        string? updatedDisplayName = await applicationManager.GetDisplayNameAsync(app, cancellationToken).ConfigureAwait(false);
+        string? updatedType = await applicationManager.GetApplicationTypeAsync(app, cancellationToken).ConfigureAwait(false);
+        Guid? tenantId = app is GranitOpenIddictApplication updatedGranitApp ? updatedGranitApp.TenantId : null;
+
+        return TypedResults.Ok(new AdminOidcApplicationResponse(clientId, updatedDisplayName, updatedType, tenantId));
+    }
+
     // ──── Scope handlers ────
 
     private static async Task<Ok<IReadOnlyList<AdminOidcScopeResponse>>> ListScopesAsync(
@@ -259,6 +323,40 @@ internal static class AdminOidcEndpoints
             new AdminOidcScopeResponse(name, displayName, description));
     }
 
+    private static async Task<Results<Ok<AdminOidcScopeResponse>, ProblemHttpResult>> UpdateScopeAsync(
+        string scopeName,
+        AdminOidcUpdateScopeRequest request,
+        [FromServices] IOpenIddictScopeManager scopeManager,
+        CancellationToken cancellationToken)
+    {
+        object? scope = await scopeManager.FindByNameAsync(scopeName, cancellationToken).ConfigureAwait(false);
+        if (scope is null)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+        }
+
+        var descriptor = new OpenIddictScopeDescriptor();
+        await scopeManager.PopulateAsync(descriptor, scope, cancellationToken).ConfigureAwait(false);
+
+        if (request.DisplayName is not null)
+        {
+            descriptor.DisplayName = request.DisplayName;
+        }
+
+        if (request.Description is not null)
+        {
+            descriptor.Description = request.Description;
+        }
+
+        await scopeManager.UpdateAsync(scope, descriptor, cancellationToken).ConfigureAwait(false);
+
+        string? name = await scopeManager.GetNameAsync(scope, cancellationToken).ConfigureAwait(false);
+        string? displayName = await scopeManager.GetDisplayNameAsync(scope, cancellationToken).ConfigureAwait(false);
+        string? description = await scopeManager.GetDescriptionAsync(scope, cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Ok(new AdminOidcScopeResponse(name, displayName, description));
+    }
+
     private static async Task<Results<NoContent, ProblemHttpResult>> DeleteScopeAsync(
         string scopeName,
         [FromServices] IOpenIddictScopeManager scopeManager,
@@ -275,6 +373,48 @@ internal static class AdminOidcEndpoints
     }
 
     // ──── Authorization handlers ────
+
+    private static async Task<Results<Created<AdminOidcAuthorizationResponse>, ProblemHttpResult>> CreateAuthorizationAsync(
+        AdminOidcCreateAuthorizationRequest request,
+        [FromServices] IOpenIddictApplicationManager applicationManager,
+        [FromServices] IOpenIddictAuthorizationManager authorizationManager,
+        CancellationToken cancellationToken)
+    {
+        // Resolve the application's internal ID from its OAuth client_id.
+        object? app = await applicationManager.FindByClientIdAsync(request.ClientId, cancellationToken).ConfigureAwait(false);
+        if (app is null)
+        {
+            return TypedResults.Problem(
+                detail: $"No application found with client_id '{request.ClientId}'.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
+
+        string? applicationId = await applicationManager.GetIdAsync(app, cancellationToken).ConfigureAwait(false);
+
+        var descriptor = new OpenIddictAuthorizationDescriptor
+        {
+            Subject = request.Subject,
+            ApplicationId = applicationId,
+            Type = OpenIddictConstants.AuthorizationTypes.Permanent,
+            Status = OpenIddictConstants.Statuses.Valid,
+        };
+        foreach (string scope in request.Scopes)
+        {
+            descriptor.Scopes.Add(scope);
+        }
+
+        object auth = await authorizationManager.CreateAsync(descriptor, cancellationToken).ConfigureAwait(false);
+
+        string? id = await authorizationManager.GetIdAsync(auth, cancellationToken).ConfigureAwait(false);
+        string? status = await authorizationManager.GetStatusAsync(auth, cancellationToken).ConfigureAwait(false);
+        string? type = await authorizationManager.GetTypeAsync(auth, cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Created(
+            $"/admin/oidc/authorizations/{id}",
+            new AdminOidcAuthorizationResponse(
+                Guid.TryParse(id, out Guid parsedId) ? parsedId : Guid.Empty,
+                request.Subject, request.ClientId, status, type));
+    }
 
     private static async Task<Ok<IReadOnlyList<AdminOidcAuthorizationResponse>>> ListAuthorizationsAsync(
         [FromServices] IOpenIddictAuthorizationManager authorizationManager,

@@ -88,6 +88,23 @@ public sealed class GranitOpenIddictOptions
     public bool EnableTokenExchange { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the server requires JWT-Secured Authorization
+    /// Requests (JAR, RFC 9101) for all authorization code flows.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When <see langword="true"/>, the server rejects authorization requests that do not
+    /// include a signed <c>request</c> JWT parameter. Clients must sign their authorization
+    /// requests using a registered key pair.
+    /// </para>
+    /// <para>
+    /// Required for FAPI 2.0 Security Profile compliance.
+    /// Default: <see langword="false"/> (JAR available but not enforced).
+    /// </para>
+    /// </remarks>
+    public bool RequireJar { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the FAPI 2.0 Security Profile is enabled.
     /// When <see langword="true"/>, all FAPI 2.0 mandatory constraints are enforced.
     /// </summary>
@@ -95,6 +112,7 @@ public sealed class GranitOpenIddictOptions
     /// <para>Enabling this profile automatically sets:</para>
     /// <list type="bullet">
     /// <item><description><see cref="RequirePar"/> = <c>true</c> (RFC 9126)</description></item>
+    /// <item><description><see cref="RequireJar"/> = <c>true</c> (RFC 9101)</description></item>
     /// </list>
     /// <para>
     /// Additionally, the following must be configured on the BFF side:
@@ -140,6 +158,7 @@ public static class GranitOpenIddictOptionsExtensions
     {
         options.EnableFapi2Profile = true;
         options.RequirePar = true;
+        options.RequireJar = true;
         options.UseReferenceTokens = true;
         return options;
     }

@@ -96,6 +96,17 @@ internal static partial class ConnectAuthorizationEndpoints
         if (!string.Equals(consentType, OpenIddictConstants.ConsentTypes.Implicit, StringComparison.OrdinalIgnoreCase)
             && !string.Equals(consentType, OpenIddictConstants.ConsentTypes.Systematic, StringComparison.OrdinalIgnoreCase))
         {
+            // Explicit / external consent: redirect to the consent page which shows the
+            // requested scopes and, on accept, creates a permanent authorization via
+            // POST /admin/oidc/authorizations before redirecting back to returnUrl.
+            // On deny, the consent page redirects back with ?error=access_denied.
+            if (!string.IsNullOrEmpty(options.ConsentPath))
+            {
+                string returnUrl = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
+                LogConsentRedirect(logger, request.ClientId!, consentType ?? "(null)");
+                return Results.Redirect($"{options.ConsentPath}?returnUrl={Uri.EscapeDataString(returnUrl)}");
+            }
+
             LogExplicitConsentNotSupported(logger, request.ClientId!, consentType ?? "(null)");
             return Results.Forbid(
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
@@ -216,7 +227,10 @@ internal static partial class ConnectAuthorizationEndpoints
     [LoggerMessage(Level = LogLevel.Warning, Message = "Authorization: application '{ClientId}' not found")]
     private static partial void LogApplicationNotFound(ILogger logger, string clientId);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Authorization: explicit consent not supported for client '{ClientId}' (consent type: '{ConsentType}')")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "Authorization: redirecting to consent page for client '{ClientId}' (consent type: '{ConsentType}')")]
+    private static partial void LogConsentRedirect(ILogger logger, string clientId, string consentType);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Authorization: explicit consent not supported for client '{ClientId}' (consent type: '{ConsentType}') — ConsentPath is empty")]
     private static partial void LogExplicitConsentNotSupported(ILogger logger, string clientId, string consentType);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Authorization: authenticated user not found in identity store")]

@@ -9,6 +9,7 @@
     "Permission:OpenIddict.Applications.Read": "OIDC-applicaties raadplegen",
     "Permission:OpenIddict.Applications.Rotate": "Applicatiegeheimen roteren",
     "Permission:OpenIddict.Authorizations.Read": "OIDC-autorisaties raadplegen",
+    "Permission:OpenIddict.Authorizations.Create": "OIDC-autorisatie aanmaken",
     "Permission:OpenIddict.Authorizations.Revoke": "OIDC-autorisaties intrekken",
     "Permission:OpenIddict.Scopes.Manage": "OIDC-scopes beheren (raadplegen, wijzigen)",
     "Permission:OpenIddict.Scopes.Read": "OIDC-scopes raadplegen",

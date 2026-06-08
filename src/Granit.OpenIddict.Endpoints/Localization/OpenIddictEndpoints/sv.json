@@ -9,6 +9,7 @@
     "Permission:OpenIddict.Applications.Read": "Visa OIDC-applikationer",
     "Permission:OpenIddict.Applications.Rotate": "Rotera applikationshemligheter",
     "Permission:OpenIddict.Authorizations.Read": "Visa OIDC-auktoriseringar",
+    "Permission:OpenIddict.Authorizations.Create": "Skapa OIDC-auktorisering",
     "Permission:OpenIddict.Authorizations.Revoke": "Återkalla OIDC-auktoriseringar",
     "Permission:OpenIddict.Scopes.Manage": "Hantera OIDC-scopes (visa, redigera)",
     "Permission:OpenIddict.Scopes.Read": "Visa OIDC-scopes",

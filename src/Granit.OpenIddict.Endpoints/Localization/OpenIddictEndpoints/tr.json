@@ -9,6 +9,7 @@
     "Permission:OpenIddict.Applications.Read": "OIDC uygulamalarını görüntüle",
     "Permission:OpenIddict.Applications.Rotate": "Uygulama gizli anahtarlarını döndür",
     "Permission:OpenIddict.Authorizations.Read": "OIDC yetkilendirmelerini görüntüle",
+    "Permission:OpenIddict.Authorizations.Create": "OIDC yetkilendirmesi oluştur",
     "Permission:OpenIddict.Authorizations.Revoke": "OIDC yetkilendirmelerini iptal et",
     "Permission:OpenIddict.Scopes.Manage": "OIDC kapsamlarını yönet (görüntüle, düzenle)",
     "Permission:OpenIddict.Scopes.Read": "OIDC kapsamlarını görüntüle",

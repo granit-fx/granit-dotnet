@@ -9,6 +9,7 @@
     "Permission:OpenIddict.Applications.Read": "OIDC 애플리케이션 조회",
     "Permission:OpenIddict.Applications.Rotate": "애플리케이션 비밀키 순환",
     "Permission:OpenIddict.Authorizations.Read": "OIDC 인가 조회",
+    "Permission:OpenIddict.Authorizations.Create": "OIDC 인가 생성",
     "Permission:OpenIddict.Authorizations.Revoke": "OIDC 인가 취소",
     "Permission:OpenIddict.Scopes.Manage": "OIDC 스코프 관리 (조회, 수정)",
     "Permission:OpenIddict.Scopes.Read": "OIDC 스코프 조회",

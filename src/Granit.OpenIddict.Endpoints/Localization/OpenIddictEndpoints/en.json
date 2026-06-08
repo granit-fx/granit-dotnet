@@ -9,6 +9,7 @@
     "Permission:OpenIddict.Applications.Read": "Read OIDC applications",
     "Permission:OpenIddict.Applications.Rotate": "Rotate application secrets",
     "Permission:OpenIddict.Authorizations.Read": "Read OIDC authorizations",
+    "Permission:OpenIddict.Authorizations.Create": "Create OIDC authorization",
     "Permission:OpenIddict.Authorizations.Revoke": "Revoke OIDC authorizations",
     "Permission:OpenIddict.Scopes.Manage": "Manage OIDC scopes (read, update)",
     "Permission:OpenIddict.Scopes.Read": "Read OIDC scopes",
