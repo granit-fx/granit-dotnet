@@ -16,5 +16,10 @@ internal sealed class AdminOidcUpdateScopeRequestValidator : GranitValidator<Adm
 
         RuleFor(x => x.Description)
             .MaximumLength(1024);
+
+        RuleForEach(x => x.Resources)
+            .NotEmpty()
+            .MaximumLength(512)
+            .When(x => x.Resources is not null);
     }
 }

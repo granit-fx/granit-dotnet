@@ -134,6 +134,12 @@ internal sealed partial class OpenIddictSeedContributor(
             return true;
         }
 
+        if ((current.ApplicationType ?? OpenIddictConstants.ApplicationTypes.Web) !=
+            (desired.ApplicationType ?? OpenIddictConstants.ApplicationTypes.Web))
+        {
+            return true;
+        }
+
         return current.GetClientSide() != desired.ClientSide;
     }
 
@@ -200,6 +206,8 @@ internal sealed partial class OpenIddictSeedContributor(
             ? BuildJsonWebKeySet(source.SigningKeyJwk)
             : null;
 
+        appDescriptor.ApplicationType = source.ApplicationType ?? OpenIddictConstants.ApplicationTypes.Web;
+
         // Consent type (default: implicit — auto-grant for first-party apps)
         appDescriptor.ConsentType = source.ConsentType ?? OpenIddictConstants.ConsentTypes.Implicit;
 
@@ -220,6 +228,7 @@ internal sealed partial class OpenIddictSeedContributor(
             {
                 Name = descriptor.Name,
                 DisplayName = descriptor.DisplayName,
+                Description = descriptor.Description,
             };
 
             foreach (string resource in descriptor.Resources)
@@ -239,6 +248,7 @@ internal sealed partial class OpenIddictSeedContributor(
             // Skip update when values are already up to date — prevents ConcurrencyException
             // when migrator and API both execute seeders concurrently at startup.
             if (scopeDescriptor.DisplayName == descriptor.DisplayName
+                && scopeDescriptor.Description == descriptor.Description
                 && scopeDescriptor.Resources.SetEquals(descriptor.Resources))
             {
                 Log.ScopeUnchanged(logger, descriptor.Name);
@@ -246,6 +256,7 @@ internal sealed partial class OpenIddictSeedContributor(
             }
 
             scopeDescriptor.DisplayName = descriptor.DisplayName;
+            scopeDescriptor.Description = descriptor.Description;
 
             scopeDescriptor.Resources.Clear();
             foreach (string resource in descriptor.Resources)

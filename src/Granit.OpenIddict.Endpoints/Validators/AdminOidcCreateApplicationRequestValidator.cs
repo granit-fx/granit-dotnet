@@ -19,6 +19,17 @@ internal sealed class AdminOidcCreateApplicationRequestValidator : GranitValidat
         RuleFor(x => x.DisplayName)
             .MaximumLength(256);
 
+        RuleFor(x => x.ConsentType)
+            .MaximumLength(64);
+
+        RuleFor(x => x.SigningKeyJwk)
+            .MaximumLength(65536);
+
+        RuleForEach(x => x.Permissions)
+            .NotEmpty()
+            .MaximumLength(512)
+            .When(x => x.Permissions is not null);
+
         RuleForEach(x => x.RedirectUris)
             .NotEmpty()
             .AbsoluteUri()

@@ -489,18 +489,34 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     {
         var authId = Guid.NewGuid();
         object auth1 = new();
+        object app1 = new();
 
         _server.AuthorizationManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(ToAsyncEnumerable<object>(auth1));
 
         _server.AuthorizationManager.GetIdAsync(auth1, Arg.Any<CancellationToken>())
             .Returns(authId.ToString());
-        _server.AuthorizationManager.GetSubjectAsync(auth1, Arg.Any<CancellationToken>())
-            .Returns("user-123");
-        _server.AuthorizationManager.GetStatusAsync(auth1, Arg.Any<CancellationToken>())
-            .Returns("valid");
-        _server.AuthorizationManager.GetTypeAsync(auth1, Arg.Any<CancellationToken>())
-            .Returns("permanent");
+
+#pragma warning disable CA2012
+        _server.AuthorizationManager
+            .PopulateAsync(Arg.Any<OpenIddictAuthorizationDescriptor>(), auth1, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictAuthorizationDescriptor d = ci.ArgAt<OpenIddictAuthorizationDescriptor>(0);
+                d.Subject = "user-123";
+                d.Status = "valid";
+                d.Type = "permanent";
+                d.ApplicationId = "app-internal-id";
+                d.Scopes.Add("openid");
+                d.Scopes.Add("profile");
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+
+        _server.ApplicationManager.FindByIdAsync("app-internal-id", Arg.Any<CancellationToken>())
+            .Returns(app1);
+        _server.ApplicationManager.GetClientIdAsync(app1, Arg.Any<CancellationToken>())
+            .Returns("my-client");
 
         HttpResponseMessage response = await _server.AuthenticatedClient
             .GetAsync("/admin/oidc/authorizations", TestContext.Current.CancellationToken);
@@ -514,8 +530,10 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         result.Count.ShouldBe(1);
         result[0].Id.ShouldBe(authId);
         result[0].Subject.ShouldBe("user-123");
+        result[0].ClientId.ShouldBe("my-client");
         result[0].Status.ShouldBe("valid");
         result[0].Type.ShouldBe("permanent");
+        result[0].Scopes.ShouldBe(["openid", "profile"], ignoreOrder: true);
     }
 
     [Fact]

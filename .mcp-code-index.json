@@ -36021,7 +36021,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcAuthorizationResponse.cs",
-      "line": 11,
+      "line": 12,
       "members": []
     },
     {
@@ -36575,7 +36575,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 36,
+      "line": 37,
       "members": []
     },
     {
@@ -36584,7 +36584,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 53,
+      "line": 56,
       "members": []
     },
     {

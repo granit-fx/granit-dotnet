@@ -95,7 +95,7 @@ internal static class AdminOidcEndpoints
         scopes.MapPut("/{scopeName}", UpdateScopeAsync)
             .WithName("UpdateOidcScope")
             .WithSummary("Updates an OIDC scope.")
-            .WithDescription("Updates the display name or description of an existing OIDC scope. Null fields are left unchanged. Returns 404 if the scope does not exist.")
+            .WithDescription("Updates the display name, description, or resource server identifiers of an existing OIDC scope. Null fields are left unchanged; an empty Resources array clears all resources. Returns 404 if the scope does not exist.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcScopeResponse>()
             .ProducesValidationProblem()
@@ -484,32 +484,47 @@ internal static class AdminOidcEndpoints
         object auth = await authorizationManager.CreateAsync(descriptor, cancellationToken).ConfigureAwait(false);
 
         string? id = await authorizationManager.GetIdAsync(auth, cancellationToken).ConfigureAwait(false);
-        string? status = await authorizationManager.GetStatusAsync(auth, cancellationToken).ConfigureAwait(false);
-        string? type = await authorizationManager.GetTypeAsync(auth, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Created(
             $"/admin/oidc/authorizations/{id}",
             new AdminOidcAuthorizationResponse(
                 Guid.TryParse(id, out Guid parsedId) ? parsedId : Guid.Empty,
-                request.Subject, request.ClientId, status, type));
+                request.Subject, request.ClientId,
+                descriptor.Status, descriptor.Type,
+                [.. descriptor.Scopes]));
     }
 
     private static async Task<Ok<IReadOnlyList<AdminOidcAuthorizationResponse>>> ListAuthorizationsAsync(
         [FromServices] IOpenIddictAuthorizationManager authorizationManager,
+        [FromServices] IOpenIddictApplicationManager applicationManager,
         CancellationToken cancellationToken)
     {
         var results = new List<AdminOidcAuthorizationResponse>();
+        var clientIdCache = new Dictionary<string, string?>(StringComparer.Ordinal);
 
         await foreach (object auth in authorizationManager.ListAsync(100, 0, cancellationToken).ConfigureAwait(false))
         {
             string? id = await authorizationManager.GetIdAsync(auth, cancellationToken).ConfigureAwait(false);
-            string? subject = await authorizationManager.GetSubjectAsync(auth, cancellationToken).ConfigureAwait(false);
-            string? status = await authorizationManager.GetStatusAsync(auth, cancellationToken).ConfigureAwait(false);
-            string? type = await authorizationManager.GetTypeAsync(auth, cancellationToken).ConfigureAwait(false);
+            var descriptor = new OpenIddictAuthorizationDescriptor();
+            await authorizationManager.PopulateAsync(descriptor, auth, cancellationToken).ConfigureAwait(false);
+
+            string? clientId = null;
+            if (descriptor.ApplicationId is not null)
+            {
+                if (!clientIdCache.TryGetValue(descriptor.ApplicationId, out clientId))
+                {
+                    object? app = await applicationManager.FindByIdAsync(descriptor.ApplicationId, cancellationToken).ConfigureAwait(false);
+                    clientId = app is not null
+                        ? await applicationManager.GetClientIdAsync(app, cancellationToken).ConfigureAwait(false)
+                        : null;
+                    clientIdCache[descriptor.ApplicationId] = clientId;
+                }
+            }
 
             results.Add(new AdminOidcAuthorizationResponse(
                 Guid.TryParse(id, out Guid parsedId) ? parsedId : Guid.Empty,
-                subject, null, status, type));
+                descriptor.Subject, clientId, descriptor.Status, descriptor.Type,
+                [.. descriptor.Scopes]));
         }
 
         return TypedResults.Ok<IReadOnlyList<AdminOidcAuthorizationResponse>>(results);
