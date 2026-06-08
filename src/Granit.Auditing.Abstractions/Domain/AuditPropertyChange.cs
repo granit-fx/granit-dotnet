@@ -1,3 +1,4 @@
+using Granit.Auditing.Attributes;
 using Granit.Domain;
 
 namespace Granit.Auditing.Domain;
@@ -5,6 +6,7 @@ namespace Granit.Auditing.Domain;
 /// <summary>
 /// Records a single property change within an <see cref="AuditEntityChange"/>.
 /// </summary>
+[AuditIgnore]
 public class AuditPropertyChange : Entity
 {
     /// <summary>Foreign key to the parent <see cref="AuditEntityChange"/>.</summary>

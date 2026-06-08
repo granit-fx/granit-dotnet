@@ -1,3 +1,4 @@
+using Granit.Auditing.Attributes;
 using Granit.Domain;
 
 namespace Granit.Auditing.Domain;
@@ -11,6 +12,7 @@ namespace Granit.Auditing.Domain;
 /// (auto-populated by <c>AuditedEntityInterceptor</c>). Audit entries are immutable —
 /// no modification audit fields needed.
 /// </remarks>
+[AuditIgnore]
 public class AuditEntry : CreationAuditedEntity, IMultiTenant
 {
     /// <summary>Operation timestamp (UTC).</summary>

@@ -1823,11 +1823,13 @@
     {
       "name": "Granit.OpenIddict",
       "deps": [
+        "Granit.Caching",
         "Granit.DataExchange.Abstractions",
         "Granit.Encryption",
+        "Granit.Entities.Abstractions",
         "Granit.Http.Cookies",
         "Granit.Identity.Local",
-        "Granit.Entities.Abstractions",
+        "Granit.Identity.Local.AspNetIdentity",
         "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
@@ -5277,7 +5279,7 @@
       "kind": "class",
       "project": "Granit.Auditing.Abstractions",
       "file": "src/Granit.Auditing.Abstractions/Domain/AuditEntityChange.cs",
-      "line": 8,
+      "line": 10,
       "members": [
         {
           "name": "AuditEntryId",
@@ -5305,7 +5307,7 @@
       "kind": "class",
       "project": "Granit.Auditing.Abstractions",
       "file": "src/Granit.Auditing.Abstractions/Domain/AuditEntry.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "Timestamp",
@@ -5336,7 +5338,7 @@
       "kind": "class",
       "project": "Granit.Auditing.Abstractions",
       "file": "src/Granit.Auditing.Abstractions/Domain/AuditPropertyChange.cs",
-      "line": 8,
+      "line": 10,
       "members": [
         {
           "name": "AuditEntityChangeId",
@@ -36419,7 +36421,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 36,
+      "line": 41,
       "members": [
         {
           "name": "ConfigureServices",
