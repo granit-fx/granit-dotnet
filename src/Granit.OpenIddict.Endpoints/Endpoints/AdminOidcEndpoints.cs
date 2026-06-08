@@ -31,6 +31,14 @@ internal static class AdminOidcEndpoints
             .Produces<IReadOnlyList<AdminOidcApplicationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Applications.Read);
 
+        apps.MapGet("/{clientId}", GetApplicationAsync)
+            .WithName("GetOidcApplication")
+            .WithSummary("Returns a single OIDC application by client ID.")
+            .WithDescription("Returns the full configuration of the specified OIDC client application. Returns 404 if no application with the given client ID exists.")
+            .Produces<AdminOidcApplicationResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(OpenIddictPermissions.Applications.Read);
+
         apps.MapPost("/", CreateApplicationAsync)
             .WithName("CreateOidcApplication")
             .WithSummary("Creates a new OIDC application.")
@@ -152,6 +160,24 @@ internal static class AdminOidcEndpoints
     }
 
     // ──── Application handlers ────
+
+    private static async Task<Results<Ok<AdminOidcApplicationResponse>, ProblemHttpResult>> GetApplicationAsync(
+        string clientId,
+        [FromServices] IOpenIddictApplicationManager applicationManager,
+        CancellationToken cancellationToken)
+    {
+        object? app = await applicationManager.FindByClientIdAsync(clientId, cancellationToken).ConfigureAwait(false);
+        if (app is null)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+        }
+
+        var descriptor = new OpenIddictApplicationDescriptor();
+        await applicationManager.PopulateAsync(descriptor, app, cancellationToken).ConfigureAwait(false);
+        Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
+
+        return TypedResults.Ok(ToResponse(descriptor, tenantId));
+    }
 
     private static async Task<Ok<IReadOnlyList<AdminOidcApplicationResponse>>> ListApplicationsAsync(
         [FromServices] IOpenIddictApplicationManager applicationManager,
