@@ -86,6 +86,7 @@
       "src/Granit.RateLimiting.Wolverine/Granit.RateLimiting.Wolverine.csproj",
       "src/Granit.RateLimiting/Granit.RateLimiting.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
+      "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",
       "src/Granit.Vault/Granit.Vault.csproj",

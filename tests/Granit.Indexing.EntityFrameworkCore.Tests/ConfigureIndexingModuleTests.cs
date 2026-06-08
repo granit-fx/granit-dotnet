@@ -2,6 +2,7 @@ using Granit.DataFiltering;
 using Granit.Indexing.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Testing.Fakes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -23,7 +24,7 @@ public sealed class ConfigureIndexingModuleTests
         SqliteConnection connection = new("DataSource=:memory:");
         await connection.OpenAsync(TestContext.Current.CancellationToken);
 
-        MutableTenant tenant = new() { Id = Guid.NewGuid() };
+        FakeCurrentTenant tenant = new() { Id = Guid.NewGuid() };
         DbContextOptions<HostFoldedDbContext> options = new DbContextOptionsBuilder<HostFoldedDbContext>()
             .UseSqlite(connection)
             .Options;

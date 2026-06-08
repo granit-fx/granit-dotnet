@@ -9,6 +9,7 @@
 // the cached model.
 // =============================================================================
 
+using Granit.Testing.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
@@ -22,7 +23,7 @@ public sealed class IndexingTenantFilterParameterizationTests
     {
         var tenantA = Guid.NewGuid();
         var tenantB = Guid.NewGuid();
-        MutableTenant tenant = new() { Id = tenantA };
+        FakeCurrentTenant tenant = new() { Id = tenantA };
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await using SqliteHarness harness = await SqliteHarness.CreateAsync(tenant, ct, typeof(Guid));
@@ -54,7 +55,7 @@ public sealed class IndexingTenantFilterParameterizationTests
         var tenantA = Guid.NewGuid();
         var tenantB = Guid.NewGuid();
         var tenantC = Guid.NewGuid();
-        var tenant = new MutableTenant { Id = tenantA };
+        var tenant = new FakeCurrentTenant { Id = tenantA };
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await using SqliteHarness harness = await SqliteHarness.CreateAsync(tenant, ct, typeof(Guid));

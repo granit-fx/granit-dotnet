@@ -7,6 +7,7 @@ using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Extensions;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
+using Granit.Testing.Fakes;
 using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -42,12 +43,12 @@ public sealed class RoleEndpointsPermissionTestApplication : IAsyncLifetime
 {
     private readonly PostgresFixture _postgres = new();
     private WebApplication? _app;
-    private MutableCurrentTenant? _currentTenant;
+    private FakeCurrentTenant? _currentTenant;
 
     public HttpClient HttpClient =>
         _app?.GetTestClient() ?? throw new InvalidOperationException("Fixture not initialized.");
 
-    public MutableCurrentTenant CurrentTenant =>
+    public FakeCurrentTenant CurrentTenant =>
         _currentTenant ?? throw new InvalidOperationException("Fixture not initialized.");
 
     public IServiceProvider Services =>
@@ -77,7 +78,7 @@ public sealed class RoleEndpointsPermissionTestApplication : IAsyncLifetime
         builder.Services.AddGranitGuids();
         builder.Services.AddScoped<IGranitRoleOrchestrator, GranitRoleOrchestrator>();
 
-        _currentTenant = new MutableCurrentTenant();
+        _currentTenant = new FakeCurrentTenant();
         builder.Services.AddSingleton<ICurrentTenant>(_currentTenant);
 
         // Real permission pipeline — no PermissiveAuthorizationPolicyProvider here.

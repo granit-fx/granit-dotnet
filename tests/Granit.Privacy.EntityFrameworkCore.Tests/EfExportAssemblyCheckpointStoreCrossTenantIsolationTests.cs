@@ -6,6 +6,7 @@ using Granit.Privacy.DataExport;
 using Granit.Privacy.EntityFrameworkCore.DataExport.Internal;
 using Granit.Privacy.EntityFrameworkCore.Entities;
 using Granit.Privacy.EntityFrameworkCore.Internal;
+using Granit.Testing.Fakes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
@@ -32,7 +33,7 @@ public sealed class EfExportAssemblyCheckpointStoreCrossTenantIsolationTests
         // Same request id under two tenants — reading tenant A MUST return tenant
         // A's checkpoint, never tenant B's or the ambient tenant's.
         await using SqliteHarness h = await SqliteHarness.CreateAsync(
-            new MutableTenant { Id = TenantA }, TestContext.Current.CancellationToken);
+            new FakeCurrentTenant { Id = TenantA }, TestContext.Current.CancellationToken);
 
         var sut = new EfExportAssemblyCheckpointStore(h.Factory, TimeProvider.System);
         var requestId = Guid.NewGuid();
@@ -60,7 +61,7 @@ public sealed class EfExportAssemblyCheckpointStoreCrossTenantIsolationTests
         // ExecuteDelete bypasses change tracking — a missing predicate would wipe
         // every row matching RequestId across all tenants.
         await using SqliteHarness h = await SqliteHarness.CreateAsync(
-            new MutableTenant { Id = TenantA }, TestContext.Current.CancellationToken);
+            new FakeCurrentTenant { Id = TenantA }, TestContext.Current.CancellationToken);
 
         var sut = new EfExportAssemblyCheckpointStore(h.Factory, TimeProvider.System);
         var requestId = Guid.NewGuid();
@@ -87,7 +88,7 @@ public sealed class EfExportAssemblyCheckpointStoreCrossTenantIsolationTests
         // dispatched for tenant B can checkpoint against tenant B even if the
         // ambient ICurrentTenant happens to point elsewhere.
         await using SqliteHarness h = await SqliteHarness.CreateAsync(
-            new MutableTenant { Id = TenantA }, TestContext.Current.CancellationToken);
+            new FakeCurrentTenant { Id = TenantA }, TestContext.Current.CancellationToken);
 
         var sut = new EfExportAssemblyCheckpointStore(h.Factory, TimeProvider.System);
         var requestId = Guid.NewGuid();
@@ -103,7 +104,7 @@ public sealed class EfExportAssemblyCheckpointStoreCrossTenantIsolationTests
     public async Task SetAsync_RoundTripsAllCheckpointFields()
     {
         await using SqliteHarness h = await SqliteHarness.CreateAsync(
-            new MutableTenant { Id = TenantA }, TestContext.Current.CancellationToken);
+            new FakeCurrentTenant { Id = TenantA }, TestContext.Current.CancellationToken);
 
         var sut = new EfExportAssemblyCheckpointStore(h.Factory, TimeProvider.System);
         var requestId = Guid.NewGuid();
@@ -126,7 +127,7 @@ public sealed class EfExportAssemblyCheckpointStoreCrossTenantIsolationTests
     public async Task SetAsync_TwiceUpdatesInPlace_DoesNotInsertDuplicate()
     {
         await using SqliteHarness h = await SqliteHarness.CreateAsync(
-            new MutableTenant { Id = TenantA }, TestContext.Current.CancellationToken);
+            new FakeCurrentTenant { Id = TenantA }, TestContext.Current.CancellationToken);
 
         var sut = new EfExportAssemblyCheckpointStore(h.Factory, TimeProvider.System);
         var requestId = Guid.NewGuid();
@@ -161,7 +162,7 @@ public sealed class EfExportAssemblyCheckpointStoreCrossTenantIsolationTests
             Factory = factory;
         }
 
-        public static async Task<SqliteHarness> CreateAsync(MutableTenant tenant, CancellationToken ct)
+        public static async Task<SqliteHarness> CreateAsync(FakeCurrentTenant tenant, CancellationToken ct)
         {
             SqliteConnection connection = new("DataSource=:memory:");
             await connection.OpenAsync(ct);
@@ -200,22 +201,4 @@ public sealed class EfExportAssemblyCheckpointStoreCrossTenantIsolationTests
         }
     }
 
-    private sealed class MutableTenant : ICurrentTenant
-    {
-        public Guid? Id { get; set; }
-        public bool IsAvailable => Id is not null;
-        public string? Name => null;
-        public string? Jurisdiction => null;
-        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
-        {
-            Guid? prev = Id;
-            Id = id;
-            return new Restore(this, prev);
-        }
-
-        private sealed class Restore(MutableTenant t, Guid? prev) : IDisposable
-        {
-            public void Dispose() => t.Id = prev;
-        }
-    }
 }

@@ -1,3 +1,4 @@
+using Granit.Testing.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
@@ -11,7 +12,7 @@ public sealed class EfIndexerTests
     {
         var tenantId = Guid.NewGuid();
         var key = Guid.NewGuid();
-        var tenant = new MutableTenant { Id = tenantId };
+        var tenant = new FakeCurrentTenant { Id = tenantId };
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await using SqliteHarness harness = await SqliteHarness.CreateAsync(tenant, ct, typeof(Guid));
@@ -49,7 +50,7 @@ public sealed class EfIndexerTests
         var tenantA = Guid.NewGuid();
         var tenantB = Guid.NewGuid();
         var sharedKey = Guid.NewGuid();
-        MutableTenant tenant = new() { Id = tenantA };
+        FakeCurrentTenant tenant = new() { Id = tenantA };
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await using SqliteHarness harness = await SqliteHarness.CreateAsync(tenant, ct, typeof(Guid));
@@ -88,7 +89,7 @@ public sealed class EfIndexerTests
         var tenantA = Guid.NewGuid();
         var tenantB = Guid.NewGuid();
         var sharedKey = Guid.NewGuid();
-        MutableTenant tenant = new() { Id = tenantA };
+        FakeCurrentTenant tenant = new() { Id = tenantA };
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await using SqliteHarness harness = await SqliteHarness.CreateAsync(tenant, ct, typeof(Guid));

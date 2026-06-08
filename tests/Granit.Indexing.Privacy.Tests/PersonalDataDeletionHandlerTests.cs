@@ -1,5 +1,6 @@
 using Granit.MultiTenancy;
 using Granit.Privacy.DataDeletion.Events;
+using Granit.Testing.Fakes;
 using Shouldly;
 using Xunit;
 
@@ -38,7 +39,7 @@ public sealed class PersonalDataDeletionHandlerTests
     public async Task Falls_back_to_current_tenant_when_event_tenant_id_is_null()
     {
         var currentTenantId = Guid.NewGuid();
-        StubCurrentTenant tenant = new(currentTenantId);
+        FakeCurrentTenant tenant = new() { Id = currentTenantId };
         FakeEraser ef = new("ef_tsvector");
 
         PersonalDataDeletionRequestedEto @event = new(
@@ -93,20 +94,5 @@ public sealed class PersonalDataDeletionHandlerTests
 
         public Task<int> EraseAsync(Guid? tenantId, Guid dataSubjectId, CancellationToken cancellationToken = default) =>
             throw new InvalidOperationException("boom");
-    }
-
-    private sealed class StubCurrentTenant(Guid? id) : ICurrentTenant
-    {
-        public bool IsAvailable => id is not null;
-        public Guid? Id => id;
-        public string? Name => null;
-        public string? Jurisdiction => null;
-        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null) => Empty.Instance;
-
-        private sealed class Empty : IDisposable
-        {
-            public static readonly Empty Instance = new();
-            public void Dispose() { }
-        }
     }
 }

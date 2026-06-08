@@ -22,6 +22,7 @@
 using System.Globalization;
 using Granit.Domain;
 using Granit.MultiTenancy;
+using Granit.Testing.Fakes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -49,7 +50,7 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantA = Guid.NewGuid();
         var tenantB = Guid.NewGuid();
-        MutableTenant tenant = new() { Id = tenantA };
+        FakeCurrentTenant tenant = new() { Id = tenantA };
 
         await SeedReproAAsync(tenant, tenantA, tenantB, ct);
 
@@ -79,7 +80,7 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantA = Guid.NewGuid();
         var tenantB = Guid.NewGuid();
-        MutableTenant tenant = new() { Id = tenantA };
+        FakeCurrentTenant tenant = new() { Id = tenantA };
 
         await SeedReproBAsync(tenant, tenantA, tenantB, ct);
 
@@ -103,7 +104,7 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantA = Guid.NewGuid();
         var tenantB = Guid.NewGuid();
-        MutableTenant tenant = new() { Id = tenantA };
+        FakeCurrentTenant tenant = new() { Id = tenantA };
 
         await SeedReproCAsync(tenant, tenantA, tenantB, ct);
 
@@ -153,7 +154,7 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
             .EnableSensitiveDataLogging()
             .Options;
 
-    private async Task SeedReproAAsync(MutableTenant tenant, Guid tenantA, Guid tenantB, CancellationToken ct)
+    private async Task SeedReproAAsync(FakeCurrentTenant tenant, Guid tenantA, Guid tenantB, CancellationToken ct)
     {
         tenant.Id = tenantA;
         await using ReproDbContextA seed = new(BuildOpts<ReproDbContextA>(), tenant);
@@ -165,7 +166,7 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
         tenant.Id = tenantA;
     }
 
-    private async Task SeedReproBAsync(MutableTenant tenant, Guid tenantA, Guid tenantB, CancellationToken ct)
+    private async Task SeedReproBAsync(FakeCurrentTenant tenant, Guid tenantA, Guid tenantB, CancellationToken ct)
     {
         tenant.Id = tenantA;
         await using ReproDbContextB seed = new(BuildOpts<ReproDbContextB>(), tenant);
@@ -177,7 +178,7 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
         tenant.Id = tenantA;
     }
 
-    private async Task SeedReproCAsync(MutableTenant tenant, Guid tenantA, Guid tenantB, CancellationToken ct)
+    private async Task SeedReproCAsync(FakeCurrentTenant tenant, Guid tenantA, Guid tenantB, CancellationToken ct)
     {
         tenant.Id = tenantA;
         await using ReproDbContextC seed = new(BuildOpts<ReproDbContextC>(), tenant);
@@ -195,18 +196,6 @@ public sealed class MultiTenantFilterParameterizationReproTests : IAsyncLifetime
         {
             Console.WriteLine(line);
         }
-    }
-
-    private sealed class MutableTenant : ICurrentTenant
-    {
-        public bool IsAvailable => Id.HasValue;
-        public Guid? Id { get; set; }
-        public string? Name { get; set; }
-
-        public string? Jurisdiction => throw new NotImplementedException();
-
-        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
-            => throw new NotSupportedException();
     }
 
     public sealed class TenantItem : IMultiTenant

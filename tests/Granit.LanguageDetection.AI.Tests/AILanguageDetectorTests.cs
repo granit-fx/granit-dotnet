@@ -6,7 +6,7 @@ using Granit.LanguageDetection.AI.Diagnostics;
 using Granit.LanguageDetection.AI.Internal;
 using Granit.LanguageDetection.AI.Options;
 using Granit.LanguageDetection.AI.Prompts;
-using Granit.MultiTenancy;
+using Granit.Testing.Fakes;
 using Microsoft.Extensions.Diagnostics.Metrics.Testing;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -184,7 +184,7 @@ public sealed class AILanguageDetectorTests
         h.Redactor,
         Microsoft.Extensions.Options.Options.Create(h.Options),
         h.Metrics,
-        new FixedTenant(TenantA),
+        new FakeCurrentTenant { Id = TenantA },
         NullLogger<AILanguageDetector>.Instance);
 
     private sealed class Harness
@@ -246,12 +246,4 @@ public sealed class AILanguageDetectorTests
         public void Dispose() => Meter.Dispose();
     }
 
-    private sealed class FixedTenant(Guid? id) : ICurrentTenant
-    {
-        public bool IsAvailable => Id.HasValue;
-        public Guid? Id { get; } = id;
-        public string? Name => null;
-        public string? Jurisdiction => null;
-        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null) => throw new NotSupportedException();
-    }
 }

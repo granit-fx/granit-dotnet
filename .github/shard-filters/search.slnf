@@ -30,6 +30,7 @@
       "src/Granit.Privacy/Granit.Privacy.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
+      "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.TextExtraction.Email/Granit.TextExtraction.Email.csproj",
       "src/Granit.TextExtraction.Ocr.AI/Granit.TextExtraction.Ocr.AI.csproj",
       "src/Granit.TextExtraction.Ocr.Tesseract/Granit.TextExtraction.Ocr.Tesseract.csproj",

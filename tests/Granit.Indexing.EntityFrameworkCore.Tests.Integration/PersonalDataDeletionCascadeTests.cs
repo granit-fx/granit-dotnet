@@ -1,6 +1,7 @@
 using Granit.Indexing.Privacy;
 using Granit.MultiTenancy;
 using Granit.Privacy.DataDeletion.Events;
+using Granit.Testing.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
@@ -23,7 +24,7 @@ public sealed class PersonalDataDeletionCascadeTests(PostgresFixture fixture)
         var tenantB = Guid.NewGuid();
         var subject = Guid.NewGuid();
         var otherSubject = Guid.NewGuid();
-        var tenant = new MutableTenant { Id = tenantA };
+        var tenant = new FakeCurrentTenant { Id = tenantA };
 
         await using PostgresHarness harness = await PostgresHarness.CreateAsync(fixture.ConnectionString, tenant, ct, typeof(Guid));
         IIndexer<Guid> indexer = harness.Services.GetRequiredService<IIndexer<Guid>>();

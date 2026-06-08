@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Indexing.Elasticsearch\Granit.Indexing.Elasticsearch.csproj" />
     <ProjectReference Include="..\..\src\Granit.Indexing\Granit.Indexing.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
   </ItemGroup>
 
 </Project>

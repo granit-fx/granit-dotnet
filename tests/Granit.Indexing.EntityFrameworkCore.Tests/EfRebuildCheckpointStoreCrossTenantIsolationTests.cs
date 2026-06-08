@@ -3,6 +3,7 @@
 // the analyzer is a cross-package guard, not a real access boundary.
 #pragma warning disable EF1001
 using Granit.Indexing.EntityFrameworkCore.Internal;
+using Granit.Testing.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
@@ -30,7 +31,7 @@ public sealed class EfRebuildCheckpointStoreCrossTenantIsolationTests
         // return tenant A's value — never tenant B's, never the ambient tenant's, never
         // the first row encountered.
         await using SqliteHarness h = await SqliteHarness.CreateAsync(
-            new MutableTenant { Id = TenantA }, TestContext.Current.CancellationToken, typeof(Guid));
+            new FakeCurrentTenant { Id = TenantA }, TestContext.Current.CancellationToken, typeof(Guid));
 
         var store = new EfRebuildCheckpointStore<Guid>(h.Factory, TimeProvider.System);
         var checkpointA = Guid.NewGuid();
@@ -51,7 +52,7 @@ public sealed class EfRebuildCheckpointStoreCrossTenantIsolationTests
         // ExecuteDelete is the most dangerous variant — it bypasses change tracking. A
         // missing predicate would wipe every row matching SourceName across all tenants.
         await using SqliteHarness h = await SqliteHarness.CreateAsync(
-            new MutableTenant { Id = TenantA }, TestContext.Current.CancellationToken, typeof(Guid));
+            new FakeCurrentTenant { Id = TenantA }, TestContext.Current.CancellationToken, typeof(Guid));
 
         var store = new EfRebuildCheckpointStore<Guid>(h.Factory, TimeProvider.System);
         var checkpointA = Guid.NewGuid();
@@ -76,7 +77,7 @@ public sealed class EfRebuildCheckpointStoreCrossTenantIsolationTests
         // rebuild can checkpoint against a tenant other than the ambient one. This is
         // intentional, but it MUST require explicit equality (locked here).
         await using SqliteHarness h = await SqliteHarness.CreateAsync(
-            new MutableTenant { Id = TenantA }, TestContext.Current.CancellationToken, typeof(Guid));
+            new FakeCurrentTenant { Id = TenantA }, TestContext.Current.CancellationToken, typeof(Guid));
 
         var store = new EfRebuildCheckpointStore<Guid>(h.Factory, TimeProvider.System);
         var checkpointForB = Guid.NewGuid();
@@ -96,7 +97,7 @@ public sealed class EfRebuildCheckpointStoreCrossTenantIsolationTests
         // must surface DbUpdateConcurrencyException, which the store maps to
         // RebuildAlreadyInProgressException for the dead-letter path.
         await using SqliteHarness h = await SqliteHarness.CreateAsync(
-            new MutableTenant { Id = TenantA }, TestContext.Current.CancellationToken, typeof(Guid));
+            new FakeCurrentTenant { Id = TenantA }, TestContext.Current.CancellationToken, typeof(Guid));
 
         var store = new EfRebuildCheckpointStore<Guid>(h.Factory, TimeProvider.System);
         await store.SetCheckpointAsync(TenantA, SourceName, Guid.NewGuid(), TestContext.Current.CancellationToken);

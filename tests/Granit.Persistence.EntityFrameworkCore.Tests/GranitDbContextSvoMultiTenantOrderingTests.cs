@@ -34,6 +34,7 @@ using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Domain.ValueObjects;
 using Granit.MultiTenancy;
+using Granit.Testing.Fakes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -58,7 +59,7 @@ public sealed class GranitDbContextSvoMultiTenantOrderingTests : IAsyncLifetime
     [Fact]
     public void Model_EntityWithMultiTenantAndSvoProperty_MapsSvoAsScalarColumn()
     {
-        MutableTenant tenant = new() { Id = Guid.NewGuid() };
+        FakeCurrentTenant tenant = new() { Id = Guid.NewGuid() };
 
         using OrderingReproDbContext context = new(BuildOpts(), tenant);
 
@@ -83,7 +84,7 @@ public sealed class GranitDbContextSvoMultiTenantOrderingTests : IAsyncLifetime
     [Fact]
     public void Model_AutoDiscoveredSvoProperty_OnMultiTenantOwner_SurvivesAsScalar()
     {
-        MutableTenant tenant = new() { Id = Guid.NewGuid() };
+        FakeCurrentTenant tenant = new() { Id = Guid.NewGuid() };
 
         using OrderingReproDbContext context = new(BuildOpts(), tenant);
 
@@ -108,7 +109,7 @@ public sealed class GranitDbContextSvoMultiTenantOrderingTests : IAsyncLifetime
         // Locks in that the SVO removal + converter machinery is generic over T —
         // the ordering bug surfaces identically for SingleValueObject<string>
         // (BlobReference) as it does for SingleValueObject<Guid> (PartyId).
-        MutableTenant tenant = new() { Id = Guid.NewGuid() };
+        FakeCurrentTenant tenant = new() { Id = Guid.NewGuid() };
 
         using OrderingReproDbContext context = new(BuildOpts(), tenant);
 
@@ -134,7 +135,7 @@ public sealed class GranitDbContextSvoMultiTenantOrderingTests : IAsyncLifetime
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
         var partyGuid = Guid.NewGuid();
-        MutableTenant tenant = new() { Id = tenantId };
+        FakeCurrentTenant tenant = new() { Id = tenantId };
 
         await using (OrderingReproDbContext seed = new(BuildOpts(), tenant))
         {
@@ -158,18 +159,6 @@ public sealed class GranitDbContextSvoMultiTenantOrderingTests : IAsyncLifetime
         => new DbContextOptionsBuilder<OrderingReproDbContext>()
             .UseSqlite(_connection)
             .Options;
-
-    private sealed class MutableTenant : ICurrentTenant
-    {
-        public bool IsAvailable => Id.HasValue;
-        public Guid? Id { get; set; }
-        public string? Name { get; set; }
-
-        public string? Jurisdiction => throw new NotImplementedException();
-
-        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
-            => throw new NotSupportedException();
-    }
 
     public sealed class ReproPartyId : SingleValueObject<Guid>
     {

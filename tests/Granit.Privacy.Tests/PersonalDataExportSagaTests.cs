@@ -5,6 +5,7 @@ using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Options;
+using Granit.Testing.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -343,7 +344,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
     {
         // Arrange: ICurrentTenant starts inactive — simulates the envelope reaching
         // the saga without an X-Tenant-Id header restored by TenantContextBehavior.
-        RecordingCurrentTenant currentTenant = new();
+        FakeCurrentTenant currentTenant = new();
         Guid? observedDuringProbe = null;
 
         IPrivacyScopeResolver scopeResolver = Substitute.For<IPrivacyScopeResolver>();
@@ -373,30 +374,4 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         currentTenant.Id.ShouldBeNull();
     }
 
-    private sealed class RecordingCurrentTenant : ICurrentTenant
-    {
-        public bool IsAvailable => Id.HasValue;
-        public Guid? Id { get; private set; }
-        public string? Name { get; private set; }
-        public string? Jurisdiction { get; private set; }
-
-        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
-        {
-            (Guid? previousId, string? previousName, string? previousJurisdiction) = (Id, Name, Jurisdiction);
-            Id = id;
-            Name = name;
-            Jurisdiction = jurisdiction;
-            return new Restore(this, previousId, previousName, previousJurisdiction);
-        }
-
-        private sealed class Restore(RecordingCurrentTenant owner, Guid? previousId, string? previousName, string? previousJurisdiction) : IDisposable
-        {
-            public void Dispose()
-            {
-                owner.Id = previousId;
-                owner.Name = previousName;
-                owner.Jurisdiction = previousJurisdiction;
-            }
-        }
-    }
 }

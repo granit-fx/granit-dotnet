@@ -1,6 +1,7 @@
 using Granit.IO.Diagnostics;
 using Granit.IO.Internal;
 using Granit.IO.Options;
+using Granit.Testing.Fakes;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
@@ -181,7 +182,7 @@ public sealed class DefaultTempFileFactoryTests : IDisposable
             OptionsFactory.Create(opts),
             _metrics,
             NullLogger<DefaultTempFileFactory>.Instance,
-            new FakeCurrentTenant(Guid.NewGuid()));
+            new FakeCurrentTenant { Id = Guid.NewGuid() });
 
         await using ITempFile file = await factory.CreateAsync("har", "bin");
 

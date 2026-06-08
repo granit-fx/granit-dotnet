@@ -32,6 +32,7 @@ using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Testing.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shouldly;
@@ -45,7 +46,7 @@ public sealed class ModelBuilderExtensionsTests
     // EF Core caches the model by DbContext type: the closures captured during the first
     // OnModelCreating call are reused. Using static instances ensures that test mutations
     // target the same objects held by the cached expression tree.
-    private static readonly MutableCurrentTenant SharedTenant = new();
+    private static readonly FakeCurrentTenant SharedTenant = new();
     private static readonly MutableDataFilter SharedDataFilter = new();
 
     // -------------------------------------------------------------------------
@@ -772,16 +773,6 @@ public sealed class ModelBuilderExtensionsTests
                 .Options;
 
         return new TestDbContextWithCombined(options, SharedTenant, SharedDataFilter);
-    }
-
-    // Mutable ICurrentTenant: simulates the production AsyncLocal singleton.
-    private sealed class MutableCurrentTenant : ICurrentTenant
-    {
-        public bool IsAvailable => Id.HasValue;
-        public Guid? Id { get; set; }
-        public string? Name { get; set; }
-        public string? Jurisdiction => null;
-        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null) => throw new NotSupportedException();
     }
 
     // Mutable IDataFilter for tests: direct control without AsyncLocal.

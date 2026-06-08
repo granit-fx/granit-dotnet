@@ -7,7 +7,7 @@ using Granit.Indexing.AI.Internal;
 using Granit.Indexing.AI.Options;
 using Granit.Indexing.AI.Prompts;
 using Granit.Indexing.AI.Schema;
-using Granit.MultiTenancy;
+using Granit.Testing.Fakes;
 using Microsoft.Extensions.Diagnostics.Metrics.Testing;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -199,7 +199,7 @@ public sealed class AIAutoTaggerTests
             Redactor,
             Microsoft.Extensions.Options.Options.Create(Options),
             Metrics,
-            new FixedTenant(TenantA),
+            new FakeCurrentTenant { Id = TenantA },
             NullLogger<AIAutoTagger>.Instance);
     }
 
@@ -218,12 +218,4 @@ public sealed class AIAutoTaggerTests
         public void Dispose() => Meter.Dispose();
     }
 
-    private sealed class FixedTenant(Guid? id) : ICurrentTenant
-    {
-        public bool IsAvailable => Id.HasValue;
-        public Guid? Id { get; } = id;
-        public string? Name => null;
-        public string? Jurisdiction => null;
-        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null) => throw new NotSupportedException();
-    }
 }

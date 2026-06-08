@@ -1,3 +1,4 @@
+using Granit.Testing.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
@@ -12,7 +13,7 @@ public sealed class EfIndexedDataEraserTests
         var tenantId = Guid.NewGuid();
         var subject = Guid.NewGuid();
         var otherSubject = Guid.NewGuid();
-        MutableTenant tenant = new() { Id = tenantId };
+        FakeCurrentTenant tenant = new() { Id = tenantId };
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await using SqliteHarness harness = await SqliteHarness.CreateAsync(tenant, ct, typeof(Guid));
@@ -59,7 +60,7 @@ public sealed class EfIndexedDataEraserTests
         var tenantA = Guid.NewGuid();
         var tenantB = Guid.NewGuid();
         var sharedSubject = Guid.NewGuid();
-        MutableTenant tenant = new() { Id = tenantA };
+        FakeCurrentTenant tenant = new() { Id = tenantA };
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await using SqliteHarness harness = await SqliteHarness.CreateAsync(tenant, ct, typeof(Guid));

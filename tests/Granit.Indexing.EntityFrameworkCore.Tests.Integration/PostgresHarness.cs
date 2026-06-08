@@ -2,6 +2,7 @@ using Granit.Events;
 using Granit.Indexing.EntityFrameworkCore.Extensions;
 using Granit.Indexing.EntityFrameworkCore.Options;
 using Granit.MultiTenancy;
+using Granit.Testing.Fakes;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Indexing.EntityFrameworkCore.Tests.Integration;
@@ -20,7 +21,7 @@ internal sealed class PostgresHarness : IAsyncDisposable
 
     public static async Task<PostgresHarness> CreateAsync(
         string connectionString,
-        MutableTenant tenant,
+        FakeCurrentTenant tenant,
         CancellationToken ct,
         params Type[] indexedKeyTypes)
     {
@@ -55,25 +56,6 @@ internal sealed class PostgresHarness : IAsyncDisposable
     {
         if (Services is IAsyncDisposable a) { await a.DisposeAsync(); }
         else if (Services is IDisposable s) { s.Dispose(); }
-    }
-}
-
-internal sealed class MutableTenant : ICurrentTenant
-{
-    public Guid? Id { get; set; }
-    public bool IsAvailable => Id is not null;
-    public string? Name => null;
-    public string? Jurisdiction => null;
-    public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
-    {
-        Guid? prev = Id;
-        Id = id;
-        return new Restore(this, prev);
-    }
-
-    private sealed class Restore(MutableTenant t, Guid? prev) : IDisposable
-    {
-        public void Dispose() => t.Id = prev;
     }
 }
 

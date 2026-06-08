@@ -1,3 +1,4 @@
+using Granit.Testing.Fakes;
 using Shouldly;
 using Xunit;
 
@@ -19,7 +20,7 @@ public sealed class TsQueryInjectionHardeningTests(PostgresFixture fixture)
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var tenant = new MutableTenant { Id = tenantId };
+        var tenant = new FakeCurrentTenant { Id = tenantId };
 
         await using PostgresHarness harness = await PostgresHarness.CreateAsync(fixture.ConnectionString, tenant, ct, typeof(Guid));
         IIndexer<Guid> indexer = harness.Services.GetRequiredService<IIndexer<Guid>>();
@@ -56,7 +57,7 @@ public sealed class TsQueryInjectionHardeningTests(PostgresFixture fixture)
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var tenant = new MutableTenant { Id = tenantId };
+        var tenant = new FakeCurrentTenant { Id = tenantId };
 
         await using PostgresHarness harness = await PostgresHarness.CreateAsync(fixture.ConnectionString, tenant, ct, typeof(Guid));
         IIndexer<Guid> indexer = harness.Services.GetRequiredService<IIndexer<Guid>>();

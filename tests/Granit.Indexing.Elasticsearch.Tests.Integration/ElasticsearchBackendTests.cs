@@ -3,6 +3,7 @@ using Granit.Events;
 using Granit.Indexing.Elasticsearch.Extensions;
 using Granit.Indexing.Extensions;
 using Granit.MultiTenancy;
+using Granit.Testing.Fakes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -145,7 +146,7 @@ public sealed class ElasticsearchBackendTests : IClassFixture<ElasticsearchFixtu
         services.AddOptions();
         services.AddLogging();
         services.AddMetrics();
-        services.AddSingleton<ICurrentTenant>(new FixedTenant(tenantId));
+        services.AddSingleton<ICurrentTenant>(new FakeCurrentTenant { Id = tenantId });
         services.AddSingleton<ILocalEventBus, NoopLocalEventBus>();
         services.AddGranitIndexing();
         services.AddGranitIndexingElasticsearch(
@@ -171,15 +172,6 @@ public sealed class ElasticsearchBackendTests : IClassFixture<ElasticsearchFixtu
     }
 
     public sealed record EntrySnapshot(string Key, string? Content);
-
-    private sealed class FixedTenant(Guid? id) : ICurrentTenant
-    {
-        public bool IsAvailable => Id.HasValue;
-        public Guid? Id { get; } = id;
-        public string? Name => null;
-        public string? Jurisdiction => null;
-        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null) => throw new NotSupportedException();
-    }
 
     private sealed class NoopLocalEventBus : ILocalEventBus
     {

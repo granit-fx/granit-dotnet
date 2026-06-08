@@ -1,6 +1,7 @@
 using Granit.Indexing.EntityFrameworkCore.Extensions;
 using Granit.Indexing.EntityFrameworkCore.Options;
 using Granit.MultiTenancy;
+using Granit.Testing.Fakes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +28,7 @@ internal sealed class SqliteHarness : IAsyncDisposable
         Services = sp;
     }
 
-    public static async Task<SqliteHarness> CreateAsync(MutableTenant tenant, CancellationToken ct, params Type[] indexedKeyTypes)
+    public static async Task<SqliteHarness> CreateAsync(FakeCurrentTenant tenant, CancellationToken ct, params Type[] indexedKeyTypes)
     {
         SqliteConnection connection = new("DataSource=:memory:");
         await connection.OpenAsync(ct);
@@ -65,25 +66,6 @@ internal sealed class SqliteHarness : IAsyncDisposable
         {
             s.Dispose();
         }
-    }
-}
-
-internal sealed class MutableTenant : ICurrentTenant
-{
-    public Guid? Id { get; set; }
-    public bool IsAvailable => Id is not null;
-    public string? Name => null;
-    public string? Jurisdiction => null;
-    public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
-    {
-        Guid? prev = Id;
-        Id = id;
-        return new Restore(this, prev);
-    }
-
-    private sealed class Restore(MutableTenant t, Guid? prev) : IDisposable
-    {
-        public void Dispose() => t.Id = prev;
     }
 }
 
