@@ -46176,6 +46176,34 @@
       "members": []
     },
     {
+      "name": "FakeTimeProvider",
+      "fqn": "Granit.Testing.Fakes.FakeTimeProvider",
+      "kind": "class",
+      "project": "Granit.Testing",
+      "file": "src/Granit.Testing/Fakes/FakeTimeProvider.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "GetUtcNow",
+          "kind": "method",
+          "signature": "GetUtcNow()",
+          "returnType": "DateTimeOffset"
+        },
+        {
+          "name": "SetUtcNow",
+          "kind": "method",
+          "signature": "SetUtcNow(DateTimeOffset value)",
+          "returnType": "void"
+        },
+        {
+          "name": "Advance",
+          "kind": "method",
+          "signature": "Advance(TimeSpan duration)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "SharedCurrentTenant",
       "fqn": "Granit.Testing.Fakes.SharedCurrentTenant",
       "kind": "class",

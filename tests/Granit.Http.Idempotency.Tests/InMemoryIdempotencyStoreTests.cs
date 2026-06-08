@@ -1,6 +1,7 @@
 using Granit.Caching.Internal;
 using Granit.Http.Idempotency.Internal;
 using Granit.Http.Idempotency.Models;
+using Granit.Testing.Fakes;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
@@ -9,7 +10,7 @@ namespace Granit.Http.Idempotency.Tests;
 
 public sealed class ConditionalCacheIdempotencyStoreTests
 {
-    private readonly ManualTimeProvider _timeProvider = new(new DateTimeOffset(2026, 3, 21, 12, 0, 0, TimeSpan.Zero));
+    private readonly FakeTimeProvider _timeProvider = new(new DateTimeOffset(2026, 3, 21, 12, 0, 0, TimeSpan.Zero));
     private readonly ConditionalCacheIdempotencyStore _store;
 
     public ConditionalCacheIdempotencyStoreTests()
@@ -237,16 +238,4 @@ public sealed class ConditionalCacheIdempotencyStoreTests
         kept.ShouldNotBeNull();
     }
 
-    // =========================================================================
-    // Manual TimeProvider for testing
-    // =========================================================================
-
-    private sealed class ManualTimeProvider(DateTimeOffset startTime) : TimeProvider
-    {
-        private DateTimeOffset _utcNow = startTime;
-
-        public override DateTimeOffset GetUtcNow() => _utcNow;
-
-        public void Advance(TimeSpan delta) => _utcNow += delta;
-    }
 }

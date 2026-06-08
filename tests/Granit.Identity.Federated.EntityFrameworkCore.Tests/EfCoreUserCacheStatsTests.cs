@@ -2,6 +2,7 @@ using Granit.Identity.Federated.EntityFrameworkCore.Internal;
 using Granit.Identity.Federated.Internal;
 using Granit.Identity.Federated.Options;
 using Granit.MultiTenancy;
+using Granit.Testing.Fakes;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -81,12 +82,4 @@ public sealed class EfCoreUserCacheStatsTests
         resultNewest.ShouldBe(newest);
     }
 
-    private sealed class FakeTimeProvider : TimeProvider
-    {
-        private DateTimeOffset _utcNow = DateTimeOffset.UtcNow;
-
-        public void SetUtcNow(DateTimeOffset value) => _utcNow = value;
-
-        public override DateTimeOffset GetUtcNow() => _utcNow;
-    }
 }

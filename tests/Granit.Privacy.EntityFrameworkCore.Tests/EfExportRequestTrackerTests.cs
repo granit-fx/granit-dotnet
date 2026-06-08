@@ -116,7 +116,7 @@ public sealed class EfExportRequestTrackerTests : IAsyncDisposable
         var userId = Guid.NewGuid();
         await _sut.RecordRequestAsync(requestId, userId, userId, Now, TestContext.Current.CancellationToken);
 
-        _time.Set(Now.AddMinutes(5));
+        _time.SetUtcNow(Now.AddMinutes(5));
         await _sut.MarkCompletedAsync(
             requestId,
             ExportRequestState.Completed,
@@ -175,10 +175,4 @@ public sealed class EfExportRequestTrackerTests : IAsyncDisposable
         }
     }
 
-    private sealed class FakeTimeProvider(DateTimeOffset now) : TimeProvider
-    {
-        private DateTimeOffset _now = now;
-        public override DateTimeOffset GetUtcNow() => _now;
-        public void Set(DateTimeOffset value) => _now = value;
-    }
 }
