@@ -100,6 +100,7 @@
       "src/Granit.IO/Granit.IO.csproj",
       "src/Granit.Identity.Endpoints/Granit.Identity.Endpoints.csproj",
       "src/Granit.Identity.EntityFrameworkCore/Granit.Identity.EntityFrameworkCore.csproj",
+      "src/Granit.Identity.Local.AspNetIdentity/Granit.Identity.Local.AspNetIdentity.csproj",
       "src/Granit.Identity.Local.Endpoints/Granit.Identity.Local.Endpoints.csproj",
       "src/Granit.Identity.Local/Granit.Identity.Local.csproj",
       "src/Granit.Identity/Granit.Identity.csproj",

@@ -164,8 +164,26 @@ internal static partial class ConnectTokenEndpoints
                 failureReason: null,
                 tenantId).ConfigureAwait(false);
 
-            return Results.SignIn(principal,
-                authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
+            string? userAgent = context.Request.Headers.UserAgent.FirstOrDefault();
+            if (string.IsNullOrEmpty(userAgent))
+            {
+                userAgent = null;
+            }
+
+            var properties = new AuthenticationProperties();
+            if (ipAddress is not null)
+            {
+                properties.Items["ip_address"] = ipAddress;
+            }
+
+            if (userAgent is not null)
+            {
+                properties.Items["user_agent"] = userAgent;
+            }
+
+            return Results.SignIn(principal, properties,
+                OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
         finally
         {
@@ -276,8 +294,26 @@ internal static partial class ConnectTokenEndpoints
             failureReason: null,
             tenantId).ConfigureAwait(false);
 
-        return Results.SignIn(principal,
-            authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
+        string? userAgent = context.Request.Headers.UserAgent.FirstOrDefault();
+        if (string.IsNullOrEmpty(userAgent))
+        {
+            userAgent = null;
+        }
+
+        var properties = new AuthenticationProperties();
+        if (ipAddress is not null)
+        {
+            properties.Items["ip_address"] = ipAddress;
+        }
+
+        if (userAgent is not null)
+        {
+            properties.Items["user_agent"] = userAgent;
+        }
+
+        return Results.SignIn(principal, properties,
+            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
     private static async Task<IResult> HandlePasskeyAsync(
@@ -349,8 +385,26 @@ internal static partial class ConnectTokenEndpoints
             failureReason: null,
             tenantId).ConfigureAwait(false);
 
-        return Results.SignIn(principal,
-            authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
+        string? userAgent = context.Request.Headers.UserAgent.FirstOrDefault();
+        if (string.IsNullOrEmpty(userAgent))
+        {
+            userAgent = null;
+        }
+
+        var properties = new AuthenticationProperties();
+        if (ipAddress is not null)
+        {
+            properties.Items["ip_address"] = ipAddress;
+        }
+
+        if (userAgent is not null)
+        {
+            properties.Items["user_agent"] = userAgent;
+        }
+
+        return Results.SignIn(principal, properties,
+            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
     /// <summary>

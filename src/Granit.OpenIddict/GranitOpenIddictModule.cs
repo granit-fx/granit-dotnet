@@ -1,8 +1,11 @@
+using Granit.Caching;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Entities.Extensions;
 using Granit.Http.Cookies;
+using Granit.Identity;
 using Granit.Identity.Local;
+using Granit.Identity.Local.AspNetIdentity;
 using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
 using Granit.Modularity;
@@ -30,7 +33,9 @@ namespace Granit.OpenIddict;
 /// and Identity cookie configuration (neutral names, env-aware __Host- prefix).
 /// </summary>
 [DependsOn(
+    typeof(GranitCachingModule),
     typeof(GranitHttpCookiesModule),
+    typeof(GranitIdentityLocalAspNetIdentityModule),
     typeof(GranitIdentityLocalModule),
     typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitOpenIddictModule : GranitModule
@@ -131,6 +136,12 @@ public sealed class GranitOpenIddictModule : GranitModule
         // Phase 2 EntityDefinitions (ADR-050).
         context.Services.AddEntityDefinition<GranitOpenIddictApplication, GranitOpenIddictApplicationEntityDefinition>();
         context.Services.AddEntityDefinition<GranitOpenIddictScope, GranitOpenIddictScopeEntityDefinition>();
+
+        // Override the stub IIdentitySessionManager from AspNetIdentityProvider with an
+        // implementation that reads active refresh tokens from the OpenIddict token store.
+        context.Services.TryAddScoped<OpenIddictSessionManager>();
+        context.Services.Replace(ServiceDescriptor.Scoped<IIdentitySessionManager>(
+            sp => sp.GetRequiredService<OpenIddictSessionManager>()));
     }
 
     private static void PostConfigureIdentityCookie(
