@@ -42,9 +42,12 @@ public sealed class GranitBffEndpointsModule : GranitModule
 
         // In development (HTTP), use "." prefix instead of "__Host-" on BFF session cookies.
         // __Host- requires HTTPS — browsers silently ignore the cookie on HTTP.
-        context.Services.PostConfigureAll<BffFrontendOptions>(options =>
+        context.Services.PostConfigure<GranitBffOptions>(options =>
         {
-            options.CookiePrefix = isDevelopment ? "." : "__Host-";
+            foreach (BffFrontendOptions frontend in options.Frontends)
+            {
+                frontend.CookiePrefix = isDevelopment ? "." : "__Host-";
+            }
         });
     }
 }
