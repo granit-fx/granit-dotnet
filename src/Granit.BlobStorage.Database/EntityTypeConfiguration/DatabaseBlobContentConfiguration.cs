@@ -11,7 +11,9 @@ internal sealed class DatabaseBlobContentConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<DatabaseBlobContent> builder)
     {
-        builder.ToTable("storage_blob_contents");
+        builder.ToTable(
+            GranitBlobStorageDatabaseDbProperties.DbTablePrefix + "contents",
+            GranitBlobStorageDatabaseDbProperties.DbSchema);
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.TenantId);
@@ -28,9 +30,9 @@ internal sealed class DatabaseBlobContentConfiguration : IEntityTypeConfiguratio
 
         builder.HasIndex(e => e.ObjectKey)
             .IsUnique()
-            .HasDatabaseName("uq_storage_blob_contents_object_key");
+            .HasDatabaseName($"uq_{GranitBlobStorageDatabaseDbProperties.DbTablePrefix}contents_object_key");
 
         builder.HasIndex(e => new { e.TenantId, e.ObjectKey })
-            .HasDatabaseName("ix_storage_blob_contents_tenant_object_key");
+            .HasDatabaseName($"ix_{GranitBlobStorageDatabaseDbProperties.DbTablePrefix}contents_tenant_object_key");
     }
 }

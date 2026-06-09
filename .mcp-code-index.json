@@ -10459,6 +10459,22 @@
       ]
     },
     {
+      "name": "GranitBlobStorageDatabaseDbProperties",
+      "fqn": "Granit.BlobStorage.Database.GranitBlobStorageDatabaseDbProperties",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Database",
+      "file": "src/Granit.BlobStorage.Database/GranitBlobStorageDatabaseDbProperties.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "GranitBlobStorageDatabaseModule",
       "fqn": "Granit.BlobStorage.Database.GranitBlobStorageDatabaseModule",
       "kind": "class",
@@ -28853,6 +28869,22 @@
           "kind": "method",
           "signature": "AddGranitIndexingEntityFrameworkCore(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDbContext, params Type[] indexedKeyTypes)",
           "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIndexingDbProperties",
+      "fqn": "Granit.Indexing.EntityFrameworkCore.GranitIndexingDbProperties",
+      "kind": "class",
+      "project": "Granit.Indexing.EntityFrameworkCore",
+      "file": "src/Granit.Indexing.EntityFrameworkCore/GranitIndexingDbProperties.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
         }
       ]
     },

@@ -199,7 +199,7 @@ public static class ModelBuilderExtensions
 
         entity.HasIndex(e => e.SearchVector)
             .HasMethod("GIN")
-            .HasDatabaseName($"IX_IndexedEntry_{typeof(TKey).Name}_SearchVector_GIN");
+            .HasDatabaseName($"ix_{GranitIndexingDbProperties.DbTablePrefix}indexed_entry_{typeof(TKey).Name.ToLowerInvariant()}_search_vector_gin");
 
         return entity;
     }
@@ -237,7 +237,7 @@ public static class ModelBuilderExtensions
         entity.HasIndex(e => e.Embedding)
             .HasMethod("hnsw")
             .HasOperators("vector_cosine_ops")
-            .HasDatabaseName($"IX_IndexedEntry_{typeof(TKey).Name}_Embedding_HNSW");
+            .HasDatabaseName($"ix_{GranitIndexingDbProperties.DbTablePrefix}indexed_entry_{typeof(TKey).Name.ToLowerInvariant()}_embedding_hnsw");
 
         return entity;
     }

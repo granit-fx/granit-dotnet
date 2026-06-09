@@ -8,7 +8,7 @@ namespace Granit.EntityMerge.EntityFrameworkCore;
 /// <remarks>
 /// <para>
 /// The merge orchestrator owns a single host-level bookkeeping table
-/// (<c>merge_idempotency</c>). Both the isolated <c>EntityMergeDbContext</c> and host
+/// (<c>entity_merge_idempotency</c>). Both the isolated <c>EntityMergeDbContext</c> and host
 /// applications that fold the table into their own <c>DbContext</c> via
 /// <c>modelBuilder.ConfigureEntityMergeModule()</c> read these same static values, ensuring
 /// migration-time and runtime SQL stay in sync.
@@ -22,9 +22,9 @@ namespace Granit.EntityMerge.EntityFrameworkCore;
 public static class GranitEntityMergeDbProperties
 {
     /// <summary>
-    /// Table name prefix for the EntityMerge tables. Default: <c>"merge_"</c>.
+    /// Table name prefix for the EntityMerge tables. Default: <c>"entity_merge_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "merge_";
+    public static string DbTablePrefix { get; set; } = "entity_merge_";
 
     private static string? _dbSchema;
     private static bool _dbSchemaExplicitlySet;

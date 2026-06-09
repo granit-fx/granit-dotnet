@@ -15,11 +15,9 @@ namespace Granit.Identity.EntityFrameworkCore;
 public static class GranitIdentityDbProperties
 {
     /// <summary>
-    /// Table-name prefix applied to every Identity-owned table. Mirrors the
-    /// per-module prefix convention (<c>granit_</c>, <c>granit_apikeys_</c>,
-    /// etc.). Default: <c>"granit_identity_"</c>.
+    /// Table-name prefix applied to every Identity-owned table. Default: <c>"identity_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "granit_identity_";
+    public static string DbTablePrefix { get; set; } = "identity_";
 
     private static string? _dbSchema;
     private static bool _dbSchemaExplicitlySet;

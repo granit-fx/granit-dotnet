@@ -8,7 +8,9 @@ internal sealed class IndexingRebuildCheckpointRowConfiguration : IEntityTypeCon
 {
     public void Configure(EntityTypeBuilder<IndexingRebuildCheckpointRow> builder)
     {
-        builder.ToTable("IndexingRebuildCheckpoint");
+        builder.ToTable(
+            GranitIndexingDbProperties.DbTablePrefix + "rebuild_checkpoint",
+            GranitIndexingDbProperties.DbSchema);
 
         // (TenantId, SourceName) is the natural key. We deliberately don't add a
         // surrogate Id — checkpoints are upsert-by-tuple.

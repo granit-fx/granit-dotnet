@@ -14,7 +14,7 @@ namespace Granit.Indexing.Embeddings;
 /// pgvector, Elasticsearch dense_vector) are wired by the host via their per-key
 /// extensions, NOT by module discovery — embeddings stay opt-in.
 /// </remarks>
-[DependsOn(typeof(GranitIndexingModule), typeof(GranitAIModule))]
+[DependsOn(typeof(GranitAIModule), typeof(GranitIndexingModule))]
 public sealed class GranitIndexingEmbeddingsModule : GranitModule
 {
     /// <inheritdoc/>

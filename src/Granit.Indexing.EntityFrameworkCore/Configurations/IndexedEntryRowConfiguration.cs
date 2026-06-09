@@ -17,7 +17,9 @@ internal sealed class IndexedEntryRowConfiguration<TKey> : IEntityTypeConfigurat
 {
     public void Configure(EntityTypeBuilder<IndexedEntryRow<TKey>> builder)
     {
-        builder.ToTable($"IndexedEntry_{typeof(TKey).Name}");
+        builder.ToTable(
+            GranitIndexingDbProperties.DbTablePrefix + $"indexed_entry_{typeof(TKey).Name.ToLowerInvariant()}",
+            GranitIndexingDbProperties.DbSchema);
 
         builder.HasKey(e => new { e.TenantId, e.Key });
 
@@ -29,6 +31,6 @@ internal sealed class IndexedEntryRowConfiguration<TKey> : IEntityTypeConfigurat
 
         // Hot-path lookup: GDPR Art. 17 handler deletes by (TenantId, DataSubjectId).
         builder.HasIndex(e => new { e.TenantId, e.DataSubjectId })
-            .HasDatabaseName($"IX_IndexedEntry_{typeof(TKey).Name}_DataSubject");
+            .HasDatabaseName($"ix_{GranitIndexingDbProperties.DbTablePrefix}indexed_entry_{typeof(TKey).Name.ToLowerInvariant()}_data_subject");
     }
 }

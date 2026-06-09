@@ -13,9 +13,9 @@ namespace Granit.Identity.Federated.EntityFrameworkCore;
 public static class GranitIdentityDbProperties
 {
     /// <summary>
-    /// Table name prefix for all identity tables. Default: <c>"identity_"</c>.
+    /// Table name prefix for all federated identity tables. Default: <c>"identity_federated_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "identity_";
+    public static string DbTablePrefix { get; set; } = "identity_federated_";
 
     private static string? _dbSchema;
     private static bool _dbSchemaExplicitlySet;
