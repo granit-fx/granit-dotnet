@@ -46,8 +46,8 @@ internal sealed class PostgresHarness : IAsyncDisposable
             // Idempotent across tests sharing the same container — schema is created once,
             // rows are truncated below to guarantee isolation.
             await db.Database.EnsureCreatedAsync(ct);
-            await db.Database.ExecuteSqlRawAsync(
-                $"TRUNCATE TABLE \"{GranitIndexingDbProperties.DbTablePrefix}indexed_entry_guid\"", ct);
+            string truncateSql = $"TRUNCATE TABLE \"{GranitIndexingDbProperties.DbTablePrefix}indexed_entry_guid\"";
+            await db.Database.ExecuteSqlRawAsync(truncateSql, ct);
         }
 
         return new PostgresHarness(sp);
