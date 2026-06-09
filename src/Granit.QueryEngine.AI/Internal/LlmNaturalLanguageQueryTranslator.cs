@@ -183,6 +183,21 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
         return sb.ToString();
     }
 
+    // Used by the fuzz harness (Granit.QueryEngine.AI.Fuzz) to exercise the
+    // JSON-parse + whitelist-validation path without going through the LLM.
+    internal static bool TryDeserializeAndConvert(string json, QueryMetadata metadata, out QueryRequest? result)
+    {
+        LlmQueryPayload? dto = System.Text.Json.JsonSerializer.Deserialize<LlmQueryPayload>(json);
+        if (dto is null)
+        {
+            result = null;
+            return false;
+        }
+
+        result = ValidateAndConvert(dto, metadata);
+        return true;
+    }
+
     private static QueryRequest ValidateAndConvert(LlmQueryPayload dto, QueryMetadata metadata)
     {
         // Build whitelist of allowed filter keys from metadata (CWE-20, LLM02)
