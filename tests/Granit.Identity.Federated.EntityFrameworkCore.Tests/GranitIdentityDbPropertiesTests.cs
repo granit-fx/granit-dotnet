@@ -6,16 +6,16 @@ namespace Granit.Identity.Federated.EntityFrameworkCore.Tests;
 public sealed class GranitIdentityDbPropertiesTests
 {
     [Fact]
-    public void DbTablePrefix_DefaultsToIdentityUnderscore()
+    public void DbTablePrefix_DefaultsToIdentityFederatedUnderscore()
     {
         // Save original to restore after test
         string original = GranitIdentityDbProperties.DbTablePrefix;
         try
         {
             // Reset to default
-            GranitIdentityDbProperties.DbTablePrefix = "identity_";
+            GranitIdentityDbProperties.DbTablePrefix = "identity_federated_";
 
-            GranitIdentityDbProperties.DbTablePrefix.ShouldBe("identity_");
+            GranitIdentityDbProperties.DbTablePrefix.ShouldBe("identity_federated_");
         }
         finally
         {

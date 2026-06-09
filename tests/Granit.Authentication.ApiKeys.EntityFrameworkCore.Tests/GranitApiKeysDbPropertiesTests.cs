@@ -6,12 +6,12 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests;
 public sealed class GranitApiKeysDbPropertiesTests
 {
     [Fact]
-    public void DbTablePrefix_DefaultIsApiKeys()
+    public void DbTablePrefix_DefaultIsAuthenticationApiKeys()
     {
         // Reset to default in case other tests modified it
-        GranitApiKeysDbProperties.DbTablePrefix = "api_keys_";
+        GranitApiKeysDbProperties.DbTablePrefix = "authentication_api_keys_";
 
-        GranitApiKeysDbProperties.DbTablePrefix.ShouldBe("api_keys_");
+        GranitApiKeysDbProperties.DbTablePrefix.ShouldBe("authentication_api_keys_");
     }
 
     [Fact]

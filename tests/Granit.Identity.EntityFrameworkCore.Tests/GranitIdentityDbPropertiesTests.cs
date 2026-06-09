@@ -6,14 +6,14 @@ namespace Granit.Identity.EntityFrameworkCore.Tests;
 public sealed class GranitIdentityDbPropertiesTests
 {
     [Fact]
-    public void DbTablePrefix_DefaultsToGranitIdentityUnderscore()
+    public void DbTablePrefix_DefaultsToIdentityUnderscore()
     {
         string original = GranitIdentityDbProperties.DbTablePrefix;
         try
         {
-            GranitIdentityDbProperties.DbTablePrefix = "granit_identity_";
+            GranitIdentityDbProperties.DbTablePrefix = "identity_";
 
-            GranitIdentityDbProperties.DbTablePrefix.ShouldBe("granit_identity_");
+            GranitIdentityDbProperties.DbTablePrefix.ShouldBe("identity_");
         }
         finally
         {
