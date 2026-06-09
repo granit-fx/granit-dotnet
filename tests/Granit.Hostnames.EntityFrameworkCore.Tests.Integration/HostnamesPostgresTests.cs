@@ -30,7 +30,7 @@ public sealed class HostnamesPostgresTests : IClassFixture<PostgresFixture>, IAs
 
         // Table name uses the default prefix — tests always run with defaults.
         await _context.Database.ExecuteSqlAsync(
-            $"TRUNCATE TABLE hostname_managed_hostnames RESTART IDENTITY CASCADE;",
+            $"TRUNCATE TABLE {GranitHostnamesDbProperties.DbTablePrefix}managed_hostnames RESTART IDENTITY CASCADE;",
             TestContext.Current.CancellationToken);
     }
 
