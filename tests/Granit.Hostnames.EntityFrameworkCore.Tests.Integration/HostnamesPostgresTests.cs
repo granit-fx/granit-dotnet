@@ -112,8 +112,9 @@ public sealed class HostnamesPostgresTests : IClassFixture<PostgresFixture>, IAs
         // SqlQuery<string> uses a parameterised query (safe from SQL injection).
         // Column/table names use PascalCase — EF Core default without snake_case conventions.
         Guid id = hostname.Id;
+        string sql = $"""SELECT "Status" AS "Value" FROM {GranitHostnamesDbProperties.DbTablePrefix}managed_hostnames WHERE "Id" = @id""";
         string? rawStatus = await _context.Database
-            .SqlQuery<string>($"""SELECT "Status" AS "Value" FROM {GranitHostnamesDbProperties.DbTablePrefix}managed_hostnames WHERE "Id" = {id}""")
+            .SqlQueryRaw<string>(sql, new NpgsqlParameter("id", id))
             .FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 
         // Create() sets Status = Pending; Active is only reached after DNS verification.
