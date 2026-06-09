@@ -29,9 +29,8 @@ public sealed class HostnamesPostgresTests : IClassFixture<PostgresFixture>, IAs
         await _context.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
 
         // Table name uses the default prefix — tests always run with defaults.
-        await _context.Database.ExecuteSqlAsync(
-            $"TRUNCATE TABLE {GranitHostnamesDbProperties.DbTablePrefix}managed_hostnames RESTART IDENTITY CASCADE;",
-            TestContext.Current.CancellationToken);
+        string truncateSql = $"TRUNCATE TABLE {GranitHostnamesDbProperties.DbTablePrefix}managed_hostnames RESTART IDENTITY CASCADE";
+        await _context.Database.ExecuteSqlRawAsync(truncateSql, TestContext.Current.CancellationToken);
     }
 
     public ValueTask DisposeAsync() => _context.DisposeAsync();
