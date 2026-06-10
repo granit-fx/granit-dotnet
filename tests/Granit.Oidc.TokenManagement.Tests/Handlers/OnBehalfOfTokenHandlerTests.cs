@@ -22,6 +22,7 @@ using Granit.MultiTenancy;
 using Granit.Oidc.DPoP;
 using Granit.Oidc.Responses;
 using Granit.Oidc.TokenManagement.Diagnostics;
+using Granit.Oidc.TokenManagement.DPoP;
 using Granit.Oidc.TokenManagement.Handlers;
 using Granit.Oidc.TokenManagement.Options;
 using Granit.Oidc.TokenManagement.Services;
@@ -47,6 +48,7 @@ public sealed class OnBehalfOfTokenHandlerTests : IDisposable
     private readonly ITokenEndpointService _tokenEndpoint = Substitute.For<ITokenEndpointService>();
     private readonly IConditionalCache _cache = Substitute.For<IConditionalCache>();
     private readonly IDPoPProofService _dpop = Substitute.For<IDPoPProofService>();
+    private readonly IDPoPKeyStore _dpopKeyStore = Substitute.For<IDPoPKeyStore>();
     private readonly IHttpContextAccessor _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly ICurrentUserService _currentUser = Substitute.For<ICurrentUserService>();
@@ -114,6 +116,7 @@ public sealed class OnBehalfOfTokenHandlerTests : IDisposable
             _tokenEndpoint,
             _cache,
             _dpop,
+            _dpopKeyStore,
             _httpContextAccessor,
             _currentTenant,
             _currentUser,

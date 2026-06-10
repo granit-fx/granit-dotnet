@@ -16,6 +16,12 @@ internal sealed partial class DiscoveryDocumentService(
 {
     private static readonly TimeSpan DefaultCacheDuration = TimeSpan.FromHours(24);
 
+    // Base Granit.Oidc cannot reference Granit.Http.Resilience (layering), so the
+    // discovery client has no resilience pipeline. Cap its timeout well below the
+    // 100s HttpClient default so a slow or unreachable authority fails fast instead
+    // of stalling every token acquisition queued behind it.
+    private static readonly TimeSpan DiscoveryTimeout = TimeSpan.FromSeconds(15);
+
     /// <inheritdoc/>
     public async Task<OidcDiscoveryDocument> GetAsync(string authority, CancellationToken cancellationToken = default)
     {
@@ -31,6 +37,7 @@ internal sealed partial class DiscoveryDocumentService(
                 LogFetchingDiscoveryDocument(discoveryUrl);
 
                 using HttpClient httpClient = httpClientFactory.CreateClient(nameof(DiscoveryDocumentService));
+                httpClient.Timeout = DiscoveryTimeout;
                 using HttpResponseMessage response = await httpClient.GetAsync(discoveryUrl, ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
@@ -64,13 +71,31 @@ internal sealed partial class DiscoveryDocumentService(
         string normalizedAuthority = authority.TrimEnd('/');
         string normalizedIssuer = issuer.TrimEnd('/');
 
-        if (!string.Equals(normalizedAuthority, normalizedIssuer, StringComparison.OrdinalIgnoreCase))
+        if (!IssuerMatches(normalizedAuthority, normalizedIssuer))
         {
             throw new OidcDiscoveryException(
                 authority,
                 $"Issuer mismatch: expected '{normalizedAuthority}' but discovery document contains '{normalizedIssuer}'. " +
                 "This may indicate a misconfigured authority URL or a security issue.");
         }
+    }
+
+    // OIDC Discovery §4.3 requires the issuer to be identical to the authority used.
+    // Comparison is case-sensitive on the path (per URI semantics) but tolerates
+    // case differences in scheme and host, which are case-insensitive by RFC 3986.
+    private static bool IssuerMatches(string authority, string issuer)
+    {
+        if (string.Equals(authority, issuer, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return Uri.TryCreate(authority, UriKind.Absolute, out Uri? a)
+            && Uri.TryCreate(issuer, UriKind.Absolute, out Uri? i)
+            && string.Equals(a.Scheme, i.Scheme, StringComparison.OrdinalIgnoreCase)
+            && string.Equals(a.Host, i.Host, StringComparison.OrdinalIgnoreCase)
+            && a.Port == i.Port
+            && string.Equals(a.AbsolutePath.TrimEnd('/'), i.AbsolutePath.TrimEnd('/'), StringComparison.Ordinal);
     }
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Fetching OIDC discovery document from {DiscoveryUrl}")]

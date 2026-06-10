@@ -376,8 +376,7 @@ internal sealed class DPoPProofValidator(
     private async Task<string> GenerateAndStoreNonceAsync(DPoPValidationOptions opts, CancellationToken cancellationToken)
     {
         byte[] nonceBytes = RandomNumberGenerator.GetBytes(32);
-        string nonce = Convert.ToBase64String(nonceBytes)
-            .TrimEnd('=').Replace('+', '-').Replace('/', '_');
+        string nonce = System.Buffers.Text.Base64Url.EncodeToString(nonceBytes);
 
         string cacheKey = $"{NonceCachePrefix}{nonce}";
         await cache.SetAsync(cacheKey, true,
@@ -416,15 +415,6 @@ internal sealed class DPoPProofValidator(
         return uri.TrimEnd('/');
     }
 
-    private static byte[] Base64UrlDecode(string base64Url)
-    {
-        string padded = base64Url.Replace('-', '+').Replace('_', '/');
-        switch (padded.Length % 4)
-        {
-            case 2: padded += "=="; break;
-            case 3: padded += "="; break;
-        }
-
-        return Convert.FromBase64String(padded);
-    }
+    private static byte[] Base64UrlDecode(string base64Url) =>
+        System.Buffers.Text.Base64Url.DecodeFromChars(base64Url);
 }
