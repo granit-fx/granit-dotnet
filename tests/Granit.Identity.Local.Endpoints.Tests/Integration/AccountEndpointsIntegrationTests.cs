@@ -198,7 +198,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         _server.TwoFactorService
             .GetStatusAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
-            .Returns(new TwoFactorStatus(false, false, 0));
+            .Returns(new TwoFactorStatus(false, false, false, 0));
 
         _server.ExternalLoginService
             .GetLoginsAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
@@ -234,7 +234,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         _server.TwoFactorService
             .GetStatusAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
-            .Returns(new TwoFactorStatus(false, false, 0));
+            .Returns(new TwoFactorStatus(false, false, false, 0));
 
         _server.ExternalLoginService
             .GetLoginsAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
@@ -269,7 +269,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     {
         _server.TwoFactorService
             .GetStatusAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
-            .Returns(new TwoFactorStatus(true, true, 5));
+            .Returns(new TwoFactorStatus(true, true, false, 5));
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
             "/account/two-factor", TestContext.Current.CancellationToken);
@@ -290,7 +290,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     {
         List<string> recoveryCodes = ["CODE-1", "CODE-2", "CODE-3"];
 
-        _server.TwoFactorService
+        _server.AuthenticatorTwoFactorService
             .EnableAsync(AccountEndpointsTestServer.TestUserIdString, "123456", Arg.Any<CancellationToken>())
             .Returns(recoveryCodes);
 
@@ -312,7 +312,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task EnableTwoFactor_InvalidCode_Returns400()
     {
-        _server.TwoFactorService
+        _server.AuthenticatorTwoFactorService
             .EnableAsync(AccountEndpointsTestServer.TestUserIdString, "000000", Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("Invalid TOTP code."));
 
@@ -338,7 +338,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        await _server.TwoFactorService.Received(1).DisableAsync(
+        await _server.TwoFactorService.Received(1).DisableAllAsync(
             AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>());
     }
 
@@ -739,12 +739,32 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         _server.ExternalProviderRegistry
             .IsProviderConfigured("Google")
             .Returns(true);
+        _server.ExternalProviderRegistry
+            .IsProviderAvailableAsync("Google", Arg.Any<CancellationToken>())
+            .Returns(true);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsync(
             "/account/external-logins/challenge/Google", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task ChallengeExternalLogin_ConfiguredButNoSchemeRegistered_Returns500()
+    {
+        _server.ExternalProviderRegistry
+            .IsProviderConfigured("Google")
+            .Returns(true);
+        _server.ExternalProviderRegistry
+            .IsProviderAvailableAsync("Google", Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsync(
+            "/account/external-logins/challenge/Google", null,
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
     }
 
     [Fact]
@@ -1253,7 +1273,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
             "/account/login/two-factor",
-            new AccountTwoFactorLoginRequest("RECOVERY1", UseRecoveryCode: true),
+            new AccountTwoFactorLoginRequest("RECOVERY1", Method: TwoFactorMethod.RecoveryCode),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -1301,7 +1321,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
             "/account/login/two-factor",
-            new AccountTwoFactorLoginRequest("RECOVERY1", UseRecoveryCode: true, RememberMe: true),
+            new AccountTwoFactorLoginRequest("RECOVERY1", Method: TwoFactorMethod.RecoveryCode, RememberMe: true),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -1378,9 +1398,9 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task GetAuthenticatorKey_ReturnsKeyAndUri()
     {
-        _server.TwoFactorService
-            .GetAuthenticatorKeyAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
-            .Returns(new AuthenticatorKeyInfo("JBSWY3DPEHPK3PXP", "otpauth://totp/Granit:test@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Granit"));
+        _server.AuthenticatorTwoFactorService
+            .GetKeyAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
+            .Returns(new AuthenticatorKeyInfo("JBSWY3DPEHPK3PXP", "otpauth://totp/App:test@example.com?secret=JBSWY3DPEHPK3PXP&issuer=App"));
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
             "/account/two-factor/authenticator-key",
@@ -1436,6 +1456,219 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    // -------------------------------------------------------------------------
+    // Two-factor — email OTP method
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task Login_RequiresTwoFactor_ReturnsAvailableMethods()
+    {
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
+
+        _server.UserManager
+            .FindByEmailAsync("2fa@example.com")
+            .Returns(fakeUser);
+        _server.SignInManager
+            .PasswordSignInAsync(fakeUser, "MyP@ss1!", false, true)
+            .Returns(Microsoft.AspNetCore.Identity.SignInResult.TwoFactorRequired);
+        _server.TwoFactorService
+            .GetAvailableMethodsAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
+            .Returns([TwoFactorMethod.Authenticator, TwoFactorMethod.Email]);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/login",
+            new AccountLoginRequest("2fa@example.com", "MyP@ss1!"),
+            TestContext.Current.CancellationToken);
+
+        AccountLoginResponse? result = await response.Content
+            .ReadFromJsonAsync<AccountLoginResponse>(TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.RequiresTwoFactor.ShouldBeTrue();
+        result.TwoFactorMethods.ShouldNotBeNull();
+        result.TwoFactorMethods.ShouldContain("Authenticator");
+        result.TwoFactorMethods.ShouldContain("Email");
+    }
+
+    [Fact]
+    public async Task TwoFactorLogin_Email_Enrolled_Returns200()
+    {
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
+
+        _server.SignInManager
+            .GetTwoFactorAuthenticationUserAsync()
+            .Returns(fakeUser);
+        _server.EmailTwoFactorService
+            .IsEnabledAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
+            .Returns(true);
+        _server.SignInManager
+            .TwoFactorSignInAsync(Microsoft.AspNetCore.Identity.TokenOptions.DefaultEmailProvider, "123456", false, false)
+            .Returns(Microsoft.AspNetCore.Identity.SignInResult.Success);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/login/two-factor",
+            new AccountTwoFactorLoginRequest("123456", Method: TwoFactorMethod.Email),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        AccountLoginResponse? result = await response.Content
+            .ReadFromJsonAsync<AccountLoginResponse>(TestContext.Current.CancellationToken);
+        result.ShouldNotBeNull();
+        result.Succeeded.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task TwoFactorLogin_Email_NotEnrolled_Returns401AndDoesNotVerify()
+    {
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
+
+        _server.SignInManager
+            .GetTwoFactorAuthenticationUserAsync()
+            .Returns(fakeUser);
+        _server.EmailTwoFactorService
+            .IsEnabledAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/login/two-factor",
+            new AccountTwoFactorLoginRequest("123456", Method: TwoFactorMethod.Email),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        await _server.SignInManager.DidNotReceive().TwoFactorSignInAsync(
+            Microsoft.AspNetCore.Identity.TokenOptions.DefaultEmailProvider, Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>());
+    }
+
+    [Fact]
+    public async Task SendTwoFactorLoginEmailCode_Enrolled_SendsAndReturns204()
+    {
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
+
+        _server.SignInManager
+            .GetTwoFactorAuthenticationUserAsync()
+            .Returns(fakeUser);
+        _server.EmailTwoFactorService
+            .IsEnabledAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsync(
+            "/account/login/two-factor/send-email", null,
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        await _server.EmailTwoFactorService.Received(1).SendCodeAsync(
+            AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SendTwoFactorLoginEmailCode_NotEnrolled_DoesNotSendButReturns204()
+    {
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
+
+        _server.SignInManager
+            .GetTwoFactorAuthenticationUserAsync()
+            .Returns(fakeUser);
+        _server.EmailTwoFactorService
+            .IsEnabledAsync(AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsync(
+            "/account/login/two-factor/send-email", null,
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        await _server.EmailTwoFactorService.DidNotReceive().SendCodeAsync(
+            Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SendTwoFactorLoginEmailCode_NoSession_Returns400()
+    {
+        _server.SignInManager
+            .GetTwoFactorAuthenticationUserAsync()
+            .Returns((LocalIdentity?)null);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsync(
+            "/account/login/two-factor/send-email", null,
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task SendTwoFactorEnrollmentEmailCode_Returns204()
+    {
+        HttpResponseMessage response = await _server.AuthenticatedClient.PostAsync(
+            "/account/two-factor/email/send", null,
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        await _server.EmailTwoFactorService.Received(1).SendCodeAsync(
+            AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task EnableTwoFactorEmail_ValidCode_Returns204()
+    {
+        HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
+            "/account/two-factor/email/enable",
+            new AccountTwoFactorEmailEnableRequest("123456"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        await _server.EmailTwoFactorService.Received(1).EnableAsync(
+            AccountEndpointsTestServer.TestUserIdString, "123456", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task EnableTwoFactorEmail_InvalidCode_Returns400()
+    {
+        _server.EmailTwoFactorService
+            .EnableAsync(AccountEndpointsTestServer.TestUserIdString, "000000", Arg.Any<CancellationToken>())
+            .ThrowsAsync(new InvalidOperationException("Invalid email verification code."));
+
+        HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
+            "/account/two-factor/email/enable",
+            new AccountTwoFactorEmailEnableRequest("000000"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task DisableTwoFactorEmail_ValidPassword_Returns204()
+    {
+        _server.CredentialVerifier
+            .VerifyUserCredentialsAsync("test-user", "MyP@ss1!", Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
+            "/account/two-factor/email/disable",
+            new AccountTwoFactorDisableRequest("MyP@ss1!"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        await _server.EmailTwoFactorService.Received(1).DisableAsync(
+            AccountEndpointsTestServer.TestUserIdString, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task DisableTwoFactorEmail_WrongPassword_Returns400()
+    {
+        _server.CredentialVerifier
+            .VerifyUserCredentialsAsync("test-user", "WrongP@ss!", Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
+            "/account/two-factor/email/disable",
+            new AccountTwoFactorDisableRequest("WrongP@ss!"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        await _server.EmailTwoFactorService.DidNotReceive().DisableAsync(
+            Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     // -------------------------------------------------------------------------

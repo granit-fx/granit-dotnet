@@ -22,6 +22,7 @@ using Granit.OpenIddict.Queries;
 using Granit.OpenIddict.Services;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -148,6 +149,46 @@ public sealed class GranitOpenIddictModule : GranitModule
         context.Services.TryAddScoped<OpenIddictSessionManager>();
         context.Services.Replace(ServiceDescriptor.Scoped<IIdentitySessionManager>(
             sp => sp.GetRequiredService<OpenIddictSessionManager>()));
+    }
+
+    /// <inheritdoc/>
+    public override void OnApplicationInitialization(ApplicationInitializationContext context)
+    {
+        // Fail fast on a config/scheme mismatch: every external provider listed under
+        // OpenIddict:Client:Providers is advertised to users as available, so each MUST have a
+        // registered authentication handler. A provider without its scheme (host forgot
+        // AddGoogle()/AddMicrosoftAccount()) would otherwise pass IsProviderConfigured and only
+        // fail when a user clicks "Sign in with X" and the redirect dead-ends.
+        GranitOpenIddictClientOptions clientOptions = context.ServiceProvider
+            .GetRequiredService<IOptions<GranitOpenIddictClientOptions>>().Value;
+
+        if (clientOptions.Providers.Length == 0)
+        {
+            return;
+        }
+
+        IAuthenticationSchemeProvider schemeProvider = context.ServiceProvider
+            .GetRequiredService<IAuthenticationSchemeProvider>();
+
+        var registeredSchemes = schemeProvider.GetAllSchemesAsync()
+            .GetAwaiter().GetResult()
+            .Select(s => s.Name)
+            .ToHashSet(StringComparer.Ordinal);
+
+        string[] missing = clientOptions.Providers
+            .Select(p => p.Name)
+            .Where(name => !registeredSchemes.Contains(name))
+            .ToArray();
+
+        if (missing.Length > 0)
+        {
+            throw new InvalidOperationException(
+                $"External login provider(s) [{string.Join(", ", missing)}] are configured under "
+                + $"'{GranitOpenIddictClientOptions.SectionName}:Providers' but have no registered "
+                + "authentication handler. Register each provider's scheme on the host "
+                + "(e.g. services.AddAuthentication().AddGoogle(...)) with a scheme name matching the "
+                + "configured provider Name, or remove the provider from configuration.");
+        }
     }
 
     private static void PostConfigureIdentityCookie(

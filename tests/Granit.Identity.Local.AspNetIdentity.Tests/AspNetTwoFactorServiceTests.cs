@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
@@ -13,7 +14,6 @@ public sealed class AspNetTwoFactorServiceTests
     private static readonly string UserId = Guid.NewGuid().ToString();
 
     private readonly UserManager<LocalIdentity> _userManager;
-    private readonly ITotpService _totpService = Substitute.For<ITotpService>();
     private readonly AspNetTwoFactorService _sut;
     private readonly LocalIdentity _user;
 
@@ -26,7 +26,10 @@ public sealed class AspNetTwoFactorServiceTests
         _user = new LocalIdentity { Id = Guid.Parse(UserId), Email = "user@test.com", UserName = "testuser" };
         _userManager.FindByIdAsync(UserId).Returns(_user);
 
-        _sut = new AspNetTwoFactorService(_userManager, _totpService);
+        // Default: no email-OTP claim. Individual tests override.
+        _userManager.GetClaimsAsync(_user).Returns(new List<Claim>());
+
+        _sut = new AspNetTwoFactorService(_userManager);
     }
 
     // --- GetStatusAsync ---
@@ -42,21 +45,23 @@ public sealed class AspNetTwoFactorServiceTests
 
         status.IsEnabled.ShouldBeTrue();
         status.HasAuthenticatorApp.ShouldBeTrue();
+        status.HasEmailOtp.ShouldBeFalse();
         status.RecoveryCodesLeft.ShouldBe(5);
     }
 
     [Fact]
-    public async Task GetStatusAsync_NoAuthenticatorKey_HasAuthenticatorAppIsFalse()
+    public async Task GetStatusAsync_WithEmailOtpClaim_HasEmailOtpIsTrue()
     {
-        _userManager.GetTwoFactorEnabledAsync(_user).Returns(false);
+        _userManager.GetTwoFactorEnabledAsync(_user).Returns(true);
         _userManager.GetAuthenticatorKeyAsync(_user).Returns((string?)null);
         _userManager.CountRecoveryCodesAsync(_user).Returns(0);
+        _userManager.GetClaimsAsync(_user).Returns(
+            new List<Claim> { new("granit:2fa:email_otp", "true") });
 
         TwoFactorStatus status = await _sut.GetStatusAsync(UserId, TestContext.Current.CancellationToken);
 
-        status.IsEnabled.ShouldBeFalse();
+        status.HasEmailOtp.ShouldBeTrue();
         status.HasAuthenticatorApp.ShouldBeFalse();
-        status.RecoveryCodesLeft.ShouldBe(0);
     }
 
     [Fact]
@@ -68,107 +73,73 @@ public sealed class AspNetTwoFactorServiceTests
             () => _sut.GetStatusAsync("unknown", TestContext.Current.CancellationToken));
     }
 
-    // --- GetAuthenticatorKeyAsync ---
+    // --- GetAvailableMethodsAsync ---
 
     [Fact]
-    public async Task GetAuthenticatorKeyAsync_KeyExists_ReturnsKeyAndQrCode()
+    public async Task GetAvailableMethodsAsync_AllFactors_ReturnsAll()
     {
-        _userManager.GetAuthenticatorKeyAsync(_user).Returns("EXISTINGKEY");
-        _totpService.GetQrCodeUri("user@test.com", "EXISTINGKEY").Returns("otpauth://totp/...");
+        _userManager.GetTwoFactorEnabledAsync(_user).Returns(true);
+        _userManager.GetAuthenticatorKeyAsync(_user).Returns("KEY");
+        _userManager.CountRecoveryCodesAsync(_user).Returns(3);
+        _userManager.GetClaimsAsync(_user).Returns(
+            new List<Claim> { new("granit:2fa:email_otp", "true") });
 
-        AuthenticatorKeyInfo info = await _sut.GetAuthenticatorKeyAsync(UserId, TestContext.Current.CancellationToken);
+        IReadOnlyList<TwoFactorMethod> methods = await _sut.GetAvailableMethodsAsync(
+            UserId, TestContext.Current.CancellationToken);
 
-        info.SharedKey.ShouldBe("EXISTINGKEY");
-        info.QrCodeUri.ShouldBe("otpauth://totp/...");
-        await _userManager.DidNotReceive().ResetAuthenticatorKeyAsync(_user);
+        methods.ShouldBe([TwoFactorMethod.Authenticator, TwoFactorMethod.Email, TwoFactorMethod.RecoveryCode]);
     }
 
     [Fact]
-    public async Task GetAuthenticatorKeyAsync_NoKey_ResetsAndReturnsNewKey()
+    public async Task GetAvailableMethodsAsync_TwoFactorDisabled_ReturnsEmpty()
     {
-        _userManager.GetAuthenticatorKeyAsync(_user).Returns(
-            (string?)null,    // first call: no key
-            "NEWLYGENERATED"  // after reset
-        );
-        _totpService.GetQrCodeUri("user@test.com", "NEWLYGENERATED").Returns("otpauth://totp/new...");
+        _userManager.GetTwoFactorEnabledAsync(_user).Returns(false);
 
-        AuthenticatorKeyInfo info = await _sut.GetAuthenticatorKeyAsync(UserId, TestContext.Current.CancellationToken);
+        IReadOnlyList<TwoFactorMethod> methods = await _sut.GetAvailableMethodsAsync(
+            UserId, TestContext.Current.CancellationToken);
 
-        info.SharedKey.ShouldBe("NEWLYGENERATED");
-        await _userManager.Received(1).ResetAuthenticatorKeyAsync(_user);
+        methods.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task GetAuthenticatorKeyAsync_NoEmail_UsesUserNameForQrCode()
+    public async Task GetAvailableMethodsAsync_EmailOnlyNoRecoveryCodes_ReturnsEmailOnly()
     {
-        var user = new LocalIdentity { Id = Guid.NewGuid(), Email = null, UserName = "fallback-user" };
-        _userManager.FindByIdAsync(user.Id.ToString()).Returns(user);
-        _userManager.GetAuthenticatorKeyAsync(user).Returns("KEY123");
-        _totpService.GetQrCodeUri("fallback-user", "KEY123").Returns("otpauth://...");
-
-        AuthenticatorKeyInfo info = await _sut.GetAuthenticatorKeyAsync(user.Id.ToString(), TestContext.Current.CancellationToken);
-
-        info.SharedKey.ShouldBe("KEY123");
-    }
-
-    // --- EnableAsync ---
-
-    [Fact]
-    public async Task EnableAsync_ValidCode_EnablesTwoFactorAndReturnsRecoveryCodes()
-    {
-        _userManager.GetAuthenticatorKeyAsync(_user).Returns("VALIDKEY");
-        _totpService.ValidateCode("VALIDKEY", "123456").Returns(true);
-        _userManager.GenerateNewTwoFactorRecoveryCodesAsync(_user, 10)
-            .Returns(new[] { "CODE1", "CODE2", "CODE3" }.AsEnumerable());
-
-        IReadOnlyList<string> codes = await _sut.EnableAsync(UserId, "123456", TestContext.Current.CancellationToken);
-
-        codes.Count.ShouldBe(3);
-        codes.ShouldContain("CODE1");
-        await _userManager.Received(1).SetTwoFactorEnabledAsync(_user, true);
-    }
-
-    [Fact]
-    public async Task EnableAsync_InvalidCode_ThrowsInvalidOperation()
-    {
-        _userManager.GetAuthenticatorKeyAsync(_user).Returns("VALIDKEY");
-        _totpService.ValidateCode("VALIDKEY", "000000").Returns(false);
-
-        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
-            () => _sut.EnableAsync(UserId, "000000", TestContext.Current.CancellationToken));
-
-        ex.Message.ShouldContain("Invalid TOTP");
-        await _userManager.DidNotReceive().SetTwoFactorEnabledAsync(Arg.Any<LocalIdentity>(), Arg.Any<bool>());
-    }
-
-    [Fact]
-    public async Task EnableAsync_NoAuthenticatorKey_ThrowsInvalidOperation()
-    {
+        _userManager.GetTwoFactorEnabledAsync(_user).Returns(true);
         _userManager.GetAuthenticatorKeyAsync(_user).Returns((string?)null);
+        _userManager.CountRecoveryCodesAsync(_user).Returns(0);
+        _userManager.GetClaimsAsync(_user).Returns(
+            new List<Claim> { new("granit:2fa:email_otp", "true") });
 
-        await Should.ThrowAsync<InvalidOperationException>(
-            () => _sut.EnableAsync(UserId, "123456", TestContext.Current.CancellationToken));
+        IReadOnlyList<TwoFactorMethod> methods = await _sut.GetAvailableMethodsAsync(
+            UserId, TestContext.Current.CancellationToken);
+
+        methods.ShouldBe([TwoFactorMethod.Email]);
     }
 
-    // --- DisableAsync ---
+    // --- DisableAllAsync ---
 
     [Fact]
-    public async Task DisableAsync_DisablesTwoFactorAndUpdatesSecurityStamp()
+    public async Task DisableAllAsync_ClearsEveryFactorAndRotatesStamp()
     {
-        await _sut.DisableAsync(UserId, TestContext.Current.CancellationToken);
+        _userManager.GetClaimsAsync(_user).Returns(
+            new List<Claim> { new("granit:2fa:email_otp", "true") });
+
+        await _sut.DisableAllAsync(UserId, TestContext.Current.CancellationToken);
 
         await _userManager.Received(1).SetTwoFactorEnabledAsync(_user, false);
+        await _userManager.Received(1).ResetAuthenticatorKeyAsync(_user);
+        await _userManager.Received(1).RemoveClaimAsync(
+            _user, Arg.Is<Claim>(c => c.Type == "granit:2fa:email_otp"));
         await _userManager.Received(1).UpdateSecurityStampAsync(_user);
     }
 
-    // --- ResetAuthenticatorAsync ---
-
     [Fact]
-    public async Task ResetAuthenticatorAsync_ResetsKey()
+    public async Task DisableAllAsync_NoEmailClaim_DoesNotRemoveClaim()
     {
-        await _sut.ResetAuthenticatorAsync(UserId, TestContext.Current.CancellationToken);
+        await _sut.DisableAllAsync(UserId, TestContext.Current.CancellationToken);
 
-        await _userManager.Received(1).ResetAuthenticatorKeyAsync(_user);
+        await _userManager.DidNotReceive().RemoveClaimAsync(_user, Arg.Any<Claim>());
+        await _userManager.Received(1).SetTwoFactorEnabledAsync(_user, false);
     }
 
     // --- GenerateRecoveryCodesAsync ---

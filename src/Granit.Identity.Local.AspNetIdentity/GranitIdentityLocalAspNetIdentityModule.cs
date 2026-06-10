@@ -73,6 +73,8 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         // ASP.NET Core Identity service implementations (depend on UserManager<LocalIdentity>)
         context.Services.TryAddScoped<ITotpService, TotpService>();
         context.Services.TryAddScoped<ITwoFactorService, AspNetTwoFactorService>();
+        context.Services.TryAddScoped<IAuthenticatorTwoFactorService, AspNetAuthenticatorTwoFactorService>();
+        context.Services.TryAddScoped<IEmailTwoFactorService, AspNetEmailTwoFactorService>();
         context.Services.TryAddScoped<IPasskeyService, AspNetPasskeyService>();
         context.Services.TryAddScoped<IPasswordResetService, AspNetPasswordResetService>();
         context.Services.TryAddScoped<IEmailChangeService, AspNetEmailChangeService>();

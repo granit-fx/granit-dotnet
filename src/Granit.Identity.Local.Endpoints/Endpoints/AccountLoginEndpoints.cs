@@ -10,6 +10,7 @@ using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -48,18 +49,32 @@ internal static partial class AccountLoginEndpoints
 
         group.MapPost("/login/two-factor", HandleTwoFactorLoginAsync)
             .WithName("AccountTwoFactorLogin")
-            .WithSummary("Completes login with a TOTP code or recovery code.")
+            .WithSummary("Completes login with a TOTP, email, or recovery code.")
             .WithDescription(
                 "Finalizes the two-factor authentication challenge after a successful "
                 + "password-based login returned requiresTwoFactor: true. "
                 + "The Identity.TwoFactorUserId cookie (set by the initial login) identifies "
-                + "the user. Accepts either a 6-digit TOTP code from an authenticator app "
-                + "or a single-use recovery code (when useRecoveryCode is true). "
+                + "the user. The method field selects the factor: a 6-digit TOTP code from an "
+                + "authenticator app, a one-time code sent by email, or a single-use recovery code. "
                 + "On success, sets the Identity authentication cookie and returns 200. "
                 + "Returns 401 if the code is invalid or the 2FA session has expired.")
             .Produces<AccountLoginResponse>()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesValidationProblem()
+            .AllowAnonymous()
+            .RequireRateLimiting("authentication");
+
+        group.MapPost("/login/two-factor/send-email", SendTwoFactorEmailCodeAsync)
+            .WithName("SendTwoFactorLoginEmailCode")
+            .WithSummary("Sends a one-time code by email for the two-factor challenge.")
+            .WithDescription(
+                "Generates and emails a one-time code to the user identified by the "
+                + "Identity.TwoFactorUserId cookie, for use with the email two-factor method. "
+                + "Only sends when the user has enrolled the email factor. Always returns 204 "
+                + "(even when no code is sent) to avoid leaking which factors are configured. "
+                + "Returns 400 if there is no active two-factor session.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .AllowAnonymous()
             .RequireRateLimiting("authentication");
 
@@ -167,8 +182,18 @@ internal static partial class AccountLoginEndpoints
         if (result.RequiresTwoFactor)
         {
             LogLoginTwoFactor(logger, user.Id.ToString());
+
+            // Surface the factors the user can complete the challenge with so the SPA
+            // knows whether to offer the "email me a code" action alongside the
+            // authenticator/recovery inputs.
+            ITwoFactorService twoFactorService = httpContext.RequestServices
+                .GetRequiredService<ITwoFactorService>();
+            IReadOnlyList<TwoFactorMethod> methods = await twoFactorService
+                .GetAvailableMethodsAsync(user.Id.ToString(), cancellationToken).ConfigureAwait(false);
+
             return TypedResults.Ok(new AccountLoginResponse(
-                Succeeded: false, RequiresTwoFactor: true));
+                Succeeded: false, RequiresTwoFactor: true,
+                TwoFactorMethods: [.. methods.Select(static m => m.ToString())]));
         }
 
         if (result.IsLockedOut)
@@ -218,13 +243,26 @@ internal static partial class AccountLoginEndpoints
     private static async Task<Results<Ok<AccountLoginResponse>, ProblemHttpResult>> HandleTwoFactorLoginAsync(
         AccountTwoFactorLoginRequest request,
         [FromServices] SignInManager<LocalIdentity> signInManager,
+        [FromServices] IEmailTwoFactorService emailTwoFactorService,
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
+        string method = request.Method switch
+        {
+            TwoFactorMethod.RecoveryCode => "recovery_code",
+            TwoFactorMethod.Email => "email_otp",
+            _ => "totp",
+        };
+        string failureReason = request.Method switch
+        {
+            TwoFactorMethod.RecoveryCode => "invalid_recovery_code",
+            TwoFactorMethod.Email => "invalid_email_otp",
+            _ => "invalid_totp_code",
+        };
+
         using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
             IdentityLocalActivitySource.TwoFactorChallenge);
-        activity?.SetTag(IdentityLocalActivitySource.TagProvider,
-            request.UseRecoveryCode ? "recovery_code" : "totp");
+        activity?.SetTag(IdentityLocalActivitySource.TagProvider, method);
 
         ILogger logger = httpContext.RequestServices
             .GetRequiredService<ILoggerFactory>()
@@ -244,36 +282,54 @@ internal static partial class AccountLoginEndpoints
         string sanitizedCode = request.Code.Replace(" ", string.Empty, StringComparison.Ordinal)
             .Replace("-", string.Empty, StringComparison.Ordinal);
 
-        string method = request.UseRecoveryCode ? "recovery_code" : "totp";
-        string failureReason = request.UseRecoveryCode ? "invalid_recovery_code" : "invalid_totp_code";
-
         Microsoft.AspNetCore.Identity.SignInResult result;
 
-        if (request.UseRecoveryCode)
+        switch (request.Method)
         {
-            result = await signInManager
-                .TwoFactorRecoveryCodeSignInAsync(sanitizedCode)
-                .ConfigureAwait(false);
+            case TwoFactorMethod.RecoveryCode:
+                result = await signInManager
+                    .TwoFactorRecoveryCodeSignInAsync(sanitizedCode)
+                    .ConfigureAwait(false);
 
-            // TwoFactorRecoveryCodeSignInAsync does not accept isPersistent,
-            // so re-sign the user with a persistent cookie when RememberMe is requested.
-            if (result.Succeeded && request.RememberMe)
-            {
-                LocalIdentity? user = await signInManager.UserManager
-                    .GetUserAsync(httpContext.User).ConfigureAwait(false);
-
-                if (user is not null)
+                // TwoFactorRecoveryCodeSignInAsync does not accept isPersistent,
+                // so re-sign the user with a persistent cookie when RememberMe is requested.
+                if (result.Succeeded && request.RememberMe)
                 {
-                    await signInManager.SignInAsync(user, isPersistent: true)
-                        .ConfigureAwait(false);
+                    LocalIdentity? user = await signInManager.UserManager
+                        .GetUserAsync(httpContext.User).ConfigureAwait(false);
+
+                    if (user is not null)
+                    {
+                        await signInManager.SignInAsync(user, isPersistent: true)
+                            .ConfigureAwait(false);
+                    }
                 }
-            }
-        }
-        else
-        {
-            result = await signInManager
-                .TwoFactorAuthenticatorSignInAsync(sanitizedCode, isPersistent: request.RememberMe, rememberClient: false)
-                .ConfigureAwait(false);
+
+                break;
+
+            case TwoFactorMethod.Email:
+                // The ASP.NET email token provider validates a code for ANY user with a
+                // confirmed email, so gate the method on explicit enrollment — otherwise
+                // email access alone would bypass a configured authenticator.
+                LocalIdentity? emailUser = await signInManager
+                    .GetTwoFactorAuthenticationUserAsync().ConfigureAwait(false);
+
+                result = emailUser is not null
+                    && await emailTwoFactorService
+                        .IsEnabledAsync(emailUser.Id.ToString(), cancellationToken).ConfigureAwait(false)
+                    ? await signInManager.TwoFactorSignInAsync(
+                        TokenOptions.DefaultEmailProvider, sanitizedCode,
+                        isPersistent: request.RememberMe, rememberClient: false).ConfigureAwait(false)
+                    : Microsoft.AspNetCore.Identity.SignInResult.Failed;
+
+                break;
+
+            default:
+                result = await signInManager
+                    .TwoFactorAuthenticatorSignInAsync(sanitizedCode, isPersistent: request.RememberMe, rememberClient: false)
+                    .ConfigureAwait(false);
+
+                break;
         }
 
         if (result.Succeeded)
@@ -335,6 +391,40 @@ internal static partial class AccountLoginEndpoints
         return TypedResults.Problem(
             detail: "Invalid verification code.",
             statusCode: StatusCodes.Status401Unauthorized);
+    }
+
+    private static async Task<Results<NoContent, ProblemHttpResult>> SendTwoFactorEmailCodeAsync(
+        [FromServices] SignInManager<LocalIdentity> signInManager,
+        [FromServices] IEmailTwoFactorService emailTwoFactorService,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+    {
+        ICurrentTenant? currentTenant = httpContext.RequestServices.GetService<ICurrentTenant>();
+        IDataFilter? dataFilter = httpContext.RequestServices.GetService<IDataFilter>();
+
+        using IDisposable? tenantScope = await ResolveTenantFromTwoFactorSessionAsync(
+            signInManager, currentTenant, dataFilter).ConfigureAwait(false);
+
+        LocalIdentity? user = await signInManager.GetTwoFactorAuthenticationUserAsync()
+            .ConfigureAwait(false);
+        if (user is null)
+        {
+            return TypedResults.Problem(
+                detail: "No active two-factor session.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        // Send only when the email factor is actually enrolled — prevents unsolicited mail
+        // and an authenticator bypass via the always-available email token provider. The
+        // response is 204 regardless, so a caller cannot probe which factors are configured.
+        if (await emailTwoFactorService.IsEnabledAsync(user.Id.ToString(), cancellationToken)
+            .ConfigureAwait(false))
+        {
+            await emailTwoFactorService.SendCodeAsync(user.Id.ToString(), cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        return TypedResults.NoContent();
     }
 
     /// <summary>

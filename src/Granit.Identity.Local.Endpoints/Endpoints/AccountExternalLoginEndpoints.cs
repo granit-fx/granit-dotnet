@@ -36,12 +36,14 @@ internal static partial class AccountExternalLoginEndpoints
             .WithName("ChallengeExternalLogin")
             .WithSummary("Initiates an OAuth flow with an external provider.")
             .WithDescription(
-                "Validates that the specified provider is registered in IExternalProviderRegistry. "
-                + "Returns 200 to confirm the provider is available; the frontend then initiates "
-                + "the OAuth redirect via the standard client challenge flow. "
-                + "Returns 400 if the provider is not configured.")
+                "Validates that the specified provider is configured AND backed by a registered "
+                + "authentication handler. Returns 200 to confirm the provider is available; the "
+                + "frontend then initiates the OAuth redirect via the standard client challenge flow. "
+                + "Returns 400 if the provider is not configured, or 500 if it is configured but no "
+                + "authentication handler is registered for it (a host wiring error).")
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status500InternalServerError)
             .AllowAnonymous();
 
         group.MapGet("/external-logins/callback", CallbackAsync)
@@ -85,19 +87,34 @@ internal static partial class AccountExternalLoginEndpoints
             logins.Select(IdentityLocalResponseMapper.ToResponse).ToList());
     }
 
-    private static Task<Results<Ok, ProblemHttpResult>> ChallengeAsync(
+    private static async Task<Results<Ok, ProblemHttpResult>> ChallengeAsync(
         string provider,
-        [FromServices] IExternalProviderRegistry providerRegistry)
+        [FromServices] IExternalProviderRegistry providerRegistry,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
     {
-        // Validate provider is configured
-        bool isConfigured = providerRegistry.IsProviderConfigured(provider);
-
-        if (!isConfigured)
+        // Unknown provider → client error.
+        if (!providerRegistry.IsProviderConfigured(provider))
         {
-            return Task.FromResult<Results<Ok, ProblemHttpResult>>(
-                TypedResults.Problem(
-                    detail: "The specified external login provider is not configured.",
-                    statusCode: StatusCodes.Status400BadRequest));
+            return TypedResults.Problem(
+                detail: "The specified external login provider is not configured.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        // Configured but no authentication handler wired (host forgot AddGoogle()/etc.).
+        // Surface it as a server misconfiguration rather than returning a misleading 200
+        // that dead-ends when the frontend initiates the redirect on a non-existent scheme.
+        if (!await providerRegistry.IsProviderAvailableAsync(provider, cancellationToken).ConfigureAwait(false))
+        {
+            ILogger logger = httpContext.RequestServices.GetRequiredService<ILoggerFactory>()
+                .CreateLogger("Granit.Identity.Local.Endpoints.AccountExternalLoginEndpoints");
+            LogProviderSchemeMissing(logger, provider);
+
+            return TypedResults.Problem(
+                detail: "The external login provider is configured but no authentication handler "
+                    + "is registered for it. Register the provider's authentication scheme on the host "
+                    + "(e.g. AddGoogle()/AddMicrosoftAccount()).",
+                statusCode: StatusCodes.Status500InternalServerError);
         }
 
         // The actual OAuth challenge is initiated by the auth server's client middleware.
@@ -105,7 +122,7 @@ internal static partial class AccountExternalLoginEndpoints
         // on the authentication scheme corresponding to the provider.
         // This endpoint validates the provider and returns metadata for the frontend
         // to initiate the redirect via the standard OAuth client flow.
-        return Task.FromResult<Results<Ok, ProblemHttpResult>>(TypedResults.Ok());
+        return TypedResults.Ok();
     }
 
     private static async Task<Results<Ok<ExternalLoginCallbackResponse>, ProblemHttpResult>> CallbackAsync(
@@ -228,6 +245,9 @@ internal static partial class AccountExternalLoginEndpoints
 
     [LoggerMessage(Level = LogLevel.Error, Message = "External login: failed to write authentication audit entry — login flow continues.")]
     private static partial void LogAuditWriteFailed(ILogger logger, Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "External login: provider '{Provider}' is configured but no authentication handler is registered for it — register its scheme on the host (AddGoogle()/AddMicrosoftAccount()/…).")]
+    private static partial void LogProviderSchemeMissing(ILogger logger, string provider);
 
     private static async Task<Results<NoContent, ProblemHttpResult>> UnlinkExternalLoginAsync(
         string provider,

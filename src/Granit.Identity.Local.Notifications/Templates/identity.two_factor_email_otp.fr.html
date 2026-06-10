@@ -1,0 +1,16 @@
+<title>Votre code de vérification</title>
+<mj-text>
+  <p>Bonjour,</p>
+  <p>Utilisez le code à usage unique suivant pour valider l'authentification à deux facteurs du compte associé à <strong>{{ model.email | html.escape }}</strong> :</p>
+</mj-text>
+<mj-text align="center" font-size="32px" font-weight="bold" letter-spacing="6px" color="#1d4ed8" padding="16px 0">
+  {{ model.code }}
+</mj-text>
+<mj-text>
+  <p>Ce code expire dans quelques minutes et ne peut être utilisé qu'une seule fois.</p>
+  <p>Si vous n'avez pas tenté de vous connecter ni de modifier vos paramètres de sécurité, vous pouvez ignorer cet e-mail en toute sécurité — votre compte reste protégé par vos autres facteurs.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Ne partagez jamais ce code. Nous ne vous le demanderons jamais.</p>
+</mj-text>

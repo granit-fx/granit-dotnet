@@ -100,6 +100,10 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
             _ => Substitute.For<IImpersonationService>());
         builder.Services.TryAddScoped<ITwoFactorService>(
             _ => Substitute.For<ITwoFactorService>());
+        builder.Services.TryAddScoped<IAuthenticatorTwoFactorService>(
+            _ => Substitute.For<IAuthenticatorTwoFactorService>());
+        builder.Services.TryAddScoped<IEmailTwoFactorService>(
+            _ => Substitute.For<IEmailTwoFactorService>());
         builder.Services.TryAddScoped<IExternalLoginService>(
             _ => Substitute.For<IExternalLoginService>());
         builder.Services.TryAddScoped<IPasskeyService>(

@@ -17,7 +17,7 @@ public sealed class NotificationTypeDefinitionDriftTests
         CollectingContext context = new();
         provider.Define(context);
 
-        // All 9 notification type names
+        // All notification type names
         string[] expectedNames =
         [
             WelcomeNotificationType.Instance.Name,
@@ -27,6 +27,7 @@ public sealed class NotificationTypeDefinitionDriftTests
             PasswordChangedNotificationType.Instance.Name,
             AccountLockedNotificationType.Instance.Name,
             TwoFactorChangedNotificationType.Instance.Name,
+            TwoFactorEmailOtpNotificationType.Instance.Name,
             EmailChangeAlertNotificationType.Instance.Name,
             EmailChangeConfirmationNotificationType.Instance.Name,
         ];

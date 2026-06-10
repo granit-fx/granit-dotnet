@@ -1,0 +1,16 @@
+<title>Your verification code</title>
+<mj-text>
+  <p>Hi,</p>
+  <p>Use the following one-time code to complete two-factor authentication for the account associated with <strong>{{ model.email | html.escape }}</strong>:</p>
+</mj-text>
+<mj-text align="center" font-size="32px" font-weight="bold" letter-spacing="6px" color="#1d4ed8" padding="16px 0">
+  {{ model.code }}
+</mj-text>
+<mj-text>
+  <p>This code expires in a few minutes and can be used only once.</p>
+  <p>If you didn't try to sign in or change your security settings, you can safely ignore this email — your account is still protected by your other factors.</p>
+</mj-text>
+<mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+<mj-text font-size="13px" color="#4b5563">
+  <p>Never share this code. We will never ask you for it.</p>
+</mj-text>
