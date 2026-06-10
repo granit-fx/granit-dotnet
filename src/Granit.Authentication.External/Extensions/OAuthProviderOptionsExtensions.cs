@@ -26,17 +26,36 @@ public static class OAuthProviderOptionsExtensions
         // endpoint reads the resulting ticket from IdentityConstants.ExternalScheme.
         options.SignInScheme = IdentityConstants.ExternalScheme;
 
+        provider.ApplyCallbackAndScopes(path => options.CallbackPath = path, options.Scope);
+    }
+
+    /// <summary>
+    /// Applies the provider's optional callback-path override and scope overrides to a handler.
+    /// Shared by the OAuth handlers and the generic OpenID Connect handler, whose option types
+    /// (<see cref="OAuthOptions"/> and <c>OpenIdConnectOptions</c>) do not share a base exposing
+    /// <c>CallbackPath</c>/<c>Scope</c> — hence the callback-path setter and scope collection are
+    /// passed in rather than the options object.
+    /// </summary>
+    public static void ApplyCallbackAndScopes(
+        this ExternalAuthProvider provider,
+        Action<string> setCallbackPath,
+        ICollection<string> scope)
+    {
+        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(setCallbackPath);
+        ArgumentNullException.ThrowIfNull(scope);
+
         if (!string.IsNullOrWhiteSpace(provider.CallbackPath))
         {
-            options.CallbackPath = provider.CallbackPath;
+            setCallbackPath(provider.CallbackPath);
         }
 
         if (provider.Scopes.Length > 0)
         {
-            options.Scope.Clear();
-            foreach (string scope in provider.Scopes)
+            scope.Clear();
+            foreach (string s in provider.Scopes)
             {
-                options.Scope.Add(scope);
+                scope.Add(s);
             }
         }
     }
