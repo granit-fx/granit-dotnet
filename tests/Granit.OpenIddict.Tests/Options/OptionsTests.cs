@@ -45,7 +45,7 @@ public sealed class OptionsTests
         options.ServerDomain.ShouldBeEmpty();
         options.AuthenticatorTimeout.ShouldBe(TimeSpan.FromMinutes(5));
         options.ChallengeSize.ShouldBe(32);
-        GranitPasskeyOptions.SectionName.ShouldBe("Identity:Passkeys");
+        GranitPasskeyOptions.SectionName.ShouldBe("Identity:Local:Passkey");
     }
 
     [Fact]
