@@ -28,18 +28,6 @@ public sealed class GranitAuthenticationExternalOidcModule : GranitModule
                 options.UsePkce = true;
                 options.SaveTokens = true;
 
-                if (!string.IsNullOrWhiteSpace(provider.CallbackPath))
-                {
-                    options.CallbackPath = provider.CallbackPath;
-                }
-
-                if (provider.Scopes.Length > 0)
-                {
-                    options.Scope.Clear();
-                    foreach (string scope in provider.Scopes)
-                    {
-                        options.Scope.Add(scope);
-                    }
-                }
+                provider.ApplyCallbackAndScopes(path => options.CallbackPath = path, options.Scope);
             }));
 }

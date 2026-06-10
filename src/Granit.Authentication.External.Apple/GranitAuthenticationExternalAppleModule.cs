@@ -37,19 +37,7 @@ public sealed class GranitAuthenticationExternalAppleModule : GranitModule
                     options.KeyId = keyId;
                 }
 
-                if (!string.IsNullOrWhiteSpace(provider.CallbackPath))
-                {
-                    options.CallbackPath = provider.CallbackPath;
-                }
-
-                if (provider.Scopes.Length > 0)
-                {
-                    options.Scope.Clear();
-                    foreach (string scope in provider.Scopes)
-                    {
-                        options.Scope.Add(scope);
-                    }
-                }
+                provider.ApplyCallbackAndScopes(path => options.CallbackPath = path, options.Scope);
 
                 // Apple's client secret is a JWT signed with the P8 private key (PEM in config).
                 options.GenerateClientSecret = true;
