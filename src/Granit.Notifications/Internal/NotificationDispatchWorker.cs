@@ -1,4 +1,5 @@
 using System.Threading.Channels;
+using Granit.MultiTenancy;
 using Granit.Notifications.Exceptions;
 using Granit.Notifications.Handlers;
 using Granit.Notifications.Messages;
@@ -65,6 +66,17 @@ internal sealed partial class NotificationDispatchWorker(
         try
         {
             await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+
+            // The worker runs in a BackgroundService thread with no ambient tenant, so a fresh
+            // scope defaults to Host context. Restore the tenant captured at publish time
+            // (NotificationTrigger.TenantId) so fan-out recipient resolution, channel delivery,
+            // and per-tenant DB routing all execute in the originating tenant's context — otherwise
+            // tenant-scoped lookups (recipient contact, preferences, tenant schema) resolve nothing
+            // and no notification is delivered. A null TenantId (Host-scoped notification) keeps the
+            // default Host context, so Host mode is unaffected.
+            ICurrentTenant currentTenant = scope.ServiceProvider.GetRequiredService<ICurrentTenant>();
+            using IDisposable tenantScope = currentTenant.Change(trigger.TenantId);
+
             NotificationFanoutHandler fanout =
                 scope.ServiceProvider.GetRequiredService<NotificationFanoutHandler>();
 
