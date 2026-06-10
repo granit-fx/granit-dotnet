@@ -1,4 +1,5 @@
 using Granit.Caching;
+using Granit.Http.Resilience;
 using Granit.Modularity;
 using Granit.Oidc.TokenManagement.Extensions;
 using Granit.Timing;
@@ -12,6 +13,7 @@ namespace Granit.Oidc.TokenManagement;
 /// </summary>
 [DependsOn(
     typeof(GranitCachingModule),
+    typeof(GranitHttpResilienceModule),
     typeof(GranitOidcModule),
     typeof(GranitTimingModule))]
 public sealed class GranitOidcTokenManagementModule : GranitModule

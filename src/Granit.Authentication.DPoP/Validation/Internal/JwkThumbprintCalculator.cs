@@ -30,7 +30,7 @@ internal static class JwkThumbprintCalculator
         };
 
         byte[] hash = SHA256.HashData(canonicalJson);
-        return Base64UrlEncode(hash);
+        return System.Buffers.Text.Base64Url.EncodeToString(hash);
     }
 
     /// <summary>
@@ -78,10 +78,4 @@ internal static class JwkThumbprintCalculator
 
         return buffer.WrittenSpan.ToArray();
     }
-
-    private static string Base64UrlEncode(byte[] data) =>
-        Convert.ToBase64String(data)
-            .Replace('+', '-')
-            .Replace('/', '_')
-            .TrimEnd('=');
 }

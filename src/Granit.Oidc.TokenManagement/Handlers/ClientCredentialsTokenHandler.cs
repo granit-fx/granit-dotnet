@@ -8,6 +8,7 @@ using Granit.Oidc.Requests;
 using Granit.Oidc.Responses;
 using Granit.Oidc.TokenManagement.Cache;
 using Granit.Oidc.TokenManagement.Diagnostics;
+using Granit.Oidc.TokenManagement.DPoP;
 using Granit.Oidc.TokenManagement.Options;
 using Granit.Oidc.TokenManagement.Services;
 using Granit.Timing;
@@ -27,13 +28,16 @@ internal sealed partial class ClientCredentialsTokenHandler(
     ITokenEndpointService tokenEndpointService,
     IClientCredentialsTokenCache tokenCache,
     IDPoPProofService dpopProofService,
+    IDPoPKeyStore dpopKeyStore,
     IOptionsMonitor<ClientCredentialsOptions> clientCredentialsOptionsMonitor,
     IOptions<TokenManagementOptions> tokenManagementOptions,
     IClock clock,
     TokenManagementMetrics metrics,
     ILogger<ClientCredentialsTokenHandler> logger) : DelegatingHandler
 {
-    private string? _dpopPrivateKeyJwk;
+    // The proof key is stable per client (see IDPoPKeyStore) so cached
+    // sender-constrained tokens keep matching across handler rotations. Only the
+    // short-lived, server-supplied nonce is tracked per handler instance.
     private string? _dpopNonce;
     private readonly Lock _dpopLock = new();
 
@@ -152,16 +156,15 @@ internal sealed partial class ClientCredentialsTokenHandler(
         {
             request.Headers.Authorization = new AuthenticationHeaderValue("DPoP", accessToken);
 
-            string? privateKey;
             string? nonce;
             lock (_dpopLock)
             {
-                privateKey = _dpopPrivateKeyJwk;
                 nonce = _dpopNonce;
             }
 
-            if (privateKey is not null && request.RequestUri is not null)
+            if (request.RequestUri is not null)
             {
+                string privateKey = dpopKeyStore.GetOrCreateKey(ClientName);
                 string proof = dpopProofService.CreateProof(
                     privateKey, request.Method.Method, request.RequestUri.ToString(), nonce);
                 request.Headers.TryAddWithoutValidation("DPoP", proof);
@@ -180,10 +183,10 @@ internal sealed partial class ClientCredentialsTokenHandler(
             return null;
         }
 
+        string privateKey = dpopKeyStore.GetOrCreateKey(ClientName);
         lock (_dpopLock)
         {
-            _dpopPrivateKeyJwk ??= dpopProofService.GenerateKeyPair();
-            return new DPoPOptions(_dpopPrivateKeyJwk, _dpopNonce);
+            return new DPoPOptions(privateKey, _dpopNonce);
         }
     }
 

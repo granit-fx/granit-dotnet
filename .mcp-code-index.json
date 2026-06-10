@@ -35554,7 +35554,7 @@
       "kind": "class",
       "project": "Granit.Oidc.TokenManagement",
       "file": "src/Granit.Oidc.TokenManagement/Extensions/TokenManagementServiceCollectionExtensions.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitTokenManagement",
@@ -35570,7 +35570,7 @@
       "kind": "class",
       "project": "Granit.Oidc.TokenManagement",
       "file": "src/Granit.Oidc.TokenManagement/GranitOidcTokenManagementModule.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",

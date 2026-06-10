@@ -5,18 +5,19 @@ using Microsoft.Extensions.Options;
 namespace Granit.Oidc.TokenManagement.Options;
 
 /// <summary>
-/// Validates <see cref="OnBehalfOfOptions"/> when the named options are first
-/// resolved (the first request through the handler).
-/// Refuses any configuration that would reintroduce the confused-deputy
-/// vector (no audience, no host allow-list, non-https authority in prod).
+/// Validates <see cref="ClientCredentialsOptions"/> when first resolved.
+/// Catches misconfigurations that would otherwise fail silently at the first
+/// outbound request: missing authority/client id, non-https authority in
+/// non-Development environments, and a client-authentication method without its
+/// matching credential.
 /// </summary>
-internal sealed class OnBehalfOfOptionsValidator(IHostEnvironment environment)
-    : IValidateOptions<OnBehalfOfOptions>
+internal sealed class ClientCredentialsOptionsValidator(IHostEnvironment environment)
+    : IValidateOptions<ClientCredentialsOptions>
 {
-    public ValidateOptionsResult Validate(string? name, OnBehalfOfOptions options)
+    public ValidateOptionsResult Validate(string? name, ClientCredentialsOptions options)
     {
         List<string> failures = [];
-        string prefix = string.IsNullOrEmpty(name) ? "OnBehalfOfOptions" : $"OnBehalfOfOptions[{name}]";
+        string prefix = string.IsNullOrEmpty(name) ? "ClientCredentialsOptions" : $"ClientCredentialsOptions[{name}]";
 
         if (string.IsNullOrWhiteSpace(options.Authority))
         {
@@ -35,22 +36,6 @@ internal sealed class OnBehalfOfOptionsValidator(IHostEnvironment environment)
             failures.Add($"{prefix}.{nameof(options.ClientId)} is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(options.Audience))
-        {
-            failures.Add(
-                $"{prefix}.{nameof(options.Audience)} is required. Without an audience the " +
-                "exchanged token is not narrowed to the downstream API, defeating the purpose " +
-                "of token exchange (RFC 8693).");
-        }
-
-        if (options.AllowedHosts is null || options.AllowedHosts.Length == 0)
-        {
-            failures.Add(
-                $"{prefix}.{nameof(options.AllowedHosts)} must contain at least one host. " +
-                "Without it the handler has no way to detect attacker-influenced target URLs.");
-        }
-
-        // At least one form of client authentication must be configured
         bool hasClientSecret = !string.IsNullOrEmpty(options.ClientSecret);
         bool hasSigningKey = !string.IsNullOrEmpty(options.ClientSigningKeyJwk);
 
@@ -69,10 +54,9 @@ internal sealed class OnBehalfOfOptionsValidator(IHostEnvironment environment)
                 break;
         }
 
-        if (options.TokenLifetimeSafetyMargin < TimeSpan.Zero)
+        if (options.CacheMargin is { } margin && margin < TimeSpan.Zero)
         {
-            failures.Add(
-                $"{prefix}.{nameof(options.TokenLifetimeSafetyMargin)} must be non-negative.");
+            failures.Add($"{prefix}.{nameof(options.CacheMargin)} must be non-negative.");
         }
 
         return failures.Count == 0

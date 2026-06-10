@@ -3,6 +3,8 @@ using Granit.Http.Resilience.Extensions;
 using Granit.Oidc.TokenManagement.Cache;
 using Granit.Oidc.TokenManagement.Cache.Internal;
 using Granit.Oidc.TokenManagement.Diagnostics;
+using Granit.Oidc.TokenManagement.DPoP;
+using Granit.Oidc.TokenManagement.DPoP.Internal;
 using Granit.Oidc.TokenManagement.Handlers;
 using Granit.Oidc.TokenManagement.Options;
 using Granit.Oidc.TokenManagement.Services;
@@ -34,6 +36,7 @@ public static class TokenManagementServiceCollectionExtensions
         services.TryAddSingleton<ITokenEndpointService, TokenEndpointService>();
         services.TryAddSingleton<ITokenRevocationService, TokenRevocationService>();
         services.TryAddSingleton<IClientCredentialsTokenCache, ClientCredentialsTokenCache>();
+        services.TryAddSingleton<IDPoPKeyStore, DPoPKeyStore>();
 
         services.AddGranitHttpClient("Granit.TokenManagement");
 
@@ -60,6 +63,7 @@ public static class TokenManagementServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configure);
 
         services.AddGranitTokenManagement();
+        services.TryAddSingleton<IValidateOptions<ClientCredentialsOptions>, ClientCredentialsOptionsValidator>();
         services.Configure(name, configure);
 
         return services.AddGranitHttpClient(name)

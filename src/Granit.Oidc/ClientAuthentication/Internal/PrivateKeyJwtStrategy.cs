@@ -69,8 +69,17 @@ internal sealed class PrivateKeyJwtStrategy(string privateKeyJwk, IClock clock) 
 
     private string CreateRsaAssertion(JsonElement jwk, string clientId, string tokenEndpoint)
     {
-        using var rsa = RSA.Create();
-        rsa.ImportFromPem(ExportRsaJwkToPkcs8Pem(jwk));
+        using var rsa = RSA.Create(new RSAParameters
+        {
+            Modulus = Base64Url.Decode(jwk.GetProperty("n").GetString()!),
+            Exponent = Base64Url.Decode(jwk.GetProperty("e").GetString()!),
+            D = Base64Url.Decode(jwk.GetProperty("d").GetString()!),
+            P = Base64Url.Decode(jwk.GetProperty("p").GetString()!),
+            Q = Base64Url.Decode(jwk.GetProperty("q").GetString()!),
+            DP = Base64Url.Decode(jwk.GetProperty("dp").GetString()!),
+            DQ = Base64Url.Decode(jwk.GetProperty("dq").GetString()!),
+            InverseQ = Base64Url.Decode(jwk.GetProperty("qi").GetString()!),
+        });
 
         string header = JsonSerializer.Serialize(new Dictionary<string, string>
         {
@@ -98,23 +107,6 @@ internal sealed class PrivateKeyJwtStrategy(string privateKeyJwk, IClock clock) 
             ["exp"] = now + AssertionLifetimeSeconds,
         });
 #pragma warning restore GRSEC002
-    }
-
-    private static ReadOnlySpan<char> ExportRsaJwkToPkcs8Pem(JsonElement jwk)
-    {
-        using var rsa = RSA.Create(new RSAParameters
-        {
-            Modulus = Base64Url.Decode(jwk.GetProperty("n").GetString()!),
-            Exponent = Base64Url.Decode(jwk.GetProperty("e").GetString()!),
-            D = Base64Url.Decode(jwk.GetProperty("d").GetString()!),
-            P = Base64Url.Decode(jwk.GetProperty("p").GetString()!),
-            Q = Base64Url.Decode(jwk.GetProperty("q").GetString()!),
-            DP = Base64Url.Decode(jwk.GetProperty("dp").GetString()!),
-            DQ = Base64Url.Decode(jwk.GetProperty("dq").GetString()!),
-            InverseQ = Base64Url.Decode(jwk.GetProperty("qi").GetString()!),
-        });
-
-        return rsa.ExportRSAPrivateKeyPem();
     }
 }
 

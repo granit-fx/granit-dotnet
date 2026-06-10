@@ -1,7 +1,8 @@
 namespace Granit.Oidc.Internal;
 
 /// <summary>
-/// Base64url encoding and decoding utilities (RFC 4648 §5).
+/// Base64url encoding and decoding utilities (RFC 4648 §5), delegating to the
+/// allocation-free BCL <see cref="System.Buffers.Text.Base64Url"/> (.NET 9+).
 /// </summary>
 internal static class Base64Url
 {
@@ -9,28 +10,14 @@ internal static class Base64Url
     /// Encodes the specified byte array to a base64url string without padding.
     /// </summary>
     internal static string Encode(byte[] data) =>
-        Convert.ToBase64String(data)
-            .Replace('+', '-')
-            .Replace('/', '_')
-            .TrimEnd('=');
+        System.Buffers.Text.Base64Url.EncodeToString(data);
 
     /// <summary>
-    /// Decodes a base64url string to a byte array, adding padding as needed.
+    /// Decodes a base64url string (with or without padding) to a byte array.
     /// </summary>
     internal static byte[] Decode(string base64Url)
     {
         ArgumentException.ThrowIfNullOrEmpty(base64Url);
-
-        string padded = base64Url
-            .Replace('-', '+')
-            .Replace('_', '/');
-
-        switch (padded.Length % 4)
-        {
-            case 2: padded += "=="; break;
-            case 3: padded += "="; break;
-        }
-
-        return Convert.FromBase64String(padded);
+        return System.Buffers.Text.Base64Url.DecodeFromChars(base64Url);
     }
 }

@@ -4,6 +4,7 @@ using Granit.Oidc.TokenManagement.Extensions;
 using Granit.Oidc.TokenManagement.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -94,6 +95,11 @@ public sealed class TokenManagementServiceCollectionExtensionsTests
         services.AddSingleton(Substitute.For<Granit.Oidc.DPoP.IDPoPProofService>());
         services.AddSingleton(Substitute.For<Granit.Timing.IClock>());
         services.AddSingleton<IMeterFactory>(new TestMeterFactory());
+
+        // A real host always provides IHostEnvironment; the options validators depend on it.
+        IHostEnvironment environment = Substitute.For<IHostEnvironment>();
+        environment.EnvironmentName.Returns(Environments.Development);
+        services.AddSingleton(environment);
     }
 
     private sealed class TestMeterFactory : IMeterFactory

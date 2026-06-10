@@ -4,6 +4,7 @@ using Granit.Oidc.DPoP;
 using Granit.Oidc.Responses;
 using Granit.Oidc.TokenManagement.Cache;
 using Granit.Oidc.TokenManagement.Diagnostics;
+using Granit.Oidc.TokenManagement.DPoP;
 using Granit.Oidc.TokenManagement.Handlers;
 using Granit.Oidc.TokenManagement.Options;
 using Granit.Oidc.TokenManagement.Services;
@@ -23,6 +24,7 @@ public sealed class ClientCredentialsTokenHandlerTests : IDisposable
     private readonly ITokenEndpointService _tokenEndpointService = Substitute.For<ITokenEndpointService>();
     private readonly IClientCredentialsTokenCache _tokenCache = Substitute.For<IClientCredentialsTokenCache>();
     private readonly IDPoPProofService _dpopProofService = Substitute.For<IDPoPProofService>();
+    private readonly IDPoPKeyStore _dpopKeyStore = Substitute.For<IDPoPKeyStore>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ServiceProvider _sp;
     private readonly TokenManagementMetrics _metrics;
@@ -62,6 +64,7 @@ public sealed class ClientCredentialsTokenHandlerTests : IDisposable
             _tokenEndpointService,
             _tokenCache,
             _dpopProofService,
+            _dpopKeyStore,
             _optionsMonitor,
             MsOptions.Options.Create(new TokenManagementOptions()),
             _clock,
@@ -111,6 +114,7 @@ public sealed class ClientCredentialsTokenHandlerTests : IDisposable
             _tokenEndpointService,
             _tokenCache,
             _dpopProofService,
+            _dpopKeyStore,
             _optionsMonitor,
             MsOptions.Options.Create(new TokenManagementOptions()),
             _clock,
@@ -159,6 +163,7 @@ public sealed class ClientCredentialsTokenHandlerTests : IDisposable
             _tokenEndpointService,
             _tokenCache,
             _dpopProofService,
+            _dpopKeyStore,
             _optionsMonitor,
             MsOptions.Options.Create(new TokenManagementOptions()),
             _clock,
@@ -195,6 +200,7 @@ public sealed class ClientCredentialsTokenHandlerTests : IDisposable
             _tokenEndpointService,
             _tokenCache,
             _dpopProofService,
+            _dpopKeyStore,
             _optionsMonitor,
             MsOptions.Options.Create(new TokenManagementOptions()),
             _clock,

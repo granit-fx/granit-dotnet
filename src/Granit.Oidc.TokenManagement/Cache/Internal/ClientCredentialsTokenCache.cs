@@ -20,7 +20,18 @@ internal sealed partial class ClientCredentialsTokenCache(
     {
         ArgumentException.ThrowIfNullOrEmpty(clientName);
 
-        MaybeValue<string?> maybe = await cache.TryGetAsync<string?>(BuildKey(clientName), token: cancellationToken).ConfigureAwait(false);
+        MaybeValue<string?> maybe;
+        try
+        {
+            maybe = await cache.TryGetAsync<string?>(BuildKey(clientName), token: cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            // Fail-open: a cache outage re-triggers a token endpoint round-trip
+            // rather than failing the outbound request.
+            LogCacheFailure(clientName, nameof(GetTokenAsync), ex.Message);
+            return null;
+        }
 
         if (!maybe.HasValue)
         {
@@ -42,11 +53,19 @@ internal sealed partial class ClientCredentialsTokenCache(
         ArgumentException.ThrowIfNullOrEmpty(clientName);
         ArgumentException.ThrowIfNullOrEmpty(accessToken);
 
-        await cache.SetAsync(
-            BuildKey(clientName),
-            accessToken,
-            new FusionCacheEntryOptions { Duration = expiry },
-            token: cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await cache.SetAsync(
+                BuildKey(clientName),
+                accessToken,
+                new FusionCacheEntryOptions { Duration = expiry },
+                token: cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogCacheFailure(clientName, nameof(SetTokenAsync), ex.Message);
+            return;
+        }
 
         LogCacheSet(clientName, expiry);
     }
@@ -56,7 +75,15 @@ internal sealed partial class ClientCredentialsTokenCache(
     {
         ArgumentException.ThrowIfNullOrEmpty(clientName);
 
-        await cache.RemoveAsync(BuildKey(clientName), token: cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await cache.RemoveAsync(BuildKey(clientName), token: cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogCacheFailure(clientName, nameof(RemoveTokenAsync), ex.Message);
+            return;
+        }
 
         LogCacheRemoved(clientName);
     }
@@ -74,6 +101,9 @@ internal sealed partial class ClientCredentialsTokenCache(
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Removed cached client credentials token for client {ClientName}")]
     private partial void LogCacheRemoved(string clientName);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Client credentials token cache operation {Operation} failed for client {ClientName} — falling back to token endpoint. {ErrorMessage}")]
+    private partial void LogCacheFailure(string clientName, string operation, string errorMessage);
 }
 
 #pragma warning restore GRSEC003
