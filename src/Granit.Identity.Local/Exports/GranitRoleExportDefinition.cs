@@ -5,7 +5,7 @@ namespace Granit.Identity.Local.Exports;
 
 public sealed class GranitRoleExportDefinition : ExportDefinition<GranitRole>
 {
-    public override string Name => "Granit.Identity.GranitRoleExport";
+    public override string Name => "Granit.Identity.Local.GranitRoleExport";
 
     protected override void Configure(ExportDefinitionBuilder<GranitRole> builder)
     {

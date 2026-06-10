@@ -8,7 +8,7 @@ public sealed class GranitPasskeyOptionsTests
 {
     [Fact]
     public void SectionName_IsCorrect() =>
-        GranitPasskeyOptions.SectionName.ShouldBe("Identity:Passkeys");
+        GranitPasskeyOptions.SectionName.ShouldBe("Identity:Local:Passkey");
 
     [Fact]
     public void ServerDomain_Default_IsEmpty() =>

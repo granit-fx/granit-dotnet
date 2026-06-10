@@ -8,6 +8,7 @@ using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Validation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Identity.Local.Endpoints;
 
@@ -33,5 +34,7 @@ public sealed class GranitIdentityLocalEndpointsModule : GranitModule
     {
         context.Services.AddLocalizationResource<IdentityLocalEndpointsLocalizationResource>();
         context.Services.AddScoped<IdentityLocalConfigProvider>();
+        context.Services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<ISchemaExampleProvider, IdentityLocalSchemaExampleProvider>());
     }
 }

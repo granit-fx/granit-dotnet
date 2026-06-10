@@ -110,7 +110,7 @@ internal static class AccountProfileEndpoints
             user.FirstName,
             user.LastName,
             twoFactorStatus.IsEnabled,
-            true, // HasPassword — not resolvable without UserManager; safe default
+            null, // HasPassword — no abstraction exposes it without a UserManager dependency; resolved by the provider layer
             externalLogins.Select(l => l.LoginProvider).ToList());
     }
 }

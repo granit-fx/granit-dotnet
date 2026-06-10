@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Identity.Local</PackageId>
-    <Description>Shared abstractions for self-hosted identity providers backed by ASP.NET Core Identity. Contains GranitUser, GranitRole, GranitUserGroup, provider-agnostic service interfaces (TOTP, passkeys, impersonation, email confirmation, password reset, external logins, account deletion), integration events, and ILocalIdentityGroupStore. Shared between Granit.OpenIddict and any future local provider (e.g. Duende Identity Server).</Description>
+    <Description>Shared abstractions for self-hosted identity providers backed by ASP.NET Core Identity. Contains LocalIdentity, GranitRole, GranitUserGroup, provider-agnostic service interfaces (TOTP, passkeys, impersonation, email confirmation, password reset, external logins, account deletion), integration events, and ILocalIdentityGroupStore. Shared between Granit.OpenIddict and any future local provider (e.g. Duende Identity Server).</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -21,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Provides IdentityUser<T> / IdentityRole<T> — the base types this module exists to
+         extend (see GranitRole, LocalIdentity). No HTTP-layer types are used here. -->
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

@@ -13,7 +13,7 @@ public sealed class ImpersonationAlertNotificationType
     public static readonly ImpersonationAlertNotificationType Instance = new();
 
     /// <inheritdoc />
-    public override string Name => "Security.ImpersonationAlert";
+    public override string Name => "identity.impersonation_alert";
 
     /// <inheritdoc />
     public override NotificationSeverity DefaultSeverity => NotificationSeverity.Warning;

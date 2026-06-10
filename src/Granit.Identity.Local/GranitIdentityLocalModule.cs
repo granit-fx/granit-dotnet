@@ -1,3 +1,4 @@
+using Granit.Authorization;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Entities.Extensions;
@@ -27,6 +28,7 @@ namespace Granit.Identity.Local;
 /// self-hosted identity provider (e.g. Duende Identity Server).
 /// </remarks>
 [DependsOn(
+    typeof(GranitAuthorizationModule),
     typeof(GranitEventsModule),
     typeof(GranitGuidsModule),
     typeof(GranitIdentityModule),

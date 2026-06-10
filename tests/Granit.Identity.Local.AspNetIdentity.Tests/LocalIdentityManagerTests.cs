@@ -246,6 +246,8 @@ public sealed class LocalIdentityManagerTests
         IOptions<IdentityOptions> identityOptions = Microsoft.Extensions.Options.Options.Create(new IdentityOptions());
         IPasswordHasher<LocalIdentity> hasher = Substitute.For<IPasswordHasher<LocalIdentity>>();
         ILogger<LocalIdentityManager> logger = Substitute.For<ILogger<LocalIdentityManager>>();
+        Granit.Timing.IClock clock = Substitute.For<Granit.Timing.IClock>();
+        clock.Now.Returns(new DateTimeOffset(2026, 1, 15, 10, 0, 0, TimeSpan.Zero));
 
         return new LocalIdentityManager(
             store ?? Substitute.For<IUserStore<LocalIdentity>>(),
@@ -259,6 +261,7 @@ public sealed class LocalIdentityManagerTests
             logger,
             Microsoft.Extensions.Options.Options.Create(lockoutOptions),
             userDirectoryWriter ?? Substitute.For<IUserDirectoryWriter>(),
-            guidGenerator ?? Substitute.For<IGuidGenerator>());
+            guidGenerator ?? Substitute.For<IGuidGenerator>(),
+            clock);
     }
 }

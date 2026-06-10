@@ -5,7 +5,7 @@ namespace Granit.Identity.Local.Exports;
 
 public sealed class GranitUserGroupExportDefinition : ExportDefinition<GranitUserGroup>
 {
-    public override string Name => "Granit.Identity.GranitUserGroupExport";
+    public override string Name => "Granit.Identity.Local.GranitUserGroupExport";
 
     protected override void Configure(ExportDefinitionBuilder<GranitUserGroup> builder)
     {

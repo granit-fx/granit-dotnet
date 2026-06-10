@@ -17,6 +17,14 @@ namespace Granit.Identity.Local.Domain;
 /// This differs from <see cref="LocalIdentity"/>, <see cref="GranitUserGroup"/>,
 /// and <see cref="GranitUserGroupMember"/> which are all tenant-scoped.
 /// </para>
+/// <para>
+/// <b>Naming:</b> <see cref="GranitRole"/>, <see cref="GranitUserGroup"/>, and
+/// <see cref="GranitUserGroupMember"/> deliberately keep the <c>Granit</c> prefix
+/// — they are framework-shared RBAC/grouping types reused across providers
+/// (<c>Granit.OpenIddict</c> and any future local provider). The credential record
+/// was renamed <see cref="LocalIdentity"/> because it is provider-specific; these
+/// shared types are not, so the asymmetry is intentional.
+/// </para>
 /// </remarks>
 public class GranitRole : IdentityRole<Guid>
 {

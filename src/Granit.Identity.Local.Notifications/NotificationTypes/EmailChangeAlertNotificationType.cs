@@ -13,7 +13,7 @@ public sealed class EmailChangeAlertNotificationType
     public static readonly EmailChangeAlertNotificationType Instance = new();
 
     /// <inheritdoc />
-    public override string Name => "Security.EmailChangeAlert";
+    public override string Name => "identity.email_change_alert";
 
     /// <inheritdoc />
     public override NotificationSeverity DefaultSeverity => NotificationSeverity.Warning;

@@ -36,8 +36,8 @@ internal static class AccountDeletionEndpoints
     private static async Task<Results<Accepted<string>, ProblemHttpResult>> DeleteAccountAsync(
         AccountDeleteRequest request,
         HttpContext httpContext,
-[FromServices] Granit.Identity.IIdentityCredentialVerifier credentialVerifier,
-[FromServices] IAccountDeletionService deletionService,
+        [FromServices] IIdentityCredentialVerifier credentialVerifier,
+        [FromServices] IAccountDeletionService deletionService,
         CancellationToken cancellationToken)
     {
         using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(

@@ -13,7 +13,7 @@ public sealed class TwoFactorChangedNotificationType
     public static readonly TwoFactorChangedNotificationType Instance = new();
 
     /// <inheritdoc />
-    public override string Name => "Security.TwoFactorChanged";
+    public override string Name => "identity.two_factor_changed";
 
     /// <inheritdoc />
     public override NotificationSeverity DefaultSeverity => NotificationSeverity.Warning;

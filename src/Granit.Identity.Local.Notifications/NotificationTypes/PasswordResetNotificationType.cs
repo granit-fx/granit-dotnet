@@ -12,7 +12,7 @@ public sealed class PasswordResetNotificationType
     public static readonly PasswordResetNotificationType Instance = new();
 
     /// <inheritdoc />
-    public override string Name => "Security.PasswordReset";
+    public override string Name => "identity.password_reset";
 
     /// <inheritdoc />
     public override NotificationSeverity DefaultSeverity => NotificationSeverity.Warning;

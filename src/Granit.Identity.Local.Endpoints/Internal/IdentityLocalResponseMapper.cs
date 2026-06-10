@@ -13,4 +13,7 @@ internal static class IdentityLocalResponseMapper
 
     internal static ImpersonationResponse ToResponse(ImpersonationResult result) =>
         new(result.AccessToken, result.RefreshToken, result.ExpiresIn);
+
+    internal static ExternalLoginCallbackResponse ToResponse(ProcessCallbackResult result) =>
+        new(result.UserId, result.IsNewUser);
 }

@@ -19,10 +19,10 @@ dotnet add package Granit.Identity.Local.AspNetIdentity
 ## Do NOT add Granit.Identity.Federated.EntityFrameworkCore
 
 When using `Granit.Identity.Local.AspNetIdentity`, **do not add** `Granit.Identity.Federated.EntityFrameworkCore`
-to your project. `UserCacheEntry` is redundant when the identity provider stores users
-locally (`GranitUser`). A warning is logged at startup if both packages are detected.
+to your project. `FederatedIdentity` is redundant when the identity provider stores users
+locally (`LocalIdentity`). A warning is logged at startup if both packages are detected.
 
-See [ADR-019](docs-site/src/content/docs/dotnet/architecture/adr/019-user-lookup-dual-mode.md)
+See [ADR-019](https://granit-fx.dev/dotnet/architecture/adr/019-user-lookup-dual-mode/)
 for the full architectural rationale.
 
 ## Dependencies

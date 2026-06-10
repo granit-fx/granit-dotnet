@@ -13,7 +13,7 @@ public sealed class PasswordChangedNotificationType
     public static readonly PasswordChangedNotificationType Instance = new();
 
     /// <inheritdoc />
-    public override string Name => "Security.PasswordChanged";
+    public override string Name => "identity.password_changed";
 
     /// <inheritdoc />
     public override NotificationSeverity DefaultSeverity => NotificationSeverity.Warning;

@@ -2,6 +2,7 @@ using Granit.Guids;
 using Granit.Identity.Domain;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Options;
+using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,7 +37,6 @@ namespace Granit.Identity.Local.AspNetIdentity;
 /// <see cref="IUserDirectoryWriter.DeleteAsync"/>.
 /// </para>
 /// </remarks>
-#pragma warning disable GRSEC001 // TimeProvider not available in UserManager constructor — DateTimeOffset.UtcNow is acceptable here
 public class LocalIdentityManager(
     IUserStore<LocalIdentity> store,
     IOptions<IdentityOptions> optionsAccessor,
@@ -49,13 +49,15 @@ public class LocalIdentityManager(
     ILogger<LocalIdentityManager> logger,
     IOptions<GranitLockoutOptions> lockoutOptions,
     IUserDirectoryWriter userDirectoryWriter,
-    IGuidGenerator guidGenerator)
+    IGuidGenerator guidGenerator,
+    IClock clock)
     : UserManager<LocalIdentity>(store, optionsAccessor, passwordHasher,
         userValidators, passwordValidators, keyNormalizer, errors, services, logger)
 {
     private readonly GranitLockoutOptions _lockoutOptions = lockoutOptions.Value;
     private readonly IUserDirectoryWriter _userDirectoryWriter = userDirectoryWriter;
     private readonly IGuidGenerator _guidGenerator = guidGenerator;
+    private readonly IClock _clock = clock;
 
     /// <inheritdoc/>
     public override async Task<IdentityResult> CreateAsync(LocalIdentity user)
@@ -125,7 +127,7 @@ public class LocalIdentityManager(
 
         // base.AccessFailedAsync sets LockoutEnd when AccessFailedCount reaches max.
         // Detect whether a lockout was just triggered by checking LockoutEnd.
-        DateTimeOffset now = DateTimeOffset.UtcNow;
+        DateTimeOffset now = _clock.Now;
         DateTimeOffset? lockoutEnd = await GetLockoutEndDateAsync(user).ConfigureAwait(false);
 
         if (lockoutEnd is null || lockoutEnd <= now)
@@ -176,4 +178,3 @@ public class LocalIdentityManager(
         return TimeSpan.FromSeconds(totalSeconds);
     }
 }
-#pragma warning restore GRSEC001
