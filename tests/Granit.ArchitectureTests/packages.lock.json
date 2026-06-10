@@ -759,11 +759,11 @@
       },
       "Microsoft.IdentityModel.Protocols.OpenIdConnect": {
         "type": "Transitive",
-        "resolved": "8.0.1",
-        "contentHash": "AQDbfpL+yzuuGhO/mQhKNsp44pm5Jv8/BI4KiFXR7beVGZoSH35zMV3PrmcfvSTsyI6qrcR898NzUauD6SRigg==",
+        "resolved": "8.14.0",
+        "contentHash": "afwKt+g52FXMu5Hsgpm6cFSFh40WYbnvXKJDCCBjcV10m6eXRwN2SBpg3auyyA6mYDZVaEtxYaOLXqsZAz4oig==",
         "dependencies": {
-          "Microsoft.IdentityModel.Protocols": "8.0.1",
-          "System.IdentityModel.Tokens.Jwt": "8.0.1"
+          "Microsoft.IdentityModel.Protocols": "8.14.0",
+          "System.IdentityModel.Tokens.Jwt": "8.14.0"
         }
       },
       "Microsoft.IdentityModel.Tokens": {
@@ -1281,11 +1281,11 @@
       },
       "System.IdentityModel.Tokens.Jwt": {
         "type": "Transitive",
-        "resolved": "8.0.1",
-        "contentHash": "GJw3bYkWpOgvN3tJo5X4lYUeIFA2HD293FPUhKmp7qxS+g5ywAb34Dnd3cDAFLkcMohy5XTpoaZ4uAHuw0uSPQ==",
+        "resolved": "8.14.0",
+        "contentHash": "EYGgN/S+HK7S6F3GaaPLFAfK0UzMrkXFyWCvXpQWFYmZln3dqtbyIO7VuTM/iIIPMzkelg8ZLlBPvMhxj6nOAA==",
         "dependencies": {
-          "Microsoft.IdentityModel.JsonWebTokens": "8.0.1",
-          "Microsoft.IdentityModel.Tokens": "8.0.1"
+          "Microsoft.IdentityModel.JsonWebTokens": "8.14.0",
+          "Microsoft.IdentityModel.Tokens": "8.14.0"
         }
       },
       "System.IO.Hashing": {
@@ -1677,6 +1677,48 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.authentication.external.apple": {
+        "type": "Project",
+        "dependencies": {
+          "AspNet.Security.OAuth.Apple": "[10.*, )",
+          "Granit.Authentication.External": "[0.1.0-dev, )"
+        }
+      },
+      "granit.authentication.external.facebook": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authentication.External": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.Authentication.Facebook": "[10.*, )"
+        }
+      },
+      "granit.authentication.external.github": {
+        "type": "Project",
+        "dependencies": {
+          "AspNet.Security.OAuth.GitHub": "[10.*, )",
+          "Granit.Authentication.External": "[0.1.0-dev, )"
+        }
+      },
+      "granit.authentication.external.google": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authentication.External": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.Authentication.Google": "[10.*, )"
+        }
+      },
+      "granit.authentication.external.microsoft": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authentication.External": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.Authentication.MicrosoftAccount": "[10.*, )"
+        }
+      },
+      "granit.authentication.external.oidc": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authentication.External": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.Authentication.OpenIdConnect": "[10.*, )"
         }
       },
       "granit.authentication.jwtbearer": {
@@ -3740,6 +3782,21 @@
           "Asp.Versioning.Mvc": "10.0.0"
         }
       },
+      "AspNet.Security.OAuth.Apple": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.0",
+        "contentHash": "nbZRB7YLt+cByQPZ06mRWlZYXLhqNt9KtUArOqBS1g2gJ8A9f3J5qLeTjvmzKJjXI7CCC+jGwDLrMOD9H0yYjw==",
+        "dependencies": {
+          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.14.0"
+        }
+      },
+      "AspNet.Security.OAuth.GitHub": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.0",
+        "contentHash": "PbOrAso/hlCS2p3YHHq94C5W/6851xyMT8ZEkAc3eGQNlsu3Siwu/D98nzCKyOKmB+KNu9MirWpmO66PmEIexQ=="
+      },
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
@@ -3994,11 +4051,38 @@
           "MimeKit": "4.17.0"
         }
       },
+      "Microsoft.AspNetCore.Authentication.Facebook": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.9",
+        "contentHash": "rVcrrkOnVmo2R7EH66dmR/znYaJluqO7LukiGClyzxo4C3R/YkkLmgEXhoYI5pAIQ2mj+2iryeG9jnZ9kwYciw=="
+      },
+      "Microsoft.AspNetCore.Authentication.Google": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.9",
+        "contentHash": "xqjTc8/ap0dwKmdaqSlV8RxjXb02uQ8rynDtTuHRU2gmOYaNm6O+uUjobp4Ararzq0ndKNXiWnQErxjWEGFGiA=="
+      },
       "Microsoft.AspNetCore.Authentication.JwtBearer": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
         "resolved": "10.0.9",
         "contentHash": "Hs5NDsGm8YicDDNx5RoBIT+H2AB9R27MvZ2gHoupTiHr+nnH3VxzY7DcmlbJ3b5DvvOhK35lWt/9Odtrq9sjtA==",
+        "dependencies": {
+          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.0.1"
+        }
+      },
+      "Microsoft.AspNetCore.Authentication.MicrosoftAccount": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.9",
+        "contentHash": "OEA+/MAr1bjSGTyTLs+h8uUalrH7ECABHfRRSWJ9NObfZicA2b9iu9Tv7ZxBF2DXU58jcIdugFUKwN5rY+Mx+g=="
+      },
+      "Microsoft.AspNetCore.Authentication.OpenIdConnect": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.9",
+        "contentHash": "Xvmxf86pKWHk9aSdqIQP7ao4qTLsYoiYgtbe75YP2aSCdGY4EHjaWOD0IWVR4/wcukrdj6DfqJRtVniUXSr5Nw==",
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.0.1"
         }

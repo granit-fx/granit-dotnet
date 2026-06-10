@@ -54,6 +54,13 @@
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.EntityFrameworkCore\Granit.Authentication.ApiKeys.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.Notifications\Granit.Authentication.ApiKeys.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.DPoP\Granit.Authentication.DPoP.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.External\Granit.Authentication.External.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.External.Apple\Granit.Authentication.External.Apple.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.External.Facebook\Granit.Authentication.External.Facebook.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.External.GitHub\Granit.Authentication.External.GitHub.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.External.Google\Granit.Authentication.External.Google.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.External.Microsoft\Granit.Authentication.External.Microsoft.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.External.Oidc\Granit.Authentication.External.Oidc.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer\Granit.Authentication.JwtBearer.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.Cognito\Granit.Authentication.JwtBearer.Cognito.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.EntraId\Granit.Authentication.JwtBearer.EntraId.csproj" />

@@ -20,7 +20,7 @@ public sealed class GranitAuthenticationExternalAppleModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddExternalProviderSchemes(
-            context.Builder!.Configuration,
+            context.Configuration,
             "Apple",
             static (builder, provider) => builder.AddApple(provider.SchemeName, options =>
             {

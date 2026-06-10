@@ -14,7 +14,7 @@ public sealed class GranitAuthenticationExternalGoogleModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddExternalProviderSchemes(
-            context.Builder!.Configuration,
+            context.Configuration,
             "Google",
             static (builder, provider) => builder.AddGoogle(
                 provider.SchemeName, options => options.ApplyExternalProvider(provider)));

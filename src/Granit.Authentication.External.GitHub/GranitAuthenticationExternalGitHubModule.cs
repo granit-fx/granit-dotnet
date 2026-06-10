@@ -14,7 +14,7 @@ public sealed class GranitAuthenticationExternalGitHubModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddExternalProviderSchemes(
-            context.Builder!.Configuration,
+            context.Configuration,
             "GitHub",
             static (builder, provider) => builder.AddGitHub(
                 provider.SchemeName, options => options.ApplyExternalProvider(provider)));

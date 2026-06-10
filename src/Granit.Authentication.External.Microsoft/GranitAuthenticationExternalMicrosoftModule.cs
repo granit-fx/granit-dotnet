@@ -14,7 +14,7 @@ public sealed class GranitAuthenticationExternalMicrosoftModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddExternalProviderSchemes(
-            context.Builder!.Configuration,
+            context.Configuration,
             "Microsoft",
             static (builder, provider) => builder.AddMicrosoftAccount(
                 provider.SchemeName, options => options.ApplyExternalProvider(provider)));
