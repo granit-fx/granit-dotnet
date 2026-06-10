@@ -26,4 +26,19 @@ public interface IExternalProviderRegistry
     /// </summary>
     /// <param name="providerName">The provider name (e.g., "Google", "Microsoft").</param>
     bool IsProviderConfigured(string providerName);
+
+    /// <summary>
+    /// Returns <see langword="true"/> only if the provider is both configured
+    /// <em>and</em> backed by a registered authentication handler — i.e. an OAuth challenge
+    /// for it would actually succeed.
+    /// </summary>
+    /// <remarks>
+    /// A provider can be listed in configuration without the host having wired its
+    /// authentication scheme (<c>AddGoogle()</c>, <c>AddMicrosoftAccount()</c>, …). In that
+    /// case <see cref="IsProviderConfigured"/> returns <see langword="true"/> but the
+    /// subsequent challenge dead-ends at the redirect. This method closes that gap.
+    /// </remarks>
+    /// <param name="providerName">The provider name (e.g., "Google", "Microsoft").</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<bool> IsProviderAvailableAsync(string providerName, CancellationToken cancellationToken = default);
 }

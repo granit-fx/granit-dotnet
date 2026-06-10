@@ -107,28 +107,30 @@ public sealed class TwoFactorStatusTests
     [Fact]
     public void TwoFactorStatus_Properties()
     {
-        TwoFactorStatus status = new(true, true, 5);
+        TwoFactorStatus status = new(true, true, true, 5);
 
         status.IsEnabled.ShouldBeTrue();
         status.HasAuthenticatorApp.ShouldBeTrue();
+        status.HasEmailOtp.ShouldBeTrue();
         status.RecoveryCodesLeft.ShouldBe(5);
     }
 
     [Fact]
     public void TwoFactorStatus_Disabled()
     {
-        TwoFactorStatus status = new(false, false, 0);
+        TwoFactorStatus status = new(false, false, false, 0);
 
         status.IsEnabled.ShouldBeFalse();
         status.HasAuthenticatorApp.ShouldBeFalse();
+        status.HasEmailOtp.ShouldBeFalse();
         status.RecoveryCodesLeft.ShouldBe(0);
     }
 
     [Fact]
     public void TwoFactorStatus_Equality()
     {
-        TwoFactorStatus a = new(true, true, 5);
-        TwoFactorStatus b = new(true, true, 5);
+        TwoFactorStatus a = new(true, true, true, 5);
+        TwoFactorStatus b = new(true, true, true, 5);
 
         a.ShouldBe(b);
     }

@@ -29,6 +29,7 @@ internal sealed class IdentityLocalSchemaExampleProvider : ISchemaExampleProvide
                 ["requiresTwoFactor"] = true,
                 ["isLockedOut"] = false,
                 ["isNotAllowed"] = false,
+                ["twoFactorMethods"] = new JsonArray("Authenticator", "Email", "RecoveryCode"),
             },
             [typeof(AccountRegisterRequest)] = new JsonObject
             {
@@ -42,10 +43,14 @@ internal sealed class IdentityLocalSchemaExampleProvider : ISchemaExampleProvide
             [typeof(AccountTwoFactorLoginRequest)] = new JsonObject
             {
                 ["code"] = "123456",
-                ["useRecoveryCode"] = false,
+                ["method"] = "Authenticator",
                 ["rememberMe"] = false,
             },
             [typeof(AccountTwoFactorEnableRequest)] = new JsonObject
+            {
+                ["code"] = "123456",
+            },
+            [typeof(AccountTwoFactorEmailEnableRequest)] = new JsonObject
             {
                 ["code"] = "123456",
             },

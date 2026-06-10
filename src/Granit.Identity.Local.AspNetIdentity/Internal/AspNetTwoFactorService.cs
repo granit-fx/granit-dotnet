@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Identity;
@@ -5,11 +6,13 @@ using Microsoft.AspNetCore.Identity;
 namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>
-/// <see cref="ITwoFactorService"/> implementation backed by <see cref="UserManager{TUser}"/>.
+/// <see cref="ITwoFactorService"/> coordinator implementation backed by
+/// <see cref="UserManager{TUser}"/>. Owns the factor-agnostic concerns; per-factor
+/// enrollment lives in <see cref="AspNetAuthenticatorTwoFactorService"/> and
+/// <see cref="AspNetEmailTwoFactorService"/>.
 /// </summary>
 internal sealed class AspNetTwoFactorService(
-    UserManager<LocalIdentity> userManager,
-    ITotpService totpService) : ITwoFactorService
+    UserManager<LocalIdentity> userManager) : ITwoFactorService
 {
     /// <inheritdoc/>
     public async Task<TwoFactorStatus> GetStatusAsync(
@@ -19,65 +22,42 @@ internal sealed class AspNetTwoFactorService(
 
         bool isEnabled = await userManager.GetTwoFactorEnabledAsync(user).ConfigureAwait(false);
         string? key = await userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false);
+        bool hasEmailOtp = await HasEmailOtpClaimAsync(user).ConfigureAwait(false);
         int recoveryCodesLeft = await userManager.CountRecoveryCodesAsync(user).ConfigureAwait(false);
 
-        return new TwoFactorStatus(isEnabled, !string.IsNullOrEmpty(key), recoveryCodesLeft);
+        return new TwoFactorStatus(isEnabled, !string.IsNullOrEmpty(key), hasEmailOtp, recoveryCodesLeft);
     }
 
     /// <inheritdoc/>
-    public async Task<AuthenticatorKeyInfo> GetAuthenticatorKeyAsync(
+    public async Task<IReadOnlyList<TwoFactorMethod>> GetAvailableMethodsAsync(
         string userId, CancellationToken cancellationToken = default)
     {
         LocalIdentity user = await FindUserAsync(userId).ConfigureAwait(false);
 
-        string? key = await userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false);
-        if (string.IsNullOrEmpty(key))
+        if (!await userManager.GetTwoFactorEnabledAsync(user).ConfigureAwait(false))
         {
-            await userManager.ResetAuthenticatorKeyAsync(user).ConfigureAwait(false);
-            key = await userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false);
+            return [];
         }
 
-        string email = user.Email ?? user.UserName ?? userId;
-        string qrCodeUri = totpService.GetQrCodeUri(email, key!);
-
-        return new AuthenticatorKeyInfo(key!, qrCodeUri);
-    }
-
-    /// <inheritdoc/>
-    public async Task<IReadOnlyList<string>> EnableAsync(
-        string userId, string code, CancellationToken cancellationToken = default)
-    {
-        LocalIdentity user = await FindUserAsync(userId).ConfigureAwait(false);
+        var methods = new List<TwoFactorMethod>();
 
         string? key = await userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false);
-        if (string.IsNullOrEmpty(key) || !totpService.ValidateCode(key, code))
+        if (!string.IsNullOrEmpty(key))
         {
-            throw new InvalidOperationException("Invalid TOTP verification code.");
+            methods.Add(TwoFactorMethod.Authenticator);
         }
 
-        await userManager.SetTwoFactorEnabledAsync(user, true).ConfigureAwait(false);
+        if (await HasEmailOtpClaimAsync(user).ConfigureAwait(false))
+        {
+            methods.Add(TwoFactorMethod.Email);
+        }
 
-        IEnumerable<string>? codes = await userManager
-            .GenerateNewTwoFactorRecoveryCodesAsync(user, 10).ConfigureAwait(false);
+        if (await userManager.CountRecoveryCodesAsync(user).ConfigureAwait(false) > 0)
+        {
+            methods.Add(TwoFactorMethod.RecoveryCode);
+        }
 
-        return codes?.ToList() ?? [];
-    }
-
-    /// <inheritdoc/>
-    public async Task DisableAsync(string userId, CancellationToken cancellationToken = default)
-    {
-        LocalIdentity user = await FindUserAsync(userId).ConfigureAwait(false);
-        await userManager.SetTwoFactorEnabledAsync(user, false).ConfigureAwait(false);
-
-        // Invalidate security stamp to force re-authentication on existing sessions
-        await userManager.UpdateSecurityStampAsync(user).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    public async Task ResetAuthenticatorAsync(string userId, CancellationToken cancellationToken = default)
-    {
-        LocalIdentity user = await FindUserAsync(userId).ConfigureAwait(false);
-        await userManager.ResetAuthenticatorKeyAsync(user).ConfigureAwait(false);
+        return methods;
     }
 
     /// <inheritdoc/>
@@ -89,6 +69,29 @@ internal sealed class AspNetTwoFactorService(
             .GenerateNewTwoFactorRecoveryCodesAsync(user, 10).ConfigureAwait(false);
         return codes?.ToList() ?? [];
     }
+
+    /// <inheritdoc/>
+    public async Task DisableAllAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        LocalIdentity user = await FindUserAsync(userId).ConfigureAwait(false);
+
+        await userManager.SetTwoFactorEnabledAsync(user, false).ConfigureAwait(false);
+        await userManager.ResetAuthenticatorKeyAsync(user).ConfigureAwait(false);
+
+        if (await HasEmailOtpClaimAsync(user).ConfigureAwait(false))
+        {
+            await userManager.RemoveClaimAsync(
+                user, new Claim(TwoFactorClaims.EmailOtpEnabled, TwoFactorClaims.EnabledValue))
+                .ConfigureAwait(false);
+        }
+
+        // Invalidate the security stamp to force re-authentication on existing sessions.
+        await userManager.UpdateSecurityStampAsync(user).ConfigureAwait(false);
+    }
+
+    private async Task<bool> HasEmailOtpClaimAsync(LocalIdentity user) =>
+        (await userManager.GetClaimsAsync(user).ConfigureAwait(false))
+            .Any(c => c.Type == TwoFactorClaims.EmailOtpEnabled && c.Value == TwoFactorClaims.EnabledValue);
 
     private async Task<LocalIdentity> FindUserAsync(string userId) =>
         await userManager.FindByIdAsync(userId).ConfigureAwait(false)

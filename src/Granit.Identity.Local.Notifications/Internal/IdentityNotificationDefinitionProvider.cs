@@ -80,6 +80,17 @@ internal sealed class IdentityNotificationDefinitionProvider : INotificationDefi
             AllowUserOptOut = false,
         });
 
+        // Two-factor email OTP — transactional auth code, cannot be opted out
+        context.Add(new NotificationDefinition(TwoFactorEmailOtpNotificationType.Instance.Name)
+        {
+            GroupName = GroupName,
+            DisplayName = "Two-Factor Email Code",
+            Description = "One-time code emailed to complete the email-based two-factor method.",
+            DefaultSeverity = NotificationSeverity.Warning,
+            DefaultChannels = [NotificationChannels.Email],
+            AllowUserOptOut = false,
+        });
+
         // Email change alert — security alert to current email, cannot be opted out
         context.Add(new NotificationDefinition(EmailChangeAlertNotificationType.Instance.Name)
         {

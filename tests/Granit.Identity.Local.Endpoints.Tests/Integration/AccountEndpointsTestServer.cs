@@ -59,6 +59,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
     public IEmailConfirmationService EmailConfirmation { get; }
     public IPasswordResetService PasswordResetService { get; }
     public ITwoFactorService TwoFactorService { get; }
+    public IAuthenticatorTwoFactorService AuthenticatorTwoFactorService { get; }
+    public IEmailTwoFactorService EmailTwoFactorService { get; }
     public IExternalLoginService ExternalLoginService { get; }
     public IExternalProviderRegistry ExternalProviderRegistry { get; }
     public IPasskeyService PasskeyService { get; }
@@ -86,6 +88,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         IEmailConfirmationService emailConfirmation,
         IPasswordResetService passwordResetService,
         ITwoFactorService twoFactorService,
+        IAuthenticatorTwoFactorService authenticatorTwoFactorService,
+        IEmailTwoFactorService emailTwoFactorService,
         IExternalLoginService externalLoginService,
         IExternalProviderRegistry externalProviderRegistry,
         IPasskeyService passkeyService,
@@ -112,6 +116,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         EmailConfirmation = emailConfirmation;
         PasswordResetService = passwordResetService;
         TwoFactorService = twoFactorService;
+        AuthenticatorTwoFactorService = authenticatorTwoFactorService;
+        EmailTwoFactorService = emailTwoFactorService;
         ExternalLoginService = externalLoginService;
         ExternalProviderRegistry = externalProviderRegistry;
         PasskeyService = passkeyService;
@@ -138,6 +144,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         IEmailConfirmationService emailConfirmation = Substitute.For<IEmailConfirmationService>();
         IPasswordResetService passwordResetService = Substitute.For<IPasswordResetService>();
         ITwoFactorService twoFactorService = Substitute.For<ITwoFactorService>();
+        IAuthenticatorTwoFactorService authenticatorTwoFactorService = Substitute.For<IAuthenticatorTwoFactorService>();
+        IEmailTwoFactorService emailTwoFactorService = Substitute.For<IEmailTwoFactorService>();
         IExternalLoginService externalLoginService = Substitute.For<IExternalLoginService>();
         IExternalProviderRegistry externalProviderRegistry = Substitute.For<IExternalProviderRegistry>();
         IPasskeyService passkeyService = Substitute.For<IPasskeyService>();
@@ -174,7 +182,9 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
 
         // Default: 2FA not enabled
         twoFactorService.GetStatusAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new TwoFactorStatus(false, false, 0));
+            .Returns(new TwoFactorStatus(false, false, false, 0));
+        twoFactorService.GetAvailableMethodsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new List<TwoFactorMethod>());
 
         // Default: no external logins
         externalLoginService.GetLoginsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -207,6 +217,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(emailConfirmation);
         builder.Services.AddSingleton(passwordResetService);
         builder.Services.AddSingleton(twoFactorService);
+        builder.Services.AddSingleton(authenticatorTwoFactorService);
+        builder.Services.AddSingleton(emailTwoFactorService);
         builder.Services.AddSingleton(externalLoginService);
         builder.Services.AddSingleton(externalProviderRegistry);
         builder.Services.AddSingleton(passkeyService);
@@ -255,6 +267,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
             app, authenticatedClient, anonymousClient, impersonatedClient,
             identityProvider, credentialVerifier, userReader, userWriter, passwordManager,
             emailConfirmation, passwordResetService, twoFactorService,
+            authenticatorTwoFactorService, emailTwoFactorService,
             externalLoginService, externalProviderRegistry,
             passkeyService, impersonationService, deletionService,
             eventBus, fusionCache, settingProvider, timeProvider,
