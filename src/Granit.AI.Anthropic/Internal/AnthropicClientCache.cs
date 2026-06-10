@@ -63,17 +63,6 @@ internal sealed class AnthropicClientCache(
         return _cache.Set(key, client, entryOptions);
     }
 
-    /// <summary>Removes the cached client for the given API key (if any).</summary>
-    public void Invalidate(string apiKey)
-    {
-        if (string.IsNullOrWhiteSpace(apiKey))
-        {
-            return;
-        }
-
-        _cache.Remove(AICacheKey.ForApiKey(apiKey));
-    }
-
     /// <summary>Wipes every cached client — used when the rotation event cannot identify the affected key.</summary>
     public void InvalidateAll()
     {

@@ -46,17 +46,6 @@ internal sealed class OpenAIClientCache(
         return _cache.Set(key, client, entryOptions);
     }
 
-    /// <summary>Removes the cached client for the given credentials (if any).</summary>
-    public void Invalidate(string apiKey, string? endpoint)
-    {
-        if (string.IsNullOrWhiteSpace(apiKey))
-        {
-            return;
-        }
-
-        _cache.Remove(AICacheKey.ForApiKey(apiKey, endpoint));
-    }
-
     /// <summary>Clears every cached client.</summary>
     public void InvalidateAll() => _cache.Clear();
 

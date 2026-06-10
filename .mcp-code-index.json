@@ -2790,7 +2790,7 @@
       "kind": "class",
       "project": "Granit.AI.Anthropic",
       "file": "src/Granit.AI.Anthropic/Extensions/AIAnthropicHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitAIAnthropic",
@@ -2855,7 +2855,7 @@
       "kind": "class",
       "project": "Granit.AI.AzureOpenAI",
       "file": "src/Granit.AI.AzureOpenAI/Extensions/AIAzureOpenAIHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitAIAzureOpenAI",
@@ -3697,7 +3697,7 @@
       "kind": "class",
       "project": "Granit.AI.Ollama",
       "file": "src/Granit.AI.Ollama/Extensions/AIOllamaHostApplicationBuilderExtensions.cs",
-      "line": 22,
+      "line": 25,
       "members": [
         {
           "name": "AddGranitAIOllama",
@@ -3756,7 +3756,7 @@
       "kind": "class",
       "project": "Granit.AI.OpenAI",
       "file": "src/Granit.AI.OpenAI/Extensions/AIOpenAIHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitAIOpenAI",
@@ -4275,15 +4275,6 @@
       "project": "Granit.AI",
       "file": "src/Granit.AI/Tenancy/AISettingNames.cs",
       "line": 8,
-      "members": []
-    },
-    {
-      "name": "AIWorkspaceCredentialsChangedEvent",
-      "fqn": "Granit.AI.Tenancy.AIWorkspaceCredentialsChangedEvent",
-      "kind": "record",
-      "project": "Granit.AI",
-      "file": "src/Granit.AI/Tenancy/AIWorkspaceCredentialsChangedEvent.cs",
-      "line": 25,
       "members": []
     },
     {

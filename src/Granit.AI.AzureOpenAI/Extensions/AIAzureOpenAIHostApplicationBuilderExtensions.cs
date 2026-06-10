@@ -1,9 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.AI.AzureOpenAI.Diagnostics;
+using Granit.AI.AzureOpenAI.Handlers;
 using Granit.AI.AzureOpenAI.Internal;
 using Granit.AI.AzureOpenAI.Options;
 using Granit.AI.Tenancy;
 using Granit.Diagnostics;
+using Granit.Events;
+using Granit.Settings.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -53,6 +56,10 @@ public static class AIAzureOpenAIHostApplicationBuilderExtensions
         builder.Services.AddScoped<IAIProviderCredentialResolver>(sp =>
             sp.GetRequiredService<AzureOpenAICredentialResolver>());
         builder.Services.AddScoped<IAIProviderFactory, AzureOpenAIProviderFactory>();
+
+        // Evict cached SDK clients the moment an Azure OpenAI credential setting changes,
+        // rather than waiting out the cache's 90s sliding expiration.
+        builder.Services.AddScoped<ILocalEventHandler<SettingChangedEvent>, AzureOpenAICredentialCacheInvalidationHandler>();
 
         return builder;
     }

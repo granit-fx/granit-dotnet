@@ -1,9 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.AI.Anthropic.Diagnostics;
+using Granit.AI.Anthropic.Handlers;
 using Granit.AI.Anthropic.Internal;
 using Granit.AI.Anthropic.Options;
 using Granit.AI.Tenancy;
 using Granit.Diagnostics;
+using Granit.Events;
+using Granit.Settings.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -57,6 +60,10 @@ public static class AIAnthropicHostApplicationBuilderExtensions
         builder.Services.AddScoped<IAIProviderCredentialResolver>(sp =>
             sp.GetRequiredService<AnthropicCredentialResolver>());
         builder.Services.AddScoped<IAIProviderFactory, AnthropicProviderFactory>();
+
+        // Evict cached SDK clients the moment an Anthropic credential setting changes,
+        // rather than waiting out the cache's 90s sliding expiration.
+        builder.Services.AddScoped<ILocalEventHandler<SettingChangedEvent>, AnthropicCredentialCacheInvalidationHandler>();
 
         return builder;
     }

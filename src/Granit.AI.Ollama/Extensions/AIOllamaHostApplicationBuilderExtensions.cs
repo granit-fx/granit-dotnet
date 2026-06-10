@@ -1,11 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.AI.Ollama.Diagnostics;
+using Granit.AI.Ollama.Handlers;
 using Granit.AI.Ollama.HealthChecks;
 using Granit.AI.Ollama.Internal;
 using Granit.AI.Ollama.Options;
 using Granit.AI.Tenancy;
 using Granit.Diagnostics;
+using Granit.Events;
 using Granit.Http.Resilience.Extensions;
+using Granit.Settings.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -70,6 +73,10 @@ public static class AIOllamaHostApplicationBuilderExtensions
         builder.Services.AddScoped<IAIProviderCredentialResolver>(sp =>
             sp.GetRequiredService<OllamaCredentialResolver>());
         builder.Services.AddScoped<IAIProviderFactory, OllamaProviderFactory>();
+
+        // Evict cached SDK clients the moment an Ollama endpoint setting changes,
+        // rather than waiting out the cache's 90s sliding expiration.
+        builder.Services.AddScoped<ILocalEventHandler<SettingChangedEvent>, OllamaCredentialCacheInvalidationHandler>();
 
         builder.Services.AddGranitHttpClient("GranitAIOllamaHealthCheck");
 
