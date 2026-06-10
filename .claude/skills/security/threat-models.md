@@ -39,6 +39,18 @@ ZONE 5 — External Identity
 └── ACME / Certificate authorities
 ```
 
+### Boundary crossings (referenced by findings as `Boundary: B#`)
+
+| ID | Crossing | Carried by | Primary TMs |
+| ---- | ---------- | ----------- | ------------- |
+| B1 | Zone 1 → Zone 2 | HTTPS, session cookies, DPoP proofs, API keys, webhook HMAC | TM-01, TM-04, TM-07 |
+| B2 | Zone 2 → Zone 3 | YARP token injection, MCP tool dispatch, tenant resolution | TM-01, TM-02, TM-03 |
+| B3 | Zone 3 → Zone 4 | EF Core (tenant filters), Redis protocol, Vault API, blob SDK | TM-03, TM-05, TM-08 |
+| B4 | Zone 3 ↔ Zone 5 | OIDC code flow, JWKS fetch, back-channel logout | TM-01, TM-04 |
+| B5 | Zone 3 → external egress | Webhooks, SMTP/SMS providers, MCP **client**, AI provider APIs | TM-02 (SSRF) |
+| B6 | Outbox → consumer (time-shifted) | Wolverine envelopes serialized in a PAST security context | TM-06, TM-08 |
+| B7 | Build/CI → packages | NuGet feeds, source generators, CI secrets | supply-chain checklist §6 |
+
 ---
 
 ## TM-01: BFF Authentication Flow
@@ -48,7 +60,7 @@ ZONE 5 — External Identity
 ### STRIDE Analysis
 
 | Threat | Vector | Mitigation (expected) | Verify |
-|--------|--------|----------------------|--------|
+| -------- | -------- | ---------------------- | -------- |
 | **Spoofing** | Attacker replays stolen session cookie | Session cookie: `Secure`, `HttpOnly`, `SameSite=Strict`; session rotation after login | Check `BffLoginEndpoints` cookie settings |
 | **Spoofing** | Attacker forges CSRF token | HMAC-SHA256 with server-side secret, bound to session | Check `HmacBffCsrfTokenGenerator` key source |
 | **Tampering** | Attacker modifies `redirect_uri` in auth request | Allowlist-based validation, exact match | Check `BffLoginEndpoints` redirect validation |
@@ -90,7 +102,7 @@ Goal: Steal user session
 ### STRIDE Analysis
 
 | Threat | Vector | Mitigation (expected) | Verify |
-|--------|--------|----------------------|--------|
+| -------- | -------- | ---------------------- | -------- |
 | **Spoofing** | Attacker impersonates authorized AI agent | MCP transport authentication (API key, mTLS, session) | Check MCP server auth middleware |
 | **Spoofing** | Tool executes with wrong user context | `McpTenantScopeAttribute` + permission check on calling user | Check `TenantAwareVisibilityFilter` |
 | **Tampering** | Prompt injection in tool parameters | Input validation against schema, parameterized queries | Check tool input handling |
@@ -158,7 +170,7 @@ Goal: Access Tenant B data from Tenant A context
 ### STRIDE Analysis
 
 | Threat | Vector | Mitigation (expected) | Verify |
-|--------|--------|----------------------|--------|
+| -------- | -------- | ---------------------- | -------- |
 | **Spoofing** | Attacker sends `X-Tenant-Id` header for another tenant | JWT claim takes precedence, header only for internal calls | Check resolver pipeline priority |
 | **Tampering** | Modify entity's `TenantId` field after creation | `TenantId` has `private set`, set by interceptor | Check entity configuration |
 | **Info Disclosure** | Query returns entities from other tenants | Named query filter on `TenantId` via `ApplyGranitConventions` | Check filter registration for all entities |
@@ -176,7 +188,7 @@ Goal: Access Tenant B data from Tenant A context
 ### STRIDE Analysis
 
 | Threat | Vector | Mitigation (expected) | Verify |
-|--------|--------|----------------------|--------|
+| -------- | -------- | ---------------------- | -------- |
 | **Spoofing** | Stolen access token used without DPoP proof | Token bound to JWK thumbprint, proof required on every request | Check `DPoPValidationMiddleware` enforcement |
 | **Spoofing** | Attacker generates DPoP proof with different key | `cnf.jkt` in token must match proof's JWK thumbprint | Check thumbprint validation |
 | **Tampering** | DPoP proof replayed | Nonce tracking (server-issued) or `jti` uniqueness check | Check replay detection mechanism |
@@ -193,7 +205,7 @@ Goal: Access Tenant B data from Tenant A context
 ### STRIDE Analysis
 
 | Threat | Vector | Mitigation (expected) | Verify |
-|--------|--------|----------------------|--------|
+| -------- | -------- | ---------------------- | -------- |
 | **Spoofing** | Unauthorized deletion request | Request requires authenticated user + self-service or admin permission | Check deletion endpoint authorization |
 | **Tampering** | Deletion saga partially executes (key destroyed but audit missed) | Saga uses compensation, atomic transaction for key + audit | Check saga transaction boundaries |
 | **Repudiation** | Organization denies deletion was performed | Immutable audit record via `ICryptoShreddingAuditRecorder` | Check audit immutability |
@@ -210,7 +222,7 @@ Goal: Access Tenant B data from Tenant A context
 ### STRIDE Analysis
 
 | Threat | Vector | Mitigation (expected) | Verify |
-|--------|--------|----------------------|--------|
+| -------- | -------- | ---------------------- | -------- |
 | **Spoofing** | Fake message injected into outbox table | Outbox table writes via EF Core transaction only (no direct SQL access) | Check outbox table permissions |
 | **Tampering** | Message content modified between outbox and consumer | Message integrity (envelope signing or DB-level integrity) | Check message envelope |
 | **Repudiation** | Message processed but no trace | W3C Trace Context propagation, audit correlation | Check `TraceContextBehavior` |
@@ -228,7 +240,7 @@ Goal: Access Tenant B data from Tenant A context
 ### STRIDE Analysis
 
 | Threat | Vector | Mitigation (expected) | Verify |
-|--------|--------|----------------------|--------|
+| -------- | -------- | ---------------------- | -------- |
 | **Spoofing** | Brute-force API key | High entropy (256-bit), rate limiting, account lockout | Check key generation + rate limiting |
 | **Spoofing** | Timing attack on key comparison | `CryptographicOperations.FixedTimeEquals` | Check comparison implementation |
 | **Spoofing** | X-Forwarded-For spoofing to bypass CIDR | Trust proxy headers only from known load balancer IPs | Check `CidrValidator` IP source |
@@ -250,7 +262,7 @@ Claim Check payloads (blob → handler), MCP tool responses (external → server
 ### STRIDE Analysis
 
 | Threat | Vector | Mitigation (expected) | Verify |
-|--------|--------|----------------------|--------|
+| -------- | -------- | ---------------------- | -------- |
 | **Tampering** | Attacker injects type discriminator in JSON to instantiate arbitrary types | `System.Text.Json` with closed `[JsonDerivedType]` set, no `TypeNameHandling` | Grep for `TypeNameHandling`, `JsonPolymorphicAttribute` with open type sets |
 | **Tampering** | Wolverine outbox message contains crafted payload | Schema-first deserialization with known message types only | Check Wolverine serializer configuration |
 | **Tampering** | Cache poisoning with malicious serialized object | FusionCache serializer does not resolve arbitrary types | Check `EncryptingFusionCacheSerializer` chain |
@@ -293,6 +305,26 @@ Goal: Execute arbitrary code via crafted serialized payload
 
 ---
 
+## TM-09: Input Injection Paths
+
+**Data Flow:** External Input (B1) → Validation → Business Logic → Sink
+(SQL via EF Core raw APIs, blob path, Scriban template, log, export cell)
+
+### STRIDE Analysis
+
+| Threat | Vector | Mitigation (expected) | Verify |
+| -------- | -------- | ---------------------- | -------- |
+| **Tampering** | User input concatenated into `FromSqlRaw`/`ExecuteSqlRaw` | Parameterized queries or `*Interpolated` variants; identifiers via closed allowlist | Grep raw SQL APIs across `*.EntityFrameworkCore` |
+| **Tampering** | Blob key contains `../` or absolute path | Key sanitization before provider dispatch (esp. `Granit.BlobStorage.FileSystem`) | Check blob key validation |
+| **Tampering** | Zip-slip during DataExchange import | Archive entry names validated against extraction root | Check import extraction code |
+| **Tampering** | Tenant-supplied Scriban template executes injected directives | Templates from embedded resources only, or sandboxed Scriban context | Check template source loading in `*.Notifications` |
+| **Info Disclosure** | XSS via unencoded user values in HTML email templates | Scriban auto-encoding / explicit encoding of model values | Check template rendering pipeline |
+| **Tampering** | Formula injection in CSV/Excel exports | Leading `=`, `+`, `-`, `@` escaped in user-supplied cells | Check `Granit.DataExchange.Csv` / `.Excel` writers |
+| **Repudiation** | Log forging via CRLF in user input | `[LoggerMessage]` structured params (no interpolation) | Grep interpolated log calls |
+| **DoS** | ReDoS on user-input-facing regex | `[GeneratedRegex]` with `NonBacktracking` or `matchTimeout` | Review regex patterns on input paths |
+
+---
+
 ## Methodology Notes
 
 ### Using these threat models
@@ -309,7 +341,7 @@ Goal: Execute arbitrary code via crafted serialized payload
 Threat models are point-in-time artifacts. Revisit when:
 
 | Change | Affected TMs | Why |
-|--------|-------------|-----|
+| -------- | ------------- | ----- |
 | MCP transport changes (stdio → HTTP/SSE) | TM-02 | New network attack surface, authentication model changes |
 | New identity provider added | TM-01, TM-04 | New trust boundary, token format differences |
 | Redis replaced with another cache | TM-01, TM-03, TM-08 | Encryption-at-rest, authentication model |
@@ -318,6 +350,7 @@ Threat models are point-in-time artifacts. Revisit when:
 | Multi-region deployment | TM-03, TM-05 | Cross-region tenant isolation, data residency |
 | Public API gateway added | TM-01, TM-07 | New trust boundary, rate limiting changes |
 | Serialization library change | TM-08 | Entire deserialization threat model may change |
+| New raw SQL path, template engine, or export format | TM-09 | New injection sink |
 
 **Rule:** Any PR that modifies a trust boundary crossing should reference the
 relevant TM and confirm mitigations still hold.
@@ -325,7 +358,7 @@ relevant TM and confirm mitigations still hold.
 ### CVSS 3.1 Quick Reference
 
 | Metric | Values |
-|--------|--------|
+| -------- | -------- |
 | Attack Vector (AV) | Network (N), Adjacent (A), Local (L), Physical (P) |
 | Attack Complexity (AC) | Low (L), High (H) |
 | Privileges Required (PR) | None (N), Low (L), High (H) |
@@ -336,3 +369,30 @@ relevant TM and confirm mitigations still hold.
 | Availability (A) | None (N), Low (L), High (H) |
 
 Example: `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:N` = 10.0 (Critical)
+
+### CVSS scoring discipline — Granit conventions
+
+Score metric-by-metric in the `<scratchpad>` (SKILL.md Step 3a), in this
+order, with one line of justification each. Granit-specific calibrations:
+
+| Situation | Calibration |
+| ----------- | ------------- |
+| Cross-tenant data access (isolation broken) | **S:C** — the tenant is a security authority boundary; C at least H |
+| Vulnerability only reachable via internal network (Zone 3+) | AV:A or AV:L, NOT AV:N — be honest about reachability across B1/B2 |
+| Requires a valid authenticated session/API key | PR:L (regular user) or PR:H (admin) — never PR:N "because the attacker could phish" |
+| Exploit needs a non-default option (`Options` class) | AC:H, and name the option in the finding |
+| MCP tool abuse requires a connected AI agent session | PR:L minimum; UI:R if a human must approve the tool call |
+| Secret found in repo (CWE-798) | Score the secret's blast radius, not the act of reading the repo: public repo ⇒ AV:N/PR:N; private ⇒ PR:L |
+| Defense-in-depth gap with an intact primary control | Cap at MEDIUM; primary control is a compensating control |
+
+Common pitfalls that inflate scores (each one is a credibility hit):
+
+- Scoring the worst theoretical chain instead of THIS finding (chained
+  findings are separate findings with their own scores).
+- AV:N for code only reachable behind the BFF with a valid session.
+- S:C without naming the second security authority that is crossed.
+- A:H for a DoS that only degrades one tenant's own throughput.
+
+Severity bands (after final vector): 9.0+ Critical · 7.0-8.9 High ·
+4.0-6.9 Medium · 0.1-3.9 Low. If the computed band contradicts your
+narrative, fix the narrative or the vector BEFORE writing the finding.

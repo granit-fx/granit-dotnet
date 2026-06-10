@@ -8,8 +8,10 @@ Standards referenced:
 - **ASVS** — OWASP Application Security Verification Standard 4.0
 - **FAPI** — Financial-grade API Security Profile 2.0
 - **ISO** — ISO 27001:2022 Annex A
-- **LLM** — OWASP LLM Top 10 (2025)
-- **RFC** — IETF RFCs (9449, 9126, 7519, 6749, 7636, etc.)
+- **LLM** — OWASP LLM Top 10, **2025 edition numbering** (LLM02 = Sensitive
+  Information Disclosure, LLM05 = Improper Output Handling, LLM06 = Excessive
+  Agency, LLM10 = Unbounded Consumption)
+- **RFC** — IETF RFCs (9449, 9126, 9700, 8725, 7519, 6749, 7636, etc.)
 - **CWE** — Common Weakness Enumeration
 
 ---
@@ -19,7 +21,7 @@ Standards referenced:
 ### 1a. BFF Pattern — Granit.Bff
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 1.1 | CSRF token uses HMAC-SHA256 with cryptographically random key | ASVS 4.2.2 | HIGH |
 | 1.2 | CSRF key is rotated periodically (not hardcoded) | ISO A.8.24 | CRITICAL |
 | 1.3 | CSRF token is bound to user session (not global) | ASVS 4.2.2 | HIGH |
@@ -38,7 +40,7 @@ Standards referenced:
 ### 1b. DPoP — Granit.Authentication.DPoP
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 1.15 | DPoP proof JWT validated: `typ`, `alg`, `jwk`, `htm`, `htu`, `iat` | RFC 9449 §4.3 | CRITICAL |
 | 1.16 | `ath` claim validated (access token hash) | RFC 9449 §4.3 | HIGH |
 | 1.17 | JWK thumbprint (S256) matches token `cnf.jkt` claim | RFC 9449 §6 | CRITICAL |
@@ -51,7 +53,7 @@ Standards referenced:
 ### 1c. OIDC / OpenIddict
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 1.23 | PKCE mandatory with `S256` method (never `plain`) | RFC 7636, FAPI §5.2.2 | CRITICAL |
 | 1.24 | Authorization code is single-use | RFC 6749 §4.1.2 | HIGH |
 | 1.25 | Token endpoint requires client authentication | FAPI §5.2.2 | HIGH |
@@ -70,7 +72,7 @@ Standards referenced:
 ### 1d. API Key Authentication
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 1.37 | API key generated with >= 256 bits of entropy | ASVS 2.4.1 | CRITICAL |
 | 1.38 | API key stored hashed (SHA-256 or better), never plaintext | ASVS 2.4.1 | CRITICAL |
 | 1.39 | Key comparison is timing-safe (`CryptographicOperations.FixedTimeEquals`) | CWE-208 | HIGH |
@@ -82,7 +84,7 @@ Standards referenced:
 ### 1e. Authorization
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 1.44 | Default-deny: endpoints require explicit authorization | ASVS 4.1.1 | CRITICAL |
 | 1.45 | `[AllowAnonymous]` endpoints are inventoried and justified | ASVS 4.1.1 | HIGH |
 | 1.46 | Permission cache TTL is short enough to reflect revocation | ASVS 4.1.3 | MEDIUM |
@@ -94,7 +96,7 @@ Standards referenced:
 ### 1f. Identity & Password Management
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 1.51 | Password hashing uses Argon2id, bcrypt, or PBKDF2 (>= 600K iterations) | ASVS 2.4.1 | CRITICAL |
 | 1.52 | Password complexity enforced (min 8 chars, no max limit < 128) | ASVS 2.1.1 | MEDIUM |
 | 1.53 | Account lockout after N failed attempts (with exponential backoff) | ASVS 2.2.1 | HIGH |
@@ -111,52 +113,52 @@ Standards referenced:
 ### 2a. MCP Tool Discovery & Visibility
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
-| 2.1 | Default discovery mode is explicit (opt-in, not opt-out) | LLM07 | CRITICAL |
-| 2.2 | `McpExposedAttribute` required for tool exposure | LLM07 | HIGH |
-| 2.3 | `TenantAwareVisibilityFilter` enforces tenant isolation | LLM06 | CRITICAL |
-| 2.4 | `ModuleScopeVisibilityFilter` restricts tools to loaded modules | LLM08 | HIGH |
-| 2.5 | Tool descriptions do not leak internal architecture details | LLM06 | MEDIUM |
+| --- | ------- | ---------- | --------------------- |
+| 2.1 | Default discovery mode is explicit (opt-in, not opt-out) | LLM06 | CRITICAL |
+| 2.2 | `McpExposedAttribute` required for tool exposure | LLM06 | HIGH |
+| 2.3 | `TenantAwareVisibilityFilter` enforces tenant isolation | LLM02 | CRITICAL |
+| 2.4 | `ModuleScopeVisibilityFilter` restricts tools to loaded modules | LLM06 | HIGH |
+| 2.5 | Tool descriptions do not leak internal architecture details | LLM02 | MEDIUM |
 | 2.6 | Tool parameter schemas validate input types and ranges | LLM01 | HIGH |
-| 2.7 | MCP transport (stdio/SSE/HTTP) uses authenticated channel | LLM07 | HIGH |
+| 2.7 | MCP transport (stdio/SSE/HTTP) uses authenticated channel | CWE-306 | HIGH |
 
 ### 2b. Output Sanitization
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
-| 2.8 | `IMcpOutputSanitizer` applied to ALL tool responses (not opt-in) | LLM02 | CRITICAL |
-| 2.9 | `[SensitiveData]` coverage: all PII/secret entity properties annotated with correct `Sensitivity` level — `SensitivePropertyRegistry` auto-feeds `PropertyRedactionSanitizer` (threshold: `Confidential`+) | LLM06 | HIGH |
-| 2.10 | `SensitiveDataMode` includes `Omit` for secrets and `Hash` for correlatable IDs — verify no `Restricted` property uses `Mask` (leaks partial value to LLM) | LLM06 | HIGH |
-| 2.11 | Error responses sanitized (no stack traces, connection strings, paths) | LLM06 | HIGH |
-| 2.12 | SQL query results sanitized for cross-tenant data | LLM06 | CRITICAL |
-| 2.13 | File system paths in responses are relative (no absolute paths) | LLM06 | MEDIUM |
+| --- | ------- | ---------- | --------------------- |
+| 2.8 | `IMcpOutputSanitizer` applied to ALL tool responses (not opt-in) | LLM05 | CRITICAL |
+| 2.9 | `[SensitiveData]` coverage: all PII/secret entity properties annotated with correct `Sensitivity` level — `SensitivePropertyRegistry` auto-feeds `PropertyRedactionSanitizer` (threshold: `Confidential`+) | LLM02 | HIGH |
+| 2.10 | `SensitiveDataMode` includes `Omit` for secrets and `Hash` for correlatable IDs — verify no `Restricted` property uses `Mask` (leaks partial value to LLM) | LLM02 | HIGH |
+| 2.11 | Error responses sanitized (no stack traces, connection strings, paths) | LLM02 | HIGH |
+| 2.12 | SQL query results sanitized for cross-tenant data | LLM02 | CRITICAL |
+| 2.13 | File system paths in responses are relative (no absolute paths) | LLM02 | MEDIUM |
 
 ### 2c. Prompt Injection & Confused Deputy
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 2.14 | MCP tool inputs validated against schema before execution | LLM01 | CRITICAL |
 | 2.15 | User-controlled strings not interpolated into tool descriptions | LLM01 | CRITICAL |
-| 2.16 | Tool execution checks CALLING user's permissions (not tool owner) | LLM08 | CRITICAL |
-| 2.17 | `McpTenantScopeAttribute` enforced — tools respect tenant context | LLM08 | CRITICAL |
-| 2.18 | MCP tool calls are audited (who, what, when, result summary) | LLM07 | HIGH |
-| 2.19 | Tool chaining cannot escalate privileges across calls | LLM08 | HIGH |
+| 2.16 | Tool execution checks CALLING user's permissions (not tool owner) | LLM06 | CRITICAL |
+| 2.17 | `McpTenantScopeAttribute` enforced — tools respect tenant context | LLM06 | CRITICAL |
+| 2.18 | MCP tool calls are audited (who, what, when, result summary) | LLM06 | HIGH |
+| 2.19 | Tool chaining cannot escalate privileges across calls | LLM06 | HIGH |
 | 2.20 | Content returned by tools is treated as untrusted by the LLM layer | LLM01 | HIGH |
 
 ### 2d. Resource Exhaustion & Denial of Wallet
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
-| 2.21 | MCP tool calls are rate-limited per user/tenant | LLM08 | HIGH |
-| 2.22 | Expensive operations (DB queries, file I/O) have timeouts | LLM08 | HIGH |
-| 2.23 | Token/cost budget per session or per user | LLM08 | MEDIUM |
-| 2.24 | Recursive tool calls are bounded (max depth) | LLM08 | HIGH |
-| 2.25 | Large result sets are paginated or truncated | LLM06 | MEDIUM |
+| --- | ------- | ---------- | --------------------- |
+| 2.21 | MCP tool calls are rate-limited per user/tenant | LLM10 | HIGH |
+| 2.22 | Expensive operations (DB queries, file I/O) have timeouts | LLM10 | HIGH |
+| 2.23 | Token/cost budget per session or per user | LLM10 | MEDIUM |
+| 2.24 | Recursive tool calls are bounded (max depth) | LLM10 | HIGH |
+| 2.25 | Large result sets are paginated or truncated | LLM10 | MEDIUM |
 
 ### 2e. MCP Client-Side Risks (SSRF)
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 2.26 | `McpConnectionOptions` URL validated against allowlist (no internal IPs) | CWE-918 | CRITICAL |
 | 2.27 | `IMcpClientFactory` rejects connections to `localhost`, `127.0.0.1`, `::1`, `169.254.*` (link-local), RFC 1918 ranges | CWE-918 | CRITICAL |
 | 2.28 | MCP client does not follow redirects to internal endpoints | CWE-918 | HIGH |
@@ -171,7 +173,7 @@ Standards referenced:
 ### 3a. Encryption at Rest
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 3.1 | AES encryption uses GCM mode (authenticated encryption) | ASVS 6.2.1 | CRITICAL |
 | 3.2 | IV/nonce is unique per encryption operation (never reused) | CWE-329 | CRITICAL |
 | 3.3 | Key derivation uses a KDF (HKDF, PBKDF2) — not raw key | ASVS 6.2.2 | HIGH |
@@ -183,7 +185,7 @@ Standards referenced:
 ### 3b. Key Management
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 3.8 | Encryption keys stored in Vault (never in config/env vars) | ISO A.8.24 | CRITICAL |
 | 3.9 | Key rotation supported without data re-encryption downtime | ISO A.8.24 | HIGH |
 | 3.10 | `RetiredKeyVersionException` handled gracefully (re-encrypt, not fail) | ISO A.8.24 | HIGH |
@@ -195,7 +197,7 @@ Standards referenced:
 ### 3c. Crypto-Shredding (GDPR Art. 17)
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 3.15 | `ICryptoShredder` destroys ALL copies of the entity encryption key | GDPR Art. 17 | CRITICAL |
 | 3.16 | Crypto-shredding audit trail (`ICryptoShreddingAuditRecorder`) is immutable | ISO A.8.15 | HIGH |
 | 3.17 | Shredding covers backup keys (or backups are themselves encrypted) | GDPR Art. 17 | HIGH |
@@ -204,7 +206,7 @@ Standards referenced:
 ### 3d. Privacy / GDPR
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 3.19 | `GdprDeletionSaga` has compensation on failure (no partial deletion) | GDPR Art. 17 | CRITICAL |
 | 3.20 | `GdprExportSaga` encrypts exported data before transmission | GDPR Art. 20 | HIGH |
 | 3.21 | `IDataProviderRegistry` covers ALL modules with personal data | GDPR Art. 17 | HIGH |
@@ -220,7 +222,7 @@ Standards referenced:
 ### 4a. Tenant Resolution
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 4.1 | `HeaderTenantResolver` only trusted on internal network (not public) | CWE-290 | CRITICAL |
 | 4.2 | `JwtClaimTenantResolver` validates tenant against known tenant list | CWE-284 | HIGH |
 | 4.3 | Default behavior when no resolver matches: REJECT (not default tenant) | CWE-284 | CRITICAL |
@@ -230,7 +232,7 @@ Standards referenced:
 ### 4b. Data Isolation
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 4.6 | Named query filters (`ApplyGranitConventions`) applied to ALL entities | CWE-639 | CRITICAL |
 | 4.7 | `IgnoreQueryFilters()` usage audited — grep and justify each occurrence | CWE-639 | HIGH |
 | 4.8 | `ExecuteUpdate`/`ExecuteDelete` manually adds tenant WHERE clause | CWE-639 | CRITICAL |
@@ -240,7 +242,7 @@ Standards referenced:
 ### 4c. Cross-Service Isolation
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 4.11 | Cache keys include tenant ID prefix (`{tenantId}:{module}:{key}`) | CWE-639 | CRITICAL |
 | 4.12 | Wolverine messages propagate tenant context (`TenantContextBehavior`) | CWE-639 | CRITICAL |
 | 4.13 | Blob storage paths include tenant partition | CWE-639 | HIGH |
@@ -256,7 +258,7 @@ Standards referenced:
 ### 5a. Wolverine Messaging
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 5.1 | Outbox messages encrypted at rest if containing PII | GDPR Art. 32 | HIGH |
 | 5.2 | Dead-letter queue messages reviewed for PII before manual replay | GDPR Art. 32 | MEDIUM |
 | 5.3 | Poison message detection: max retry count with exponential backoff | CWE-400 | HIGH |
@@ -269,7 +271,7 @@ Standards referenced:
 ### 5b. Rate Limiting
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 5.9 | Rate limiting applied BEFORE authentication (to protect auth endpoint) | CWE-307 | HIGH |
 | 5.10 | `CounterStoreFailureBehavior` is CLOSED (deny on Redis failure) | CWE-636 | HIGH |
 | 5.11 | Redis Lua scripts are atomic (no TOCTOU race conditions) | CWE-362 | HIGH |
@@ -280,7 +282,7 @@ Standards referenced:
 ### 5c. Idempotency
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 5.15 | Idempotency key has sufficient entropy (UUID v4 or better) | CWE-330 | MEDIUM |
 | 5.16 | Idempotency window is bounded (TTL prevents indefinite storage) | CWE-400 | MEDIUM |
 | 5.17 | Stored responses do not leak data to different users with same key | CWE-639 | HIGH |
@@ -289,7 +291,7 @@ Standards referenced:
 ### 5d. Caching Security
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 5.19 | Cache keys are not constructable from user input (injection) | CWE-74 | HIGH |
 | 5.20 | Serialized cache values use safe deserializer (no type resolution) | CWE-502 | CRITICAL |
 | 5.21 | FusionCache stampede protection enabled | CWE-400 | MEDIUM |
@@ -299,7 +301,7 @@ Standards referenced:
 ### 5e. Webhooks
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 5.24 | Outbound webhooks sign payload (HMAC-SHA256 with shared secret) | CWE-345 | HIGH |
 | 5.25 | Inbound webhooks validate signature before processing | CWE-345 | CRITICAL |
 | 5.26 | Webhook URLs validated (no SSRF: reject internal IPs, localhost) | CWE-918 | CRITICAL |
@@ -310,7 +312,7 @@ Standards referenced:
 ## 6. Supply Chain (`supply-chain`)
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 6.1 | All NuGet packages have lock files (`packages.lock.json`) | CWE-1357 | HIGH |
 | 6.2 | No known CVEs in dependency tree (`dotnet list package --vulnerable`) | CWE-1357 | CRITICAL |
 | 6.3 | No deprecated packages (`dotnet list package --deprecated`) | CWE-1357 | MEDIUM |
@@ -333,7 +335,7 @@ Standards referenced:
 ### 7a. Algorithm Inventory
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 7.1 | No MD5 or SHA-1 for security purposes (only checksums) | ASVS 6.2.5 | CRITICAL |
 | 7.2 | AES uses GCM or CCM mode (never ECB, never CBC without HMAC) | ASVS 6.2.1 | CRITICAL |
 | 7.3 | RSA key size >= 2048 bits (4096 preferred) | NIST SP 800-57 | HIGH |
@@ -343,7 +345,7 @@ Standards referenced:
 ### 7b. Random Number Generation
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 7.6 | `RandomNumberGenerator` used (never `System.Random` for security) | CWE-330 | CRITICAL |
 | 7.7 | Token generation uses >= 128 bits of entropy | ASVS 2.4.1 | HIGH |
 | 7.8 | Nonce generation is non-repeating (counter or random) | CWE-330 | HIGH |
@@ -351,7 +353,7 @@ Standards referenced:
 ### 7c. Key Lifecycle
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 7.9 | Keys never logged, never in error messages | CWE-532 | CRITICAL |
 | 7.10 | Key material zeroized after use (Span, ArrayPool return) | CWE-244 | HIGH |
 | 7.11 | Key rotation is automated (background job or Vault) | ISO A.8.24 | HIGH |
@@ -365,7 +367,7 @@ Standards referenced:
 ### 8a. Logging
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 8.1 | No PII in log messages (names, emails, phone numbers) | GDPR Art. 5 | CRITICAL |
 | 8.2 | No secrets in log messages (tokens, keys, passwords) | CWE-532 | CRITICAL |
 | 8.3 | `[SensitiveData]` applied to all sensitive entity properties with correct `Sensitivity` level (`Internal`/`Confidential`/`Restricted`) — enforced by `AuditPiiConventionTests`. `[AuditIgnore]` excludes entire entities/properties from change tracking (verify not misused to hide security-relevant changes). | GDPR Art. 5 | HIGH |
@@ -376,7 +378,7 @@ Standards referenced:
 ### 8b. Metrics
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 8.7 | No user-controlled values as metric tag VALUES (cardinality explosion) | CWE-400 | HIGH |
 | 8.8 | Metric names do not reveal internal architecture | CWE-200 | LOW |
 | 8.9 | Health check endpoints do not expose sensitive system info | CWE-200 | MEDIUM |
@@ -385,7 +387,7 @@ Standards referenced:
 ### 8c. Distributed Tracing
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 8.11 | Trace context does not propagate to untrusted external systems | CWE-200 | MEDIUM |
 | 8.12 | Span attributes do not contain PII or secrets | GDPR Art. 5 | HIGH |
 | 8.13 | Audit entries include trace ID for correlation | ISO A.8.15 | LOW |
@@ -393,7 +395,7 @@ Standards referenced:
 ### 8d. Audit Trail
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 8.14 | Audit log is append-only (no update/delete) | ISO A.8.15 | CRITICAL |
 | 8.15 | Audit log captures: who, what, when, where, result | ISO A.8.15 | HIGH |
 | 8.16 | Security events (login, logout, permission change) are audited | ASVS 7.1.1 | HIGH |
@@ -408,7 +410,7 @@ Standards referenced:
 ### 9a. Response Headers
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 9.1 | `Strict-Transport-Security` with `max-age >= 31536000; includeSubDomains` | ASVS 9.1.1 | HIGH |
 | 9.2 | `Content-Security-Policy` restricts `script-src`, `style-src`, `frame-ancestors` | ASVS 14.4.3 | HIGH |
 | 9.3 | `X-Content-Type-Options: nosniff` on all responses | ASVS 14.4.4 | MEDIUM |
@@ -422,7 +424,7 @@ Standards referenced:
 ### 9b. CORS
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 9.10 | No wildcard `*` origin for authenticated endpoints | CWE-942 | HIGH |
 | 9.11 | `Access-Control-Allow-Credentials` only with explicit origin list | CWE-942 | HIGH |
 | 9.12 | Preflight `Access-Control-Max-Age` bounded (< 7200s) | CWE-942 | LOW |
@@ -434,7 +436,7 @@ Standards referenced:
 ### 10a. JSON Deserialization
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 10.1 | `System.Text.Json` used (not Newtonsoft with `TypeNameHandling`) | CWE-502 | CRITICAL |
 | 10.2 | No `JsonSerializerOptions` with `TypeInfoResolver` allowing arbitrary types | CWE-502 | CRITICAL |
 | 10.3 | Polymorphic deserialization uses `[JsonDerivedType]` with closed type set | CWE-502 | HIGH |
@@ -443,7 +445,7 @@ Standards referenced:
 ### 10b. Wolverine Message Deserialization
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 10.5 | Message envelope uses schema-first deserialization (known types only) | CWE-502 | CRITICAL |
 | 10.6 | Outbox messages cannot contain polymorphic payloads from external input | CWE-502 | HIGH |
 | 10.7 | Dead-letter queue replay validates message schema before re-processing | CWE-502 | HIGH |
@@ -452,7 +454,7 @@ Standards referenced:
 ### 10c. Cache Deserialization
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 10.9 | FusionCache serializer does not resolve arbitrary types | CWE-502 | CRITICAL |
 | 10.10 | `EncryptingFusionCacheSerializer` validates integrity before deserializing | CWE-502 | HIGH |
 | 10.11 | Redis cache values cannot trigger type instantiation on deserialization | CWE-502 | HIGH |
@@ -464,7 +466,7 @@ Standards referenced:
 These checks apply across all domains:
 
 | # | Check | Standard | Severity if missing |
-|---|-------|----------|---------------------|
+| --- | ------- | ---------- | --------------------- |
 | 11.1 | No hardcoded secrets (connection strings, API keys, passwords) in code | CWE-798 | CRITICAL |
 | 11.2 | `appsettings.json` / `appsettings.Development.json` contain no secrets | CWE-798 | CRITICAL |
 | 11.3 | `.gitignore` excludes sensitive files (`.env`, `*.pfx`, `*.key`) | CWE-798 | HIGH |
@@ -475,3 +477,43 @@ These checks apply across all domains:
 | 11.8 | Error responses use RFC 7807 Problem Details (no internal data leak) | CWE-209 | MEDIUM |
 | 11.9 | All `async` methods accept and forward `CancellationToken` | CWE-400 | LOW |
 | 11.10 | Architecture tests in `Granit.ArchitectureTests` cover security conventions | ISO A.8.25 | MEDIUM |
+
+---
+
+## 12. Input Injection (`injection`)
+
+### 12a. SQL Injection
+
+| # | Check | Standard | Severity if missing |
+| --- | ------- | ---------- | --------------------- |
+| 12.1 | No string concatenation/interpolation into `FromSqlRaw`/`ExecuteSqlRaw`/`SqlQueryRaw` — parameters or `*Interpolated` variants only | CWE-89 | CRITICAL |
+| 12.2 | Dynamic SQL identifiers (table/column names) validated against a closed allowlist (parameters cannot protect identifiers) | CWE-89 | CRITICAL |
+| 12.3 | Full-text / `jsonb` query fragments built from user input are escaped or parameterized | CWE-89 | HIGH |
+| 12.4 | EF interceptors/executors that emit raw SQL (TRUNCATE, maintenance) take no user input | CWE-89 | HIGH |
+
+### 12b. Path & File Handling
+
+| # | Check | Standard | Severity if missing |
+| --- | ------- | ---------- | --------------------- |
+| 12.5 | Blob keys/file names reject `..`, absolute paths, and URL-encoded traversal before provider dispatch | CWE-22 | CRITICAL |
+| 12.6 | Archive extraction (DataExchange import) validates entry names (zip-slip) | CWE-22 | HIGH |
+| 12.7 | Content-Type and extension validated on upload (no served executable content) | CWE-434 | HIGH |
+| 12.8 | Download endpoints set `Content-Disposition` with sanitized filename (no CRLF) | CWE-113 | MEDIUM |
+
+### 12c. Template & Output Injection
+
+| # | Check | Standard | Severity if missing |
+| --- | ------- | ---------- | --------------------- |
+| 12.9 | Scriban templates: user data enters as model values, never concatenated into template source | CWE-1336 | CRITICAL |
+| 12.10 | Tenant-supplied templates (if supported) rendered in a sandboxed/limited Scriban context | CWE-1336 | HIGH |
+| 12.11 | HTML email templates encode user values (no raw HTML pass-through) | CWE-79 | HIGH |
+| 12.12 | CSV/Excel exports escape leading `=`, `+`, `-`, `@` in user-supplied cell values | CWE-1236 | MEDIUM |
+
+### 12d. Other Injection Vectors
+
+| # | Check | Standard | Severity if missing |
+| --- | ------- | ---------- | --------------------- |
+| 12.13 | No user input in response header values without CRLF stripping | CWE-113 | HIGH |
+| 12.14 | `[LoggerMessage]` used everywhere — no string interpolation of user input into log calls | CWE-117 | MEDIUM |
+| 12.15 | User-input-facing regexes use `[GeneratedRegex]` with `NonBacktracking` or `matchTimeout` (no nested quantifiers on unbounded input) | CWE-1333 | MEDIUM |
+| 12.16 | OS command execution absent (or arguments passed as array, never shell string) | CWE-78 | CRITICAL |

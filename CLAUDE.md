@@ -153,7 +153,7 @@ Every `*.Endpoints` module attaches `.WithTags(...)` on its root group. Format: 
 - `endpoints.MapGranitGroup(prefix)` — applies `FluentValidationAutoEndpointFilter` automatically.
 - Validators auto-discovered by `GranitValidationModule`. Opt-out: `WithMetadata(new SkipAutoValidationAttribute())`.
 - `FluentValidationSchemaTransformer` exposes constraints (maxLength, pattern...) in OpenAPI for codegen.
-- **Localized messages MANDATORY**: never hardcode `.WithMessage("...")`. Built-ins (NotEmpty, MaximumLength) auto-converted to error codes by `GranitErrorCodeLanguageManager`. Custom `.Must()` → `.WithErrorCodeAndMessage("Granit:Validation:XxxCode")` + add the key to all 17 JSON files in `src/Granit.Validation/Localization/Validation/`.
+- **Localized messages MANDATORY**: never hardcode `.WithMessage("...")`. Built-ins (NotEmpty, MaximumLength) auto-converted to error codes by `GranitErrorCodeLanguageManager`. Custom `.Must()` → `.WithErrorCodeAndMessage("Granit:Validation:XxxCode")` + add the key to all 18 JSON files in `src/Granit.Validation/Localization/Validation/`.
 
 ### Isolated DbContext (each `*.EntityFrameworkCore` package)
 

@@ -313,10 +313,12 @@ the finding:
 - [ ] **Eager refresh at 80 % of TTL** (`EagerRefreshThreshold=0.8`) refreshes in the
   background before expiry so requests rarely hit a cold miss. Keep it on for hot keys
   (set to 0 only intentionally).
-- [ ] **Default durations**: absolute 1 h (`Cache:DefaultAbsoluteExpirationRelativeToNow`),
-  sliding 20 min. Set an explicit `Duration` per entry when the data's volatility
-  differs — don't leave volatile data on the 1 h default (staleness) or pin rarely-
-  changing data to a short TTL (needless misses).
+- [ ] **Default duration**: absolute 1 h (`Cache:DefaultAbsoluteExpirationRelativeToNow`)
+  wired into `FusionCacheEntryOptions.Duration`. FusionCache has **no sliding
+  expiration** (by design — it doesn't compose with L2/backplane); do not assume or
+  recommend sliding behavior. Set an explicit `Duration` per entry when the data's
+  volatility differs — don't leave volatile data on the 1 h default (staleness) or
+  pin rarely-changing data to a short TTL (needless misses).
 
 ### 4.2 Coverage — what should be cached
 
@@ -550,13 +552,13 @@ The measurement layer that makes every other section evidence-based.
 ## Quick triage — where to look first by symptom
 
 | Symptom | Start at scope | Likely cause |
-|---------|---------------|--------------|
+| --------- | --------------- | -------------- |
 | Endpoint slow, DB CPU high | `efcore` | N+1 (§1.3), missing index (§1.6), no projection (§1.2) |
 | Endpoint slow, app CPU high | `allocations` / `http` | LINQ/string churn (§2), reflection JSON (§5) |
-| Memory grows unbounded | `allocations` / `caching` | buffer/cache leak (§2, §4.6), tracked entities (§1.1) |
-| Threadpool queue climbs, throughput collapses | `async` | sync-over-async (§3.1) |
-| Fine on 1 replica, breaks on N | `scaling` / `caching` | per-replica jobs (§8.4), in-memory cache (§4.3) |
+| Memory grows unbounded | `allocations` / `caching` | buffer/cache leak (§2, §4.5), tracked entities (§1.1) |
+| Threadpool queue climbs, throughput collapses | `async` | sync-over-async (§3) |
+| Fine on 1 replica, breaks on N | `scaling` / `caching` | per-replica jobs (§8), in-memory cache (§4.3) |
 | Slow only on deep pages | `efcore` | `OFFSET` pagination (§1.5) |
 | Fast on PostgreSQL, slow on SQL Server/SQLite | `efcore` (`--provider`) | provider divergence (§1.10/§1.11) |
 | Latency spikes / GC pauses | `allocations` / `startup` | Gen-2 pressure (§2), Workstation GC (§7) |
-| Message queue drains slowly | `messaging` | slow handler (§6.2), no batching (§6.4) |
+| Message queue drains slowly | `messaging` | slow handler, no batching (§6) |

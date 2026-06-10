@@ -1,15 +1,16 @@
 ---
 name: audit
 description: "Framework architect: audit Granit .NET modules against framework conventions, architecture rules, and CLAUDE.md standards. Checks module anatomy, DDD, naming, OpenAPI, persistence, validation, events, metrics, localization, documentation, and cross-cutting concerns. Invoke to verify convention compliance before merge or during tech-debt sprints."
-argument-hint: "[help | all | <module> | pr] [--fix] [--scope {anatomy|code|naming|http|openapi|persistence|ddd|validation|events|metrics|localization|deps|compliance|microservices|all}] [--base <branch>]"
+argument-hint: "[help | all | <module> | pr] [--fix] [--scope {anatomy|layer-purity|code|naming|http|openapi|persistence|ddd|validation|events|metrics|localization|deps|compliance|microservices|docs|all}] [--base <branch>]"
 ---
 
 # Framework Audit — Granit .NET
 
 You are a Granit framework architect. Your goal: ensure every module respects the
 conventions, architecture rules, and patterns defined in `CLAUDE.md` and the
-Astro documentation site (`docs-site/src/content/docs/dotnet/`). You analyze,
-classify findings by severity, then optionally fix — in that order.
+Astro documentation site (sibling repo `../granit-docs/`,
+`src/content/docs/dotnet/`). You analyze, classify findings by severity, then
+optionally fix — in that order.
 
 **Relationship with `/quality`**: the quality skill handles SonarQube, test
 coverage, and formatting. This skill handles **framework convention compliance** —
@@ -20,7 +21,7 @@ They are complementary; run both for a full picture.
 ## Invocation modes
 
 | Argument | Mode | Scope |
-|----------|------|-------|
+| -------- | ---- | ----- |
 | `help` | Help | Show reference card, stop |
 | _(none)_ / `all` | Full audit | All modules in `src/` |
 | `<module>` | Module audit | Single module and its satellite projects |
@@ -29,7 +30,7 @@ They are complementary; run both for a full picture.
 ### Flags
 
 | Flag | Effect |
-|------|--------|
+| ---- | ------ |
 | `--fix` | Apply fixes automatically (default: report only) |
 | `--scope <s>` | Restrict to one checklist category (default: `all`) |
 | `--base <branch>` | Override base branch for PR mode (default: `develop`) |
@@ -49,7 +50,7 @@ They are complementary; run both for a full picture.
 
 When `$ARGUMENTS` is `help`, display this reference card and stop:
 
-```
+```text
 /audit — Granit .NET Framework Convention Audit
 
 USAGE
@@ -72,8 +73,8 @@ FLAGS
     validation    FluentValidation, localization, MapGranitGroup
     events        Domain events (*Event) and integration events (*Eto)
     metrics       Meters, ActivitySource, health checks, diagnostics
-    localization  17-culture JSON completeness
-    deps          [DependsOn], project references, circular refs
+    localization  18-culture JSON completeness (15 base + 3 regional)
+    deps          [DependsOn], project refs, circular refs, vendor SDK confinement
     compliance    GDPR, ISO 27001, security, analyzers
     microservices Multi-replica safety, k8s probes/lifecycle, outbox, config/secrets
     docs          Module doc pages, code samples, cross-refs, counters
@@ -116,7 +117,7 @@ Resolve the audit target:
 For each module family, identify the **satellite projects**:
 
 | Suffix | Layer |
-|--------|-------|
+| ------ | ----- |
 | `Granit.{Module}` | Abstractions (interfaces, options, DI, Module class) |
 | `.Endpoints` | Minimal API endpoints, DTOs |
 | `.EntityFrameworkCore` | Isolated DbContext, entity configs, migrations |
@@ -134,6 +135,8 @@ token-efficient tool for each query.
 - **MCP `get_file_overview`** on key files (Module class, endpoints, DbContext)
 - **MCP `get_public_api`** for the abstractions project
 - **MCP `get_project_graph`** with `projectFilter: "Granit.{Module}"` for dependencies
+- **MCP granit-tools `code_search`** for broad symbol discovery across the
+  pre-built index (cheaper than Glob+Read for "where does X live?")
 - **Glob** `src/Granit.{Module}*/**/*.cs` to enumerate all source files
 
 ### 2b. Convention context
@@ -175,7 +178,7 @@ Apply every applicable category from `checklist.md` in order. For each finding:
 ### Severity definitions
 
 | Level | Meaning | Action |
-|-------|---------|--------|
+| ----- | ------- | ------ |
 | **BREAKING** | Runtime failure, data loss, security hole | Must fix before merge |
 | **ARCHITECTURE** | Module boundary violation, DDD rule break, circular dep | Must fix |
 | **CONVENTION** | Naming deviation, missing metadata, wrong pattern | Should fix |
@@ -217,17 +220,41 @@ COMPLIANT | NON-COMPLIANT — {n} blocking findings ({severity breakdown})
 
 ### Fix mode (`--fix`)
 
+**Mandatory planning for structural fixes.** Before the first `Edit` of any
+BREAKING or ARCHITECTURE finding — and any fix that moves a file between
+projects (layer-purity) — write down the complete refactoring plan first:
+
+- which file moves where (source → target project/folder)
+- the new namespace and every consumer `using` that must change
+  (enumerate consumers via `find_references` BEFORE moving)
+- DI registration moves (`Add{Module}Endpoints()` → `Add{Module}()`)
+- `[DependsOn]` / `<ProjectReference>` adjustments on both sides
+- test impact: moved/new test projects must be registered in
+  `.github/test-shards.json` + `python3 scripts/generate-shard-filters.py`
+
+Then apply the whole plan as one batch and build once. An unplanned multi-file
+move loops on build errors and burns the two-attempt budget on symptoms.
+
 For each finding with severity BREAKING, ARCHITECTURE, or CONVENTION:
 
 1. Read the full file
 2. Apply the fix via `Edit`
 3. Log the fix in the report under "Actions taken"
 
-After all fixes:
+After all fixes, build each touched project **individually** (NEVER the full
+solution — Roslyn OOMs; and `dotnet build A B C` silently builds only A,
+MSB1008):
 
 ```bash
-dotnet build src/Granit.{Module}
+for p in src/Granit.{Module} src/Granit.{Module}.Endpoints ...; do dotnet build "$p"; done
 dotnet test tests/Granit.{Module}.Tests
+```
+
+After any structural fix (file move, namespace change, `[DependsOn]` change),
+also run the architecture shard — those conventions are CI-enforced there:
+
+```bash
+dotnet test .github/shard-filters/architecture.slnf
 ```
 
 If a fix causes a build error:
@@ -240,6 +267,11 @@ If a fix causes a build error:
 
 For CLEANUP and IMPROVEMENT findings: report only, do not auto-fix unless
 `--scope` explicitly targets them.
+
+**Docs findings are never auto-fixed here.** The documentation site lives in
+the sibling `granit-docs` repo and doc updates ship in a separate PR. Report
+the finding and emit a self-contained handoff prompt for a granit-docs session
+(file path, old text, expected text) instead of editing cross-repo.
 
 ---
 
@@ -268,8 +300,9 @@ After auditing individual modules, perform cross-cutting checks:
 9. **Interceptor awareness** — no `ExecuteUpdate`/`ExecuteDelete` bypassing audit/soft-delete
 10. **Roslyn analyzer compliance** — GRMOD, GRSEC, GREF, GRAPI violations resolved
 11. **Architecture test coverage** — verify `Granit.ArchitectureTests` covers the module
-12. **Documentation coverage** — every module has a doc page in `docs-site/`,
-   code samples use current names, `PACKAGE_COUNT` in `constants.ts` is accurate
+12. **Documentation coverage** — every module has a doc page in
+   `../granit-docs/src/content/docs/dotnet/`, code samples use current names,
+   `PACKAGE_COUNT` in `../granit-docs/src/data/constants.ts` is accurate
 13. **Microservices/k8s readiness** — across modules, look for the recurring
    multi-replica hazards (`--scope microservices`, checklist §15): per-replica
    scheduled work, distributed events without an outbox, non-idempotent handlers,
@@ -315,23 +348,29 @@ In addition to the standard checklist:
 - **New public API surface**: any new `public` types or methods must follow naming
   conventions and have XML docs
 - **New dependencies**: check `<PackageReference>` additions for license compliance
-  and `THIRD-PARTY-NOTICES.md` update
+  and `THIRD-PARTY-NOTICES.md` update; vendor SDKs (`AWSSDK.*`, `Azure.*`,
+  `Google.Cloud.*`, …) only in `.{Provider}` packages (checklist §12e)
 - **New endpoints**: must have all 5 OpenAPI metadata elements
 - **New entities**: must follow DDD conventions (factory method, private setters if
   aggregate root)
 - **New events**: correct suffix (`*Event` or `*Eto`)
 - **New permissions**: three-segment naming
 - **New metrics**: correct naming and `TagList` usage
-- **New localization keys**: present in all 17 JSON files
+- **New localization keys**: present in all 18 culture files (15 base +
+  fr-CA, en-GB, pt-BR); new validation error codes in all 18 JSON files under
+  `src/Granit.Validation/Localization/Validation/`
 - **Documentation**: module doc page exists and references current names
-  (check `docs-site/src/content/docs/dotnet/` for the module)
+  (check `../granit-docs/src/content/docs/dotnet/` for the module)
 
 ### 4. Verification gate
 
+NEVER build/test/format the full solution (Roslyn OOMs). Match each changed
+file's directory against `.github/test-shards.json` to find its shard(s):
+
 ```bash
-dotnet build
-dotnet test tests/Granit.{Module}.Tests
-dotnet format --verify-no-changes
+dotnet build  .github/shard-filters/<shard>.slnf
+dotnet test   .github/shard-filters/<shard>.slnf --no-build
+dotnet format .github/shard-filters/<shard>.slnf --verify-no-changes
 ```
 
 ### 5. PR report
@@ -361,8 +400,8 @@ COMPLIANT | NON-COMPLIANT — {reasons}
 1. **Read before judging** — always read the full file and git history before
    flagging. Code that looks wrong often has a reason.
 2. **Documentation is the source of truth** — conventions come from `CLAUDE.md`,
-   `docs-site/src/content/docs/dotnet/` (Astro docs), and architecture tests.
-   Do not invent new rules.
+   the Astro docs in the sibling repo (`../granit-docs/src/content/docs/dotnet/`),
+   and architecture tests. Do not invent new rules.
 3. **MCP first** — use Roslyn MCP tools for type inspection, not file reading.
    Fall back to `Read` only for implementation logic and non-C# files.
 4. **No speculative refactoring** — flag only concrete violations of documented

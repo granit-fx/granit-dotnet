@@ -6,7 +6,9 @@ Verification matrix used by the `/audit` skill. Each category maps to a
 Convention references point to:
 
 - `CLAUDE.md` — project conventions (root of repo)
-- `docs-site/…/dotnet/` — Astro documentation site
+- `docs-site/…/dotnet/` — Astro documentation site, now the **sibling repo**
+  `../granit-docs/` — resolve any `docs-site/…/X` reference as
+  `../granit-docs/src/content/docs/dotnet/…/X`
 - `GRXXXX` — Roslyn analyzer rule
 
 ---
@@ -663,7 +665,15 @@ What the endpoint MUST still declare:
 
 - [ ] `ISchemaExampleProvider<TRequest>` implemented for each non-trivial
   `*Request` DTO with realistic values (no `"string"`, `0`, `00000000-0000-...`)
-- [ ] Enum JSON serialization uses `JsonStringEnumConverter` (PascalCase)
+- [ ] Enum JSON serialization uses `JsonStringEnumConverter` (PascalCase) —
+  never raw integers; an opaque `type: integer` enum is useless to TypeScript
+  codegen and to anyone reading the payload
+- [ ] **Polymorphic DTOs declare their hierarchy explicitly** — any `*Request`/
+  `*Response` base type with derived wire types carries
+  `[JsonDerivedType(typeof(Derived), "discriminatorValue")]` (one per derived
+  type) so the OpenAPI document emits a `discriminator` mapping. Without it,
+  TypeScript generators (openapi-ts, Orval) silently degrade the union to
+  `any` or an unusable intersection — flag as BREAKING, not style
 - [ ] Date/time properties are `DateTime` / `DateTimeOffset` → ISO 8601 with
   timezone in OpenAPI
 - [ ] Identifiers are `Guid` → `string` with `format: uuid` in OpenAPI
@@ -772,6 +782,8 @@ When auditing a module's endpoints:
 | Swashbuckle / NSwag reference | ARCHITECTURE |
 | Wrong route constraint type | BREAKING (binding fails at runtime) |
 | Missing `.DisableAntiforgery()` on multipart | BREAKING (endpoint rejects requests) |
+| Polymorphic DTO base without `[JsonDerivedType]` discriminator | BREAKING (TS codegen emits `any`) |
+| Enum exposed as raw integer in a wire DTO | CONVENTION |
 
 Ref: `CLAUDE.md §OpenAPI metadata`, `docs-site/…/api/api-documentation.mdx`,
 `docs-site/…/architecture/http-conventions.md`
@@ -802,6 +814,15 @@ Ref: `docs-site/…/data/persistence.mdx`, `docs-site/…/data/query-filters.mdx
   `Guid`, never `string`)
 - [ ] Entity type configurations in `EntityTypeConfiguration/` folder
 - [ ] Each configuration in its own file
+- [ ] **Enum persistence**: no manual `.HasConversion<string>()` on enum
+  properties — `ApplyGranitConventions` already persists every enum as its
+  PascalCase string name in a `varchar` column (CLAUDE.md §Enum persistence)
+- [ ] `[PersistAsInt]` opt-outs are justified inline — reserved for `[Flags]`
+  bitmasks (auto-skipped anyway), high-write tables, or pre-existing DB
+  contracts; an undocumented `[PersistAsInt]` is a CONVENTION finding
+- [ ] Int→string enum migrations in consuming apps use
+  `MigrationBuilderExtensions.AlterEnumColumnIntToString<TEnum>` (emits the
+  mandatory PostgreSQL `USING CASE` clause)
 
 ### 6c. Interceptor pipeline awareness
 
@@ -928,8 +949,9 @@ Verify correct base class selection:
   (`GranitErrorCodeLanguageManager`)
 - [ ] Custom `.Must()` validators use
   `.WithErrorCodeAndMessage("Granit:Validation:XxxCode")`
-- [ ] Error code present in all 17 JSON files in
-  `src/Granit.Validation/Localization/Validation/`
+- [ ] Error code present in all 18 JSON files in
+  `src/Granit.Validation/Localization/Validation/` (15 base + fr-CA, en-GB,
+  pt-BR)
 
 Ref: `CLAUDE.md §Validation`
 
@@ -1065,6 +1087,36 @@ Ref: `CLAUDE.md §Localization`
 
 Ref: `docs-site/…/concepts/multi-tenancy.mdx`
 
+### 12e. Provider SDK confinement (cloud agnosticism / vendor lock-in)
+
+Granit must stay deployable on any infrastructure (sovereign EU clouds, on-prem
+K8s) — vendor SDKs are confined to `.{Provider}` packages and must never leak
+into the base module, `.Endpoints`, or `.EntityFrameworkCore`:
+
+- [ ] No `<PackageReference>` to a vendor SDK (`AWSSDK.*`, `Azure.*`,
+  `Google.Cloud.*`, `Amazon.*`, `Twilio*`, `SendGrid*`, vendor `*.Sdk`)
+  outside `src/Granit.{Module}.{Provider}/` projects
+- [ ] No vendor type (`AmazonS3Client`, `BlobServiceClient`, …) in the public
+  API or method signatures of the base module — abstractions speak in framework
+  types and primitives only
+- [ ] No vendor-specific configuration key (`AccessKeyId`, `ConnectionString`
+  with vendor scheme, region names) in base-module `*Options` — provider
+  options live in the provider package with their own `SectionName`
+  (`{Module}:{Provider}` or `Notifications:{Channel}:{Provider}`)
+- [ ] The base module compiles and runs with zero provider packages installed
+  (provider chosen by the host via DI)
+
+**How to detect:**
+
+```bash
+# Vendor SDK leaking outside provider packages
+grep -lE 'AWSSDK|Azure\.|Google\.Cloud|Amazon\.' src/Granit.*/[!.]*.csproj \
+  | grep -vE 'Granit\.[^.]+\.(S3|AzureBlob|GoogleCloud|Aws|Azure|Cognito|EntraId|Keycloak|AwsSes|AwsSns|AzureCommunicationServices|AzureNotificationHubs|AzureOpenAI)'
+```
+
+Severity: ARCHITECTURE (a vendor type in an abstraction welds every consumer
+to that vendor).
+
 ---
 
 ## 13. Compliance (`--scope compliance`)
@@ -1135,8 +1187,10 @@ Ref: `CLAUDE.md §Security`, `docs-site/…/concepts/security-model.mdx`
 ### 14a. Module documentation page
 
 Every module with public API surface MUST have a documentation page in
-`docs-site/src/content/docs/dotnet/`. The page lives under the appropriate
-domain subdirectory:
+`../granit-docs/src/content/docs/dotnet/` (sibling repo). Doc fixes ship in a
+**separate PR against granit-docs** — in `--fix` mode, report the finding with
+a self-contained handoff prompt instead of editing cross-repo. The page lives
+under the appropriate domain subdirectory:
 
 | Domain | Directory | Example modules |
 | ------ | --------- | --------------- |
@@ -1181,7 +1235,7 @@ domain subdirectory:
 
 ### 14e. Counters
 
-- [ ] `PACKAGE_COUNT` in `docs-site/src/data/constants.ts` matches
+- [ ] `PACKAGE_COUNT` in `../granit-docs/src/data/constants.ts` matches
   actual count: `ls src/ | grep "^Granit\." | wc -l`
 - [ ] `PATTERN_COUNT` and `ADR_COUNT` are current (check only in `all` mode)
 
@@ -1200,7 +1254,7 @@ After a module rename, verify:
 
 1. Check recent renames: `git log --diff-filter=R --name-status -20 -- 'src/'`
 2. For each renamed module, grep docs for old name:
-   `grep -r "OldModuleName" docs-site/src/content/`
+   `grep -r "OldModuleName" ../granit-docs/src/content/`
 3. Flag any occurrence as CONVENTION severity
 
 Ref: `CLAUDE.md §Documentation site`
@@ -1324,6 +1378,13 @@ Config and secrets must be injectable per environment without rebuilding the ima
 - [ ] No `localhost`/`127.0.0.1`/`file://` defaults that only work on a dev box
 - [ ] Feature toggles / endpoints overridable via `*Options` (e.g. `TagName`,
   health paths) rather than constants
+- [ ] **Options shapes are env-var-overridable** — prefer dictionaries
+  (`"Providers": { "Smtp": { … } }` → `…__Providers__Smtp__Host`) over arrays
+  of objects (`"Providers": [ { "Name": "Smtp", … } ]` →
+  `…__Providers__0__Name`): ordinal indices are fragile under Helm/ArgoCD
+  overlays (an override targets a position, not an identity, and removing an
+  element from the base config silently shifts every override). Flag a
+  `List<T>`-of-records option where the elements have a natural key
 
 **How to detect:** `grep -nE 'https?://(localhost|127\.0\.0\.1)|Password=|ApiKey|/home/|C:\\\\'`
 across the module's `src` and `appsettings*.json`.
@@ -1361,6 +1422,13 @@ Builds on §10c/§10d, but from the _probe-correctness_ angle:
   that is a readiness concern); only deadlock/unrecoverable state fails liveness
 - [ ] Startup probe covers slow init (migrations) so liveness doesn't kill a
   still-booting pod
+- [ ] **The app survives an un-migrated database** — when the schema is not yet
+  in place (the K8s migration job/init container is still running), the module
+  must fail its readiness/startup probe gracefully, NOT throw during
+  `Program.cs`/module init. A startup-path schema query (`ValidateOnStart`
+  hitting the DB, eager warmup, seeding) that throws turns "waiting for the
+  migration job" into a CrashLoopBackOff — and on a fresh environment the
+  migration job and the app race each other forever
 - [ ] Probes are cheap + time-bounded (10s defensive timeout, `CachedHealthCheck`
   to avoid stampede across rapid kubelet polls) and leak **no PII/secrets/connection
   strings** (ISO 27001 / GDPR)
@@ -1492,6 +1560,8 @@ two modules; check whether any two DbContexts map the same table name.
 | `new HttpClient()` / no resilience on external call | CONVENTION |
 | Module ships no health check for its own critical dependency | CONVENTION |
 | Liveness probe depends on an external dependency | CONVENTION |
+| Startup throws on un-migrated DB (CrashLoopBackOff instead of failing readiness) | ARCHITECTURE |
+| Array-of-objects options shape where elements have a natural key | CONVENTION |
 | Hardcoded `localhost`/path/URL default | CONVENTION |
 | Missing trace-context propagation on outbound call | CLEANUP |
 | No graceful-shutdown drain on a hosted service | CONVENTION |

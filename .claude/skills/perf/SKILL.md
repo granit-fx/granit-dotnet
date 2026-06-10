@@ -40,7 +40,7 @@ reason from the checklist and label findings by confidence.
 ## Invocation modes
 
 | Argument | Mode | Scope |
-|----------|------|-------|
+| ---------- | ------ | ------- |
 | `help` | Help | Show reference card, stop |
 | _(none)_ / `all` | Full audit | Every module in `src/` |
 | `<module>` | Module audit | One module family and its satellites |
@@ -51,7 +51,7 @@ reason from the checklist and label findings by confidence.
 ### Flags
 
 | Flag | Effect |
-|------|--------|
+| ------ | -------- |
 | `--fix` | Apply safe optimizations automatically (default: report only) |
 | `--scope <s>` | Restrict to one category (default: `all`) |
 | `--provider <p>` | Focus persistence findings on one provider (default: `all`, PostgreSQL-first) |
@@ -139,6 +139,7 @@ Collect context **before** judging. Use the most token-efficient tool per query.
 
 - MCP `get_project_graph` with `projectFilter: "Granit.{Module}"` — dependency fan-out.
 - MCP `get_file_overview` on the DbContext, endpoints, handlers, and any `*Service`/`*Store`/`*Repository`-like orchestrators.
+- MCP `code_search` (granit-tools pre-built index) for broad symbol discovery; roslyn-lens stays the tool for live analysis (callers, refs, impls).
 - Glob `src/Granit.{Module}*/**/*.cs` to enumerate sources.
 
 ### 2b. Hot-path & anti-pattern context
@@ -191,7 +192,7 @@ each finding:
 ### Impact definitions
 
 | Level | Meaning | Action |
-|-------|---------|--------|
+| ------- | --------- | -------- |
 | **CRITICAL** | Breaks at scale: per-row round-trips, unbounded result sets, memory/connection leak, threadpool starvation, per-replica duplication | Fix before load |
 | **HIGH** | Material cost under concurrency: missing index on a hot filter, no caching on a hot read, cartesian explosion, sync-over-async on a request path | Should fix |
 | **MEDIUM** | Measurable waste, low-risk fix: missing `AsNoTracking`/projection, over-fetching, no pagination cap | Fix |
@@ -222,7 +223,7 @@ code is noise. Reserve those for paths the profiler proved hot.
 #### {Category} ({n})
 
 | # | Impact | Location | Finding | Est. cost | Fix | Provider notes |
-|---|--------|----------|---------|-----------|-----|----------------|
+| --- | -------- | ---------- | --------- | ----------- | ----- | ---------------- |
 | 1 | CRITICAL | Blobs/BlobStore.cs:88 | N+1: `FindAsync` inside `foreach` over {n} ids | {n} round-trips → 1 | Batch with `Where(b => ids.Contains(b.Id))` | all |
 
 ### Scaling profile (horizontal)
@@ -255,7 +256,7 @@ the full solution — see CLAUDE.md):
 
 ```bash
 dotnet build src/Granit.{Module}
-dotnet test  tests/Granit.{Module}.Tests --no-build
+dotnet test  tests/Granit.{Module}.Tests   # no --no-build after src edits — stale test DLL
 ```
 
 If a fix breaks the build/tests: one corrective edit, else **revert** and mark
@@ -265,8 +266,11 @@ If a fix breaks the build/tests: one corrective edit, else **revert** and mark
 
 ## Step 5 — Cross-module / scaling analysis (`all` mode)
 
-Process one module family at a time (context discipline), then aggregate. After the
-per-module pass, look for the **scaling clusters** that repeat framework-wide:
+Process one module family at a time (context discipline), then aggregate — ~128
+packages do not fit one context. Fan the per-module passes out to subagents (one
+per module family, each returning **only** its findings table, never file dumps)
+and aggregate centrally. After the per-module pass, look for the **scaling
+clusters** that repeat framework-wide:
 
 1. **N+1 / round-trip clusters** — the same in-loop query shape across modules.
 2. **Tracking & projection** — modules returning tracked entities or EF entities instead of `*Response` projections.
@@ -343,7 +347,7 @@ dotnet-counters collect -p <PID> --format json -o counters.json --refresh-interv
 Read against these thresholds, then map breaches to checklist categories:
 
 | Counter | Healthy | Problem → checklist scope |
-|---------|---------|---------------------------|
+| --------- | --------- | --------------------------- |
 | `cpu-usage` | < 80% sustained | > 90% → `allocations` / hot LINQ / serialization |
 | `working-set` / `gc-heap-size` | stable | growing → leak (`allocations`, dump) |
 | `gen-2-gc-count` / `% time in gc` | low / < 10% | high → GC pressure (`allocations`, pooling) |
@@ -366,7 +370,7 @@ dotnet-trace convert trace.nettrace --format Speedscope
 Hot-method → likely cause map (mirror in the report):
 
 | Hot frames | Cause | Checklist scope |
-|-----------|-------|-----------------|
+| ----------- | ------- | ----------------- |
 | `Monitor.Enter` / `*.Wait` | lock contention / sync-over-async | `async` |
 | `String.Concat` / `Format` / `StringBuilder` churn | string allocation | `allocations` / `http` |
 | `Enumerable.*` heavy | LINQ in hot path | `allocations` |
@@ -412,8 +416,11 @@ values / topN frames that justify each finding.
 
 For a contended hot path, prove the win with **BenchmarkDotNet** rather than asserting it.
 
-1. Locate or create `benchmarks/Granit.{Module}.Benchmarks` (console, `-c Release`).
-   Reference the target project; do **not** add BenchmarkDotNet to a shipping package.
+1. Locate or create `benchmarks/Granit.{Module}.Benchmarks` (console, `-c Release`) —
+   the repo has no `benchmarks/` directory yet; the first benchmark creates it.
+   Reference the target project; do **not** add BenchmarkDotNet to a shipping package,
+   and do **not** register the project in `.github/test-shards.json` (it is not a
+   test project).
 2. Write a `[MemoryDiagnoser]` benchmark with `[Benchmark(Baseline = true)]` on the
    current implementation and `[Benchmark]` on the proposed one. Include realistic N.
 3. For EF Core, benchmark against a **real provider via Testcontainers** (PostgreSQL
@@ -422,6 +429,11 @@ For a contended hot path, prove the win with **BenchmarkDotNet** rather than ass
 4. Run `dotnet run -c Release --project benchmarks/Granit.{Module}.Benchmarks`.
 5. Report the table: Mean, Ratio, Gen0/1/2, Allocated. A "faster" change that
    allocates more or regresses another column is not a win — say so.
+
+6. Decide the artifact's fate explicitly: a one-off benchmark is **deleted** after
+   its table is captured in the report (clean-tree rule); a benchmark worth keeping
+   is committed **with** a `THIRD-PARTY-NOTICES.md` entry for BenchmarkDotNet
+   (CLAUDE.md dependency rule).
 
 > A micro-benchmark proves the local change. Always sanity-check it against a
 > realistic workload — a 10× faster method on a cold path moves nothing.
