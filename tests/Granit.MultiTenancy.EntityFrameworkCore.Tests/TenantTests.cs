@@ -59,6 +59,22 @@ public sealed class TenantTests
     }
 
     [Fact]
+    public void Create_RaisesDurableTenantCreatedEto()
+    {
+        var id = Guid.NewGuid();
+
+        var tenant = Tenant.Create(id, "Acme Corp", "acme-corp");
+
+        // The ETO rides the Wolverine outbox so tenant provisioning survives a crash
+        // between the host-DB commit and provisioning completion.
+        IIntegrationEvent evt = tenant.IntegrationEvents.ShouldHaveSingleItem();
+        TenantCreatedEto created = evt.ShouldBeOfType<TenantCreatedEto>();
+        created.TenantId.ShouldBe(id);
+        created.Name.ShouldBe("Acme Corp");
+        created.Identifier.ShouldBe("acme-corp");
+    }
+
+    [Fact]
     public void Create_NullName_Throws() =>
         Should.Throw<ArgumentException>(() => Tenant.Create(Guid.NewGuid(), null!, "acme"));
 

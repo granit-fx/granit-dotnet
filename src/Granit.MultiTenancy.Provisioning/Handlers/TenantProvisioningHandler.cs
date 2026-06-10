@@ -6,7 +6,7 @@ namespace Granit.MultiTenancy.Provisioning.Handlers;
 
 /// <summary>
 /// Provisions a new tenant's database schema, runs EF Core migrations, and seeds
-/// tenant-specific data when <see cref="TenantCreatedEvent"/> is dispatched at runtime.
+/// tenant-specific data when <see cref="TenantCreatedEto"/> is dispatched at runtime.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -20,18 +20,20 @@ namespace Granit.MultiTenancy.Provisioning.Handlers;
 /// post-seed re-migration pass.
 /// </para>
 /// <para>
-/// All operations are idempotent. Wolverine's retry policies can safely replay
-/// this message without side effects.
+/// The trigger is a durable integration event (<see cref="TenantCreatedEto"/>) delivered
+/// via the Wolverine outbox, so a crash between the host-DB commit and provisioning is
+/// recovered on restart. All operations are idempotent, so Wolverine's retry policies can
+/// safely replay this message without side effects.
 /// </para>
 /// </remarks>
 [SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public class TenantProvisioningHandler
 {
     /// <summary>
-    /// Handles <see cref="TenantCreatedEvent"/> by provisioning the new tenant.
+    /// Handles <see cref="TenantCreatedEto"/> by provisioning the new tenant.
     /// </summary>
     public static async Task HandleAsync(
-        TenantCreatedEvent evt,
+        TenantCreatedEto evt,
         ITenantProvisioner provisioner,
         CancellationToken cancellationToken)
     {

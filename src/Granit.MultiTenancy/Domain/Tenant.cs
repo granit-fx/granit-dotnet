@@ -84,7 +84,11 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo, IConcurrency
             Activated = true,
         };
 
+        // Domain event: in-process notification hook (after-commit, non-durable).
         tenant.AddDomainEvent(new TenantCreatedEvent(id, name, identifier));
+        // Integration event: durable trigger for cross-process tenant provisioning
+        // (Wolverine outbox, written atomically with this row — survives a crash).
+        tenant.AddDistributedEvent(new TenantCreatedEto(id, name, identifier));
         return tenant;
     }
 

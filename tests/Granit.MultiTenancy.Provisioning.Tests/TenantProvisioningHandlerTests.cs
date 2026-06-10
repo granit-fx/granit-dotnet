@@ -15,7 +15,7 @@ public sealed class TenantProvisioningHandlerTests
     {
         // Arrange
         ITenantProvisioner provisioner = Substitute.For<ITenantProvisioner>();
-        TenantCreatedEvent evt = new(Guid.NewGuid(), "Acme Corp", "acme");
+        TenantCreatedEto evt = new(Guid.NewGuid(), "Acme Corp", "acme");
 
         // Act
         await TenantProvisioningHandler.HandleAsync(evt, provisioner, CancellationToken.None);
@@ -45,13 +45,13 @@ public sealed class TenantProvisioningHandlerTests
     }
 
     [Fact]
-    public void HandleAsync_FirstParameter_ShouldBeTenantCreatedEvent()
+    public void HandleAsync_FirstParameter_ShouldBeTenantCreatedEto()
     {
         MethodInfo method = typeof(TenantProvisioningHandler)
             .GetMethod("HandleAsync", BindingFlags.Public | BindingFlags.Static)!;
 
         ParameterInfo[] parameters = method.GetParameters();
         parameters.Length.ShouldBeGreaterThanOrEqualTo(1);
-        parameters[0].ParameterType.ShouldBe(typeof(TenantCreatedEvent));
+        parameters[0].ParameterType.ShouldBe(typeof(TenantCreatedEto));
     }
 }

@@ -24,7 +24,7 @@ namespace Granit.Persistence.EntityFrameworkCore.Hosting;
 /// <b>Cold-start provisioning</b> (<c>--migrate</c>) is handled separately by
 /// <see cref="Internal.GranitMigrationRunner"/> via its post-seed re-migration pass.
 /// This interface is invoked only at runtime via Wolverine when
-/// <c>Granit.MultiTenancy.Events.TenantCreatedEvent</c> is dispatched.
+/// <c>Granit.MultiTenancy.Events.TenantCreatedEto</c> is dispatched (durably, via the outbox).
 /// </para>
 /// </remarks>
 public interface ITenantProvisioner

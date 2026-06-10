@@ -1495,7 +1495,6 @@
     {
       "name": "Granit.MultiTenancy.EntityFrameworkCore",
       "deps": [
-        "Granit.DataExchange.Abstractions",
         "Granit.DataLookup.EntityFrameworkCore",
         "Granit.Events",
         "Granit.MultiTenancy",
@@ -31023,7 +31022,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.Authorization",
       "file": "src/Granit.MultiTenancy.Authorization/MultiTenancyAuthorizationPermissions.cs",
-      "line": 12,
+      "line": 16,
       "members": []
     },
     {
@@ -31375,7 +31374,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.EntityFrameworkCore",
       "file": "src/Granit.MultiTenancy.EntityFrameworkCore/GranitMultiTenancyEntityFrameworkCoreModule.cs",
-      "line": 28,
+      "line": 26,
       "members": []
     },
     {
@@ -31401,6 +31400,15 @@
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Events/TenantActivatedEvent.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "TenantCreatedEto",
+      "fqn": "Granit.MultiTenancy.Events.TenantCreatedEto",
+      "kind": "record",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Events/TenantCreatedEto.cs",
+      "line": 19,
       "members": []
     },
     {
@@ -31477,7 +31485,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Extensions/MultiTenancyServiceCollectionExtensions.cs",
-      "line": 25,
+      "line": 26,
       "members": [
         {
           "name": "AddGranitMultiTenancy",
@@ -31593,7 +31601,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Middleware/TenantResolutionMiddleware.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "InvokeAsync",
@@ -31775,12 +31783,12 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.Provisioning",
       "file": "src/Granit.MultiTenancy.Provisioning/Handlers/TenantProvisioningHandler.cs",
-      "line": 28,
+      "line": 30,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(TenantCreatedEvent evt, ITenantProvisioner provisioner, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(TenantCreatedEto evt, ITenantProvisioner provisioner, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]

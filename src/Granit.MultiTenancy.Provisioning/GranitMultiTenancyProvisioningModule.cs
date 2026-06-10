@@ -8,7 +8,7 @@ namespace Granit.MultiTenancy.Provisioning;
 /// Wolverine integration for Granit.MultiTenancy.
 /// Provides automatic runtime tenant provisioning via
 /// <see cref="Handlers.TenantProvisioningHandler"/>, which listens to
-/// <see cref="Events.TenantCreatedEvent"/> and delegates to <see cref="ITenantProvisioner"/>.
+/// <see cref="Events.TenantCreatedEto"/> and delegates to <see cref="ITenantProvisioner"/>.
 /// </summary>
 /// <remarks>
 /// <para>
