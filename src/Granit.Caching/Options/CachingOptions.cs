@@ -18,17 +18,12 @@ public sealed class CachingOptions
     public string KeyPrefix { get; set; } = "dd";
 
     /// <summary>
-    /// Default absolute expiration relative to the time of caching.
-    /// Used when no options are passed to <c>SetAsync</c> or <c>GetOrAddAsync</c>.
+    /// Default absolute expiration relative to the time of caching, applied as the
+    /// FusionCache default entry <c>Duration</c> when no per-entry options are passed.
+    /// FusionCache has no sliding expiration — absolute duration is the only default.
     /// Default: 1 hour.
     /// </summary>
     public TimeSpan? DefaultAbsoluteExpirationRelativeToNow { get; set; } = TimeSpan.FromHours(1);
-
-    /// <summary>
-    /// Default sliding expiration (reset on each access).
-    /// Default: 20 minutes.
-    /// </summary>
-    public TimeSpan? DefaultSlidingExpiration { get; set; } = TimeSpan.FromMinutes(20);
 
     /// <summary>
     /// Enables AES-256 encryption for all types without a <see cref="CacheEncryptedAttribute"/>.

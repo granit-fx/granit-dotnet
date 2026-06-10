@@ -26,14 +26,6 @@ public sealed class CachingOptionsTests
     }
 
     [Fact]
-    public void Defaults_DefaultSlidingExpiration_IsTwentyMinutes()
-    {
-        CachingOptions options = new();
-
-        options.DefaultSlidingExpiration.ShouldBe(TimeSpan.FromMinutes(20));
-    }
-
-    [Fact]
     public void Defaults_EncryptValues_IsFalse()
     {
         CachingOptions options = new();
@@ -63,13 +55,5 @@ public sealed class CachingOptionsTests
         CachingOptions options = new() { DefaultAbsoluteExpirationRelativeToNow = null };
 
         options.DefaultAbsoluteExpirationRelativeToNow.ShouldBeNull();
-    }
-
-    [Fact]
-    public void DefaultSlidingExpiration_CanBeSetToNull()
-    {
-        CachingOptions options = new() { DefaultSlidingExpiration = null };
-
-        options.DefaultSlidingExpiration.ShouldBeNull();
     }
 }
