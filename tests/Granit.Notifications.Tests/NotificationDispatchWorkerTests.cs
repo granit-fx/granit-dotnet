@@ -18,6 +18,7 @@ using Granit.Notifications.Domain;
 using Granit.Notifications.Handlers;
 using Granit.Notifications.Internal;
 using Granit.Notifications.Messages;
+using Granit.Testing.Fakes;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -91,7 +92,7 @@ public sealed class NotificationDispatchWorkerTests
         public static Harness Build()
         {
             ChannelWithSpy channel = new();
-            AsyncLocalCurrentTenant currentTenant = new();
+            FakeCurrentTenant currentTenant = new();
             CapturingEmailChannel emailChannel = new(currentTenant, channel);
 
             INotificationSubscriptionReader subscriptionReader = Substitute.For<INotificationSubscriptionReader>();
@@ -170,29 +171,6 @@ public sealed class NotificationDispatchWorkerTests
         {
             spy.Record(currentTenant.Id);
             return Task.CompletedTask;
-        }
-    }
-
-    /// <summary>Minimal <see cref="ICurrentTenant"/> whose <c>Change</c> flows through <see cref="AsyncLocal{T}"/> like production.</summary>
-    private sealed class AsyncLocalCurrentTenant : ICurrentTenant
-    {
-        private readonly AsyncLocal<Guid?> _id = new();
-
-        public bool IsAvailable => _id.Value.HasValue;
-        public Guid? Id => _id.Value;
-        public string? Name => null;
-        public string? Jurisdiction => null;
-
-        public IDisposable Change(Guid? id, string? name = null, string? jurisdiction = null)
-        {
-            Guid? previous = _id.Value;
-            _id.Value = id;
-            return new Scope(this, previous);
-        }
-
-        private sealed class Scope(AsyncLocalCurrentTenant owner, Guid? previous) : IDisposable
-        {
-            public void Dispose() => owner._id.Value = previous;
         }
     }
 }
