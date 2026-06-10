@@ -8,11 +8,12 @@ namespace Granit.Identity.Local.Notifications.Tests.Templates;
 /// Pin the set of embedded templates shipped by the package. A renamed file or a missing
 /// `.csproj` glob would break notification rendering at runtime — better to fail here.
 ///
-/// 149 templates currently ship: 9 notification types × 15 base cultures (en neutral
-/// + 14 translations) + 5 fr-CA + 9 pt-BR variants. The remaining 13 cells of the
-/// 9 × 18 culture matrix (9 en-GB + 4 fr-CA) are intentionally omitted because the
-/// Scriban culture cascade resolves them via their parent culture (en-GB → en, fr-CA →
-/// fr) when there is no Quebec/British-specific divergence to encode.
+/// 151 templates currently ship: 9 fully-localized notification types × 15 base cultures
+/// (en neutral + 14 translations) + 5 fr-CA + 9 pt-BR variants, plus two_factor_email_otp
+/// shipping en + fr only (its 14 remaining cultures are pending AI translation via
+/// scripts/translate-templates.py). The omitted cells of the culture matrix are resolved
+/// by the Scriban culture cascade via their parent culture (en-GB → en, fr-CA → fr) when
+/// there is no region-specific divergence to encode.
 /// </summary>
 public sealed class EmbeddedTemplatesTests
 {
@@ -150,6 +151,11 @@ public sealed class EmbeddedTemplatesTests
         "Templates.identity.two_factor_changed.sv.html",
         "Templates.identity.two_factor_changed.tr.html",
         "Templates.identity.two_factor_changed.zh.html",
+        // two_factor_email_otp ships en + fr only for now; the remaining 14 cultures are
+        // pending generation via scripts/translate-templates.py (requires ANTHROPIC_API_KEY).
+        // Until then the Scriban culture cascade falls back to en for the other locales.
+        "Templates.identity.two_factor_email_otp.fr.html",
+        "Templates.identity.two_factor_email_otp.html",
         "Templates.identity.welcome.cs.html",
         "Templates.identity.welcome.de.html",
         "Templates.identity.welcome.es.html",

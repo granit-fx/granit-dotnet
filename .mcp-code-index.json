@@ -25853,7 +25853,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountLoginResponse.cs",
-      "line": 10,
+      "line": 15,
       "members": []
     },
     {
@@ -25929,6 +25929,15 @@
       "members": []
     },
     {
+      "name": "AccountTwoFactorEmailEnableRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountTwoFactorEmailEnableRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountTwoFactorEmailEnableRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "AccountTwoFactorEnableRequest",
       "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountTwoFactorEnableRequest",
       "kind": "record",
@@ -25952,7 +25961,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountTwoFactorLoginRequest.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -25961,7 +25970,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountTwoFactorStatusResponse.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -26347,6 +26356,15 @@
       "members": []
     },
     {
+      "name": "TwoFactorEmailOtpRequestedEto",
+      "fqn": "Granit.Identity.Local.Events.TwoFactorEmailOtpRequestedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Events/TwoFactorEmailOtpRequestedEto.cs",
+      "line": 28,
+      "members": []
+    },
+    {
       "name": "UserImpersonatedEto",
       "fqn": "Granit.Identity.Local.Events.UserImpersonatedEto",
       "kind": "record",
@@ -26545,6 +26563,22 @@
           "name": "HandleAsync",
           "kind": "method",
           "signature": "HandleAsync(TwoFactorChangedEto evt, IIdentityUserReader userReader, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "TwoFactorEmailOtpRequestedHandler",
+      "fqn": "Granit.Identity.Local.Notifications.Handlers.TwoFactorEmailOtpRequestedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/Handlers/TwoFactorEmailOtpRequestedHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(TwoFactorEmailOtpRequestedEto evt, IIdentityUserReader userReader, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -26866,6 +26900,43 @@
       ]
     },
     {
+      "name": "TwoFactorEmailOtpNotificationData",
+      "fqn": "Granit.Identity.Local.Notifications.NotificationTypes.TwoFactorEmailOtpNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/TwoFactorEmailOtpNotificationType.cs",
+      "line": 32,
+      "members": []
+    },
+    {
+      "name": "TwoFactorEmailOtpNotificationType",
+      "fqn": "Granit.Identity.Local.Notifications.NotificationTypes.TwoFactorEmailOtpNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/TwoFactorEmailOtpNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "TwoFactorEmailOtpNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
       "name": "WelcomeNotificationData",
       "fqn": "Granit.Identity.Local.Notifications.NotificationTypes.WelcomeNotificationData",
       "kind": "record",
@@ -27166,7 +27237,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/ITwoFactorService.cs",
-      "line": 41,
+      "line": 57,
       "members": []
     },
     {
@@ -27213,6 +27284,34 @@
       ]
     },
     {
+      "name": "IAuthenticatorTwoFactorService",
+      "fqn": "Granit.Identity.Local.Services.IAuthenticatorTwoFactorService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IAuthenticatorTwoFactorService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "GetKeyAsync",
+          "kind": "method",
+          "signature": "GetKeyAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AuthenticatorKeyInfo>"
+        },
+        {
+          "name": "EnableAsync",
+          "kind": "method",
+          "signature": "EnableAsync(string userId, string code, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        },
+        {
+          "name": "ResetAsync",
+          "kind": "method",
+          "signature": "ResetAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IEmailChangeService",
       "fqn": "Granit.Identity.Local.Services.IEmailChangeService",
       "kind": "interface",
@@ -27252,6 +27351,40 @@
           "name": "ConfirmAsync",
           "kind": "method",
           "signature": "ConfirmAsync(string userId, string token, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "IEmailTwoFactorService",
+      "fqn": "Granit.Identity.Local.Services.IEmailTwoFactorService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IEmailTwoFactorService.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "SendCodeAsync",
+          "kind": "method",
+          "signature": "SendCodeAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "EnableAsync",
+          "kind": "method",
+          "signature": "EnableAsync(string userId, string code, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DisableAsync",
+          "kind": "method",
+          "signature": "DisableAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "IsEnabledAsync",
+          "kind": "method",
+          "signature": "IsEnabledAsync(string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
         }
       ]
@@ -27309,6 +27442,12 @@
           "kind": "method",
           "signature": "IsProviderConfigured(string providerName)",
           "returnType": "bool"
+        },
+        {
+          "name": "IsProviderAvailableAsync",
+          "kind": "method",
+          "signature": "IsProviderAvailableAsync(string providerName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -27520,7 +27659,7 @@
       "kind": "interface",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/ITwoFactorService.cs",
-      "line": 10,
+      "line": 20,
       "members": [
         {
           "name": "GetStatusAsync",
@@ -27529,34 +27668,22 @@
           "returnType": "Task<TwoFactorStatus>"
         },
         {
-          "name": "GetAuthenticatorKeyAsync",
+          "name": "GetAvailableMethodsAsync",
           "kind": "method",
-          "signature": "GetAuthenticatorKeyAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<AuthenticatorKeyInfo>"
-        },
-        {
-          "name": "EnableAsync",
-          "kind": "method",
-          "signature": "EnableAsync(string userId, string code, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<string>>"
-        },
-        {
-          "name": "DisableAsync",
-          "kind": "method",
-          "signature": "DisableAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "ResetAuthenticatorAsync",
-          "kind": "method",
-          "signature": "ResetAuthenticatorAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
+          "signature": "GetAvailableMethodsAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<TwoFactorMethod>>"
         },
         {
           "name": "GenerateRecoveryCodesAsync",
           "kind": "method",
           "signature": "GenerateRecoveryCodesAsync(string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<string>>"
+        },
+        {
+          "name": "DisableAllAsync",
+          "kind": "method",
+          "signature": "DisableAllAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -27604,12 +27731,21 @@
       ]
     },
     {
+      "name": "TwoFactorMethod",
+      "fqn": "Granit.Identity.Local.Services.TwoFactorMethod",
+      "kind": "enum",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/TwoFactorMethod.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "TwoFactorStatus",
       "fqn": "Granit.Identity.Local.Services.TwoFactorStatus",
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/ITwoFactorService.cs",
-      "line": 35,
+      "line": 47,
       "members": []
     },
     {
@@ -36461,7 +36597,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 47,
+      "line": 48,
       "members": [
         {
           "name": "ConfigureServices",

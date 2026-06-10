@@ -21,8 +21,8 @@ internal static class AccountTwoFactorEndpoints
             .WithName("GetTwoFactorStatus")
             .WithSummary("Returns the current 2FA status.")
             .WithDescription(
-                "Returns whether 2FA is enabled, whether an authenticator app "
-                + "is configured, and the number of unused recovery codes.")
+                "Returns whether 2FA is enabled, whether an authenticator app and the "
+                + "email one-time-code factor are configured, and the number of unused recovery codes.")
             .Produces<AccountTwoFactorStatusResponse>()
             .RequireAuthorization();
 
@@ -38,7 +38,7 @@ internal static class AccountTwoFactorEndpoints
 
         group.MapPost("/two-factor/enable", EnableAsync)
             .WithName("EnableTwoFactor")
-            .WithSummary("Enables 2FA after TOTP code verification.")
+            .WithSummary("Enables the authenticator factor after TOTP code verification.")
             .WithDescription(
                 "Validates the provided TOTP code against the shared key. On success, "
                 + "enables 2FA and returns single-use recovery codes. "
@@ -52,9 +52,9 @@ internal static class AccountTwoFactorEndpoints
 
         group.MapPost("/two-factor/disable", DisableAsync)
             .WithName("DisableTwoFactor")
-            .WithSummary("Disables 2FA for the authenticated user.")
+            .WithSummary("Disables all two-factor methods for the authenticated user.")
             .WithDescription(
-                "Disables TOTP-based two-factor authentication. "
+                "Turns off every two-factor method (authenticator and email) for the user. "
                 + "Requires password confirmation as step-up authentication (OWASP ASVS V2.8.1).")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
@@ -68,13 +68,49 @@ internal static class AccountTwoFactorEndpoints
             .WithDescription(
                 "Generates 10 new single-use recovery codes. Previously generated codes "
                 + "are invalidated. Requires password confirmation as step-up authentication. "
-                + "Recovery codes can be used instead of a TOTP code during login.")
+                + "Recovery codes can be used instead of a TOTP or email code during login.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AccountRecoveryCodesResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
             .RequireAuthorization()
             .WithNoStoreResponse();
+
+        group.MapPost("/two-factor/email/send", SendEmailCodeAsync)
+            .WithName("SendTwoFactorEmailEnrollmentCode")
+            .WithSummary("Emails a one-time code to verify email-factor enrollment.")
+            .WithDescription(
+                "Generates and emails a one-time code to the authenticated user's address. "
+                + "Submit the code to /two-factor/email/enable to enroll the email factor. "
+                + "Returns 204 regardless of whether the user has an email address on file.")
+            .Produces(StatusCodes.Status204NoContent)
+            .RequireAuthorization()
+            .RequireRateLimiting("authentication");
+
+        group.MapPost("/two-factor/email/enable", EnableEmailAsync)
+            .WithName("EnableTwoFactorEmail")
+            .WithSummary("Enables the email one-time-code factor after code verification.")
+            .WithDescription(
+                "Validates the code previously sent to the user's email. On success, enrolls "
+                + "the email two-factor method (and enables 2FA if it is the first factor). "
+                + "Returns 400 if the code is invalid or expired.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesValidationProblem()
+            .RequireAuthorization();
+
+        group.MapPost("/two-factor/email/disable", DisableEmailAsync)
+            .WithName("DisableTwoFactorEmail")
+            .WithSummary("Disables the email one-time-code factor.")
+            .WithDescription(
+                "Removes the email two-factor method. Other factors (authenticator) remain active. "
+                + "Requires password confirmation as step-up authentication (OWASP ASVS V2.8.1).")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesValidationProblem()
+            .RequireAuthorization();
 
         return group;
     }
@@ -88,31 +124,31 @@ internal static class AccountTwoFactorEndpoints
         TwoFactorStatus status = await twoFactorService
             .GetStatusAsync(userId, cancellationToken).ConfigureAwait(false);
         return TypedResults.Ok(new AccountTwoFactorStatusResponse(
-            status.IsEnabled, status.HasAuthenticatorApp, status.RecoveryCodesLeft));
+            status.IsEnabled, status.HasAuthenticatorApp, status.HasEmailOtp, status.RecoveryCodesLeft));
     }
 
     private static async Task<Ok<AccountAuthenticatorKeyResponse>> GetAuthenticatorKeyAsync(
         HttpContext httpContext,
-        [FromServices] ITwoFactorService twoFactorService,
+        [FromServices] IAuthenticatorTwoFactorService authenticatorService,
         CancellationToken cancellationToken)
     {
         string userId = httpContext.User.FindFirst("sub")!.Value;
-        AuthenticatorKeyInfo keyInfo = await twoFactorService
-            .GetAuthenticatorKeyAsync(userId, cancellationToken).ConfigureAwait(false);
+        AuthenticatorKeyInfo keyInfo = await authenticatorService
+            .GetKeyAsync(userId, cancellationToken).ConfigureAwait(false);
         return TypedResults.Ok(new AccountAuthenticatorKeyResponse(keyInfo.SharedKey, keyInfo.QrCodeUri));
     }
 
     private static async Task<Results<Ok<AccountTwoFactorEnableResponse>, ProblemHttpResult>> EnableAsync(
         AccountTwoFactorEnableRequest request,
         HttpContext httpContext,
-        [FromServices] ITwoFactorService twoFactorService,
+        [FromServices] IAuthenticatorTwoFactorService authenticatorService,
         CancellationToken cancellationToken)
     {
         string userId = httpContext.User.FindFirst("sub")!.Value;
 
         try
         {
-            IReadOnlyList<string> recoveryCodes = await twoFactorService
+            IReadOnlyList<string> recoveryCodes = await authenticatorService
                 .EnableAsync(userId, request.Code, cancellationToken).ConfigureAwait(false);
 
             await PublishTwoFactorChangedAsync(httpContext, Guid.Parse(userId), true, cancellationToken)
@@ -155,7 +191,7 @@ internal static class AccountTwoFactorEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        await twoFactorService.DisableAsync(userId, cancellationToken).ConfigureAwait(false);
+        await twoFactorService.DisableAllAsync(userId, cancellationToken).ConfigureAwait(false);
 
         await PublishTwoFactorChangedAsync(httpContext, Guid.Parse(userId), false, cancellationToken)
             .ConfigureAwait(false);
@@ -195,6 +231,86 @@ internal static class AccountTwoFactorEndpoints
         IReadOnlyList<string> codes = await twoFactorService
             .GenerateRecoveryCodesAsync(userId, cancellationToken).ConfigureAwait(false);
         return TypedResults.Ok(new AccountRecoveryCodesResponse(codes));
+    }
+
+    private static async Task<NoContent> SendEmailCodeAsync(
+        HttpContext httpContext,
+        [FromServices] IEmailTwoFactorService emailTwoFactorService,
+        CancellationToken cancellationToken)
+    {
+        string userId = httpContext.User.FindFirst("sub")!.Value;
+        await emailTwoFactorService.SendCodeAsync(userId, cancellationToken).ConfigureAwait(false);
+        return TypedResults.NoContent();
+    }
+
+    private static async Task<Results<NoContent, ProblemHttpResult>> EnableEmailAsync(
+        AccountTwoFactorEmailEnableRequest request,
+        HttpContext httpContext,
+        [FromServices] IEmailTwoFactorService emailTwoFactorService,
+        CancellationToken cancellationToken)
+    {
+        string userId = httpContext.User.FindFirst("sub")!.Value;
+
+        try
+        {
+            await emailTwoFactorService.EnableAsync(userId, request.Code, cancellationToken)
+                .ConfigureAwait(false);
+
+            await PublishTwoFactorChangedAsync(httpContext, Guid.Parse(userId), true, cancellationToken)
+                .ConfigureAwait(false);
+
+            return TypedResults.NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
+        }
+    }
+
+    private static async Task<Results<NoContent, ProblemHttpResult>> DisableEmailAsync(
+        AccountTwoFactorDisableRequest request,
+        HttpContext httpContext,
+        [FromServices] IIdentityCredentialVerifier credentialVerifier,
+        [FromServices] IEmailTwoFactorService emailTwoFactorService,
+        [FromServices] ITwoFactorService twoFactorService,
+        CancellationToken cancellationToken)
+    {
+        string userId = httpContext.User.FindFirst("sub")!.Value;
+        string? username = httpContext.User.FindFirst("preferred_username")?.Value
+                           ?? httpContext.User.FindFirst("name")?.Value;
+
+        if (username is null)
+        {
+            return TypedResults.Problem(
+                detail: "Unable to determine username from token claims.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        bool isValid = await credentialVerifier
+            .VerifyUserCredentialsAsync(username, request.Password, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!isValid)
+        {
+            return TypedResults.Problem(
+                detail: "Password is incorrect.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        await emailTwoFactorService.DisableAsync(userId, cancellationToken).ConfigureAwait(false);
+
+        // The coarse TwoFactorChanged alert can only express the master switch, so only emit
+        // it when removing the email factor fully disabled 2FA (no authenticator remained).
+        // A factor-granular security alert is a future improvement.
+        TwoFactorStatus status = await twoFactorService
+            .GetStatusAsync(userId, cancellationToken).ConfigureAwait(false);
+        if (!status.IsEnabled)
+        {
+            await PublishTwoFactorChangedAsync(httpContext, Guid.Parse(userId), false, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        return TypedResults.NoContent();
     }
 
     private static async Task PublishTwoFactorChangedAsync(
