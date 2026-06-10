@@ -13,7 +13,7 @@ public sealed class EmailChangeConfirmationNotificationType
     public static readonly EmailChangeConfirmationNotificationType Instance = new();
 
     /// <inheritdoc />
-    public override string Name => "Security.EmailChangeConfirmation";
+    public override string Name => "identity.email_change_confirmation";
 
     /// <inheritdoc />
     public override IReadOnlyList<string> DefaultChannels { get; } =

@@ -53,7 +53,7 @@ internal static partial class AccountExternalLoginEndpoints
                 + "Returns 400 if the provider query parameter is missing. "
                 + "Returns 409 if the email is taken by another account. "
                 + "Returns 403 if auto-registration is disabled and no account exists.")
-            .Produces<ProcessCallbackResult>()
+            .Produces<ExternalLoginCallbackResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status409Conflict)
@@ -108,7 +108,7 @@ internal static partial class AccountExternalLoginEndpoints
         return Task.FromResult<Results<Ok, ProblemHttpResult>>(TypedResults.Ok());
     }
 
-    private static async Task<Results<Ok<ProcessCallbackResult>, ProblemHttpResult>> CallbackAsync(
+    private static async Task<Results<Ok<ExternalLoginCallbackResponse>, ProblemHttpResult>> CallbackAsync(
         HttpContext httpContext,
         [FromServices] IExternalLoginService externalLoginService,
         CancellationToken cancellationToken)
@@ -152,7 +152,7 @@ internal static partial class AccountExternalLoginEndpoints
             await TryWriteExternalLoginAuditAsync(httpContext, logger, provider,
                 userId: externalUserId, userName: externalUserName, failureReason: null,
                 cancellationToken).ConfigureAwait(false);
-            return TypedResults.Ok(result);
+            return TypedResults.Ok(IdentityLocalResponseMapper.ToResponse(result));
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
         {

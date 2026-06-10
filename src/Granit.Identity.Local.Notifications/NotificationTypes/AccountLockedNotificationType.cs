@@ -13,7 +13,7 @@ public sealed class AccountLockedNotificationType
     public static readonly AccountLockedNotificationType Instance = new();
 
     /// <inheritdoc />
-    public override string Name => "Security.AccountLocked";
+    public override string Name => "identity.account_locked";
 
     /// <inheritdoc />
     public override NotificationSeverity DefaultSeverity => NotificationSeverity.Error;

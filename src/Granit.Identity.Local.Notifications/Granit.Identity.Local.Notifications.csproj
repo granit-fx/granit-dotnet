@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Identity.Local.Notifications</PackageId>
-    <Description>Notification handlers for local identity events: welcome, password reset, email confirmation, account lockout, 2FA changes, impersonation alerts. Wolverine event handlers, Scriban templates (17 cultures), RFC 8058 List-Unsubscribe support.</Description>
+    <Description>Notification handlers for local identity events: welcome, password reset, email confirmation, account lockout, 2FA changes, impersonation alerts. Wolverine event handlers, Scriban templates (15 base cultures plus pt-BR and fr-CA regional variants), RFC 8058 List-Unsubscribe support.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

@@ -25633,7 +25633,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
       "file": "src/Granit.Identity.Local.AspNetIdentity/GranitIdentityLocalAspNetIdentityModule.cs",
-      "line": 31,
+      "line": 33,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25735,7 +25735,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Domain/GranitRole.cs",
-      "line": 21,
+      "line": 29,
       "members": []
     },
     {
@@ -25890,7 +25890,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountProfileResponse.cs",
-      "line": 14,
+      "line": 19,
       "members": []
     },
     {
@@ -25963,6 +25963,15 @@
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountTwoFactorStatusResponse.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "ExternalLoginCallbackResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.ExternalLoginCallbackResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/ExternalLoginCallbackResponse.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -26084,7 +26093,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/GranitIdentityLocalEndpointsModule.cs",
-      "line": 29,
+      "line": 30,
       "members": [
         {
           "name": "ConfigureServices",
@@ -26394,7 +26403,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Extensions/ClaimsPrincipalExtensions.cs",
-      "line": 9,
+      "line": 8,
       "members": [
         {
           "name": "IsImpersonated",
@@ -26410,7 +26419,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/GranitIdentityLocalModule.cs",
-      "line": 35,
+      "line": 37,
       "members": [
         {
           "name": "ConfigureServices",

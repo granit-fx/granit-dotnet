@@ -32,6 +32,7 @@ internal static class AccountRegistrationEndpoints
             .Produces(StatusCodes.Status202Accepted)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .AllowAnonymous()
             .RequireRateLimiting("authentication");
 

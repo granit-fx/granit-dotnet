@@ -2,7 +2,7 @@ namespace Granit.Identity.Local.Options;
 
 /// <summary>
 /// Configuration options for account lockout with exponential backoff.
-/// Bound to <c>Identity:Lockout</c> configuration section.
+/// Bound to <c>Identity:Local:Lockout</c> configuration section.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -18,7 +18,7 @@ namespace Granit.Identity.Local.Options;
 public sealed class GranitLockoutOptions
 {
     /// <summary>Configuration section name for binding from <c>appsettings.json</c>.</summary>
-    public const string SectionName = "Identity:Lockout";
+    public const string SectionName = "Identity:Local:Lockout";
 
     /// <summary>
     /// Gets or sets the maximum number of consecutive failed login attempts before lockout.

@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
 
 namespace Granit.Identity.Local.Extensions;
 
@@ -23,17 +22,6 @@ public static class ClaimsPrincipalExtensions
     {
         ArgumentNullException.ThrowIfNull(principal);
         return principal.FindFirst(ImpersonatorIdClaimType) is not null;
-    }
-
-    /// <summary>
-    /// Returns <see langword="true"/> if the current HTTP request is an impersonation session.
-    /// </summary>
-    /// <param name="httpContext">The HTTP context.</param>
-    /// <returns><see langword="true"/> if an <c>impersonator_id</c> claim is present.</returns>
-    public static bool IsImpersonated(this HttpContext httpContext)
-    {
-        ArgumentNullException.ThrowIfNull(httpContext);
-        return httpContext.User.IsImpersonated();
     }
 
     /// <summary>

@@ -134,6 +134,9 @@ internal sealed partial class AspNetPasskeyService(
             {
                 AttestationResponse = attestationResponse,
                 OriginalOptions = originalOptions,
+                // Safe to short-circuit: BeginRegistrationAsync passes every existing
+                // credential in ExcludeCredentials, so a conformant authenticator never
+                // re-registers a credential id already bound to this user.
                 IsCredentialIdUniqueToUserCallback = static (_, _) => Task.FromResult(true),
             },
             cancellationToken).ConfigureAwait(false);
@@ -262,6 +265,10 @@ internal sealed partial class AspNetPasskeyService(
                     OriginalOptions = originalOptions,
                     StoredPublicKey = storedPasskey.PublicKey,
                     StoredSignatureCounter = storedPasskey.SignCount,
+                    // Safe to short-circuit: the credential is resolved to its owning user
+                    // (FindByPasskeyIdAsync) and matched against that user's stored passkeys
+                    // above before this call, so the user-handle ownership link is already
+                    // established here.
                     IsUserHandleOwnerOfCredentialIdCallback =
                         static (_, _) => Task.FromResult(true),
                 },

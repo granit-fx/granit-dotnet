@@ -4,6 +4,7 @@ using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
 using Granit.Modularity;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +28,8 @@ namespace Granit.Identity.Local.AspNetIdentity;
 /// </remarks>
 [DependsOn(
     typeof(GranitIdentityLocalModule),
-    typeof(GranitIdentityModule))]
+    typeof(GranitIdentityModule),
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModule
 {
     /// <inheritdoc/>
@@ -106,13 +108,6 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
 
         context.Services.TryAddSingleton<PasskeyChallengeStore>();
         context.Services.AddDistributedMemoryCache();
-
-        // Defense-in-depth: fail startup if a host opts out of unique-email enforcement
-        // without registering a tenant resolver. The headless login/2FA handlers disable
-        // the multi-tenant query filter when no tenant context is active and rely on
-        // unique emails to deterministically resolve the user across tenants.
-        context.Services.TryAddSingleton<IValidateOptions<IdentityOptions>, RequireUniqueEmailValidator>();
-        context.Services.AddOptions<IdentityOptions>().ValidateOnStart();
 
         // Defense-in-depth: fail startup if a host opts out of unique-email enforcement
         // without registering a tenant resolver. The headless login/2FA handlers disable

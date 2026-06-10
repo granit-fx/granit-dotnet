@@ -9,7 +9,12 @@ namespace Granit.Identity.Local.Endpoints.Dtos;
 /// <param name="FirstName">The user's first name.</param>
 /// <param name="LastName">The user's last name.</param>
 /// <param name="TwoFactorEnabled">Whether TOTP 2FA is enabled.</param>
-/// <param name="HasPassword">Whether the user has a password set.</param>
+/// <param name="HasPassword">
+/// Whether the user has a local password set, or <see langword="null"/> when the active identity
+/// provider does not expose this signal. No framework abstraction surfaces it without a hard
+/// dependency on ASP.NET Core Identity's <c>UserManager</c>, which the endpoints layer must not take;
+/// resolving it is the provider layer's responsibility.
+/// </param>
 /// <param name="ExternalLogins">Linked external login providers.</param>
 public sealed record AccountProfileResponse(
     Guid UserId,
@@ -18,5 +23,5 @@ public sealed record AccountProfileResponse(
     string? FirstName,
     string? LastName,
     bool TwoFactorEnabled,
-    bool HasPassword,
+    bool? HasPassword,
     IReadOnlyList<string> ExternalLogins);

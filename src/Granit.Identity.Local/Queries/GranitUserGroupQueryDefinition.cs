@@ -10,7 +10,7 @@ namespace Granit.Identity.Local.Queries;
 public sealed class GranitUserGroupQueryDefinition : QueryDefinition<GranitUserGroup>
 {
     /// <inheritdoc/>
-    public override string Name => "Granit.Identity.GranitUserGroupQuery";
+    public override string Name => "Granit.Identity.Local.GranitUserGroupQuery";
 
     /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<GranitUserGroup> builder)

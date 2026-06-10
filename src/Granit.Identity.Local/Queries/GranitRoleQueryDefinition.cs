@@ -10,7 +10,7 @@ namespace Granit.Identity.Local.Queries;
 public sealed class GranitRoleQueryDefinition : QueryDefinition<GranitRole>
 {
     /// <inheritdoc/>
-    public override string Name => "Granit.Identity.GranitRoleQuery";
+    public override string Name => "Granit.Identity.Local.GranitRoleQuery";
 
     /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<GranitRole> builder)

@@ -60,8 +60,8 @@ internal static class AccountPasswordEndpoints
     private static async Task<Results<NoContent, ProblemHttpResult>> ChangePasswordAsync(
         AccountPasswordChangeRequest request,
         HttpContext httpContext,
-[FromServices] IIdentityCredentialVerifier credentialVerifier,
-[FromServices] IIdentityPasswordManager passwordManager,
+        [FromServices] IIdentityCredentialVerifier credentialVerifier,
+        [FromServices] IIdentityPasswordManager passwordManager,
         CancellationToken cancellationToken)
     {
         string userId = httpContext.User.FindFirst("sub")!.Value;

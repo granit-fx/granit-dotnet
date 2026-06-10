@@ -9,16 +9,16 @@ Part of the [granit](https://granit-fx.dev) framework.
 ## Notification types
 
 | Notification | Channels | Opt-out | Trigger |
-|---|---|---|---|
-| `Security.Welcome` | Email | Yes | User registration |
-| `Security.PasswordReset` | Email | No | Forgot password flow |
-| `Security.EmailConfirmation` | Email | No | Registration / resend |
-| `Security.PasswordChanged` | Email | No | Password change (compromise alert) |
-| `Security.AccountLocked` | Email, InApp | No | Failed login attempts |
-| `Security.TwoFactorChanged` | Email | No | 2FA enabled/disabled |
-| `Security.EmailChangeAlert` | Email | No | Email change alert (old address) |
-| `Security.EmailChangeConfirmation` | Email | No | Email change confirm (new address) |
-| `Security.ImpersonationAlert` | Email, InApp | No | Admin impersonation (GDPR/SOC2) |
+| --- | --- | --- | --- |
+| `identity.welcome` | Email | Yes | User registration |
+| `identity.password_reset` | Email | No | Forgot password flow |
+| `identity.email_confirmation` | Email | No | Registration / resend |
+| `identity.password_changed` | Email | No | Password change (compromise alert) |
+| `identity.account_locked` | Email, InApp | No | Failed login attempts |
+| `identity.two_factor_changed` | Email | No | 2FA enabled/disabled |
+| `identity.email_change_alert` | Email | No | Email change alert (old address) |
+| `identity.email_change_confirmation` | Email | No | Email change confirm (new address) |
+| `identity.impersonation_alert` | Email, InApp | No | Admin impersonation (GDPR/SOC2) |
 
 ## Installation
 

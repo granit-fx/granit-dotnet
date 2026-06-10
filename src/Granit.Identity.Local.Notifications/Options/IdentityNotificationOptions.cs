@@ -4,12 +4,12 @@ namespace Granit.Identity.Local.Notifications.Options;
 
 /// <summary>
 /// Configuration for identity notification URL generation.
-/// Bound to <c>Identity:Notifications</c> configuration section.
+/// Bound to <c>Identity:Local:Notifications</c> configuration section.
 /// </summary>
 public sealed class IdentityNotificationOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "Identity:Notifications";
+    public const string SectionName = "Identity:Local:Notifications";
 
     /// <summary>Base URL of the frontend application (e.g., <c>https://app.example.com</c>).</summary>
     [Required]

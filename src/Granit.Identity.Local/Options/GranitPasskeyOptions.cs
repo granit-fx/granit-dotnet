@@ -6,7 +6,7 @@ namespace Granit.Identity.Local.Options;
 public sealed class GranitPasskeyOptions
 {
     /// <summary>Configuration section name for binding from <c>appsettings.json</c>.</summary>
-    public const string SectionName = "Identity:Passkeys";
+    public const string SectionName = "Identity:Local:Passkey";
 
     /// <summary>
     /// Gets or sets the Relying Party ID (domain). Required.

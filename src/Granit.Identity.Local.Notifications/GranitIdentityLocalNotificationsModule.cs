@@ -22,7 +22,7 @@ public sealed class GranitIdentityLocalNotificationsModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddEmbeddedTemplates(typeof(GranitIdentityLocalNotificationsModule).Assembly);
-        context.Services.AddTemplateLayout("Security.*", "Layout.Email");
+        context.Services.AddTemplateLayout("identity.*", "Layout.Email");
         context.Services.AddSingleton<INotificationDefinitionProvider, IdentityNotificationDefinitionProvider>();
 
         context.Services.AddOptions<Options.IdentityNotificationOptions>()

@@ -12,7 +12,7 @@ public sealed class WelcomeNotificationType
     public static readonly WelcomeNotificationType Instance = new();
 
     /// <inheritdoc />
-    public override string Name => "Security.Welcome";
+    public override string Name => "identity.welcome";
 
     /// <inheritdoc />
     public override IReadOnlyList<string> DefaultChannels { get; } =
