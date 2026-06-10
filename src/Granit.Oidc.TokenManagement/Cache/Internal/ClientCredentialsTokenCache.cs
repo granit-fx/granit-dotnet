@@ -25,7 +25,7 @@ internal sealed partial class ClientCredentialsTokenCache(
         {
             maybe = await cache.TryGetAsync<string?>(BuildKey(clientName), token: cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             // Fail-open: a cache outage re-triggers a token endpoint round-trip
             // rather than failing the outbound request.
@@ -61,7 +61,7 @@ internal sealed partial class ClientCredentialsTokenCache(
                 new FusionCacheEntryOptions { Duration = expiry },
                 token: cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             LogCacheFailure(clientName, nameof(SetTokenAsync), ex.Message);
             return;
@@ -79,7 +79,7 @@ internal sealed partial class ClientCredentialsTokenCache(
         {
             await cache.RemoveAsync(BuildKey(clientName), token: cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             LogCacheFailure(clientName, nameof(RemoveTokenAsync), ex.Message);
             return;
