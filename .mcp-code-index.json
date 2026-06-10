@@ -12814,12 +12814,6 @@
           "kind": "method",
           "signature": "FromHours(1)",
           "returnType": "TimeSpan? DefaultAbsoluteExpirationRelativeToNow { get; set; } = TimeSpan."
-        },
-        {
-          "name": "FromMinutes",
-          "kind": "method",
-          "signature": "FromMinutes(20)",
-          "returnType": "TimeSpan? DefaultSlidingExpiration { get; set; } = TimeSpan."
         }
       ]
     },
