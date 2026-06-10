@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-06-03 (alignement des analyzers Roslyn — Microsoft.CodeAnalysis.* — sur le compilateur du SDK 5.3.0 via `VersionOverride`)
+Dernière mise à jour : 2026-06-10 (ajout des providers de login externe — Granit.Authentication.External : Google, Microsoft, Facebook, OpenID Connect, GitHub, Apple)
 
 ---
 
@@ -12,7 +12,7 @@ Dernière mise à jour : 2026-06-03 (alignement des analyzers Roslyn — Microso
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 88                 |
+| MIT          | 94                 |
 | Apache-2.0   | 40                 |
 | BSD-3-Clause | 3                  |
 | BSD-2-Clause | 1                  |
@@ -30,6 +30,8 @@ Dernière mise à jour : 2026-06-03 (alignement des analyzers Roslyn — Microso
 | Anthropic | 12.22.0 | Copyright 2026 Anthropic |
 | Asp.Versioning.Mvc | 10.0.0 | (c) .NET Foundation |
 | Asp.Versioning.Mvc.ApiExplorer | 10.0.0 | (c) .NET Foundation |
+| AspNet.Security.OAuth.Apple | 10.0.0 | (c) .NET Foundation |
+| AspNet.Security.OAuth.GitHub | 10.0.0 | (c) .NET Foundation |
 | Azure.AI.OpenAI | 2.1.0 | (c) Microsoft Corporation |
 | Azure.Communication.Email | 1.1.0 | (c) Microsoft Corporation |
 | Azure.Communication.Sms | 1.0.2 | (c) Microsoft Corporation |
@@ -42,7 +44,11 @@ Dernière mise à jour : 2026-06-03 (alignement des analyzers Roslyn — Microso
 | DocumentFormat.OpenXml | 3.1.1 | Copyright (c) Microsoft Corporation |
 | Lib.Net.Http.WebPush | 3.3.1 | Copyright (c) Tomasz Pęczek |
 | MailKit | 4.16.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
+| Microsoft.AspNetCore.Authentication.Facebook | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.Google | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.MicrosoftAccount | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.OpenIdConnect | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.Identity.EntityFrameworkCore | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.OpenApi | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.OutputCaching.StackExchangeRedis | 10.0.8 | (c) Microsoft Corporation |

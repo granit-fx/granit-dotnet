@@ -282,6 +282,7 @@
         "tests/Granit.Authentication.ApiKeys.Notifications.Tests",
         "tests/Granit.Authentication.ApiKeys.Tests",
         "tests/Granit.Authentication.DPoP.Tests",
+        "tests/Granit.Authentication.External.Tests",
         "tests/Granit.Authentication.JwtBearer.Cognito.Tests",
         "tests/Granit.Authentication.JwtBearer.EntraId.Tests",
         "tests/Granit.Authentication.JwtBearer.GoogleCloud.Tests",

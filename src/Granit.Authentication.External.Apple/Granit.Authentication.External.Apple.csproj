@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Authentication.External.Apple</PackageId>
+    <Description>Sign in with Apple external login provider for Granit.Authentication.External (via AspNet.Security.OAuth.Apple). Config-driven from Authentication:External:Providers entries of type "Apple" (set TeamId/KeyId/PrivateKey via Properties).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNet.Security.OAuth.Apple" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Authentication.External\Granit.Authentication.External.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Authentication.External.Apple.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+</Project>

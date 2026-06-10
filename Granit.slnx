@@ -81,6 +81,13 @@
     <Project Path="src/Granit.Authentication.ApiKeys.Notifications/Granit.Authentication.ApiKeys.Notifications.csproj" />
     <Project Path="src/Granit.Authentication.ApiKeys/Granit.Authentication.ApiKeys.csproj" />
     <Project Path="src/Granit.Authentication.DPoP/Granit.Authentication.DPoP.csproj" />
+    <Project Path="src/Granit.Authentication.External.Apple/Granit.Authentication.External.Apple.csproj" />
+    <Project Path="src/Granit.Authentication.External.Facebook/Granit.Authentication.External.Facebook.csproj" />
+    <Project Path="src/Granit.Authentication.External.GitHub/Granit.Authentication.External.GitHub.csproj" />
+    <Project Path="src/Granit.Authentication.External.Google/Granit.Authentication.External.Google.csproj" />
+    <Project Path="src/Granit.Authentication.External.Microsoft/Granit.Authentication.External.Microsoft.csproj" />
+    <Project Path="src/Granit.Authentication.External.Oidc/Granit.Authentication.External.Oidc.csproj" />
+    <Project Path="src/Granit.Authentication.External/Granit.Authentication.External.csproj" />
     <Project Path="src/Granit.Authentication.JwtBearer.Cognito/Granit.Authentication.JwtBearer.Cognito.csproj" />
     <Project Path="src/Granit.Authentication.JwtBearer.EntraId/Granit.Authentication.JwtBearer.EntraId.csproj" />
     <Project Path="src/Granit.Authentication.JwtBearer.GoogleCloud/Granit.Authentication.JwtBearer.GoogleCloud.csproj" />

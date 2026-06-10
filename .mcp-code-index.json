@@ -243,6 +243,55 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Authentication.External",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Authentication.External.Apple",
+      "deps": [
+        "Granit.Authentication.External"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Authentication.External.Facebook",
+      "deps": [
+        "Granit.Authentication.External"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Authentication.External.GitHub",
+      "deps": [
+        "Granit.Authentication.External"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Authentication.External.Google",
+      "deps": [
+        "Granit.Authentication.External"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Authentication.External.Microsoft",
+      "deps": [
+        "Granit.Authentication.External"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Authentication.External.Oidc",
+      "deps": [
+        "Granit.Authentication.External"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Authentication.JwtBearer",
       "deps": [
         "Granit",
@@ -7244,6 +7293,224 @@
           "kind": "method",
           "signature": "AddGranitRoleClaimNormalization(this IServiceCollection services, Action<RoleClaimNormalizationOptions> configure)",
           "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuthenticationExternalAppleModule",
+      "fqn": "Granit.Authentication.External.Apple.GranitAuthenticationExternalAppleModule",
+      "kind": "class",
+      "project": "Granit.Authentication.External.Apple",
+      "file": "src/Granit.Authentication.External.Apple/GranitAuthenticationExternalAppleModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ExternalAuthenticationServiceCollectionExtensions",
+      "fqn": "Granit.Authentication.External.Extensions.ExternalAuthenticationServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Authentication.External",
+      "file": "src/Granit.Authentication.External/Extensions/ExternalAuthenticationServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitExternalProviders",
+          "kind": "method",
+          "signature": "AddGranitExternalProviders(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "OAuthProviderOptionsExtensions",
+      "fqn": "Granit.Authentication.External.Extensions.OAuthProviderOptionsExtensions",
+      "kind": "class",
+      "project": "Granit.Authentication.External",
+      "file": "src/Granit.Authentication.External/Extensions/OAuthProviderOptionsExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ApplyExternalProvider",
+          "kind": "method",
+          "signature": "ApplyExternalProvider(this OAuthOptions options, ExternalAuthProvider provider)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuthenticationExternalFacebookModule",
+      "fqn": "Granit.Authentication.External.Facebook.GranitAuthenticationExternalFacebookModule",
+      "kind": "class",
+      "project": "Granit.Authentication.External.Facebook",
+      "file": "src/Granit.Authentication.External.Facebook/GranitAuthenticationExternalFacebookModule.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuthenticationExternalGitHubModule",
+      "fqn": "Granit.Authentication.External.GitHub.GranitAuthenticationExternalGitHubModule",
+      "kind": "class",
+      "project": "Granit.Authentication.External.GitHub",
+      "file": "src/Granit.Authentication.External.GitHub/GranitAuthenticationExternalGitHubModule.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuthenticationExternalGoogleModule",
+      "fqn": "Granit.Authentication.External.Google.GranitAuthenticationExternalGoogleModule",
+      "kind": "class",
+      "project": "Granit.Authentication.External.Google",
+      "file": "src/Granit.Authentication.External.Google/GranitAuthenticationExternalGoogleModule.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuthenticationExternalModule",
+      "fqn": "Granit.Authentication.External.GranitAuthenticationExternalModule",
+      "kind": "class",
+      "project": "Granit.Authentication.External",
+      "file": "src/Granit.Authentication.External/GranitAuthenticationExternalModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        },
+        {
+          "name": "OnApplicationInitialization",
+          "kind": "method",
+          "signature": "OnApplicationInitialization(ApplicationInitializationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuthenticationExternalMicrosoftModule",
+      "fqn": "Granit.Authentication.External.Microsoft.GranitAuthenticationExternalMicrosoftModule",
+      "kind": "class",
+      "project": "Granit.Authentication.External.Microsoft",
+      "file": "src/Granit.Authentication.External.Microsoft/GranitAuthenticationExternalMicrosoftModule.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuthenticationExternalOidcModule",
+      "fqn": "Granit.Authentication.External.Oidc.GranitAuthenticationExternalOidcModule",
+      "kind": "class",
+      "project": "Granit.Authentication.External.Oidc",
+      "file": "src/Granit.Authentication.External.Oidc/GranitAuthenticationExternalOidcModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ExternalAuthOptions",
+      "fqn": "Granit.Authentication.External.Options.ExternalAuthOptions",
+      "kind": "class",
+      "project": "Granit.Authentication.External",
+      "file": "src/Granit.Authentication.External/Options/ExternalAuthOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "AutoRegisterExternalUsers",
+          "kind": "property",
+          "signature": "bool AutoRegisterExternalUsers",
+          "returnType": "bool"
+        },
+        {
+          "name": "Providers",
+          "kind": "property",
+          "signature": "IList<ExternalAuthProvider> Providers",
+          "returnType": "IList<ExternalAuthProvider>"
+        }
+      ]
+    },
+    {
+      "name": "ExternalAuthProvider",
+      "fqn": "Granit.Authentication.External.Options.ExternalAuthProvider",
+      "kind": "class",
+      "project": "Granit.Authentication.External",
+      "file": "src/Granit.Authentication.External/Options/ExternalAuthProvider.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Type",
+          "kind": "property",
+          "signature": "string Type",
+          "returnType": "string"
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string? Name",
+          "returnType": "string?"
+        },
+        {
+          "name": "ClientSecret",
+          "kind": "property",
+          "signature": "string ClientSecret",
+          "returnType": "string"
+        },
+        {
+          "name": "Scopes",
+          "kind": "property",
+          "signature": "string[] Scopes",
+          "returnType": "string[]"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(StringComparer.OrdinalIgnoreCase)",
+          "returnType": "string? Authority { get; set; } public string? CallbackPath { get; set; } public Dictionary<string, string?> Properties { get; set; } ="
+        },
+        {
+          "name": "IsNullOrWhiteSpace",
+          "kind": "method",
+          "signature": "IsNullOrWhiteSpace(Name)",
+          "returnType": "string SchemeName => string."
         }
       ]
     },

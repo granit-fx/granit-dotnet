@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Authentication.External</PackageId>
+    <Description>External/social login abstractions for Granit. Config-driven registration of ASP.NET Core authentication handlers (Google, Microsoft, Apple, GitHub, Facebook, generic OIDC) from the Authentication:External:Providers section, with a startup guard that fails fast on a config/scheme mismatch.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Authentication.External.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <!-- ASP.NET Core shared framework (AuthenticationBuilder, IAuthenticationSchemeProvider) -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>
