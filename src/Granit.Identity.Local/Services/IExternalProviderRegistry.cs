@@ -5,9 +5,9 @@ namespace Granit.Identity.Local.Services;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Implementations read from the auth server's configuration:
-/// <c>Granit.OpenIddict</c> reads from <c>GranitOpenIddictClientOptions.Providers</c>,
-/// a future Duende module would read from its own config.
+/// Implementations read the providers configured under <c>Authentication:External:Providers</c>
+/// (owned by <c>Granit.Authentication.External</c>); the registry surfaces which of them are
+/// usable for an OAuth challenge.
 /// </para>
 /// <para>
 /// Used by account self-service endpoints to validate that a requested external

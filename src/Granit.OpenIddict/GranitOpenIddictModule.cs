@@ -1,3 +1,4 @@
+using Granit.Authentication.External;
 using Granit.Caching;
 using Granit.DataExchange;
 using Granit.DataExchange.Extensions;
@@ -36,6 +37,7 @@ namespace Granit.OpenIddict;
 /// and Identity cookie configuration (neutral names, env-aware __Host- prefix).
 /// </summary>
 [DependsOn(
+    typeof(GranitAuthenticationExternalModule),
     typeof(GranitCachingModule),
     typeof(GranitDataExchangeAbstractionsModule),
     typeof(GranitEncryptionModule),
@@ -55,10 +57,6 @@ public sealed class GranitOpenIddictModule : GranitModule
         context.Services
             .AddOptions<GranitOpenIddictOptions>()
             .BindConfiguration(GranitOpenIddictOptions.SectionName);
-
-        context.Services
-            .AddOptions<GranitOpenIddictClientOptions>()
-            .BindConfiguration(GranitOpenIddictClientOptions.SectionName);
 
         context.Services
             .AddOptions<GranitPasskeyOptions>()

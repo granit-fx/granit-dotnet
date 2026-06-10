@@ -1,10 +1,10 @@
 using System.Security.Claims;
+using Granit.Authentication.External.Options;
 using Granit.Events;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Internal;
-using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
@@ -19,7 +19,7 @@ public sealed class AspNetExternalLoginServiceTests
     private readonly UserManager<LocalIdentity> _userManager;
     private readonly ExternalClaimsMapper _claimsMapper = Substitute.For<ExternalClaimsMapper>();
     private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
-    private readonly GranitOpenIddictClientOptions _clientOptions = new() { AutoRegisterExternalUsers = true };
+    private readonly ExternalAuthOptions _externalAuthOptions = new() { AutoRegisterExternalUsers = true };
     private readonly AspNetExternalLoginService _sut;
 
     public AspNetExternalLoginServiceTests()
@@ -32,7 +32,7 @@ public sealed class AspNetExternalLoginServiceTests
             _userManager,
             _claimsMapper,
             _eventBus,
-            Microsoft.Extensions.Options.Options.Create(_clientOptions));
+            Microsoft.Extensions.Options.Options.Create(_externalAuthOptions));
     }
 
     // --- GetLoginsAsync ---
@@ -226,7 +226,7 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task ProcessCallbackAsync_AutoRegisterDisabled_Throws()
     {
-        _clientOptions.AutoRegisterExternalUsers = false;
+        _externalAuthOptions.AutoRegisterExternalUsers = false;
 
         ClaimsPrincipal principal = CreatePrincipal("sub", "new-key");
         _userManager.FindByLoginAsync("Google", "new-key").Returns((LocalIdentity?)null);

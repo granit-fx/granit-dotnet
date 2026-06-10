@@ -12,6 +12,7 @@
       "src/Granit.Authentication.ApiKeys.Endpoints/Granit.Authentication.ApiKeys.Endpoints.csproj",
       "src/Granit.Authentication.ApiKeys/Granit.Authentication.ApiKeys.csproj",
       "src/Granit.Authentication.DPoP/Granit.Authentication.DPoP.csproj",
+      "src/Granit.Authentication.External/Granit.Authentication.External.csproj",
       "src/Granit.Authentication/Granit.Authentication.csproj",
       "src/Granit.Authorization.Endpoints/Granit.Authorization.Endpoints.csproj",
       "src/Granit.Authorization/Granit.Authorization.csproj",

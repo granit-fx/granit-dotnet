@@ -1871,6 +1871,7 @@
     {
       "name": "Granit.OpenIddict",
       "deps": [
+        "Granit.Authentication.External",
         "Granit.Caching",
         "Granit.DataExchange.Abstractions",
         "Granit.Encryption",
@@ -36728,7 +36729,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 47,
+      "line": 49,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36755,40 +36756,6 @@
       "file": "src/Granit.OpenIddict/OpenIddictSettingNames.cs",
       "line": 12,
       "members": []
-    },
-    {
-      "name": "ExternalProviderOptions",
-      "fqn": "Granit.OpenIddict.Options.ExternalProviderOptions",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Options/GranitOpenIddictClientOptions.cs",
-      "line": 32,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ClientId",
-          "kind": "property",
-          "signature": "string ClientId",
-          "returnType": "string"
-        },
-        {
-          "name": "ClientSecret",
-          "kind": "property",
-          "signature": "string ClientSecret",
-          "returnType": "string"
-        },
-        {
-          "name": "Scopes",
-          "kind": "property",
-          "signature": "string[] Scopes",
-          "returnType": "string[]"
-        }
-      ]
     },
     {
       "name": "GranitKeyRotationOptions",
@@ -36827,28 +36794,6 @@
           "kind": "property",
           "signature": "string SigningAlgorithm",
           "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitOpenIddictClientOptions",
-      "fqn": "Granit.OpenIddict.Options.GranitOpenIddictClientOptions",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Options/GranitOpenIddictClientOptions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "AutoRegisterExternalUsers",
-          "kind": "property",
-          "signature": "bool AutoRegisterExternalUsers",
-          "returnType": "bool"
-        },
-        {
-          "name": "Providers",
-          "kind": "property",
-          "signature": "ExternalProviderOptions[] Providers",
-          "returnType": "ExternalProviderOptions[]"
         }
       ]
     },

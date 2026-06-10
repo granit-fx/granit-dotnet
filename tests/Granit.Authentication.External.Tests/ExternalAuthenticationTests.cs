@@ -77,4 +77,14 @@ public sealed class ExternalAuthenticationTests
         options.CallbackPath.ToString().ShouldBe("/cb");
         options.Scope.ShouldBe(["openid", "email"]);
     }
+
+    [Fact]
+    public void ExternalAuthOptions_HasSensibleDefaults()
+    {
+        var options = new ExternalAuthOptions();
+
+        options.AutoRegisterExternalUsers.ShouldBeTrue();
+        options.Providers.ShouldBeEmpty();
+        ExternalAuthOptions.SectionName.ShouldBe("Authentication:External");
+    }
 }

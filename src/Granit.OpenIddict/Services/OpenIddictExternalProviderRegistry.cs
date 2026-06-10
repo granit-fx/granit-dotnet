@@ -1,22 +1,23 @@
+using Granit.Authentication.External.Options;
 using Granit.Identity.Local.Services;
-using Granit.OpenIddict.Options;
 using Microsoft.Extensions.Options;
 
 namespace Granit.OpenIddict.Services;
 
 /// <summary>
-/// OpenIddict implementation of <see cref="IExternalProviderRegistry"/>.
-/// Reads configured providers from <see cref="GranitOpenIddictClientOptions"/>.
+/// <see cref="IExternalProviderRegistry"/> implementation that reads configured external
+/// providers from <see cref="ExternalAuthOptions"/> (the <c>Authentication:External</c> section,
+/// owned by <c>Granit.Authentication.External</c>).
 /// </summary>
 internal sealed class OpenIddictExternalProviderRegistry(
-    IOptions<GranitOpenIddictClientOptions> clientOptions) : IExternalProviderRegistry
+    IOptions<ExternalAuthOptions> externalAuthOptions) : IExternalProviderRegistry
 {
     /// <inheritdoc/>
     public IReadOnlyList<string> GetConfiguredProviderNames() =>
-        clientOptions.Value.Providers.Select(p => p.Name).ToList();
+        externalAuthOptions.Value.Providers.Select(p => p.SchemeName).ToList();
 
     /// <inheritdoc/>
     public bool IsProviderConfigured(string providerName) =>
-        clientOptions.Value.Providers
-            .Any(p => p.Name.Equals(providerName, StringComparison.OrdinalIgnoreCase));
+        externalAuthOptions.Value.Providers
+            .Any(p => p.SchemeName.Equals(providerName, StringComparison.OrdinalIgnoreCase));
 }

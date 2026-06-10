@@ -26,6 +26,7 @@
       "src/Granit.Authentication.ApiKeys.Notifications/Granit.Authentication.ApiKeys.Notifications.csproj",
       "src/Granit.Authentication.ApiKeys/Granit.Authentication.ApiKeys.csproj",
       "src/Granit.Authentication.DPoP/Granit.Authentication.DPoP.csproj",
+      "src/Granit.Authentication.External/Granit.Authentication.External.csproj",
       "src/Granit.Authentication.JwtBearer.Cognito/Granit.Authentication.JwtBearer.Cognito.csproj",
       "src/Granit.Authentication.JwtBearer.EntraId/Granit.Authentication.JwtBearer.EntraId.csproj",
       "src/Granit.Authentication.JwtBearer.GoogleCloud/Granit.Authentication.JwtBearer.GoogleCloud.csproj",

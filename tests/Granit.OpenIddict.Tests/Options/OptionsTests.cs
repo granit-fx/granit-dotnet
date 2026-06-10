@@ -18,16 +18,6 @@ public sealed class OptionsTests
     }
 
     [Fact]
-    public void GranitOpenIddictClientOptions_HasSensibleDefaults()
-    {
-        GranitOpenIddictClientOptions options = new();
-
-        options.AutoRegisterExternalUsers.ShouldBeTrue();
-        options.Providers.ShouldBeEmpty();
-        GranitOpenIddictClientOptions.SectionName.ShouldBe("OpenIddict:Client");
-    }
-
-    [Fact]
     public void GranitOpenIddictSeedingOptions_HasSensibleDefaults()
     {
         GranitOpenIddictSeedingOptions options = new();
@@ -46,16 +36,5 @@ public sealed class OptionsTests
         options.AuthenticatorTimeout.ShouldBe(TimeSpan.FromMinutes(5));
         options.ChallengeSize.ShouldBe(32);
         GranitPasskeyOptions.SectionName.ShouldBe("Identity:Local:Passkey");
-    }
-
-    [Fact]
-    public void ExternalProviderOptions_HasSensibleDefaults()
-    {
-        ExternalProviderOptions options = new();
-
-        options.Name.ShouldBeEmpty();
-        options.ClientId.ShouldBeEmpty();
-        options.ClientSecret.ShouldBeEmpty();
-        options.Scopes.ShouldBe(new[] { "openid", "profile", "email" });
     }
 }

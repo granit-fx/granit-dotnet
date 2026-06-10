@@ -1,9 +1,9 @@
 using System.Security.Claims;
+using Granit.Authentication.External.Options;
 using Granit.Events;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
-using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -19,7 +19,7 @@ internal sealed class AspNetExternalLoginService(
     UserManager<LocalIdentity> userManager,
     ExternalClaimsMapper claimsMapper,
     IDistributedEventBus eventBus,
-    IOptions<GranitOpenIddictClientOptions> clientOptions) : IExternalLoginService
+    IOptions<ExternalAuthOptions> externalAuthOptions) : IExternalLoginService
 {
     /// <inheritdoc/>
     public async Task<IReadOnlyList<GranitExternalLoginInfo>> GetLoginsAsync(
@@ -124,7 +124,7 @@ internal sealed class AspNetExternalLoginService(
         }
 
         // 3. Auto-register if enabled
-        if (!clientOptions.Value.AutoRegisterExternalUsers)
+        if (!externalAuthOptions.Value.AutoRegisterExternalUsers)
         {
             throw new InvalidOperationException(
                 "Account not found. Party your administrator.");
