@@ -1,4 +1,5 @@
 using Granit.DataExchange.Extensions;
+using Granit.Diagnostics;
 using Granit.Localization.Extensions;
 using Granit.MultiTenancy.Authorization;
 using Granit.MultiTenancy.Diagnostics;
@@ -83,6 +84,9 @@ public static class MultiTenancyServiceCollectionExtensions
 
         services.TryAddScoped<TenantResolverPipeline>();
         services.TryAddSingleton<MultiTenancyMetrics>();
+
+        // Register the module's ActivitySource so Granit.Observability picks it up.
+        GranitActivitySourceRegistry.Register(MultiTenancyActivitySource.Name);
 
         // Secure-by-default host-impersonation gate. Apps that want permission-based
         // gating reference Granit.MultiTenancy.Authorization and call

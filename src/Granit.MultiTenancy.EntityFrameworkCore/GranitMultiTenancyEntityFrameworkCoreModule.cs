@@ -1,4 +1,3 @@
-using Granit.DataExchange;
 using Granit.DataLookup.EntityFrameworkCore;
 using Granit.Events;
 using Granit.Modularity;
@@ -18,7 +17,6 @@ namespace Granit.MultiTenancy.EntityFrameworkCore;
 /// Registered via <c>AddGranitMultiTenancyEntityFrameworkCore(opt => opt.UseNpgsql(...))</c>.
 /// </remarks>
 [DependsOn(
-    typeof(GranitDataExchangeAbstractionsModule),
     typeof(GranitDataLookupEntityFrameworkCoreModule),
     typeof(GranitEventsModule),
     typeof(GranitMultiTenancyModule),

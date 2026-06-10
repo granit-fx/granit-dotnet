@@ -16,7 +16,7 @@ public sealed class MultiTenancyEndpointsOptions
 
     /// <summary>
     /// OpenAPI tag name for all tenant management endpoints.
-    /// Default: <c>"Platform - Tenants"</c>.
+    /// Default: <c>"Multi-Tenancy - Tenants"</c>.
     /// </summary>
-    public string TagName { get; set; } = "Platform - Tenants";
+    public string TagName { get; set; } = "Multi-Tenancy - Tenants";
 }

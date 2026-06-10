@@ -77,7 +77,7 @@ Full reference: [`docs/guide/conventions/`](docs/guide/conventions/index.md).
 
 ### Permissions (STRICT)
 
-Format `[Group].[Resource].[Action]` (PascalCase, plural Resource). Loc keys: `PermissionGroup:{Group}` and `Permission:{Group}.{Resource}.{Action}`. Provider `{Module}PermissionDefinitionProvider : IPermissionDefinitionProvider` (auto-discovered). Standard actions: `Read`, `Manage`, `Execute`, `Create` — domain-specific (`Upload`, `Revoke`, `Rotate`...) allowed when `Manage` is too coarse for least-privilege (ISO 27001 A.9.4).
+Format `[Group].[Resource].[Action]` (PascalCase, plural Resource). Loc keys: `PermissionGroup:{Group}` and `Permission:{Group}.{Resource}.{Action}`. Provider `{Module}PermissionDefinitionProvider : IPermissionDefinitionProvider` (auto-discovered). Standard actions: `Read`, `Create`, `Update`, `Manage`, `Execute` (`Manage` ⊇ `Create`+`Update`) — domain-specific (`Upload`, `Revoke`, `Rotate`...) allowed when `Manage` is too coarse for least-privilege (ISO 27001 A.9.4).
 
 ### Events (STRICT, archi-tested)
 

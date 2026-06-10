@@ -16,7 +16,7 @@ public sealed class MultiTenancyEndpointsOptionsTests
         MultiTenancyEndpointsOptions options = new();
 
         options.RoutePrefix.ShouldBe("multi-tenancy");
-        options.TagName.ShouldBe("Platform - Tenants");
+        options.TagName.ShouldBe("Multi-Tenancy - Tenants");
     }
 
     [Fact]

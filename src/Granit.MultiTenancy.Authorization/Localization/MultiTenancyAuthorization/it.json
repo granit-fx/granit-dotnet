@@ -2,6 +2,6 @@
   "culture": "it",
   "texts": {
     "Permission:MultiTenancy.Host.Impersonate": "Impersonare qualsiasi tenant dal contesto host",
-    "PermissionGroup:MultiTenancyHost": "Multi-Tenancy — Host"
+    "PermissionGroup:MultiTenancy": "Multi-Tenancy"
   }
 }

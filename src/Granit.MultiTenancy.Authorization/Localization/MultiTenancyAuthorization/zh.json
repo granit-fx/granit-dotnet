@@ -2,6 +2,6 @@
   "culture": "zh",
   "texts": {
     "Permission:MultiTenancy.Host.Impersonate": "从主机范围模拟任何租户",
-    "PermissionGroup:MultiTenancyHost": "多租户 — 主机"
+    "PermissionGroup:MultiTenancy": "多租户"
   }
 }

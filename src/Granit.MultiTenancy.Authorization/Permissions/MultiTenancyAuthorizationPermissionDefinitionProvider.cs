@@ -15,7 +15,7 @@ internal sealed class MultiTenancyAuthorizationPermissionDefinitionProvider : IP
         PermissionGroup group = context.AddGroup(
             MultiTenancyAuthorizationPermissions.GroupName,
             LocalizableString.Create<MultiTenancyAuthorizationLocalizationResource>(
-                "PermissionGroup:MultiTenancyHost"));
+                "PermissionGroup:MultiTenancy"));
 
         // Host-side only: a Tenant user can never grant himself the right to impersonate
         // a different tenant by virtue of being inside a tenant scope.

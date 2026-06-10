@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Claims;
 using Granit.MultiTenancy.Authorization;
 using Granit.MultiTenancy.Diagnostics;
@@ -53,6 +54,9 @@ public sealed partial class TenantResolutionMiddleware(
             return;
         }
 
+        // Span is null-at-rest: StartActivity returns null unless a listener is attached.
+        using Activity? activity = MultiTenancyActivitySource.Source.StartActivity(MultiTenancyActivitySource.Resolve);
+
         TenantResolutionResult result = await _pipeline.ResolveAsync(context, context.RequestAborted).ConfigureAwait(false);
 
         if (result.Tenant is null)
@@ -75,6 +79,7 @@ public sealed partial class TenantResolutionMiddleware(
         }
 
         _metrics.RecordResolutionSucceeded(result.Tenant.Id.ToString()!, result.ResolverType);
+        activity?.SetTag("resolver_type", result.ResolverType);
 
         using IDisposable _ = _currentTenant.Change(result.Tenant.Id, result.Tenant.Name, jurisdiction);
         await next(context).ConfigureAwait(false);

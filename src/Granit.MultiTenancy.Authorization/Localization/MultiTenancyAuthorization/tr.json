@@ -2,6 +2,6 @@
   "culture": "tr",
   "texts": {
     "Permission:MultiTenancy.Host.Impersonate": "Host kapsamından herhangi bir kiracının kimliğine bürünme",
-    "PermissionGroup:MultiTenancyHost": "Çok Kiracılılık — Host"
+    "PermissionGroup:MultiTenancy": "Çoklu Kiracılık"
   }
 }
