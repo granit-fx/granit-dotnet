@@ -49511,7 +49511,7 @@
       "kind": "class",
       "project": "Granit.Validation",
       "file": "src/Granit.Validation/Extensions/RuleBuilderExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -49545,7 +49545,7 @@
       "kind": "class",
       "project": "Granit.Validation",
       "file": "src/Granit.Validation/GranitValidationModule.cs",
-      "line": 36,
+      "line": 38,
       "members": [
         {
           "name": "ConfigureServices",
