@@ -35901,7 +35901,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.BackgroundJobs",
       "file": "src/Granit.OpenIddict.BackgroundJobs/Services/KeyRotationExecutionService.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -35982,6 +35982,12 @@
       "line": 22,
       "members": [
         {
+          "name": "ConcurrencyStamp",
+          "kind": "property",
+          "signature": "string ConcurrencyStamp",
+          "returnType": "string"
+        },
+        {
           "name": "KeyId",
           "kind": "property",
           "signature": "string KeyId",
@@ -36037,7 +36043,7 @@
       "kind": "enum",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
-      "line": 97,
+      "line": 100,
       "members": []
     },
     {
@@ -36453,7 +36459,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 41,
+      "line": 47,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36904,7 +36910,7 @@
           "name": "UpdateAsync",
           "kind": "method",
           "signature": "UpdateAsync(SigningKey key, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
+          "returnType": "Task<bool>"
         },
         {
           "name": "PruneRevokedAsync",

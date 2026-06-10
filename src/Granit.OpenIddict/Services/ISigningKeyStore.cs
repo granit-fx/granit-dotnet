@@ -34,7 +34,13 @@ public interface ISigningKeyStore
     /// <summary>
     /// Updates an existing key (e.g., status change on rotation).
     /// </summary>
-    Task UpdateAsync(SigningKey key, CancellationToken cancellationToken = default);
+    /// <returns>
+    /// <c>true</c> if the update was applied; <c>false</c> if it lost an optimistic-concurrency
+    /// race (another rotation already transitioned this key). Callers must treat <c>false</c> as
+    /// "another runner won" and abort the dependent step rather than retrying — this is the
+    /// guard against a double key rotation minting two active keys across replicas.
+    /// </returns>
+    Task<bool> UpdateAsync(SigningKey key, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Deletes keys older than the specified cutoff (cleanup of revoked keys).

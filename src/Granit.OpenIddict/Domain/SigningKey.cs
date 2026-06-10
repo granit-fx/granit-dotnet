@@ -19,10 +19,13 @@ namespace Granit.OpenIddict.Domain;
 /// and <see cref="SigningKeyStatus.Retired"/> public keys.
 /// </para>
 /// </remarks>
-public sealed class SigningKey : CreationAuditedEntity
+public sealed class SigningKey : CreationAuditedEntity, IConcurrencyAware
 {
     /// <summary>EF Core materialization constructor.</summary>
     private SigningKey() { }
+
+    /// <inheritdoc/>
+    public string ConcurrencyStamp { get; set; } = string.Empty;
 
     /// <summary>The key identifier (kid), used in JWT headers to identify the signing key.</summary>
     public string KeyId { get; private set; } = string.Empty;

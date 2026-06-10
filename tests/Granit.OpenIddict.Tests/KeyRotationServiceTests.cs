@@ -30,6 +30,10 @@ public sealed class KeyRotationServiceTests
             .Returns([]);
         _keyStore.PruneRevokedAsync(Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
             .Returns(0);
+
+        // Default: updates win the optimistic-concurrency race.
+        _keyStore.UpdateAsync(Arg.Any<SigningKey>(), Arg.Any<CancellationToken>())
+            .Returns(true);
     }
 
     private KeyRotationService CreateSut(GranitKeyRotationOptions? options = null)
@@ -172,6 +176,25 @@ public sealed class KeyRotationServiceTests
         await _keyStore.Received().UpdateAsync(signingKey, Arg.Any<CancellationToken>());
         signingKey.Status.ShouldBe(SigningKeyStatus.Retired);
         signingKey.RetiredAt.ShouldBe(Now);
+    }
+
+    [Fact]
+    public async Task RotateAsync_WhenRetireLosesConcurrencyRace_DoesNotGenerateReplacement()
+    {
+        // Signing key is expiring → rotation is attempted, but the retire update loses the
+        // optimistic-concurrency race (a competing rotation already retired this key).
+        SigningKey signingKey = SetupActiveKey("signing", Now.AddDays(10));
+        SetupActiveKey("encryption", Now.AddDays(60));
+        _keyStore.UpdateAsync(signingKey, Arg.Any<CancellationToken>()).Returns(false);
+
+        KeyRotationService sut = CreateSut();
+
+        KeyRotationResult result = await sut.RotateAsync(TestContext.Current.CancellationToken);
+
+        // Fail closed: no replacement key is minted when the retire was not applied.
+        result.KeysGenerated.ShouldBe(0);
+        result.KeysRetired.ShouldBe(0);
+        await _keyStore.DidNotReceive().CreateAsync(Arg.Any<SigningKey>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

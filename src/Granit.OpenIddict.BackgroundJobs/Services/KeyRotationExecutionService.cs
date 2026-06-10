@@ -1,3 +1,4 @@
+using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Services;
 using Microsoft.Extensions.Logging;
 
@@ -8,12 +9,17 @@ namespace Granit.OpenIddict.BackgroundJobs.Services;
 /// </summary>
 public sealed partial class KeyRotationExecutionService(
     IKeyRotationService keyRotationService,
+    OpenIddictMetrics metrics,
     ILogger<KeyRotationExecutionService> logger)
 {
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         KeyRotationResult result = await keyRotationService
             .RotateAsync(cancellationToken).ConfigureAwait(false);
+
+        // Signing keys are global (not tenant-scoped) — record under the "global" tenant.
+        metrics.RecordKeyRotation(
+            tenantId: null, result.KeysGenerated, result.KeysRetired, result.KeysRevoked);
 
         Log.KeyRotationCompleted(logger,
             result.KeysGenerated, result.KeysRetired, result.KeysRevoked, result.KeysPruned);

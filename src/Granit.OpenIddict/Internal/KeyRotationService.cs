@@ -36,10 +36,14 @@ internal sealed partial class KeyRotationService(
         int revoked = 0;
 
         // 1. Ensure active signing key exists, rotate if expiring soon
-        generated += await EnsureActiveKeyAsync("signing", options, now, cancellationToken).ConfigureAwait(false);
+        (int g, int r) = await EnsureActiveKeyAsync("signing", options, now, cancellationToken).ConfigureAwait(false);
+        generated += g;
+        retired += r;
 
         // 2. Ensure active encryption key exists, rotate if expiring soon
-        generated += await EnsureActiveKeyAsync("encryption", options, now, cancellationToken).ConfigureAwait(false);
+        (g, r) = await EnsureActiveKeyAsync("encryption", options, now, cancellationToken).ConfigureAwait(false);
+        generated += g;
+        retired += r;
 
         // 3. Revoke keys whose grace period has expired
         IReadOnlyList<SigningKey> retiredKeys = await keyStore
@@ -49,7 +53,13 @@ internal sealed partial class KeyRotationService(
             k.RetiredAt.HasValue && now - k.RetiredAt.Value > options.GracePeriod))
         {
             retiredKey.Revoke();
-            await keyStore.UpdateAsync(retiredKey, cancellationToken).ConfigureAwait(false);
+
+            // A concurrent rotation may already have revoked this key — skip on a lost race.
+            if (!await keyStore.UpdateAsync(retiredKey, cancellationToken).ConfigureAwait(false))
+            {
+                continue;
+            }
+
             Log.KeyRevoked(logger, retiredKey.KeyId);
             revoked++;
         }
@@ -66,7 +76,18 @@ internal sealed partial class KeyRotationService(
         return new KeyRotationResult(generated, retired, revoked, pruned);
     }
 
-    private async Task<int> EnsureActiveKeyAsync(
+    /// <summary>
+    /// Ensures an active key exists for <paramref name="keyType"/>, rotating it when it nears
+    /// expiry. Returns the number of keys generated and retired in this cycle.
+    /// </summary>
+    /// <remarks>
+    /// Rotation retires the current key <b>before</b> generating its replacement. The retire is
+    /// an optimistic-concurrency update on <see cref="SigningKey.ConcurrencyStamp"/>: when two
+    /// rotations race (cron + manual trigger, message redelivery, or per-replica scheduling), only
+    /// one wins the retire and proceeds to generate. The loser observes a lost race and aborts,
+    /// guaranteeing a single new active key per type instead of two.
+    /// </remarks>
+    private async Task<(int Generated, int Retired)> EnsureActiveKeyAsync(
         string keyType,
         GranitKeyRotationOptions options,
         DateTimeOffset now,
@@ -78,23 +99,30 @@ internal sealed partial class KeyRotationService(
         if (activeKey is null)
         {
             await GenerateKeyAsync(keyType, options, now, cancellationToken).ConfigureAwait(false);
-            return 1;
+            return (1, 0);
         }
 
         if (activeKey.ExpiresAt - now <= options.RotationLeadTime)
         {
             Log.KeyRotationStarted(logger, activeKey.KeyId, activeKey.ExpiresAt);
 
-            await GenerateKeyAsync(keyType, options, now, cancellationToken).ConfigureAwait(false);
-
+            // Retire first: this is the concurrency gate. If a competing rotation already
+            // retired this key, our update loses the race and we MUST NOT generate a duplicate.
             activeKey.Retire(now);
-            await keyStore.UpdateAsync(activeKey, cancellationToken).ConfigureAwait(false);
+            if (!await keyStore.UpdateAsync(activeKey, cancellationToken).ConfigureAwait(false))
+            {
+                Log.ConcurrentRotationSkipped(logger, activeKey.KeyId);
+                return (0, 0);
+            }
+
             Log.KeyRetired(logger, activeKey.KeyId);
 
-            return 1;
+            await GenerateKeyAsync(keyType, options, now, cancellationToken).ConfigureAwait(false);
+
+            return (1, 1);
         }
 
-        return 0;
+        return (0, 0);
     }
 
     private async Task GenerateKeyAsync(
@@ -147,6 +175,9 @@ internal sealed partial class KeyRotationService(
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Key {KeyId} retired (grace period started).")]
         public static partial void KeyRetired(ILogger logger, string keyId);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Key rotation for {KeyId} skipped — a concurrent rotation already retired it.")]
+        public static partial void ConcurrentRotationSkipped(ILogger logger, string keyId);
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Key {KeyId} revoked (grace period expired).")]
         public static partial void KeyRevoked(ILogger logger, string keyId);

@@ -1,6 +1,9 @@
 using Granit.Caching;
+using Granit.DataExchange;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.Encryption;
+using Granit.Entities;
 using Granit.Entities.Extensions;
 using Granit.Http.Cookies;
 using Granit.Identity;
@@ -34,6 +37,9 @@ namespace Granit.OpenIddict;
 /// </summary>
 [DependsOn(
     typeof(GranitCachingModule),
+    typeof(GranitDataExchangeAbstractionsModule),
+    typeof(GranitEncryptionModule),
+    typeof(GranitEntitiesAbstractionsModule),
     typeof(GranitHttpCookiesModule),
     typeof(GranitIdentityLocalAspNetIdentityModule),
     typeof(GranitIdentityLocalModule),
