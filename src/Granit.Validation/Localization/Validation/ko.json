@@ -1,7 +1,7 @@
 {
-  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "ko",
   "texts": {
+    "Validation:ProblemTitle": "유효성 검사에 실패했습니다.",
     "Validation:AsyncPredicateValidator": "'{PropertyName}'에 대해 지정된 조건이 충족되지 않았습니다.",
     "Validation:CalendarRangeInverted": "캘린더 범위가 반전되었습니다. '종료'는 '시작'보다 크거나 같아야 합니다.",
     "Validation:CalendarRangeTooWide": "캘린더 범위가 너무 넓습니다. 요청된 창은 366일을 초과할 수 없습니다.",

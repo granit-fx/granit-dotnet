@@ -1,7 +1,7 @@
 {
-  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "it",
   "texts": {
+    "Validation:ProblemTitle": "Convalida non riuscita.",
     "Validation:AsyncPredicateValidator": "La condizione specificata per '{PropertyName}' non è stata soddisfatta.",
     "Validation:CalendarRangeInverted": "L'intervallo del calendario è invertito: 'A' deve essere maggiore o uguale a 'Da'.",
     "Validation:CalendarRangeTooWide": "L'intervallo del calendario è troppo ampio: la finestra richiesta non può superare i 366 giorni.",

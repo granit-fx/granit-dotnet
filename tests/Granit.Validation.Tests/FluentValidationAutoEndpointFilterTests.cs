@@ -19,6 +19,7 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Shouldly;
 using Xunit;
 
@@ -250,6 +251,50 @@ public sealed class FluentValidationAutoEndpointFilterTests
     }
 
     // -------------------------------------------------------------------------
+    // 422 title is non-stock (default fallback when no localizer registered)
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task InvokeAsync_InvalidRequest_TitleIsNotStockAspNetString()
+    {
+        TestRequest request = new("", -1);
+        FluentValidationAutoEndpointFilter filter = new();
+        EndpointFilterDelegate next = _ => ValueTask.FromResult<object?>(Results.Ok());
+
+        DefaultEndpointFilterInvocationContext context =
+            CreateContext(request, withValidator: true);
+
+        object? result = await filter.InvokeAsync(context, next);
+
+        ProblemHttpResult pr = result.ShouldBeOfType<ProblemHttpResult>();
+        HttpValidationProblemDetails vpd = pr.ProblemDetails.ShouldBeOfType<HttpValidationProblemDetails>();
+        vpd.Title.ShouldBe("Validation failed.");
+        vpd.Title.ShouldNotBe("One or more validation errors occurred.");
+    }
+
+    // -------------------------------------------------------------------------
+    // 422 title is localized when an IStringLocalizer<ValidationLocalizationResource>
+    // is resolvable from request services.
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task InvokeAsync_InvalidRequest_UsesLocalizedTitle()
+    {
+        TestRequest request = new("", -1);
+        FluentValidationAutoEndpointFilter filter = new();
+        EndpointFilterDelegate next = _ => ValueTask.FromResult<object?>(Results.Ok());
+
+        DefaultEndpointFilterInvocationContext context =
+            CreateContext(request, withValidator: true, withLocalizedTitle: "Custom title.");
+
+        object? result = await filter.InvokeAsync(context, next);
+
+        ProblemHttpResult pr = result.ShouldBeOfType<ProblemHttpResult>();
+        HttpValidationProblemDetails vpd = pr.ProblemDetails.ShouldBeOfType<HttpValidationProblemDetails>();
+        vpd.Title.ShouldBe("Custom title.");
+    }
+
+    // -------------------------------------------------------------------------
     // CancellationToken argument is skipped
     // -------------------------------------------------------------------------
 
@@ -278,13 +323,22 @@ public sealed class FluentValidationAutoEndpointFilterTests
     // -------------------------------------------------------------------------
 
     private static DefaultEndpointFilterInvocationContext CreateContext(
-        object argument, bool withValidator, bool skipAutoValidation = false)
+        object argument,
+        bool withValidator,
+        bool skipAutoValidation = false,
+        string? withLocalizedTitle = null)
     {
         ServiceCollection services = new();
 
         if (withValidator)
         {
             services.AddSingleton<IValidator<TestRequest>, TestRequestValidator>();
+        }
+
+        if (withLocalizedTitle is not null)
+        {
+            services.AddSingleton<IStringLocalizer<ValidationLocalizationResource>>(
+                new StubTitleLocalizer(withLocalizedTitle));
         }
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -315,5 +369,16 @@ public sealed class FluentValidationAutoEndpointFilterTests
             RuleFor(x => x.Name).NotEmpty();
             RuleFor(x => x.Age).GreaterThan(0);
         }
+    }
+
+    private sealed class StubTitleLocalizer(string title) : IStringLocalizer<ValidationLocalizationResource>
+    {
+        public LocalizedString this[string name] =>
+            new(name, title, resourceNotFound: false);
+
+        public LocalizedString this[string name, params object[] arguments] =>
+            new(name, title, resourceNotFound: false);
+
+        public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) => [];
     }
 }

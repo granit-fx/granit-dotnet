@@ -4,6 +4,7 @@ using Granit.Http.Idempotency.Attributes;
 using Granit.Http.Timing;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
@@ -71,7 +72,10 @@ internal static class AccountPasswordEndpoints
         if (username is null)
         {
             return TypedResults.Problem(
-                detail: "Unable to determine username from token claims.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Account:SessionInvalid",
+                    "Your session is invalid. Please sign in again."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -82,7 +86,10 @@ internal static class AccountPasswordEndpoints
         if (!isValid)
         {
             return TypedResults.Problem(
-                detail: "Current password is incorrect.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Account:CurrentPasswordIncorrect",
+                    "Current password is incorrect."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -150,7 +157,10 @@ internal static class AccountPasswordEndpoints
         catch (InvalidOperationException)
         {
             return TypedResults.Problem(
-                detail: "Invalid or expired reset token.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Account:InvalidResetToken",
+                    "Invalid or expired reset token."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
     }

@@ -1,5 +1,4 @@
 {
-  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "pt-BR",
   "texts": {
     "Validation:CodeInvalidFormat": "'{PropertyName}' só pode conter letras, dígitos, hifens, underscores ou pontos.",

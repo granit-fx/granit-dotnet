@@ -1,7 +1,7 @@
 {
-  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "sv",
   "texts": {
+    "Validation:ProblemTitle": "Valideringen misslyckades.",
     "Validation:AsyncPredicateValidator": "Det angivna villkoret uppfylldes inte för '{PropertyName}'.",
     "Validation:CalendarRangeInverted": "Kalenderintervallet är omvänt: 'Till' måste vara större än eller lika med 'Från'.",
     "Validation:CalendarRangeTooWide": "Kalenderintervallet är för brett: det begärda fönstret får inte överstiga 366 dagar.",

@@ -1,7 +1,7 @@
 {
-  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "tr",
   "texts": {
+    "Validation:ProblemTitle": "Doğrulama başarısız oldu.",
     "Validation:AsyncPredicateValidator": "'{PropertyName}' için belirtilen koşul karşılanmadı.",
     "Validation:CalendarRangeInverted": "Takvim aralığı ters: 'Bitiş', 'Başlangıç' değerine eşit veya ondan büyük olmalıdır.",
     "Validation:CalendarRangeTooWide": "Takvim aralığı çok geniş: istenen pencere 366 günü aşamaz.",

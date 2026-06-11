@@ -1,7 +1,7 @@
 {
-  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "nl",
   "texts": {
+    "Validation:ProblemTitle": "Validatie mislukt.",
     "Validation:AsyncPredicateValidator": "Aan de opgegeven voorwaarde voor '{PropertyName}' is niet voldaan.",
     "Validation:CalendarRangeInverted": "Het kalenderbereik is omgekeerd: 'Tot' moet groter dan of gelijk aan 'Van' zijn.",
     "Validation:CalendarRangeTooWide": "Het kalenderbereik is te breed: het aangevraagde venster mag niet groter zijn dan 366 dagen.",

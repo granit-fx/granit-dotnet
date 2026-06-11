@@ -12,6 +12,7 @@ using Granit.Validation.OpenApi;
 using Granit.Validation.ServerValidation;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 
 namespace Granit.Validation;
 
@@ -20,10 +21,11 @@ namespace Granit.Validation;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Registers <c>AddGranitValidation()</c>, which configures FluentValidation to
-/// emit structured error codes (<c>Validation:*</c>) instead of
-/// human-readable messages. The SPA resolves codes from its local localization
-/// dictionary served by <c>GET /api/{version}/localization</c>.
+/// Registers <c>AddGranitValidation()</c> and, at initialization, wires the
+/// <c>Validation</c> localizer into the global FluentValidation language manager so
+/// validator error codes (<c>Validation:*</c>) resolve to fully localized, interpolated
+/// messages in the request culture. Error codes remain available on
+/// <c>ValidationFailure.ErrorCode</c> for programmatic handling.
 /// </para>
 /// <para>
 /// Auto-discovers all <see cref="IValidator{T}"/> implementations from loaded
@@ -82,5 +84,30 @@ public sealed class GranitValidationModule : GranitModule
         // required, etc.) across ALL registered documents without creating a spurious "v1" document.
         context.Services.ConfigureAll<OpenApiOptions>(options =>
             options.AddSchemaTransformer<FluentValidationSchemaTransformer>());
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Wires the <c>Validation</c> localizer into the global
+    /// <see cref="GranitErrorCodeLanguageManager"/> so built-in validator error codes
+    /// resolve to localized, interpolated messages. Deferred to initialization because the
+    /// <see cref="IStringLocalizerFactory"/> is only resolvable after the container is built.
+    /// </remarks>
+    public override void OnApplicationInitialization(ApplicationInitializationContext context)
+    {
+        IStringLocalizerFactory factory =
+            context.ServiceProvider.GetRequiredService<IStringLocalizerFactory>();
+
+        IStringLocalizer localizer = factory.Create(typeof(ValidationLocalizationResource));
+
+        if (ValidatorOptions.Global.LanguageManager is GranitErrorCodeLanguageManager manager)
+        {
+            manager.Localizer = localizer;
+        }
+        else
+        {
+            ValidatorOptions.Global.LanguageManager =
+                new GranitErrorCodeLanguageManager { Localizer = localizer };
+        }
     }
 }

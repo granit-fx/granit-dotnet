@@ -1,5 +1,4 @@
 {
-  "Validation:InvalidMergeChoice": "Chaque choix de fusion doit être 'Survivor' ou 'Loser'.",
   "culture": "fr-CA",
   "texts": {
     "Validation:CreditCardValidator": "'{PropertyName}' n'est pas un numéro de carte de crédit valide.",

@@ -14,16 +14,26 @@ public static class ValidationServiceCollectionExtensions
     /// to emit structured error codes instead of human-readable messages.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Sets <c>ValidatorOptions.Global.LanguageManager</c> to
-    /// <c>GranitErrorCodeLanguageManager</c> so that all built-in FluentValidation
-    /// rules return codes following the <c>Validation:{ValidatorName}</c>
-    /// convention. The SPA resolves these codes from its local localization dictionary.
+    /// <c>GranitErrorCodeLanguageManager</c>, which resolves built-in validator error
+    /// codes to localized, interpolated messages once the localizer is wired at
+    /// application initialization. Until then it degrades to the bare
+    /// <c>Validation:{ValidatorName}</c> code.
+    /// </para>
+    /// <para>
+    /// Sets <c>ValidatorOptions.Global.DisplayNameResolver</c> to humanize PascalCase
+    /// member names (<c>NewPassword</c> → <c>New password</c>) so the <c>{PropertyName}</c>
+    /// placeholder reads naturally in every validation message.
+    /// </para>
     /// </remarks>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitValidation(this IServiceCollection services)
     {
         ValidatorOptions.Global.LanguageManager = new GranitErrorCodeLanguageManager();
+        ValidatorOptions.Global.DisplayNameResolver = static (_, member, _) =>
+            member is null ? null : PropertyNameHumanizer.Humanize(member.Name);
         return services;
     }
 
