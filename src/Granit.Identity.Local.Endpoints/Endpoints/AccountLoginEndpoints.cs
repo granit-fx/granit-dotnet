@@ -9,6 +9,7 @@ using Granit.Http.Timing;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
@@ -153,7 +154,8 @@ internal static partial class AccountLoginEndpoints
                 failureReason: "invalid_credentials", cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Problem(
-                detail: "Invalid credentials.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Account:InvalidCredentials", "Invalid credentials."),
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
@@ -210,7 +212,8 @@ internal static partial class AccountLoginEndpoints
             // Return 401 (same as invalid credentials) to prevent account enumeration.
             // The user is notified of the lockout exclusively via email.
             return TypedResults.Problem(
-                detail: "Invalid credentials.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Account:InvalidCredentials", "Invalid credentials."),
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
@@ -223,7 +226,8 @@ internal static partial class AccountLoginEndpoints
                 failureReason: "email_not_confirmed", cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Problem(
-                detail: "Sign-in is not allowed. Verify your email address.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Account:SignInNotAllowed", "Sign-in is not allowed. Verify your email address."),
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
@@ -235,7 +239,8 @@ internal static partial class AccountLoginEndpoints
             failureReason: "invalid_credentials", cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Problem(
-            detail: "Invalid credentials.",
+            detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Account:InvalidCredentials", "Invalid credentials."),
             statusCode: StatusCodes.Status401Unauthorized);
     }
 #pragma warning restore GRSEC003
@@ -373,7 +378,8 @@ internal static partial class AccountLoginEndpoints
             // Return 401 (same as invalid code) to prevent account enumeration.
             // The user is notified of the lockout exclusively via email.
             return TypedResults.Problem(
-                detail: "Invalid verification code.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:TwoFactor:InvalidCode", "Invalid verification code."),
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
@@ -389,7 +395,8 @@ internal static partial class AccountLoginEndpoints
             cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Problem(
-            detail: "Invalid verification code.",
+            detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:TwoFactor:InvalidCode", "Invalid verification code."),
             statusCode: StatusCodes.Status401Unauthorized);
     }
 
@@ -410,7 +417,8 @@ internal static partial class AccountLoginEndpoints
         if (user is null)
         {
             return TypedResults.Problem(
-                detail: "No active two-factor session.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:TwoFactor:NoActiveSession", "No active two-factor session."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 

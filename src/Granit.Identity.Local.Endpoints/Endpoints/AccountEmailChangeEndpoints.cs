@@ -1,6 +1,7 @@
 using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -73,7 +74,8 @@ internal static class AccountEmailChangeEndpoints
         if (!isValid)
         {
             return TypedResults.Problem(
-                detail: "Current password is incorrect.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Account:CurrentPasswordIncorrect", "Current password is incorrect."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -89,6 +91,7 @@ internal static class AccountEmailChangeEndpoints
 
     private static async Task<Results<NoContent, ProblemHttpResult>> ConfirmEmailChangeAsync(
         AccountConfirmEmailChangeRequest request,
+        HttpContext httpContext,
         [FromServices] IEmailChangeService emailChangeService,
         CancellationToken cancellationToken)
     {
@@ -99,7 +102,8 @@ internal static class AccountEmailChangeEndpoints
         if (!confirmed)
         {
             return TypedResults.Problem(
-                detail: "Invalid or expired email change token.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Account:InvalidEmailChangeToken", "Invalid or expired email change token."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 

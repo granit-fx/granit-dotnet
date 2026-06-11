@@ -86,7 +86,8 @@ internal static class AccountSessionEndpoints
         if (!httpContext.User.IsImpersonated())
         {
             return TypedResults.Problem(
-                detail: "Current session is not an impersonation session.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Impersonation:NotImpersonating", "Current session is not an impersonation session."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 

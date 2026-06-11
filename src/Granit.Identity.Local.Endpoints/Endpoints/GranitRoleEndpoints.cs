@@ -4,6 +4,7 @@ using Granit.Entities;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Endpoints.Options;
 using Granit.Identity.Local.Endpoints.Permissions;
 using Granit.Identity.Local.Services;
@@ -101,6 +102,7 @@ internal static class GranitRoleEndpoints
 
     private static async Task<Results<Ok<RoleResponse>, ProblemHttpResult>> GetByIdAsync(
         Guid id,
+        HttpContext httpContext,
         [FromServices] IRoleMetadataStore store,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
@@ -108,7 +110,10 @@ internal static class GranitRoleEndpoints
         RoleMetadata? role = await store.FindByIdAsync(id, cancellationToken).ConfigureAwait(false);
         if (role is null || !IsVisible(role, currentTenant))
         {
-            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Role {id:D} not found.");
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Role:NotFound", "Role not found."));
         }
 
         return TypedResults.Ok(Map(role));
@@ -128,8 +133,9 @@ internal static class GranitRoleEndpoints
         {
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status403Forbidden,
-                detail: "Tenant-scoped role creation is disabled. " +
-                        "Set RoleEndpointsOptions.AllowTenantRoles = true to enable it.");
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Role:TenantRolesDisabled",
+                    "Tenant-scoped role creation is disabled."));
         }
 
         // Tenant admins may only create roles in their own tenant.
@@ -138,7 +144,9 @@ internal static class GranitRoleEndpoints
         {
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status403Forbidden,
-                detail: "Tenant admins can only create roles within their own tenant.");
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Role:CrossTenantForbidden",
+                    "Tenant admins can only create roles within their own tenant."));
         }
 
         // Tenant admins cannot create Host or Both roles (platform-level scope).
@@ -146,7 +154,9 @@ internal static class GranitRoleEndpoints
         {
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status403Forbidden,
-                detail: "Host and Both roles are managed from the host admin context.");
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Role:HostManagedElsewhere",
+                    "Host and Both roles are managed from the host admin context."));
         }
 
         RoleMetadata created;
@@ -178,6 +188,7 @@ internal static class GranitRoleEndpoints
     private static async Task<Results<Ok<RoleResponse>, ProblemHttpResult>> RenameAsync(
         Guid id,
         [FromBody] RoleUpdateRequest request,
+        HttpContext httpContext,
         [FromServices] IGranitRoleOrchestrator orchestrator,
         [FromServices] IRoleMetadataStore store,
         [FromServices] ICurrentTenant currentTenant,
@@ -186,14 +197,19 @@ internal static class GranitRoleEndpoints
         RoleMetadata? role = await store.FindByIdAsync(id, cancellationToken).ConfigureAwait(false);
         if (role is null || !IsVisible(role, currentTenant))
         {
-            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Role {id:D} not found.");
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Role:NotFound", "Role not found."));
         }
 
         if (!CanMutate(role, currentTenant))
         {
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status403Forbidden,
-                detail: "You do not have permission to modify this role.");
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Role:ModifyForbidden",
+                    "You do not have permission to modify this role."));
         }
 
         try
@@ -215,6 +231,7 @@ internal static class GranitRoleEndpoints
 
     private static async Task<Results<NoContent, ProblemHttpResult>> DeleteAsync(
         Guid id,
+        HttpContext httpContext,
         [FromServices] IGranitRoleOrchestrator orchestrator,
         [FromServices] IRoleMetadataStore store,
         [FromServices] ICurrentTenant currentTenant,
@@ -223,14 +240,19 @@ internal static class GranitRoleEndpoints
         RoleMetadata? role = await store.FindByIdAsync(id, cancellationToken).ConfigureAwait(false);
         if (role is null || !IsVisible(role, currentTenant))
         {
-            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Role {id:D} not found.");
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Role:NotFound", "Role not found."));
         }
 
         if (!CanMutate(role, currentTenant))
         {
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status403Forbidden,
-                detail: "You do not have permission to delete this role.");
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Role:DeleteForbidden",
+                    "You do not have permission to delete this role."));
         }
 
         try
