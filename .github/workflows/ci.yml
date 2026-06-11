@@ -526,13 +526,24 @@ jobs:
           dotnet nuget add source \
             "https://gitlab.digitaldynamics.be/api/v4/projects/11/packages/nuget/index.json" \
             --name gitlab_granit_business
-          # GitLab's NuGet endpoint is sometimes slow on large packages — bump from
-          # the 300s default to 900s so transient PUT stalls don't fail the publish.
-          dotnet nuget push "nupkgs/*.nupkg" \
+          # GitLab's NuGet endpoint is sometimes slow on large packages — bump the
+          # PUT timeout from the 300s default to 900s. The service-index GET, though,
+          # uses HttpClient's fixed 100s timeout (not governed by --timeout), so retry
+          # the whole push a few times before failing the publish on a transient stall.
+          n=0
+          until dotnet nuget push "nupkgs/*.nupkg" \
             --source gitlab_granit_business \
             --api-key "$GITLAB_NUGET_TOKEN" \
             --skip-duplicate \
-            --timeout 900
+            --timeout 900; do
+            n=$((n + 1))
+            if [ "$n" -ge 3 ]; then
+              echo "::error::GitLab push failed after $n attempts"
+              exit 1
+            fi
+            echo "::warning::GitLab push attempt $n failed (slow service index?); retrying in 30s…"
+            sleep 30
+          done
 
   # nuget.org — release packages on version tags
   publish-nuget:
