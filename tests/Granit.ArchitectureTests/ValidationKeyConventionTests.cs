@@ -40,30 +40,6 @@ public sealed partial class ValidationKeyConventionTests
     /// </summary>
     private static readonly HashSet<string> PendingMigration = new(StringComparer.Ordinal)
     {
-        // → Validation:Builtin:* (drop the redundant "Validator" suffix); remapped in GranitErrorCodeLanguageManager.
-        "Validation:AsyncPredicateValidator",
-        "Validation:CreditCardValidator",
-        "Validation:EmailValidator",
-        "Validation:EmptyValidator",
-        "Validation:EqualValidator",
-        "Validation:ExactLengthValidator",
-        "Validation:ExclusiveBetweenValidator",
-        "Validation:GreaterThanOrEqualValidator",
-        "Validation:GreaterThanValidator",
-        "Validation:InclusiveBetweenValidator",
-        "Validation:LengthValidator",
-        "Validation:LessThanOrEqualValidator",
-        "Validation:LessThanValidator",
-        "Validation:MaximumLengthValidator",
-        "Validation:MinimumLengthValidator",
-        "Validation:NotEmptyValidator",
-        "Validation:NotEqualValidator",
-        "Validation:NotNullValidator",
-        "Validation:NullValidator",
-        "Validation:PredicateValidator",
-        "Validation:RegularExpressionValidator",
-        "Validation:ScalePrecisionValidator",
-
         // → Validation:Format:* (the "Format" category already implies "invalid format").
         "Validation:InvalidAbsoluteUri",
         "Validation:InvalidBase64String",

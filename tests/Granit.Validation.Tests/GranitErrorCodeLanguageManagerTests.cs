@@ -25,9 +25,9 @@ public sealed class GranitErrorCodeLanguageManagerTests
     // -------------------------------------------------------------------------
 
     [Theory]
-    [InlineData("NotEmptyValidator", "Validation:NotEmptyValidator")]
-    [InlineData("MaximumLengthValidator", "Validation:MaximumLengthValidator")]
-    [InlineData("EmailValidator", "Validation:EmailValidator")]
+    [InlineData("NotEmptyValidator", "Validation:Builtin:NotEmpty")]
+    [InlineData("MaximumLengthValidator", "Validation:Builtin:MaximumLength")]
+    [InlineData("EmailValidator", "Validation:Builtin:Email")]
     [InlineData("CustomKey", "Validation:CustomKey")]
     public void GetString_ReturnsGranitValidationCode(string key, string expected)
     {
@@ -96,6 +96,6 @@ public sealed class GranitErrorCodeLanguageManagerTests
 
         ValidationResult result = validator.Validate(string.Empty);
 
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:NotEmptyValidator");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Builtin:NotEmpty");
     }
 }

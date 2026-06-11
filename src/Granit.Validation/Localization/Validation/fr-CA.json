@@ -1,8 +1,8 @@
 {
   "culture": "fr-CA",
   "texts": {
-    "Validation:CreditCardValidator": "'{PropertyName}' n'est pas un numéro de carte de crédit valide.",
-    "Validation:EmailValidator": "'{PropertyName}' n'est pas une adresse courriel valide.",
+    "Validation:Builtin:CreditCard": "'{PropertyName}' n'est pas un numéro de carte de crédit valide.",
+    "Validation:Builtin:Email": "'{PropertyName}' n'est pas une adresse courriel valide.",
     "Validation:EntityViewShareEmptyAudience": "L'audience doit comporter au moins un rôle ou un utilisateur.",
     "Validation:InvalidEmail": "'{PropertyName}' n'est pas une adresse courriel valide.",
     "Validation:PaymentAmountOutOfRange": "Le montant du paiement est hors de la plage autorisée.",

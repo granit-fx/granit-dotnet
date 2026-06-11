@@ -36,6 +36,8 @@ namespace Granit.Validation.Internal;
 internal sealed class GranitErrorCodeLanguageManager : ILanguageManager
 {
     private const string KeyPrefix = "Validation:";
+    private const string BuiltinPrefix = "Validation:Builtin:";
+    private const string ValidatorSuffix = "Validator";
 
     /// <summary>
     /// Localizer for the <c>Validation</c> resource. <c>null</c> until wired at
@@ -55,8 +57,16 @@ internal sealed class GranitErrorCodeLanguageManager : ILanguageManager
     public CultureInfo Culture { get; set; } = CultureInfo.InvariantCulture;
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// FluentValidation passes the bare validator name (e.g. <c>NotEmptyValidator</c>) as the
+    /// key. Built-in validators (suffix <c>Validator</c>) map to <c>Validation:Builtin:{Rule}</c>
+    /// per ADR-066 (the wire <c>ErrorCode</c> is unaffected — FluentValidation owns it).
+    /// </remarks>
     public string GetString(string key, CultureInfo? culture = null) =>
-        ResolveTemplate(KeyPrefix + key);
+        ResolveTemplate(
+            key.EndsWith(ValidatorSuffix, StringComparison.Ordinal)
+                ? BuiltinPrefix + key[..^ValidatorSuffix.Length]
+                : KeyPrefix + key);
 
     /// <summary>
     /// Resolves a fully-prefixed <c>Validation:*</c> key to its localized template

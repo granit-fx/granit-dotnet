@@ -74,7 +74,7 @@ public sealed class ValidationMessageLocalizationTests : IDisposable
         GranitErrorCodeLanguageManager manager = new() { Localizer = CreateValidationLocalizer() };
         CultureInfo.CurrentUICulture = new CultureInfo("en");
 
-        manager.GetString("NoSuchValidator").ShouldBe("Validation:NoSuchValidator");
+        manager.GetString("NoSuchValidator").ShouldBe("Validation:Builtin:NoSuch");
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public sealed class ValidationMessageLocalizationTests : IDisposable
     {
         GranitErrorCodeLanguageManager manager = new();
 
-        manager.GetString("MinimumLengthValidator").ShouldBe("Validation:MinimumLengthValidator");
+        manager.GetString("MinimumLengthValidator").ShouldBe("Validation:Builtin:MinimumLength");
     }
 
     // -------------------------------------------------------------------------
