@@ -3,6 +3,9 @@ using Granit.Indexing.AI.Diagnostics;
 using Granit.Indexing.AI.Internal;
 using Granit.Indexing.AI.Options;
 using Granit.Indexing.AI.Prompts;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Indexing.AI.Extensions;
 

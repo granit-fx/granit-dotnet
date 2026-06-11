@@ -1,7 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
+using Granit.Diagnostics;
 using Granit.Timeline.AI.Diagnostics;
 using Granit.Timeline.AI.Internal;
 using Granit.Timeline.AI.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace Granit.Timeline.AI.Extensions;
 

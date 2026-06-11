@@ -1,6 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.Workflow.AI.Internal;
 using Granit.Workflow.AI.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace Granit.Workflow.AI.Extensions;
 

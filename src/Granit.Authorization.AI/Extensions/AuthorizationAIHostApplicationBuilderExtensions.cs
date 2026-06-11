@@ -1,6 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.Authorization.AI.Internal;
 using Granit.Authorization.AI.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Authorization.AI.Extensions;
 
