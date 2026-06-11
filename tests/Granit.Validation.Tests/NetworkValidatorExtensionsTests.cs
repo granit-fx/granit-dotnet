@@ -57,8 +57,8 @@ public sealed class NetworkValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(url));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidUrl");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUrl");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:Url");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:Url");
     }
 
     // =========================================================================
@@ -97,8 +97,8 @@ public sealed class NetworkValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(ip));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidIpv4Address");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidIpv4Address");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:Ipv4Address");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:Ipv4Address");
     }
 
     // =========================================================================
@@ -135,8 +135,8 @@ public sealed class NetworkValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(ip));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidIpv6Address");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidIpv6Address");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:Ipv6Address");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:Ipv6Address");
     }
 
     // =========================================================================
@@ -175,8 +175,8 @@ public sealed class NetworkValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(mac));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidMacAddress");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidMacAddress");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:MacAddress");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:MacAddress");
     }
 
     // -------------------------------------------------------------------------

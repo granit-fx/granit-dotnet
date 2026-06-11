@@ -3,7 +3,7 @@
   "texts": {
     "Validation:CodeInvalidFormat": "'{PropertyName}' só pode conter letras, dígitos, hifens, underscores ou pontos.",
     "Validation:EntityViewShareEmptyAudience": "O público deve incluir pelo menos uma função ou usuário.",
-    "Validation:PaymentAmountOutOfRange": "O valor do pagamento está fora do intervalo permitido.",
-    "Validation:UrlMustBeHttps": "A URL deve usar HTTPS."
+    "Validation:Format:UrlHttps": "A URL deve usar HTTPS.",
+    "Validation:PaymentAmountOutOfRange": "O valor do pagamento está fora do intervalo permitido."
   }
 }

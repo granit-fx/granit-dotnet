@@ -23,7 +23,7 @@ public static class PaymentValidatorExtensions
     public static IRuleBuilderOptions<T, string?> Iban<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(IbanAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidIban");
+            .WithErrorCodeAndMessage("Validation:Format:Iban");
 
     /// <summary>
     /// Validates a BIC/SWIFT code per ISO 9362.
@@ -36,7 +36,7 @@ public static class PaymentValidatorExtensions
     public static IRuleBuilderOptions<T, string?> BicSwift<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(BicSwiftAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidBicSwift");
+            .WithErrorCodeAndMessage("Validation:Format:BicSwift");
 
     /// <summary>
     /// Validates a SEPA Creditor Identifier (SCI) per EPC262-08.
@@ -48,5 +48,5 @@ public static class PaymentValidatorExtensions
     public static IRuleBuilderOptions<T, string?> SepaCreditorIdentifier<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(SepaCreditorIdentifierAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidSepaCreditorIdentifier");
+            .WithErrorCodeAndMessage("Validation:Format:SepaCreditorIdentifier");
 }

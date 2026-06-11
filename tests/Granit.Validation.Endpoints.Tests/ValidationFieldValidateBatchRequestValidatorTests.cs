@@ -15,8 +15,8 @@ public sealed class ValidationFieldValidateBatchRequestValidatorTests
     {
         var request = new ValidationFieldValidateBatchRequest(
         [
-            new("Validation:InvalidIban", "BE68539007547034"),
-            new("Validation:InvalidEmail", "test@example.com"),
+            new("Validation:Format:Iban", "BE68539007547034"),
+            new("Validation:Format:Email", "test@example.com"),
         ]);
 
         ValidationResult result = _sut.Validate(request);

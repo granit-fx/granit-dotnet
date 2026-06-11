@@ -1,4 +1,5 @@
 using Granit.Imaging.AI.Options;
+using Shouldly;
 
 namespace Granit.Imaging.AI.Tests;
 

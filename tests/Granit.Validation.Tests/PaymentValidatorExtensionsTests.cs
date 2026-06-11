@@ -50,8 +50,8 @@ public sealed class PaymentValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(bic));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidBicSwift");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidBicSwift");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:BicSwift");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:BicSwift");
     }
 
     // =========================================================================
@@ -90,8 +90,8 @@ public sealed class PaymentValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(sci));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidSepaCreditorIdentifier");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidSepaCreditorIdentifier");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:SepaCreditorIdentifier");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:SepaCreditorIdentifier");
     }
 
     // -------------------------------------------------------------------------

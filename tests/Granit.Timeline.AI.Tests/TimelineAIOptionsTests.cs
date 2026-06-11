@@ -1,4 +1,6 @@
 using Granit.Timeline.AI.Options;
+using Shouldly;
+using Xunit;
 
 namespace Granit.Timeline.AI.Tests;
 

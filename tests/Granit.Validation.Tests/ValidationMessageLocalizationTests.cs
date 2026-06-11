@@ -120,7 +120,7 @@ public sealed class ValidationMessageLocalizationTests : IDisposable
         GranitErrorCodeLanguageManager manager = new() { Localizer = CreateValidationLocalizer() };
         CultureInfo.CurrentUICulture = new CultureInfo("en");
 
-        manager.ResolveTemplate("Validation:UrlMustBeHttps")
+        manager.ResolveTemplate("Validation:Format:UrlHttps")
             .ShouldBe("The URL must use HTTPS.");
     }
 

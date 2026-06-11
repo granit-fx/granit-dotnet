@@ -48,8 +48,8 @@ public sealed class ContactValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(email));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidEmail");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidEmail");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:Email");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:Email");
     }
 
     // -------------------------------------------------------------------------

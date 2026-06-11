@@ -28605,7 +28605,7 @@
       "kind": "class",
       "project": "Granit.Indexing.AI",
       "file": "src/Granit.Indexing.AI/Extensions/ServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitIndexingAISummarizer",
@@ -29848,7 +29848,7 @@
       "kind": "class",
       "project": "Granit.LanguageDetection.AI",
       "file": "src/Granit.LanguageDetection.AI/Extensions/ServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitLanguageDetectionAI",

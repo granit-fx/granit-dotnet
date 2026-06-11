@@ -31,7 +31,7 @@ public static partial class LocaleValidatorExtensions
         ruleBuilder
             .Must(value => value != null
                 && Iso3166Alpha2Regex().IsMatch(value.Trim().ToUpperInvariant()))
-            .WithErrorCodeAndMessage("Validation:InvalidIso3166Alpha2");
+            .WithErrorCodeAndMessage("Validation:Format:Iso3166Alpha2");
 
     /// <summary>
     /// Validates a BCP 47 language tag (e.g. <c>fr</c>, <c>fr-BE</c>, <c>zh-Hans-CN</c>).
@@ -45,7 +45,7 @@ public static partial class LocaleValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && Bcp47Regex().IsMatch(value.Trim()))
-            .WithErrorCodeAndMessage("Validation:InvalidBcp47LanguageTag");
+            .WithErrorCodeAndMessage("Validation:Format:Bcp47LanguageTag");
 
     // -------------------------------------------------------------------------
     // Server-side single-field validation delegates

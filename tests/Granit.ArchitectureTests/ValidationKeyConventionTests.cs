@@ -40,39 +40,6 @@ public sealed partial class ValidationKeyConventionTests
     /// </summary>
     private static readonly HashSet<string> PendingMigration = new(StringComparer.Ordinal)
     {
-        // → Validation:Format:* (the "Format" category already implies "invalid format").
-        "Validation:InvalidAbsoluteUri",
-        "Validation:InvalidBase64String",
-        "Validation:InvalidBcp47LanguageTag",
-        "Validation:InvalidBicSwift",
-        "Validation:InvalidColorHex",
-        "Validation:InvalidCreditCard",
-        "Validation:InvalidE164Phone",
-        "Validation:InvalidEmail",
-        "Validation:InvalidGeoLatitude",
-        "Validation:InvalidGeoLongitude",
-        "Validation:InvalidIban",
-        "Validation:InvalidIpv4Address",
-        "Validation:InvalidIpv6Address",
-        "Validation:InvalidIso3166Alpha2",
-        "Validation:InvalidIso4217CurrencyCode",
-        "Validation:InvalidIso8601Duration",
-        "Validation:InvalidLei",
-        "Validation:InvalidMacAddress",
-        "Validation:InvalidSepaCreditorIdentifier",
-        "Validation:InvalidSlug",
-        "Validation:InvalidUrl",
-        "Validation:InvalidUuid",
-        "Validation:UrlMustBeHttps",
-
-        // → Validation:Hint:* (singular).
-        "Validation:Hints:Alpha2Code",
-        "Validation:Hints:Alpha3Code",
-        "Validation:Hints:NumericCode",
-
-        // → Validation:Problem:Title (the 422 problem-details title).
-        "Validation:ProblemTitle",
-
         // → relocate to the owning module's resource as {Module}:Validation:{Rule} (Phase 2).
         // These have no framework consumer; they were left behind when the owning modules
         // (Analytics, Metering, Payments, Invoicing, Entities, QueryEngine, …) moved to granit-business.

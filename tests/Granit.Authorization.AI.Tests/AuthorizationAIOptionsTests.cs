@@ -1,4 +1,5 @@
 using Granit.Authorization.AI.Options;
+using Shouldly;
 
 namespace Granit.Authorization.AI.Tests;
 

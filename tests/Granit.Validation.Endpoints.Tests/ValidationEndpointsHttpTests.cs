@@ -48,12 +48,12 @@ public sealed class ValidationEndpointsHttpTests
     public async Task PostValidate_ValidValue_Returns200WithValidStatus()
     {
         await using GranitEndpointTestHost host = await StartAsync(
-            new DelegatingServerValidator("Validation:InvalidIban", v => v == "BE68539007547034"));
+            new DelegatingServerValidator("Validation:Format:Iban", v => v == "BE68539007547034"));
         using HttpClient client = host.CreateAnonymousClient();
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             $"{Prefix}/validate",
-            new ValidationFieldValidateRequest("Validation:InvalidIban", "BE68539007547034"),
+            new ValidationFieldValidateRequest("Validation:Format:Iban", "BE68539007547034"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -61,19 +61,19 @@ public sealed class ValidationEndpointsHttpTests
             .ReadFromJsonAsync<ValidationFieldValidateResponse>(TestContext.Current.CancellationToken);
         body.ShouldNotBeNull();
         body.Status.ShouldBe(ValidationFieldStatus.Valid);
-        body.ErrorCode.ShouldBe("Validation:InvalidIban");
+        body.ErrorCode.ShouldBe("Validation:Format:Iban");
     }
 
     [Fact]
     public async Task PostValidate_InvalidValue_Returns200WithInvalidStatus()
     {
         await using GranitEndpointTestHost host = await StartAsync(
-            new DelegatingServerValidator("Validation:InvalidIban", _ => false));
+            new DelegatingServerValidator("Validation:Format:Iban", _ => false));
         using HttpClient client = host.CreateAnonymousClient();
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             $"{Prefix}/validate",
-            new ValidationFieldValidateRequest("Validation:InvalidIban", "bad"),
+            new ValidationFieldValidateRequest("Validation:Format:Iban", "bad"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -149,14 +149,14 @@ public sealed class ValidationEndpointsHttpTests
     public async Task PostValidateBatch_MixedResults_Returns200WithEachStatus()
     {
         await using GranitEndpointTestHost host = await StartAsync(
-            new DelegatingServerValidator("Validation:InvalidIban", v => v == "BE68539007547034"),
-            new DelegatingServerValidator("Validation:InvalidEmail", _ => false));
+            new DelegatingServerValidator("Validation:Format:Iban", v => v == "BE68539007547034"),
+            new DelegatingServerValidator("Validation:Format:Email", _ => false));
         using HttpClient client = host.CreateAnonymousClient();
 
         ValidationFieldValidateBatchRequest request = new(
         [
-            new("Validation:InvalidIban", "BE68539007547034"),
-            new("Validation:InvalidEmail", "bad"),
+            new("Validation:Format:Iban", "BE68539007547034"),
+            new("Validation:Format:Email", "bad"),
             new("Validation:Unknown", "x"),
         ]);
 
@@ -213,8 +213,8 @@ public sealed class ValidationEndpointsHttpTests
     public async Task GetValidators_Anonymous_Returns200WithSortedCodes_HidesSensitive()
     {
         await using GranitEndpointTestHost host = await StartAsync(
-            new DelegatingServerValidator("Validation:InvalidEmail", _ => true),
-            new DelegatingServerValidator("Validation:InvalidBicSwift", _ => true),
+            new DelegatingServerValidator("Validation:Format:Email", _ => true),
+            new DelegatingServerValidator("Validation:Format:BicSwift", _ => true),
             new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
         using HttpClient client = host.CreateAnonymousClient();
 
@@ -225,14 +225,14 @@ public sealed class ValidationEndpointsHttpTests
         List<string>? codes = await response.Content
             .ReadFromJsonAsync<List<string>>(TestContext.Current.CancellationToken);
         codes.ShouldNotBeNull();
-        codes.ShouldBe(["Validation:InvalidBicSwift", "Validation:InvalidEmail"]);
+        codes.ShouldBe(["Validation:Format:BicSwift", "Validation:Format:Email"]);
     }
 
     [Fact]
     public async Task GetValidators_Authenticated_IncludesSensitive()
     {
         await using GranitEndpointTestHost host = await StartAsync(
-            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Validation:Format:Iban", _ => true),
             new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
         using HttpClient client = host.CreateAuthenticatedClient();
 

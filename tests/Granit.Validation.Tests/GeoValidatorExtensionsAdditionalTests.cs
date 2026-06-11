@@ -40,7 +40,7 @@ public sealed class GeoValidatorExtensionsAdditionalTests
         ValidationResult result = validator.Validate(new NullableGeoModel(lat, null));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidGeoLatitude");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:GeoLatitude");
     }
 
     // =========================================================================
@@ -75,7 +75,7 @@ public sealed class GeoValidatorExtensionsAdditionalTests
         ValidationResult result = validator.Validate(new NullableGeoModel(null, lng));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidGeoLongitude");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:GeoLongitude");
     }
 
     // =========================================================================
@@ -110,7 +110,7 @@ public sealed class GeoValidatorExtensionsAdditionalTests
         ValidationResult result = validator.Validate(new GeoDecimalModel(0, lng));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidGeoLongitude");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:GeoLongitude");
     }
 
     // -------------------------------------------------------------------------

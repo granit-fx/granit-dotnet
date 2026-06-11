@@ -21,7 +21,7 @@ namespace Granit.Validation.AspNetCore;
 /// When validation fails, returns <c>422 Unprocessable Entity</c> with a
 /// <c>HttpValidationProblemDetails</c> body whose <c>errors</c> values are fully
 /// localized, interpolated messages in the request culture and whose <c>title</c>
-/// is the localized <c>Validation:ProblemTitle</c> (not the ASP.NET stock string).
+/// is the localized <c>Validation:Problem:Title</c> (not the ASP.NET stock string).
 /// </para>
 /// <para>
 /// Arguments of primitive types, strings, enums, <see cref="CancellationToken"/>,
@@ -37,7 +37,7 @@ namespace Granit.Validation.AspNetCore;
 /// </remarks>
 internal sealed class FluentValidationAutoEndpointFilter : IEndpointFilter
 {
-    private const string ProblemTitleKey = "Validation:ProblemTitle";
+    private const string ProblemTitleKey = "Validation:Problem:Title";
     private const string FallbackProblemTitle = "Validation failed.";
 
     private static readonly ConcurrentDictionary<Type, Type> ValidatorTypeCache = new();

@@ -49,8 +49,8 @@ public sealed class LocaleValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidIso3166Alpha2");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidIso3166Alpha2");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:Iso3166Alpha2");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:Iso3166Alpha2");
     }
 
     // =========================================================================
@@ -93,8 +93,8 @@ public sealed class LocaleValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(tag));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidBcp47LanguageTag");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidBcp47LanguageTag");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:Bcp47LanguageTag");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:Bcp47LanguageTag");
     }
 
     // -------------------------------------------------------------------------

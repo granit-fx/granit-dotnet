@@ -50,7 +50,7 @@ public sealed class IdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(phone));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidE164Phone");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:E164Phone");
     }
 
     // =========================================================================
@@ -88,7 +88,7 @@ public sealed class IdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(iban));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidIban");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:Iban");
     }
 
     // -------------------------------------------------------------------------

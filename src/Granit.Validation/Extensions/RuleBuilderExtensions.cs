@@ -52,7 +52,7 @@ public static class RuleBuilderExtensions
     /// <code>
     /// RuleFor(x => x.CountryCode)
     ///     .Matches(@"^[A-Z]{2}$")
-    ///     .WithPatternHint("Validation:Hints:Alpha2Code");
+    ///     .WithPatternHint("Validation:Hint:Alpha2Code");
     /// </code>
     /// </example>
     /// </remarks>

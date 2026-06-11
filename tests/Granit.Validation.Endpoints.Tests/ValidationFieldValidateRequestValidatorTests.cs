@@ -11,8 +11,8 @@ public sealed class ValidationFieldValidateRequestValidatorTests
     private readonly ValidationFieldValidateRequestValidator _sut = new();
 
     [Theory]
-    [InlineData("Validation:InvalidIban", "BE68539007547034")]
-    [InlineData("Validation:InvalidEmail", null)]
+    [InlineData("Validation:Format:Iban", "BE68539007547034")]
+    [InlineData("Validation:Format:Email", null)]
     [InlineData("Guava:Validation:Custom", "test")]
     public void ValidRequest_PassesValidation(string errorCode, string? value)
     {
@@ -48,7 +48,7 @@ public sealed class ValidationFieldValidateRequestValidatorTests
     {
         string longValue = new('x', 501);
         ValidationResult result = _sut.Validate(
-            new ValidationFieldValidateRequest("Validation:InvalidIban", longValue));
+            new ValidationFieldValidateRequest("Validation:Format:Iban", longValue));
         result.IsValid.ShouldBeFalse();
     }
 }

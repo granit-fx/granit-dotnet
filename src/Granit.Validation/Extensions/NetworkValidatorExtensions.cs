@@ -37,7 +37,7 @@ public static partial class NetworkValidatorExtensions
     public static IRuleBuilderOptions<T, string?> AbsoluteUri<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && Uri.TryCreate(value.Trim(), UriKind.Absolute, out _))
-            .WithErrorCodeAndMessage("Validation:InvalidAbsoluteUri");
+            .WithErrorCodeAndMessage("Validation:Format:AbsoluteUri");
 
     /// <summary>
     /// Validates a URL with a required <c>http</c> or <c>https</c> scheme per RFC 3986.
@@ -49,7 +49,7 @@ public static partial class NetworkValidatorExtensions
     public static IRuleBuilderOptions<T, string?> Url<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && UrlRegex().IsMatch(value.Trim()))
-            .WithErrorCodeAndMessage("Validation:InvalidUrl");
+            .WithErrorCodeAndMessage("Validation:Format:Url");
 
     /// <summary>
     /// Validates an IPv4 address per RFC 791.
@@ -61,7 +61,7 @@ public static partial class NetworkValidatorExtensions
     public static IRuleBuilderOptions<T, string?> Ipv4Address<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && Ipv4Regex().IsMatch(value.Trim()))
-            .WithErrorCodeAndMessage("Validation:InvalidIpv4Address");
+            .WithErrorCodeAndMessage("Validation:Format:Ipv4Address");
 
     /// <summary>
     /// Validates an IPv6 address per RFC 4291.
@@ -76,7 +76,7 @@ public static partial class NetworkValidatorExtensions
                 value != null
                 && System.Net.IPAddress.TryParse(value.Trim(), out System.Net.IPAddress? ip)
                 && ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
-            .WithErrorCodeAndMessage("Validation:InvalidIpv6Address");
+            .WithErrorCodeAndMessage("Validation:Format:Ipv6Address");
 
     /// <summary>
     /// Validates a MAC address per IEEE 802.
@@ -89,7 +89,7 @@ public static partial class NetworkValidatorExtensions
     public static IRuleBuilderOptions<T, string?> MacAddress<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && MacAddressRegex().IsMatch(value.Trim()))
-            .WithErrorCodeAndMessage("Validation:InvalidMacAddress");
+            .WithErrorCodeAndMessage("Validation:Format:MacAddress");
 
     // -------------------------------------------------------------------------
     // Server-side single-field validation delegates

@@ -63,8 +63,8 @@ public sealed class FinancialValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(card));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidCreditCard");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidCreditCard");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:CreditCard");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:CreditCard");
     }
 
     // =========================================================================
@@ -101,8 +101,8 @@ public sealed class FinancialValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(lei));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidLei");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidLei");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:Lei");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:Lei");
     }
 
     // -------------------------------------------------------------------------

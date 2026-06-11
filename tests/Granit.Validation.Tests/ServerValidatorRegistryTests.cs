@@ -12,12 +12,12 @@ public sealed class ServerValidatorRegistryTests
     public void GetOrNull_RegisteredCode_ReturnsValidator()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidIban", _ => true));
+            new DelegatingServerValidator("Validation:Format:Iban", _ => true));
 
-        IServerValidator? result = registry.GetOrNull("Validation:InvalidIban");
+        IServerValidator? result = registry.GetOrNull("Validation:Format:Iban");
 
         result.ShouldNotBeNull();
-        result.ErrorCode.ShouldBe("Validation:InvalidIban");
+        result.ErrorCode.ShouldBe("Validation:Format:Iban");
     }
 
     [Fact]
@@ -32,14 +32,14 @@ public sealed class ServerValidatorRegistryTests
     public void GetAllErrorCodes_ReturnsAllRegisteredCodes()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
-            new DelegatingServerValidator("Validation:InvalidEmail", _ => true));
+            new DelegatingServerValidator("Validation:Format:Iban", _ => true),
+            new DelegatingServerValidator("Validation:Format:Email", _ => true));
 
         IReadOnlyCollection<string> codes = registry.GetAllErrorCodes();
 
         codes.Count.ShouldBe(2);
-        codes.ShouldContain("Validation:InvalidIban");
-        codes.ShouldContain("Validation:InvalidEmail");
+        codes.ShouldContain("Validation:Format:Iban");
+        codes.ShouldContain("Validation:Format:Email");
     }
 
     [Fact]
@@ -54,12 +54,12 @@ public sealed class ServerValidatorRegistryTests
     [Fact]
     public void DuplicateErrorCode_KeepsFirstRegistration()
     {
-        DelegatingServerValidator first = new("Validation:InvalidIban", _ => true);
-        DelegatingServerValidator second = new("Validation:InvalidIban", _ => false);
+        DelegatingServerValidator first = new("Validation:Format:Iban", _ => true);
+        DelegatingServerValidator second = new("Validation:Format:Iban", _ => false);
 
         ServerValidatorRegistry registry = CreateRegistry(first, second);
 
-        IServerValidator? result = registry.GetOrNull("Validation:InvalidIban");
+        IServerValidator? result = registry.GetOrNull("Validation:Format:Iban");
         result.ShouldNotBeNull();
         result.Validate("anything").ShouldBeTrue();
     }
@@ -68,10 +68,10 @@ public sealed class ServerValidatorRegistryTests
     public void MultipleContributors_CombineValidators()
     {
         TestContributor contributor1 = new([
-            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Validation:Format:Iban", _ => true),
         ]);
         TestContributor contributor2 = new([
-            new DelegatingServerValidator("Validation:InvalidEmail", _ => true),
+            new DelegatingServerValidator("Validation:Format:Email", _ => true),
         ]);
 
         ILogger<ServerValidatorRegistry> logger = Substitute.For<ILogger<ServerValidatorRegistry>>();
@@ -84,13 +84,13 @@ public sealed class ServerValidatorRegistryTests
     public void GetAll_ReturnsAllValidatorInstances()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Validation:Format:Iban", _ => true),
             new DelegatingServerValidator("Validation:InvalidSsn", _ => true, isSensitive: true));
 
         IReadOnlyCollection<IServerValidator> all = registry.GetAll();
 
         all.Count.ShouldBe(2);
-        all.ShouldContain(v => v.ErrorCode == "Validation:InvalidIban" && !v.IsSensitive);
+        all.ShouldContain(v => v.ErrorCode == "Validation:Format:Iban" && !v.IsSensitive);
         all.ShouldContain(v => v.ErrorCode == "Validation:InvalidSsn" && v.IsSensitive);
     }
 

@@ -165,7 +165,7 @@ public sealed class JsonSchemaWriterTests
 
         JsonNode prop = schema["properties"]!["code"]!;
         prop["pattern"]!.GetValue<string>().ShouldBe(@"^[A-Z]{2}$");
-        prop["x-granit-pattern-hint"]!.GetValue<string>().ShouldBe("Validation:Hints:Alpha2Code");
+        prop["x-granit-pattern-hint"]!.GetValue<string>().ShouldBe("Validation:Hint:Alpha2Code");
     }
 
     [Fact]
@@ -343,7 +343,7 @@ public sealed class JsonSchemaWriterTests
         public PatternHintRequestValidator() =>
             RuleFor(x => x.Code)
                 .Matches(@"^[A-Z]{2}$")
-                .WithPatternHint("Validation:Hints:Alpha2Code");
+                .WithPatternHint("Validation:Hint:Alpha2Code");
     }
 
     private sealed record CustomCodeRequest(string Value);

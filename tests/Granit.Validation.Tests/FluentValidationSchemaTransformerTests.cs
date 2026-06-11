@@ -296,7 +296,7 @@ public sealed class FluentValidationSchemaTransformerTests
         public PatternHintRequestValidator() =>
             RuleFor(x => x.Code)
                 .Matches(@"^[A-Z]{2}$")
-                .WithPatternHint("Validation:Hints:Alpha2Code");
+                .WithPatternHint("Validation:Hint:Alpha2Code");
     }
 
     private sealed record NoValidatorRequest(string Name);

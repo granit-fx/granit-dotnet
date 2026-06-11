@@ -14,11 +14,11 @@ public sealed class ValidationMetricsTests
     {
         using var recorder = Recorder.Start();
 
-        recorder.Metrics.RecordFieldValidated(tenantId: null, "Validation:InvalidIban", ValidationFieldStatus.Valid);
+        recorder.Metrics.RecordFieldValidated(tenantId: null, "Validation:Format:Iban", ValidationFieldStatus.Valid);
 
         Measurement m = recorder.Single();
         m.Value.ShouldBe(1);
-        m.Tag("error_code").ShouldBe("Validation:InvalidIban");
+        m.Tag("error_code").ShouldBe("Validation:Format:Iban");
         m.Tag("status").ShouldBe("Valid");
         m.Tag("tenant_id").ShouldBe("global");
     }
@@ -41,7 +41,7 @@ public sealed class ValidationMetricsTests
     {
         using var recorder = Recorder.Start();
 
-        recorder.Metrics.RecordFieldValidated("tenant-7", "Validation:InvalidEmail", ValidationFieldStatus.Invalid);
+        recorder.Metrics.RecordFieldValidated("tenant-7", "Validation:Format:Email", ValidationFieldStatus.Invalid);
 
         Measurement m = recorder.Single();
         m.Tag("tenant_id").ShouldBe("tenant-7");

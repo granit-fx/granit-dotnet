@@ -24,15 +24,15 @@ public sealed class ValidationEndpointTests
     public void HandleValidate_ValidValue_ReturnsValidStatus()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidIban", value => value == "BE68539007547034"));
+            new DelegatingServerValidator("Validation:Format:Iban", value => value == "BE68539007547034"));
 
-        var request = new ValidationFieldValidateRequest("Validation:InvalidIban", "BE68539007547034");
+        var request = new ValidationFieldValidateRequest("Validation:Format:Iban", "BE68539007547034");
         Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
             ValidationEndpoints.HandleValidate(request, registry, CreateMetrics(), CreateAuthenticatedContext());
 
         Ok<ValidationFieldValidateResponse> ok = result.Result.ShouldBeOfType<Ok<ValidationFieldValidateResponse>>();
         ok.Value.ShouldNotBeNull();
-        ok.Value.ErrorCode.ShouldBe("Validation:InvalidIban");
+        ok.Value.ErrorCode.ShouldBe("Validation:Format:Iban");
         ok.Value.Status.ShouldBe(ValidationFieldStatus.Valid);
     }
 
@@ -40,9 +40,9 @@ public sealed class ValidationEndpointTests
     public void HandleValidate_InvalidValue_ReturnsInvalidStatus()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidIban", _ => false));
+            new DelegatingServerValidator("Validation:Format:Iban", _ => false));
 
-        var request = new ValidationFieldValidateRequest("Validation:InvalidIban", "INVALID");
+        var request = new ValidationFieldValidateRequest("Validation:Format:Iban", "INVALID");
         Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
             ValidationEndpoints.HandleValidate(request, registry, CreateMetrics(), CreateAnonymousContext());
 
@@ -101,13 +101,13 @@ public sealed class ValidationEndpointTests
     public void HandleValidateBatch_MixedResults_ReturnsCorrectStatuses()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidIban", value => value == "BE68539007547034"),
-            new DelegatingServerValidator("Validation:InvalidEmail", _ => false));
+            new DelegatingServerValidator("Validation:Format:Iban", value => value == "BE68539007547034"),
+            new DelegatingServerValidator("Validation:Format:Email", _ => false));
 
         var request = new ValidationFieldValidateBatchRequest(
         [
-            new("Validation:InvalidIban", "BE68539007547034"),
-            new("Validation:InvalidEmail", "bad"),
+            new("Validation:Format:Iban", "BE68539007547034"),
+            new("Validation:Format:Email", "bad"),
             new("Validation:Unknown", "value"),
         ]);
 
@@ -125,12 +125,12 @@ public sealed class ValidationEndpointTests
     public void HandleValidateBatch_SensitiveValidator_Unauthenticated_ReturnsNotFound()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Validation:Format:Iban", _ => true),
             new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
 
         var request = new ValidationFieldValidateBatchRequest(
         [
-            new("Validation:InvalidIban", "BE68539007547034"),
+            new("Validation:Format:Iban", "BE68539007547034"),
             new("Validation:InvalidUsSsn", "123-45-6789"),
         ]);
 
@@ -151,23 +151,23 @@ public sealed class ValidationEndpointTests
     public void HandleGetValidators_ReturnsSortedErrorCodes()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidEmail", _ => true),
-            new DelegatingServerValidator("Validation:InvalidBicSwift", _ => true));
+            new DelegatingServerValidator("Validation:Format:Email", _ => true),
+            new DelegatingServerValidator("Validation:Format:BicSwift", _ => true));
 
         Ok<IReadOnlyList<string>> result =
             ValidationEndpoints.HandleGetValidators(registry, CreateAnonymousContext());
 
         IReadOnlyList<string> codes = result.Value.ShouldNotBeNull();
         codes.Count.ShouldBe(2);
-        codes[0].ShouldBe("Validation:InvalidBicSwift");
-        codes[1].ShouldBe("Validation:InvalidEmail");
+        codes[0].ShouldBe("Validation:Format:BicSwift");
+        codes[1].ShouldBe("Validation:Format:Email");
     }
 
     [Fact]
     public void HandleGetValidators_HidesSensitiveFromAnonymous()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Validation:Format:Iban", _ => true),
             new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
 
         Ok<IReadOnlyList<string>> result =
@@ -175,14 +175,14 @@ public sealed class ValidationEndpointTests
 
         IReadOnlyList<string> codes = result.Value.ShouldNotBeNull();
         codes.Count.ShouldBe(1);
-        codes[0].ShouldBe("Validation:InvalidIban");
+        codes[0].ShouldBe("Validation:Format:Iban");
     }
 
     [Fact]
     public void HandleGetValidators_ShowsSensitiveToAuthenticated()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Validation:Format:Iban", _ => true),
             new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
 
         Ok<IReadOnlyList<string>> result =

@@ -12,7 +12,7 @@ namespace Granit.Validation.OpenApi;
 public interface IPatternHintProvider
 {
     /// <summary>
-    /// The i18n key for the pattern hint (e.g. <c>Validation:Hints:Alpha2Code</c>).
+    /// The i18n key for the pattern hint (e.g. <c>Validation:Hint:Alpha2Code</c>).
     /// </summary>
     string HintKey { get; }
 }
