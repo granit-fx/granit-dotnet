@@ -1,10 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.Privacy.AI.Internal;
 using Granit.Privacy.AI.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Privacy.AI.Extensions;
 
@@ -16,7 +12,7 @@ public static class PrivacyAIHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Adds AI-powered PII detection services and binds <see cref="PrivacyAIOptions"/>
-    /// from the <c>AI:Privacy</c> configuration section.
+    /// from the <c>Privacy:AI</c> configuration section.
     /// </summary>
     /// <remarks>
     /// Registers <see cref="IAIPiiDetector"/> backed by an LLM via <see cref="Granit.AI.IAIChatClientFactory"/>.
@@ -41,7 +37,7 @@ public static class PrivacyAIHostApplicationBuilderExtensions
         {
             optionsBuilder.Validate(
                 opts => opts.FailMode != PiiDetectionFailMode.Open,
-                "AI:Privacy:FailMode 'Open' is only permitted in the Development "
+                "Privacy:AI:FailMode 'Open' is only permitted in the Development "
                 + "environment — outside it, PII would silently go undetected on LLM "
                 + "unavailability, violating GDPR Art. 25 (Privacy by Design). "
                 + "Use 'Closed' instead.");

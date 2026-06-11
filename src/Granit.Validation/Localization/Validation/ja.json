@@ -1,7 +1,7 @@
 {
-  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "ja",
   "texts": {
+    "Validation:ProblemTitle": "検証に失敗しました。",
     "Validation:AsyncPredicateValidator": "'{PropertyName}' に対する指定された条件が満たされていません。",
     "Validation:CalendarRangeInverted": "カレンダーの範囲が逆転しています。「終了」は「開始」以上である必要があります。",
     "Validation:CalendarRangeTooWide": "カレンダーの範囲が広すぎます。要求されたウィンドウは366日を超えることはできません。",

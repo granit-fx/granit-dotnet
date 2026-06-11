@@ -1,13 +1,11 @@
 using Granit.Timeline.AI.Options;
-using Shouldly;
-using Xunit;
 
 namespace Granit.Timeline.AI.Tests;
 
 public sealed class TimelineAIOptionsTests
 {
     [Fact]
-    public void SectionName_is_AI_Timeline() => TimelineAIOptions.SectionName.ShouldBe("AI:Timeline");
+    public void SectionName_is_Timeline_AI() => TimelineAIOptions.SectionName.ShouldBe("Timeline:AI");
 
     [Fact]
     public void Default_WorkspaceName_IsNull()

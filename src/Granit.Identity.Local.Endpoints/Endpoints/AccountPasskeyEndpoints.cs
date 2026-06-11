@@ -141,9 +141,14 @@ internal static partial class AccountPasskeyEndpoints
                 $"/api/account/passkeys/{passkey.Id}",
                 IdentityLocalResponseMapper.ToResponse(passkey));
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
-            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Passkey:RegistrationFailed",
+                    "The passkey could not be registered. The request may have expired — please try again."),
+                statusCode: StatusCodes.Status400BadRequest);
         }
     }
 
@@ -180,7 +185,10 @@ internal static partial class AccountPasskeyEndpoints
                 failureReason: "invalid_token", cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Problem(
-                detail: "Passkey authentication failed.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Passkey:AuthenticationFailed",
+                    "Passkey authentication failed."),
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
@@ -192,7 +200,10 @@ internal static partial class AccountPasskeyEndpoints
                 userId: assertion.UserId, userName: null,
                 failureReason: "user_not_found", cancellationToken).ConfigureAwait(false);
             return TypedResults.Problem(
-                detail: "User not found.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Account:UserNotFound",
+                    "User not found."),
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
@@ -284,9 +295,14 @@ internal static partial class AccountPasskeyEndpoints
             await passkeyService.DeleteAsync(userId, id, cancellationToken).ConfigureAwait(false);
             return TypedResults.NoContent();
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
-            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Passkey:RemoveFailed",
+                    "The passkey could not be removed."),
+                statusCode: StatusCodes.Status400BadRequest);
         }
     }
 }

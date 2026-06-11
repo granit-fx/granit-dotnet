@@ -1,12 +1,8 @@
 using Granit.AI.Redaction;
-using Granit.Diagnostics;
 using Granit.LanguageDetection.AI.Diagnostics;
 using Granit.LanguageDetection.AI.Internal;
 using Granit.LanguageDetection.AI.Options;
 using Granit.LanguageDetection.AI.Prompts;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace Granit.LanguageDetection.AI.Extensions;
 
@@ -31,8 +27,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddGranitLanguageDetectionAI(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-
-        GranitActivitySourceRegistry.Register(LanguageDetectionAIMetrics.MeterName);
 
         // ValidateOnStart aborts host boot when MaxContentLength / TimeoutSeconds /
         // MaxAICallsPerHourPerTenant / WorkspaceName are out of range. Silent

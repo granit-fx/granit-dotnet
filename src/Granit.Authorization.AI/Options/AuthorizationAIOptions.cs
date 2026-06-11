@@ -4,14 +4,14 @@ namespace Granit.Authorization.AI.Options;
 /// Configuration options for AI-powered access anomaly detection.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:Authorization</c> configuration section.
+/// Bound to the <c>Authorization:AI</c> configuration section.
 /// </remarks>
 public sealed class AuthorizationAIOptions
 {
     /// <summary>
     /// Configuration section name in appsettings.json.
     /// </summary>
-    public const string SectionName = "AI:Authorization";
+    public const string SectionName = "Authorization:AI";
 
     /// <summary>
     /// Name of the AI workspace used for access anomaly detection.

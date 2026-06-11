@@ -3,10 +3,6 @@ using Granit.Observability.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-using Serilog;
 
 namespace Granit.Observability.Extensions;
 
@@ -184,7 +180,13 @@ public static class ObservabilityServiceCollectionExtensions
 
         metrics
             .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation();
+            .AddHttpClientInstrumentation()
+            // Every Granit module meter is created via IMeterFactory with the name
+            // "Granit.<Package>" (see the *Metrics classes). Subscribe to them all by
+            // wildcard so module metrics export with no per-module registration — the
+            // metrics counterpart to GranitActivitySourceRegistry on the tracing side,
+            // but self-maintaining: a new *Metrics class needs no Observability change.
+            .AddMeter("Granit.*");
 
         // Apply metrics contributors declared by SDK-embedding modules.
         foreach (Action<MeterProviderBuilder> contributor in

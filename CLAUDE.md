@@ -153,7 +153,12 @@ Every `*.Endpoints` module attaches `.WithTags(...)` on its root group. Format: 
 - `endpoints.MapGranitGroup(prefix)` — applies `FluentValidationAutoEndpointFilter` automatically.
 - Validators auto-discovered by `GranitValidationModule`. Opt-out: `WithMetadata(new SkipAutoValidationAttribute())`.
 - `FluentValidationSchemaTransformer` exposes constraints (maxLength, pattern...) in OpenAPI for codegen.
-- **Localized messages MANDATORY**: never hardcode `.WithMessage("...")`. Built-ins (NotEmpty, MaximumLength) auto-converted to error codes by `GranitErrorCodeLanguageManager`. Custom `.Must()` → `.WithErrorCodeAndMessage("Granit:Validation:XxxCode")` + add the key to all 18 JSON files in `src/Granit.Validation/Localization/Validation/`.
+- **Localized messages MANDATORY**: never hardcode `.WithMessage("...")`.
+- **Key convention (ADR-066, enforced by `ValidationKeyConventionTests`)**: `Validation:{Category}:{Rule}` for framework keys, `{Module}:Validation:{Rule}` for module-owned domain keys. PascalCase `Rule`, closed constraint vocabulary (`Invalid`, `Required`, `TooLong`/`TooShort`, `OutOfRange`, `Ordering`, `Empty`, `TooMany`…).
+  - Built-ins (NotEmpty, MaximumLength…) → `Validation:Builtin:{Rule}` (auto-remapped by `GranitErrorCodeLanguageManager`; FV wire `ErrorCode` stays `{Rule}Validator`).
+  - Framework format/identifier validators → `Validation:Format:{Rule}` (e.g. `Validation:Format:Iban`).
+  - Pattern hints → `Validation:Hint:{Code}`. The 422 problem title → `Validation:Problem:Title`.
+  - Custom `.Must()` in a module → `.WithErrorCodeAndMessage("{Module}:Validation:XxxCode")` + add the key to the **module's own** resource (NEVER the framework `Granit.Validation` resource), across all 18 culture files.
 
 ### Isolated DbContext (each `*.EntityFrameworkCore` package)
 

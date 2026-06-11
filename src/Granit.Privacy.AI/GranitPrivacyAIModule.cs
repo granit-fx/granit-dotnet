@@ -1,5 +1,4 @@
 using Granit.AI;
-using Granit.Modularity;
 
 namespace Granit.Privacy.AI;
 
@@ -13,7 +12,7 @@ namespace Granit.Privacy.AI;
 /// <para>
 /// PII detection data should not leave the security perimeter. Configure a local model
 /// (Ollama) or a provider covered by a Data Processing Agreement (Azure OpenAI with DPA)
-/// in the <c>AI:Privacy</c> workspace.
+/// in the <c>Privacy:AI</c> workspace.
 /// </para>
 /// </remarks>
 [DependsOn(typeof(GranitAIModule), typeof(GranitPrivacyModule))]

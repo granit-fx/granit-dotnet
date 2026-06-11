@@ -1,11 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
-using Granit.Diagnostics;
 using Granit.Imaging.AI.Diagnostics;
 using Granit.Imaging.AI.Internal;
 using Granit.Imaging.AI.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace Granit.Imaging.AI.Extensions;
 
@@ -19,7 +15,7 @@ public static class ImagingAIHostApplicationBuilderExtensions
     /// Adds AI-powered image analysis services to the application.
     /// </summary>
     /// <remarks>
-    /// Binds <see cref="ImagingAIOptions"/> from the <c>AI:Imaging</c> configuration section
+    /// Binds <see cref="ImagingAIOptions"/> from the <c>Imaging:AI</c> configuration section
     /// and registers <see cref="IAIImageAnalyzer"/> backed by a multimodal LLM.
     /// Requires <c>Granit.AI</c> to be registered with a vision-capable provider.
     /// </remarks>

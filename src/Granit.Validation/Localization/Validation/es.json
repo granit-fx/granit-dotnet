@@ -1,7 +1,7 @@
 {
-  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "es",
   "texts": {
+    "Validation:ProblemTitle": "La validación ha fallado.",
     "Validation:AsyncPredicateValidator": "La condición especificada para '{PropertyName}' no se ha cumplido.",
     "Validation:CalendarRangeInverted": "El rango del calendario está invertido: 'Hasta' debe ser mayor o igual que 'Desde'.",
     "Validation:CalendarRangeTooWide": "El rango del calendario es demasiado amplio: la ventana solicitada no puede superar los 366 días.",

@@ -1,7 +1,7 @@
 {
-  "Validation:InvalidMergeChoice": "Chaque choix de fusion doit être 'Survivor' ou 'Loser'.",
   "culture": "fr",
   "texts": {
+    "Validation:ProblemTitle": "Échec de la validation.",
     "Validation:AsyncPredicateValidator": "La condition spécifiée n'a pas été remplie pour '{PropertyName}'.",
     "Validation:CalendarRangeInverted": "La plage du calendrier est inversée : 'Jusqu'à' doit être supérieur ou égal à 'À partir de'.",
     "Validation:CalendarRangeTooWide": "La plage du calendrier est trop large : la fenêtre demandée ne peut pas dépasser 366 jours.",

@@ -2,6 +2,7 @@ using Granit.Events;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
@@ -156,9 +157,14 @@ internal static class AccountTwoFactorEndpoints
 
             return TypedResults.Ok(new AccountTwoFactorEnableResponse(recoveryCodes));
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
-            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:TwoFactor:InvalidCode",
+                    "The verification code is incorrect or has expired. Please try again."),
+                statusCode: StatusCodes.Status400BadRequest);
         }
     }
 
@@ -176,7 +182,10 @@ internal static class AccountTwoFactorEndpoints
         if (username is null)
         {
             return TypedResults.Problem(
-                detail: "Unable to determine username from token claims.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Account:SessionInvalid",
+                    "Your session is invalid. Please sign in again."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -187,7 +196,10 @@ internal static class AccountTwoFactorEndpoints
         if (!isValid)
         {
             return TypedResults.Problem(
-                detail: "Password is incorrect.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Account:PasswordIncorrect",
+                    "Password is incorrect."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -213,7 +225,10 @@ internal static class AccountTwoFactorEndpoints
         if (username is null)
         {
             return TypedResults.Problem(
-                detail: "Unable to determine username from token claims.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Account:SessionInvalid",
+                    "Your session is invalid. Please sign in again."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -224,7 +239,10 @@ internal static class AccountTwoFactorEndpoints
         if (!isValid)
         {
             return TypedResults.Problem(
-                detail: "Password is incorrect.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Account:PasswordIncorrect",
+                    "Password is incorrect."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -261,9 +279,14 @@ internal static class AccountTwoFactorEndpoints
 
             return TypedResults.NoContent();
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
-            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:TwoFactor:InvalidCode",
+                    "The verification code is incorrect or has expired. Please try again."),
+                statusCode: StatusCodes.Status400BadRequest);
         }
     }
 
@@ -282,7 +305,10 @@ internal static class AccountTwoFactorEndpoints
         if (username is null)
         {
             return TypedResults.Problem(
-                detail: "Unable to determine username from token claims.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Account:SessionInvalid",
+                    "Your session is invalid. Please sign in again."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -293,7 +319,10 @@ internal static class AccountTwoFactorEndpoints
         if (!isValid)
         {
             return TypedResults.Problem(
-                detail: "Password is incorrect.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:Account:PasswordIncorrect",
+                    "Password is incorrect."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 

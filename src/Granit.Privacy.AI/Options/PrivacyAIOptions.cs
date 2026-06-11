@@ -6,7 +6,7 @@ namespace Granit.Privacy.AI.Options;
 /// Configuration options for AI-powered PII detection.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:Privacy</c> configuration section.
+/// Bound to the <c>Privacy:AI</c> configuration section.
 /// <para>
 /// <b>Data sovereignty warning:</b> PII detection sends text to an AI model.
 /// Configure <see cref="WorkspaceName"/> to point to a workspace using a local model
@@ -19,7 +19,7 @@ public sealed class PrivacyAIOptions
     /// <summary>
     /// Configuration section name in appsettings.json.
     /// </summary>
-    public const string SectionName = "AI:Privacy";
+    public const string SectionName = "Privacy:AI";
 
     /// <summary>
     /// AI workspace name to use for PII detection. Defaults to <c>"default"</c>.

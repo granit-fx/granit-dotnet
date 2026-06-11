@@ -3,6 +3,8 @@ using System.Security.Claims;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 
 namespace Granit.Validation.AspNetCore;
 
@@ -17,8 +19,9 @@ namespace Granit.Validation.AspNetCore;
 /// </para>
 /// <para>
 /// When validation fails, returns <c>422 Unprocessable Entity</c> with a
-/// <c>HttpValidationProblemDetails</c> body containing structured error codes
-/// (e.g. <c>Validation:NotEmptyValidator</c>).
+/// <c>HttpValidationProblemDetails</c> body whose <c>errors</c> values are fully
+/// localized, interpolated messages in the request culture and whose <c>title</c>
+/// is the localized <c>Validation:ProblemTitle</c> (not the ASP.NET stock string).
 /// </para>
 /// <para>
 /// Arguments of primitive types, strings, enums, <see cref="CancellationToken"/>,
@@ -34,6 +37,9 @@ namespace Granit.Validation.AspNetCore;
 /// </remarks>
 internal sealed class FluentValidationAutoEndpointFilter : IEndpointFilter
 {
+    private const string ProblemTitleKey = "Validation:ProblemTitle";
+    private const string FallbackProblemTitle = "Validation failed.";
+
     private static readonly ConcurrentDictionary<Type, Type> ValidatorTypeCache = new();
 
     /// <inheritdoc/>
@@ -85,12 +91,32 @@ internal sealed class FluentValidationAutoEndpointFilter : IEndpointFilter
 #pragma warning disable GRAPI001
                 return Results.ValidationProblem(
                     result.ToDictionary(),
+                    title: ResolveTitle(context.HttpContext),
                     statusCode: StatusCodes.Status422UnprocessableEntity);
 #pragma warning restore GRAPI001
             }
         }
 
         return await next(context).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Resolves the localized 422 problem title, replacing the ASP.NET stock string
+    /// "One or more validation errors occurred." with a clear, request-culture message.
+    /// Falls back to <see cref="FallbackProblemTitle"/> when the localizer is unavailable.
+    /// </summary>
+    private static string ResolveTitle(HttpContext httpContext)
+    {
+        IStringLocalizer<ValidationLocalizationResource>? localizer = httpContext.RequestServices
+            .GetService<IStringLocalizer<ValidationLocalizationResource>>();
+
+        if (localizer is null)
+        {
+            return FallbackProblemTitle;
+        }
+
+        LocalizedString title = localizer[ProblemTitleKey];
+        return title.ResourceNotFound ? FallbackProblemTitle : title.Value;
     }
 
     private static bool ShouldValidate(Type type) =>

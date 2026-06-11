@@ -1,8 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.Notifications.AI.Internal;
 using Granit.Notifications.AI.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Granit.Notifications.AI.Extensions;
 
@@ -20,7 +18,7 @@ public static class NotificationsAIHostApplicationBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Reads <see cref="NotificationsAIOptions"/> from the <c>"AI:Notifications"</c> configuration section.
+    /// Reads <see cref="NotificationsAIOptions"/> from the <c>"Notifications:AI"</c> configuration section.
     /// Requires <c>Granit.AI</c> core services (<c>AddGranitAI()</c>) and at least one AI provider
     /// to be registered beforehand.
     /// </para>

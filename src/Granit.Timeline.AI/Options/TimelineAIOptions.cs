@@ -4,14 +4,14 @@ namespace Granit.Timeline.AI.Options;
 /// Configuration options for AI-powered timeline analysis.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:Timeline</c> configuration section.
+/// Bound to the <c>Timeline:AI</c> configuration section.
 /// </remarks>
 public sealed class TimelineAIOptions
 {
     /// <summary>
     /// Configuration section name in appsettings.json.
     /// </summary>
-    public const string SectionName = "AI:Timeline";
+    public const string SectionName = "Timeline:AI";
 
     /// <summary>
     /// Name of the AI workspace to use for timeline analysis.

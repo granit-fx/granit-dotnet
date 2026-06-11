@@ -1,5 +1,4 @@
 {
-  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "en-GB",
   "texts": {
     "Validation:EntityViewShareEmptyAudience": "Audience must include at least one role or user.",

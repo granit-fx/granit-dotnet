@@ -1,7 +1,7 @@
 {
-  "Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "cs",
   "texts": {
+    "Validation:ProblemTitle": "Ověření se nezdařilo.",
     "Validation:AsyncPredicateValidator": "Zadaná podmínka nebyla splněna pro '{PropertyName}'.",
     "Validation:CalendarRangeInverted": "Rozsah kalendáře je obrácený: hodnota 'Do' musí být větší nebo rovna 'Od'.",
     "Validation:CalendarRangeTooWide": "Rozsah kalendáře je příliš široký: požadované okno nesmí přesáhnout 366 dní.",

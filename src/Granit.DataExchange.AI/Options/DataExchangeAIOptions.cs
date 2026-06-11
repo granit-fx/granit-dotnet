@@ -4,14 +4,14 @@ namespace Granit.DataExchange.AI.Options;
 /// Configuration options for the AI-powered semantic mapping service.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:DataExchange</c> configuration section.
+/// Bound to the <c>DataExchange:AI</c> configuration section.
 /// </remarks>
 public sealed class DataExchangeAIOptions
 {
     /// <summary>
     /// Configuration section name in appsettings.json.
     /// </summary>
-    public const string SectionName = "AI:DataExchange";
+    public const string SectionName = "DataExchange:AI";
 
     /// <summary>
     /// Name of the AI workspace to use for mapping suggestions.

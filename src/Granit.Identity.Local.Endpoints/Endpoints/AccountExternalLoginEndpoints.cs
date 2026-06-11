@@ -97,7 +97,10 @@ internal static partial class AccountExternalLoginEndpoints
         if (!providerRegistry.IsProviderConfigured(provider))
         {
             return TypedResults.Problem(
-                detail: "The specified external login provider is not configured.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:ExternalLogin:ProviderNotConfigured",
+                    "The specified external login provider is not configured."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -154,7 +157,10 @@ internal static partial class AccountExternalLoginEndpoints
                 userId: null, userName: null, failureReason: "callback_missing_scheme",
                 cancellationToken).ConfigureAwait(false);
             return TypedResults.Problem(
-                detail: "External login callback did not carry an authentication scheme.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:ExternalLogin:CallbackMissingScheme",
+                    "External login callback did not carry an authentication scheme."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -177,7 +183,10 @@ internal static partial class AccountExternalLoginEndpoints
                 userId: externalUserId, userName: externalUserName,
                 failureReason: "account_not_found", cancellationToken).ConfigureAwait(false);
             return TypedResults.Problem(
-                detail: ex.Message,
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:ExternalLogin:NoLinkedAccount",
+                    "No account is linked to this external login."),
                 statusCode: StatusCodes.Status403Forbidden);
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("DuplicateEmail", StringComparison.OrdinalIgnoreCase))
@@ -186,7 +195,10 @@ internal static partial class AccountExternalLoginEndpoints
                 userId: externalUserId, userName: externalUserName,
                 failureReason: "duplicate_email", cancellationToken).ConfigureAwait(false);
             return TypedResults.Problem(
-                detail: "An account with this email already exists.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:ExternalLogin:EmailAlreadyExists",
+                    "An account with this email already exists."),
                 statusCode: StatusCodes.Status409Conflict);
         }
     }
@@ -278,10 +290,13 @@ internal static partial class AccountExternalLoginEndpoints
                 .ConfigureAwait(false);
             return TypedResults.NoContent();
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
             return TypedResults.Problem(
-                detail: ex.Message,
+                detail: AccountEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Identity:ExternalLogin:RemoveFailed",
+                    "This external login could not be removed."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
     }

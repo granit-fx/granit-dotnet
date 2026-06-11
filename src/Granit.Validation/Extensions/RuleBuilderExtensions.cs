@@ -1,4 +1,5 @@
 using FluentValidation;
+using Granit.Validation.Internal;
 using Granit.Validation.OpenApi;
 
 namespace Granit.Validation.Extensions;
@@ -12,9 +13,17 @@ public static class RuleBuilderExtensions
     /// Sets <c>WithErrorCode</c> and <c>WithMessage</c> on the rule builder to the same value.
     /// </summary>
     /// <remarks>
-    /// In Granit validators the error code is also the message key so that the Wolverine HTTP
-    /// middleware serializes it in <c>ValidationProblemDetails.errors</c>.
-    /// Using this method prevents the two values from silently diverging.
+    /// <para>
+    /// The error <c>code</c> is preserved on <c>ValidationFailure.ErrorCode</c> (machine-readable),
+    /// while the message is resolved at validation time to the localized template registered under
+    /// the same key in the <c>Validation</c> resource — so the <c>errors</c> map carries a real
+    /// sentence in the request culture, not the bare code. Any FluentValidation placeholders in the
+    /// template (e.g. <c>{PropertyName}</c>) are interpolated by the message formatter.
+    /// </para>
+    /// <para>
+    /// Resolution is lazy (per validation) and degrades to the bare <c>code</c> when the
+    /// localization layer is not wired (e.g. unit tests instantiating a validator directly).
+    /// </para>
     /// </remarks>
     /// <typeparam name="T">The type being validated.</typeparam>
     /// <typeparam name="TProperty">The property type.</typeparam>
@@ -23,7 +32,8 @@ public static class RuleBuilderExtensions
     /// <returns>The same rule builder options for fluent chaining.</returns>
     public static IRuleBuilderOptions<T, TProperty> WithErrorCodeAndMessage<T, TProperty>(
         this IRuleBuilderOptions<T, TProperty> rule, string code) =>
-        rule.WithErrorCode(code).WithMessage(code);
+        rule.WithErrorCode(code)
+            .WithMessage(_ => GranitErrorCodeLanguageManager.ResolveMessage(code));
 
     /// <summary>
     /// Attaches a pattern hint i18n key to the current rule chain.

@@ -1,5 +1,4 @@
 using Granit.Imaging.AI.Options;
-using Shouldly;
 
 namespace Granit.Imaging.AI.Tests;
 
@@ -16,5 +15,5 @@ public sealed class ImagingAIOptionsTests
 
     [Fact]
     public void SectionName_IsCorrect() =>
-        ImagingAIOptions.SectionName.ShouldBe("AI:Imaging");
+        ImagingAIOptions.SectionName.ShouldBe("Imaging:AI");
 }
