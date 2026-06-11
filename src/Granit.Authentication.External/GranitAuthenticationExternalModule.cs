@@ -24,14 +24,21 @@ public sealed class GranitAuthenticationExternalModule : GranitModule
     /// <inheritdoc/>
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
-        // Every provider listed under Authentication:External:Providers is advertised to users as
-        // available, so each MUST have a registered authentication handler. A provider without its
-        // scheme (host forgot to reference/enable the matching Granit.Authentication.External.<X>
+        // Every configured provider under Authentication:External:Providers is advertised to users
+        // as available, so each MUST have a registered authentication handler. A provider without
+        // its scheme (host forgot to reference/enable the matching Granit.Authentication.External.<X>
         // package) would otherwise only fail when a user clicks "Sign in with X".
         ExternalAuthOptions options = context.ServiceProvider
             .GetRequiredService<IOptions<ExternalAuthOptions>>().Value;
 
-        if (options.Providers.Count == 0)
+        // A blank ClientId is the documented "configure later via user-secrets" placeholder:
+        // AddExternalProviderSchemes skips it, so it has no scheme by design and must not trip this
+        // guard. Only actually-configured providers (non-empty ClientId) are validated.
+        ExternalAuthProvider[] configured = options.Providers
+            .Where(p => !string.IsNullOrWhiteSpace(p.ClientId))
+            .ToArray();
+
+        if (configured.Length == 0)
         {
             return;
         }
@@ -44,7 +51,7 @@ public sealed class GranitAuthenticationExternalModule : GranitModule
             .Select(s => s.Name)
             .ToHashSet(StringComparer.Ordinal);
 
-        string[] missing = options.Providers
+        string[] missing = configured
             .Select(p => p.SchemeName)
             .Where(name => !registeredSchemes.Contains(name))
             .ToArray();

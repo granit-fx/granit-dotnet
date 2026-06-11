@@ -53,9 +53,15 @@ public static class ExternalAuthenticationServiceCollectionExtensions
             configuration.GetSection(ExternalAuthOptions.SectionName).Get<ExternalAuthOptions>()
             ?? new ExternalAuthOptions();
 
+        // Skip providers with no ClientId: every external provider (OAuth and OIDC) requires one,
+        // and OAuthOptions.Validate() throws on an empty ClientId the moment the remote handler is
+        // initialized — which happens on every request, breaking the whole pipeline. A blank entry
+        // is the documented "configure later via user-secrets" placeholder, so treat it as a no-op
+        // until it is actually filled in rather than registering an unusable scheme.
         List<ExternalAuthProvider> matching =
             [.. options.Providers.Where(p =>
-                string.Equals(p.Type, providerType, StringComparison.OrdinalIgnoreCase))];
+                string.Equals(p.Type, providerType, StringComparison.OrdinalIgnoreCase)
+                && !string.IsNullOrWhiteSpace(p.ClientId))];
 
         if (matching.Count == 0)
         {
