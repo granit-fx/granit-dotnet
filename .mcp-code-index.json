@@ -7352,7 +7352,7 @@
       "kind": "record",
       "project": "Granit.Authentication.External",
       "file": "src/Granit.Authentication.External/IExternalProviderRegistry.cs",
-      "line": 56,
+      "line": 65,
       "members": []
     },
     {
@@ -7444,6 +7444,12 @@
           "kind": "method",
           "signature": "IsProviderConfigured(string providerName)",
           "returnType": "bool"
+        },
+        {
+          "name": "GetSchemeName",
+          "kind": "method",
+          "signature": "GetSchemeName(string providerName)",
+          "returnType": "string?"
         },
         {
           "name": "IsProviderAvailableAsync",
@@ -26297,7 +26303,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/ExternalLoginCallbackResponse.cs",
-      "line": 8,
+      "line": 18,
       "members": []
     },
     {
@@ -26316,6 +26322,15 @@
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalConfigResponse.cs",
       "line": 21,
+      "members": []
+    },
+    {
+      "name": "ExternalProfilePrefillResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.ExternalProfilePrefillResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/ExternalLoginCallbackResponse.cs",
+      "line": 38,
       "members": []
     },
     {
@@ -26361,6 +26376,15 @@
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/PasskeyRenameRequest.cs",
       "line": 5,
+      "members": []
+    },
+    {
+      "name": "RegisterExternalRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.RegisterExternalRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/RegisterExternalRequest.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -26428,7 +26452,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/GranitIdentityLocalEndpointsModule.cs",
-      "line": 30,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",
@@ -26459,10 +26483,10 @@
           "returnType": "string"
         },
         {
-          "name": "LoginTagName",
+          "name": "ExternalLoginCallbackRedirectUrl",
           "kind": "property",
-          "signature": "string LoginTagName",
-          "returnType": "string"
+          "signature": "string? ExternalLoginCallbackRedirectUrl",
+          "returnType": "string?"
         },
         {
           "name": "RegistrationTagName",
@@ -26770,6 +26794,22 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AssignDefaultRoleHandler",
+      "fqn": "Granit.Identity.Local.Handlers.AssignDefaultRoleHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Handlers/AssignDefaultRoleHandler.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(UserRegisteredEto evt, ISettingProvider settingProvider, IIdentityRoleManager roleManager, ICurrentTenant currentTenant, ILogger<AssignDefaultRoleHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -27582,8 +27622,42 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/IExternalLoginService.cs",
-      "line": 51,
+      "line": 58,
       "members": []
+    },
+    {
+      "name": "ExternalProfilePrefill",
+      "fqn": "Granit.Identity.Local.Services.ExternalProfilePrefill",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IExternalLoginService.cs",
+      "line": 88,
+      "members": [
+        {
+          "name": "IsNewUser",
+          "kind": "property",
+          "signature": "bool IsNewUser",
+          "returnType": "bool"
+        },
+        {
+          "name": "Existing",
+          "kind": "method",
+          "signature": "Existing(Guid userId)",
+          "returnType": "ProcessCallbackResult"
+        },
+        {
+          "name": "Created",
+          "kind": "method",
+          "signature": "Created(Guid userId)",
+          "returnType": "ProcessCallbackResult"
+        },
+        {
+          "name": "NeedsProfile",
+          "kind": "method",
+          "signature": "NeedsProfile(ExternalProfilePrefill prefill)",
+          "returnType": "ProcessCallbackResult"
+        }
+      ]
     },
     {
       "name": "GranitPasskeyAssertionResult",
@@ -27745,7 +27819,7 @@
         {
           "name": "ProcessCallbackAsync",
           "kind": "method",
-          "signature": "ProcessCallbackAsync(ClaimsPrincipal principal, string provider, CancellationToken cancellationToken = default)",
+          "signature": "ProcessCallbackAsync(ClaimsPrincipal principal, string provider, bool allowRegistration, CancellationToken cancellationToken = default)",
           "returnType": "Task<ProcessCallbackResult>"
         }
       ]
@@ -28010,7 +28084,41 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/IExternalLoginService.cs",
-      "line": 58,
+      "line": 108,
+      "members": [
+        {
+          "name": "IsNewUser",
+          "kind": "property",
+          "signature": "bool IsNewUser",
+          "returnType": "bool"
+        },
+        {
+          "name": "Existing",
+          "kind": "method",
+          "signature": "Existing(Guid userId)",
+          "returnType": "ProcessCallbackResult"
+        },
+        {
+          "name": "Created",
+          "kind": "method",
+          "signature": "Created(Guid userId)",
+          "returnType": "ProcessCallbackResult"
+        },
+        {
+          "name": "NeedsProfile",
+          "kind": "method",
+          "signature": "NeedsProfile(ExternalProfilePrefill prefill)",
+          "returnType": "ProcessCallbackResult"
+        }
+      ]
+    },
+    {
+      "name": "ProcessCallbackStatus",
+      "fqn": "Granit.Identity.Local.Services.ProcessCallbackStatus",
+      "kind": "enum",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IExternalLoginService.cs",
+      "line": 63,
       "members": []
     },
     {

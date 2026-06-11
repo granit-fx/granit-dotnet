@@ -871,6 +871,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         await _server.ExternalLoginService.DidNotReceive().ProcessCallbackAsync(
             Arg.Any<System.Security.Claims.ClaimsPrincipal>(),
             Arg.Any<string>(),
+            Arg.Any<bool>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -878,8 +879,8 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task ExternalLoginCallback_ValidProvider_Returns200()
     {
         _server.ExternalLoginService
-            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<CancellationToken>())
-            .Returns(new ProcessCallbackResult(AccountEndpointsTestServer.TestUserId, false));
+            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns(ProcessCallbackResult.Existing(AccountEndpointsTestServer.TestUserId));
 
         using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
         request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "Google");
@@ -894,7 +895,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task ExternalLoginCallback_DuplicateEmail_Returns409()
     {
         _server.ExternalLoginService
-            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<CancellationToken>())
+            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<bool>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("DuplicateEmail: email already in use."));
 
         using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
@@ -910,7 +911,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task ExternalLoginCallback_UserNotFound_Returns403()
     {
         _server.ExternalLoginService
-            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "GitHub", Arg.Any<CancellationToken>())
+            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "GitHub", Arg.Any<bool>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("User not found for external login."));
 
         using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
@@ -929,8 +930,8 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         // ticket ("Google") wins. Otherwise an attacker who lands an OAuth callback for
         // one provider could mis-attribute the resulting external login.
         _server.ExternalLoginService
-            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<CancellationToken>())
-            .Returns(new ProcessCallbackResult(AccountEndpointsTestServer.TestUserId, false));
+            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns(ProcessCallbackResult.Existing(AccountEndpointsTestServer.TestUserId));
 
         using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback?provider=GitHub");
         request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "Google");
@@ -942,11 +943,166 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         await _server.ExternalLoginService.Received(1).ProcessCallbackAsync(
             Arg.Any<System.Security.Claims.ClaimsPrincipal>(),
             "Google",
+            Arg.Any<bool>(),
             Arg.Any<CancellationToken>());
         await _server.ExternalLoginService.DidNotReceive().ProcessCallbackAsync(
             Arg.Any<System.Security.Claims.ClaimsPrincipal>(),
             "GitHub",
+            Arg.Any<bool>(),
             Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExternalLoginCallback_ExistingUser_EstablishesSession()
+    {
+        LocalIdentity user = new() { Id = AccountEndpointsTestServer.TestUserId, Email = "external@example.com" };
+        _server.UserManager.FindByIdAsync(AccountEndpointsTestServer.TestUserIdString).Returns(user);
+        _server.ExternalLoginService
+            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns(ProcessCallbackResult.Existing(AccountEndpointsTestServer.TestUserId));
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
+        request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "Google");
+
+        HttpResponseMessage response = await _server.AnonymousClient.SendAsync(
+            request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        ExternalLoginCallbackResponse? body = await response.Content
+            .ReadFromJsonAsync<ExternalLoginCallbackResponse>(TestContext.Current.CancellationToken);
+        body.ShouldNotBeNull();
+        body.Status.ShouldBe(ExternalLoginCallbackResponse.StatusCompleted);
+        await _server.SignInManager.Received(1).SignInAsync(user, false, null);
+    }
+
+    [Fact]
+    public async Task ExternalLoginCallback_NeedsProfile_ReturnsTokenAndNoSession()
+    {
+        _server.ExternalLoginService
+            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns(ProcessCallbackResult.NeedsProfile(
+                new ExternalProfilePrefill("Google", "provider-key-9", Email: null, "Ada", "Lovelace", "ada")));
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
+        request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "Google");
+
+        HttpResponseMessage response = await _server.AnonymousClient.SendAsync(
+            request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        ExternalLoginCallbackResponse? body = await response.Content
+            .ReadFromJsonAsync<ExternalLoginCallbackResponse>(TestContext.Current.CancellationToken);
+        body.ShouldNotBeNull();
+        body.Status.ShouldBe(ExternalLoginCallbackResponse.StatusNeedsProfileCompletion);
+        body.UserId.ShouldBeNull();
+        body.ContinuationToken.ShouldNotBeNullOrEmpty();
+        body.Prefill.ShouldNotBeNull();
+        body.Prefill!.FirstName.ShouldBe("Ada");
+        // No session established for an incomplete profile.
+        await _server.SignInManager.DidNotReceive().SignInAsync(Arg.Any<LocalIdentity>(), Arg.Any<bool>());
+    }
+
+    [Fact]
+    public async Task CompleteExternalRegistration_ValidToken_CreatesLinksAndSignsIn()
+    {
+        // Obtain a real continuation token by first driving the needs-profile callback.
+        string token = await ObtainContinuationTokenAsync("Google", "pk-complete", email: null);
+
+        _server.UserManager.CreateAsync(Arg.Any<LocalIdentity>())
+            .Returns(Microsoft.AspNetCore.Identity.IdentityResult.Success);
+        _server.UserManager.AddLoginAsync(Arg.Any<LocalIdentity>(), Arg.Any<Microsoft.AspNetCore.Identity.UserLoginInfo>())
+            .Returns(Microsoft.AspNetCore.Identity.IdentityResult.Success);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/external-logins/complete-registration",
+            new RegisterExternalRequest(token, "ada@example.com", "Ada", "Lovelace"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        await _server.UserManager.Received(1).CreateAsync(Arg.Is<LocalIdentity>(u => u.Email == "ada@example.com"));
+        await _server.UserManager.Received(1).AddLoginAsync(
+            Arg.Any<LocalIdentity>(), Arg.Any<Microsoft.AspNetCore.Identity.UserLoginInfo>());
+        // Email was not provider-verified → confirmation must be sent.
+        await _server.EmailConfirmation.Received(1).SendConfirmationEmailAsync(
+            Arg.Any<string>(), "ada@example.com", Arg.Any<CancellationToken>());
+        await _server.SignInManager.Received(1).SignInAsync(Arg.Any<LocalIdentity>(), false, null);
+        await _server.EventBus.Received(1).PublishAsync(Arg.Any<UserRegisteredEto>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CompleteExternalRegistration_InvalidToken_Returns400()
+    {
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/external-logins/complete-registration",
+            new RegisterExternalRequest("not-a-valid-token", "ada@example.com"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        await _server.UserManager.DidNotReceive().CreateAsync(Arg.Any<LocalIdentity>());
+    }
+
+    [Fact]
+    public async Task CompleteExternalRegistration_SelfRegistrationDisabled_Returns403()
+    {
+        _server.SettingProvider
+            .GetOrNullAsync(IdentityLocalSettingNames.AllowSelfRegistration, Arg.Any<CancellationToken>())
+            .Returns("false");
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/external-logins/complete-registration",
+            new RegisterExternalRequest("any-token", "ada@example.com"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task CompleteExternalRegistration_TenantMismatch_Returns403()
+    {
+        // Mint the token while the request resolves to tenant A...
+        var tenantA = Guid.NewGuid();
+        _server.CurrentTenant.IsAvailable.Returns(true);
+        _server.CurrentTenant.Id.Returns(tenantA);
+        string token = await ObtainContinuationTokenAsync("Google", "pk-tenant", email: null);
+
+        // ...then redeem it while the request resolves to tenant B.
+        _server.CurrentTenant.Id.Returns(Guid.NewGuid());
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/external-logins/complete-registration",
+            new RegisterExternalRequest(token, "ada@example.com"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        await _server.UserManager.DidNotReceive().CreateAsync(Arg.Any<LocalIdentity>());
+    }
+
+    [Fact]
+    public async Task StartExternalLogin_UnknownProvider_Returns400()
+    {
+        // Registry returns no scheme for an unknown provider → 400 before any challenge.
+        HttpResponseMessage response = await _server.AnonymousClient.GetAsync(
+            "/account/external-logins/challenge/Unknown/start",
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    private async Task<string> ObtainContinuationTokenAsync(string provider, string providerKey, string? email)
+    {
+        _server.ExternalLoginService
+            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), provider, Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns(ProcessCallbackResult.NeedsProfile(
+                new ExternalProfilePrefill(provider, providerKey, email, "Ada", "Lovelace", "ada")));
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
+        request.Headers.Add(TestExternalAuthHandler.ProviderHeader, provider);
+
+        HttpResponseMessage response = await _server.AnonymousClient.SendAsync(
+            request, TestContext.Current.CancellationToken);
+        ExternalLoginCallbackResponse body = (await response.Content
+            .ReadFromJsonAsync<ExternalLoginCallbackResponse>(TestContext.Current.CancellationToken))!;
+        return body.ContinuationToken!;
     }
 
     // -------------------------------------------------------------------------

@@ -4,6 +4,7 @@ using Granit.Caching;
 using Granit.Http.ApiDocumentation;
 using Granit.Identity.Local.Endpoints.Endpoints;
 using Granit.Identity.Local.Endpoints.Internal;
+using Granit.Identity.Local.Endpoints.Options;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Validation;
@@ -33,6 +34,7 @@ public sealed class GranitIdentityLocalEndpointsModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddLocalizationResource<IdentityLocalEndpointsLocalizationResource>();
+        context.Services.AddOptions<AccountEndpointsOptions>().BindConfiguration(AccountEndpointsOptions.SectionName);
         context.Services.AddScoped<IdentityLocalConfigProvider>();
         context.Services.TryAddEnumerable(
             ServiceDescriptor.Singleton<ISchemaExampleProvider, IdentityLocalSchemaExampleProvider>());

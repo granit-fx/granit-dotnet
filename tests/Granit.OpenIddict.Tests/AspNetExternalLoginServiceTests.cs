@@ -27,6 +27,9 @@ public sealed class AspNetExternalLoginServiceTests
         IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
         _userManager = Substitute.For<UserManager<LocalIdentity>>(
             store, null, null, null, null, null, null, null, null);
+        // RequireUniqueEmail gates the "needs profile completion" branch; default options (false)
+        // keep the happy path creating directly.
+        _userManager.Options = new IdentityOptions();
 
         _sut = new AspNetExternalLoginService(
             _userManager,
@@ -168,7 +171,7 @@ public sealed class AspNetExternalLoginServiceTests
         _userManager.FindByLoginAsync("Google", "provider-key-123").Returns(user);
 
         ProcessCallbackResult result =
-            await _sut.ProcessCallbackAsync(principal, "Google", TestContext.Current.CancellationToken);
+            await _sut.ProcessCallbackAsync(principal, "Google", allowRegistration: true, TestContext.Current.CancellationToken);
 
         result.UserId.ShouldBe(user.Id);
         result.IsNewUser.ShouldBeFalse();
@@ -186,7 +189,7 @@ public sealed class AspNetExternalLoginServiceTests
         _userManager.AddLoginAsync(user, Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Success);
 
         ProcessCallbackResult result =
-            await _sut.ProcessCallbackAsync(principal, "Google", TestContext.Current.CancellationToken);
+            await _sut.ProcessCallbackAsync(principal, "Google", allowRegistration: true, TestContext.Current.CancellationToken);
 
         result.UserId.ShouldBe(user.Id);
         result.IsNewUser.ShouldBeFalse();
@@ -211,7 +214,7 @@ public sealed class AspNetExternalLoginServiceTests
             .Returns(IdentityResult.Success);
 
         ProcessCallbackResult result =
-            await _sut.ProcessCallbackAsync(principal, "Google", TestContext.Current.CancellationToken);
+            await _sut.ProcessCallbackAsync(principal, "Google", allowRegistration: true, TestContext.Current.CancellationToken);
 
         result.IsNewUser.ShouldBeTrue();
         await _userManager.Received(1).CreateAsync(Arg.Is<LocalIdentity>(u =>
@@ -235,7 +238,7 @@ public sealed class AspNetExternalLoginServiceTests
         _userManager.FindByEmailAsync("noone@example.com").Returns((LocalIdentity?)null);
 
         InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
-            () => _sut.ProcessCallbackAsync(principal, "Google", TestContext.Current.CancellationToken));
+            () => _sut.ProcessCallbackAsync(principal, "Google", allowRegistration: true, TestContext.Current.CancellationToken));
 
         ex.Message.ShouldContain("Account not found");
     }
@@ -246,7 +249,7 @@ public sealed class AspNetExternalLoginServiceTests
         var principal = new ClaimsPrincipal(new ClaimsIdentity()); // no claims
 
         await Should.ThrowAsync<InvalidOperationException>(
-            () => _sut.ProcessCallbackAsync(principal, "Google", TestContext.Current.CancellationToken));
+            () => _sut.ProcessCallbackAsync(principal, "Google", allowRegistration: true, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -257,9 +260,49 @@ public sealed class AspNetExternalLoginServiceTests
         _userManager.FindByLoginAsync("Microsoft", "ni-key").Returns(user);
 
         ProcessCallbackResult result =
-            await _sut.ProcessCallbackAsync(principal, "Microsoft", TestContext.Current.CancellationToken);
+            await _sut.ProcessCallbackAsync(principal, "Microsoft", allowRegistration: true, TestContext.Current.CancellationToken);
 
         result.UserId.ShouldBe(user.Id);
+    }
+
+    [Fact]
+    public async Task ProcessCallbackAsync_RegistrationDisabled_NewUser_Throws()
+    {
+        ClaimsPrincipal principal = CreatePrincipal("sub", "no-account-key");
+        _userManager.FindByLoginAsync("Google", "no-account-key").Returns((LocalIdentity?)null);
+        _claimsMapper.MapToUserProperties(principal, "Google")
+            .Returns(new ExternalUserProperties { Email = "nobody@example.com" });
+        _userManager.FindByEmailAsync("nobody@example.com").Returns((LocalIdentity?)null);
+
+        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
+            () => _sut.ProcessCallbackAsync(principal, "Google", allowRegistration: false, TestContext.Current.CancellationToken));
+
+        ex.Message.ShouldContain("Account not found");
+        await _userManager.DidNotReceive().CreateAsync(Arg.Any<LocalIdentity>());
+    }
+
+    [Fact]
+    public async Task ProcessCallbackAsync_RequireUniqueEmailButNoEmail_ReturnsNeedsProfile()
+    {
+        _userManager.Options = new IdentityOptions { User = { RequireUniqueEmail = true } };
+
+        ClaimsPrincipal principal = CreatePrincipal("sub", "no-email-key");
+        _userManager.FindByLoginAsync("Google", "no-email-key").Returns((LocalIdentity?)null);
+        _claimsMapper.MapToUserProperties(principal, "Google")
+            .Returns(new ExternalUserProperties { FirstName = "Ada", LastName = "Lovelace" });
+
+        ProcessCallbackResult result =
+            await _sut.ProcessCallbackAsync(principal, "Google", allowRegistration: true, TestContext.Current.CancellationToken);
+
+        result.Status.ShouldBe(ProcessCallbackStatus.NewUserNeedsProfile);
+        result.UserId.ShouldBeNull();
+        result.Prefill.ShouldNotBeNull();
+        result.Prefill!.Provider.ShouldBe("Google");
+        result.Prefill.ProviderKey.ShouldBe("no-email-key");
+        result.Prefill.Email.ShouldBeNull();
+        result.Prefill.FirstName.ShouldBe("Ada");
+        await _userManager.DidNotReceive().CreateAsync(Arg.Any<LocalIdentity>());
+        await _eventBus.DidNotReceive().PublishAsync(Arg.Any<UserRegisteredEto>(), Arg.Any<CancellationToken>());
     }
 
     private static LocalIdentity CreateUser() => new() { Id = Guid.NewGuid(), Email = "user@test.com" };

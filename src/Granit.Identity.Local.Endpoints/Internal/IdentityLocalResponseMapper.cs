@@ -14,6 +14,19 @@ internal static class IdentityLocalResponseMapper
     internal static ImpersonationResponse ToResponse(ImpersonationResult result) =>
         new(result.AccessToken, result.RefreshToken, result.ExpiresIn);
 
-    internal static ExternalLoginCallbackResponse ToResponse(ProcessCallbackResult result) =>
-        new(result.UserId, result.IsNewUser);
+    internal static ExternalLoginCallbackResponse ToResponse(ProcessCallbackResult result, string? continuationToken) =>
+        result.Status == ProcessCallbackStatus.NewUserNeedsProfile
+            ? new ExternalLoginCallbackResponse(
+                ExternalLoginCallbackResponse.StatusNeedsProfileCompletion,
+                UserId: null,
+                IsNewUser: false,
+                ContinuationToken: continuationToken,
+                Prefill: new ExternalProfilePrefillResponse(
+                    result.Prefill!.Email, result.Prefill.FirstName, result.Prefill.LastName))
+            : new ExternalLoginCallbackResponse(
+                ExternalLoginCallbackResponse.StatusCompleted,
+                result.UserId,
+                result.IsNewUser,
+                ContinuationToken: null,
+                Prefill: null);
 }

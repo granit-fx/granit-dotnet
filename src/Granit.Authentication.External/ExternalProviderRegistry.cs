@@ -22,6 +22,10 @@ internal sealed class ExternalProviderRegistry(
         FindConfigured(providerName) is not null;
 
     /// <inheritdoc/>
+    public string? GetSchemeName(string providerName) =>
+        FindConfigured(providerName)?.SchemeName;
+
+    /// <inheritdoc/>
     public async Task<bool> IsProviderAvailableAsync(
         string providerName, CancellationToken cancellationToken = default)
     {

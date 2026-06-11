@@ -85,7 +85,7 @@ internal sealed class AspNetExternalLoginService(
 
     /// <inheritdoc/>
     public async Task<ProcessCallbackResult> ProcessCallbackAsync(
-        ClaimsPrincipal principal, string provider, CancellationToken cancellationToken = default)
+        ClaimsPrincipal principal, string provider, bool allowRegistration, CancellationToken cancellationToken = default)
     {
         // 1. Try to find an existing user by external login
         string? providerKey = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value
@@ -101,7 +101,7 @@ internal sealed class AspNetExternalLoginService(
 
         if (existingUser is not null)
         {
-            return new ProcessCallbackResult(existingUser.Id, false);
+            return ProcessCallbackResult.Existing(existingUser.Id);
         }
 
         // 2. Try to find by email
@@ -119,17 +119,31 @@ internal sealed class AspNetExternalLoginService(
                     new UserLoginInfo(provider, providerKey, provider))
                     .ConfigureAwait(false);
 
-                return new ProcessCallbackResult(existingUser.Id, false);
+                return ProcessCallbackResult.Existing(existingUser.Id);
             }
         }
 
-        // 3. Auto-register if enabled
-        if (!externalAuthOptions.Value.AutoRegisterExternalUsers)
+        // 3. New account. Gated by the master account-creation switch (per-tenant, resolved by the
+        //    caller) AND the host-level AutoRegisterExternalUsers policy. Either disabled → no
+        //    creation; an existing account would have authenticated above, so this is a 403 path.
+        if (!allowRegistration || !externalAuthOptions.Value.AutoRegisterExternalUsers)
         {
             throw new InvalidOperationException(
-                "Account not found. Party your administrator.");
+                "Account not found. No account is linked to this external login.");
         }
 
+        // 3a. Insufficient provider data → do NOT 1-click create. Surface a prefill so the caller
+        //     can drive the classic registration flow pre-filled and complete creation once the
+        //     user supplies the missing fields. RequireUniqueEmail without an email is the canonical
+        //     case (CreateAsync would otherwise fail or create an unreachable account).
+        bool emailMissing = string.IsNullOrWhiteSpace(props.Email);
+        if (userManager.Options.User.RequireUniqueEmail && emailMissing)
+        {
+            return ProcessCallbackResult.NeedsProfile(new ExternalProfilePrefill(
+                provider, providerKey, props.Email, props.FirstName, props.LastName, props.UserName));
+        }
+
+        // 3b. Sufficient data → create and link.
         LocalIdentity newUser = new()
         {
             UserName = props.Email ?? props.UserName ?? providerKey,
@@ -155,6 +169,6 @@ internal sealed class AspNetExternalLoginService(
             new UserRegisteredEto(newUser.Id, newUser.TenantId),
             cancellationToken).ConfigureAwait(false);
 
-        return new ProcessCallbackResult(newUser.Id, true);
+        return ProcessCallbackResult.Created(newUser.Id);
     }
 }

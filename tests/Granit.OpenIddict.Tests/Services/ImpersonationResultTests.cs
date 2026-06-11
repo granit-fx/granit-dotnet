@@ -73,11 +73,12 @@ public sealed class KeyRotationResultTests
 public sealed class ProcessCallbackResultTests
 {
     [Fact]
-    public void ProcessCallbackResult_Properties()
+    public void ProcessCallbackResult_Created()
     {
         var userId = Guid.NewGuid();
-        ProcessCallbackResult result = new(userId, true);
+        var result = ProcessCallbackResult.Created(userId);
 
+        result.Status.ShouldBe(ProcessCallbackStatus.NewUserCreated);
         result.UserId.ShouldBe(userId);
         result.IsNewUser.ShouldBeTrue();
     }
@@ -86,17 +87,30 @@ public sealed class ProcessCallbackResultTests
     public void ProcessCallbackResult_ExistingUser()
     {
         var userId = Guid.NewGuid();
-        ProcessCallbackResult result = new(userId, false);
+        var result = ProcessCallbackResult.Existing(userId);
 
+        result.Status.ShouldBe(ProcessCallbackStatus.ExistingUser);
         result.IsNewUser.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void ProcessCallbackResult_NeedsProfile()
+    {
+        var result = ProcessCallbackResult.NeedsProfile(
+            new ExternalProfilePrefill("Google", "key-1", "a@b.com", "Ada", "Lovelace", "ada"));
+
+        result.Status.ShouldBe(ProcessCallbackStatus.NewUserNeedsProfile);
+        result.UserId.ShouldBeNull();
+        result.IsNewUser.ShouldBeFalse();
+        result.Prefill!.ProviderKey.ShouldBe("key-1");
     }
 
     [Fact]
     public void ProcessCallbackResult_Equality()
     {
         var userId = Guid.NewGuid();
-        ProcessCallbackResult a = new(userId, true);
-        ProcessCallbackResult b = new(userId, true);
+        var a = ProcessCallbackResult.Created(userId);
+        var b = ProcessCallbackResult.Created(userId);
 
         a.ShouldBe(b);
     }

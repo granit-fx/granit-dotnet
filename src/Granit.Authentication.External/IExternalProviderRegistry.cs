@@ -23,6 +23,15 @@ public interface IExternalProviderRegistry
     bool IsProviderConfigured(string providerName);
 
     /// <summary>
+    /// Resolves the canonical authentication scheme name for a configured provider, matching the
+    /// provider name case-insensitively. Returns <see langword="null"/> if not configured. Use this
+    /// to issue an OAuth challenge against the exact scheme the host registered, avoiding a casing
+    /// mismatch between the request and <c>AddGoogle()</c>/<c>AddMicrosoftAccount()</c>.
+    /// </summary>
+    /// <param name="providerName">The provider name (e.g., "google", "Microsoft").</param>
+    string? GetSchemeName(string providerName);
+
+    /// <summary>
     /// Returns <see langword="true"/> only if the provider is both configured
     /// <em>and</em> backed by a registered authentication handler — i.e. an OAuth challenge
     /// for it would actually succeed.

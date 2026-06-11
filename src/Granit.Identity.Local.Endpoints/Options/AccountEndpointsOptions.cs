@@ -14,6 +14,16 @@ public sealed class AccountEndpointsOptions
     /// <summary>Route prefix for admin management endpoints. Default: <c>"admin"</c>.</summary>
     public string AdminRoutePrefix { get; set; } = "admin";
 
+    /// <summary>
+    /// Absolute frontend URL the external-login callback redirects the browser to after processing.
+    /// When set, the callback responds with <c>302</c> and appends <c>status</c> (and, when profile
+    /// completion is required, <c>token</c> + non-sensitive prefill, or otherwise the validated
+    /// <c>returnUrl</c>). When <see langword="null"/> (the default), the callback returns the JSON
+    /// <c>ExternalLoginCallbackResponse</c> instead — suitable for headless/test hosts. The
+    /// <c>?mode=json</c> query forces the JSON response regardless of this setting.
+    /// </summary>
+    public string? ExternalLoginCallbackRedirectUrl { get; set; }
+
     /// <summary>OpenAPI tag for authentication endpoints (login, 2FA completion). Default: <c>"Account - Login"</c>.</summary>
     public string LoginTagName { get; set; } = "Account - Login";
 

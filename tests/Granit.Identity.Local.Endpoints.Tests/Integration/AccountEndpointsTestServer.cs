@@ -236,6 +236,10 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(dataFilter);
         builder.Services.AddSingleton<IPasswordHasher<LocalIdentity>, PasswordHasher<LocalIdentity>>();
 
+        // Data protection — the external-login callback mints a continuation token via
+        // IDataProtectionProvider when a provider returns insufficient data.
+        builder.Services.AddDataProtection();
+
         // Options
         builder.Services.AddSingleton(
             Microsoft.Extensions.Options.Options.Create(new AccountEndpointsOptions()));

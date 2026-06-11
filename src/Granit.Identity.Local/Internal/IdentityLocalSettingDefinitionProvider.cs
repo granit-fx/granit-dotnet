@@ -18,7 +18,20 @@ internal sealed class IdentityLocalSettingDefinitionProvider : ISettingDefinitio
             DefaultValue = "false",
             IsVisibleToClients = true,
             DisplayName = "Allow self-registration",
-            Description = "When enabled, new users can create an account via the public registration endpoint.",
+            Description = "Master switch for account creation. When enabled, new users can create an "
+                + "account via the public registration endpoint or an external provider. When disabled, "
+                + "external login authenticates existing accounts only and never creates new ones.",
+            Providers = { "T", "G" },
+        });
+
+        context.Add(new SettingDefinition(IdentityLocalSettingNames.DefaultUserRole)
+        {
+            DefaultValue = "",
+            IsVisibleToClients = false,
+            DisplayName = "Default user role",
+            Description = "Role assigned to every newly self-registered user (local and external). "
+                + "Empty disables the behavior. The role must already exist; otherwise registration "
+                + "succeeds but no role is assigned.",
             Providers = { "T", "G" },
         });
     }
