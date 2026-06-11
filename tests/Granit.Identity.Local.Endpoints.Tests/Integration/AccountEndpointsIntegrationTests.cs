@@ -1088,6 +1088,49 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
+    [Fact]
+    public async Task ExternalLoginCallback_RedirectMode_Completed_Redirects302WithStatus()
+    {
+        const string frontendUrl = "http://localhost:5173/auth/external-callback";
+        await using AccountEndpointsTestServer server = await AccountEndpointsTestServer.CreateAsync(frontendUrl);
+        LocalIdentity user = new() { Id = AccountEndpointsTestServer.TestUserId, Email = "external@example.com" };
+        server.UserManager.FindByIdAsync(AccountEndpointsTestServer.TestUserIdString).Returns(user);
+        server.ExternalLoginService
+            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns(ProcessCallbackResult.Existing(AccountEndpointsTestServer.TestUserId));
+
+        using HttpClient client = server.CreateNonRedirectingAnonymousClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
+        request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "Google");
+        HttpResponseMessage response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.Headers.Location!.ToString().ShouldStartWith(frontendUrl);
+        response.Headers.Location.Query.ShouldContain("status=completed");
+        await server.SignInManager.Received(1).SignInAsync(user, false, null);
+    }
+
+    [Fact]
+    public async Task ExternalLoginCallback_RedirectMode_NeedsProfile_Redirects302WithToken()
+    {
+        const string frontendUrl = "http://localhost:5173/auth/external-callback";
+        await using AccountEndpointsTestServer server = await AccountEndpointsTestServer.CreateAsync(frontendUrl);
+        server.ExternalLoginService
+            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns(ProcessCallbackResult.NeedsProfile(
+                new ExternalProfilePrefill("Google", "pk-redir", Email: null, "Ada", "Lovelace", "ada")));
+
+        using HttpClient client = server.CreateNonRedirectingAnonymousClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
+        request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "Google");
+        HttpResponseMessage response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.Headers.Location!.ToString().ShouldStartWith(frontendUrl);
+        response.Headers.Location.Query.ShouldContain("status=needs-profile-completion");
+        response.Headers.Location.Query.ShouldContain("token=");
+    }
+
     private async Task<string> ObtainContinuationTokenAsync(string provider, string providerKey, string? email)
     {
         _server.ExternalLoginService

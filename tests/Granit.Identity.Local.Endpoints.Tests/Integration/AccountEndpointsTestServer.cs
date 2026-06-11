@@ -134,7 +134,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         DataFilter = dataFilter;
     }
 
-    public static async Task<AccountEndpointsTestServer> CreateAsync()
+    public static async Task<AccountEndpointsTestServer> CreateAsync(
+        string? externalLoginCallbackRedirectUrl = null)
     {
         // Service mocks
         IIdentityProvider identityProvider = Substitute.For<IIdentityProvider>();
@@ -242,7 +243,10 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
 
         // Options
         builder.Services.AddSingleton(
-            Microsoft.Extensions.Options.Options.Create(new AccountEndpointsOptions()));
+            Microsoft.Extensions.Options.Options.Create(new AccountEndpointsOptions
+            {
+                ExternalLoginCallbackRedirectUrl = externalLoginCallbackRedirectUrl,
+            }));
 
         // Real metrics (needs a real IMeterFactory)
         builder.Services.AddMetrics();
@@ -278,6 +282,13 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
             eventBus, fusionCache, settingProvider, timeProvider,
             signInManager, userManager, currentTenant, dataFilter);
     }
+
+    /// <summary>
+    /// Anonymous client that does NOT auto-follow redirects, so a 302 from the external-login
+    /// callback (redirect mode) can be inspected via its Location header.
+    /// </summary>
+    public HttpClient CreateNonRedirectingAnonymousClient() =>
+        new(_app.GetTestServer().CreateHandler()) { BaseAddress = new Uri("http://localhost") };
 
     public async ValueTask DisposeAsync()
     {
