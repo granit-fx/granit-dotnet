@@ -15,7 +15,7 @@ internal sealed class ValidationFieldValidateBatchRequestValidator
         RuleFor(x => x.Fields)
             .NotEmpty()
             .Must(fields => fields.Count <= 20)
-            .WithErrorCodeAndMessage("Validation:MaxBatchSize");
+            .WithErrorCodeAndMessage("Validation:Rule:MaxBatchSize");
 
         RuleForEach(x => x.Fields)
             .SetValidator(new ValidationFieldValidateRequestValidator());

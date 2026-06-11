@@ -31,39 +31,18 @@ public sealed partial class ValidationKeyConventionTests
 {
     private static readonly string RepoRoot = FindRepoRoot();
 
-    [GeneratedRegex(@"^Validation:(Builtin|Format|Hint|Problem):[A-Z][A-Za-z0-9]*$")]
+    // Category ∈ { Builtin (FV native), Format (format/identifier validators), Hint
+    // (pattern hints), Problem (422 problem-details), Rule (framework-generic domain
+    // rules shared across modules, e.g. batch-size limits) }.
+    [GeneratedRegex(@"^Validation:(Builtin|Format|Hint|Problem|Rule):[A-Z][A-Za-z0-9]*$")]
     private static partial Regex ConformingKey();
 
     /// <summary>
     /// Keys still on the legacy flat scheme, pending migration to the category
-    /// convention (or relocation to their owning module). MUST shrink to empty.
+    /// convention (or relocation to their owning module). The migration is complete —
+    /// the backlog is empty. A NEW key must conform or be added here with justification.
     /// </summary>
-    private static readonly HashSet<string> PendingMigration = new(StringComparer.Ordinal)
-    {
-        // → relocate to the owning module's resource as {Module}:Validation:{Rule} (Phase 2).
-        // These have no framework consumer; they were left behind when the owning modules
-        // (Analytics, Metering, Payments, Invoicing, Entities, QueryEngine, …) moved to granit-business.
-        "Validation:CalendarRangeInverted",
-        "Validation:CalendarRangeTooWide",
-        "Validation:CodeInvalidFormat",
-        "Validation:EntityViewShareEmptyAudience",
-        "Validation:MaxBatchSize",
-        "Validation:MaxMetadataKeys",
-        "Validation:MeteringDistinctPropertyNotAllowed",
-        "Validation:MeteringDistinctPropertyRequired",
-        "Validation:MeteringRecomputeWindowInvalid",
-        "Validation:PaymentAmountOutOfRange",
-        "Validation:PeriodSpecBoundsCode",
-        "Validation:PeriodSpecOrderingCode",
-        "Validation:RegroupGroupKeyRequired",
-        "Validation:ReorderDeltaIllFormed",
-        "Validation:ScopeRequired",
-        "Validation:SearchTermRequired",
-        "Validation:TargetIdRequired",
-        "Validation:TargetTypeRequired",
-        "Validation:TooManyDeltas",
-        "Validation:ValidToAfterValidFrom",
-    };
+    private static readonly HashSet<string> PendingMigration = new(StringComparer.Ordinal);
 
     [Fact]
     public void Framework_validation_keys_follow_the_category_convention()

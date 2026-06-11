@@ -1,9 +1,7 @@
 {
   "culture": "en-GB",
   "texts": {
-    "Validation:EntityViewShareEmptyAudience": "Audience must include at least one role or user.",
     "Validation:Format:Email": "'{PropertyName}' is not a valid email address.",
-    "Validation:Format:UrlHttps": "The URL must use HTTPS.",
-    "Validation:PaymentAmountOutOfRange": "The payment amount is out of the allowed range."
+    "Validation:Format:UrlHttps": "The URL must use HTTPS."
   }
 }

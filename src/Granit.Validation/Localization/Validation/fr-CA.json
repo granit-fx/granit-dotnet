@@ -3,9 +3,7 @@
   "texts": {
     "Validation:Builtin:CreditCard": "'{PropertyName}' n'est pas un numéro de carte de crédit valide.",
     "Validation:Builtin:Email": "'{PropertyName}' n'est pas une adresse courriel valide.",
-    "Validation:EntityViewShareEmptyAudience": "L'audience doit comporter au moins un rôle ou un utilisateur.",
     "Validation:Format:Email": "'{PropertyName}' n'est pas une adresse courriel valide.",
-    "Validation:Format:UrlHttps": "L'URL doit utiliser HTTPS.",
-    "Validation:PaymentAmountOutOfRange": "Le montant du paiement est hors de la plage autorisée."
+    "Validation:Format:UrlHttps": "L'URL doit utiliser HTTPS."
   }
 }

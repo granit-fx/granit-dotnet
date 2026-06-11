@@ -21,7 +21,7 @@ internal sealed class IdentityUserCacheBatchRequestValidator : GranitValidator<I
         RuleFor(x => x.UserIds)
             .NotEmpty()
             .Must(ids => ids.Count <= MaxBatchSize)
-            .WithErrorCodeAndMessage("Validation:MaxBatchSize");
+            .WithErrorCodeAndMessage("Validation:Rule:MaxBatchSize");
 
         RuleForEach(x => x.UserIds)
             .NotEmpty()
