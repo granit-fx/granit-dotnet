@@ -2,6 +2,7 @@ using Granit.Authentication.External.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Authentication.External.Extensions;
 
@@ -19,6 +20,10 @@ public static class ExternalAuthenticationServiceCollectionExtensions
     {
         services.AddOptions<ExternalAuthOptions>()
             .BindConfiguration(ExternalAuthOptions.SectionName);
+
+        // The registry only needs the bound options + the registered auth schemes — no auth-server
+        // dependency — so it lives here, making external-provider availability self-contained.
+        services.TryAddSingleton<IExternalProviderRegistry, ExternalProviderRegistry>();
 
         return services;
     }

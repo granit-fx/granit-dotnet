@@ -77,7 +77,6 @@ public sealed class GranitOpenIddictModule : GranitModule
         context.Services.TryAddScoped<IAccountDeletionService, Internal.AspNetAccountDeletionService>();
         context.Services.TryAddScoped<IImpersonationService, Internal.AspNetImpersonationService>();
         context.Services.TryAddScoped<IKeyRotationService, Internal.KeyRotationService>();
-        context.Services.TryAddSingleton<IExternalProviderRegistry, OpenIddictExternalProviderRegistry>();
 
         // Load signing/encryption keys from DB at startup (replaces ephemeral keys)
         context.Services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>,

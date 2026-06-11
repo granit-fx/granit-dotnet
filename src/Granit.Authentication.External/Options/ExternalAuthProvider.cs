@@ -43,6 +43,13 @@ public sealed class ExternalAuthProvider
     public string? CallbackPath { get; set; }
 
     /// <summary>
+    /// Optional human-friendly label for the provider (e.g. shown on a "Continue with …" button).
+    /// When unset, a default is derived from <see cref="Type"/> (or <see cref="SchemeName"/> for
+    /// the generic <c>Oidc</c> provider, which can have several instances).
+    /// </summary>
+    public string? DisplayName { get; set; }
+
+    /// <summary>
     /// Provider-specific extra settings keyed by name (e.g. Apple <c>TeamId</c>/<c>KeyId</c>/
     /// <c>PrivateKey</c>, a GitHub Enterprise base URL). Interpreted by each provider package.
     /// </summary>
@@ -50,4 +57,13 @@ public sealed class ExternalAuthProvider
 
     /// <summary>The resolved scheme name: <see cref="Name"/> when set, otherwise <see cref="Type"/>.</summary>
     public string SchemeName => string.IsNullOrWhiteSpace(Name) ? Type : Name!;
+
+    /// <summary>
+    /// The label to display for this provider: <see cref="DisplayName"/> when set, otherwise the
+    /// provider <see cref="Type"/> (already display-ready for Google/Microsoft/Apple/GitHub/Facebook),
+    /// or the <see cref="SchemeName"/> for the generic <c>Oidc</c> provider.
+    /// </summary>
+    public string ResolvedDisplayName => string.IsNullOrWhiteSpace(DisplayName)
+        ? (string.Equals(Type, "Oidc", StringComparison.OrdinalIgnoreCase) ? SchemeName : Type)
+        : DisplayName!;
 }

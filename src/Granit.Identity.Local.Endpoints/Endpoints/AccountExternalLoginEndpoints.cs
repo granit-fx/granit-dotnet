@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Security.Claims;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
+using Granit.Authentication.External;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;

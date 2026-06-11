@@ -87,4 +87,13 @@ public sealed class ExternalAuthenticationTests
         options.Providers.ShouldBeEmpty();
         ExternalAuthOptions.SectionName.ShouldBe("Authentication:External");
     }
+
+    [Fact]
+    public void ResolvedDisplayName_DefaultsToTypeOrSchemeNameForOidc()
+    {
+        new ExternalAuthProvider { Type = "Google" }.ResolvedDisplayName.ShouldBe("Google");
+        new ExternalAuthProvider { Type = "Oidc", Name = "corp-sso" }.ResolvedDisplayName.ShouldBe("corp-sso");
+        new ExternalAuthProvider { Type = "Google", DisplayName = "Sign in with Google" }
+            .ResolvedDisplayName.ShouldBe("Sign in with Google");
+    }
 }

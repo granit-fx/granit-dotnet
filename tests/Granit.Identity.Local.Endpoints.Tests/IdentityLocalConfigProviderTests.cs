@@ -1,3 +1,4 @@
+using Granit.Authentication.External;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Endpoints;
 using Granit.Settings.Services;
@@ -63,5 +64,35 @@ public sealed class IdentityLocalConfigProviderTests
         IdentityLocalConfigResponse result = await provider.GetConfigAsync(TestContext.Current.CancellationToken);
 
         result.AllowSelfRegistration.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task GetConfigAsync_NoRegistry_ReturnsNoExternalProviders()
+    {
+        ISettingProvider settings = Substitute.For<ISettingProvider>();
+
+        IdentityLocalConfigProvider provider = new(settings);
+
+        IdentityLocalConfigResponse result = await provider.GetConfigAsync(TestContext.Current.CancellationToken);
+
+        result.ExternalProviders.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task GetConfigAsync_WithRegistry_MapsAvailableProviders()
+    {
+        ISettingProvider settings = Substitute.For<ISettingProvider>();
+        IExternalProviderRegistry registry = Substitute.For<IExternalProviderRegistry>();
+        registry.GetAvailableProvidersAsync(Arg.Any<CancellationToken>())
+            .Returns([new ExternalProviderInfo("Google", "Google", "Google")]);
+
+        IdentityLocalConfigProvider provider = new(settings, registry);
+
+        IdentityLocalConfigResponse result = await provider.GetConfigAsync(TestContext.Current.CancellationToken);
+
+        result.ExternalProviders.Count.ShouldBe(1);
+        result.ExternalProviders[0].Name.ShouldBe("Google");
+        result.ExternalProviders[0].Type.ShouldBe("Google");
+        result.ExternalProviders[0].DisplayName.ShouldBe("Google");
     }
 }

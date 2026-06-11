@@ -1299,6 +1299,7 @@
       "name": "Granit.Identity.Local.Endpoints",
       "deps": [
         "Granit.Auditing",
+        "Granit.Authentication.External",
         "Granit.Authorization",
         "Granit.Caching",
         "Granit.Http.Abstractions",
@@ -7319,7 +7320,7 @@
       "kind": "class",
       "project": "Granit.Authentication.External",
       "file": "src/Granit.Authentication.External/Extensions/ExternalAuthenticationServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitExternalProviders",
@@ -7344,6 +7345,15 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "ExternalProviderInfo",
+      "fqn": "Granit.Authentication.External.ExternalProviderInfo",
+      "kind": "record",
+      "project": "Granit.Authentication.External",
+      "file": "src/Granit.Authentication.External/IExternalProviderRegistry.cs",
+      "line": 56,
+      "members": []
     },
     {
       "name": "GranitAuthenticationExternalFacebookModule",
@@ -7412,6 +7422,40 @@
           "kind": "method",
           "signature": "OnApplicationInitialization(ApplicationInitializationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IExternalProviderRegistry",
+      "fqn": "Granit.Authentication.External.IExternalProviderRegistry",
+      "kind": "interface",
+      "project": "Granit.Authentication.External",
+      "file": "src/Granit.Authentication.External/IExternalProviderRegistry.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "GetConfiguredProviderNames",
+          "kind": "method",
+          "signature": "GetConfiguredProviderNames()",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "IsProviderConfigured",
+          "kind": "method",
+          "signature": "IsProviderConfigured(string providerName)",
+          "returnType": "bool"
+        },
+        {
+          "name": "IsProviderAvailableAsync",
+          "kind": "method",
+          "signature": "IsProviderAvailableAsync(string providerName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "GetAvailableProvidersAsync",
+          "kind": "method",
+          "signature": "GetAvailableProvidersAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ExternalProviderInfo>>"
         }
       ]
     },
@@ -7505,13 +7549,19 @@
           "name": "new",
           "kind": "method",
           "signature": "new(StringComparer.OrdinalIgnoreCase)",
-          "returnType": "string? Authority { get; set; } public string? CallbackPath { get; set; } public Dictionary<string, string?> Properties { get; set; } ="
+          "returnType": "string? Authority { get; set; } public string? CallbackPath { get; set; } public string? DisplayName { get; set; } public Dictionary<string, string?> Properties { get; set; } ="
         },
         {
           "name": "IsNullOrWhiteSpace",
           "kind": "method",
           "signature": "IsNullOrWhiteSpace(Name)",
           "returnType": "string SchemeName => string."
+        },
+        {
+          "name": "IsNullOrWhiteSpace",
+          "kind": "method",
+          "signature": "IsNullOrWhiteSpace(DisplayName)",
+          "returnType": "string ResolvedDisplayName => string."
         }
       ]
     },
@@ -26260,12 +26310,21 @@
       "members": []
     },
     {
+      "name": "ExternalLoginProviderInfo",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.ExternalLoginProviderInfo",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalConfigResponse.cs",
+      "line": 21,
+      "members": []
+    },
+    {
       "name": "IdentityLocalConfigResponse",
       "fqn": "Granit.Identity.Local.Endpoints.Dtos.IdentityLocalConfigResponse",
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalConfigResponse.cs",
-      "line": 6,
+      "line": 11,
       "members": []
     },
     {
@@ -27688,34 +27747,6 @@
           "kind": "method",
           "signature": "ProcessCallbackAsync(ClaimsPrincipal principal, string provider, CancellationToken cancellationToken = default)",
           "returnType": "Task<ProcessCallbackResult>"
-        }
-      ]
-    },
-    {
-      "name": "IExternalProviderRegistry",
-      "fqn": "Granit.Identity.Local.Services.IExternalProviderRegistry",
-      "kind": "interface",
-      "project": "Granit.Identity.Local",
-      "file": "src/Granit.Identity.Local/Services/IExternalProviderRegistry.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "GetConfiguredProviderNames",
-          "kind": "method",
-          "signature": "GetConfiguredProviderNames()",
-          "returnType": "IReadOnlyList<string>"
-        },
-        {
-          "name": "IsProviderConfigured",
-          "kind": "method",
-          "signature": "IsProviderConfigured(string providerName)",
-          "returnType": "bool"
-        },
-        {
-          "name": "IsProviderAvailableAsync",
-          "kind": "method",
-          "signature": "IsProviderAvailableAsync(string providerName, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
         }
       ]
     },

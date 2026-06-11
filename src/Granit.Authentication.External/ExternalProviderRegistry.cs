@@ -1,17 +1,15 @@
 using Granit.Authentication.External.Options;
-using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
-namespace Granit.OpenIddict.Services;
+namespace Granit.Authentication.External;
 
 /// <summary>
-/// <see cref="IExternalProviderRegistry"/> implementation that reads configured external
-/// providers from <see cref="ExternalAuthOptions"/> (the <c>Authentication:External</c> section,
-/// owned by <c>Granit.Authentication.External</c>) and cross-checks them against the
-/// authentication handlers the host has actually registered.
+/// Default <see cref="IExternalProviderRegistry"/> implementation: reads the providers configured
+/// under <c>Authentication:External:Providers</c> and cross-checks them against the authentication
+/// handlers the host has actually registered. Has no auth-server dependency.
 /// </summary>
-internal sealed class OpenIddictExternalProviderRegistry(
+internal sealed class ExternalProviderRegistry(
     IOptions<ExternalAuthOptions> externalAuthOptions,
     IAuthenticationSchemeProvider schemeProvider) : IExternalProviderRegistry
 {
@@ -39,6 +37,27 @@ internal sealed class OpenIddictExternalProviderRegistry(
         AuthenticationScheme? scheme = await schemeProvider
             .GetSchemeAsync(configured.SchemeName).ConfigureAwait(false);
         return scheme is not null;
+    }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<ExternalProviderInfo>> GetAvailableProvidersAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var available = new List<ExternalProviderInfo>();
+
+        foreach (ExternalAuthProvider provider in externalAuthOptions.Value.Providers)
+        {
+            AuthenticationScheme? scheme = await schemeProvider
+                .GetSchemeAsync(provider.SchemeName).ConfigureAwait(false);
+
+            if (scheme is not null)
+            {
+                available.Add(new ExternalProviderInfo(
+                    provider.SchemeName, provider.Type, provider.ResolvedDisplayName));
+            }
+        }
+
+        return available;
     }
 
     private ExternalAuthProvider? FindConfigured(string providerName) =>

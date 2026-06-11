@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using FluentValidation;
+using Granit.Authentication.External;
 using Granit.DataFiltering;
 using Granit.Events;
 using Granit.Identity.Local.Diagnostics;
