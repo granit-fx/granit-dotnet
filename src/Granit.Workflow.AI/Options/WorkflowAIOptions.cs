@@ -4,14 +4,14 @@ namespace Granit.Workflow.AI.Options;
 /// Configuration options for AI-powered workflow recommendations and risk evaluation.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:Workflow</c> configuration section.
+/// Bound to the <c>Workflow:AI</c> configuration section.
 /// </remarks>
 public sealed class WorkflowAIOptions
 {
     /// <summary>
     /// Configuration section name in appsettings.json.
     /// </summary>
-    public const string SectionName = "AI:Workflow";
+    public const string SectionName = "Workflow:AI";
 
     /// <summary>
     /// AI workspace name to use for workflow AI operations. Defaults to <c>"default"</c>.

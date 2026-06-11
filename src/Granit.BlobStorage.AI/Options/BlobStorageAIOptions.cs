@@ -4,14 +4,14 @@ namespace Granit.BlobStorage.AI.Options;
 /// Configuration options for the AI blob classifier.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:BlobStorage</c> configuration section.
+/// Bound to the <c>BlobStorage:AI</c> configuration section.
 /// </remarks>
 public sealed class BlobStorageAIOptions
 {
     /// <summary>
     /// Configuration section name in appsettings.json.
     /// </summary>
-    public const string SectionName = "AI:BlobStorage";
+    public const string SectionName = "BlobStorage:AI";
 
     /// <summary>
     /// Name of the AI workspace to use for blob classification.

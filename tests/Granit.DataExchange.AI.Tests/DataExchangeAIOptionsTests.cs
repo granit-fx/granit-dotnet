@@ -1,5 +1,4 @@
 using Granit.DataExchange.AI.Options;
-using Shouldly;
 
 namespace Granit.DataExchange.AI.Tests;
 
@@ -7,7 +6,7 @@ public sealed class DataExchangeAIOptionsTests
 {
     [Fact]
     public void SectionName_IsCorrect() =>
-        DataExchangeAIOptions.SectionName.ShouldBe("AI:DataExchange");
+        DataExchangeAIOptions.SectionName.ShouldBe("DataExchange:AI");
 
     [Fact]
     public void Default_WorkspaceName_IsDefault()

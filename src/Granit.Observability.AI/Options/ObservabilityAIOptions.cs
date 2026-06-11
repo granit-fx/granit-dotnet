@@ -6,14 +6,14 @@ namespace Granit.Observability.AI.Options;
 /// Configuration options for AI-powered observability features.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:Observability</c> configuration section.
+/// Bound to the <c>Observability:AI</c> configuration section.
 /// </remarks>
 public sealed class ObservabilityAIOptions
 {
     /// <summary>
     /// Configuration section name in appsettings.json.
     /// </summary>
-    public const string SectionName = "AI:Observability";
+    public const string SectionName = "Observability:AI";
 
     /// <summary>
     /// Name of the AI workspace to use for log analysis.

@@ -8129,7 +8129,7 @@
       "kind": "class",
       "project": "Granit.Authorization.AI",
       "file": "src/Granit.Authorization.AI/Extensions/AuthorizationAIHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitAuthorizationAI",
@@ -10422,7 +10422,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.AI",
       "file": "src/Granit.BlobStorage.AI/Extensions/BlobStorageAIHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitBlobStorageAI",
@@ -28192,7 +28192,7 @@
       "kind": "class",
       "project": "Granit.Imaging.AI",
       "file": "src/Granit.Imaging.AI/Extensions/ImagingAIHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitImagingAI",
@@ -28574,7 +28574,7 @@
       "kind": "class",
       "project": "Granit.Indexing.AI",
       "file": "src/Granit.Indexing.AI/Extensions/ServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitIndexingAISummarizer",
@@ -29817,7 +29817,7 @@
       "kind": "class",
       "project": "Granit.LanguageDetection.AI",
       "file": "src/Granit.LanguageDetection.AI/Extensions/ServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitLanguageDetectionAI",
@@ -30066,7 +30066,7 @@
       "kind": "class",
       "project": "Granit.Localization.AI",
       "file": "src/Granit.Localization.AI/Extensions/LocalizationAIHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitLocalizationAI",
@@ -32464,7 +32464,7 @@
       "kind": "class",
       "project": "Granit.Notifications.AI",
       "file": "src/Granit.Notifications.AI/Extensions/NotificationsAIHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitNotificationsAI",
@@ -35439,7 +35439,7 @@
       "kind": "class",
       "project": "Granit.Observability",
       "file": "src/Granit.Observability/Extensions/ObservabilityServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitObservability",
@@ -39528,7 +39528,7 @@
       "kind": "class",
       "project": "Granit.Privacy.AI",
       "file": "src/Granit.Privacy.AI/Extensions/PrivacyAIHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitPrivacyAI",
@@ -39544,7 +39544,7 @@
       "kind": "class",
       "project": "Granit.Privacy.AI",
       "file": "src/Granit.Privacy.AI/GranitPrivacyAIModule.cs",
-      "line": 20,
+      "line": 19,
       "members": []
     },
     {
@@ -47698,7 +47698,7 @@
       "kind": "class",
       "project": "Granit.Timeline.AI",
       "file": "src/Granit.Timeline.AI/Extensions/TimelineAIHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitTimelineAI",
@@ -49196,6 +49196,15 @@
       "members": []
     },
     {
+      "name": "ValidationMetrics",
+      "fqn": "Granit.Validation.Endpoints.Diagnostics.ValidationMetrics",
+      "kind": "class",
+      "project": "Granit.Validation.Endpoints",
+      "file": "src/Granit.Validation.Endpoints/Diagnostics/ValidationMetrics.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "ValidationFieldStatus",
       "fqn": "Granit.Validation.Endpoints.Dtos.ValidationFieldStatus",
       "kind": "enum",
@@ -49262,8 +49271,15 @@
       "kind": "class",
       "project": "Granit.Validation.Endpoints",
       "file": "src/Granit.Validation.Endpoints/GranitValidationEndpointsModule.cs",
-      "line": 18,
-      "members": []
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "ValidationEndpointsOptions",
@@ -52466,7 +52482,7 @@
       "kind": "class",
       "project": "Granit.Workflow.AI",
       "file": "src/Granit.Workflow.AI/Extensions/WorkflowAIHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitWorkflowAI",

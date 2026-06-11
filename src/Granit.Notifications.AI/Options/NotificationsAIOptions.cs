@@ -4,14 +4,14 @@ namespace Granit.Notifications.AI.Options;
 /// Configuration options for the AI notification content generator and channel selector.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:Notifications</c> configuration section.
+/// Bound to the <c>Notifications:AI</c> configuration section.
 /// </remarks>
 public sealed class NotificationsAIOptions
 {
     /// <summary>
     /// Configuration section name in appsettings.json.
     /// </summary>
-    public const string SectionName = "AI:Notifications";
+    public const string SectionName = "Notifications:AI";
 
     /// <summary>
     /// Name of the AI workspace to use for notification content generation and channel selection.

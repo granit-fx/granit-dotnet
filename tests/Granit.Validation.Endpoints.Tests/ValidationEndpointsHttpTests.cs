@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentValidation;
 using Granit.Testing.Endpoints;
+using Granit.Validation.Endpoints.Diagnostics;
 using Granit.Validation.Endpoints.Dtos;
 using Granit.Validation.Endpoints.Extensions;
 using Granit.Validation.Endpoints.Validators;
@@ -26,6 +27,7 @@ public sealed class ValidationEndpointsHttpTests
         GranitEndpointTestHost.StartAsync(
             configureServices: services =>
             {
+                services.AddSingleton<ValidationMetrics>();
                 services.AddSingleton<IServerValidatorContributor>(
                     new TestContributor(validators));
                 services.AddSingleton(sp =>

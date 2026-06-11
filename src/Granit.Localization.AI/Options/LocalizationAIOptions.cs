@@ -6,7 +6,7 @@ namespace Granit.Localization.AI.Options;
 /// Configuration options for AI-powered translation suggestions.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:Localization</c> configuration section and validated at startup via
+/// Bound to the <c>Localization:AI</c> configuration section and validated at startup via
 /// <c>ValidateDataAnnotations().ValidateOnStart()</c> so an out-of-range value aborts
 /// host boot instead of silently degrading every suggestion call.
 /// </remarks>
@@ -15,7 +15,7 @@ public sealed class LocalizationAIOptions
     /// <summary>
     /// Configuration section name in appsettings.json.
     /// </summary>
-    public const string SectionName = "AI:Localization";
+    public const string SectionName = "Localization:AI";
 
     /// <summary>
     /// AI workspace name to use for translation. Defaults to <c>"default"</c>.

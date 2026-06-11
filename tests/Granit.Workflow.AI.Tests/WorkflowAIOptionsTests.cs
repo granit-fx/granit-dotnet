@@ -1,5 +1,4 @@
 using Granit.Workflow.AI.Options;
-using Shouldly;
 
 namespace Granit.Workflow.AI.Tests;
 
@@ -10,7 +9,7 @@ public sealed class WorkflowAIOptionsTests
 {
     [Fact]
     public void SectionName_ShouldBeAIWorkflow() =>
-        WorkflowAIOptions.SectionName.ShouldBe("AI:Workflow");
+        WorkflowAIOptions.SectionName.ShouldBe("Workflow:AI");
 
     [Fact]
     public void Default_WorkspaceName_ShouldBeDefault()

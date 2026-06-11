@@ -1,9 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.BlobStorage.AI.Internal;
 using Granit.BlobStorage.AI.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace Granit.BlobStorage.AI.Extensions;
 
@@ -20,7 +17,7 @@ public static class BlobStorageAIHostApplicationBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Reads <see cref="BlobStorageAIOptions"/> from the <c>"AI:BlobStorage"</c> configuration section.
+    /// Reads <see cref="BlobStorageAIOptions"/> from the <c>"BlobStorage:AI"</c> configuration section.
     /// Requires <c>Granit.AI</c> core services (<c>AddGranitAI()</c>) and at least one AI provider
     /// to be registered beforehand.
     /// </para>

@@ -1,12 +1,11 @@
 using Granit.QueryEngine.AI.Options;
-using Shouldly;
 
 namespace Granit.QueryEngine.AI.Tests.Options;
 
 public sealed class QueryEngineAIOptionsTests
 {
     [Fact]
-    public void SectionName_is_AI_QueryEngine() => QueryEngineAIOptions.SectionName.ShouldBe("AI:QueryEngine");
+    public void SectionName_is_QueryEngine_AI() => QueryEngineAIOptions.SectionName.ShouldBe("QueryEngine:AI");
 
     [Fact]
     public void WorkspaceName_defaults_to_default()

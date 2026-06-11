@@ -7,6 +7,157 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Changed (framework — BREAKING: appsettings)
+
+- **`SectionName` homogenization across the framework.** Every `public const string SectionName` on a Granit options class now follows the same convention: a colon-separated, ASP.NET-style hierarchical path aligned on the project namespace after stripping the internal `Granit` prefix (`Granit.Foo.Bar.Baz` → `"Foo:Bar:Baz"`). Three classes of legacy values were eliminated: (1) the `Granit:` root prefix (which was leaking the code namespace into config — `"Granit:ApiKeys"`, `"Granit:IO:TempFiles"`, `"Granit:Templating:App"`, `"Granit:DataExchange:BlobStorage"`); (2) PascalCase-glued compound names that hid a real hierarchy (`"WolverinePostgresql"`, `"WolverineSqlServer"`, `"GranitMigrations"`, `"TenantSchema"`, every `"*Endpoints"` umbrella, every `Http.*` flat name); (3) vendor-rooted or wrong-segmented names under `Notifications.*` and `Identity.Federated.*` (`"AzureCommunicationServices:Email"`, `"Notifications:Smtp"`, `"KeycloakAdmin"`, `"EntraIdAdmin"`, `"CognitoAdmin"`, `"Identity:UserCacheHasher"`, …). One real binding collision was also fixed: `ImportOptions` and the root data-exchange config both bound to `"DataExchange"`, silently shadowing one another — `ImportOptions` now lives at `"DataExchange:Import"` and `ExportOptions` at `"DataExchange:Export"`. `TenantIsolationOptions` (which had no `SectionName` const and was bound to the literal `"TenantIsolation"`) now exposes the const and binds to `"MultiTenancy:TenantIsolation"`, aligned with `MultiTenancy:TenantSchema`. The convention is enforced going forward by `Granit.ArchitectureTests.SectionNameConventionTests` (forbids `Granit:` root, forbids flat compound names, requires SectionName uniqueness). Every renamed section also has its `*OptionsTests.SectionName.ShouldBe(...)` assertion updated, every test that builds an in-memory `IConfiguration` for a service-collection extension was migrated to the new prefix (otherwise the binder fails silently and tests assert default values), and the `templates/granit-api-full/appsettings.json` was repointed (`"Cors"` → `"Http:Cors"`). The Keycloak JwtBearer rename (`"Keycloak"` → `"Authentication:Keycloak"`) shipped earlier in this release is part of the same sweep. The 13 cross-module AI integration packages (`Granit.{X}.AI`) had their section direction inverted to match the namespace — `"AI:Authorization"` → `"Authorization:AI"`, `"AI:BlobStorage"` → `"BlobStorage:AI"`, … `"AI:Validation"` → `"Validation:AI"` — so they now align with the `Indexing:AI` / `LanguageDetection:AI` / `TextExtraction:Ocr:AI` packages that already followed the rule; the core `Granit.AI.*` provider family (`AI:OpenAI`, `AI:Anthropic`, `AI:Extraction`, …) is unchanged, since there `AI` is itself the owning module.
+
+  **Migration** — rewrite the host `appsettings.json` (only the sections you actually use):
+
+  ```diff
+  - "Keycloak":              { ... }      // JwtBearer
+  + "Authentication": { "Keycloak": { ... } }
+
+  - "Cognito":               { ... }
+  - "EntraId":               { ... }
+  - "GoogleCloudAuth":       { ... }
+  + "Authentication": { "Cognito": { ... }, "EntraId": { ... }, "GoogleCloud": { ... } }
+
+  - "Granit:ApiKeys":        { ... }
+  + "Authentication": { "ApiKeys": { ... } }
+
+  - "WolverinePostgresql":   { ... }
+  - "WolverineSqlServer":    { ... }
+  + "Wolverine": { "Postgresql": { ... }, "SqlServer": { ... } }
+
+  - "GranitMigrations":      { ... }
+  + "Persistence": { "Migrations": { ... } }
+
+  - "TenantSchema":          { ... }
+  + "MultiTenancy": { "TenantSchema": { ... } }
+
+  - "TokenManagement":       { ... }
+  + "Oidc": { "TokenManagement": { ... } }
+
+  - "ReEncryption":          { ... }
+  + "Vault": { "ReEncryption": { ... } }
+
+  - "Granit:IO:TempFiles":   { ... }
+  + "IO": { "TempFiles": { ... } }
+
+  - "Granit:Templating:App": { ... }
+  + "Templating": { "App": { ... } }
+
+  - "Granit:DataExchange:BlobStorage": { ... }
+  + "DataExchange": { "BlobStorage": { ... } }
+
+  - "TenantIsolation":      { ... }
+  + "MultiTenancy": { "TenantIsolation": { ... } }
+
+  # *.Endpoints umbrella sections (one example, applies to every Endpoints module):
+  - "BlobStorageEndpoints":  { ... }
+  + "BlobStorage": { "Endpoints": { ... } }
+  - "AIEndpoints":           { ... }
+  + "AI": { "Endpoints": { ... } }
+  - "ApiKeysEndpoints":      { ... }
+  + "Authentication": { "ApiKeys": { "Endpoints": { ... } } }
+  - "AuthorizationEndpoints":{ ... }
+  + "Authorization": { "Endpoints": { ... } }
+  - "BackgroundJobsEndpoints":{ ... }
+  + "BackgroundJobs": { "Endpoints": { ... } }
+  - "DataExchangeEndpoints": { ... }
+  + "DataExchange": { "Endpoints": { ... } }
+  - "IdentityEndpoints":     { ... }
+  - "IdentityProviderEndpoints": { ... }
+  - "IdentityWebhook":       { ... }
+  + "Identity": { "Endpoints": { ... , "Provider": { ... } }, "Webhook": { ... } }
+  - "SchedulingEndpoints":   { ... }
+  + "Scheduling": { "Endpoints": { ... } }
+  - "TimelineEndpoints":     { ... }
+  + "Timeline": { "Endpoints": { ... } }
+  - "WebhooksEndpoints":     { ... }
+  + "Webhooks": { "Endpoints": { ... } }
+  - "WorkflowEndpoints":     { ... }
+  + "Workflow": { "Endpoints": { ... } }
+
+  # Http.* — all flat names now under "Http:":
+  - "ApiDocumentation":      { ... }
+  - "ApiVersioning":         { ... }
+  - "Bulkhead":              { ... }
+  - "Cors":                  { ... }
+  - "Cookies":               { ... }
+  - "Klaro":                 { ... }
+  - "HttpResilience":        { ... }
+  - "Idempotency":           { ... }
+  - "OutputCaching":         { ... }
+  - "OutputCaching:Redis":   { ... }
+  - "ResponseCompression":   { ... }
+  - "SecurityHeaders":       { ... }
+  + "Http": {
+  +   "ApiDocumentation": { ... }, "ApiVersioning": { ... }, "Bulkhead": { ... },
+  +   "Cors": { ... }, "Cookies": { ..., "Klaro": { ... } }, "Resilience": { ... },
+  +   "Idempotency": { ... }, "OutputCaching": { ..., "Redis": { ... } },
+  +   "ResponseCompression": { ... }, "SecurityHeaders": { ... }
+  + }
+
+  # Notifications.* — missing channel segment / wrong root:
+  - "Notifications:Smtp":             { ... }
+  - "Notifications:AwsSes":           { ... }
+  - "AzureCommunicationServices:Email":  { ... }
+  - "AzureCommunicationServices:Sms":    { ... }
+  - "Notifications:AzureNotificationHubs":{ ... }
+  - "Notifications:Push":             { ... }  // WebPush
+  + "Notifications": {
+  +   "Email": { "Smtp": { ... }, "AwsSes": { ... }, "AzureCommunicationServices": { ... } },
+  +   "Sms":   { "AzureCommunicationServices": { ... } },
+  +   "MobilePush": { "AzureNotificationHubs": { ... } },
+  +   "WebPush": { ... }
+  + }
+
+  # Identity.Federated.* — admin providers and sub-options:
+  - "KeycloakAdmin":              { ... }
+  - "KeycloakAdmin:ClientRoleSync":{ ... }
+  - "CognitoAdmin":               { ... }
+  - "CognitoAdmin:ClientRoleSync": { ... }
+  - "EntraIdAdmin":               { ... }
+  - "EntraIdAdmin:ClientRoleSync": { ... }
+  - "Identity:GoogleCloud":       { ... }
+  - "Identity:UserCacheHasher":   { ... }
+  - "IdentityUserCache":          { ... }
+  - "IdentityFederatedNotifications": { ... }
+  + "Identity": { "Federated": {
+  +   "Keycloak":    { ..., "ClientRoleSync": { ... } },
+  +   "Cognito":     { ..., "ClientRoleSync": { ... } },
+  +   "EntraId":     { ..., "ClientRoleSync": { ... } },
+  +   "GoogleCloud": { ... },
+  +   "UserCacheHasher": { ... }, "UserCache": { ... },
+  +   "Notifications":   { ... }
+  + } }
+
+  # Granit.{X}.AI integration packages — direction aligned to the namespace
+  # ("Foo:AI", matching Granit.Foo.AI — not the inverted "AI:Foo"). The core
+  # Granit.AI.* provider family (AI:OpenAI, AI:Anthropic, AI:Extraction, …) is
+  # unchanged — there "AI" IS the owning module.
+  - "AI": { "Authorization": { ... }, "BlobStorage": { ... }, "DataExchange": { ... },
+  -         "Imaging": { ... }, "Localization": { ... }, "Notifications": { ... },
+  -         "Observability": { ... }, "Privacy": { ... }, "QueryEngine": { ... },
+  -         "Templating": { ... }, "Timeline": { ... }, "Validation": { ... }, "Workflow": { ... } }
+  + "Authorization": { "AI": { ... } }
+  + "BlobStorage":   { "AI": { ... } }
+  + "DataExchange":  { "AI": { ... } }
+  + "Imaging":       { "AI": { ... } }
+  + "Localization":  { "AI": { ... } }
+  + "Notifications": { "AI": { ... } }
+  + "Observability": { "AI": { ... } }
+  + "Privacy":       { "AI": { ... } }   # note: Privacy:AI:FailMode follows
+  + "QueryEngine":   { "AI": { ... } }
+  + "Templating":    { "AI": { ... } }
+  + "Timeline":      { "AI": { ... } }
+  + "Validation":    { "AI": { ... } }
+  + "Workflow":      { "AI": { ... } }
+  ```
+
+  **Operational impact**: every Granit-using host must rewrite its `appsettings.json`, K8s/Vault projections (the `__` env-var syntax mirrors the new key), CI secrets, and ExternalSecret manifests in the same deploy. Containers should be rolled together: a mixed fleet will see whichever pods still read the old key fall back to defaults silently. The accompanying Keycloak JwtBearer fix (described next) addresses an `IDX10500` regression introduced by the previous Keycloak section split.
+
 ### Changed (framework — behavior)
 
 - **Local-identity account endpoints now return localized error details.** The `Account*` self-service endpoints (`change-password`, `delete-account`, two-factor, passkeys, external login) previously returned hardcoded English `detail` strings on their RFC 7807 problem responses — and in a few cases passed the raw service `ex.Message` straight to the client, leaking internal user/passkey GUIDs (info disclosure, ISO 27001 A.8). They now resolve translatable keys (`Granit:Identity:Account:*`, `Granit:Identity:Passkey:*`, `Granit:Identity:TwoFactor:*`, `Granit:Identity:ExternalLogin:*`) from the `IdentityLocalEndpoints` resource in the request culture (all 15 base cultures translated), degrading to English only when localization is not wired. The internal jargon "Unable to determine username from token claims." is replaced by a user-facing "Your session is invalid. Please sign in again."

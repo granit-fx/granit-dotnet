@@ -4,12 +4,12 @@ namespace Granit.Imaging.AI.Options;
 /// Configuration options for AI-powered image analysis.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:Imaging</c> configuration section.
+/// Bound to the <c>Imaging:AI</c> configuration section.
 /// </remarks>
 public sealed class ImagingAIOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "AI:Imaging";
+    public const string SectionName = "Imaging:AI";
 
     /// <summary>
     /// Name of the AI workspace to use for image analysis.

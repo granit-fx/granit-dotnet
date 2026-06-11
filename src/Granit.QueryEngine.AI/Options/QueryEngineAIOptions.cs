@@ -6,9 +6,9 @@ namespace Granit.QueryEngine.AI.Options;
 public sealed class QueryEngineAIOptions
 {
     /// <summary>
-    /// Configuration section name (<c>"AI:QueryEngine"</c>).
+    /// Configuration section name (<c>"QueryEngine:AI"</c>).
     /// </summary>
-    public const string SectionName = "AI:QueryEngine";
+    public const string SectionName = "QueryEngine:AI";
 
     /// <summary>
     /// AI workspace name used to create the <c>IChatClient</c>. Defaults to <c>"default"</c>.

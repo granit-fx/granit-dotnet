@@ -1,11 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
-using Granit.Diagnostics;
 using Granit.Timeline.AI.Diagnostics;
 using Granit.Timeline.AI.Internal;
 using Granit.Timeline.AI.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace Granit.Timeline.AI.Extensions;
 
@@ -22,7 +18,7 @@ public static class TimelineAIHostApplicationBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Reads <see cref="TimelineAIOptions"/> from the <c>"AI:Timeline"</c> configuration section.
+    /// Reads <see cref="TimelineAIOptions"/> from the <c>"Timeline:AI"</c> configuration section.
     /// Requires <c>Granit.AI</c> core services (<c>AddGranitAI()</c>) and at least one AI provider
     /// to be registered beforehand.
     /// </para>

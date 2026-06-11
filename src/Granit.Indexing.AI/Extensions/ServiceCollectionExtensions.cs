@@ -1,12 +1,8 @@
 using Granit.AI.Redaction;
-using Granit.Diagnostics;
 using Granit.Indexing.AI.Diagnostics;
 using Granit.Indexing.AI.Internal;
 using Granit.Indexing.AI.Options;
 using Granit.Indexing.AI.Prompts;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Indexing.AI.Extensions;
 
@@ -76,8 +72,6 @@ public static class ServiceCollectionExtensions
 
     private static void RegisterCommon(IServiceCollection services)
     {
-        GranitActivitySourceRegistry.Register(IndexingAIMetrics.MeterName);
-
         // ValidateOnStart aborts host boot on an out-of-range option rather than
         // silently degrading every call (which would inflate the injection counters).
         services.AddOptions<IndexingAIOptions>()

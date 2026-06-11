@@ -1,9 +1,12 @@
+using System.Diagnostics.Metrics;
 using System.Security.Claims;
+using Granit.Validation.Endpoints.Diagnostics;
 using Granit.Validation.Endpoints.Dtos;
 using Granit.Validation.Endpoints.Endpoints;
 using Granit.Validation.ServerValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;
@@ -25,7 +28,7 @@ public sealed class ValidationEndpointTests
 
         var request = new ValidationFieldValidateRequest("Validation:InvalidIban", "BE68539007547034");
         Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
-            ValidationEndpoints.HandleValidate(request, registry, CreateAuthenticatedContext());
+            ValidationEndpoints.HandleValidate(request, registry, CreateMetrics(), CreateAuthenticatedContext());
 
         Ok<ValidationFieldValidateResponse> ok = result.Result.ShouldBeOfType<Ok<ValidationFieldValidateResponse>>();
         ok.Value.ShouldNotBeNull();
@@ -41,7 +44,7 @@ public sealed class ValidationEndpointTests
 
         var request = new ValidationFieldValidateRequest("Validation:InvalidIban", "INVALID");
         Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
-            ValidationEndpoints.HandleValidate(request, registry, CreateAnonymousContext());
+            ValidationEndpoints.HandleValidate(request, registry, CreateMetrics(), CreateAnonymousContext());
 
         Ok<ValidationFieldValidateResponse> ok = result.Result.ShouldBeOfType<Ok<ValidationFieldValidateResponse>>();
         ok.Value.ShouldNotBeNull();
@@ -55,7 +58,7 @@ public sealed class ValidationEndpointTests
 
         var request = new ValidationFieldValidateRequest("Validation:Unknown", "value");
         Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
-            ValidationEndpoints.HandleValidate(request, registry, CreateAnonymousContext());
+            ValidationEndpoints.HandleValidate(request, registry, CreateMetrics(), CreateAnonymousContext());
 
         ProblemHttpResult problem = result.Result.ShouldBeOfType<ProblemHttpResult>();
         problem.StatusCode.ShouldBe(404);
@@ -69,7 +72,7 @@ public sealed class ValidationEndpointTests
 
         var request = new ValidationFieldValidateRequest("Validation:InvalidUsSsn", "123-45-6789");
         Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
-            ValidationEndpoints.HandleValidate(request, registry, CreateAnonymousContext());
+            ValidationEndpoints.HandleValidate(request, registry, CreateMetrics(), CreateAnonymousContext());
 
         ProblemHttpResult problem = result.Result.ShouldBeOfType<ProblemHttpResult>();
         problem.StatusCode.ShouldBe(404);
@@ -83,7 +86,7 @@ public sealed class ValidationEndpointTests
 
         var request = new ValidationFieldValidateRequest("Validation:InvalidUsSsn", "123-45-6789");
         Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
-            ValidationEndpoints.HandleValidate(request, registry, CreateAuthenticatedContext());
+            ValidationEndpoints.HandleValidate(request, registry, CreateMetrics(), CreateAuthenticatedContext());
 
         Ok<ValidationFieldValidateResponse> ok = result.Result.ShouldBeOfType<Ok<ValidationFieldValidateResponse>>();
         ok.Value.ShouldNotBeNull();
@@ -109,7 +112,7 @@ public sealed class ValidationEndpointTests
         ]);
 
         Ok<ValidationFieldValidateBatchResponse> result =
-            ValidationEndpoints.HandleValidateBatch(request, registry, CreateAuthenticatedContext());
+            ValidationEndpoints.HandleValidateBatch(request, registry, CreateMetrics(), CreateAuthenticatedContext());
 
         ValidationFieldValidateBatchResponse ok = result.Value.ShouldNotBeNull();
         ok.Results.Count.ShouldBe(3);
@@ -132,7 +135,7 @@ public sealed class ValidationEndpointTests
         ]);
 
         Ok<ValidationFieldValidateBatchResponse> result =
-            ValidationEndpoints.HandleValidateBatch(request, registry, CreateAnonymousContext());
+            ValidationEndpoints.HandleValidateBatch(request, registry, CreateMetrics(), CreateAnonymousContext());
 
         ValidationFieldValidateBatchResponse ok = result.Value.ShouldNotBeNull();
         ok.Results.Count.ShouldBe(2);
@@ -206,6 +209,11 @@ public sealed class ValidationEndpointTests
         context.User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "testuser")], "TestAuth"));
         return context;
     }
+
+    private static readonly IMeterFactory MeterFactory =
+        new ServiceCollection().AddMetrics().BuildServiceProvider().GetRequiredService<IMeterFactory>();
+
+    private static ValidationMetrics CreateMetrics() => new(MeterFactory);
 
     private static ServerValidatorRegistry CreateRegistry(params IServerValidator[] validators)
     {

@@ -1,9 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.Workflow.AI.Internal;
 using Granit.Workflow.AI.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace Granit.Workflow.AI.Extensions;
 
@@ -15,7 +12,7 @@ public static class WorkflowAIHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Adds Granit Workflow AI services and binds <see cref="WorkflowAIOptions"/>
-    /// from the <c>AI:Workflow</c> configuration section.
+    /// from the <c>Workflow:AI</c> configuration section.
     /// </summary>
     /// <param name="builder">The host application builder.</param>
     /// <returns>The builder for chaining.</returns>

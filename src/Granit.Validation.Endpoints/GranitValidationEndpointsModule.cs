@@ -1,5 +1,7 @@
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
+using Granit.Validation.Endpoints.Diagnostics;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Validation.Endpoints;
 
@@ -15,4 +17,9 @@ namespace Granit.Validation.Endpoints;
 [DependsOn(
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitValidationModule))]
-public sealed class GranitValidationEndpointsModule : GranitModule;
+public sealed class GranitValidationEndpointsModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.TryAddSingleton<ValidationMetrics>();
+}

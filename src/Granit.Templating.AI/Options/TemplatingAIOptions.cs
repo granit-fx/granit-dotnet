@@ -4,14 +4,14 @@ namespace Granit.Templating.AI.Options;
 /// Configuration options for AI-powered template assistance.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:Templating</c> configuration section.
+/// Bound to the <c>Templating:AI</c> configuration section.
 /// </remarks>
 public sealed class TemplatingAIOptions
 {
     /// <summary>
     /// Configuration section name in appsettings.json.
     /// </summary>
-    public const string SectionName = "AI:Templating";
+    public const string SectionName = "Templating:AI";
 
     /// <summary>
     /// Name of the AI workspace to use for template generation.

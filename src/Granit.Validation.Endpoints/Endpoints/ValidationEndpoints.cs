@@ -1,3 +1,4 @@
+using Granit.Validation.Endpoints.Diagnostics;
 using Granit.Validation.Endpoints.Dtos;
 using Granit.Validation.ServerValidation;
 using Microsoft.AspNetCore.Builder;
@@ -47,12 +48,15 @@ internal static class ValidationEndpoints
     internal static Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> HandleValidate(
         ValidationFieldValidateRequest request,
         [FromServices] ServerValidatorRegistry registry,
+        [FromServices] ValidationMetrics metrics,
         HttpContext httpContext)
     {
         IServerValidator? validator = ResolveValidator(registry, request.ErrorCode, httpContext);
 
         if (validator is null)
         {
+            // Unknown (or sensitive-and-hidden) code: record without the client-supplied code to cap cardinality.
+            metrics.RecordFieldValidated(tenantId: null, errorCode: null, ValidationFieldStatus.ValidatorNotFound);
             return ValidatorNotFound();
         }
 
@@ -60,12 +64,15 @@ internal static class ValidationEndpoints
             ? ValidationFieldStatus.Valid
             : ValidationFieldStatus.Invalid;
 
+        metrics.RecordFieldValidated(tenantId: null, request.ErrorCode, status);
+
         return TypedResults.Ok(new ValidationFieldValidateResponse(request.ErrorCode, status));
     }
 
     internal static Ok<ValidationFieldValidateBatchResponse> HandleValidateBatch(
         ValidationFieldValidateBatchRequest request,
         [FromServices] ServerValidatorRegistry registry,
+        [FromServices] ValidationMetrics metrics,
         HttpContext httpContext)
     {
         List<ValidationFieldValidateResponse> results = new(request.Fields.Count);
@@ -78,12 +85,14 @@ internal static class ValidationEndpoints
             if (validator is null)
             {
                 status = ValidationFieldStatus.ValidatorNotFound;
+                metrics.RecordFieldValidated(tenantId: null, errorCode: null, status);
             }
             else
             {
                 status = validator.Validate(field.Value)
                     ? ValidationFieldStatus.Valid
                     : ValidationFieldStatus.Invalid;
+                metrics.RecordFieldValidated(tenantId: null, field.ErrorCode, status);
             }
 
             results.Add(new ValidationFieldValidateResponse(field.ErrorCode, status));

@@ -1,12 +1,11 @@
 using Granit.Localization.AI.Options;
-using Shouldly;
 
 namespace Granit.Localization.AI.Tests;
 
 public sealed class LocalizationAIOptionsTests
 {
     [Fact]
-    public void SectionName_IsExpected() => LocalizationAIOptions.SectionName.ShouldBe("AI:Localization");
+    public void SectionName_IsExpected() => LocalizationAIOptions.SectionName.ShouldBe("Localization:AI");
 
     [Fact]
     public void WorkspaceName_DefaultsToDefault()

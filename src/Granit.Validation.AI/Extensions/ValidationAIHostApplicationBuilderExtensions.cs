@@ -17,7 +17,7 @@ public static class ValidationAIHostApplicationBuilderExtensions
     /// Adds AI-powered content moderation to the application.
     /// </summary>
     /// <remarks>
-    /// Binds <see cref="ValidationAIOptions"/> from the <c>AI:Validation</c> configuration section
+    /// Binds <see cref="ValidationAIOptions"/> from the <c>Validation:AI</c> configuration section
     /// and registers <see cref="IAIContentModerator"/> as a scoped service backed by an LLM.
     /// Requires an AI provider to be registered (e.g. <c>AddGranitAIOpenAI()</c>).
     /// </remarks>

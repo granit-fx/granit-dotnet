@@ -4,14 +4,14 @@ namespace Granit.Validation.AI.Options;
 /// Configuration options for AI-powered content moderation.
 /// </summary>
 /// <remarks>
-/// Bound to the <c>AI:Validation</c> configuration section.
+/// Bound to the <c>Validation:AI</c> configuration section.
 /// </remarks>
 public sealed class ValidationAIOptions
 {
     /// <summary>
     /// Configuration section name in appsettings.json.
     /// </summary>
-    public const string SectionName = "AI:Validation";
+    public const string SectionName = "Validation:AI";
 
     /// <summary>
     /// Name of the AI workspace used for content moderation.
