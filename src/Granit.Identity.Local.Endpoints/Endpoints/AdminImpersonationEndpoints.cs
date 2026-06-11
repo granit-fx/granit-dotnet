@@ -46,7 +46,8 @@ internal static class AdminImpersonationEndpoints
         if (httpContext.User.FindFirst("impersonator_id") is not null)
         {
             return TypedResults.Problem(
-                detail: "Cannot impersonate while already impersonating.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Impersonation:AlreadyImpersonating", "Cannot impersonate while already impersonating."),
                 statusCode: StatusCodes.Status403Forbidden);
         }
 

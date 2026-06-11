@@ -3,6 +3,7 @@ using Granit.Events;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
@@ -60,6 +61,7 @@ internal static class AccountRegistrationEndpoints
 
     private static async Task<Results<Accepted, ProblemHttpResult>> RegisterAsync(
         AccountRegisterRequest request,
+        HttpContext httpContext,
         [FromServices] ISettingProvider settingProvider,
         [FromServices] IIdentityProvider identityProvider,
         [FromServices] IEmailConfirmationService emailConfirmation,
@@ -77,7 +79,8 @@ internal static class AccountRegistrationEndpoints
         if (!string.Equals(allowed, "true", StringComparison.OrdinalIgnoreCase))
         {
             return TypedResults.Problem(
-                detail: "Self-registration is disabled.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Account:SelfRegistrationDisabled", "Self-registration is disabled."),
                 statusCode: StatusCodes.Status403Forbidden);
         }
 
@@ -122,6 +125,7 @@ internal static class AccountRegistrationEndpoints
     private static async Task<Results<NoContent, ProblemHttpResult>> ConfirmEmailAsync(
         string userId,
         string token,
+        HttpContext httpContext,
         [FromServices] IEmailConfirmationService emailConfirmation,
         CancellationToken cancellationToken)
     {
@@ -131,7 +135,8 @@ internal static class AccountRegistrationEndpoints
         if (!confirmed)
         {
             return TypedResults.Problem(
-                detail: "Invalid or expired confirmation token.",
+                detail: AccountEndpointMessages.Localize(
+                    httpContext, "Granit:Identity:Account:InvalidConfirmationToken", "Invalid or expired confirmation token."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 

@@ -1,6 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.Localization.AI.Internal;
 using Granit.Localization.AI.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace Granit.Localization.AI.Extensions;
 
