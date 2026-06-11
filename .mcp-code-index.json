@@ -8179,7 +8179,7 @@
       "kind": "class",
       "project": "Granit.Authorization.AI",
       "file": "src/Granit.Authorization.AI/Extensions/AuthorizationAIHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitAuthorizationAI",
@@ -10472,7 +10472,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.AI",
       "file": "src/Granit.BlobStorage.AI/Extensions/BlobStorageAIHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitBlobStorageAI",
@@ -28223,7 +28223,7 @@
       "kind": "class",
       "project": "Granit.Imaging.AI",
       "file": "src/Granit.Imaging.AI/Extensions/ImagingAIHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitImagingAI",
@@ -28605,7 +28605,7 @@
       "kind": "class",
       "project": "Granit.Indexing.AI",
       "file": "src/Granit.Indexing.AI/Extensions/ServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitIndexingAISummarizer",
@@ -29848,7 +29848,7 @@
       "kind": "class",
       "project": "Granit.LanguageDetection.AI",
       "file": "src/Granit.LanguageDetection.AI/Extensions/ServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitLanguageDetectionAI",
@@ -30097,7 +30097,7 @@
       "kind": "class",
       "project": "Granit.Localization.AI",
       "file": "src/Granit.Localization.AI/Extensions/LocalizationAIHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitLocalizationAI",
@@ -32495,7 +32495,7 @@
       "kind": "class",
       "project": "Granit.Notifications.AI",
       "file": "src/Granit.Notifications.AI/Extensions/NotificationsAIHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitNotificationsAI",
@@ -35470,7 +35470,7 @@
       "kind": "class",
       "project": "Granit.Observability",
       "file": "src/Granit.Observability/Extensions/ObservabilityServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitObservability",
@@ -39559,7 +39559,7 @@
       "kind": "class",
       "project": "Granit.Privacy.AI",
       "file": "src/Granit.Privacy.AI/Extensions/PrivacyAIHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitPrivacyAI",
@@ -39575,7 +39575,7 @@
       "kind": "class",
       "project": "Granit.Privacy.AI",
       "file": "src/Granit.Privacy.AI/GranitPrivacyAIModule.cs",
-      "line": 19,
+      "line": 20,
       "members": []
     },
     {
@@ -47729,7 +47729,7 @@
       "kind": "class",
       "project": "Granit.Timeline.AI",
       "file": "src/Granit.Timeline.AI/Extensions/TimelineAIHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitTimelineAI",
@@ -52513,7 +52513,7 @@
       "kind": "class",
       "project": "Granit.Workflow.AI",
       "file": "src/Granit.Workflow.AI/Extensions/WorkflowAIHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitWorkflowAI",

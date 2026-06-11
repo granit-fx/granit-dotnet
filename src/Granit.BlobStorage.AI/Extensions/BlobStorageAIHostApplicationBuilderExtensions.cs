@@ -1,6 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.BlobStorage.AI.Internal;
 using Granit.BlobStorage.AI.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Granit.BlobStorage.AI.Extensions;
 

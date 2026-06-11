@@ -1,4 +1,5 @@
 using Granit.Templating.AI.Options;
+using Shouldly;
 
 namespace Granit.Templating.AI.Tests;
 

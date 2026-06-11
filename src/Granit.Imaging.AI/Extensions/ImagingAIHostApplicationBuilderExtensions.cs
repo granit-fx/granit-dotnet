@@ -1,7 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
+using Granit.Diagnostics;
 using Granit.Imaging.AI.Diagnostics;
 using Granit.Imaging.AI.Internal;
 using Granit.Imaging.AI.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace Granit.Imaging.AI.Extensions;
 

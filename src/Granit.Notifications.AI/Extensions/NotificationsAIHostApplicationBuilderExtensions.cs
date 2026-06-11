@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.Notifications.AI.Internal;
 using Granit.Notifications.AI.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Granit.Notifications.AI.Extensions;
 
