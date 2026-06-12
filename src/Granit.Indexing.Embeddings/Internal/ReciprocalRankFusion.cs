@@ -22,6 +22,13 @@ namespace Granit.Indexing.Embeddings.Internal;
 /// </remarks>
 internal static class ReciprocalRankFusion
 {
+    /// <summary>
+    /// Tolerance for treating two adjacent raw scores as a tie. Raw scores are IEEE-754 doubles
+    /// from BM25 / <c>ts_rank</c> / cosine, so an exact <c>!=</c> would split scores that differ
+    /// only by floating-point noise into separate dense ranks. A span smaller than this is a tie.
+    /// </summary>
+    private const double ScoreTieEpsilon = 1e-9;
+
     /// <summary>Fuses two ranked hit lists into a single descending-score list.</summary>
     /// <typeparam name="TKey">Resource primary key.</typeparam>
     /// <typeparam name="TResult">Projected payload.</typeparam>
@@ -69,7 +76,7 @@ internal static class ReciprocalRankFusion
 
         foreach (SearchHit<TKey, TResult> hit in hits)
         {
-            if (lastRawScore is null || hit.Score != lastRawScore.Value)
+            if (lastRawScore is null || Math.Abs(hit.Score - lastRawScore.Value) > ScoreTieEpsilon)
             {
                 denseRank++;
                 lastRawScore = hit.Score;
