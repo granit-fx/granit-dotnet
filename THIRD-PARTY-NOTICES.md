@@ -8,7 +8,7 @@ Seules les **dépendances directes** y figurent. Les dépendances transitives
 sont couvertes par leurs propres avis de licence, restaurés depuis NuGet par
 le consommateur (les packages Granit ne redistribuent pas leurs binaires).
 
-Dernière mise à jour : 2026-06-12 (épinglage direct de MessagePack 2.5.302 dans Granit.Notifications.SignalR — correctif CVE-2026-48109)
+Dernière mise à jour : 2026-06-12 (ajout de MaxMind.GeoIP2 pour le module Granit.IpGeolocation.MaxMind — géolocalisation IP hors-ligne)
 
 ---
 
@@ -17,7 +17,7 @@ Dernière mise à jour : 2026-06-12 (épinglage direct de MessagePack 2.5.302 da
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
 | MIT          | 95                 |
-| Apache-2.0   | 40                 |
+| Apache-2.0   | 41                 |
 | BSD-3-Clause | 3                  |
 | BSD-2-Clause | 1                  |
 | PostgreSQL   | 2                  |
@@ -134,6 +134,7 @@ Dernière mise à jour : 2026-06-12 (épinglage direct de MessagePack 2.5.302 da
 | Google.Cloud.SecretManager.V1 | 2.7.0 | Copyright (c) Google LLC |
 | Google.Cloud.Storage.V1 | 4.14.0 | Copyright (c) Google LLC |
 | Magick.NET-Q8-AnyCPU | 14.13.1 | Copyright 2013-2026 Dirk Lemstra |
+| MaxMind.GeoIP2 | 6.0.0 | Copyright (c) MaxMind, Inc. |
 | ModelContextProtocol | 1.3.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | ModelContextProtocol.AspNetCore | 1.3.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | OpenIddict | 7.5.0 | Copyright (c) Kévin Chalet |
@@ -246,6 +247,23 @@ dépendance sur son image runtime (`apt-get install libreoffice` /
 `apk add libreoffice` / `brew install --cask libreoffice`). Le framework reste
 sous Apache-2.0.
 
+### Bases de données géo-IP (MaxMind GeoLite2 / DB-IP)
+
+| Champ | Valeur |
+| --- | --- |
+| Nom | MaxMind GeoLite2 / DB-IP Lite (fichiers `.mmdb`) |
+| Licence | GeoLite2 : EULA MaxMind + CC BY-SA 4.0 (attribution) — DB-IP Lite : CC BY 4.0 |
+| Copyright | © MaxMind, Inc. / © db-ip.com |
+| Date d'ajout | 2026-06-12 |
+
+Fichier de base de données lu en lecture seule par le module
+`Granit.IpGeolocation.MaxMind` (provider de géolocalisation IP hors-ligne).
+Le fichier `.mmdb` est **fourni et provisionné par le consommateur** (téléchargé
+depuis MaxMind ou DB-IP) ; il n'est **ni embarqué ni redistribué** par le
+framework. Les obligations d'attribution (CC BY-SA 4.0 / CC BY 4.0) et le respect
+de l'EULA MaxMind incombent au déploiement qui installe la base. Le framework
+reste sous Apache-2.0.
+
 ---
 
 ## Jeux de données embarqués
@@ -345,6 +363,18 @@ comme alternative au provider HashiCorp Vault.
 Ce SDK est utilisé par le package `Granit.BlobStorage.GoogleCloud` pour le stockage
 d'objets binaires via Google Cloud Storage comme alternative aux providers S3 et
 Azure Blob Storage.
+
+### ipinfo.io (Granit.IpGeolocation.IpApi)
+
+Le package optionnel `Granit.IpGeolocation.IpApi` interroge l'API tierce
+[ipinfo.io](https://ipinfo.io) pour résoudre une adresse IP en localisation
+approximative. **RGPD :** l'adresse IP est une donnée personnelle transmise à un
+sous-traitant ; ce provider est donc **désactivé par défaut** et ne s'active que
+sur enregistrement explicite (`AddGranitIpGeolocationIpApi()`) et inscription dans
+`IpGeolocation:ProviderOrder`. Pour les déploiements sensibles, privilégier le
+provider hors-ligne `Granit.IpGeolocation.MaxMind`, qui n'émet aucun appel externe.
+Aucune bibliothèque ipinfo.io n'est compilée ni redistribuée (appels HTTP via
+`IHttpClientFactory`).
 
 ### Microsoft.Azure.NotificationHubs
 

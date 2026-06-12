@@ -37,6 +37,7 @@ public sealed partial class SectionNameConventionTests
         "Cache",
         "Encryption",
         "Indexing",
+        "IpGeolocation",
         "Mcp",
         "EntityMerge",
         "Hostnames",

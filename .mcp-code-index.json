@@ -1419,6 +1419,28 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.IpGeolocation",
+      "deps": [
+        "Granit",
+        "Granit.Caching"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.IpGeolocation.IpApi",
+      "deps": [
+        "Granit.IpGeolocation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.IpGeolocation.MaxMind",
+      "deps": [
+        "Granit.IpGeolocation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.LanguageDetection",
       "deps": [
         "Granit"
@@ -2493,6 +2515,14 @@
       "name": "Granit.Timing",
       "deps": [
         "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.UserSessions.Abstractions",
+      "deps": [
+        "Granit",
+        "Granit.IpGeolocation"
       ],
       "framework": "net10.0"
     },
@@ -21489,6 +21519,12 @@
           "kind": "property",
           "signature": "string Path",
           "returnType": "string"
+        },
+        {
+          "name": "IsEssential",
+          "kind": "property",
+          "signature": "bool IsEssential",
+          "returnType": "bool"
         }
       ]
     },
@@ -29913,6 +29949,249 @@
       "file": "src/Granit.Indexing/SearchRequest.cs",
       "line": 31,
       "members": []
+    },
+    {
+      "name": "IpGeolocationMetrics",
+      "fqn": "Granit.IpGeolocation.Diagnostics.IpGeolocationMetrics",
+      "kind": "class",
+      "project": "Granit.IpGeolocation",
+      "file": "src/Granit.IpGeolocation/Diagnostics/IpGeolocationMetrics.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "RecordCacheHit",
+          "kind": "method",
+          "signature": "RecordCacheHit()",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCacheMiss",
+          "kind": "method",
+          "signature": "RecordCacheMiss()",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordProviderAttempt",
+          "kind": "method",
+          "signature": "RecordProviderAttempt(string provider, string outcome)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordLookupDuration",
+          "kind": "method",
+          "signature": "RecordLookupDuration(string result, TimeSpan duration)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GeoLocation",
+      "fqn": "Granit.IpGeolocation.GeoLocation",
+      "kind": "record",
+      "project": "Granit.IpGeolocation",
+      "file": "src/Granit.IpGeolocation/GeoLocation.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "GranitIpGeolocationModule",
+      "fqn": "Granit.IpGeolocation.GranitIpGeolocationModule",
+      "kind": "class",
+      "project": "Granit.IpGeolocation",
+      "file": "src/Granit.IpGeolocation/GranitIpGeolocationModule.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IIpGeolocationProvider",
+      "fqn": "Granit.IpGeolocation.IIpGeolocationProvider",
+      "kind": "interface",
+      "project": "Granit.IpGeolocation",
+      "file": "src/Granit.IpGeolocation/IIpGeolocationProvider.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(string ipAddress, CancellationToken cancellationToken = default)",
+          "returnType": "string ProviderName { get; } Task<GeoLocation?>"
+        }
+      ]
+    },
+    {
+      "name": "IIpGeolocationResolver",
+      "fqn": "Granit.IpGeolocation.IIpGeolocationResolver",
+      "kind": "interface",
+      "project": "Granit.IpGeolocation",
+      "file": "src/Granit.IpGeolocation/IIpGeolocationResolver.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(string? ipAddress, CancellationToken cancellationToken = default)",
+          "returnType": "Task<GeoLocation?>"
+        }
+      ]
+    },
+    {
+      "name": "IpGeolocationIpApiHostApplicationBuilderExtensions",
+      "fqn": "Granit.IpGeolocation.IpApi.Extensions.IpGeolocationIpApiHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.IpGeolocation.IpApi",
+      "file": "src/Granit.IpGeolocation.IpApi/Extensions/IpGeolocationIpApiHostApplicationBuilderExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "AddGranitIpGeolocationIpApi",
+          "kind": "method",
+          "signature": "AddGranitIpGeolocationIpApi(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitIpGeolocationIpApiModule",
+      "fqn": "Granit.IpGeolocation.IpApi.GranitIpGeolocationIpApiModule",
+      "kind": "class",
+      "project": "Granit.IpGeolocation.IpApi",
+      "file": "src/Granit.IpGeolocation.IpApi/GranitIpGeolocationIpApiModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "IpApiIpGeolocationOptions",
+      "fqn": "Granit.IpGeolocation.IpApi.Options.IpApiIpGeolocationOptions",
+      "kind": "class",
+      "project": "Granit.IpGeolocation.IpApi",
+      "file": "src/Granit.IpGeolocation.IpApi/Options/IpApiIpGeolocationOptions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(\"https://ipinfo.io\")",
+          "returnType": "string? ApiToken { get; set; } public Uri BaseAddress { get; set; } ="
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(3)",
+          "returnType": "TimeSpan Timeout { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "IpMasking",
+      "fqn": "Granit.IpGeolocation.IpMasking",
+      "kind": "class",
+      "project": "Granit.IpGeolocation",
+      "file": "src/Granit.IpGeolocation/IpMasking.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "IpGeolocationMaxMindHostApplicationBuilderExtensions",
+      "fqn": "Granit.IpGeolocation.MaxMind.Extensions.IpGeolocationMaxMindHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.IpGeolocation.MaxMind",
+      "file": "src/Granit.IpGeolocation.MaxMind/Extensions/IpGeolocationMaxMindHostApplicationBuilderExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "AddGranitIpGeolocationMaxMind",
+          "kind": "method",
+          "signature": "AddGranitIpGeolocationMaxMind(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitIpGeolocationMaxMindModule",
+      "fqn": "Granit.IpGeolocation.MaxMind.GranitIpGeolocationMaxMindModule",
+      "kind": "class",
+      "project": "Granit.IpGeolocation.MaxMind",
+      "file": "src/Granit.IpGeolocation.MaxMind/GranitIpGeolocationMaxMindModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "MaxMindFileAccess",
+      "fqn": "Granit.IpGeolocation.MaxMind.Options.MaxMindFileAccess",
+      "kind": "enum",
+      "project": "Granit.IpGeolocation.MaxMind",
+      "file": "src/Granit.IpGeolocation.MaxMind/Options/MaxMindFileAccess.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "MaxMindIpGeolocationOptions",
+      "fqn": "Granit.IpGeolocation.MaxMind.Options.MaxMindIpGeolocationOptions",
+      "kind": "class",
+      "project": "Granit.IpGeolocation.MaxMind",
+      "file": "src/Granit.IpGeolocation.MaxMind/Options/MaxMindIpGeolocationOptions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "DatabasePath",
+          "kind": "property",
+          "signature": "string DatabasePath",
+          "returnType": "string"
+        },
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "ReloadOnChange",
+          "kind": "property",
+          "signature": "bool ReloadOnChange",
+          "returnType": "bool"
+        },
+        {
+          "name": "FileAccess",
+          "kind": "property",
+          "signature": "MaxMindFileAccess FileAccess",
+          "returnType": "MaxMindFileAccess"
+        }
+      ]
+    },
+    {
+      "name": "GranitIpGeolocationOptions",
+      "fqn": "Granit.IpGeolocation.Options.GranitIpGeolocationOptions",
+      "kind": "class",
+      "project": "Granit.IpGeolocation",
+      "file": "src/Granit.IpGeolocation/Options/GranitIpGeolocationOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ProviderOrder",
+          "kind": "property",
+          "signature": "IList<string> ProviderOrder",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(1)",
+          "returnType": "TimeSpan CacheDuration { get; set; } = TimeSpan."
+        }
+      ]
     },
     {
       "name": "GranitJsonConverters",
@@ -49092,6 +49371,109 @@
       "project": "Granit.Timing",
       "file": "src/Granit.Timing/ResolvedPeriod.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "GranitUserSessionsAbstractionsModule",
+      "fqn": "Granit.UserSessions.GranitUserSessionsAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.UserSessions.Abstractions",
+      "file": "src/Granit.UserSessions.Abstractions/GranitUserSessionsAbstractionsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ISessionAnomalyDetector",
+      "fqn": "Granit.UserSessions.ISessionAnomalyDetector",
+      "kind": "interface",
+      "project": "Granit.UserSessions.Abstractions",
+      "file": "src/Granit.UserSessions.Abstractions/ISessionAnomalyDetector.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AssessAsync",
+          "kind": "method",
+          "signature": "AssessAsync(SessionDescriptor candidate, IReadOnlyList<SessionDescriptor> history, CancellationToken cancellationToken = default)",
+          "returnType": "Task<SessionRiskAssessment>"
+        }
+      ]
+    },
+    {
+      "name": "ISessionRiskStore",
+      "fqn": "Granit.UserSessions.ISessionRiskStore",
+      "kind": "interface",
+      "project": "Granit.UserSessions.Abstractions",
+      "file": "src/Granit.UserSessions.Abstractions/ISessionRiskStore.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "SetAsync",
+          "kind": "method",
+          "signature": "SetAsync(string userId, string sessionId, SessionRiskVerdict verdict, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<SessionRiskVerdict?>"
+        },
+        {
+          "name": "GetManyAsync",
+          "kind": "method",
+          "signature": "GetManyAsync(string userId, IReadOnlyCollection<string> sessionIds, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<string, SessionRiskVerdict>>"
+        }
+      ]
+    },
+    {
+      "name": "SessionDescriptor",
+      "fqn": "Granit.UserSessions.SessionDescriptor",
+      "kind": "record",
+      "project": "Granit.UserSessions.Abstractions",
+      "file": "src/Granit.UserSessions.Abstractions/SessionDescriptor.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "SessionRiskAssessment",
+      "fqn": "Granit.UserSessions.SessionRiskAssessment",
+      "kind": "record",
+      "project": "Granit.UserSessions.Abstractions",
+      "file": "src/Granit.UserSessions.Abstractions/SessionRiskAssessment.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(SessionRiskLevel.None, 0d, [])",
+          "returnType": "SessionRiskAssessment None { get; } ="
+        }
+      ]
+    },
+    {
+      "name": "SessionRiskLevel",
+      "fqn": "Granit.UserSessions.SessionRiskLevel",
+      "kind": "enum",
+      "project": "Granit.UserSessions.Abstractions",
+      "file": "src/Granit.UserSessions.Abstractions/SessionRiskLevel.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "SessionRiskVerdict",
+      "fqn": "Granit.UserSessions.SessionRiskVerdict",
+      "kind": "record",
+      "project": "Granit.UserSessions.Abstractions",
+      "file": "src/Granit.UserSessions.Abstractions/SessionRiskVerdict.cs",
+      "line": 13,
       "members": []
     },
     {

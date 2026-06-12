@@ -179,6 +179,9 @@
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.*" />
     <PackageVersion Include="Lib.Net.Http.WebPush" Version="3.*" />
   </ItemGroup>
+  <ItemGroup Label="IP Geolocation">
+    <PackageVersion Include="MaxMind.GeoIP2" Version="6.*" />
+  </ItemGroup>
   <ItemGroup Label="Cache">
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.*" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Abstractions" Version="10.*" />

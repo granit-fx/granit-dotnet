@@ -1,0 +1,25 @@
+using Granit.IpGeolocation;
+using Granit.Modularity;
+using Granit.UserSessions.Internal;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace Granit.UserSessions;
+
+/// <summary>
+/// Granit module for shared session contracts (<see cref="SessionDescriptor"/>,
+/// <see cref="ISessionAnomalyDetector"/>, <see cref="ISessionRiskStore"/>).
+/// </summary>
+/// <remarks>
+/// Registers safe no-op / in-memory defaults so the contracts resolve everywhere. Install
+/// <c>Granit.UserSessions.AnomalyDetection</c> to replace the detector and
+/// <c>Granit.UserSessions.EntityFrameworkCore</c> to replace the risk store with a durable one.
+/// </remarks>
+[DependsOn(typeof(GranitIpGeolocationModule))]
+public sealed class GranitUserSessionsAbstractionsModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddScoped<ISessionAnomalyDetector, NullSessionAnomalyDetector>();
+        context.Services.TryAddSingleton<ISessionRiskStore, MemorySessionRiskStore>();
+    }
+}

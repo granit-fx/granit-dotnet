@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.IpGeolocation.MaxMind</PackageId>
+    <Description>Offline IP geolocation provider for Granit.IpGeolocation backed by MaxMind .mmdb databases. Reads GeoLite2 (free) / GeoIP2 (paid) and DB-IP .mmdb files entirely in memory (no file lock, so scheduled database swaps never fail) with optional hot-reload. The database file is supplied by the consumer and is never embedded or redistributed. Privacy-first: lookups stay on-premise.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.IpGeolocation.MaxMind.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MaxMind.GeoIP2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.IpGeolocation\Granit.IpGeolocation.csproj" />
+  </ItemGroup>
+
+</Project>

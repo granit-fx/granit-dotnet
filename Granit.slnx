@@ -308,7 +308,12 @@
     <Project Path="src/Granit.Notifications.Zulip/Granit.Notifications.Zulip.csproj" />
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
   </Folder>
-  <Folder Name="/src/" />
+  <Folder Name="/src/">
+    <Project Path="src/Granit.IpGeolocation.IpApi/Granit.IpGeolocation.IpApi.csproj" />
+    <Project Path="src/Granit.IpGeolocation.MaxMind/Granit.IpGeolocation.MaxMind.csproj" />
+    <Project Path="src/Granit.IpGeolocation/Granit.IpGeolocation.csproj" />
+    <Project Path="src/Granit.UserSessions.Abstractions/Granit.UserSessions.Abstractions.csproj" />
+  </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.Anthropic/Granit.AI.Anthropic.csproj" />
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
@@ -653,7 +658,12 @@
     <Project Path="tests/Granit.Notifications.Wolverine.Tests/Granit.Notifications.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/Granit.IpGeolocation.IpApi.Tests/Granit.IpGeolocation.IpApi.Tests.csproj" />
+    <Project Path="tests/Granit.IpGeolocation.MaxMind.Tests/Granit.IpGeolocation.MaxMind.Tests.csproj" />
+    <Project Path="tests/Granit.IpGeolocation.Tests/Granit.IpGeolocation.Tests.csproj" />
+    <Project Path="tests/Granit.UserSessions.Abstractions.Tests/Granit.UserSessions.Abstractions.Tests.csproj" />
+  </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.Anthropic.Tests/Granit.AI.Anthropic.Tests.csproj" />
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />
