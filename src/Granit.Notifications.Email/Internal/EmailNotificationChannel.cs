@@ -310,8 +310,7 @@ internal sealed partial class EmailNotificationChannel(
         // bodies in a default `<mj-section><mj-column><mj-text>` so author writes plain markup,
         // and inject MJML bodies raw at the section level so authors can use `<mj-button>`,
         // `<mj-table>`, etc.
-        bool bodyIsMjml = contentEmail.Html.AsSpan().TrimStart()
-            .StartsWith("<mj-", StringComparison.OrdinalIgnoreCase);
+        bool bodyIsMjml = StartsWithMjml(contentEmail.Html);
 
         TemplateDescriptor layoutWithBody = new()
         {
@@ -392,6 +391,29 @@ internal sealed partial class EmailNotificationChannel(
         }
 
         return dict;
+    }
+
+    /// <summary>
+    /// Returns whether the body is an MJML fragment, skipping any leading whitespace and HTML
+    /// comments first. A translated template body begins with an <c>&lt;!-- AUTO-TRANSLATED --&gt;</c>
+    /// marker, which must not fool the detection into treating the MJML fragment as plain HTML.
+    /// </summary>
+    internal static bool StartsWithMjml(string html)
+    {
+        ReadOnlySpan<char> span = html.AsSpan().TrimStart();
+
+        while (span.StartsWith("<!--", StringComparison.Ordinal))
+        {
+            int end = span.IndexOf("-->", StringComparison.Ordinal);
+            if (end < 0)
+            {
+                break;
+            }
+
+            span = span[(end + 3)..].TrimStart();
+        }
+
+        return span.StartsWith("<mj-", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
