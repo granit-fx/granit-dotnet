@@ -1,10 +1,10 @@
+using Granit.Identity.Internal;
 using Granit.Identity.Models;
-using Granit.Identity.UserSessions.Internal;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Identity.UserSessions.Tests;
+namespace Granit.Identity.Tests;
 
 public sealed class IdentityUserSessionProviderTests
 {

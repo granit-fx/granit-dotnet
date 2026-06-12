@@ -1,6 +1,6 @@
 using Granit.IpGeolocation;
 
-namespace Granit.UserSessions.Endpoints.Dtos;
+namespace Granit.Identity.Endpoints.Dtos;
 
 /// <summary>A single session in the canonical session list. The raw IP is never exposed — only the derived location.</summary>
 /// <param name="SessionId">Opaque session identifier.</param>

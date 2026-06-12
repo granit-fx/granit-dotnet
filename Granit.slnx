@@ -98,10 +98,8 @@
     <Project Path="src/Granit.TextExtraction.Tika/Granit.TextExtraction.Tika.csproj" />
     <Project Path="src/Granit.TextExtraction/Granit.TextExtraction.csproj" />
     <Project Path="src/Granit.Timing/Granit.Timing.csproj" />
-    <Project Path="src/Granit.UserSessions/Granit.UserSessions.csproj" />
     <Project Path="src/Granit.Identity.Abstractions/Granit.Identity.Abstractions.csproj" />
     <Project Path="src/Granit.UserSessions.AnomalyDetection/Granit.UserSessions.AnomalyDetection.csproj" />
-    <Project Path="src/Granit.UserSessions.Endpoints/Granit.UserSessions.Endpoints.csproj" />
     <Project Path="src/Granit.UserSessions.EntityFrameworkCore/Granit.UserSessions.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.UserSessions.Notifications/Granit.UserSessions.Notifications.csproj" />
     <Project Path="src/Granit.Validation.AI/Granit.Validation.AI.csproj" />
@@ -165,7 +163,6 @@
     <Project Path="src/Granit.Identity.Local.Privacy/Granit.Identity.Local.Privacy.csproj" />
     <Project Path="src/Granit.Identity.Local/Granit.Identity.Local.csproj" />
     <Project Path="src/Granit.Identity.Notifications/Granit.Identity.Notifications.csproj" />
-    <Project Path="src/Granit.Identity.UserSessions/Granit.Identity.UserSessions.csproj" />
     <Project Path="src/Granit.Identity/Granit.Identity.csproj" />
     <Project Path="src/Granit.OpenIddict.BackgroundJobs/Granit.OpenIddict.BackgroundJobs.csproj" />
     <Project Path="src/Granit.OpenIddict.Endpoints/Granit.OpenIddict.Endpoints.csproj" />
@@ -450,10 +447,8 @@
     <Project Path="tests/Granit.TextExtraction.Text.Tests/Granit.TextExtraction.Text.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Tika.Tests/Granit.TextExtraction.Tika.Tests.csproj" />
     <Project Path="tests/Granit.Timing.Tests/Granit.Timing.Tests.csproj" />
-    <Project Path="tests/Granit.UserSessions.Tests/Granit.UserSessions.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Abstractions.Tests/Granit.Identity.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.UserSessions.AnomalyDetection.Tests/Granit.UserSessions.AnomalyDetection.Tests.csproj" />
-    <Project Path="tests/Granit.UserSessions.Endpoints.Tests/Granit.UserSessions.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.UserSessions.EntityFrameworkCore.Tests/Granit.UserSessions.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.UserSessions.Notifications.Tests/Granit.UserSessions.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Users.Tests/Granit.Users.Tests.csproj" />
@@ -523,7 +518,6 @@
     <Project Path="tests/Granit.Identity.Local.Tests/Granit.Identity.Local.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Notifications.Tests/Granit.Identity.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Tests/Granit.Identity.Tests.csproj" />
-    <Project Path="tests/Granit.Identity.UserSessions.Tests/Granit.Identity.UserSessions.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.BackgroundJobs.Tests/Granit.OpenIddict.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.Endpoints.Tests/Granit.OpenIddict.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.EntityFrameworkCore.Tests/Granit.OpenIddict.EntityFrameworkCore.Tests.csproj" />

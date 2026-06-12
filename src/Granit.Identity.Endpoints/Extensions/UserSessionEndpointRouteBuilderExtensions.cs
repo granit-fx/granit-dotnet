@@ -1,11 +1,11 @@
-using Granit.UserSessions.Endpoints.Endpoints;
-using Granit.UserSessions.Endpoints.Options;
+using Granit.Identity.Endpoints.Endpoints;
+using Granit.Identity.Endpoints.Options;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace Granit.UserSessions.Endpoints.Extensions;
+namespace Granit.Identity.Endpoints.Extensions;
 
 /// <summary>
 /// Extension methods for mapping the canonical user-session API (<c>/sessions</c> and <c>/devices</c>).

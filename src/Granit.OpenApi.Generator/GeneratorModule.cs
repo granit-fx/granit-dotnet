@@ -39,7 +39,6 @@ namespace Granit.OpenApi.Generator;
     typeof(Granit.Settings.Endpoints.GranitSettingsEndpointsModule),
     typeof(Granit.Templating.Endpoints.GranitTemplatingEndpointsModule),
     typeof(Granit.Timeline.Endpoints.GranitTimelineEndpointsModule),
-    typeof(Granit.UserSessions.Endpoints.GranitUserSessionsEndpointsModule),
     typeof(Granit.Validation.Endpoints.GranitValidationEndpointsModule),
     typeof(Granit.Webhooks.Endpoints.GranitWebhooksEndpointsModule),
     typeof(Granit.Workflow.Endpoints.GranitWorkflowEndpointsModule))]

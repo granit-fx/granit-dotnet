@@ -1,16 +1,17 @@
 using System.Net;
 using System.Net.Http.Json;
+using Granit.Identity.Endpoints.Dtos;
+using Granit.Identity.Endpoints.Extensions;
 using Granit.IpGeolocation;
 using Granit.Testing.Endpoints;
 using Granit.Users;
-using Granit.UserSessions.Endpoints.Dtos;
-using Granit.UserSessions.Endpoints.Extensions;
+
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.Endpoints.Tests;
+namespace Granit.Identity.Endpoints.Tests;
 
 public sealed class UserSessionEndpointsHttpTests : IAsyncDisposable
 {

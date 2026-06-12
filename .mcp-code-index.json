@@ -1149,6 +1149,7 @@
         "Granit.Auditing",
         "Granit.DataExchange.Abstractions",
         "Granit.Entities.Abstractions",
+        "Granit.Identity.Abstractions",
         "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
@@ -1355,14 +1356,6 @@
       "deps": [
         "Granit.Identity",
         "Granit.Notifications.Abstractions"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Identity.UserSessions",
-      "deps": [
-        "Granit.Identity",
-        "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1922,7 +1915,6 @@
         "Granit.Settings.Endpoints",
         "Granit.Templating.Endpoints",
         "Granit.Timeline.Endpoints",
-        "Granit.UserSessions.Endpoints",
         "Granit.Validation.Endpoints",
         "Granit.Webhooks.Endpoints",
         "Granit.Workflow.Endpoints"
@@ -2558,28 +2550,11 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.UserSessions",
-      "deps": [
-        "Granit",
-        "Granit.Identity.Abstractions"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.UserSessions.AnomalyDetection",
       "deps": [
         "Granit.AI",
         "Granit.IpGeolocation.Abstractions",
         "Granit.Identity.Abstractions"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.UserSessions.Endpoints",
-      "deps": [
-        "Granit.Http.ApiDocumentation",
-        "Granit.UserSessions",
-        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -24046,6 +24021,33 @@
       "members": []
     },
     {
+      "name": "UserDeviceResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.UserDeviceResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/UserSessionResponses.cs",
+      "line": 32,
+      "members": []
+    },
+    {
+      "name": "UserSessionResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.UserSessionResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/UserSessionResponses.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "UserSessionsRevokedResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.UserSessionsRevokedResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/UserSessionResponses.cs",
+      "line": 43,
+      "members": []
+    },
+    {
       "name": "IdentityEndpointRouteBuilderExtensions",
       "fqn": "Granit.Identity.Endpoints.Extensions.IdentityEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -24090,6 +24092,22 @@
           "kind": "method",
           "signature": "MapGranitIdentityProvider(this IEndpointRouteBuilder endpoints, Action<IdentityProviderEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "UserSessionEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Identity.Endpoints.Extensions.UserSessionEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Extensions/UserSessionEndpointRouteBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapGranitUserSessions",
+          "kind": "method",
+          "signature": "MapGranitUserSessions(this IEndpointRouteBuilder endpoints, Action<UserSessionsEndpointsOptions>? configure = null)",
+          "returnType": "IEndpointRouteBuilder"
         }
       ]
     },
@@ -24184,6 +24202,28 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan ReplayWindow { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "UserSessionsEndpointsOptions",
+      "fqn": "Granit.Identity.Endpoints.Options.UserSessionsEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Options/UserSessionsEndpointsOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
         }
       ]
     },
@@ -25687,7 +25727,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/GranitIdentityModule.cs",
-      "line": 28,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -28681,22 +28721,6 @@
       "file": "src/Granit.Identity.Abstractions/UserSessionView.cs",
       "line": 16,
       "members": []
-    },
-    {
-      "name": "GranitIdentityUserSessionsModule",
-      "fqn": "Granit.Identity.UserSessions.GranitIdentityUserSessionsModule",
-      "kind": "class",
-      "project": "Granit.Identity.UserSessions",
-      "file": "src/Granit.Identity.UserSessions/GranitIdentityUserSessionsModule.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
     },
     {
       "name": "ImagingAIMetrics",
@@ -36980,7 +37004,7 @@
       "kind": "class",
       "project": "Granit.OpenApi.Generator",
       "file": "src/Granit.OpenApi.Generator/GeneratorModule.cs",
-      "line": 46,
+      "line": 45,
       "members": []
     },
     {
@@ -49861,80 +49885,6 @@
       ]
     },
     {
-      "name": "UserDeviceResponse",
-      "fqn": "Granit.UserSessions.Endpoints.Dtos.UserDeviceResponse",
-      "kind": "record",
-      "project": "Granit.UserSessions.Endpoints",
-      "file": "src/Granit.UserSessions.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 32,
-      "members": []
-    },
-    {
-      "name": "UserSessionResponse",
-      "fqn": "Granit.UserSessions.Endpoints.Dtos.UserSessionResponse",
-      "kind": "record",
-      "project": "Granit.UserSessions.Endpoints",
-      "file": "src/Granit.UserSessions.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 14,
-      "members": []
-    },
-    {
-      "name": "UserSessionsRevokedResponse",
-      "fqn": "Granit.UserSessions.Endpoints.Dtos.UserSessionsRevokedResponse",
-      "kind": "record",
-      "project": "Granit.UserSessions.Endpoints",
-      "file": "src/Granit.UserSessions.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 43,
-      "members": []
-    },
-    {
-      "name": "UserSessionEndpointRouteBuilderExtensions",
-      "fqn": "Granit.UserSessions.Endpoints.Extensions.UserSessionEndpointRouteBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.UserSessions.Endpoints",
-      "file": "src/Granit.UserSessions.Endpoints/Extensions/UserSessionEndpointRouteBuilderExtensions.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "MapGranitUserSessions",
-          "kind": "method",
-          "signature": "MapGranitUserSessions(this IEndpointRouteBuilder endpoints, Action<UserSessionsEndpointsOptions>? configure = null)",
-          "returnType": "IEndpointRouteBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitUserSessionsEndpointsModule",
-      "fqn": "Granit.UserSessions.Endpoints.GranitUserSessionsEndpointsModule",
-      "kind": "class",
-      "project": "Granit.UserSessions.Endpoints",
-      "file": "src/Granit.UserSessions.Endpoints/GranitUserSessionsEndpointsModule.cs",
-      "line": 15,
-      "members": []
-    },
-    {
-      "name": "UserSessionsEndpointsOptions",
-      "fqn": "Granit.UserSessions.Endpoints.Options.UserSessionsEndpointsOptions",
-      "kind": "class",
-      "project": "Granit.UserSessions.Endpoints",
-      "file": "src/Granit.UserSessions.Endpoints/Options/UserSessionsEndpointsOptions.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "RoutePrefix",
-          "kind": "property",
-          "signature": "string RoutePrefix",
-          "returnType": "string"
-        },
-        {
-          "name": "TagName",
-          "kind": "property",
-          "signature": "string TagName",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "UserSessionsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.UserSessions.EntityFrameworkCore.Extensions.UserSessionsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -49989,22 +49939,6 @@
       "project": "Granit.UserSessions.EntityFrameworkCore",
       "file": "src/Granit.UserSessions.EntityFrameworkCore/GranitUserSessionsEntityFrameworkCoreModule.cs",
       "line": 19,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "GranitUserSessionsModule",
-      "fqn": "Granit.UserSessions.GranitUserSessionsModule",
-      "kind": "class",
-      "project": "Granit.UserSessions",
-      "file": "src/Granit.UserSessions/GranitUserSessionsModule.cs",
-      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",

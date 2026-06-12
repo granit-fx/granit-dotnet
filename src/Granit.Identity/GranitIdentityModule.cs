@@ -6,10 +6,13 @@ using Granit.Identity.Entities;
 using Granit.Identity.Exports;
 using Granit.Identity.Extensions;
 using Granit.Identity.Import;
+using Granit.Identity.Internal;
 using Granit.Identity.Queries;
 using Granit.Modularity;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Identity;
 
@@ -24,6 +27,7 @@ namespace Granit.Identity;
 /// <see cref="IUserDirectoryQueryableSource"/> impl.
 /// </summary>
 [DependsOn(typeof(GranitAuditingModule))]
+[DependsOn(typeof(GranitIdentityAbstractionsModule))]
 [DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitIdentityModule : GranitModule
 {
@@ -31,6 +35,14 @@ public sealed class GranitIdentityModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddGranitIdentity();
+
+        // Canonical user-session management (formerly Granit.UserSessions + the
+        // Granit.Identity.UserSessions bridge): the orchestrator plus the identity-provider
+        // session/device providers, made the active backend for /sessions and /devices over
+        // IIdentitySessionManager. A BFF deployment replaces these with its own providers.
+        context.Services.TryAddScoped<IUserSessionManager, DefaultUserSessionManager>();
+        context.Services.Replace(ServiceDescriptor.Scoped<IUserSessionProvider, IdentityUserSessionProvider>());
+        context.Services.Replace(ServiceDescriptor.Scoped<IUserDeviceProvider, IdentityUserDeviceProvider>());
 
         // ADR-051 — User aggregate primitives (Query / Export / EntityDefinition).
         // The IUserDirectoryQueryableSource implementation lives in the EF Core

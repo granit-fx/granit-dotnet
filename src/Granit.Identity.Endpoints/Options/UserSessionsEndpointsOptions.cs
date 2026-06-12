@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.Endpoints.Options;
+namespace Granit.Identity.Endpoints.Options;
 
 /// <summary>
 /// Configuration for the canonical user-session endpoints. Bind from

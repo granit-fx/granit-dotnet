@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.Internal;
+namespace Granit.Identity.Internal;
 
 /// <summary>
 /// Default <see cref="IUserSessionManager"/>: the single orchestrator behind the canonical session API.

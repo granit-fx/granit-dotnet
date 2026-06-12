@@ -1,9 +1,9 @@
-using Granit.UserSessions.Internal;
+using Granit.Identity.Internal;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.Tests;
+namespace Granit.Identity.Tests;
 
 public sealed class DefaultUserSessionManagerTests
 {

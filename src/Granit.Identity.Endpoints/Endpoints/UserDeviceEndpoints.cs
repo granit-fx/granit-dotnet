@@ -1,12 +1,12 @@
+using Granit.Identity.Endpoints.Dtos;
 using Granit.Users;
-using Granit.UserSessions.Endpoints.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace Granit.UserSessions.Endpoints.Endpoints;
+namespace Granit.Identity.Endpoints.Endpoints;
 
 /// <summary>
 /// The canonical <c>/devices</c> endpoint: lists the caller's devices.

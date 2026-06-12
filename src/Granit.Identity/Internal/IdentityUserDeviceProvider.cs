@@ -1,6 +1,6 @@
 using Granit.Identity.Models;
 
-namespace Granit.Identity.UserSessions.Internal;
+namespace Granit.Identity.Internal;
 
 /// <summary>
 /// <see cref="IUserDeviceProvider"/> backed by <see cref="IIdentitySessionManager"/>'s device-activity

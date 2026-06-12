@@ -26,7 +26,6 @@ using Granit.Scheduling.Endpoints.Extensions;
 using Granit.Settings.Endpoints.Extensions;
 using Granit.Templating.Endpoints.Extensions;
 using Granit.Timeline.Endpoints.Extensions;
-using Granit.UserSessions.Endpoints.Extensions;
 using Granit.Validation.Endpoints.Extensions;
 using Granit.Webhooks.Endpoints.Extensions;
 using Granit.Workflow.Endpoints.Extensions;
@@ -56,7 +55,11 @@ internal static class GeneratorEndpoints
         new("hostnames", e => e.MapGranitHostnames()),
         new("cookies", e => e.MapGranitCookieConsent()),
         new("security-headers", e => e.MapGranitSecurityHeadersAudit()),
-        new("identity", e => e.MapGranitIdentityUserCache()),
+        new("identity", e =>
+        {
+            e.MapGranitIdentityUserCache();
+            e.MapGranitUserSessions();
+        }),
         new("identity-local", e =>
         {
             e.MapGranitAccount();
@@ -89,7 +92,6 @@ internal static class GeneratorEndpoints
         }),
         new("templating", e => e.MapGranitTemplating()),
         new("timeline", e => e.MapGranitTimeline()),
-        new("user-sessions", e => e.MapGranitUserSessions()),
         new("validation", e => e.MapGranitValidation()),
         new("webhooks", e => e.MapGranitWebhooks()),
         new("workflow", e => e.MapGranitWorkflow()),
