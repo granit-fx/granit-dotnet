@@ -156,6 +156,7 @@
       "src/Granit.Identity.Local.Privacy/Granit.Identity.Local.Privacy.csproj",
       "src/Granit.Identity.Local/Granit.Identity.Local.csproj",
       "src/Granit.Identity.Notifications/Granit.Identity.Notifications.csproj",
+      "src/Granit.Identity.UserSessions/Granit.Identity.UserSessions.csproj",
       "src/Granit.Identity/Granit.Identity.csproj",
       "src/Granit.Imaging.AI/Granit.Imaging.AI.csproj",
       "src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj",

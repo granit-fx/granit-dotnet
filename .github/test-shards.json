@@ -333,6 +333,7 @@
         "tests/Granit.Identity.Local.Tests",
         "tests/Granit.Identity.Notifications.Tests",
         "tests/Granit.Identity.Tests",
+        "tests/Granit.Identity.UserSessions.Tests",
         "tests/Granit.Oidc.Tests",
         "tests/Granit.Oidc.TokenManagement.Tests",
         "tests/Granit.OpenIddict.BackgroundJobs.Tests",

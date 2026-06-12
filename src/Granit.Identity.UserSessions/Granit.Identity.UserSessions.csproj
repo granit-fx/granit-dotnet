@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Identity.UserSessions</PackageId>
+    <Description>Makes the identity provider the backend for Granit's canonical user-session API. Implements IUserSessionProvider and IUserDeviceProvider over IIdentitySessionManager, so a user's SSO sessions and devices surface and revoke through /sessions and /devices — for any IdP integration that implements IIdentitySessionManager (OpenIddict today; Keycloak when it does).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Identity.UserSessions.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Identity\Granit.Identity.csproj" />
+    <ProjectReference Include="..\Granit.UserSessions.Abstractions\Granit.UserSessions.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
