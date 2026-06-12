@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Granit.UserSessions.EntityFrameworkCore.Internal.Configurations;
+namespace Granit.Identity.EntityFrameworkCore.Internal.Configurations;
 
 /// <summary>
 /// EF Core configuration for <see cref="UserSessionRiskEntity"/>.

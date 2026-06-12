@@ -1181,7 +1181,9 @@
       "name": "Granit.Identity.EntityFrameworkCore",
       "deps": [
         "Granit.Encryption.EntityFrameworkCore",
+        "Granit.Guids",
         "Granit.Identity",
+        "Granit.Identity.Abstractions",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -2554,15 +2556,6 @@
       "deps": [
         "Granit.AI",
         "Granit.IpGeolocation.Abstractions",
-        "Granit.Identity.Abstractions"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.UserSessions.EntityFrameworkCore",
-      "deps": [
-        "Granit.Guids",
-        "Granit.Persistence.EntityFrameworkCore",
         "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
@@ -24360,8 +24353,31 @@
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentityEntityFrameworkCoreModule.cs",
-      "line": 22,
-      "members": []
+      "line": 25,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitUserSessionsDbProperties",
+      "fqn": "Granit.Identity.EntityFrameworkCore.GranitUserSessionsDbProperties",
+      "kind": "class",
+      "project": "Granit.Identity.EntityFrameworkCore",
+      "file": "src/Granit.Identity.EntityFrameworkCore/GranitUserSessionsDbProperties.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "IdentityGroupMembershipChangedEto",
@@ -49881,70 +49897,6 @@
           "kind": "property",
           "signature": "double MaxTravelKilometersPerHour",
           "returnType": "double"
-        }
-      ]
-    },
-    {
-      "name": "UserSessionsEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.UserSessions.EntityFrameworkCore.Extensions.UserSessionsEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.UserSessions.EntityFrameworkCore",
-      "file": "src/Granit.UserSessions.EntityFrameworkCore/Extensions/UserSessionsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "AddGranitUserSessionsEntityFrameworkCore",
-          "kind": "method",
-          "signature": "AddGranitUserSessionsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
-    },
-    {
-      "name": "UserSessionsModelBuilderExtensions",
-      "fqn": "Granit.UserSessions.EntityFrameworkCore.Extensions.UserSessionsModelBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.UserSessions.EntityFrameworkCore",
-      "file": "src/Granit.UserSessions.EntityFrameworkCore/Extensions/UserSessionsModelBuilderExtensions.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "ConfigureUserSessionsModule",
-          "kind": "method",
-          "signature": "ConfigureUserSessionsModule(this ModelBuilder modelBuilder)",
-          "returnType": "ModelBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitUserSessionsDbProperties",
-      "fqn": "Granit.UserSessions.EntityFrameworkCore.GranitUserSessionsDbProperties",
-      "kind": "class",
-      "project": "Granit.UserSessions.EntityFrameworkCore",
-      "file": "src/Granit.UserSessions.EntityFrameworkCore/GranitUserSessionsDbProperties.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "DbTablePrefix",
-          "kind": "property",
-          "signature": "string DbTablePrefix",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitUserSessionsEntityFrameworkCoreModule",
-      "fqn": "Granit.UserSessions.EntityFrameworkCore.GranitUserSessionsEntityFrameworkCoreModule",
-      "kind": "class",
-      "project": "Granit.UserSessions.EntityFrameworkCore",
-      "file": "src/Granit.UserSessions.EntityFrameworkCore/GranitUserSessionsEntityFrameworkCoreModule.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
         }
       ]
     },

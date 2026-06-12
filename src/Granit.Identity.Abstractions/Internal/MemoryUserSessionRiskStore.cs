@@ -4,7 +4,7 @@ namespace Granit.Identity.Internal;
 
 /// <summary>
 /// In-memory, single-node, non-durable <see cref="IUserSessionRiskStore"/> registered by default. Suitable for
-/// development and tests; replaced by <c>Granit.UserSessions.EntityFrameworkCore</c> for durable production use.
+/// development and tests; replaced by <c>Granit.Identity.EntityFrameworkCore</c> for durable production use.
 /// </summary>
 internal sealed class MemoryUserSessionRiskStore : IUserSessionRiskStore
 {

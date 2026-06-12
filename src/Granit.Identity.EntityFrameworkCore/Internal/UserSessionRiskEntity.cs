@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.EntityFrameworkCore.Internal;
+namespace Granit.Identity.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core entity persisting a <see cref="UserSessionRiskVerdict"/> for a session, keyed by

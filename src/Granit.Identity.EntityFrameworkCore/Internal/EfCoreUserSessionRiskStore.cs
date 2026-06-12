@@ -2,14 +2,14 @@ using System.Text.Json;
 using Granit.Guids;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.UserSessions.EntityFrameworkCore.Internal;
+namespace Granit.Identity.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Durable <see cref="IUserSessionRiskStore"/> backed by EF Core. Verdicts survive restarts and are shared across
 /// instances, keeping the risk shown on the session surfaces stable.
 /// </summary>
 internal sealed class EfCoreUserSessionRiskStore(
-    IDbContextFactory<UserSessionRiskDbContext> dbContextFactory,
+    IDbContextFactory<IdentityDbContext> dbContextFactory,
     IGuidGenerator guidGenerator) : IUserSessionRiskStore
 {
     private static readonly JsonSerializerOptions JsonOptions = new();
@@ -29,7 +29,7 @@ internal sealed class EfCoreUserSessionRiskStore(
         // row the winner created instead of surfacing the DbUpdateException. Provider-agnostic (no ON CONFLICT).
         for (int attempt = 0; ; attempt++)
         {
-            await using UserSessionRiskDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
+            await using IdentityDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             UserSessionRiskEntity? existing = await db.UserSessionRisks
@@ -72,7 +72,7 @@ internal sealed class EfCoreUserSessionRiskStore(
         string sessionId,
         CancellationToken cancellationToken = default)
     {
-        await using UserSessionRiskDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
+        await using IdentityDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
         UserSessionRiskEntity? entity = await db.UserSessionRisks
@@ -95,7 +95,7 @@ internal sealed class EfCoreUserSessionRiskStore(
 
         List<string> ids = [.. sessionIds];
 
-        await using UserSessionRiskDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
+        await using IdentityDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
         List<UserSessionRiskEntity> rows = await db.UserSessionRisks

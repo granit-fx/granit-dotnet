@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.EntityFrameworkCore;
+namespace Granit.Identity.EntityFrameworkCore;
 
 /// <summary>
 /// Database naming properties for the user-sessions EF Core store. Set before the first DbContext is created.
