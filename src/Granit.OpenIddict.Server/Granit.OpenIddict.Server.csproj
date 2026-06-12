@@ -25,6 +25,7 @@
     <ProjectReference Include="..\Granit.Authentication\Granit.Authentication.csproj" />
     <ProjectReference Include="..\Granit.Authentication.DPoP\Granit.Authentication.DPoP.csproj" />
     <ProjectReference Include="..\Granit.OpenIddict\Granit.OpenIddict.csproj" />
+    <ProjectReference Include="..\Granit.UserSessions.Abstractions\Granit.UserSessions.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

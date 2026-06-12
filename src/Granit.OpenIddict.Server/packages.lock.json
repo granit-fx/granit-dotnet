@@ -482,6 +482,12 @@
           "Microsoft.EntityFrameworkCore": "[10.*, )"
         }
       },
+      "granit.ipgeolocation.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.openiddict": {
         "type": "Project",
         "dependencies": {
@@ -538,6 +544,13 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.usersessions.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.workflow.abstractions": {

@@ -57,12 +57,43 @@ public sealed class UserSessionCreatedHandlerTests
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(false);
         tenant.Change(Arg.Any<Guid?>()).Returns(Substitute.For<IDisposable>());
-        provider.ListAsync("user-1", "s1", Arg.Any<CancellationToken>()).Returns([]);
+        provider.ListAsync("user-1", "s1", Arg.Any<CancellationToken>())
+            .Returns(new List<UserSessionDescriptor>
+            {
+                new("s1", "user-1", IsCurrent: true, Now, null, "ua", null, Location: null),
+            });
 
         UserSessionCreatedEto evt = new("user-1", "s1", eventTenant, UserSessionSource.Bff, "ua", null, Now);
 
         await UserSessionCreatedHandler.HandleAsync(evt, tenant, evaluator, provider, geo, Ct);
 
         tenant.Received(1).Change(eventTenant);
+    }
+
+    [Fact]
+    public async Task HandleAsync_DoesNotEvaluate_WhenProviderDoesNotSurfaceTheSession()
+    {
+        IUserSessionRiskEvaluator evaluator = Substitute.For<IUserSessionRiskEvaluator>();
+        IUserSessionProvider provider = Substitute.For<IUserSessionProvider>();
+        IIpGeolocationResolver geo = Substitute.For<IIpGeolocationResolver>();
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.IsAvailable.Returns(false);
+        tenant.Change(Arg.Any<Guid?>()).Returns(Substitute.For<IDisposable>());
+
+        // The active provider surfaces only an unrelated session — the candidate belongs to another topology
+        // layer (e.g. an OpenIddict refresh-token event reaching a BFF deployment), so it must be ignored.
+        provider.ListAsync("user-1", "oidc-token-id", Arg.Any<CancellationToken>())
+            .Returns(new List<UserSessionDescriptor>
+            {
+                new("bff-sid", "user-1", IsCurrent: true, Now, null, "ua", "1.1.1.1", Location: null),
+            });
+
+        UserSessionCreatedEto evt = new(
+            "user-1", "oidc-token-id", TenantId: null, UserSessionSource.OpenIddict, "ua", "1.1.1.1", Now);
+
+        await UserSessionCreatedHandler.HandleAsync(evt, tenant, evaluator, provider, geo, Ct);
+
+        await evaluator.DidNotReceiveWithAnyArgs().EvaluateAsync(default!, default!, Ct);
+        await geo.DidNotReceiveWithAnyArgs().ResolveAsync(default, Ct);
     }
 }

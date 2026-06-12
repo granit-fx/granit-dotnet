@@ -26,6 +26,20 @@ public class UserSessionCreatedHandler
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : evt.TenantId;
         using IDisposable _ = currentTenant.Change(tenantId);
 
+        IReadOnlyList<UserSessionDescriptor> sessions = await sessionProvider
+            .ListAsync(evt.UserId, evt.SessionId, cancellationToken)
+            .ConfigureAwait(false);
+
+        // Ownership guard: evaluate only a session the active provider actually surfaces. A session-created
+        // event whose session this topology does not list belongs to a different session layer — e.g. an
+        // OpenIddict refresh-token event reaching a BFF deployment, where the BFF owns the surfaced session and
+        // has already emitted its own event. Evaluating it would double-count risk and could double-alert. The
+        // emitting source stays simple and topology-blind; the authoritative provider decides relevance here.
+        if (!sessions.Any(s => s.SessionId == evt.SessionId))
+        {
+            return;
+        }
+
         GeoLocation? candidateLocation = await geoResolver.ResolveAsync(evt.IpAddress, cancellationToken)
             .ConfigureAwait(false);
 
@@ -40,7 +54,7 @@ public class UserSessionCreatedHandler
             candidateLocation);
 
         IReadOnlyList<UserSessionDescriptor> history = await BuildEnrichedHistoryAsync(
-            evt, sessionProvider, geoResolver, cancellationToken).ConfigureAwait(false);
+            sessions, evt.SessionId, geoResolver, cancellationToken).ConfigureAwait(false);
 
         await evaluator.EvaluateAsync(candidate, history, cancellationToken).ConfigureAwait(false);
     }
@@ -49,19 +63,15 @@ public class UserSessionCreatedHandler
     // the heuristics (impossible travel, new country) can compare against history. Lookups are cache-backed and
     // coalesced, so repeated IPs are cheap.
     private static async Task<IReadOnlyList<UserSessionDescriptor>> BuildEnrichedHistoryAsync(
-        UserSessionCreatedEto evt,
-        IUserSessionProvider sessionProvider,
+        IReadOnlyList<UserSessionDescriptor> sessions,
+        string candidateSessionId,
         IIpGeolocationResolver geoResolver,
         CancellationToken cancellationToken)
     {
-        IReadOnlyList<UserSessionDescriptor> sessions = await sessionProvider
-            .ListAsync(evt.UserId, evt.SessionId, cancellationToken)
-            .ConfigureAwait(false);
-
         List<UserSessionDescriptor> history = [];
         foreach (UserSessionDescriptor session in sessions)
         {
-            if (session.SessionId == evt.SessionId)
+            if (session.SessionId == candidateSessionId)
             {
                 continue;
             }
