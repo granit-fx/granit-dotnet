@@ -242,6 +242,7 @@
         "tests/Granit.UserSessions.Tests",
         "tests/Granit.UserSessions.Abstractions.Tests",
         "tests/Granit.UserSessions.AnomalyDetection.Tests",
+        "tests/Granit.UserSessions.Endpoints.Tests",
         "tests/Granit.UserSessions.EntityFrameworkCore.Tests",
         "tests/Granit.Wolverine.Encryption.Tests",
         "tests/Granit.Wolverine.Postgresql.Tests",

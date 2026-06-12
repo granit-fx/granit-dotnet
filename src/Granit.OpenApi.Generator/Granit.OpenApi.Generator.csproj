@@ -48,6 +48,7 @@
     <ProjectReference Include="..\Granit.Settings.Endpoints\Granit.Settings.Endpoints.csproj" />
     <ProjectReference Include="..\Granit.Templating.Endpoints\Granit.Templating.Endpoints.csproj" />
     <ProjectReference Include="..\Granit.Timeline.Endpoints\Granit.Timeline.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.UserSessions.Endpoints\Granit.UserSessions.Endpoints.csproj" />
     <ProjectReference Include="..\Granit.Validation.Endpoints\Granit.Validation.Endpoints.csproj" />
     <ProjectReference Include="..\Granit.Webhooks.Endpoints\Granit.Webhooks.Endpoints.csproj" />
     <ProjectReference Include="..\Granit.Workflow.Endpoints\Granit.Workflow.Endpoints.csproj" />

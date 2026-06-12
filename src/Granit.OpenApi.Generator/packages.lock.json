@@ -1215,11 +1215,26 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.usersessions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.usersessions.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.usersessions.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.UserSessions": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.validation": {

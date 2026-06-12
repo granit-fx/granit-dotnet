@@ -1,0 +1,44 @@
+using Granit.UserSessions.Endpoints.Endpoints;
+using Granit.UserSessions.Endpoints.Options;
+using Granit.Validation.AspNetCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+
+namespace Granit.UserSessions.Endpoints.Extensions;
+
+/// <summary>
+/// Extension methods for mapping the canonical user-session API (<c>/sessions</c> and <c>/devices</c>).
+/// </summary>
+public static class UserSessionEndpointRouteBuilderExtensions
+{
+    /// <summary>
+    /// Maps the canonical, self-service session and device endpoints. The whole surface requires an
+    /// authenticated caller and operates on that caller's own sessions, regardless of the configured
+    /// backend (BFF, OpenIddict or Keycloak).
+    /// </summary>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="configure">Optional delegate to customize <see cref="UserSessionsEndpointsOptions"/>.</param>
+    /// <returns>The endpoint route builder for chaining.</returns>
+    public static IEndpointRouteBuilder MapGranitUserSessions(
+        this IEndpointRouteBuilder endpoints,
+        Action<UserSessionsEndpointsOptions>? configure = null)
+    {
+        UserSessionsEndpointsOptions options = new();
+        configure?.Invoke(options);
+
+        string prefix = string.IsNullOrEmpty(options.RoutePrefix) ? "" : $"{options.RoutePrefix.Trim('/')}/";
+
+        endpoints.MapGranitGroup($"{prefix}sessions")
+            .WithTags(options.TagName)
+            .RequireAuthorization()
+            .MapUserSessionEndpoints();
+
+        endpoints.MapGranitGroup($"{prefix}devices")
+            .WithTags(options.TagName)
+            .RequireAuthorization()
+            .MapUserDeviceEndpoints();
+
+        return endpoints;
+    }
+}

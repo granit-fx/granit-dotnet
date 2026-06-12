@@ -101,6 +101,7 @@
     <Project Path="src/Granit.UserSessions/Granit.UserSessions.csproj" />
     <Project Path="src/Granit.UserSessions.Abstractions/Granit.UserSessions.Abstractions.csproj" />
     <Project Path="src/Granit.UserSessions.AnomalyDetection/Granit.UserSessions.AnomalyDetection.csproj" />
+    <Project Path="src/Granit.UserSessions.Endpoints/Granit.UserSessions.Endpoints.csproj" />
     <Project Path="src/Granit.UserSessions.EntityFrameworkCore/Granit.UserSessions.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Validation.AI/Granit.Validation.AI.csproj" />
     <Project Path="src/Granit.Validation.Endpoints/Granit.Validation.Endpoints.csproj" />
@@ -449,6 +450,7 @@
     <Project Path="tests/Granit.UserSessions.Tests/Granit.UserSessions.Tests.csproj" />
     <Project Path="tests/Granit.UserSessions.Abstractions.Tests/Granit.UserSessions.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.UserSessions.AnomalyDetection.Tests/Granit.UserSessions.AnomalyDetection.Tests.csproj" />
+    <Project Path="tests/Granit.UserSessions.Endpoints.Tests/Granit.UserSessions.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.UserSessions.EntityFrameworkCore.Tests/Granit.UserSessions.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Users.Tests/Granit.Users.Tests.csproj" />
     <Project Path="tests/Granit.Validation.AI.Tests/Granit.Validation.AI.Tests.csproj" />
