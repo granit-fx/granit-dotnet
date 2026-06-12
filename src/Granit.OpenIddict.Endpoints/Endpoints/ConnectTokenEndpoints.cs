@@ -157,12 +157,11 @@ internal static partial class ConnectTokenEndpoints
             metrics.RecordAuthenticationSuccess(tenantId, grantType);
             LogTokenIssued(logger, user.Id.ToString(), grantType);
 
-            await TryWriteAuthAuditAsync(context, logger,
-                method: grantType,
-                userId: user.Id.ToString(),
-                userName: user.UserName,
-                failureReason: null,
-                tenantId).ConfigureAwait(false);
+            // No success audit here: authorization_code / refresh_token do not authenticate the user at
+            // the token endpoint — they exchange an authentication that already happened and was audited
+            // at its source (the BFF session callback, or the interactive login endpoint for direct
+            // clients). Auditing the exchange would duplicate that record. Token-level FAILURES above are
+            // still audited, as a forged/replayed code or refresh token is a security event seen only here.
 
             string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
             string? userAgent = context.Request.Headers.UserAgent.FirstOrDefault();

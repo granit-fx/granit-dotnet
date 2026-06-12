@@ -1,6 +1,8 @@
 using System.Net;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using Granit.Auditing;
+using Granit.Auditing.Domain;
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Internal;
 using Granit.Authentication.ApiKeys.Options;
@@ -37,7 +39,8 @@ public sealed class ApiKeyAuthenticationHandlerTests
     private async Task<AuthenticateResult> AuthenticateAsync(
         string? authorizationHeader,
         IPAddress? remoteIp = null,
-        IApiKeyCacheService? cacheService = null)
+        IApiKeyCacheService? cacheService = null,
+        IAuditingWriter? auditingWriter = null)
     {
         IOptionsMonitor<ApiKeyOptions> optionsMonitor = Substitute.For<IOptionsMonitor<ApiKeyOptions>>();
         optionsMonitor.Get(ApiKeyAuthenticationDefaults.AuthenticationScheme).Returns(_options);
@@ -55,6 +58,13 @@ public sealed class ApiKeyAuthenticationHandlerTests
             cacheService);
 
         var context = new DefaultHttpContext();
+
+        if (auditingWriter is not null)
+        {
+            IServiceProvider services = Substitute.For<IServiceProvider>();
+            services.GetService(typeof(IAuditingWriter)).Returns(auditingWriter);
+            context.RequestServices = services;
+        }
 
         if (authorizationHeader is not null)
         {
@@ -143,6 +153,23 @@ public sealed class ApiKeyAuthenticationHandlerTests
 
         result.Succeeded.ShouldBeFalse();
         result.Failure!.Message.ShouldBe("Invalid API key.");
+    }
+
+    [Fact]
+    public async Task HandleAuthenticate_Failure_WritesAccessDeniedAudit()
+    {
+        ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
+        _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
+            .Returns((ApiKeyEntry?)null);
+        IAuditingWriter auditingWriter = Substitute.For<IAuditingWriter>();
+
+        AuthenticateResult result = await AuthenticateAsync(
+            $"Bearer {gen.RawSecret}", auditingWriter: auditingWriter);
+
+        result.Succeeded.ShouldBeFalse();
+        await auditingWriter.Received(1).WriteAsync(
+            Arg.Is<AuditEntry>(e => e.Category == AuditCategory.AccessDenied),
+            Arg.Any<CancellationToken>());
     }
 
     // --- Revoked key ---

@@ -284,9 +284,15 @@ internal static partial class BffLoginEndpoints
 
         metrics.RecordLogin(null);
         LogLoginSuccess(logger, BffSessionEndpoints.MaskSessionId(sessionId), frontend.Name);
+
+        // The BFF owns the authentication audit trail for interactive logins it fronts: it carries the
+        // real browser User-Agent and the authenticated user as CreatedBy. The authorization server's
+        // token endpoint deliberately does NOT audit the authorization_code / refresh_token exchange
+        // (see ConnectTokenEndpoints), so this is the single success row for a BFF login.
         await TryWriteAuthAuditAsync(httpContext, logger,
             userId: string.IsNullOrEmpty(userId) ? AuthenticationAuditEntry.UnknownUserSentinel : userId,
-            userName: ExtractClaimFromIdToken(tokens.IdToken, "name"),
+            userName: ExtractClaimFromIdToken(tokens.IdToken, "preferred_username")
+                ?? ExtractClaimFromIdToken(tokens.IdToken, "email"),
             failureReason: null,
             cancellationToken).ConfigureAwait(false);
 
