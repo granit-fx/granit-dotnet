@@ -465,6 +465,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Auditing.Abstractions": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
@@ -1444,8 +1445,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.16.2",
-        "contentHash": "2dS8DRab00T4tyadGfiEw7Y3928mDGmk09yJSOqX7Jd69twU60n3jJPIIpAtA67UgngFL/UK0NxcSIoEQEd2AA=="
+        "resolved": "2.16.3",
+        "contentHash": "GhQUD/eiUKo1gh+9gYwwT3ndnb/wdZavwwHlXnnTKc55d51Qcu6sdAPfil9paPGrw8BTpF/GL8INZm1sK4kJLQ=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",
@@ -1469,8 +1470,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.7.0",
-        "contentHash": "sBSlzRrHOBz8o3fI7YGD7TH/hmyRn3Bg/uTl0P2wJgnXEzM+hGqmD4IZP1E/dW+bHgTgGLa1J+OeDA0itvSwzA==",
+        "resolved": "6.8.0",
+        "contentHash": "z4JclmpLO3jMHokFgT9EO4UlLpi4KyqtNdYEFj85keRRqLKmckJikkkjjer04EdoIxRF7vejdWEGB4RRQ8ILHQ==",
         "dependencies": {
           "JasperFx": "2.8.2",
           "JasperFx.Events": "2.8.2",
