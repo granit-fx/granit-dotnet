@@ -2567,6 +2567,7 @@
       "name": "Granit.UserSessions.AnomalyDetection",
       "deps": [
         "Granit.AI",
+        "Granit.IpGeolocation.Abstractions",
         "Granit.UserSessions.Abstractions"
       ],
       "framework": "net10.0"
@@ -30130,8 +30131,8 @@
       "name": "IIpGeolocationResolver",
       "fqn": "Granit.IpGeolocation.IIpGeolocationResolver",
       "kind": "interface",
-      "project": "Granit.IpGeolocation",
-      "file": "src/Granit.IpGeolocation/IIpGeolocationResolver.cs",
+      "project": "Granit.IpGeolocation.Abstractions",
+      "file": "src/Granit.IpGeolocation.Abstractions/IIpGeolocationResolver.cs",
       "line": 12,
       "members": [
         {
@@ -49504,6 +49505,22 @@
       ]
     },
     {
+      "name": "UserSessionCreatedHandler",
+      "fqn": "Granit.UserSessions.AnomalyDetection.Handlers.UserSessionCreatedHandler",
+      "kind": "class",
+      "project": "Granit.UserSessions.AnomalyDetection",
+      "file": "src/Granit.UserSessions.AnomalyDetection/Handlers/UserSessionCreatedHandler.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(UserSessionCreatedEto evt, ICurrentTenant currentTenant, IUserSessionRiskEvaluator evaluator, IUserSessionProvider sessionProvider, IIpGeolocationResolver geoResolver, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IUserSessionRiskEvaluator",
       "fqn": "Granit.UserSessions.AnomalyDetection.IUserSessionRiskEvaluator",
       "kind": "interface",
@@ -49860,7 +49877,7 @@
       "kind": "record",
       "project": "Granit.UserSessions.Abstractions",
       "file": "src/Granit.UserSessions.Abstractions/SuspiciousUserSessionDetectedEto.cs",
-      "line": 18,
+      "line": 32,
       "members": []
     },
     {
@@ -49870,6 +49887,15 @@
       "project": "Granit.UserSessions.Abstractions",
       "file": "src/Granit.UserSessions.Abstractions/UserDevice.cs",
       "line": 23,
+      "members": []
+    },
+    {
+      "name": "UserSessionCreatedEto",
+      "fqn": "Granit.UserSessions.UserSessionCreatedEto",
+      "kind": "record",
+      "project": "Granit.UserSessions.Abstractions",
+      "file": "src/Granit.UserSessions.Abstractions/UserSessionCreatedEto.cs",
+      "line": 30,
       "members": []
     },
     {
@@ -49913,6 +49939,15 @@
       "project": "Granit.UserSessions.Abstractions",
       "file": "src/Granit.UserSessions.Abstractions/UserSessionRiskVerdict.cs",
       "line": 13,
+      "members": []
+    },
+    {
+      "name": "UserSessionSource",
+      "fqn": "Granit.UserSessions.UserSessionSource",
+      "kind": "enum",
+      "project": "Granit.UserSessions.Abstractions",
+      "file": "src/Granit.UserSessions.Abstractions/UserSessionSource.cs",
+      "line": 7,
       "members": []
     },
     {
