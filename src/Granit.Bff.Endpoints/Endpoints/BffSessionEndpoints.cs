@@ -1,6 +1,6 @@
 using Granit.Bff.Options;
+using Granit.Identity;
 using Granit.IpGeolocation;
-using Granit.UserSessions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

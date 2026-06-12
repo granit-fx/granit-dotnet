@@ -1,9 +1,9 @@
+using Granit.Identity.Internal;
 using Granit.IpGeolocation;
-using Granit.UserSessions.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.Abstractions.Tests;
+namespace Granit.Identity.Abstractions.Tests;
 
 public sealed class NullUserSessionAnomalyDetectorTests
 {

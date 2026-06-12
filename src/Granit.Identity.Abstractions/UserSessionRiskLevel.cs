@@ -1,4 +1,4 @@
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// Coarse risk classification for a session, surfaced to users and used to drive security responses

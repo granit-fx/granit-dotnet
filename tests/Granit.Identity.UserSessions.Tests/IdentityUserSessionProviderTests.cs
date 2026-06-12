@@ -1,6 +1,5 @@
 using Granit.Identity.Models;
 using Granit.Identity.UserSessions.Internal;
-using Granit.UserSessions;
 using NSubstitute;
 using Shouldly;
 using Xunit;

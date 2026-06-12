@@ -22,7 +22,7 @@
     <ProjectReference Include="..\Granit.IpGeolocation\Granit.IpGeolocation.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine\Granit.QueryEngine.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.AspNetCore\Granit.QueryEngine.AspNetCore.csproj" />
-    <ProjectReference Include="..\Granit.UserSessions.Abstractions\Granit.UserSessions.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Identity.Abstractions\Granit.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
     <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
   </ItemGroup>

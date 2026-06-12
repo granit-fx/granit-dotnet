@@ -1,6 +1,6 @@
 using Granit.Events;
 
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// Integration event raised when a session is assessed as <c>Medium</c> or <c>High</c> risk. Consumers
@@ -8,7 +8,7 @@ namespace Granit.UserSessions;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Lives in <c>Granit.UserSessions.Abstractions</c> so a subscriber can react to suspicious sessions without
+/// Lives in <c>Granit.Identity.Abstractions</c> so a subscriber can react to suspicious sessions without
 /// referencing the anomaly-detection engine (and transitively <c>Granit.AI</c>).
 /// </para>
 /// <para>

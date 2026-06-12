@@ -1,4 +1,4 @@
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// Durable store for session risk verdicts, keyed by <c>(userId, sessionId)</c>. The single source of truth
@@ -6,7 +6,7 @@ namespace Granit.UserSessions;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The default registration (<c>Granit.UserSessions.Abstractions</c>) is an in-memory, single-node, non-durable
+/// The default registration (<c>Granit.Identity.Abstractions</c>) is an in-memory, single-node, non-durable
 /// store suitable for development. Install <c>Granit.UserSessions.EntityFrameworkCore</c> for a durable store that
 /// survives restarts and is shared across instances.
 /// </para>

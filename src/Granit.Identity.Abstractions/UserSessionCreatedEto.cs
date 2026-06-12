@@ -1,6 +1,6 @@
 using Granit.Events;
 
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// Integration event raised when a user session is established, from any session source (BFF, OpenIddict,
@@ -9,7 +9,7 @@ namespace Granit.UserSessions;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Lives in <c>Granit.UserSessions.Abstractions</c> so a consumer (anomaly detection, geo enrichment,
+/// Lives in <c>Granit.Identity.Abstractions</c> so a consumer (anomaly detection, geo enrichment,
 /// notifications) can subscribe without referencing any session-provider package. Distributed via
 /// <c>AddDistributedEvent</c> / <c>IDistributedEventBus</c> (Wolverine outbox).
 /// </para>

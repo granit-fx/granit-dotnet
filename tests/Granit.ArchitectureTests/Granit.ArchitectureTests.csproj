@@ -315,7 +315,7 @@
     <ProjectReference Include="..\..\src\Granit.Timeline.EntityFrameworkCore\Granit.Timeline.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timeline.Notifications\Granit.Timeline.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timing\Granit.Timing.csproj" />
-    <ProjectReference Include="..\..\src\Granit.UserSessions.Abstractions\Granit.UserSessions.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Abstractions\Granit.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.UserSessions.AnomalyDetection\Granit.UserSessions.AnomalyDetection.csproj" />
     <ProjectReference Include="..\..\src\Granit.UserSessions.EntityFrameworkCore\Granit.UserSessions.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.UserSessions.Notifications\Granit.UserSessions.Notifications.csproj" />

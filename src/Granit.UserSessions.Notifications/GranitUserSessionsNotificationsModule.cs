@@ -18,7 +18,7 @@ namespace Granit.UserSessions.Notifications;
 [DependsOn(
     typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitTemplatingModule),
-    typeof(GranitUserSessionsAbstractionsModule))]
+    typeof(GranitIdentityAbstractionsModule))]
 public sealed class GranitUserSessionsNotificationsModule : GranitModule
 {
     /// <inheritdoc/>

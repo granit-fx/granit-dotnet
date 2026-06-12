@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Granit.UserSessions;
+using Granit.Identity;
 using OpenIddict.Abstractions;
 
 namespace Granit.OpenIddict.Extensions;

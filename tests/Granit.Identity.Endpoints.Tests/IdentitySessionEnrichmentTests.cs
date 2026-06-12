@@ -2,7 +2,6 @@ using Granit.Identity.Endpoints.Dtos;
 using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Models;
 using Granit.IpGeolocation;
-using Granit.UserSessions;
 using NSubstitute;
 using Shouldly;
 using Xunit;

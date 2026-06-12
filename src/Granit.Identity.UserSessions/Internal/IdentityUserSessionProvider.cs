@@ -1,5 +1,4 @@
 using Granit.Identity.Models;
-using Granit.UserSessions;
 
 namespace Granit.Identity.UserSessions.Internal;
 

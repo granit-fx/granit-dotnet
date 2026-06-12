@@ -1,4 +1,4 @@
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// The session layer a <see cref="UserSessionCreatedEto"/> originated from. Lets consumers reason about the

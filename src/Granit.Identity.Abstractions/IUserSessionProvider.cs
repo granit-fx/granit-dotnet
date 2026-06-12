@@ -1,4 +1,4 @@
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// Thin, backend-specific adapter that exposes a user's sessions and the irreducible

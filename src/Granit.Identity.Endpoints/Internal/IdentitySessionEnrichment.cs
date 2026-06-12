@@ -1,7 +1,6 @@
 using Granit.Identity.Endpoints.Dtos;
 using Granit.Identity.Models;
 using Granit.IpGeolocation;
-using Granit.UserSessions;
 
 namespace Granit.Identity.Endpoints.Internal;
 

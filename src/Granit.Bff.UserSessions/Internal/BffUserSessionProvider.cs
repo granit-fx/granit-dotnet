@@ -1,5 +1,5 @@
 using Granit.Bff.Options;
-using Granit.UserSessions;
+using Granit.Identity;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Bff.UserSessions.Internal;

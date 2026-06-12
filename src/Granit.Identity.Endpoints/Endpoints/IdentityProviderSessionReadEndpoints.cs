@@ -3,7 +3,6 @@ using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Options;
 using Granit.Identity.Models;
 using Granit.IpGeolocation;
-using Granit.UserSessions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

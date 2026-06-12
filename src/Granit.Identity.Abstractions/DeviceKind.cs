@@ -1,4 +1,4 @@
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// The kind of client a session or device represents. Determined by the <strong>authentication

@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Bff\Granit.Bff.csproj" />
-    <ProjectReference Include="..\Granit.UserSessions.Abstractions\Granit.UserSessions.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Identity.Abstractions\Granit.Identity.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

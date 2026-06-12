@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.Internal;
+namespace Granit.Identity.Internal;
 
 /// <summary>
 /// No-op <see cref="IUserSessionProvider"/> registered by default: reports no sessions and revokes

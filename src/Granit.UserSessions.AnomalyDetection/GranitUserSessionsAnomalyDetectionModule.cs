@@ -11,10 +11,10 @@ namespace Granit.UserSessions.AnomalyDetection;
 
 /// <summary>
 /// Granit module for opt-in session anomaly detection. Replaces the no-op
-/// <see cref="IUserSessionAnomalyDetector"/> default from <c>Granit.UserSessions.Abstractions</c> with the
+/// <see cref="IUserSessionAnomalyDetector"/> default from <c>Granit.Identity.Abstractions</c> with the
 /// heuristic (and optionally AI-assisted) detector, and registers <see cref="IUserSessionRiskEvaluator"/>.
 /// </summary>
-[DependsOn(typeof(GranitAIModule), typeof(GranitUserSessionsAbstractionsModule))]
+[DependsOn(typeof(GranitAIModule), typeof(GranitIdentityAbstractionsModule))]
 public sealed class GranitUserSessionsAnomalyDetectionModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

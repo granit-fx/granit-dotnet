@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace Granit.UserSessions.Internal;
+namespace Granit.Identity.Internal;
 
 /// <summary>
 /// In-memory, single-node, non-durable <see cref="IUserSessionRiskStore"/> registered by default. Suitable for

@@ -1,8 +1,8 @@
+using Granit.Identity.Internal;
 using Granit.Modularity;
-using Granit.UserSessions.Internal;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// Granit module for shared session contracts (<see cref="UserSessionDescriptor"/>,
@@ -15,7 +15,7 @@ namespace Granit.UserSessions;
 /// <c>Granit.UserSessions.AnomalyDetection</c> to replace the detector, and
 /// <c>Granit.UserSessions.EntityFrameworkCore</c> to replace the risk store with a durable one.
 /// </remarks>
-public sealed class GranitUserSessionsAbstractionsModule : GranitModule
+public sealed class GranitIdentityAbstractionsModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

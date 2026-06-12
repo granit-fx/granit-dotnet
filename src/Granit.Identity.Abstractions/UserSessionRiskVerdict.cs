@@ -1,4 +1,4 @@
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// A persisted risk verdict for a session, read back by the session surfaces to display a stable risk level.

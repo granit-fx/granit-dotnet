@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using Granit.Events;
+using Granit.Identity;
 using Granit.OpenIddict.Server.Handlers;
 using Granit.Timing;
-using Granit.UserSessions;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using OpenIddict.Abstractions;

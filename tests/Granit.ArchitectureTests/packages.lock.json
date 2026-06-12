@@ -1950,9 +1950,9 @@
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Http.Cookies": "[0.1.0-dev, )",
+          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
           "Granit.IpGeolocation": "[0.1.0-dev, )",
           "Granit.Oidc": "[0.1.0-dev, )",
-          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
@@ -2596,16 +2596,23 @@
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
+      "granit.identity.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.identity.endpoints": {
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
           "Granit.IpGeolocation": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
@@ -3301,10 +3308,10 @@
           "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Entities.Abstractions": "[0.1.0-dev, )",
           "Granit.Http.Cookies": "[0.1.0-dev, )",
+          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.Identity.Local.AspNetIdentity": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )",
           "OpenIddict": "[7.*, )",
           "OpenIddict.EntityFrameworkCore": "[7.*, )"
         }
@@ -3354,8 +3361,8 @@
         "dependencies": {
           "Granit.Authentication": "[0.1.0-dev, )",
           "Granit.Authentication.DPoP": "[0.1.0-dev, )",
+          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
-          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )",
           "OpenIddict": "[7.*, )",
           "OpenIddict.Server.AspNetCore": "[7.*, )",
           "OpenIddict.Validation.AspNetCore": "[7.*, )"
@@ -3898,35 +3905,28 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.usersessions.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
-        }
-      },
       "granit.usersessions.anomalydetection": {
         "type": "Project",
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",
-          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )",
-          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )"
+          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.usersessions.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )"
+          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )"
         }
       },
       "granit.usersessions.notifications": {
         "type": "Project",
         "dependencies": {
+          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
-          "Granit.Templating": "[0.1.0-dev, )",
-          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )"
+          "Granit.Templating": "[0.1.0-dev, )"
         }
       },
       "granit.validation": {

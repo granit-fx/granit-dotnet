@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>Granit.UserSessions.Abstractions</PackageId>
-    <Description>Shared session read-model and risk contracts for Granit. Provides UserSessionDescriptor (the canonical session shape produced by both the BFF and the identity authority), IUserSessionAnomalyDetector, and the durable IUserSessionRiskStore. Reference this package to consume or enrich sessions without taking a dependency on a specific session store or the anomaly-detection engine.</Description>
+    <PackageId>Granit.Identity.Abstractions</PackageId>
+    <Description>Identity session and device contracts for Granit. Provides UserSessionDescriptor (the canonical session shape produced by both the BFF and the identity authority), DeviceKind, the session/device providers, the session lifecycle events, and the durable IUserSessionRiskStore. Reference this package to consume or enrich user sessions without taking a dependency on a specific session store or the anomaly-detection engine.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.UserSessions.Abstractions.Tests" />
+    <InternalsVisibleTo Include="Granit.Identity.Abstractions.Tests" />
     <InternalsVisibleTo Include="Granit.UserSessions.AnomalyDetection" />
     <InternalsVisibleTo Include="Granit.UserSessions.AnomalyDetection.Tests" />
     <InternalsVisibleTo Include="Granit.UserSessions.EntityFrameworkCore" />

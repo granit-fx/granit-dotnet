@@ -1,6 +1,5 @@
 using Granit.Identity.UserSessions.Internal;
 using Granit.Modularity;
-using Granit.UserSessions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -14,7 +13,7 @@ namespace Granit.Identity.UserSessions;
 /// </summary>
 [DependsOn(
     typeof(GranitIdentityModule),
-    typeof(GranitUserSessionsAbstractionsModule))]
+    typeof(GranitIdentityAbstractionsModule))]
 public sealed class GranitIdentityUserSessionsModule : GranitModule
 {
     /// <inheritdoc/>

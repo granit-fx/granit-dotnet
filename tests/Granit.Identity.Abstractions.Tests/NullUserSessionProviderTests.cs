@@ -1,8 +1,8 @@
-using Granit.UserSessions.Internal;
+using Granit.Identity.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.Abstractions.Tests;
+namespace Granit.Identity.Abstractions.Tests;
 
 public sealed class NullUserSessionProviderTests
 {

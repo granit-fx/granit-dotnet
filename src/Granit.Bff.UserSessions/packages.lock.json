@@ -241,6 +241,13 @@
           "Microsoft.Extensions.Http.Resilience": "[10.*, )"
         }
       },
+      "granit.identity.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.ipgeolocation.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -263,13 +270,6 @@
           "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
-        }
-      },
-      "granit.usersessions.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
         }
       },
       "Microsoft.Extensions.Caching.Abstractions": {

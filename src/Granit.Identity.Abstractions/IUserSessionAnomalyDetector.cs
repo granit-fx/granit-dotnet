@@ -1,4 +1,4 @@
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// Evaluates a candidate session against the user's session history to detect anomalies.

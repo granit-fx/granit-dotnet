@@ -10,11 +10,11 @@ namespace Granit.UserSessions;
 /// </summary>
 /// <remarks>
 /// The orchestrator is backed by the no-op session/device providers from
-/// <c>Granit.UserSessions.Abstractions</c> until a backend integration package (BFF, OpenIddict, Keycloak)
+/// <c>Granit.Identity.Abstractions</c> until a backend integration package (BFF, OpenIddict, Keycloak)
 /// registers a real <see cref="IUserSessionProvider"/>. Map the HTTP surface with
 /// <c>Granit.UserSessions.Endpoints</c>.
 /// </remarks>
-[DependsOn(typeof(GranitUserSessionsAbstractionsModule))]
+[DependsOn(typeof(GranitIdentityAbstractionsModule))]
 public sealed class GranitUserSessionsModule : GranitModule
 {
     /// <inheritdoc/>

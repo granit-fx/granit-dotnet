@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.Internal;
+namespace Granit.Identity.Internal;
 
 /// <summary>
 /// No-op <see cref="IUserSessionAnomalyDetector"/> registered by default: every session is

@@ -1,4 +1,4 @@
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// Thin, backend-specific adapter that lists the devices a user has signed in from. One

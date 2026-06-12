@@ -7,14 +7,14 @@ namespace Granit.UserSessions.EntityFrameworkCore;
 
 /// <summary>
 /// Granit module for EF Core-backed durable session risk persistence. Replaces the in-memory default
-/// <see cref="IUserSessionRiskStore"/> from <c>Granit.UserSessions.Abstractions</c>.
+/// <see cref="IUserSessionRiskStore"/> from <c>Granit.Identity.Abstractions</c>.
 /// </summary>
 /// <remarks>
 /// Register the DbContext via <c>AddGranitUserSessionsEntityFrameworkCore(configure)</c>; this module wires the
 /// store. Verdicts then survive restarts and are shared across instances.
 /// </remarks>
 [DependsOn(
-    typeof(GranitUserSessionsAbstractionsModule),
+    typeof(GranitIdentityAbstractionsModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitUserSessionsEntityFrameworkCoreModule : GranitModule
 {

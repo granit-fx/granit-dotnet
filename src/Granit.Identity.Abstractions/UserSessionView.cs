@@ -1,4 +1,4 @@
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// A user session enriched for presentation: the canonical <see cref="UserSessionDescriptor"/>

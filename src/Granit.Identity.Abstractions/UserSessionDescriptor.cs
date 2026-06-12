@@ -1,6 +1,6 @@
 using Granit.IpGeolocation;
 
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// Canonical, store-agnostic description of a single user session.

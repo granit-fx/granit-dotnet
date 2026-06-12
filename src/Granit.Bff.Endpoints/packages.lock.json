@@ -208,6 +208,13 @@
       "granit.http.securityheaders.abstractions": {
         "type": "Project"
       },
+      "granit.identity.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.ipgeolocation": {
         "type": "Project",
         "dependencies": {
@@ -251,13 +258,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.usersessions.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.validation": {

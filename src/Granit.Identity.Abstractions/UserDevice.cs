@@ -1,6 +1,6 @@
 using Granit.IpGeolocation;
 
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// Canonical, store-agnostic view of a device a user has signed in from — an aggregation of one

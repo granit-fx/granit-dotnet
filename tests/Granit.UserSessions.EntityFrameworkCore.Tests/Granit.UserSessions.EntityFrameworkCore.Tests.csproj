@@ -8,6 +8,10 @@
          internals exposed to this test via InternalsVisibleTo, not EF Core internal APIs. -->
     <NoWarn>$(NoWarn);EF1001</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="Granit.Identity" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.v3" />

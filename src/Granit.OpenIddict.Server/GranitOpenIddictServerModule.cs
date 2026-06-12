@@ -1,10 +1,10 @@
 using Granit.Authentication;
 using Granit.Authentication.DPoP;
 using Granit.Authentication.DPoP.Options;
+using Granit.Identity;
 using Granit.Modularity;
 using Granit.OpenIddict.Server.Handlers;
 using Granit.OpenIddict.Server.Internal;
-using Granit.UserSessions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -19,7 +19,7 @@ namespace Granit.OpenIddict.Server;
     typeof(GranitAuthenticationModule),
     typeof(GranitAuthenticationDPoPModule),
     typeof(GranitOpenIddictModule),
-    typeof(GranitUserSessionsAbstractionsModule))]
+    typeof(GranitIdentityAbstractionsModule))]
 public sealed class GranitOpenIddictServerModule : GranitModule
 {
     // Scoped handlers must be registered in DI for OpenIddict to resolve them

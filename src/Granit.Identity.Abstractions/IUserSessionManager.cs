@@ -1,4 +1,4 @@
-namespace Granit.UserSessions;
+namespace Granit.Identity;
 
 /// <summary>
 /// The single, topology-agnostic orchestrator for user-session management. It is the one entry

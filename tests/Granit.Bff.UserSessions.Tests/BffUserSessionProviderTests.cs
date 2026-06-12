@@ -1,6 +1,6 @@
 using Granit.Bff.Options;
 using Granit.Bff.UserSessions.Internal;
-using Granit.UserSessions;
+using Granit.Identity;
 using NSubstitute;
 using Shouldly;
 using Xunit;

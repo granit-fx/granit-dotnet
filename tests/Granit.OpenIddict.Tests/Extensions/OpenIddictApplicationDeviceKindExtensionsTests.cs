@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using System.Text.Json;
+using Granit.Identity;
 using Granit.OpenIddict.Extensions;
-using Granit.UserSessions;
 using NSubstitute;
 using OpenIddict.Abstractions;
 using Shouldly;

@@ -1,6 +1,6 @@
 using Granit.Events;
+using Granit.Identity;
 using Granit.Timing;
-using Granit.UserSessions;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

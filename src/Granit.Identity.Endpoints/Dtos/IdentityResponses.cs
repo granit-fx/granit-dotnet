@@ -1,5 +1,4 @@
 using Granit.IpGeolocation;
-using Granit.UserSessions;
 
 namespace Granit.Identity.Endpoints.Dtos;
 

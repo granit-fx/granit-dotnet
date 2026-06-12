@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.Internal;
+namespace Granit.Identity.Internal;
 
 /// <summary>
 /// No-op <see cref="IUserDeviceProvider"/> registered by default: reports no devices. Replaced when a

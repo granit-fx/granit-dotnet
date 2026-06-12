@@ -1,6 +1,6 @@
 using Granit.Bff.UserSessions.Internal;
+using Granit.Identity;
 using Granit.Modularity;
-using Granit.UserSessions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -13,7 +13,7 @@ namespace Granit.Bff.UserSessions;
 /// </summary>
 [DependsOn(
     typeof(GranitBffModule),
-    typeof(GranitUserSessionsAbstractionsModule))]
+    typeof(GranitIdentityAbstractionsModule))]
 public sealed class GranitBffUserSessionsModule : GranitModule
 {
     /// <inheritdoc/>

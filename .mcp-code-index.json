@@ -454,7 +454,7 @@
         "Granit.Http.Cookies",
         "Granit.IpGeolocation",
         "Granit.Oidc",
-        "Granit.UserSessions.Abstractions",
+        "Granit.Identity.Abstractions",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -473,7 +473,7 @@
       "name": "Granit.Bff.UserSessions",
       "deps": [
         "Granit.Bff",
-        "Granit.UserSessions.Abstractions"
+        "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1154,6 +1154,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Abstractions",
+      "deps": [
+        "Granit",
+        "Granit.IpGeolocation.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity.Endpoints",
       "deps": [
         "Granit.Http.ApiDocumentation",
@@ -1162,7 +1170,7 @@
         "Granit.IpGeolocation",
         "Granit.QueryEngine",
         "Granit.QueryEngine.AspNetCore",
-        "Granit.UserSessions.Abstractions",
+        "Granit.Identity.Abstractions",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -1354,7 +1362,7 @@
       "name": "Granit.Identity.UserSessions",
       "deps": [
         "Granit.Identity",
-        "Granit.UserSessions.Abstractions"
+        "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1933,7 +1941,7 @@
         "Granit.Identity.Local",
         "Granit.Identity.Local.AspNetIdentity",
         "Granit.QueryEngine.Abstractions",
-        "Granit.UserSessions.Abstractions"
+        "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1980,7 +1988,7 @@
         "Granit.Authentication",
         "Granit.Authentication.DPoP",
         "Granit.OpenIddict",
-        "Granit.UserSessions.Abstractions"
+        "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -2553,15 +2561,7 @@
       "name": "Granit.UserSessions",
       "deps": [
         "Granit",
-        "Granit.UserSessions.Abstractions"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.UserSessions.Abstractions",
-      "deps": [
-        "Granit",
-        "Granit.IpGeolocation.Abstractions"
+        "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -2570,7 +2570,7 @@
       "deps": [
         "Granit.AI",
         "Granit.IpGeolocation.Abstractions",
-        "Granit.UserSessions.Abstractions"
+        "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -2588,7 +2588,7 @@
       "deps": [
         "Granit.Guids",
         "Granit.Persistence.EntityFrameworkCore",
-        "Granit.UserSessions.Abstractions"
+        "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -2597,7 +2597,7 @@
       "deps": [
         "Granit.Notifications.Abstractions",
         "Granit.Templating",
-        "Granit.UserSessions.Abstractions"
+        "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -23834,6 +23834,15 @@
       ]
     },
     {
+      "name": "DeviceKind",
+      "fqn": "Granit.Identity.DeviceKind",
+      "kind": "enum",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/DeviceKind.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "IdentityMetrics",
       "fqn": "Granit.Identity.Diagnostics.IdentityMetrics",
       "kind": "class",
@@ -23907,7 +23916,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 41,
+      "line": 40,
       "members": []
     },
     {
@@ -23916,7 +23925,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 23,
+      "line": 22,
       "members": []
     },
     {
@@ -23943,7 +23952,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 17,
+      "line": 16,
       "members": []
     },
     {
@@ -23952,7 +23961,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 30,
+      "line": 29,
       "members": []
     },
     {
@@ -24006,7 +24015,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 7,
+      "line": 6,
       "members": []
     },
     {
@@ -24090,7 +24099,7 @@
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/GranitIdentityEndpointsModule.cs",
-      "line": 39,
+      "line": 38,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25657,6 +25666,22 @@
       ]
     },
     {
+      "name": "GranitIdentityAbstractionsModule",
+      "fqn": "Granit.Identity.GranitIdentityAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/GranitIdentityAbstractionsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "GranitIdentityModule",
       "fqn": "Granit.Identity.GranitIdentityModule",
       "kind": "class",
@@ -25983,6 +26008,22 @@
       ]
     },
     {
+      "name": "IUserDeviceProvider",
+      "fqn": "Granit.Identity.IUserDeviceProvider",
+      "kind": "interface",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IUserDeviceProvider.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<UserDevice>>"
+        }
+      ]
+    },
+    {
       "name": "IUserDirectoryQueryableSource",
       "fqn": "Granit.Identity.IUserDirectoryQueryableSource",
       "kind": "interface",
@@ -26075,6 +26116,112 @@
           "kind": "method",
           "signature": "PseudonymizeByIdAsync(string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IUserSessionAnomalyDetector",
+      "fqn": "Granit.Identity.IUserSessionAnomalyDetector",
+      "kind": "interface",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IUserSessionAnomalyDetector.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AssessAsync",
+          "kind": "method",
+          "signature": "AssessAsync(UserSessionDescriptor candidate, IReadOnlyList<UserSessionDescriptor> history, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UserSessionRiskAssessment>"
+        }
+      ]
+    },
+    {
+      "name": "IUserSessionManager",
+      "fqn": "Granit.Identity.IUserSessionManager",
+      "kind": "interface",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IUserSessionManager.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(string userId, string? currentSessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<UserSessionView>>"
+        },
+        {
+          "name": "RevokeAsync",
+          "kind": "method",
+          "signature": "RevokeAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "RevokeOthersAsync",
+          "kind": "method",
+          "signature": "RevokeOthersAsync(string userId, string currentSessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        },
+        {
+          "name": "ListDevicesAsync",
+          "kind": "method",
+          "signature": "ListDevicesAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<UserDevice>>"
+        }
+      ]
+    },
+    {
+      "name": "IUserSessionProvider",
+      "fqn": "Granit.Identity.IUserSessionProvider",
+      "kind": "interface",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IUserSessionProvider.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(string userId, string? currentSessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<UserSessionDescriptor>>"
+        },
+        {
+          "name": "RevokeAsync",
+          "kind": "method",
+          "signature": "RevokeAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "RevokeOthersAsync",
+          "kind": "method",
+          "signature": "RevokeOthersAsync(string userId, string currentSessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "IUserSessionRiskStore",
+      "fqn": "Granit.Identity.IUserSessionRiskStore",
+      "kind": "interface",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IUserSessionRiskStore.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "SetAsync",
+          "kind": "method",
+          "signature": "SetAsync(string userId, string sessionId, UserSessionRiskVerdict verdict, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UserSessionRiskVerdict?>"
+        },
+        {
+          "name": "GetManyAsync",
+          "kind": "method",
+          "signature": "GetManyAsync(string userId, IReadOnlyCollection<string> sessionIds, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<string, UserSessionRiskVerdict>>"
         }
       ]
     },
@@ -28448,12 +28595,100 @@
       ]
     },
     {
+      "name": "SuspiciousUserSessionDetectedEto",
+      "fqn": "Granit.Identity.SuspiciousUserSessionDetectedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/SuspiciousUserSessionDetectedEto.cs",
+      "line": 32,
+      "members": []
+    },
+    {
+      "name": "UserDevice",
+      "fqn": "Granit.Identity.UserDevice",
+      "kind": "record",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/UserDevice.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "UserSessionCreatedEto",
+      "fqn": "Granit.Identity.UserSessionCreatedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/UserSessionCreatedEto.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "UserSessionDescriptor",
+      "fqn": "Granit.Identity.UserSessionDescriptor",
+      "kind": "record",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/UserSessionDescriptor.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "UserSessionRiskAssessment",
+      "fqn": "Granit.Identity.UserSessionRiskAssessment",
+      "kind": "record",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/UserSessionRiskAssessment.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(UserSessionRiskLevel.None, 0d, [])",
+          "returnType": "UserSessionRiskAssessment None { get; } ="
+        }
+      ]
+    },
+    {
+      "name": "UserSessionRiskLevel",
+      "fqn": "Granit.Identity.UserSessionRiskLevel",
+      "kind": "enum",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/UserSessionRiskLevel.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "UserSessionRiskVerdict",
+      "fqn": "Granit.Identity.UserSessionRiskVerdict",
+      "kind": "record",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/UserSessionRiskVerdict.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "UserSessionSource",
+      "fqn": "Granit.Identity.UserSessionSource",
+      "kind": "enum",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/UserSessionSource.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "UserSessionView",
+      "fqn": "Granit.Identity.UserSessionView",
+      "kind": "record",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/UserSessionView.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "GranitIdentityUserSessionsModule",
       "fqn": "Granit.Identity.UserSessions.GranitIdentityUserSessionsModule",
       "kind": "class",
       "project": "Granit.Identity.UserSessions",
       "file": "src/Granit.Identity.UserSessions/GranitIdentityUserSessionsModule.cs",
-      "line": 18,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -37435,7 +37670,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 51,
+      "line": 50,
       "members": [
         {
           "name": "ConfigureServices",
@@ -49626,15 +49861,6 @@
       ]
     },
     {
-      "name": "DeviceKind",
-      "fqn": "Granit.UserSessions.DeviceKind",
-      "kind": "enum",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/DeviceKind.cs",
-      "line": 9,
-      "members": []
-    },
-    {
       "name": "UserDeviceResponse",
       "fqn": "Granit.UserSessions.Endpoints.Dtos.UserDeviceResponse",
       "kind": "record",
@@ -49773,22 +49999,6 @@
       ]
     },
     {
-      "name": "GranitUserSessionsAbstractionsModule",
-      "fqn": "Granit.UserSessions.GranitUserSessionsAbstractionsModule",
-      "kind": "class",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/GranitUserSessionsAbstractionsModule.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
       "name": "GranitUserSessionsModule",
       "fqn": "Granit.UserSessions.GranitUserSessionsModule",
       "kind": "class",
@@ -49801,128 +50011,6 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "IUserDeviceProvider",
-      "fqn": "Granit.UserSessions.IUserDeviceProvider",
-      "kind": "interface",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/IUserDeviceProvider.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "ListAsync",
-          "kind": "method",
-          "signature": "ListAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<UserDevice>>"
-        }
-      ]
-    },
-    {
-      "name": "IUserSessionAnomalyDetector",
-      "fqn": "Granit.UserSessions.IUserSessionAnomalyDetector",
-      "kind": "interface",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/IUserSessionAnomalyDetector.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "AssessAsync",
-          "kind": "method",
-          "signature": "AssessAsync(UserSessionDescriptor candidate, IReadOnlyList<UserSessionDescriptor> history, CancellationToken cancellationToken = default)",
-          "returnType": "Task<UserSessionRiskAssessment>"
-        }
-      ]
-    },
-    {
-      "name": "IUserSessionManager",
-      "fqn": "Granit.UserSessions.IUserSessionManager",
-      "kind": "interface",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/IUserSessionManager.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "ListAsync",
-          "kind": "method",
-          "signature": "ListAsync(string userId, string? currentSessionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<UserSessionView>>"
-        },
-        {
-          "name": "RevokeAsync",
-          "kind": "method",
-          "signature": "RevokeAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
-        },
-        {
-          "name": "RevokeOthersAsync",
-          "kind": "method",
-          "signature": "RevokeOthersAsync(string userId, string currentSessionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<int>"
-        },
-        {
-          "name": "ListDevicesAsync",
-          "kind": "method",
-          "signature": "ListDevicesAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<UserDevice>>"
-        }
-      ]
-    },
-    {
-      "name": "IUserSessionProvider",
-      "fqn": "Granit.UserSessions.IUserSessionProvider",
-      "kind": "interface",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/IUserSessionProvider.cs",
-      "line": 27,
-      "members": [
-        {
-          "name": "ListAsync",
-          "kind": "method",
-          "signature": "ListAsync(string userId, string? currentSessionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<UserSessionDescriptor>>"
-        },
-        {
-          "name": "RevokeAsync",
-          "kind": "method",
-          "signature": "RevokeAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
-        },
-        {
-          "name": "RevokeOthersAsync",
-          "kind": "method",
-          "signature": "RevokeOthersAsync(string userId, string currentSessionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<int>"
-        }
-      ]
-    },
-    {
-      "name": "IUserSessionRiskStore",
-      "fqn": "Granit.UserSessions.IUserSessionRiskStore",
-      "kind": "interface",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/IUserSessionRiskStore.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "SetAsync",
-          "kind": "method",
-          "signature": "SetAsync(string userId, string sessionId, UserSessionRiskVerdict verdict, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "GetAsync",
-          "kind": "method",
-          "signature": "GetAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<UserSessionRiskVerdict?>"
-        },
-        {
-          "name": "GetManyAsync",
-          "kind": "method",
-          "signature": "GetManyAsync(string userId, IReadOnlyCollection<string> sessionIds, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyDictionary<string, UserSessionRiskVerdict>>"
         }
       ]
     },
@@ -50056,94 +50144,6 @@
           "returnType": "NotificationSeverity"
         }
       ]
-    },
-    {
-      "name": "SuspiciousUserSessionDetectedEto",
-      "fqn": "Granit.UserSessions.SuspiciousUserSessionDetectedEto",
-      "kind": "record",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/SuspiciousUserSessionDetectedEto.cs",
-      "line": 32,
-      "members": []
-    },
-    {
-      "name": "UserDevice",
-      "fqn": "Granit.UserSessions.UserDevice",
-      "kind": "record",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/UserDevice.cs",
-      "line": 22,
-      "members": []
-    },
-    {
-      "name": "UserSessionCreatedEto",
-      "fqn": "Granit.UserSessions.UserSessionCreatedEto",
-      "kind": "record",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/UserSessionCreatedEto.cs",
-      "line": 30,
-      "members": []
-    },
-    {
-      "name": "UserSessionDescriptor",
-      "fqn": "Granit.UserSessions.UserSessionDescriptor",
-      "kind": "record",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/UserSessionDescriptor.cs",
-      "line": 22,
-      "members": []
-    },
-    {
-      "name": "UserSessionRiskAssessment",
-      "fqn": "Granit.UserSessions.UserSessionRiskAssessment",
-      "kind": "record",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/UserSessionRiskAssessment.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new(UserSessionRiskLevel.None, 0d, [])",
-          "returnType": "UserSessionRiskAssessment None { get; } ="
-        }
-      ]
-    },
-    {
-      "name": "UserSessionRiskLevel",
-      "fqn": "Granit.UserSessions.UserSessionRiskLevel",
-      "kind": "enum",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/UserSessionRiskLevel.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "UserSessionRiskVerdict",
-      "fqn": "Granit.UserSessions.UserSessionRiskVerdict",
-      "kind": "record",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/UserSessionRiskVerdict.cs",
-      "line": 13,
-      "members": []
-    },
-    {
-      "name": "UserSessionSource",
-      "fqn": "Granit.UserSessions.UserSessionSource",
-      "kind": "enum",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/UserSessionSource.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "UserSessionView",
-      "fqn": "Granit.UserSessions.UserSessionView",
-      "kind": "record",
-      "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/UserSessionView.cs",
-      "line": 16,
-      "members": []
     },
     {
       "name": "ActorKind",

@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Using Include="Granit.Identity" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="Granit.UserSessions.Endpoints.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
