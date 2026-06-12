@@ -7,8 +7,11 @@
   {{ if model.city || model.country_code }}
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Onde</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
   {{ end }}
-  {{ if model.device }}
-  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Dispositivo</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ if model.browser }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Navegador</td><td style="padding: 6px 0;"><strong>{{ model.browser }}</strong></td></tr>
+  {{ end }}
+  {{ if model.operating_system }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Sistema operacional</td><td style="padding: 6px 0;"><strong>{{ model.operating_system }}</strong></td></tr>
   {{ end }}
   {{ if model.ip_address }}
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Endereço IP</td><td style="padding: 6px 0;"><strong>{{ model.ip_address }}</strong></td></tr>

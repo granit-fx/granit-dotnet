@@ -50020,7 +50020,7 @@
       "kind": "record",
       "project": "Granit.UserSessions.Notifications",
       "file": "src/Granit.UserSessions.Notifications/SuspiciousUserSessionNotificationData.cs",
-      "line": 23,
+      "line": 26,
       "members": []
     },
     {

@@ -38,7 +38,8 @@ public class SuspiciousUserSessionDetectedHandler
             evt.City,
             evt.CountryCode,
             evt.IpAddress,
-            UserAgentDescriptor.Describe(evt.UserAgent),
+            UserAgentDescriptor.Browser(evt.UserAgent),
+            UserAgentDescriptor.OperatingSystem(evt.UserAgent),
             evt.DetectedAt);
 
         string[] recipients = [evt.UserId];

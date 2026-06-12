@@ -15,9 +15,12 @@ namespace Granit.UserSessions.Notifications;
 /// <param name="IpAddress">Raw client IP of the sign-in, present only when the deployment opted into raw-IP
 /// exposure (<c>UserSessions:AnomalyDetection:IncludeClientIpInAlert</c>); otherwise <see langword="null"/> and
 /// the IP row is omitted. Personal data — never log it.</param>
-/// <param name="Device">Friendly device label ("Chrome on Windows", "Safari on iPhone") derived from the raw
-/// User-Agent via <see cref="Internal.UserAgentDescriptor"/>; <see langword="null"/> when it could not be
-/// derived. Never the raw User-Agent string.</param>
+/// <param name="Browser">Coarse browser family ("Chrome", "Safari") derived from the raw User-Agent via
+/// <see cref="Internal.UserAgentDescriptor"/>; <see langword="null"/> when it could not be derived. Kept
+/// separate from <paramref name="OperatingSystem"/> so the template composes and labels them per culture (no
+/// English connector baked in code). Never the raw User-Agent string.</param>
+/// <param name="OperatingSystem">Coarse OS family ("Windows", "iPhone") derived from the raw User-Agent;
+/// <see langword="null"/> when it could not be derived.</param>
 /// <param name="DetectedAt">When the verdict was produced (rendered in UTC; user-timezone
 /// localization is a follow-up).</param>
 public sealed record SuspiciousUserSessionNotificationData(
@@ -26,5 +29,6 @@ public sealed record SuspiciousUserSessionNotificationData(
     string? City,
     string? CountryCode,
     string? IpAddress,
-    string? Device,
+    string? Browser,
+    string? OperatingSystem,
     DateTimeOffset DetectedAt);

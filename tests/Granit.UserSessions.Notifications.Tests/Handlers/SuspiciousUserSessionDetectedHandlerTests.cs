@@ -98,11 +98,12 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
         captured.ReasonsDisplay.ShouldBe("impossible_travel, new_country");
         captured.City.ShouldBe("Brussels");
         captured.CountryCode.ShouldBe("BE");
-        captured.Device.ShouldBe("Chrome on Windows");
+        captured.Browser.ShouldBe("Chrome");
+        captured.OperatingSystem.ShouldBe("Windows");
     }
 
     [Fact]
-    public async Task Data_DerivesFriendlyDeviceLabel_FromUserAgent()
+    public async Task Data_DerivesBrowserAndOperatingSystem_FromUserAgent()
     {
         INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
         SuspiciousUserSessionNotificationData? captured = null;
@@ -118,11 +119,12 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
             publisher, TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
-        captured.Device.ShouldBe("Safari on iPhone");
+        captured.Browser.ShouldBe("Safari");
+        captured.OperatingSystem.ShouldBe("iPhone");
     }
 
     [Fact]
-    public async Task Data_NullUserAgent_YieldsNullDevice()
+    public async Task Data_NullUserAgent_YieldsNullBrowserAndOperatingSystem()
     {
         INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
         SuspiciousUserSessionNotificationData? captured = null;
@@ -136,7 +138,8 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
             Eto(UserSessionRiskLevel.High, userAgent: null), publisher, TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
-        captured.Device.ShouldBeNull();
+        captured.Browser.ShouldBeNull();
+        captured.OperatingSystem.ShouldBeNull();
     }
 
     [Theory]
