@@ -33,7 +33,7 @@ internal static class IdentityProviderSessionReadEndpoints
         string userId,
         [FromServices] IIdentitySessionManager sessionManager,
         [FromServices] IIpGeolocationResolver geoResolver,
-        [FromServices] ISessionRiskStore riskStore,
+        [FromServices] IUserSessionRiskStore riskStore,
         [FromServices] IOptions<IdentityEndpointsOptions> options,
         CancellationToken cancellationToken)
     {

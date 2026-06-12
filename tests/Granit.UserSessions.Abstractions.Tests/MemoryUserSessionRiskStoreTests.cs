@@ -4,21 +4,21 @@ using Xunit;
 
 namespace Granit.UserSessions.Abstractions.Tests;
 
-public sealed class MemorySessionRiskStoreTests
+public sealed class MemoryUserSessionRiskStoreTests
 {
     private static readonly DateTimeOffset AssessedAt = new(2026, 6, 12, 10, 0, 0, TimeSpan.Zero);
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
-    private readonly MemorySessionRiskStore _sut = new();
+    private readonly MemoryUserSessionRiskStore _sut = new();
 
     [Fact]
     public async Task SetThenGet_ReturnsStoredVerdict()
     {
-        SessionRiskVerdict verdict = new(SessionRiskLevel.High, ["impossible_travel"], AssessedAt);
+        UserSessionRiskVerdict verdict = new(UserSessionRiskLevel.High, ["impossible_travel"], AssessedAt);
         await _sut.SetAsync("user-1", "session-1", verdict, Ct);
 
-        SessionRiskVerdict? result = await _sut.GetAsync("user-1", "session-1", Ct);
+        UserSessionRiskVerdict? result = await _sut.GetAsync("user-1", "session-1", Ct);
 
         result.ShouldBe(verdict);
     }
@@ -30,7 +30,7 @@ public sealed class MemorySessionRiskStoreTests
     [Fact]
     public async Task Get_SameSessionIdDifferentUser_IsIsolated()
     {
-        await _sut.SetAsync("user-1", "shared", new SessionRiskVerdict(SessionRiskLevel.High, [], AssessedAt), Ct);
+        await _sut.SetAsync("user-1", "shared", new UserSessionRiskVerdict(UserSessionRiskLevel.High, [], AssessedAt), Ct);
 
         (await _sut.GetAsync("user-2", "shared", Ct)).ShouldBeNull();
     }
@@ -38,14 +38,14 @@ public sealed class MemorySessionRiskStoreTests
     [Fact]
     public async Task GetMany_ReturnsOnlyRecordedSessions()
     {
-        await _sut.SetAsync("user-1", "a", new SessionRiskVerdict(SessionRiskLevel.Low, [], AssessedAt), Ct);
-        await _sut.SetAsync("user-1", "c", new SessionRiskVerdict(SessionRiskLevel.Medium, [], AssessedAt), Ct);
+        await _sut.SetAsync("user-1", "a", new UserSessionRiskVerdict(UserSessionRiskLevel.Low, [], AssessedAt), Ct);
+        await _sut.SetAsync("user-1", "c", new UserSessionRiskVerdict(UserSessionRiskLevel.Medium, [], AssessedAt), Ct);
 
-        IReadOnlyDictionary<string, SessionRiskVerdict> result =
+        IReadOnlyDictionary<string, UserSessionRiskVerdict> result =
             await _sut.GetManyAsync("user-1", ["a", "b", "c"], Ct);
 
         result.Keys.ShouldBe(["a", "c"], ignoreOrder: true);
-        result["a"].Level.ShouldBe(SessionRiskLevel.Low);
-        result["c"].Level.ShouldBe(SessionRiskLevel.Medium);
+        result["a"].Level.ShouldBe(UserSessionRiskLevel.Low);
+        result["c"].Level.ShouldBe(UserSessionRiskLevel.Medium);
     }
 }

@@ -10,7 +10,7 @@ namespace Granit.UserSessions;
 /// <param name="Level">The classified risk level.</param>
 /// <param name="Reasons">Machine-readable reason codes that contributed.</param>
 /// <param name="AssessedAt">When the verdict was produced.</param>
-public sealed record SessionRiskVerdict(
-    SessionRiskLevel Level,
+public sealed record UserSessionRiskVerdict(
+    UserSessionRiskLevel Level,
     IReadOnlyList<string> Reasons,
     DateTimeOffset AssessedAt);

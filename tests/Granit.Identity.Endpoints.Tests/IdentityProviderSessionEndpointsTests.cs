@@ -86,9 +86,9 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
 
         // Session-enrichment defaults (normally provided by Granit.IpGeolocation / Granit.UserSessions modules).
         builder.Services.AddSingleton(Substitute.For<Granit.IpGeolocation.IIpGeolocationResolver>());
-        Granit.UserSessions.ISessionRiskStore riskStore = Substitute.For<Granit.UserSessions.ISessionRiskStore>();
+        Granit.UserSessions.IUserSessionRiskStore riskStore = Substitute.For<Granit.UserSessions.IUserSessionRiskStore>();
         riskStore.GetManyAsync(Arg.Any<string>(), Arg.Any<IReadOnlyCollection<string>>(), Arg.Any<CancellationToken>())
-            .Returns(new Dictionary<string, Granit.UserSessions.SessionRiskVerdict>());
+            .Returns(new Dictionary<string, Granit.UserSessions.UserSessionRiskVerdict>());
         builder.Services.AddSingleton(riskStore);
 
         _app = builder.Build();

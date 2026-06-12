@@ -16,11 +16,11 @@ internal static class IdentitySessionEnrichment
         IReadOnlyList<IdentitySession> sessions,
         string userId,
         IIpGeolocationResolver geoResolver,
-        ISessionRiskStore riskStore,
+        IUserSessionRiskStore riskStore,
         bool exposeRawIp,
         CancellationToken cancellationToken)
     {
-        IReadOnlyDictionary<string, SessionRiskVerdict> verdicts = await riskStore
+        IReadOnlyDictionary<string, UserSessionRiskVerdict> verdicts = await riskStore
             .GetManyAsync(userId, [.. sessions.Select(s => s.SessionId)], cancellationToken)
             .ConfigureAwait(false);
 
@@ -38,7 +38,7 @@ internal static class IdentitySessionEnrichment
         IReadOnlyList<IdentityDeviceActivity> devices,
         string userId,
         IIpGeolocationResolver geoResolver,
-        ISessionRiskStore riskStore,
+        IUserSessionRiskStore riskStore,
         bool exposeRawIp,
         CancellationToken cancellationToken)
     {
@@ -65,13 +65,13 @@ internal static class IdentitySessionEnrichment
     private static async Task<IdentitySessionResponse> EnrichSessionAsync(
         IdentitySession session,
         IIpGeolocationResolver geoResolver,
-        IReadOnlyDictionary<string, SessionRiskVerdict> verdicts,
+        IReadOnlyDictionary<string, UserSessionRiskVerdict> verdicts,
         bool exposeRawIp,
         CancellationToken cancellationToken)
     {
         GeoLocation? location = await geoResolver.ResolveAsync(session.IpAddress, cancellationToken)
             .ConfigureAwait(false);
-        SessionRiskLevel? riskLevel = verdicts.TryGetValue(session.SessionId, out SessionRiskVerdict? verdict)
+        UserSessionRiskLevel? riskLevel = verdicts.TryGetValue(session.SessionId, out UserSessionRiskVerdict? verdict)
             ? verdict.Level
             : null;
 

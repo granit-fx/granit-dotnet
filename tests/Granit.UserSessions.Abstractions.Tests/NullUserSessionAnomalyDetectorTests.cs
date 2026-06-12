@@ -5,13 +5,13 @@ using Xunit;
 
 namespace Granit.UserSessions.Abstractions.Tests;
 
-public sealed class NullSessionAnomalyDetectorTests
+public sealed class NullUserSessionAnomalyDetectorTests
 {
     [Fact]
     public async Task AssessAsync_AlwaysReturnsNone()
     {
-        NullSessionAnomalyDetector sut = new();
-        SessionDescriptor candidate = new(
+        NullUserSessionAnomalyDetector sut = new();
+        UserSessionDescriptor candidate = new(
             "session-1",
             "user-1",
             IsCurrent: true,
@@ -21,9 +21,9 @@ public sealed class NullSessionAnomalyDetectorTests
             IpAddress: "8.8.8.8",
             Location: new GeoLocation { CountryCode = "US" });
 
-        SessionRiskAssessment result = await sut.AssessAsync(candidate, [], TestContext.Current.CancellationToken);
+        UserSessionRiskAssessment result = await sut.AssessAsync(candidate, [], TestContext.Current.CancellationToken);
 
-        result.ShouldBe(SessionRiskAssessment.None);
-        result.Level.ShouldBe(SessionRiskLevel.None);
+        result.ShouldBe(UserSessionRiskAssessment.None);
+        result.Level.ShouldBe(UserSessionRiskLevel.None);
     }
 }

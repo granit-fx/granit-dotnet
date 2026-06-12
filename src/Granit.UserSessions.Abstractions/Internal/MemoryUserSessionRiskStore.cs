@@ -3,44 +3,44 @@ using System.Collections.Concurrent;
 namespace Granit.UserSessions.Internal;
 
 /// <summary>
-/// In-memory, single-node, non-durable <see cref="ISessionRiskStore"/> registered by default. Suitable for
+/// In-memory, single-node, non-durable <see cref="IUserSessionRiskStore"/> registered by default. Suitable for
 /// development and tests; replaced by <c>Granit.UserSessions.EntityFrameworkCore</c> for durable production use.
 /// </summary>
-internal sealed class MemorySessionRiskStore : ISessionRiskStore
+internal sealed class MemoryUserSessionRiskStore : IUserSessionRiskStore
 {
-    private readonly ConcurrentDictionary<(string UserId, string SessionId), SessionRiskVerdict> _verdicts =
+    private readonly ConcurrentDictionary<(string UserId, string SessionId), UserSessionRiskVerdict> _verdicts =
         new();
 
     public Task SetAsync(
         string userId,
         string sessionId,
-        SessionRiskVerdict verdict,
+        UserSessionRiskVerdict verdict,
         CancellationToken cancellationToken = default)
     {
         _verdicts[(userId, sessionId)] = verdict;
         return Task.CompletedTask;
     }
 
-    public Task<SessionRiskVerdict?> GetAsync(
+    public Task<UserSessionRiskVerdict?> GetAsync(
         string userId,
         string sessionId,
         CancellationToken cancellationToken = default) =>
         Task.FromResult(_verdicts.GetValueOrDefault((userId, sessionId)));
 
-    public Task<IReadOnlyDictionary<string, SessionRiskVerdict>> GetManyAsync(
+    public Task<IReadOnlyDictionary<string, UserSessionRiskVerdict>> GetManyAsync(
         string userId,
         IReadOnlyCollection<string> sessionIds,
         CancellationToken cancellationToken = default)
     {
-        Dictionary<string, SessionRiskVerdict> result = [];
+        Dictionary<string, UserSessionRiskVerdict> result = [];
         foreach (string sessionId in sessionIds)
         {
-            if (_verdicts.TryGetValue((userId, sessionId), out SessionRiskVerdict? verdict))
+            if (_verdicts.TryGetValue((userId, sessionId), out UserSessionRiskVerdict? verdict))
             {
                 result[sessionId] = verdict;
             }
         }
 
-        return Task.FromResult<IReadOnlyDictionary<string, SessionRiskVerdict>>(result);
+        return Task.FromResult<IReadOnlyDictionary<string, UserSessionRiskVerdict>>(result);
     }
 }

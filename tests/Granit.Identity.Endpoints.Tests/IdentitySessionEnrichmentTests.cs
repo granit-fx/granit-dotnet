@@ -23,11 +23,11 @@ public sealed class IdentitySessionEnrichmentTests
         geo.ResolveAsync("203.0.113.7", Arg.Any<CancellationToken>())
             .Returns(new GeoLocation { City = "Brussels", CountryCode = "BE" });
 
-        ISessionRiskStore risk = Substitute.For<ISessionRiskStore>();
+        IUserSessionRiskStore risk = Substitute.For<IUserSessionRiskStore>();
         risk.GetManyAsync("user-1", Arg.Any<IReadOnlyCollection<string>>(), Arg.Any<CancellationToken>())
-            .Returns(new Dictionary<string, SessionRiskVerdict>
+            .Returns(new Dictionary<string, UserSessionRiskVerdict>
             {
-                ["s1"] = new(SessionRiskLevel.High, ["impossible_travel"], DateTimeOffset.UnixEpoch),
+                ["s1"] = new(UserSessionRiskLevel.High, ["impossible_travel"], DateTimeOffset.UnixEpoch),
             });
 
         List<IdentitySessionResponse> result = await IdentitySessionEnrichment.EnrichSessionsAsync(
@@ -36,16 +36,16 @@ public sealed class IdentitySessionEnrichmentTests
         result.Count.ShouldBe(1);
         result[0].IpAddress.ShouldBe("203.0.113.0"); // masked
         result[0].Location!.City.ShouldBe("Brussels");
-        result[0].RiskLevel.ShouldBe(SessionRiskLevel.High);
+        result[0].RiskLevel.ShouldBe(UserSessionRiskLevel.High);
     }
 
     [Fact]
     public async Task EnrichSessionsAsync_ExposeRawIp_KeepsFullIp()
     {
         IIpGeolocationResolver geo = Substitute.For<IIpGeolocationResolver>();
-        ISessionRiskStore risk = Substitute.For<ISessionRiskStore>();
+        IUserSessionRiskStore risk = Substitute.For<IUserSessionRiskStore>();
         risk.GetManyAsync(Arg.Any<string>(), Arg.Any<IReadOnlyCollection<string>>(), Arg.Any<CancellationToken>())
-            .Returns(new Dictionary<string, SessionRiskVerdict>());
+            .Returns(new Dictionary<string, UserSessionRiskVerdict>());
 
         List<IdentitySessionResponse> result = await IdentitySessionEnrichment.EnrichSessionsAsync(
             [Session("s1", "203.0.113.7")], "user-1", geo, risk, exposeRawIp: true, Ct);

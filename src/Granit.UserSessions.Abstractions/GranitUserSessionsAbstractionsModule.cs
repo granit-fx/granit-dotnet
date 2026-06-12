@@ -6,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace Granit.UserSessions;
 
 /// <summary>
-/// Granit module for shared session contracts (<see cref="SessionDescriptor"/>,
-/// <see cref="ISessionAnomalyDetector"/>, <see cref="ISessionRiskStore"/>).
+/// Granit module for shared session contracts (<see cref="UserSessionDescriptor"/>,
+/// <see cref="IUserSessionAnomalyDetector"/>, <see cref="IUserSessionRiskStore"/>).
 /// </summary>
 /// <remarks>
 /// Registers safe no-op / in-memory defaults so the contracts resolve everywhere. Install
@@ -19,7 +19,7 @@ public sealed class GranitUserSessionsAbstractionsModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.TryAddScoped<ISessionAnomalyDetector, NullSessionAnomalyDetector>();
-        context.Services.TryAddSingleton<ISessionRiskStore, MemorySessionRiskStore>();
+        context.Services.TryAddScoped<IUserSessionAnomalyDetector, NullUserSessionAnomalyDetector>();
+        context.Services.TryAddSingleton<IUserSessionRiskStore, MemoryUserSessionRiskStore>();
     }
 }

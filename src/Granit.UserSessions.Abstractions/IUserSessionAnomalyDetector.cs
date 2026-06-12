@@ -4,11 +4,11 @@ namespace Granit.UserSessions;
 /// Evaluates a candidate session against the user's session history to detect anomalies.
 /// </summary>
 /// <remarks>
-/// The default registration is a no-op returning <see cref="SessionRiskAssessment.None"/>. Install
+/// The default registration is a no-op returning <see cref="UserSessionRiskAssessment.None"/>. Install
 /// <c>Granit.UserSessions.AnomalyDetection</c> to enable heuristic (and optionally AI-assisted) detection.
 /// Implementations must never throw for evaluation failures — degrade to a lower-confidence verdict instead.
 /// </remarks>
-public interface ISessionAnomalyDetector
+public interface IUserSessionAnomalyDetector
 {
     /// <summary>
     /// Assesses <paramref name="candidate"/> in the context of <paramref name="history"/>.
@@ -17,8 +17,8 @@ public interface ISessionAnomalyDetector
     /// <param name="history">The user's other known sessions, most-recent first.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The risk assessment.</returns>
-    Task<SessionRiskAssessment> AssessAsync(
-        SessionDescriptor candidate,
-        IReadOnlyList<SessionDescriptor> history,
+    Task<UserSessionRiskAssessment> AssessAsync(
+        UserSessionDescriptor candidate,
+        IReadOnlyList<UserSessionDescriptor> history,
         CancellationToken cancellationToken = default);
 }

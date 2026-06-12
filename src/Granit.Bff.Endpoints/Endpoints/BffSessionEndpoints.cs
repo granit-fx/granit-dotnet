@@ -23,7 +23,7 @@ internal static partial class BffSessionEndpoints
         group.MapGet("/sessions", (HttpContext httpContext,
                 [FromServices] IBffTokenStore tokenStore,
                 [FromServices] IIpGeolocationResolver geoResolver,
-                [FromServices] ISessionRiskStore riskStore,
+                [FromServices] IUserSessionRiskStore riskStore,
                 [FromServices] IOptions<GranitBffOptions> options,
                 CancellationToken cancellationToken) =>
                 HandleListSessionsAsync(httpContext, frontend, tokenStore, geoResolver, riskStore, options, cancellationToken))
@@ -76,7 +76,7 @@ internal static partial class BffSessionEndpoints
         BffFrontendOptions frontend,
         [FromServices] IBffTokenStore tokenStore,
         [FromServices] IIpGeolocationResolver geoResolver,
-        [FromServices] ISessionRiskStore riskStore,
+        [FromServices] IUserSessionRiskStore riskStore,
         [FromServices] IOptions<GranitBffOptions> options,
         CancellationToken cancellationToken)
     {
@@ -99,7 +99,7 @@ internal static partial class BffSessionEndpoints
         IReadOnlyList<string> sessionIds = await tokenStore.GetSessionIdsByUserAsync(
             frontend.Name, currentTokens.UserId, cancellationToken).ConfigureAwait(false);
 
-        IReadOnlyDictionary<string, SessionRiskVerdict> riskVerdicts = await riskStore
+        IReadOnlyDictionary<string, UserSessionRiskVerdict> riskVerdicts = await riskStore
             .GetManyAsync(currentTokens.UserId, sessionIds, cancellationToken)
             .ConfigureAwait(false);
 
@@ -120,7 +120,7 @@ internal static partial class BffSessionEndpoints
             GeoLocation? location = await geoResolver.ResolveAsync(tokens.IpAddress, cancellationToken)
                 .ConfigureAwait(false);
             string? displayedIp = exposeRawIp ? tokens.IpAddress : IpMasking.Mask(tokens.IpAddress);
-            SessionRiskLevel? riskLevel = riskVerdicts.TryGetValue(sessionId, out SessionRiskVerdict? verdict)
+            UserSessionRiskLevel? riskLevel = riskVerdicts.TryGetValue(sessionId, out UserSessionRiskVerdict? verdict)
                 ? verdict.Level
                 : null;
 
@@ -261,4 +261,4 @@ internal sealed record BffSessionInfo(
     DateTimeOffset? LastAccessedAt,
     GeoLocation? Location,
     string? IpAddress,
-    SessionRiskLevel? RiskLevel);
+    UserSessionRiskLevel? RiskLevel);

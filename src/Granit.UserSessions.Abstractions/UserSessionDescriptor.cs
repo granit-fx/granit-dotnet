@@ -19,7 +19,7 @@ namespace Granit.UserSessions;
 /// <param name="UserAgent">User-Agent captured at establishment, when available.</param>
 /// <param name="IpAddress">Raw client IP (server-side only), when available.</param>
 /// <param name="Location">Approximate location derived from <paramref name="IpAddress"/>, when resolved.</param>
-public sealed record SessionDescriptor(
+public sealed record UserSessionDescriptor(
     string SessionId,
     string? UserId,
     bool IsCurrent,

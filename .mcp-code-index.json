@@ -2529,6 +2529,23 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.UserSessions.AnomalyDetection",
+      "deps": [
+        "Granit.AI",
+        "Granit.UserSessions.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.UserSessions.EntityFrameworkCore",
+      "deps": [
+        "Granit.Guids",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.UserSessions.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Validation",
       "deps": [
         "Granit.Http.ExceptionHandling",
@@ -49382,6 +49399,54 @@
       "members": []
     },
     {
+      "name": "UserSessionsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.UserSessions.EntityFrameworkCore.Extensions.UserSessionsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.UserSessions.EntityFrameworkCore",
+      "file": "src/Granit.UserSessions.EntityFrameworkCore/Extensions/UserSessionsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitUserSessionsEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitUserSessionsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitUserSessionsDbProperties",
+      "fqn": "Granit.UserSessions.EntityFrameworkCore.GranitUserSessionsDbProperties",
+      "kind": "class",
+      "project": "Granit.UserSessions.EntityFrameworkCore",
+      "file": "src/Granit.UserSessions.EntityFrameworkCore/GranitUserSessionsDbProperties.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitUserSessionsEntityFrameworkCoreModule",
+      "fqn": "Granit.UserSessions.EntityFrameworkCore.GranitUserSessionsEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.UserSessions.EntityFrameworkCore",
+      "file": "src/Granit.UserSessions.EntityFrameworkCore/GranitUserSessionsEntityFrameworkCoreModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "GranitUserSessionsAbstractionsModule",
       "fqn": "Granit.UserSessions.GranitUserSessionsAbstractionsModule",
       "kind": "class",
@@ -49398,89 +49463,89 @@
       ]
     },
     {
-      "name": "ISessionAnomalyDetector",
-      "fqn": "Granit.UserSessions.ISessionAnomalyDetector",
+      "name": "IUserSessionAnomalyDetector",
+      "fqn": "Granit.UserSessions.IUserSessionAnomalyDetector",
       "kind": "interface",
       "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/ISessionAnomalyDetector.cs",
+      "file": "src/Granit.UserSessions.Abstractions/IUserSessionAnomalyDetector.cs",
       "line": 11,
       "members": [
         {
           "name": "AssessAsync",
           "kind": "method",
-          "signature": "AssessAsync(SessionDescriptor candidate, IReadOnlyList<SessionDescriptor> history, CancellationToken cancellationToken = default)",
-          "returnType": "Task<SessionRiskAssessment>"
+          "signature": "AssessAsync(UserSessionDescriptor candidate, IReadOnlyList<UserSessionDescriptor> history, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UserSessionRiskAssessment>"
         }
       ]
     },
     {
-      "name": "ISessionRiskStore",
-      "fqn": "Granit.UserSessions.ISessionRiskStore",
+      "name": "IUserSessionRiskStore",
+      "fqn": "Granit.UserSessions.IUserSessionRiskStore",
       "kind": "interface",
       "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/ISessionRiskStore.cs",
+      "file": "src/Granit.UserSessions.Abstractions/IUserSessionRiskStore.cs",
       "line": 12,
       "members": [
         {
           "name": "SetAsync",
           "kind": "method",
-          "signature": "SetAsync(string userId, string sessionId, SessionRiskVerdict verdict, CancellationToken cancellationToken = default)",
+          "signature": "SetAsync(string userId, string sessionId, UserSessionRiskVerdict verdict, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
           "name": "GetAsync",
           "kind": "method",
           "signature": "GetAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<SessionRiskVerdict?>"
+          "returnType": "Task<UserSessionRiskVerdict?>"
         },
         {
           "name": "GetManyAsync",
           "kind": "method",
           "signature": "GetManyAsync(string userId, IReadOnlyCollection<string> sessionIds, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyDictionary<string, SessionRiskVerdict>>"
+          "returnType": "Task<IReadOnlyDictionary<string, UserSessionRiskVerdict>>"
         }
       ]
     },
     {
-      "name": "SessionDescriptor",
-      "fqn": "Granit.UserSessions.SessionDescriptor",
+      "name": "UserSessionDescriptor",
+      "fqn": "Granit.UserSessions.UserSessionDescriptor",
       "kind": "record",
       "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/SessionDescriptor.cs",
+      "file": "src/Granit.UserSessions.Abstractions/UserSessionDescriptor.cs",
       "line": 22,
       "members": []
     },
     {
-      "name": "SessionRiskAssessment",
-      "fqn": "Granit.UserSessions.SessionRiskAssessment",
+      "name": "UserSessionRiskAssessment",
+      "fqn": "Granit.UserSessions.UserSessionRiskAssessment",
       "kind": "record",
       "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/SessionRiskAssessment.cs",
+      "file": "src/Granit.UserSessions.Abstractions/UserSessionRiskAssessment.cs",
       "line": 10,
       "members": [
         {
           "name": "new",
           "kind": "method",
-          "signature": "new(SessionRiskLevel.None, 0d, [])",
-          "returnType": "SessionRiskAssessment None { get; } ="
+          "signature": "new(UserSessionRiskLevel.None, 0d, [])",
+          "returnType": "UserSessionRiskAssessment None { get; } ="
         }
       ]
     },
     {
-      "name": "SessionRiskLevel",
-      "fqn": "Granit.UserSessions.SessionRiskLevel",
+      "name": "UserSessionRiskLevel",
+      "fqn": "Granit.UserSessions.UserSessionRiskLevel",
       "kind": "enum",
       "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/SessionRiskLevel.cs",
+      "file": "src/Granit.UserSessions.Abstractions/UserSessionRiskLevel.cs",
       "line": 7,
       "members": []
     },
     {
-      "name": "SessionRiskVerdict",
-      "fqn": "Granit.UserSessions.SessionRiskVerdict",
+      "name": "UserSessionRiskVerdict",
+      "fqn": "Granit.UserSessions.UserSessionRiskVerdict",
       "kind": "record",
       "project": "Granit.UserSessions.Abstractions",
-      "file": "src/Granit.UserSessions.Abstractions/SessionRiskVerdict.cs",
+      "file": "src/Granit.UserSessions.Abstractions/UserSessionRiskVerdict.cs",
       "line": 13,
       "members": []
     },

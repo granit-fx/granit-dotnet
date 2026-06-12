@@ -4,7 +4,7 @@ namespace Granit.UserSessions;
 /// Coarse risk classification for a session, surfaced to users and used to drive security responses
 /// (notifications, step-up authentication).
 /// </summary>
-public enum SessionRiskLevel
+public enum UserSessionRiskLevel
 {
     /// <summary>No anomaly detected (also the value when anomaly detection is not installed).</summary>
     None,

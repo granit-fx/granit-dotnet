@@ -35,7 +35,7 @@ public sealed record IdentitySessionResponse(
     bool RememberMe,
     IReadOnlyList<string> Clients,
     GeoLocation? Location,
-    SessionRiskLevel? RiskLevel);
+    UserSessionRiskLevel? RiskLevel);
 
 /// <summary>Device activity summary.</summary>
 public sealed record IdentityDeviceActivityResponse(
