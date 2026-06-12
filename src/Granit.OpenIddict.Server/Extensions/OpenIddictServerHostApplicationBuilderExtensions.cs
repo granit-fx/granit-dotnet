@@ -213,6 +213,12 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             // access token (RFC 9449 §6). In FAPI 2.0, a missing DPoP header rejects
             // the request — see DPoPTokenBindingHandler for semantics.
             options.AddEventHandler(DPoPTokenBindingHandler.Descriptor);
+
+            // Announces a new user session (UserSessionCreatedEto) when the token endpoint
+            // issues a refresh token, so consumers (anomaly detection, geo, notifications)
+            // react out-of-band. Ordered after token generation and the reject-capable
+            // handlers above — see OpenIddictUserSessionCreatedHandler for semantics.
+            options.AddEventHandler(OpenIddictUserSessionCreatedHandler.Descriptor);
         });
 
         // ──── Validation — token validation for resource servers ────
