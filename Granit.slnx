@@ -98,6 +98,7 @@
     <Project Path="src/Granit.TextExtraction.Tika/Granit.TextExtraction.Tika.csproj" />
     <Project Path="src/Granit.TextExtraction/Granit.TextExtraction.csproj" />
     <Project Path="src/Granit.Timing/Granit.Timing.csproj" />
+    <Project Path="src/Granit.UserSessions/Granit.UserSessions.csproj" />
     <Project Path="src/Granit.UserSessions.Abstractions/Granit.UserSessions.Abstractions.csproj" />
     <Project Path="src/Granit.UserSessions.AnomalyDetection/Granit.UserSessions.AnomalyDetection.csproj" />
     <Project Path="src/Granit.UserSessions.EntityFrameworkCore/Granit.UserSessions.EntityFrameworkCore.csproj" />
@@ -445,6 +446,7 @@
     <Project Path="tests/Granit.TextExtraction.Text.Tests/Granit.TextExtraction.Text.Tests.csproj" />
     <Project Path="tests/Granit.TextExtraction.Tika.Tests/Granit.TextExtraction.Tika.Tests.csproj" />
     <Project Path="tests/Granit.Timing.Tests/Granit.Timing.Tests.csproj" />
+    <Project Path="tests/Granit.UserSessions.Tests/Granit.UserSessions.Tests.csproj" />
     <Project Path="tests/Granit.UserSessions.Abstractions.Tests/Granit.UserSessions.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.UserSessions.AnomalyDetection.Tests/Granit.UserSessions.AnomalyDetection.Tests.csproj" />
     <Project Path="tests/Granit.UserSessions.EntityFrameworkCore.Tests/Granit.UserSessions.EntityFrameworkCore.Tests.csproj" />

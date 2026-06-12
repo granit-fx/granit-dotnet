@@ -2531,6 +2531,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.UserSessions",
+      "deps": [
+        "Granit",
+        "Granit.UserSessions.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.UserSessions.Abstractions",
       "deps": [
         "Granit",
@@ -49557,6 +49565,22 @@
       "kind": "class",
       "project": "Granit.UserSessions.Abstractions",
       "file": "src/Granit.UserSessions.Abstractions/GranitUserSessionsAbstractionsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitUserSessionsModule",
+      "fqn": "Granit.UserSessions.GranitUserSessionsModule",
+      "kind": "class",
+      "project": "Granit.UserSessions",
+      "file": "src/Granit.UserSessions/GranitUserSessionsModule.cs",
       "line": 18,
       "members": [
         {

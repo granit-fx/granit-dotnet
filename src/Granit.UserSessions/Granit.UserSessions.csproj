@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.UserSessions</PackageId>
+    <Description>User-session orchestrator for Granit: IUserSessionManager, the single topology-agnostic entry point that lists and revokes a user's sessions and devices. It centralizes risk enrichment (from IUserSessionRiskStore) and dispatches commands to the registered backend adapter (IUserSessionProvider), so consumers get one session API whether or not a BFF is present and whatever the identity provider is.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.UserSessions.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.UserSessions.Abstractions\Granit.UserSessions.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
