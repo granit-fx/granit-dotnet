@@ -313,6 +313,8 @@
     <Project Path="src/Granit.IpGeolocation.MaxMind/Granit.IpGeolocation.MaxMind.csproj" />
     <Project Path="src/Granit.IpGeolocation/Granit.IpGeolocation.csproj" />
     <Project Path="src/Granit.UserSessions.Abstractions/Granit.UserSessions.Abstractions.csproj" />
+    <Project Path="src/Granit.UserSessions.AnomalyDetection/Granit.UserSessions.AnomalyDetection.csproj" />
+    <Project Path="src/Granit.UserSessions.EntityFrameworkCore/Granit.UserSessions.EntityFrameworkCore.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.Anthropic/Granit.AI.Anthropic.csproj" />
@@ -663,6 +665,8 @@
     <Project Path="tests/Granit.IpGeolocation.MaxMind.Tests/Granit.IpGeolocation.MaxMind.Tests.csproj" />
     <Project Path="tests/Granit.IpGeolocation.Tests/Granit.IpGeolocation.Tests.csproj" />
     <Project Path="tests/Granit.UserSessions.Abstractions.Tests/Granit.UserSessions.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.UserSessions.AnomalyDetection.Tests/Granit.UserSessions.AnomalyDetection.Tests.csproj" />
+    <Project Path="tests/Granit.UserSessions.EntityFrameworkCore.Tests/Granit.UserSessions.EntityFrameworkCore.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.Anthropic.Tests/Granit.AI.Anthropic.Tests.csproj" />
