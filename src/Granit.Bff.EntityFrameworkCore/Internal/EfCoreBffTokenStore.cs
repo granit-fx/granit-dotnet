@@ -48,12 +48,16 @@ internal sealed partial class EfCoreBffTokenStore(
 
         string serialized = SerializeTokens(tokens);
         DateTimeOffset expiresAt = clock.Now.Add(options.Value.SessionDuration);
+        DateTimeOffset lastAccessedAt = tokens.LastAccessedAt ?? clock.Now;
+        string? storedIp = EncryptIp(tokens.IpAddress);
 
         if (existing is not null)
         {
             existing.SerializedTokens = serialized;
             existing.ExpiresAt = expiresAt;
             existing.UserId = tokens.UserId;
+            existing.LastAccessedAt = lastAccessedAt;
+            existing.IpAddress = storedIp;
         }
         else
         {
@@ -66,6 +70,8 @@ internal sealed partial class EfCoreBffTokenStore(
                 SerializedTokens = serialized,
                 ExpiresAt = expiresAt,
                 CreatedAt = clock.Now,
+                LastAccessedAt = lastAccessedAt,
+                IpAddress = storedIp,
             });
         }
 
@@ -92,7 +98,36 @@ internal sealed partial class EfCoreBffTokenStore(
             return null;
         }
 
-        return DeserializeTokens(entity.SerializedTokens);
+        BffTokenSet? tokens = DeserializeTokens(entity.SerializedTokens);
+
+        // The dedicated columns are authoritative for these fields (TouchAsync updates them without rewriting
+        // the encrypted blob), so overlay them onto the deserialized token set.
+        return tokens is null
+            ? null
+            : tokens with { LastAccessedAt = entity.LastAccessedAt, IpAddress = DecryptIp(entity.IpAddress) };
+    }
+
+    public async Task TouchAsync(
+        string frontendName, string sessionId, DateTimeOffset lastAccessedAt, string? ipAddress,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
+
+        string? storedIp = EncryptIp(ipAddress);
+
+        await using BffDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        // Column-only update — avoids loading, decrypting, and re-encrypting the token blob on every touch.
+        await db.Sessions
+            .Where(s => s.FrontendName == frontendName && s.SessionId == sessionId && s.ExpiresAt > clock.Now)
+            .ExecuteUpdateAsync(
+                s => s
+                    .SetProperty(x => x.LastAccessedAt, lastAccessedAt)
+                    .SetProperty(x => x.IpAddress, storedIp),
+                cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task RemoveAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default)
@@ -140,6 +175,12 @@ internal sealed partial class EfCoreBffTokenStore(
         string json = _encryptionEnabled ? encryptionService!.Decrypt(data) ?? data : data;
         return JsonSerializer.Deserialize<BffTokenSet>(json, JsonOptions);
     }
+
+    private string? EncryptIp(string? ipAddress) =>
+        ipAddress is null ? null : _encryptionEnabled ? encryptionService!.Encrypt(ipAddress) : ipAddress;
+
+    private string? DecryptIp(string? stored) =>
+        stored is null ? null : _encryptionEnabled ? encryptionService!.Decrypt(stored) ?? stored : stored;
 
     private static bool InitEncryption(IStringEncryptionService? service, ILogger logger)
     {

@@ -25,4 +25,13 @@ internal sealed class BffSessionEntity
 
     /// <summary>When this session was created.</summary>
     public DateTimeOffset CreatedAt { get; set; }
+
+    /// <summary>When this session was last accessed on the proxy path (throttled). Authoritative for display.</summary>
+    public DateTimeOffset? LastAccessedAt { get; set; }
+
+    /// <summary>
+    /// Client IP last observed for this session, encrypted at rest when an encryption service is configured.
+    /// Authoritative over the value embedded in <see cref="SerializedTokens"/>.
+    /// </summary>
+    public string? IpAddress { get; set; }
 }

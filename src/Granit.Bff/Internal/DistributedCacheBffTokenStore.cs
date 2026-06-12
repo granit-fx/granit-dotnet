@@ -44,6 +44,28 @@ internal sealed class DistributedCacheBffTokenStore(
         return maybe.HasValue ? maybe.Value : null;
     }
 
+    public async Task TouchAsync(
+        string frontendName, string sessionId, DateTimeOffset lastAccessedAt, string? ipAddress,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
+
+        BffTokenSet? tokens = await GetAsync(frontendName, sessionId, cancellationToken).ConfigureAwait(false);
+        if (tokens is null)
+        {
+            return;
+        }
+
+        // Re-store the (already in-memory) token set with the updated activity fields. This resets the TTL,
+        // which is the intended sliding-session behaviour; the caller throttles how often this runs.
+        BffTokenSet updated = tokens with { LastAccessedAt = lastAccessedAt, IpAddress = ipAddress };
+        FusionCacheEntryOptions cacheOptions = new() { Duration = options.Value.SessionDuration };
+
+        await cache.SetAsync(BuildKey(frontendName, sessionId), updated, cacheOptions, token: cancellationToken)
+            .ConfigureAwait(false);
+    }
+
     public async Task RemoveAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);

@@ -1868,6 +1868,7 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Http.Cookies": "[0.1.0-dev, )",
           "Granit.Oidc": "[0.1.0-dev, )",
+          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
@@ -2672,6 +2673,13 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )"
+        }
+      },
+      "granit.ipgeolocation": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )"
         }
       },
       "granit.localization": {
@@ -3512,6 +3520,13 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.usersessions.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.IpGeolocation": "[0.1.0-dev, )"
         }
       },
       "granit.validation": {

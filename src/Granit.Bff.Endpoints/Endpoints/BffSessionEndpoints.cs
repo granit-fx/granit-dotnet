@@ -1,10 +1,13 @@
 using Granit.Bff.Options;
+using Granit.IpGeolocation;
+using Granit.UserSessions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Bff.Endpoints.Endpoints;
 
@@ -19,9 +22,11 @@ internal static partial class BffSessionEndpoints
     {
         group.MapGet("/sessions", (HttpContext httpContext,
                 [FromServices] IBffTokenStore tokenStore,
-                [FromServices] IBffCsrfTokenGenerator csrfGenerator,
+                [FromServices] IIpGeolocationResolver geoResolver,
+                [FromServices] ISessionRiskStore riskStore,
+                [FromServices] IOptions<GranitBffOptions> options,
                 CancellationToken cancellationToken) =>
-                HandleListSessionsAsync(httpContext, frontend, tokenStore, cancellationToken))
+                HandleListSessionsAsync(httpContext, frontend, tokenStore, geoResolver, riskStore, options, cancellationToken))
             .WithName($"BffListSessions_{frontend.Name}")
             .WithSummary("Lists the current user's active sessions.")
             .WithDescription(
@@ -70,6 +75,9 @@ internal static partial class BffSessionEndpoints
         HttpContext httpContext,
         BffFrontendOptions frontend,
         [FromServices] IBffTokenStore tokenStore,
+        [FromServices] IIpGeolocationResolver geoResolver,
+        [FromServices] ISessionRiskStore riskStore,
+        [FromServices] IOptions<GranitBffOptions> options,
         CancellationToken cancellationToken)
     {
         string? currentSessionId = httpContext.Request.Cookies[frontend.SessionCookieName];
@@ -91,6 +99,11 @@ internal static partial class BffSessionEndpoints
         IReadOnlyList<string> sessionIds = await tokenStore.GetSessionIdsByUserAsync(
             frontend.Name, currentTokens.UserId, cancellationToken).ConfigureAwait(false);
 
+        IReadOnlyDictionary<string, SessionRiskVerdict> riskVerdicts = await riskStore
+            .GetManyAsync(currentTokens.UserId, sessionIds, cancellationToken)
+            .ConfigureAwait(false);
+
+        bool exposeRawIp = options.Value.ExposeRawIpAddress;
         List<BffSessionInfo> sessions = [];
         foreach (string sessionId in sessionIds)
         {
@@ -99,14 +112,27 @@ internal static partial class BffSessionEndpoints
                 .ConfigureAwait(false);
 #pragma warning restore GRSEC003
 
-            if (tokens is not null)
+            if (tokens is null)
             {
-                sessions.Add(new BffSessionInfo(
-                    SessionId: MaskSessionId(sessionId),
-                    IsCurrent: sessionId == currentSessionId,
-                    CreatedAt: tokens.SessionCreatedAt,
-                    UserAgent: tokens.UserAgent));
+                continue;
             }
+
+            GeoLocation? location = await geoResolver.ResolveAsync(tokens.IpAddress, cancellationToken)
+                .ConfigureAwait(false);
+            string? displayedIp = exposeRawIp ? tokens.IpAddress : IpMasking.Mask(tokens.IpAddress);
+            SessionRiskLevel? riskLevel = riskVerdicts.TryGetValue(sessionId, out SessionRiskVerdict? verdict)
+                ? verdict.Level
+                : null;
+
+            sessions.Add(new BffSessionInfo(
+                SessionId: MaskSessionId(sessionId),
+                IsCurrent: sessionId == currentSessionId,
+                CreatedAt: tokens.SessionCreatedAt,
+                UserAgent: tokens.UserAgent,
+                LastAccessedAt: tokens.LastAccessedAt,
+                Location: location,
+                IpAddress: displayedIp,
+                RiskLevel: riskLevel));
         }
 
         return TypedResults.Ok(new BffSessionListResponse(sessions));
@@ -231,4 +257,8 @@ internal sealed record BffSessionInfo(
     string SessionId,
     bool IsCurrent,
     DateTimeOffset CreatedAt,
-    string? UserAgent);
+    string? UserAgent,
+    DateTimeOffset? LastAccessedAt,
+    GeoLocation? Location,
+    string? IpAddress,
+    SessionRiskLevel? RiskLevel);

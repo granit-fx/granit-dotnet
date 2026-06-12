@@ -51,5 +51,18 @@ public sealed record BffTokenSet(
     /// Updated when the server returns a new <c>DPoP-Nonce</c> header.
     /// </summary>
     public string? DPoPNonce { get; init; }
+
+    /// <summary>
+    /// Timestamp of the most recent observed activity on this session (proxy path), throttled by
+    /// <see cref="Options.GranitBffOptions.LastActivityUpdateInterval"/>. Used for "last seen" display.
+    /// </summary>
+    public DateTimeOffset? LastAccessedAt { get; init; }
+
+    /// <summary>
+    /// Client IP address last observed for this session. Personal data: encrypted at rest, never logged in
+    /// clear, and masked before exposure to the browser unless
+    /// <see cref="Options.GranitBffOptions.ExposeRawIpAddress"/> is enabled.
+    /// </summary>
+    public string? IpAddress { get; init; }
 }
 #pragma warning restore GRSEC003

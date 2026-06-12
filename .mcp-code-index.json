@@ -453,6 +453,7 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Http.Cookies",
         "Granit.Oidc",
+        "Granit.UserSessions.Abstractions",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -10111,7 +10112,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
-      "line": 30,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -10272,6 +10273,12 @@
           "returnType": "Task"
         },
         {
+          "name": "TouchAsync",
+          "kind": "method",
+          "signature": "TouchAsync(string frontendName, string sessionId, DateTimeOffset lastAccessedAt, string? ipAddress, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
           "name": "GetSessionIdsByUserAsync",
           "kind": "method",
           "signature": "GetSessionIdsByUserAsync(string frontendName, string userId, CancellationToken cancellationToken = default)",
@@ -10310,7 +10317,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
-      "line": 93,
+      "line": 107,
       "members": [
         {
           "name": "Name",
@@ -10425,9 +10432,15 @@
           "returnType": "TimeSpan SessionAbsoluteMaxDuration { get; set; } = TimeSpan."
         },
         {
-          "name": "RequireIssuerValidation",
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(1)",
+          "returnType": "TimeSpan LastActivityUpdateInterval { get; set; } = TimeSpan."
+        },
+        {
+          "name": "ExposeRawIpAddress",
           "kind": "property",
-          "signature": "bool RequireIssuerValidation",
+          "signature": "bool ExposeRawIpAddress",
           "returnType": "bool"
         },
         {
@@ -21519,12 +21532,6 @@
           "kind": "property",
           "signature": "string Path",
           "returnType": "string"
-        },
-        {
-          "name": "IsEssential",
-          "kind": "property",
-          "signature": "bool IsEssential",
-          "returnType": "bool"
         }
       ]
     },

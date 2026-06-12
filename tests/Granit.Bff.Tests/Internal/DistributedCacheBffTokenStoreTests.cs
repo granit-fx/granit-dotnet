@@ -143,4 +143,38 @@ public sealed class DistributedCacheBffTokenStoreTests : IDisposable
         await Should.ThrowAsync<ArgumentException>(
             () => _store.RemoveAsync("admin", sessionId!, TestContext.Current.CancellationToken));
     }
+
+    [Fact]
+    public async Task TouchAsync_UpdatesLastAccessedAtAndIpAddress_PreservingOtherFields()
+    {
+        DateTimeOffset created = new(2026, 6, 12, 9, 0, 0, TimeSpan.Zero);
+        BffTokenSet tokens = new("access-token", "refresh-token", "id-token", created.AddHours(1))
+        {
+            UserId = "user-1",
+            SessionCreatedAt = created,
+        };
+        await _store.StoreAsync("admin", "s1", tokens, TestContext.Current.CancellationToken);
+
+        DateTimeOffset touchedAt = created.AddMinutes(3);
+        await _store.TouchAsync("admin", "s1", touchedAt, "203.0.113.7", TestContext.Current.CancellationToken);
+
+        BffTokenSet? result = await _store.GetAsync("admin", "s1", TestContext.Current.CancellationToken);
+        result.ShouldNotBeNull();
+        result.LastAccessedAt.ShouldBe(touchedAt);
+        result.IpAddress.ShouldBe("203.0.113.7");
+        result.AccessToken.ShouldBe("access-token");
+        result.RefreshToken.ShouldBe("refresh-token");
+        result.UserId.ShouldBe("user-1");
+        result.SessionCreatedAt.ShouldBe(created);
+    }
+
+    [Fact]
+    public async Task TouchAsync_MissingSession_IsNoOp()
+    {
+        await _store.TouchAsync(
+            "admin", "missing", DateTimeOffset.UtcNow, "203.0.113.7", TestContext.Current.CancellationToken);
+
+        BffTokenSet? result = await _store.GetAsync("admin", "missing", TestContext.Current.CancellationToken);
+        result.ShouldBeNull();
+    }
 }

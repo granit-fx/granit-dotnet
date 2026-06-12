@@ -57,6 +57,20 @@ public sealed class GranitBffOptions
     public TimeSpan SessionAbsoluteMaxDuration { get; set; } = TimeSpan.FromHours(8);
 
     /// <summary>
+    /// Gets or sets the minimum interval between persisted updates of a session's last-activity timestamp
+    /// on the proxy path. Bounds the storage write cost so it is not incurred on every request.
+    /// Default: 1 minute.
+    /// </summary>
+    public TimeSpan LastActivityUpdateInterval { get; set; } = TimeSpan.FromMinutes(1);
+
+    /// <summary>
+    /// Gets or sets whether the session listing exposes the raw client IP address. When
+    /// <see langword="false"/> (default), the IP is masked (host portion zeroed) before being returned to the
+    /// browser — GDPR data minimisation. The full IP is always persisted server-side for the session lifetime.
+    /// </summary>
+    public bool ExposeRawIpAddress { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the BFF validates the <c>iss</c> parameter in authorization
     /// responses (RFC 9207). Prevents IdP mix-up attacks.
     /// Default: <see langword="true"/>.

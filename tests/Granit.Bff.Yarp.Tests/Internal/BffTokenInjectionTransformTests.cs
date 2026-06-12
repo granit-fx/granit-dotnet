@@ -60,6 +60,64 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
         NullLogger<BffTokenInjectionTransform>.Instance);
 
     [Fact]
+    public async Task ApplyAsync_LastActivityWithinInterval_DoesNotPersist()
+    {
+        _bffOptions.LastActivityUpdateInterval = TimeSpan.FromMinutes(1);
+        DateTimeOffset now = new(2026, 6, 12, 12, 0, 0, TimeSpan.Zero);
+        _clock.Now.Returns(now);
+
+        BffTokenSet tokens = new("access-token", null, null, now.AddHours(1))
+        {
+            SessionCreatedAt = now.AddHours(-1),
+            LastAccessedAt = now.AddSeconds(-30), // within the 1-minute throttle window
+        };
+        _tokenStore.GetAsync("main", "session-abc", Arg.Any<CancellationToken>()).Returns(tokens);
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+            ["Granit.Bff.Frontend"] = "main",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        await _tokenStore.DidNotReceive().TouchAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+        await _tokenStore.DidNotReceive().StoreAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<BffTokenSet>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ApplyAsync_LastActivityPastInterval_TouchesSession()
+    {
+        _bffOptions.LastActivityUpdateInterval = TimeSpan.FromMinutes(1);
+        DateTimeOffset now = new(2026, 6, 12, 12, 0, 0, TimeSpan.Zero);
+        _clock.Now.Returns(now);
+
+        BffTokenSet tokens = new("access-token", null, null, now.AddHours(1))
+        {
+            SessionCreatedAt = now.AddHours(-1),
+            LastAccessedAt = now.AddMinutes(-5), // past the throttle window
+        };
+        _tokenStore.GetAsync("main", "session-abc", Arg.Any<CancellationToken>()).Returns(tokens);
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+            ["Granit.Bff.Frontend"] = "main",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        await _tokenStore.Received(1).TouchAsync(
+            "main", "session-abc", now, Arg.Any<string?>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task ApplyAsync_NoProxyFeature_DoesNotReturn401()
     {
         DefaultHttpContext httpContext = new();
@@ -438,9 +496,11 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
 
         await CreateTransform().ApplyAsync(context);
 
-        // Should have stored tokens for sliding extension
+        // Should have re-stored the session for sliding extension, now also recording fresh activity.
         await _tokenStore.Received().StoreAsync(
-            "main", "session-abc", tokens, Arg.Any<CancellationToken>());
+            "main", "session-abc",
+            Arg.Is<BffTokenSet>(t => t.AccessToken == tokens.AccessToken && t.LastAccessedAt == now),
+            Arg.Any<CancellationToken>());
 
         _bffOptions.UseSessionSlidingExpiration = false;
     }

@@ -145,9 +145,9 @@ public sealed partial class BffTokenInjectionMiddleware
         // Inject Authorization header
         InjectAuthorizationHeader(context, tokens);
 
-        // Extend sliding session
-        await ExtendSlidingSessionAsync(
-            bffOptions, frontend, sessionId, tokens, tokenStore, clock, context.RequestAborted)
+        // Extend sliding session and record last activity (throttled)
+        await PersistSessionActivityAsync(
+            bffOptions, frontend, sessionId, tokens, tokenStore, clock, context, context.RequestAborted)
             .ConfigureAwait(false);
 
         await _next(context).ConfigureAwait(false);
@@ -256,27 +256,37 @@ public sealed partial class BffTokenInjectionMiddleware
         }
     }
 
-    private static async Task ExtendSlidingSessionAsync(
+    private static async Task PersistSessionActivityAsync(
         GranitBffOptions bffOptions,
         BffFrontendOptions frontend,
         string sessionId,
         BffTokenSet tokens,
         IBffTokenStore tokenStore,
         IClock clock,
+        HttpContext context,
         CancellationToken cancellationToken)
     {
-        if (!bffOptions.UseSessionSlidingExpiration)
+        DateTimeOffset now = clock.Now;
+        string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
+
+        DateTimeOffset halfwayPoint = tokens.SessionCreatedAt + (bffOptions.SessionDuration / 2);
+        DateTimeOffset absoluteMax = tokens.SessionCreatedAt + bffOptions.SessionAbsoluteMaxDuration;
+        bool slidingDue = bffOptions.UseSessionSlidingExpiration && now >= halfwayPoint && now < absoluteMax;
+
+        if (slidingDue)
         {
+            // Sliding extension: a full re-store resets the TTL and records fresh activity in one write.
+            BffTokenSet extended = tokens with { LastAccessedAt = now, IpAddress = ipAddress };
+            await tokenStore.StoreAsync(frontend.Name, sessionId, extended, cancellationToken)
+                .ConfigureAwait(false);
             return;
         }
 
-        DateTimeOffset now = clock.Now;
-        DateTimeOffset halfwayPoint = tokens.SessionCreatedAt + (bffOptions.SessionDuration / 2);
-        DateTimeOffset absoluteMax = tokens.SessionCreatedAt + bffOptions.SessionAbsoluteMaxDuration;
-
-        if (now >= halfwayPoint && now < absoluteMax)
+        // Otherwise, cheaply touch last-activity at most once per configured interval.
+        DateTimeOffset lastSeen = tokens.LastAccessedAt ?? tokens.SessionCreatedAt;
+        if (now - lastSeen >= bffOptions.LastActivityUpdateInterval)
         {
-            await tokenStore.StoreAsync(frontend.Name, sessionId, tokens, cancellationToken)
+            await tokenStore.TouchAsync(frontend.Name, sessionId, now, ipAddress, cancellationToken)
                 .ConfigureAwait(false);
         }
     }
@@ -357,6 +367,8 @@ public sealed partial class BffTokenInjectionMiddleware
                 SessionCreatedAt = currentTokens.SessionCreatedAt,
                 UserId = currentTokens.UserId,
                 UserAgent = currentTokens.UserAgent,
+                LastAccessedAt = currentTokens.LastAccessedAt,
+                IpAddress = currentTokens.IpAddress,
             };
         }
         catch (OperationCanceledException)

@@ -458,10 +458,57 @@ public sealed class EfCoreBffTokenStoreTests : IAsyncLifetime
     }
 
     // =========================================================================
-    // Roundtrip (Store -> Get -> Remove -> Get)
+    // Last activity + IP
     // =========================================================================
 
-    // FullLifecycle test removed — RemoveAsync uses ExecuteDeleteAsync (not supported by InMemory)
+    [Fact]
+    public async Task StoreThenGet_RoundtripsLastAccessedAtAndIpAddress()
+    {
+        EfCoreBffTokenStore store = CreateStore();
+        BffTokenSet withActivity = _tokenSet with { LastAccessedAt = _now, IpAddress = "203.0.113.7" };
+
+        await store.StoreAsync("admin", "s1", withActivity, TestContext.Current.CancellationToken);
+        BffTokenSet? got = await store.GetAsync("admin", "s1", TestContext.Current.CancellationToken);
+
+        got.ShouldNotBeNull();
+        got.LastAccessedAt.ShouldBe(_now);
+        got.IpAddress.ShouldBe("203.0.113.7");
+    }
+
+    [Fact]
+    public async Task Store_WithEncryption_PersistsIpAsCiphertextAndDecryptsOnRead()
+    {
+        EfCoreBffTokenStore store = CreateStore(ReversingEncryption());
+        BffTokenSet withIp = _tokenSet with { IpAddress = "203.0.113.7", LastAccessedAt = _now };
+
+        await store.StoreAsync("admin", "s1", withIp, TestContext.Current.CancellationToken);
+
+        await using BffDbContext db = new(_dbOptions, GranitDesignTime.CurrentTenant);
+        BffSessionEntity entity = await db.Sessions.AsNoTracking().FirstAsync(TestContext.Current.CancellationToken);
+        entity.IpAddress.ShouldNotBe("203.0.113.7"); // stored encrypted at rest
+
+        BffTokenSet? got = await store.GetAsync("admin", "s1", TestContext.Current.CancellationToken);
+        got!.IpAddress.ShouldBe("203.0.113.7"); // decrypted on read
+    }
+
+    private static IStringEncryptionService ReversingEncryption()
+    {
+        IStringEncryptionService service = Substitute.For<IStringEncryptionService>();
+        service.Encrypt(Arg.Any<string>()).Returns(ci => Reverse(ci.Arg<string>()));
+        service.Decrypt(Arg.Any<string>()).Returns(ci => Reverse(ci.Arg<string>()));
+        return service;
+
+        static string Reverse(string value)
+        {
+            char[] chars = value.ToCharArray();
+            Array.Reverse(chars);
+            return new string(chars);
+        }
+    }
+
+    // Roundtrip (Store -> Get -> Remove -> Get) and TouchAsync are not unit-tested here:
+    // RemoveAsync/TouchAsync use ExecuteDelete/ExecuteUpdate, unsupported by the in-memory provider.
+    // TouchAsync behaviour (throttling, no-op, field update) is covered by the cache store and proxy-hook tests.
 
     /// <summary>
     /// Simple <see cref="IDbContextFactory{TContext}"/> implementation backed by in-memory provider.

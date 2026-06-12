@@ -19,6 +19,10 @@ internal sealed class BffSessionEntityConfiguration : IEntityTypeConfiguration<B
         builder.Property(e => e.SerializedTokens).IsRequired();
         builder.Property(e => e.ExpiresAt).IsRequired();
         builder.Property(e => e.CreatedAt).IsRequired();
+        builder.Property(e => e.LastAccessedAt);
+
+        // Holds an encrypted IP (ciphertext is longer than the 45-char raw IPv6 maximum).
+        builder.Property(e => e.IpAddress).HasMaxLength(256);
 
         builder.HasIndex(e => new { e.FrontendName, e.SessionId }).IsUnique();
         builder.HasIndex(e => new { e.FrontendName, e.UserId });

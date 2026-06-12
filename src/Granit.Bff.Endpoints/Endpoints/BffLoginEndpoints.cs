@@ -287,6 +287,7 @@ internal static partial class BffLoginEndpoints
         {
             UserId = userId,
             UserAgent = string.IsNullOrEmpty(userAgent) ? null : userAgent,
+            IpAddress = httpContext.Connection.RemoteIpAddress?.ToString(),
         };
 
         // Generate session ID with 256 bits of cryptographic entropy (OWASP ASVS 3.2.2)

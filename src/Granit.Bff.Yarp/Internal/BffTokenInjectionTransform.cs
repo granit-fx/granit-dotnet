@@ -113,7 +113,7 @@ internal sealed partial class BffTokenInjectionTransform(
 
         InjectAuthorizationHeader(context, tokens);
 
-        await ExtendSlidingSessionAsync(bffOptions, frontend, sessionId, tokens, httpContext.RequestAborted)
+        await PersistSessionActivityAsync(bffOptions, frontend, sessionId, tokens, httpContext, httpContext.RequestAborted)
             .ConfigureAwait(false);
     }
 
@@ -154,26 +154,40 @@ internal sealed partial class BffTokenInjectionTransform(
         }
     }
 
-    private async Task ExtendSlidingSessionAsync(
+    private async Task PersistSessionActivityAsync(
         GranitBffOptions bffOptions,
         BffFrontendOptions frontend,
         string sessionId,
         BffTokenSet tokens,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
-        if (!bffOptions.UseSessionSlidingExpiration || string.IsNullOrEmpty(sessionId))
+        if (string.IsNullOrEmpty(sessionId))
         {
             return;
         }
 
         DateTimeOffset now = clock.Now;
+        string? ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+
         DateTimeOffset halfwayPoint = tokens.SessionCreatedAt + (bffOptions.SessionDuration / 2);
         DateTimeOffset absoluteMax = tokens.SessionCreatedAt + bffOptions.SessionAbsoluteMaxDuration;
+        bool slidingDue = bffOptions.UseSessionSlidingExpiration && now >= halfwayPoint && now < absoluteMax;
 
-        // Only extend if past halfway and within absolute max — re-store resets the distributed cache TTL
-        if (now >= halfwayPoint && now < absoluteMax)
+        if (slidingDue)
         {
-            await tokenStore.StoreAsync(frontend.Name, sessionId, tokens, cancellationToken)
+            // Sliding extension: a full re-store resets the TTL and records fresh activity in one write.
+            BffTokenSet extended = tokens with { LastAccessedAt = now, IpAddress = ipAddress };
+            await tokenStore.StoreAsync(frontend.Name, sessionId, extended, cancellationToken)
+                .ConfigureAwait(false);
+            return;
+        }
+
+        // Otherwise, cheaply touch last-activity at most once per configured interval.
+        DateTimeOffset lastSeen = tokens.LastAccessedAt ?? tokens.SessionCreatedAt;
+        if (now - lastSeen >= bffOptions.LastActivityUpdateInterval)
+        {
+            await tokenStore.TouchAsync(frontend.Name, sessionId, now, ipAddress, cancellationToken)
                 .ConfigureAwait(false);
         }
     }
@@ -262,6 +276,8 @@ internal sealed partial class BffTokenInjectionTransform(
                 SessionCreatedAt = currentTokens.SessionCreatedAt,
                 UserId = currentTokens.UserId,
                 UserAgent = currentTokens.UserAgent,
+                LastAccessedAt = currentTokens.LastAccessedAt,
+                IpAddress = currentTokens.IpAddress,
             };
         }
         catch (OperationCanceledException)

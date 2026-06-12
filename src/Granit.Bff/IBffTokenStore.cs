@@ -25,6 +25,18 @@ public interface IBffTokenStore
     /// <param name="cancellationToken">Cancellation token.</param>
     Task RemoveAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Cheaply updates a session's last-activity timestamp and last-seen IP without rewriting the full token
+    /// set. Called on the proxy path, throttled by <see cref="Options.GranitBffOptions.LastActivityUpdateInterval"/>.
+    /// No-op when the session is absent or expired.
+    /// </summary>
+    /// <param name="frontendName">The frontend name.</param>
+    /// <param name="sessionId">The session identifier.</param>
+    /// <param name="lastAccessedAt">The new last-activity timestamp.</param>
+    /// <param name="ipAddress">The client IP last observed (raw; the store encrypts it at rest).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task TouchAsync(string frontendName, string sessionId, DateTimeOffset lastAccessedAt, string? ipAddress, CancellationToken cancellationToken = default);
+
     /// <summary>Returns all session IDs for a given user on a frontend.</summary>
     /// <param name="frontendName">The frontend name.</param>
     /// <param name="userId">The user's subject identifier.</param>
