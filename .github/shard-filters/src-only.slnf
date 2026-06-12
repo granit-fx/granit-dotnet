@@ -167,7 +167,7 @@
       "src/Granit.Indexing.Privacy/Granit.Indexing.Privacy.csproj",
       "src/Granit.Indexing/Granit.Indexing.csproj",
       "src/Granit.IpGeolocation.Abstractions/Granit.IpGeolocation.Abstractions.csproj",
-      "src/Granit.IpGeolocation.IpApi/Granit.IpGeolocation.IpApi.csproj",
+      "src/Granit.IpGeolocation.IpInfo/Granit.IpGeolocation.IpInfo.csproj",
       "src/Granit.IpGeolocation.MaxMind/Granit.IpGeolocation.MaxMind.csproj",
       "src/Granit.IpGeolocation/Granit.IpGeolocation.csproj",
       "src/Granit.LanguageDetection.AI/Granit.LanguageDetection.AI.csproj",

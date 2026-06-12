@@ -1439,7 +1439,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.IpGeolocation.IpApi",
+      "name": "Granit.IpGeolocation.IpInfo",
       "deps": [
         "Granit.IpGeolocation"
       ],
@@ -30077,36 +30077,36 @@
       ]
     },
     {
-      "name": "IpGeolocationIpApiHostApplicationBuilderExtensions",
-      "fqn": "Granit.IpGeolocation.IpApi.Extensions.IpGeolocationIpApiHostApplicationBuilderExtensions",
+      "name": "IpGeolocationIpInfoHostApplicationBuilderExtensions",
+      "fqn": "Granit.IpGeolocation.IpInfo.Extensions.IpGeolocationIpInfoHostApplicationBuilderExtensions",
       "kind": "class",
-      "project": "Granit.IpGeolocation.IpApi",
-      "file": "src/Granit.IpGeolocation.IpApi/Extensions/IpGeolocationIpApiHostApplicationBuilderExtensions.cs",
+      "project": "Granit.IpGeolocation.IpInfo",
+      "file": "src/Granit.IpGeolocation.IpInfo/Extensions/IpGeolocationIpInfoHostApplicationBuilderExtensions.cs",
       "line": 15,
       "members": [
         {
-          "name": "AddGranitIpGeolocationIpApi",
+          "name": "AddGranitIpGeolocationIpInfo",
           "kind": "method",
-          "signature": "AddGranitIpGeolocationIpApi(this IHostApplicationBuilder builder)",
+          "signature": "AddGranitIpGeolocationIpInfo(this IHostApplicationBuilder builder)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
     },
     {
-      "name": "GranitIpGeolocationIpApiModule",
-      "fqn": "Granit.IpGeolocation.IpApi.GranitIpGeolocationIpApiModule",
+      "name": "GranitIpGeolocationIpInfoModule",
+      "fqn": "Granit.IpGeolocation.IpInfo.GranitIpGeolocationIpInfoModule",
       "kind": "class",
-      "project": "Granit.IpGeolocation.IpApi",
-      "file": "src/Granit.IpGeolocation.IpApi/GranitIpGeolocationIpApiModule.cs",
+      "project": "Granit.IpGeolocation.IpInfo",
+      "file": "src/Granit.IpGeolocation.IpInfo/GranitIpGeolocationIpInfoModule.cs",
       "line": 14,
       "members": []
     },
     {
-      "name": "IpApiIpGeolocationOptions",
-      "fqn": "Granit.IpGeolocation.IpApi.Options.IpApiIpGeolocationOptions",
+      "name": "IpInfoIpGeolocationOptions",
+      "fqn": "Granit.IpGeolocation.IpInfo.Options.IpInfoIpGeolocationOptions",
       "kind": "class",
-      "project": "Granit.IpGeolocation.IpApi",
-      "file": "src/Granit.IpGeolocation.IpApi/Options/IpApiIpGeolocationOptions.cs",
+      "project": "Granit.IpGeolocation.IpInfo",
+      "file": "src/Granit.IpGeolocation.IpInfo/Options/IpInfoIpGeolocationOptions.cs",
       "line": 11,
       "members": [
         {
@@ -49589,7 +49589,7 @@
       "kind": "interface",
       "project": "Granit.UserSessions.Abstractions",
       "file": "src/Granit.UserSessions.Abstractions/IUserSessionRiskStore.cs",
-      "line": 12,
+      "line": 19,
       "members": [
         {
           "name": "SetAsync",

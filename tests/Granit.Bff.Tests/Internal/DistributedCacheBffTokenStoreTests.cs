@@ -1,6 +1,8 @@
 using Granit.Bff.Internal;
 using Granit.Bff.Options;
+using Granit.Timing;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
@@ -9,16 +11,20 @@ namespace Granit.Bff.Tests.Internal;
 
 public sealed class DistributedCacheBffTokenStoreTests : IDisposable
 {
+    private static readonly DateTimeOffset Now = new(2026, 6, 12, 9, 0, 0, TimeSpan.Zero);
+
     private readonly FusionCache _cache = new(new FusionCacheOptions());
     private readonly IOptions<GranitBffOptions> _options;
+    private readonly IClock _clock = Substitute.For<IClock>();
     private readonly DistributedCacheBffTokenStore _store;
 
     public DistributedCacheBffTokenStoreTests()
     {
         GranitBffOptions bffOptions = new() { SessionDuration = TimeSpan.FromHours(8) };
         _options = Microsoft.Extensions.Options.Options.Create(bffOptions);
+        _clock.Now.Returns(Now);
 
-        _store = new DistributedCacheBffTokenStore(_cache, _options);
+        _store = new DistributedCacheBffTokenStore(_cache, _options, _clock);
     }
 
     public void Dispose() => _cache.Dispose();
@@ -166,6 +172,30 @@ public sealed class DistributedCacheBffTokenStoreTests : IDisposable
         result.RefreshToken.ShouldBe("refresh-token");
         result.UserId.ShouldBe("user-1");
         result.SessionCreatedAt.ShouldBe(created);
+    }
+
+    [Fact]
+    public async Task TouchAsync_PreservesSessionExpiry_DoesNotExtendTheSession()
+    {
+        BffTokenSet tokens = new("access-token", "refresh-token", "id-token", Now.AddHours(1))
+        {
+            SessionCreatedAt = Now,
+        };
+        await _store.StoreAsync("admin", "s2", tokens, TestContext.Current.CancellationToken);
+
+        // StoreAsync stamps the absolute expiry at SessionDuration (8h) past the store instant.
+        DateTimeOffset expiryAfterStore =
+            (await _store.GetAsync("admin", "s2", TestContext.Current.CancellationToken))!.SessionExpiresAt!.Value;
+        expiryAfterStore.ShouldBe(Now.AddHours(8));
+
+        // Time moves on and the session is touched — the expiry anchor must stay put (a touch never extends it).
+        _clock.Now.Returns(Now.AddHours(2));
+        await _store.TouchAsync("admin", "s2", Now.AddHours(2), "203.0.113.9", TestContext.Current.CancellationToken);
+
+        BffTokenSet? result = await _store.GetAsync("admin", "s2", TestContext.Current.CancellationToken);
+        result.ShouldNotBeNull();
+        result.SessionExpiresAt.ShouldBe(expiryAfterStore);
+        result.LastAccessedAt.ShouldBe(Now.AddHours(2));
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using Granit.Bff.Options;
+using Granit.Timing;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -10,7 +11,8 @@ namespace Granit.Bff.Internal;
 /// </summary>
 internal sealed class DistributedCacheBffTokenStore(
     IFusionCache cache,
-    IOptions<GranitBffOptions> options) : IBffTokenStore
+    IOptions<GranitBffOptions> options,
+    IClock clock) : IBffTokenStore
 {
     private const string KeyPrefix = "bff:session:";
     private const string UserIndexPrefix = "bff:user-sessions:";
@@ -21,9 +23,13 @@ internal sealed class DistributedCacheBffTokenStore(
         ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
         ArgumentNullException.ThrowIfNull(tokens);
 
-        FusionCacheEntryOptions cacheOptions = new() { Duration = options.Value.SessionDuration };
+        // Stamp the absolute expiry so a later TouchAsync can renew the entry without extending the session
+        // (mirrors the EF Core store's ExpiresAt column). A full re-store is the only path that moves it.
+        TimeSpan sessionDuration = options.Value.SessionDuration;
+        BffTokenSet stored = tokens with { SessionExpiresAt = clock.Now.Add(sessionDuration) };
+        FusionCacheEntryOptions cacheOptions = new() { Duration = sessionDuration };
 
-        await cache.SetAsync(BuildKey(frontendName, sessionId), tokens, cacheOptions, token: cancellationToken)
+        await cache.SetAsync(BuildKey(frontendName, sessionId), stored, cacheOptions, token: cancellationToken)
             .ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(tokens.UserId))
@@ -51,16 +57,28 @@ internal sealed class DistributedCacheBffTokenStore(
         ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);
         ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
 
+        // Read-modify-write of the cached entry: not atomic, but the updated fields are display-only
+        // (last-activity, IP) and the caller throttles touches, so a lost race only drops one activity sample.
         BffTokenSet? tokens = await GetAsync(frontendName, sessionId, cancellationToken).ConfigureAwait(false);
         if (tokens is null)
         {
             return;
         }
 
-        // Re-store the (already in-memory) token set with the updated activity fields. This resets the TTL,
-        // which is the intended sliding-session behaviour; the caller throttles how often this runs.
+        // Renew the entry with fresh activity fields while PRESERVING the original expiry: re-store with the TTL
+        // remaining until SessionExpiresAt, never a full SessionDuration. A cheap touch must not extend the
+        // session — only a full StoreAsync (login, refresh, sliding extension) does — so this matches the EF Core
+        // store (which leaves ExpiresAt untouched on touch) and respects SessionAbsoluteMaxDuration.
+        DateTimeOffset expiresAt = tokens.SessionExpiresAt ?? clock.Now.Add(options.Value.SessionDuration);
+        TimeSpan remaining = expiresAt - clock.Now;
+        if (remaining <= TimeSpan.Zero)
+        {
+            // Already at/past expiry — let the entry lapse rather than resurrecting it with a new TTL.
+            return;
+        }
+
         BffTokenSet updated = tokens with { LastAccessedAt = lastAccessedAt, IpAddress = ipAddress };
-        FusionCacheEntryOptions cacheOptions = new() { Duration = options.Value.SessionDuration };
+        FusionCacheEntryOptions cacheOptions = new() { Duration = remaining };
 
         await cache.SetAsync(BuildKey(frontendName, sessionId), updated, cacheOptions, token: cancellationToken)
             .ConfigureAwait(false);

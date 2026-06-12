@@ -64,5 +64,15 @@ public sealed record BffTokenSet(
     /// <see cref="Options.GranitBffOptions.ExposeRawIpAddress"/> is enabled.
     /// </summary>
     public string? IpAddress { get; init; }
+
+    /// <summary>
+    /// Absolute instant at which the session expires, set by the token store when the session is (re)stored
+    /// (<see cref="Options.GranitBffOptions.SessionDuration"/> past the write). A cheap last-activity touch
+    /// preserves this instant; only a full re-store — login, silent refresh, or a sliding extension — moves it.
+    /// Lets the distributed-cache store renew an entry's TTL on touch without silently extending the session
+    /// past its expiry, matching the EF Core store (which freezes the <c>ExpiresAt</c> column on touch) and
+    /// honouring <see cref="Options.GranitBffOptions.SessionAbsoluteMaxDuration"/>.
+    /// </summary>
+    public DateTimeOffset? SessionExpiresAt { get; init; }
 }
 #pragma warning restore GRSEC003
