@@ -17,6 +17,9 @@ public sealed record RecipientInfo
     /// <summary>Preferred culture/language (BCP 47, e.g. "fr").</summary>
     public string? PreferredCulture { get; init; }
 
+    /// <summary>Preferred time zone (IANA id, e.g. "Europe/Brussels"). <c>null</c> leaves dates in UTC.</summary>
+    public string? PreferredTimeZone { get; init; }
+
     /// <summary>Display name for personalization.</summary>
     public string? DisplayName { get; init; }
 }

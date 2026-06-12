@@ -11,6 +11,7 @@ using Granit.Notifications.Abstractions;
 using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
 using Granit.Templating.Pipeline;
+using Granit.Timing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -27,6 +28,7 @@ public sealed class EmailNotificationChannelTests
     private readonly IEmailSender _emailSender = Substitute.For<IEmailSender>();
     private readonly IRecipientResolver _recipientResolver = Substitute.For<IRecipientResolver>();
     private readonly IKeyedServiceProvider _serviceProvider = Substitute.For<IKeyedServiceProvider>();
+    private readonly CurrentTimezoneProvider _timezoneProvider = new();
     private readonly IOptions<EmailChannelOptions> _options;
     private readonly EmailNotificationChannel _channel;
 
@@ -46,6 +48,7 @@ public sealed class EmailNotificationChannelTests
             _options,
             _recipientResolver,
             new ConfigurationBuilder().Build(),
+            _timezoneProvider,
             new AngleSharpHtmlToPlainTextConverter(),
             Substitute.For<ILogger<EmailNotificationChannel>>());
     }
@@ -682,6 +685,114 @@ public sealed class EmailNotificationChannelTests
         capturedData["recipient_name"].ShouldBe("");
     }
 
+    // ──── Recipient time zone tests ────
+
+    [Fact]
+    public async Task SendAsync_SetsAmbientTimezoneToRecipientDuringRender_ThenRestores()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com", preferredTimeZone: "Europe/Brussels");
+
+        _timezoneProvider.Timezone = "UTC"; // pre-existing ambient value to verify restoration
+
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TemplateDescriptor
+            {
+                Content = "<p>{{ model.recipient_timezone }}</p>",
+                MimeType = "text/html",
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        string? timezoneDuringRender = null;
+        Dictionary<string, object?>? capturedData = null;
+        ITemplateEngine engine = Substitute.For<ITemplateEngine>();
+        engine.CanRender(Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>()).Returns(true);
+        engine.RenderAsync(
+                Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>(),
+                Arg.Any<Dictionary<string, object?>>(),
+                Arg.Any<Granit.Templating.Keys.DocumentFormat>(),
+                Arg.Any<IReadOnlyList<Granit.Templating.GlobalContext.ITemplateGlobalContext>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                timezoneDuringRender = _timezoneProvider.Timezone;
+                capturedData = callInfo.Arg<Dictionary<string, object?>>();
+                return new Granit.Templating.Pipeline.TextRenderedContent(
+                    "<p>Europe/Brussels</p>",
+                    Granit.Templating.Keys.DocumentFormat.Html);
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateEngine>))
+            .Returns(new[] { engine });
+
+        _serviceProvider.GetService(typeof(IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>))
+            .Returns((IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>?)null);
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        timezoneDuringRender.ShouldBe("Europe/Brussels");
+        // Ambient value restored after render
+        _timezoneProvider.Timezone.ShouldBe("UTC");
+        // Zone also exposed to the template model
+        capturedData.ShouldNotBeNull();
+        capturedData["recipient_timezone"].ShouldBe("Europe/Brussels");
+    }
+
+    [Fact]
+    public async Task SendAsync_WithoutRecipientTimeZone_ThreadsEmptyTimezone()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com", preferredTimeZone: null);
+
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TemplateDescriptor
+            {
+                Content = "<p>{{ model.recipient_timezone }}</p>",
+                MimeType = "text/html",
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        string? timezoneDuringRender = "sentinel";
+        Dictionary<string, object?>? capturedData = null;
+        ITemplateEngine engine = Substitute.For<ITemplateEngine>();
+        engine.CanRender(Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>()).Returns(true);
+        engine.RenderAsync(
+                Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>(),
+                Arg.Any<Dictionary<string, object?>>(),
+                Arg.Any<Granit.Templating.Keys.DocumentFormat>(),
+                Arg.Any<IReadOnlyList<Granit.Templating.GlobalContext.ITemplateGlobalContext>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                timezoneDuringRender = _timezoneProvider.Timezone;
+                capturedData = callInfo.Arg<Dictionary<string, object?>>();
+                return new Granit.Templating.Pipeline.TextRenderedContent(
+                    "<p></p>",
+                    Granit.Templating.Keys.DocumentFormat.Html);
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateEngine>))
+            .Returns(new[] { engine });
+
+        _serviceProvider.GetService(typeof(IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>))
+            .Returns((IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>?)null);
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        // No recipient time zone => ambient stays UTC (null) during render, model gets empty string
+        timezoneDuringRender.ShouldBeNull();
+        capturedData.ShouldNotBeNull();
+        capturedData["recipient_timezone"].ShouldBe("");
+    }
+
     // ──── ToName and FromNameOverride propagation tests ────
 
     [Fact]
@@ -899,13 +1010,15 @@ public sealed class EmailNotificationChannelTests
     // Helpers
     // -------------------------------------------------------------------------
 
-    private void SetupRecipient(string userId, string? email, string? displayName = null) =>
+    private void SetupRecipient(
+        string userId, string? email, string? displayName = null, string? preferredTimeZone = null) =>
         _recipientResolver.ResolveAsync(userId, Arg.Any<CancellationToken>())
             .Returns(new RecipientInfo
             {
                 UserId = userId,
                 Email = email,
                 DisplayName = displayName,
+                PreferredTimeZone = preferredTimeZone,
             });
 
     private static NotificationDeliveryContext BuildContext() => new()
@@ -942,6 +1055,7 @@ public sealed class EmailNotificationChannelTests
             Microsoft.Extensions.Options.Options.Create(opts),
             _recipientResolver,
             config,
+            _timezoneProvider,
             new AngleSharpHtmlToPlainTextConverter(),
             Substitute.For<ILogger<EmailNotificationChannel>>());
     }

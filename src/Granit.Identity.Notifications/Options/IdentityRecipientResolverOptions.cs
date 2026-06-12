@@ -48,4 +48,12 @@ public sealed class IdentityRecipientResolverOptions
     /// applies its own default.
     /// </summary>
     public string? DefaultCulture { get; set; }
+
+    /// <summary>
+    /// Metadata keys probed, in order, to resolve the recipient preferred time
+    /// zone (IANA id) when the backend does not expose it as a first-class field.
+    /// The first key with a non-empty value wins. Defaults cover the common
+    /// provider conventions (<c>zoneinfo</c> is the OIDC standard claim).
+    /// </summary>
+    public IList<string> TimeZoneMetadataKeys { get; set; } = ["timezone", "zoneinfo"];
 }

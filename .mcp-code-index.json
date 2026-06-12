@@ -28413,6 +28413,12 @@
           "kind": "property",
           "signature": "IList<string> PreferredCultureMetadataKeys",
           "returnType": "IList<string>"
+        },
+        {
+          "name": "DefaultCulture",
+          "kind": "property",
+          "signature": "string? DefaultCulture",
+          "returnType": "string?"
         }
       ]
     },
@@ -50020,7 +50026,7 @@
       "kind": "record",
       "project": "Granit.UserSessions.Notifications",
       "file": "src/Granit.UserSessions.Notifications/SuspiciousUserSessionNotificationData.cs",
-      "line": 26,
+      "line": 27,
       "members": []
     },
     {

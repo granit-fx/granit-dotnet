@@ -6,6 +6,7 @@ using Granit.Notifications.Email.Options;
 using Granit.Templating.Keys;
 using Granit.Templating.Layouts;
 using Granit.Templating.Pipeline;
+using Granit.Timing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -45,6 +46,7 @@ internal sealed partial class EmailNotificationChannel(
     IOptions<EmailChannelOptions> options,
     IRecipientResolver recipientResolver,
     IConfiguration configuration,
+    ICurrentTimezoneProvider timezoneProvider,
     [FromKeyedServices(HtmlConverterKeys.Trusted)] IHtmlToPlainTextConverter htmlToPlainText,
     ILogger<EmailNotificationChannel> logger) : INotificationChannel
 {
@@ -98,20 +100,34 @@ internal sealed partial class EmailNotificationChannel(
         }
 
         // Build enrichment context for templates
-        EmailEnrichment enrichment = new(definition, allowOptOut, unsubscribeUrl, recipient.DisplayName);
+        EmailEnrichment enrichment = new(
+            definition, allowOptOut, unsubscribeUrl, recipient.DisplayName, recipient.PreferredTimeZone);
 
-        // Try type-specific template first, then fall back to the built-in default template
-        RenderedEmail? rendered = await TryRenderTemplateAsync(
-                context.NotificationTypeName, context, enrichment, cancellationToken).ConfigureAwait(false)
-            ?? await TryRenderTemplateAsync(
-                FallbackTemplateName, context, enrichment, cancellationToken).ConfigureAwait(false);
+        // Render in the recipient's time zone so {{ to_user_time }} localizes timestamps.
+        // ICurrentTimezoneProvider is AsyncLocal — set it, render, restore in finally.
+        string? previousTz = timezoneProvider.Timezone;
+        timezoneProvider.Timezone = recipient.PreferredTimeZone;
 
-        // Apply layout wrapping (two-pass: content was rendered above, now wrap in layout)
-        if (rendered is not null)
+        RenderedEmail? rendered;
+        try
         {
-            rendered = await TryApplyLayoutAsync(
-                context.NotificationTypeName, rendered, context, enrichment, cancellationToken).ConfigureAwait(false)
-                ?? rendered;
+            // Try type-specific template first, then fall back to the built-in default template
+            rendered = await TryRenderTemplateAsync(
+                    context.NotificationTypeName, context, enrichment, cancellationToken).ConfigureAwait(false)
+                ?? await TryRenderTemplateAsync(
+                    FallbackTemplateName, context, enrichment, cancellationToken).ConfigureAwait(false);
+
+            // Apply layout wrapping (two-pass: content was rendered above, now wrap in layout)
+            if (rendered is not null)
+            {
+                rendered = await TryApplyLayoutAsync(
+                    context.NotificationTypeName, rendered, context, enrichment, cancellationToken).ConfigureAwait(false)
+                    ?? rendered;
+            }
+        }
+        finally
+        {
+            timezoneProvider.Timezone = previousTz;
         }
 
         string subject = rendered?.Subject ?? context.NotificationTypeName.Replace('.', ' ');
@@ -362,6 +378,7 @@ internal sealed partial class EmailNotificationChannel(
         dataDict.TryAdd("allow_opt_out", enrichment.AllowOptOut);
         dataDict.TryAdd("unsubscribe_url", enrichment.AllowOptOut ? enrichment.UnsubscribeUrl : "");
         dataDict.TryAdd("recipient_name", enrichment.RecipientName ?? "");
+        dataDict.TryAdd("recipient_timezone", enrichment.RecipientTimeZone ?? "");
     }
 
     /// <summary>Notification metadata resolved once per send, threaded through render methods.</summary>
@@ -369,7 +386,8 @@ internal sealed partial class EmailNotificationChannel(
         NotificationDefinition? Definition,
         bool AllowOptOut,
         string UnsubscribeUrl,
-        string? RecipientName);
+        string? RecipientName,
+        string? RecipientTimeZone);
 
     private static Dictionary<string, object?> JsonElementToDictionary(JsonElement element)
     {

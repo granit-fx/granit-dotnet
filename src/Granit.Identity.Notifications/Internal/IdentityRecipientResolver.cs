@@ -47,6 +47,7 @@ internal sealed partial class IdentityRecipientResolver(
             Email = user.Email,
             PhoneNumber = ResolvePhoneNumber(user),
             PreferredCulture = ResolvePreferredCulture(user),
+            PreferredTimeZone = ResolvePreferredTimeZone(user),
             DisplayName = ResolveDisplayName(user),
         };
     }
@@ -69,6 +70,16 @@ internal sealed partial class IdentityRecipientResolver(
         }
 
         return ProbeMetadata(user, _options.PreferredCultureMetadataKeys) ?? _options.DefaultCulture;
+    }
+
+    private string? ResolvePreferredTimeZone(IIdentityUser user)
+    {
+        if (user is User { Timezone: { Length: > 0 } tz })
+        {
+            return tz;
+        }
+
+        return ProbeMetadata(user, _options.TimeZoneMetadataKeys);
     }
 
     private static string? ResolveDisplayName(IIdentityUser user)

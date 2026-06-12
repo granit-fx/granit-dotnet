@@ -174,6 +174,35 @@ public sealed class IdentityRecipientResolverTests
         recipient.DisplayName.ShouldBe("Canon Ical");
         recipient.PhoneNumber.ShouldBe("+3225559999");
         recipient.PreferredCulture.ShouldBe("nl");
+        recipient.PreferredTimeZone.ShouldBe("Europe/Brussels");
+    }
+
+    [Fact]
+    public async Task ResolveAsync_resolves_timezone_from_default_metadata_keys()
+    {
+        SetUser(new FakeIdentityUser
+        {
+            UserId = UserId,
+            Email = "kc@example.com",
+            Metadata = new Dictionary<string, string>
+            {
+                ["zoneinfo"] = "America/New_York",
+            },
+        });
+
+        RecipientInfo? recipient = await CreateResolver().ResolveAsync(UserId, TestContext.Current.CancellationToken);
+
+        recipient!.PreferredTimeZone.ShouldBe("America/New_York");
+    }
+
+    [Fact]
+    public async Task ResolveAsync_leaves_timezone_null_when_none_resolved()
+    {
+        SetUser(new FakeIdentityUser { UserId = UserId, Email = "notz@example.com" });
+
+        RecipientInfo? recipient = await CreateResolver().ResolveAsync(UserId, TestContext.Current.CancellationToken);
+
+        recipient!.PreferredTimeZone.ShouldBeNull();
     }
 
     private void SetUser(IIdentityUser user) =>
