@@ -1,7 +1,7 @@
 namespace Granit.Http.OutputCaching.Options;
 
 /// <summary>
-/// Configuration options for Granit output caching. Section <c>"OutputCaching"</c> in <c>appsettings.json</c>.
+/// Configuration options for Granit output caching. Section <c>"Http:OutputCaching"</c> in <c>appsettings.json</c>.
 /// </summary>
 public sealed class OutputCachingOptions
 {
@@ -30,7 +30,7 @@ public sealed class OutputCachingOptions
     public bool EnableTenantIsolation { get; set; } = true;
 
     /// <summary>
-    /// Excludes authenticated responses from caching (GDPR compliance).
+    /// Excludes authenticated responses from caching (private-response isolation).
     /// When <c>true</c>, requests with an authenticated identity bypass output caching entirely.
     /// Default: <c>true</c>.
     /// </summary>

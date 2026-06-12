@@ -37,39 +37,51 @@ public static class OutputCachingServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        services.AddOutputCache(options =>
-        {
-            // Base policy: applied to all cached endpoints
-            options.AddBasePolicy(builder =>
-            {
-                builder.AddPolicy<PrivateResponseOutputCachePolicy>();
-                builder.AddPolicy<TenantAwareOutputCachePolicy>();
-                builder.Tag("all");
-            });
+        services.AddOutputCache();
 
-            // Named policy: explicit Granit default with same base chain
-            options.AddPolicy(GranitOutputCachePolicyNames.Default, builder =>
-            {
-                builder.AddPolicy<PrivateResponseOutputCachePolicy>();
-                builder.AddPolicy<TenantAwareOutputCachePolicy>();
-                builder.Tag("all");
-            });
-
-            // Named policy: explicitly disable caching for an endpoint
-            options.AddPolicy(GranitOutputCachePolicyNames.NoCache, builder =>
-                builder.NoCache());
-        });
-
-        // Override default expiration and VaryByQuery from Granit options
+        // Policy configuration lives here (not in AddOutputCache) so it can honour the
+        // bound OutputCachingOptions: the privacy/tenant toggles and the VaryByQuery keys.
         services
             .AddOptions<OutputCacheOptions>()
-            .Configure<IOptions<OutputCachingOptions>>((outputCache, granitOpts) =>
+            .Configure<IOptions<OutputCachingOptions>>((outputCache, granitOptsAccessor) =>
             {
-                outputCache.DefaultExpirationTimeSpan = granitOpts.Value.DefaultExpiration;
+                OutputCachingOptions granitOpts = granitOptsAccessor.Value;
+
+                outputCache.DefaultExpirationTimeSpan = granitOpts.DefaultExpiration;
+
+                // Base policy: applied to all cached endpoints.
+                outputCache.AddBasePolicy(builder => ConfigureGranitPolicy(builder, granitOpts));
+
+                // Named policy: explicit Granit default with the same base chain.
+                outputCache.AddPolicy(
+                    GranitOutputCachePolicyNames.Default,
+                    builder => ConfigureGranitPolicy(builder, granitOpts));
+
+                // Named policy: explicitly disable caching for an endpoint.
+                outputCache.AddPolicy(GranitOutputCachePolicyNames.NoCache, builder => builder.NoCache());
             });
 
         services.TryAddSingleton<IOutputCacheEvictionService, OutputCacheEvictionService>();
 
         return services;
+    }
+
+    // Applies the Granit base chain, honouring OutputCachingOptions: private-response
+    // isolation and tenant isolation are each opt-out via their toggle, and cache keys
+    // vary by the configured query parameters.
+    private static void ConfigureGranitPolicy(OutputCachePolicyBuilder builder, OutputCachingOptions options)
+    {
+        if (options.ExcludeAuthenticatedResponses)
+        {
+            builder.AddPolicy<PrivateResponseOutputCachePolicy>();
+        }
+
+        if (options.EnableTenantIsolation)
+        {
+            builder.AddPolicy<TenantAwareOutputCachePolicy>();
+        }
+
+        builder.SetVaryByQuery(options.VaryByQueryKeys);
+        builder.Tag("all");
     }
 }

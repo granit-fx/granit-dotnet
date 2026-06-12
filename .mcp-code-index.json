@@ -5184,7 +5184,7 @@
       "kind": "class",
       "project": "Granit.Auditing.BackgroundJobs",
       "file": "src/Granit.Auditing.BackgroundJobs/Jobs/AuditRetentionCleanupHandler.cs",
-      "line": 7,
+      "line": 10,
       "members": [
         {
           "name": "HandleAsync",
@@ -19972,7 +19972,7 @@
       "kind": "class",
       "project": "Granit.Hostnames.BackgroundJobs",
       "file": "src/Granit.Hostnames.BackgroundJobs/Jobs/VerifyHostnamesHandler.cs",
-      "line": 9,
+      "line": 11,
       "members": [
         {
           "name": "HandleAsync",
@@ -26814,7 +26814,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Handlers/AssignDefaultRoleHandler.cs",
-      "line": 22,
+      "line": 24,
       "members": [
         {
           "name": "HandleAsync",
@@ -26951,7 +26951,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Notifications",
       "file": "src/Granit.Identity.Local.Notifications/Handlers/TwoFactorEmailOtpRequestedHandler.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "HandleAsync",
@@ -29105,7 +29105,7 @@
       "kind": "class",
       "project": "Granit.Indexing.BackgroundJobs",
       "file": "src/Granit.Indexing.BackgroundJobs/Jobs/RebuildIndexHandler.cs",
-      "line": 14,
+      "line": 16,
       "members": []
     },
     {
@@ -29114,7 +29114,7 @@
       "kind": "record",
       "project": "Granit.Indexing.BackgroundJobs",
       "file": "src/Granit.Indexing.BackgroundJobs/Jobs/RebuildIndexJob.cs",
-      "line": 29,
+      "line": 35,
       "members": []
     },
     {
@@ -29393,7 +29393,7 @@
       "kind": "class",
       "project": "Granit.Indexing.EntityFrameworkCore",
       "file": "src/Granit.Indexing.EntityFrameworkCore/Extensions/ModelBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureIndexingModule",
@@ -29755,7 +29755,7 @@
       "kind": "interface",
       "project": "Granit.Indexing",
       "file": "src/Granit.Indexing/ISearchService.cs",
-      "line": 33,
+      "line": 41,
       "members": [
         {
           "name": "SearchAsync",
@@ -29877,7 +29877,7 @@
       "kind": "class",
       "project": "Granit.Indexing.Privacy",
       "file": "src/Granit.Indexing.Privacy/PersonalDataDeletionHandler.cs",
-      "line": 26,
+      "line": 28,
       "members": [
         {
           "name": "Handle",
@@ -39653,7 +39653,7 @@
       "kind": "class",
       "project": "Granit.Presence.Wolverine",
       "file": "src/Granit.Presence.Wolverine/Handlers/AccountDeletedHandler.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "HandleAsync",
@@ -39874,7 +39874,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BackgroundJobs",
       "file": "src/Granit.Privacy.BackgroundJobs/Jobs/DeletionDeadlineEnforcerHandler.cs",
-      "line": 9,
+      "line": 11,
       "members": [
         {
           "name": "HandleAsync",
@@ -39921,7 +39921,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BackgroundJobs",
       "file": "src/Granit.Privacy.BackgroundJobs/Jobs/PrivacyExportAssemblyJobHandler.cs",
-      "line": 27,
+      "line": 29,
       "members": [
         {
           "name": "HandleAsync",
@@ -39937,7 +39937,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BackgroundJobs",
       "file": "src/Granit.Privacy.BackgroundJobs/Jobs/PrivacyExportCompletedHandler.cs",
-      "line": 25,
+      "line": 27,
       "members": [
         {
           "name": "HandleAsync",
@@ -47651,7 +47651,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction.Text",
       "file": "src/Granit.TextExtraction.Text/HtmlTextExtractor.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "CanHandle",

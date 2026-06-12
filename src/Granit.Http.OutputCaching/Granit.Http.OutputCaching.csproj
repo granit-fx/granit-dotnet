@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Http.OutputCaching</PackageId>
-    <Description>Multi-tenant HTTP response caching with GDPR-safe defaults. Wraps ASP.NET Core OutputCaching with tenant-aware cache isolation, tag-based eviction, and secure-by-default policies that exclude authenticated responses.</Description>
+    <Description>Multi-tenant HTTP response caching with privacy-safe defaults. Wraps ASP.NET Core OutputCaching with tenant-aware cache isolation, tag-based eviction, and secure-by-default policies that exclude authenticated responses.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

@@ -1,7 +1,9 @@
 using Granit.Http.OutputCaching.Eviction;
 using Granit.Http.OutputCaching.Extensions;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
@@ -37,5 +39,29 @@ public sealed class OutputCachingServiceCollectionExtensionsTests
             services.AddGranitOutputCaching();
             services.AddGranitOutputCaching();
         });
+    }
+
+    [Fact]
+    public void AddGranitOutputCaching_FlowsConfiguredExpirationIntoOutputCacheOptions()
+    {
+        ServiceCollection services = new();
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Http:OutputCaching:DefaultExpiration"] = "00:05:00",
+            })
+            .Build();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddLogging();
+
+        services.AddGranitOutputCaching();
+
+        ServiceProvider provider = services.BuildServiceProvider();
+        OutputCacheOptions outputCacheOptions =
+            provider.GetRequiredService<IOptions<OutputCacheOptions>>().Value;
+
+        // Proves the Granit options are consumed by the ASP.NET output-cache configuration
+        // delegate that also wires the privacy/tenant toggles and the VaryByQuery keys.
+        outputCacheOptions.DefaultExpirationTimeSpan.ShouldBe(TimeSpan.FromMinutes(5));
     }
 }

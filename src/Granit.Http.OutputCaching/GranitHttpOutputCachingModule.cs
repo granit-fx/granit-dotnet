@@ -4,12 +4,12 @@ using Granit.Modularity;
 namespace Granit.Http.OutputCaching;
 
 /// <summary>
-/// Granit module for HTTP response output caching with GDPR-safe, tenant-aware defaults.
+/// Granit module for HTTP response output caching with privacy-safe, tenant-aware defaults.
 /// </summary>
 /// <remarks>
 /// Registers the ASP.NET Core output caching middleware with:
 /// <list type="bullet">
-///   <item>Authenticated responses excluded by default (GDPR compliance)</item>
+///   <item>Authenticated and credentialed responses excluded by default (private-response isolation)</item>
 ///   <item>Automatic tenant ID cache key isolation (when <c>Granit.MultiTenancy</c> is active)</item>
 ///   <item>Tag-based eviction per module and per tenant via <see cref="Eviction.IOutputCacheEvictionService"/></item>
 /// </list>

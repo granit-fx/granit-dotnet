@@ -7,7 +7,7 @@ namespace Granit.Http.OutputCaching.Policies;
 public static class GranitOutputCachePolicyNames
 {
     /// <summary>
-    /// Default policy: GDPR-compliant, tenant-aware, with configured expiration and VaryByQuery.
+    /// Default policy: private-response isolation, tenant-aware, with configured expiration and query-key variation.
     /// </summary>
     public const string Default = "GranitDefault";
 
