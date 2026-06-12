@@ -208,16 +208,13 @@ public sealed class CspBuilder
         // Reject directive separators, CR/LF, NUL, and all C0 controls + DEL.
         // These would either break the CSP header (newline → header injection)
         // or silently produce a malformed policy that browsers ignore.
-        foreach (char c in source)
+        if (source.Any(c => c == ';' || c == '\r' || c == '\n' || c < 0x20 || c == 0x7F))
         {
-            if (c == ';' || c == '\r' || c == '\n' || c < 0x20 || c == 0x7F)
-            {
-                throw new ArgumentException(
-                    "Invalid CSP source: directive separators (';') and control " +
-                    "characters (CR, LF, NUL, C0, DEL) are not allowed. " +
-                    $"Got source '{Sanitise(source)}'.",
-                    nameof(source));
-            }
+            throw new ArgumentException(
+                "Invalid CSP source: directive separators (';') and control " +
+                "characters (CR, LF, NUL, C0, DEL) are not allowed. " +
+                $"Got source '{Sanitise(source)}'.",
+                nameof(source));
         }
     }
 

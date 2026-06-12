@@ -23,6 +23,7 @@ internal sealed partial class AzureManagedHsmMacService : ITransitMacService, ID
 {
     private const string ProviderName = "azure-hsm";
     private const string TagPrefix = "ahsm:";
+    private const string VerifyOperation = "verify";
 
     private readonly AzureManagedHsmMacOptions _options;
     private readonly VaultMetrics _metrics;
@@ -160,7 +161,7 @@ internal sealed partial class AzureManagedHsmMacService : ITransitMacService, ID
             bool ok = result.IsValid;
             _metrics.RecordOperationCompleted(
                 tenantId,
-                "verify",
+                VerifyOperation,
                 ProviderName,
                 ok ? "success" : "rejected");
             return ok;
@@ -168,18 +169,18 @@ internal sealed partial class AzureManagedHsmMacService : ITransitMacService, ID
         catch (RequestFailedException ex) when (ex.Status is 404 or 403)
         {
             // Version unknown / disabled / forbidden — treat as miss rather than error.
-            _metrics.RecordOperationCompleted(tenantId, "verify", ProviderName, "rejected");
+            _metrics.RecordOperationCompleted(tenantId, VerifyOperation, ProviderName, "rejected");
             return false;
         }
         catch
         {
-            _metrics.RecordOperationError(tenantId, "verify", ProviderName);
+            _metrics.RecordOperationError(tenantId, VerifyOperation, ProviderName);
             throw;
         }
         finally
         {
             stopwatch.Stop();
-            _metrics.RecordOperationDuration(tenantId, "verify", ProviderName, stopwatch.Elapsed);
+            _metrics.RecordOperationDuration(tenantId, VerifyOperation, ProviderName, stopwatch.Elapsed);
         }
     }
 

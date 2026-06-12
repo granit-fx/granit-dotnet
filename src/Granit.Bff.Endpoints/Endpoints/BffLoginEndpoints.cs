@@ -171,6 +171,35 @@ internal static partial class BffLoginEndpoints
         return TypedResults.Redirect(authorizeUrl);
     }
 
+    // Validates the authorization-response issuer (RFC 9207). Returns an error redirect to send
+    // back, or null when the issuer is present and matches the configured authority.
+    private static async Task<RedirectHttpResult?> ValidateCallbackIssuerAsync(
+        HttpContext httpContext, GranitBffOptions bffOptions, BffFrontendOptions frontend,
+        string? iss, CancellationToken cancellationToken)
+    {
+        ILogger logger = httpContext.RequestServices.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
+        string expectedIssuer = bffOptions.Authority.ToString().TrimEnd('/');
+
+        if (string.IsNullOrEmpty(iss))
+        {
+            LogIssuerMissing(logger, frontend.Name);
+            await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
+                failureReason: "issuer_missing", cancellationToken).ConfigureAwait(false);
+            return RedirectToError(frontend, "issuer_missing");
+        }
+
+        if (!string.Equals(iss.TrimEnd('/'), expectedIssuer, StringComparison.OrdinalIgnoreCase))
+        {
+            LogIssuerMismatch(logger, iss, expectedIssuer, frontend.Name);
+            await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
+                failureReason: "issuer_mismatch", cancellationToken).ConfigureAwait(false);
+            return RedirectToError(frontend, "issuer_mismatch");
+        }
+
+        return null;
+    }
+
     private static async Task<RedirectHttpResult> HandleCallbackAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
@@ -210,22 +239,11 @@ internal static partial class BffLoginEndpoints
         // Verify authorization response issuer (RFC 9207, FAPI 2.0 §5.3.3.2)
         if (bffOptions.RequireIssuerValidation)
         {
-            string expectedIssuer = bffOptions.Authority.ToString().TrimEnd('/');
-
-            if (string.IsNullOrEmpty(iss))
+            RedirectHttpResult? issuerError = await ValidateCallbackIssuerAsync(
+                httpContext, bffOptions, frontend, iss, cancellationToken).ConfigureAwait(false);
+            if (issuerError is not null)
             {
-                LogIssuerMissing(logger, frontend.Name);
-                await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
-                    failureReason: "issuer_missing", cancellationToken).ConfigureAwait(false);
-                return RedirectToError(frontend, "issuer_missing");
-            }
-
-            if (!string.Equals(iss.TrimEnd('/'), expectedIssuer, StringComparison.OrdinalIgnoreCase))
-            {
-                LogIssuerMismatch(logger, iss, expectedIssuer, frontend.Name);
-                await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
-                    failureReason: "issuer_mismatch", cancellationToken).ConfigureAwait(false);
-                return RedirectToError(frontend, "issuer_mismatch");
+                return issuerError;
             }
         }
 
@@ -284,9 +302,15 @@ internal static partial class BffLoginEndpoints
 
         metrics.RecordLogin(null);
         LogLoginSuccess(logger, BffSessionEndpoints.MaskSessionId(sessionId), frontend.Name);
+
+        // The BFF owns the authentication audit trail for interactive logins it fronts: it carries the
+        // real browser User-Agent and the authenticated user as CreatedBy. The authorization server's
+        // token endpoint deliberately does NOT audit the authorization_code / refresh_token exchange
+        // (see ConnectTokenEndpoints), so this is the single success row for a BFF login.
         await TryWriteAuthAuditAsync(httpContext, logger,
             userId: string.IsNullOrEmpty(userId) ? AuthenticationAuditEntry.UnknownUserSentinel : userId,
-            userName: ExtractClaimFromIdToken(tokens.IdToken, "name"),
+            userName: ExtractClaimFromIdToken(tokens.IdToken, "preferred_username")
+                ?? ExtractClaimFromIdToken(tokens.IdToken, "email"),
             failureReason: null,
             cancellationToken).ConfigureAwait(false);
 

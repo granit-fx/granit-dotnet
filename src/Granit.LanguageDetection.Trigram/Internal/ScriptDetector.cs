@@ -70,7 +70,14 @@ internal static class ScriptDetector
         Other = -1,
     }
 
-    private static ScriptId ClassifyChar(char c) => c switch
+    private static ScriptId ClassifyChar(char c)
+    {
+        ScriptId id = ClassifyWesternChar(c);
+        return id != ScriptId.Other ? id : ClassifyAsianChar(c);
+    }
+
+    // Latin / Greek / Cyrillic / Hebrew / Arabic block ranges.
+    private static ScriptId ClassifyWesternChar(char c) => c switch
     {
         // Latin (Basic + Latin-1 + Latin Extended A/B + IPA + Latin Extended Additional)
         >= 'A' and <= 'Z' => ScriptId.Latin,
@@ -88,6 +95,12 @@ internal static class ScriptDetector
         >= '؀' and <= 'ۿ' => ScriptId.Arabic,
         >= 'ﭐ' and <= '﷿' => ScriptId.Arabic,
         >= 'ﹰ' and <= '﻿' => ScriptId.Arabic,
+        _ => ScriptId.Other,
+    };
+
+    // South-Asian / South-East-Asian / Ethiopic / CJK block ranges.
+    private static ScriptId ClassifyAsianChar(char c) => c switch
+    {
         // Devanagari
         >= 'ऀ' and <= 'ॿ' => ScriptId.Devanagari,
         // Bengali

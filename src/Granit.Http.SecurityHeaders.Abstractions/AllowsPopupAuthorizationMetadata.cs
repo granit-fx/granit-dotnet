@@ -26,4 +26,8 @@ namespace Granit.Http.SecurityHeaders;
 /// JSON/data endpoints.
 /// </para>
 /// </remarks>
-public sealed class AllowsPopupAuthorizationMetadata;
+public sealed class AllowsPopupAuthorizationMetadata
+{
+    /// <summary>Shared stateless marker instance.</summary>
+    public static AllowsPopupAuthorizationMetadata Instance { get; } = new();
+}

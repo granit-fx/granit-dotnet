@@ -36,6 +36,7 @@ internal sealed class FusionCacheResourcePresenceTracker(
 {
     private const string CacheKeyPrefix = "granit.presence.room";
     private const string GlobalTenant = "global";
+    private const string RoomSizeTag = "room.size";
 
     /// <summary>Maximum metadata size in bytes (UTF-8) accepted by <see cref="JoinAsync"/>.</summary>
     public const int MaxMetadataBytes = 512;
@@ -84,7 +85,7 @@ internal sealed class FusionCacheResourcePresenceTracker(
         {
             metrics.RecordRoomMetadataBytes(resource.Kind, metadataBytes);
         }
-        activity?.SetTag("room.size", merged.Count);
+        activity?.SetTag(RoomSizeTag, merged.Count);
 
         return new ResourceRoom(resource, merged);
     }
@@ -108,7 +109,7 @@ internal sealed class FusionCacheResourcePresenceTracker(
 
         if (existing is null || existing.Count == 0)
         {
-            activity?.SetTag("room.size", 0);
+            activity?.SetTag(RoomSizeTag, 0);
             return;
         }
 
@@ -155,7 +156,7 @@ internal sealed class FusionCacheResourcePresenceTracker(
         }
 
         metrics.RecordRoomSize(tenantId, resource.Kind, remaining.Count);
-        activity?.SetTag("room.size", remaining.Count);
+        activity?.SetTag(RoomSizeTag, remaining.Count);
     }
 
     public async Task<ResourceRoom> GetAsync(
@@ -176,7 +177,7 @@ internal sealed class FusionCacheResourcePresenceTracker(
 
         if (existing is null || existing.Count == 0)
         {
-            activity?.SetTag("room.size", 0);
+            activity?.SetTag(RoomSizeTag, 0);
             metrics.RecordRoomSize(tenantId, resource.Kind, 0);
             return new ResourceRoom(resource, []);
         }
@@ -194,7 +195,7 @@ internal sealed class FusionCacheResourcePresenceTracker(
         }
 
         metrics.RecordRoomSize(tenantId, resource.Kind, live.Count);
-        activity?.SetTag("room.size", live.Count);
+        activity?.SetTag(RoomSizeTag, live.Count);
 
         return new ResourceRoom(resource, live);
     }

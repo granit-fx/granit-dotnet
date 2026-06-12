@@ -16,6 +16,9 @@ public sealed class IndexingAIMetrics
 {
     public const string MeterName = "Granit.Indexing.AI";
 
+    internal const string TenantIdTag = "tenant_id";
+    internal const string GlobalTenant = "global";
+
     private readonly Counter<long> _summarizerAttempted;
     private readonly Counter<long> _summarizerThrottled;
     private readonly Counter<long> _summarizerFailed;
@@ -77,13 +80,13 @@ public sealed class IndexingAIMetrics
 
     public void RecordSummarizerAttempted(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _summarizerAttempted.Add(1, tags);
     }
 
     public void RecordSummarizerThrottled(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _summarizerThrottled.Add(1, tags);
     }
 
@@ -91,7 +94,7 @@ public sealed class IndexingAIMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("reason", reason),
         ];
         _summarizerFailed.Add(1, tags);
@@ -99,25 +102,25 @@ public sealed class IndexingAIMetrics
 
     public void RecordSummarizerTruncated(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _summarizerTruncated.Add(1, tags);
     }
 
     public void RecordSummarizerInjection(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _summarizerInjection.Add(1, tags);
     }
 
     public void RecordAutoTaggerAttempted(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _autoTaggerAttempted.Add(1, tags);
     }
 
     public void RecordAutoTaggerThrottled(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _autoTaggerThrottled.Add(1, tags);
     }
 
@@ -125,7 +128,7 @@ public sealed class IndexingAIMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("reason", reason),
         ];
         _autoTaggerFailed.Add(1, tags);
@@ -133,7 +136,7 @@ public sealed class IndexingAIMetrics
 
     public void RecordAutoTaggerInjection(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _autoTaggerInjection.Add(1, tags);
     }
 
@@ -143,7 +146,7 @@ public sealed class IndexingAIMetrics
         {
             return;
         }
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _autoTaggerOutOfCandidate.Add(droppedCount, tags);
     }
 }

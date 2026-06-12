@@ -38,15 +38,7 @@ public sealed class NotificationFanoutHandler(
         activity?.SetTag("notifications.type", trigger.NotificationTypeName);
 
         // Decrypt payload when encryption was applied by WolverineNotificationPublisher
-        JsonElement data = trigger.Data;
-        if (trigger.EncryptedData is not null && encryptionService is not null)
-        {
-            string? decrypted = encryptionService.Decrypt(trigger.EncryptedData);
-            if (decrypted is not null)
-            {
-                data = JsonDocument.Parse(decrypted).RootElement;
-            }
-        }
+        JsonElement data = ResolvePayloadData(trigger);
 
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : trigger.TenantId;
         NotificationDefinition? definition = definitionStore.Get(trigger.NotificationTypeName);
@@ -70,12 +62,9 @@ public sealed class NotificationFanoutHandler(
         {
             foreach (string channelName in defaultChannels)
             {
-                if (allowOptOut && !await IsChannelEnabledAsync(userId, trigger, channelName, tenantId, cancellationToken).ConfigureAwait(false))
-                {
-                    continue;
-                }
-
-                if (!bypassGates && !await AllGatesAllowAsync(userId, trigger, channelName, tenantId, cancellationToken).ConfigureAwait(false))
+                if (!await ShouldDeliverChannelAsync(
+                        userId, trigger, channelName, tenantId, allowOptOut, bypassGates, cancellationToken)
+                    .ConfigureAwait(false))
                 {
                     continue;
                 }
@@ -106,6 +95,40 @@ public sealed class NotificationFanoutHandler(
             trigger.NotificationTypeName);
 
         return commands;
+    }
+
+    // Decrypts the payload when WolverineNotificationPublisher encrypted it; otherwise
+    // returns the trigger's plaintext data unchanged.
+    private JsonElement ResolvePayloadData(NotificationTrigger trigger)
+    {
+        if (trigger.EncryptedData is not null && encryptionService is not null)
+        {
+            string? decrypted = encryptionService.Decrypt(trigger.EncryptedData);
+            if (decrypted is not null)
+            {
+                return JsonDocument.Parse(decrypted).RootElement;
+            }
+        }
+
+        return trigger.Data;
+    }
+
+    // Applies the opt-out preference and delivery-gate checks for a single user x channel.
+    private async Task<bool> ShouldDeliverChannelAsync(
+        string userId, NotificationTrigger trigger, string channelName, Guid? tenantId,
+        bool allowOptOut, bool bypassGates, CancellationToken cancellationToken)
+    {
+        if (allowOptOut && !await IsChannelEnabledAsync(userId, trigger, channelName, tenantId, cancellationToken).ConfigureAwait(false))
+        {
+            return false;
+        }
+
+        if (!bypassGates && !await AllGatesAllowAsync(userId, trigger, channelName, tenantId, cancellationToken).ConfigureAwait(false))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>

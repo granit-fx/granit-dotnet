@@ -122,21 +122,17 @@ public sealed partial class RebuildIndexService<TKey>
             new IndexRebuildStartedEvent(tenantId, sourceName, KeyTypeName, resumed, dispatchedBy),
             cancellationToken).ConfigureAwait(false);
 
-        long indexed = 0;
-        long skipped = 0;
-        long failed = 0;
-        // `processedInBatch > 0` is the sole guard for checkpoint writes (a positive count
-        // implies the loop body assigned `lastSuccessfulKey` before incrementing). We do NOT
-        // gate on `lastSuccessfulKey is not null` because `TKey?` collapses to non-nullable
+        // `ProcessedInBatch > 0` is the sole guard for checkpoint writes (a positive count
+        // implies a loop body assigned `LastSuccessfulKey` before incrementing). We do NOT
+        // gate on `LastSuccessfulKey is not null` because `TKey?` collapses to non-nullable
         // `TKey` under the `notnull` constraint for value-type instantiations.
-        int processedInBatch = 0;
-        int consecutiveFailures = 0;
-        TKey? lastSuccessfulKey = checkpoint;
+        RebuildProgress progress = new() { LastSuccessfulKey = checkpoint };
 
         long startTimestamp = _timeProvider.GetTimestamp();
         TimeSpan? maxDuration = _options.MaxRunDurationSeconds is int s
             ? TimeSpan.FromSeconds(s)
             : null;
+        RebuildRunContext context = new(tenantId, tenantTag, sourceName, dispatchedBy, startTimestamp, maxDuration);
 
         try
         {
@@ -145,99 +141,8 @@ public sealed partial class RebuildIndexService<TKey>
                 .ConfigureAwait(false))
             {
                 cancellationToken.ThrowIfCancellationRequested();
-
-                try
-                {
-                    IndexedEntry<TKey>? entry = await _source
-                        .BuildEntryAsync(key, cancellationToken)
-                        .ConfigureAwait(false);
-
-                    if (entry is null)
-                    {
-                        _metrics.RecordEntrySkipped(tenantTag, sourceName);
-                        skipped++;
-                    }
-                    else
-                    {
-                        await _indexer.IndexAsync(entry, cancellationToken).ConfigureAwait(false);
-                        _metrics.RecordEntryIndexed(tenantTag, sourceName);
-                        indexed++;
-                    }
-
-                    lastSuccessfulKey = key;
-                    consecutiveFailures = 0;
-                    processedInBatch++;
-                }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    consecutiveFailures++;
-                    failed++;
-                    _metrics.RecordEntryFailed(tenantTag, sourceName, "build_or_index_error");
-                    LogEntryFailed(tenantTag, sourceName, ex.Message);
-
-                    if (consecutiveFailures >= _options.MaxConsecutiveFailures)
-                    {
-                        await AbortAsync(
-                            "max_consecutive_failures",
-                            tenantId,
-                            tenantTag,
-                            sourceName,
-                            lastSuccessfulKey,
-                            processedInBatch,
-                            indexed + skipped + failed,
-                            dispatchedBy,
-                            cancellationToken).ConfigureAwait(false);
-                        LogAborted(tenantTag, sourceName, consecutiveFailures);
-                        throw;
-                    }
-                }
-
-                if (processedInBatch >= _options.CheckpointBatchSize)
-                {
-                    await _checkpoints
-                        .SetCheckpointAsync(tenantId, sourceName, lastSuccessfulKey!, cancellationToken)
-                        .ConfigureAwait(false);
-                    _metrics.RecordCheckpointWritten(tenantTag, sourceName);
-                    processedInBatch = 0;
-                }
-
-                long processedTotal = indexed + skipped + failed;
-
-                if (_options.MaxEntriesPerRun is int maxEntries && processedTotal >= maxEntries)
-                {
-                    await AbortAsync(
-                        "max_entries_per_run",
-                        tenantId,
-                        tenantTag,
-                        sourceName,
-                        lastSuccessfulKey,
-                        processedInBatch,
-                        processedTotal,
-                        dispatchedBy,
-                        cancellationToken).ConfigureAwait(false);
-                    LogBudgetExceeded(tenantTag, sourceName, "max_entries_per_run", processedTotal);
-                    throw new RebuildBudgetExceededException("max_entries_per_run", tenantId, sourceName, processedTotal);
-                }
-
-                if (maxDuration is TimeSpan budget && _timeProvider.GetElapsedTime(startTimestamp) >= budget)
-                {
-                    await AbortAsync(
-                        "max_run_duration",
-                        tenantId,
-                        tenantTag,
-                        sourceName,
-                        lastSuccessfulKey,
-                        processedInBatch,
-                        processedTotal,
-                        dispatchedBy,
-                        cancellationToken).ConfigureAwait(false);
-                    LogBudgetExceeded(tenantTag, sourceName, "max_run_duration", processedTotal);
-                    throw new RebuildBudgetExceededException("max_run_duration", tenantId, sourceName, processedTotal);
-                }
+                await IndexSingleKeyAsync(key, progress, context, cancellationToken).ConfigureAwait(false);
+                await EnforceLimitsAsync(progress, context, cancellationToken).ConfigureAwait(false);
             }
 
             await _checkpoints.ClearAsync(tenantId, sourceName, cancellationToken).ConfigureAwait(false);
@@ -245,25 +150,149 @@ public sealed partial class RebuildIndexService<TKey>
             LogCompleted(tenantTag, sourceName);
 
             await _eventBus.PublishAsync(
-                new IndexRebuildCompletedEvent(tenantId, sourceName, KeyTypeName, indexed, skipped, failed, dispatchedBy),
+                new IndexRebuildCompletedEvent(
+                    tenantId, sourceName, KeyTypeName, progress.Indexed, progress.Skipped, progress.Failed, dispatchedBy),
                 cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
             // Persist progress on graceful cancellation so a re-dispatch resumes.
-            if (processedInBatch > 0)
+            if (progress.ProcessedInBatch > 0)
             {
                 await _checkpoints
-                    .SetCheckpointAsync(tenantId, sourceName, lastSuccessfulKey!, CancellationToken.None)
+                    .SetCheckpointAsync(tenantId, sourceName, progress.LastSuccessfulKey!, CancellationToken.None)
                     .ConfigureAwait(false);
                 _metrics.RecordCheckpointWritten(tenantTag, sourceName);
             }
 
             // Best-effort: cancellation may be racing event-bus shutdown, so use a fresh token.
             await _eventBus.PublishAsync(
-                new IndexRebuildAbortedEvent(tenantId, sourceName, KeyTypeName, "cancelled", indexed + skipped + failed, dispatchedBy),
+                new IndexRebuildAbortedEvent(
+                    tenantId, sourceName, KeyTypeName, "cancelled", progress.ProcessedTotal, dispatchedBy),
                 CancellationToken.None).ConfigureAwait(false);
             throw;
+        }
+    }
+
+    // Per-run mutable counters and the resume cursor.
+    private sealed class RebuildProgress
+    {
+        public long Indexed;
+        public long Skipped;
+        public long Failed;
+        public int ProcessedInBatch;
+        public int ConsecutiveFailures;
+        public TKey? LastSuccessfulKey;
+        public long ProcessedTotal => Indexed + Skipped + Failed;
+    }
+
+    // Run-invariant context threaded through the per-key helpers.
+    private readonly record struct RebuildRunContext(
+        Guid? TenantId, string TenantTag, string SourceName, string? DispatchedBy,
+        long StartTimestamp, TimeSpan? MaxDuration);
+
+    // Builds and indexes one key, updating counters. Aborts (and rethrows) once the
+    // consecutive-failure threshold is crossed; cancellation propagates untouched.
+    private async Task IndexSingleKeyAsync(
+        TKey key, RebuildProgress progress, RebuildRunContext ctx, CancellationToken cancellationToken)
+    {
+        try
+        {
+            IndexedEntry<TKey>? entry = await _source
+                .BuildEntryAsync(key, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (entry is null)
+            {
+                _metrics.RecordEntrySkipped(ctx.TenantTag, ctx.SourceName);
+                progress.Skipped++;
+            }
+            else
+            {
+                await _indexer.IndexAsync(entry, cancellationToken).ConfigureAwait(false);
+                _metrics.RecordEntryIndexed(ctx.TenantTag, ctx.SourceName);
+                progress.Indexed++;
+            }
+
+            progress.LastSuccessfulKey = key;
+            progress.ConsecutiveFailures = 0;
+            progress.ProcessedInBatch++;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            progress.ConsecutiveFailures++;
+            progress.Failed++;
+            _metrics.RecordEntryFailed(ctx.TenantTag, ctx.SourceName, "build_or_index_error");
+            LogEntryFailed(ctx.TenantTag, ctx.SourceName, ex.Message);
+
+            if (progress.ConsecutiveFailures >= _options.MaxConsecutiveFailures)
+            {
+                await AbortAsync(
+                    "max_consecutive_failures",
+                    ctx.TenantId,
+                    ctx.TenantTag,
+                    ctx.SourceName,
+                    progress.LastSuccessfulKey,
+                    progress.ProcessedInBatch,
+                    progress.ProcessedTotal,
+                    ctx.DispatchedBy,
+                    cancellationToken).ConfigureAwait(false);
+                LogAborted(ctx.TenantTag, ctx.SourceName, progress.ConsecutiveFailures);
+                throw;
+            }
+        }
+    }
+
+    // Writes a checkpoint once a batch fills, then enforces the per-run entry-count and
+    // duration budgets — aborting (and throwing RebuildBudgetExceededException) when exceeded.
+    private async Task EnforceLimitsAsync(
+        RebuildProgress progress, RebuildRunContext ctx, CancellationToken cancellationToken)
+    {
+        if (progress.ProcessedInBatch >= _options.CheckpointBatchSize)
+        {
+            await _checkpoints
+                .SetCheckpointAsync(ctx.TenantId, ctx.SourceName, progress.LastSuccessfulKey!, cancellationToken)
+                .ConfigureAwait(false);
+            _metrics.RecordCheckpointWritten(ctx.TenantTag, ctx.SourceName);
+            progress.ProcessedInBatch = 0;
+        }
+
+        long processedTotal = progress.ProcessedTotal;
+
+        if (_options.MaxEntriesPerRun is int maxEntries && processedTotal >= maxEntries)
+        {
+            await AbortAsync(
+                "max_entries_per_run",
+                ctx.TenantId,
+                ctx.TenantTag,
+                ctx.SourceName,
+                progress.LastSuccessfulKey,
+                progress.ProcessedInBatch,
+                processedTotal,
+                ctx.DispatchedBy,
+                cancellationToken).ConfigureAwait(false);
+            LogBudgetExceeded(ctx.TenantTag, ctx.SourceName, "max_entries_per_run", processedTotal);
+            throw new RebuildBudgetExceededException("max_entries_per_run", ctx.TenantId, ctx.SourceName, processedTotal);
+        }
+
+        if (ctx.MaxDuration is TimeSpan budget && _timeProvider.GetElapsedTime(ctx.StartTimestamp) >= budget)
+        {
+            await AbortAsync(
+                "max_run_duration",
+                ctx.TenantId,
+                ctx.TenantTag,
+                ctx.SourceName,
+                progress.LastSuccessfulKey,
+                progress.ProcessedInBatch,
+                processedTotal,
+                ctx.DispatchedBy,
+                cancellationToken).ConfigureAwait(false);
+            LogBudgetExceeded(ctx.TenantTag, ctx.SourceName, "max_run_duration", processedTotal);
+            throw new RebuildBudgetExceededException("max_run_duration", ctx.TenantId, ctx.SourceName, processedTotal);
         }
     }
 

@@ -29,6 +29,11 @@ namespace Granit.OpenIddict.Endpoints.Endpoints;
 #pragma warning disable GRAPI003 // Private handler methods — not exposed as endpoint parameters
 internal static partial class ConnectTokenEndpoints
 {
+    private const string LoggerCategory = "Granit.OpenIddict.Endpoints.ConnectTokenEndpoints";
+    private const string TwoFactorGrantType = "urn:granit:grant_type:two_factor";
+    private const string PasskeyGrantType = "urn:granit:grant_type:passkey";
+    private const string InvalidLoginReason = "invalid_credentials";
+
     internal static IEndpointRouteBuilder MapConnectTokenEndpoints(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost("/connect/token", (Delegate)HandleTokenAsync)
@@ -48,7 +53,7 @@ internal static partial class ConnectTokenEndpoints
             .GetRequiredService<OpenIddictMetrics>();
         ILogger logger = context.RequestServices
             .GetRequiredService<ILoggerFactory>()
-            .CreateLogger("Granit.OpenIddict.Endpoints.ConnectTokenEndpoints");
+            .CreateLogger(LoggerCategory);
         ICurrentTenant? currentTenant = context.RequestServices
             .GetService<ICurrentTenant>();
         string? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id?.ToString() : null;
@@ -65,14 +70,14 @@ internal static partial class ConnectTokenEndpoints
             return HandleClientCredentials(context, request, metrics, tenantId);
         }
 
-        if (request.GrantType == "urn:granit:grant_type:two_factor")
+        if (request.GrantType == TwoFactorGrantType)
         {
             return await HandleTwoFactorAsync(
                 context, request, principalFactory, metrics, tenantId)
                 .ConfigureAwait(false);
         }
 
-        if (request.GrantType == "urn:granit:grant_type:passkey")
+        if (request.GrantType == PasskeyGrantType)
         {
             return await HandlePasskeyAsync(
                 context, request, principalFactory, metrics, tenantId)
@@ -93,7 +98,7 @@ internal static partial class ConnectTokenEndpoints
     {
         ILogger logger = context.RequestServices
             .GetRequiredService<ILoggerFactory>()
-            .CreateLogger("Granit.OpenIddict.Endpoints.ConnectTokenEndpoints");
+            .CreateLogger(LoggerCategory);
 
         // OpenIddict has already validated the code/refresh_token — authenticate to get the principal.
         AuthenticateResult authenticateResult = await context.AuthenticateAsync(
@@ -136,10 +141,10 @@ internal static partial class ConnectTokenEndpoints
             if (user is null)
             {
                 LogUserNotFound(logger, subject ?? "(null)");
-                metrics.RecordAuthenticationFailure(tenantId, "invalid_credentials");
+                metrics.RecordAuthenticationFailure(tenantId, InvalidLoginReason);
                 await TryWriteAuthAuditAsync(context, logger,
                     method: request.GrantType!, userId: subject, userName: null,
-                    failureReason: "invalid_credentials", tenantId).ConfigureAwait(false);
+                    failureReason: InvalidLoginReason, tenantId).ConfigureAwait(false);
                 return Results.Forbid(
                     authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
             }
@@ -157,12 +162,11 @@ internal static partial class ConnectTokenEndpoints
             metrics.RecordAuthenticationSuccess(tenantId, grantType);
             LogTokenIssued(logger, user.Id.ToString(), grantType);
 
-            await TryWriteAuthAuditAsync(context, logger,
-                method: grantType,
-                userId: user.Id.ToString(),
-                userName: user.UserName,
-                failureReason: null,
-                tenantId).ConfigureAwait(false);
+            // No success audit here: authorization_code / refresh_token do not authenticate the user at
+            // the token endpoint — they exchange an authentication that already happened and was audited
+            // at its source (the BFF session callback, or the interactive login endpoint for direct
+            // clients). Auditing the exchange would duplicate that record. Token-level FAILURES above are
+            // still audited, as a forged/replayed code or refresh token is a security event seen only here.
 
             string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
             string? userAgent = context.Request.Headers.UserAgent.FirstOrDefault();
@@ -199,7 +203,7 @@ internal static partial class ConnectTokenEndpoints
     {
         ILogger logger = context.RequestServices
             .GetRequiredService<ILoggerFactory>()
-            .CreateLogger("Granit.OpenIddict.Endpoints.ConnectTokenEndpoints");
+            .CreateLogger(LoggerCategory);
 
         ClaimsPrincipal principal = OidcPrincipalFactory.CreateClientPrincipal(
             request.ClientId!,
@@ -222,7 +226,7 @@ internal static partial class ConnectTokenEndpoints
     {
         ILogger logger = context.RequestServices
             .GetRequiredService<ILoggerFactory>()
-            .CreateLogger("Granit.OpenIddict.Endpoints.ConnectTokenEndpoints");
+            .CreateLogger(LoggerCategory);
 
         UserManager<LocalIdentity> userManager = context.RequestServices
             .GetRequiredService<UserManager<LocalIdentity>>();
@@ -245,10 +249,10 @@ internal static partial class ConnectTokenEndpoints
         if (user is null)
         {
             LogUserNotFound(logger, username);
-            metrics.RecordAuthenticationFailure(tenantId, "invalid_credentials");
+            metrics.RecordAuthenticationFailure(tenantId, InvalidLoginReason);
             await TryWriteAuthAuditAsync(context, logger,
-                method: "urn:granit:grant_type:two_factor", userId: null, userName: username,
-                failureReason: "invalid_credentials", tenantId).ConfigureAwait(false);
+                method: TwoFactorGrantType, userId: null, userName: username,
+                failureReason: InvalidLoginReason, tenantId).ConfigureAwait(false);
             return Results.Forbid(
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
         }
@@ -272,7 +276,7 @@ internal static partial class ConnectTokenEndpoints
             LogTwoFactorFailed(logger, user.Id.ToString());
             metrics.RecordAuthenticationFailure(tenantId, "invalid_two_factor_code");
             await TryWriteAuthAuditAsync(context, logger,
-                method: "urn:granit:grant_type:two_factor", userId: user.Id.ToString(), userName: user.UserName,
+                method: TwoFactorGrantType, userId: user.Id.ToString(), userName: user.UserName,
                 failureReason: "invalid_two_factor_code", tenantId).ConfigureAwait(false);
             return Results.Forbid(
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
@@ -283,12 +287,12 @@ internal static partial class ConnectTokenEndpoints
             user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
             .ConfigureAwait(false);
 
-        metrics.RecordTokenIssued(tenantId, "urn:granit:grant_type:two_factor");
-        metrics.RecordAuthenticationSuccess(tenantId, "urn:granit:grant_type:two_factor");
-        LogTokenIssued(logger, user.Id.ToString(), "urn:granit:grant_type:two_factor");
+        metrics.RecordTokenIssued(tenantId, TwoFactorGrantType);
+        metrics.RecordAuthenticationSuccess(tenantId, TwoFactorGrantType);
+        LogTokenIssued(logger, user.Id.ToString(), TwoFactorGrantType);
 
         await TryWriteAuthAuditAsync(context, logger,
-            method: "urn:granit:grant_type:two_factor",
+            method: TwoFactorGrantType,
             userId: user.Id.ToString(),
             userName: user.UserName,
             failureReason: null,
@@ -325,7 +329,7 @@ internal static partial class ConnectTokenEndpoints
     {
         ILogger logger = context.RequestServices
             .GetRequiredService<ILoggerFactory>()
-            .CreateLogger("Granit.OpenIddict.Endpoints.ConnectTokenEndpoints");
+            .CreateLogger(LoggerCategory);
 
         string? credentialJson = (string?)request["credential_json"];
         if (string.IsNullOrEmpty(credentialJson))
@@ -348,7 +352,7 @@ internal static partial class ConnectTokenEndpoints
             LogPasskeyAssertionFailed(logger);
             metrics.RecordAuthenticationFailure(tenantId, "invalid_passkey");
             await TryWriteAuthAuditAsync(context, logger,
-                method: "urn:granit:grant_type:passkey", userId: null, userName: null,
+                method: PasskeyGrantType, userId: null, userName: null,
                 failureReason: "invalid_passkey", tenantId).ConfigureAwait(false);
             return Results.Forbid(
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
@@ -361,10 +365,10 @@ internal static partial class ConnectTokenEndpoints
         if (user is null)
         {
             LogUserNotFound(logger, assertion.UserId);
-            metrics.RecordAuthenticationFailure(tenantId, "invalid_credentials");
+            metrics.RecordAuthenticationFailure(tenantId, InvalidLoginReason);
             await TryWriteAuthAuditAsync(context, logger,
-                method: "urn:granit:grant_type:passkey", userId: assertion.UserId, userName: null,
-                failureReason: "invalid_credentials", tenantId).ConfigureAwait(false);
+                method: PasskeyGrantType, userId: assertion.UserId, userName: null,
+                failureReason: InvalidLoginReason, tenantId).ConfigureAwait(false);
             return Results.Forbid(
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
         }
@@ -374,12 +378,12 @@ internal static partial class ConnectTokenEndpoints
             user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
             .ConfigureAwait(false);
 
-        metrics.RecordTokenIssued(tenantId, "urn:granit:grant_type:passkey");
-        metrics.RecordAuthenticationSuccess(tenantId, "urn:granit:grant_type:passkey");
-        LogTokenIssued(logger, user.Id.ToString(), "urn:granit:grant_type:passkey");
+        metrics.RecordTokenIssued(tenantId, PasskeyGrantType);
+        metrics.RecordAuthenticationSuccess(tenantId, PasskeyGrantType);
+        LogTokenIssued(logger, user.Id.ToString(), PasskeyGrantType);
 
         await TryWriteAuthAuditAsync(context, logger,
-            method: "urn:granit:grant_type:passkey",
+            method: PasskeyGrantType,
             userId: user.Id.ToString(),
             userName: user.UserName,
             failureReason: null,

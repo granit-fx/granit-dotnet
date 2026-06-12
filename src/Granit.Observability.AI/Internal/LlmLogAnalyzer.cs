@@ -87,7 +87,6 @@ internal sealed partial class LlmLogAnalyzer(
                     metrics.RecordAnalysisDuration(tenantId, sw.Elapsed.TotalSeconds);
                     return new LogAnalysisReport("AI analysis returned a non-JSON response.", [], truncatedEntries.Count);
 
-                case StructuredCompletionStatus.TransportFailure:
                 default:
                     // Transport problems are surfaced to the caller, as before.
                     sw.Stop();

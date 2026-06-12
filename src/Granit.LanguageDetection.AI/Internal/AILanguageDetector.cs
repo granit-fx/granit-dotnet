@@ -138,7 +138,6 @@ internal sealed partial class AILanguageDetector : ILanguageDetectorProvider
                     _metrics.RecordInjectionDetected(tenantId);
                     return null;
 
-                case StructuredCompletionStatus.TransportFailure:
                 default:
                     _metrics.RecordCallFailed(tenantId, "transport");
                     LogTransportFailure(tenantId ?? LanguageDetectionAIMetrics.GlobalTenant, result.Status.ToString());

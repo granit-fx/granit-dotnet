@@ -67,9 +67,8 @@ public static class OpenApiContractGenerator
         // One OpenAPI document per module, sliced by the GroupName stamped on its routes below, each
         // carrying the full Granit transformer chain so the artifacts match the framework's served
         // output (int32 normalized, int64 string-union kept, problem-details enriched, tags sorted).
-        foreach (OpenApiContractModule module in modules)
+        foreach (string slug in modules.Select(module => module.Slug))
         {
-            string slug = module.Slug;
             builder.AddGranitOpenApiDocument(slug, slug, description => description.GroupName == slug);
         }
 
@@ -87,44 +86,7 @@ public static class OpenApiContractGenerator
 
         for (int i = builder.Services.Count - 1; i >= 0; i--)
         {
-            ServiceDescriptor d = builder.Services[i];
-
-            // (1) Keyed services from the OpenAPI assembly (OpenApiDocumentService, IOpenApiDocumentProvider,
-            //     OpenApiSchemaService, …). These are resolved at generation time — one set per document.
-            if (d.IsKeyedService
-                && d.ServiceKey is string docKey
-                && !slugSet.Contains(docKey)
-                && d.ServiceType.Assembly == openApiAssembly)
-            {
-                builder.Services.RemoveAt(i);
-                continue;
-            }
-
-            // (2) Non-keyed NamedService<OpenApiDocumentService> instances (internal, OpenAPI assembly).
-            //     OpenApiDocumentProvider.GetDocumentNames() iterates these to build its list; leaving
-            //     a "v1" entry here causes GetDocumentNames() to return "v1" even after (1) is stripped,
-            //     which then fails in GenerateAsync when the keyed service can't be resolved.
-            if (!d.IsKeyedService
-                && d.ImplementationInstance is not null
-                && d.ServiceType.Assembly == openApiAssembly)
-            {
-                PropertyInfo? nameProp = d.ImplementationInstance.GetType()
-                    .GetProperty("Name", BindingFlags.Public | BindingFlags.Instance);
-                if (nameProp?.GetValue(d.ImplementationInstance) is string svcName
-                    && !slugSet.Contains(svcName))
-                {
-                    builder.Services.RemoveAt(i);
-                    continue;
-                }
-            }
-
-            // (3) IConfigureNamedOptions<OpenApiOptions> for non-slug document names. A stale entry
-            //     here is harmless for GetDocumentNames() but keep removal for completeness.
-            if (!d.IsKeyedService
-                && d.ServiceType == typeof(IConfigureOptions<OpenApiOptions>)
-                && d.ImplementationInstance is ConfigureNamedOptions<OpenApiOptions> namedOpts
-                && namedOpts.Name is not null   // null == ConfigureAll → keep
-                && !slugSet.Contains(namedOpts.Name))
+            if (ShouldStripOpenApiDescriptor(builder.Services[i], slugSet, openApiAssembly))
             {
                 builder.Services.RemoveAt(i);
             }
@@ -154,5 +116,47 @@ public static class OpenApiContractGenerator
         }
 
         await app.RunAsync().ConfigureAwait(false);
+    }
+
+    // True when a service descriptor belongs to the OpenAPI assembly for a document name
+    // that is NOT in the requested slug set — those stale registrations must be stripped so
+    // the generator emits exactly the declared documents. Three registration shapes exist.
+    private static bool ShouldStripOpenApiDescriptor(
+        ServiceDescriptor d, HashSet<string> slugSet, Assembly openApiAssembly)
+    {
+        // (1) Keyed services from the OpenAPI assembly (OpenApiDocumentService, IOpenApiDocumentProvider,
+        //     OpenApiSchemaService, …). These are resolved at generation time — one set per document.
+        if (d.IsKeyedService
+            && d.ServiceKey is string docKey
+            && !slugSet.Contains(docKey)
+            && d.ServiceType.Assembly == openApiAssembly)
+        {
+            return true;
+        }
+
+        // (2) Non-keyed NamedService<OpenApiDocumentService> instances (internal, OpenAPI assembly).
+        //     OpenApiDocumentProvider.GetDocumentNames() iterates these to build its list; leaving
+        //     a "v1" entry here causes GetDocumentNames() to return "v1" even after (1) is stripped,
+        //     which then fails in GenerateAsync when the keyed service can't be resolved.
+        if (!d.IsKeyedService
+            && d.ImplementationInstance is not null
+            && d.ServiceType.Assembly == openApiAssembly)
+        {
+            PropertyInfo? nameProp = d.ImplementationInstance.GetType()
+                .GetProperty("Name", BindingFlags.Public | BindingFlags.Instance);
+            if (nameProp?.GetValue(d.ImplementationInstance) is string svcName
+                && !slugSet.Contains(svcName))
+            {
+                return true;
+            }
+        }
+
+        // (3) IConfigureNamedOptions<OpenApiOptions> for non-slug document names. A stale entry
+        //     here is harmless for GetDocumentNames() but keep removal for completeness.
+        return !d.IsKeyedService
+            && d.ServiceType == typeof(IConfigureOptions<OpenApiOptions>)
+            && d.ImplementationInstance is ConfigureNamedOptions<OpenApiOptions> namedOpts
+            && namedOpts.Name is not null   // null == ConfigureAll → keep
+            && !slugSet.Contains(namedOpts.Name);
     }
 }

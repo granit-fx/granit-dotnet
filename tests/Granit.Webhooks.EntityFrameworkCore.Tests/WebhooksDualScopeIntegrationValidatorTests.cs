@@ -28,7 +28,7 @@ public sealed class WebhooksDualScopeIntegrationValidatorTests
             serviceProvider: sp,
             logger: NullLogger<WebhooksDualScopeIntegrationValidator>.Instance);
 
-        await sut.StartAsync(TestContext.Current.CancellationToken);
+        await Should.NotThrowAsync(() => sut.StartAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public sealed class WebhooksDualScopeIntegrationValidatorTests
             serviceProvider: sp,
             logger: NullLogger<WebhooksDualScopeIntegrationValidator>.Instance);
 
-        await sut.StartAsync(TestContext.Current.CancellationToken);
+        await Should.NotThrowAsync(() => sut.StartAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public sealed class WebhooksDualScopeIntegrationValidatorTests
             serviceProvider: sp,
             logger: NullLogger<WebhooksDualScopeIntegrationValidator>.Instance);
 
-        await sut.StartAsync(TestContext.Current.CancellationToken);
+        await Should.NotThrowAsync(() => sut.StartAsync(TestContext.Current.CancellationToken));
     }
 
     private static ServiceProvider BuildProvider<TContext>(bool validateScopes = false)

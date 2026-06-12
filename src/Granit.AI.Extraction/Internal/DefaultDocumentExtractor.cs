@@ -67,7 +67,6 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
                 LogExtractionFailed(typeof(TResult).Name, result.Status.ToString());
                 return ExtractionResult.Failed<TResult>("Failed to deserialize the LLM response.", result.ModelId);
 
-            case StructuredCompletionStatus.TransportFailure:
             default:
                 LogExtractionFailed(typeof(TResult).Name, result.Status.ToString());
                 return ExtractionResult.Failed<TResult>(

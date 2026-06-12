@@ -166,10 +166,13 @@ internal static partial class BffBackChannelLogoutEndpoints
         string? correlationId = Activity.Current?.Id;
         const string Method = "bff_backchannel_logout";
 
+        string successUserId = string.IsNullOrEmpty(userId)
+            ? AuthenticationAuditEntry.UnknownUserSentinel
+            : userId;
         AuditEntry entry = failureReason is null
             ? AuthenticationAuditEntry.CreateSuccess(
                 timeProvider.GetUtcNow(),
-                userId: string.IsNullOrEmpty(userId) ? AuthenticationAuditEntry.UnknownUserSentinel : userId,
+                userId: successUserId,
                 userName: null, method: Method,
                 tenantId, ipAddress, userAgent, correlationId)
             : AuthenticationAuditEntry.CreateFailure(

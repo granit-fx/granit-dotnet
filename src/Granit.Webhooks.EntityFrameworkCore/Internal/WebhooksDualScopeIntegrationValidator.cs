@@ -2,7 +2,6 @@ using System.Text;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.Webhooks.Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -43,16 +42,10 @@ internal sealed partial class WebhooksDualScopeIntegrationValidator(
     /// <inheritdoc/>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        List<(Type DbContextType, List<string> Entities)> offenders = [];
-
-        foreach (IsolatedDbContextMarker marker in markers)
-        {
-            List<string>? folded = TryFindFoldedWebhooksEntities(marker.DbContextType);
-            if (folded is { Count: > 0 })
-            {
-                offenders.Add((marker.DbContextType, folded));
-            }
-        }
+        List<(Type DbContextType, List<string> Entities)> offenders = [.. markers
+            .Select(marker => (marker.DbContextType, Folded: TryFindFoldedWebhooksEntities(marker.DbContextType)))
+            .Where(x => x.Folded is { Count: > 0 })
+            .Select(x => (x.DbContextType, x.Folded!))];
 
         if (offenders.Count == 0)
         {
@@ -109,15 +102,10 @@ internal sealed partial class WebhooksDualScopeIntegrationValidator(
 
             try
             {
-                List<string> matches = [];
-                foreach (IEntityType entityType in context.Model.GetEntityTypes())
-                {
-                    if (WebhooksAggregates.Contains(entityType.ClrType))
-                    {
-                        matches.Add(entityType.ClrType.Name);
-                    }
-                }
-                return matches;
+                return [.. context.Model.GetEntityTypes()
+                    .Select(entityType => entityType.ClrType)
+                    .Where(WebhooksAggregates.Contains)
+                    .Select(clrType => clrType.Name)];
             }
             finally
             {

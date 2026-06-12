@@ -1,5 +1,6 @@
 using Granit.Http.Cookies.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 
 #pragma warning disable GRSEC004 // This IS the IGranitCookieManager implementation
 
@@ -13,7 +14,8 @@ internal sealed class GranitCookieManager(
     ICookieRegistry registry,
     IConsentResolver consentResolver,
     IGlobalPrivacyControlSignal gpcSignal,
-    ICookieConsentModelProvider consentModelProvider) : IGranitCookieManager
+    ICookieConsentModelProvider consentModelProvider,
+    IHostEnvironment environment) : IGranitCookieManager
 {
     /// <inheritdoc/>
     public async Task SetCookieAsync(HttpContext httpContext, string cookieName, string value)
@@ -47,7 +49,7 @@ internal sealed class GranitCookieManager(
         {
             MaxAge = TimeSpan.FromDays(definition.RetentionDays),
             HttpOnly = definition.IsHttpOnly, // NOSONAR S3330 - intentional: HttpOnly is configurable per cookie (analytics cookies like _ga require JS access)
-            Secure = true,
+            Secure = !environment.IsDevelopment() || httpContext.Request.IsHttps,
             SameSite = definition.SameSite,
             Path = definition.Path,
             Domain = definition.Domain,
@@ -79,7 +81,7 @@ internal sealed class GranitCookieManager(
         httpContext.Response.Cookies.Delete(cookieName, new CookieOptions
         {
             HttpOnly = definition.IsHttpOnly, // NOSONAR S3330 - intentional: must match SetCookieAsync options for browser to delete the cookie
-            Secure = true,
+            Secure = !environment.IsDevelopment() || httpContext.Request.IsHttps,
             SameSite = definition.SameSite,
             Path = definition.Path,
             Domain = definition.Domain, // must mirror Set; omitting leaves the cookie stranded in browser

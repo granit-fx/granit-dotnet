@@ -58,7 +58,7 @@ public sealed class InMemoryExportAssemblyCheckpointStoreTests
     public async Task ClearAsync_OnMissing_IsNoOp()
     {
         InMemoryExportAssemblyCheckpointStore sut = new();
-        await sut.ClearAsync(Guid.NewGuid(), tenantId: null, TestContext.Current.CancellationToken);
-        // Should not throw.
+        await Should.NotThrowAsync(
+            async () => await sut.ClearAsync(Guid.NewGuid(), tenantId: null, TestContext.Current.CancellationToken));
     }
 }

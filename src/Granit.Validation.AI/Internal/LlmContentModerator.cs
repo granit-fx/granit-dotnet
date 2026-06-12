@@ -63,8 +63,6 @@ internal sealed partial class LlmContentModerator(
                     LogModerationFailed();
                     return AcceptWithWarning();
 
-                case StructuredCompletionStatus.ModelRefused:
-                case StructuredCompletionStatus.SchemaViolation:
                 default:
                     // Refused or unparseable output suggests adversarial manipulation — fail closed.
                     LogModerationParseFailure();

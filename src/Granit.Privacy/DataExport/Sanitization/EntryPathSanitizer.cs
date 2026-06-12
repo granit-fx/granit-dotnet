@@ -75,17 +75,28 @@ public static partial class EntryPathSanitizer
         }
 
         // Control characters anywhere in the string.
-        foreach (char c in normalized)
+        if (normalized.Cast<char?>().FirstOrDefault(c => c < 0x20 || c == 0x7F) is { } control)
         {
-            if (c < 0x20 || c == 0x7F)
-            {
-                throw new InvalidExportEntryPathException(entryPath, $"control character 0x{(int)c:X2} not allowed");
-            }
+            throw new InvalidExportEntryPathException(
+                entryPath, $"control character 0x{(int)control:X2} not allowed");
         }
 
-        // Per-segment checks.
-        string[] segments = normalized.Split('/');
-        foreach (string segment in segments)
+        ValidateSegments(entryPath, normalized);
+
+        int fullByteLength = Encoding.UTF8.GetByteCount(normalized);
+        if (fullByteLength > MaxFullPathBytes)
+        {
+            throw new InvalidExportEntryPathException(
+                entryPath,
+                $"path exceeds {MaxFullPathBytes} bytes ({fullByteLength})");
+        }
+
+        return normalized;
+    }
+
+    private static void ValidateSegments(string entryPath, string normalized)
+    {
+        foreach (string segment in normalized.Split('/'))
         {
             if (segment.Length == 0)
             {
@@ -117,16 +128,6 @@ public static partial class EntryPathSanitizer
                     $"segment '{segment}' uses a Windows reserved name");
             }
         }
-
-        int fullByteLength = Encoding.UTF8.GetByteCount(normalized);
-        if (fullByteLength > MaxFullPathBytes)
-        {
-            throw new InvalidExportEntryPathException(
-                entryPath,
-                $"path exceeds {MaxFullPathBytes} bytes ({fullByteLength})");
-        }
-
-        return normalized;
     }
 
     private static string Normalize(string entryPath)

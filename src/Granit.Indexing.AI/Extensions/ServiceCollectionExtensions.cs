@@ -89,12 +89,15 @@ public static class ServiceCollectionExtensions
         // (summarizer / auto-tagger) — gate on a marker so the probe is added exactly once.
         if (!services.Any(d => d.ServiceType == typeof(RedactionWarningMarker)))
         {
-            services.AddSingleton<RedactionWarningMarker>();
+            services.AddSingleton(RedactionWarningMarker.Instance);
             services.AddAIRedactionStartupWarning(
                 "Granit.Indexing.AI",
                 sp => sp.GetRequiredService<IOptions<IndexingAIOptions>>().Value.RedactPIIBeforeLLMCall);
         }
     }
 
-    private sealed class RedactionWarningMarker;
+    private sealed class RedactionWarningMarker
+    {
+        public static readonly RedactionWarningMarker Instance = new();
+    }
 }

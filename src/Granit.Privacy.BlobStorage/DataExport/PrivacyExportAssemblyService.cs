@@ -142,7 +142,7 @@ internal sealed partial class PrivacyExportAssemblyService(
 
         string objectKeyPrefix = BuildObjectKeyPrefix(completion.RequestId);
         await using ShardingArchiveWriter writer = new(
-            blobStoreProvider, PrivacyExportContainerBucket(opts), objectKeyPrefix, shardMaxBytes,
+            blobStoreProvider, PrivacyExportContainerBucket(), objectKeyPrefix, shardMaxBytes,
             startShardIndex: startShardIndex,
             priorShards: priorShards);
 
@@ -156,69 +156,14 @@ internal sealed partial class PrivacyExportAssemblyService(
             // to keep the manifest's emptyProviders / manifestFragments lists complete
             // (covering pre-resume work too), but only stream non-empty fragments at or
             // past startFragmentIndex into the writer.
+            FragmentAssemblyContext fragmentContext = new(
+                completion, writer, startFragmentIndex, downloadTtl, httpClient, hmacExpiryWindow,
+                emptyProviders, manifestFragments);
+
             for (int i = 0; i < completion.Fragments.Count; i++)
             {
-                ReceivedFragment fragment = completion.Fragments[i];
-
-                if (string.Equals(fragment.FragmentKind, PrivacyFragmentUploader.EmptyFragmentKind, StringComparison.Ordinal))
-                {
-                    emptyProviders.Add(fragment.ProviderName);
-                    continue;
-                }
-
-                if (!Guid.TryParse(fragment.BlobReferenceId.Value, out Guid blobId))
-                {
-                    LogUnexpectedBlobReference(logger, fragment.ProviderName, fragment.BlobReferenceId.Value, completion.RequestId);
-                    continue;
-                }
-
-                if (i < startFragmentIndex)
-                {
-                    // Re-build manifest metadata for the fragment without re-streaming
-                    // its bytes — the shard it lived in is already committed.
-                    string priorEntryName = await ResolveEntryNameAsync(fragment, blobId, cancellationToken).ConfigureAwait(false);
-                    manifestFragments.Add(new ExportManifestFragment(
-                        fragment.ProviderName, priorEntryName, fragment.ContentType, fragment.BlobReferenceId));
-                    continue;
-                }
-
-                if (!VerifyFragmentTag(completion, fragment, blobId, hmacExpiryWindow))
-                {
-                    LogIntegrityTagRejected(logger, fragment.ProviderName, completion.RequestId);
-                    throw new InvalidOperationException(
-                        $"HMAC integrity tag verification failed for provider '{fragment.ProviderName}' on request {completion.RequestId}.");
-                }
-
-                int shardsBefore = writer.Shards.Count;
-
-                string entryName = await ResolveEntryNameAsync(fragment, blobId, cancellationToken).ConfigureAwait(false);
-                await CopyFragmentToWriterAsync(writer, entryName, fragment, blobId, downloadTtl, httpClient, cancellationToken)
+                shardStartTimestamp = await ProcessFragmentAsync(fragmentContext, i, shardStartTimestamp, cancellationToken)
                     .ConfigureAwait(false);
-
-                manifestFragments.Add(new ExportManifestFragment(
-                    fragment.ProviderName, entryName, fragment.ContentType, fragment.BlobReferenceId));
-
-                // AppendAsync rolls over BEFORE writing when the prior shard hit the cap,
-                // so a growth in Shards.Count means the rolled-over shard is fully
-                // committed to storage. Persist a checkpoint pointing at the fragment
-                // currently in flight (this one): a re-dispatch will re-do this fragment
-                // into a fresh shard, which is fine because the committed shards stay
-                // addressable individually.
-                if (writer.Shards.Count > shardsBefore)
-                {
-                    await checkpointStore.SetAsync(
-                        completion.RequestId,
-                        completion.TenantId,
-                        new ExportAssemblyCheckpoint(
-                            LastCompletedShardIndex: writer.Shards[^1].Index,
-                            NextFragmentIndex: i,
-                            CompletedShardObjectKeys: [.. writer.Shards.Select(s => s.ObjectKey)]),
-                        cancellationToken).ConfigureAwait(false);
-
-                    await EmitShardCompletedAuditAsync(completion, writer.Shards[^1], shardStartTimestamp, cancellationToken)
-                        .ConfigureAwait(false);
-                    shardStartTimestamp = Stopwatch.GetTimestamp();
-                }
             }
 
             // Capture the shard count before CompleteAsync to detect whether a final
@@ -526,6 +471,89 @@ internal sealed partial class PrivacyExportAssemblyService(
         return ms.ToArray();
     }
 
+    // Run-invariant context for the per-fragment assembly loop. The two lists are mutated in place.
+    private sealed record FragmentAssemblyContext(
+        ExportCompletedEto Completion,
+        ShardingArchiveWriter Writer,
+        int StartFragmentIndex,
+        TimeSpan DownloadTtl,
+        HttpClient HttpClient,
+        DateTimeOffset HmacExpiryWindow,
+        List<string> EmptyProviders,
+        List<ExportManifestFragment> ManifestFragments);
+
+    // Processes fragment <paramref name="i"/>: skips empty / malformed / already-committed
+    // fragments, verifies the HMAC tag, streams the bytes into the writer, and checkpoints on a
+    // shard rollover. Returns the (possibly reset) per-shard start timestamp.
+    private async Task<long> ProcessFragmentAsync(
+        FragmentAssemblyContext ctx, int i, long shardStartTimestamp, CancellationToken cancellationToken)
+    {
+        ExportCompletedEto completion = ctx.Completion;
+        ReceivedFragment fragment = completion.Fragments[i];
+
+        if (string.Equals(fragment.FragmentKind, PrivacyFragmentUploader.EmptyFragmentKind, StringComparison.Ordinal))
+        {
+            ctx.EmptyProviders.Add(fragment.ProviderName);
+            return shardStartTimestamp;
+        }
+
+        if (!Guid.TryParse(fragment.BlobReferenceId.Value, out Guid blobId))
+        {
+            LogUnexpectedBlobReference(logger, fragment.ProviderName, fragment.BlobReferenceId.Value, completion.RequestId);
+            return shardStartTimestamp;
+        }
+
+        if (i < ctx.StartFragmentIndex)
+        {
+            // Re-build manifest metadata for the fragment without re-streaming
+            // its bytes — the shard it lived in is already committed.
+            string priorEntryName = await ResolveEntryNameAsync(fragment, blobId, cancellationToken).ConfigureAwait(false);
+            ctx.ManifestFragments.Add(new ExportManifestFragment(
+                fragment.ProviderName, priorEntryName, fragment.ContentType, fragment.BlobReferenceId));
+            return shardStartTimestamp;
+        }
+
+        if (!VerifyFragmentTag(completion, fragment, blobId, ctx.HmacExpiryWindow))
+        {
+            LogIntegrityTagRejected(logger, fragment.ProviderName, completion.RequestId);
+            throw new InvalidOperationException(
+                $"HMAC integrity tag verification failed for provider '{fragment.ProviderName}' on request {completion.RequestId}.");
+        }
+
+        int shardsBefore = ctx.Writer.Shards.Count;
+
+        string entryName = await ResolveEntryNameAsync(fragment, blobId, cancellationToken).ConfigureAwait(false);
+        await CopyFragmentToWriterAsync(ctx.Writer, entryName, fragment, blobId, ctx.DownloadTtl, ctx.HttpClient, cancellationToken)
+            .ConfigureAwait(false);
+
+        ctx.ManifestFragments.Add(new ExportManifestFragment(
+            fragment.ProviderName, entryName, fragment.ContentType, fragment.BlobReferenceId));
+
+        // AppendAsync rolls over BEFORE writing when the prior shard hit the cap,
+        // so a growth in Shards.Count means the rolled-over shard is fully
+        // committed to storage. Persist a checkpoint pointing at the fragment
+        // currently in flight (this one): a re-dispatch will re-do this fragment
+        // into a fresh shard, which is fine because the committed shards stay
+        // addressable individually.
+        if (ctx.Writer.Shards.Count > shardsBefore)
+        {
+            await checkpointStore.SetAsync(
+                completion.RequestId,
+                completion.TenantId,
+                new ExportAssemblyCheckpoint(
+                    LastCompletedShardIndex: ctx.Writer.Shards[^1].Index,
+                    NextFragmentIndex: i,
+                    CompletedShardObjectKeys: [.. ctx.Writer.Shards.Select(s => s.ObjectKey)]),
+                cancellationToken).ConfigureAwait(false);
+
+            await EmitShardCompletedAuditAsync(completion, ctx.Writer.Shards[^1], shardStartTimestamp, cancellationToken)
+                .ConfigureAwait(false);
+            return Stopwatch.GetTimestamp();
+        }
+
+        return shardStartTimestamp;
+    }
+
     private static string BuildObjectKeyPrefix(Guid requestId) =>
         $"personal-data-export/{requestId}";
 
@@ -533,7 +561,7 @@ internal sealed partial class PrivacyExportAssemblyService(
     // bucket name (not container). The privacy export uses a single bucket name —
     // re-use the fragment-container constant so providers that wire one bucket per
     // container resolve consistently.
-    private static string PrivacyExportContainerBucket(GranitPrivacyOptions _) =>
+    private static string PrivacyExportContainerBucket() =>
         PrivacyExportContainerNames.FragmentContainer;
 
     private static string ExtensionFor(string contentType) => contentType switch

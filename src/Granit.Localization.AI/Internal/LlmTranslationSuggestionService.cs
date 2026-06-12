@@ -77,9 +77,6 @@ internal sealed partial class LlmTranslationSuggestionService(
                     LogTranslationSucceeded(key, suggestions.Count, targetCultures.Count);
                     return suggestions;
 
-                case StructuredCompletionStatus.ModelRefused:
-                case StructuredCompletionStatus.SchemaViolation:
-                case StructuredCompletionStatus.TransportFailure:
                 default:
                     LogTranslationRejected(key, result.Status.ToString());
                     return [];

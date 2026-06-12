@@ -31,6 +31,8 @@ namespace Granit.Http.ApiDocumentation.Internal;
 /// </remarks>
 internal sealed class ScalarCspContributor(IOptions<ApiDocumentationOptions> options) : ICspContributor
 {
+    private const string SelfSource = "'self'";
+
     private readonly ApiDocumentationOptions _options = options.Value;
 
     public void Contribute(HttpContext context, CspBuilder builder)
@@ -40,15 +42,15 @@ internal sealed class ScalarCspContributor(IOptions<ApiDocumentationOptions> opt
             return;
         }
 
-        List<string> connectSources = ["'self'", "https://api.scalar.com"];
+        List<string> connectSources = [SelfSource, "https://api.scalar.com"];
         AddOrigin(connectSources, _options.OAuth2.AuthorizationUrl);
         AddOrigin(connectSources, _options.OAuth2.TokenUrl);
 
         builder
-            .AddScriptSrc("'self'", "'unsafe-inline'", "'unsafe-eval'")
-            .AddStyleSrc("'self'", "'unsafe-inline'")
-            .AddFontSrc("'self'", "data:", "https://fonts.scalar.com")
-            .AddImgSrc("'self'", "data:", "https:")
+            .AddScriptSrc(SelfSource, "'unsafe-inline'", "'unsafe-eval'")
+            .AddStyleSrc(SelfSource, "'unsafe-inline'")
+            .AddFontSrc(SelfSource, "data:", "https://fonts.scalar.com")
+            .AddImgSrc(SelfSource, "data:", "https:")
             .AddConnectSrc([.. connectSources.Distinct()]);
     }
 

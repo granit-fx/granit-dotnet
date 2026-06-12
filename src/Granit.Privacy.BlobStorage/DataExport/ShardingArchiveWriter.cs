@@ -166,7 +166,7 @@ internal sealed class ShardingArchiveWriter : IAsyncDisposable
         // completed shards stay committed in storage.
         if (_zip is not null)
         {
-            try { _zip.Dispose(); }
+            try { await _zip.DisposeAsync().ConfigureAwait(false); }
             catch { /* ignore — abort path */ }
             _zip = null;
         }
@@ -222,7 +222,7 @@ internal sealed class ShardingArchiveWriter : IAsyncDisposable
         // counter into the multipart stream. Must precede CompleteAsync on the multipart
         // so the upload captures the directory — and ComputeHashAndReset must happen
         // after the dispose so the central directory is included in the digest.
-        _zip.Dispose();
+        await _zip.DisposeAsync().ConfigureAwait(false);
         _zip = null;
 
         byte[] sha256 = _hasher!.ComputeHashAndReset();

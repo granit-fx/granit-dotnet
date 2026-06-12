@@ -277,57 +277,62 @@ public static class ModelBuilderExtensions
         {
             foreach (IMutableProperty property in entityType.GetProperties())
             {
-                Type? enumType = GetEnumType(property.ClrType);
-                if (enumType is null)
-                {
-                    continue;
-                }
-
-                // Respect explicit overrides: a HasConversion<...>() call in the entity
-                // configuration always wins over the convention. EF Core exposes the
-                // override in two different ways depending on the overload:
-                //   - HasConversion(ValueConverter) / HasConversion<TConverter>()
-                //       → SetValueConverter, surfaced by GetValueConverter()
-                //   - HasConversion<TProvider>()  (e.g. HasConversion<short>())
-                //       → SetProviderClrType only; the ValueConverter is materialised
-                //         later from the type mapping, so GetValueConverter() is null
-                //         at convention-application time. Without the second check the
-                //         convention stacks EnumToStringConverter on top of the
-                //         provider type and EF crashes on default-value sanitisation
-                //         (FormatException trying to parse "Available" as short).
-                if (property.GetValueConverter() is not null
-                    || property.GetProviderClrType() is not null)
-                {
-                    continue;
-                }
-
-                // Skip opt-out: property marked [PersistAsInt] with a documented reason.
-                if (property.PropertyInfo?.GetCustomAttribute<PersistAsIntAttribute>() is not null)
-                {
-                    continue;
-                }
-
-                // [Flags] enums encode multiple values bitwise — storing them as a single
-                // string name would lose information. Keep the int column unless an
-                // explicit converter was configured above.
-                if (enumType.GetCustomAttribute<FlagsAttribute>() is not null)
-                {
-                    continue;
-                }
-
-                Type converterType = typeof(EnumToStringConverter<>).MakeGenericType(enumType);
-                property.SetValueConverter(
-                    (ValueConverter)Activator.CreateInstance(converterType)!);
-
-                // Preserve any explicit HasMaxLength(N) the entity configuration already set
-                // (e.g. AuditEntry.Category keeps its 50-char column even though the convention
-                // floor would compute a smaller value). Only apply the default when missing.
-                if (property.GetMaxLength() is null)
-                {
-                    int longestName = Enum.GetNames(enumType).Max(name => name.Length);
-                    property.SetMaxLength(Math.Max(20, longestName + 4));
-                }
+                ApplyEnumStringConverter(property);
             }
+        }
+    }
+
+    private static void ApplyEnumStringConverter(IMutableProperty property)
+    {
+        Type? enumType = GetEnumType(property.ClrType);
+        if (enumType is null)
+        {
+            return;
+        }
+
+        // Respect explicit overrides: a HasConversion<...>() call in the entity
+        // configuration always wins over the convention. EF Core exposes the
+        // override in two different ways depending on the overload:
+        //   - HasConversion(ValueConverter) / HasConversion<TConverter>()
+        //       → SetValueConverter, surfaced by GetValueConverter()
+        //   - HasConversion<TProvider>()  (e.g. HasConversion<short>())
+        //       → SetProviderClrType only; the ValueConverter is materialised
+        //         later from the type mapping, so GetValueConverter() is null
+        //         at convention-application time. Without the second check the
+        //         convention stacks EnumToStringConverter on top of the
+        //         provider type and EF crashes on default-value sanitisation
+        //         (FormatException trying to parse "Available" as short).
+        if (property.GetValueConverter() is not null
+            || property.GetProviderClrType() is not null)
+        {
+            return;
+        }
+
+        // Skip opt-out: property marked [PersistAsInt] with a documented reason.
+        if (property.PropertyInfo?.GetCustomAttribute<PersistAsIntAttribute>() is not null)
+        {
+            return;
+        }
+
+        // [Flags] enums encode multiple values bitwise — storing them as a single
+        // string name would lose information. Keep the int column unless an
+        // explicit converter was configured above.
+        if (enumType.GetCustomAttribute<FlagsAttribute>() is not null)
+        {
+            return;
+        }
+
+        Type converterType = typeof(EnumToStringConverter<>).MakeGenericType(enumType);
+        property.SetValueConverter(
+            (ValueConverter)Activator.CreateInstance(converterType)!);
+
+        // Preserve any explicit HasMaxLength(N) the entity configuration already set
+        // (e.g. AuditEntry.Category keeps its 50-char column even though the convention
+        // floor would compute a smaller value). Only apply the default when missing.
+        if (property.GetMaxLength() is null)
+        {
+            int longestName = Enum.GetNames(enumType).Max(name => name.Length);
+            property.SetMaxLength(Math.Max(20, longestName + 4));
         }
     }
 
@@ -412,68 +417,83 @@ public static class ModelBuilderExtensions
 
             foreach (System.Reflection.PropertyInfo clrProperty in valueObjectClrProperties)
             {
-                // Fail fast on explicit OwnsOne(...) over a ValueObject subtype on a real entity
-                // owner: this would create a third VO persistence path beyond the two supported
-                // by ADR-017 / ADR-058 (convention auto-JSON / scalar, or ComplexProperty for
-                // typed flat columns). Silent-override the previous behavior — produced schema
-                // drift and late STJ failures with no diagnostic. A nested-VO owner stays on
-                // the existing detach-only path: nobody opts in to OwnsOne on a VO-inside-VO.
-                IMutableNavigation? nav = ownerEntityType.FindNavigation(clrProperty.Name);
-                if (!ownerIsValueObject && nav?.ForeignKey.IsOwnership == true)
-                {
-                    throw new InvalidOperationException(
-                        $"'{ownerEntityType.ClrType.Name}.{clrProperty.Name}' is a ValueObject " +
-                        $"subtype configured via OwnsOne(...). Granit reserves ValueObject " +
-                        $"persistence to two paths: (1) let ApplyGranitConventions auto-serialize " +
-                        $"to JSON (multi-field) or a scalar column (SingleValueObject<T>), or " +
-                        $"(2) map explicitly via ComplexProperty(...) for typed flat columns. " +
-                        $"Drop the OwnsOne call or switch to ComplexProperty. " +
-                        $"See ADR-017 (DDD VO strategy) and ADR-058 (JSON persistence policy).");
-                }
-
-                ownerBuilder.Ignore(clrProperty.Name);
-
-                // A value object owner is removed wholesale below — only the navigation needs
-                // detaching. A real entity keeps the data, re-attached as a column.
-                if (ownerIsValueObject)
-                {
-                    continue;
-                }
-
-                Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder propertyBuilder =
-                    ownerBuilder.Property(clrProperty.PropertyType, clrProperty.Name);
-
-                // SingleValueObject<T> maps to its underlying primitive (ApplySingleValueObjectConverters,
-                // next step). A multi-field value object has no single primitive — serialize it to JSON.
-                if (GetSingleValueObjectBase(clrProperty.PropertyType) is null)
-                {
-                    ApplyJsonValueObjectConverterMethod // NOSONAR S3011 - intentional: generic value converter over the property CLR type requires reflection
-                        .MakeGenericMethod(clrProperty.PropertyType)
-                        .Invoke(null, [propertyBuilder.Metadata]);
-                }
+                ReattachOrDetachValueObjectProperty(ownerBuilder, ownerEntityType, clrProperty, ownerIsValueObject);
             }
         }
 
-        // RemoveEntityType alone is not enough: an earlier convention that calls
-        // modelBuilder.Entity<T>() on the OWNER (the IConcurrencyAware / soft-delete passes
-        // above) re-fires EF navigation discovery, and model FINALIZATION then re-materialises
-        // these phantom value object entity types — with their shadow-FK graph
-        // (OpenGraph → OgImage → ImageDimensions) — straight off the still-present CLR
-        // navigation properties. Finalization then fails binding e.g.
-        // ImageDimensions(int width, int height).
-        //
-        // The model-level Ignore(type) adds the CLR type to the model's ignored set so NO
-        // later convention can re-add it. Restrict it to MULTI-FIELD value objects: a
-        // SingleValueObject<T> must stay visible as a scalar property so the next pass
-        // (ApplySingleValueObjectConverters) can wrap it with its primitive converter —
-        // Ignore(type) would hide that property and drop the column.
-        //
-        // Exception: when a module author explicitly mapped the VO as a property column in a
-        // custom IEntityTypeConfiguration (e.g. WebManifest via HasConversion in
-        // SiteSeoDefaultsConfiguration), the navigation loop above found no raw navigation to
-        // process. No navigation → no risk of re-discovery during finalization → RemoveEntityType
-        // is sufficient and avoids the EF Core warning "entity type was first mapped explicitly
-        // and then ignored" that Ignore() emits in this scenario.
+        RemoveOrIgnoreValueObjectEntityTypes(modelBuilder, valueObjectClrTypes);
+    }
+
+    // Detaches one auto-discovered value-object navigation on an owner. On a real entity the CLR
+    // member is re-registered as a column (scalar for SingleValueObject<T>, JSON otherwise); on a
+    // value-object owner (removed wholesale later) only the navigation is detached. Throws when the
+    // member was explicitly mapped via OwnsOne(...) on a real entity — an unsupported third VO
+    // persistence path (ADR-017 / ADR-058).
+    private static void ReattachOrDetachValueObjectProperty(
+        Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder ownerBuilder,
+        IMutableEntityType ownerEntityType,
+        System.Reflection.PropertyInfo clrProperty,
+        bool ownerIsValueObject)
+    {
+        IMutableNavigation? nav = ownerEntityType.FindNavigation(clrProperty.Name);
+        if (!ownerIsValueObject && nav?.ForeignKey.IsOwnership == true)
+        {
+            throw new InvalidOperationException(
+                $"'{ownerEntityType.ClrType.Name}.{clrProperty.Name}' is a ValueObject " +
+                $"subtype configured via OwnsOne(...). Granit reserves ValueObject " +
+                $"persistence to two paths: (1) let ApplyGranitConventions auto-serialize " +
+                $"to JSON (multi-field) or a scalar column (SingleValueObject<T>), or " +
+                $"(2) map explicitly via ComplexProperty(...) for typed flat columns. " +
+                $"Drop the OwnsOne call or switch to ComplexProperty. " +
+                $"See ADR-017 (DDD VO strategy) and ADR-058 (JSON persistence policy).");
+        }
+
+        ownerBuilder.Ignore(clrProperty.Name);
+
+        // A value object owner is removed wholesale below — only the navigation needs
+        // detaching. A real entity keeps the data, re-attached as a column.
+        if (ownerIsValueObject)
+        {
+            return;
+        }
+
+        Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder propertyBuilder =
+            ownerBuilder.Property(clrProperty.PropertyType, clrProperty.Name);
+
+        // SingleValueObject<T> maps to its underlying primitive (ApplySingleValueObjectConverters,
+        // next step). A multi-field value object has no single primitive — serialize it to JSON.
+        if (GetSingleValueObjectBase(clrProperty.PropertyType) is null)
+        {
+            ApplyJsonValueObjectConverterMethod // NOSONAR S3011 - intentional: generic value converter over the property CLR type requires reflection
+                .MakeGenericMethod(clrProperty.PropertyType)
+                .Invoke(null, [propertyBuilder.Metadata]);
+        }
+    }
+
+    // Un-maps the phantom value-object entity types after their navigations were detached.
+    //
+    // RemoveEntityType alone is not enough: an earlier convention that calls
+    // modelBuilder.Entity<T>() on the OWNER (the IConcurrencyAware / soft-delete passes
+    // above) re-fires EF navigation discovery, and model FINALIZATION then re-materialises
+    // these phantom value object entity types — with their shadow-FK graph
+    // (OpenGraph → OgImage → ImageDimensions) — straight off the still-present CLR
+    // navigation properties. Finalization then fails binding e.g.
+    // ImageDimensions(int width, int height).
+    //
+    // The model-level Ignore(type) adds the CLR type to the model's ignored set so NO
+    // later convention can re-add it. Restrict it to MULTI-FIELD value objects: a
+    // SingleValueObject<T> must stay visible as a scalar property so the next pass
+    // (ApplySingleValueObjectConverters) can wrap it with its primitive converter —
+    // Ignore(type) would hide that property and drop the column.
+    //
+    // Exception: when a module author explicitly mapped the VO as a property column in a
+    // custom IEntityTypeConfiguration (e.g. WebManifest via HasConversion in
+    // SiteSeoDefaultsConfiguration), the navigation loop above found no raw navigation to
+    // process. No navigation → no risk of re-discovery during finalization → RemoveEntityType
+    // is sufficient and avoids the EF Core warning "entity type was first mapped explicitly
+    // and then ignored" that Ignore() emits in this scenario.
+    private static void RemoveOrIgnoreValueObjectEntityTypes(ModelBuilder modelBuilder, HashSet<Type> valueObjectClrTypes)
+    {
         foreach (Type valueObjectClrType in valueObjectClrTypes)
         {
             if (GetSingleValueObjectBase(valueObjectClrType) is null)

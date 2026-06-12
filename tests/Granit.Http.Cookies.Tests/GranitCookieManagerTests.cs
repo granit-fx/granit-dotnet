@@ -1,6 +1,7 @@
 using Granit.Http.Cookies.Exceptions;
 using Granit.Http.Cookies.Internal;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -13,11 +14,14 @@ public sealed class GranitCookieManagerTests
     private readonly IConsentResolver _consentResolver = Substitute.For<IConsentResolver>();
     private readonly IGlobalPrivacyControlSignal _gpcSignal = Substitute.For<IGlobalPrivacyControlSignal>();
     private readonly ICookieConsentModelProvider _consentModelProvider = Substitute.For<ICookieConsentModelProvider>();
+    private readonly IHostEnvironment _environment = Substitute.For<IHostEnvironment>();
     private readonly GranitCookieManager _sut;
 
     public GranitCookieManagerTests()
     {
-        _sut = new GranitCookieManager(_registry, _consentResolver, _gpcSignal, _consentModelProvider);
+        // Default to a non-Development environment so Secure stays on (production behaviour).
+        _environment.EnvironmentName.Returns(Environments.Production);
+        _sut = new GranitCookieManager(_registry, _consentResolver, _gpcSignal, _consentModelProvider, _environment);
     }
 
     private static DefaultHttpContext CreateHttpContext() => new();
@@ -104,6 +108,41 @@ public sealed class GranitCookieManagerTests
         string? setCookieHeader = httpContext.Response.Headers.SetCookie.ToString();
         setCookieHeader.ShouldContain("secure");
         setCookieHeader.ShouldContain("samesite=lax");
+    }
+
+    [Fact]
+    public async Task SetCookieAsync_InDevelopmentOverHttp_OmitsSecure()
+    {
+        GranitCookieManager devSut = CreateDevManager();
+        _registry.Register(new("session_id", CookieCategory.StrictlyNecessary, 1, true, "Session"));
+        DefaultHttpContext httpContext = CreateHttpContext(); // plain HTTP
+
+        await devSut.SetCookieAsync(httpContext, "session_id", "val");
+
+        string? setCookieHeader = httpContext.Response.Headers.SetCookie.ToString();
+        setCookieHeader.ShouldContain("session_id=val");
+        setCookieHeader.ShouldNotContain("secure");
+    }
+
+    [Fact]
+    public async Task SetCookieAsync_InDevelopmentOverHttps_KeepsSecure()
+    {
+        GranitCookieManager devSut = CreateDevManager();
+        _registry.Register(new("session_id", CookieCategory.StrictlyNecessary, 1, true, "Session"));
+        DefaultHttpContext httpContext = CreateHttpContext();
+        httpContext.Request.IsHttps = true;
+
+        await devSut.SetCookieAsync(httpContext, "session_id", "val");
+
+        string? setCookieHeader = httpContext.Response.Headers.SetCookie.ToString();
+        setCookieHeader.ShouldContain("secure");
+    }
+
+    private GranitCookieManager CreateDevManager()
+    {
+        IHostEnvironment devEnvironment = Substitute.For<IHostEnvironment>();
+        devEnvironment.EnvironmentName.Returns(Environments.Development);
+        return new GranitCookieManager(_registry, _consentResolver, _gpcSignal, _consentModelProvider, devEnvironment);
     }
 
     [Fact]

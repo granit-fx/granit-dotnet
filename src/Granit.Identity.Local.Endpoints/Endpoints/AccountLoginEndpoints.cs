@@ -31,6 +31,10 @@ namespace Granit.Identity.Local.Endpoints.Endpoints;
 /// </summary>
 internal static partial class AccountLoginEndpoints
 {
+    private const string LocalLoginMethod = "password";
+    private const string InvalidLoginReason = "invalid_credentials";
+    private const string AccountLockedReason = "account_locked";
+
     internal static RouteGroupBuilder MapAccountLoginEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/login", HandleLoginAsync)
@@ -100,7 +104,7 @@ internal static partial class AccountLoginEndpoints
 
         using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
             IdentityLocalActivitySource.UserAuthentication);
-        activity?.SetTag(IdentityLocalActivitySource.TagProvider, "password");
+        activity?.SetTag(IdentityLocalActivitySource.TagProvider, LocalLoginMethod);
 
         return await HandleLoginCoreAsync(
             request, signInManager, userManager, httpContext, cancellationToken)
@@ -148,10 +152,10 @@ internal static partial class AccountLoginEndpoints
             PerformDummyPasswordHash(httpContext);
 
             LogLoginFailed(logger, request.Login, "user_not_found");
-            metrics?.RecordAuthenticationFailure(null, "invalid_credentials");
+            metrics?.RecordAuthenticationFailure(null, InvalidLoginReason);
             await TryWriteAuthAuditAsync(httpContext, logger,
-                method: "password", userId: null, userName: null,
-                failureReason: "invalid_credentials", cancellationToken).ConfigureAwait(false);
+                method: LocalLoginMethod, userId: null, userName: null,
+                failureReason: InvalidLoginReason, cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Problem(
                 detail: AccountEndpointMessages.Localize(
@@ -173,9 +177,9 @@ internal static partial class AccountLoginEndpoints
         if (result.Succeeded)
         {
             LogLoginSuccess(logger, user.Id.ToString());
-            metrics?.RecordAuthenticationSuccess(null, "password");
+            metrics?.RecordAuthenticationSuccess(null, LocalLoginMethod);
             await TryWriteAuthAuditAsync(httpContext, logger,
-                method: "password", userId: user.Id.ToString(), userName: user.UserName,
+                method: LocalLoginMethod, userId: user.Id.ToString(), userName: user.UserName,
                 failureReason: null, cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
@@ -201,13 +205,13 @@ internal static partial class AccountLoginEndpoints
         if (result.IsLockedOut)
         {
             LogLoginLockedOut(logger, user.Id.ToString());
-            metrics?.RecordAuthenticationFailure(null, "account_locked");
+            metrics?.RecordAuthenticationFailure(null, AccountLockedReason);
 
             await PublishAccountLockedAsync(httpContext, userManager, user, cancellationToken)
                 .ConfigureAwait(false);
             await TryWriteAuthAuditAsync(httpContext, logger,
-                method: "password", userId: user.Id.ToString(), userName: user.UserName,
-                failureReason: "account_locked", cancellationToken).ConfigureAwait(false);
+                method: LocalLoginMethod, userId: user.Id.ToString(), userName: user.UserName,
+                failureReason: AccountLockedReason, cancellationToken).ConfigureAwait(false);
 
             // Return 401 (same as invalid credentials) to prevent account enumeration.
             // The user is notified of the lockout exclusively via email.
@@ -222,7 +226,7 @@ internal static partial class AccountLoginEndpoints
             LogLoginNotAllowed(logger, user.Id.ToString());
             metrics?.RecordAuthenticationFailure(null, "email_not_confirmed");
             await TryWriteAuthAuditAsync(httpContext, logger,
-                method: "password", userId: user.Id.ToString(), userName: user.UserName,
+                method: LocalLoginMethod, userId: user.Id.ToString(), userName: user.UserName,
                 failureReason: "email_not_confirmed", cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Problem(
@@ -233,10 +237,10 @@ internal static partial class AccountLoginEndpoints
 
         // Generic failure (wrong password)
         LogLoginFailed(logger, request.Login, "invalid_password");
-        metrics?.RecordAuthenticationFailure(null, "invalid_credentials");
+        metrics?.RecordAuthenticationFailure(null, InvalidLoginReason);
         await TryWriteAuthAuditAsync(httpContext, logger,
-            method: "password", userId: user.Id.ToString(), userName: user.UserName,
-            failureReason: "invalid_credentials", cancellationToken).ConfigureAwait(false);
+            method: LocalLoginMethod, userId: user.Id.ToString(), userName: user.UserName,
+            failureReason: InvalidLoginReason, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Problem(
             detail: AccountEndpointMessages.Localize(
@@ -359,7 +363,7 @@ internal static partial class AccountLoginEndpoints
                 .ConfigureAwait(false);
 
             LogLoginLockedOut(logger, lockedUser?.Id.ToString() ?? "two-factor-user");
-            metrics?.RecordAuthenticationFailure(null, "account_locked");
+            metrics?.RecordAuthenticationFailure(null, AccountLockedReason);
 
             if (lockedUser is not null)
             {
@@ -372,7 +376,7 @@ internal static partial class AccountLoginEndpoints
                 method: method,
                 userId: lockedUser?.Id.ToString(),
                 userName: lockedUser?.UserName,
-                failureReason: "account_locked",
+                failureReason: AccountLockedReason,
                 cancellationToken).ConfigureAwait(false);
 
             // Return 401 (same as invalid code) to prevent account enumeration.

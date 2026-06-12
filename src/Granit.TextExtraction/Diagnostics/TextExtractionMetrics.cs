@@ -19,6 +19,10 @@ public sealed class TextExtractionMetrics
 {
     public const string MeterName = "Granit.TextExtraction";
 
+    internal const string TenantIdTag = "tenant_id";
+    internal const string ContentTypeTag = "content_type";
+    internal const string GlobalTenant = "global";
+
     /// <summary>
     /// Sentinel surfaced on the <c>content_type</c> tag when the caller-supplied MIME string
     /// fails RFC 2045 parsing (malformed, empty, all-whitespace). Stable across releases so
@@ -58,9 +62,9 @@ public sealed class TextExtractionMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("extractor", extractorName),
-            new("content_type", NormalizeContentType(contentType)),
+            new(ContentTypeTag, NormalizeContentType(contentType)),
         ];
         _success.Add(1, tags);
     }
@@ -69,9 +73,9 @@ public sealed class TextExtractionMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("extractor", extractorName),
-            new("content_type", NormalizeContentType(contentType)),
+            new(ContentTypeTag, NormalizeContentType(contentType)),
             new("reason", reason),
         ];
         _failed.Add(1, tags);
@@ -81,8 +85,8 @@ public sealed class TextExtractionMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
-            new("content_type", NormalizeContentType(contentType)),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
+            new(ContentTypeTag, NormalizeContentType(contentType)),
         ];
         _skipped.Add(1, tags);
     }
@@ -91,9 +95,9 @@ public sealed class TextExtractionMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("extractor", extractorName),
-            new("content_type", NormalizeContentType(contentType)),
+            new(ContentTypeTag, NormalizeContentType(contentType)),
         ];
         _truncated.Add(1, tags);
     }

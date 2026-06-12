@@ -113,17 +113,10 @@ internal sealed partial class PrivacyTenantScopedProviderValidator(
         // Inspect every public constructor's parameter list. Most providers expose a single
         // primary ctor, but we don't assume — any ctor reachable by DI is a potential bind
         // site, and a false negative here would defeat the validator's purpose.
-        HashSet<Type> matches = [];
-        foreach (System.Reflection.ConstructorInfo ctor in providerType.GetConstructors())
-        {
-            foreach (System.Reflection.ParameterInfo param in ctor.GetParameters())
-            {
-                if (isolatedDbContextTypes.Contains(param.ParameterType))
-                {
-                    matches.Add(param.ParameterType);
-                }
-            }
-        }
+        HashSet<Type> matches = [.. providerType.GetConstructors()
+            .SelectMany(ctor => ctor.GetParameters())
+            .Select(param => param.ParameterType)
+            .Where(isolatedDbContextTypes.Contains)];
         return [.. matches];
     }
 

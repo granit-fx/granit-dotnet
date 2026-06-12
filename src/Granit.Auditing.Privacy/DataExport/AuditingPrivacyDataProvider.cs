@@ -45,12 +45,18 @@ public sealed class AuditingPrivacyDataProvider(
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<ExportFragment> ExportAsync(
+    public IAsyncEnumerable<ExportFragment> ExportAsync(
+        PrivacyExportContext context,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        return ExportCoreAsync(context, cancellationToken);
+    }
+
+    private async IAsyncEnumerable<ExportFragment> ExportCoreAsync(
         PrivacyExportContext context,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(context);
-
         List<AuditEntry> entries = await reader
             .GetByUserAsync(context.SubjectUserId.ToString(), AuditExportLimit, cancellationToken)
             .ConfigureAwait(false);

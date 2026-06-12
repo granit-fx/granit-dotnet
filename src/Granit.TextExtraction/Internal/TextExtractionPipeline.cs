@@ -142,12 +142,9 @@ internal sealed class TextExtractionPipeline : ITextExtractionPipeline, IDisposa
 
     private ITextExtractor SelectExtractor(string contentType)
     {
-        foreach (ITextExtractor extractor in _extractors)
+        if (_extractors.FirstOrDefault(extractor => extractor.CanHandle(contentType)) is { } match)
         {
-            if (extractor.CanHandle(contentType))
-            {
-                return extractor;
-            }
+            return match;
         }
 
         // Universal fallback. RecordSkipped is fired so dashboards surface unmapped MIMEs even

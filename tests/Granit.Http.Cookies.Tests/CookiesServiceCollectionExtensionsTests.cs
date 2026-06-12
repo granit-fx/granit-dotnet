@@ -1,5 +1,7 @@
 using Granit.Http.Cookies.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -11,6 +13,10 @@ public sealed class CookiesServiceCollectionExtensionsTests
     public void AddGranitCookies_RegistersServices()
     {
         ServiceCollection services = new();
+        // IHostEnvironment is always provided by the host; the cookie manager depends on it.
+        IHostEnvironment environment = Substitute.For<IHostEnvironment>();
+        environment.EnvironmentName.Returns(Environments.Production);
+        services.AddSingleton(environment);
         services.AddGranitCookies(cookies =>
         {
             cookies.UseConsentResolver<FakeConsentResolver>();

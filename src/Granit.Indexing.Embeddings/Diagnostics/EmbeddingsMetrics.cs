@@ -15,6 +15,9 @@ public sealed class EmbeddingsMetrics
 {
     public const string MeterName = "Granit.Indexing.Embeddings";
 
+    internal const string TenantIdTag = "tenant_id";
+    internal const string GlobalTenant = "global";
+
     private readonly Counter<long> _embeddingsGenerated;
     private readonly Counter<long> _embeddingsFailed;
     private readonly Counter<long> _hybridSearchQueries;
@@ -53,7 +56,7 @@ public sealed class EmbeddingsMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("model_id", string.IsNullOrEmpty(modelId) ? "unknown" : modelId),
         ];
         _embeddingsGenerated.Add(1, tags);
@@ -63,7 +66,7 @@ public sealed class EmbeddingsMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("reason", reason),
         ];
         _embeddingsFailed.Add(1, tags);
@@ -71,19 +74,19 @@ public sealed class EmbeddingsMetrics
 
     public void RecordHybridQuery(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _hybridSearchQueries.Add(1, tags);
     }
 
     public void RecordHybridLatency(string? tenantId, double durationSeconds)
     {
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _hybridSearchLatency.Record(durationSeconds, tags);
     }
 
     public void RecordVectorBackendMiss(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _vectorBackendMisses.Add(1, tags);
     }
 }
