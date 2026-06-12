@@ -32,6 +32,7 @@ internal static partial class BffLoginEndpoints
     private const string PkceKeyPrefix = "bff:pkce:";
     private const int CodeVerifierLength = 64;
     private const int SessionIdByteLength = 32;
+    private const string LoggerCategory = "Granit.Bff.Endpoints.BffLoginEndpoints";
 
     /// <summary>
     /// Known OIDC error codes (RFC 6749 §4.1.2.1, §5.2 + OIDC Core §3.1.2.6).
@@ -91,7 +92,7 @@ internal static partial class BffLoginEndpoints
         IFusionCache cache = services.GetRequiredService<IFusionCache>();
         IDPoPProofService dpopService = services.GetRequiredService<IDPoPProofService>();
         ILogger logger = services.GetRequiredService<ILoggerFactory>()
-            .CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
+            .CreateLogger(LoggerCategory);
 
         Activity? activity = BffActivitySource.Source.StartActivity(BffActivitySource.Login);
         using IDisposable? activityScope = activity;
@@ -178,7 +179,7 @@ internal static partial class BffLoginEndpoints
         string? iss, CancellationToken cancellationToken)
     {
         ILogger logger = httpContext.RequestServices.GetRequiredService<ILoggerFactory>()
-            .CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
+            .CreateLogger(LoggerCategory);
         string expectedIssuer = bffOptions.Authority.ToString().TrimEnd('/');
 
         if (string.IsNullOrEmpty(iss))
@@ -215,7 +216,7 @@ internal static partial class BffLoginEndpoints
         IBffTokenStore tokenStore = services.GetRequiredService<IBffTokenStore>();
         BffMetrics metrics = services.GetRequiredService<BffMetrics>();
         ILogger logger = services.GetRequiredService<ILoggerFactory>()
-            .CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
+            .CreateLogger(LoggerCategory);
 
         Activity? activity = BffActivitySource.Source.StartActivity(BffActivitySource.Callback);
         using IDisposable? activityScope = activity;
@@ -436,7 +437,7 @@ internal static partial class BffLoginEndpoints
         IHttpClientFactory httpClientFactory = services.GetRequiredService<IHttpClientFactory>();
         IClock clock = services.GetRequiredService<IClock>();
         ILogger logger = services.GetRequiredService<ILoggerFactory>()
-            .CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
+            .CreateLogger(LoggerCategory);
         GranitBffOptions bffOptions = services.GetRequiredService<IOptions<GranitBffOptions>>().Value;
         string authorityBase = bffOptions.Authority.ToString().TrimEnd('/');
 

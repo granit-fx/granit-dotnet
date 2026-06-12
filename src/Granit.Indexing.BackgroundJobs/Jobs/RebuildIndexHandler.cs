@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Indexing.BackgroundJobs.Services;
 
 namespace Granit.Indexing.BackgroundJobs.Jobs;
@@ -11,6 +12,7 @@ namespace Granit.Indexing.BackgroundJobs.Jobs;
 /// therefore <c>public</c> with a public constructor, the method is
 /// <c>public static</c>. See CLAUDE.md §Wolverine handlers.
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public sealed class RebuildIndexHandler
 {
     public static Task HandleAsync<TKey>(

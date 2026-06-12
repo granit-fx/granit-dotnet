@@ -26,8 +26,6 @@ namespace Granit.Presence.Wolverine;
 public sealed class GranitPresenceWolverineModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         ArgumentNullException.ThrowIfNull(context);
-    }
 }

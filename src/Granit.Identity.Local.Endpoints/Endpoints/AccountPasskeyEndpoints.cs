@@ -247,10 +247,12 @@ internal static partial class AccountPasskeyEndpoints
         }
         string? correlationId = Activity.Current?.Id;
 
+        string auditUserId = string.IsNullOrEmpty(userId) ? AuthenticationAuditEntry.UnknownUserSentinel : userId;
+
         AuditEntry entry = failureReason is null
             ? AuthenticationAuditEntry.CreateSuccess(
                 timeProvider.GetUtcNow(),
-                userId: string.IsNullOrEmpty(userId) ? AuthenticationAuditEntry.UnknownUserSentinel : userId,
+                auditUserId,
                 userName, method: "passkey", tenantId, ipAddress, userAgent, correlationId)
             : AuthenticationAuditEntry.CreateFailure(
                 timeProvider.GetUtcNow(), userId, userName,

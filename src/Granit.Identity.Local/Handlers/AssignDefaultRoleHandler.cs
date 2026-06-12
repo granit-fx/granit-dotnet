@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Models;
 using Granit.MultiTenancy;
@@ -19,6 +20,7 @@ namespace Granit.Identity.Local.Handlers;
 /// outbox nor blocks the registration side effects (welcome notification, session). A user whose
 /// configured role is missing simply receives no role (secure-by-default).
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public partial class AssignDefaultRoleHandler
 {
     public static async Task HandleAsync(

@@ -57,7 +57,7 @@ internal static class PrivacyStepUpChallenge
     internal static string SetStepUpChallengeHeader(HttpContext httpContext, TimeSpan maxAge)
     {
         string header = $"Bearer error=\"step_up\", acr_values=\"{StepUpAcrValue}\", max_age=\"{(int)maxAge.TotalSeconds}\"";
-        httpContext.Response.Headers["WWW-Authenticate"] = header;
+        httpContext.Response.Headers.WWWAuthenticate = header;
         return $"Step-up authentication required: re-authenticate within the last {(int)maxAge.TotalMinutes} minute(s).";
     }
 }

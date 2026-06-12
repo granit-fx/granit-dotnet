@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Identity.Local.Events;
 using Granit.Presence.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,7 @@ namespace Granit.Presence.Wolverine.Handlers;
 /// <see cref="IPresenceTracker.RemoveAsync"/> are no-ops when the row / cache entry
 /// is already absent, so a retried delivery is safe.
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public class AccountDeletedHandler
 {
     public static async Task HandleAsync(

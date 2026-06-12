@@ -203,7 +203,7 @@ public sealed class SecurityHeadersMiddlewareTests
 
         TestHarness harness = new(next: ctx =>
         {
-            ctx.Response.Headers["Content-Security-Policy"] = "default-src 'attacker.example'";
+            ctx.Response.Headers.ContentSecurityPolicy = "default-src 'attacker.example'";
             return Task.CompletedTask;
         }, contributors: [contributor]);
         harness.SetEndpoint(new Endpoint(static _ => Task.CompletedTask,
@@ -228,8 +228,8 @@ public sealed class SecurityHeadersMiddlewareTests
         SecurityHeadersMiddleware.ApplyScalarHeaders(ctx, options);
         SecurityHeadersMiddleware.ApplyScalarHeaders(ctx, options);
 
-        ctx.Response.Headers["X-Content-Type-Options"].ToString().ShouldBe("nosniff");
-        ctx.Response.Headers["X-Frame-Options"].ToString().ShouldBe("DENY");
+        ctx.Response.Headers.XContentTypeOptions.ToString().ShouldBe("nosniff");
+        ctx.Response.Headers.XFrameOptions.ToString().ShouldBe("DENY");
     }
 
     [Fact]

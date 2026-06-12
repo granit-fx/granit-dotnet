@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Granit.Indexing;
 
 /// <summary>
@@ -30,6 +32,12 @@ namespace Granit.Indexing;
 /// <c>Problem(429)</c> at the HTTP boundary.
 /// </para>
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S2326:Unused type parameters should be removed",
+    Justification = "TKey is required for the open-generic DI registration " +
+        "(typeof(ISearchService<,>) -> DefaultSearchService<,>): the implementation injects " +
+        "ISearchBackend<TKey, TResult> and ISearchResultAuthorizer<TKey>. No interface member " +
+        "references TKey, but dropping it would leave an arity-1 interface against an arity-2 " +
+        "implementation, invalidating the open-generic registration and per-TKey backend resolution.")]
 public interface ISearchService<TKey, TResult>
 {
     /// <summary>Executes a search and returns the authorised page.</summary>

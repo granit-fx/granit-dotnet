@@ -61,16 +61,9 @@ internal static partial class ConnectAuthorizationEndpoints
             // In headless/BFF mode this points to the SPA login route; in MVC mode
             // it points to a Razor page. The returnUrl lets the login page redirect
             // back to /connect/authorize after successful authentication.
-            string returnUrl = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
-            string effectiveLoginPath = request.ClientId is not null
-                && options.ClientLoginPaths.TryGetValue(request.ClientId, out string? clientPath)
-                ? clientPath
-                : options.LoginPath;
-            string loginUrl = $"{effectiveLoginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}";
-
             LogUnauthenticatedRedirect(logger, request.ClientId ?? "(null)");
 
-            return Results.Redirect(loginUrl);
+            return Results.Redirect(BuildLoginRedirectUrl(context, request, options));
         }
 
         // Resolve the application to check consent type.
@@ -143,12 +136,7 @@ internal static partial class ConnectAuthorizationEndpoints
             LogUserNotFound(logger);
             await context.SignOutAsync(IdentityConstants.ApplicationScheme).ConfigureAwait(false);
 
-            string returnUrl = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
-            string effectiveLoginPath = request.ClientId is not null
-                && options.ClientLoginPaths.TryGetValue(request.ClientId, out string? clientPath)
-                ? clientPath
-                : options.LoginPath;
-            return Results.Redirect($"{effectiveLoginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}");
+            return Results.Redirect(BuildLoginRedirectUrl(context, request, options));
         }
 
         // Align the tenant context with the resolved user for the rest of the flow
@@ -177,32 +165,9 @@ internal static partial class ConnectAuthorizationEndpoints
             .GetIdAsync(application, context.RequestAborted)
             .ConfigureAwait(false);
 
-        object? authorization = null;
-        List<object> authorizations = [];
-
-        await foreach (object auth in authorizationManager.FindAsync(
-            subject: user.Id.ToString(),
-            client: applicationId!,
-            status: OpenIddictConstants.Statuses.Valid,
-            type: OpenIddictConstants.AuthorizationTypes.Permanent,
-            scopes: scopes,
-            cancellationToken: context.RequestAborted).ConfigureAwait(false))
-        {
-            authorizations.Add(auth);
-        }
-
-        authorization = authorizations.FirstOrDefault();
-
-        if (authorization is null)
-        {
-            authorization = await authorizationManager.CreateAsync(
-                principal: principal,
-                subject: user.Id.ToString(),
-                client: applicationId!,
-                type: OpenIddictConstants.AuthorizationTypes.Permanent,
-                scopes: scopes,
-                cancellationToken: context.RequestAborted).ConfigureAwait(false);
-        }
+        object authorization = await ResolveOrCreateAuthorizationAsync(
+            authorizationManager, principal, user.Id.ToString(), applicationId!, scopes, context.RequestAborted)
+            .ConfigureAwait(false);
 
         string? authorizationId = await authorizationManager
             .GetIdAsync(authorization, context.RequestAborted)
@@ -217,6 +182,49 @@ internal static partial class ConnectAuthorizationEndpoints
 
         return Results.SignIn(principal,
             authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
+    // Builds the login-page redirect URL, honouring a per-client login path override and
+    // carrying the current request as returnUrl so the login page can resume the flow.
+    private static string BuildLoginRedirectUrl(
+        HttpContext context, OpenIddictRequest request, OpenIddictServerEndpointsOptions options)
+    {
+        string returnUrl = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
+        string effectiveLoginPath = request.ClientId is not null
+            && options.ClientLoginPaths.TryGetValue(request.ClientId, out string? clientPath)
+            ? clientPath
+            : options.LoginPath;
+        return $"{effectiveLoginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}";
+    }
+
+    // Returns the first valid permanent authorization matching the subject/client/scopes, or
+    // creates a new one when none exists.
+    private static async Task<object> ResolveOrCreateAuthorizationAsync(
+        IOpenIddictAuthorizationManager authorizationManager,
+        ClaimsPrincipal principal,
+        string subject,
+        string applicationId,
+        ImmutableArray<string> scopes,
+        CancellationToken cancellationToken)
+    {
+        await foreach (object auth in authorizationManager.FindAsync(
+            subject: subject,
+            client: applicationId,
+            status: OpenIddictConstants.Statuses.Valid,
+            type: OpenIddictConstants.AuthorizationTypes.Permanent,
+            scopes: scopes,
+            cancellationToken: cancellationToken).ConfigureAwait(false))
+        {
+            return auth;
+        }
+
+        return await authorizationManager.CreateAsync(
+            principal: principal,
+            subject: subject,
+            client: applicationId,
+            type: OpenIddictConstants.AuthorizationTypes.Permanent,
+            scopes: scopes,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     // ──── Source-generated log messages ────

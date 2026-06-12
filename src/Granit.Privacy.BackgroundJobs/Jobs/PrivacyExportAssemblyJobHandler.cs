@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.MultiTenancy;
 using Granit.Privacy.DataExport;
 
@@ -24,6 +25,7 @@ namespace Granit.Privacy.BackgroundJobs.Jobs;
 /// <c>Granit.Privacy.BackgroundJobs.Tests.Integration</c>.
 /// </para>
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public sealed class PrivacyExportAssemblyJobHandler
 {
     public static async Task HandleAsync(

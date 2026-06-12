@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,6 +42,10 @@ internal sealed class EfIndexedDataEraser : IIndexedDataEraser
         return total;
     }
 
+    [SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields",
+        Justification = "Reflects over this type's OWN private DeleteByDataSubjectAsync<TKey> to close it over a key " +
+            "type known only at runtime (db.IndexedKeyTypes). It does not bypass another type's encapsulation; the " +
+            "method is private precisely to stay out of the public API while remaining reflectively dispatchable.")]
     private static readonly MethodInfo DeleteByDataSubjectMethod =
         typeof(EfIndexedDataEraser).GetMethod(
             nameof(DeleteByDataSubjectAsync),

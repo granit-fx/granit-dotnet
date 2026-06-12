@@ -64,7 +64,7 @@ public sealed class PrivacyStepUpChallengeTests
         string detail = PrivacyStepUpChallenge.SetStepUpChallengeHeader(context, FiveMinutes);
 
         detail.ShouldContain("Step-up authentication required");
-        context.Response.Headers["WWW-Authenticate"].ToString()
+        context.Response.Headers.WWWAuthenticate.ToString()
             .ShouldBe("Bearer error=\"step_up\", acr_values=\"urn:granit:step-up\", max_age=\"300\"");
     }
 

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -143,6 +144,10 @@ public static class ModelBuilderExtensions
             nameof(IgnoreEmbeddingColumn),
             BindingFlags.Static | BindingFlags.Public)!;
 
+    [SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields",
+        Justification = "Reflects over this type's OWN internal IgnoreSearchVector<TKey> to close it over a key type " +
+            "known only at runtime; it does not widen another type's encapsulation. The helper is kept non-public to " +
+            "stay out of the public API while remaining reflectively dispatchable per registered key type.")]
     private static readonly MethodInfo IgnoreSearchVectorMethod =
         typeof(ModelBuilderExtensions).GetMethod(
             nameof(IgnoreSearchVector),

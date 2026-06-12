@@ -88,10 +88,8 @@ internal sealed class FusionCachePresenceTracker(
         return result;
     }
 
-    public async Task RemoveAsync(Guid userId, CancellationToken cancellationToken)
-    {
+    public async Task RemoveAsync(Guid userId, CancellationToken cancellationToken) =>
         await cache.RemoveAsync(CacheKey(userId), token: cancellationToken).ConfigureAwait(false);
-    }
 
     private static string CacheKey(Guid userId) => $"{CacheKeyPrefix}{userId:N}";
 }

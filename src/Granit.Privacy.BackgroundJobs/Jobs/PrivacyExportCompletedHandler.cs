@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.BackgroundJobs.Abstractions;
 using Granit.Privacy.DataExport.Events;
 
@@ -22,6 +23,7 @@ namespace Granit.Privacy.BackgroundJobs.Jobs;
 /// See CLAUDE.md §Wolverine handlers.
 /// </para>
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public sealed class PrivacyExportCompletedHandler
 {
     public static Task HandleAsync(

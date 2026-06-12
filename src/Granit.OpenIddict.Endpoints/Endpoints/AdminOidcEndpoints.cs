@@ -310,6 +310,22 @@ internal static class AdminOidcEndpoints
         var descriptor = new OpenIddictApplicationDescriptor();
         await applicationManager.PopulateAsync(descriptor, app, cancellationToken).ConfigureAwait(false);
 
+        ApplyRequestedUpdates(descriptor, request);
+
+        await applicationManager.UpdateAsync(app, descriptor, cancellationToken).ConfigureAwait(false);
+
+        var responseDescriptor = new OpenIddictApplicationDescriptor();
+        await applicationManager.PopulateAsync(responseDescriptor, app, cancellationToken).ConfigureAwait(false);
+        Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
+
+        return TypedResults.Ok(ToResponse(responseDescriptor, tenantId));
+    }
+
+    // Applies the non-null fields of the update request onto the descriptor. A null field
+    // leaves the existing value untouched; a present collection fully replaces the existing one.
+    private static void ApplyRequestedUpdates(
+        OpenIddictApplicationDescriptor descriptor, AdminOidcUpdateApplicationRequest request)
+    {
         if (request.DisplayName is not null)
         {
             descriptor.DisplayName = request.DisplayName;
@@ -364,14 +380,6 @@ internal static class AdminOidcEndpoints
         {
             descriptor.SetClientSide(request.ClientSide.Value);
         }
-
-        await applicationManager.UpdateAsync(app, descriptor, cancellationToken).ConfigureAwait(false);
-
-        var responseDescriptor = new OpenIddictApplicationDescriptor();
-        await applicationManager.PopulateAsync(responseDescriptor, app, cancellationToken).ConfigureAwait(false);
-        Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
-
-        return TypedResults.Ok(ToResponse(responseDescriptor, tenantId));
     }
 
     // ──── Scope handlers ────
@@ -535,16 +543,14 @@ internal static class AdminOidcEndpoints
             await authorizationManager.PopulateAsync(descriptor, auth, cancellationToken).ConfigureAwait(false);
 
             string? clientId = null;
-            if (descriptor.ApplicationId is not null)
+            if (descriptor.ApplicationId is not null
+                && !clientIdCache.TryGetValue(descriptor.ApplicationId, out clientId))
             {
-                if (!clientIdCache.TryGetValue(descriptor.ApplicationId, out clientId))
-                {
-                    object? app = await applicationManager.FindByIdAsync(descriptor.ApplicationId, cancellationToken).ConfigureAwait(false);
-                    clientId = app is not null
-                        ? await applicationManager.GetClientIdAsync(app, cancellationToken).ConfigureAwait(false)
-                        : null;
-                    clientIdCache[descriptor.ApplicationId] = clientId;
-                }
+                object? app = await applicationManager.FindByIdAsync(descriptor.ApplicationId, cancellationToken).ConfigureAwait(false);
+                clientId = app is not null
+                    ? await applicationManager.GetClientIdAsync(app, cancellationToken).ConfigureAwait(false)
+                    : null;
+                clientIdCache[descriptor.ApplicationId] = clientId;
             }
 
             results.Add(new AdminOidcAuthorizationResponse(

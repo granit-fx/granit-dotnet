@@ -1,5 +1,4 @@
 using Granit.Html;
-using Granit.TextExtraction.Exceptions;
 using Granit.TextExtraction.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -67,14 +66,7 @@ public sealed class HtmlTextExtractor : ITextExtractor
         string html;
         using (StreamReader reader = new(limited, leaveOpen: true))
         {
-            try
-            {
-                html = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
-            }
-            catch (TextExtractionException)
-            {
-                throw;
-            }
+            html = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
         }
 
         string plain = await _converter.ConvertAsync(html, cancellationToken).ConfigureAwait(false);

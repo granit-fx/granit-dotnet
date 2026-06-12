@@ -291,55 +291,9 @@ internal static partial class AccountLoginEndpoints
         string sanitizedCode = request.Code.Replace(" ", string.Empty, StringComparison.Ordinal)
             .Replace("-", string.Empty, StringComparison.Ordinal);
 
-        Microsoft.AspNetCore.Identity.SignInResult result;
-
-        switch (request.Method)
-        {
-            case TwoFactorMethod.RecoveryCode:
-                result = await signInManager
-                    .TwoFactorRecoveryCodeSignInAsync(sanitizedCode)
-                    .ConfigureAwait(false);
-
-                // TwoFactorRecoveryCodeSignInAsync does not accept isPersistent,
-                // so re-sign the user with a persistent cookie when RememberMe is requested.
-                if (result.Succeeded && request.RememberMe)
-                {
-                    LocalIdentity? user = await signInManager.UserManager
-                        .GetUserAsync(httpContext.User).ConfigureAwait(false);
-
-                    if (user is not null)
-                    {
-                        await signInManager.SignInAsync(user, isPersistent: true)
-                            .ConfigureAwait(false);
-                    }
-                }
-
-                break;
-
-            case TwoFactorMethod.Email:
-                // The ASP.NET email token provider validates a code for ANY user with a
-                // confirmed email, so gate the method on explicit enrollment — otherwise
-                // email access alone would bypass a configured authenticator.
-                LocalIdentity? emailUser = await signInManager
-                    .GetTwoFactorAuthenticationUserAsync().ConfigureAwait(false);
-
-                result = emailUser is not null
-                    && await emailTwoFactorService
-                        .IsEnabledAsync(emailUser.Id.ToString(), cancellationToken).ConfigureAwait(false)
-                    ? await signInManager.TwoFactorSignInAsync(
-                        TokenOptions.DefaultEmailProvider, sanitizedCode,
-                        isPersistent: request.RememberMe, rememberClient: false).ConfigureAwait(false)
-                    : Microsoft.AspNetCore.Identity.SignInResult.Failed;
-
-                break;
-
-            default:
-                result = await signInManager
-                    .TwoFactorAuthenticatorSignInAsync(sanitizedCode, isPersistent: request.RememberMe, rememberClient: false)
-                    .ConfigureAwait(false);
-
-                break;
-        }
+        Microsoft.AspNetCore.Identity.SignInResult result = await PerformTwoFactorSignInAsync(
+            request, signInManager, emailTwoFactorService, httpContext, sanitizedCode, cancellationToken)
+            .ConfigureAwait(false);
 
         if (result.Succeeded)
         {
@@ -402,6 +356,61 @@ internal static partial class AccountLoginEndpoints
             detail: AccountEndpointMessages.Localize(
                     httpContext, "Granit:Identity:TwoFactor:InvalidCode", "Invalid verification code."),
             statusCode: StatusCodes.Status401Unauthorized);
+    }
+
+    // Performs the second-factor sign-in for the requested method, returning the raw
+    // SignInResult for the caller to translate into success / lockout / failure responses.
+    private static async Task<Microsoft.AspNetCore.Identity.SignInResult> PerformTwoFactorSignInAsync(
+        AccountTwoFactorLoginRequest request,
+        SignInManager<LocalIdentity> signInManager,
+        IEmailTwoFactorService emailTwoFactorService,
+        HttpContext httpContext,
+        string sanitizedCode,
+        CancellationToken cancellationToken)
+    {
+        switch (request.Method)
+        {
+            case TwoFactorMethod.RecoveryCode:
+                Microsoft.AspNetCore.Identity.SignInResult recoveryResult = await signInManager
+                    .TwoFactorRecoveryCodeSignInAsync(sanitizedCode)
+                    .ConfigureAwait(false);
+
+                // TwoFactorRecoveryCodeSignInAsync does not accept isPersistent,
+                // so re-sign the user with a persistent cookie when RememberMe is requested.
+                if (recoveryResult.Succeeded && request.RememberMe)
+                {
+                    LocalIdentity? user = await signInManager.UserManager
+                        .GetUserAsync(httpContext.User).ConfigureAwait(false);
+
+                    if (user is not null)
+                    {
+                        await signInManager.SignInAsync(user, isPersistent: true)
+                            .ConfigureAwait(false);
+                    }
+                }
+
+                return recoveryResult;
+
+            case TwoFactorMethod.Email:
+                // The ASP.NET email token provider validates a code for ANY user with a
+                // confirmed email, so gate the method on explicit enrollment — otherwise
+                // email access alone would bypass a configured authenticator.
+                LocalIdentity? emailUser = await signInManager
+                    .GetTwoFactorAuthenticationUserAsync().ConfigureAwait(false);
+
+                return emailUser is not null
+                    && await emailTwoFactorService
+                        .IsEnabledAsync(emailUser.Id.ToString(), cancellationToken).ConfigureAwait(false)
+                    ? await signInManager.TwoFactorSignInAsync(
+                        TokenOptions.DefaultEmailProvider, sanitizedCode,
+                        isPersistent: request.RememberMe, rememberClient: false).ConfigureAwait(false)
+                    : Microsoft.AspNetCore.Identity.SignInResult.Failed;
+
+            default:
+                return await signInManager
+                    .TwoFactorAuthenticatorSignInAsync(sanitizedCode, isPersistent: request.RememberMe, rememberClient: false)
+                    .ConfigureAwait(false);
+        }
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> SendTwoFactorEmailCodeAsync(

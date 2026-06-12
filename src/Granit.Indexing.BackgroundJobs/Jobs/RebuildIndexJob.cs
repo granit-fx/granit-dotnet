@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.BackgroundJobs;
 
 namespace Granit.Indexing.BackgroundJobs.Jobs;
@@ -26,5 +27,10 @@ namespace Granit.Indexing.BackgroundJobs.Jobs;
 /// when dispatching with <c>TenantId == null</c> (cross-tenant rebuild).
 /// </para>
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S2326:Unused type parameters should be removed",
+    Justification = "TKey is a phantom type parameter driving Wolverine's type-directed dispatch: " +
+        "the closed message type (e.g. RebuildIndexJob<Guid>) selects the matching generic handler " +
+        "and RebuildIndexService<TKey>. The payload carries only TenantId, but TKey is how a host " +
+        "targets a specific index's rebuild service — removing it breaks multi-index targeting.")]
 public sealed record RebuildIndexJob<TKey>(Guid? TenantId) : IBackgroundJob
     where TKey : notnull;

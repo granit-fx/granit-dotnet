@@ -332,10 +332,12 @@ internal static partial class AccountExternalLoginEndpoints
         string? correlationId = Activity.Current?.Id;
         string method = $"external:{provider.ToLowerInvariant()}";
 
+        string auditUserId = string.IsNullOrEmpty(userId) ? AuthenticationAuditEntry.UnknownUserSentinel : userId;
+
         AuditEntry entry = failureReason is null
             ? AuthenticationAuditEntry.CreateSuccess(
                 timeProvider.GetUtcNow(),
-                userId: string.IsNullOrEmpty(userId) ? AuthenticationAuditEntry.UnknownUserSentinel : userId,
+                auditUserId,
                 userName, method, tenantId, ipAddress, userAgent, correlationId)
             : AuthenticationAuditEntry.CreateFailure(
                 timeProvider.GetUtcNow(), userId, userName, method, failureReason,
