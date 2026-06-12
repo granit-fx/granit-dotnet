@@ -14,9 +14,13 @@ internal static class IdentityResponseMapper
     internal static IdentityGroupResponse ToResponse(IdentityGroup group) =>
         new(group.Id, group.Name, group.Path, group.SubGroups.Select(ToResponse).ToList());
 
+    // Location / RiskLevel are enrichment concerns filled in at the endpoint (see IdentitySessionEnrichment);
+    // the mapper stays pure and projects them as null.
     internal static IdentitySessionResponse ToResponse(IdentitySession session) =>
-        new(session.SessionId, session.IpAddress, session.StartedAt, session.LastAccess, session.RememberMe, session.Clients);
+        new(session.SessionId, session.IpAddress, session.StartedAt, session.LastAccess, session.RememberMe,
+            session.Clients, Location: null, RiskLevel: null);
 
     internal static IdentityDeviceActivityResponse ToResponse(IdentityDeviceActivity device) =>
-        new(device.IpAddress, device.LastAccess, device.Device, device.Os, device.OsVersion, device.Browser, device.Mobile, device.Current, device.Sessions.Select(ToResponse).ToList());
+        new(device.IpAddress, device.LastAccess, device.Device, device.Os, device.OsVersion, device.Browser,
+            device.Mobile, device.Current, device.Sessions.Select(ToResponse).ToList(), Location: null);
 }

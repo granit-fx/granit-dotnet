@@ -1152,6 +1152,7 @@
         "Granit.Identity",
         "Granit.QueryEngine",
         "Granit.QueryEngine.AspNetCore",
+        "Granit.UserSessions.Abstractions",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -23817,7 +23818,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 36,
+      "line": 41,
       "members": []
     },
     {
@@ -23826,7 +23827,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 20,
+      "line": 23,
       "members": []
     },
     {
@@ -23853,7 +23854,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 14,
+      "line": 17,
       "members": []
     },
     {
@@ -23862,7 +23863,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 27,
+      "line": 30,
       "members": []
     },
     {
@@ -23916,7 +23917,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 4,
+      "line": 7,
       "members": []
     },
     {
@@ -24000,7 +24001,7 @@
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/GranitIdentityEndpointsModule.cs",
-      "line": 35,
+      "line": 37,
       "members": [
         {
           "name": "ConfigureServices",

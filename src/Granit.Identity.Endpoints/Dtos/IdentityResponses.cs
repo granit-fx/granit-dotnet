@@ -1,3 +1,6 @@
+using Granit.IpGeolocation;
+using Granit.UserSessions;
+
 namespace Granit.Identity.Endpoints.Dtos;
 
 /// <summary>User identity information.</summary>
@@ -30,7 +33,9 @@ public sealed record IdentitySessionResponse(
     DateTimeOffset StartedAt,
     DateTimeOffset LastAccess,
     bool RememberMe,
-    IReadOnlyList<string> Clients);
+    IReadOnlyList<string> Clients,
+    GeoLocation? Location,
+    SessionRiskLevel? RiskLevel);
 
 /// <summary>Device activity summary.</summary>
 public sealed record IdentityDeviceActivityResponse(
@@ -42,4 +47,5 @@ public sealed record IdentityDeviceActivityResponse(
     string? Browser,
     bool Mobile,
     bool Current,
-    IReadOnlyList<IdentitySessionResponse> Sessions);
+    IReadOnlyList<IdentitySessionResponse> Sessions,
+    GeoLocation? Location);

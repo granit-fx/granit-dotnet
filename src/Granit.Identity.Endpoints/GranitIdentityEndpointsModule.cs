@@ -4,6 +4,7 @@ using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Workspaces;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
+using Granit.UserSessions;
 using Granit.Validation;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
@@ -30,6 +31,7 @@ namespace Granit.Identity.Endpoints;
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitIdentityModule),
+    typeof(GranitUserSessionsAbstractionsModule),
     typeof(GranitValidationModule),
     typeof(GranitWorkspacesAbstractionsModule))]
 public sealed class GranitIdentityEndpointsModule : GranitModule

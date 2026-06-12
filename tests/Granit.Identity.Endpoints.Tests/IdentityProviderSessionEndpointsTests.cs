@@ -84,6 +84,13 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_sessionManager);
         builder.Services.AddSingleton(_capabilities);
 
+        // Session-enrichment defaults (normally provided by Granit.IpGeolocation / Granit.UserSessions modules).
+        builder.Services.AddSingleton(Substitute.For<Granit.IpGeolocation.IIpGeolocationResolver>());
+        Granit.UserSessions.ISessionRiskStore riskStore = Substitute.For<Granit.UserSessions.ISessionRiskStore>();
+        riskStore.GetManyAsync(Arg.Any<string>(), Arg.Any<IReadOnlyCollection<string>>(), Arg.Any<CancellationToken>())
+            .Returns(new Dictionary<string, Granit.UserSessions.SessionRiskVerdict>());
+        builder.Services.AddSingleton(riskStore);
+
         _app = builder.Build();
         _app.MapGranitIdentityProvider();
         _app.StartAsync().GetAwaiter().GetResult();
@@ -133,7 +140,8 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
             .ReadFromJsonAsync<List<IdentityDeviceActivity>>(TestContext.Current.CancellationToken);
         devices.ShouldNotBeNull();
         devices.Count.ShouldBe(1);
-        devices[0].IpAddress.ShouldBe("127.0.0.1");
+        // IP is masked by default (GDPR): 127.0.0.1 -> 127.0.0.0 (host octet zeroed).
+        devices[0].IpAddress.ShouldBe("127.0.0.0");
     }
 
     [Fact]

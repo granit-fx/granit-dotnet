@@ -1,11 +1,15 @@
 using Granit.Identity.Endpoints.Dtos;
 using Granit.Identity.Endpoints.Internal;
+using Granit.Identity.Endpoints.Options;
 using Granit.Identity.Models;
+using Granit.IpGeolocation;
+using Granit.UserSessions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Endpoints.Endpoints;
 
@@ -28,13 +32,19 @@ internal static class IdentityProviderSessionReadEndpoints
     private static async Task<Ok<IReadOnlyList<IdentitySessionResponse>>> GetUserSessionsAsync(
         string userId,
         [FromServices] IIdentitySessionManager sessionManager,
+        [FromServices] IIpGeolocationResolver geoResolver,
+        [FromServices] ISessionRiskStore riskStore,
+        [FromServices] IOptions<IdentityEndpointsOptions> options,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<IdentitySession> sessions = await sessionManager
             .GetUserSessionsAsync(userId, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok<IReadOnlyList<IdentitySessionResponse>>(
-            sessions.Select(IdentityResponseMapper.ToResponse).ToList());
+        List<IdentitySessionResponse> enriched = await IdentitySessionEnrichment
+            .EnrichSessionsAsync(sessions, userId, geoResolver, riskStore, options.Value.ExposeRawIpAddress, cancellationToken)
+            .ConfigureAwait(false);
+
+        return TypedResults.Ok<IReadOnlyList<IdentitySessionResponse>>(enriched);
     }
 }
