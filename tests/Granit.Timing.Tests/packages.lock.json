@@ -23,8 +23,8 @@
       "Microsoft.Extensions.TimeProvider.Testing": {
         "type": "Direct",
         "requested": "[10.*, )",
-        "resolved": "10.6.0",
-        "contentHash": "qQDiaYWpvIymGbu+kXaMDS8YdqfeQkv6DOxPF2GSwC+eSzIKqOOnSP34TYt7gKqvB7p8/aSptexnW6nF0CUdnw=="
+        "resolved": "10.7.0",
+        "contentHash": "THd3CJ9e/ftm/3+Z69E51MQy4n46so4Zs/vUevMCYR5tjZsP+INqD4npXARVQwB2nnG+eQ8SI6ERLe/tn6gwSA=="
       },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
@@ -109,8 +109,8 @@
       },
       "Microsoft.Extensions.Primitives": {
         "type": "Transitive",
-        "resolved": "10.0.8",
-        "contentHash": "OBPo4nYhMyIbtueoC10CBm6AGAbo/A9IV8QQ/6ryZS7VvmqpGT7hunazeHLxFawRzn3oLOq4jhqhpBX4tfswWQ=="
+        "resolved": "10.0.9",
+        "contentHash": "fmEbAUFsaIKirgLt/lYhuFRBwhcSJN31jjHgCdbQxJiWOum6EdLjkbgGuukSP9z/a+9LibaxII/kF+GwOXgC4g=="
       },
       "Microsoft.Testing.Extensions.Telemetry": {
         "type": "Transitive",
@@ -265,17 +265,17 @@
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.8",
-        "contentHash": "21nbDV60SRPWGIivsyl6lqBeEJNG1sginhhfWgRrr3Ais7aQ12To25OAHQxgoiJkjqy1aQ6RxpZBGYuTi7Ge6A=="
+        "resolved": "10.0.9",
+        "contentHash": "g41l/30G3K4B/d/L8kjux0+30e27c8D0FVQ/PFCpbekgfDpj9mnDhieP67EqXWvl1EWNeZh2rpR4F5B/jcDOHA=="
       },
       "Microsoft.Extensions.Options": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.8",
-        "contentHash": "VBD+131DpTNCNDfA4kIyKTiCySvJGNhwibdWBSdFRu7GMfXLXcXODkgA+KStKbbhzraLglZWUN4nXyHgW4JIRA==",
+        "resolved": "10.0.9",
+        "contentHash": "hyNdX4c2UwkRkzb9byw0H2DQkRzwBM3mzY2sCM9egwzTyg8dvQJmp5noQHGEaaCORQrNK3DD2gREBsc2DlXS4A==",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.8",
-          "Microsoft.Extensions.Primitives": "10.0.8"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.9",
+          "Microsoft.Extensions.Primitives": "10.0.9"
         }
       }
     }

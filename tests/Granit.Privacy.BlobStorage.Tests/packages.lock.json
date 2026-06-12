@@ -17,11 +17,11 @@
       "Microsoft.AspNetCore.Mvc.Testing": {
         "type": "Direct",
         "requested": "[10.*, )",
-        "resolved": "10.0.8",
-        "contentHash": "C9kMpUciPgx7ObqoO6W+eXEf3zHFWb7XpQgFJBzdO8GsmmVYrgcErTLMuki6e3EihycGpHbcJECYHDgM7XRMkg==",
+        "resolved": "10.0.9",
+        "contentHash": "Mt+5CtYz+xmog1S1TJt2owVKU8YquZtNy9bmO+kfrrtjEDZPzCw1qZ7o97PLpIEpt3yy4F5YdAUh9nKPm0CX5Q==",
         "dependencies": {
-          "Microsoft.AspNetCore.TestHost": "10.0.8",
-          "Microsoft.Extensions.DependencyModel": "10.0.8"
+          "Microsoft.AspNetCore.TestHost": "10.0.9",
+          "Microsoft.Extensions.DependencyModel": "10.0.9"
         }
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
@@ -33,17 +33,17 @@
       "Microsoft.Extensions.Diagnostics.Testing": {
         "type": "Direct",
         "requested": "[10.*, )",
-        "resolved": "10.6.0",
-        "contentHash": "WFgkep0Nxz0aht9k/OKwXdBOZ/uIB8VULY35ou91BiK4k0gj9CJz985T8GN0Q7XjCOMjNgjVFnv/9FmqcDEivg==",
+        "resolved": "10.7.0",
+        "contentHash": "2G1QonlvuybwwvJjguUcNXMnFN8jBnWiAn3Z3If5L8wkVvW1AEQyakF1RUZbad+bqAtgPoxJ6JBAwGj1MikcWQ==",
         "dependencies": {
-          "Microsoft.Extensions.Telemetry.Abstractions": "10.6.0"
+          "Microsoft.Extensions.Telemetry.Abstractions": "10.7.0"
         }
       },
       "Microsoft.Extensions.TimeProvider.Testing": {
         "type": "Direct",
         "requested": "[10.*, )",
-        "resolved": "10.6.0",
-        "contentHash": "qQDiaYWpvIymGbu+kXaMDS8YdqfeQkv6DOxPF2GSwC+eSzIKqOOnSP34TYt7gKqvB7p8/aSptexnW6nF0CUdnw=="
+        "resolved": "10.7.0",
+        "contentHash": "THd3CJ9e/ftm/3+Z69E51MQy4n46so4Zs/vUevMCYR5tjZsP+INqD4npXARVQwB2nnG+eQ8SI6ERLe/tn6gwSA=="
       },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
@@ -150,8 +150,8 @@
       },
       "Microsoft.AspNetCore.TestHost": {
         "type": "Transitive",
-        "resolved": "10.0.8",
-        "contentHash": "HRH/XAke90wkHv9ykCsrvpVqvKOUt53jQzvHHIXrPIPZWAjyPq6B5/InCmPYWvme+WKMXD10rplMAitzNMtC3w=="
+        "resolved": "10.0.9",
+        "contentHash": "mR4y30XFsVbn7EwV3Ic5/KMBO5QGwukTJE2ztGmpAST5ACX+Z+9r+Y6D1eibJojsOIW5KHpM4myo9/aRALJOyg=="
       },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
@@ -170,20 +170,20 @@
       },
       "Microsoft.Extensions.Compliance.Abstractions": {
         "type": "Transitive",
-        "resolved": "10.6.0",
-        "contentHash": "L8zTKn8e2LCQbsDFLWFm6fZQ54F/1FisLx43nkEof4HmmsO2HaZHshV85+qF8HXO48MlGJdrWUg+uVBj/WDmmw=="
+        "resolved": "10.7.0",
+        "contentHash": "qbi6lg6dyvydBvpjXeBx3wLPvmgXWn3nwkKBOsgEck6w++BEsBcv8YhdcczME16Oq+a6wkdtna9/qCEkxsNw5A=="
       },
       "Microsoft.Extensions.DependencyModel": {
         "type": "Transitive",
-        "resolved": "10.0.8",
-        "contentHash": "vLyZVpxmduO2jx+76ggqnsA3m81kwMY3NkWciNTj5E+Nvqb0VihqCvQP89QsGONWp0AJwMZG+u9GzaCjDdFGNw=="
+        "resolved": "10.0.9",
+        "contentHash": "SCDTQ6HubnRvTUjR7dgMKHZvNoCb03t44ttHL8trlFTGgfDteWn/0nRdOxDhcI+lTWhKgd/flCVJEtAOPhSLNg=="
       },
       "Microsoft.Extensions.Telemetry.Abstractions": {
         "type": "Transitive",
-        "resolved": "10.6.0",
-        "contentHash": "aNQEJu5DD2YVQEWWmC/ALEiV1Qt400BaDO+SExtfAaGqYaNu/r2sW9xGLuc71fcjbrmzqX8LzNgK5mzjjMW9RQ==",
+        "resolved": "10.7.0",
+        "contentHash": "ir1QKShZzfEmqO9LUWESVMUDZdnxYBSKQyulYPMeaye531lAuT8YTotthx+htrrS8hZY52HANeqowLQyCYBCZg==",
         "dependencies": {
-          "Microsoft.Extensions.Compliance.Abstractions": "10.6.0"
+          "Microsoft.Extensions.Compliance.Abstractions": "10.7.0"
         }
       },
       "Microsoft.OpenApi": {
@@ -522,8 +522,8 @@
       "Microsoft.AspNetCore.OpenApi": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.8",
-        "contentHash": "cw24xHE2QaWwyEG9GQwFbjboyabub6Vd80DIItUGENzcQOa/BEnTrXsg2GADqWTmY/3ycqk9ToLGjgvF/VRlGA==",
+        "resolved": "10.0.9",
+        "contentHash": "1ihb8FO9cGgEK1/m3CTtT/SfnynwmiZib0W2pcDVj3KSWk/Sca4VOXEtaptKQc582zpFrzTFiwkGRCglt6H+WQ==",
         "dependencies": {
           "Microsoft.OpenApi": "2.0.0"
         }
@@ -546,8 +546,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.5.1",
-        "contentHash": "DGGnGnk9hqmldiuc6zdHrFu+g9Qb6D0+d7Y/u0+S7EMZnhhOzWmRS1cbDplQeb1EnXAgrB0XRw6cOGreO8w5uQ==",
+        "resolved": "6.8.0",
+        "contentHash": "z4JclmpLO3jMHokFgT9EO4UlLpi4KyqtNdYEFj85keRRqLKmckJikkkjjer04EdoIxRF7vejdWEGB4RRQ8ILHQ==",
         "dependencies": {
           "JasperFx": "2.8.2",
           "JasperFx.Events": "2.8.2",

@@ -38,22 +38,22 @@
       "System.Text.Json": {
         "type": "Direct",
         "requested": "[9.*, )",
-        "resolved": "9.0.16",
-        "contentHash": "BgvJQq4uc6jOiiuZ/5LTxrZ+hXTmnm/Q/Sq9/RM2LtBqY8YSA7UB8NgF6j0ZdqWrfvk9Z8AfwV+WMTONIOXESw==",
+        "resolved": "9.0.17",
+        "contentHash": "Oj5n8W2G0/YM1BUwlJkfBrUeXjVlk0fnKqmnWmkbof1+bJAwmz7sOUxPbUv8Wwmh6wd0ylcFKMBcB/RRER5HrA==",
         "dependencies": {
-          "Microsoft.Bcl.AsyncInterfaces": "9.0.16",
+          "Microsoft.Bcl.AsyncInterfaces": "9.0.17",
           "System.Buffers": "4.5.1",
-          "System.IO.Pipelines": "9.0.16",
+          "System.IO.Pipelines": "9.0.17",
           "System.Memory": "4.5.5",
           "System.Runtime.CompilerServices.Unsafe": "6.0.0",
-          "System.Text.Encodings.Web": "9.0.16",
+          "System.Text.Encodings.Web": "9.0.17",
           "System.Threading.Tasks.Extensions": "4.5.4"
         }
       },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
-        "resolved": "9.0.16",
-        "contentHash": "JRb3B73ZozyL55S4V2VD+FOTsBXOGhSfzRMg/4dW52g0eVrZhMWHzlk2u0w1g4ODl5dVKpzInEaufr70h9qK3Q==",
+        "resolved": "9.0.17",
+        "contentHash": "Frw8rJPEkM9K9JtjnswTu594szHTy8KvU2SuGHbaF0cCyk0E9PhBtwie0yobz6LuLs0ausesGMRwwzXchaN7zQ==",
         "dependencies": {
           "System.Threading.Tasks.Extensions": "4.5.4"
         }
@@ -95,8 +95,8 @@
       },
       "System.IO.Pipelines": {
         "type": "Transitive",
-        "resolved": "9.0.16",
-        "contentHash": "wULNihoFgu6JMzwxSbvG2fYtp8h3dxM8aIzcvQv535aMRECy+c3b8YL5m/36vwETPOcRJjyIN8SASTITdm8JZg==",
+        "resolved": "9.0.17",
+        "contentHash": "Nmoqfxva1/ggLG66LoHzV9mdnTvpe+ADYw3eHU1VFm9BbryNdSDMpVNjoDFD9e62smzsF0jb78JjBvEmV/jR3g==",
         "dependencies": {
           "System.Buffers": "4.5.1",
           "System.Memory": "4.5.5",
@@ -143,8 +143,8 @@
       },
       "System.Text.Encodings.Web": {
         "type": "Transitive",
-        "resolved": "9.0.16",
-        "contentHash": "860BMNxGLHCc8QWHb+ERfDgzEIsRk3GXZnWYMyMmynuFNAoabHhWSWBElPbzI839MBf+hUJWADp/1rLH1+/2Eg==",
+        "resolved": "9.0.17",
+        "contentHash": "HX8LWtxcwdfIV3ruH7EyKy0s+wQiOEY3jWSnuIl1ugbIeqbBC9tO5z0n6+HeK2iavMuKhhGKA/1zY1dPfSK4uQ==",
         "dependencies": {
           "System.Buffers": "4.5.1",
           "System.Memory": "4.5.5",
