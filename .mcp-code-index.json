@@ -1932,7 +1932,8 @@
         "Granit.Http.Cookies",
         "Granit.Identity.Local",
         "Granit.Identity.Local.AspNetIdentity",
-        "Granit.QueryEngine.Abstractions"
+        "Granit.QueryEngine.Abstractions",
+        "Granit.UserSessions.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -37407,12 +37408,28 @@
       ]
     },
     {
+      "name": "OpenIddictApplicationDeviceKindExtensions",
+      "fqn": "Granit.OpenIddict.Extensions.OpenIddictApplicationDeviceKindExtensions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Extensions/OpenIddictApplicationDeviceKindExtensions.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "SetDeviceKind",
+          "kind": "method",
+          "signature": "SetDeviceKind(this OpenIddictApplicationDescriptor descriptor, DeviceKind? deviceKind)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "GranitOpenIddictModule",
       "fqn": "Granit.OpenIddict.GranitOpenIddictModule",
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 49,
+      "line": 51,
       "members": [
         {
           "name": "ConfigureServices",

@@ -23,6 +23,7 @@ using Granit.OpenIddict.Queries;
 using Granit.OpenIddict.Services;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
+using Granit.UserSessions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -45,7 +46,8 @@ namespace Granit.OpenIddict;
     typeof(GranitHttpCookiesModule),
     typeof(GranitIdentityLocalAspNetIdentityModule),
     typeof(GranitIdentityLocalModule),
-    typeof(GranitQueryEngineAbstractionsModule))]
+    typeof(GranitQueryEngineAbstractionsModule),
+    typeof(GranitUserSessionsAbstractionsModule))]
 public sealed class GranitOpenIddictModule : GranitModule
 {
     /// <inheritdoc/>

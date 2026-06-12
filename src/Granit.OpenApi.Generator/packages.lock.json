@@ -997,6 +997,7 @@
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.Identity.Local.AspNetIdentity": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )",
           "OpenIddict": "[7.*, )",
           "OpenIddict.EntityFrameworkCore": "[7.*, )"
         }
@@ -1022,6 +1023,7 @@
           "Granit.Authentication": "[0.1.0-dev, )",
           "Granit.Authentication.DPoP": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
+          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )",
           "OpenIddict": "[7.*, )",
           "OpenIddict.Server.AspNetCore": "[7.*, )",
           "OpenIddict.Validation.AspNetCore": "[7.*, )"

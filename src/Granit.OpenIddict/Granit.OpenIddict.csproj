@@ -31,6 +31,7 @@
     <ProjectReference Include="..\Granit.Identity.Local\Granit.Identity.Local.csproj" />
     <ProjectReference Include="..\Granit.Identity.Local.AspNetIdentity\Granit.Identity.Local.AspNetIdentity.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.UserSessions.Abstractions\Granit.UserSessions.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>
