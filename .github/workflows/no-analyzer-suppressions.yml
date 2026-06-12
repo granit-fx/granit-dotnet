@@ -7,8 +7,10 @@
 #   - dotnet_diagnostic.*.severity = none|silent  (in .editorconfig / .globalconfig)
 #   - [SuppressMessage(...)]
 #
-# A suppression is allowed only if the SAME hunk introduces a
-# `// justification:` (or `<!-- justification: -->`) comment.
+# A suppression is allowed when the SAME hunk introduces a `// justification:`
+# (or `<!-- justification: -->`) comment — or, for `[SuppressMessage]`, when the
+# attribute carries its standard `Justification = "..."` argument (the .NET-native
+# mechanism, used by every existing SuppressMessage in the codebase).
 #
 # Fails the check with a comment listing the offending hunks.
 # =============================================================================
@@ -73,7 +75,7 @@ jobs:
                 # New hunk — evaluate the previous one
                 if [[ -n "$current_hunk" ]]; then
                   if echo "$current_hunk" | grep -Eq "$patterns"; then
-                    if ! echo "$current_hunk" | grep -Eq '^\+[^+].*justification:'; then
+                    if ! echo "$current_hunk" | grep -Eq '^\+[^+].*(justification:|Justification[[:space:]]*=)'; then
                       {
                         echo "── $f ──"
                         echo "$current_hunk" | grep -E "$patterns" || true
@@ -91,7 +93,7 @@ jobs:
             # Tail hunk
             if [[ -n "$current_hunk" ]]; then
               if echo "$current_hunk" | grep -Eq "$patterns"; then
-                if ! echo "$current_hunk" | grep -Eq '^\+[^+].*justification:'; then
+                if ! echo "$current_hunk" | grep -Eq '^\+[^+].*(justification:|Justification[[:space:]]*=)'; then
                   {
                     echo "── $f ──"
                     echo "$current_hunk" | grep -E "$patterns" || true
@@ -125,10 +127,11 @@ jobs:
               '',
               'This PR adds one or more analyzer suppressions',
               '(`#pragma warning disable`, `<NoWarn>`, `dotnet_diagnostic.*.severity = none`,',
-              'or `[SuppressMessage]`) on lines that do **not** carry a `justification:` comment.',
+              'or `[SuppressMessage]`) that are not justified inline.',
               '',
               'Per `CONTRIBUTING.md`, suppressions must either be fixed at the source or',
-              'documented inline. Example:',
+              'documented inline — a `// justification:` comment in the same hunk, or, for',
+              '`[SuppressMessage]`, its standard `Justification = "..."` argument. Example:',
               '',
               '```csharp',
               '// justification: false positive — handler is discovered by Wolverine via',
