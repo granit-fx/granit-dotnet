@@ -1,4 +1,5 @@
 using Granit.Events;
+using Granit.MultiTenancy;
 
 namespace Granit.UserSessions.AnomalyDetection.Internal;
 
@@ -20,6 +21,7 @@ internal sealed class DefaultUserSessionRiskEvaluator(
     IUserSessionAnomalyDetector detector,
     IUserSessionRiskStore riskStore,
     TimeProvider timeProvider,
+    ICurrentTenant currentTenant,
     IDistributedEventBus? eventBus = null) : IUserSessionRiskEvaluator
 {
     public async Task<UserSessionRiskAssessment> EvaluateAsync(
@@ -41,10 +43,20 @@ internal sealed class DefaultUserSessionRiskEvaluator(
             // Best-effort, non-atomic with the store write above — see the class remarks for the rationale.
             if (assessment.Level >= UserSessionRiskLevel.Medium && eventBus is not null)
             {
-                string category = assessment.Reasons.Count > 0 ? assessment.Reasons[0] : "anomaly";
                 await eventBus
                     .PublishAsync(
-                        new SuspiciousUserSessionDetectedEto(userId, candidate.SessionId, category, assessment.Score, now),
+                        new SuspiciousUserSessionDetectedEto(
+                            userId,
+                            candidate.SessionId,
+                            currentTenant.IsAvailable ? currentTenant.Id : null,
+                            assessment.Level,
+                            assessment.Reasons,
+                            assessment.Score,
+                            candidate.Location?.City,
+                            candidate.Location?.CountryCode,
+                            candidate.UserAgent,
+                            IpAddress: null, // raw IP withheld by default (GDPR); coarse location carried instead
+                            now),
                         cancellationToken)
                     .ConfigureAwait(false);
             }

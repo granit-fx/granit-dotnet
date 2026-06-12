@@ -419,6 +419,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )",
           "Granit.UserSessions.Abstractions": "[0.1.0-dev, )"
         }
       },

@@ -6,12 +6,14 @@ using Granit.Auditing;
 using Granit.Auditing.Domain;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Options;
+using Granit.Events;
 using Granit.Http.Cookies;
 using Granit.MultiTenancy;
 using Granit.Oidc.ClientAuthentication;
 using Granit.Oidc.ClientAuthentication.Internal;
 using Granit.Oidc.DPoP;
 using Granit.Timing;
+using Granit.UserSessions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -304,6 +306,23 @@ internal static partial class BffLoginEndpoints
 
         metrics.RecordLogin(null);
         LogLoginSuccess(logger, BffSessionEndpoints.MaskSessionId(sessionId), frontend.Name);
+
+        // Announce the new session out-of-band so consumers (anomaly detection, geo enrichment, notifications)
+        // react without the login path waiting on them. Best-effort: a no-op when no distributed bus is wired.
+        if (userId is not null && services.GetService<IDistributedEventBus>() is { } eventBus)
+        {
+            Guid? tenantId = services.GetService<ICurrentTenant>() is { IsAvailable: true } tenant ? tenant.Id : null;
+            await eventBus.PublishAsync(
+                new UserSessionCreatedEto(
+                    userId,
+                    sessionId,
+                    tenantId,
+                    UserSessionSource.Bff,
+                    tokens.UserAgent,
+                    tokens.IpAddress,
+                    tokens.SessionCreatedAt),
+                cancellationToken).ConfigureAwait(false);
+        }
 
         // The BFF owns the authentication audit trail for interactive logins it fronts: it carries the
         // real browser User-Agent and the authenticated user as CreatedBy. The authorization server's
