@@ -15,8 +15,11 @@ internal sealed class UserSessionRiskEntity
     /// <summary>Session identifier.</summary>
     public string SessionId { get; set; } = string.Empty;
 
-    /// <summary>Risk level name (PascalCase, for SQL readability).</summary>
-    public string Level { get; set; } = string.Empty;
+    /// <summary>
+    /// Risk level. Persisted as its PascalCase name (for SQL-audit readability) by the Granit
+    /// enum-as-string convention applied via <c>ApplyGranitConventions</c>.
+    /// </summary>
+    public UserSessionRiskLevel Level { get; set; }
 
     /// <summary>JSON-serialized reason codes.</summary>
     public string ReasonsJson { get; set; } = "[]";

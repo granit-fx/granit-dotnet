@@ -22,35 +22,49 @@ internal sealed class EfCoreUserSessionRiskStore(
     {
         ArgumentNullException.ThrowIfNull(verdict);
 
-        await using UserSessionRiskDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        UserSessionRiskEntity? existing = await db.UserSessionRisks
-            .FirstOrDefaultAsync(e => e.UserId == userId && e.SessionId == sessionId, cancellationToken)
-            .ConfigureAwait(false);
-
         string reasonsJson = JsonSerializer.Serialize(verdict.Reasons, JsonOptions);
 
-        if (existing is not null)
+        // Upsert with one retry: two concurrent assessments of the same (userId, sessionId) both miss the
+        // existing row and both insert, tripping the unique index. On that conflict, re-read and update the
+        // row the winner created instead of surfacing the DbUpdateException. Provider-agnostic (no ON CONFLICT).
+        for (int attempt = 0; ; attempt++)
         {
-            existing.Level = verdict.Level.ToString();
-            existing.ReasonsJson = reasonsJson;
-            existing.AssessedAt = verdict.AssessedAt;
-        }
-        else
-        {
-            db.UserSessionRisks.Add(new UserSessionRiskEntity
-            {
-                Id = guidGenerator.Create(),
-                UserId = userId,
-                SessionId = sessionId,
-                Level = verdict.Level.ToString(),
-                ReasonsJson = reasonsJson,
-                AssessedAt = verdict.AssessedAt,
-            });
-        }
+            await using UserSessionRiskDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            UserSessionRiskEntity? existing = await db.UserSessionRisks
+                .FirstOrDefaultAsync(e => e.UserId == userId && e.SessionId == sessionId, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (existing is not null)
+            {
+                existing.Level = verdict.Level;
+                existing.ReasonsJson = reasonsJson;
+                existing.AssessedAt = verdict.AssessedAt;
+            }
+            else
+            {
+                db.UserSessionRisks.Add(new UserSessionRiskEntity
+                {
+                    Id = guidGenerator.Create(),
+                    UserId = userId,
+                    SessionId = sessionId,
+                    Level = verdict.Level,
+                    ReasonsJson = reasonsJson,
+                    AssessedAt = verdict.AssessedAt,
+                });
+            }
+
+            try
+            {
+                await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                return;
+            }
+            catch (DbUpdateException) when (attempt == 0)
+            {
+                // Lost an insert race; loop once to re-read and update the winner's row.
+            }
+        }
     }
 
     public async Task<UserSessionRiskVerdict?> GetAsync(
@@ -95,7 +109,7 @@ internal sealed class EfCoreUserSessionRiskStore(
 
     private static UserSessionRiskVerdict Map(UserSessionRiskEntity entity) =>
         new(
-            Enum.TryParse(entity.Level, out UserSessionRiskLevel level) ? level : UserSessionRiskLevel.None,
+            entity.Level,
             JsonSerializer.Deserialize<List<string>>(entity.ReasonsJson, JsonOptions) ?? [],
             entity.AssessedAt);
 }
