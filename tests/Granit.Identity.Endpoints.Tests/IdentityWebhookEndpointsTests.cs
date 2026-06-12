@@ -3,6 +3,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Granit.Events;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Endpoints.Options;
 using Granit.Identity.Endpoints.Permissions;
@@ -30,6 +31,7 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
 
     private readonly IUserLookupService _lookupService = Substitute.For<IUserLookupService>();
     private readonly IUserCacheStats _cacheStats = Substitute.For<IUserCacheStats>();
+    private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
     private readonly FakeTimeProvider _clock = new(Now);
     private readonly WebApplication _app;
     private readonly HttpClient _client;
@@ -54,6 +56,7 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddSingleton(_lookupService);
         builder.Services.AddSingleton(_cacheStats);
+        builder.Services.AddSingleton(_eventBus);
 
         // Replace the default TimeProvider so signature-replay-window tests can
         // pin "now" deterministically.
@@ -111,6 +114,48 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         await _lookupService.Received(1).DeleteByIdAsync("user-1", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Webhook_login_publishes_UserSessionCreatedEto()
+    {
+        var payload = new
+        {
+            eventType = "login",
+            userId = "user-9",
+            sessionId = "kc-sid-1",
+            ipAddress = "1.2.3.4",
+            userAgent = "Mozilla/5.0",
+        };
+        using HttpRequestMessage request = CreateSignedRequest(payload);
+
+        using HttpResponseMessage response = await _client.SendAsync(
+            request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        await _eventBus.Received(1).PublishAsync(
+            Arg.Is<UserSessionCreatedEto>(e =>
+                e.UserId == "user-9"
+                && e.SessionId == "kc-sid-1"
+                && e.Source == UserSessionSource.Keycloak
+                && e.IpAddress == "1.2.3.4"
+                && e.UserAgent == "Mozilla/5.0"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Webhook_login_without_sessionId_does_not_publish()
+    {
+        // No session id → nothing the session provider could match against; the event is a no-op.
+        var payload = new { eventType = "login", userId = "user-9" };
+        using HttpRequestMessage request = CreateSignedRequest(payload);
+
+        using HttpResponseMessage response = await _client.SendAsync(
+            request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        await _eventBus.DidNotReceiveWithAnyArgs()
+            .PublishAsync<UserSessionCreatedEto>(default!, Arg.Any<CancellationToken>());
     }
 
     [Fact]

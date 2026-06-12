@@ -1,12 +1,16 @@
 using System.Text.Json;
+using Granit.Events;
 using Granit.Identity.Endpoints.Dtos;
 using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Options;
+using Granit.MultiTenancy;
+using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Endpoints.Endpoints;
@@ -35,8 +39,8 @@ internal static class IdentityWebhookEndpoints
 
         endpoints.MapPost(webhookRoute, HandleWebhookAsync)
             .WithName("IdentityWebhook")
-            .WithSummary("Receives identity provider webhook events (user created/updated/deleted).")
-            .WithDescription("Webhook receiver for identity provider event notifications. Validates the HMAC signature (if configured) and processes user_created, user_updated, and user_deleted events by refreshing or removing the corresponding cache entries. No bearer authentication — security relies on HMAC signature validation in the handler.")
+            .WithSummary("Receives identity provider webhook events (user created/updated/deleted, login).")
+            .WithDescription("Webhook receiver for identity provider event notifications. Validates the HMAC signature (if configured) and processes user_created, user_updated, and user_deleted events by refreshing or removing the corresponding cache entries, and login events by announcing a UserSessionCreatedEto so anomaly detection runs off the login path (the IdP's push channel for session-created — used by Keycloak via its event SPI). No bearer authentication — security relies on HMAC signature validation in the handler.")
             .WithTags(tagName)
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -113,6 +117,14 @@ internal static class IdentityWebhookEndpoints
                 await lookupService.DeleteByIdAsync(payload.UserId, cancellationToken).ConfigureAwait(false);
                 break;
 
+            case "login":
+                // A new IdP session was established (Keycloak is push-only via its event SPI — it never
+                // calls us on login otherwise). Announce it so anomaly detection runs off the login path,
+                // exactly like the BFF and OpenIddict sources. The session's full shape is read on demand
+                // from the IdP's Admin API by the consumer; this only carries the trigger + the keying ids.
+                await EmitSessionCreatedAsync(request.HttpContext, payload, cancellationToken).ConfigureAwait(false);
+                break;
+
             default:
                 return TypedResults.Problem(
                     detail: "Unsupported event type.",
@@ -120,5 +132,39 @@ internal static class IdentityWebhookEndpoints
         }
 
         return TypedResults.Ok();
+    }
+
+    private static async Task EmitSessionCreatedAsync(
+        HttpContext context, IdentityWebhookPayload payload, CancellationToken cancellationToken)
+    {
+        // No session id → nothing the session provider could match against, so nothing to evaluate.
+        if (string.IsNullOrEmpty(payload.SessionId))
+        {
+            return;
+        }
+
+        // Best-effort: a no-op when no distributed bus is wired.
+        if (context.RequestServices.GetService<IDistributedEventBus>() is not { } eventBus)
+        {
+            return;
+        }
+
+        Guid? tenantId = context.RequestServices.GetService<ICurrentTenant>() is { IsAvailable: true } tenant
+            ? tenant.Id
+            : null;
+        DateTimeOffset createdAt = payload.Timestamp
+            ?? context.RequestServices.GetService<IClock>()?.Now
+            ?? TimeProvider.System.GetUtcNow();
+
+        await eventBus.PublishAsync(
+            new UserSessionCreatedEto(
+                payload.UserId,
+                payload.SessionId,
+                tenantId,
+                UserSessionSource.Keycloak,
+                payload.UserAgent,
+                payload.IpAddress,
+                createdAt),
+            cancellationToken).ConfigureAwait(false);
     }
 }

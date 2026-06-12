@@ -24100,7 +24100,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityWebhookPayload.cs",
-      "line": 10,
+      "line": 13,
       "members": []
     },
     {
