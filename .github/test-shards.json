@@ -185,6 +185,7 @@
         "tests/Granit.Hostnames.Notifications.Tests",
         "tests/Granit.Html.AngleSharp.Tests",
         "tests/Granit.Html.Tests",
+        "tests/Granit.IpGeolocation.Abstractions.Tests",
         "tests/Granit.IpGeolocation.Tests",
         "tests/Granit.IpGeolocation.IpApi.Tests",
         "tests/Granit.IpGeolocation.MaxMind.Tests",

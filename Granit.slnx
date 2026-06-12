@@ -399,6 +399,7 @@
     <Project Path="tests/Granit.Indexing.EntityFrameworkCore.Tests/Granit.Indexing.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Indexing.Privacy.Tests/Granit.Indexing.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Indexing.Tests/Granit.Indexing.Tests.csproj" />
+    <Project Path="tests/Granit.IpGeolocation.Abstractions.Tests/Granit.IpGeolocation.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.IpGeolocation.IpApi.Tests/Granit.IpGeolocation.IpApi.Tests.csproj" />
     <Project Path="tests/Granit.IpGeolocation.MaxMind.Tests/Granit.IpGeolocation.MaxMind.Tests.csproj" />
     <Project Path="tests/Granit.IpGeolocation.Tests/Granit.IpGeolocation.Tests.csproj" />
