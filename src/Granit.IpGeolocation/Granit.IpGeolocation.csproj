@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
+    <ProjectReference Include="..\Granit.IpGeolocation.Abstractions\Granit.IpGeolocation.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

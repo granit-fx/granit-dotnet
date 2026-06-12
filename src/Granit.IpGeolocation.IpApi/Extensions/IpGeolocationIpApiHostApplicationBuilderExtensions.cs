@@ -48,6 +48,11 @@ public static class IpGeolocationIpApiHostApplicationBuilderExtensions
                 client.Timeout = options.Timeout;
                 client.MaxResponseContentBufferSize = options.MaxResponseSizeBytes;
             })
+            // The default HttpClientFactory logging handlers record the request URI at Information level — and
+            // for this client the URI carries the raw client IP in its path (/{ip}/json), personal data under
+            // GDPR. The telemetry redaction handler scrubs the trace span but not this parallel ILogger channel,
+            // so strip the default loggers entirely; failures are already logged (category only) by the provider.
+            .RemoveAllLoggers()
             .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
             {
                 AllowAutoRedirect = false,

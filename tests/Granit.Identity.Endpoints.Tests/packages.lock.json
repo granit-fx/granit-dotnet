@@ -633,6 +633,7 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.IpGeolocation": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.UserSessions.Abstractions": "[0.1.0-dev, )",
@@ -645,8 +646,15 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
+      "granit.ipgeolocation.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.localization": {
@@ -697,7 +705,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.IpGeolocation": "[0.1.0-dev, )"
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.validation": {

@@ -12,6 +12,9 @@ internal sealed class UserSessionRiskResponse
     /// <summary>Machine-readable reason codes.</summary>
     public string[]? Reasons { get; set; }
 
-    /// <summary>PII-safe human-readable explanation.</summary>
+    /// <summary>
+    /// Human-readable explanation. Requested to be PII-safe, but this is untrusted model output — callers must
+    /// sanitize before display/persistence (see <see cref="UserSessionRiskAssessment.Explanation"/>).
+    /// </summary>
     public string? Explanation { get; set; }
 }

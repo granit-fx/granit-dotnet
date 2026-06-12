@@ -135,6 +135,21 @@
           "System.IO.Hashing": "10.0.3"
         }
       },
+      "bblanchon.PDFium.Linux": {
+        "type": "Transitive",
+        "resolved": "147.0.7690",
+        "contentHash": "VnH5sYEI1/gd1t0h3TQMsbGnicdYKfzfDjKBGfRX8MqjSFcWgHdFL1MGvyB7HBvQzZtDWspSn2qY6mehGRSw9g=="
+      },
+      "bblanchon.PDFium.macOS": {
+        "type": "Transitive",
+        "resolved": "147.0.7690",
+        "contentHash": "P6b05GVUhbcfzO54W3rKTTWX/lac3CzZ+5TZnqMhJMqSJrtTGawCXsw+4GiFfC2imnbU7EPabFARzvtPvNp0sw=="
+      },
+      "bblanchon.PDFium.Win32": {
+        "type": "Transitive",
+        "resolved": "147.0.7690",
+        "contentHash": "vPUlS9LklHm59lcBc9f6loggGgezogOoMdRYbUfTvum1Ndlr7u7KrAq3ZTuTdPF0ijHjhtfjNafZvyyTbmB4mg=="
+      },
       "BouncyCastle.Cryptography": {
         "type": "Transitive",
         "resolved": "2.6.2",
@@ -180,11 +195,21 @@
       },
       "DocumentFormat.OpenXml.Framework": {
         "type": "Transitive",
-        "resolved": "3.1.1",
-        "contentHash": "6APEp/ElZV58S/4v8mf4Ke3ONEDORs64MqdD64Z7wWpcHANB9oovQsGIwtqjnKihulOj7T0a6IxHIHOfMqKOng==",
+        "resolved": "3.5.1",
+        "contentHash": "U5txtc3ORno73xQx9Lf2gWzfaSZnZwKHfLkTAslhlew9lxe5XbUiCt0dY1fHeAf8yRqszUAe5i/+xLC9R/Xfsw==",
         "dependencies": {
-          "System.IO.Packaging": "8.0.1"
+          "System.IO.Packaging": "10.0.2"
         }
+      },
+      "Elastic.Esql": {
+        "type": "Transitive",
+        "resolved": "0.11.0",
+        "contentHash": "frYrulxZxDLsAk5vBw6oVG4dOYcGFSOPBsJ+1EfLn/sEB/fS56zVEbEitdVxreY3xREdhZwS9dtUkAqsAt037g=="
+      },
+      "Elastic.Transport": {
+        "type": "Transitive",
+        "resolved": "0.17.1",
+        "contentHash": "PpDoD+6zxtYgK/DAqQEiVSlkC2Zt1x0JKGaygAx8Oqrkft9Nr1VTuysOWZ6NKsav9WtB4jyHuU/eIZXuc2oZuw=="
       },
       "EmptyFiles": {
         "type": "Transitive",
@@ -422,6 +447,11 @@
         "type": "Transitive",
         "resolved": "14.14.0",
         "contentHash": "pACR3w4QmjBkebtYvZwNk0oow8YwEAF4CLfzSrGmPcWsObL8wvt/lOXsrzK9M0cVwYES7jp+bdnHQBTeQgfoIg=="
+      },
+      "MaxMind.Db": {
+        "type": "Transitive",
+        "resolved": "5.1.0",
+        "contentHash": "u4fynkxX0bNLYaz90N9m9FiaOX22WmEFKlHnvlqw8sswngH54oYvgynhT4GXZvqTy8l7D96/+E9OVzuu34ex9w=="
       },
       "MessagePack.Annotations": {
         "type": "Transitive",
@@ -1049,6 +1079,14 @@
           "OpenTelemetry": "[1.15.3, 2.0.0)"
         }
       },
+      "Pgvector": {
+        "type": "Transitive",
+        "resolved": "0.3.2",
+        "contentHash": "n7M5LuNejHUmtWky3zCbNO+tP1Gnjiuv9Qtu4LyvB1602dD8RiBxxCQp9jEjM0ZFDxAZF1oOWkNIkXw46KT00Q==",
+        "dependencies": {
+          "Npgsql": "8.0.5"
+        }
+      },
       "Pipelines.Sockets.Unofficial": {
         "type": "Transitive",
         "resolved": "2.2.16",
@@ -1160,6 +1198,30 @@
         "type": "Transitive",
         "resolved": "1.0.0",
         "contentHash": "LFQsCZlV0xlUyXAOMUo5kkSl+8zAQXXbbdwWchtk0B4o7zotZhQsQOcJUELGHdfPfm/xDAsz6hONAuV25bJaAg=="
+      },
+      "SkiaSharp": {
+        "type": "Transitive",
+        "resolved": "3.119.2",
+        "contentHash": "nmy2dOFWPvQKMglfpjz8+/xQQcSrL9jzul3cUyzCJVSwrmSAw+6B1sEgU7jt6NZBptwGq2k/V0kjyu2GizMFtg==",
+        "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "3.119.2",
+          "SkiaSharp.NativeAssets.macOS": "3.119.2"
+        }
+      },
+      "SkiaSharp.NativeAssets.Linux.NoDependencies": {
+        "type": "Transitive",
+        "resolved": "3.119.2",
+        "contentHash": "1rmveKZ8Cz7k4QJQdtKV6RFXYIEqYBiX450Bm0Bk41EE50MMPUyF81cRnASsuV0qCwdZuzjZTaFvoqS0Q2zVfA=="
+      },
+      "SkiaSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "3.119.2",
+        "contentHash": "I2jMGQ/26KOnc6iAoR+Mxh9vSJJ2vioJyj9aJ9OL5yEZyXothXJxf4vBMqnSaiXMqiiU1scG7KqtT0CLkmMmWA=="
+      },
+      "SkiaSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "3.119.2",
+        "contentHash": "uYe+da6+GXVgPKkCopzvIZ83DmC8SXXKeUAPrNcztJNsg0SjPQAxfKMOPZqmVjbzznrq/QUIjLUlJSZV/e0IPA=="
       },
       "Spectre.Console": {
         "type": "Transitive",
@@ -1286,8 +1348,8 @@
       },
       "System.IO.Packaging": {
         "type": "Transitive",
-        "resolved": "8.0.1",
-        "contentHash": "KYkIOAvPexQOLDxPO2g0BVoWInnQhPpkFzRqvNrNrMhVT6kqhVr0zEb6KCHlptLFukxnZrjuMVAnxK7pOGUYrw=="
+        "resolved": "10.0.2",
+        "contentHash": "JTpM4z0wpoIHHDvlCU27HsXo+zVnpWib94HXQpzzr+jc/P9NYf4w353AK4MXyGq/grm1mbLi7eXsOsDU8sGmNg=="
       },
       "System.Management": {
         "type": "Transitive",
@@ -1465,6 +1527,13 @@
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
         }
       },
+      "granit.ai.anthropic": {
+        "type": "Project",
+        "dependencies": {
+          "Anthropic": "[12.*, )",
+          "Granit.AI": "[0.1.0-dev, )"
+        }
+      },
       "granit.ai.azureopenai": {
         "type": "Project",
         "dependencies": {
@@ -1520,6 +1589,13 @@
           "Microsoft.Extensions.AI.OpenAI": "[10.*, )"
         }
       },
+      "granit.ai.stackexchangeredis": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "StackExchange.Redis": "[2.*, )"
+        }
+      },
       "granit.ai.vectordata": {
         "type": "Project",
         "dependencies": {
@@ -1553,6 +1629,13 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.auditing.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Auditing.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.BackgroundJobs": "[0.1.0-dev, )"
         }
       },
       "granit.auditing.configurationchanges": {
@@ -2032,6 +2115,13 @@
           "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )"
         }
       },
+      "granit.caching.vault": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Vault": "[0.1.0-dev, )"
+        }
+      },
       "granit.dataexchange": {
         "type": "Project",
         "dependencies": {
@@ -2095,6 +2185,18 @@
           "ClosedXML": "[0.105.*, )",
           "Granit.DataExchange": "[0.1.0-dev, )",
           "Sylvan.Data.Excel": "[0.5.*, )"
+        }
+      },
+      "granit.dataexchange.json": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.DataExchange": "[0.1.0-dev, )"
+        }
+      },
+      "granit.dataexchange.xml": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.DataExchange": "[0.1.0-dev, )"
         }
       },
       "granit.datalookup": {
@@ -2307,6 +2409,14 @@
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
+      "granit.hostnames.notifications": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Hostnames": "[0.1.0-dev, )",
+          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
+          "Granit.Templating": "[0.1.0-dev, )"
+        }
+      },
       "granit.html": {
         "type": "Project",
         "dependencies": {
@@ -2353,6 +2463,12 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.cookies.cookieconsent": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Http.Cookies": "[0.1.0-dev, )"
         }
       },
       "granit.http.cookies.endpoints": {
@@ -2462,6 +2578,14 @@
       "granit.http.securityheaders.abstractions": {
         "type": "Project"
       },
+      "granit.http.securityheaders.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Diagnostics.Endpoints": "[0.1.0-dev, )",
+          "Granit.Http.SecurityHeaders": "[0.1.0-dev, )",
+          "Granit.Http.SecurityHeaders.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.identity": {
         "type": "Project",
         "dependencies": {
@@ -2478,6 +2602,7 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.IpGeolocation": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.UserSessions.Abstractions": "[0.1.0-dev, )",
@@ -2649,6 +2774,13 @@
           "Granit.Privacy.BlobStorage": "[0.1.0-dev, )"
         }
       },
+      "granit.identity.notifications": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.Notifications.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.imaging": {
         "type": "Project",
         "dependencies": {
@@ -2670,6 +2802,62 @@
           "Magick.NET-Q8-AnyCPU": "[14.*, )"
         }
       },
+      "granit.indexing": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.LanguageDetection": "[0.1.0-dev, )"
+        }
+      },
+      "granit.indexing.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Indexing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.indexing.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Indexing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.indexing.elasticsearch": {
+        "type": "Project",
+        "dependencies": {
+          "Elastic.Clients.Elasticsearch": "[8.*, )",
+          "Granit.Indexing": "[0.1.0-dev, )",
+          "Granit.Indexing.Embeddings": "[0.1.0-dev, )"
+        }
+      },
+      "granit.indexing.embeddings": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Indexing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.indexing.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Indexing": "[0.1.0-dev, )",
+          "Granit.Indexing.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Indexing.Embeddings": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.*, )",
+          "Pgvector.EntityFrameworkCore": "[0.3.*, )"
+        }
+      },
+      "granit.indexing.privacy": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Indexing": "[0.1.0-dev, )",
+          "Granit.Privacy": "[0.1.0-dev, )"
+        }
+      },
       "granit.io": {
         "type": "Project",
         "dependencies": {
@@ -2681,7 +2869,46 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.Caching": "[0.1.0-dev, )"
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.ipgeolocation.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.ipgeolocation.ipapi": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.IpGeolocation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.ipgeolocation.maxmind": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.IpGeolocation": "[0.1.0-dev, )",
+          "MaxMind.GeoIP2": "[6.*, )"
+        }
+      },
+      "granit.languagedetection": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.languagedetection.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.LanguageDetection": "[0.1.0-dev, )"
+        }
+      },
+      "granit.languagedetection.trigram": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.LanguageDetection": "[0.1.0-dev, )"
         }
       },
       "granit.localization": {
@@ -2752,6 +2979,22 @@
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.multitenancy.auditing": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Auditing": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.multitenancy.authorization": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )"
         }
       },
       "granit.multitenancy.endpoints": {
@@ -3042,6 +3285,50 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.openapi.generation": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.openapi.generator": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI.Endpoints": "[0.1.0-dev, )",
+          "Granit.Auditing.Endpoints": "[0.1.0-dev, )",
+          "Granit.Authentication.ApiKeys.Endpoints": "[0.1.0-dev, )",
+          "Granit.Authorization.Endpoints": "[0.1.0-dev, )",
+          "Granit.BackgroundJobs.Endpoints": "[0.1.0-dev, )",
+          "Granit.Bff.Endpoints": "[0.1.0-dev, )",
+          "Granit.BlobStorage.Endpoints": "[0.1.0-dev, )",
+          "Granit.DataExchange.Endpoints": "[0.1.0-dev, )",
+          "Granit.DataLookup.Endpoints": "[0.1.0-dev, )",
+          "Granit.Diagnostics.Endpoints": "[0.1.0-dev, )",
+          "Granit.Features.Endpoints": "[0.1.0-dev, )",
+          "Granit.Hostnames.Endpoints": "[0.1.0-dev, )",
+          "Granit.Http.Cookies.Endpoints": "[0.1.0-dev, )",
+          "Granit.Http.SecurityHeaders.Endpoints": "[0.1.0-dev, )",
+          "Granit.Identity.Endpoints": "[0.1.0-dev, )",
+          "Granit.Identity.Local.Endpoints": "[0.1.0-dev, )",
+          "Granit.Localization.Endpoints": "[0.1.0-dev, )",
+          "Granit.MultiTenancy.Endpoints": "[0.1.0-dev, )",
+          "Granit.Notifications.Endpoints": "[0.1.0-dev, )",
+          "Granit.OpenApi.Generation": "[0.1.0-dev, )",
+          "Granit.OpenIddict.Endpoints": "[0.1.0-dev, )",
+          "Granit.Presence.Endpoints": "[0.1.0-dev, )",
+          "Granit.Privacy.Endpoints": "[0.1.0-dev, )",
+          "Granit.Scheduling.Endpoints": "[0.1.0-dev, )",
+          "Granit.Settings.Endpoints": "[0.1.0-dev, )",
+          "Granit.Templating.Endpoints": "[0.1.0-dev, )",
+          "Granit.Timeline.Endpoints": "[0.1.0-dev, )",
+          "Granit.Validation.Endpoints": "[0.1.0-dev, )",
+          "Granit.Webhooks.Endpoints": "[0.1.0-dev, )",
+          "Granit.Workflow.Endpoints": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.OpenApi": "[10.*, )",
+          "Microsoft.Extensions.ApiDescription.Server": "[10.*, )"
+        }
+      },
       "granit.openiddict": {
         "type": "Project",
         "dependencies": {
@@ -3177,6 +3464,30 @@
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
+      "granit.presence.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Presence": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
+      "granit.presence.notifications": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
+          "Granit.Presence": "[0.1.0-dev, )"
+        }
+      },
+      "granit.presence.wolverine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Identity.Local": "[0.1.0-dev, )",
+          "Granit.Presence": "[0.1.0-dev, )",
+          "Granit.Wolverine": "[0.1.0-dev, )",
+          "WolverineFx": "[6.*, )"
+        }
+      },
       "granit.privacy": {
         "type": "Project",
         "dependencies": {
@@ -3193,11 +3504,27 @@
           "Granit.Privacy": "[0.1.0-dev, )"
         }
       },
+      "granit.privacy.auditing": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Auditing": "[0.1.0-dev, )",
+          "Granit.Privacy": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.privacy.backgroundjobs": {
         "type": "Project",
         "dependencies": {
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Privacy": "[0.1.0-dev, )"
+        }
+      },
+      "granit.privacy.backgroundjobs.wolverine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Privacy.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Wolverine": "[0.1.0-dev, )",
+          "WolverineFx": "[6.*, )"
         }
       },
       "granit.privacy.blobstorage": {
@@ -3254,6 +3581,14 @@
         "dependencies": {
           "Granit.Http.Cookies": "[0.1.0-dev, )",
           "Granit.Privacy.Regulations": "[0.1.0-dev, )"
+        }
+      },
+      "granit.privacy.vault": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Privacy": "[0.1.0-dev, )",
+          "Granit.Privacy.BlobStorage": "[0.1.0-dev, )",
+          "Granit.Vault": "[0.1.0-dev, )"
         }
       },
       "granit.queryengine": {
@@ -3474,6 +3809,73 @@
           "Microsoft.EntityFrameworkCore.Sqlite": "[10.*, )"
         }
       },
+      "granit.textextraction": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.textextraction.email": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Html.AngleSharp": "[0.1.0-dev, )",
+          "Granit.TextExtraction": "[0.1.0-dev, )",
+          "MimeKit": "[4.*, )"
+        }
+      },
+      "granit.textextraction.ocr.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.TextExtraction": "[0.1.0-dev, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.textextraction.ocr.tesseract": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.TextExtraction": "[0.1.0-dev, )",
+          "SixLabors.ImageSharp": "[2.*, )",
+          "Tesseract": "[5.*, )"
+        }
+      },
+      "granit.textextraction.office": {
+        "type": "Project",
+        "dependencies": {
+          "DocumentFormat.OpenXml": "[3.*, )",
+          "Granit.TextExtraction": "[0.1.0-dev, )"
+        }
+      },
+      "granit.textextraction.pdf": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.TextExtraction": "[0.1.0-dev, )",
+          "PdfPig": "[0.1.*, )"
+        }
+      },
+      "granit.textextraction.pdf.ocr": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.TextExtraction": "[0.1.0-dev, )",
+          "Granit.TextExtraction.Pdf": "[0.1.0-dev, )",
+          "PDFtoImage": "[5.*, )",
+          "PdfPig": "[0.1.*, )"
+        }
+      },
+      "granit.textextraction.text": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Html.AngleSharp": "[0.1.0-dev, )",
+          "Granit.TextExtraction": "[0.1.0-dev, )",
+          "Markdig": "[0.*, )"
+        }
+      },
+      "granit.textextraction.tika": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.TextExtraction": "[0.1.0-dev, )"
+        }
+      },
       "granit.timeline": {
         "type": "Project",
         "dependencies": {
@@ -3490,6 +3892,13 @@
           "Granit.AI": "[0.1.0-dev, )",
           "Granit.Timeline": "[0.1.0-dev, )",
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.timeline.auditing": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Auditing": "[0.1.0-dev, )",
+          "Granit.Timeline": "[0.1.0-dev, )"
         }
       },
       "granit.timeline.endpoints": {
@@ -3528,7 +3937,22 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.IpGeolocation": "[0.1.0-dev, )"
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.usersessions.anomalydetection": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.usersessions.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.validation": {
@@ -3775,6 +4199,15 @@
         "resolved": "1.5.0",
         "contentHash": "REAdFOAlTxr6yqmxWFFLLMB/+uvIS3N6tXXUAWjoexA0LsQB/CfZYadg+z+DkcpAwJk8gF1VF4YLsq4U1Gficg=="
       },
+      "Anthropic": {
+        "type": "CentralTransitive",
+        "requested": "[12.*, )",
+        "resolved": "12.29.0",
+        "contentHash": "KMYq0TsBRqaZjXbgj1NMhPzs46GliQfLuBbA5L0fqWUCnaV0Csus0ImJK5fjYm4CnrE7GY+2MJI8i5Z7UrPG8g==",
+        "dependencies": {
+          "Microsoft.Extensions.AI.Abstractions": "10.5.1"
+        }
+      },
       "Asp.Versioning.Mvc": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
@@ -3961,10 +4394,20 @@
       "DocumentFormat.OpenXml": {
         "type": "CentralTransitive",
         "requested": "[3.*, )",
-        "resolved": "3.1.1",
-        "contentHash": "2z9QBzeTLNNKWM9SaOSDMegfQk/7hDuElOsmF77pKZMkFRP/GHA/W/4yOAQD9kn15N/FsFxHn3QVYkatuZghiA==",
+        "resolved": "3.5.1",
+        "contentHash": "zxdOf5VVCe/uNklbRhj8dVBzQGj3DoqkUuqOp9cAZVuN8mNYDjof1lvSQA2OQNr8Ptc9d7pbA7Azq/ReaI3FpA==",
         "dependencies": {
-          "DocumentFormat.OpenXml.Framework": "3.1.1"
+          "DocumentFormat.OpenXml.Framework": "3.5.1"
+        }
+      },
+      "Elastic.Clients.Elasticsearch": {
+        "type": "CentralTransitive",
+        "requested": "[8.*, )",
+        "resolved": "8.19.23",
+        "contentHash": "HTA5Lzk6agTbJW4ke60Tgyd6V1Xdpml/Q9SIphnfzeRRmai4zuR/2zn0BD6JPq12+eZdFsDies43975OprPulw==",
+        "dependencies": {
+          "Elastic.Esql": "0.11.0",
+          "Elastic.Transport": "0.17.1"
         }
       },
       "Fido2.AspNet": {
@@ -4060,6 +4503,21 @@
         "contentHash": "1nUAVLxM9fhT/78we6/AGsCesnpn5dRNLLeRqOfr52Wnk87pzVwo5YMTMyqnmoXrYc7piGhmayiMA/OgDluIjg==",
         "dependencies": {
           "MimeKit": "4.17.0"
+        }
+      },
+      "Markdig": {
+        "type": "CentralTransitive",
+        "requested": "[0.*, )",
+        "resolved": "0.45.0",
+        "contentHash": "ObNLcA1b+0lpNNoEg256g9faMeJZi35wZW0AnKJ4nGPJe+5qkwnV26kUvQTHuanFnSX9SdvPzOO41BVJ6XarAg=="
+      },
+      "MaxMind.GeoIP2": {
+        "type": "CentralTransitive",
+        "requested": "[6.*, )",
+        "resolved": "6.0.0",
+        "contentHash": "DeyQ4h/y8TNwphZKLcJZHTmPesdBXhTlKGEUj2RFgeJqPTPSNgTykypQokdq3DE4vcNJFyMOgunvYbOC7jLG2A==",
+        "dependencies": {
+          "MaxMind.Db": "5.1.0"
         }
       },
       "MessagePack": {
@@ -4261,6 +4719,12 @@
           "Microsoft.Extensions.AI.Abstractions": "10.7.0",
           "OpenAI": "2.11.0"
         }
+      },
+      "Microsoft.Extensions.ApiDescription.Server": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.9",
+        "contentHash": "n1m7EAbCbHMGiTy++F+mLSan4MrZe0t00XEpJrkai6BFpB6lwEcirflI9FiMm4G4u55h/2RnWToYBDwS+MnN6g=="
       },
       "Microsoft.Extensions.Caching.Hybrid": {
         "type": "CentralTransitive",
@@ -4540,6 +5004,31 @@
         "resolved": "0.1.14",
         "contentHash": "V2Anq0Yvyn3bGGG8WCQxqEAshG0KHIehB0QOotCz14vTkEk1PR3ErPOSmbnEsyOewhdF3G5XpQHywK2L50Xu+A=="
       },
+      "PDFtoImage": {
+        "type": "CentralTransitive",
+        "requested": "[5.*, )",
+        "resolved": "5.2.1",
+        "contentHash": "tqCcLRuEc517UJeKy+gHmhjtLcvpE9/UXWgDtU8t4GR+2NQx0SimBDVKkFxGsLlMUHEHuy58dlyfXlo5Sf1jjw==",
+        "dependencies": {
+          "SkiaSharp": "3.119.2",
+          "SkiaSharp.NativeAssets.Linux.NoDependencies": "3.119.2",
+          "SkiaSharp.NativeAssets.Win32": "3.119.2",
+          "SkiaSharp.NativeAssets.macOS": "3.119.2",
+          "bblanchon.PDFium.Linux": "147.0.7690",
+          "bblanchon.PDFium.Win32": "147.0.7690",
+          "bblanchon.PDFium.macOS": "147.0.7690"
+        }
+      },
+      "Pgvector.EntityFrameworkCore": {
+        "type": "CentralTransitive",
+        "requested": "[0.3.*, )",
+        "resolved": "0.3.0",
+        "contentHash": "HVMcglKLOg979w67k8DOvKO+xJvfBHv/GcAgv/fI8alK8zp9oIYJUYP9BSV6n6+3GwkfynAJ77euwow4/c7HoA==",
+        "dependencies": {
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.1",
+          "Pgvector": "0.3.2"
+        }
+      },
       "PuppeteerSharp": {
         "type": "CentralTransitive",
         "requested": "[24.*, )",
@@ -4597,6 +5086,12 @@
           "Serilog": "4.2.0"
         }
       },
+      "SixLabors.ImageSharp": {
+        "type": "CentralTransitive",
+        "requested": "[2.*, )",
+        "resolved": "2.1.13",
+        "contentHash": "zmVHZR13XE477TBAVXE71VcMhqhiv1PbzMWIfuIDytVdBPl3KZlvYYBkqcuQSDdszVY2XHanW98VmDffoNzSSw=="
+      },
       "SmartFormat": {
         "type": "CentralTransitive",
         "requested": "[3.*, )",
@@ -4627,6 +5122,12 @@
         "requested": "[9.*, )",
         "resolved": "9.0.0",
         "contentHash": "iri00l/zIX9g4lHMY+Nz0qV1n40+jFYAmgsaiNn16xvt2RDwlqByNG4wgblagnDYxm3YSQQ0jLlC/7Xlk9CzyA=="
+      },
+      "Tesseract": {
+        "type": "CentralTransitive",
+        "requested": "[5.*, )",
+        "resolved": "5.2.0",
+        "contentHash": "YB7feJlrTWSXtK8+WaCcseGSPK/1r2d2FWeKGyndlrPwYClrzTlCoHD4/oQEUjKafmpkWlhTZZ7pxiRJYZgj6w=="
       },
       "VaultSharp": {
         "type": "CentralTransitive",

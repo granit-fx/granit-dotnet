@@ -124,6 +124,35 @@ public sealed class UserSessionAnomalyDetectorTests
         result.Level.ShouldBe(UserSessionRiskLevel.High);
     }
 
+    [Fact]
+    public async Task AssessAsync_PerUserBudgetExhausted_SkipsAiAndKeepsHeuristic()
+    {
+        _currentTenant.IsAvailable.Returns(false);
+
+        // Per-user bucket (checked first) is exhausted; the tenant bucket would still admit. AI must be skipped.
+        _rateLimiter.TryAcquireAsync(
+                Arg.Is<string>(k => k.StartsWith("user_sessions_anomaly:user:", StringComparison.Ordinal)),
+                Arg.Any<int>(),
+                Arg.Any<CancellationToken>())
+            .Returns(ValueTask.FromResult(false));
+        _rateLimiter.TryAcquireAsync(
+                Arg.Is<string>(k => !k.StartsWith("user_sessions_anomaly:user:", StringComparison.Ordinal)),
+                Arg.Any<int>(),
+                Arg.Any<CancellationToken>())
+            .Returns(ValueTask.FromResult(true));
+
+        UserSessionAnomalyDetector sut = CreateDetector(useAi: true);
+        UserSessionDescriptor candidate = Session("s2", Brussels, Desktop, Now);
+        UserSessionDescriptor prior = Session("s1", Sydney, Desktop, Now.AddHours(-1));
+
+        UserSessionRiskAssessment result = await sut.AssessAsync(candidate, [prior], Ct);
+
+        // The AI layer never ran; the deterministic impossible-travel verdict survives.
+        result.Level.ShouldBe(UserSessionRiskLevel.High);
+        await _structuredCompletion.DidNotReceive().CompleteAsync<UserSessionRiskResponse>(
+            Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>());
+    }
+
     private UserSessionAnomalyDetector CreateDetector(bool useAi = false) =>
         new(
             _structuredCompletion,

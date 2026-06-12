@@ -43,6 +43,14 @@ internal sealed partial class DefaultIpGeolocationResolver : IIpGeolocationResol
         _metrics = metrics;
         _logger = logger;
         _providers = OrderProviders(providers, _options.ProviderOrder);
+
+        // A plain SHA-256 cache key over the 2³² IPv4 space is fully enumerable offline: an actor with a dump of
+        // a shared cache could reverse every key back to the originating IP. Warn once (this is a singleton) when
+        // resolution is actually active but no HMAC secret is configured, so shared-cache deployments key the hash.
+        if (_providers.Count > 0 && string.IsNullOrEmpty(_options.CacheKeySecret))
+        {
+            LogUnkeyedCacheKey();
+        }
     }
 
     public async Task<GeoLocation?> ResolveAsync(string? ipAddress, CancellationToken cancellationToken = default)
@@ -193,4 +201,13 @@ internal sealed partial class DefaultIpGeolocationResolver : IIpGeolocationResol
         Level = LogLevel.Warning,
         Message = "Configured IP geolocation provider '{Provider}' is not registered and will be skipped.")]
     private partial void LogUnknownProvider(string provider);
+
+    [LoggerMessage(
+        EventId = 3,
+        Level = LogLevel.Warning,
+        Message = "IP geolocation cache keys use an unkeyed SHA-256 hash. Over a shared cache this is reversible "
+            + "to the originating IPv4 address from a cache dump (GDPR personal data). Set "
+            + "'IpGeolocation:CacheKeySecret' (sourced from configuration/Vault, stable across instances) to key "
+            + "the hash with HMAC-SHA-256.")]
+    private partial void LogUnkeyedCacheKey();
 }

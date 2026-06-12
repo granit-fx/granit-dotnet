@@ -13,10 +13,12 @@ Part of the [granit](https://granit-fx.dev) framework.
 ## How it works
 
 The provider calls `GET {BaseAddress}/{ip}/json`, sending the API token as a
-`Bearer` header (never in the URL). Failures are caught internally and the request
-URI — which contains the IP — is never logged; only a failure category is. The
-`Granit.IpGeolocation` resolver caches the result, so an installed distributed
-cache means one API call per IP per cluster.
+`Bearer` header (never in the URL). Failures are caught internally and logged with a
+failure category only — never the request URI. Because the URI carries the IP in its
+path, the default `HttpClient` factory logging (which records the URI at `Information`)
+is removed for this client, and the redaction handler scrubs the IP from the outbound
+trace span. The `Granit.IpGeolocation` resolver caches the result, so an installed
+distributed cache means one API call per IP per cluster.
 
 ## Registration
 
@@ -54,6 +56,8 @@ builder.AddGranitIpGeolocationIpApi();
 - The token is sent as a header, not a query parameter.
 - The IP is stripped from the outbound HTTP trace (`url.full` / `url.path`) by a
   redaction handler, so it does not leak into trace exporters.
+- The default `HttpClient` request logging is removed for this client, so the IP-bearing
+  request URI is never written to the log pipeline (only trace and logs are both covered).
 - The response body is size-capped (`MaxResponseSizeBytes`) — a third-party response
   is untrusted input re-entering the process.
 - **Cost / denial-of-wallet:** each distinct public IP triggers one API call before

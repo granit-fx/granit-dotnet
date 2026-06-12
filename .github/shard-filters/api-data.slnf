@@ -67,6 +67,7 @@
       "src/Granit.Identity/Granit.Identity.csproj",
       "src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj",
       "src/Granit.Imaging/Granit.Imaging.csproj",
+      "src/Granit.IpGeolocation.Abstractions/Granit.IpGeolocation.Abstractions.csproj",
       "src/Granit.IpGeolocation/Granit.IpGeolocation.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
       "src/Granit.MultiTenancy.EntityFrameworkCore/Granit.MultiTenancy.EntityFrameworkCore.csproj",

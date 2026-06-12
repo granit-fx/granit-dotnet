@@ -141,7 +141,19 @@ internal sealed class UserSessionAnomalyDetector(
         string? tenantId,
         CancellationToken cancellationToken)
     {
-        string bucketKey = $"user_sessions_anomaly:{tenantId ?? "global"}";
+        string tenantScope = tenantId ?? "global";
+
+        // Per-user cap first so one noisy subject cannot drain the shared tenant budget and silently downgrade
+        // everyone else's detection to heuristics; then the per-tenant cost ceiling.
+        string userBucketKey = $"user_sessions_anomaly:user:{tenantScope}:{candidate.UserId ?? "anonymous"}";
+        if (!await rateLimiter.TryAcquireAsync(userBucketKey, opts.MaxAiCallsPerHourPerUser, cancellationToken)
+            .ConfigureAwait(false))
+        {
+            metrics.RecordAiCall(tenantId, "rate_limited");
+            return null;
+        }
+
+        string bucketKey = $"user_sessions_anomaly:{tenantScope}";
         if (!await rateLimiter.TryAcquireAsync(bucketKey, opts.MaxAiCallsPerHourPerTenant, cancellationToken)
             .ConfigureAwait(false))
         {
@@ -201,14 +213,37 @@ internal sealed class UserSessionAnomalyDetector(
         return builder.ToString();
     }
 
-    // Coarse features only — never the raw IP.
+    // Coarse features only — never the raw IP. country/city originate from a third-party geolocation provider
+    // (untrusted egress response): sanitize them to a flat token before interpolation so a crafted value cannot
+    // inject newlines/structure into the data block the model is told to treat as untrusted.
     private static string DescribeSession(UserSessionDescriptor session)
     {
-        string country = session.Location?.CountryCode ?? "unknown";
-        string city = session.Location?.City ?? "unknown";
+        string country = Sanitize(session.Location?.CountryCode);
+        string city = Sanitize(session.Location?.City);
         string device = DeviceFingerprint.Family(session.UserAgent);
         DateTimeOffset at = session.LastAccessedAt ?? session.CreatedAt;
         return string.Create(CultureInfo.InvariantCulture, $"country={country} city={city} device={device} at={at:O}");
+    }
+
+    // Keeps letters, digits, spaces, and a small punctuation set; collapses anything else (control chars,
+    // newlines, '=') to '_' and caps the length, so geolocation strings stay one flat, bounded token.
+    private static string Sanitize(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "unknown";
+        }
+
+        ReadOnlySpan<char> trimmed = value.AsSpan().Trim();
+        int length = Math.Min(trimmed.Length, 64);
+        Span<char> buffer = stackalloc char[length];
+        for (int i = 0; i < length; i++)
+        {
+            char c = trimmed[i];
+            buffer[i] = char.IsLetterOrDigit(c) || c is ' ' or '-' or '.' or ',' or '\'' ? c : '_';
+        }
+
+        return new string(buffer);
     }
 
     private static UserSessionRiskAssessment MapAiResponse(UserSessionRiskResponse response)

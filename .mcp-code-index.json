@@ -1151,6 +1151,7 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.Identity",
+        "Granit.IpGeolocation",
         "Granit.QueryEngine",
         "Granit.QueryEngine.AspNetCore",
         "Granit.UserSessions.Abstractions",
@@ -1425,7 +1426,15 @@
       "name": "Granit.IpGeolocation",
       "deps": [
         "Granit",
-        "Granit.Caching"
+        "Granit.Caching",
+        "Granit.IpGeolocation.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.IpGeolocation.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -2525,7 +2534,7 @@
       "name": "Granit.UserSessions.Abstractions",
       "deps": [
         "Granit",
-        "Granit.IpGeolocation"
+        "Granit.IpGeolocation.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -24019,7 +24028,7 @@
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/GranitIdentityEndpointsModule.cs",
-      "line": 37,
+      "line": 39,
       "members": [
         {
           "name": "ConfigureServices",
@@ -30014,8 +30023,8 @@
       "name": "GeoLocation",
       "fqn": "Granit.IpGeolocation.GeoLocation",
       "kind": "record",
-      "project": "Granit.IpGeolocation",
-      "file": "src/Granit.IpGeolocation/GeoLocation.cs",
+      "project": "Granit.IpGeolocation.Abstractions",
+      "file": "src/Granit.IpGeolocation.Abstractions/GeoLocation.cs",
       "line": 12,
       "members": []
     },
@@ -49468,6 +49477,12 @@
           "returnType": "bool"
         },
         {
+          "name": "MaxAiCallsPerHourPerUser",
+          "kind": "property",
+          "signature": "int MaxAiCallsPerHourPerUser",
+          "returnType": "int"
+        },
+        {
           "name": "AiTimeoutSeconds",
           "kind": "property",
           "signature": "int AiTimeoutSeconds",
@@ -49551,7 +49566,7 @@
       "kind": "class",
       "project": "Granit.UserSessions.Abstractions",
       "file": "src/Granit.UserSessions.Abstractions/GranitUserSessionsAbstractionsModule.cs",
-      "line": 18,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureServices",
@@ -49629,7 +49644,7 @@
       "kind": "record",
       "project": "Granit.UserSessions.Abstractions",
       "file": "src/Granit.UserSessions.Abstractions/UserSessionRiskAssessment.cs",
-      "line": 10,
+      "line": 14,
       "members": [
         {
           "name": "new",

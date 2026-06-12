@@ -1,4 +1,3 @@
-using Granit.IpGeolocation;
 using Granit.Modularity;
 using Granit.UserSessions.Internal;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -14,7 +13,6 @@ namespace Granit.UserSessions;
 /// <c>Granit.UserSessions.AnomalyDetection</c> to replace the detector and
 /// <c>Granit.UserSessions.EntityFrameworkCore</c> to replace the risk store with a durable one.
 /// </remarks>
-[DependsOn(typeof(GranitIpGeolocationModule))]
 public sealed class GranitUserSessionsAbstractionsModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

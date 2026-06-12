@@ -2,6 +2,7 @@ using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
 using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Workspaces;
+using Granit.IpGeolocation;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.UserSessions;
@@ -31,6 +32,7 @@ namespace Granit.Identity.Endpoints;
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitIdentityModule),
+    typeof(GranitIpGeolocationModule),
     typeof(GranitUserSessionsAbstractionsModule),
     typeof(GranitValidationModule),
     typeof(GranitWorkspacesAbstractionsModule))]

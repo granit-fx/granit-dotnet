@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.IpGeolocation.Abstractions</PackageId>
+    <Description>Source-agnostic geographic contract for Granit: the GeoLocation read-model (city, region, country, coordinates) produced by IP geolocation and consumable by any module — e.g. user-session enrichment — without taking a runtime dependency on the Granit.IpGeolocation resolver engine.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

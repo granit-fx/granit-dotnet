@@ -6,7 +6,11 @@ namespace Granit.UserSessions;
 /// <param name="Level">Coarse risk classification.</param>
 /// <param name="Score">Normalized risk score in <c>[0, 1]</c>.</param>
 /// <param name="Reasons">Machine-readable reason codes that contributed (e.g. <c>"impossible_travel"</c>).</param>
-/// <param name="Explanation">Optional human-readable explanation (PII-safe).</param>
+/// <param name="Explanation">
+/// Optional human-readable explanation. When produced by the AI layer this is <strong>untrusted model output</strong>:
+/// the model is instructed to keep it PII-safe but that is not enforced. Treat it as such — sanitize and bound it
+/// before rendering to a user or writing it to logs/traces, and never persist it as-is.
+/// </param>
 public sealed record UserSessionRiskAssessment(
     UserSessionRiskLevel Level,
     double Score,

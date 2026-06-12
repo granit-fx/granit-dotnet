@@ -24,6 +24,15 @@ public sealed class UserSessionsAnomalyDetectionOptions
     [Range(1, int.MaxValue)]
     public int MaxAiCallsPerHourPerTenant { get; set; } = 500;
 
+    /// <summary>
+    /// Hard cap on AI calls per user per hour, enforced alongside <see cref="MaxAiCallsPerHourPerTenant"/>. Bounds
+    /// the blast radius of a single noisy user: without it, one subject could exhaust the whole tenant budget and
+    /// silently downgrade every other user's detection to heuristics. Over the cap, that user degrades to
+    /// heuristics while others keep the AI layer. Default: 50.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    public int MaxAiCallsPerHourPerUser { get; set; } = 50;
+
     /// <summary>Per-call AI timeout in seconds. On timeout, detection degrades to heuristics.</summary>
     [Range(1, 600)]
     public int AiTimeoutSeconds { get; set; } = 15;
