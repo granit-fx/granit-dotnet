@@ -31,10 +31,13 @@ public sealed record CookieDefinition(
     public string Path { get; init; } = "/";
 
     /// <summary>
-    /// Gets whether the cookie is marked as essential (bypasses GDPR consent banner suppression).
-    /// Only <see cref="CookieCategory.StrictlyNecessary"/> cookies should set this to <see langword="true"/>.
+    /// Gets whether the cookie is essential and therefore bypasses GDPR consent suppression.
+    /// Derived from <see cref="Category"/>: a cookie is essential <b>if and only if</b> it is
+    /// <see cref="CookieCategory.StrictlyNecessary"/>. Coupling the two by construction prevents a
+    /// strictly-necessary cookie from being consent-gated, or a consent-gated cookie from being
+    /// flagged essential.
     /// </summary>
-    public bool IsEssential { get; init; }
+    public bool IsEssential => Category == CookieCategory.StrictlyNecessary;
 
     /// <summary>
     /// Optional <c>Domain</c> attribute for the cookie. When set, the cookie is

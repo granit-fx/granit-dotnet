@@ -31,7 +31,6 @@ internal sealed class SessionCookieDefinitionContributor(
             "Server-side session identifier.")
         {
             SameSite = SameSiteMode.Strict,
-            IsEssential = true,
         };
     }
 }

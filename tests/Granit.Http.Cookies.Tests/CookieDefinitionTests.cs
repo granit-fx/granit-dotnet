@@ -35,12 +35,23 @@ public sealed class CookieDefinitionTests
         {
             SameSite = SameSiteMode.Strict,
             Path = "/",
-            IsEssential = true,
         };
 
         definition.SameSite.ShouldBe(SameSiteMode.Strict);
         definition.Path.ShouldBe("/");
-        definition.IsEssential.ShouldBeTrue();
+    }
+
+    [Theory]
+    [InlineData(CookieCategory.StrictlyNecessary, true)]
+    [InlineData(CookieCategory.Preferences, false)]
+    [InlineData(CookieCategory.Analytics, false)]
+    [InlineData(CookieCategory.Marketing, false)]
+    [InlineData(CookieCategory.SaleOrSharing, false)]
+    public void IsEssential_IsDerivedFromStrictlyNecessaryCategory(CookieCategory category, bool expected)
+    {
+        CookieDefinition definition = new("cookie", category, 1, true, "Test");
+
+        definition.IsEssential.ShouldBe(expected);
     }
 
     [Fact]

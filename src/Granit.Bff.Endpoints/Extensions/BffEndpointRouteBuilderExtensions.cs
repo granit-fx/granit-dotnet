@@ -68,7 +68,6 @@ public static class BffEndpointRouteBuilderExtensions
         {
             SameSite = SameSiteMode.Strict,
             Path = "/",
-            IsEssential = true,
         });
     }
 

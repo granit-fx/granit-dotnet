@@ -21582,6 +21582,12 @@
           "kind": "property",
           "signature": "string Path",
           "returnType": "string"
+        },
+        {
+          "name": "IsEssential",
+          "kind": "property",
+          "signature": "bool IsEssential",
+          "returnType": "bool"
         }
       ]
     },
