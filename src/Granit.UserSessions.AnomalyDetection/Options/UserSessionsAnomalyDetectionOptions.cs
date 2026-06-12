@@ -43,4 +43,14 @@ public sealed class UserSessionsAnomalyDetectionOptions
     /// </summary>
     [Range(1d, double.MaxValue)]
     public double MaxTravelKilometersPerHour { get; set; } = 1000d;
+
+    /// <summary>
+    /// When <c>true</c>, the raw client IP is carried on <c>SuspiciousUserSessionDetectedEto</c> so a
+    /// downstream consumer (e.g. the alert email) can display it. <strong>Opt-in</strong>: the default
+    /// (<c>false</c>) keeps alerts location-only. <strong>GDPR note:</strong> enabling this re-introduces the
+    /// raw IP — personal data — into the integration-event payload (and therefore the durable outbox row and the
+    /// resulting email), so only turn it on where that retention and exposure is justified and documented. The
+    /// IP is still never written to logs. Default: <c>false</c>.
+    /// </summary>
+    public bool IncludeClientIpInAlert { get; set; }
 }

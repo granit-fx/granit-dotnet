@@ -1,5 +1,7 @@
 using Granit.Events;
 using Granit.MultiTenancy;
+using Granit.UserSessions.AnomalyDetection.Options;
+using Microsoft.Extensions.Options;
 
 namespace Granit.UserSessions.AnomalyDetection.Internal;
 
@@ -22,6 +24,7 @@ internal sealed class DefaultUserSessionRiskEvaluator(
     IUserSessionRiskStore riskStore,
     TimeProvider timeProvider,
     ICurrentTenant currentTenant,
+    IOptions<UserSessionsAnomalyDetectionOptions> options,
     IDistributedEventBus? eventBus = null) : IUserSessionRiskEvaluator
 {
     public async Task<UserSessionRiskAssessment> EvaluateAsync(
@@ -55,7 +58,9 @@ internal sealed class DefaultUserSessionRiskEvaluator(
                             candidate.Location?.City,
                             candidate.Location?.CountryCode,
                             candidate.UserAgent,
-                            IpAddress: null, // raw IP withheld by default (GDPR); coarse location carried instead
+                            // Raw IP withheld by default (GDPR); coarse location carried instead. A deployment
+                            // can opt into raw-IP exposure on the alert via IncludeClientIpInAlert.
+                            options.Value.IncludeClientIpInAlert ? candidate.IpAddress : null,
                             now),
                         cancellationToken)
                     .ConfigureAwait(false);
