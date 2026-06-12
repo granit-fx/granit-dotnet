@@ -33,8 +33,8 @@ both project to `UserSessionDescriptor`, so a single enrichment pipeline
 
 Registering `GranitIdentityAbstractionsModule` wires safe defaults: no-op session and
 device providers, a no-op anomaly detector (`UserSessionRiskLevel.None`), and an
-in-memory risk store. Install `Granit.UserSessions.AnomalyDetection` to enable
-detection and `Granit.UserSessions.EntityFrameworkCore` for a durable,
+in-memory risk store. Install `Granit.Identity.AnomalyDetection` to enable
+detection and `Granit.Identity.EntityFrameworkCore` for a durable,
 cluster-shared risk store.
 
 ## Installation

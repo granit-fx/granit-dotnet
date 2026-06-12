@@ -1,7 +1,7 @@
 # Granit.Bff.UserSessions
 
 Makes the BFF the backend for `granit`'s **canonical user-session API**. Install it
-alongside `Granit.Bff` and `Granit.UserSessions.Endpoints` and a user's browser↔BFF
+alongside `Granit.Bff` and `Granit.Identity.Endpoints` and a user's browser↔BFF
 sessions surface — and revoke — through `/sessions`, with no BFF-specific client code.
 
 Part of the [granit](https://granit-fx.dev) framework.
