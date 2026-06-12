@@ -1,15 +1,15 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
-namespace Granit.UserSessions.AnomalyDetection.Diagnostics;
+namespace Granit.Identity.AnomalyDetection.Diagnostics;
 
 /// <summary>
-/// OpenTelemetry metrics for session anomaly detection. Meter: <c>Granit.UserSessions.AnomalyDetection</c>.
+/// OpenTelemetry metrics for session anomaly detection. Meter: <c>Granit.Identity.AnomalyDetection</c>.
 /// </summary>
 public sealed class UserSessionsAnomalyDetectionMetrics
 {
     /// <summary>The meter name.</summary>
-    public const string MeterName = "Granit.UserSessions.AnomalyDetection";
+    public const string MeterName = "Granit.Identity.AnomalyDetection";
 
     private const string TagTenantId = "tenant_id";
     private const string GlobalTenant = "global";

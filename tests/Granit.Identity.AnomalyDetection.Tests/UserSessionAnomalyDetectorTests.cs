@@ -1,16 +1,16 @@
 using System.Diagnostics.Metrics;
 using Granit.AI;
 using Granit.AI.RateLimiting;
+using Granit.Identity.AnomalyDetection.Diagnostics;
+using Granit.Identity.AnomalyDetection.Internal;
+using Granit.Identity.AnomalyDetection.Options;
 using Granit.IpGeolocation;
 using Granit.MultiTenancy;
-using Granit.UserSessions.AnomalyDetection.Diagnostics;
-using Granit.UserSessions.AnomalyDetection.Internal;
-using Granit.UserSessions.AnomalyDetection.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.AnomalyDetection.Tests;
+namespace Granit.Identity.AnomalyDetection.Tests;
 
 public sealed class UserSessionAnomalyDetectorTests
 {

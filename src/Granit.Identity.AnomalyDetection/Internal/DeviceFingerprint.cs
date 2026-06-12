@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.AnomalyDetection.Internal;
+namespace Granit.Identity.AnomalyDetection.Internal;
 
 /// <summary>Coarse device-family extraction from a User-Agent, stable across browser/OS version changes.</summary>
 internal static class DeviceFingerprint

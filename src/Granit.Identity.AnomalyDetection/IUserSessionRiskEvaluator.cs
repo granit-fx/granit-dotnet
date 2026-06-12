@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.AnomalyDetection;
+namespace Granit.Identity.AnomalyDetection;
 
 /// <summary>
 /// Orchestrates session risk evaluation: runs the anomaly detector, persists a non-<c>None</c> verdict to the

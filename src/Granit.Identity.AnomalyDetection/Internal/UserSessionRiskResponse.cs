@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.AnomalyDetection.Internal;
+namespace Granit.Identity.AnomalyDetection.Internal;
 
 /// <summary>Structured output shape requested from the AI model.</summary>
 internal sealed class UserSessionRiskResponse

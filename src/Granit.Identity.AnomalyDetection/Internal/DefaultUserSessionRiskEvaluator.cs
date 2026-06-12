@@ -1,9 +1,9 @@
 using Granit.Events;
+using Granit.Identity.AnomalyDetection.Options;
 using Granit.MultiTenancy;
-using Granit.UserSessions.AnomalyDetection.Options;
 using Microsoft.Extensions.Options;
 
-namespace Granit.UserSessions.AnomalyDetection.Internal;
+namespace Granit.Identity.AnomalyDetection.Internal;
 
 /// <summary>
 /// Default <see cref="IUserSessionRiskEvaluator"/>. Persists a non-<c>None</c> verdict to the durable store so

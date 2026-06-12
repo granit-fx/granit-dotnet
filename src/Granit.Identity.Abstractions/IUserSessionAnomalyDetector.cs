@@ -5,7 +5,7 @@ namespace Granit.Identity;
 /// </summary>
 /// <remarks>
 /// The default registration is a no-op returning <see cref="UserSessionRiskAssessment.None"/>. Install
-/// <c>Granit.UserSessions.AnomalyDetection</c> to enable heuristic (and optionally AI-assisted) detection.
+/// <c>Granit.Identity.AnomalyDetection</c> to enable heuristic (and optionally AI-assisted) detection.
 /// Implementations must never throw for evaluation failures — degrade to a lower-confidence verdict instead.
 /// </remarks>
 public interface IUserSessionAnomalyDetector

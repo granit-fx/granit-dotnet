@@ -1,7 +1,7 @@
 using Granit.IpGeolocation;
 using Granit.MultiTenancy;
 
-namespace Granit.UserSessions.AnomalyDetection.Handlers;
+namespace Granit.Identity.AnomalyDetection.Handlers;
 
 /// <summary>
 /// Consumes <see cref="UserSessionCreatedEto"/> and runs anomaly detection for the new session, off the login

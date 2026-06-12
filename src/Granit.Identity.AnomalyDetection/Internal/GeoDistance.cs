@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.AnomalyDetection.Internal;
+namespace Granit.Identity.AnomalyDetection.Internal;
 
 /// <summary>Great-circle distance helpers.</summary>
 internal static class GeoDistance

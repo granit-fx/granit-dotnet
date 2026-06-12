@@ -1,13 +1,13 @@
 using Granit.AI;
 using Granit.Diagnostics;
+using Granit.Identity.AnomalyDetection.Diagnostics;
+using Granit.Identity.AnomalyDetection.Internal;
+using Granit.Identity.AnomalyDetection.Options;
 using Granit.Modularity;
-using Granit.UserSessions.AnomalyDetection.Diagnostics;
-using Granit.UserSessions.AnomalyDetection.Internal;
-using Granit.UserSessions.AnomalyDetection.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Granit.UserSessions.AnomalyDetection;
+namespace Granit.Identity.AnomalyDetection;
 
 /// <summary>
 /// Granit module for opt-in session anomaly detection. Replaces the no-op
@@ -15,7 +15,7 @@ namespace Granit.UserSessions.AnomalyDetection;
 /// heuristic (and optionally AI-assisted) detector, and registers <see cref="IUserSessionRiskEvaluator"/>.
 /// </summary>
 [DependsOn(typeof(GranitAIModule), typeof(GranitIdentityAbstractionsModule))]
-public sealed class GranitUserSessionsAnomalyDetectionModule : GranitModule
+public sealed class GranitIdentityAnomalyDetectionModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

@@ -3,12 +3,12 @@ using System.Globalization;
 using System.Text;
 using Granit.AI;
 using Granit.AI.RateLimiting;
+using Granit.Identity.AnomalyDetection.Diagnostics;
+using Granit.Identity.AnomalyDetection.Options;
 using Granit.MultiTenancy;
-using Granit.UserSessions.AnomalyDetection.Diagnostics;
-using Granit.UserSessions.AnomalyDetection.Options;
 using Microsoft.Extensions.Options;
 
-namespace Granit.UserSessions.AnomalyDetection.Internal;
+namespace Granit.Identity.AnomalyDetection.Internal;
 
 /// <summary>
 /// Detects anomalous sessions with always-on deterministic heuristics (impossible travel, new country, new

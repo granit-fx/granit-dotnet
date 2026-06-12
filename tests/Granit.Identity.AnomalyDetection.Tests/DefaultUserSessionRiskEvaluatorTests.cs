@@ -1,14 +1,14 @@
 using Granit.Events;
+using Granit.Identity.AnomalyDetection.Internal;
+using Granit.Identity.AnomalyDetection.Options;
 using Granit.IpGeolocation;
 using Granit.MultiTenancy;
-using Granit.UserSessions.AnomalyDetection.Internal;
-using Granit.UserSessions.AnomalyDetection.Options;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.AnomalyDetection.Tests;
+namespace Granit.Identity.AnomalyDetection.Tests;
 
 /// <summary>
 /// Verifies the raw-IP opt-in gate on the published <see cref="SuspiciousUserSessionDetectedEto"/>:

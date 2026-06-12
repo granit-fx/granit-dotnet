@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.UserSessions.AnomalyDetection\Granit.UserSessions.AnomalyDetection.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.AnomalyDetection\Granit.Identity.AnomalyDetection.csproj" />
   </ItemGroup>
 
 </Project>

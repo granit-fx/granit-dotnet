@@ -1163,6 +1163,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.AnomalyDetection",
+      "deps": [
+        "Granit.AI",
+        "Granit.IpGeolocation.Abstractions",
+        "Granit.Identity.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity.Endpoints",
       "deps": [
         "Granit.Http.ApiDocumentation",
@@ -2548,15 +2557,6 @@
       "name": "Granit.Timing",
       "deps": [
         "Granit"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.UserSessions.AnomalyDetection",
-      "deps": [
-        "Granit.AI",
-        "Granit.IpGeolocation.Abstractions",
-        "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -23798,6 +23798,104 @@
           "kind": "property",
           "signature": "string EffectiveRootDirectory",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "UserSessionsAnomalyDetectionMetrics",
+      "fqn": "Granit.Identity.AnomalyDetection.Diagnostics.UserSessionsAnomalyDetectionMetrics",
+      "kind": "class",
+      "project": "Granit.Identity.AnomalyDetection",
+      "file": "src/Granit.Identity.AnomalyDetection/Diagnostics/UserSessionsAnomalyDetectionMetrics.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "RecordAiCall",
+          "kind": "method",
+          "signature": "RecordAiCall(string? tenantId, string outcome)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityAnomalyDetectionModule",
+      "fqn": "Granit.Identity.AnomalyDetection.GranitIdentityAnomalyDetectionModule",
+      "kind": "class",
+      "project": "Granit.Identity.AnomalyDetection",
+      "file": "src/Granit.Identity.AnomalyDetection/GranitIdentityAnomalyDetectionModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "UserSessionCreatedHandler",
+      "fqn": "Granit.Identity.AnomalyDetection.Handlers.UserSessionCreatedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.AnomalyDetection",
+      "file": "src/Granit.Identity.AnomalyDetection/Handlers/UserSessionCreatedHandler.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(UserSessionCreatedEto evt, ICurrentTenant currentTenant, IUserSessionRiskEvaluator evaluator, IUserSessionProvider sessionProvider, IIpGeolocationResolver geoResolver, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IUserSessionRiskEvaluator",
+      "fqn": "Granit.Identity.AnomalyDetection.IUserSessionRiskEvaluator",
+      "kind": "interface",
+      "project": "Granit.Identity.AnomalyDetection",
+      "file": "src/Granit.Identity.AnomalyDetection/IUserSessionRiskEvaluator.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "EvaluateAsync",
+          "kind": "method",
+          "signature": "EvaluateAsync(UserSessionDescriptor candidate, IReadOnlyList<UserSessionDescriptor> history, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UserSessionRiskAssessment>"
+        }
+      ]
+    },
+    {
+      "name": "UserSessionsAnomalyDetectionOptions",
+      "fqn": "Granit.Identity.AnomalyDetection.Options.UserSessionsAnomalyDetectionOptions",
+      "kind": "class",
+      "project": "Granit.Identity.AnomalyDetection",
+      "file": "src/Granit.Identity.AnomalyDetection/Options/UserSessionsAnomalyDetectionOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "UseAi",
+          "kind": "property",
+          "signature": "bool UseAi",
+          "returnType": "bool"
+        },
+        {
+          "name": "MaxAiCallsPerHourPerUser",
+          "kind": "property",
+          "signature": "int MaxAiCallsPerHourPerUser",
+          "returnType": "int"
+        },
+        {
+          "name": "AiTimeoutSeconds",
+          "kind": "property",
+          "signature": "int AiTimeoutSeconds",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxTravelKilometersPerHour",
+          "kind": "property",
+          "signature": "double MaxTravelKilometersPerHour",
+          "returnType": "double"
         }
       ]
     },
@@ -49801,104 +49899,6 @@
       "file": "src/Granit.Timing/ResolvedPeriod.cs",
       "line": 12,
       "members": []
-    },
-    {
-      "name": "UserSessionsAnomalyDetectionMetrics",
-      "fqn": "Granit.UserSessions.AnomalyDetection.Diagnostics.UserSessionsAnomalyDetectionMetrics",
-      "kind": "class",
-      "project": "Granit.UserSessions.AnomalyDetection",
-      "file": "src/Granit.UserSessions.AnomalyDetection/Diagnostics/UserSessionsAnomalyDetectionMetrics.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "RecordAiCall",
-          "kind": "method",
-          "signature": "RecordAiCall(string? tenantId, string outcome)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "GranitUserSessionsAnomalyDetectionModule",
-      "fqn": "Granit.UserSessions.AnomalyDetection.GranitUserSessionsAnomalyDetectionModule",
-      "kind": "class",
-      "project": "Granit.UserSessions.AnomalyDetection",
-      "file": "src/Granit.UserSessions.AnomalyDetection/GranitUserSessionsAnomalyDetectionModule.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "UserSessionCreatedHandler",
-      "fqn": "Granit.UserSessions.AnomalyDetection.Handlers.UserSessionCreatedHandler",
-      "kind": "class",
-      "project": "Granit.UserSessions.AnomalyDetection",
-      "file": "src/Granit.UserSessions.AnomalyDetection/Handlers/UserSessionCreatedHandler.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(UserSessionCreatedEto evt, ICurrentTenant currentTenant, IUserSessionRiskEvaluator evaluator, IUserSessionProvider sessionProvider, IIpGeolocationResolver geoResolver, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IUserSessionRiskEvaluator",
-      "fqn": "Granit.UserSessions.AnomalyDetection.IUserSessionRiskEvaluator",
-      "kind": "interface",
-      "project": "Granit.UserSessions.AnomalyDetection",
-      "file": "src/Granit.UserSessions.AnomalyDetection/IUserSessionRiskEvaluator.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "EvaluateAsync",
-          "kind": "method",
-          "signature": "EvaluateAsync(UserSessionDescriptor candidate, IReadOnlyList<UserSessionDescriptor> history, CancellationToken cancellationToken = default)",
-          "returnType": "Task<UserSessionRiskAssessment>"
-        }
-      ]
-    },
-    {
-      "name": "UserSessionsAnomalyDetectionOptions",
-      "fqn": "Granit.UserSessions.AnomalyDetection.Options.UserSessionsAnomalyDetectionOptions",
-      "kind": "class",
-      "project": "Granit.UserSessions.AnomalyDetection",
-      "file": "src/Granit.UserSessions.AnomalyDetection/Options/UserSessionsAnomalyDetectionOptions.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "UseAi",
-          "kind": "property",
-          "signature": "bool UseAi",
-          "returnType": "bool"
-        },
-        {
-          "name": "MaxAiCallsPerHourPerUser",
-          "kind": "property",
-          "signature": "int MaxAiCallsPerHourPerUser",
-          "returnType": "int"
-        },
-        {
-          "name": "AiTimeoutSeconds",
-          "kind": "property",
-          "signature": "int AiTimeoutSeconds",
-          "returnType": "int"
-        },
-        {
-          "name": "MaxTravelKilometersPerHour",
-          "kind": "property",
-          "signature": "double MaxTravelKilometersPerHour",
-          "returnType": "double"
-        }
-      ]
     },
     {
       "name": "GranitUserSessionsNotificationsModule",

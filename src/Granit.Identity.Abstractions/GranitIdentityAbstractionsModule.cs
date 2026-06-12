@@ -12,7 +12,7 @@ namespace Granit.Identity;
 /// <remarks>
 /// Registers safe no-op / in-memory defaults so the contracts resolve everywhere. Install a backend
 /// integration package (BFF, OpenIddict, Keycloak) to replace the session/device providers,
-/// <c>Granit.UserSessions.AnomalyDetection</c> to replace the detector, and
+/// <c>Granit.Identity.AnomalyDetection</c> to replace the detector, and
 /// <c>Granit.Identity.EntityFrameworkCore</c> to replace the risk store with a durable one.
 /// </remarks>
 public sealed class GranitIdentityAbstractionsModule : GranitModule

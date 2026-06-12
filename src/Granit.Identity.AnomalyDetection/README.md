@@ -1,6 +1,6 @@
-# Granit.UserSessions.AnomalyDetection
+# Granit.Identity.AnomalyDetection
 
-Opt-in session anomaly detection for `Granit.UserSessions`. Classifies a session's risk
+Opt-in session anomaly detection for `Granit.Identity`. Classifies a session's risk
 (`None`/`Low`/`Medium`/`High`) from always-on deterministic heuristics plus an optional AI
 layer, persists the verdict to `IUserSessionRiskStore`, and raises an event for high risk.
 
@@ -48,17 +48,3 @@ or step-up authentication.
 | `MaxAiCallsPerHourPerTenant` | `500` | AI call cap per tenant/hour |
 | `AiTimeoutSeconds` | `15` | Per-call AI timeout |
 | `MaxTravelKilometersPerHour` | `1000` | Impossible-travel speed threshold |
-
-## Privacy (GDPR)
-
-The AI layer never receives the raw IP — only coarse, derived features. Enable `UseAi` only when
-sending those features to your configured model provider is approved.
-
-## Dependencies
-
-- `Granit.AI` (`IStructuredCompletion`)
-- `Granit.UserSessions.Abstractions`
-
-## License
-
-Apache-2.0

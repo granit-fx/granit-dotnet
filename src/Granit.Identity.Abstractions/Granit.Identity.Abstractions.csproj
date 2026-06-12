@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Identity.Abstractions.Tests" />
-    <InternalsVisibleTo Include="Granit.UserSessions.AnomalyDetection" />
-    <InternalsVisibleTo Include="Granit.UserSessions.AnomalyDetection.Tests" />
+    <InternalsVisibleTo Include="Granit.Identity.AnomalyDetection" />
+    <InternalsVisibleTo Include="Granit.Identity.AnomalyDetection.Tests" />
     <InternalsVisibleTo Include="Granit.Identity.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.Identity.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />

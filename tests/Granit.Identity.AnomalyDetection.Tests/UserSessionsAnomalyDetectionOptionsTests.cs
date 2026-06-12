@@ -1,8 +1,8 @@
-using Granit.UserSessions.AnomalyDetection.Options;
+using Granit.Identity.AnomalyDetection.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.AnomalyDetection.Tests;
+namespace Granit.Identity.AnomalyDetection.Tests;
 
 public sealed class UserSessionsAnomalyDetectionOptionsTests
 {

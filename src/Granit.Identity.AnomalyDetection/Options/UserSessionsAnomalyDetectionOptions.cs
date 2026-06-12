@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Granit.UserSessions.AnomalyDetection.Options;
+namespace Granit.Identity.AnomalyDetection.Options;
 
 /// <summary>
 /// Configuration for session anomaly detection, bound from <c>"UserSessions:AnomalyDetection"</c>.

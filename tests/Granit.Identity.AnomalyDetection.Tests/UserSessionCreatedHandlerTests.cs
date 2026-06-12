@@ -1,10 +1,10 @@
+using Granit.Identity.AnomalyDetection.Handlers;
 using Granit.IpGeolocation;
 using Granit.MultiTenancy;
-using Granit.UserSessions.AnomalyDetection.Handlers;
 using NSubstitute;
 using Xunit;
 
-namespace Granit.UserSessions.AnomalyDetection.Tests;
+namespace Granit.Identity.AnomalyDetection.Tests;
 
 public sealed class UserSessionCreatedHandlerTests
 {

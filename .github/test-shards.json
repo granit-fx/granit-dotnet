@@ -241,7 +241,7 @@
         "tests/Granit.Settings.EntityFrameworkCore.Tests",
         "tests/Granit.Settings.Tests",
         "tests/Granit.Identity.Abstractions.Tests",
-        "tests/Granit.UserSessions.AnomalyDetection.Tests",
+        "tests/Granit.Identity.AnomalyDetection.Tests",
         "tests/Granit.UserSessions.Notifications.Tests",
         "tests/Granit.Wolverine.Encryption.Tests",
         "tests/Granit.Wolverine.Postgresql.Tests",

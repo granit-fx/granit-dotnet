@@ -2604,6 +2604,14 @@
           "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
         }
       },
+      "granit.identity.anomalydetection": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.identity.endpoints": {
         "type": "Project",
         "dependencies": {
@@ -3906,14 +3914,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.usersessions.anomalydetection": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.AI": "[0.1.0-dev, )",
-          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
-          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.usersessions.notifications": {
