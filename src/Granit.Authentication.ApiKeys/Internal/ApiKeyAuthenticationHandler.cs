@@ -1,10 +1,14 @@
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using Granit.Auditing;
+using Granit.Auditing.Domain;
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Options;
 using Granit.Diagnostics;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -69,6 +73,8 @@ internal sealed partial class ApiKeyAuthenticationHandler(
         if (apiKey is null)
         {
             LogApiKeyNotFound(Logger);
+            await TryWriteFailureAuditAsync("invalid_api_key", apiKeyId: null, apiKeyName: null, tenantId: null)
+                .ConfigureAwait(false);
             return AuthenticateResult.Fail("Invalid API key.");
         }
 
@@ -78,12 +84,16 @@ internal sealed partial class ApiKeyAuthenticationHandler(
         if (apiKey.RevokedAt.HasValue)
         {
             LogApiKeyRevoked(Logger, apiKey.Id);
+            await TryWriteFailureAuditAsync("api_key_revoked", apiKey.Id, apiKey.Name, apiKey.TenantId)
+                .ConfigureAwait(false);
             return AuthenticateResult.Fail("API key has been revoked.");
         }
 
         if (apiKey.ExpiresAt.HasValue && apiKey.ExpiresAt.Value <= now)
         {
             LogApiKeyExpired(Logger, apiKey.Id);
+            await TryWriteFailureAuditAsync("api_key_expired", apiKey.Id, apiKey.Name, apiKey.TenantId)
+                .ConfigureAwait(false);
             return AuthenticateResult.Fail("API key has expired.");
         }
 
@@ -91,6 +101,8 @@ internal sealed partial class ApiKeyAuthenticationHandler(
         if (!CidrValidator.IsAllowed(Context.Connection.RemoteIpAddress, apiKey.AllowedCidrs))
         {
             LogIpNotAllowed(Logger, apiKey.Id, LogRedaction.IpAddress(Context.Connection.RemoteIpAddress?.ToString() ?? "unknown"));
+            await TryWriteFailureAuditAsync("ip_not_allowed", apiKey.Id, apiKey.Name, apiKey.TenantId)
+                .ConfigureAwait(false);
             return AuthenticateResult.Fail("IP address not in allowed CIDR ranges.");
         }
 
@@ -168,8 +180,54 @@ internal sealed partial class ApiKeyAuthenticationHandler(
         return new ClaimsPrincipal(identity);
     }
 
+    /// <summary>
+    /// Records an <see cref="AuditCategory.AccessDenied"/> audit row for a rejected API-key
+    /// authentication. No-op when <see cref="IAuditingWriter"/> is not registered. Successful
+    /// authentications are intentionally not audited per-request: a key authenticates on every
+    /// call, so what it does is attributed via <c>CreatedBy</c> on the entities it touches.
+    /// Audit failures are swallowed so a transient audit-store outage never blocks the request.
+    /// </summary>
+    private async Task TryWriteFailureAuditAsync(string reason, Guid? apiKeyId, string? apiKeyName, Guid? tenantId)
+    {
+        IAuditingWriter? auditingWriter = Context.RequestServices?.GetService<IAuditingWriter>();
+        if (auditingWriter is null)
+        {
+            return;
+        }
+
+        string? ipAddress = Context.Connection.RemoteIpAddress?.ToString();
+        string? userAgent = Request.Headers.UserAgent.ToString();
+        if (string.IsNullOrEmpty(userAgent))
+        {
+            userAgent = null;
+        }
+
+        AuditEntry entry = AuthenticationAuditEntry.CreateFailure(
+            clock.Now,
+            userId: apiKeyId?.ToString(),
+            userName: apiKeyName,
+            method: "api_key",
+            reason: reason,
+            tenantId: tenantId,
+            ipAddress: ipAddress,
+            userAgent: userAgent,
+            correlationId: Activity.Current?.Id);
+
+        try
+        {
+            await auditingWriter.WriteAsync(entry, Context.RequestAborted).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogAuditWriteFailed(Logger, ex);
+        }
+    }
+
     [LoggerMessage(Level = LogLevel.Debug, Message = "API key not found for provided token hash.")]
     private static partial void LogApiKeyNotFound(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "API key authentication: failed to write AccessDenied audit entry — request continues.")]
+    private static partial void LogAuditWriteFailed(ILogger logger, Exception exception);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "API key {ApiKeyId} has been revoked.")]
     private static partial void LogApiKeyRevoked(ILogger logger, Guid apiKeyId);

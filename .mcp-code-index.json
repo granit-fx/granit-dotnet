@@ -185,6 +185,7 @@
         "Granit",
         "Granit.Timing",
         "Granit.Guids",
+        "Granit.Auditing.Abstractions",
         "Granit.Http.ExceptionHandling",
         "Granit.DataExchange.Abstractions",
         "Granit.QueryEngine.Abstractions",

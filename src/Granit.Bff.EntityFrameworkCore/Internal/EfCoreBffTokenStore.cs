@@ -123,6 +123,7 @@ internal sealed partial class EfCoreBffTokenStore(
         return await db.Sessions
             .AsNoTracking()
             .Where(s => s.FrontendName == frontendName && s.UserId == userId && s.ExpiresAt > clock.Now)
+            .OrderByDescending(s => s.CreatedAt)
             .Select(s => s.SessionId)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
