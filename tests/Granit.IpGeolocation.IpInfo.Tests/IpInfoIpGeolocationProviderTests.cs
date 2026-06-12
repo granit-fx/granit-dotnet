@@ -1,15 +1,15 @@
 using System.Net;
 using System.Text;
-using Granit.IpGeolocation.IpApi.Internal;
-using Granit.IpGeolocation.IpApi.Options;
+using Granit.IpGeolocation.IpInfo.Internal;
+using Granit.IpGeolocation.IpInfo.Options;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.IpGeolocation.IpApi.Tests;
+namespace Granit.IpGeolocation.IpInfo.Tests;
 
-public sealed class IpApiIpGeolocationProviderTests
+public sealed class IpInfoIpGeolocationProviderTests
 {
     private const string PublicIp = "8.8.8.8";
 
@@ -21,7 +21,7 @@ public sealed class IpApiIpGeolocationProviderTests
         const string json = """
             {"ip":"8.8.8.8","city":"Mountain View","region":"California","country":"US","loc":"37.4056,-122.0775"}
             """;
-        IpApiIpGeolocationProvider sut = CreateProvider(JsonResponse(json), out _);
+        IpInfoIpGeolocationProvider sut = CreateProvider(JsonResponse(json), out _);
 
         GeoLocation? result = await sut.ResolveAsync(PublicIp, Ct);
 
@@ -37,7 +37,7 @@ public sealed class IpApiIpGeolocationProviderTests
     [Fact]
     public async Task ResolveAsync_WithToken_SendsBearerAuthorizationHeader()
     {
-        IpApiIpGeolocationProvider sut = CreateProvider(
+        IpInfoIpGeolocationProvider sut = CreateProvider(
             JsonResponse("""{"country":"US"}"""),
             out StubHttpMessageHandler handler,
             token: "secret-token");
@@ -53,7 +53,7 @@ public sealed class IpApiIpGeolocationProviderTests
     [Fact]
     public async Task ResolveAsync_NonSuccessStatus_ReturnsNull()
     {
-        IpApiIpGeolocationProvider sut = CreateProvider(
+        IpInfoIpGeolocationProvider sut = CreateProvider(
             new HttpResponseMessage(HttpStatusCode.NotFound), out _);
 
         (await sut.ResolveAsync(PublicIp, Ct)).ShouldBeNull();
@@ -62,7 +62,7 @@ public sealed class IpApiIpGeolocationProviderTests
     [Fact]
     public async Task ResolveAsync_BogonResponse_ReturnsNull()
     {
-        IpApiIpGeolocationProvider sut = CreateProvider(
+        IpInfoIpGeolocationProvider sut = CreateProvider(
             JsonResponse("""{"ip":"8.8.8.8","bogon":true}"""), out _);
 
         (await sut.ResolveAsync(PublicIp, Ct)).ShouldBeNull();
@@ -71,7 +71,7 @@ public sealed class IpApiIpGeolocationProviderTests
     [Fact]
     public async Task ResolveAsync_EmptyPayload_ReturnsNull()
     {
-        IpApiIpGeolocationProvider sut = CreateProvider(JsonResponse("{}"), out _);
+        IpInfoIpGeolocationProvider sut = CreateProvider(JsonResponse("{}"), out _);
 
         (await sut.ResolveAsync(PublicIp, Ct)).ShouldBeNull();
     }
@@ -82,7 +82,7 @@ public sealed class IpApiIpGeolocationProviderTests
     [InlineData("8.8.8.8/../../admin")]
     public async Task ResolveAsync_NonIpInput_ReturnsNullWithoutCallingHttp(string input)
     {
-        IpApiIpGeolocationProvider sut = CreateProvider(JsonResponse("""{"country":"US"}"""), out StubHttpMessageHandler handler);
+        IpInfoIpGeolocationProvider sut = CreateProvider(JsonResponse("""{"country":"US"}"""), out StubHttpMessageHandler handler);
 
         (await sut.ResolveAsync(input, Ct)).ShouldBeNull();
         handler.LastRequest.ShouldBeNull();
@@ -91,8 +91,31 @@ public sealed class IpApiIpGeolocationProviderTests
     [Fact]
     public async Task ResolveAsync_TransportError_ReturnsNullWithoutThrowing()
     {
-        IpApiIpGeolocationProvider sut = CreateProvider(
+        IpInfoIpGeolocationProvider sut = CreateProvider(
             new ThrowingHttpMessageHandler(new HttpRequestException("network down")));
+
+        (await sut.ResolveAsync(PublicIp, Ct)).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ResolveAsync_ResponseExceedsBufferCap_ReturnsNullWithoutThrowing()
+    {
+        // The HttpClient is registered with MaxResponseContentBufferSize = MaxResponseSizeBytes; a body larger
+        // than the cap makes the content read throw, which the provider swallows to null. Locks in the
+        // "bounds memory even on a hostile/oversized response" guarantee the option documents.
+        string oversized = $$"""{"country":"US","pad":"{{new string('x', 4096)}}"}""";
+        StubHttpMessageHandler handler = new(JsonResponse(oversized));
+        HttpClient client = new(handler)
+        {
+            BaseAddress = new Uri("https://ipinfo.io"),
+            MaxResponseContentBufferSize = 256,
+        };
+        IHttpClientFactory factory = Substitute.For<IHttpClientFactory>();
+        factory.CreateClient(IpInfoIpGeolocationProvider.HttpClientName).Returns(client);
+        IpInfoIpGeolocationProvider sut = new(
+            factory,
+            Microsoft.Extensions.Options.Options.Create(new IpInfoIpGeolocationOptions()),
+            NullLogger<IpInfoIpGeolocationProvider>.Instance);
 
         (await sut.ResolveAsync(PublicIp, Ct)).ShouldBeNull();
     }
@@ -103,26 +126,26 @@ public sealed class IpApiIpGeolocationProviderTests
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
         };
 
-    private static IpApiIpGeolocationProvider CreateProvider(HttpResponseMessage response, out StubHttpMessageHandler handler, string? token = null)
+    private static IpInfoIpGeolocationProvider CreateProvider(HttpResponseMessage response, out StubHttpMessageHandler handler, string? token = null)
     {
         handler = new StubHttpMessageHandler(response);
         return BuildProvider(handler, token);
     }
 
-    private static IpApiIpGeolocationProvider CreateProvider(HttpMessageHandler handler) =>
+    private static IpInfoIpGeolocationProvider CreateProvider(HttpMessageHandler handler) =>
         BuildProvider(handler, token: null);
 
-    private static IpApiIpGeolocationProvider BuildProvider(HttpMessageHandler handler, string? token)
+    private static IpInfoIpGeolocationProvider BuildProvider(HttpMessageHandler handler, string? token)
     {
         HttpClient client = new(handler) { BaseAddress = new Uri("https://ipinfo.io") };
         IHttpClientFactory factory = Substitute.For<IHttpClientFactory>();
-        factory.CreateClient(IpApiIpGeolocationProvider.HttpClientName).Returns(client);
+        factory.CreateClient(IpInfoIpGeolocationProvider.HttpClientName).Returns(client);
 
-        IpApiIpGeolocationOptions options = new() { ApiToken = token };
-        return new IpApiIpGeolocationProvider(
+        IpInfoIpGeolocationOptions options = new() { ApiToken = token };
+        return new IpInfoIpGeolocationProvider(
             factory,
             Microsoft.Extensions.Options.Options.Create(options),
-            NullLogger<IpApiIpGeolocationProvider>.Instance);
+            NullLogger<IpInfoIpGeolocationProvider>.Instance);
     }
 
     private sealed class StubHttpMessageHandler(HttpResponseMessage response) : HttpMessageHandler

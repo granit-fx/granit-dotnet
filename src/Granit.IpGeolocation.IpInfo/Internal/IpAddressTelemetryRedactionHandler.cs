@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Granit.IpGeolocation.IpApi.Internal;
+namespace Granit.IpGeolocation.IpInfo.Internal;
 
 /// <summary>
 /// Strips the client IP from the outbound HTTP trace emitted by the built-in <c>System.Net.Http</c>

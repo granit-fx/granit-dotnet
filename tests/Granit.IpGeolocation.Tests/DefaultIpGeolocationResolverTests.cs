@@ -62,11 +62,11 @@ public sealed class DefaultIpGeolocationResolverTests
     public async Task ResolveAsync_FirstProviderMisses_FallsBackToNext()
     {
         IIpGeolocationProvider first = StubProvider("MaxMind", PublicIp, result: null);
-        IIpGeolocationProvider second = StubProvider("IpApi", PublicIp, Brussels);
+        IIpGeolocationProvider second = StubProvider("IpInfo", PublicIp, Brussels);
 
         DefaultIpGeolocationResolver sut = CreateResolver(
             [first, second],
-            new GranitIpGeolocationOptions { ProviderOrder = { "MaxMind", "IpApi" } });
+            new GranitIpGeolocationOptions { ProviderOrder = { "MaxMind", "IpInfo" } });
 
         (await sut.ResolveAsync(PublicIp, Ct)).ShouldBe(Brussels);
     }
@@ -78,11 +78,11 @@ public sealed class DefaultIpGeolocationResolverTests
         faulty.ProviderName.Returns("MaxMind");
         faulty.ResolveAsync(PublicIp, Arg.Any<CancellationToken>())
             .Returns<Task<GeoLocation?>>(_ => throw new InvalidOperationException("boom"));
-        IIpGeolocationProvider healthy = StubProvider("IpApi", PublicIp, Brussels);
+        IIpGeolocationProvider healthy = StubProvider("IpInfo", PublicIp, Brussels);
 
         DefaultIpGeolocationResolver sut = CreateResolver(
             [faulty, healthy],
-            new GranitIpGeolocationOptions { ProviderOrder = { "MaxMind", "IpApi" } });
+            new GranitIpGeolocationOptions { ProviderOrder = { "MaxMind", "IpInfo" } });
 
         (await sut.ResolveAsync(PublicIp, Ct)).ShouldBe(Brussels);
     }
@@ -116,11 +116,11 @@ public sealed class DefaultIpGeolocationResolverTests
     {
         IIpGeolocationProvider maxMind = StubProvider("MaxMind", PublicIp, Brussels);
         GeoLocation paris = new() { City = "Paris", CountryCode = "FR" };
-        IIpGeolocationProvider ipApi = StubProvider("IpApi", PublicIp, paris);
+        IIpGeolocationProvider ipApi = StubProvider("IpInfo", PublicIp, paris);
 
         DefaultIpGeolocationResolver sut = CreateResolver(
             [maxMind, ipApi],
-            new GranitIpGeolocationOptions { ProviderOrder = { "IpApi", "MaxMind" } });
+            new GranitIpGeolocationOptions { ProviderOrder = { "IpInfo", "MaxMind" } });
 
         (await sut.ResolveAsync(PublicIp, Ct)).ShouldBe(paris);
         await maxMind.DidNotReceive().ResolveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());

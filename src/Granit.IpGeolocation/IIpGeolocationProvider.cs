@@ -2,7 +2,7 @@ namespace Granit.IpGeolocation;
 
 /// <summary>
 /// Low-level IP-to-location lookup implemented by each provider package
-/// (e.g. <c>Granit.IpGeolocation.MaxMind</c>, <c>Granit.IpGeolocation.IpApi</c>).
+/// (e.g. <c>Granit.IpGeolocation.MaxMind</c>, <c>Granit.IpGeolocation.IpInfo</c>).
 /// </summary>
 /// <remarks>
 /// Implementations are registered with <c>AddSingleton&lt;IIpGeolocationProvider, ...&gt;()</c> so multiple
@@ -14,7 +14,7 @@ public interface IIpGeolocationProvider
 {
     /// <summary>
     /// Stable identifier used to order this provider in
-    /// <see cref="Options.GranitIpGeolocationOptions.ProviderOrder"/> (e.g. <c>"MaxMind"</c>, <c>"IpApi"</c>).
+    /// <see cref="Options.GranitIpGeolocationOptions.ProviderOrder"/> (e.g. <c>"MaxMind"</c>, <c>"IpInfo"</c>).
     /// </summary>
     string ProviderName { get; }
 

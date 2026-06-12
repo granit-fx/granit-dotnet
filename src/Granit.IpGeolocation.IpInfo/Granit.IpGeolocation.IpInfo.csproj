@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>Granit.IpGeolocation.IpApi</PackageId>
+    <PackageId>Granit.IpGeolocation.IpInfo</PackageId>
     <Description>Opt-in third-party IP geolocation provider for Granit.IpGeolocation backed by the ipinfo.io HTTP API. Because it transmits the client IP to an external processor, it is disabled unless explicitly registered and listed in ProviderOrder. Prefer the offline Granit.IpGeolocation.MaxMind provider for privacy-sensitive deployments.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.IpGeolocation.IpApi.Tests" />
+    <InternalsVisibleTo Include="Granit.IpGeolocation.IpInfo.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

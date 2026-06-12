@@ -196,7 +196,7 @@
     <ProjectReference Include="..\..\src\Granit.Indexing.Privacy\Granit.Indexing.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.IpGeolocation\Granit.IpGeolocation.csproj" />
     <ProjectReference Include="..\..\src\Granit.IpGeolocation.Abstractions\Granit.IpGeolocation.Abstractions.csproj" />
-    <ProjectReference Include="..\..\src\Granit.IpGeolocation.IpApi\Granit.IpGeolocation.IpApi.csproj" />
+    <ProjectReference Include="..\..\src\Granit.IpGeolocation.IpInfo\Granit.IpGeolocation.IpInfo.csproj" />
     <ProjectReference Include="..\..\src\Granit.IpGeolocation.MaxMind\Granit.IpGeolocation.MaxMind.csproj" />
     <ProjectReference Include="..\..\src\Granit.LanguageDetection\Granit.LanguageDetection.csproj" />
     <ProjectReference Include="..\..\src\Granit.LanguageDetection.AI\Granit.LanguageDetection.AI.csproj" />

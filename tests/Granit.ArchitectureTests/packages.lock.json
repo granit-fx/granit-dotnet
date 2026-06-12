@@ -2879,7 +2879,7 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.ipgeolocation.ipapi": {
+      "granit.ipgeolocation.ipinfo": {
         "type": "Project",
         "dependencies": {
           "Granit.IpGeolocation": "[0.1.0-dev, )"

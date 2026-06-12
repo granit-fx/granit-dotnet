@@ -1,20 +1,20 @@
-namespace Granit.IpGeolocation.IpApi.Options;
+namespace Granit.IpGeolocation.IpInfo.Options;
 
 /// <summary>
-/// Configuration for the opt-in ipinfo.io HTTP geolocation provider, bound from <c>"IpGeolocation:IpApi"</c>.
+/// Configuration for the opt-in ipinfo.io HTTP geolocation provider, bound from <c>"IpGeolocation:IpInfo"</c>.
 /// </summary>
 /// <remarks>
 /// This provider sends the client IP address to an external processor (ipinfo.io). Under GDPR this is a
 /// transfer of personal data to a sub-processor, so the provider only acts when explicitly registered and
 /// listed in <c>IpGeolocation:ProviderOrder</c>. Keep <see cref="BaseAddress"/> on HTTPS.
 /// </remarks>
-public sealed class IpApiIpGeolocationOptions
+public sealed class IpInfoIpGeolocationOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "IpGeolocation:IpApi";
+    public const string SectionName = "IpGeolocation:IpInfo";
 
     /// <summary>Identifier this provider registers under, for <c>IpGeolocation:ProviderOrder</c>.</summary>
-    public string ProviderName { get; set; } = "IpApi";
+    public string ProviderName { get; set; } = "IpInfo";
 
     /// <summary>
     /// ipinfo.io API token. Sent as a <c>Bearer</c> header (never in the URL). Optional, but the tokenless tier

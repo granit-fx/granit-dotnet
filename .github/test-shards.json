@@ -187,7 +187,7 @@
         "tests/Granit.Html.Tests",
         "tests/Granit.IpGeolocation.Abstractions.Tests",
         "tests/Granit.IpGeolocation.Tests",
-        "tests/Granit.IpGeolocation.IpApi.Tests",
+        "tests/Granit.IpGeolocation.IpInfo.Tests",
         "tests/Granit.IpGeolocation.MaxMind.Tests",
         "tests/Granit.Localization.Endpoints.Tests",
         "tests/Granit.Localization.EntityFrameworkCore.Tests",

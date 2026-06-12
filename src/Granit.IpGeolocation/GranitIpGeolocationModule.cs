@@ -15,7 +15,7 @@ namespace Granit.IpGeolocation;
 /// <remarks>
 /// Registers the no-op default resolver (<see cref="IIpGeolocationResolver"/>). With no provider package
 /// installed it resolves every address to <c>null</c> without throwing. Add a provider package (e.g.
-/// <c>Granit.IpGeolocation.MaxMind</c> for offline <c>.mmdb</c> lookups, or <c>Granit.IpGeolocation.IpApi</c>
+/// <c>Granit.IpGeolocation.MaxMind</c> for offline <c>.mmdb</c> lookups, or <c>Granit.IpGeolocation.IpInfo</c>
 /// for an opt-in third-party API) and list it in <see cref="GranitIpGeolocationOptions.ProviderOrder"/> to
 /// enable resolution. Results are cached through <c>Granit.Caching</c> (<c>IFusionCache</c>), so they become
 /// cluster-shared automatically when a distributed cache (e.g. <c>Granit.Caching.StackExchangeRedis</c>) is

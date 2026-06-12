@@ -1,4 +1,4 @@
-# Granit.IpGeolocation.IpApi
+# Granit.IpGeolocation.IpInfo
 
 Opt-in third-party IP geolocation provider for `Granit.IpGeolocation`, backed by
 the [ipinfo.io](https://ipinfo.io) HTTP API.
@@ -24,14 +24,14 @@ distributed cache means one API call per IP per cluster.
 
 ```csharp
 // Program.cs
-builder.AddGranitIpGeolocationIpApi();
+builder.AddGranitIpGeolocationIpInfo();
 ```
 
 ```json
 {
   "IpGeolocation": {
-    "ProviderOrder": [ "MaxMind", "IpApi" ],
-    "IpApi": {
+    "ProviderOrder": [ "MaxMind", "IpInfo" ],
+    "IpInfo": {
       "ApiToken": "<ipinfo-token>",
       "BaseAddress": "https://ipinfo.io",
       "Timeout": "00:00:03"
@@ -46,7 +46,7 @@ builder.AddGranitIpGeolocationIpApi();
 | `BaseAddress` | `https://ipinfo.io` | API base URL (must be http/https) |
 | `Timeout` | `00:00:03` | Per-request timeout |
 | `MaxResponseSizeBytes` | `65536` | Cap on the buffered response body (untrusted egress input) |
-| `ProviderName` | `IpApi` | Name used in `ProviderOrder` |
+| `ProviderName` | `IpInfo` | Name used in `ProviderOrder` |
 
 ## Security
 

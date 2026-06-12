@@ -17,7 +17,7 @@ public sealed class GranitIpGeolocationOptions
     /// excluded from the chain entirely.
     /// </summary>
     /// <remarks>
-    /// Prefer listing the offline provider first (e.g. <c>["MaxMind", "IpApi"]</c>) so that the privacy-friendly
+    /// Prefer listing the offline provider first (e.g. <c>["MaxMind", "IpInfo"]</c>) so that the privacy-friendly
     /// local lookup wins and third-party API calls only happen on a miss.
     /// </remarks>
     public IList<string> ProviderOrder { get; set; } = [];

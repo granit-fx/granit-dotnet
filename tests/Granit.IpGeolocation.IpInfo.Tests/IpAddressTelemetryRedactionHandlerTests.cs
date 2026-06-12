@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using System.Net;
-using Granit.IpGeolocation.IpApi.Internal;
+using Granit.IpGeolocation.IpInfo.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Granit.IpGeolocation.IpApi.Tests;
+namespace Granit.IpGeolocation.IpInfo.Tests;
 
 public sealed class IpAddressTelemetryRedactionHandlerTests
 {

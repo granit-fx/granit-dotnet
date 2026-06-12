@@ -54,7 +54,7 @@
     <Project Path="src/Granit.Indexing.Privacy/Granit.Indexing.Privacy.csproj" />
     <Project Path="src/Granit.Indexing/Granit.Indexing.csproj" />
     <Project Path="src/Granit.IpGeolocation.Abstractions/Granit.IpGeolocation.Abstractions.csproj" />
-    <Project Path="src/Granit.IpGeolocation.IpApi/Granit.IpGeolocation.IpApi.csproj" />
+    <Project Path="src/Granit.IpGeolocation.IpInfo/Granit.IpGeolocation.IpInfo.csproj" />
     <Project Path="src/Granit.IpGeolocation.MaxMind/Granit.IpGeolocation.MaxMind.csproj" />
     <Project Path="src/Granit.IpGeolocation/Granit.IpGeolocation.csproj" />
     <Project Path="src/Granit.LanguageDetection.AI/Granit.LanguageDetection.AI.csproj" />
@@ -400,7 +400,7 @@
     <Project Path="tests/Granit.Indexing.Privacy.Tests/Granit.Indexing.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Indexing.Tests/Granit.Indexing.Tests.csproj" />
     <Project Path="tests/Granit.IpGeolocation.Abstractions.Tests/Granit.IpGeolocation.Abstractions.Tests.csproj" />
-    <Project Path="tests/Granit.IpGeolocation.IpApi.Tests/Granit.IpGeolocation.IpApi.Tests.csproj" />
+    <Project Path="tests/Granit.IpGeolocation.IpInfo.Tests/Granit.IpGeolocation.IpInfo.Tests.csproj" />
     <Project Path="tests/Granit.IpGeolocation.MaxMind.Tests/Granit.IpGeolocation.MaxMind.Tests.csproj" />
     <Project Path="tests/Granit.IpGeolocation.Tests/Granit.IpGeolocation.Tests.csproj" />
     <Project Path="tests/Granit.LanguageDetection.AI.Tests/Granit.LanguageDetection.AI.Tests.csproj" />

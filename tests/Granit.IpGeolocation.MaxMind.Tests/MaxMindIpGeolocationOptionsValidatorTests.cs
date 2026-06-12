@@ -10,6 +10,10 @@ public sealed class MaxMindIpGeolocationOptionsValidatorTests
     private readonly MaxMindIpGeolocationOptionsValidator _sut = new();
 
     [Fact]
+    public void SectionName_IsNamespaceAlignedHierarchicalPath() =>
+        MaxMindIpGeolocationOptions.SectionName.ShouldBe("IpGeolocation:MaxMind");
+
+    [Fact]
     public void Validate_EmptyDatabasePath_Fails()
     {
         ValidateOptionsResult result = _sut.Validate(null, new MaxMindIpGeolocationOptions { DatabasePath = "" });

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Granit.IpGeolocation.IpApi.Internal;
+namespace Granit.IpGeolocation.IpInfo.Internal;
 
 /// <summary>
 /// Subset of the ipinfo.io JSON response consumed by the provider. <c>country</c> is an ISO alpha-2 code;

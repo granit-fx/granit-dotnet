@@ -10,8 +10,8 @@
     <InternalsVisibleTo Include="Granit.IpGeolocation.Tests" />
     <InternalsVisibleTo Include="Granit.IpGeolocation.MaxMind" />
     <InternalsVisibleTo Include="Granit.IpGeolocation.MaxMind.Tests" />
-    <InternalsVisibleTo Include="Granit.IpGeolocation.IpApi" />
-    <InternalsVisibleTo Include="Granit.IpGeolocation.IpApi.Tests" />
+    <InternalsVisibleTo Include="Granit.IpGeolocation.IpInfo" />
+    <InternalsVisibleTo Include="Granit.IpGeolocation.IpInfo.Tests" />
     <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>

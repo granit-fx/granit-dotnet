@@ -29,13 +29,13 @@ a single resolution serves the whole fleet.
 ```csharp
 // Program.cs — the core module is pulled in by any provider package.
 builder.AddGranitIpGeolocationMaxMind();   // offline .mmdb provider (recommended)
-builder.AddGranitIpGeolocationIpApi();     // opt-in third-party API provider
+builder.AddGranitIpGeolocationIpInfo();     // opt-in third-party API provider
 ```
 
 ```json
 {
   "IpGeolocation": {
-    "ProviderOrder": [ "MaxMind", "IpApi" ],
+    "ProviderOrder": [ "MaxMind", "IpInfo" ],
     "CacheDuration": "01:00:00"
   }
 }
@@ -64,7 +64,7 @@ builder.AddGranitIpGeolocationIpApi();     // opt-in third-party API provider
 | Package | Kind | Notes |
 | ------- | ---- | ----- |
 | `Granit.IpGeolocation.MaxMind` | Offline `.mmdb` | MaxMind GeoLite2/GeoIP2 + DB-IP |
-| `Granit.IpGeolocation.IpApi` | Third-party API | ipinfo.io — opt-in |
+| `Granit.IpGeolocation.IpInfo` | Third-party API | ipinfo.io — opt-in |
 
 ## Dependencies
 

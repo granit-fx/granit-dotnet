@@ -3,11 +3,11 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Granit.IpGeolocation.IpApi.Options;
+using Granit.IpGeolocation.IpInfo.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Granit.IpGeolocation.IpApi.Internal;
+namespace Granit.IpGeolocation.IpInfo.Internal;
 
 /// <summary>
 /// Opt-in <see cref="IIpGeolocationProvider"/> backed by the ipinfo.io HTTP API.
@@ -18,12 +18,12 @@ namespace Granit.IpGeolocation.IpApi.Internal;
 /// Note that outbound HTTP instrumentation may still record the URL, so prefer the offline MaxMind provider for
 /// strict data-minimisation.
 /// </remarks>
-internal sealed partial class IpApiIpGeolocationProvider(
+internal sealed partial class IpInfoIpGeolocationProvider(
     IHttpClientFactory httpClientFactory,
-    IOptions<IpApiIpGeolocationOptions> options,
-    ILogger<IpApiIpGeolocationProvider> logger) : IIpGeolocationProvider
+    IOptions<IpInfoIpGeolocationOptions> options,
+    ILogger<IpInfoIpGeolocationProvider> logger) : IIpGeolocationProvider
 {
-    internal const string HttpClientName = "Granit.IpGeolocation.IpApi";
+    internal const string HttpClientName = "Granit.IpGeolocation.IpInfo";
 
     public string ProviderName => options.Value.ProviderName;
 

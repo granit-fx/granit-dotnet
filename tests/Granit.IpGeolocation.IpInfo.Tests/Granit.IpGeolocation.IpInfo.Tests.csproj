@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.IpGeolocation.IpApi\Granit.IpGeolocation.IpApi.csproj" />
+    <ProjectReference Include="..\..\src\Granit.IpGeolocation.IpInfo\Granit.IpGeolocation.IpInfo.csproj" />
   </ItemGroup>
 
 </Project>
