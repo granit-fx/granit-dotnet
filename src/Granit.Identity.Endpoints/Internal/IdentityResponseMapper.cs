@@ -21,6 +21,6 @@ internal static class IdentityResponseMapper
             session.Clients, Location: null, RiskLevel: null);
 
     internal static IdentityDeviceActivityResponse ToResponse(IdentityDeviceActivity device) =>
-        new(device.IpAddress, device.LastAccess, device.Device, device.Os, device.OsVersion, device.Browser,
+        new(device.IpAddress, device.LastAccess, device.Device, device.OperatingSystem, device.OperatingSystemVersion, device.Browser,
             device.Mobile, device.Current, device.Sessions.Select(ToResponse).ToList(), Location: null);
 }

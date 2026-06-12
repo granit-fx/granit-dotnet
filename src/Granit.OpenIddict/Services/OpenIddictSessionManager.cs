@@ -122,7 +122,7 @@ internal sealed class OpenIddictSessionManager(
             .Select(g => new IdentityDeviceActivity(
                 IpAddress: g.Key == "unknown" ? null : g.Key,
                 LastAccess: g.Max(s => s.LastAccess),
-                Device: null, Os: null, OsVersion: null, Browser: null,
+                Device: null, OperatingSystem: null, OperatingSystemVersion: null, Browser: null,
                 Mobile: false, Current: false,
                 Sessions: [..g]))];
     }

@@ -532,7 +532,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         result[0].IpAddress.ShouldBe("1.2.3.4");
         result[0].LastAccess.ShouldBe(DateTimeOffset.FromUnixTimeMilliseconds(1700001000000));
         result[0].Device.ShouldBeNull();
-        result[0].Os.ShouldBeNull();
+        result[0].OperatingSystem.ShouldBeNull();
         result[0].Browser.ShouldBeNull();
         result[0].Sessions.Count.ShouldBe(1);
         result[0].Sessions[0].SessionId.ShouldBe("sess-1");
@@ -585,8 +585,8 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             "user-1", TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(1);
-        result[0].Os.ShouldBe("Windows");
-        result[0].OsVersion.ShouldBe("10");
+        result[0].OperatingSystem.ShouldBe("Windows");
+        result[0].OperatingSystemVersion.ShouldBe("10");
         result[0].Browser.ShouldBe("Chrome/120.0");
         result[0].Device.ShouldBe("Desktop");
         result[0].Mobile.ShouldBeFalse();
