@@ -46,6 +46,7 @@ public static class IpGeolocationIpApiHostApplicationBuilderExtensions
                     sp.GetRequiredService<IOptions<IpApiIpGeolocationOptions>>().Value;
                 client.BaseAddress = options.BaseAddress;
                 client.Timeout = options.Timeout;
+                client.MaxResponseContentBufferSize = options.MaxResponseSizeBytes;
             })
             .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
             {

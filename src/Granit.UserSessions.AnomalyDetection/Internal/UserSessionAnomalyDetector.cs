@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using Granit.AI;
@@ -35,6 +36,8 @@ internal sealed class UserSessionAnomalyDetector(
         ArgumentNullException.ThrowIfNull(candidate);
         ArgumentNullException.ThrowIfNull(history);
 
+        using Activity? activity = UserSessionsAnomalyDetectionActivitySource.Source.StartActivity("UserSession.AssessAnomaly");
+
         UserSessionsAnomalyDetectionOptions opts = options.Value;
         UserSessionRiskAssessment heuristic = EvaluateHeuristics(candidate, history, opts);
         string? tenantId = currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
@@ -42,14 +45,21 @@ internal sealed class UserSessionAnomalyDetector(
         if (!opts.UseAi)
         {
             metrics.RecordAssessment(tenantId, heuristic.Level.ToString(), aiUsed: false);
-            return heuristic;
+            return Tag(activity, heuristic, aiUsed: false);
         }
 
         UserSessionRiskAssessment? ai = await TryAssessWithAiAsync(candidate, history, opts, tenantId, cancellationToken)
             .ConfigureAwait(false);
         UserSessionRiskAssessment combined = ai is null ? heuristic : Combine(heuristic, ai);
         metrics.RecordAssessment(tenantId, combined.Level.ToString(), aiUsed: ai is not null);
-        return combined;
+        return Tag(activity, combined, aiUsed: ai is not null);
+    }
+
+    private static UserSessionRiskAssessment Tag(Activity? activity, UserSessionRiskAssessment assessment, bool aiUsed)
+    {
+        activity?.SetTag("granit.user_sessions.anomaly.level", assessment.Level.ToString());
+        activity?.SetTag("granit.user_sessions.anomaly.ai_used", aiUsed);
+        return assessment;
     }
 
     private static UserSessionRiskAssessment EvaluateHeuristics(

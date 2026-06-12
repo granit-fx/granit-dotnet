@@ -1,5 +1,4 @@
 using Granit.Events;
-using Granit.UserSessions.AnomalyDetection.Events;
 
 namespace Granit.UserSessions.AnomalyDetection.Internal;
 
@@ -8,6 +7,15 @@ namespace Granit.UserSessions.AnomalyDetection.Internal;
 /// it shows up on the session surfaces, and raises <see cref="SuspiciousUserSessionDetectedEto"/> for
 /// Medium/High risk when a distributed event bus is available.
 /// </summary>
+/// <remarks>
+/// The persisted verdict is the durable source of truth (the session surfaces read it back); the
+/// <see cref="SuspiciousUserSessionDetectedEto"/> is a <strong>best-effort reactive signal</strong>. The two
+/// writes are intentionally decoupled — the verdict commits in the risk store's own transaction, then the Eto
+/// publishes — because the store sits behind an abstraction that may not be transactional (the in-memory
+/// default) and the evaluator carries no ambient DbContext to share an outbox transaction with. A crash between
+/// the two therefore loses the Eto, not the verdict: a consumer that needs guaranteed delivery should reconcile
+/// against the durable store rather than rely solely on the event.
+/// </remarks>
 internal sealed class DefaultUserSessionRiskEvaluator(
     IUserSessionAnomalyDetector detector,
     IUserSessionRiskStore riskStore,
@@ -30,6 +38,7 @@ internal sealed class DefaultUserSessionRiskEvaluator(
                 .SetAsync(userId, candidate.SessionId, new UserSessionRiskVerdict(assessment.Level, assessment.Reasons, now), cancellationToken)
                 .ConfigureAwait(false);
 
+            // Best-effort, non-atomic with the store write above — see the class remarks for the rationale.
             if (assessment.Level >= UserSessionRiskLevel.Medium && eventBus is not null)
             {
                 string category = assessment.Reasons.Count > 0 ? assessment.Reasons[0] : "anomaly";

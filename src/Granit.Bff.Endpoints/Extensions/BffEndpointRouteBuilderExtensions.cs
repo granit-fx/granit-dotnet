@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Granit.Bff.Endpoints.Endpoints;
 using Granit.Bff.Options;
 using Granit.Http.Cookies;
@@ -17,7 +18,10 @@ namespace Granit.Bff.Endpoints.Extensions;
 /// </summary>
 public static class BffEndpointRouteBuilderExtensions
 {
-    private static bool s_bffEndpointsMapped;
+    // Idempotency guard keyed on the route builder instance rather than a process-wide
+    // bool, so a second in-process host (e.g. parallel integration tests) maps its own
+    // BFF endpoints instead of silently skipping. Entries are collected with the builder.
+    private static readonly ConditionalWeakTable<IEndpointRouteBuilder, object> s_mappedBuilders = [];
 
     /// <summary>
     /// Maps BFF authentication endpoints for each configured frontend.
@@ -29,12 +33,12 @@ public static class BffEndpointRouteBuilderExtensions
     /// <returns>The endpoint route builder for further chaining.</returns>
     public static IEndpointRouteBuilder MapGranitBff(this IEndpointRouteBuilder endpoints)
     {
-        if (s_bffEndpointsMapped)
+        if (s_mappedBuilders.TryGetValue(endpoints, out _))
         {
             return endpoints;
         }
 
-        s_bffEndpointsMapped = true;
+        s_mappedBuilders.Add(endpoints, new object());
 
         GranitBffOptions options = endpoints.ServiceProvider
             .GetRequiredService<IOptions<GranitBffOptions>>().Value;

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.UserSessions.AnomalyDetection</PackageId>
-    <Description>Opt-in session anomaly detection for Granit.UserSessions. Always-on deterministic heuristics (impossible travel, new country, new device) plus an opt-in AI layer over Granit.AI IStructuredCompletion classify a session's risk. Verdicts are persisted to ISessionRiskStore and a SuspiciousSessionDetectedEto is raised for Medium/High risk. Fed only coarse, IP-free features.</Description>
+    <Description>Opt-in session anomaly detection for Granit.UserSessions. Always-on deterministic heuristics (impossible travel, new country, new device) plus an opt-in AI layer over Granit.AI IStructuredCompletion classify a session's risk. Verdicts are persisted to IUserSessionRiskStore and a SuspiciousUserSessionDetectedEto is raised for Medium/High risk. Fed only coarse, IP-free features.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

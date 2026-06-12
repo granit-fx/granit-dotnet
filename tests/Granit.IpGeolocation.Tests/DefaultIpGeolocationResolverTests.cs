@@ -142,12 +142,26 @@ public sealed class DefaultIpGeolocationResolverTests
     {
         const string ip = "203.0.113.42";
 
-        string key = DefaultIpGeolocationResolver.BuildCacheKey(ip);
+        string key = DefaultIpGeolocationResolver.BuildCacheKey(ip, secret: null);
 
         key.ShouldStartWith("granit:ip_geolocation:");
         key.ShouldNotContain(ip);
-        key.ShouldBe(DefaultIpGeolocationResolver.BuildCacheKey(ip));            // deterministic
-        key.ShouldNotBe(DefaultIpGeolocationResolver.BuildCacheKey("8.8.8.8"));  // distinct per address
+        key.ShouldBe(DefaultIpGeolocationResolver.BuildCacheKey(ip, secret: null));            // deterministic
+        key.ShouldNotBe(DefaultIpGeolocationResolver.BuildCacheKey("8.8.8.8", secret: null));  // distinct per address
+    }
+
+    [Fact]
+    public void BuildCacheKey_WithSecret_ProducesKeyedHashDistinctFromUnkeyed()
+    {
+        const string ip = "203.0.113.42";
+
+        string keyed = DefaultIpGeolocationResolver.BuildCacheKey(ip, secret: "pepper");
+
+        keyed.ShouldStartWith("granit:ip_geolocation:");
+        keyed.ShouldNotContain(ip);
+        keyed.ShouldNotBe(DefaultIpGeolocationResolver.BuildCacheKey(ip, secret: null));      // not a plain SHA-256
+        keyed.ShouldNotBe(DefaultIpGeolocationResolver.BuildCacheKey(ip, secret: "other"));   // key-dependent
+        keyed.ShouldBe(DefaultIpGeolocationResolver.BuildCacheKey(ip, secret: "pepper"));     // deterministic
     }
 
     private static IIpGeolocationProvider StubProvider(string name, string ip, GeoLocation? result)

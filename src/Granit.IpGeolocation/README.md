@@ -46,6 +46,7 @@ builder.AddGranitIpGeolocationIpApi();     // opt-in third-party API provider
 | `ProviderOrder` | `[]` (all, registration order) | Provider fallback order, by name |
 | `CacheDuration` | `01:00:00` | TTL for cached results (incl. negatives) |
 | `ResolvePrivateAddresses` | `false` | Resolve private/loopback addresses (testing only) |
+| `CacheKeySecret` | *(none)* | Optional secret keying the cache-key hash (HMAC). Set it (from Vault) to stop a cache dump being brute-forced back to IPs |
 
 ## Privacy (GDPR)
 
@@ -54,6 +55,9 @@ builder.AddGranitIpGeolocationIpApi();     // opt-in third-party API provider
 - Third-party API providers transmit the IP to a sub-processor and are **opt-in**.
 - Raw IPs are never logged — failures log a masked form. Use `IpMasking.Mask` to
   derive a host-zeroed address for any value exposed to a client.
+- Cache keys hash the IP so no raw address reaches a shared cache. Set
+  `CacheKeySecret` (from Vault) to key that hash (HMAC) — otherwise a plain
+  SHA-256 over the IPv4 space is enumerable offline from a cache dump.
 
 ## Providers
 

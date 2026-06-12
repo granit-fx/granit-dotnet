@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.UserSessions.Abstractions</PackageId>
-    <Description>Shared session read-model and risk contracts for Granit. Provides SessionDescriptor (the canonical session shape produced by both the BFF and the identity authority), ISessionAnomalyDetector, and the durable ISessionRiskStore. Reference this package to consume or enrich sessions without taking a dependency on a specific session store or the anomaly-detection engine.</Description>
+    <Description>Shared session read-model and risk contracts for Granit. Provides UserSessionDescriptor (the canonical session shape produced by both the BFF and the identity authority), IUserSessionAnomalyDetector, and the durable IUserSessionRiskStore. Reference this package to consume or enrich sessions without taking a dependency on a specific session store or the anomaly-detection engine.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

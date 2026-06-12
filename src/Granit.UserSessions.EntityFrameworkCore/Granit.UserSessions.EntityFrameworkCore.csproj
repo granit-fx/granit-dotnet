@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.UserSessions.EntityFrameworkCore</PackageId>
-    <Description>EF Core durable implementation of the Granit.UserSessions ISessionRiskStore. Persists session anomaly risk verdicts so a Medium/High verdict survives restarts and pod evictions and is shared across instances. Replaces the in-memory default from Granit.UserSessions.Abstractions.</Description>
+    <Description>EF Core durable implementation of the Granit.UserSessions IUserSessionRiskStore. Persists session anomaly risk verdicts so a Medium/High verdict survives restarts and pod evictions and is shared across instances. Replaces the in-memory default from Granit.UserSessions.Abstractions.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

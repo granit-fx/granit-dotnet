@@ -32,4 +32,17 @@ public sealed class GranitIpGeolocationOptions
     /// without contacting any provider. Enable only for testing against curated fixtures.
     /// </summary>
     public bool ResolvePrivateAddresses { get; set; }
+
+    /// <summary>
+    /// Optional secret used to key the SHA-256 cache-key hash (turning it into an HMAC). When set, cache keys
+    /// can no longer be reversed to the originating IP by brute force.
+    /// </summary>
+    /// <remarks>
+    /// Cache keys hash the IP so a raw address is never written to a shared cache (e.g. Redis), where keys —
+    /// unlike values — are not encrypted. A plain SHA-256 over the 2³² IPv4 space is, however, fully
+    /// enumerable offline, so an actor with a cache dump could still recover every looked-up IPv4 address.
+    /// Providing a secret here (sourced from configuration/Vault, and stable across every instance sharing the
+    /// cache) closes that gap. Leave <c>null</c> to keep the unkeyed SHA-256 behaviour.
+    /// </remarks>
+    public string? CacheKeySecret { get; set; }
 }

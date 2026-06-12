@@ -76,6 +76,18 @@ public sealed class IpApiIpGeolocationProviderTests
         (await sut.ResolveAsync(PublicIp, Ct)).ShouldBeNull();
     }
 
+    [Theory]
+    [InlineData("not-an-ip")]
+    [InlineData("//attacker.example")]
+    [InlineData("8.8.8.8/../../admin")]
+    public async Task ResolveAsync_NonIpInput_ReturnsNullWithoutCallingHttp(string input)
+    {
+        IpApiIpGeolocationProvider sut = CreateProvider(JsonResponse("""{"country":"US"}"""), out StubHttpMessageHandler handler);
+
+        (await sut.ResolveAsync(input, Ct)).ShouldBeNull();
+        handler.LastRequest.ShouldBeNull();
+    }
+
     [Fact]
     public async Task ResolveAsync_TransportError_ReturnsNullWithoutThrowing()
     {

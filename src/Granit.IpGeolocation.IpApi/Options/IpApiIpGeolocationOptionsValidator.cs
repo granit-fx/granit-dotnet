@@ -29,6 +29,11 @@ internal sealed class IpApiIpGeolocationOptionsValidator : IValidateOptions<IpAp
             return ValidateOptionsResult.Fail($"{nameof(options.Timeout)} must be a positive duration.");
         }
 
+        if (options.MaxResponseSizeBytes <= 0)
+        {
+            return ValidateOptionsResult.Fail($"{nameof(options.MaxResponseSizeBytes)} must be positive.");
+        }
+
         return ValidateOptionsResult.Success;
     }
 }

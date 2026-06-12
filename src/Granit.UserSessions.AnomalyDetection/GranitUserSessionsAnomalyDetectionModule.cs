@@ -23,7 +23,9 @@ public sealed class GranitUserSessionsAnomalyDetectionModule : GranitModule
 
         context.Services
             .AddOptions<UserSessionsAnomalyDetectionOptions>()
-            .BindConfiguration(UserSessionsAnomalyDetectionOptions.SectionName);
+            .BindConfiguration(UserSessionsAnomalyDetectionOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         context.Services.TryAddSingleton<UserSessionsAnomalyDetectionMetrics>();
         context.Services.AddScoped<IUserSessionAnomalyDetector, UserSessionAnomalyDetector>();

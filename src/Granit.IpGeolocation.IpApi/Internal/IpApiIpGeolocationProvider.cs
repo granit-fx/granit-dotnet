@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -28,9 +29,16 @@ internal sealed partial class IpApiIpGeolocationProvider(
 
     public async Task<GeoLocation?> ResolveAsync(string ipAddress, CancellationToken cancellationToken = default)
     {
+        // Defence-in-depth: the IP is interpolated into the request path, so reject anything that is not a bare
+        // IP literal before it can override the validated base address (e.g. "//host", a scheme, or extra path).
+        if (!IPAddress.TryParse(ipAddress, out IPAddress? parsed))
+        {
+            return null;
+        }
+
         HttpClient client = httpClientFactory.CreateClient(HttpClientName);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, $"{ipAddress}/json");
+        using HttpRequestMessage request = new(HttpMethod.Get, $"{parsed}/json");
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
         string? token = options.Value.ApiToken;

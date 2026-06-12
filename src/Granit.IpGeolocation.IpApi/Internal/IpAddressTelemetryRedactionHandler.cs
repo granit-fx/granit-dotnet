@@ -34,14 +34,23 @@ internal sealed class IpAddressTelemetryRedactionHandler : DelegatingHandler
             return;
         }
 
+        string redactedFull = requestUri.GetLeftPart(UriPartial.Authority) + RedactedPath;
+
+        // Current OpenTelemetry HTTP semantic conventions (.NET 8+).
         if (activity.GetTagItem("url.full") is not null)
         {
-            activity.SetTag("url.full", requestUri.GetLeftPart(UriPartial.Authority) + RedactedPath);
+            activity.SetTag("url.full", redactedFull);
         }
 
         if (activity.GetTagItem("url.path") is not null)
         {
             activity.SetTag("url.path", RedactedPath);
+        }
+
+        // Legacy convention emitted by older instrumentation, defended against in case it is ever enabled.
+        if (activity.GetTagItem("http.url") is not null)
+        {
+            activity.SetTag("http.url", redactedFull);
         }
     }
 }

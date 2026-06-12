@@ -38,7 +38,7 @@ internal static class BffUserEndpoints
     }
 
 #pragma warning disable GRAPI003 // Private handler — not a direct endpoint delegate; services are resolved via lambda
-    private static async Task<Ok<object>> HandleGetUserAsync(
+    private static async Task<Results<Ok<BffUserResponse>, Ok<BffUnauthenticatedResponse>>> HandleGetUserAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
         [FromServices] IBffTokenStore tokenStore,
@@ -51,7 +51,7 @@ internal static class BffUserEndpoints
 
         if (string.IsNullOrEmpty(sessionId))
         {
-            return TypedResults.Ok<object>(new BffUnauthenticatedResponse());
+            return TypedResults.Ok(new BffUnauthenticatedResponse());
         }
 
 #pragma warning disable GRSEC003 // Reading tokens — server-side only, never returned
@@ -61,19 +61,19 @@ internal static class BffUserEndpoints
 
         if (tokens is null)
         {
-            return TypedResults.Ok<object>(new BffUnauthenticatedResponse());
+            return TypedResults.Ok(new BffUnauthenticatedResponse());
         }
 
         Dictionary<string, string>? claims = DecodeIdTokenClaims(tokens.IdToken);
         if (claims is null)
         {
-            return TypedResults.Ok<object>(new BffUnauthenticatedResponse());
+            return TypedResults.Ok(new BffUnauthenticatedResponse());
         }
 
         httpContext.Response.Headers.CacheControl = "private, no-cache, no-store";
 
         BffUserResponse response = BuildAuthenticatedResponse(claims, tokens.ExpiresAt);
-        return TypedResults.Ok<object>(response);
+        return TypedResults.Ok(response);
     }
 #pragma warning restore GRAPI003
 

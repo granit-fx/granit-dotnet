@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.UserSessions.AnomalyDetection.Options;
 
 /// <summary>
@@ -19,14 +21,17 @@ public sealed class UserSessionsAnomalyDetectionOptions
     public string? WorkspaceName { get; set; }
 
     /// <summary>Hard cap on AI calls per tenant per hour. Over the cap, detection degrades to heuristics.</summary>
+    [Range(1, int.MaxValue)]
     public int MaxAiCallsPerHourPerTenant { get; set; } = 500;
 
     /// <summary>Per-call AI timeout in seconds. On timeout, detection degrades to heuristics.</summary>
+    [Range(1, 600)]
     public int AiTimeoutSeconds { get; set; } = 15;
 
     /// <summary>
     /// Maximum plausible travel speed (km/h) between two sessions before it is flagged as impossible travel.
     /// Default: 1000 (faster than a commercial flight plus airport time).
     /// </summary>
+    [Range(1d, double.MaxValue)]
     public double MaxTravelKilometersPerHour { get; set; } = 1000d;
 }

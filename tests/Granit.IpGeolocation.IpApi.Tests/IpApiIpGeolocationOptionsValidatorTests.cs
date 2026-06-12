@@ -29,4 +29,8 @@ public sealed class IpApiIpGeolocationOptionsValidatorTests
     [Fact]
     public void Validate_NonPositiveTimeout_Fails() =>
         _sut.Validate(null, new IpApiIpGeolocationOptions { Timeout = TimeSpan.Zero }).Failed.ShouldBeTrue();
+
+    [Fact]
+    public void Validate_NonPositiveMaxResponseSize_Fails() =>
+        _sut.Validate(null, new IpApiIpGeolocationOptions { MaxResponseSizeBytes = 0 }).Failed.ShouldBeTrue();
 }

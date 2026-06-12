@@ -27,4 +27,11 @@ public sealed class IpApiIpGeolocationOptions
 
     /// <summary>Per-request timeout. Defaults to 3 seconds.</summary>
     public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(3);
+
+    /// <summary>
+    /// Upper bound on the response body buffered from the external API, in bytes. A response from a third party
+    /// is untrusted input re-entering the process; capping it bounds memory use even if the endpoint is
+    /// compromised or proxied. Defaults to 64 KiB — the ipinfo.io payload is well under 1 KiB.
+    /// </summary>
+    public long MaxResponseSizeBytes { get; set; } = 64 * 1024;
 }

@@ -15,6 +15,10 @@ public sealed class IpAddressClassifierTests
     [InlineData("169.254.1.1")]     // link-local
     [InlineData("100.64.0.1")]      // CGNAT
     [InlineData("0.0.0.0")]         // unspecified
+    [InlineData("224.0.0.1")]       // multicast 224.0.0.0/4
+    [InlineData("239.255.255.250")] // multicast (SSDP)
+    [InlineData("240.0.0.1")]       // reserved 240.0.0.0/4
+    [InlineData("255.255.255.255")] // broadcast
     [InlineData("::1")]             // IPv6 loopback
     [InlineData("fe80::1")]         // IPv6 link-local
     [InlineData("fc00::1")]         // IPv6 unique-local

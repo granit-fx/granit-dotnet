@@ -68,7 +68,7 @@ internal sealed partial class DefaultIpGeolocationResolver : IIpGeolocationResol
         activity?.SetTag("ip.version", ipVersion);
 
         string normalized = parsed.ToString();
-        string cacheKey = BuildCacheKey(normalized);
+        string cacheKey = BuildCacheKey(normalized, _options.CacheKeySecret);
 
         MaybeValue<GeoLocation?> cached = await _cache
             .TryGetAsync<GeoLocation?>(cacheKey, token: cancellationToken)
@@ -101,12 +101,20 @@ internal sealed partial class DefaultIpGeolocationResolver : IIpGeolocationResol
     }
 
     /// <summary>
-    /// Builds the cache key for <paramref name="normalizedIp"/>. The IP is hashed (SHA-256) rather than embedded
-    /// verbatim so that no raw client IP — personal data under GDPR — is persisted in a shared/distributed cache
-    /// (e.g. Redis), where keys, unlike values, are not encrypted.
+    /// Builds the cache key for <paramref name="normalizedIp"/>. The IP is hashed rather than embedded verbatim
+    /// so that no raw client IP — personal data under GDPR — is persisted in a shared/distributed cache (e.g.
+    /// Redis), where keys, unlike values, are not encrypted. When <paramref name="secret"/> is supplied the hash
+    /// is keyed (HMAC-SHA-256), so the key cannot be brute-force-reversed to the IP from a cache dump; otherwise
+    /// a plain SHA-256 is used.
     /// </summary>
-    internal static string BuildCacheKey(string normalizedIp) =>
-        CacheKeyPrefix + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(normalizedIp)));
+    internal static string BuildCacheKey(string normalizedIp, string? secret)
+    {
+        byte[] input = Encoding.UTF8.GetBytes(normalizedIp);
+        byte[] hash = string.IsNullOrEmpty(secret)
+            ? SHA256.HashData(input)
+            : HMACSHA256.HashData(Encoding.UTF8.GetBytes(secret), input);
+        return CacheKeyPrefix + Convert.ToHexStringLower(hash);
+    }
 
     private async Task<GeoLocation?> QueryProvidersAsync(string ipAddress, CancellationToken cancellationToken)
     {

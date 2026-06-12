@@ -49,7 +49,7 @@ internal static class IpAddressClassifier
                 169 when b[1] == 254 => true,               // 169.254.0.0/16 (link-local)
                 172 when b[1] is >= 16 and <= 31 => true,   // 172.16.0.0/12 (RFC 1918)
                 192 when b[1] == 168 => true,               // 192.168.0.0/16 (RFC 1918)
-                255 when b is [255, 255, 255, 255] => true, // broadcast
+                >= 224 => true,                             // 224.0.0.0/4 multicast, 240.0.0.0/4 reserved, 255.255.255.255 broadcast
                 _ => false,
             };
         }

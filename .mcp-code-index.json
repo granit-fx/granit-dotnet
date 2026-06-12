@@ -452,6 +452,7 @@
         "Granit.Caching",
         "Granit.Http.ApiDocumentation",
         "Granit.Http.Cookies",
+        "Granit.IpGeolocation",
         "Granit.Oidc",
         "Granit.UserSessions.Abstractions",
         "Granit.Validation"
@@ -10089,7 +10090,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "MapGranitBff",
@@ -10130,7 +10131,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
-      "line": 32,
+      "line": 34,
       "members": [
         {
           "name": "ConfigureServices",
@@ -30116,6 +30117,12 @@
           "kind": "method",
           "signature": "FromSeconds(3)",
           "returnType": "TimeSpan Timeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxResponseSizeBytes",
+          "kind": "property",
+          "signature": "long MaxResponseSizeBytes",
+          "returnType": "long"
         }
       ]
     },
@@ -49415,15 +49422,6 @@
       ]
     },
     {
-      "name": "SuspiciousUserSessionDetectedEto",
-      "fqn": "Granit.UserSessions.AnomalyDetection.Events.SuspiciousUserSessionDetectedEto",
-      "kind": "record",
-      "project": "Granit.UserSessions.AnomalyDetection",
-      "file": "src/Granit.UserSessions.AnomalyDetection/Events/SuspiciousUserSessionDetectedEto.cs",
-      "line": 14,
-      "members": []
-    },
-    {
       "name": "GranitUserSessionsAnomalyDetectionModule",
       "fqn": "Granit.UserSessions.AnomalyDetection.GranitUserSessionsAnomalyDetectionModule",
       "kind": "class",
@@ -49461,7 +49459,7 @@
       "kind": "class",
       "project": "Granit.UserSessions.AnomalyDetection",
       "file": "src/Granit.UserSessions.AnomalyDetection/Options/UserSessionsAnomalyDetectionOptions.cs",
-      "line": 6,
+      "line": 8,
       "members": [
         {
           "name": "UseAi",
@@ -49606,6 +49604,15 @@
           "returnType": "Task<IReadOnlyDictionary<string, UserSessionRiskVerdict>>"
         }
       ]
+    },
+    {
+      "name": "SuspiciousUserSessionDetectedEto",
+      "fqn": "Granit.UserSessions.SuspiciousUserSessionDetectedEto",
+      "kind": "record",
+      "project": "Granit.UserSessions.Abstractions",
+      "file": "src/Granit.UserSessions.Abstractions/SuspiciousUserSessionDetectedEto.cs",
+      "line": 18,
+      "members": []
     },
     {
       "name": "UserSessionDescriptor",

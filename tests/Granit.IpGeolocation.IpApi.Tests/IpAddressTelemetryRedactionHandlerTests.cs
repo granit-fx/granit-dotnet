@@ -30,6 +30,21 @@ public sealed class IpAddressTelemetryRedactionHandlerTests
     }
 
     [Fact]
+    public async Task SendAsync_RedactsClientIp_FromLegacyHttpUrlTag()
+    {
+        using ActivityListener listener = CreateListener();
+        ActivitySource.AddActivityListener(listener);
+
+        using ActivitySource source = new("System.Net.Http");
+        using Activity activity = source.StartActivity("System.Net.Http.HttpRequestOut")!;
+        activity.SetTag("http.url", $"https://ipinfo.io/{PublicIp}/json");
+
+        await SendThroughHandlerAsync($"https://ipinfo.io/{PublicIp}/json");
+
+        activity.GetTagItem("http.url").ShouldBe("https://ipinfo.io/redacted");
+    }
+
+    [Fact]
     public async Task SendAsync_LeavesNonHttpClientActivityUntouched()
     {
         using ActivityListener listener = CreateListener();
