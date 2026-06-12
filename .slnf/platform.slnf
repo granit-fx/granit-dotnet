@@ -238,6 +238,7 @@
       "tests/Granit.Indexing.EntityFrameworkCore.Tests/Granit.Indexing.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Indexing.Privacy.Tests/Granit.Indexing.Privacy.Tests.csproj",
       "tests/Granit.Indexing.Tests/Granit.Indexing.Tests.csproj",
+      "tests/Granit.IpGeolocation.Abstractions.Tests/Granit.IpGeolocation.Abstractions.Tests.csproj",
       "tests/Granit.IpGeolocation.IpApi.Tests/Granit.IpGeolocation.IpApi.Tests.csproj",
       "tests/Granit.IpGeolocation.MaxMind.Tests/Granit.IpGeolocation.MaxMind.Tests.csproj",
       "tests/Granit.IpGeolocation.Tests/Granit.IpGeolocation.Tests.csproj",

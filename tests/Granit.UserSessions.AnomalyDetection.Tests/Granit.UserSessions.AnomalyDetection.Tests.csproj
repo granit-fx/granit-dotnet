@@ -3,7 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
-    <!-- CA2012 false positive: NSubstitute's .Returns() on a ValueTask-returning member. -->
+    <!-- justification: CA2012 false positive — tests mock a ValueTask-returning member with
+         NSubstitute's .Returns(ValueTask.FromResult(...)); the substitute consumes the ValueTask
+         once, it is never stored or double-consumed. -->
     <NoWarn>$(NoWarn);CA2012</NoWarn>
   </PropertyGroup>
 

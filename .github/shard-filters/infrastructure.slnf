@@ -145,6 +145,7 @@
       "tests/Granit.Hostnames.Tests/Granit.Hostnames.Tests.csproj",
       "tests/Granit.Html.AngleSharp.Tests/Granit.Html.AngleSharp.Tests.csproj",
       "tests/Granit.Html.Tests/Granit.Html.Tests.csproj",
+      "tests/Granit.IpGeolocation.Abstractions.Tests/Granit.IpGeolocation.Abstractions.Tests.csproj",
       "tests/Granit.IpGeolocation.IpApi.Tests/Granit.IpGeolocation.IpApi.Tests.csproj",
       "tests/Granit.IpGeolocation.MaxMind.Tests/Granit.IpGeolocation.MaxMind.Tests.csproj",
       "tests/Granit.IpGeolocation.Tests/Granit.IpGeolocation.Tests.csproj",
