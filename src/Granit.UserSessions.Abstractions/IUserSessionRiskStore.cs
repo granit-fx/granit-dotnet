@@ -5,9 +5,16 @@ namespace Granit.UserSessions;
 /// the BFF and identity session surfaces read their displayed risk level from.
 /// </summary>
 /// <remarks>
+/// <para>
 /// The default registration (<c>Granit.UserSessions.Abstractions</c>) is an in-memory, single-node, non-durable
 /// store suitable for development. Install <c>Granit.UserSessions.EntityFrameworkCore</c> for a durable store that
 /// survives restarts and is shared across instances.
+/// </para>
+/// <para>
+/// Lifetime contract: implementations must be safe to resolve per request scope. The default in-memory store is
+/// registered <c>Singleton</c> (shared state) while the EF Core store is <c>Scoped</c>; consumers must therefore
+/// depend on this interface from a scoped (or transient) service — never capture it in a singleton.
+/// </para>
 /// </remarks>
 public interface IUserSessionRiskStore
 {

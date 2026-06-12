@@ -17,6 +17,7 @@ public sealed class UserSessionsAnomalyDetectionOptionsTests
 
         options.UseAi.ShouldBeFalse();
         options.MaxAiCallsPerHourPerTenant.ShouldBe(500);
+        options.MaxAiCallsPerHourPerUser.ShouldBe(50);
         options.AiTimeoutSeconds.ShouldBe(15);
         options.MaxTravelKilometersPerHour.ShouldBe(1000d);
     }
