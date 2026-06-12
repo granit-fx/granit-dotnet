@@ -55,6 +55,7 @@
       "src/Granit.Bff.BackgroundJobs/Granit.Bff.BackgroundJobs.csproj",
       "src/Granit.Bff.Endpoints/Granit.Bff.Endpoints.csproj",
       "src/Granit.Bff.EntityFrameworkCore/Granit.Bff.EntityFrameworkCore.csproj",
+      "src/Granit.Bff.UserSessions/Granit.Bff.UserSessions.csproj",
       "src/Granit.Bff.Yarp/Granit.Bff.Yarp.csproj",
       "src/Granit.Bff/Granit.Bff.csproj",
       "src/Granit.BlobStorage.AI/Granit.BlobStorage.AI.csproj",

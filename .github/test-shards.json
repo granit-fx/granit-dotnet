@@ -103,6 +103,7 @@
       "projects": [
         "tests/Granit.Bff.Endpoints.Tests",
         "tests/Granit.Bff.Tests",
+        "tests/Granit.Bff.UserSessions.Tests",
         "tests/Granit.Bff.Yarp.Tests",
         "tests/Granit.BlobStorage.AzureBlob.Tests",
         "tests/Granit.BlobStorage.BackgroundJobs.Tests",

@@ -470,6 +470,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Bff.UserSessions",
+      "deps": [
+        "Granit.Bff",
+        "Granit.UserSessions.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Bff.Yarp",
       "deps": [
         "Granit.Oidc",
@@ -10494,6 +10502,22 @@
           "kind": "property",
           "signature": "string? CsrfHmacKey",
           "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "GranitBffUserSessionsModule",
+      "fqn": "Granit.Bff.UserSessions.GranitBffUserSessionsModule",
+      "kind": "class",
+      "project": "Granit.Bff.UserSessions",
+      "file": "src/Granit.Bff.UserSessions/GranitBffUserSessionsModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

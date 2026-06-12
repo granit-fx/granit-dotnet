@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Bff.UserSessions</PackageId>
+    <Description>Glue package making the BFF the backend for Granit's canonical user-session API. Implements IUserSessionProvider over IBffTokenStore so a user's browser↔BFF sessions surface and revoke through /sessions, across every configured frontend.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Bff.UserSessions.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Bff\Granit.Bff.csproj" />
+    <ProjectReference Include="..\Granit.UserSessions.Abstractions\Granit.UserSessions.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
