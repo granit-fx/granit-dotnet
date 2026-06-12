@@ -10,6 +10,7 @@ namespace Granit.Authentication.ApiKeys.Notifications.Internal;
 internal sealed class ApiKeysNotificationDefinitionProvider : INotificationDefinitionProvider
 {
     private const string GroupName = "Security";
+    private const string ReadPermission = "AuthenticationApiKeys.Keys.Read";
 
     public void Define(INotificationDefinitionContext context)
     {
@@ -21,7 +22,7 @@ internal sealed class ApiKeysNotificationDefinitionProvider : INotificationDefin
             DefaultSeverity = NotificationSeverity.Info,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
-            RequiredPermission = "AuthenticationApiKeys.Keys.Read",
+            RequiredPermission = ReadPermission,
         });
 
         context.Add(new NotificationDefinition(ApiKeyRotatedNotificationType.Instance.Name)
@@ -32,7 +33,7 @@ internal sealed class ApiKeysNotificationDefinitionProvider : INotificationDefin
             DefaultSeverity = NotificationSeverity.Info,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
-            RequiredPermission = "AuthenticationApiKeys.Keys.Read",
+            RequiredPermission = ReadPermission,
         });
 
         context.Add(new NotificationDefinition(ApiKeyRevokedNotificationType.Instance.Name)
@@ -43,7 +44,7 @@ internal sealed class ApiKeysNotificationDefinitionProvider : INotificationDefin
             DefaultSeverity = NotificationSeverity.Info,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
-            RequiredPermission = "AuthenticationApiKeys.Keys.Read",
+            RequiredPermission = ReadPermission,
         });
 
         context.Add(new NotificationDefinition(ApiKeyExpiringSoonNotificationType.Instance.Name)
@@ -54,7 +55,7 @@ internal sealed class ApiKeysNotificationDefinitionProvider : INotificationDefin
             DefaultSeverity = NotificationSeverity.Warning,
             DefaultChannels = [NotificationChannels.Email, NotificationChannels.InApp],
             AllowUserOptOut = false,
-            RequiredPermission = "AuthenticationApiKeys.Keys.Read",
+            RequiredPermission = ReadPermission,
         });
     }
 }

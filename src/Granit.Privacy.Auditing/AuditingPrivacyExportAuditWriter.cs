@@ -25,6 +25,7 @@ public sealed class AuditingPrivacyExportAuditWriter(IAuditingWriter auditingWri
     : IPrivacyExportAuditWriter
 {
     private const string SyntheticEntityType = "PrivacyExport";
+    private const string PhaseProperty = "Phase";
 
     public Task WriteExportRequestedAsync(PrivacyExportRequestedAudit data, CancellationToken cancellationToken) =>
         auditingWriter.WriteAsync(new AuditEntry
@@ -40,7 +41,7 @@ public sealed class AuditingPrivacyExportAuditWriter(IAuditingWriter auditingWri
                 data.RequestId,
                 AuditChangeType.Created,
                 [
-                    new AuditPropertyChange { PropertyName = "Phase", NewValue = "requested" },
+                    new AuditPropertyChange { PropertyName = PhaseProperty, NewValue = "requested" },
                     new AuditPropertyChange { PropertyName = "SubjectUserId", NewValue = data.SubjectUserId.ToString("D", CultureInfo.InvariantCulture) },
                     new AuditPropertyChange { PropertyName = "Regulation", NewValue = data.Regulation },
                     new AuditPropertyChange { PropertyName = "ResolvedScopes", NewValue = string.Join(",", data.ResolvedScopes) },
@@ -58,7 +59,7 @@ public sealed class AuditingPrivacyExportAuditWriter(IAuditingWriter auditingWri
                 data.RequestId,
                 AuditChangeType.Modified,
                 [
-                    new AuditPropertyChange { PropertyName = "Phase", NewValue = "fragment-prepared" },
+                    new AuditPropertyChange { PropertyName = PhaseProperty, NewValue = "fragment-prepared" },
                     new AuditPropertyChange { PropertyName = "ProviderName", NewValue = data.ProviderName },
                     new AuditPropertyChange { PropertyName = "FragmentKind", NewValue = data.FragmentKind },
                     new AuditPropertyChange { PropertyName = "EntryPathHash", NewValue = data.EntryPathHash },
@@ -77,7 +78,7 @@ public sealed class AuditingPrivacyExportAuditWriter(IAuditingWriter auditingWri
                 data.RequestId,
                 AuditChangeType.Modified,
                 [
-                    new AuditPropertyChange { PropertyName = "Phase", NewValue = "assembly-started" },
+                    new AuditPropertyChange { PropertyName = PhaseProperty, NewValue = "assembly-started" },
                     new AuditPropertyChange { PropertyName = "Regulation", NewValue = data.Regulation },
                     new AuditPropertyChange { PropertyName = "ExpectedFragmentCount", NewValue = data.ExpectedFragmentCount.ToString(CultureInfo.InvariantCulture) },
                     new AuditPropertyChange { PropertyName = "IsResumed", NewValue = data.IsResumed ? "true" : "false" },
@@ -95,7 +96,7 @@ public sealed class AuditingPrivacyExportAuditWriter(IAuditingWriter auditingWri
                 data.RequestId,
                 AuditChangeType.Modified,
                 [
-                    new AuditPropertyChange { PropertyName = "Phase", NewValue = "shard-completed" },
+                    new AuditPropertyChange { PropertyName = PhaseProperty, NewValue = "shard-completed" },
                     new AuditPropertyChange { PropertyName = "ShardIndex", NewValue = data.ShardIndex.ToString(CultureInfo.InvariantCulture) },
                     new AuditPropertyChange { PropertyName = "SizeBytes", NewValue = data.SizeBytes.ToString(CultureInfo.InvariantCulture) },
                     new AuditPropertyChange { PropertyName = "Sha256", NewValue = data.Sha256Hex },
@@ -114,7 +115,7 @@ public sealed class AuditingPrivacyExportAuditWriter(IAuditingWriter auditingWri
                 data.RequestId,
                 AuditChangeType.Modified,
                 [
-                    new AuditPropertyChange { PropertyName = "Phase", NewValue = "completed" },
+                    new AuditPropertyChange { PropertyName = PhaseProperty, NewValue = "completed" },
                     new AuditPropertyChange { PropertyName = "Regulation", NewValue = data.Regulation },
                     new AuditPropertyChange { PropertyName = "ShardCount", NewValue = data.ShardCount.ToString(CultureInfo.InvariantCulture) },
                     new AuditPropertyChange { PropertyName = "IsPartial", NewValue = data.IsPartial ? "true" : "false" },
@@ -139,7 +140,7 @@ public sealed class AuditingPrivacyExportAuditWriter(IAuditingWriter auditingWri
                 data.RequestId,
                 AuditChangeType.Modified,
                 [
-                    new AuditPropertyChange { PropertyName = "Phase", NewValue = "shard-downloaded" },
+                    new AuditPropertyChange { PropertyName = PhaseProperty, NewValue = "shard-downloaded" },
                     new AuditPropertyChange { PropertyName = "SubjectUserId", NewValue = data.SubjectUserId.ToString("D", CultureInfo.InvariantCulture) },
                     new AuditPropertyChange { PropertyName = "ShardIndex", NewValue = data.ShardIndex.ToString(CultureInfo.InvariantCulture) },
                     new AuditPropertyChange { PropertyName = "AuthMethod", NewValue = data.AuthMethod ?? "" },
@@ -157,7 +158,7 @@ public sealed class AuditingPrivacyExportAuditWriter(IAuditingWriter auditingWri
                 data.RequestId,
                 AuditChangeType.Modified,
                 [
-                    new AuditPropertyChange { PropertyName = "Phase", NewValue = "failed" },
+                    new AuditPropertyChange { PropertyName = PhaseProperty, NewValue = "failed" },
                     new AuditPropertyChange { PropertyName = "ExceptionType", NewValue = data.ExceptionType },
                     new AuditPropertyChange { PropertyName = "RetryCount", NewValue = data.RetryCount.ToString(CultureInfo.InvariantCulture) },
                 ])],

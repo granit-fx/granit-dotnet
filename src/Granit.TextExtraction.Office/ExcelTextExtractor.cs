@@ -80,7 +80,7 @@ public sealed partial class ExcelTextExtractor : ITextExtractor
             StringBuilder sb = new(Math.Min(maxCharLength, 8192));
             bool truncated = false;
 
-            foreach (WorksheetPart worksheetPart in workbookPart.WorksheetParts)
+            foreach (Worksheet? worksheet in workbookPart.WorksheetParts.Select(part => part.Worksheet))
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -90,35 +90,13 @@ public sealed partial class ExcelTextExtractor : ITextExtractor
                     if (truncated) { break; }
                 }
 
-                Worksheet? worksheet = worksheetPart.Worksheet;
                 if (worksheet is null) { continue; }
 
-                foreach (Row row in worksheet.Descendants<Row>())
+                if (AppendWorksheet(sb, worksheet, sharedStrings, maxCharLength, cancellationToken))
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    bool firstCellInRow = true;
-                    foreach (Cell cell in row.Descendants<Cell>())
-                    {
-                        if (!firstCellInRow)
-                        {
-                            AppendIfRoom(sb, '\t', maxCharLength, ref truncated);
-                            if (truncated) { break; }
-                        }
-
-                        string cellText = ResolveCellText(cell, sharedStrings);
-                        AppendIfRoom(sb, cellText, maxCharLength, ref truncated);
-                        if (truncated) { break; }
-
-                        firstCellInRow = false;
-                    }
-
-                    if (truncated) { break; }
-                    AppendIfRoom(sb, '\n', maxCharLength, ref truncated);
-                    if (truncated) { break; }
+                    truncated = true;
+                    break;
                 }
-
-                if (truncated) { break; }
             }
 
             return new TextExtractionResult(
@@ -134,6 +112,51 @@ public sealed partial class ExcelTextExtractor : ITextExtractor
             LogPackageParseFailed(ex);
             return OpenXmlExtraction.Skipped(ExtractorName);
         }
+    }
+
+    // Appends one worksheet's rows. Returns true once the output cap is hit.
+    private static bool AppendWorksheet(
+        StringBuilder sb, Worksheet worksheet, SharedStringTable? sharedStrings,
+        int maxCharLength, CancellationToken cancellationToken)
+    {
+        bool truncated = false;
+        foreach (Row row in worksheet.Descendants<Row>())
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (AppendRow(sb, row, sharedStrings, maxCharLength))
+            {
+                return true;
+            }
+
+            AppendIfRoom(sb, '\n', maxCharLength, ref truncated);
+            if (truncated) { return true; }
+        }
+
+        return false;
+    }
+
+    // Appends one row's tab-separated cells. Returns true once the output cap is hit.
+    private static bool AppendRow(StringBuilder sb, Row row, SharedStringTable? sharedStrings, int maxCharLength)
+    {
+        bool truncated = false;
+        bool firstCellInRow = true;
+        foreach (Cell cell in row.Descendants<Cell>())
+        {
+            if (!firstCellInRow)
+            {
+                AppendIfRoom(sb, '\t', maxCharLength, ref truncated);
+                if (truncated) { return true; }
+            }
+
+            string cellText = ResolveCellText(cell, sharedStrings);
+            AppendIfRoom(sb, cellText, maxCharLength, ref truncated);
+            if (truncated) { return true; }
+
+            firstCellInRow = false;
+        }
+
+        return false;
     }
 
     private static string ResolveCellText(Cell cell, SharedStringTable? sharedStrings)

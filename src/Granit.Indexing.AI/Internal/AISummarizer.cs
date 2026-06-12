@@ -83,7 +83,7 @@ internal sealed partial class AISummarizer : ISummarizer
         _ = language;
 
         string? tenantId = _currentTenant.Id?.ToString();
-        string bucketKey = $"indexing_summarizer:{tenantId ?? "global"}";
+        string bucketKey = $"indexing_summarizer:{tenantId ?? IndexingAIMetrics.GlobalTenant}";
 
         bool admitted = await _rateLimiter
             .TryAcquireAsync(bucketKey, _options.MaxAICallsPerHourPerTenant, cancellationToken)
@@ -92,7 +92,7 @@ internal sealed partial class AISummarizer : ISummarizer
         if (!admitted)
         {
             _metrics.RecordSummarizerThrottled(tenantId);
-            LogThrottled(tenantId ?? "global");
+            LogThrottled(tenantId ?? IndexingAIMetrics.GlobalTenant);
             return null;
         }
 
@@ -132,17 +132,16 @@ internal sealed partial class AISummarizer : ISummarizer
                     _metrics.RecordSummarizerInjection(tenantId);
                     return null;
 
-                case StructuredCompletionStatus.TransportFailure:
                 default:
                     _metrics.RecordSummarizerFailed(tenantId, "transport");
-                    LogTransportFailure(tenantId ?? "global", result.Status.ToString());
+                    LogTransportFailure(tenantId ?? IndexingAIMetrics.GlobalTenant, result.Status.ToString());
                     return null;
             }
         }
         catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
             _metrics.RecordSummarizerFailed(tenantId, "timeout");
-            LogTimeout(tenantId ?? "global", _options.TimeoutSeconds);
+            LogTimeout(tenantId ?? IndexingAIMetrics.GlobalTenant, _options.TimeoutSeconds);
             return null;
         }
     }

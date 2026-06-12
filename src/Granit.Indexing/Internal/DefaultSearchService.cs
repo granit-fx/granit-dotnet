@@ -72,65 +72,9 @@ internal sealed class DefaultSearchService<TKey, TResult> : ISearchService<TKey,
 
         // Exponential over-fetch loop. Cumulative authorised hits accumulate in
         // backend-score order; we slice the requested page at the end.
-        int multiplier = Math.Max(_authorizer.RecommendedInitialMultiplier, 1);
-        int window = pageSize * multiplier;
-        int offset = 0;
-        int backendHitCount = 0;
-        bool hitLimit = false;
-        List<SearchHit<TKey, TResult>> authorisedHits = [];
-        HashSet<TKey> authorisedKeys = new();
-
-        while (true)
-        {
-            BackendSearchPage<TKey, TResult> page = await _backend
-                .SearchAsync(request, offset, window, cancellationToken)
+        (List<SearchHit<TKey, TResult>> authorisedHits, int backendHitCount, bool hitLimit) =
+            await CollectAuthorisedHitsAsync(request, pageSize, wantThrough, tenantTag, backendName, cancellationToken)
                 .ConfigureAwait(false);
-
-            backendHitCount += page.Hits.Count;
-
-            if (page.Hits.Count > 0)
-            {
-                IReadOnlyList<TKey> candidateKeys = page.Hits.Select(h => h.Key).ToArray();
-                AuthorizedResult<TKey> authorised = await _authorizer
-                    .FilterAsync(candidateKeys, cancellationToken)
-                    .ConfigureAwait(false);
-
-                HashSet<TKey> authorisedSet = [.. authorised.Authorized];
-                long filteredOut = page.Hits.Count - authorisedSet.Count;
-                _metrics.RecordAuthorizationFiltered(tenantTag, backendName, filteredOut);
-
-                foreach (SearchHit<TKey, TResult> hit in page.Hits)
-                {
-                    if (authorisedSet.Contains(hit.Key) && authorisedKeys.Add(hit.Key))
-                    {
-                        authorisedHits.Add(hit);
-                    }
-                }
-            }
-
-            if (authorisedHits.Count >= wantThrough)
-            {
-                break;
-            }
-
-            if (!page.HasMore || page.Hits.Count == 0)
-            {
-                break;
-            }
-
-            if (backendHitCount >= _options.MaxAuthorizationDepth)
-            {
-                hitLimit = true;
-                break;
-            }
-
-            offset += page.Hits.Count;
-            // Double the window for the next iteration; cap at the remaining authorization
-            // depth so the very last iteration cannot blow past MaxAuthorizationDepth.
-            int nextWindow = window * 2;
-            int remaining = _options.MaxAuthorizationDepth - backendHitCount;
-            window = Math.Max(1, Math.Min(nextWindow, remaining));
-        }
 
         int skip = (request.Page - 1) * pageSize;
         TResult[] items = authorisedHits.Count <= skip
@@ -164,5 +108,73 @@ internal sealed class DefaultSearchService<TKey, TResult> : ISearchService<TKey,
             HitAuthorizationLimit = hitLimit,
             BackendHitCount = backendHitCount,
         };
+    }
+
+    // Exponential over-fetch loop: repeatedly pulls a growing window from the backend,
+    // authorises each page, and accumulates distinct authorised hits in backend-score
+    // order until the requested page is covered, the backend is exhausted, or the
+    // MaxAuthorizationDepth budget is hit.
+    private async Task<(List<SearchHit<TKey, TResult>> Hits, int BackendHitCount, bool HitLimit)> CollectAuthorisedHitsAsync(
+        SearchRequest request, int pageSize, int wantThrough, string? tenantTag, string backendName,
+        CancellationToken cancellationToken)
+    {
+        int multiplier = Math.Max(_authorizer.RecommendedInitialMultiplier, 1);
+        int window = pageSize * multiplier;
+        int offset = 0;
+        int backendHitCount = 0;
+        bool hitLimit = false;
+        List<SearchHit<TKey, TResult>> authorisedHits = [];
+        HashSet<TKey> authorisedKeys = [];
+
+        while (true)
+        {
+            BackendSearchPage<TKey, TResult> page = await _backend
+                .SearchAsync(request, offset, window, cancellationToken)
+                .ConfigureAwait(false);
+
+            backendHitCount += page.Hits.Count;
+
+            if (page.Hits.Count > 0)
+            {
+                IReadOnlyList<TKey> candidateKeys = page.Hits.Select(h => h.Key).ToArray();
+                AuthorizedResult<TKey> authorised = await _authorizer
+                    .FilterAsync(candidateKeys, cancellationToken)
+                    .ConfigureAwait(false);
+
+                HashSet<TKey> authorisedSet = [.. authorised.Authorized];
+                long filteredOut = page.Hits.Count - authorisedSet.Count;
+                _metrics.RecordAuthorizationFiltered(tenantTag, backendName, filteredOut);
+
+                // authorisedKeys.Add doubles as the cross-page de-dup; the lazy Where keeps each
+                // distinct authorised hit exactly once.
+                authorisedHits.AddRange(page.Hits
+                    .Where(hit => authorisedSet.Contains(hit.Key) && authorisedKeys.Add(hit.Key)));
+            }
+
+            if (authorisedHits.Count >= wantThrough)
+            {
+                break;
+            }
+
+            if (!page.HasMore || page.Hits.Count == 0)
+            {
+                break;
+            }
+
+            if (backendHitCount >= _options.MaxAuthorizationDepth)
+            {
+                hitLimit = true;
+                break;
+            }
+
+            offset += page.Hits.Count;
+            // Double the window for the next iteration; cap at the remaining authorization
+            // depth so the very last iteration cannot blow past MaxAuthorizationDepth.
+            int nextWindow = window * 2;
+            int remaining = _options.MaxAuthorizationDepth - backendHitCount;
+            window = Math.Max(1, Math.Min(nextWindow, remaining));
+        }
+
+        return (authorisedHits, backendHitCount, hitLimit);
     }
 }

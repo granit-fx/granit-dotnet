@@ -18,6 +18,9 @@ public sealed class IndexingMetrics
 {
     public const string MeterName = "Granit.Indexing";
 
+    internal const string TenantIdTag = "tenant_id";
+    internal const string GlobalTenant = "global";
+
     private readonly Counter<long> _entryIndexed;
     private readonly Counter<long> _entryFailed;
     private readonly Counter<long> _searchQueries;
@@ -71,7 +74,7 @@ public sealed class IndexingMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("backend", backend),
         ];
         _entryIndexed.Add(1, tags);
@@ -81,7 +84,7 @@ public sealed class IndexingMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("backend", backend),
             new("reason", reason),
         ];
@@ -92,7 +95,7 @@ public sealed class IndexingMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("backend", backend),
         ];
         _searchQueries.Add(1, tags);
@@ -102,7 +105,7 @@ public sealed class IndexingMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("backend", backend),
         ];
         _searchLatency.Record(durationSeconds, tags);
@@ -117,7 +120,7 @@ public sealed class IndexingMetrics
 
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("backend", backend),
         ];
         _authorizationFiltered.Add(filteredCount, tags);
@@ -125,7 +128,7 @@ public sealed class IndexingMetrics
 
     public void RecordEmptyResultThrottled(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? "global")];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _emptyResultThrottled.Add(1, tags);
     }
 
@@ -138,7 +141,7 @@ public sealed class IndexingMetrics
 
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("backend", backend),
         ];
         _backendHitCount.Add(count, tags);
@@ -148,7 +151,7 @@ public sealed class IndexingMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? "global"),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("detector", detector),
         ];
         _aiInjectionAttempts.Add(1, tags);

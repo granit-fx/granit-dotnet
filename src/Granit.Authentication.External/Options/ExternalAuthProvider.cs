@@ -63,7 +63,16 @@ public sealed class ExternalAuthProvider
     /// provider <see cref="Type"/> (already display-ready for Google/Microsoft/Apple/GitHub/Facebook),
     /// or the <see cref="SchemeName"/> for the generic <c>Oidc</c> provider.
     /// </summary>
-    public string ResolvedDisplayName => string.IsNullOrWhiteSpace(DisplayName)
-        ? (string.Equals(Type, "Oidc", StringComparison.OrdinalIgnoreCase) ? SchemeName : Type)
-        : DisplayName!;
+    public string ResolvedDisplayName
+    {
+        get
+        {
+            if (!string.IsNullOrWhiteSpace(DisplayName))
+            {
+                return DisplayName;
+            }
+
+            return string.Equals(Type, "Oidc", StringComparison.OrdinalIgnoreCase) ? SchemeName : Type;
+        }
+    }
 }

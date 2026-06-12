@@ -85,25 +85,7 @@ public sealed class PrivacyExportSubjectSubstitutionAnalyzer : SingleRuleAnalyze
             return;
         }
 
-        ArgumentSyntax? subjectArg = null;
-        ArgumentSyntax? callerArg = null;
-
-        for (int i = 0; i < creation.ArgumentList.Arguments.Count; i++)
-        {
-            ArgumentSyntax arg = creation.ArgumentList.Arguments[i];
-            string? parameterName = arg.NameColon?.Name.Identifier.Text
-                ?? (i < ctor.Parameters.Length ? ctor.Parameters[i].Name : null);
-
-            if (parameterName == "SubjectUserId")
-            {
-                subjectArg = arg;
-            }
-            else if (parameterName == "CallerUserId")
-            {
-                callerArg = arg;
-            }
-        }
-
+        (ArgumentSyntax? subjectArg, ArgumentSyntax? callerArg) = FindSubjectAndCallerArgs(creation, ctor);
         if (subjectArg is null || callerArg is null)
         {
             return;
@@ -129,5 +111,33 @@ public sealed class PrivacyExportSubjectSubstitutionAnalyzer : SingleRuleAnalyze
             creation.GetLocation(),
             subjectArg.Expression.ToString(),
             callerArg.Expression.ToString()));
+    }
+
+    // Matches the SubjectUserId / CallerUserId arguments by name (named-colon) or by
+    // positional index against the constructor's parameter list.
+    private static (ArgumentSyntax? Subject, ArgumentSyntax? Caller) FindSubjectAndCallerArgs(
+        BaseObjectCreationExpressionSyntax creation, IMethodSymbol ctor)
+    {
+        ArgumentSyntax? subjectArg = null;
+        ArgumentSyntax? callerArg = null;
+
+        SeparatedSyntaxList<ArgumentSyntax> arguments = creation.ArgumentList!.Arguments;
+        for (int i = 0; i < arguments.Count; i++)
+        {
+            ArgumentSyntax arg = arguments[i];
+            string? parameterName = arg.NameColon?.Name.Identifier.Text
+                ?? (i < ctor.Parameters.Length ? ctor.Parameters[i].Name : null);
+
+            if (parameterName == "SubjectUserId")
+            {
+                subjectArg = arg;
+            }
+            else if (parameterName == "CallerUserId")
+            {
+                callerArg = arg;
+            }
+        }
+
+        return (subjectArg, callerArg);
     }
 }

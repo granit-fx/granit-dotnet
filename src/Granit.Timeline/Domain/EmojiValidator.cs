@@ -65,49 +65,20 @@ public static class EmojiValidator
         foreach (Rune r in emoji.EnumerateRunes())
         {
             RuneKind kind = Classify(r.Value);
-            switch (kind)
+            if (kind == RuneKind.Invalid)
             {
-                case RuneKind.Invalid:
-                    return false;
-                case RuneKind.Base:
-                case RuneKind.KeycapBase:
-                    hasBase = true;
-                    break;
-                case RuneKind.Modifier:
-                case RuneKind.Vs16:
-                case RuneKind.KeycapCombiner:
-                    // Combiners need a preceding atom (base or keycap base).
-                    if (previous is RuneKind.Start or RuneKind.Zwj)
-                    {
-                        return false;
-                    }
-                    break;
-                case RuneKind.Zwj:
-                    // ZWJ at start or doubled is not allowed.
-                    if (previous is RuneKind.Start or RuneKind.Zwj)
-                    {
-                        return false;
-                    }
-                    break;
-                case RuneKind.TagChar:
-                    // Tag chars (U+E0020..U+E007E) form the payload of an
-                    // Emoji_Tag_Sequence after a base — e.g. the
-                    // subdivision flags 🏴󠁧󠁢󠁥󠁮󠁧󠁿 (England). They are never
-                    // valid at start, after a combiner, or after a ZWJ.
-                    if (previous is not (RuneKind.Base or RuneKind.TagChar))
-                    {
-                        return false;
-                    }
-                    break;
-                case RuneKind.TagEnd:
-                    // Cancel-tag (U+E007F) terminates an open tag sequence
-                    // and is only valid right after at least one tag char.
-                    if (previous != RuneKind.TagChar)
-                    {
-                        return false;
-                    }
-                    break;
+                return false;
             }
+
+            if (kind is RuneKind.Base or RuneKind.KeycapBase)
+            {
+                hasBase = true;
+            }
+            else if (!IsValidTransition(kind, previous))
+            {
+                return false;
+            }
+
             previous = kind;
         }
 
@@ -170,6 +141,23 @@ public static class EmojiValidator
         return buffer.ToString();
     }
 
+    // Validates that a combiner/joiner/tag rune may follow <paramref name="previous"/>.
+    // Base / KeycapBase / Invalid are handled by the caller and never reach here.
+    private static bool IsValidTransition(RuneKind kind, RuneKind previous) => kind switch
+    {
+        // Combiners and ZWJ need a preceding atom; ZWJ may not start or double.
+        RuneKind.Modifier or RuneKind.Vs16 or RuneKind.KeycapCombiner or RuneKind.Zwj
+            => previous is not (RuneKind.Start or RuneKind.Zwj),
+        // Tag chars (U+E0020..U+E007E) form an Emoji_Tag_Sequence after a base —
+        // e.g. the subdivision flags 🏴󠁧󠁢󠁥󠁮󠁧󠁿 (England). Never valid at start, after a
+        // combiner, or after a ZWJ.
+        RuneKind.TagChar => previous is RuneKind.Base or RuneKind.TagChar,
+        // Cancel-tag (U+E007F) terminates an open tag sequence, valid only right
+        // after at least one tag char.
+        RuneKind.TagEnd => previous == RuneKind.TagChar,
+        _ => true,
+    };
+
     private enum RuneKind
     {
         Start,
@@ -225,33 +213,35 @@ public static class EmojiValidator
     private static bool IsKeycapBase(int cp) =>
         cp == 0x23 || cp == 0x2A || (cp >= 0x30 && cp <= 0x39);
 
-    // Recognised emoji codepoints, ordered by block. The set mirrors the
-    // Unicode Extended_Pictographic property for blocks where emojis live;
-    // the safety-net goal does not require the strict RGI subset.
-    private static bool IsEmojiBase(int cp) => cp switch
-    {
-        0x00A9 or 0x00AE => true,
-        0x203C or 0x2049 => true,
-        0x2122 or 0x2139 => true,
-        >= 0x2194 and <= 0x2199 => true,
-        >= 0x21A9 and <= 0x21AA => true,
-        >= 0x231A and <= 0x231B => true,
-        0x2328 => true,
-        0x23CF => true,
-        >= 0x23E9 and <= 0x23F3 => true,
-        >= 0x23F8 and <= 0x23FA => true,
-        0x24C2 => true,
-        >= 0x25AA and <= 0x25AB => true,
-        0x25B6 or 0x25C0 => true,
-        >= 0x25FB and <= 0x25FE => true,
-        >= 0x2600 and <= 0x27BF => true,
-        >= 0x2934 and <= 0x2935 => true,
-        >= 0x2B00 and <= 0x2BFF => true,
-        0x3030 or 0x303D or 0x3297 or 0x3299 => true,
-        // Supplementary Multilingual Plane emoji blocks. The Fitzpatrick
-        // range (0x1F3FB..0x1F3FF) is intercepted earlier by Classify so
-        // it never reaches this switch as a base.
-        >= 0x1F000 and <= 0x1FAFF => true,
-        _ => false,
-    };
+    // Recognised emoji codepoint ranges, ordered by block. The set mirrors the
+    // Unicode Extended_Pictographic property for blocks where emojis live; the
+    // safety-net goal does not require the strict RGI subset. Single codepoints
+    // are encoded as a one-element range (Min == Max). The Fitzpatrick range
+    // (0x1F3FB..0x1F3FF) is intercepted earlier by Classify, so it never reaches
+    // this table as a base even though it falls inside 0x1F000..0x1FAFF.
+    private static readonly (int Min, int Max)[] EmojiBaseRanges =
+    [
+        (0x00A9, 0x00A9), (0x00AE, 0x00AE),
+        (0x203C, 0x203C), (0x2049, 0x2049),
+        (0x2122, 0x2122), (0x2139, 0x2139),
+        (0x2194, 0x2199),
+        (0x21A9, 0x21AA),
+        (0x231A, 0x231B),
+        (0x2328, 0x2328),
+        (0x23CF, 0x23CF),
+        (0x23E9, 0x23F3),
+        (0x23F8, 0x23FA),
+        (0x24C2, 0x24C2),
+        (0x25AA, 0x25AB),
+        (0x25B6, 0x25B6), (0x25C0, 0x25C0),
+        (0x25FB, 0x25FE),
+        (0x2600, 0x27BF),
+        (0x2934, 0x2935),
+        (0x2B00, 0x2BFF),
+        (0x3030, 0x3030), (0x303D, 0x303D), (0x3297, 0x3297), (0x3299, 0x3299),
+        (0x1F000, 0x1FAFF),
+    ];
+
+    private static bool IsEmojiBase(int cp) =>
+        Array.Exists(EmojiBaseRanges, range => cp >= range.Min && cp <= range.Max);
 }

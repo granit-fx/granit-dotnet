@@ -7,4 +7,8 @@ namespace Granit.Http.ApiDocumentation.Internal;
 /// <c>context.GetEndpoint()?.Metadata.GetMetadata&lt;ScalarApiReferenceMetadata&gt;()</c>
 /// to scope the CSP relaxation to the Scalar route only.
 /// </summary>
-internal sealed class ScalarApiReferenceMetadata;
+internal sealed class ScalarApiReferenceMetadata
+{
+    /// <summary>Shared stateless marker instance.</summary>
+    public static ScalarApiReferenceMetadata Instance { get; } = new();
+}

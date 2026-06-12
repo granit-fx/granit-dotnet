@@ -7562,12 +7562,6 @@
           "kind": "method",
           "signature": "IsNullOrWhiteSpace(Name)",
           "returnType": "string SchemeName => string."
-        },
-        {
-          "name": "IsNullOrWhiteSpace",
-          "kind": "method",
-          "signature": "IsNullOrWhiteSpace(DisplayName)",
-          "returnType": "string ResolvedDisplayName => string."
         }
       ]
     },
@@ -22983,7 +22977,14 @@
       "project": "Granit.Http.SecurityHeaders.Abstractions",
       "file": "src/Granit.Http.SecurityHeaders.Abstractions/AllowsPopupAuthorizationMetadata.cs",
       "line": 29,
-      "members": []
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "AllowsPopupAuthorizationMetadata Instance { get; } ="
+        }
+      ]
     },
     {
       "name": "CspBuilder",
@@ -39983,7 +39984,7 @@
       "kind": "record",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/PrivacyExportAssemblyService.cs",
-      "line": 579,
+      "line": 607,
       "members": []
     },
     {
@@ -40077,7 +40078,14 @@
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/Streaming/BlobBackedExportSource.cs",
       "line": 15,
-      "members": []
+      "members": [
+        {
+          "name": "StreamAsync",
+          "kind": "method",
+          "signature": "StreamAsync(IAsyncEnumerable<BlobBackedExportItem> items, PrivacyExportContext context, string providerName, CancellationToken cancellationToken)",
+          "returnType": "IAsyncEnumerable<ExportFragment>"
+        }
+      ]
     },
     {
       "name": "IBlobBackedExportSource",
@@ -43004,7 +43012,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Vault",
       "file": "src/Granit.Privacy.Vault/VaultExportHmacSigner.cs",
-      "line": 33,
+      "line": 32,
       "members": []
     },
     {

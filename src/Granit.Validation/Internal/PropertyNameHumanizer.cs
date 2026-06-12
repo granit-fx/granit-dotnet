@@ -55,16 +55,5 @@ internal static partial class PropertyNameHumanizer
         return string.Join(' ', words);
     }
 
-    private static bool IsAcronym(string word)
-    {
-        foreach (char c in word)
-        {
-            if (char.IsLower(c))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    private static bool IsAcronym(string word) => !word.Any(char.IsLower);
 }

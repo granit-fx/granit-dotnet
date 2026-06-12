@@ -30,6 +30,7 @@ internal sealed partial class GoogleCloudKmsMacService(
 {
     private const string ProviderName = "googlecloud";
     private const string TagPrefix = "gcpkms:";
+    private const string VerifyOperation = "verify";
 
     private readonly CryptoKeyName _cryptoKeyName = new(
         vaultOptions.Value.ProjectId,
@@ -148,14 +149,14 @@ internal sealed partial class GoogleCloudKmsMacService(
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
             {
-                metrics.RecordOperationCompleted(tenantId, "verify", ProviderName, "rejected");
+                metrics.RecordOperationCompleted(tenantId, VerifyOperation, ProviderName, "rejected");
                 return false;
             }
 
             if (versionState.State != CryptoKeyVersion.Types.CryptoKeyVersionState.Enabled)
             {
                 LogVersionDisabled(logger, _cryptoKeyName.CryptoKeyId, version, versionState.State.ToString());
-                metrics.RecordOperationCompleted(tenantId, "verify", ProviderName, "rejected");
+                metrics.RecordOperationCompleted(tenantId, VerifyOperation, ProviderName, "rejected");
                 return false;
             }
 
@@ -169,20 +170,20 @@ internal sealed partial class GoogleCloudKmsMacService(
             bool ok = response.Success;
             metrics.RecordOperationCompleted(
                 tenantId,
-                "verify",
+                VerifyOperation,
                 ProviderName,
                 ok ? "success" : "rejected");
             return ok;
         }
         catch
         {
-            metrics.RecordOperationError(tenantId, "verify", ProviderName);
+            metrics.RecordOperationError(tenantId, VerifyOperation, ProviderName);
             throw;
         }
         finally
         {
             stopwatch.Stop();
-            metrics.RecordOperationDuration(tenantId, "verify", ProviderName, stopwatch.Elapsed);
+            metrics.RecordOperationDuration(tenantId, VerifyOperation, ProviderName, stopwatch.Elapsed);
         }
     }
 

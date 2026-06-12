@@ -31,6 +31,7 @@ public sealed partial class SecretBackedMacService : ITransitMacService, IDispos
 {
     private const string ProviderName = "secret-backed";
     private const string TagPrefix = "sbm:";
+    private const string VerifyOperation = "verify";
     private const int RequiredKeySizeBytes = 32;
 
     private readonly ISecretStore _secretStore;
@@ -125,7 +126,7 @@ public sealed partial class SecretBackedMacService : ITransitMacService, IDispos
             int colon = body.IndexOf(':');
             if (colon <= 0)
             {
-                _metrics.RecordOperationCompleted(tenantId, "verify", ProviderName, "rejected");
+                _metrics.RecordOperationCompleted(tenantId, VerifyOperation, ProviderName, "rejected");
                 return false;
             }
 
@@ -136,7 +137,7 @@ public sealed partial class SecretBackedMacService : ITransitMacService, IDispos
             }
             catch (FormatException)
             {
-                _metrics.RecordOperationCompleted(tenantId, "verify", ProviderName, "rejected");
+                _metrics.RecordOperationCompleted(tenantId, VerifyOperation, ProviderName, "rejected");
                 return false;
             }
 
@@ -159,20 +160,20 @@ public sealed partial class SecretBackedMacService : ITransitMacService, IDispos
             bool ok = currentMatch || previousMatch;
             _metrics.RecordOperationCompleted(
                 tenantId,
-                "verify",
+                VerifyOperation,
                 ProviderName,
                 ok ? "success" : "rejected");
             return ok;
         }
         catch
         {
-            _metrics.RecordOperationError(tenantId, "verify", ProviderName);
+            _metrics.RecordOperationError(tenantId, VerifyOperation, ProviderName);
             throw;
         }
         finally
         {
             stopwatch.Stop();
-            _metrics.RecordOperationDuration(tenantId, "verify", ProviderName, stopwatch.Elapsed);
+            _metrics.RecordOperationDuration(tenantId, VerifyOperation, ProviderName, stopwatch.Elapsed);
         }
     }
 

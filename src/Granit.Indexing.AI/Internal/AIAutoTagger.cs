@@ -100,7 +100,7 @@ internal sealed partial class AIAutoTagger : IAutoTagger
             return [];
         }
 
-        string bucketKey = $"indexing_autotag:{tenantId ?? "global"}";
+        string bucketKey = $"indexing_autotag:{tenantId ?? IndexingAIMetrics.GlobalTenant}";
         bool admitted = await _rateLimiter
             .TryAcquireAsync(bucketKey, _options.MaxAutoTagCallsPerHourPerTenant, cancellationToken)
             .ConfigureAwait(false);
@@ -108,7 +108,7 @@ internal sealed partial class AIAutoTagger : IAutoTagger
         if (!admitted)
         {
             _metrics.RecordAutoTaggerThrottled(tenantId);
-            LogThrottled(tenantId ?? "global");
+            LogThrottled(tenantId ?? IndexingAIMetrics.GlobalTenant);
             return [];
         }
 
@@ -150,17 +150,16 @@ internal sealed partial class AIAutoTagger : IAutoTagger
                     _metrics.RecordAutoTaggerInjection(tenantId);
                     return [];
 
-                case StructuredCompletionStatus.TransportFailure:
                 default:
                     _metrics.RecordAutoTaggerFailed(tenantId, "transport");
-                    LogTransportFailure(tenantId ?? "global", result.Status.ToString());
+                    LogTransportFailure(tenantId ?? IndexingAIMetrics.GlobalTenant, result.Status.ToString());
                     return [];
             }
         }
         catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
             _metrics.RecordAutoTaggerFailed(tenantId, "timeout");
-            LogTimeout(tenantId ?? "global", _options.TimeoutSeconds);
+            LogTimeout(tenantId ?? IndexingAIMetrics.GlobalTenant, _options.TimeoutSeconds);
             return [];
         }
     }
@@ -202,7 +201,7 @@ internal sealed partial class AIAutoTagger : IAutoTagger
         if (dropped > 0)
         {
             _metrics.RecordAutoTaggerOutOfCandidate(tenantId, dropped);
-            LogOutOfCandidate(tenantId ?? "global", dropped);
+            LogOutOfCandidate(tenantId ?? IndexingAIMetrics.GlobalTenant, dropped);
         }
 
         return kept;

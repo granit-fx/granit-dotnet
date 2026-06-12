@@ -135,38 +135,17 @@ public sealed partial class PdfOcrTextExtractor : ITextExtractor
                 cancellationToken.ThrowIfCancellationRequested();
 
                 Page page = document.GetPage(i);
-                (string nativeText, bool pageFallback) = ExtractPageText(page);
-                usedFallback |= pageFallback;
+                PageAppendResult result = await AppendPageTextAsync(
+                    sb, page, pageNumber: i, ocrExtractor, pdfMemory, maxCharLength, cancellationToken)
+                    .ConfigureAwait(false);
 
-                string pageText = nativeText;
-                bool scanned = nativeText.Length < _ocrOptions.MinNativeCharsPerPage;
-                if (scanned && ocrExtractor is not null)
+                usedFallback |= result.UsedFallback;
+                usedOcr |= result.UsedOcr;
+                if (result.Truncated)
                 {
-                    string? ocrText = await TryOcrPageAsync(
-                        ocrExtractor, pdfMemory, pageIndex: i - 1, page, maxCharLength, cancellationToken)
-                        .ConfigureAwait(false);
-                    if (!string.IsNullOrEmpty(ocrText))
-                    {
-                        pageText = ocrText;
-                        usedOcr = true;
-                    }
-                }
-
-                if (sb.Length > 0)
-                {
-                    sb.Append('\n');
-                    sb.Append('\n');
-                }
-
-                int remaining = maxCharLength - sb.Length;
-                if (pageText.Length >= remaining)
-                {
-                    sb.Append(pageText, 0, Math.Max(remaining, 0));
                     truncated = true;
                     break;
                 }
-
-                sb.Append(pageText);
             }
 
             string content = sb.ToString();
@@ -183,6 +162,48 @@ public sealed partial class PdfOcrTextExtractor : ITextExtractor
                     ? ExtractionConfidence.Heuristic
                     : ExtractionConfidence.Deterministic);
         }
+    }
+
+    private readonly record struct PageAppendResult(bool Truncated, bool UsedOcr, bool UsedFallback);
+
+    // Extracts one page (native text, falling back to OCR for scanned pages), appends it to
+    // <paramref name="sb"/> with a blank-line separator, and reports whether the output cap was hit.
+    private async Task<PageAppendResult> AppendPageTextAsync(
+        StringBuilder sb, Page page, int pageNumber, ITextExtractor? ocrExtractor,
+        ReadOnlyMemory<byte> pdfMemory, int maxCharLength, CancellationToken cancellationToken)
+    {
+        (string nativeText, bool pageFallback) = ExtractPageText(page);
+
+        string pageText = nativeText;
+        bool usedOcr = false;
+        bool scanned = nativeText.Length < _ocrOptions.MinNativeCharsPerPage;
+        if (scanned && ocrExtractor is not null)
+        {
+            string? ocrText = await TryOcrPageAsync(
+                ocrExtractor, pdfMemory, pageIndex: pageNumber - 1, page, maxCharLength, cancellationToken)
+                .ConfigureAwait(false);
+            if (!string.IsNullOrEmpty(ocrText))
+            {
+                pageText = ocrText;
+                usedOcr = true;
+            }
+        }
+
+        if (sb.Length > 0)
+        {
+            sb.Append('\n');
+            sb.Append('\n');
+        }
+
+        int remaining = maxCharLength - sb.Length;
+        if (pageText.Length >= remaining)
+        {
+            sb.Append(pageText, 0, Math.Max(remaining, 0));
+            return new PageAppendResult(Truncated: true, usedOcr, pageFallback);
+        }
+
+        sb.Append(pageText);
+        return new PageAppendResult(Truncated: false, usedOcr, pageFallback);
     }
 
     private async Task<string?> TryOcrPageAsync(

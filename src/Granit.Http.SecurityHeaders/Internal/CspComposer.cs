@@ -172,6 +172,14 @@ internal sealed partial class CspComposer : IDisposable
         StringBuilder sb = new();
         bool first = true;
 
+        AppendDirectives(sb, builder, ref first);
+        AppendReportingHints(sb, builder, csp, includeBuilderReporting, ref first);
+
+        return sb.ToString();
+    }
+
+    private static void AppendDirectives(StringBuilder sb, CspBuilder builder, ref bool first)
+    {
         foreach (string directive in CspDirectiveNames.All)
         {
             if (!builder.Directives.TryGetValue(directive, out IReadOnlyCollection<string>? sources)
@@ -195,7 +203,11 @@ internal sealed partial class CspComposer : IDisposable
                 sb.Append(' ').Append(source);
             }
         }
+    }
 
+    private static void AppendReportingHints(
+        StringBuilder sb, CspBuilder builder, CspOptions csp, bool includeBuilderReporting, ref bool first)
+    {
         // Reporting hints — builder state takes precedence over options
         // (a contributor that sets ReportUri overrides the global default).
         string? reportUri = includeBuilderReporting ? builder.ReportUri ?? csp.ReportUri : csp.ReportUri;
@@ -222,8 +234,6 @@ internal sealed partial class CspComposer : IDisposable
             if (!first) { sb.Append("; "); }
             sb.Append("upgrade-insecure-requests");
         }
-
-        return sb.ToString();
     }
 
     private static string HeaderName(bool reportOnly) =>
@@ -265,15 +275,8 @@ internal sealed partial class CspComposer : IDisposable
             return;
         }
 
-        bool anyUnsafeInline = false;
-        foreach (KeyValuePair<string, IReadOnlyCollection<string>> directive in builder.Directives)
-        {
-            if (directive.Value.Contains("'unsafe-inline'"))
-            {
-                anyUnsafeInline = true;
-                break;
-            }
-        }
+        bool anyUnsafeInline = builder.Directives.Any(
+            directive => directive.Value.Contains("'unsafe-inline'"));
 
         if (!anyUnsafeInline)
         {
@@ -283,12 +286,10 @@ internal sealed partial class CspComposer : IDisposable
         // One warning per distinct contributor name observed in a composition
         // that emits 'unsafe-inline'. Best-effort attribution: we can't know
         // which contributor wrote the source, so we name all of them.
-        foreach (string name in activeNames)
+        // TryAdd doubles as the de-dup filter — the lazy Where keeps it one log per name.
+        foreach (string name in activeNames.Where(name => _loggedProdUnsafeInline.TryAdd(name, 0)))
         {
-            if (_loggedProdUnsafeInline.TryAdd(name, 0))
-            {
-                LogProductionUnsafeInline(name);
-            }
+            LogProductionUnsafeInline(name);
         }
     }
 

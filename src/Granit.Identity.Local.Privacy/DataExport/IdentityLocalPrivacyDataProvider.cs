@@ -39,12 +39,18 @@ public sealed class IdentityLocalPrivacyDataProvider(
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<ExportFragment> ExportAsync(
+    public IAsyncEnumerable<ExportFragment> ExportAsync(
+        PrivacyExportContext context,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        return ExportCoreAsync(context, cancellationToken);
+    }
+
+    private async IAsyncEnumerable<ExportFragment> ExportCoreAsync(
         PrivacyExportContext context,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(context);
-
         LocalIdentity? user = await userManager.FindByIdAsync(context.SubjectUserId.ToString()).ConfigureAwait(false);
         if (user is null)
         {

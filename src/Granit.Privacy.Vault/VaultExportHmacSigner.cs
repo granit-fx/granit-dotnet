@@ -1,7 +1,6 @@
 using Granit.Privacy.DataExport.Security;
 using Granit.Privacy.Vault.Options;
 using Granit.Vault;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Privacy.Vault;
@@ -36,21 +35,17 @@ public sealed partial class VaultExportHmacSigner : IExportHmacSigner, IExportCo
 
     private readonly ITransitMacService _macService;
     private readonly VaultExportSignerOptions _options;
-    private readonly ILogger<VaultExportHmacSigner> _logger;
 
     /// <summary>Initializes a new instance.</summary>
     public VaultExportHmacSigner(
         ITransitMacService macService,
-        IOptions<VaultExportSignerOptions> options,
-        ILogger<VaultExportHmacSigner> logger)
+        IOptions<VaultExportSignerOptions> options)
     {
         ArgumentNullException.ThrowIfNull(macService);
         ArgumentNullException.ThrowIfNull(options);
-        ArgumentNullException.ThrowIfNull(logger);
 
         _macService = macService;
         _options = options.Value;
-        _logger = logger;
     }
 
     /// <inheritdoc />

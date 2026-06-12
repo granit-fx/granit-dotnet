@@ -18,16 +18,24 @@ public sealed class BlobBackedExportSource(
     TimeProvider timeProvider) : IBlobBackedExportSource
 {
     /// <inheritdoc />
-    public async IAsyncEnumerable<ExportFragment> StreamAsync(
+    public IAsyncEnumerable<ExportFragment> StreamAsync(
+        IAsyncEnumerable<BlobBackedExportItem> items,
+        PrivacyExportContext context,
+        string providerName,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentException.ThrowIfNullOrEmpty(providerName);
+        return StreamCoreAsync(items, context, providerName, cancellationToken);
+    }
+
+    private async IAsyncEnumerable<ExportFragment> StreamCoreAsync(
         IAsyncEnumerable<BlobBackedExportItem> items,
         PrivacyExportContext context,
         string providerName,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(items);
-        ArgumentNullException.ThrowIfNull(context);
-        ArgumentException.ThrowIfNullOrEmpty(providerName);
-
         // Capability TTL: saga timeout + worker headroom. Same envelope StagedFragmentBuilder
         // uses, so a single rotation horizon covers both fragment kinds.
         DateTimeOffset expiresAt = timeProvider.GetUtcNow()

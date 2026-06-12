@@ -50,15 +50,8 @@ public static class GranitSafeConnectCallback
         IPAddress[] addresses = await Dns.GetHostAddressesAsync(endpoint.Host, cancellationToken).ConfigureAwait(false);
 
         // Pick the first address that passes the policy.
-        IPAddress? acceptable = null;
-        foreach (IPAddress ip in addresses)
-        {
-            if (AIEndpointValidator.CheckIpRanges(ip, policy) is null)
-            {
-                acceptable = ip;
-                break;
-            }
-        }
+        IPAddress? acceptable = addresses.FirstOrDefault(
+            ip => AIEndpointValidator.CheckIpRanges(ip, policy) is null);
 
         if (acceptable is null)
         {

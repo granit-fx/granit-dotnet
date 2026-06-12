@@ -27,6 +27,7 @@ internal sealed partial class HashiCorpTransitMacService(
     ILogger<HashiCorpTransitMacService> logger) : ITransitMacService
 {
     private const string ProviderName = "hashicorp";
+    private const string VerifyOperation = "verify";
     private readonly HashiCorpVaultOptions _options = options.Value;
 
     // Vault Transit HMAC tag format: vault:v{N}:base64
@@ -128,25 +129,25 @@ internal sealed partial class HashiCorpTransitMacService(
             bool valid = ExtractValid(response.Data);
             metrics.RecordOperationCompleted(
                 tenantId,
-                "verify",
+                VerifyOperation,
                 ProviderName,
                 valid ? "success" : "rejected");
             return valid;
         }
         catch (Exception ex) when (IsKeyNotFound(ex))
         {
-            metrics.RecordOperationError(tenantId, "verify", ProviderName);
+            metrics.RecordOperationError(tenantId, VerifyOperation, ProviderName);
             throw new MacKeyNotFoundException(keyName, ex);
         }
         catch
         {
-            metrics.RecordOperationError(tenantId, "verify", ProviderName);
+            metrics.RecordOperationError(tenantId, VerifyOperation, ProviderName);
             throw;
         }
         finally
         {
             stopwatch.Stop();
-            metrics.RecordOperationDuration(tenantId, "verify", ProviderName, stopwatch.Elapsed);
+            metrics.RecordOperationDuration(tenantId, VerifyOperation, ProviderName, stopwatch.Elapsed);
         }
     }
 

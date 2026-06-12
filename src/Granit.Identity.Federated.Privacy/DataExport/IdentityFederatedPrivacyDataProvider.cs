@@ -46,12 +46,18 @@ public sealed class IdentityFederatedPrivacyDataProvider(
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<ExportFragment> ExportAsync(
+    public IAsyncEnumerable<ExportFragment> ExportAsync(
+        PrivacyExportContext context,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        return ExportCoreAsync(context, cancellationToken);
+    }
+
+    private async IAsyncEnumerable<ExportFragment> ExportCoreAsync(
         PrivacyExportContext context,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(context);
-
         string externalUserId = context.SubjectUserId.ToString();
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
 

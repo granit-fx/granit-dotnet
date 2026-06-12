@@ -59,36 +59,8 @@ public static partial class ApiDocumentationApplicationBuilderExtensions
         }
 
         IEndpointConventionBuilder scalarEndpoint =
-            app.MapScalarApiReference(scalarOptions =>
-            {
-                scalarOptions.WithTitle(options.Title);
-
-                if (!string.IsNullOrEmpty(options.FaviconUrl))
-                {
-                    scalarOptions.WithFavicon(options.FaviconUrl);
-                }
-
-                if (options.OAuth2.IsConfigured)
-                {
-                    scalarOptions.AddAuthorizationCodeFlow("OAuth2", flow =>
-                    {
-                        flow
-                            .WithClientId(options.OAuth2.ClientId!)
-                            .WithSelectedScopes(options.OAuth2.Scopes);
-
-                        if (options.OAuth2.EnablePkce)
-                        {
-                            flow.WithPkce(Pkce.Sha256);
-                        }
-
-                        if (!string.IsNullOrEmpty(options.OAuth2.RedirectUri))
-                        {
-                            flow.WithRedirectUri(options.OAuth2.RedirectUri);
-                        }
-                    });
-                }
-            });
-        scalarEndpoint.WithMetadata(new ScalarApiReferenceMetadata());
+            app.MapScalarApiReference(scalarOptions => ConfigureScalar(scalarOptions, options));
+        scalarEndpoint.WithMetadata(ScalarApiReferenceMetadata.Instance);
 
         // Scalar's Authorize button opens the IdP in a popup and polls the
         // popup's location for the auth code. The framework default COOP
@@ -99,7 +71,7 @@ public static partial class ApiDocumentationApplicationBuilderExtensions
         // Only needed when OAuth2 is wired — otherwise no popup is opened.
         if (options.OAuth2.IsConfigured)
         {
-            scalarEndpoint.WithMetadata(new AllowsPopupAuthorizationMetadata());
+            scalarEndpoint.WithMetadata(AllowsPopupAuthorizationMetadata.Instance);
         }
 
         ApplyAuthorizationPolicy(scalarEndpoint, options.AuthorizationPolicy);
@@ -126,6 +98,38 @@ public static partial class ApiDocumentationApplicationBuilderExtensions
     /// unresolved — the contributor registration is a no-op (logged at
     /// Debug) and the consumer is left to manage CSP externally.
     /// </remarks>
+    private static void ConfigureScalar(ScalarOptions scalarOptions, ApiDocumentationOptions options)
+    {
+        scalarOptions.WithTitle(options.Title);
+
+        if (!string.IsNullOrEmpty(options.FaviconUrl))
+        {
+            scalarOptions.WithFavicon(options.FaviconUrl);
+        }
+
+        if (options.OAuth2.IsConfigured)
+        {
+            scalarOptions.AddAuthorizationCodeFlow("OAuth2", flow => ConfigureOAuth2Flow(flow, options.OAuth2));
+        }
+    }
+
+    private static void ConfigureOAuth2Flow(AuthorizationCodeFlow flow, Options.OAuth2Options oauth2)
+    {
+        flow
+            .WithClientId(oauth2.ClientId!)
+            .WithSelectedScopes(oauth2.Scopes);
+
+        if (oauth2.EnablePkce)
+        {
+            flow.WithPkce(Pkce.Sha256);
+        }
+
+        if (!string.IsNullOrEmpty(oauth2.RedirectUri))
+        {
+            flow.WithRedirectUri(oauth2.RedirectUri);
+        }
+    }
+
     private static void RegisterScalarCspContributor(WebApplication app)
     {
         ICspContributorRegistry? registry =

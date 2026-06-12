@@ -17,6 +17,8 @@ public sealed class LanguageDetectionAIMetrics
 {
     public const string MeterName = "Granit.LanguageDetection.AI";
 
+    internal const string TenantIdTag = "tenant_id";
+
     /// <summary>Fallback tenant tag value when no tenant context is active.</summary>
     internal const string GlobalTenant = "global";
 
@@ -50,13 +52,13 @@ public sealed class LanguageDetectionAIMetrics
 
     public void RecordCallAttempted(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? GlobalTenant)];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _callsAttempted.Add(1, tags);
     }
 
     public void RecordCallThrottled(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? GlobalTenant)];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _callsThrottled.Add(1, tags);
     }
 
@@ -64,7 +66,7 @@ public sealed class LanguageDetectionAIMetrics
     {
         TagList tags =
         [
-            new("tenant_id", tenantId ?? GlobalTenant),
+            new(TenantIdTag, tenantId ?? GlobalTenant),
             new("reason", reason),
         ];
         _callsFailed.Add(1, tags);
@@ -72,7 +74,7 @@ public sealed class LanguageDetectionAIMetrics
 
     public void RecordInjectionDetected(string? tenantId)
     {
-        TagList tags = [new("tenant_id", tenantId ?? GlobalTenant)];
+        TagList tags = [new(TenantIdTag, tenantId ?? GlobalTenant)];
         _injectionsDetected.Add(1, tags);
     }
 }
