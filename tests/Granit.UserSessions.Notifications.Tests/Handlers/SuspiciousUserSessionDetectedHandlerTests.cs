@@ -13,10 +13,15 @@ namespace Granit.UserSessions.Notifications.Tests.Handlers;
 /// </summary>
 public sealed class SuspiciousUserSessionDetectedHandlerTests
 {
+    private const string ChromeWindowsUa =
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36";
+
     private static SuspiciousUserSessionDetectedEto Eto(
         UserSessionRiskLevel level,
         string userId = "user-123",
-        IReadOnlyList<string>? reasons = null) =>
+        IReadOnlyList<string>? reasons = null,
+        string? userAgent = ChromeWindowsUa,
+        string? ipAddress = null) =>
         new(
             userId,
             "session-1",
@@ -26,8 +31,8 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
             RiskScore: 0.9,
             City: "Brussels",
             CountryCode: "BE",
-            UserAgent: "Mozilla/5.0",
-            IpAddress: null,
+            UserAgent: userAgent,
+            IpAddress: ipAddress,
             DetectedAt: DateTimeOffset.UtcNow);
 
     [Fact]
@@ -93,7 +98,68 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
         captured.ReasonsDisplay.ShouldBe("impossible_travel, new_country");
         captured.City.ShouldBe("Brussels");
         captured.CountryCode.ShouldBe("BE");
-        captured.Device.ShouldBe("Mozilla/5.0");
+        captured.Browser.ShouldBe("Chrome");
+        captured.OperatingSystem.ShouldBe("Windows");
+    }
+
+    [Fact]
+    public async Task Data_DerivesBrowserAndOperatingSystem_FromUserAgent()
+    {
+        INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
+        SuspiciousUserSessionNotificationData? captured = null;
+        await publisher.PublishAsync(
+            Arg.Any<NotificationType<SuspiciousUserSessionNotificationData>>(),
+            Arg.Do<SuspiciousUserSessionNotificationData>(d => captured = d),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<CancellationToken>());
+
+        await SuspiciousUserSessionDetectedHandler.HandleAsync(
+            Eto(UserSessionRiskLevel.High,
+                userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"),
+            publisher, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Browser.ShouldBe("Safari");
+        captured.OperatingSystem.ShouldBe("iPhone");
+    }
+
+    [Fact]
+    public async Task Data_NullUserAgent_YieldsNullBrowserAndOperatingSystem()
+    {
+        INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
+        SuspiciousUserSessionNotificationData? captured = null;
+        await publisher.PublishAsync(
+            Arg.Any<NotificationType<SuspiciousUserSessionNotificationData>>(),
+            Arg.Do<SuspiciousUserSessionNotificationData>(d => captured = d),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<CancellationToken>());
+
+        await SuspiciousUserSessionDetectedHandler.HandleAsync(
+            Eto(UserSessionRiskLevel.High, userAgent: null), publisher, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Browser.ShouldBeNull();
+        captured.OperatingSystem.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("203.0.113.42")]
+    public async Task Data_CarriesEtoIpAddress_AsIs(string? ip)
+    {
+        INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
+        SuspiciousUserSessionNotificationData? captured = null;
+        await publisher.PublishAsync(
+            Arg.Any<NotificationType<SuspiciousUserSessionNotificationData>>(),
+            Arg.Do<SuspiciousUserSessionNotificationData>(d => captured = d),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<CancellationToken>());
+
+        await SuspiciousUserSessionDetectedHandler.HandleAsync(
+            Eto(UserSessionRiskLevel.High, ipAddress: ip), publisher, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.IpAddress.ShouldBe(ip);
     }
 
     [Fact]

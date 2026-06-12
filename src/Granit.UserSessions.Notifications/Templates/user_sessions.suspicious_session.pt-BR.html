@@ -1,14 +1,20 @@
 <!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
 <title>Login suspeito na sua conta</title>
-<mj-text>Olá,</mj-text>
+<mj-text>{{ if model.recipient_name != "" }}Olá {{ model.recipient_name }},{{ else }}Olá,{{ end }}</mj-text>
 <mj-text>Detectamos um login na sua conta que pareceu incomum e queremos ter certeza de que foi você.</mj-text>
 <mj-table cellpadding="0" font-size="15px">
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Quando</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
   {{ if model.city || model.country_code }}
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Onde</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
   {{ end }}
-  {{ if model.device }}
-  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Dispositivo</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ if model.browser }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Navegador</td><td style="padding: 6px 0;"><strong>{{ model.browser }}</strong></td></tr>
+  {{ end }}
+  {{ if model.operating_system }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Sistema operacional</td><td style="padding: 6px 0;"><strong>{{ model.operating_system }}</strong></td></tr>
+  {{ end }}
+  {{ if model.ip_address }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Endereço IP</td><td style="padding: 6px 0;"><strong>{{ model.ip_address }}</strong></td></tr>
   {{ end }}
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}Este login veio de um local distante de onde você costuma fazer login e longe demais para você ter viajado até lá desde a sua última sessão.{{ else if model.reason == "new_country" }}Este é o primeiro login que registramos a partir deste país.{{ else if model.reason == "new_device" }}Este login veio de um dispositivo que nunca vimos antes.{{ else }}Este login pareceu incomum para a sua conta.{{ end }}</mj-text>

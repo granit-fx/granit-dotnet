@@ -1,13 +1,19 @@
 <title>Suspicious sign-in to your account</title>
-<mj-text>Hi,</mj-text>
+<mj-text>{{ if model.recipient_name != "" }}Hi {{ model.recipient_name }},{{ else }}Hi,{{ end }}</mj-text>
 <mj-text>We noticed a sign-in to your account that looked unusual, and we want to make sure it was you.</mj-text>
 <mj-table cellpadding="0" font-size="15px">
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">When</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
   {{ if model.city || model.country_code }}
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Where</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
   {{ end }}
-  {{ if model.device }}
-  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Device</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ if model.browser }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Browser</td><td style="padding: 6px 0;"><strong>{{ model.browser }}</strong></td></tr>
+  {{ end }}
+  {{ if model.operating_system }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Operating system</td><td style="padding: 6px 0;"><strong>{{ model.operating_system }}</strong></td></tr>
+  {{ end }}
+  {{ if model.ip_address }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">IP address</td><td style="padding: 6px 0;"><strong>{{ model.ip_address }}</strong></td></tr>
   {{ end }}
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}This sign-in came from a location far from where you usually sign in, and too far to have travelled there since your last session.{{ else if model.reason == "new_country" }}This is the first sign-in we've seen from this country.{{ else if model.reason == "new_device" }}This sign-in came from a device we haven't seen before.{{ else }}This sign-in looked unusual for your account.{{ end }}</mj-text>

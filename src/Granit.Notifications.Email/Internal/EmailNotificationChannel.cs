@@ -98,7 +98,7 @@ internal sealed partial class EmailNotificationChannel(
         }
 
         // Build enrichment context for templates
-        EmailEnrichment enrichment = new(definition, allowOptOut, unsubscribeUrl);
+        EmailEnrichment enrichment = new(definition, allowOptOut, unsubscribeUrl, recipient.DisplayName);
 
         // Try type-specific template first, then fall back to the built-in default template
         RenderedEmail? rendered = await TryRenderTemplateAsync(
@@ -361,13 +361,15 @@ internal sealed partial class EmailNotificationChannel(
         dataDict.TryAdd("notification_group", enrichment.Definition?.GroupName ?? "");
         dataDict.TryAdd("allow_opt_out", enrichment.AllowOptOut);
         dataDict.TryAdd("unsubscribe_url", enrichment.AllowOptOut ? enrichment.UnsubscribeUrl : "");
+        dataDict.TryAdd("recipient_name", enrichment.RecipientName ?? "");
     }
 
     /// <summary>Notification metadata resolved once per send, threaded through render methods.</summary>
     private sealed record EmailEnrichment(
         NotificationDefinition? Definition,
         bool AllowOptOut,
-        string UnsubscribeUrl);
+        string UnsubscribeUrl,
+        string? RecipientName);
 
     private static Dictionary<string, object?> JsonElementToDictionary(JsonElement element)
     {

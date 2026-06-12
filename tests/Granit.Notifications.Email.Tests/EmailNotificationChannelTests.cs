@@ -586,6 +586,102 @@ public sealed class EmailNotificationChannelTests
         capturedData["notification_type"].ShouldBe("test.notification");
     }
 
+    [Fact]
+    public async Task SendAsync_ThreadsRecipientNameIntoModel()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com", displayName: "Ada Lovelace");
+
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TemplateDescriptor
+            {
+                Content = "<p>{{ model.recipient_name }}</p>",
+                MimeType = "text/html",
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        Dictionary<string, object?>? capturedData = null;
+        ITemplateEngine engine = Substitute.For<ITemplateEngine>();
+        engine.CanRender(Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>()).Returns(true);
+        engine.RenderAsync(
+                Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>(),
+                Arg.Any<Dictionary<string, object?>>(),
+                Arg.Any<Granit.Templating.Keys.DocumentFormat>(),
+                Arg.Any<IReadOnlyList<Granit.Templating.GlobalContext.ITemplateGlobalContext>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                capturedData = callInfo.Arg<Dictionary<string, object?>>();
+                return new Granit.Templating.Pipeline.TextRenderedContent(
+                    "<p>Ada Lovelace</p>",
+                    Granit.Templating.Keys.DocumentFormat.Html);
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateEngine>))
+            .Returns(new[] { engine });
+
+        _serviceProvider.GetService(typeof(IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>))
+            .Returns((IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>?)null);
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        capturedData.ShouldNotBeNull();
+        capturedData.ShouldContainKey("recipient_name");
+        capturedData["recipient_name"].ShouldBe("Ada Lovelace");
+    }
+
+    [Fact]
+    public async Task SendAsync_WithoutDisplayName_ThreadsEmptyRecipientName()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com", displayName: null);
+
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TemplateDescriptor
+            {
+                Content = "<p>{{ model.recipient_name }}</p>",
+                MimeType = "text/html",
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        Dictionary<string, object?>? capturedData = null;
+        ITemplateEngine engine = Substitute.For<ITemplateEngine>();
+        engine.CanRender(Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>()).Returns(true);
+        engine.RenderAsync(
+                Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>(),
+                Arg.Any<Dictionary<string, object?>>(),
+                Arg.Any<Granit.Templating.Keys.DocumentFormat>(),
+                Arg.Any<IReadOnlyList<Granit.Templating.GlobalContext.ITemplateGlobalContext>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                capturedData = callInfo.Arg<Dictionary<string, object?>>();
+                return new Granit.Templating.Pipeline.TextRenderedContent(
+                    "<p></p>",
+                    Granit.Templating.Keys.DocumentFormat.Html);
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateEngine>))
+            .Returns(new[] { engine });
+
+        _serviceProvider.GetService(typeof(IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>))
+            .Returns((IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>?)null);
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        capturedData.ShouldNotBeNull();
+        capturedData.ShouldContainKey("recipient_name");
+        capturedData["recipient_name"].ShouldBe("");
+    }
+
     // ──── ToName and FromNameOverride propagation tests ────
 
     [Fact]

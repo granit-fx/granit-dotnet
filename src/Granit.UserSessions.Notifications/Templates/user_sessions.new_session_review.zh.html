@@ -1,14 +1,20 @@
 <!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
 <title>您的账户出现新登录</title>
-<mj-text>您好，</mj-text>
+<mj-text>{{ if model.recipient_name != "" }}您好 {{ model.recipient_name }}，{{ else }}您好，{{ end }}</mj-text>
 <mj-text>我们注意到您的账户有一次新登录。如果是您本人操作，您无需进行任何操作。</mj-text>
 <mj-table cellpadding="0" font-size="15px">
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">时间</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
   {{ if model.city || model.country_code }}
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">地点</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
   {{ end }}
-  {{ if model.device }}
-  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">设备</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ if model.browser }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">浏览器</td><td style="padding: 6px 0;"><strong>{{ model.browser }}</strong></td></tr>
+  {{ end }}
+  {{ if model.operating_system }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">操作系统</td><td style="padding: 6px 0;"><strong>{{ model.operating_system }}</strong></td></tr>
+  {{ end }}
+  {{ if model.ip_address }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">IP 地址</td><td style="padding: 6px 0;"><strong>{{ model.ip_address }}</strong></td></tr>
   {{ end }}
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}此次登录来自一个远离您平常登录地点的位置。{{ else if model.reason == "new_country" }}这是我们首次发现来自该国家/地区的登录。{{ else if model.reason == "new_device" }}此次登录来自一台我们此前从未见过的设备。{{ else }}此次登录与您平常的登录略有不同。{{ end }}</mj-text>

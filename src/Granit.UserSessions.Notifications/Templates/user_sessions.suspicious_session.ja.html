@@ -1,14 +1,20 @@
 <!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
 <title>アカウントへの不審なサインイン</title>
-<mj-text>こんにちは。</mj-text>
+<mj-text>{{ if model.recipient_name != "" }}{{ model.recipient_name }}様、こんにちは。{{ else }}こんにちは。{{ end }}</mj-text>
 <mj-text>お客様のアカウントで通常とは異なるサインインを検出したため、ご本人によるものかどうかを確認させていただきたく存じます。</mj-text>
 <mj-table cellpadding="0" font-size="15px">
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">日時</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
   {{ if model.city || model.country_code }}
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">場所</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
   {{ end }}
-  {{ if model.device }}
-  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">デバイス</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ if model.browser }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">ブラウザ</td><td style="padding: 6px 0;"><strong>{{ model.browser }}</strong></td></tr>
+  {{ end }}
+  {{ if model.operating_system }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">オペレーティングシステム</td><td style="padding: 6px 0;"><strong>{{ model.operating_system }}</strong></td></tr>
+  {{ end }}
+  {{ if model.ip_address }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">IPアドレス</td><td style="padding: 6px 0;"><strong>{{ model.ip_address }}</strong></td></tr>
   {{ end }}
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}このサインインは、お客様が普段サインインされる場所から遠く離れた場所からのものであり、前回のセッション以降に移動するには遠すぎる距離でした。{{ else if model.reason == "new_country" }}この国からのサインインを確認したのは今回が初めてです。{{ else if model.reason == "new_device" }}このサインインは、これまで確認されていないデバイスからのものでした。{{ else }}このサインインは、お客様のアカウントにとって通常とは異なるものでした。{{ end }}</mj-text>

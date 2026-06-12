@@ -1,14 +1,20 @@
 <!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
 <title>계정에 대한 의심스러운 로그인</title>
-<mj-text>안녕하세요,</mj-text>
+<mj-text>{{ if model.recipient_name != "" }}안녕하세요 {{ model.recipient_name }}님,{{ else }}안녕하세요,{{ end }}</mj-text>
 <mj-text>고객님의 계정에서 평소와 다른 로그인이 감지되어, 본인이 맞으신지 확인하고자 합니다.</mj-text>
 <mj-table cellpadding="0" font-size="15px">
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">시간</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
   {{ if model.city || model.country_code }}
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">위치</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
   {{ end }}
-  {{ if model.device }}
-  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">기기</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ if model.browser }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">브라우저</td><td style="padding: 6px 0;"><strong>{{ model.browser }}</strong></td></tr>
+  {{ end }}
+  {{ if model.operating_system }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">운영 체제</td><td style="padding: 6px 0;"><strong>{{ model.operating_system }}</strong></td></tr>
+  {{ end }}
+  {{ if model.ip_address }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">IP 주소</td><td style="padding: 6px 0;"><strong>{{ model.ip_address }}</strong></td></tr>
   {{ end }}
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}이 로그인은 고객님이 평소 로그인하시는 위치에서 멀리 떨어진 곳에서 이루어졌으며, 마지막 세션 이후 이동하기에는 너무 먼 거리였습니다.{{ else if model.reason == "new_country" }}이 국가에서 확인된 첫 로그인입니다.{{ else if model.reason == "new_device" }}이 로그인은 이전에 확인된 적이 없는 기기에서 이루어졌습니다.{{ else }}이 로그인은 고객님의 계정에서 평소와 다르게 보였습니다.{{ end }}</mj-text>

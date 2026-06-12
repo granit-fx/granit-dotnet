@@ -1,4 +1,5 @@
 using Granit.Notifications.Abstractions;
+using Granit.UserSessions.Notifications.Internal;
 
 namespace Granit.UserSessions.Notifications.Handlers;
 
@@ -36,7 +37,9 @@ public class SuspiciousUserSessionDetectedHandler
             string.Join(", ", evt.Reasons),
             evt.City,
             evt.CountryCode,
-            evt.UserAgent,
+            evt.IpAddress,
+            UserAgentDescriptor.Browser(evt.UserAgent),
+            UserAgentDescriptor.OperatingSystem(evt.UserAgent),
             evt.DetectedAt);
 
         string[] recipients = [evt.UserId];

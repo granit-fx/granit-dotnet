@@ -49942,7 +49942,7 @@
       "kind": "class",
       "project": "Granit.UserSessions.Notifications",
       "file": "src/Granit.UserSessions.Notifications/Handlers/SuspiciousUserSessionDetectedHandler.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "HandleAsync",
@@ -50020,7 +50020,7 @@
       "kind": "record",
       "project": "Granit.UserSessions.Notifications",
       "file": "src/Granit.UserSessions.Notifications/SuspiciousUserSessionNotificationData.cs",
-      "line": 19,
+      "line": 26,
       "members": []
     },
     {

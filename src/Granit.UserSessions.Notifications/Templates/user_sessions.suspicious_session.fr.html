@@ -1,14 +1,20 @@
 <!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
 <title>Connexion suspecte à votre compte</title>
-<mj-text>Bonjour,</mj-text>
+<mj-text>{{ if model.recipient_name != "" }}Bonjour {{ model.recipient_name }},{{ else }}Bonjour,{{ end }}</mj-text>
 <mj-text>Nous avons remarqué une connexion à votre compte qui semblait inhabituelle, et nous voulons nous assurer qu'il s'agissait bien de vous.</mj-text>
 <mj-table cellpadding="0" font-size="15px">
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Quand</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
   {{ if model.city || model.country_code }}
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Où</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
   {{ end }}
-  {{ if model.device }}
-  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Appareil</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ if model.browser }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Navigateur</td><td style="padding: 6px 0;"><strong>{{ model.browser }}</strong></td></tr>
+  {{ end }}
+  {{ if model.operating_system }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Système d'exploitation</td><td style="padding: 6px 0;"><strong>{{ model.operating_system }}</strong></td></tr>
+  {{ end }}
+  {{ if model.ip_address }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Adresse IP</td><td style="padding: 6px 0;"><strong>{{ model.ip_address }}</strong></td></tr>
   {{ end }}
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}Cette connexion provient d'un lieu éloigné de celui où vous vous connectez habituellement, et trop éloigné pour que vous ayez pu vous y rendre depuis votre dernière session.{{ else if model.reason == "new_country" }}Il s'agit de la première connexion que nous observons depuis ce pays.{{ else if model.reason == "new_device" }}Cette connexion provient d'un appareil que nous n'avons jamais vu auparavant.{{ else }}Cette connexion a semblé inhabituelle pour votre compte.{{ end }}</mj-text>
