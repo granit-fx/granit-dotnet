@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.Notifications;
+namespace Granit.Identity.Notifications;
 
 /// <summary>
 /// Data payload for a suspicious / new-session alert email. Built from

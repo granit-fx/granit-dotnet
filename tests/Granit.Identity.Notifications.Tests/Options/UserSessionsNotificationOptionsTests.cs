@@ -1,8 +1,8 @@
-using Granit.UserSessions.Notifications.Options;
+using Granit.Identity.Notifications.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.Notifications.Tests.Options;
+namespace Granit.Identity.Notifications.Tests.Options;
 
 public sealed class UserSessionsNotificationOptionsTests
 {

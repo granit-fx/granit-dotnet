@@ -1,7 +1,7 @@
+using Granit.Identity.Notifications.Internal;
 using Granit.Notifications.Abstractions;
-using Granit.UserSessions.Notifications.Internal;
 
-namespace Granit.UserSessions.Notifications.Handlers;
+namespace Granit.Identity.Notifications.Handlers;
 
 /// <summary>
 /// Handles <see cref="SuspiciousUserSessionDetectedEto"/> by sending the account owner a localized

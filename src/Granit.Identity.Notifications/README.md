@@ -1,9 +1,15 @@
 # Granit.Identity.Notifications
 
-Recipient resolution bridge between `Granit.Notifications` and `Granit.Identity`.
+Identity notifications for `granit`: the recipient-resolution bridge **plus** the
+user-session security alerts.
+
 Provides a default `IRecipientResolver` that turns a user ID into `RecipientInfo`
 (email, phone number, preferred culture, display name) by reading from the
-Identity module's `IIdentityUserReader`.
+Identity module's `IIdentityUserReader`. It also routes
+`SuspiciousUserSessionDetectedEto` to the user as a brand-neutral "suspicious
+sign-in" / new-session-review security alert email (localized, location and
+plain-language reason only — never the raw IP), with embedded templates overridable
+at runtime via the `Granit.Templating` admin API.
 
 A single adapter covers **local (OpenIddict)** and **every federated provider**
 (Keycloak, EntraID, Cognito, Google), because `IIdentityUserReader` is the

@@ -1,11 +1,11 @@
+using Granit.Identity.Notifications.Handlers;
 using Granit.Notifications;
 using Granit.Notifications.Abstractions;
-using Granit.UserSessions.Notifications.Handlers;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.Notifications.Tests.Handlers;
+namespace Granit.Identity.Notifications.Tests.Handlers;
 
 /// <summary>
 /// Verifies the level-based routing: High → the hard-locked suspicious-session alert,

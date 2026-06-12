@@ -1,7 +1,7 @@
 using Granit.Notifications;
 using Granit.Notifications.Abstractions;
 
-namespace Granit.UserSessions.Notifications.Internal;
+namespace Granit.Identity.Notifications.Internal;
 
 /// <summary>
 /// Registers the user-session notification definitions with their security posture.

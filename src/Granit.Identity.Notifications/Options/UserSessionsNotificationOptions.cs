@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Granit.UserSessions.Notifications.Options;
+namespace Granit.Identity.Notifications.Options;
 
 /// <summary>
 /// Configuration for user-session notification URL generation.

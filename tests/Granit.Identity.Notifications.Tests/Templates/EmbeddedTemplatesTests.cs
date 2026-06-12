@@ -2,7 +2,7 @@ using System.Reflection;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.Notifications.Tests.Templates;
+namespace Granit.Identity.Notifications.Tests.Templates;
 
 /// <summary>
 /// Pin the set of embedded templates shipped by the package. A renamed file or a missing
@@ -46,7 +46,7 @@ public sealed class EmbeddedTemplatesTests
     [MemberData(nameof(ExpectedTemplates))]
     public void EachExpectedTemplate_IsEmbeddedInTheAssembly(string suffix)
     {
-        Assembly assembly = typeof(GranitUserSessionsNotificationsModule).Assembly;
+        Assembly assembly = typeof(GranitIdentityNotificationsModule).Assembly;
         string assemblyName = assembly.GetName().Name!;
         string fullResourceName = $"{assemblyName}.{suffix}";
 
@@ -61,7 +61,7 @@ public sealed class EmbeddedTemplatesTests
     [MemberData(nameof(ExpectedTemplates))]
     public void EachExpectedTemplate_ContainsTitle(string suffix)
     {
-        Assembly assembly = typeof(GranitUserSessionsNotificationsModule).Assembly;
+        Assembly assembly = typeof(GranitIdentityNotificationsModule).Assembly;
         string fullResourceName = $"{assembly.GetName().Name}.{suffix}";
 
         using Stream? stream = assembly.GetManifestResourceStream(fullResourceName);

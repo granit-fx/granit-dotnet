@@ -100,7 +100,6 @@
     <Project Path="src/Granit.Timing/Granit.Timing.csproj" />
     <Project Path="src/Granit.Identity.Abstractions/Granit.Identity.Abstractions.csproj" />
     <Project Path="src/Granit.Identity.AnomalyDetection/Granit.Identity.AnomalyDetection.csproj" />
-    <Project Path="src/Granit.UserSessions.Notifications/Granit.UserSessions.Notifications.csproj" />
     <Project Path="src/Granit.Validation.AI/Granit.Validation.AI.csproj" />
     <Project Path="src/Granit.Validation.Endpoints/Granit.Validation.Endpoints.csproj" />
     <Project Path="src/Granit.Validation.Europe/Granit.Validation.Europe.csproj" />
@@ -448,7 +447,6 @@
     <Project Path="tests/Granit.Timing.Tests/Granit.Timing.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Abstractions.Tests/Granit.Identity.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Identity.AnomalyDetection.Tests/Granit.Identity.AnomalyDetection.Tests.csproj" />
-    <Project Path="tests/Granit.UserSessions.Notifications.Tests/Granit.UserSessions.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Users.Tests/Granit.Users.Tests.csproj" />
     <Project Path="tests/Granit.Validation.AI.Tests/Granit.Validation.AI.Tests.csproj" />
     <Project Path="tests/Granit.Validation.Endpoints.Tests/Granit.Validation.Endpoints.Tests.csproj" />

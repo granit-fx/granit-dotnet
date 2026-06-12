@@ -1366,7 +1366,8 @@
       "name": "Granit.Identity.Notifications",
       "deps": [
         "Granit.Identity",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -2557,15 +2558,6 @@
       "name": "Granit.Timing",
       "deps": [
         "Granit"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.UserSessions.Notifications",
-      "deps": [
-        "Granit.Notifications.Abstractions",
-        "Granit.Templating",
-        "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -28685,13 +28677,57 @@
       "kind": "class",
       "project": "Granit.Identity.Notifications",
       "file": "src/Granit.Identity.Notifications/GranitIdentityNotificationsModule.cs",
-      "line": 20,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "SuspiciousUserSessionDetectedHandler",
+      "fqn": "Granit.Identity.Notifications.Handlers.SuspiciousUserSessionDetectedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Notifications",
+      "file": "src/Granit.Identity.Notifications/Handlers/SuspiciousUserSessionDetectedHandler.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(SuspiciousUserSessionDetectedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "NewUserSessionReviewNotificationType",
+      "fqn": "Granit.Identity.Notifications.NewUserSessionReviewNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Notifications",
+      "file": "src/Granit.Identity.Notifications/NewUserSessionReviewNotificationType.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "NewUserSessionReviewNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },
@@ -28720,6 +28756,77 @@
           "kind": "property",
           "signature": "string? DefaultCulture",
           "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "UserSessionsNotificationOptions",
+      "fqn": "Granit.Identity.Notifications.Options.UserSessionsNotificationOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Notifications",
+      "file": "src/Granit.Identity.Notifications/Options/UserSessionsNotificationOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "FrontendBaseUrl",
+          "kind": "property",
+          "signature": "string FrontendBaseUrl",
+          "returnType": "string"
+        },
+        {
+          "name": "SecurityPagePath",
+          "kind": "property",
+          "signature": "string SecurityPagePath",
+          "returnType": "string"
+        },
+        {
+          "name": "BuildSecurityUrl",
+          "kind": "method",
+          "signature": "BuildSecurityUrl()",
+          "returnType": "string"
+        },
+        {
+          "name": "BuildSecurityUrl",
+          "kind": "method",
+          "signature": "BuildSecurityUrl(string baseUrl)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "SuspiciousUserSessionNotificationData",
+      "fqn": "Granit.Identity.Notifications.SuspiciousUserSessionNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Notifications",
+      "file": "src/Granit.Identity.Notifications/SuspiciousUserSessionNotificationData.cs",
+      "line": 27,
+      "members": []
+    },
+    {
+      "name": "SuspiciousUserSessionNotificationType",
+      "fqn": "Granit.Identity.Notifications.SuspiciousUserSessionNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Notifications",
+      "file": "src/Granit.Identity.Notifications/SuspiciousUserSessionNotificationType.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "SuspiciousUserSessionNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },
@@ -49899,137 +50006,6 @@
       "file": "src/Granit.Timing/ResolvedPeriod.cs",
       "line": 12,
       "members": []
-    },
-    {
-      "name": "GranitUserSessionsNotificationsModule",
-      "fqn": "Granit.UserSessions.Notifications.GranitUserSessionsNotificationsModule",
-      "kind": "class",
-      "project": "Granit.UserSessions.Notifications",
-      "file": "src/Granit.UserSessions.Notifications/GranitUserSessionsNotificationsModule.cs",
-      "line": 22,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "SuspiciousUserSessionDetectedHandler",
-      "fqn": "Granit.UserSessions.Notifications.Handlers.SuspiciousUserSessionDetectedHandler",
-      "kind": "class",
-      "project": "Granit.UserSessions.Notifications",
-      "file": "src/Granit.UserSessions.Notifications/Handlers/SuspiciousUserSessionDetectedHandler.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(SuspiciousUserSessionDetectedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "NewUserSessionReviewNotificationType",
-      "fqn": "Granit.UserSessions.Notifications.NewUserSessionReviewNotificationType",
-      "kind": "class",
-      "project": "Granit.UserSessions.Notifications",
-      "file": "src/Granit.UserSessions.Notifications/NewUserSessionReviewNotificationType.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new()",
-          "returnType": "NewUserSessionReviewNotificationType Instance ="
-        },
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "DefaultSeverity",
-          "kind": "property",
-          "signature": "NotificationSeverity DefaultSeverity",
-          "returnType": "NotificationSeverity"
-        }
-      ]
-    },
-    {
-      "name": "UserSessionsNotificationOptions",
-      "fqn": "Granit.UserSessions.Notifications.Options.UserSessionsNotificationOptions",
-      "kind": "class",
-      "project": "Granit.UserSessions.Notifications",
-      "file": "src/Granit.UserSessions.Notifications/Options/UserSessionsNotificationOptions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "FrontendBaseUrl",
-          "kind": "property",
-          "signature": "string FrontendBaseUrl",
-          "returnType": "string"
-        },
-        {
-          "name": "SecurityPagePath",
-          "kind": "property",
-          "signature": "string SecurityPagePath",
-          "returnType": "string"
-        },
-        {
-          "name": "BuildSecurityUrl",
-          "kind": "method",
-          "signature": "BuildSecurityUrl()",
-          "returnType": "string"
-        },
-        {
-          "name": "BuildSecurityUrl",
-          "kind": "method",
-          "signature": "BuildSecurityUrl(string baseUrl)",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "SuspiciousUserSessionNotificationData",
-      "fqn": "Granit.UserSessions.Notifications.SuspiciousUserSessionNotificationData",
-      "kind": "record",
-      "project": "Granit.UserSessions.Notifications",
-      "file": "src/Granit.UserSessions.Notifications/SuspiciousUserSessionNotificationData.cs",
-      "line": 27,
-      "members": []
-    },
-    {
-      "name": "SuspiciousUserSessionNotificationType",
-      "fqn": "Granit.UserSessions.Notifications.SuspiciousUserSessionNotificationType",
-      "kind": "class",
-      "project": "Granit.UserSessions.Notifications",
-      "file": "src/Granit.UserSessions.Notifications/SuspiciousUserSessionNotificationType.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new()",
-          "returnType": "SuspiciousUserSessionNotificationType Instance ="
-        },
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "DefaultSeverity",
-          "kind": "property",
-          "signature": "NotificationSeverity DefaultSeverity",
-          "returnType": "NotificationSeverity"
-        }
-      ]
     },
     {
       "name": "ActorKind",

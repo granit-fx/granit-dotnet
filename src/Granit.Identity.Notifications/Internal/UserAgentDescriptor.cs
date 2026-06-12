@@ -1,4 +1,4 @@
-namespace Granit.UserSessions.Notifications.Internal;
+namespace Granit.Identity.Notifications.Internal;
 
 /// <summary>
 /// Extracts a coarse browser family and operating-system family from a raw User-Agent string, for display in

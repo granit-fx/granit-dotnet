@@ -1,6 +1,6 @@
 using Granit.Notifications;
 
-namespace Granit.UserSessions.Notifications;
+namespace Granit.Identity.Notifications;
 
 /// <summary>
 /// Medium-tier informational alert: a sign-in looked unusual (e.g. new country / new device) but

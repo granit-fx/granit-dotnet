@@ -1,6 +1,6 @@
 using Granit.Notifications;
 
-namespace Granit.UserSessions.Notifications;
+namespace Granit.Identity.Notifications;
 
 /// <summary>
 /// High-tier security alert: a sign-in was assessed as <c>High</c> risk (e.g. impossible travel).

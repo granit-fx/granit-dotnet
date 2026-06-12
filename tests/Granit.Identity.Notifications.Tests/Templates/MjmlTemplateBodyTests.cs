@@ -2,7 +2,7 @@ using System.Reflection;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.Notifications.Tests.Templates;
+namespace Granit.Identity.Notifications.Tests.Templates;
 
 /// <summary>
 /// Lighter-weight stand-in for a full MJML render smoke test. Wiring the complete pipeline
@@ -26,7 +26,7 @@ public sealed class MjmlTemplateBodyTests
 
     private static string ReadBodyAfterTitle(string suffix)
     {
-        Assembly assembly = typeof(GranitUserSessionsNotificationsModule).Assembly;
+        Assembly assembly = typeof(GranitIdentityNotificationsModule).Assembly;
         string fullResourceName = $"{assembly.GetName().Name}.{suffix}";
 
         using Stream? stream = assembly.GetManifestResourceStream(fullResourceName);

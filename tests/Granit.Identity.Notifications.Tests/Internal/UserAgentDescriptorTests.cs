@@ -1,8 +1,8 @@
-using Granit.UserSessions.Notifications.Internal;
+using Granit.Identity.Notifications.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Granit.UserSessions.Notifications.Tests.Internal;
+namespace Granit.Identity.Notifications.Tests.Internal;
 
 /// <summary>
 /// Coarse browser-family and OS-family extraction, returned <b>separately</b> (never joined in code)
