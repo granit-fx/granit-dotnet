@@ -27,12 +27,12 @@ namespace Granit.Http.ODataExposure.Tests.Integration;
 /// </summary>
 /// <remarks>
 /// The integration uses Granit's production <see cref="CurrentTenant"/>
-/// (AsyncLocal-based, registered as singleton) — NOT a per-scope stub.
-/// <c>ApplyGranitConventions</c> captures the <see cref="ICurrentTenant"/>
-/// instance into the EF Core model filter expression, and EF Core caches
-/// the model PER DBCONTEXT TYPE. A per-scope stub would let the first
-/// request's stub leak into every subsequent query's filter; only an
-/// AsyncLocal-backed singleton has the correct semantics.
+/// (AsyncLocal-based, registered as a singleton) behind a <see cref="TestDbContext"/>
+/// that inherits <c>GranitDbContext</c>. The multi-tenant filter is parameterised
+/// (<c>@ef_filter__CurrentTenantId</c>) and re-bound per request from the live
+/// AsyncLocal value, so swapping the active tenant via the <c>X-Test-Tenant</c>
+/// header takes effect on every query instead of being constant-folded into the
+/// cached model at first build.
 /// </remarks>
 internal sealed class ODataTestApp : IAsyncDisposable
 {
@@ -163,10 +163,9 @@ internal sealed class ODataTestApp : IAsyncDisposable
 
         await app.StartAsync().ConfigureAwait(false);
 
-        // Apply schema once per host (xUnit fixture lifetime). Done outside
-        // any tenant scope so the first model build pins the singleton
-        // CurrentTenant — subsequent requests mutate its AsyncLocal, never
-        // the captured instance.
+        // Apply schema once per host (xUnit fixture lifetime). The multi-tenant
+        // filter is parameterised, so the model build no longer captures a tenant
+        // value — this can safely run outside any tenant scope.
         using IServiceScope dbScope = app.Services.CreateScope();
         TestDbContext db = dbScope.ServiceProvider.GetRequiredService<TestDbContext>();
         await db.Database.EnsureCreatedAsync().ConfigureAwait(false);

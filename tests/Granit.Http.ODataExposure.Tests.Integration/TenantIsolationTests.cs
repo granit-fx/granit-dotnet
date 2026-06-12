@@ -186,15 +186,7 @@ public sealed class TenantIsolationTests(PostgresFixture postgres)
         rows.ShouldBeEmpty();
     }
 
-    [Fact(Skip =
-        "Reveals a constant-folding bug in ApplyGranitConventions's multi-tenant filter: " +
-        "EF Core inlines currentTenant.Id into the compiled SQL at first model build " +
-        "instead of parameterising, so subsequent requests reuse the FROZEN tenant value " +
-        "(captured SQL: WHERE TenantId = '<frozen-guid>'). After the first TenantA-scoped " +
-        "request 'pins' TenantA into the model, an anonymous request returns those same " +
-        "rows. Fix needs a rework of the filter expression (Expression.Call instead of " +
-        "Expression.Property, or a model-cache key bypass) — outside the scope of the " +
-        "OData test-suite hotfix. Re-enable once the framework filter parameterises.")]
+    [Fact]
     public async Task UnauthenticatedRequest_NoTenantHeader_ReturnsEmpty()
     {
         // No tenant header means ICurrentTenant.Id is null, the multi-tenant

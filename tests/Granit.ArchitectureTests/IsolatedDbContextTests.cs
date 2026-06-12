@@ -104,6 +104,107 @@ public sealed partial class IsolatedDbContextTests
             $"Violators: {string.Join(", ", violations)}");
     }
 
+    /// <summary>
+    /// Test-project counterpart to <see cref="DbContext_classes_should_use_GranitDbContext_or_inline_parameterised_filter"/>,
+    /// which only scans <c>src/</c>. A test harness that passes a non-null tenant to the legacy
+    /// <c>ApplyGranitConventions(currentTenant, …)</c> overload re-introduces the frozen-tenant SQL
+    /// leak (#2129) the moment it switches tenants across requests on a reused model — exactly the
+    /// bug that kept <c>TenantIsolationTests</c> skipped until its harness was migrated to
+    /// <c>GranitDbContext</c>. The allowlist holds contexts that exercise the legacy overload on
+    /// purpose (unit tests of the convention itself, design-time stub parity) and only ever use a
+    /// single tenant per model build, so they cannot freeze across tenants.
+    /// </summary>
+    [Fact]
+    public void Test_DbContexts_should_not_pass_a_non_null_tenant_to_ApplyGranitConventions()
+    {
+        string testsDir = Path.Join(RepoRoot, "tests");
+
+        HashSet<string> allowed =
+        [
+            "ModelBuilderExtensionsTests.cs",                 // unit tests OF the ApplyGranitConventions overloads
+            "GranitDesignTimeTests.cs",                       // design-time stub parity (fixed tenant by design)
+            "DbContextOptionsBuilderTestExtensionsTests.cs",  // unit test of a test helper, single tenant per build
+        ];
+
+        List<string> violations = [];
+
+        foreach (string csFile in Directory.GetFiles(testsDir, "*.cs", SearchOption.AllDirectories))
+        {
+            if (csFile.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar, StringComparison.Ordinal) ||
+                csFile.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            string source = File.ReadAllText(csFile);
+
+            // Cheap pre-filter before paying for a parse; skip the deliberate exemptions.
+            if (!source.Contains("ApplyGranitConventions", StringComparison.Ordinal)
+                || allowed.Contains(Path.GetFileName(csFile)))
+            {
+                continue;
+            }
+
+            CancellationToken ct = TestContext.Current.CancellationToken;
+            Microsoft.CodeAnalysis.SyntaxNode root =
+                Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(source, path: csFile, cancellationToken: ct).GetRoot(ct);
+
+            foreach (Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax invocation
+                in root.DescendantNodes().OfType<Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax>())
+            {
+                if (IsApplyGranitConventionsCall(invocation) && PassesNonNullTenant(invocation))
+                {
+                    Microsoft.CodeAnalysis.FileLinePositionSpan loc = invocation.GetLocation().GetLineSpan();
+                    violations.Add($"{Path.GetRelativePath(RepoRoot, csFile)}:{loc.StartLinePosition.Line + 1}");
+                }
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "A test DbContext passes a non-null tenant to the legacy ApplyGranitConventions(currentTenant, …) " +
+            "overload, which constant-folds the tenant id into the cached model and leaks it across requests " +
+            "(#2129). Inherit GranitDbContext instead — forward currentTenant to the base ctor and let it wire " +
+            "the parameterised @ef_filter__CurrentTenantId filter. If the context genuinely unit-tests the legacy " +
+            "overload on a single tenant, add its file name to the allowlist above with a justification. " +
+            $"Violators: {string.Join(", ", violations)}");
+    }
+
+    /// <summary>True when the invocation is a call to <c>ApplyGranitConventions</c>.</summary>
+    private static bool IsApplyGranitConventionsCall(Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax invocation)
+    {
+        Microsoft.CodeAnalysis.CSharp.Syntax.SimpleNameSyntax? name = invocation.Expression switch
+        {
+            Microsoft.CodeAnalysis.CSharp.Syntax.MemberAccessExpressionSyntax m => m.Name,
+            Microsoft.CodeAnalysis.CSharp.Syntax.SimpleNameSyntax s => s,
+            _ => null,
+        };
+        return name?.Identifier.ValueText == "ApplyGranitConventions";
+    }
+
+    /// <summary>
+    /// True when the <c>currentTenant</c> argument is present and not the <c>null</c> literal —
+    /// i.e. the legacy frozen-tenant path. The currentTenant value is the named
+    /// <c>currentTenant:</c> argument when present, otherwise the first positional argument
+    /// (a lone <c>dataFilter:</c> named argument leaves currentTenant defaulted to null).
+    /// </summary>
+    private static bool PassesNonNullTenant(Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax invocation)
+    {
+        Microsoft.CodeAnalysis.SeparatedSyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.ArgumentSyntax> args =
+            invocation.ArgumentList.Arguments;
+
+        Microsoft.CodeAnalysis.CSharp.Syntax.ArgumentSyntax? tenantArg =
+            args.FirstOrDefault(a => a.NameColon?.Name.Identifier.ValueText == "currentTenant")
+            ?? args.FirstOrDefault(a => a.NameColon is null);
+
+        if (tenantArg is null)
+        {
+            return false;
+        }
+
+        return tenantArg.Expression is not Microsoft.CodeAnalysis.CSharp.Syntax.LiteralExpressionSyntax literal
+            || literal.RawKind != (int)Microsoft.CodeAnalysis.CSharp.SyntaxKind.NullLiteralExpression;
+    }
+
     [Fact]
     public void No_manual_HasQueryFilter_in_entity_configurations()
     {

@@ -1,8 +1,9 @@
 using Granit.DataExchange.Export;
+using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Entities;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,27 +29,24 @@ internal sealed class Invoice : IMultiTenant, ISoftDeletable
 
 internal sealed class TestDbContext(
     DbContextOptions<TestDbContext> options,
-    ICurrentTenant? currentTenant = null) : DbContext(options)
+    ICurrentTenant currentTenant,
+    IDataFilter? dataFilter = null)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
-    private readonly ICurrentTenant? _currentTenant = currentTenant;
-
     public DbSet<Invoice> Invoices => Set<Invoice>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder) =>
+        // This override only configures the entity surface. GranitDbContext's sealed
+        // OnModelCreating then wires the parameterised multi-tenant filter (built inside a
+        // member of this context — CurrentTenantId — so EF Core emits @ef_filter__CurrentTenantId
+        // re-bound per request instead of constant-folding a frozen value) and runs
+        // ApplyGranitConventions for the remaining filters (soft-delete WHERE IsDeleted = false,
+        // etc.). All filters compose BEFORE any user-supplied predicate — the guarantee this suite pins.
         modelBuilder.Entity<Invoice>(e =>
         {
             e.HasKey(i => i.Id);
             e.Property(i => i.Number).HasMaxLength(64).IsRequired();
         });
-
-        // ApplyGranitConventions wires the multi-tenancy filter
-        // (WHERE TenantId = currentTenant.Id) AND the soft-delete filter
-        // (WHERE IsDeleted = false). These filters are appended to every
-        // query by EF Core BEFORE any user-supplied predicate; that's the
-        // load-bearing guarantee this integration test pins.
-        modelBuilder.ApplyGranitConventions(_currentTenant);
-    }
 }
 
 internal sealed class InvoiceQueryDefinition : QueryDefinition<Invoice>
