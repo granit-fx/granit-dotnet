@@ -4,7 +4,11 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-06-10 (ajout des providers de login externe — Granit.Authentication.External : Google, Microsoft, Facebook, OpenID Connect, GitHub, Apple)
+Seules les **dépendances directes** y figurent. Les dépendances transitives
+sont couvertes par leurs propres avis de licence, restaurés depuis NuGet par
+le consommateur (les packages Granit ne redistribuent pas leurs binaires).
+
+Dernière mise à jour : 2026-06-12 (épinglage direct de MessagePack 2.5.302 dans Granit.Notifications.SignalR — correctif CVE-2026-48109)
 
 ---
 
@@ -12,7 +16,7 @@ Dernière mise à jour : 2026-06-10 (ajout des providers de login externe — Gr
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 94                 |
+| MIT          | 95                 |
 | Apache-2.0   | 40                 |
 | BSD-3-Clause | 3                  |
 | BSD-2-Clause | 1                  |
@@ -44,6 +48,7 @@ Dernière mise à jour : 2026-06-10 (ajout des providers de login externe — Gr
 | DocumentFormat.OpenXml | 3.1.1 | Copyright (c) Microsoft Corporation |
 | Lib.Net.Http.WebPush | 3.3.1 | Copyright (c) Tomasz Pęczek |
 | MailKit | 4.16.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
+| MessagePack | 2.5.302 | Copyright (c) 2017 Yoshifumi Kawai and contributors |
 | Microsoft.AspNetCore.Authentication.Facebook | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.Authentication.Google | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.8 | (c) Microsoft Corporation |
@@ -274,8 +279,7 @@ Le format d'origine (`data.js` JS) est documenté à
 ### AWSSDK.S3
 
 Ce SDK est utilisé uniquement pour la compatibilité S3 avec un stockage objet
-hébergé en Europe (S3-compatible object storage, API S3-compatible). Aucune donnée
-de santé ne transite par l'infrastructure AWS.
+hébergé en Europe (S3-compatible object storage, API S3-compatible).
 
 ### AWSSDK.SimpleEmailV2
 
