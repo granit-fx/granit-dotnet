@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
+<title>Nowe logowanie do Twojego konta</title>
+<mj-text>Witaj,</mj-text>
+<mj-text>Zauważyliśmy nowe logowanie do Twojego konta. Jeśli to byłeś Ty, nie musisz nic robić.</mj-text>
+<mj-table cellpadding="0" font-size="15px">
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Kiedy</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  {{ if model.city || model.country_code }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Gdzie</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
+  {{ end }}
+  {{ if model.device }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Urządzenie</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ end }}
+</mj-table>
+<mj-text>{{ if model.reason == "impossible_travel" }}To logowanie nastąpiło z miejsca odległego od tego, z którego zwykle się logujesz.{{ else if model.reason == "new_country" }}To pierwsze logowanie, jakie odnotowaliśmy z tego kraju.{{ else if model.reason == "new_device" }}To logowanie nastąpiło z urządzenia, którego wcześniej nie widzieliśmy.{{ else }}To logowanie nieco różniło się od Twoich zwykłych logowań.{{ end }}</mj-text>
+<mj-text>Jeśli to byłeś Ty, nie musisz nic robić. Jeśli go nie rozpoznajesz, możesz zabezpieczyć swoje konto poniżej.</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Sprawdź zabezpieczenia swojego konta</mj-button>

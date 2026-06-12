@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
+<title>Nové přihlášení k vašemu účtu</title>
+<mj-text>Dobrý den,</mj-text>
+<mj-text>Zaznamenali jsme nové přihlášení k vašemu účtu. Pokud jste to byli vy, nemusíte nic dělat.</mj-text>
+<mj-table cellpadding="0" font-size="15px">
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Kdy</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  {{ if model.city || model.country_code }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Kde</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
+  {{ end }}
+  {{ if model.device }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Zařízení</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ end }}
+</mj-table>
+<mj-text>{{ if model.reason == "impossible_travel" }}Toto přihlášení proběhlo z místa vzdáleného od místa, odkud se obvykle přihlašujete.{{ else if model.reason == "new_country" }}Jde o první přihlášení, které jsme z této země zaznamenali.{{ else if model.reason == "new_device" }}Toto přihlášení proběhlo ze zařízení, které jsme dosud neviděli.{{ else }}Toto přihlášení se trochu lišilo od vašich obvyklých.{{ end }}</mj-text>
+<mj-text>Pokud jste to byli vy, není třeba nic dělat. Pokud přihlášení nepoznáváte, můžete svůj účet zabezpečit níže.</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Zkontrolovat zabezpečení svého účtu</mj-button>

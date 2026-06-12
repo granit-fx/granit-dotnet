@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
+<title>アカウントへの不審なサインイン</title>
+<mj-text>こんにちは。</mj-text>
+<mj-text>お客様のアカウントで通常とは異なるサインインを検出したため、ご本人によるものかどうかを確認させていただきたく存じます。</mj-text>
+<mj-table cellpadding="0" font-size="15px">
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">日時</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  {{ if model.city || model.country_code }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">場所</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
+  {{ end }}
+  {{ if model.device }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">デバイス</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ end }}
+</mj-table>
+<mj-text>{{ if model.reason == "impossible_travel" }}このサインインは、お客様が普段サインインされる場所から遠く離れた場所からのものであり、前回のセッション以降に移動するには遠すぎる距離でした。{{ else if model.reason == "new_country" }}この国からのサインインを確認したのは今回が初めてです。{{ else if model.reason == "new_device" }}このサインインは、これまで確認されていないデバイスからのものでした。{{ else }}このサインインは、お客様のアカウントにとって通常とは異なるものでした。{{ end }}</mj-text>
+<mj-text>ご本人によるものであれば、このメールは無視していただいて差し支えありません。</mj-text>
+<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">ご本人によるものでない場合は、アカウントを保護してください</mj-button>

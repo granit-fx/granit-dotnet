@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
+<title>Misstänkt inloggning på ditt konto</title>
+<mj-text>Hej,</mj-text>
+<mj-text>Vi har upptäckt en inloggning på ditt konto som såg ovanlig ut, och vi vill försäkra oss om att det var du.</mj-text>
+<mj-table cellpadding="0" font-size="15px">
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">När</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  {{ if model.city || model.country_code }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Var</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
+  {{ end }}
+  {{ if model.device }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Enhet</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ end }}
+</mj-table>
+<mj-text>{{ if model.reason == "impossible_travel" }}Den här inloggningen kom från en plats långt ifrån där du brukar logga in, och för långt bort för att du skulle ha hunnit resa dit sedan din senaste session.{{ else if model.reason == "new_country" }}Det här är den första inloggningen vi har sett från det här landet.{{ else if model.reason == "new_device" }}Den här inloggningen kom från en enhet som vi inte har sett tidigare.{{ else }}Den här inloggningen såg ovanlig ut för ditt konto.{{ end }}</mj-text>
+<mj-text>Om det var du kan du lugnt bortse från det här e-postmeddelandet.</mj-text>
+<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Om det inte var du, säkra ditt konto</mj-button>

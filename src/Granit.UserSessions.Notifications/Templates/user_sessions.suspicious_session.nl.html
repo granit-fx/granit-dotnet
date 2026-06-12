@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
+<title>Verdachte aanmelding bij uw account</title>
+<mj-text>Hallo,</mj-text>
+<mj-text>We hebben een aanmelding bij uw account opgemerkt die ongebruikelijk leek, en we willen zeker weten dat u dit was.</mj-text>
+<mj-table cellpadding="0" font-size="15px">
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Wanneer</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  {{ if model.city || model.country_code }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Waar</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
+  {{ end }}
+  {{ if model.device }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Apparaat</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ end }}
+</mj-table>
+<mj-text>{{ if model.reason == "impossible_travel" }}Deze aanmelding kwam van een locatie ver van waar u zich gewoonlijk aanmeldt, en te ver om er sinds uw laatste sessie naartoe te zijn gereisd.{{ else if model.reason == "new_country" }}Dit is de eerste aanmelding die we vanuit dit land hebben gezien.{{ else if model.reason == "new_device" }}Deze aanmelding kwam van een apparaat dat we niet eerder hebben gezien.{{ else }}Deze aanmelding leek ongebruikelijk voor uw account.{{ end }}</mj-text>
+<mj-text>Als u dit was, kunt u deze e-mail gerust negeren.</mj-text>
+<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Als u dit niet was, beveilig dan uw account</mj-button>

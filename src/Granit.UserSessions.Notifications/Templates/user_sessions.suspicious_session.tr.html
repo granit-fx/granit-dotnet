@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
+<title>Hesabınızda şüpheli oturum açma</title>
+<mj-text>Merhaba,</mj-text>
+<mj-text>Hesabınızda olağan dışı görünen bir oturum açma işlemi fark ettik ve bunun siz olduğunuzdan emin olmak istiyoruz.</mj-text>
+<mj-table cellpadding="0" font-size="15px">
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Ne zaman</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  {{ if model.city || model.country_code }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Nerede</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
+  {{ end }}
+  {{ if model.device }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Cihaz</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ end }}
+</mj-table>
+<mj-text>{{ if model.reason == "impossible_travel" }}Bu oturum açma işlemi, genellikle oturum açtığınız yerden çok uzak ve son oturumunuzdan bu yana oraya seyahat etmiş olamayacağınız kadar uzak bir konumdan gerçekleşti.{{ else if model.reason == "new_country" }}Bu, bu ülkeden gördüğümüz ilk oturum açma işlemidir.{{ else if model.reason == "new_device" }}Bu oturum açma işlemi, daha önce görmediğimiz bir cihazdan gerçekleşti.{{ else }}Bu oturum açma işlemi, hesabınız için olağan dışı görünüyordu.{{ end }}</mj-text>
+<mj-text>Bu işlemi siz yaptıysanız bu e-postayı güvenle yok sayabilirsiniz.</mj-text>
+<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Bu işlemi siz yapmadıysanız hesabınızı güvene alın</mj-button>

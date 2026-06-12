@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
+<title>आपके खाते में नया साइन-इन</title>
+<mj-text>नमस्ते,</mj-text>
+<mj-text>हमने आपके खाते में एक नया साइन-इन देखा। यदि यह आप ही थे, तो आपको कुछ करने की आवश्यकता नहीं है।</mj-text>
+<mj-table cellpadding="0" font-size="15px">
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">कब</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  {{ if model.city || model.country_code }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">कहाँ</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
+  {{ end }}
+  {{ if model.device }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">डिवाइस</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ end }}
+</mj-table>
+<mj-text>{{ if model.reason == "impossible_travel" }}यह साइन-इन उस स्थान से बहुत दूर के स्थान से हुआ जहाँ से आप सामान्यतः साइन इन करते हैं।{{ else if model.reason == "new_country" }}यह इस देश से देखा गया पहला साइन-इन है।{{ else if model.reason == "new_device" }}यह साइन-इन एक ऐसे डिवाइस से हुआ जिसे हमने पहले नहीं देखा था।{{ else }}यह साइन-इन आपके सामान्य साइन-इन से थोड़ा अलग लगा।{{ end }}</mj-text>
+<mj-text>यदि यह आप ही थे, तो किसी कार्रवाई की आवश्यकता नहीं है। यदि आप इसे नहीं पहचानते हैं, तो आप नीचे अपना खाता सुरक्षित कर सकते हैं।</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">अपने खाते की सुरक्षा की समीक्षा करें</mj-button>

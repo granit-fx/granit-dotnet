@@ -1,17 +1,15 @@
 <title>New sign-in to your account</title>
-<p>Hi,</p>
-<p>We noticed a new sign-in to your account. If this was you, there's nothing you need to do.</p>
-<p><strong>When:</strong> {{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</p>
-{{ if model.city || model.country_code }}
-<p><strong>Where:</strong> {{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</p>
-{{ end }}
-{{ if model.device }}
-<p><strong>Device:</strong> {{ model.device }}</p>
-{{ end }}
-<p>
-  {{ if model.reason == "impossible_travel" }}This sign-in came from a location far from where you usually sign in.{{ else if model.reason == "new_country" }}This is the first sign-in we've seen from this country.{{ else if model.reason == "new_device" }}This sign-in came from a device we haven't seen before.{{ else }}This sign-in looked a little different from your usual ones.{{ end }}
-</p>
-<p>If this was you, no action is needed. If you don't recognise it, you can secure your account below.</p>
-<p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/account/security" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Review your account security</a>
-</p>
+<mj-text>Hi,</mj-text>
+<mj-text>We noticed a new sign-in to your account. If this was you, there's nothing you need to do.</mj-text>
+<mj-table cellpadding="0" font-size="15px">
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">When</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  {{ if model.city || model.country_code }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Where</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
+  {{ end }}
+  {{ if model.device }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Device</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ end }}
+</mj-table>
+<mj-text>{{ if model.reason == "impossible_travel" }}This sign-in came from a location far from where you usually sign in.{{ else if model.reason == "new_country" }}This is the first sign-in we've seen from this country.{{ else if model.reason == "new_device" }}This sign-in came from a device we haven't seen before.{{ else }}This sign-in looked a little different from your usual ones.{{ end }}</mj-text>
+<mj-text>If this was you, no action is needed. If you don't recognise it, you can secure your account below.</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Review your account security</mj-button>

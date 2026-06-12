@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
+<title>Nuovo accesso al tuo account</title>
+<mj-text>Ciao,</mj-text>
+<mj-text>Abbiamo rilevato un nuovo accesso al tuo account. Se sei stato tu, non devi fare nulla.</mj-text>
+<mj-table cellpadding="0" font-size="15px">
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Quando</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  {{ if model.city || model.country_code }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Dove</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
+  {{ end }}
+  {{ if model.device }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Dispositivo</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ end }}
+</mj-table>
+<mj-text>{{ if model.reason == "impossible_travel" }}Questo accesso proviene da un luogo molto distante da quello in cui accedi di solito.{{ else if model.reason == "new_country" }}È il primo accesso che rileviamo da questo Paese.{{ else if model.reason == "new_device" }}Questo accesso proviene da un dispositivo che non abbiamo mai visto prima.{{ else }}Questo accesso era un po' diverso da quelli abituali.{{ end }}</mj-text>
+<mj-text>Se sei stato tu, non è necessaria alcuna azione. Se non lo riconosci, puoi proteggere il tuo account qui sotto.</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Verifica la sicurezza del tuo account</mj-button>

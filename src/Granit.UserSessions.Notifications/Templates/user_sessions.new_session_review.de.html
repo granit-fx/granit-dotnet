@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
+<title>Neue Anmeldung bei Ihrem Konto</title>
+<mj-text>Hallo,</mj-text>
+<mj-text>Wir haben eine neue Anmeldung bei Ihrem Konto festgestellt. Wenn Sie das waren, müssen Sie nichts unternehmen.</mj-text>
+<mj-table cellpadding="0" font-size="15px">
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Wann</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  {{ if model.city || model.country_code }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Wo</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
+  {{ end }}
+  {{ if model.device }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Gerät</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ end }}
+</mj-table>
+<mj-text>{{ if model.reason == "impossible_travel" }}Diese Anmeldung erfolgte von einem Ort, der weit von dem entfernt ist, wo Sie sich üblicherweise anmelden.{{ else if model.reason == "new_country" }}Dies ist die erste Anmeldung, die wir aus diesem Land registriert haben.{{ else if model.reason == "new_device" }}Diese Anmeldung erfolgte von einem Gerät, das wir bisher nicht gesehen haben.{{ else }}Diese Anmeldung unterschied sich ein wenig von Ihren üblichen.{{ end }}</mj-text>
+<mj-text>Wenn Sie das waren, ist nichts zu tun. Falls Sie die Anmeldung nicht wiedererkennen, können Sie Ihr Konto unten absichern.</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Sicherheit Ihres Kontos überprüfen</mj-button>

@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
+<title>Nuevo inicio de sesión en tu cuenta</title>
+<mj-text>Hola:</mj-text>
+<mj-text>Hemos detectado un nuevo inicio de sesión en tu cuenta. Si fuiste tú, no necesitas hacer nada.</mj-text>
+<mj-table cellpadding="0" font-size="15px">
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Cuándo</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  {{ if model.city || model.country_code }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Dónde</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
+  {{ end }}
+  {{ if model.device }}
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Dispositivo</td><td style="padding: 6px 0;"><strong>{{ model.device }}</strong></td></tr>
+  {{ end }}
+</mj-table>
+<mj-text>{{ if model.reason == "impossible_travel" }}Este inicio de sesión se realizó desde un lugar muy alejado de donde sueles iniciar sesión.{{ else if model.reason == "new_country" }}Es el primer inicio de sesión que detectamos desde este país.{{ else if model.reason == "new_device" }}Este inicio de sesión se realizó desde un dispositivo que no habíamos visto antes.{{ else }}Este inicio de sesión fue un poco diferente de los habituales.{{ end }}</mj-text>
+<mj-text>Si fuiste tú, no es necesario hacer nada. Si no lo reconoces, puedes proteger tu cuenta a continuación.</mj-text>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Revisar la seguridad de tu cuenta</mj-button>
