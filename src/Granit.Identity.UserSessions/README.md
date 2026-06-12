@@ -17,8 +17,8 @@ providers (replacing the no-op defaults), implemented over `IIdentitySessionMana
 - **`/devices`** — the IdP's device-activity view (OS, browser, last seen, session count).
 
 Provider-agnostic: it depends only on `IIdentitySessionManager`, so any IdP integration
-that implements it is covered — **OpenIddict** today; **Keycloak** as soon as it provides
-an `IIdentitySessionManager`.
+that registers one is covered — **OpenIddict** and **Keycloak** today (Keycloak over its
+Admin REST API), any future IdP the moment it provides an `IIdentitySessionManager`.
 
 ## Notes
 
