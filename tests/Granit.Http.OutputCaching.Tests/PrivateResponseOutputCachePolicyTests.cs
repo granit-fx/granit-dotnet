@@ -7,9 +7,9 @@ using Xunit;
 
 namespace Granit.Http.OutputCaching.Tests;
 
-public sealed class GdprCompliantOutputCachePolicyTests
+public sealed class PrivateResponseOutputCachePolicyTests
 {
-    private readonly GdprCompliantOutputCachePolicy _sut = new();
+    private readonly PrivateResponseOutputCachePolicy _sut = new();
 
     [Fact]
     public async Task CacheRequestAsync_WhenAuthenticated_DisablesCaching()
@@ -25,7 +25,7 @@ public sealed class GdprCompliantOutputCachePolicyTests
     }
 
     [Fact]
-    public async Task CacheRequestAsync_WhenAnonymous_DoesNotDisableCaching()
+    public async Task CacheRequestAsync_WhenAnonymousWithoutCredentials_DoesNotDisableCaching()
     {
         // Arrange
         OutputCacheContext context = CreateContext(authenticated: false);
@@ -36,6 +36,36 @@ public sealed class GdprCompliantOutputCachePolicyTests
 
         // Assert
         context.EnableOutputCaching.ShouldBe(originalValue);
+    }
+
+    [Fact]
+    public async Task CacheRequestAsync_WhenAuthorizationHeaderPresent_DisablesCaching()
+    {
+        // Arrange — credential carried on the request even though User is not populated
+        // (the output-cache middleware commonly runs before authentication).
+        OutputCacheContext context = CreateContext(authenticated: false);
+        context.HttpContext.Request.Headers.Authorization = "Bearer token";
+
+        // Act
+        await _sut.CacheRequestAsync(context, CancellationToken.None);
+
+        // Assert
+        context.EnableOutputCaching.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task CacheRequestAsync_WhenCookieHeaderPresent_DisablesCaching()
+    {
+        // Arrange — cookie/session schemes (e.g. the BFF session cookie) authenticate inside
+        // the endpoint and never set User, so a shared cache must not store their responses.
+        OutputCacheContext context = CreateContext(authenticated: false);
+        context.HttpContext.Request.Headers.Cookie = ".bff-host=abc";
+
+        // Act
+        await _sut.CacheRequestAsync(context, CancellationToken.None);
+
+        // Assert
+        context.EnableOutputCaching.ShouldBeFalse();
     }
 
     [Fact]

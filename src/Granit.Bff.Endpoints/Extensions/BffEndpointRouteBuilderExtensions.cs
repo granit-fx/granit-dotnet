@@ -78,6 +78,13 @@ public static class BffEndpointRouteBuilderExtensions
             .MapGranitGroup(groupPrefix)
             .WithTags($"BFF - {ToTagSuffix(frontend.Name)}");
 
+        // BFF endpoints are per-session and credential-sensitive (session state, CSRF tokens):
+        // they must never enter a shared output cache, or one caller's /bff/user — or worse, a
+        // CSRF token — would be served to another, and session state would read stale (login
+        // loop / delayed logout). NoCache wins over any host base policy that enables caching;
+        // the metadata is inert when output caching is not configured.
+        group.CacheOutput(static policy => policy.NoCache());
+
         group.MapLoginEndpoints(frontend);
         group.MapLogoutEndpoints(frontend);
         group.MapUserEndpoints(frontend);

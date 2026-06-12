@@ -4,6 +4,10 @@ using System.Text;
 using System.Text.Json;
 using System.Web;
 using Granit.Bff.Endpoints.Endpoints;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -61,6 +65,37 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
         using HttpRequestMessage request = CreateRequestWithSession(method, url, content);
         return await _server.AnonymousClient.SendAsync(request, TestContext.Current.CancellationToken)
             .ConfigureAwait(false);
+    }
+
+    // ──── Output cache exclusion ────
+
+    [Fact]
+    public async Task BffEndpoints_OptOutOfOutputCaching()
+    {
+        // BFF endpoints are per-session and credential-sensitive; a shared output cache
+        // would serve one caller's session state — or CSRF token — to another, and read
+        // stale (login loop / delayed logout). The group applies a NoCache policy to all
+        // of its endpoints.
+        EndpointDataSource dataSource = _server.Services.GetRequiredService<EndpointDataSource>();
+
+        string bffPrefix = $"{BffEndpointsTestServer.TestPathPrefix}/bff/";
+        var bffEndpoints = dataSource.Endpoints
+            .OfType<RouteEndpoint>()
+            .Where(e => e.RoutePattern.RawText?.StartsWith(bffPrefix, StringComparison.Ordinal) == true)
+            .ToList();
+
+        bffEndpoints.ShouldNotBeEmpty();
+
+        foreach (RouteEndpoint endpoint in bffEndpoints)
+        {
+            IOutputCachePolicy? policy = endpoint.Metadata.GetMetadata<IOutputCachePolicy>();
+            policy.ShouldNotBeNull($"endpoint '{endpoint.RoutePattern.RawText}' must carry an output-cache policy");
+
+            // The attached policy must disable caching for this endpoint.
+            OutputCacheContext context = new() { HttpContext = new DefaultHttpContext(), EnableOutputCaching = true };
+            await policy.CacheRequestAsync(context, TestContext.Current.CancellationToken);
+            context.EnableOutputCaching.ShouldBeFalse($"endpoint '{endpoint.RoutePattern.RawText}' must not be cached");
+        }
     }
 
     /// <summary>

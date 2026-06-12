@@ -52,6 +52,9 @@ internal sealed class BffEndpointsTestServer : IAsyncDisposable
     public HttpClient AuthenticatedClient { get; }
     public HttpClient AnonymousClient { get; }
 
+    /// <summary>Application services, for inspecting mapped endpoints and their metadata.</summary>
+    public IServiceProvider Services => _app.Services;
+
     public IBffTokenStore TokenStore { get; }
     public IBffCsrfTokenGenerator CsrfGenerator { get; }
     public ILogoutTokenValidator LogoutTokenValidator { get; }

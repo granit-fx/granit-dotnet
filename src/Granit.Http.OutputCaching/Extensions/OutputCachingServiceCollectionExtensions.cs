@@ -14,12 +14,12 @@ namespace Granit.Http.OutputCaching.Extensions;
 public static class OutputCachingServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the Granit output caching system with GDPR-safe, tenant-aware defaults.
+    /// Registers the Granit output caching system with privacy-safe, tenant-aware defaults.
     /// </summary>
     /// <remarks>
     /// Configured services:
     /// <list type="bullet">
-    ///   <item>ASP.NET Core <c>OutputCache</c> with base policy chain (GDPR + tenant isolation)</item>
+    ///   <item>ASP.NET Core <c>OutputCache</c> with base policy chain (private-response + tenant isolation)</item>
     ///   <item><see cref="IOutputCacheEvictionService"/> for tag-based cache invalidation</item>
     ///   <item>Named policies: <see cref="GranitOutputCachePolicyNames.Default"/> and
     ///   <see cref="GranitOutputCachePolicyNames.NoCache"/></item>
@@ -42,7 +42,7 @@ public static class OutputCachingServiceCollectionExtensions
             // Base policy: applied to all cached endpoints
             options.AddBasePolicy(builder =>
             {
-                builder.AddPolicy<GdprCompliantOutputCachePolicy>();
+                builder.AddPolicy<PrivateResponseOutputCachePolicy>();
                 builder.AddPolicy<TenantAwareOutputCachePolicy>();
                 builder.Tag("all");
             });
@@ -50,7 +50,7 @@ public static class OutputCachingServiceCollectionExtensions
             // Named policy: explicit Granit default with same base chain
             options.AddPolicy(GranitOutputCachePolicyNames.Default, builder =>
             {
-                builder.AddPolicy<GdprCompliantOutputCachePolicy>();
+                builder.AddPolicy<PrivateResponseOutputCachePolicy>();
                 builder.AddPolicy<TenantAwareOutputCachePolicy>();
                 builder.Tag("all");
             });
