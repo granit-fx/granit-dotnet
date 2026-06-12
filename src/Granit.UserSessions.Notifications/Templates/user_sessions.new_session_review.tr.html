@@ -3,7 +3,7 @@
 <mj-text>{{ if model.recipient_name != "" }}Merhaba {{ model.recipient_name }},{{ else }}Merhaba,{{ end }}</mj-text>
 <mj-text>Hesabınızda yeni bir oturum açma işlemi fark ettik. Bu işlemi siz yaptıysanız yapmanız gereken bir şey yok.</mj-text>
 <mj-table cellpadding="0" font-size="15px">
-  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Ne zaman</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Ne zaman</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | to_user_time | date.to_string '%B %d, %Y at %H:%M' }}{{ if model.recipient_timezone != "" }} ({{ model.recipient_timezone }}){{ else }} UTC{{ end }}</strong></td></tr>
   {{ if model.city || model.country_code }}
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Nerede</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
   {{ end }}

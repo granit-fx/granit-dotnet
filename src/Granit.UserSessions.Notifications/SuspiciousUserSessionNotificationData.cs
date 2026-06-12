@@ -21,8 +21,9 @@ namespace Granit.UserSessions.Notifications;
 /// English connector baked in code). Never the raw User-Agent string.</param>
 /// <param name="OperatingSystem">Coarse OS family ("Windows", "iPhone") derived from the raw User-Agent;
 /// <see langword="null"/> when it could not be derived.</param>
-/// <param name="DetectedAt">When the verdict was produced (rendered in UTC; user-timezone
-/// localization is a follow-up).</param>
+/// <param name="DetectedAt">When the verdict was produced. The template renders it in the recipient's
+/// time zone (via the <c>to_user_time</c> Scriban function) with the IANA zone shown in parentheses,
+/// falling back to UTC when the recipient has no time zone configured.</param>
 public sealed record SuspiciousUserSessionNotificationData(
     string Reason,
     string ReasonsDisplay,

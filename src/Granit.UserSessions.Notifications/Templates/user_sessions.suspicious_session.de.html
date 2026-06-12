@@ -3,7 +3,7 @@
 <mj-text>{{ if model.recipient_name != "" }}Hallo {{ model.recipient_name }},{{ else }}Hallo,{{ end }}</mj-text>
 <mj-text>Wir haben bei Ihrem Konto eine Anmeldung festgestellt, die ungewöhnlich erschien, und möchten sicherstellen, dass Sie es waren.</mj-text>
 <mj-table cellpadding="0" font-size="15px">
-  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Wann</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Wann</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | to_user_time | date.to_string '%B %d, %Y at %H:%M' }}{{ if model.recipient_timezone != "" }} ({{ model.recipient_timezone }}){{ else }} UTC{{ end }}</strong></td></tr>
   {{ if model.city || model.country_code }}
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Wo</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
   {{ end }}

@@ -3,7 +3,7 @@
 <mj-text>{{ if model.recipient_name != "" }}Ciao {{ model.recipient_name }},{{ else }}Ciao,{{ end }}</mj-text>
 <mj-text>Abbiamo rilevato un nuovo accesso al tuo account. Se sei stato tu, non devi fare nulla.</mj-text>
 <mj-table cellpadding="0" font-size="15px">
-  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Quando</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong></td></tr>
+  <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Quando</td><td style="padding: 6px 0;"><strong>{{ model.detected_at | to_user_time | date.to_string '%B %d, %Y at %H:%M' }}{{ if model.recipient_timezone != "" }} ({{ model.recipient_timezone }}){{ else }} UTC{{ end }}</strong></td></tr>
   {{ if model.city || model.country_code }}
   <tr><td style="padding: 6px 16px 6px 0; color: #6b7280;">Dove</td><td style="padding: 6px 0;"><strong>{{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</strong></td></tr>
   {{ end }}
