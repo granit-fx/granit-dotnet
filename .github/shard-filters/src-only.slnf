@@ -292,7 +292,6 @@
       "src/Granit.Timeline/Granit.Timeline.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.UserSessions.AnomalyDetection/Granit.UserSessions.AnomalyDetection.csproj",
-      "src/Granit.UserSessions.EntityFrameworkCore/Granit.UserSessions.EntityFrameworkCore.csproj",
       "src/Granit.UserSessions.Notifications/Granit.UserSessions.Notifications.csproj",
       "src/Granit.Validation.AI/Granit.Validation.AI.csproj",
       "src/Granit.Validation.Endpoints/Granit.Validation.Endpoints.csproj",

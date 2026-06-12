@@ -31,11 +31,18 @@ internal sealed class IdentityDbContext(
     /// <summary>The <see cref="User"/> table.</summary>
     public DbSet<User> Users => Set<User>();
 
+    /// <summary>
+    /// Durable session-risk verdicts, keyed by <c>(UserId, SessionId)</c>. Persisted in the same context as
+    /// <see cref="User"/> — user sessions are part of the identity domain (no separate context per table).
+    /// </summary>
+    public DbSet<UserSessionRiskEntity> UserSessionRisks => Set<UserSessionRiskEntity>();
+
     /// <inheritdoc />
     protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.ConfigureGranitIdentityModule();
+        modelBuilder.ApplyConfiguration(new Configurations.UserSessionRiskEntityConfiguration());
         modelBuilder.ApplyEncryptionConventions(_encryption);
     }
 }

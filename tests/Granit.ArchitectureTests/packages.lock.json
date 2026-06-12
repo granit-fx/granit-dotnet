@@ -2622,7 +2622,9 @@
         "type": "Project",
         "dependencies": {
           "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
@@ -3912,14 +3914,6 @@
           "Granit.AI": "[0.1.0-dev, )",
           "Granit.Identity.Abstractions": "[0.1.0-dev, )",
           "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.usersessions.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )"
         }
       },
       "granit.usersessions.notifications": {

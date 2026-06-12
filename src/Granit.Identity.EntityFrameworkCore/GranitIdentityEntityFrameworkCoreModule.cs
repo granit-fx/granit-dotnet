@@ -1,6 +1,8 @@
 using Granit.Encryption.EntityFrameworkCore;
+using Granit.Identity.EntityFrameworkCore.Internal;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Identity.EntityFrameworkCore;
 
@@ -17,6 +19,15 @@ namespace Granit.Identity.EntityFrameworkCore;
 /// </remarks>
 [DependsOn(
     typeof(GranitEncryptionEntityFrameworkCoreModule),
+    typeof(GranitIdentityAbstractionsModule),
     typeof(GranitIdentityModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule))]
-public sealed class GranitIdentityEntityFrameworkCoreModule : GranitModule;
+public sealed class GranitIdentityEntityFrameworkCoreModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        // Durable session-risk store, persisting verdicts in the User DbContext. Overrides the in-memory
+        // default from Granit.Identity.Abstractions so a Medium/High verdict survives restarts and is shared
+        // across instances. The DbContext itself is registered by AddGranitIdentityEntityFrameworkCore.
+        context.Services.AddScoped<IUserSessionRiskStore, EfCoreUserSessionRiskStore>();
+}

@@ -7,7 +7,7 @@ namespace Granit.Identity;
 /// <remarks>
 /// <para>
 /// The default registration (<c>Granit.Identity.Abstractions</c>) is an in-memory, single-node, non-durable
-/// store suitable for development. Install <c>Granit.UserSessions.EntityFrameworkCore</c> for a durable store that
+/// store suitable for development. Install <c>Granit.Identity.EntityFrameworkCore</c> for a durable store that
 /// survives restarts and is shared across instances.
 /// </para>
 /// <para>
