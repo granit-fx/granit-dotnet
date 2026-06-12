@@ -19,8 +19,8 @@ public sealed class IdentityDeviceActivityTests
             IpAddress: "10.0.0.1",
             LastAccess: lastAccess,
             Device: "Desktop",
-            Os: "Windows",
-            OsVersion: "11",
+            OperatingSystem: "Windows",
+            OperatingSystemVersion: "11",
             Browser: "Chrome/120.0",
             Mobile: false,
             Current: true,
@@ -29,8 +29,8 @@ public sealed class IdentityDeviceActivityTests
         device.IpAddress.ShouldBe("10.0.0.1");
         device.LastAccess.ShouldBe(lastAccess);
         device.Device.ShouldBe("Desktop");
-        device.Os.ShouldBe("Windows");
-        device.OsVersion.ShouldBe("11");
+        device.OperatingSystem.ShouldBe("Windows");
+        device.OperatingSystemVersion.ShouldBe("11");
         device.Browser.ShouldBe("Chrome/120.0");
         device.Mobile.ShouldBeFalse();
         device.Current.ShouldBeTrue();
@@ -46,8 +46,8 @@ public sealed class IdentityDeviceActivityTests
             IpAddress: null,
             LastAccess: lastAccess,
             Device: null,
-            Os: null,
-            OsVersion: null,
+            OperatingSystem: null,
+            OperatingSystemVersion: null,
             Browser: null,
             Mobile: false,
             Current: false,
@@ -55,8 +55,8 @@ public sealed class IdentityDeviceActivityTests
 
         device.IpAddress.ShouldBeNull();
         device.Device.ShouldBeNull();
-        device.Os.ShouldBeNull();
-        device.OsVersion.ShouldBeNull();
+        device.OperatingSystem.ShouldBeNull();
+        device.OperatingSystemVersion.ShouldBeNull();
         device.Browser.ShouldBeNull();
         device.Sessions.ShouldBeEmpty();
     }

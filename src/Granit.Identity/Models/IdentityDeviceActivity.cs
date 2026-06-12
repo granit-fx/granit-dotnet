@@ -5,7 +5,7 @@ namespace Granit.Identity.Models;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Device-level fields (<see cref="Device"/>, <see cref="Os"/>, <see cref="OsVersion"/>,
+/// Device-level fields (<see cref="Device"/>, <see cref="OperatingSystem"/>, <see cref="OperatingSystemVersion"/>,
 /// <see cref="Browser"/>) are populated when the identity provider supports device-level
 /// session tracking (e.g. Keycloak Account API via token exchange).
 /// They are <c>null</c> when only session-level data is available.
@@ -18,8 +18,8 @@ namespace Granit.Identity.Models;
 /// <param name="IpAddress">Last known IP address for this device.</param>
 /// <param name="LastAccess">Most recent activity timestamp across all sessions on this device.</param>
 /// <param name="Device">Device category (e.g. <c>"Desktop"</c>, <c>"Mobile"</c>, <c>"Other"</c>). <c>null</c> if unavailable.</param>
-/// <param name="Os">Operating system name (e.g. <c>"Windows"</c>, <c>"macOS"</c>, <c>"iOS"</c>). <c>null</c> if unavailable.</param>
-/// <param name="OsVersion">Operating system version (e.g. <c>"10"</c>, <c>"14"</c>). <c>null</c> if unavailable.</param>
+/// <param name="OperatingSystem">Operating system name (e.g. <c>"Windows"</c>, <c>"macOS"</c>, <c>"iOS"</c>). <c>null</c> if unavailable.</param>
+/// <param name="OperatingSystemVersion">Operating system version (e.g. <c>"10"</c>, <c>"14"</c>). <c>null</c> if unavailable.</param>
 /// <param name="Browser">Browser name and version (e.g. <c>"Chrome/120.0"</c>). <c>null</c> if unavailable.</param>
 /// <param name="Mobile">Whether the device is a mobile device.</param>
 /// <param name="Current">Whether this device corresponds to the currently authenticated session.</param>
@@ -28,8 +28,8 @@ public sealed record IdentityDeviceActivity(
     string? IpAddress,
     DateTimeOffset LastAccess,
     string? Device,
-    string? Os,
-    string? OsVersion,
+    string? OperatingSystem,
+    string? OperatingSystemVersion,
     string? Browser,
     bool Mobile,
     bool Current,

@@ -224,14 +224,14 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
 
         result.Count.ShouldBe(2);
 
-        IdentityDeviceActivity desktop = result.First(d => d.Os == "Windows");
+        IdentityDeviceActivity desktop = result.First(d => d.OperatingSystem == "Windows");
         desktop.IpAddress.ShouldBe("10.0.0.1");
         desktop.Device.ShouldBe("Desktop");
         desktop.Mobile.ShouldBeFalse();
         desktop.Sessions.Count.ShouldBe(2);
         desktop.Browser.ShouldBe("Chrome/120.0");
 
-        IdentityDeviceActivity mobile = result.First(d => d.Os == "Android");
+        IdentityDeviceActivity mobile = result.First(d => d.OperatingSystem == "Android");
         mobile.IpAddress.ShouldBe("10.0.0.2");
         mobile.Device.ShouldBe("Mobile");
         mobile.Mobile.ShouldBeTrue();
