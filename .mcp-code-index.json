@@ -49634,7 +49634,7 @@
       "kind": "record",
       "project": "Granit.UserSessions.Endpoints",
       "file": "src/Granit.UserSessions.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 33,
+      "line": 32,
       "members": []
     },
     {
@@ -49652,7 +49652,7 @@
       "kind": "record",
       "project": "Granit.UserSessions.Endpoints",
       "file": "src/Granit.UserSessions.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 45,
+      "line": 43,
       "members": []
     },
     {
@@ -50066,7 +50066,7 @@
       "kind": "record",
       "project": "Granit.UserSessions.Abstractions",
       "file": "src/Granit.UserSessions.Abstractions/UserDevice.cs",
-      "line": 23,
+      "line": 22,
       "members": []
     },
     {

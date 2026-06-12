@@ -50,6 +50,6 @@ internal static class UserDeviceEndpoints
 #pragma warning restore GRAPI003
 
     private static UserDeviceResponse Map(UserDevice device) =>
-        new(device.DeviceId, device.Kind, device.DisplayName, device.OperatingSystem, device.Browser,
+        new(device.DeviceId, device.Kind, device.OperatingSystem, device.Browser,
             device.LastSeen, device.SessionCount, device.LastLocation);
 }

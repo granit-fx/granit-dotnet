@@ -79,7 +79,6 @@ public sealed class IdentityUserSessionProviderTests
         result[0].Kind.ShouldBe(DeviceKind.Browser);
         result[0].OperatingSystem.ShouldBe("Windows");
         result[0].Browser.ShouldBe("Chrome/120");
-        result[0].DisplayName.ShouldBe("Chrome/120 on Windows");
         result[0].SessionCount.ShouldBe(1);
     }
 }

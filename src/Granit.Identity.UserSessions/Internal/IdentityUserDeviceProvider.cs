@@ -24,7 +24,6 @@ internal sealed class IdentityUserDeviceProvider(IIdentitySessionManager session
         new(
             DeviceId(device),
             DeviceKind.Browser,
-            DisplayName(device),
             device.Os,
             device.Browser,
             device.LastAccess,
@@ -35,11 +34,4 @@ internal sealed class IdentityUserDeviceProvider(IIdentitySessionManager session
     // groups consistently across calls. A device-bound identifier is the "Trusted devices" feature's job.
     private static string DeviceId(IdentityDeviceActivity d) =>
         $"{d.Device ?? "?"}/{d.Os ?? "?"}/{d.Browser ?? "?"}";
-
-    private static string? DisplayName(IdentityDeviceActivity d)
-    {
-        string label = string.Join(" on ",
-            new[] { d.Browser, d.Os }.Where(part => !string.IsNullOrEmpty(part)));
-        return label.Length > 0 ? label : d.Device;
-    }
 }

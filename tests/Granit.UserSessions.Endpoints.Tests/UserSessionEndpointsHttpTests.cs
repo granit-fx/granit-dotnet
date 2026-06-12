@@ -103,7 +103,7 @@ public sealed class UserSessionEndpointsHttpTests : IAsyncDisposable
     public async Task ListDevices_Authenticated_ReturnsMappedDevices()
     {
         _manager.ListDevicesAsync("user-1", Arg.Any<CancellationToken>())
-            .Returns([new UserDevice("d1", DeviceKind.MobileApp, "MyApp on iPhone", "iOS", null, null, 1, null)]);
+            .Returns([new UserDevice("d1", DeviceKind.MobileApp, "iOS", null, null, 1, null)]);
 
         UserDeviceResponse[]? body = await _auth.GetFromJsonAsync<UserDeviceResponse[]>("/devices", Ct);
 
@@ -111,7 +111,7 @@ public sealed class UserSessionEndpointsHttpTests : IAsyncDisposable
         body.Length.ShouldBe(1);
         body[0].DeviceId.ShouldBe("d1");
         body[0].Kind.ShouldBe(DeviceKind.MobileApp);
-        body[0].DisplayName.ShouldBe("MyApp on iPhone");
+        body[0].OperatingSystem.ShouldBe("iOS");
         body[0].Browser.ShouldBeNull();
     }
 

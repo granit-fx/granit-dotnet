@@ -14,7 +14,6 @@ namespace Granit.UserSessions;
 /// </remarks>
 /// <param name="DeviceId">Stable device identifier (device-bound credential, install id, or backend device id).</param>
 /// <param name="Kind">The client kind, from the auth context (browser, mobile app, desktop app, TV, API client).</param>
-/// <param name="DisplayName">Human-friendly label (e.g. <c>"Chrome on Windows"</c>, <c>"MyApp on iPhone"</c>), when derivable.</param>
 /// <param name="OperatingSystem">Operating-system family (e.g. <c>"Windows"</c>), when known.</param>
 /// <param name="Browser">Browser family (e.g. <c>"Chrome"</c>) for <see cref="DeviceKind.Browser"/> devices; otherwise <see langword="null"/>.</param>
 /// <param name="LastSeen">Last observed activity from this device, when tracked.</param>
@@ -23,7 +22,6 @@ namespace Granit.UserSessions;
 public sealed record UserDevice(
     string DeviceId,
     DeviceKind Kind,
-    string? DisplayName,
     string? OperatingSystem,
     string? Browser,
     DateTimeOffset? LastSeen,
