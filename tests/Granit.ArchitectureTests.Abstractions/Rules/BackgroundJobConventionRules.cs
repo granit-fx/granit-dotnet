@@ -23,7 +23,7 @@ public static class BackgroundJobConventionRules
             .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
                 && !c.IsAbstract.GetValueOrDefault()
                 && ImplementsInterface(c, "Granit.BackgroundJobs.IBackgroundJob"))
-            .Where(c => !c.Name.EndsWith("Job", StringComparison.Ordinal))
+            .Where(c => !StripGenericArity(c.Name).EndsWith("Job", StringComparison.Ordinal))
             .Select(c => $"{c.FullName} (IBackgroundJob must end with 'Job')")
             .ToList();
 
@@ -50,6 +50,14 @@ public static class BackgroundJobConventionRules
         violations.ShouldBeEmpty(
             "Types with [RecurringJob] must implement IBackgroundJob. " +
             $"Violators: {string.Join(", ", violations)}");
+    }
+
+    // ArchUnitNET reports generic type names with a CLR arity suffix (e.g. "RebuildIndexJob`1");
+    // strip it so generic jobs are matched on their declared name.
+    private static string StripGenericArity(string name)
+    {
+        int backtick = name.IndexOf('`', StringComparison.Ordinal);
+        return backtick < 0 ? name : name[..backtick];
     }
 
     private static bool ImplementsInterface(Class c, string interfaceFullName) =>

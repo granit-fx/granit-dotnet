@@ -3292,43 +3292,6 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )"
         }
       },
-      "granit.openapi.generator": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.AI.Endpoints": "[0.1.0-dev, )",
-          "Granit.Auditing.Endpoints": "[0.1.0-dev, )",
-          "Granit.Authentication.ApiKeys.Endpoints": "[0.1.0-dev, )",
-          "Granit.Authorization.Endpoints": "[0.1.0-dev, )",
-          "Granit.BackgroundJobs.Endpoints": "[0.1.0-dev, )",
-          "Granit.Bff.Endpoints": "[0.1.0-dev, )",
-          "Granit.BlobStorage.Endpoints": "[0.1.0-dev, )",
-          "Granit.DataExchange.Endpoints": "[0.1.0-dev, )",
-          "Granit.DataLookup.Endpoints": "[0.1.0-dev, )",
-          "Granit.Diagnostics.Endpoints": "[0.1.0-dev, )",
-          "Granit.Features.Endpoints": "[0.1.0-dev, )",
-          "Granit.Hostnames.Endpoints": "[0.1.0-dev, )",
-          "Granit.Http.Cookies.Endpoints": "[0.1.0-dev, )",
-          "Granit.Http.SecurityHeaders.Endpoints": "[0.1.0-dev, )",
-          "Granit.Identity.Endpoints": "[0.1.0-dev, )",
-          "Granit.Identity.Local.Endpoints": "[0.1.0-dev, )",
-          "Granit.Localization.Endpoints": "[0.1.0-dev, )",
-          "Granit.MultiTenancy.Endpoints": "[0.1.0-dev, )",
-          "Granit.Notifications.Endpoints": "[0.1.0-dev, )",
-          "Granit.OpenApi.Generation": "[0.1.0-dev, )",
-          "Granit.OpenIddict.Endpoints": "[0.1.0-dev, )",
-          "Granit.Presence.Endpoints": "[0.1.0-dev, )",
-          "Granit.Privacy.Endpoints": "[0.1.0-dev, )",
-          "Granit.Scheduling.Endpoints": "[0.1.0-dev, )",
-          "Granit.Settings.Endpoints": "[0.1.0-dev, )",
-          "Granit.Templating.Endpoints": "[0.1.0-dev, )",
-          "Granit.Timeline.Endpoints": "[0.1.0-dev, )",
-          "Granit.Validation.Endpoints": "[0.1.0-dev, )",
-          "Granit.Webhooks.Endpoints": "[0.1.0-dev, )",
-          "Granit.Workflow.Endpoints": "[0.1.0-dev, )",
-          "Microsoft.AspNetCore.OpenApi": "[10.*, )",
-          "Microsoft.Extensions.ApiDescription.Server": "[10.*, )"
-        }
-      },
       "granit.openiddict": {
         "type": "Project",
         "dependencies": {
@@ -4719,12 +4682,6 @@
           "Microsoft.Extensions.AI.Abstractions": "10.7.0",
           "OpenAI": "2.11.0"
         }
-      },
-      "Microsoft.Extensions.ApiDescription.Server": {
-        "type": "CentralTransitive",
-        "requested": "[10.*, )",
-        "resolved": "10.0.9",
-        "contentHash": "n1m7EAbCbHMGiTy++F+mLSan4MrZe0t00XEpJrkai6BFpB6lwEcirflI9FiMm4G4u55h/2RnWToYBDwS+MnN6g=="
       },
       "Microsoft.Extensions.Caching.Hybrid": {
         "type": "CentralTransitive",

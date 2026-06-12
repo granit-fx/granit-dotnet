@@ -40,7 +40,7 @@ internal static class OpenXmlGate
     /// </summary>
     internal const long RatioCheckMinCompressedBytes = 1024;
 
-    public enum GateResult
+    internal enum GateResult
     {
         Ok,
         TooManyEntries,
