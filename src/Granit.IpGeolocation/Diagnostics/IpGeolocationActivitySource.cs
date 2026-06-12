@@ -6,8 +6,9 @@ namespace Granit.IpGeolocation.Diagnostics;
 /// Central <see cref="ActivitySource"/> for <c>Granit.IpGeolocation</c> distributed tracing.
 /// </summary>
 /// <remarks>
-/// <c>Granit.Observability</c> adds this source automatically via
-/// <c>GranitActivitySourceRegistry</c> when both packages are used.
+/// <see cref="GranitIpGeolocationModule"/> registers this source with
+/// <c>GranitActivitySourceRegistry</c> at startup, so any tracing exporter wired through
+/// <c>Granit.Observability</c> picks it up automatically — no per-app configuration needed.
 /// </remarks>
 internal static class IpGeolocationActivitySource
 {

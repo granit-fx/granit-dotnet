@@ -78,32 +78,40 @@ internal sealed partial class DefaultIpGeolocationResolver : IIpGeolocationResol
         string normalized = parsed.ToString();
         string cacheKey = BuildCacheKey(normalized, _options.CacheKeySecret);
 
-        MaybeValue<GeoLocation?> cached = await _cache
-            .TryGetAsync<GeoLocation?>(cacheKey, token: cancellationToken)
-            .ConfigureAwait(false);
-        if (cached.HasValue)
+        // Cache stampede protection: GetOrSetAsync invokes the factory for only ONE caller per key, so concurrent
+        // lookups of the same uncached IP await that single result instead of each hitting a provider. This bounds
+        // cost, third-party rate limits, and duplicate GDPR transfers of the same IP. (Coalescing is per instance;
+        // across replicas each instance still resolves once — a distributed lock would be needed to coalesce
+        // cluster-wide.) Negative results are cached too: the factory returns null and FusionCache stores it.
+        bool resolvedFresh = false;
+        GeoLocation? resolved = await _cache.GetOrSetAsync<GeoLocation?>(
+            cacheKey,
+            async (ctx, ct) =>
+            {
+                resolvedFresh = true;
+                long start = Stopwatch.GetTimestamp();
+                GeoLocation? r = await QueryProvidersAsync(normalized, ct).ConfigureAwait(false);
+                _metrics.RecordLookupDuration(r is null ? "not_found" : "found", Stopwatch.GetElapsedTime(start));
+                return r;
+            },
+            new FusionCacheEntryOptions { Duration = _options.CacheDuration },
+            token: cancellationToken).ConfigureAwait(false);
+
+        // A caller that did not execute the factory was served from the cache (or coalesced onto the in-flight
+        // resolution) — count it as a hit; only the factory-executing caller is the real miss.
+        if (resolvedFresh)
+        {
+            _metrics.RecordCacheMiss();
+            activity?.SetTag("cache.hit", false);
+        }
+        else
         {
             _metrics.RecordCacheHit();
-            string cachedOutcome = cached.Value is null ? "not_found" : "found";
-            _metrics.RecordLookup(cachedOutcome, ipVersion);
             activity?.SetTag("cache.hit", true);
-            activity?.SetTag("ip_geolocation.result", cachedOutcome);
-            return cached.Value;
         }
-
-        _metrics.RecordCacheMiss();
-        activity?.SetTag("cache.hit", false);
-
-        long start = Stopwatch.GetTimestamp();
-        GeoLocation? resolved = await QueryProvidersAsync(normalized, cancellationToken).ConfigureAwait(false);
-
-        await _cache
-            .SetAsync(cacheKey, resolved, new FusionCacheEntryOptions { Duration = _options.CacheDuration }, token: cancellationToken)
-            .ConfigureAwait(false);
 
         string outcome = resolved is null ? "not_found" : "found";
         _metrics.RecordLookup(outcome, ipVersion);
-        _metrics.RecordLookupDuration(outcome, Stopwatch.GetElapsedTime(start));
         activity?.SetTag("ip_geolocation.result", outcome);
         return resolved;
     }
