@@ -103,8 +103,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.9",
-        "contentHash": "++VT2Q80ieKgJaSkD4WsIB+lSwDbkOn45AJ89M4zMZyuogW3AeUG915ePy7hAcfpujTWnf39cUgNDA30c45IpA=="
+        "resolved": "4.0.9.2",
+        "contentHash": "BW8nJkdjRFWMqk1ufvqUMqF+Axx+lJX/HTst6eKQw//PQf2wUx8i9xf5MSItazHZeatOVLLhZhwyALIlsiQD7g=="
       },
       "AWSSDK.SQS": {
         "type": "Transitive",
@@ -3907,6 +3907,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",
+          "Granit.IpGeolocation.Abstractions": "[0.1.0-dev, )",
           "Granit.UserSessions.Abstractions": "[0.1.0-dev, )"
         }
       },
@@ -3915,6 +3916,14 @@
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.UserSessions.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.usersessions.notifications": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
+          "Granit.Templating": "[0.1.0-dev, )",
           "Granit.UserSessions.Abstractions": "[0.1.0-dev, )"
         }
       },
@@ -4225,10 +4234,10 @@
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.24.3",
-        "contentHash": "vexHQGHi1CYHceVl9cKlbmvLrV0vhDlLm5CSLHZBHGmQUrtoimUT/Jxcr4i1d1+Sx58eZt/X7B5CBL3GkSXvyQ==",
+        "resolved": "4.0.24.4",
+        "contentHash": "r7naF7ZPfMjsj1jLjC9JP7Npg868+PT9/nUKgMNFNBvvTKzmAD5CMNw/DCT9AVd4qoCpI3YTYcCEIPlWcgW1bQ==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.9, 5.0.0)"
+          "AWSSDK.Core": "[4.0.9.2, 5.0.0)"
         }
       },
       "AWSSDK.SecretsManager": {
@@ -4243,10 +4252,10 @@
       "AWSSDK.SimpleEmailV2": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.14.4",
-        "contentHash": "rQjuoktALOTfnLamerF18uQs+Yheu1rpJoy5/eHoLC4qXGS5QqnHaeOJ/DblmgUW+shJJFihva6WzvpYB6qiPA==",
+        "resolved": "4.0.14.5",
+        "contentHash": "Ja48L7ZRxvGg3wj0MpqVrWMyVKurA4JSzVYB9qkv+mraSXAAC30EM60Dvt/CJ7Oq/AOmnhtYiViKQgveu0NJIg==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.9, 5.0.0)"
+          "AWSSDK.Core": "[4.0.9.2, 5.0.0)"
         }
       },
       "AWSSDK.SimpleNotificationService": {

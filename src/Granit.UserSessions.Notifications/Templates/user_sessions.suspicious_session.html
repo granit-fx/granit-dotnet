@@ -1,0 +1,18 @@
+<title>Suspicious sign-in to your account</title>
+<p>Hi,</p>
+<p>We noticed a sign-in to your account that looked unusual, and we want to make sure it was you.</p>
+<p><strong>When:</strong> {{ model.detected_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</p>
+{{ if model.city || model.country_code }}
+<p><strong>Where:</strong> {{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</p>
+{{ end }}
+{{ if model.device }}
+<p><strong>Device:</strong> {{ model.device }}</p>
+{{ end }}
+<p>
+  {{ if model.reason == "impossible_travel" }}This sign-in came from a location far from where you usually sign in, and too far to have travelled there since your last session.{{ else if model.reason == "new_country" }}This is the first sign-in we've seen from this country.{{ else if model.reason == "new_device" }}This sign-in came from a device we haven't seen before.{{ else }}This sign-in looked unusual for your account.{{ end }}
+</p>
+<p>If this was you, you can safely ignore this email.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/account/security" style="display: inline-block; padding: 12px 28px; background-color: #b91c1c; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">If this wasn't you, secure your account</a>
+</p>
+<p style="font-size: 13px; color: #4b5563;">We sent this alert because protecting your account is important. You'll always be notified of sign-ins that look suspicious.</p>

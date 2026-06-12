@@ -1,0 +1,18 @@
+<title>Connexion suspecte à votre compte</title>
+<p>Bonjour,</p>
+<p>Nous avons remarqué une connexion à votre compte qui nous a semblé inhabituelle, et nous voulons nous assurer qu'il s'agissait bien de vous.</p>
+<p><strong>Quand :</strong> {{ model.detected_at | date.to_string '%d %B %Y à %H:%M UTC' }}</p>
+{{ if model.city || model.country_code }}
+<p><strong>Où :</strong> {{ if model.city }}{{ model.city }}, {{ end }}{{ model.country_code }}</p>
+{{ end }}
+{{ if model.device }}
+<p><strong>Appareil :</strong> {{ model.device }}</p>
+{{ end }}
+<p>
+  {{ if model.reason == "impossible_travel" }}Cette connexion provient d'un endroit éloigné de l'endroit où vous vous connectez habituellement, et trop loin pour que vous ayez pu vous y rendre depuis votre dernière session.{{ else if model.reason == "new_country" }}C'est la première connexion que nous observons depuis ce pays.{{ else if model.reason == "new_device" }}Cette connexion provient d'un appareil que nous n'avons jamais vu auparavant.{{ else }}Cette connexion a semblé inhabituelle pour votre compte.{{ end }}
+</p>
+<p>S'il s'agissait bien de vous, vous pouvez ignorer cet e-mail en toute sécurité.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/account/security" style="display: inline-block; padding: 12px 28px; background-color: #b91c1c; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Si ce n'était pas vous, sécurisez votre compte</a>
+</p>
+<p style="font-size: 13px; color: #4b5563;">Nous vous avons envoyé cette alerte parce que la protection de votre compte est importante. Vous serez toujours averti des connexions qui semblent suspectes.</p>
