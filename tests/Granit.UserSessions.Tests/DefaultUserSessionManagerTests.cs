@@ -64,7 +64,7 @@ public sealed class DefaultUserSessionManagerTests
     [Fact]
     public async Task ListDevicesAsync_DelegatesToProvider()
     {
-        UserDevice device = new("d1", "desktop", "Windows", "Chrome", null, 2, null);
+        UserDevice device = new("d1", DeviceKind.Browser, "Chrome on Windows", "Windows", "Chrome", null, 2, null);
         _devices.ListAsync("user-1", Ct).Returns([device]);
 
         (await _sut.ListDevicesAsync("user-1", Ct)).ShouldBe([device]);

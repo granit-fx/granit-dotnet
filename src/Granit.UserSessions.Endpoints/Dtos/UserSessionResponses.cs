@@ -23,15 +23,17 @@ public sealed record UserSessionResponse(
 
 /// <summary>A device a user has signed in from.</summary>
 /// <param name="DeviceId">Stable device identifier.</param>
-/// <param name="DeviceType">Coarse form factor, when known.</param>
+/// <param name="Kind">The client kind (browser, mobile app, desktop app, TV, API client).</param>
+/// <param name="DisplayName">Human-friendly label, when derivable.</param>
 /// <param name="OperatingSystem">Operating-system family, when known.</param>
-/// <param name="Browser">Browser family, when known.</param>
+/// <param name="Browser">Browser family for browser devices; otherwise null.</param>
 /// <param name="LastSeen">Last observed activity from this device, when tracked.</param>
 /// <param name="SessionCount">Number of active sessions on this device.</param>
 /// <param name="LastLocation">Approximate location of the most recent activity, when resolved.</param>
 public sealed record UserDeviceResponse(
     string DeviceId,
-    string? DeviceType,
+    DeviceKind Kind,
+    string? DisplayName,
     string? OperatingSystem,
     string? Browser,
     DateTimeOffset? LastSeen,

@@ -49506,12 +49506,21 @@
       ]
     },
     {
+      "name": "DeviceKind",
+      "fqn": "Granit.UserSessions.DeviceKind",
+      "kind": "enum",
+      "project": "Granit.UserSessions.Abstractions",
+      "file": "src/Granit.UserSessions.Abstractions/DeviceKind.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "UserDeviceResponse",
       "fqn": "Granit.UserSessions.Endpoints.Dtos.UserDeviceResponse",
       "kind": "record",
       "project": "Granit.UserSessions.Endpoints",
       "file": "src/Granit.UserSessions.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 32,
+      "line": 33,
       "members": []
     },
     {
@@ -49529,7 +49538,7 @@
       "kind": "record",
       "project": "Granit.UserSessions.Endpoints",
       "file": "src/Granit.UserSessions.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 43,
+      "line": 45,
       "members": []
     },
     {
@@ -49812,7 +49821,7 @@
       "kind": "record",
       "project": "Granit.UserSessions.Abstractions",
       "file": "src/Granit.UserSessions.Abstractions/UserDevice.cs",
-      "line": 21,
+      "line": 23,
       "members": []
     },
     {
