@@ -2,7 +2,6 @@ using System.Text;
 using Granit.Privacy.DataExport.Security;
 using Granit.Privacy.Vault.Options;
 using Granit.Vault;
-using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -23,8 +22,7 @@ public sealed class VaultExportHmacSignerTests
         };
         _sut = new VaultExportHmacSigner(
             _macService,
-            Microsoft.Extensions.Options.Options.Create(options),
-            NullLogger<VaultExportHmacSigner>.Instance);
+            Microsoft.Extensions.Options.Options.Create(options));
     }
 
     private static ExportHmacParameters MakeParameters(DateTimeOffset? expiry = null) => new(
