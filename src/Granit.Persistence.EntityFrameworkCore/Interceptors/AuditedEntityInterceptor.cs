@@ -11,7 +11,7 @@ namespace Granit.Persistence.EntityFrameworkCore.Interceptors;
 
 /// <summary>
 /// EF Core interceptor that automatically populates audit fields
-/// on entities inheriting from <see cref="CreationAuditedEntity"/>,
+/// on entities implementing <see cref="ICreationAuditedObject"/>,
 /// and the <see cref="IMultiTenant.TenantId"/> on multi-tenant entities.
 /// </summary>
 /// <remarks>
@@ -57,7 +57,12 @@ public sealed class AuditedEntityInterceptor(
         DateTimeOffset now = clock.Now;
         string userId = currentUserService.UserId ?? "system";
 
-        foreach (EntityEntry<CreationAuditedEntity> entry in context.ChangeTracker.Entries<CreationAuditedEntity>())
+        // Pivot on ICreationAuditedObject rather than the CreationAuditedEntity base
+        // class so entities that cannot inherit it — e.g. LocalIdentity, forced to
+        // extend ASP.NET Identity's IdentityUser<Guid> — still get their audit fields.
+        // Without this, CreatedAt stayed at default(DateTimeOffset), which Npgsql
+        // persists as -infinity.
+        foreach (EntityEntry<ICreationAuditedObject> entry in context.ChangeTracker.Entries<ICreationAuditedObject>())
         {
             switch (entry.State)
             {
@@ -72,14 +77,16 @@ public sealed class AuditedEntityInterceptor(
         }
     }
 
-    private void ApplyCreationFields(EntityEntry<CreationAuditedEntity> entry, DateTimeOffset now, string userId)
+    private void ApplyCreationFields(EntityEntry<ICreationAuditedObject> entry, DateTimeOffset now, string userId)
     {
         entry.Entity.CreatedAt = now;
         entry.Entity.CreatedBy = userId;
 
-        if (entry.Entity.Id == Guid.Empty)
+        // GUID generation is an Entity concern. Entities outside that hierarchy
+        // (e.g. IdentityUser-derived) own their key and set it before save.
+        if (entry.Entity is Entity entity && entity.Id == Guid.Empty)
         {
-            entry.Entity.Id = guidGenerator.Create();
+            entity.Id = guidGenerator.Create();
         }
 
         // Multi-tenant isolation: inject current TenantId if the entity supports it.
@@ -90,7 +97,7 @@ public sealed class AuditedEntityInterceptor(
         }
     }
 
-    private static void ApplyModificationFields(EntityEntry<CreationAuditedEntity> entry, DateTimeOffset now, string userId)
+    private static void ApplyModificationFields(EntityEntry<ICreationAuditedObject> entry, DateTimeOffset now, string userId)
     {
         // Protect creation fields from modification
         entry.Property(e => e.CreatedAt).IsModified = false;

@@ -16658,6 +16658,15 @@
       "members": []
     },
     {
+      "name": "ICreationAuditedObject",
+      "fqn": "Granit.Domain.ICreationAuditedObject",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ICreationAuditedObject.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "IEmitEntityLifecycleEvents",
       "fqn": "Granit.Domain.IEmitEntityLifecycleEvents",
       "kind": "interface",
@@ -26092,7 +26101,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Domain/LocalIdentity.cs",
-      "line": 28,
+      "line": 34,
       "members": [
         {
           "name": "UserId",

@@ -435,6 +435,55 @@ public sealed class AuditedEntityInterceptorTests
     }
 
     // -------------------------------------------------------------------------
+    // ICreationAuditedObject sur une entité hors hiérarchie Entity
+    // -------------------------------------------------------------------------
+    // Régression : LocalIdentity étend IdentityUser<Guid> et ne PEUT donc pas
+    // dériver de CreationAuditedEntity. Avant le pivot sur ICreationAuditedObject
+    // l'intercepteur l'ignorait, CreatedAt restait à default(DateTimeOffset) et
+    // Npgsql le persistait en -infinity. Le pivot interface couvre désormais ce cas.
+
+    [Fact]
+    public async Task SaveChangesAsync_IdentityLikeEntity_OnAdd_SetsCreatedFields()
+    {
+        // Arrange
+        await using TestDbContext context = CreateContext();
+        TestIdentityLikeAuditable entity = new() { Id = Guid.NewGuid(), Name = "Alice" };
+        context.IdentityLikeAuditables.Add(entity);
+
+        // Act
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert — plus de default(DateTimeOffset) → plus de -infinity en base
+        entity.CreatedAt.ShouldBe(FixedNow);
+        entity.CreatedBy.ShouldBe("user-test-123");
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_IdentityLikeEntity_OnModify_SetsModifiedFields_AndProtectsCreated()
+    {
+        // Arrange
+        await using TestDbContext context = CreateContext();
+        TestIdentityLikeAuditable entity = new() { Id = Guid.NewGuid(), Name = "Alice" };
+        context.IdentityLikeAuditables.Add(entity);
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        DateTimeOffset originalCreatedAt = entity.CreatedAt;
+        string originalCreatedBy = entity.CreatedBy;
+        _clock.Now.Returns(FixedNow.AddHours(1));
+
+        // Act
+        entity.Name = "Alice Updated";
+        context.Entry(entity).State = EntityState.Modified;
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        entity.ModifiedAt.ShouldBe(FixedNow.AddHours(1));
+        entity.ModifiedBy.ShouldBe("user-test-123");
+        entity.CreatedAt.ShouldBe(originalCreatedAt);
+        entity.CreatedBy.ShouldBe(originalCreatedBy);
+    }
+
+    // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
@@ -479,6 +528,18 @@ public sealed class AuditedEntityInterceptorTests
         public Guid? TenantId { get; set; }
     }
 
+    // Mimics LocalIdentity: owns a Guid PK but does NOT derive from Entity /
+    // CreationAuditedEntity — it only implements the audit interfaces.
+    private sealed class TestIdentityLikeAuditable : ICreationAuditedObject, IModificationAuditedObject
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public DateTimeOffset CreatedAt { get; set; }
+        public string CreatedBy { get; set; } = string.Empty;
+        public DateTimeOffset? ModifiedAt { get; set; }
+        public string? ModifiedBy { get; set; }
+    }
+
     private sealed class TestDbContext(DbContextOptions<AuditedEntityInterceptorTests.TestDbContext> options) : DbContext(options)
     {
         public DbSet<TestCreationAuditedEntity> CreationAuditedEntities => Set<TestCreationAuditedEntity>();
@@ -487,6 +548,7 @@ public sealed class AuditedEntityInterceptorTests
         public DbSet<TestAuditedAggregateRoot> AuditedAggregateRoots => Set<TestAuditedAggregateRoot>();
         public DbSet<TestFullAuditedAggregateRoot> FullAuditedAggregateRoots => Set<TestFullAuditedAggregateRoot>();
         public DbSet<TestMultiTenantEntity> MultiTenantEntities => Set<TestMultiTenantEntity>();
+        public DbSet<TestIdentityLikeAuditable> IdentityLikeAuditables => Set<TestIdentityLikeAuditable>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -495,6 +557,13 @@ public sealed class AuditedEntityInterceptorTests
             modelBuilder.Entity<TestAuditedEntity>().Property(e => e.Id).ValueGeneratedNever();
             modelBuilder.Entity<TestFullAuditedEntity>().Property(e => e.Id).ValueGeneratedNever();
             modelBuilder.Entity<TestMultiTenantEntity>().Property(e => e.Id).ValueGeneratedNever();
+
+            // Hors hiérarchie Entity : PK déclarée explicitement, posée par l'appelant.
+            modelBuilder.Entity<TestIdentityLikeAuditable>(b =>
+            {
+                b.HasKey(e => e.Id);
+                b.Property(e => e.Id).ValueGeneratedNever();
+            });
 
             // Aggregate roots expose event collections that are not persisted columns.
             modelBuilder.Entity<TestAuditedAggregateRoot>(b =>

@@ -20,12 +20,19 @@ namespace Granit.Identity.Local.Domain;
 /// <see cref="IdentityUser{TKey}.ConcurrencyStamp"/> property.
 /// </para>
 /// <para>
+/// Implements <see cref="ICreationAuditedObject"/> and <see cref="IModificationAuditedObject"/>
+/// so <c>AuditedEntityInterceptor</c> populates the audit fields. It cannot inherit
+/// <c>CreationAuditedEntity</c> (single inheritance is taken by <see cref="IdentityUser{TKey}"/>),
+/// so the interceptor pivots on these interfaces rather than the base class.
+/// </para>
+/// <para>
 /// Implements <see cref="IHasMetadata"/> via explicit interface mapping to
 /// <see cref="CustomAttributesJson"/>. The generic <c>MetadataSyncInterceptor</c>
 /// in <c>Granit.Persistence.EntityFrameworkCore</c> handles Shadow Property synchronization.
 /// </para>
 /// </remarks>
-public class LocalIdentity : IdentityUser<Guid>, IMultiTenant, IIdentityUser, IHasMetadata
+public class LocalIdentity
+    : IdentityUser<Guid>, IMultiTenant, IIdentityUser, IHasMetadata, ICreationAuditedObject, IModificationAuditedObject
 {
     private IReadOnlyDictionary<string, string>? _parsedMetadata;
 

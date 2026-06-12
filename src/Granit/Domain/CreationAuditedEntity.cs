@@ -4,7 +4,7 @@ namespace Granit.Domain;
 /// Entity with creation-only audit trail.
 /// Inherits from <see cref="Entity"/> and adds CreatedAt/CreatedBy.
 /// </summary>
-public abstract class CreationAuditedEntity : Entity
+public abstract class CreationAuditedEntity : Entity, ICreationAuditedObject
 {
     /// <summary>Creation timestamp (UTC).</summary>
     public DateTimeOffset CreatedAt { get; set; }
