@@ -37,6 +37,8 @@ public static class IpGeolocationIpApiHostApplicationBuilderExtensions
         builder.Services
             .AddSingleton<IValidateOptions<IpApiIpGeolocationOptions>, IpApiIpGeolocationOptionsValidator>();
 
+        builder.Services.AddTransient<IpAddressTelemetryRedactionHandler>();
+
         builder.Services
             .AddHttpClient(IpApiIpGeolocationProvider.HttpClientName, static (sp, client) =>
             {
@@ -48,7 +50,8 @@ public static class IpGeolocationIpApiHostApplicationBuilderExtensions
             .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
             {
                 AllowAutoRedirect = false,
-            });
+            })
+            .AddHttpMessageHandler<IpAddressTelemetryRedactionHandler>();
 
         builder.Services.AddSingleton<IIpGeolocationProvider, IpApiIpGeolocationProvider>();
 

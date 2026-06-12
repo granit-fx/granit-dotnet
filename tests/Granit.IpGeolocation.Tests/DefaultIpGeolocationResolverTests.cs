@@ -137,6 +137,19 @@ public sealed class DefaultIpGeolocationResolverTests
         (await sut.ResolveAsync(PublicIp, Ct)).ShouldBeNull();
     }
 
+    [Fact]
+    public void BuildCacheKey_HashesIp_NeverEmbedsRawAddress()
+    {
+        const string ip = "203.0.113.42";
+
+        string key = DefaultIpGeolocationResolver.BuildCacheKey(ip);
+
+        key.ShouldStartWith("granit:ip_geolocation:");
+        key.ShouldNotContain(ip);
+        key.ShouldBe(DefaultIpGeolocationResolver.BuildCacheKey(ip));            // deterministic
+        key.ShouldNotBe(DefaultIpGeolocationResolver.BuildCacheKey("8.8.8.8"));  // distinct per address
+    }
+
     private static IIpGeolocationProvider StubProvider(string name, string ip, GeoLocation? result)
     {
         IIpGeolocationProvider provider = Substitute.For<IIpGeolocationProvider>();

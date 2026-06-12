@@ -13,6 +13,8 @@ public sealed class GranitIpGeolocationOptions
     /// Ordered list of <see cref="IIpGeolocationProvider.ProviderName"/> values defining the fallback chain:
     /// the resolver tries each in turn and returns the first match. When empty, all registered providers are
     /// tried in registration order. Names not matching a registered provider are skipped with a warning.
+    /// When non-empty this list acts as an allow-list: a registered provider whose name is absent from it is
+    /// excluded from the chain entirely.
     /// </summary>
     /// <remarks>
     /// Prefer listing the offline provider first (e.g. <c>["MaxMind", "IpApi"]</c>) so that the privacy-friendly

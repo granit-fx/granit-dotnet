@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Text;
 using Granit.Diagnostics;
 using Granit.IpGeolocation.Diagnostics;
 using Granit.IpGeolocation.Options;
@@ -61,8 +63,12 @@ internal sealed partial class DefaultIpGeolocationResolver : IIpGeolocationResol
             return null;
         }
 
+        // The activity carries only coarse, non-identifying tags (never the IP): GDPR data-minimisation.
+        using Activity? activity = IpGeolocationActivitySource.Source.StartActivity("ip_geolocation.resolve");
+        activity?.SetTag("ip.version", ipVersion);
+
         string normalized = parsed.ToString();
-        string cacheKey = CacheKeyPrefix + normalized;
+        string cacheKey = BuildCacheKey(normalized);
 
         MaybeValue<GeoLocation?> cached = await _cache
             .TryGetAsync<GeoLocation?>(cacheKey, token: cancellationToken)
@@ -70,11 +76,15 @@ internal sealed partial class DefaultIpGeolocationResolver : IIpGeolocationResol
         if (cached.HasValue)
         {
             _metrics.RecordCacheHit();
-            _metrics.RecordLookup(cached.Value is null ? "not_found" : "found", ipVersion);
+            string cachedOutcome = cached.Value is null ? "not_found" : "found";
+            _metrics.RecordLookup(cachedOutcome, ipVersion);
+            activity?.SetTag("cache.hit", true);
+            activity?.SetTag("ip_geolocation.result", cachedOutcome);
             return cached.Value;
         }
 
         _metrics.RecordCacheMiss();
+        activity?.SetTag("cache.hit", false);
 
         long start = Stopwatch.GetTimestamp();
         GeoLocation? resolved = await QueryProvidersAsync(normalized, cancellationToken).ConfigureAwait(false);
@@ -86,8 +96,17 @@ internal sealed partial class DefaultIpGeolocationResolver : IIpGeolocationResol
         string outcome = resolved is null ? "not_found" : "found";
         _metrics.RecordLookup(outcome, ipVersion);
         _metrics.RecordLookupDuration(outcome, Stopwatch.GetElapsedTime(start));
+        activity?.SetTag("ip_geolocation.result", outcome);
         return resolved;
     }
+
+    /// <summary>
+    /// Builds the cache key for <paramref name="normalizedIp"/>. The IP is hashed (SHA-256) rather than embedded
+    /// verbatim so that no raw client IP — personal data under GDPR — is persisted in a shared/distributed cache
+    /// (e.g. Redis), where keys, unlike values, are not encrypted.
+    /// </summary>
+    internal static string BuildCacheKey(string normalizedIp) =>
+        CacheKeyPrefix + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(normalizedIp)));
 
     private async Task<GeoLocation?> QueryProvidersAsync(string ipAddress, CancellationToken cancellationToken)
     {
