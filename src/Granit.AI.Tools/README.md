@@ -26,15 +26,24 @@ services.AddGranitAITools(tools =>
 });
 ```
 
-The orchestrator emits declarations automatically:
+The orchestrator drives the agentic loop (think → call → execute → repeat), bounded by an
+iteration cap and per-result context guards, stamping usage on completion:
 
 ```csharp
-chatOptions.Tools = [.. projector.ProjectAll()];
+var result = await orchestrator.RunAsync(new AIOrchestrationRequest
+{
+    WorkspaceName = "support-chat",
+    Messages = [new ChatMessage(ChatRole.User, "What changed last week?")],
+});
 ```
+
+Bounds are configured under `AI:Tools:Orchestration` (`MaxIterations`,
+`MaxToolResultCharacters`).
 
 ## Dependencies
 
 - `Granit`
+- `Granit.AI`
 
 ## Documentation
 

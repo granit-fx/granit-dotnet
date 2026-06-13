@@ -1,4 +1,7 @@
+using Granit.AI.Tools.Diagnostics;
 using Granit.AI.Tools.Internal;
+using Granit.AI.Tools.Options;
+using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -44,7 +47,15 @@ public static class AIToolsServiceCollectionExtensions
 
     private static void AddCoreServices(IServiceCollection services)
     {
+        services.AddOptions<GranitAIToolsOrchestrationOptions>()
+            .BindConfiguration(GranitAIToolsOrchestrationOptions.SectionName);
+
         services.TryAddScoped<IAIToolRegistry, AIToolRegistry>();
         services.TryAddScoped<IAIToolProjector, AIToolProjector>();
+        services.TryAddScoped<IAIToolOrchestrator, AIToolOrchestrator>();
+        services.TryAddSingleton<AIToolsMetrics>();
+        services.TryAddSingleton(TimeProvider.System);
+
+        GranitActivitySourceRegistry.Register(AIToolsActivitySource.Name);
     }
 }

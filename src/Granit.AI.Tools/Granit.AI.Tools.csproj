@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
   </ItemGroup>
 
 </Project>
