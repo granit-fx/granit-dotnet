@@ -1604,6 +1604,14 @@
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
         }
       },
+      "granit.ai.tools.search": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI.Tools": "[0.1.0-dev, )",
+          "Granit.AI.VectorData": "[0.1.0-dev, )",
+          "Granit.Indexing": "[0.1.0-dev, )"
+        }
+      },
       "granit.ai.vectordata": {
         "type": "Project",
         "dependencies": {

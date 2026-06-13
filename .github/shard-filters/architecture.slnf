@@ -11,6 +11,7 @@
       "src/Granit.AI.Ollama/Granit.AI.Ollama.csproj",
       "src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj",
       "src/Granit.AI.StackExchangeRedis/Granit.AI.StackExchangeRedis.csproj",
+      "src/Granit.AI.Tools.Search/Granit.AI.Tools.Search.csproj",
       "src/Granit.AI.Tools/Granit.AI.Tools.csproj",
       "src/Granit.AI.VectorData/Granit.AI.VectorData.csproj",
       "src/Granit.AI/Granit.AI.csproj",

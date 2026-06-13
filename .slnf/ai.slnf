@@ -11,6 +11,7 @@
       "src/Granit.AI.Ollama/Granit.AI.Ollama.csproj",
       "src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj",
       "src/Granit.AI.StackExchangeRedis/Granit.AI.StackExchangeRedis.csproj",
+      "src/Granit.AI.Tools.Search/Granit.AI.Tools.Search.csproj",
       "src/Granit.AI.Tools/Granit.AI.Tools.csproj",
       "src/Granit.AI.VectorData/Granit.AI.VectorData.csproj",
       "src/Granit.AI/Granit.AI.csproj",
@@ -29,6 +30,8 @@
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
       "src/Granit.Http.Resilience/Granit.Http.Resilience.csproj",
       "src/Granit.Http.SecurityHeaders.Abstractions/Granit.Http.SecurityHeaders.Abstractions.csproj",
+      "src/Granit.Indexing/Granit.Indexing.csproj",
+      "src/Granit.LanguageDetection/Granit.LanguageDetection.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
       "src/Granit.Mcp.Client/Granit.Mcp.Client.csproj",
       "src/Granit.Mcp/Granit.Mcp.csproj",
@@ -53,6 +56,7 @@
       "tests/Granit.AI.OpenAI.Tests/Granit.AI.OpenAI.Tests.csproj",
       "tests/Granit.AI.StackExchangeRedis.Tests.Integration/Granit.AI.StackExchangeRedis.Tests.Integration.csproj",
       "tests/Granit.AI.Tests/Granit.AI.Tests.csproj",
+      "tests/Granit.AI.Tools.Search.Tests/Granit.AI.Tools.Search.Tests.csproj",
       "tests/Granit.AI.Tools.Tests/Granit.AI.Tools.Tests.csproj",
       "tests/Granit.AI.VectorData.Tests/Granit.AI.VectorData.Tests.csproj"
     ]

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AI.Tools.Search</PackageId>
+    <Description>Search (RAG) tools for the Granit agentic chat. Exposes opted-in semantic collections and full-text indexes as ACL-bound 'search' tools that return ranked snippets the agent can ground its answer on. See ADR-067.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AI.Tools.Search.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI.Tools\Granit.AI.Tools.csproj" />
+    <ProjectReference Include="..\Granit.AI.VectorData\Granit.AI.VectorData.csproj" />
+    <ProjectReference Include="..\Granit.Indexing\Granit.Indexing.csproj" />
+  </ItemGroup>
+
+</Project>

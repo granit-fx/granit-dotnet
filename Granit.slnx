@@ -331,6 +331,7 @@
     <Project Path="src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj" />
     <Project Path="src/Granit.AI.StackExchangeRedis/Granit.AI.StackExchangeRedis.csproj" />
     <Project Path="src/Granit.AI.Tools/Granit.AI.Tools.csproj" />
+    <Project Path="src/Granit.AI.Tools.Search/Granit.AI.Tools.Search.csproj" />
     <Project Path="src/Granit.AI.VectorData/Granit.AI.VectorData.csproj" />
     <Project Path="src/Granit.AI/Granit.AI.csproj" />
   </Folder>
@@ -692,6 +693,7 @@
     <Project Path="tests/Granit.AI.StackExchangeRedis.Tests.Integration/Granit.AI.StackExchangeRedis.Tests.Integration.csproj" />
     <Project Path="tests/Granit.AI.Tests/Granit.AI.Tests.csproj" />
     <Project Path="tests/Granit.AI.Tools.Tests/Granit.AI.Tools.Tests.csproj" />
+    <Project Path="tests/Granit.AI.Tools.Search.Tests/Granit.AI.Tools.Search.Tests.csproj" />
     <Project Path="tests/Granit.AI.VectorData.Tests/Granit.AI.VectorData.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/Tooling/">

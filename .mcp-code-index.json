@@ -97,6 +97,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.AI.Tools.Search",
+      "deps": [
+        "Granit.AI.Tools",
+        "Granit.AI.VectorData",
+        "Granit.Indexing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.AI.VectorData",
       "deps": [
         "Granit.AI"
@@ -4784,6 +4793,78 @@
           "kind": "method",
           "signature": "Compose(AISystemPromptContext context)",
           "returnType": "AISystemPrompt"
+        }
+      ]
+    },
+    {
+      "name": "SearchToolRegistrationExtensions",
+      "fqn": "Granit.AI.Tools.Search.Extensions.SearchToolRegistrationExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Tools.Search",
+      "file": "src/Granit.AI.Tools.Search/Extensions/SearchToolRegistrationExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddSearch",
+          "kind": "method",
+          "signature": "AddSearch(this AIToolRegistrationBuilder tools, Action<SearchToolBuilder> configure)",
+          "returnType": "AIToolRegistrationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIToolsSearchModule",
+      "fqn": "Granit.AI.Tools.Search.GranitAIToolsSearchModule",
+      "kind": "class",
+      "project": "Granit.AI.Tools.Search",
+      "file": "src/Granit.AI.Tools.Search/GranitAIToolsSearchModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "GranitAIToolsSearchOptions",
+      "fqn": "Granit.AI.Tools.Search.Options.GranitAIToolsSearchOptions",
+      "kind": "class",
+      "project": "Granit.AI.Tools.Search",
+      "file": "src/Granit.AI.Tools.Search/Options/GranitAIToolsSearchOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "DefaultLimit",
+          "kind": "property",
+          "signature": "int DefaultLimit",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxLimit",
+          "kind": "property",
+          "signature": "int MaxLimit",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "SearchSnippet",
+      "fqn": "Granit.AI.Tools.Search.SearchSnippet",
+      "kind": "record",
+      "project": "Granit.AI.Tools.Search",
+      "file": "src/Granit.AI.Tools.Search/SearchSnippet.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "SearchToolBuilder",
+      "fqn": "Granit.AI.Tools.Search.SearchToolBuilder",
+      "kind": "class",
+      "project": "Granit.AI.Tools.Search",
+      "file": "src/Granit.AI.Tools.Search/SearchToolBuilder.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddSemantic",
+          "kind": "method",
+          "signature": "AddSemantic(string name, string collectionName, string? description = null)",
+          "returnType": "SearchToolBuilder"
         }
       ]
     },
