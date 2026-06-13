@@ -3,6 +3,7 @@ using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Notifications.Handlers;
 using Granit.Identity.Local.Notifications.NotificationTypes;
 using Granit.Identity.Local.Notifications.Options;
+using Granit.MultiTenancy;
 using Granit.Notifications;
 using Granit.Notifications.Abstractions;
 using Microsoft.Extensions.Options;
@@ -19,6 +20,7 @@ public sealed class HandlerTests
     {
         FrontendBaseUrl = "https://app.example.com",
     });
+    private readonly ITenantUrlResolver _urlResolver = Substitute.For<ITenantUrlResolver>();
 
     // --- UserRegisteredHandler ---
 
@@ -73,6 +75,49 @@ public sealed class HandlerTests
             Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task PasswordReset_HostAccount_ResolvesUrlForNullTenant()
+    {
+        // Regression: a host account (TenantId == null) must resolve the link from its
+        // own (null) tenant, never the ambient context the originating request resolved.
+        _urlResolver.ResolveBaseUrlAsync(Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns("https://host.example.com");
+        var evt = new PasswordResetRequestedEto(
+            Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            "alice@test.com", "reset-token-123", TenantId: null);
+
+        await PasswordResetRequestedHandler.HandleAsync(
+            evt, _options, _publisher, _urlResolver, TestContext.Current.CancellationToken);
+
+        await _urlResolver.Received(1).ResolveBaseUrlAsync(null, Arg.Any<CancellationToken>());
+        await _publisher.Received(1).PublishAsync(
+            PasswordResetNotificationType.Instance,
+            Arg.Is<PasswordResetNotificationData>(d => d.ResetLink.StartsWith("https://host.example.com/")),
+            Arg.Is<IReadOnlyList<string>>(r => r.Count == 1),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task PasswordReset_TenantAccount_ResolvesUrlForOwnTenant()
+    {
+        var tenantId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        _urlResolver.ResolveBaseUrlAsync(tenantId, Arg.Any<CancellationToken>())
+            .Returns("https://acme.example.com");
+        var evt = new PasswordResetRequestedEto(
+            Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            "alice@test.com", "reset-token-123", tenantId);
+
+        await PasswordResetRequestedHandler.HandleAsync(
+            evt, _options, _publisher, _urlResolver, TestContext.Current.CancellationToken);
+
+        await _urlResolver.Received(1).ResolveBaseUrlAsync(tenantId, Arg.Any<CancellationToken>());
+        await _publisher.Received(1).PublishAsync(
+            PasswordResetNotificationType.Instance,
+            Arg.Is<PasswordResetNotificationData>(d => d.ResetLink.StartsWith("https://acme.example.com/")),
+            Arg.Is<IReadOnlyList<string>>(r => r.Count == 1),
+            Arg.Any<CancellationToken>());
+    }
+
     // --- EmailConfirmationRequestedHandler ---
 
     [Fact]
@@ -110,6 +155,27 @@ public sealed class HandlerTests
             Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task EmailConfirmation_ResolvesUrlForOwnTenant()
+    {
+        SetupUser("alice@test.com");
+        var tenantId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        _urlResolver.ResolveBaseUrlAsync(tenantId, Arg.Any<CancellationToken>())
+            .Returns("https://acme.example.com");
+        var evt = new EmailConfirmationRequestedEto(
+            Guid.Parse("00000000-0000-0000-0000-000000000001"), "confirm-token-456", tenantId);
+
+        await EmailConfirmationRequestedHandler.HandleAsync(
+            evt, _userReader, _options, _publisher, _urlResolver, TestContext.Current.CancellationToken);
+
+        await _urlResolver.Received(1).ResolveBaseUrlAsync(tenantId, Arg.Any<CancellationToken>());
+        await _publisher.Received(1).PublishAsync(
+            EmailConfirmationNotificationType.Instance,
+            Arg.Is<EmailConfirmationNotificationData>(d => d.ConfirmLink.StartsWith("https://acme.example.com/")),
+            Arg.Is<IReadOnlyList<string>>(r => r.Count == 1),
+            Arg.Any<CancellationToken>());
+    }
+
     // --- EmailChangeRequestedHandler (dual notification) ---
 
     [Fact]
@@ -134,6 +200,30 @@ public sealed class HandlerTests
             EmailChangeConfirmationNotificationType.Instance,
             Arg.Is<EmailChangeConfirmationNotificationData>(d =>
                 d.NewEmail == "new@test.com" && d.ConfirmLink.Contains("change-token")),
+            Arg.Is<IReadOnlyList<string>>(r => r.Count == 1),
+            Arg.Is<RecipientInfo>(r => r.Email == "new@test.com"),
+            Arg.Any<EntityReference?>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task EmailChange_ResolvesUrlForOwnTenant()
+    {
+        var tenantId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        _urlResolver.ResolveBaseUrlAsync(tenantId, Arg.Any<CancellationToken>())
+            .Returns("https://acme.example.com");
+        var evt = new EmailChangeRequestedEto(
+            Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            "old@test.com", "new@test.com", "change-token", tenantId);
+
+        await EmailChangeRequestedHandler.HandleAsync(
+            evt, _options, _publisher, _urlResolver, TestContext.Current.CancellationToken);
+
+        await _urlResolver.Received(1).ResolveBaseUrlAsync(tenantId, Arg.Any<CancellationToken>());
+        await _publisher.Received(1).PublishAsync(
+            EmailChangeConfirmationNotificationType.Instance,
+            Arg.Is<EmailChangeConfirmationNotificationData>(d =>
+                d.ConfirmLink.StartsWith("https://acme.example.com/")),
             Arg.Is<IReadOnlyList<string>>(r => r.Count == 1),
             Arg.Is<RecipientInfo>(r => r.Email == "new@test.com"),
             Arg.Any<EntityReference?>(),

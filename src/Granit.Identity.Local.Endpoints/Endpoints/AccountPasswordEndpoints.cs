@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Events;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Http.Timing;
@@ -108,6 +110,7 @@ internal static class AccountPasswordEndpoints
 
     private static async Task<Accepted<string>> ForgotPasswordAsync(
         AccountForgotPasswordRequest request,
+        HttpContext httpContext,
         [FromServices] IPasswordResetService passwordResetService,
         CancellationToken cancellationToken)
     {
@@ -125,8 +128,17 @@ internal static class AccountPasswordEndpoints
         // Always return 202 regardless of whether the email exists (prevents enumeration).
         // IPasswordResetService.RequestResetAsync publishes PasswordResetRequestedEto
         // which a subscriber (Granit.Notifications or app-level) consumes to send the email.
-        await passwordResetService.RequestResetAsync(request.Email, cancellationToken)
-            .ConfigureAwait(false);
+        //
+        // Disable the multi-tenant filter for the email lookup: a host account
+        // (TenantId == null) requesting a reset while a tenant is resolved from the
+        // request domain would be hidden by a tenant-scoped query, so no email is sent.
+        // RequireUniqueEmail=true guarantees no cross-tenant ambiguity. Mirrors /login.
+        IDataFilter? dataFilter = httpContext.RequestServices.GetService<IDataFilter>();
+        using (dataFilter?.Disable<IMultiTenant>())
+        {
+            await passwordResetService.RequestResetAsync(request.Email, cancellationToken)
+                .ConfigureAwait(false);
+        }
 
         return TypedResults.Accepted((string?)null, (string?)null);
     }
@@ -140,6 +152,14 @@ internal static class AccountPasswordEndpoints
         using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
             IdentityLocalActivitySource.PasswordReset);
         activity?.SetTag(IdentityLocalActivitySource.TagProvider, "reset-token");
+
+        // Disable the multi-tenant filter for the user lookup: the reset link may land
+        // on any domain (e.g. a tenant subdomain), making ICurrentTenant resolve to a
+        // tenant that does not own a host account (TenantId == null). A tenant-scoped
+        // FindByIdAsync would then return null and reject a valid token. Mirrors /login
+        // and /forgot-password; RequireUniqueEmail=true guarantees no ambiguity.
+        IDataFilter? dataFilter = httpContext.RequestServices.GetService<IDataFilter>();
+        using IDisposable? tenantFilterScope = dataFilter?.Disable<IMultiTenant>();
 
         try
         {

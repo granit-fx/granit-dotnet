@@ -21,8 +21,11 @@ public class PasswordResetRequestedHandler
         CancellationToken cancellationToken = default)
     {
         IdentityNotificationOptions opts = options.Value;
+        // Resolve the link from the account's own tenant (carried on the event),
+        // not the ambient context — a host account (TenantId == null) that requested
+        // the reset from a tenant domain must still get the host/fallback URL.
         string? resolvedUrl = urlResolver is not null
-            ? await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false)
+            ? await urlResolver.ResolveBaseUrlAsync(evt.TenantId, cancellationToken).ConfigureAwait(false)
             : null;
         string baseUrl = !string.IsNullOrEmpty(resolvedUrl) ? resolvedUrl : opts.FrontendBaseUrl;
 

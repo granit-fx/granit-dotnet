@@ -33889,6 +33889,12 @@
           "kind": "method",
           "signature": "ResolveBaseUrlAsync(CancellationToken cancellationToken = default)",
           "returnType": "Task<string>"
+        },
+        {
+          "name": "ResolveBaseUrlAsync",
+          "kind": "method",
+          "signature": "ResolveBaseUrlAsync(Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
         }
       ]
     },

@@ -37,15 +37,18 @@ internal sealed class TenantUrlResolver(
     private readonly MultiTenancyOptions _options = options.Value;
 
     /// <inheritdoc/>
-    public async Task<string> ResolveBaseUrlAsync(CancellationToken cancellationToken = default)
+    public Task<string> ResolveBaseUrlAsync(CancellationToken cancellationToken = default) =>
+        ResolveBaseUrlAsync(currentTenant.IsAvailable ? currentTenant.Id : null, cancellationToken);
+
+    /// <inheritdoc/>
+    public async Task<string> ResolveBaseUrlAsync(Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        if (_options.UrlStrategy == TenantUrlStrategy.Shared || !currentTenant.IsAvailable)
+        if (_options.UrlStrategy == TenantUrlStrategy.Shared || tenantId is null)
         {
             return GetFallbackUrl();
         }
 
-        Guid tenantId = currentTenant.Id!.Value;
-        TenantUrlData? urlData = await GetOrLoadUrlDataAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        TenantUrlData? urlData = await GetOrLoadUrlDataAsync(tenantId.Value, cancellationToken).ConfigureAwait(false);
 
         if (urlData is null)
         {

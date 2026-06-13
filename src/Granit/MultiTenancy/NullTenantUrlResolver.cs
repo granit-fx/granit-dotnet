@@ -9,4 +9,7 @@ internal sealed class NullTenantUrlResolver : ITenantUrlResolver
 {
     public Task<string> ResolveBaseUrlAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult(string.Empty);
+
+    public Task<string> ResolveBaseUrlAsync(Guid? tenantId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(string.Empty);
 }

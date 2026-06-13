@@ -43,4 +43,27 @@ public interface ITenantUrlResolver
     /// Returns an empty string when no URL can be resolved.
     /// </returns>
     Task<string> ResolveBaseUrlAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Resolves the base URL for an explicit tenant, ignoring the ambient
+    /// <see cref="ICurrentTenant"/> context.
+    /// </summary>
+    /// <remarks>
+    /// Background handlers that act on behalf of a specific account (e.g. password
+    /// reset, email confirmation) must resolve the URL from the account's own tenant
+    /// — carried on the integration event — not from the ambient context, which is
+    /// whatever tenant the originating HTTP request happened to resolve. A host
+    /// account (<paramref name="tenantId"/> is <see langword="null"/>) requesting a
+    /// reset from a tenant domain would otherwise receive a tenant-scoped link.
+    /// </remarks>
+    /// <param name="tenantId">
+    /// The tenant to resolve the URL for, or <see langword="null"/> for a host/global
+    /// account. <see langword="null"/> (and the <b>Shared</b> strategy) yields the
+    /// static fallback URL.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>
+    /// The base URL without trailing slash, or an empty string when none can be resolved.
+    /// </returns>
+    Task<string> ResolveBaseUrlAsync(Guid? tenantId, CancellationToken cancellationToken = default);
 }

@@ -37,8 +37,10 @@ public class EmailChangeRequestedHandler
         // Confirmation to the new email — override recipient so the email
         // goes to the new address, not the one currently on file.
         IdentityNotificationOptions opts = options.Value;
+        // Resolve the link from the account's own tenant (carried on the event),
+        // not the ambient context — see PasswordResetRequestedHandler for the rationale.
         string? resolvedUrl = urlResolver is not null
-            ? await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false)
+            ? await urlResolver.ResolveBaseUrlAsync(evt.TenantId, cancellationToken).ConfigureAwait(false)
             : null;
         string baseUrl = !string.IsNullOrEmpty(resolvedUrl) ? resolvedUrl : opts.FrontendBaseUrl;
 

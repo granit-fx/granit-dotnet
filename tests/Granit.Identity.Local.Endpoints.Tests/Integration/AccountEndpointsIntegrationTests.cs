@@ -181,6 +181,41 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
+    [Fact]
+    public async Task ForgotPassword_DisablesMultiTenantFilterForLookup()
+    {
+        _server.PasswordResetService
+            .RequestResetAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/forgot-password",
+            new AccountForgotPasswordRequest("host-admin@example.com"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+
+        // A host account (TenantId == null) requesting a reset while a tenant is
+        // resolved from the request domain must stay visible — otherwise the email
+        // is silently never sent. The filter must be disabled for the lookup.
+        _server.DataFilter.Received().Disable<IMultiTenant>();
+    }
+
+    [Fact]
+    public async Task ResetPassword_DisablesMultiTenantFilterForLookup()
+    {
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/reset-password",
+            new AccountPasswordResetRequest("user-id-1", "valid-token", "NewP@ss1!"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // The reset link can land on any domain; a tenant-scoped FindByIdAsync would
+        // hide a host account and reject a valid token. The filter must be disabled.
+        _server.DataFilter.Received().Disable<IMultiTenant>();
+    }
+
     // -------------------------------------------------------------------------
     // Profile endpoints
     // -------------------------------------------------------------------------
