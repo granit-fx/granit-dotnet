@@ -42,7 +42,6 @@ internal sealed class IdentityDbContext(
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.ConfigureGranitIdentityModule();
-        modelBuilder.ApplyConfiguration(new Configurations.UserSessionRiskEntityConfiguration());
         modelBuilder.ApplyEncryptionConventions(_encryption);
     }
 }

@@ -24411,7 +24411,7 @@
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityModelBuilderExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "ConfigureGranitIdentityModule",
