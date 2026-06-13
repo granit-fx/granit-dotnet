@@ -1094,8 +1094,7 @@ internal sealed partial class KeycloakIdentityProvider(
                 .ConfigureAwait(false);
 
             if (rep?.Attributes is { } attributes
-                && attributes.TryGetValue(DeviceKindClientAttribute, out List<string>? values)
-                && values is [string raw, ..]
+                && attributes.TryGetValue(DeviceKindClientAttribute, out string? raw)
                 && Enum.TryParse(raw, ignoreCase: false, out DeviceKind kind)
                 && Enum.IsDefined(kind)
                 && kind != DeviceKind.Unknown)
