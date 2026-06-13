@@ -1,3 +1,4 @@
+using Granit.Identity;
 using Granit.MultiTenancy;
 
 namespace Granit.OpenIddict.Options;
@@ -34,6 +35,7 @@ public sealed class GranitOpenIddictSeedingOptions
 /// <param name="ConsentType">The consent type for the application (<c>"implicit"</c>, <c>"explicit"</c>, or <c>"systematic"</c>). Default: <c>"implicit"</c> (auto-grant for first-party apps).</param>
 /// <param name="ApplicationType">The application type (<c>"web"</c> or <c>"native"</c>). Default: <c>"web"</c>.</param>
 /// <param name="ClientSide">Optional host/tenant policy enforced at sign-in. <see cref="MultiTenancySides.Host"/> = only users with <c>TenantId = null</c> may obtain tokens for this client; <see cref="MultiTenancySides.Tenant"/> = only users with a non-null <c>TenantId</c>; <see cref="MultiTenancySides.Both"/> or <see langword="null"/> = no restriction. Stored on the OIDC application's <c>Properties</c> bag and enforced by <c>ClientSideAuthorizationHandler</c>.</param>
+/// <param name="DeviceKind">Optional device classification for the devices that authenticate through this client (e.g. <see cref="DeviceKind.MobileApp"/>, <see cref="DeviceKind.Tv"/>). Stored on the OIDC application's <c>Properties</c> bag and read by the session adapters so <c>/devices</c> shows an accurate classification. <see langword="null"/> or <see cref="DeviceKind.Unknown"/> = not declared (the adapter falls back to a redirect-URI/grant heuristic).</param>
 public sealed record OidcApplicationSeedDescriptor(
     string ClientId,
     string? ClientSecret,
@@ -44,7 +46,8 @@ public sealed record OidcApplicationSeedDescriptor(
     string? SigningKeyJwk = null,
     string? ConsentType = null,
     string? ApplicationType = null,
-    MultiTenancySides? ClientSide = null);
+    MultiTenancySides? ClientSide = null,
+    DeviceKind? DeviceKind = null);
 
 /// <summary>
 /// Describes an OIDC scope to seed.

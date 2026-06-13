@@ -1,3 +1,4 @@
+using Granit.Identity;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Options;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
@@ -140,7 +141,15 @@ internal sealed partial class OpenIddictSeedContributor(
             return true;
         }
 
-        return current.GetClientSide() != desired.ClientSide;
+        if (current.GetClientSide() != desired.ClientSide)
+        {
+            return true;
+        }
+
+        // SetDeviceKind stores null and Unknown identically (the key is removed), so normalise the desired
+        // value before comparing against the stored one — otherwise Unknown would read back as a phantom diff.
+        DeviceKind? desiredKind = desired.DeviceKind is null or DeviceKind.Unknown ? null : desired.DeviceKind;
+        return current.GetDeviceKind() != desiredKind;
     }
 
     /// <summary>
@@ -214,6 +223,10 @@ internal sealed partial class OpenIddictSeedContributor(
         // Host/tenant policy — persisted in Properties so the OIDC server can enforce
         // host-only / tenant-only client access without depending on Granit.Bff.
         appDescriptor.SetClientSide(source.ClientSide);
+
+        // Declared device kind — persisted in Properties and read by the session adapters so /devices
+        // classifies devices accurately instead of guessing from the User-Agent.
+        appDescriptor.SetDeviceKind(source.DeviceKind);
     }
 
     private async Task SeedScopeAsync(

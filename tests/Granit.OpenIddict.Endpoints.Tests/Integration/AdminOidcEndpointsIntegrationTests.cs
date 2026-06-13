@@ -1,7 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
+using Granit.Identity;
 using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Entities.OpenIddict;
+using Granit.OpenIddict.Extensions;
 using NSubstitute;
 using OpenIddict.Abstractions;
 using Shouldly;
@@ -140,6 +142,48 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         result.DisplayName.ShouldBe("New App");
         result.Type.ShouldBe("web");
         result.TenantId.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task CreateApplication_DeclaredDeviceKind_PersistsAndReturnsIt()
+    {
+        GranitOpenIddictApplication createdApp = new() { TenantId = null };
+
+        _server.ApplicationManager.CreateAsync(
+            Arg.Any<OpenIddictApplicationDescriptor>(),
+            Arg.Any<CancellationToken>())
+            .Returns(createdApp);
+#pragma warning disable CA2012 // NSubstitute mock setup intentionally doesn't await ValueTask
+        _server.ApplicationManager
+            .PopulateAsync(Arg.Any<OpenIddictApplicationDescriptor>(), createdApp, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictApplicationDescriptor d = ci.ArgAt<OpenIddictApplicationDescriptor>(0);
+                d.ClientId = "tv-client";
+                d.DisplayName = "TV App";
+                d.ApplicationType = "web";
+                d.SetDeviceKind(DeviceKind.Tv);
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+
+        AdminOidcCreateApplicationRequest request = new("tv-client", "TV App", null, "web", DeviceKind: DeviceKind.Tv);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PostAsJsonAsync("/admin/oidc/applications", request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        // The endpoint wrote the declared kind onto the descriptor it created.
+        await _server.ApplicationManager.Received(1).CreateAsync(
+            Arg.Is<OpenIddictApplicationDescriptor>(d => d.GetDeviceKind() == DeviceKind.Tv),
+            Arg.Any<CancellationToken>());
+
+        AdminOidcApplicationResponse? result = await response.Content
+            .ReadFromJsonAsync<AdminOidcApplicationResponse>(TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.DeviceKind.ShouldBe(DeviceKind.Tv);
     }
 
     [Fact]

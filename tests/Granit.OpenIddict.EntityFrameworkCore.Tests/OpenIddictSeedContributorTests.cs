@@ -1,4 +1,6 @@
+using Granit.Identity;
 using Granit.OpenIddict.EntityFrameworkCore.Seeding;
+using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Options;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -258,6 +260,83 @@ public sealed class OpenIddictSeedContributorTests
         await contributor.SeedAsync(Ctx, TestContext.Current.CancellationToken);
 
         await _appManager.Received(1).UpdateAsync(
+            existingApp,
+            Arg.Any<OpenIddictApplicationDescriptor>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SeedApplicationAsync_DeviceKindChanged_PerformsUpdate()
+    {
+        _scopeManager.FindByNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+
+        const string clientId = "showcase-tv";
+        object existingApp = new();
+        _appManager.FindByClientIdAsync(clientId, Arg.Any<CancellationToken>()).Returns(existingApp);
+
+        _appManager.When(m => m.PopulateAsync(
+                Arg.Any<OpenIddictApplicationDescriptor>(), existingApp, Arg.Any<CancellationToken>()))
+            .Do(ci =>
+            {
+                OpenIddictApplicationDescriptor d = ci.ArgAt<OpenIddictApplicationDescriptor>(0);
+                d.DisplayName = "Showcase TV";
+                // Current app declares no device kind — the seed declaring Tv must trigger an update.
+            });
+
+        OidcApplicationSeedDescriptor app = new(
+            ClientId: clientId,
+            ClientSecret: null,
+            DisplayName: "Showcase TV",
+            Permissions: [],
+            RedirectUris: [],
+            PostLogoutRedirectUris: [],
+            SigningKeyJwk: null,
+            DeviceKind: DeviceKind.Tv);
+
+        OpenIddictSeedContributor contributor = CreateContributor(apps: [app]);
+        await contributor.SeedAsync(Ctx, TestContext.Current.CancellationToken);
+
+        await _appManager.Received(1).UpdateAsync(
+            existingApp,
+            Arg.Is<OpenIddictApplicationDescriptor>(d => d.GetDeviceKind() == DeviceKind.Tv),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SeedApplicationAsync_DeviceKindUnknownAndNoneStored_SkipsUpdate()
+    {
+        _scopeManager.FindByNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+
+        const string clientId = "showcase-web";
+        object existingApp = new();
+        _appManager.FindByClientIdAsync(clientId, Arg.Any<CancellationToken>()).Returns(existingApp);
+
+        _appManager.When(m => m.PopulateAsync(
+                Arg.Any<OpenIddictApplicationDescriptor>(), existingApp, Arg.Any<CancellationToken>()))
+            .Do(ci =>
+            {
+                OpenIddictApplicationDescriptor d = ci.ArgAt<OpenIddictApplicationDescriptor>(0);
+                d.DisplayName = "Showcase Web";
+                // No device kind stored.
+            });
+
+        // Declaring Unknown is "not declared" — it must normalise to the stored absence, not a phantom diff.
+        OidcApplicationSeedDescriptor app = new(
+            ClientId: clientId,
+            ClientSecret: null,
+            DisplayName: "Showcase Web",
+            Permissions: [],
+            RedirectUris: [],
+            PostLogoutRedirectUris: [],
+            SigningKeyJwk: null,
+            DeviceKind: DeviceKind.Unknown);
+
+        OpenIddictSeedContributor contributor = CreateContributor(apps: [app]);
+        await contributor.SeedAsync(Ctx, TestContext.Current.CancellationToken);
+
+        await _appManager.DidNotReceive().UpdateAsync(
             existingApp,
             Arg.Any<OpenIddictApplicationDescriptor>(),
             Arg.Any<CancellationToken>());

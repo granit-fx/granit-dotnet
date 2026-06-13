@@ -1,3 +1,4 @@
+using Granit.Identity;
 using Granit.MultiTenancy;
 
 namespace Granit.OpenIddict.Endpoints.Dtos;
@@ -14,6 +15,7 @@ namespace Granit.OpenIddict.Endpoints.Dtos;
 /// <param name="PostLogoutRedirectUris">The allowed post-logout redirect URIs.</param>
 /// <param name="ConsentType">The consent type (<c>implicit</c>, <c>explicit</c>, or <c>systematic</c>).</param>
 /// <param name="ClientSide">The host/tenant policy enforced at sign-in, or <see langword="null"/> for no restriction.</param>
+/// <param name="DeviceKind">The device classification declared for this client, or <see langword="null"/> when not declared.</param>
 /// <param name="HasSigningKey">Whether a public signing key (JWK) is registered for <c>private_key_jwt</c> authentication.</param>
 public sealed record AdminOidcApplicationResponse(
     string? ClientId,
@@ -25,4 +27,5 @@ public sealed record AdminOidcApplicationResponse(
     string[] PostLogoutRedirectUris,
     string? ConsentType,
     MultiTenancySides? ClientSide,
+    DeviceKind? DeviceKind,
     bool HasSigningKey);

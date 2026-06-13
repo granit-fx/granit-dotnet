@@ -19,6 +19,12 @@ namespace Granit.Identity;
 /// <param name="UserAgent">User-Agent captured at establishment, when available.</param>
 /// <param name="IpAddress">Raw client IP (server-side only), when available.</param>
 /// <param name="Location">Approximate location derived from <paramref name="IpAddress"/>, when resolved.</param>
+/// <param name="Kind">
+/// Device classification of the client that established the session, resolved from the authentication context
+/// (the OIDC client's declared <see cref="DeviceKind"/>, with a redirect-URI/grant heuristic as fallback) — not
+/// guessed from the User-Agent. <see cref="DeviceKind.Unknown"/> when the backend cannot classify it; the
+/// device view then defaults it to <see cref="DeviceKind.Browser"/>.
+/// </param>
 public sealed record UserSessionDescriptor(
     string SessionId,
     string? UserId,
@@ -27,4 +33,5 @@ public sealed record UserSessionDescriptor(
     DateTimeOffset? LastAccessedAt,
     string? UserAgent,
     string? IpAddress,
-    GeoLocation? Location);
+    GeoLocation? Location,
+    DeviceKind Kind = DeviceKind.Unknown);

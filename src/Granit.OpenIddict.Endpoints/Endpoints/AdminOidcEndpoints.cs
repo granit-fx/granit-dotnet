@@ -240,6 +240,7 @@ internal static class AdminOidcEndpoints
         }
 
         descriptor.SetClientSide(request.ClientSide);
+        descriptor.SetDeviceKind(request.DeviceKind);
 
         object app = await applicationManager.CreateAsync(descriptor, cancellationToken).ConfigureAwait(false);
 
@@ -379,6 +380,12 @@ internal static class AdminOidcEndpoints
         if (request.ClientSide is not null)
         {
             descriptor.SetClientSide(request.ClientSide.Value);
+        }
+
+        if (request.DeviceKind is not null)
+        {
+            // SetDeviceKind treats Unknown as "clear the declaration".
+            descriptor.SetDeviceKind(request.DeviceKind.Value);
         }
     }
 
@@ -633,6 +640,7 @@ internal static class AdminOidcEndpoints
             [.. descriptor.PostLogoutRedirectUris.Select(u => u.ToString())],
             descriptor.ConsentType,
             descriptor.GetClientSide(),
+            descriptor.GetDeviceKind(),
             descriptor.JsonWebKeySet is not null);
 
     /// <summary>

@@ -1,3 +1,4 @@
+using Granit.Identity;
 using Granit.MultiTenancy;
 
 namespace Granit.OpenIddict.Endpoints.Dtos;
@@ -17,6 +18,7 @@ namespace Granit.OpenIddict.Endpoints.Dtos;
 /// <param name="ConsentType">The consent type (<c>implicit</c>, <c>explicit</c>, or <c>systematic</c>). Null leaves it unchanged.</param>
 /// <param name="SigningKeyJwk">Public signing key as JWK JSON for <c>private_key_jwt</c> authentication. Null leaves it unchanged; empty string clears the key.</param>
 /// <param name="ClientSide">Host/tenant policy enforced at sign-in. Null leaves it unchanged.</param>
+/// <param name="DeviceKind">Device classification for the devices that authenticate through this client. Null leaves it unchanged; <c>Unknown</c> clears the declaration.</param>
 public sealed record AdminOidcUpdateApplicationRequest(
     string? DisplayName = null,
     string? Type = null,
@@ -25,4 +27,5 @@ public sealed record AdminOidcUpdateApplicationRequest(
     string[]? PostLogoutRedirectUris = null,
     string? ConsentType = null,
     string? SigningKeyJwk = null,
-    MultiTenancySides? ClientSide = null);
+    MultiTenancySides? ClientSide = null,
+    DeviceKind? DeviceKind = null);

@@ -28959,7 +28959,7 @@
       "kind": "record",
       "project": "Granit.Identity.Abstractions",
       "file": "src/Granit.Identity.Abstractions/UserSessionDescriptor.cs",
-      "line": 22,
+      "line": 28,
       "members": []
     },
     {
@@ -37563,7 +37563,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcApplicationResponse.cs",
-      "line": 18,
+      "line": 20,
       "members": []
     },
     {
@@ -37581,7 +37581,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcCreateApplicationRequest.cs",
-      "line": 19,
+      "line": 21,
       "members": []
     },
     {
@@ -37626,7 +37626,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcUpdateApplicationRequest.cs",
-      "line": 20,
+      "line": 22,
       "members": []
     },
     {
@@ -38085,7 +38085,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 8,
+      "line": 9,
       "members": [
         {
           "name": "Applications",
@@ -38107,7 +38107,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 37,
+      "line": 39,
       "members": []
     },
     {
@@ -38116,7 +38116,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 56,
+      "line": 59,
       "members": []
     },
     {
