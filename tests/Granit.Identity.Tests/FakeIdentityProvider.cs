@@ -21,14 +21,6 @@ internal sealed class FakeIdentityProvider : IIdentityProvider
         string userId, bool enabled, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
 
-    public Task<IReadOnlyList<IdentitySession>> GetUserSessionsAsync(
-        string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentitySession>>([]);
-
-    public Task<IReadOnlyList<IdentityDeviceActivity>> GetUserDeviceActivityAsync(
-        string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentityDeviceActivity>>([]);
-
     public Task<DateTimeOffset?> GetPasswordChangedAtAsync(
         string userId, CancellationToken cancellationToken = default) =>
         Task.FromResult<DateTimeOffset?>(null);
@@ -55,14 +47,6 @@ internal sealed class FakeIdentityProvider : IIdentityProvider
 
     public Task RemoveRoleAsync(
         string userId, string roleName, CancellationToken cancellationToken = default) =>
-        Task.CompletedTask;
-
-    public Task TerminateSessionAsync(
-        string userId, string sessionId, CancellationToken cancellationToken = default) =>
-        Task.CompletedTask;
-
-    public Task TerminateAllSessionsAsync(
-        string userId, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
 
     public Task SendPasswordResetEmailAsync(

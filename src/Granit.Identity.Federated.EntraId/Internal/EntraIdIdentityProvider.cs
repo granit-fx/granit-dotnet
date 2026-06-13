@@ -38,7 +38,7 @@ internal sealed partial class EntraIdIdentityProvider(
     IPasswordResetNotifier passwordResetNotifier,
     IDistributedEventBus distributedEventBus,
     Granit.Guids.IGuidGenerator guidGenerator,
-    ILogger<EntraIdIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager
+    ILogger<EntraIdIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager, IUserSessionProvider, IUserDeviceProvider
 {
     private const string ProviderName = "entra-id";
 
@@ -187,9 +187,10 @@ internal sealed partial class EntraIdIdentityProvider(
         LogUserProfileUpdated(userId);
     }
 
-    /// <inheritdoc/>
-    public async Task<IReadOnlyList<IdentitySession>> GetUserSessionsAsync(
+    /// <inheritdoc cref="IUserSessionProvider.ListAsync"/>
+    public async Task<IReadOnlyList<UserSessionDescriptor>> ListAsync(
         string userId,
+        string? currentSessionId,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(userId);
@@ -208,7 +209,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
             return response?.Value?
                 .Where(s => s.Status?.ErrorCode == 0) // Only successful sign-ins
-                .Select(ToIdentitySession)
+                .Select(s => ToSessionDescriptor(s, userId, currentSessionId))
                 .ToList() ?? [];
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
@@ -219,8 +220,8 @@ internal sealed partial class EntraIdIdentityProvider(
         }
     }
 
-    /// <inheritdoc/>
-    public async Task<IReadOnlyList<IdentityDeviceActivity>> GetUserDeviceActivityAsync(
+    /// <inheritdoc cref="IUserDeviceProvider.ListAsync"/>
+    public async Task<IReadOnlyList<UserDevice>> ListAsync(
         string userId,
         CancellationToken cancellationToken = default)
     {
@@ -242,7 +243,7 @@ internal sealed partial class EntraIdIdentityProvider(
                 .Where(s => s.Status?.ErrorCode == 0)
                 .ToList() ?? [];
 
-            // Group by IP + OS to produce device activity entries
+            // Group by IP + OS to produce one device entry per distinct device.
             return signIns
                 .GroupBy(s => new
                 {
@@ -253,18 +254,17 @@ internal sealed partial class EntraIdIdentityProvider(
                 {
                     GraphAuditSignInRepresentation latest = group.OrderByDescending(s => s.CreatedDateTime).First();
                     string? os = latest.DeviceDetail?.OperatingSystem;
-                    bool mobile = IsMobileOs(os);
+                    string? browser = latest.DeviceDetail?.Browser;
 
-                    return new IdentityDeviceActivity(
-                        IpAddress: latest.IpAddress,
-                        LastAccess: latest.CreatedDateTime ?? DateTimeOffset.MinValue,
-                        Device: mobile ? "Mobile" : "Desktop",
+                    return new UserDevice(
+                        // Entra ID sign-in audits carry no stable device id — synthesize one from OS + browser.
+                        DeviceId: $"{os ?? "unknown"}/{browser ?? "unknown"}",
+                        Kind: DeviceKind.Browser, // IdP SSO sign-ins are browser-based unless the backend says otherwise.
                         OperatingSystem: os,
-                        OperatingSystemVersion: null,
-                        Browser: latest.DeviceDetail?.Browser,
-                        Mobile: mobile,
-                        Current: false,
-                        Sessions: group.Select(ToIdentitySession).ToList());
+                        Browser: browser,
+                        LastSeen: latest.CreatedDateTime,
+                        SessionCount: group.Count(),
+                        LastLocation: null); // The manager enriches geolocation.
                 })
                 .ToList();
         }
@@ -764,10 +764,16 @@ internal sealed partial class EntraIdIdentityProvider(
             $"Entra ID App Role '{roleName}' not found on appId '{clientId}'.");
     }
 
-    // ──── Session termination ────
+    // ──── Session revocation ────
 
-    /// <inheritdoc/>
-    public async Task TerminateSessionAsync(
+    /// <inheritdoc cref="IUserSessionProvider.RevokeAsync"/>
+    /// <remarks>
+    /// Entra ID's <c>revokeSignInSessions</c> Graph API revokes <em>all</em> of a user's sessions at
+    /// once — it cannot target a single session. Individual revocation is therefore unsupported
+    /// (see <c>EntraIdIdentityProviderCapabilities.SupportsIndividualSessionTermination</c>): this
+    /// logs and returns <see langword="false"/> rather than silently revoking everything.
+    /// </remarks>
+    public Task<bool> RevokeAsync(
         string userId,
         string sessionId,
         CancellationToken cancellationToken = default)
@@ -778,24 +784,30 @@ internal sealed partial class EntraIdIdentityProvider(
         using Activity? activity = IdentityEntraIdActivitySource.Source.StartActivity(IdentityEntraIdActivitySource.TerminateSession);
         activity?.SetTag(IdentityEntraIdActivitySource.TagUserId, userId);
 
-        // Entra ID does not support individual session termination.
-        // We revoke all sessions and log a warning.
         LogIndividualSessionTerminationNotSupported(sessionId, userId);
 
-        await TerminateAllSessionsAsync(userId, cancellationToken).ConfigureAwait(false);
-
-        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
+        return Task.FromResult(false);
     }
 
-    /// <inheritdoc/>
-    public async Task TerminateAllSessionsAsync(
+    /// <inheritdoc cref="IUserSessionProvider.RevokeOthersAsync"/>
+    /// <remarks>
+    /// Entra ID exposes only a bulk <c>revokeSignInSessions</c> endpoint, so "revoke others" is
+    /// realised by revoking every session (the current one included) — there is no way to spare it.
+    /// Returns the count of sessions that were <em>not</em> the current one, matching the contract.
+    /// </remarks>
+    public async Task<int> RevokeOthersAsync(
         string userId,
+        string currentSessionId,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(userId);
+        ArgumentNullException.ThrowIfNull(currentSessionId);
 
         using Activity? activity = IdentityEntraIdActivitySource.Source.StartActivity(IdentityEntraIdActivitySource.TerminateAllSessions);
         activity?.SetTag(IdentityEntraIdActivitySource.TagUserId, userId);
+
+        IReadOnlyList<UserSessionDescriptor> sessions = await ListAsync(userId, currentSessionId, cancellationToken).ConfigureAwait(false);
+        int others = sessions.Count(s => s.SessionId != currentSessionId);
 
         HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
         string endpoint = EntraIdAdminOptions.GetRevokeSessionsEndpoint(userId);
@@ -809,6 +821,8 @@ internal sealed partial class EntraIdIdentityProvider(
         await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
 
         LogAllSessionsTerminated(userId);
+
+        return others;
     }
 
     // ──── Password management ────
@@ -1110,14 +1124,17 @@ internal sealed partial class EntraIdIdentityProvider(
         new(user.Id, user.UserPrincipalName, user.Mail, user.GivenName, user.Surname, user.AccountEnabled,
             ExtractExtensionAttributes(user.ExtensionAttributes));
 
-    private static IdentitySession ToIdentitySession(GraphAuditSignInRepresentation signIn) =>
+    private static UserSessionDescriptor ToSessionDescriptor(
+        GraphAuditSignInRepresentation signIn, string userId, string? currentSessionId) =>
         new(
             SessionId: signIn.Id,
+            UserId: userId,
+            IsCurrent: signIn.Id == currentSessionId,
+            CreatedAt: signIn.CreatedDateTime ?? DateTimeOffset.MinValue,
+            LastAccessedAt: signIn.CreatedDateTime,
+            UserAgent: null, // Graph sign-in audits expose deviceDetail (os/browser), not a raw User-Agent.
             IpAddress: signIn.IpAddress,
-            StartedAt: signIn.CreatedDateTime ?? DateTimeOffset.MinValue,
-            LastAccess: signIn.CreatedDateTime ?? DateTimeOffset.MinValue,
-            RememberMe: false,
-            Clients: signIn.ClientAppUsed is not null ? [signIn.ClientAppUsed] : []);
+            Location: null); // The manager enriches geolocation.
 
     private static IdentityGroup ToIdentityGroup(GraphGroupRepresentation group) =>
         new(
@@ -1184,12 +1201,6 @@ internal sealed partial class EntraIdIdentityProvider(
         List<GraphAppRoleRepresentation> appRoles = await GetAppRolesAsync(client, cancellationToken).ConfigureAwait(false);
         return appRoles.Find(r => string.Equals(r.Value, roleName, StringComparison.OrdinalIgnoreCase))?.Id;
     }
-
-    private static bool IsMobileOs(string? os) =>
-        os is not null && (
-            os.Contains("Android", StringComparison.OrdinalIgnoreCase) ||
-            os.Contains("iOS", StringComparison.OrdinalIgnoreCase) ||
-            os.Contains("iPadOS", StringComparison.OrdinalIgnoreCase));
 
     private static string GenerateTemporaryPassword()
     {

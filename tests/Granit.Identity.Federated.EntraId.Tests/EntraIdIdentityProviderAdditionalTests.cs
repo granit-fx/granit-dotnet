@@ -133,10 +133,10 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             Arg.Any<CancellationToken>());
     }
 
-    // ──── GetUserSessionsAsync ────
+    // ──── IUserSessionProvider.ListAsync ────
 
     [Fact]
-    public async Task GetUserSessionsAsync_ReturnsOnlySuccessfulSignIns()
+    public async Task ListSessionsAsync_ReturnsOnlySuccessfulSignIns()
     {
         _handler.ResponseBody = """
             {
@@ -161,32 +161,34 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             }
             """;
 
-        IReadOnlyList<IdentitySession> result = await _provider.GetUserSessionsAsync(
-            "user-1", TestContext.Current.CancellationToken);
+        IReadOnlyList<UserSessionDescriptor> result = await _provider.ListAsync(
+            "user-1", currentSessionId: "s1", TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(1);
         result[0].SessionId.ShouldBe("s1");
+        result[0].UserId.ShouldBe("user-1");
+        result[0].IsCurrent.ShouldBeTrue();
         result[0].IpAddress.ShouldBe("10.0.0.1");
-        result[0].Clients.Count.ShouldBe(1);
-        result[0].Clients[0].ShouldBe("Browser");
+        result[0].CreatedAt.ShouldBe(new DateTimeOffset(2026, 1, 1, 10, 0, 0, TimeSpan.Zero));
+        result[0].Location.ShouldBeNull();
     }
 
     [Fact]
-    public async Task GetUserSessionsAsync_WhenHttpFails_ReturnsEmptyList()
+    public async Task ListSessionsAsync_WhenHttpFails_ReturnsEmptyList()
     {
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        IReadOnlyList<IdentitySession> result = await _provider.GetUserSessionsAsync(
-            "user-1", TestContext.Current.CancellationToken);
+        IReadOnlyList<UserSessionDescriptor> result = await _provider.ListAsync(
+            "user-1", currentSessionId: null, TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
     }
 
-    // ──── GetUserDeviceActivityAsync ────
+    // ──── IUserDeviceProvider.ListAsync ────
 
     [Fact]
-    public async Task GetUserDeviceActivityAsync_GroupsByIpAndOs()
+    public async Task ListDevicesAsync_GroupsByIpAndOs()
     {
         _handler.ResponseBody = """
             {
@@ -219,23 +221,23 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             }
             """;
 
-        IReadOnlyList<IdentityDeviceActivity> result = await _provider.GetUserDeviceActivityAsync(
+        IReadOnlyList<UserDevice> result = await ((IUserDeviceProvider)_provider).ListAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(2);
 
-        IdentityDeviceActivity desktop = result.First(d => d.OperatingSystem == "Windows");
-        desktop.IpAddress.ShouldBe("10.0.0.1");
-        desktop.Device.ShouldBe("Desktop");
-        desktop.Mobile.ShouldBeFalse();
-        desktop.Sessions.Count.ShouldBe(2);
+        UserDevice desktop = result.First(d => d.OperatingSystem == "Windows");
+        desktop.Kind.ShouldBe(DeviceKind.Browser);
         desktop.Browser.ShouldBe("Chrome/120.0");
+        desktop.SessionCount.ShouldBe(2);
+        desktop.DeviceId.ShouldBe("Windows/Chrome/120.0");
+        desktop.LastSeen.ShouldBe(new DateTimeOffset(2026, 1, 2, 10, 0, 0, TimeSpan.Zero));
+        desktop.LastLocation.ShouldBeNull();
 
-        IdentityDeviceActivity mobile = result.First(d => d.OperatingSystem == "Android");
-        mobile.IpAddress.ShouldBe("10.0.0.2");
-        mobile.Device.ShouldBe("Mobile");
-        mobile.Mobile.ShouldBeTrue();
-        mobile.Sessions.Count.ShouldBe(1);
+        UserDevice mobile = result.First(d => d.OperatingSystem == "Android");
+        mobile.Kind.ShouldBe(DeviceKind.Browser);
+        mobile.Browser.ShouldBe("Safari");
+        mobile.SessionCount.ShouldBe(1);
     }
 
     // ──── GetPasswordChangedAtAsync ────
@@ -335,28 +337,81 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
         sequenceHandler.CallCount.ShouldBe(2);
     }
 
-    // ──── TerminateAllSessionsAsync ────
+    // ──── IUserSessionProvider.RevokeAsync (individual — unsupported) ────
 
     [Fact]
-    public async Task TerminateAllSessionsAsync_SendsPostToRevokeEndpoint()
+    public async Task RevokeAsync_IndividualSessionUnsupported_ReturnsFalseWithoutHttpCall()
     {
-        _handler.ResponseStatusCode = HttpStatusCode.OK;
-        _handler.ResponseBody = """{"value":true}""";
+        bool revoked = await _provider.RevokeAsync(
+            "user-1", "s1", TestContext.Current.CancellationToken);
 
-        await _provider.TerminateAllSessionsAsync("user-1", TestContext.Current.CancellationToken);
+        revoked.ShouldBeFalse();
+        _handler.Requests.ShouldBeEmpty();
 
-        _handler.Requests.Count.ShouldBe(1);
-        _handler.Requests[0].Method.ShouldBe("POST");
-        _handler.Requests[0].Url.ShouldContain("/v1.0/users/user-1/revokeSignInSessions");
+        await _distributedEventBus.DidNotReceive().PublishAsync(
+            Arg.Any<IdentitySessionsRevokedEto>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    // ──── IUserSessionProvider.RevokeOthersAsync ────
+
+    [Fact]
+    public async Task RevokeOthersAsync_SendsPostToRevokeEndpoint_AndCountsOthers()
+    {
+        string signInsResponse = """
+            {
+                "value": [
+                    { "id": "s1", "ipAddress": "10.0.0.1", "createdDateTime": "2026-01-01T10:00:00Z", "status": { "errorCode": 0 } },
+                    { "id": "s2", "ipAddress": "10.0.0.2", "createdDateTime": "2026-01-02T10:00:00Z", "status": { "errorCode": 0 } },
+                    { "id": "s3", "ipAddress": "10.0.0.3", "createdDateTime": "2026-01-03T10:00:00Z", "status": { "errorCode": 0 } }
+                ]
+            }
+            """;
+
+        MockSequenceHttpMessageHandler sequenceHandler = new([signInsResponse, """{"value":true}"""]);
+        HttpClient sequenceClient = new(sequenceHandler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
+        IHttpClientFactory sequenceFactory = Substitute.For<IHttpClientFactory>();
+        sequenceFactory.CreateClient("MicrosoftGraph").Returns(sequenceClient);
+
+        EntraIdIdentityProvider provider = new(
+            _tokenService,
+            sequenceFactory,
+            Microsoft.Extensions.Options.Options.Create(_options),
+            _passwordResetNotifier,
+            _distributedEventBus,
+            new SimpleGuidGenerator(),
+            NullLogger<EntraIdIdentityProvider>.Instance);
+
+        int revoked = await provider.RevokeOthersAsync(
+            "user-1", currentSessionId: "s1", TestContext.Current.CancellationToken);
+
+        // s2 + s3 are "others" relative to the current session s1.
+        revoked.ShouldBe(2);
+
+        (string Method, string Url, string Body) post = sequenceHandler.Requests[^1];
+        post.Method.ShouldBe("POST");
+        post.Url.ShouldContain("/v1.0/users/user-1/revokeSignInSessions");
     }
 
     [Fact]
-    public async Task TerminateAllSessionsAsync_PublishesSessionsRevokedEvent()
+    public async Task RevokeOthersAsync_PublishesSessionsRevokedEvent()
     {
-        _handler.ResponseStatusCode = HttpStatusCode.OK;
-        _handler.ResponseBody = """{"value":true}""";
+        MockSequenceHttpMessageHandler sequenceHandler = new(["""{"value":[]}""", """{"value":true}"""]);
+        HttpClient sequenceClient = new(sequenceHandler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
+        IHttpClientFactory sequenceFactory = Substitute.For<IHttpClientFactory>();
+        sequenceFactory.CreateClient("MicrosoftGraph").Returns(sequenceClient);
 
-        await _provider.TerminateAllSessionsAsync("user-1", TestContext.Current.CancellationToken);
+        EntraIdIdentityProvider provider = new(
+            _tokenService,
+            sequenceFactory,
+            Microsoft.Extensions.Options.Options.Create(_options),
+            _passwordResetNotifier,
+            _distributedEventBus,
+            new SimpleGuidGenerator(),
+            NullLogger<EntraIdIdentityProvider>.Instance);
+
+        await provider.RevokeOthersAsync(
+            "user-1", currentSessionId: "s1", TestContext.Current.CancellationToken);
 
         await _distributedEventBus.Received(1).PublishAsync(
             Arg.Is<IdentitySessionsRevokedEto>(e => e.UserId == "user-1"),

@@ -53,7 +53,7 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsClientRoleTests
     }
 
     [Fact]
-    public void IdentityProvider_And_SessionManager_ResolveToSameScopedInstance()
+    public void IdentityProvider_And_SessionProviders_ResolveToSameScopedInstance()
     {
         ServiceCollection services = [];
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
@@ -76,13 +76,18 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsClientRoleTests
         using IServiceScope scope = sp.CreateScope();
 
         IIdentityProvider provider = scope.ServiceProvider.GetRequiredService<IIdentityProvider>();
-        IIdentitySessionManager sessionManager =
-            scope.ServiceProvider.GetRequiredService<IIdentitySessionManager>();
+        IUserSessionProvider sessionProvider =
+            scope.ServiceProvider.GetRequiredService<IUserSessionProvider>();
+        IUserDeviceProvider deviceProvider =
+            scope.ServiceProvider.GetRequiredService<IUserDeviceProvider>();
 
-        object.ReferenceEquals(provider, sessionManager).ShouldBeTrue(
-            "IIdentityProvider and IIdentitySessionManager must resolve to the same scoped " +
-            "KeycloakIdentityProvider instance so Granit.Identity.UserSessions surfaces Keycloak " +
-            "sessions/devices through the canonical /sessions API — see the DI block in " +
-            "AddGranitIdentityKeycloak (#2659).");
+        object.ReferenceEquals(provider, sessionProvider).ShouldBeTrue(
+            "IIdentityProvider and IUserSessionProvider must resolve to the same scoped " +
+            "KeycloakIdentityProvider instance so the canonical /sessions API surfaces Keycloak " +
+            "sessions — see the DI block in AddGranitIdentityKeycloak (#2659).");
+        object.ReferenceEquals(provider, deviceProvider).ShouldBeTrue(
+            "IIdentityProvider and IUserDeviceProvider must resolve to the same scoped " +
+            "KeycloakIdentityProvider instance so the canonical /devices API surfaces Keycloak " +
+            "devices — see the DI block in AddGranitIdentityKeycloak (#2659).");
     }
 }

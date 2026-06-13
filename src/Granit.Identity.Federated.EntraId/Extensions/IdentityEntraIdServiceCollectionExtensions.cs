@@ -71,6 +71,14 @@ public static class IdentityEntraIdServiceCollectionExtensions
                 "The registered IIdentityProvider does not implement IIdentityClientRoleManager — " +
                 "AddGranitIdentityEntraId must be the last provider-registration call."));
 
+        // Session/device facets — forward to the scoped IIdentityProvider so the EntraId provider
+        // surfaces sessions and devices to IUserSessionManager, replacing the Null defaults from
+        // Granit.Identity.Abstractions. Same forwarding rationale as IIdentityClientRoleManager above.
+        services.Replace(ServiceDescriptor.Scoped<IUserSessionProvider>(sp =>
+            (IUserSessionProvider)sp.GetRequiredService<IIdentityProvider>()));
+        services.Replace(ServiceDescriptor.Scoped<IUserDeviceProvider>(sp =>
+            (IUserDeviceProvider)sp.GetRequiredService<IIdentityProvider>()));
+
         // Client-role sync pipeline — enumerates Entra ID App Roles for each tracked appId
         // at host boot and upserts RoleMetadata rows. See ADR-026 for details.
         services.AddOptions<EntraIdClientRoleSyncOptions>()

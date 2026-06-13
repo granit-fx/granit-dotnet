@@ -16,7 +16,12 @@ public interface IIdentityProviderCapabilities
     /// <summary>Whether the provider can terminate a specific session without revoking all sessions.</summary>
     bool SupportsIndividualSessionTermination { get; }
 
-    /// <summary>Whether the provider can send a password reset email natively (without an external notifier).</summary>
+    /// <summary>
+    /// Whether <c>SendPasswordResetEmailAsync</c> delivers a reset email — either natively
+    /// (federated providers send it themselves) or by publishing <c>PasswordResetRequestedEto</c>
+    /// for a bundled notifications subscriber (local providers). When <see langword="false"/>,
+    /// the provider endpoint returns 501 and callers should use the self-service forgot-password flow.
+    /// </summary>
     bool SupportsNativePasswordResetEmail { get; }
 
     /// <summary>Whether the provider supports hierarchical group structures (sub-groups).</summary>

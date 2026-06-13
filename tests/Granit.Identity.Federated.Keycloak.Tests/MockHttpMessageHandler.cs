@@ -44,9 +44,14 @@ internal sealed class MockSequenceHttpMessageHandler(IReadOnlyList<string> respo
     /// <summary>Number of HTTP calls made through this handler.</summary>
     public int CallCount => _callIndex;
 
+    /// <summary>Captured requests as (Method, Url) tuples, in call order.</summary>
+    public List<(string Method, string Url)> Requests { get; } = [];
+
     protected override Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        Requests.Add((request.Method.Method, request.RequestUri?.ToString() ?? ""));
+
         int index = Math.Min(_callIndex++, responses.Count - 1);
         return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
         {

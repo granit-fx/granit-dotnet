@@ -103,46 +103,6 @@ public sealed class NullIdentityProviderTests
     }
 
     // -------------------------------------------------------------------------
-    // Sessions
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public async Task GetUserSessionsAsync_ReturnsEmptyList()
-    {
-        IReadOnlyList<IdentitySession> result = await _provider.GetUserSessionsAsync(
-            "any-user-id", TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public async Task GetUserDeviceActivityAsync_ReturnsEmptyList()
-    {
-        IReadOnlyList<IdentityDeviceActivity> result = await _provider.GetUserDeviceActivityAsync(
-            "any-user-id", TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public async Task TerminateSessionAsync_CompletesWithoutError()
-    {
-        Func<Task> act = () => _provider.TerminateSessionAsync(
-            "user-1", "session-1", TestContext.Current.CancellationToken);
-
-        await Should.NotThrowAsync(act);
-    }
-
-    [Fact]
-    public async Task TerminateAllSessionsAsync_CompletesWithoutError()
-    {
-        Func<Task> act = () => _provider.TerminateAllSessionsAsync(
-            "user-1", TestContext.Current.CancellationToken);
-
-        await Should.NotThrowAsync(act);
-    }
-
-    // -------------------------------------------------------------------------
     // Roles
     // -------------------------------------------------------------------------
 

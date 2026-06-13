@@ -29,7 +29,6 @@ public interface IIdentityProvider :
     IIdentityUserWriter,
     IIdentityRoleManager,
     IIdentityGroupManager,
-    IIdentitySessionManager,
     IIdentityPasswordManager,
     IIdentityCredentialVerifier
 {

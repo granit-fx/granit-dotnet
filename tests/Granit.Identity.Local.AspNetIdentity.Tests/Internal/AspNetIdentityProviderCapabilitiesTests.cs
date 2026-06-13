@@ -29,8 +29,8 @@ public sealed class AspNetIdentityProviderCapabilitiesTests
         _sut.SupportsIndividualSessionTermination.ShouldBeFalse();
 
     [Fact]
-    public void SupportsNativePasswordResetEmail_IsFalse() =>
-        _sut.SupportsNativePasswordResetEmail.ShouldBeFalse();
+    public void SupportsNativePasswordResetEmail_IsTrue() =>
+        _sut.SupportsNativePasswordResetEmail.ShouldBeTrue();
 
     [Fact]
     public void SupportsGroupHierarchy_IsFalse() =>

@@ -80,8 +80,6 @@ public static class IdentityServiceCollectionExtensions
             sp => sp.GetRequiredService<IIdentityProvider>()));
         services.Replace(ServiceDescriptor.Scoped<IIdentityGroupManager>(
             sp => sp.GetRequiredService<IIdentityProvider>()));
-        services.Replace(ServiceDescriptor.Scoped<IIdentitySessionManager>(
-            sp => sp.GetRequiredService<IIdentityProvider>()));
         services.Replace(ServiceDescriptor.Scoped<IIdentityPasswordManager>(
             sp => sp.GetRequiredService<IIdentityProvider>()));
         services.Replace(ServiceDescriptor.Scoped<IIdentityCredentialVerifier>(

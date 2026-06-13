@@ -24,7 +24,6 @@ internal static class IdentityCognitoActivitySource
         public const string ListGroupsForUser = "cognito.list-groups-for-user";
         public const string AddUserToGroup = "cognito.add-user-to-group";
         public const string RemoveUserFromGroup = "cognito.remove-user-from-group";
-        public const string GlobalSignOut = "cognito.global-sign-out";
         public const string ListUserPoolClients = "cognito.list-user-pool-clients";
         public const string GetClientRoles = "cognito.get-client-roles";
         public const string GetUserClientRoles = "cognito.get-user-client-roles";

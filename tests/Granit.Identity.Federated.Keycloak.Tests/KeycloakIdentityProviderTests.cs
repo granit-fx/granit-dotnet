@@ -455,91 +455,92 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             () => _provider.SetUserEnabledAsync("user-1", true, TestContext.Current.CancellationToken));
     }
 
-    // --- GetUserSessionsAsync tests ---
+    // --- IUserSessionProvider.ListAsync tests ---
 
     [Fact]
-    public async Task GetUserSessionsAsync_WithSessions_ReturnsIdentitySessions()
+    public async Task ListSessionsAsync_WithSessions_ReturnsSessionDescriptors()
     {
         _handler.ResponseBody = """[{"id":"sess-1","ipAddress":"1.2.3.4","start":1700000000000,"lastAccess":1700001000000,"rememberMe":false,"clients":{"client-id":"test-app"}},{"id":"sess-2","ipAddress":"5.6.7.8","start":1700002000000,"lastAccess":1700003000000,"rememberMe":true,"clients":{}}]""";
 
-        IReadOnlyList<IdentitySession> result = await _provider.GetUserSessionsAsync(
-            "user-1", TestContext.Current.CancellationToken);
+        IReadOnlyList<UserSessionDescriptor> result = await _provider.ListAsync(
+            "user-1", "sess-1", TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(2);
         result[0].SessionId.ShouldBe("sess-1");
+        result[0].UserId.ShouldBe("user-1");
+        result[0].IsCurrent.ShouldBeTrue();
         result[0].IpAddress.ShouldBe("1.2.3.4");
-        result[0].StartedAt.ShouldBe(DateTimeOffset.FromUnixTimeMilliseconds(1700000000000));
-        result[0].LastAccess.ShouldBe(DateTimeOffset.FromUnixTimeMilliseconds(1700001000000));
-        result[0].RememberMe.ShouldBeFalse();
-        result[0].Clients.ShouldContain("test-app");
+        result[0].CreatedAt.ShouldBe(DateTimeOffset.FromUnixTimeMilliseconds(1700000000000));
+        result[0].LastAccessedAt.ShouldBe(DateTimeOffset.FromUnixTimeMilliseconds(1700001000000));
+        result[0].UserAgent.ShouldBeNull();
+        result[0].Location.ShouldBeNull();
         result[1].SessionId.ShouldBe("sess-2");
-        result[1].RememberMe.ShouldBeTrue();
-        result[1].Clients.ShouldBeEmpty();
+        result[1].IsCurrent.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task GetUserSessionsAsync_EmptyResponse_ReturnsEmptyList()
+    public async Task ListSessionsAsync_EmptyResponse_ReturnsEmptyList()
     {
         _handler.ResponseBody = "[]";
 
-        IReadOnlyList<IdentitySession> result = await _provider.GetUserSessionsAsync(
-            "user-1", TestContext.Current.CancellationToken);
+        IReadOnlyList<UserSessionDescriptor> result = await _provider.ListAsync(
+            "user-1", null, TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task GetUserSessionsAsync_KeycloakError_ReturnsEmptyList()
+    public async Task ListSessionsAsync_KeycloakError_ReturnsEmptyList()
     {
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        IReadOnlyList<IdentitySession> result = await _provider.GetUserSessionsAsync(
-            "user-1", TestContext.Current.CancellationToken);
+        IReadOnlyList<UserSessionDescriptor> result = await _provider.ListAsync(
+            "user-1", null, TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task GetUserSessionsAsync_CallsCorrectEndpoint()
+    public async Task ListSessionsAsync_CallsCorrectEndpoint()
     {
         _handler.ResponseBody = "[]";
 
-        await _provider.GetUserSessionsAsync("user-abc", TestContext.Current.CancellationToken);
+        await _provider.ListAsync("user-abc", null, TestContext.Current.CancellationToken);
 
         _handler.Requests.Count.ShouldBe(1);
         _handler.Requests[0].Url.ShouldContain("/admin/realms/test-realm/users/user-abc/sessions");
     }
 
     [Fact]
-    public async Task GetUserSessionsAsync_NullUserId_ThrowsArgumentNullException()
+    public async Task ListSessionsAsync_NullUserId_ThrowsArgumentNullException()
     {
         await Should.ThrowAsync<ArgumentNullException>(
-            () => _provider.GetUserSessionsAsync(null!, TestContext.Current.CancellationToken));
+            () => _provider.ListAsync(null!, null, TestContext.Current.CancellationToken));
     }
 
-    // --- GetUserDeviceActivityAsync tests (admin sessions fallback) ---
+    // --- IUserDeviceProvider.ListAsync tests (admin sessions fallback) ---
 
     [Fact]
-    public async Task GetUserDeviceActivityAsync_WithoutTokenExchange_UsesAdminSessions()
+    public async Task ListDevicesAsync_WithoutTokenExchange_UsesAdminSessions()
     {
         _handler.ResponseBody = """[{"id":"sess-1","ipAddress":"1.2.3.4","start":1700000000000,"lastAccess":1700001000000,"rememberMe":false,"clients":{"client-id":"test-app"}}]""";
 
-        IReadOnlyList<IdentityDeviceActivity> result = await _provider.GetUserDeviceActivityAsync(
+        IReadOnlyList<UserDevice> result = await _provider.ListAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(1);
-        result[0].IpAddress.ShouldBe("1.2.3.4");
-        result[0].LastAccess.ShouldBe(DateTimeOffset.FromUnixTimeMilliseconds(1700001000000));
-        result[0].Device.ShouldBeNull();
+        result[0].DeviceId.ShouldBe("sess-1");
+        result[0].Kind.ShouldBe(DeviceKind.Browser);
+        result[0].LastSeen.ShouldBe(DateTimeOffset.FromUnixTimeMilliseconds(1700001000000));
         result[0].OperatingSystem.ShouldBeNull();
         result[0].Browser.ShouldBeNull();
-        result[0].Sessions.Count.ShouldBe(1);
-        result[0].Sessions[0].SessionId.ShouldBe("sess-1");
+        result[0].SessionCount.ShouldBe(1);
+        result[0].LastLocation.ShouldBeNull();
     }
 
     [Fact]
-    public async Task GetUserDeviceActivityAsync_WithTokenExchange_CallsAccountApi()
+    public async Task ListDevicesAsync_WithTokenExchange_CallsAccountApi()
     {
         KeycloakAdminOptions opts = new()
         {
@@ -581,37 +582,36 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
 
-        IReadOnlyList<IdentityDeviceActivity> result = await provider.GetUserDeviceActivityAsync(
+        IReadOnlyList<UserDevice> result = await provider.ListAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(1);
+        result[0].DeviceId.ShouldBe("Windows/Chrome/120.0");
+        result[0].Kind.ShouldBe(DeviceKind.Browser);
         result[0].OperatingSystem.ShouldBe("Windows");
-        result[0].OperatingSystemVersion.ShouldBe("10");
         result[0].Browser.ShouldBe("Chrome/120.0");
-        result[0].Device.ShouldBe("Desktop");
-        result[0].Mobile.ShouldBeFalse();
-        result[0].Current.ShouldBeTrue();
-        result[0].Sessions.Count.ShouldBe(1);
-        result[0].Sessions[0].SessionId.ShouldBe("sess-x");
+        result[0].LastSeen.ShouldBe(DateTimeOffset.FromUnixTimeMilliseconds(1700005000000));
+        result[0].SessionCount.ShouldBe(1);
+        result[0].LastLocation.ShouldBeNull();
     }
 
     [Fact]
-    public async Task GetUserDeviceActivityAsync_KeycloakError_ReturnsEmptyList()
+    public async Task ListDevicesAsync_KeycloakError_ReturnsEmptyList()
     {
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        IReadOnlyList<IdentityDeviceActivity> result = await _provider.GetUserDeviceActivityAsync(
+        IReadOnlyList<UserDevice> result = await _provider.ListAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task GetUserDeviceActivityAsync_NullUserId_ThrowsArgumentNullException()
+    public async Task ListDevicesAsync_NullUserId_ThrowsArgumentNullException()
     {
         await Should.ThrowAsync<ArgumentNullException>(
-            () => _provider.GetUserDeviceActivityAsync(null!, TestContext.Current.CancellationToken));
+            () => _provider.ListAsync(null!, TestContext.Current.CancellationToken));
     }
 
     // --- GetPasswordChangedAtAsync tests ---
@@ -838,65 +838,93 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         _handler.Requests[1].Body.ShouldContain("\"id\":\"role-1\"");
     }
 
-    // --- Feature 2: TerminateSessionAsync tests ---
+    // --- IUserSessionProvider.RevokeAsync tests ---
 
     [Fact]
-    public async Task TerminateSessionAsync_SendsDeleteToCorrectEndpoint()
+    public async Task RevokeAsync_SendsDeleteToCorrectEndpoint_ReturnsTrue()
     {
         _handler.ResponseStatusCode = HttpStatusCode.NoContent;
         _handler.ResponseBody = string.Empty;
 
-        await _provider.TerminateSessionAsync("user-1", "sess-abc", TestContext.Current.CancellationToken);
+        bool revoked = await _provider.RevokeAsync("user-1", "sess-abc", TestContext.Current.CancellationToken);
 
+        revoked.ShouldBeTrue();
         _handler.Requests.Count.ShouldBe(1);
         _handler.Requests[0].Method.ShouldBe("DELETE");
         _handler.Requests[0].Url.ShouldContain("/admin/realms/test-realm/sessions/sess-abc");
     }
 
     [Fact]
-    public async Task TerminateSessionAsync_KeycloakError_PropagatesException()
+    public async Task RevokeAsync_KeycloakError_PropagatesException()
     {
         _handler.ResponseStatusCode = HttpStatusCode.NotFound;
         _handler.ResponseBody = string.Empty;
 
         await Should.ThrowAsync<HttpRequestException>(
-            () => _provider.TerminateSessionAsync("user-1", "sess-abc", TestContext.Current.CancellationToken));
+            () => _provider.RevokeAsync("user-1", "sess-abc", TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public async Task TerminateSessionAsync_NullUserId_ThrowsArgumentNullException()
+    public async Task RevokeAsync_NullUserId_ThrowsArgumentNullException()
     {
         await Should.ThrowAsync<ArgumentNullException>(
-            () => _provider.TerminateSessionAsync(null!, "sess-1", TestContext.Current.CancellationToken));
+            () => _provider.RevokeAsync(null!, "sess-1", TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public async Task TerminateSessionAsync_NullSessionId_ThrowsArgumentNullException()
+    public async Task RevokeAsync_NullSessionId_ThrowsArgumentNullException()
     {
         await Should.ThrowAsync<ArgumentNullException>(
-            () => _provider.TerminateSessionAsync("user-1", null!, TestContext.Current.CancellationToken));
+            () => _provider.RevokeAsync("user-1", null!, TestContext.Current.CancellationToken));
     }
 
-    // --- Feature 2: TerminateAllSessionsAsync tests ---
+    // --- IUserSessionProvider.RevokeOthersAsync tests ---
 
     [Fact]
-    public async Task TerminateAllSessionsAsync_SendsPostToLogoutEndpoint()
+    public async Task RevokeOthersAsync_RevokesEverySessionExceptCurrent()
     {
-        _handler.ResponseStatusCode = HttpStatusCode.NoContent;
-        _handler.ResponseBody = string.Empty;
+        // Sequence: call 1 = GET sessions; calls 2..n = DELETE each non-current session.
+        MockSequenceHttpMessageHandler seqHandler = new(
+        [
+            """[{"id":"sess-1","ipAddress":"1.2.3.4","start":1700000000000,"lastAccess":1700001000000,"rememberMe":false,"clients":{}},{"id":"sess-2","ipAddress":"5.6.7.8","start":1700002000000,"lastAccess":1700003000000,"rememberMe":false,"clients":{}},{"id":"sess-3","ipAddress":"9.9.9.9","start":1700004000000,"lastAccess":1700005000000,"rememberMe":false,"clients":{}}]""",
+            string.Empty,
+            string.Empty,
+        ]);
+        HttpClient seqClient = new(seqHandler) { BaseAddress = new Uri("https://keycloak.test/") };
+        IHttpClientFactory seqFactory = Substitute.For<IHttpClientFactory>();
+        seqFactory.CreateClient("KeycloakAdmin").Returns(seqClient);
 
-        await _provider.TerminateAllSessionsAsync("user-1", TestContext.Current.CancellationToken);
+        KeycloakIdentityProvider provider = new(
+            _tokenService,
+            _tokenExchangeService,
+            seqFactory,
+            Microsoft.Extensions.Options.Options.Create(_options),
+            _distributedEventBus,
+            _metrics,
+            NullLogger<KeycloakIdentityProvider>.Instance);
 
-        _handler.Requests.Count.ShouldBe(1);
-        _handler.Requests[0].Method.ShouldBe("POST");
-        _handler.Requests[0].Url.ShouldContain("/admin/realms/test-realm/users/user-1/logout");
+        int revoked = await provider.RevokeOthersAsync("user-1", "sess-1", TestContext.Current.CancellationToken);
+
+        revoked.ShouldBe(2);
+        seqHandler.Requests.Count.ShouldBe(3);
+        seqHandler.Requests[0].Method.ShouldBe("GET");
+        seqHandler.Requests[1].Method.ShouldBe("DELETE");
+        seqHandler.Requests[1].Url.ShouldContain("/admin/realms/test-realm/sessions/sess-2");
+        seqHandler.Requests[2].Url.ShouldContain("/admin/realms/test-realm/sessions/sess-3");
     }
 
     [Fact]
-    public async Task TerminateAllSessionsAsync_NullUserId_ThrowsArgumentNullException()
+    public async Task RevokeOthersAsync_NullUserId_ThrowsArgumentNullException()
     {
         await Should.ThrowAsync<ArgumentNullException>(
-            () => _provider.TerminateAllSessionsAsync(null!, TestContext.Current.CancellationToken));
+            () => _provider.RevokeOthersAsync(null!, "sess-1", TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task RevokeOthersAsync_NullCurrentSessionId_ThrowsArgumentNullException()
+    {
+        await Should.ThrowAsync<ArgumentNullException>(
+            () => _provider.RevokeOthersAsync("user-1", null!, TestContext.Current.CancellationToken));
     }
 
     // --- Feature 3: SendPasswordResetEmailAsync tests ---

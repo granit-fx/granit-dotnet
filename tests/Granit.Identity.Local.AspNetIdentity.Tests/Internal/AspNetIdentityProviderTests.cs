@@ -1,5 +1,7 @@
+using Granit.Events;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +24,7 @@ public sealed class AspNetIdentityProviderTests
     private readonly UserManager<LocalIdentity> _userManager;
     private readonly RoleManager<GranitRole> _roleManager;
     private readonly ILocalIdentityGroupStore _groupStore;
+    private readonly IDistributedEventBus _eventBus;
     private readonly ILogger<AspNetIdentityProvider> _logger;
     private readonly AspNetIdentityProvider _sut;
 
@@ -36,9 +39,10 @@ public sealed class AspNetIdentityProviderTests
             roleStore, null, null, null, null);
 
         _groupStore = Substitute.For<ILocalIdentityGroupStore>();
+        _eventBus = Substitute.For<IDistributedEventBus>();
         _logger = NullLogger<AspNetIdentityProvider>.Instance;
 
-        _sut = new AspNetIdentityProvider(_userManager, _roleManager, _groupStore, _logger);
+        _sut = new AspNetIdentityProvider(_userManager, _roleManager, _groupStore, _eventBus, _logger);
     }
 
     // ──── IIdentityUserReader ────
@@ -456,40 +460,6 @@ public sealed class AspNetIdentityProviderTests
             "user-1", "group-1", Arg.Any<CancellationToken>());
     }
 
-    // ──── IIdentitySessionManager ────
-
-    [Fact]
-    public async Task GetUserSessionsAsync_ReturnsEmptyList()
-    {
-        IReadOnlyList<IdentitySession> result = await _sut.GetUserSessionsAsync(
-            "user-1", TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public async Task GetUserDeviceActivityAsync_ReturnsEmptyList()
-    {
-        IReadOnlyList<IdentityDeviceActivity> result = await _sut.GetUserDeviceActivityAsync(
-            "user-1", TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public async Task TerminateSessionAsync_CompletesWithoutError()
-    {
-        await Should.NotThrowAsync(
-            () => _sut.TerminateSessionAsync("user-1", "session-1", TestContext.Current.CancellationToken));
-    }
-
-    [Fact]
-    public async Task TerminateAllSessionsAsync_CompletesWithoutError()
-    {
-        await Should.NotThrowAsync(
-            () => _sut.TerminateAllSessionsAsync("user-1", TestContext.Current.CancellationToken));
-    }
-
     // ──── IIdentityPasswordManager ────
 
     [Fact]
@@ -502,10 +472,30 @@ public sealed class AspNetIdentityProviderTests
     }
 
     [Fact]
-    public async Task SendPasswordResetEmailAsync_CompletesWithoutError()
+    public async Task SendPasswordResetEmailAsync_WhenUserExists_PublishesPasswordResetRequestedEto()
     {
-        await Should.NotThrowAsync(
-            () => _sut.SendPasswordResetEmailAsync("user-1", TestContext.Current.CancellationToken));
+        LocalIdentity user = new() { Email = "alice@acme.local" };
+        _userManager.FindByIdAsync("user-1").Returns(user);
+        _userManager.GeneratePasswordResetTokenAsync(user).Returns("reset-token");
+
+        await _sut.SendPasswordResetEmailAsync("user-1", TestContext.Current.CancellationToken);
+
+        await _eventBus.Received(1).PublishAsync(
+            Arg.Is<PasswordResetRequestedEto>(e =>
+                e.UserId == user.Id && e.Email == "alice@acme.local" && e.ResetToken == "reset-token"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SendPasswordResetEmailAsync_WhenUserNotFound_Throws()
+    {
+        _userManager.FindByIdAsync("missing").ReturnsNull();
+
+        await Should.ThrowAsync<InvalidOperationException>(
+            () => _sut.SendPasswordResetEmailAsync("missing", TestContext.Current.CancellationToken));
+
+        await _eventBus.DidNotReceive().PublishAsync(
+            Arg.Any<PasswordResetRequestedEto>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

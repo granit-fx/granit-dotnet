@@ -11,7 +11,6 @@ using Granit.Identity.Queries;
 using Granit.Modularity;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Identity;
@@ -36,13 +35,12 @@ public sealed class GranitIdentityModule : GranitModule
     {
         context.Services.AddGranitIdentity();
 
-        // Canonical user-session management (formerly Granit.UserSessions + the
-        // Granit.Identity.UserSessions bridge): the orchestrator plus the identity-provider
-        // session/device providers, made the active backend for /sessions and /devices over
-        // IIdentitySessionManager. A BFF deployment replaces these with its own providers.
+        // Canonical user-session management: the orchestrator behind /sessions and /devices.
+        // The session/device BACKEND is contributed by whichever integration package is installed
+        // (OpenIddict, Keycloak, a BFF, …), each registering its own IUserSessionProvider /
+        // IUserDeviceProvider. With none installed, the Null defaults from the Abstractions module
+        // resolve and the canonical API returns an empty list everywhere.
         context.Services.TryAddScoped<IUserSessionManager, DefaultUserSessionManager>();
-        context.Services.Replace(ServiceDescriptor.Scoped<IUserSessionProvider, IdentityUserSessionProvider>());
-        context.Services.Replace(ServiceDescriptor.Scoped<IUserDeviceProvider, IdentityUserDeviceProvider>());
 
         // ADR-051 — User aggregate primitives (Query / Export / EntityDefinition).
         // The IUserDirectoryQueryableSource implementation lives in the EF Core

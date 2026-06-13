@@ -185,19 +185,16 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
         result[1].SubGroups.ShouldBeEmpty();
     }
 
-    // --- TerminateSessionAsync tests ---
+    // --- RevokeAsync (individual session) tests ---
 
     [Fact]
-    public async Task TerminateSessionAsync_RevokesAllSessions()
+    public async Task RevokeAsync_IndividualSessionUnsupported_ReturnsFalse()
     {
-        _handler.ResponseStatusCode = HttpStatusCode.OK;
-        _handler.ResponseBody = """{"value":true}""";
+        bool revoked = await _provider.RevokeAsync("user-1", "sess-abc", TestContext.Current.CancellationToken);
 
-        await _provider.TerminateSessionAsync("user-1", "sess-abc", TestContext.Current.CancellationToken);
-
-        _handler.Requests.Count.ShouldBe(1);
-        _handler.Requests[0].Method.ShouldBe("POST");
-        _handler.Requests[0].Url.ShouldContain("/v1.0/users/user-1/revokeSignInSessions");
+        // Entra ID can only revoke ALL sessions at once, so individual revocation is a no-op.
+        revoked.ShouldBeFalse();
+        _handler.Requests.ShouldBeEmpty();
     }
 
     // --- VerifyUserCredentialsAsync tests ---

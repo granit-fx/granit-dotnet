@@ -24,7 +24,8 @@ internal sealed partial class CognitoIdentityProvider(
     IOptions<CognitoAdminOptions> options,
     IOptions<CognitoClientRoleSyncOptions> clientRoleSyncOptions,
     IDistributedEventBus distributedEventBus,
-    ILogger<CognitoIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager
+    ILogger<CognitoIdentityProvider> logger)
+    : IIdentityProvider, IIdentityClientRoleManager, IUserSessionProvider, IUserDeviceProvider
 {
     private const string ProviderName = "cognito";
     private const string EmailAttribute = "email";
@@ -458,59 +459,59 @@ internal sealed partial class CognitoIdentityProvider(
             cancellationToken).ConfigureAwait(false);
     }
 
-    // ── IIdentitySessionManager ────────────────────────────────────────────
+    // ── IUserSessionProvider / IUserDeviceProvider ─────────────────────────
 
     /// <inheritdoc/>
-    public Task<IReadOnlyList<IdentitySession>> GetUserSessionsAsync(
+    /// <remarks>
+    /// Cognito exposes no list-sessions API, so this reports no sessions.
+    /// <see cref="IUserSessionManager"/> still resolves the canonical <c>/sessions</c> endpoint;
+    /// it simply surfaces nothing for a Cognito backend.
+    /// </remarks>
+    Task<IReadOnlyList<UserSessionDescriptor>> IUserSessionProvider.ListAsync(
         string userId,
-        CancellationToken cancellationToken = default)
-    {
-        // Cognito does not expose a list-sessions API
-        IReadOnlyList<IdentitySession> empty = [];
-        return Task.FromResult(empty);
-    }
+        string? currentSessionId,
+        CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<UserSessionDescriptor>>([]);
 
     /// <inheritdoc/>
-    public Task<IReadOnlyList<IdentityDeviceActivity>> GetUserDeviceActivityAsync(
-        string userId,
-        CancellationToken cancellationToken = default)
-    {
-        // Cognito device tracking is opt-in and does not map well to IdentityDeviceActivity
-        IReadOnlyList<IdentityDeviceActivity> empty = [];
-        return Task.FromResult(empty);
-    }
-
-    /// <inheritdoc/>
-    public Task TerminateSessionAsync(
+    /// <remarks>
+    /// Cognito has no per-session revoke (only bulk <c>AdminUserGlobalSignOut</c>). The admin endpoint
+    /// gates this on <see cref="IIdentityProviderCapabilities.SupportsIndividualSessionTermination"/>,
+    /// which <see cref="CognitoIdentityProviderCapabilities"/> reports as <see langword="false"/>, so
+    /// this is never reached in practice.
+    /// </remarks>
+    Task<bool> IUserSessionProvider.RevokeAsync(
         string userId,
         string sessionId,
-        CancellationToken cancellationToken = default) =>
-        // Cognito does not support individual session termination
-        throw new NotSupportedException("AWS Cognito does not support individual session termination. Use TerminateAllSessionsAsync instead.");
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException(
+            "AWS Cognito does not support individual session revocation — only global sign-out.");
 
     /// <inheritdoc/>
-    public async Task TerminateAllSessionsAsync(
+    /// <remarks>
+    /// "Revoke others" requires excluding the current session, but Cognito's only bulk primitive
+    /// (<c>AdminUserGlobalSignOut</c>) signs out every session indiscriminately and cannot spare the
+    /// caller's. There is no per-session revoke to fall back on, so this is unsupported; the admin
+    /// endpoint gates it via <see cref="IIdentityProviderCapabilities.SupportsIndividualSessionTermination"/>
+    /// (reported <see langword="false"/>), so it is never reached in practice.
+    /// </remarks>
+    Task<int> IUserSessionProvider.RevokeOthersAsync(
         string userId,
-        CancellationToken cancellationToken = default)
-    {
-        using Activity? activity = IdentityCognitoActivitySource.Source.StartActivity(
-            IdentityCognitoActivitySource.Operations.GlobalSignOut);
-        activity?.SetTag(IdentityCognitoActivitySource.Tags.UserId, userId);
+        string currentSessionId,
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException(
+            "AWS Cognito cannot revoke other sessions while sparing the current one — its only bulk " +
+            "primitive (global sign-out) terminates every session, including the caller's.");
 
-        AdminUserGlobalSignOutRequest request = new()
-        {
-            UserPoolId = _options.UserPoolId,
-            Username = userId,
-        };
-
-        await cognitoClient
-            .AdminUserGlobalSignOutAsync(request, cancellationToken)
-            .ConfigureAwait(false);
-
-        await distributedEventBus.PublishAsync(
-            new IdentitySessionsRevokedEto(userId),
-            cancellationToken).ConfigureAwait(false);
-    }
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Cognito device tracking is opt-in and does not map onto the canonical device shape, so this
+    /// reports no devices.
+    /// </remarks>
+    Task<IReadOnlyList<UserDevice>> IUserDeviceProvider.ListAsync(
+        string userId,
+        CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<UserDevice>>([]);
 
     // ── IIdentityPasswordManager ───────────────────────────────────────────
 

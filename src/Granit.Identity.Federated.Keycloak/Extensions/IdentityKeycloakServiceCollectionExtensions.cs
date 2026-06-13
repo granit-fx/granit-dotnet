@@ -82,19 +82,15 @@ public static class IdentityKeycloakServiceCollectionExtensions
                 "The registered IIdentityProvider does not implement IIdentityClientRoleManager — " +
                 "AddGranitIdentityKeycloak must be the last provider-registration call."));
 
-        // Session management facet. Forwards to the same scoped IIdentityProvider so the canonical
-        // session adapter (Granit.Identity.UserSessions' IdentityUserSessionProvider, which injects
-        // IIdentitySessionManager) surfaces Keycloak SSO sessions and devices through /sessions and
-        // /devices — and revokes them via the Admin API — with no Keycloak-specific provider code.
-        // Same instance-sharing rationale as IIdentityClientRoleManager above; without it,
-        // IIdentitySessionManager is unregistered in a Keycloak deployment and the adapter resolves
-        // nothing. OpenIddict registers its own IIdentitySessionManager (a distinct, mutually
-        // exclusive topology), so TryAdd never collides.
-        services.TryAddScoped<IIdentitySessionManager>(sp =>
-            sp.GetRequiredService<IIdentityProvider>() as IIdentitySessionManager
-            ?? throw new InvalidOperationException(
-                "The registered IIdentityProvider does not implement IIdentitySessionManager — " +
-                "AddGranitIdentityKeycloak must be the last provider-registration call."));
+        // Session/device facets. Replace the Null defaults (from the Identity Abstractions module)
+        // so the canonical /sessions and /devices APIs surface Keycloak SSO sessions and devices —
+        // and revoke them via the Admin API. Both forward to the same scoped IIdentityProvider so
+        // every facet resolves to the SAME KeycloakIdentityProvider instance, sharing its admin-token
+        // acquisition (same instance-sharing rationale as IIdentityClientRoleManager above).
+        services.Replace(ServiceDescriptor.Scoped<IUserSessionProvider>(sp =>
+            (IUserSessionProvider)sp.GetRequiredService<IIdentityProvider>()));
+        services.Replace(ServiceDescriptor.Scoped<IUserDeviceProvider>(sp =>
+            (IUserDeviceProvider)sp.GetRequiredService<IIdentityProvider>()));
 
         // Client-role sync pipeline — enumerates Keycloak client roles for each tracked
         // clientId at host boot and upserts RoleMetadata rows. See ADR-025 for details.

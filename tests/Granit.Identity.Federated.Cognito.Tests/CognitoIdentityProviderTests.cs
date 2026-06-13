@@ -197,29 +197,43 @@ public sealed class CognitoIdentityProviderTests
             Arg.Any<CancellationToken>());
     }
 
-    // ── Session management ─────────────────────────────────────────────────
+    // ── Session/device providers ──────────────────────────────────────────
 
     [Fact]
-    public async Task TerminateAllSessionsAsync_CallsGlobalSignOut()
+    public async Task ListSessionsAsync_ReturnsEmpty()
     {
-        await _sut.TerminateAllSessionsAsync("user1", TestContext.Current.CancellationToken);
+        IUserSessionProvider sessions = _sut;
 
-        await _cognitoClient.Received(1).AdminUserGlobalSignOutAsync(
-            Arg.Is<AdminUserGlobalSignOutRequest>(r => r.Username == "user1"),
-            Arg.Any<CancellationToken>());
+        IReadOnlyList<UserSessionDescriptor> result = await sessions.ListAsync(
+            "user1", currentSessionId: null, TestContext.Current.CancellationToken);
+
+        result.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task TerminateSessionAsync_ThrowsNotSupported()
+    public async Task RevokeSessionAsync_ThrowsNotSupported()
     {
+        IUserSessionProvider sessions = _sut;
+
         await Should.ThrowAsync<NotSupportedException>(
-            () => _sut.TerminateSessionAsync("user1", "session1", TestContext.Current.CancellationToken));
+            () => sessions.RevokeAsync("user1", "session1", TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public async Task GetUserSessionsAsync_ReturnsEmpty()
+    public async Task RevokeOtherSessionsAsync_ThrowsNotSupported()
     {
-        IReadOnlyList<IdentitySession> result = await _sut.GetUserSessionsAsync(
+        IUserSessionProvider sessions = _sut;
+
+        await Should.ThrowAsync<NotSupportedException>(
+            () => sessions.RevokeOthersAsync("user1", "session1", TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task ListDevicesAsync_ReturnsEmpty()
+    {
+        IUserDeviceProvider devices = _sut;
+
+        IReadOnlyList<UserDevice> result = await devices.ListAsync(
             "user1", TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();

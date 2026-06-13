@@ -228,26 +228,6 @@ public sealed class GoogleCloudIdentityProviderTests
             () => _sut.RemoveUserFromGroupAsync("uid-1", "group", TestContext.Current.CancellationToken));
     }
 
-    // ── Sessions ────────────────────────────────────────────────────────
-
-    [Fact]
-    public async Task TerminateSessionAsync_ThrowsNotSupported()
-    {
-        await Should.ThrowAsync<NotSupportedException>(
-            () => _sut.TerminateSessionAsync("uid-1", "session-1", TestContext.Current.CancellationToken));
-    }
-
-    [Fact]
-    public async Task TerminateAllSessionsAsync_RevokesTokensAndPublishesEvent()
-    {
-        await _sut.TerminateAllSessionsAsync("uid-1", TestContext.Current.CancellationToken);
-
-        await _transport.Received(1).RevokeRefreshTokensAsync("uid-1", Arg.Any<CancellationToken>());
-        await _distributedEventBus.Received(1).PublishAsync(
-            Arg.Is<IdentitySessionsRevokedEto>(e => e.UserId == "uid-1"),
-            Arg.Any<CancellationToken>());
-    }
-
     // ── Password ────────────────────────────────────────────────────────
 
     [Fact]

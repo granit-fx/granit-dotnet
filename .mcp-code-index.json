@@ -25815,7 +25815,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/GranitIdentityModule.cs",
-      "line": 32,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",
@@ -26016,40 +26016,6 @@
           "name": "RemoveRoleAsync",
           "kind": "method",
           "signature": "RemoveRoleAsync(string userId, string roleName, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IIdentitySessionManager",
-      "fqn": "Granit.Identity.IIdentitySessionManager",
-      "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentitySessionManager.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "GetUserSessionsAsync",
-          "kind": "method",
-          "signature": "GetUserSessionsAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<IdentitySession>>"
-        },
-        {
-          "name": "GetUserDeviceActivityAsync",
-          "kind": "method",
-          "signature": "GetUserDeviceActivityAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<IdentityDeviceActivity>>"
-        },
-        {
-          "name": "TerminateSessionAsync",
-          "kind": "method",
-          "signature": "TerminateSessionAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "TerminateAllSessionsAsync",
-          "kind": "method",
-          "signature": "TerminateAllSessionsAsync(string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -28590,15 +28556,6 @@
       "members": []
     },
     {
-      "name": "IdentityDeviceActivity",
-      "fqn": "Granit.Identity.Models.IdentityDeviceActivity",
-      "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Models/IdentityDeviceActivity.cs",
-      "line": 27,
-      "members": []
-    },
-    {
       "name": "IdentityGroup",
       "fqn": "Granit.Identity.Models.IdentityGroup",
       "kind": "record",
@@ -28614,15 +28571,6 @@
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Models/IdentityRole.cs",
       "line": 9,
-      "members": []
-    },
-    {
-      "name": "IdentitySession",
-      "fqn": "Granit.Identity.Models.IdentitySession",
-      "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Models/IdentitySession.cs",
-      "line": 12,
       "members": []
     },
     {

@@ -52,7 +52,7 @@ public sealed class KeycloakAdminOptions
     public string ClientSecret { get; set; } = string.Empty;
 
     /// <summary>
-    /// When <c>true</c>, <c>GetUserDeviceActivityAsync</c> uses the Keycloak Account API
+    /// When <c>true</c>, device listing uses the Keycloak Account API
     /// (<c>GET /realms/{realm}/account/sessions/devices</c>) via OAuth 2.0 token exchange,
     /// which provides device-level details (OS, browser, device type).
     /// </summary>

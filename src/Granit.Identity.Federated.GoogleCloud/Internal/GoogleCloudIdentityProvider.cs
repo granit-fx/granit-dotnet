@@ -254,28 +254,6 @@ internal sealed partial class GoogleCloudIdentityProvider(
     public Task RemoveUserFromGroupAsync(string userId, string groupId, CancellationToken cancellationToken = default) =>
         throw new NotSupportedException("Firebase Auth does not support groups.");
 
-    // ── Sessions ──────────────────────────────────────────────────────
-
-    public Task<IReadOnlyList<IdentitySession>> GetUserSessionsAsync(string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentitySession>>([]);
-
-    public Task<IReadOnlyList<IdentityDeviceActivity>> GetUserDeviceActivityAsync(string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentityDeviceActivity>>([]);
-
-    public Task TerminateSessionAsync(string userId, string sessionId, CancellationToken cancellationToken = default) =>
-        throw new NotSupportedException("Firebase Auth does not support individual session termination.");
-
-    public async Task TerminateAllSessionsAsync(string userId, CancellationToken cancellationToken = default)
-    {
-        using Activity? activity = IdentityGoogleCloudActivitySource.Source.StartActivity(
-            IdentityGoogleCloudActivitySource.Operations.RevokeTokens);
-        activity?.SetTag(IdentityGoogleCloudActivitySource.Tags.UserId, userId);
-
-        await transport.RevokeRefreshTokensAsync(userId, cancellationToken).ConfigureAwait(false);
-
-        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
-    }
-
     // ── Password ──────────────────────────────────────────────────────
 
     public Task<DateTimeOffset?> GetPasswordChangedAtAsync(string userId, CancellationToken cancellationToken = default) =>

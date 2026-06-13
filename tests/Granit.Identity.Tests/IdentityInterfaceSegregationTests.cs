@@ -19,13 +19,12 @@ public sealed class IdentityInterfaceSegregationTests
         typeof(IIdentityUserWriter),
         typeof(IIdentityRoleManager),
         typeof(IIdentityGroupManager),
-        typeof(IIdentitySessionManager),
         typeof(IIdentityPasswordManager),
         typeof(IIdentityCredentialVerifier),
     ];
 
     // ───────────────────────────────────────────────
-    // 1. IIdentityProvider inherits all 7 interfaces
+    // 1. IIdentityProvider inherits all 6 interfaces
     // ───────────────────────────────────────────────
 
     [Fact]
@@ -43,10 +42,6 @@ public sealed class IdentityInterfaceSegregationTests
     [Fact]
     public void IIdentityProvider_IsAssignableTo_IIdentityGroupManager() =>
         typeof(IIdentityProvider).IsAssignableTo(typeof(IIdentityGroupManager)).ShouldBeTrue();
-
-    [Fact]
-    public void IIdentityProvider_IsAssignableTo_IIdentitySessionManager() =>
-        typeof(IIdentityProvider).IsAssignableTo(typeof(IIdentitySessionManager)).ShouldBeTrue();
 
     [Fact]
     public void IIdentityProvider_IsAssignableTo_IIdentityPasswordManager() =>

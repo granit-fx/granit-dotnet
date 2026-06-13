@@ -65,6 +65,14 @@ public static class IdentityCognitoServiceCollectionExtensions
                 "The registered IIdentityProvider does not implement IIdentityClientRoleManager — " +
                 "AddGranitIdentityCognito must be the last provider-registration call."));
 
+        // Session/device facets. Replace the Null defaults so the canonical /sessions and /devices
+        // endpoints surface Cognito data. Both forward to the SAME scoped IIdentityProvider instance
+        // (mirroring IIdentityClientRoleManager above) so every facet shares one CognitoIdentityProvider.
+        services.Replace(ServiceDescriptor.Scoped<IUserSessionProvider>(sp =>
+            (IUserSessionProvider)sp.GetRequiredService<IIdentityProvider>()));
+        services.Replace(ServiceDescriptor.Scoped<IUserDeviceProvider>(sp =>
+            (IUserDeviceProvider)sp.GetRequiredService<IIdentityProvider>()));
+
         // Client-role sync pipeline — enumerates prefix-matching Cognito groups for each
         // tracked app-client id at host boot and upserts RoleMetadata rows.
         services.AddOptions<CognitoClientRoleSyncOptions>()

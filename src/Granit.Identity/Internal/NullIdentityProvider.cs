@@ -26,16 +26,6 @@ internal sealed class NullIdentityProvider : IIdentityProvider
         Task.CompletedTask;
 
     /// <inheritdoc/>
-    public Task<IReadOnlyList<IdentitySession>> GetUserSessionsAsync(
-        string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentitySession>>([]);
-
-    /// <inheritdoc/>
-    public Task<IReadOnlyList<IdentityDeviceActivity>> GetUserDeviceActivityAsync(
-        string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentityDeviceActivity>>([]);
-
-    /// <inheritdoc/>
     public Task<DateTimeOffset?> GetPasswordChangedAtAsync(
         string userId, CancellationToken cancellationToken = default) =>
         Task.FromResult<DateTimeOffset?>(null);
@@ -70,15 +60,6 @@ internal sealed class NullIdentityProvider : IIdentityProvider
         string userId, string roleName, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
 
-    /// <inheritdoc/>
-    public Task TerminateSessionAsync(
-        string userId, string sessionId, CancellationToken cancellationToken = default) =>
-        Task.CompletedTask;
-
-    /// <inheritdoc/>
-    public Task TerminateAllSessionsAsync(
-        string userId, CancellationToken cancellationToken = default) =>
-        Task.CompletedTask;
 
     /// <inheritdoc/>
     public Task SendPasswordResetEmailAsync(

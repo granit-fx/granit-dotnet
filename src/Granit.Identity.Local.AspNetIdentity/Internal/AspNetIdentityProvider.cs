@@ -1,4 +1,6 @@
+using Granit.Events;
 using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
 using Microsoft.AspNetCore.Identity;
@@ -13,16 +15,17 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// <see cref="IIdentityProvider"/> implementation backed by ASP.NET Core Identity.
 /// </summary>
 /// <remarks>
-/// Implements all 7 sub-interfaces of <see cref="IIdentityProvider"/>:
+/// Implements all sub-interfaces of <see cref="IIdentityProvider"/>:
 /// <see cref="IIdentityUserReader"/>, <see cref="IIdentityUserWriter"/>,
 /// <see cref="IIdentityRoleManager"/>, <see cref="IIdentityGroupManager"/>,
-/// <see cref="IIdentitySessionManager"/>, <see cref="IIdentityPasswordManager"/>,
+/// <see cref="IIdentityPasswordManager"/>,
 /// <see cref="IIdentityCredentialVerifier"/>.
 /// </remarks>
 internal sealed partial class AspNetIdentityProvider(
     UserManager<LocalIdentity> _userManager,
     RoleManager<GranitRole> _roleManager,
     ILocalIdentityGroupStore _groupStore,
+    IDistributedEventBus _eventBus,
     ILogger<AspNetIdentityProvider> _logger) : IIdentityProvider
 {
     // ──── IIdentityUserReader ────
@@ -237,29 +240,6 @@ internal sealed partial class AspNetIdentityProvider(
         string userId, string groupId, CancellationToken cancellationToken = default) =>
         _groupStore.RemoveUserFromGroupAsync(userId, groupId, cancellationToken);
 
-    // ──── IIdentitySessionManager ────
-    // ASP.NET Core Identity does not support individual session termination.
-
-    /// <inheritdoc/>
-    public Task<IReadOnlyList<IdentitySession>> GetUserSessionsAsync(
-        string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentitySession>>([]);
-
-    /// <inheritdoc/>
-    public Task<IReadOnlyList<IdentityDeviceActivity>> GetUserDeviceActivityAsync(
-        string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentityDeviceActivity>>([]);
-
-    /// <inheritdoc/>
-    public Task TerminateSessionAsync(
-        string userId, string sessionId, CancellationToken cancellationToken = default) =>
-        Task.CompletedTask;
-
-    /// <inheritdoc/>
-    public Task TerminateAllSessionsAsync(
-        string userId, CancellationToken cancellationToken = default) =>
-        Task.CompletedTask;
-
     // ──── IIdentityPasswordManager ────
 
     /// <inheritdoc/>
@@ -268,10 +248,29 @@ internal sealed partial class AspNetIdentityProvider(
         Task.FromResult<DateTimeOffset?>(null);
 
     /// <inheritdoc/>
-    // SupportsNativePasswordResetEmail is false — the framework routes through IPasswordResetService instead.
-    public Task SendPasswordResetEmailAsync(
-        string userId, CancellationToken cancellationToken = default) =>
-        Task.CompletedTask;
+    // Admin-initiated reset, same delivery path as the self-service forgot-password flow:
+    // resolve the user, generate a reset token, and publish PasswordResetRequestedEto.
+    // Granit.Identity.Local.Notifications consumes it and sends the email with the reset link.
+#pragma warning disable GRSEC003 // Reset token is a transient parameter, not a stored secret
+    public async Task SendPasswordResetEmailAsync(
+        string userId, CancellationToken cancellationToken = default)
+    {
+        LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
+            ?? throw new InvalidOperationException($"User {userId} not found.");
+
+        if (string.IsNullOrEmpty(user.Email))
+        {
+            throw new InvalidOperationException(
+                $"User {userId} has no email address to send a reset link to.");
+        }
+
+        string token = await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
+
+        await _eventBus.PublishAsync(
+            new PasswordResetRequestedEto(user.Id, user.Email, token, user.TenantId),
+            cancellationToken).ConfigureAwait(false);
+    }
+#pragma warning restore GRSEC003
 
     /// <inheritdoc/>
 #pragma warning disable GRSEC003 // Method name contains "Password" — not a secret

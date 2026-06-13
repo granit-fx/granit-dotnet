@@ -1,0 +1,181 @@
+using System.Collections.Immutable;
+using System.Text.Json;
+using Granit.DataFiltering;
+using Granit.Domain;
+using Granit.Identity;
+using Granit.Identity.Local.Services;
+using Granit.Timing;
+using OpenIddict.Abstractions;
+using ZiggyCreatures.Caching.Fusion;
+
+namespace Granit.OpenIddict.Services;
+
+/// <summary>
+/// OpenIddict-backed <see cref="IUserSessionProvider"/> / <see cref="IUserDeviceProvider"/>: each
+/// valid refresh token in the OpenIddict token store represents one live session, identified by the
+/// token id. Revocation calls into <see cref="IOpenIddictTokenManager"/> to actually revoke the
+/// underlying refresh token, so the session disappears on the next token-refresh attempt.
+/// </summary>
+internal sealed class OpenIddictUserSessionProvider(
+    IOpenIddictTokenManager tokenManager,
+    IFusionCache cache,
+    IClock clock,
+    IDataFilter? dataFilter = null) : IUserSessionProvider, IUserDeviceProvider
+{
+    public async Task<IReadOnlyList<UserSessionDescriptor>> ListAsync(
+        string userId, string? currentSessionId, CancellationToken cancellationToken = default)
+    {
+        var sessions = new List<UserSessionDescriptor>();
+
+        // GranitOpenIddictToken.TenantId is always null — OpenIddict never sets it.
+        // Disable the IMultiTenant filter so tenant users can see their own tokens.
+        using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
+
+        await foreach (object token in tokenManager.FindBySubjectAsync(userId, cancellationToken))
+        {
+            UserSessionDescriptor? session = await MapTokenToSessionAsync(
+                userId, token, currentSessionId, cancellationToken).ConfigureAwait(false);
+            if (session is not null)
+            {
+                sessions.Add(session);
+            }
+        }
+
+        return sessions;
+    }
+
+    // Maps a single OpenIddict token to a UserSessionDescriptor, or null when the token is not a
+    // valid refresh token (the only kind that represents a live session) or carries no id.
+    private async Task<UserSessionDescriptor?> MapTokenToSessionAsync(
+        string userId, object token, string? currentSessionId, CancellationToken cancellationToken)
+    {
+        string? sessionId = await GetValidRefreshTokenIdAsync(token, cancellationToken)
+            .ConfigureAwait(false);
+        if (sessionId is null)
+        {
+            return null;
+        }
+
+        DateTimeOffset startedAt = (await tokenManager.GetCreationDateAsync(token, cancellationToken)
+            .ConfigureAwait(false)) ?? clock.Now;
+
+        MaybeValue<UserSessionActivity> activity =
+            await cache.TryGetAsync<UserSessionActivity>(
+                $"session:{userId}:{sessionId}", token: cancellationToken)
+                .ConfigureAwait(false);
+        DateTimeOffset lastAccess = activity.HasValue ? activity.Value.LastActivityAt : startedAt;
+
+        ImmutableDictionary<string, JsonElement> properties =
+            await tokenManager.GetPropertiesAsync(token, cancellationToken).ConfigureAwait(false);
+        string? ipAddress = GetStringProperty(properties, "ip_address");
+        string? userAgent = GetStringProperty(properties, "user_agent");
+
+        return new UserSessionDescriptor(
+            SessionId: sessionId,
+            UserId: userId,
+            IsCurrent: sessionId == currentSessionId,
+            CreatedAt: startedAt,
+            LastAccessedAt: lastAccess,
+            UserAgent: userAgent,
+            IpAddress: ipAddress,
+            Location: null);
+    }
+
+    // Returns the token id when the token is a valid refresh token (the only kind representing a
+    // live session) carrying an id; otherwise null.
+    private async Task<string?> GetValidRefreshTokenIdAsync(
+        object token, CancellationToken cancellationToken)
+    {
+        string? type = await tokenManager.GetTypeAsync(token, cancellationToken)
+            .ConfigureAwait(false);
+        string? status = await tokenManager.GetStatusAsync(token, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (type != OpenIddictConstants.TokenTypeHints.RefreshToken
+            || status != OpenIddictConstants.Statuses.Valid)
+        {
+            return null;
+        }
+
+        return await tokenManager.GetIdAsync(token, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static string? GetStringProperty(
+        ImmutableDictionary<string, JsonElement> properties, string key) =>
+        properties.TryGetValue(key, out JsonElement el) && el.ValueKind == JsonValueKind.String
+            ? el.GetString()
+            : null;
+
+    public async Task<bool> RevokeAsync(
+        string userId, string sessionId, CancellationToken cancellationToken = default)
+    {
+        using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
+
+        object? token = await tokenManager.FindByIdAsync(sessionId, cancellationToken)
+            .ConfigureAwait(false);
+        if (token is null)
+        {
+            return false;
+        }
+
+        // Only revoke a live refresh token belonging to this user — never another subject's token,
+        // and never an already-revoked/expired one (a no-op revoke must report false).
+        if (await GetValidRefreshTokenIdAsync(token, cancellationToken).ConfigureAwait(false) is null)
+        {
+            return false;
+        }
+
+        string? subject = await tokenManager.GetSubjectAsync(token, cancellationToken)
+            .ConfigureAwait(false);
+        if (subject != userId)
+        {
+            return false;
+        }
+
+        return await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<int> RevokeOthersAsync(
+        string userId, string currentSessionId, CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<UserSessionDescriptor> sessions =
+            await ListAsync(userId, currentSessionId, cancellationToken).ConfigureAwait(false);
+
+        int revoked = 0;
+        foreach (UserSessionDescriptor session in sessions)
+        {
+            if (session.SessionId == currentSessionId)
+            {
+                continue;
+            }
+
+            if (await RevokeAsync(userId, session.SessionId, cancellationToken).ConfigureAwait(false))
+            {
+                revoked++;
+            }
+        }
+
+        return revoked;
+    }
+
+    public async Task<IReadOnlyList<UserDevice>> ListAsync(
+        string userId, CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<UserSessionDescriptor> sessions =
+            await ListAsync(userId, currentSessionId: null, cancellationToken).ConfigureAwait(false);
+
+        // The OpenIddict backend exposes no stable device id, OS or browser — only the raw IP. Group
+        // sessions by IP and synthesize a stable device signature from it (IdP SSO devices are
+        // browser-based unless the backend declares otherwise).
+        return [.. sessions
+            .GroupBy(s => s.IpAddress ?? "unknown")
+            .Select(g => new UserDevice(
+                DeviceId: g.Key,
+                Kind: DeviceKind.Browser,
+                OperatingSystem: null,
+                Browser: null,
+                LastSeen: g.Max(s => s.LastAccessedAt),
+                SessionCount: g.Count(),
+                LastLocation: null))];
+    }
+}

@@ -36,7 +36,8 @@ internal sealed partial class KeycloakIdentityProvider(
     IOptions<KeycloakAdminOptions> options,
     IDistributedEventBus distributedEventBus,
     IdentityMetrics metrics,
-    ILogger<KeycloakIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager
+    ILogger<KeycloakIdentityProvider> logger)
+    : IIdentityProvider, IIdentityClientRoleManager, IUserSessionProvider, IUserDeviceProvider
 {
     private const string ProviderName = "keycloak";
     private const string GetUserOperation = "get_user";
@@ -221,8 +222,9 @@ internal sealed partial class KeycloakIdentityProvider(
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<IdentitySession>> GetUserSessionsAsync(
+    public async Task<IReadOnlyList<UserSessionDescriptor>> ListAsync(
         string userId,
+        string? currentSessionId,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(userId);
@@ -232,14 +234,8 @@ internal sealed partial class KeycloakIdentityProvider(
 
         try
         {
-            HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
-            string endpoint = options.Value.GetUserSessionsEndpoint(userId);
-
-            List<KeycloakSessionRepresentation>? sessions = await client
-                .GetFromJsonAsync<List<KeycloakSessionRepresentation>>(endpoint, cancellationToken)
-                .ConfigureAwait(false);
-
-            return sessions?.ConvertAll(ToIdentitySession) ?? [];
+            List<KeycloakSessionRepresentation> sessions = await GetSessionsAsync(userId, cancellationToken).ConfigureAwait(false);
+            return sessions.ConvertAll(s => ToSessionDescriptor(s, userId, currentSessionId));
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
@@ -250,7 +246,81 @@ internal sealed partial class KeycloakIdentityProvider(
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<IdentityDeviceActivity>> GetUserDeviceActivityAsync(
+    /// <remarks>
+    /// Keycloak revokes a single user session via <c>DELETE /admin/realms/{realm}/sessions/{id}</c>.
+    /// Publishes <see cref="IdentitySessionsRevokedEto"/> on success so downstream session caches
+    /// invalidate, mirroring the previous bridge behaviour.
+    /// </remarks>
+    public async Task<bool> RevokeAsync(
+        string userId,
+        string sessionId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(userId);
+        ArgumentNullException.ThrowIfNull(sessionId);
+
+        using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.TerminateSession);
+        activity?.SetTag(IdentityKeycloakActivitySource.TagUserId, userId);
+
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        string endpoint = options.Value.GetSessionEndpoint(sessionId);
+
+        using HttpResponseMessage response = await client
+            .DeleteAsync(endpoint, cancellationToken)
+            .ConfigureAwait(false);
+
+        response.EnsureSuccessStatusCode();
+
+        LogSessionTerminated(sessionId, userId);
+
+        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
+
+        return true;
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Lists the user's Keycloak sessions and revokes each one whose id differs from
+    /// <paramref name="currentSessionId"/>. Returns the number of sessions revoked.
+    /// </remarks>
+    public async Task<int> RevokeOthersAsync(
+        string userId,
+        string currentSessionId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(userId);
+        ArgumentNullException.ThrowIfNull(currentSessionId);
+
+        using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.TerminateAllSessions);
+        activity?.SetTag(IdentityKeycloakActivitySource.TagUserId, userId);
+        long startTimestamp = Stopwatch.GetTimestamp();
+
+        List<KeycloakSessionRepresentation> sessions = await GetSessionsAsync(userId, cancellationToken).ConfigureAwait(false);
+
+        int revoked = 0;
+        foreach (KeycloakSessionRepresentation session in sessions)
+        {
+            if (string.Equals(session.Id, currentSessionId, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (await RevokeAsync(userId, session.Id, cancellationToken).ConfigureAwait(false))
+            {
+                revoked++;
+            }
+        }
+
+        LogOtherSessionsTerminated(userId, revoked);
+
+        metrics.RecordOperationCompleted(null, "terminate_all_sessions", ProviderName, "terminated");
+        metrics.RecordOperationDuration(null, "terminate_all_sessions", ProviderName, Stopwatch.GetElapsedTime(startTimestamp));
+
+        return revoked;
+    }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<UserDevice>> ListAsync(
         string userId,
         CancellationToken cancellationToken = default)
     {
@@ -262,8 +332,8 @@ internal sealed partial class KeycloakIdentityProvider(
         try
         {
             return options.Value.UseTokenExchangeForDeviceActivity
-                ? await GetDeviceActivityViaAccountApiAsync(userId, cancellationToken).ConfigureAwait(false)
-                : await GetDeviceActivityViaAdminSessionsAsync(userId, cancellationToken).ConfigureAwait(false);
+                ? await GetDevicesViaAccountApiAsync(userId, cancellationToken).ConfigureAwait(false)
+                : await GetDevicesViaAdminSessionsAsync(userId, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
@@ -681,62 +751,6 @@ internal sealed partial class KeycloakIdentityProvider(
             $"Keycloak client role '{roleName}' not found on client '{clientId}'.");
     }
 
-    // ──── Feature 2: Session termination ────
-
-    /// <inheritdoc/>
-    public async Task TerminateSessionAsync(
-        string userId,
-        string sessionId,
-        CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(userId);
-        ArgumentNullException.ThrowIfNull(sessionId);
-
-        using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.TerminateSession);
-        activity?.SetTag(IdentityKeycloakActivitySource.TagUserId, userId);
-
-        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
-        string endpoint = options.Value.GetSessionEndpoint(sessionId);
-
-        using HttpResponseMessage response = await client
-            .DeleteAsync(endpoint, cancellationToken)
-            .ConfigureAwait(false);
-
-        response.EnsureSuccessStatusCode();
-
-        LogSessionTerminated(sessionId, userId);
-
-        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    public async Task TerminateAllSessionsAsync(
-        string userId,
-        CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(userId);
-
-        using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.TerminateAllSessions);
-        activity?.SetTag(IdentityKeycloakActivitySource.TagUserId, userId);
-        long startTimestamp = Stopwatch.GetTimestamp();
-
-        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
-        string endpoint = options.Value.GetUserLogoutEndpoint(userId);
-
-        using HttpResponseMessage response = await client
-            .PostAsync(endpoint, content: null, cancellationToken)
-            .ConfigureAwait(false);
-
-        response.EnsureSuccessStatusCode();
-
-        LogAllSessionsTerminated(userId);
-
-        metrics.RecordOperationCompleted(null, "terminate_all_sessions", ProviderName, "terminated");
-        metrics.RecordOperationDuration(null, "terminate_all_sessions", ProviderName, Stopwatch.GetElapsedTime(startTimestamp));
-
-        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
-    }
-
     // ──── Feature 3: Password reset ────
 
     /// <inheritdoc/>
@@ -959,7 +973,20 @@ internal sealed partial class KeycloakIdentityProvider(
         await distributedEventBus.PublishAsync(new IdentityGroupMembershipChangedEto(userId, groupId, Added: false), cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<IReadOnlyList<IdentityDeviceActivity>> GetDeviceActivityViaAccountApiAsync(
+    private async Task<List<KeycloakSessionRepresentation>> GetSessionsAsync(
+        string userId, CancellationToken cancellationToken)
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        string endpoint = options.Value.GetUserSessionsEndpoint(userId);
+
+        List<KeycloakSessionRepresentation>? sessions = await client
+            .GetFromJsonAsync<List<KeycloakSessionRepresentation>>(endpoint, cancellationToken)
+            .ConfigureAwait(false);
+
+        return sessions ?? [];
+    }
+
+    private async Task<IReadOnlyList<UserDevice>> GetDevicesViaAccountApiAsync(
         string userId, CancellationToken cancellationToken)
     {
         string userToken = await tokenExchangeService
@@ -974,29 +1001,24 @@ internal sealed partial class KeycloakIdentityProvider(
             .GetFromJsonAsync<List<KeycloakDeviceRepresentation>>(endpoint, cancellationToken)
             .ConfigureAwait(false);
 
-        return devices?.ConvertAll(ToIdentityDeviceActivity) ?? [];
+        return devices?.ConvertAll(ToUserDevice) ?? [];
     }
 
-    private async Task<IReadOnlyList<IdentityDeviceActivity>> GetDeviceActivityViaAdminSessionsAsync(
+    private async Task<IReadOnlyList<UserDevice>> GetDevicesViaAdminSessionsAsync(
         string userId, CancellationToken cancellationToken)
     {
-        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
-        string endpoint = options.Value.GetUserSessionsEndpoint(userId);
+        List<KeycloakSessionRepresentation> sessions = await GetSessionsAsync(userId, cancellationToken).ConfigureAwait(false);
 
-        List<KeycloakSessionRepresentation>? sessions = await client
-            .GetFromJsonAsync<List<KeycloakSessionRepresentation>>(endpoint, cancellationToken)
-            .ConfigureAwait(false);
-
-        return sessions?.ConvertAll(s => new IdentityDeviceActivity(
-            IpAddress: s.IpAddress,
-            LastAccess: DateTimeOffset.FromUnixTimeMilliseconds(s.LastAccess),
-            Device: null,
+        // The admin sessions endpoint exposes no device metadata, so each session maps to its
+        // own browser-kind device keyed by the session id (the only stable signature available).
+        return sessions.ConvertAll(s => new UserDevice(
+            DeviceId: s.Id,
+            Kind: DeviceKind.Browser,
             OperatingSystem: null,
-            OperatingSystemVersion: null,
             Browser: null,
-            Mobile: false,
-            Current: false,
-            Sessions: [ToIdentitySession(s)])) ?? [];
+            LastSeen: DateTimeOffset.FromUnixTimeMilliseconds(s.LastAccess),
+            SessionCount: 1,
+            LastLocation: null));
     }
 
     private async Task<HttpClient> CreateAuthenticatedClientAsync(CancellationToken cancellationToken)
@@ -1031,28 +1053,29 @@ internal sealed partial class KeycloakIdentityProvider(
         return result.Count > 0 ? result : null;
     }
 
-    private static IdentitySession ToIdentitySession(KeycloakSessionRepresentation session) =>
+    private static UserSessionDescriptor ToSessionDescriptor(
+        KeycloakSessionRepresentation session, string userId, string? currentSessionId) =>
         new(
             SessionId: session.Id,
+            UserId: userId,
+            IsCurrent: string.Equals(session.Id, currentSessionId, StringComparison.Ordinal),
+            CreatedAt: DateTimeOffset.FromUnixTimeMilliseconds(session.Start),
+            LastAccessedAt: DateTimeOffset.FromUnixTimeMilliseconds(session.LastAccess),
+            UserAgent: null,
             IpAddress: session.IpAddress,
-            StartedAt: DateTimeOffset.FromUnixTimeMilliseconds(session.Start),
-            LastAccess: DateTimeOffset.FromUnixTimeMilliseconds(session.LastAccess),
-            RememberMe: session.RememberMe,
-            Clients: session.Clients is { Count: > 0 }
-                ? session.Clients.Values.ToList()
-                : []);
+            Location: null);
 
-    private static IdentityDeviceActivity ToIdentityDeviceActivity(KeycloakDeviceRepresentation device) =>
+    private static UserDevice ToUserDevice(KeycloakDeviceRepresentation device) =>
         new(
-            IpAddress: device.IpAddress,
-            LastAccess: DateTimeOffset.FromUnixTimeMilliseconds(device.LastAccess),
-            Device: device.Device,
+            // The account devices endpoint carries no stable device id, so synthesize a signature
+            // from the OS/browser pair (falling back to the IP when both are absent).
+            DeviceId: $"{device.Os}/{device.Browser}",
+            Kind: DeviceKind.Browser,
             OperatingSystem: device.Os,
-            OperatingSystemVersion: device.OsVersion,
             Browser: device.Browser,
-            Mobile: device.Mobile,
-            Current: device.Current,
-            Sessions: device.Sessions?.ConvertAll(ToIdentitySession) ?? []);
+            LastSeen: DateTimeOffset.FromUnixTimeMilliseconds(device.LastAccess),
+            SessionCount: device.Sessions?.Count ?? 0,
+            LastLocation: null);
 
     private async Task<KeycloakRoleRepresentation> GetRoleByNameAsync(
         HttpClient client, string roleName, CancellationToken cancellationToken)
@@ -1168,8 +1191,8 @@ internal sealed partial class KeycloakIdentityProvider(
     [LoggerMessage(Level = LogLevel.Information, Message = "Session {SessionId} terminated for user {UserId} in Keycloak")]
     private partial void LogSessionTerminated(string sessionId, string userId);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "All sessions terminated for user {UserId} in Keycloak")]
-    private partial void LogAllSessionsTerminated(string userId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "{RevokedCount} other sessions terminated for user {UserId} in Keycloak")]
+    private partial void LogOtherSessionsTerminated(string userId, int revokedCount);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Password reset email sent for user {UserId} via Keycloak")]
     private partial void LogPasswordResetEmailSent(string userId);

@@ -12,7 +12,9 @@ internal sealed class AspNetIdentityProviderCapabilities : IIdentityProviderCapa
     public bool SupportsIndividualSessionTermination => false;
 
     /// <inheritdoc/>
-    public bool SupportsNativePasswordResetEmail => false;
+    // Delivered by publishing PasswordResetRequestedEto, consumed by Granit.Identity.Local.Notifications
+    // (same path as the self-service forgot-password flow). Requires that module + an email channel to be wired.
+    public bool SupportsNativePasswordResetEmail => true;
 
     /// <inheritdoc/>
     public bool SupportsGroupHierarchy => false;

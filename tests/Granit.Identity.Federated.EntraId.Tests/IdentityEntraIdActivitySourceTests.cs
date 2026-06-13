@@ -155,12 +155,12 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
     }
 
     [Fact]
-    public async Task TerminateAllSessionsAsync_EmitsSpan()
+    public async Task RevokeOthersAsync_EmitsSpan()
     {
         _handler.ResponseStatusCode = HttpStatusCode.OK;
-        _handler.ResponseBody = """{"value":true}""";
+        _handler.ResponseBody = """{"value":[]}""";
 
-        await _provider.TerminateAllSessionsAsync("u1", TestContext.Current.CancellationToken);
+        await _provider.RevokeOthersAsync("u1", currentSessionId: "s1", TestContext.Current.CancellationToken);
 
         // Filter by both operation name AND tag to avoid cross-contamination from parallel test classes.
         Activity? activity = _activities.Find(a =>
