@@ -3,6 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
+    <!-- justification: the SQLite test harness's SqliteCompatibleModelCustomizer derives from
+         RelationalModelCustomizer and resolves ModelCustomizerDependencies — EF Core internal APIs
+         (EF1001) — to remap DateTimeOffset for SQLite. Test-only; the shipped package never touches them. -->
     <NoWarn>$(NoWarn);EF1001</NoWarn>
   </PropertyGroup>
 
