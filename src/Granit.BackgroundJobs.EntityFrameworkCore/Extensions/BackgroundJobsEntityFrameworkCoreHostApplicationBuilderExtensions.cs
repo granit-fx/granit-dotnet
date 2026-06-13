@@ -1,5 +1,7 @@
+using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -41,6 +43,9 @@ public static class BackgroundJobsEntityFrameworkCoreHostApplicationBuilderExten
             ServiceDescriptor.Scoped<IBackgroundJobStoreReader>(sp => sp.GetRequiredService<EfBackgroundJobStore>()));
         builder.Services.Replace(
             ServiceDescriptor.Scoped<IBackgroundJobStoreWriter>(sp => sp.GetRequiredService<EfBackgroundJobStore>()));
+
+        // Backs MapGranitQuery<BackgroundJobDefinition> + the analytics runner over BackgroundJobDefinitionQuery.
+        builder.Services.AddScoped<IQueryableSource<BackgroundJobDefinition>, EfBackgroundJobDefinitionQueryableSource>();
 
         return builder;
     }

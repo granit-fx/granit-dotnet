@@ -3,9 +3,12 @@ using Granit.DataExchange.EntityFrameworkCore.Internal.Export;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Stores;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Stores;
 using Granit.DataExchange.Export;
+using Granit.DataExchange.Export.Domain;
+using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -51,6 +54,11 @@ public static class DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensi
         // Extra property support: replaces null-object defaults from Granit.DataExchange
         builder.Services.AddSingleton<IExtraExportFieldProvider, EfCoreExtraExportFieldProvider>();
         builder.Services.AddScoped<IExportExtraValueResolver, EfCoreExportExtraValueResolver>();
+
+        // Query engine sources — back MapGranitQuery<T> + the analytics runner over
+        // ImportJobQuery / ExportJobQuery.
+        builder.Services.AddScoped<IQueryableSource<ImportJob>, EfImportJobQueryableSource>();
+        builder.Services.AddScoped<IQueryableSource<ExportJob>, EfExportJobQueryableSource>();
 
         return builder;
     }

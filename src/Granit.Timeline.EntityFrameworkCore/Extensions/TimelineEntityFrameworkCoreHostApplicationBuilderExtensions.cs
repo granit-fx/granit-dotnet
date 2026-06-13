@@ -1,5 +1,7 @@
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.Domain;
 using Granit.Timeline.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,6 +48,9 @@ public static class TimelineEntityFrameworkCoreHostApplicationBuilderExtensions
             ServiceDescriptor.Scoped<IReactionReader>(sp => sp.GetRequiredService<EfCoreReactionStore>()));
         builder.Services.Replace(
             ServiceDescriptor.Scoped<IReactionWriter>(sp => sp.GetRequiredService<EfCoreReactionStore>()));
+
+        // Backs MapGranitQuery<TimelineEntry> + the analytics runner over TimelineEntryQuery.
+        builder.Services.AddScoped<IQueryableSource<TimelineEntry>, EfTimelineEntryQueryableSource>();
 
         return builder;
     }

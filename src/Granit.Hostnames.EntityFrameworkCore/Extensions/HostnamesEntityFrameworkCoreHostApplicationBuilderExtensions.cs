@@ -1,6 +1,8 @@
 using Granit.Hostnames.Contracts;
+using Granit.Hostnames.Domain;
 using Granit.Hostnames.EntityFrameworkCore.Internal;
 using Granit.Hostnames.Options;
+using Granit.QueryEngine;
 using Granit.Workflow.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,6 +59,9 @@ public static class HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions
             sp => sp.GetRequiredService<EfManagedHostnameStore>());
 
         builder.Services.TryAddScoped<IHostnameResolver, EfHostnameResolver>();
+
+        // Backs MapGranitQuery<ManagedHostname> + the analytics runner over ManagedHostnameQuery.
+        builder.Services.AddScoped<IQueryableSource<ManagedHostname>, EfManagedHostnameQueryableSource>();
 
         return builder;
     }

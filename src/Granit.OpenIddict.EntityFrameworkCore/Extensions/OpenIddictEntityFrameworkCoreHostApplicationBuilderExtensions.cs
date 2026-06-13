@@ -9,6 +9,7 @@ using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.SharedConnection;
+using Granit.QueryEngine;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -101,6 +102,18 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
         //    the authority wiring, so a host cannot enable OpenIddict auth and still silently serve the
         //    no-op session defaults (the failure mode when GranitOpenIddictModule is absent from the graph).
         builder.Services.AddOpenIddictUserSessionProvider();
+
+        // 8. Query engine sources for the identity entities owned by the consolidated
+        //    OpenIddictDbContext — back MapGranitQuery<T> + the analytics runner over
+        //    GranitRoleQuery / GranitUserGroupQuery (Granit.Identity.Local) and
+        //    ApplicationQuery / ScopeQuery (Granit.OpenIddict). Without these the grids and
+        //    analytics runners throw "No service for type IQueryableSource<T>" at first request.
+        builder.Services.AddScoped<IQueryableSource<GranitRole>, EfGranitRoleQueryableSource>();
+        builder.Services.AddScoped<IQueryableSource<GranitUserGroup>, EfGranitUserGroupQueryableSource>();
+        builder.Services.AddScoped<IQueryableSource<GranitOpenIddictApplication>,
+            EfGranitOpenIddictApplicationQueryableSource>();
+        builder.Services.AddScoped<IQueryableSource<GranitOpenIddictScope>,
+            EfGranitOpenIddictScopeQueryableSource>();
 
         return builder;
     }

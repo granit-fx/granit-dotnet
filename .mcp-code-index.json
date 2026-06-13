@@ -9548,7 +9548,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs.EntityFrameworkCore",
       "file": "src/Granit.BackgroundJobs.EntityFrameworkCore/Extensions/BackgroundJobsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitBackgroundJobsEntityFrameworkCore",
@@ -13767,7 +13767,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.EntityFrameworkCore",
       "file": "src/Granit.DataExchange.EntityFrameworkCore/Extensions/DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitDataExchangeEntityFrameworkCore",
@@ -20589,7 +20589,7 @@
       "kind": "class",
       "project": "Granit.Hostnames.EntityFrameworkCore",
       "file": "src/Granit.Hostnames.EntityFrameworkCore/Extensions/HostnamesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitHostnamesEntityFrameworkCore",
@@ -24585,7 +24585,7 @@
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitIdentityEntityFrameworkCore",
@@ -35096,7 +35096,7 @@
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
       "file": "src/Granit.Notifications.EntityFrameworkCore/Extensions/NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitNotificationsEntityFrameworkCore",
@@ -38100,7 +38100,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 25,
+      "line": 26,
       "members": [
         {
           "name": "AddGranitOpenIddict",
@@ -46339,7 +46339,7 @@
       "kind": "class",
       "project": "Granit.Settings.EntityFrameworkCore",
       "file": "src/Granit.Settings.EntityFrameworkCore/Extensions/SettingsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitSettingsEntityFrameworkCore",
@@ -49771,7 +49771,7 @@
       "kind": "class",
       "project": "Granit.Timeline.EntityFrameworkCore",
       "file": "src/Granit.Timeline.EntityFrameworkCore/Extensions/TimelineEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitTimelineEntityFrameworkCore",
@@ -54303,7 +54303,7 @@
       "kind": "class",
       "project": "Granit.Workflow.EntityFrameworkCore",
       "file": "src/Granit.Workflow.EntityFrameworkCore/Extensions/WorkflowEfCoreServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": []
     },
     {

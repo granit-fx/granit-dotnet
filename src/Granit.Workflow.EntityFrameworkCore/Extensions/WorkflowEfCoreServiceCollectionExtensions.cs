@@ -1,3 +1,5 @@
+using Granit.QueryEngine;
+using Granit.Workflow.Domain;
 using Granit.Workflow.EntityFrameworkCore.Interceptors;
 using Granit.Workflow.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +41,11 @@ public static class WorkflowEfCoreServiceCollectionExtensions
         services.TryAddScoped<WorkflowTransitionInterceptor>();
         services.TryAddScoped<IWorkflowHistoryQuery, DefaultWorkflowHistoryQuery<TDbContext>>();
         services.TryAddScoped<IWorkflowTransitionRecorder, EfWorkflowTransitionRecorder<TDbContext>>();
+
+        // Backs MapGranitQuery<WorkflowTransitionRecord> + the analytics runner over
+        // WorkflowTransitionRecordQuery, projecting from the host's IWorkflowDbContext.
+        services.TryAddScoped<IQueryableSource<WorkflowTransitionRecord>,
+            EfWorkflowTransitionRecordQueryableSource<TDbContext>>();
         return services;
     }
 

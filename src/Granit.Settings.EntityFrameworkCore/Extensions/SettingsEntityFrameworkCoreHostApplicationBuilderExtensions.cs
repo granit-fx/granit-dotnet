@@ -1,4 +1,6 @@
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
+using Granit.Settings.Domain;
 using Granit.Settings.EntityFrameworkCore.Internal;
 using Granit.Settings.EntityFrameworkCore.Options;
 using Granit.Settings.Values;
@@ -51,6 +53,9 @@ public static class SettingsEntityFrameworkCoreHostApplicationBuilderExtensions
 
         builder.Services.Replace(ServiceDescriptor.Scoped<ISettingStoreReader, EfCoreSettingStore>());
         builder.Services.Replace(ServiceDescriptor.Scoped<ISettingStoreWriter, EfCoreSettingStore>());
+
+        // Backs MapGranitQuery<SettingRecord> + the analytics runner over SettingRecordQuery.
+        builder.Services.AddScoped<IQueryableSource<SettingRecord>, EfSettingRecordQueryableSource>();
 
         return builder;
     }

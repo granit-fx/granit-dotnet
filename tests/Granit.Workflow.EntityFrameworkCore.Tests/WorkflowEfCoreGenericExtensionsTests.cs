@@ -1,3 +1,4 @@
+using Granit.QueryEngine;
 using Granit.Workflow.Domain;
 using Granit.Workflow.EntityFrameworkCore.Extensions;
 using Granit.Workflow.EntityFrameworkCore.Interceptors;
@@ -57,6 +58,22 @@ public sealed class WorkflowEfCoreGenericExtensionsTests
         // Assert
         ServiceDescriptor? descriptor = services.FirstOrDefault(
             d => d.ServiceType == typeof(IWorkflowTransitionRecorder));
+        descriptor.ShouldNotBeNull();
+        descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+    }
+
+    [Fact]
+    public void AddGranitWorkflowEntityFrameworkCore_Generic_ShouldRegisterQueryableSource()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitWorkflowEntityFrameworkCore<TestWorkflowDbContext>();
+
+        // Assert — backs MapGranitQuery<WorkflowTransitionRecord> + the analytics runner.
+        ServiceDescriptor? descriptor = services.FirstOrDefault(
+            d => d.ServiceType == typeof(IQueryableSource<WorkflowTransitionRecord>));
         descriptor.ShouldNotBeNull();
         descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
     }

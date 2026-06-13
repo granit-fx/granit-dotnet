@@ -1,9 +1,11 @@
 using Granit.Notifications.Abstractions;
+using Granit.Notifications.Domain;
 using Granit.Notifications.EntityFrameworkCore.Internal;
 using Granit.Notifications.Internal;
 using Granit.Notifications.MobilePush;
 using Granit.Notifications.MobilePush.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -88,6 +90,11 @@ public static class NotificationsEntityFrameworkCoreHostApplicationBuilderExtens
             ServiceDescriptor.Scoped<IMobilePushTokenReader>(sp => sp.GetRequiredService<EfCoreMobilePushTokenStore>()));
         builder.Services.Replace(
             ServiceDescriptor.Scoped<IMobilePushTokenWriter>(sp => sp.GetRequiredService<EfCoreMobilePushTokenStore>()));
+
+        // Query engine sources — back MapGranitQuery<T> + the analytics runner over
+        // UserNotificationQuery / NotificationPreferenceQuery.
+        builder.Services.AddScoped<IQueryableSource<UserNotification>, EfUserNotificationQueryableSource>();
+        builder.Services.AddScoped<IQueryableSource<NotificationPreference>, EfNotificationPreferenceQueryableSource>();
 
         return builder;
     }

@@ -1,8 +1,10 @@
+using Granit.Identity.Domain;
 using Granit.Identity.EntityFrameworkCore.Internal;
 using Granit.Identity.Internal;
 using Granit.Identity.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -38,6 +40,11 @@ public static class IdentityEntityFrameworkCoreServiceCollectionExtensions
 
         services.TryAddScoped<IUserDirectoryQueryableSource, EfUserDirectoryQueryableSource>();
         services.TryAddScoped<IUserDirectoryWriter, EfUserDirectoryWriter>();
+
+        // Backs MapGranitQuery<User> / the analytics runner over UserQuery — the query
+        // engine resolves the open generic IQueryableSource<User>, distinct from the
+        // IUserDirectoryQueryableSource directory contract above.
+        services.AddScoped<IQueryableSource<User>, EfUserQueryableSource>();
 
         // Lookup hasher backing User.EmailHash / User.PhoneNumberHash. Pepper
         // validated at first resolution (HmacUserLookupHasher ctor) — fail-fast

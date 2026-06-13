@@ -1,3 +1,5 @@
+using Granit.QueryEngine;
+using Granit.Settings.Domain;
 using Granit.Settings.EntityFrameworkCore.Extensions;
 using Granit.Settings.Values;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +42,20 @@ public sealed class SettingsEfCoreDiRegistrationTests
             d.ServiceType == typeof(ISettingStoreWriter) &&
             d.Lifetime == ServiceLifetime.Scoped,
             "EfCoreSettingStore must be registered as Scoped for ISettingStoreWriter");
+    }
+
+    [Fact]
+    public void AddGranitSettingsEntityFrameworkCore_RegistersQueryableSource_ForSettingRecord_AsScoped()
+    {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+
+        builder.AddGranitSettingsEntityFrameworkCore(
+            opts => opts.Configure = db => db.UseInMemoryDatabase("di-test-qs"));
+
+        // Backs MapGranitQuery<SettingRecord> / the analytics runner over SettingRecordQuery.
+        builder.Services.ShouldContain(d =>
+            d.ServiceType == typeof(IQueryableSource<SettingRecord>) &&
+            d.Lifetime == ServiceLifetime.Scoped);
     }
 
     [Fact]
