@@ -22,6 +22,7 @@ public sealed class GranitIdentityAbstractionsModule : GranitModule
         context.Services.TryAddScoped<IUserSessionAnomalyDetector, NullUserSessionAnomalyDetector>();
         context.Services.TryAddSingleton<IUserSessionRiskStore, MemoryUserSessionRiskStore>();
         context.Services.TryAddSingleton<IUserBehavioralProfileStore, MemoryUserBehavioralProfileStore>();
+        context.Services.TryAddSingleton<IUserSessionReviewStore, MemoryUserSessionReviewStore>();
         context.Services.TryAddSingleton<IDeviceTrustStore, MemoryDeviceTrustStore>();
         context.Services.TryAddScoped<IUserSessionProvider, NullUserSessionProvider>();
         context.Services.TryAddScoped<IUserDeviceProvider, NullUserDeviceProvider>();

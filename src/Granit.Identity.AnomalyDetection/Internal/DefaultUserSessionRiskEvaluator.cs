@@ -66,7 +66,8 @@ internal sealed class DefaultUserSessionRiskEvaluator(
                             // Raw IP withheld by default (GDPR); coarse location carried instead. A deployment
                             // can opt into raw-IP exposure on the alert via IncludeClientIpInAlert.
                             options.Value.IncludeClientIpInAlert ? candidate.IpAddress : null,
-                            now),
+                            now,
+                            deviceId),
                         cancellationToken)
                     .ConfigureAwait(false);
             }

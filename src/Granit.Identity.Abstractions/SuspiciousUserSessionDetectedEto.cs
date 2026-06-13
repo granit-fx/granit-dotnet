@@ -29,6 +29,7 @@ namespace Granit.Identity;
 /// <param name="UserAgent">User-Agent captured at establishment, when available (raw signal for downstream device labelling).</param>
 /// <param name="IpAddress">Raw client IP, carried only when raw-IP exposure is enabled; otherwise <see langword="null"/>. Never logged.</param>
 /// <param name="DetectedAt">When the verdict was produced.</param>
+/// <param name="DeviceId">Stable device id of the flagged session, when the session was bound to one. Lets a "was this you? yes" action trust the device — <see langword="null"/> when the browser carried no device binding.</param>
 public sealed record SuspiciousUserSessionDetectedEto(
     string UserId,
     string SessionId,
@@ -40,4 +41,5 @@ public sealed record SuspiciousUserSessionDetectedEto(
     string? CountryCode,
     string? UserAgent,
     string? IpAddress,
-    DateTimeOffset DetectedAt) : IIntegrationEvent;
+    DateTimeOffset DetectedAt,
+    string? DeviceId = null) : IIntegrationEvent;

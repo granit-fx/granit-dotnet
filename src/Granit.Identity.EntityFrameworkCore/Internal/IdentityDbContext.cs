@@ -50,6 +50,13 @@ internal sealed class IdentityDbContext(
     /// </summary>
     public DbSet<UserBehavioralProfileEntity> UserBehavioralProfiles => Set<UserBehavioralProfileEntity>();
 
+    /// <summary>
+    /// Durable single-use "was this you?" decisions, keyed by <c>(UserId, SessionId)</c>. Persisted in the same
+    /// context as <see cref="User"/> — session review is part of the identity domain (no separate context per
+    /// table).
+    /// </summary>
+    public DbSet<UserSessionReviewEntity> UserSessionReviews => Set<UserSessionReviewEntity>();
+
     /// <inheritdoc />
     protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {

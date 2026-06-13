@@ -39,5 +39,10 @@ public sealed class GranitIdentityEntityFrameworkCoreModule : GranitModule
         // Durable habitual-profile store, in the same context — a habitual location/device stays recognised
         // between visits instead of resetting on restart. Overrides the in-memory default.
         context.Services.AddScoped<IUserBehavioralProfileStore, EfCoreUserBehavioralProfileStore>();
+
+        // Durable single-use session-review store — the idempotency anchor for "was this you?" survives restarts
+        // and spans instances (so a repeat click / link-scanner prefetch never re-runs remediation). Overrides
+        // the in-memory default.
+        context.Services.AddScoped<IUserSessionReviewStore, EfCoreUserSessionReviewStore>();
     }
 }

@@ -24,6 +24,10 @@ namespace Granit.Identity.Notifications;
 /// <param name="DetectedAt">When the verdict was produced. The template renders it in the recipient's
 /// time zone (via the <c>to_user_time</c> Scriban function) with the IANA zone shown in parentheses,
 /// falling back to UTC when the recipient has no time zone configured.</param>
+/// <param name="ReviewToken">Signed, single-use "was this you?" token, when the session-review token service is
+/// registered (the <c>Granit.Identity.Endpoints</c> package). The template composes the review-page link from
+/// it (<c>{{ app.base_url }}/.../review?token={{ model.review_token }}</c>); <see langword="null"/> when no
+/// token service is available, in which case the template omits the review CTA.</param>
 public sealed record SuspiciousUserSessionNotificationData(
     string Reason,
     string ReasonsDisplay,
@@ -32,4 +36,5 @@ public sealed record SuspiciousUserSessionNotificationData(
     string? IpAddress,
     string? Browser,
     string? OperatingSystem,
-    DateTimeOffset DetectedAt);
+    DateTimeOffset DetectedAt,
+    string? ReviewToken = null);

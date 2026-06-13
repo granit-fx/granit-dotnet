@@ -41,7 +41,7 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
         INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
 
         await SuspiciousUserSessionDetectedHandler.HandleAsync(
-            Eto(UserSessionRiskLevel.High), publisher, TestContext.Current.CancellationToken);
+            Eto(UserSessionRiskLevel.High), publisher, Substitute.For<IServiceProvider>(), TestContext.Current.CancellationToken);
 
         await publisher.Received(1).PublishAsync(
             SuspiciousUserSessionNotificationType.Instance,
@@ -64,7 +64,7 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
         INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
 
         await SuspiciousUserSessionDetectedHandler.HandleAsync(
-            Eto(level), publisher, TestContext.Current.CancellationToken);
+            Eto(level), publisher, Substitute.For<IServiceProvider>(), TestContext.Current.CancellationToken);
 
         await publisher.Received(1).PublishAsync(
             NewUserSessionReviewNotificationType.Instance,
@@ -91,7 +91,7 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
             Arg.Any<CancellationToken>());
 
         await SuspiciousUserSessionDetectedHandler.HandleAsync(
-            Eto(UserSessionRiskLevel.High), publisher, TestContext.Current.CancellationToken);
+            Eto(UserSessionRiskLevel.High), publisher, Substitute.For<IServiceProvider>(), TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
         captured.Reason.ShouldBe("impossible_travel");
@@ -116,7 +116,7 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
         await SuspiciousUserSessionDetectedHandler.HandleAsync(
             Eto(UserSessionRiskLevel.High,
                 userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"),
-            publisher, TestContext.Current.CancellationToken);
+            publisher, Substitute.For<IServiceProvider>(), TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
         captured.Browser.ShouldBe("Safari");
@@ -135,7 +135,7 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
             Arg.Any<CancellationToken>());
 
         await SuspiciousUserSessionDetectedHandler.HandleAsync(
-            Eto(UserSessionRiskLevel.High, userAgent: null), publisher, TestContext.Current.CancellationToken);
+            Eto(UserSessionRiskLevel.High, userAgent: null), publisher, Substitute.For<IServiceProvider>(), TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
         captured.Browser.ShouldBeNull();
@@ -156,7 +156,7 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
             Arg.Any<CancellationToken>());
 
         await SuspiciousUserSessionDetectedHandler.HandleAsync(
-            Eto(UserSessionRiskLevel.High, ipAddress: ip), publisher, TestContext.Current.CancellationToken);
+            Eto(UserSessionRiskLevel.High, ipAddress: ip), publisher, Substitute.For<IServiceProvider>(), TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
         captured.IpAddress.ShouldBe(ip);
@@ -174,7 +174,7 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
             Arg.Any<CancellationToken>());
 
         await SuspiciousUserSessionDetectedHandler.HandleAsync(
-            Eto(UserSessionRiskLevel.Medium, reasons: []), publisher, TestContext.Current.CancellationToken);
+            Eto(UserSessionRiskLevel.Medium, reasons: []), publisher, Substitute.For<IServiceProvider>(), TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
         captured.Reason.ShouldBe("anomaly");
@@ -188,8 +188,50 @@ public sealed class SuspiciousUserSessionDetectedHandlerTests
         INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
 
         await SuspiciousUserSessionDetectedHandler.HandleAsync(
-            Eto(UserSessionRiskLevel.High, userId: userId), publisher, TestContext.Current.CancellationToken);
+            Eto(UserSessionRiskLevel.High, userId: userId), publisher, Substitute.For<IServiceProvider>(), TestContext.Current.CancellationToken);
 
         publisher.ReceivedCalls().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Data_CarriesReviewToken_WhenTokenServiceRegistered()
+    {
+        INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
+        SuspiciousUserSessionNotificationData? captured = null;
+        await publisher.PublishAsync(
+            Arg.Any<NotificationType<SuspiciousUserSessionNotificationData>>(),
+            Arg.Do<SuspiciousUserSessionNotificationData>(d => captured = d),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<CancellationToken>());
+
+        ISessionReviewTokenService tokenService = Substitute.For<ISessionReviewTokenService>();
+        tokenService.Issue("user-123", "session-1", Arg.Any<string?>(), "BE").Returns("tok-abc");
+        IServiceProvider services = Substitute.For<IServiceProvider>();
+        services.GetService(typeof(ISessionReviewTokenService)).Returns(tokenService);
+
+        await SuspiciousUserSessionDetectedHandler.HandleAsync(
+            Eto(UserSessionRiskLevel.High), publisher, services, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.ReviewToken.ShouldBe("tok-abc");
+    }
+
+    [Fact]
+    public async Task Data_OmitsReviewToken_WhenNoTokenService()
+    {
+        INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
+        SuspiciousUserSessionNotificationData? captured = null;
+        await publisher.PublishAsync(
+            Arg.Any<NotificationType<SuspiciousUserSessionNotificationData>>(),
+            Arg.Do<SuspiciousUserSessionNotificationData>(d => captured = d),
+            Arg.Any<IReadOnlyList<string>>(),
+            Arg.Any<CancellationToken>());
+
+        // No token service registered (e.g. a deployment without the endpoints package) → no review link.
+        await SuspiciousUserSessionDetectedHandler.HandleAsync(
+            Eto(UserSessionRiskLevel.High), publisher, Substitute.For<IServiceProvider>(), TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.ReviewToken.ShouldBeNull();
     }
 }

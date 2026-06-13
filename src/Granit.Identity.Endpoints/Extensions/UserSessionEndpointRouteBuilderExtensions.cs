@@ -43,6 +43,13 @@ public static partial class UserSessionEndpointRouteBuilderExtensions
             .RequireAuthorization()
             .MapMyUserDeviceEndpoints();
 
+        // "Was this you?" review — anonymous and token-protected (the caller is not logged in; they clicked a
+        // link in an alert email). Authority comes from the signed token, not a session.
+        endpoints.MapGranitGroup($"{prefix}sessions/review")
+            .WithTags(options.TagName)
+            .AllowAnonymous()
+            .MapUserSessionReviewEndpoints();
+
         return endpoints;
     }
 

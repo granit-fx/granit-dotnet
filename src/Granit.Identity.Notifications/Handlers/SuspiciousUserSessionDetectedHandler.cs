@@ -1,5 +1,6 @@
 using Granit.Identity.Notifications.Internal;
 using Granit.Notifications.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Identity.Notifications.Handlers;
 
@@ -23,6 +24,7 @@ public class SuspiciousUserSessionDetectedHandler
     public static async Task HandleAsync(
         SuspiciousUserSessionDetectedEto evt,
         INotificationPublisher publisher,
+        IServiceProvider serviceProvider,
         CancellationToken cancellationToken)
     {
         // No subject → nothing to alert. Guard before touching the publisher.
@@ -30,6 +32,12 @@ public class SuspiciousUserSessionDetectedHandler
         {
             return;
         }
+
+        // Mint the "was this you?" review token when the endpoints package (which registers the token service)
+        // is installed; otherwise the alert simply carries no review link. Resolved optionally so this handler
+        // works in a deployment without the review endpoints.
+        ISessionReviewTokenService? tokenService = serviceProvider.GetService<ISessionReviewTokenService>();
+        string? reviewToken = tokenService?.Issue(evt.UserId, evt.SessionId, evt.DeviceId, evt.CountryCode);
 
         string reason = evt.Reasons.Count > 0 ? evt.Reasons[0] : "anomaly";
         var data = new SuspiciousUserSessionNotificationData(
@@ -40,7 +48,8 @@ public class SuspiciousUserSessionDetectedHandler
             evt.IpAddress,
             UserAgentDescriptor.Browser(evt.UserAgent),
             UserAgentDescriptor.OperatingSystem(evt.UserAgent),
-            evt.DetectedAt);
+            evt.DetectedAt,
+            reviewToken);
 
         string[] recipients = [evt.UserId];
 

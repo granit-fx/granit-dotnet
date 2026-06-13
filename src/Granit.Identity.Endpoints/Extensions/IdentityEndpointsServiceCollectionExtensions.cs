@@ -31,6 +31,12 @@ public static class IdentityEndpointsServiceCollectionExtensions
         services.AddScoped<DeviceTrustResolutionMiddleware>();
         services.AddSingleton<ICookieDefinitionContributor, DeviceTrustCookieDefinitionContributor>();
 
+        // Session review ("was this you?"): the data-protected token service the alert link and the anonymous
+        // review endpoints share. Notifications resolve ISessionReviewTokenService to mint the link.
+        services.AddOptions<SessionReviewOptions>()
+            .BindConfiguration(SessionReviewOptions.SectionName);
+        services.AddScoped<ISessionReviewTokenService, DataProtectionSessionReviewTokenService>();
+
         services.AddHealthChecks()
             .AddCheck<UserCacheHealthCheck>(
                 "identity-user-cache",
