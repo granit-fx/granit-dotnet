@@ -1,4 +1,5 @@
 using Granit.AI;
+using Granit.AI.Tools;
 using Granit.Diagnostics;
 using Granit.Modularity;
 using Granit.QueryEngine.AI.Diagnostics;
@@ -16,6 +17,7 @@ namespace Granit.QueryEngine.AI;
 /// </remarks>
 [DependsOn(
     typeof(GranitAIModule),
+    typeof(GranitAIToolsModule),
     typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitQueryEngineAIModule : GranitModule
 {

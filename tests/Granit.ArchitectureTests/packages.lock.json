@@ -1596,6 +1596,14 @@
           "StackExchange.Redis": "[2.*, )"
         }
       },
+      "granit.ai.tools": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.AI": "[0.1.0-dev, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
       "granit.ai.vectordata": {
         "type": "Project",
         "dependencies": {
@@ -3595,6 +3603,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",
+          "Granit.AI.Tools": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
@@ -5012,8 +5021,8 @@
       "Sep": {
         "type": "CentralTransitive",
         "requested": "[0.*, )",
-        "resolved": "0.14.1",
-        "contentHash": "yliFcwYWxcLXwCR+XI0IviKCChtMWP6Tx4DWs3rW9QYhj147zW7ZLKQteg5v7T9zIB/Ki0Bo2FM0F4ndcaPP+A==",
+        "resolved": "0.15.0",
+        "contentHash": "x4euJeBMZaHwPx4vqYu2MUo5uefllW3CkSu0X/pdX0bn6sHTl3af2lDC+p5MuQLMfCHi7bOpt/rwdmcY42zbPg==",
         "dependencies": {
           "csFastFloat": "4.1.5"
         }
