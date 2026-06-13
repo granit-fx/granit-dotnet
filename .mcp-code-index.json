@@ -29176,6 +29176,22 @@
       "members": []
     },
     {
+      "name": "UserDeviceGrouping",
+      "fqn": "Granit.Identity.UserDeviceGrouping",
+      "kind": "class",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/UserDeviceGrouping.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ByIpAddress",
+          "kind": "method",
+          "signature": "ByIpAddress(IReadOnlyList<UserSessionDescriptor> sessions)",
+          "returnType": "IReadOnlyList<UserDevice>"
+        }
+      ]
+    },
+    {
       "name": "UserSessionContextItems",
       "fqn": "Granit.Identity.UserSessionContextItems",
       "kind": "class",

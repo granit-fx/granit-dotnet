@@ -235,34 +235,9 @@ internal sealed class OpenIddictUserSessionProvider(
         IReadOnlyList<UserSessionDescriptor> sessions =
             await ListAsync(userId, currentSessionId: null, cancellationToken).ConfigureAwait(false);
 
-        // The OpenIddict backend exposes no stable device id, OS or browser — only the raw IP. Group
-        // sessions by IP and synthesize a stable device signature from it; the kind comes from the client
-        // the session authenticated through (declared on the OIDC application, heuristic otherwise).
-        return [.. sessions
-            .GroupBy(s => s.IpAddress ?? "unknown")
-            .Select(g => new UserDevice(
-                DeviceId: g.Key,
-                Kind: ResolveGroupKind(g),
-                OperatingSystem: null,
-                Browser: null,
-                LastSeen: g.Max(s => s.LastAccessedAt),
-                SessionCount: g.Count(),
-                LastLocation: null))];
-    }
-
-    // A "device" here is an IP that may have sessions from several clients. Surface the most specific kind
-    // seen (a BrowserExtension/Tv/ApiClient is more informative than a plain browser), defaulting to Browser
-    // rather than Unknown — an IdP-SSO device is browser-based unless something more specific is known.
-    private static DeviceKind ResolveGroupKind(IEnumerable<UserSessionDescriptor> group)
-    {
-        foreach (DeviceKind kind in group.Select(s => s.Kind))
-        {
-            if (kind is not DeviceKind.Unknown and not DeviceKind.Browser)
-            {
-                return kind;
-            }
-        }
-
-        return DeviceKind.Browser;
+        // The OpenIddict backend exposes no stable device id, OS or browser — only the raw IP. Synthesize one
+        // device per IP from its own sessions; the kind carried on each session (declared on the OIDC
+        // application, heuristic otherwise) drives the group's device kind.
+        return UserDeviceGrouping.ByIpAddress(sessions);
     }
 }

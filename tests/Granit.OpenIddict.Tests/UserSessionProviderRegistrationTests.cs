@@ -78,10 +78,12 @@ public sealed class UserSessionProviderRegistrationTests
     [Theory]
     [InlineData(true)]  // OpenIddict registered first
     [InlineData(false)] // BFF registered first
-    public void OpenIddict_and_Bff_together_Bff_wins_session_OpenIddict_wins_device_either_order(bool openIddictFirst)
+    public void OpenIddict_and_Bff_together_Bff_wins_both_facets_either_order(bool openIddictFirst)
     {
         // The contested case (OpenIddict authority + BFF gateway on one host). The winner must be
-        // deterministic, NOT an accident of which one registered last.
+        // deterministic, NOT an accident of which one registered last. BFF now serves BOTH facets, so the
+        // device list comes from the same store as the session list (they used to split — BFF sessions but
+        // OpenIddict devices — leaving /devices reading an unrelated backend).
         IServiceCollection services = NewServices();
         RunModule(services, new GranitIdentityAbstractionsModule());
 
@@ -97,6 +99,6 @@ public sealed class UserSessionProviderRegistrationTests
         }
 
         services.GetUserSessionProviderPrecedence()
-            .ShouldBe((UserSessionProviderPrecedence.Bff, UserSessionProviderPrecedence.OpenIddict));
+            .ShouldBe((UserSessionProviderPrecedence.Bff, UserSessionProviderPrecedence.Bff));
     }
 }

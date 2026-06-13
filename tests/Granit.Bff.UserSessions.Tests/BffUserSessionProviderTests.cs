@@ -1,6 +1,8 @@
 using Granit.Bff.Options;
 using Granit.Bff.UserSessions.Internal;
 using Granit.Identity;
+using Granit.Identity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -51,6 +53,60 @@ public sealed class BffUserSessionProviderTests
         result[0].CreatedAt.ShouldBe(Now);
         result[1].IsCurrent.ShouldBeFalse();
     }
+
+    // --- IUserDeviceProvider facet: devices synthesized from the SAME BFF sessions ---
+
+    [Fact]
+    public async Task ListDevicesAsync_GroupsSessionsByIp_WithSessionCountAndLatestLastSeen()
+    {
+        _store.GetSessionIdsByUserAsync("host", "user-1", Ct).Returns(["s1", "s2", "s3"]);
+        _store.GetAsync("host", "s1", Ct).Returns(Session("1.1.1.1", Now));
+        _store.GetAsync("host", "s2", Ct).Returns(Session("1.1.1.1", Now.AddHours(2)));
+        _store.GetAsync("host", "s3", Ct).Returns(Session("2.2.2.2", Now.AddHours(1)));
+
+        IReadOnlyList<UserDevice> devices = await _sut.ListAsync("user-1", Ct);
+
+        devices.Count.ShouldBe(2);
+
+        UserDevice ip1 = devices.Single(d => d.DeviceId == "1.1.1.1");
+        ip1.SessionCount.ShouldBe(2);
+        ip1.LastSeen.ShouldBe(Now.AddHours(2));
+        ip1.Kind.ShouldBe(DeviceKind.Browser);
+        ip1.OperatingSystem.ShouldBeNull();
+
+        devices.Single(d => d.DeviceId == "2.2.2.2").SessionCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task ListDevicesAsync_NoSessions_ReturnsEmpty()
+    {
+        _store.GetSessionIdsByUserAsync("host", "user-1", Ct).Returns(Array.Empty<string>());
+
+        (await _sut.ListAsync("user-1", Ct)).ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Registration_winsBothSessionAndDeviceFacets()
+    {
+        ServiceCollection services = [];
+
+        services.SetUserSessionProvider<BffUserSessionProvider>(UserSessionProviderPrecedence.Bff);
+
+        // BFF now serves devices too, so both facets are recorded at the BFF precedence — the device list
+        // stops falling through to a lower backend (e.g. OpenIddict) and stays consistent with sessions.
+        services.GetUserSessionProviderPrecedence()
+            .ShouldBe((UserSessionProviderPrecedence.Bff, UserSessionProviderPrecedence.Bff));
+    }
+
+    private static BffTokenSet Session(string ip, DateTimeOffset lastAccess) =>
+        new("at", null, null, Now.AddHours(1))
+        {
+            UserId = "user-1",
+            UserAgent = "curl",
+            SessionCreatedAt = Now,
+            LastAccessedAt = lastAccess,
+            IpAddress = ip,
+        };
 
     [Fact]
     public async Task RevokeAsync_OnlyRevokesOwnSession()
