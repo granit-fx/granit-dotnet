@@ -1,4 +1,3 @@
-<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
 <title>Nouvelle connexion à votre compte</title>
 <mj-text>{{ if model.recipient_name != "" }}Bonjour {{ model.recipient_name }},{{ else }}Bonjour,{{ end }}</mj-text>
 <mj-text>Nous avons remarqué une nouvelle connexion à votre compte. Si c'était vous, vous n'avez rien à faire.</mj-text>
@@ -19,4 +18,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}Cette connexion provient d'un lieu éloigné de celui où vous vous connectez habituellement.{{ else if model.reason == "new_country" }}Il s'agit de la première connexion que nous observons depuis ce pays.{{ else if model.reason == "new_device" }}Cette connexion provient d'un appareil que nous n'avons jamais vu auparavant.{{ else }}Cette connexion était un peu différente de vos connexions habituelles.{{ end }}</mj-text>
 <mj-text>Si c'était vous, aucune action n'est nécessaire. Si vous ne la reconnaissez pas, vous pouvez sécuriser votre compte ci-dessous.</mj-text>
-<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Vérifier la sécurité de votre compte</mj-button>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">Vérifier la sécurité de votre compte</mj-button>

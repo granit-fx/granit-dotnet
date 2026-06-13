@@ -1,4 +1,3 @@
-<!-- AUTO-TRANSLATED (claude-opus, manual) — REVIEW BEFORE PRODUCTION -->
 <title>Connexion suspecte à votre compte</title>
 <mj-text>{{ if model.recipient_name != "" }}Bonjour {{ model.recipient_name }},{{ else }}Bonjour,{{ end }}</mj-text>
 <mj-text>Nous avons remarqué une connexion à votre compte qui semblait inhabituelle, et nous voulons nous assurer qu'il s'agissait bien de vous.</mj-text>
@@ -19,4 +18,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}Cette connexion provient d'un lieu éloigné de celui où vous vous connectez habituellement, et trop éloigné pour que vous ayez pu vous y rendre depuis votre dernière session.{{ else if model.reason == "new_country" }}Il s'agit de la première connexion que nous observons depuis ce pays.{{ else if model.reason == "new_device" }}Cette connexion provient d'un appareil que nous n'avons jamais vu auparavant.{{ else }}Cette connexion a semblé inhabituelle pour votre compte.{{ end }}</mj-text>
 <mj-text>Si c'était bien vous, vous pouvez ignorer cet e-mail en toute sécurité.</mj-text>
-<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Si ce n'était pas vous, sécurisez votre compte</mj-button>
+<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">Si ce n'était pas vous, sécurisez votre compte</mj-button>

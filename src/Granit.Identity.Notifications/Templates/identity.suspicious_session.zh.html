@@ -19,4 +19,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}此次登录来自一个远离您平常登录地点的位置，且距离过远，您不可能在上次会话之后前往该地。{{ else if model.reason == "new_country" }}这是我们首次发现来自该国家/地区的登录。{{ else if model.reason == "new_device" }}此次登录来自一台我们此前从未见过的设备。{{ else }}此次登录对于您的账户而言显得不寻常。{{ end }}</mj-text>
 <mj-text>如果是您本人操作，您可以放心忽略此邮件。</mj-text>
-<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">如果并非您本人操作，请保护您的账户</mj-button>
+<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">如果并非您本人操作，请保护您的账户</mj-button>

@@ -19,4 +19,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}Toto přihlášení proběhlo z místa vzdáleného od místa, odkud se obvykle přihlašujete.{{ else if model.reason == "new_country" }}Jde o první přihlášení, které jsme z této země zaznamenali.{{ else if model.reason == "new_device" }}Toto přihlášení proběhlo ze zařízení, které jsme dosud neviděli.{{ else }}Toto přihlášení se trochu lišilo od vašich obvyklých.{{ end }}</mj-text>
 <mj-text>Pokud jste to byli vy, není třeba nic dělat. Pokud přihlášení nepoznáváte, můžete svůj účet zabezpečit níže.</mj-text>
-<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Zkontrolovat zabezpečení svého účtu</mj-button>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">Zkontrolovat zabezpečení svého účtu</mj-button>

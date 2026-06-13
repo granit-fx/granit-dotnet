@@ -18,4 +18,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}This sign-in came from a location far from where you usually sign in.{{ else if model.reason == "new_country" }}This is the first sign-in we've seen from this country.{{ else if model.reason == "new_device" }}This sign-in came from a device we haven't seen before.{{ else }}This sign-in looked a little different from your usual ones.{{ end }}</mj-text>
 <mj-text>If this was you, no action is needed. If you don't recognise it, you can secure your account below.</mj-text>
-<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Review your account security</mj-button>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">Review your account security</mj-button>

@@ -18,4 +18,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}This sign-in came from a location far from where you usually sign in, and too far to have travelled there since your last session.{{ else if model.reason == "new_country" }}This is the first sign-in we've seen from this country.{{ else if model.reason == "new_device" }}This sign-in came from a device we haven't seen before.{{ else }}This sign-in looked unusual for your account.{{ end }}</mj-text>
 <mj-text>If this was you, you can safely ignore this email.</mj-text>
-<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">If this wasn't you, secure your account</mj-button>
+<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">If this wasn't you, secure your account</mj-button>

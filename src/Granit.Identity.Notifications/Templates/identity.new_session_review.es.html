@@ -19,4 +19,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}Este inicio de sesión se realizó desde un lugar muy alejado de donde sueles iniciar sesión.{{ else if model.reason == "new_country" }}Es el primer inicio de sesión que detectamos desde este país.{{ else if model.reason == "new_device" }}Este inicio de sesión se realizó desde un dispositivo que no habíamos visto antes.{{ else }}Este inicio de sesión fue un poco diferente de los habituales.{{ end }}</mj-text>
 <mj-text>Si fuiste tú, no es necesario hacer nada. Si no lo reconoces, puedes proteger tu cuenta a continuación.</mj-text>
-<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Revisar la seguridad de tu cuenta</mj-button>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">Revisar la seguridad de tu cuenta</mj-button>

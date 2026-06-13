@@ -24,6 +24,20 @@ public sealed class MjmlTemplateBodyTests
         body.ShouldContain("{{ app.base_url }}/account/security");
     }
 
+    [Theory]
+    [InlineData("Templates.identity.suspicious_session.html")]
+    [InlineData("Templates.identity.new_session_review.html")]
+    public void SecurityCta_LinksToReviewPage_WhenReviewTokenPresent(string suffix)
+    {
+        string body = ReadBodyAfterTitle(suffix);
+
+        // The CTA href is conditional: the review page (carrying the single-use token) when a token was minted,
+        // else the generic security page. The localized button label is reused as-is across all cultures.
+        body.ShouldContain("{{ if model.review_token }}");
+        body.ShouldContain("/account/security/review?token={{ model.review_token }}");
+        body.ShouldContain("{{ else }}");
+    }
+
     private static string ReadBodyAfterTitle(string suffix)
     {
         Assembly assembly = typeof(GranitIdentityNotificationsModule).Assembly;

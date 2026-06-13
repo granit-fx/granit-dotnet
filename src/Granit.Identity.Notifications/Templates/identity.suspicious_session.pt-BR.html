@@ -19,4 +19,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}Este login veio de um local distante de onde você costuma fazer login e longe demais para você ter viajado até lá desde a sua última sessão.{{ else if model.reason == "new_country" }}Este é o primeiro login que registramos a partir deste país.{{ else if model.reason == "new_device" }}Este login veio de um dispositivo que nunca vimos antes.{{ else }}Este login pareceu incomum para a sua conta.{{ end }}</mj-text>
 <mj-text>Se foi você, pode ignorar este e-mail com segurança.</mj-text>
-<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Se não foi você, proteja a sua conta</mj-button>
+<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">Se não foi você, proteja a sua conta</mj-button>

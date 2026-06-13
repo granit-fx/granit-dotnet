@@ -19,4 +19,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}이 로그인은 고객님이 평소 로그인하시는 위치에서 멀리 떨어진 곳에서 이루어졌습니다.{{ else if model.reason == "new_country" }}이 국가에서 확인된 첫 로그인입니다.{{ else if model.reason == "new_device" }}이 로그인은 이전에 확인된 적이 없는 기기에서 이루어졌습니다.{{ else }}이 로그인은 평소와는 조금 다르게 보였습니다.{{ end }}</mj-text>
 <mj-text>본인이 맞으시다면 별도의 조치가 필요하지 않습니다. 본인이 아니시라면 아래에서 계정을 보호하실 수 있습니다.</mj-text>
-<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">계정 보안 검토하기</mj-button>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">계정 보안 검토하기</mj-button>

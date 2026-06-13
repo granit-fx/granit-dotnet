@@ -19,4 +19,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}このサインインは、お客様が普段サインインされる場所から遠く離れた場所からのものであり、前回のセッション以降に移動するには遠すぎる距離でした。{{ else if model.reason == "new_country" }}この国からのサインインを確認したのは今回が初めてです。{{ else if model.reason == "new_device" }}このサインインは、これまで確認されていないデバイスからのものでした。{{ else }}このサインインは、お客様のアカウントにとって通常とは異なるものでした。{{ end }}</mj-text>
 <mj-text>ご本人によるものであれば、このメールは無視していただいて差し支えありません。</mj-text>
-<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">ご本人によるものでない場合は、アカウントを保護してください</mj-button>
+<mj-button background-color="#b91c1c" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">ご本人によるものでない場合は、アカウントを保護してください</mj-button>

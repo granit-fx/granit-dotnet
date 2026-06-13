@@ -19,4 +19,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}Deze aanmelding kwam van een locatie ver van waar u zich gewoonlijk aanmeldt.{{ else if model.reason == "new_country" }}Dit is de eerste aanmelding die we vanuit dit land hebben gezien.{{ else if model.reason == "new_device" }}Deze aanmelding kwam van een apparaat dat we niet eerder hebben gezien.{{ else }}Deze aanmelding week een beetje af van uw gebruikelijke aanmeldingen.{{ end }}</mj-text>
 <mj-text>Als u dit was, hoeft u niets te doen. Als u de aanmelding niet herkent, kunt u uw account hieronder beveiligen.</mj-text>
-<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Controleer de beveiliging van uw account</mj-button>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">Controleer de beveiliging van uw account</mj-button>

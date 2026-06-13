@@ -19,4 +19,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}Den här inloggningen kom från en plats långt ifrån där du brukar logga in.{{ else if model.reason == "new_country" }}Det här är den första inloggningen vi har sett från det här landet.{{ else if model.reason == "new_device" }}Den här inloggningen kom från en enhet som vi inte har sett tidigare.{{ else }}Den här inloggningen skiljde sig lite från dina vanliga.{{ end }}</mj-text>
 <mj-text>Om det var du behöver du inte göra något. Om du inte känner igen den kan du säkra ditt konto nedan.</mj-text>
-<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Granska säkerheten för ditt konto</mj-button>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">Granska säkerheten för ditt konto</mj-button>

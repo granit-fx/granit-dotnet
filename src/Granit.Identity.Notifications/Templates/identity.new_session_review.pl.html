@@ -19,4 +19,4 @@
 </mj-table>
 <mj-text>{{ if model.reason == "impossible_travel" }}To logowanie nastąpiło z miejsca odległego od tego, z którego zwykle się logujesz.{{ else if model.reason == "new_country" }}To pierwsze logowanie, jakie odnotowaliśmy z tego kraju.{{ else if model.reason == "new_device" }}To logowanie nastąpiło z urządzenia, którego wcześniej nie widzieliśmy.{{ else }}To logowanie nieco różniło się od Twoich zwykłych logowań.{{ end }}</mj-text>
 <mj-text>Jeśli to byłeś Ty, nie musisz nic robić. Jeśli go nie rozpoznajesz, możesz zabezpieczyć swoje konto poniżej.</mj-text>
-<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ app.base_url }}/account/security">Sprawdź zabezpieczenia swojego konta</mj-button>
+<mj-button background-color="#1d4ed8" color="#ffffff" border-radius="6px" font-size="15px" font-weight="bold" padding="24px 0" href="{{ if model.review_token }}{{ app.base_url }}/account/security/review?token={{ model.review_token }}{{ else }}{{ app.base_url }}/account/security{{ end }}">Sprawdź zabezpieczenia swojego konta</mj-button>
