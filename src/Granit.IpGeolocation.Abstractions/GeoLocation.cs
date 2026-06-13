@@ -28,4 +28,30 @@ public sealed record GeoLocation
 
     /// <summary>Approximate longitude in decimal degrees, when available.</summary>
     public double? Longitude { get; init; }
+
+    /// <summary>
+    /// Radius in kilometres within which the true position lies with ~67% confidence, when the source reports
+    /// it. A large radius means a coarse, low-confidence fix (mobile-carrier NAT, satellite, sparse data) —
+    /// consumers should not treat distance computed against it as precise. <c>null</c> when unknown.
+    /// </summary>
+    public int? AccuracyRadiusKm { get; init; }
+
+    /// <summary>
+    /// Whether the IP is a known anonymising proxy (e.g. Tor / open proxy), when the source classifies it.
+    /// <c>null</c> when the source does not provide anonymising-IP data.
+    /// </summary>
+    public bool? IsAnonymousProxy { get; init; }
+
+    /// <summary>
+    /// Whether the IP belongs to a hosting/datacenter provider, when the source classifies it. Datacenter
+    /// egress (cloud, server-side fetch) frequently geolocates far from the human behind it. <c>null</c> when
+    /// the source does not provide it.
+    /// </summary>
+    public bool? IsHostingProvider { get; init; }
+
+    /// <summary>
+    /// Whether the IP is a known VPN exit node, when the source classifies it. <c>null</c> when the source
+    /// does not provide it.
+    /// </summary>
+    public bool? IsVpn { get; init; }
 }

@@ -35,6 +35,38 @@ public sealed class IpInfoIpGeolocationProviderTests
     }
 
     [Fact]
+    public async Task ResolveAsync_PrivacyBlock_MapsAnonymizingFlags()
+    {
+        const string json = """
+            {"ip":"8.8.8.8","city":"X","country":"US","loc":"1,2",
+             "privacy":{"vpn":true,"proxy":false,"tor":true,"hosting":true,"relay":false}}
+            """;
+        IpInfoIpGeolocationProvider sut = CreateProvider(JsonResponse(json), out _);
+
+        GeoLocation? result = await sut.ResolveAsync(PublicIp, Ct);
+
+        result.ShouldNotBeNull();
+        result.IsVpn.ShouldBe(true);
+        result.IsHostingProvider.ShouldBe(true);
+        result.IsAnonymousProxy.ShouldBe(true); // proxy OR tor
+    }
+
+    [Fact]
+    public async Task ResolveAsync_NoPrivacyBlock_LeavesAnonymizingFlagsNull()
+    {
+        IpInfoIpGeolocationProvider sut = CreateProvider(
+            JsonResponse("""{"ip":"8.8.8.8","country":"US","loc":"1,2"}"""), out _);
+
+        GeoLocation? result = await sut.ResolveAsync(PublicIp, Ct);
+
+        result.ShouldNotBeNull();
+        result.IsVpn.ShouldBeNull();
+        result.IsAnonymousProxy.ShouldBeNull();
+        result.IsHostingProvider.ShouldBeNull();
+        result.AccuracyRadiusKm.ShouldBeNull();
+    }
+
+    [Fact]
     public async Task ResolveAsync_WithToken_SendsBearerAuthorizationHeader()
     {
         IpInfoIpGeolocationProvider sut = CreateProvider(

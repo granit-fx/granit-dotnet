@@ -66,6 +66,11 @@ internal sealed partial class MaxMindDatabaseProvider : IDisposable
             CountryCode = response.Country?.IsoCode,
             Latitude = response.Location?.Latitude,
             Longitude = response.Location?.Longitude,
+            // The City database supplies an accuracy radius (km) — the primary low-confidence signal (mobile
+            // NAT / sparse data give a large radius). Anonymising-IP classification (VPN/proxy/hosting) needs a
+            // separate MaxMind Anonymous-IP database and is left to the IpInfo privacy provider / a follow-up,
+            // so those flags stay null here.
+            AccuracyRadiusKm = response.Location?.AccuracyRadius,
         };
     }
 

@@ -65,6 +65,22 @@ public sealed class IdentityAnomalyDetectionOptions
     public TimeSpan HabitualRecencyWindow { get; set; } = TimeSpan.FromDays(30);
 
     /// <summary>
+    /// A geolocation fix whose reported accuracy radius (km) exceeds this is too coarse to support an
+    /// impossible-travel verdict — mobile-carrier NAT and sparse data routinely produce huge apparent jumps. A
+    /// travel hit involving such a fix is suppressed (recorded as <c>low_geo_confidence</c>) instead of raising a
+    /// hard-locked High. Set to <c>0</c> to disable the accuracy check. Default: 200 km.
+    /// </summary>
+    [Range(0, int.MaxValue)]
+    public int MaxGeoAccuracyRadiusKm { get; set; } = 200;
+
+    /// <summary>
+    /// When <c>true</c>, a travel hit involving an IP the provider flags as anonymising (VPN / proxy / hosting)
+    /// is suppressed (recorded as <c>low_geo_confidence</c>) rather than raising a hard-locked High — the exit
+    /// node's apparent position is not the user's. Default: <c>true</c>.
+    /// </summary>
+    public bool SuppressTravelForAnonymizedIp { get; set; } = true;
+
+    /// <summary>
     /// When <c>true</c>, the raw client IP is carried on <c>SuspiciousUserSessionDetectedEto</c> so a
     /// downstream consumer (e.g. the alert email) can display it. <strong>Opt-in</strong>: the default
     /// (<c>false</c>) keeps alerts location-only. <strong>GDPR note:</strong> enabling this re-introduces the

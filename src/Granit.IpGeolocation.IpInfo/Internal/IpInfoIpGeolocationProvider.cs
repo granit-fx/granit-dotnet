@@ -100,6 +100,11 @@ internal sealed partial class IpInfoIpGeolocationProvider(
             return null;
         }
 
+        // Privacy flags only when the token carries the privacy add-on; null (unknown) otherwise. proxy/tor both
+        // mean "anonymising proxy" for our purposes.
+        IpInfoPrivacy? privacy = body.Privacy;
+        bool? anonymousProxy = privacy is null ? null : privacy.Proxy == true || privacy.Tor == true;
+
         return new GeoLocation
         {
             City = body.City,
@@ -107,6 +112,9 @@ internal sealed partial class IpInfoIpGeolocationProvider(
             CountryCode = body.Country,
             Latitude = latitude,
             Longitude = longitude,
+            IsAnonymousProxy = anonymousProxy,
+            IsHostingProvider = privacy?.Hosting,
+            IsVpn = privacy?.Vpn,
         };
     }
 

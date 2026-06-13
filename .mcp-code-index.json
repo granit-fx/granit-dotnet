@@ -23914,6 +23914,18 @@
           "kind": "method",
           "signature": "FromDays(30)",
           "returnType": "TimeSpan HabitualRecencyWindow { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxGeoAccuracyRadiusKm",
+          "kind": "property",
+          "signature": "int MaxGeoAccuracyRadiusKm",
+          "returnType": "int"
+        },
+        {
+          "name": "SuppressTravelForAnonymizedIp",
+          "kind": "property",
+          "signature": "bool SuppressTravelForAnonymizedIp",
+          "returnType": "bool"
         }
       ]
     },

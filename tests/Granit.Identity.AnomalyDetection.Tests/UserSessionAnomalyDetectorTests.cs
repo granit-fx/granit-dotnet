@@ -236,11 +236,73 @@ public sealed class UserSessionAnomalyDetectorTests
         result.Level.ShouldBe(UserSessionRiskLevel.Low);
     }
 
-    private UserSessionAnomalyDetector CreateDetector(bool useAi = false) =>
+    // ── Geo confidence: a low-confidence / anonymising fix must not raise a hard-locked High travel alert ──
+
+    [Fact]
+    public async Task AssessAsync_ImpossibleTravelButCoarseFix_SuppressedAsLowGeoConfidence()
+    {
+        UserSessionAnomalyDetector sut = CreateDetector();
+        // Same jump as the High impossible-travel test, but the candidate fix is coarse (500 km > 200 km).
+        UserSessionDescriptor candidate = Session("s2", Brussels with { AccuracyRadiusKm = 500 }, Desktop, Now);
+        UserSessionDescriptor prior = Session("s1", Sydney, Desktop, Now.AddHours(-1));
+
+        UserSessionRiskAssessment result = await sut.AssessAsync(candidate, [prior], Ct);
+
+        result.Reasons.ShouldNotContain("impossible_travel");
+        result.Reasons.ShouldContain("low_geo_confidence");
+        // new_country still fires (BE vs AU) → Low; low_geo_confidence must NOT inflate it to Medium/High.
+        result.Level.ShouldBe(UserSessionRiskLevel.Low);
+    }
+
+    [Fact]
+    public async Task AssessAsync_ImpossibleTravelFromVpn_SuppressedAsLowGeoConfidence()
+    {
+        UserSessionAnomalyDetector sut = CreateDetector();
+        UserSessionDescriptor candidate = Session("s2", Brussels with { IsVpn = true }, Desktop, Now);
+        UserSessionDescriptor prior = Session("s1", Sydney, Desktop, Now.AddHours(-1));
+
+        UserSessionRiskAssessment result = await sut.AssessAsync(candidate, [prior], Ct);
+
+        result.Reasons.ShouldNotContain("impossible_travel");
+        result.Reasons.ShouldContain("low_geo_confidence");
+    }
+
+    [Fact]
+    public async Task AssessAsync_HighConfidenceJump_StillImpossibleTravel()
+    {
+        UserSessionAnomalyDetector sut = CreateDetector();
+        // A precise fix (small radius, no anonymising flags) must keep firing the High verdict.
+        UserSessionDescriptor candidate = Session("s2", Brussels with { AccuracyRadiusKm = 10 }, Desktop, Now);
+        UserSessionDescriptor prior = Session("s1", Sydney with { AccuracyRadiusKm = 10 }, Desktop, Now.AddHours(-1));
+
+        UserSessionRiskAssessment result = await sut.AssessAsync(candidate, [prior], Ct);
+
+        result.Reasons.ShouldContain("impossible_travel");
+        result.Level.ShouldBe(UserSessionRiskLevel.High);
+    }
+
+    [Fact]
+    public async Task AssessAsync_AnonymizedIp_NotSuppressed_WhenOptionDisabled()
+    {
+        UserSessionAnomalyDetector sut = CreateDetector(suppressAnonymizedIp: false);
+        UserSessionDescriptor candidate = Session("s2", Brussels with { IsVpn = true }, Desktop, Now);
+        UserSessionDescriptor prior = Session("s1", Sydney, Desktop, Now.AddHours(-1));
+
+        UserSessionRiskAssessment result = await sut.AssessAsync(candidate, [prior], Ct);
+
+        result.Reasons.ShouldContain("impossible_travel");
+        result.Level.ShouldBe(UserSessionRiskLevel.High);
+    }
+
+    private UserSessionAnomalyDetector CreateDetector(bool useAi = false, bool suppressAnonymizedIp = true) =>
         new(
             _structuredCompletion,
             _rateLimiter,
-            Microsoft.Extensions.Options.Options.Create(new IdentityAnomalyDetectionOptions { UseAi = useAi }),
+            Microsoft.Extensions.Options.Options.Create(new IdentityAnomalyDetectionOptions
+            {
+                UseAi = useAi,
+                SuppressTravelForAnonymizedIp = suppressAnonymizedIp,
+            }),
             _currentTenant,
             _profileStore,
             _timeProvider,

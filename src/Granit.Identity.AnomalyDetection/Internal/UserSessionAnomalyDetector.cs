@@ -5,6 +5,7 @@ using Granit.AI;
 using Granit.AI.RateLimiting;
 using Granit.Identity.AnomalyDetection.Diagnostics;
 using Granit.Identity.AnomalyDetection.Options;
+using Granit.IpGeolocation;
 using Granit.MultiTenancy;
 using Microsoft.Extensions.Options;
 
@@ -80,8 +81,8 @@ internal sealed class UserSessionAnomalyDetector(
         DateTimeOffset now)
     {
         List<string> reasons = [];
-        bool impossibleTravel = HasImpossibleTravel(candidate, history, opts.MaxTravelKilometersPerHour);
-        if (impossibleTravel)
+        TravelOutcome travel = EvaluateTravel(candidate, history, opts);
+        if (travel == TravelOutcome.Detected)
         {
             reasons.Add("impossible_travel");
         }
@@ -109,7 +110,7 @@ internal sealed class UserSessionAnomalyDetector(
             }
         }
 
-        UserSessionRiskLevel level = impossibleTravel
+        UserSessionRiskLevel level = travel == TravelOutcome.Detected
             ? UserSessionRiskLevel.High
             : reasons.Count >= 2
                 ? UserSessionRiskLevel.Medium
@@ -117,19 +118,37 @@ internal sealed class UserSessionAnomalyDetector(
                     ? UserSessionRiskLevel.Low
                     : UserSessionRiskLevel.None;
 
-        return new UserSessionRiskAssessment(level, ScoreFor(level), reasons);
+        // `low_geo_confidence` is explanatory — it records that a travel alert was withheld because the geo fix
+        // was untrustworthy, without itself inflating the risk level (so it can never manufacture a Medium).
+        IReadOnlyList<string> finalReasons = travel == TravelOutcome.SuppressedLowConfidence
+            ? [.. reasons, "low_geo_confidence"]
+            : reasons;
+
+        return new UserSessionRiskAssessment(level, ScoreFor(level), finalReasons);
     }
 
-    private static bool HasImpossibleTravel(
+    private enum TravelOutcome
+    {
+        None,
+        Detected,
+        SuppressedLowConfidence,
+    }
+
+    // A travel hit only counts when both endpoints are a trustworthy fix. A coarse (large accuracy radius) or
+    // anonymising (VPN/proxy/hosting) endpoint produces an apparent jump that is an artefact of the lookup, not
+    // real movement — so such a pairing is suppressed and surfaced as low_geo_confidence rather than a
+    // hard-locked High. A genuine high-confidence jump still wins.
+    private static TravelOutcome EvaluateTravel(
         UserSessionDescriptor candidate,
         IReadOnlyList<UserSessionDescriptor> history,
-        double maxKilometersPerHour)
+        IdentityAnomalyDetectionOptions opts)
     {
         if (candidate.Location is not { Latitude: { } lat, Longitude: { } lon })
         {
-            return false;
+            return TravelOutcome.None;
         }
 
+        bool suppressed = false;
         foreach (UserSessionDescriptor prior in history)
         {
             if (prior.SessionId == candidate.SessionId
@@ -143,13 +162,37 @@ internal sealed class UserSessionAnomalyDetector(
             double hours = Math.Abs((candidate.CreatedAt - priorTime).TotalHours);
             double speed = hours > 0.01 ? km / hours : km > 50d ? double.PositiveInfinity : 0d;
 
-            if (speed > maxKilometersPerHour)
+            if (speed <= opts.MaxTravelKilometersPerHour)
             {
-                return true;
+                continue;
             }
+
+            if (IsLowConfidence(candidate.Location, opts) || IsLowConfidence(prior.Location, opts))
+            {
+                suppressed = true;
+                continue;
+            }
+
+            return TravelOutcome.Detected;
         }
 
-        return false;
+        return suppressed ? TravelOutcome.SuppressedLowConfidence : TravelOutcome.None;
+    }
+
+    // A fix is low-confidence when its reported accuracy radius is too coarse, or the IP is flagged anonymising
+    // (and the deployment opts to suppress those). null fields mean "the provider does not classify this" — they
+    // are never treated as a negative signal.
+    private static bool IsLowConfidence(GeoLocation location, IdentityAnomalyDetectionOptions opts)
+    {
+        if (opts.MaxGeoAccuracyRadiusKm > 0
+            && location.AccuracyRadiusKm is { } radius
+            && radius > opts.MaxGeoAccuracyRadiusKm)
+        {
+            return true;
+        }
+
+        return opts.SuppressTravelForAnonymizedIp
+            && (location.IsAnonymousProxy == true || location.IsVpn == true || location.IsHostingProvider == true);
     }
 
     private async Task<UserSessionRiskAssessment?> TryAssessWithAiAsync(
