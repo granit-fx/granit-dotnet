@@ -30,7 +30,6 @@ internal sealed class AntiforgeryCookieDefinitionContributor(
             "CSRF protection token.")
         {
             SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict,
-            IsEssential = true,
         };
     }
 }

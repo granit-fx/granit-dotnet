@@ -62,7 +62,6 @@ internal sealed class IdentityCookieDefinitionContributor(
         return new CookieDefinition(name, CookieCategory.StrictlyNecessary, 1, true, purpose)
         {
             SameSite = SameSiteMode.Strict,
-            IsEssential = true,
         };
     }
 }

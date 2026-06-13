@@ -152,7 +152,6 @@ public sealed class GranitCookieManagerTests
         {
             SameSite = SameSiteMode.Strict,
             Path = "/",
-            IsEssential = true,
         };
         _registry.Register(definition);
         DefaultHttpContext httpContext = CreateHttpContext();
