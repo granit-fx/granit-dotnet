@@ -4,6 +4,7 @@ using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
+using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -95,6 +96,11 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
         //    with the host authorization DbContext when both target the same database.
         builder.Services.TryAddScoped<IIdentityDbContextAccessor,
             OpenIddictIdentityDbContextAccessor>();
+
+        // 7. Session/device provider for the canonical /sessions + /devices API. Registered here, with
+        //    the authority wiring, so a host cannot enable OpenIddict auth and still silently serve the
+        //    no-op session defaults (the failure mode when GranitOpenIddictModule is absent from the graph).
+        builder.Services.AddOpenIddictUserSessionProvider();
 
         return builder;
     }

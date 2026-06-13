@@ -141,13 +141,11 @@ public sealed class GranitOpenIddictModule : GranitModule
         context.Services.AddEntityDefinition<GranitOpenIddictApplication, GranitOpenIddictApplicationEntityDefinition>();
         context.Services.AddEntityDefinition<GranitOpenIddictScope, GranitOpenIddictScopeEntityDefinition>();
 
-        // Replace the Null session/device providers with an implementation that reads active
-        // refresh tokens from the OpenIddict token store and revokes them on demand.
-        context.Services.TryAddScoped<OpenIddictUserSessionProvider>();
-        context.Services.Replace(ServiceDescriptor.Scoped<IUserSessionProvider>(
-            sp => sp.GetRequiredService<OpenIddictUserSessionProvider>()));
-        context.Services.Replace(ServiceDescriptor.Scoped<IUserDeviceProvider>(
-            sp => sp.GetRequiredService<OpenIddictUserSessionProvider>()));
+        // NOTE: the session/device provider (OpenIddictUserSessionProvider) is registered by
+        // AddGranitOpenIddict, not here — co-located with the imperative authority wiring so a host
+        // cannot wire OpenIddict auth without also wiring its providers (which previously left the
+        // canonical /sessions + /devices endpoints silently serving the no-op defaults). See
+        // OpenIddictUserSessionServiceCollectionExtensions.AddOpenIddictUserSessionProvider.
     }
 
     private static void PostConfigureIdentityCookie(

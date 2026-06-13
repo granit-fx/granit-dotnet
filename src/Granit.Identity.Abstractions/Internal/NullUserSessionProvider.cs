@@ -5,7 +5,7 @@ namespace Granit.Identity.Internal;
 /// nothing. Replaced when a backend integration package (BFF, OpenIddict, Keycloak) is installed, so
 /// the canonical session API always resolves but only surfaces real data once a backend is wired.
 /// </summary>
-internal sealed class NullUserSessionProvider : IUserSessionProvider
+internal sealed class NullUserSessionProvider : IUserSessionProvider, IFallbackUserSessionProvider
 {
     public Task<IReadOnlyList<UserSessionDescriptor>> ListAsync(
         string userId, string? currentSessionId, CancellationToken cancellationToken = default) =>

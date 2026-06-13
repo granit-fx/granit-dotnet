@@ -1,8 +1,7 @@
 using Granit.Bff.UserSessions.Internal;
 using Granit.Identity;
+using Granit.Identity.Extensions;
 using Granit.Modularity;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Bff.UserSessions;
 
@@ -18,5 +17,5 @@ public sealed class GranitBffUserSessionsModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>
-        context.Services.Replace(ServiceDescriptor.Scoped<IUserSessionProvider, BffUserSessionProvider>());
+        context.Services.SetUserSessionProvider<BffUserSessionProvider>(UserSessionProviderPrecedence.Bff);
 }

@@ -68,10 +68,11 @@ public static class IdentityCognitoServiceCollectionExtensions
         // Session/device facets. Replace the Null defaults so the canonical /sessions and /devices
         // endpoints surface Cognito data. Both forward to the SAME scoped IIdentityProvider instance
         // (mirroring IIdentityClientRoleManager above) so every facet shares one CognitoIdentityProvider.
-        services.Replace(ServiceDescriptor.Scoped<IUserSessionProvider>(sp =>
-            (IUserSessionProvider)sp.GetRequiredService<IIdentityProvider>()));
-        services.Replace(ServiceDescriptor.Scoped<IUserDeviceProvider>(sp =>
-            (IUserDeviceProvider)sp.GetRequiredService<IIdentityProvider>()));
+        // Registered at Federated precedence: a co-resident BFF wins the session facet deterministically.
+        services.SetUserSessionProvider(
+            UserSessionProviderPrecedence.Federated,
+            sessionFactory: sp => (IUserSessionProvider)sp.GetRequiredService<IIdentityProvider>(),
+            deviceFactory: sp => (IUserDeviceProvider)sp.GetRequiredService<IIdentityProvider>());
 
         // Client-role sync pipeline — enumerates prefix-matching Cognito groups for each
         // tracked app-client id at host boot and upserts RoleMetadata rows.

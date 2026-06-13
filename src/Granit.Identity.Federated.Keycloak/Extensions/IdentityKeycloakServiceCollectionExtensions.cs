@@ -87,10 +87,11 @@ public static class IdentityKeycloakServiceCollectionExtensions
         // and revoke them via the Admin API. Both forward to the same scoped IIdentityProvider so
         // every facet resolves to the SAME KeycloakIdentityProvider instance, sharing its admin-token
         // acquisition (same instance-sharing rationale as IIdentityClientRoleManager above).
-        services.Replace(ServiceDescriptor.Scoped<IUserSessionProvider>(sp =>
-            (IUserSessionProvider)sp.GetRequiredService<IIdentityProvider>()));
-        services.Replace(ServiceDescriptor.Scoped<IUserDeviceProvider>(sp =>
-            (IUserDeviceProvider)sp.GetRequiredService<IIdentityProvider>()));
+        // Registered at Federated precedence: a co-resident BFF wins the session facet deterministically.
+        services.SetUserSessionProvider(
+            UserSessionProviderPrecedence.Federated,
+            sessionFactory: sp => (IUserSessionProvider)sp.GetRequiredService<IIdentityProvider>(),
+            deviceFactory: sp => (IUserDeviceProvider)sp.GetRequiredService<IIdentityProvider>());
 
         // Client-role sync pipeline — enumerates Keycloak client roles for each tracked
         // clientId at host boot and upserts RoleMetadata rows. See ADR-025 for details.
