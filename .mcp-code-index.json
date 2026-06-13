@@ -16295,7 +16295,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration.Excel",
       "file": "src/Granit.DocumentGeneration.Excel/Extensions/ServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitDocumentGenerationExcel",

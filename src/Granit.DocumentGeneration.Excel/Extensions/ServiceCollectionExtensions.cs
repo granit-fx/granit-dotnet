@@ -1,6 +1,7 @@
 using Granit.DocumentGeneration.Excel.Internal;
 using Granit.Templating.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.DocumentGeneration.Excel.Extensions;
 
@@ -30,6 +31,12 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitDocumentGenerationExcel(
-        this IServiceCollection services) =>
-        services.AddSingleton<ITemplateEngine, ClosedXmlTemplateEngine>();
+        this IServiceCollection services)
+    {
+        // TryAddEnumerable: ITemplateEngine is a set (selected per-template via CanRender).
+        // Coexists with Scriban and any other engine, and dedupes on repeat registration.
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<ITemplateEngine, ClosedXmlTemplateEngine>());
+        return services;
+    }
 }

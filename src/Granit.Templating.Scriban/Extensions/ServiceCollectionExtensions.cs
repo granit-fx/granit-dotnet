@@ -37,8 +37,16 @@ public static class ServiceCollectionExtensions
         services.AddGranitTemplating();
 
         services.TryAddSingleton<GranitTemplateLoader>();
-        services.TryAddSingleton<ITemplateEngine>(sp =>
-            new ScribanTemplateEngine(sp, sp.GetService<GranitTemplateLoader>()));
+
+        // TryAddEnumerable (NOT TryAddSingleton): engines are a set resolved as
+        // IEnumerable<ITemplateEngine> and selected per-template via CanRender. A plain
+        // TryAddSingleton<ITemplateEngine> would no-op whenever ANY other engine is already
+        // registered (e.g. Granit.DocumentGeneration.Excel's ClosedXmlTemplateEngine), silently
+        // dropping Scriban — so HTML/text templates would find no engine and every email would
+        // fall back to its raw notification-type name. TryAddEnumerable keeps all engines and
+        // dedupes Scriban on repeat AddGranitTemplatingWithScriban() calls.
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<ITemplateEngine, ScribanTemplateEngine>(
+            sp => new ScribanTemplateEngine(sp, sp.GetService<GranitTemplateLoader>())));
 
         services.AddTemplateGlobalContext<NowGlobalContext>();
         services.AddTemplateGlobalContext<ExecutionContextGlobalContext>();

@@ -24,14 +24,15 @@ public sealed class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitDocumentGenerationExcel_CalledTwice_RegistersBothEngines()
+    public void AddGranitDocumentGenerationExcel_CalledTwice_RegistersEngineOnce()
     {
-        // Additive registration — allows combining with other engines (Scriban, etc.)
+        // TryAddEnumerable registration: additive across DIFFERENT engines (coexists with
+        // Scriban, etc.) but deduped on repeat self-registration.
         ServiceCollection services = new();
         services.AddGranitDocumentGenerationExcel();
         services.AddGranitDocumentGenerationExcel();
 
         services.Count(d => d.ServiceType == typeof(ITemplateEngine))
-                .ShouldBe(2, "each call must add an independent registration");
+            .ShouldBe(1, "TryAddEnumerable must dedupe the Excel engine on repeat registration");
     }
 }

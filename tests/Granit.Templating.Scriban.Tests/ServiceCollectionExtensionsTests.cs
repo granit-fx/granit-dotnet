@@ -1,6 +1,8 @@
 using Granit.Templating.GlobalContext;
+using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Scriban.Extensions;
+using Granit.Templating.Scriban.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -47,13 +49,48 @@ public sealed class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitTemplatingWithScriban_ITemplateEngine_IsReplaceable_WithTryAdd()
+    public void AddGranitTemplatingWithScriban_KeepsScriban_WhenAnotherEngineAlreadyRegistered()
+    {
+        // Reproduces the regression: when another ITemplateEngine is registered first
+        // (e.g. Granit.DocumentGeneration.Excel's ClosedXmlTemplateEngine), a plain
+        // TryAddSingleton<ITemplateEngine> would no-op and silently drop Scriban — leaving
+        // HTML/text templates with no engine. TryAddEnumerable must keep both.
+        ServiceCollection services = new();
+        services.AddSingleton<ITemplateEngine, FakeTemplateEngine>();
+        services.AddGranitTemplatingWithScriban();
+
+        using ServiceProvider provider = services.BuildServiceProvider();
+        List<ITemplateEngine> engines = [.. provider.GetServices<ITemplateEngine>()];
+
+        engines.ShouldContain(e => e is ScribanTemplateEngine,
+            "Scriban must register additively so it survives alongside other engines.");
+        engines.ShouldContain(e => e is FakeTemplateEngine);
+    }
+
+    [Fact]
+    public void AddGranitTemplatingWithScriban_CalledTwice_RegistersScribanOnce()
     {
         ServiceCollection services = new();
-        services.AddSingleton<ITemplateEngine>(_ => null!); // pre-register custom engine
-        services.AddGranitTemplatingWithScriban();           // TryAdd must not replace
+        services.AddGranitTemplatingWithScriban();
+        services.AddGranitTemplatingWithScriban();
 
-        services.Count(d => d.ServiceType == typeof(ITemplateEngine))
-                .ShouldBe(1, "TryAddSingleton must not add a duplicate");
+        using ServiceProvider provider = services.BuildServiceProvider();
+
+        provider.GetServices<ITemplateEngine>().Count(e => e is ScribanTemplateEngine)
+                .ShouldBe(1, "TryAddEnumerable must dedupe Scriban on repeat registration.");
+    }
+
+    private sealed class FakeTemplateEngine : ITemplateEngine
+    {
+        public bool CanRender(TemplateDescriptor descriptor) => false;
+
+        public Task<RenderedContent> RenderAsync<TData>(
+            TemplateDescriptor descriptor,
+            TData data,
+            DocumentFormat targetFormat,
+            IReadOnlyList<ITemplateGlobalContext> globalContexts,
+            CancellationToken cancellationToken = default)
+            where TData : notnull =>
+            throw new NotSupportedException();
     }
 }
