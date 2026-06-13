@@ -70,6 +70,7 @@ public sealed class AIToolOrchestratorTests
             workspaceProvider,
             projector,
             registry,
+            new DefaultAISystemPromptComposer(new DefaultAIGuardrailProvider()),
             recordFactory,
             usageTracker,
             MsOptions.Create(options ?? new GranitAIToolsOrchestrationOptions()),
@@ -204,6 +205,32 @@ public sealed class AIToolOrchestratorTests
         result.OutputTokens.ShouldBe(12);
         await harness.UsageTracker.Received(1).RecordAsync(
             Arg.Is<AIUsageRecord>(r => r.InputTokens == 30 && r.OutputTokens == 12),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Prepends_a_system_message_carrying_the_framework_guardrails()
+    {
+        ScriptedChatClient client = new(FinalText("hi"));
+        Harness harness = CreateHarness(client, []);
+
+        await harness.Orchestrator.RunAsync(UserSays("hello"), TestContext.Current.CancellationToken);
+
+        ChatMessage first = harness.ChatClient.Calls[0][0];
+        first.Role.ShouldBe(ChatRole.System);
+        first.Text.ShouldContain("Stay within the calling user's authorization");
+    }
+
+    [Fact]
+    public async Task Stamps_the_guardrail_version_into_the_usage_record()
+    {
+        ScriptedChatClient client = new(FinalText("done", input: 5, output: 2));
+        Harness harness = CreateHarness(client, []);
+
+        await harness.Orchestrator.RunAsync(UserSays("hi"), TestContext.Current.CancellationToken);
+
+        await harness.UsageTracker.Received(1).RecordAsync(
+            Arg.Is<AIUsageRecord>(r => r.PromptVersion == "1.0.0"),
             Arg.Any<CancellationToken>());
     }
 

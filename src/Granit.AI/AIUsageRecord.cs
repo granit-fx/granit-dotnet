@@ -44,4 +44,11 @@ public sealed record AIUsageRecord
 
     /// <summary>Duration of the AI call.</summary>
     public TimeSpan? Duration { get; init; }
+
+    /// <summary>
+    /// Version of the code-first guardrail/system prompt that produced this interaction
+    /// (e.g. <c>1.0.0</c>), or <c>null</c> when not applicable. Stamped for auditability —
+    /// which prompt version produced which interaction — without persisting prompt content.
+    /// </summary>
+    public string? PromptVersion { get; init; }
 }

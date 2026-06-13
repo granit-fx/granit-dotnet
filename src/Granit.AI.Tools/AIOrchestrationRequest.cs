@@ -25,4 +25,11 @@ public sealed record AIOrchestrationRequest
     /// the <see cref="IAIToolRegistry"/>. Pass a curated subset to narrow the agent's reach.
     /// </summary>
     public IReadOnlyList<IAITool>? Tools { get; init; }
+
+    /// <summary>
+    /// Optional per-user custom context (Settings "U" scope, capped upstream) layered into the
+    /// system prompt below the framework guardrails — it can refine behaviour but never override
+    /// the guardrails.
+    /// </summary>
+    public string? UserCustomContext { get; init; }
 }

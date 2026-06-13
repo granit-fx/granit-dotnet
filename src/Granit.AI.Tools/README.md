@@ -40,6 +40,11 @@ var result = await orchestrator.RunAsync(new AIOrchestrationRequest
 Bounds are configured under `AI:Tools:Orchestration` (`MaxIterations`,
 `MaxToolResultCharacters`).
 
+The orchestrator system prompt is composed, in strict precedence, as **framework guardrails
+(code-first, versioned, non-editable) + workspace prompt + user custom context + per-tool
+instructions**. The guardrail version is stamped into the `AIUsageRecord` for auditability
+without persisting prompt content.
+
 ## Dependencies
 
 - `Granit`

@@ -4,6 +4,7 @@ using Granit.AI.Exceptions;
 using Granit.AI.Options;
 using Granit.AI.Tools.Diagnostics;
 using Granit.AI.Tools.Options;
+using Granit.AI.Tools.Prompts;
 using Granit.AI.Workspaces;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -21,6 +22,7 @@ internal sealed partial class AIToolOrchestrator(
     IAIWorkspaceProvider workspaceProvider,
     IAIToolProjector projector,
     IAIToolRegistry registry,
+    IAISystemPromptComposer systemPromptComposer,
     IAIUsageRecordFactory usageRecordFactory,
     IAIUsageTracker usageTracker,
     IOptions<GranitAIToolsOrchestrationOptions> orchestrationOptions,
@@ -63,12 +65,20 @@ internal sealed partial class AIToolOrchestrator(
             chatOptions.ToolMode = ChatToolMode.Auto;
         }
 
+        AISystemPrompt systemPrompt = systemPromptComposer.Compose(new AISystemPromptContext
+        {
+            WorkspaceSystemPrompt = workspace.SystemPrompt,
+            UserCustomContext = request.UserCustomContext,
+            Tools = tools,
+        });
+
         using Activity? activity = AIToolsActivitySource.Instance.StartActivity("ai.tools.orchestrate");
         activity?.SetTag("ai.workspace", workspaceName);
+        activity?.SetTag("ai.guardrails.version", systemPrompt.Guardrails.Version);
 
         using IChatClient chatClient = await chatClientFactory.CreateAsync(workspaceName, cancellationToken).ConfigureAwait(false);
 
-        List<ChatMessage> transcript = [.. request.Messages];
+        List<ChatMessage> transcript = [new ChatMessage(ChatRole.System, systemPrompt.Text), .. request.Messages];
         List<AIToolInvocationOutcome> outcomes = [];
         long startTimestamp = timeProvider.GetTimestamp();
 
@@ -151,7 +161,10 @@ internal sealed partial class AIToolOrchestrator(
                 workspace.Model,
                 (int)totalInput,
                 (int)totalOutput,
-                duration);
+                duration) with
+            {
+                PromptVersion = systemPrompt.Guardrails.Version,
+            };
 
             await usageTracker.RecordAsync(record, cancellationToken).ConfigureAwait(false);
         }

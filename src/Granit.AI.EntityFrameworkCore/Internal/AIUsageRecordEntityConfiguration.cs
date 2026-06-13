@@ -50,6 +50,9 @@ internal sealed class AIUsageRecordEntityConfiguration : IEntityTypeConfiguratio
 
         builder.Property(e => e.Duration);
 
+        builder.Property(e => e.PromptVersion)
+            .HasMaxLength(50);
+
         builder.Property(e => e.CreatedAt)
             .IsRequired();
 

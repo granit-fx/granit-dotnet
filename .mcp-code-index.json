@@ -4607,7 +4607,7 @@
       "kind": "class",
       "project": "Granit.AI.Tools",
       "file": "src/Granit.AI.Tools/Extensions/AIToolsServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitAITools",
@@ -4648,6 +4648,15 @@
           "returnType": "string Name { get; } string Description { get; } JsonElement ParameterSchema { get; } ValueTask<AIToolResult>"
         }
       ]
+    },
+    {
+      "name": "IAIToolInstructions",
+      "fqn": "Granit.AI.Tools.IAIToolInstructions",
+      "kind": "interface",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/IAIToolInstructions.cs",
+      "line": 13,
+      "members": []
     },
     {
       "name": "IAIToolOrchestrator",
@@ -4722,6 +4731,58 @@
           "kind": "property",
           "signature": "int MaxToolResultCharacters",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "AIPromptVersion",
+      "fqn": "Granit.AI.Tools.Prompts.AIPromptVersion",
+      "kind": "record",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/Prompts/AIPromptVersion.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "AISystemPrompt",
+      "fqn": "Granit.AI.Tools.Prompts.AISystemPrompt",
+      "kind": "record",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/Prompts/IAISystemPromptComposer.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "AISystemPromptContext",
+      "fqn": "Granit.AI.Tools.Prompts.AISystemPromptContext",
+      "kind": "record",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/Prompts/IAISystemPromptComposer.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "IAIGuardrailProvider",
+      "fqn": "Granit.AI.Tools.Prompts.IAIGuardrailProvider",
+      "kind": "interface",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/Prompts/IAIGuardrailProvider.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "IAISystemPromptComposer",
+      "fqn": "Granit.AI.Tools.Prompts.IAISystemPromptComposer",
+      "kind": "interface",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/Prompts/IAISystemPromptComposer.cs",
+      "line": 43,
+      "members": [
+        {
+          "name": "Compose",
+          "kind": "method",
+          "signature": "Compose(AISystemPromptContext context)",
+          "returnType": "AISystemPrompt"
         }
       ]
     },

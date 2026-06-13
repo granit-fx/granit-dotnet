@@ -27,6 +27,8 @@ internal sealed class AIUsageRecordEntity : CreationAuditedEntity, IMultiTenant
 
     public TimeSpan? Duration { get; set; }
 
+    public string? PromptVersion { get; set; }
+
     public static AIUsageRecordEntity FromRecord(AIUsageRecord record) => new()
     {
         Id = record.Id,
@@ -40,5 +42,6 @@ internal sealed class AIUsageRecordEntity : CreationAuditedEntity, IMultiTenant
         EstimatedCost = record.EstimatedCost,
         CostCurrency = record.CostCurrency,
         Duration = record.Duration,
+        PromptVersion = record.PromptVersion,
     };
 }
