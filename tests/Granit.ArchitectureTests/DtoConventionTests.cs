@@ -1,3 +1,4 @@
+using System.Reflection;
 using Granit.ArchitectureTests.Abstractions.Rules;
 using Xunit;
 
@@ -22,5 +23,38 @@ public sealed class DtoConventionTests
             .Distinct()];
 
         NamingConventionRules.EndpointTypesShouldNotUseDtoSuffix(Architecture, endpointNamespaces);
+    }
+
+    [Fact]
+    public void Nullable_request_parameters_must_have_a_default() =>
+        RequestDtoNullableDefaultRules.NullableRequestParametersMustHaveDefault(
+            LoadEndpointAssemblies(),
+            RequestDtoNullableDefaultExemptions.RequiredButNullable);
+
+    /// <summary>
+    /// Loads the <c>Granit.*.Endpoints</c> assemblies from the test output directory so the rule can
+    /// reflect over their request DTOs' constructor parameter defaults and nullability.
+    /// </summary>
+    private static IReadOnlyList<Assembly> LoadEndpointAssemblies()
+    {
+        string outputDir = Path.GetDirectoryName(typeof(DtoConventionTests).Assembly.Location)!;
+
+        return [.. Directory.GetFiles(outputDir, "Granit.*.Endpoints.dll")
+            .Where(path => !Path.GetFileNameWithoutExtension(path).Contains("Tests", StringComparison.Ordinal))
+            .Select(LoadOrNull)
+            .Where(a => a is not null)
+            .Cast<Assembly>()];
+    }
+
+    private static Assembly? LoadOrNull(string path)
+    {
+        try
+        {
+            return Assembly.LoadFrom(path);
+        }
+        catch (Exception ex) when (ex is BadImageFormatException or FileLoadException)
+        {
+            return null;
+        }
     }
 }
