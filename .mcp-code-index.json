@@ -23839,12 +23839,12 @@
       "kind": "class",
       "project": "Granit.Identity.AnomalyDetection",
       "file": "src/Granit.Identity.AnomalyDetection/Handlers/UserSessionCreatedHandler.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(UserSessionCreatedEto evt, ICurrentTenant currentTenant, IUserSessionRiskEvaluator evaluator, IUserSessionProvider sessionProvider, IIpGeolocationResolver geoResolver, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(UserSessionCreatedEto evt, ICurrentTenant currentTenant, IUserSessionRiskEvaluator evaluator, IUserSessionProvider sessionProvider, IIpGeolocationResolver geoResolver, IUserBehavioralProfileStore profileStore, TimeProvider timeProvider, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -23896,8 +23896,44 @@
           "kind": "property",
           "signature": "double MaxTravelKilometersPerHour",
           "returnType": "double"
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(180)",
+          "returnType": "TimeSpan ProfileRetention { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MinObservationsForHabitual",
+          "kind": "property",
+          "signature": "int MinObservationsForHabitual",
+          "returnType": "int"
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(30)",
+          "returnType": "TimeSpan HabitualRecencyWindow { get; set; } = TimeSpan."
         }
       ]
+    },
+    {
+      "name": "BehavioralObservation",
+      "fqn": "Granit.Identity.BehavioralObservation",
+      "kind": "record",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/BehavioralObservation.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "BehavioralObservationKind",
+      "fqn": "Granit.Identity.BehavioralObservationKind",
+      "kind": "enum",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/BehavioralObservationKind.cs",
+      "line": 7,
+      "members": []
     },
     {
       "name": "DeviceKind",
@@ -26229,6 +26265,28 @@
           "kind": "method",
           "signature": "CreateUserAsync(IdentityUserCreate user, CancellationToken cancellationToken = default)",
           "returnType": "Task<IIdentityUser>"
+        }
+      ]
+    },
+    {
+      "name": "IUserBehavioralProfileStore",
+      "fqn": "Granit.Identity.IUserBehavioralProfileStore",
+      "kind": "interface",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IUserBehavioralProfileStore.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UserBehavioralProfile>"
+        },
+        {
+          "name": "RecordObservationAsync",
+          "kind": "method",
+          "signature": "RecordObservationAsync(string userId, string? country, string? deviceFamily, string? coarseLocation, DateTimeOffset observedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -28952,6 +29010,28 @@
       "file": "src/Granit.Identity.Abstractions/SuspiciousUserSessionDetectedEto.cs",
       "line": 32,
       "members": []
+    },
+    {
+      "name": "UserBehavioralProfile",
+      "fqn": "Granit.Identity.UserBehavioralProfile",
+      "kind": "record",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/UserBehavioralProfile.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new([])",
+          "returnType": "UserBehavioralProfile Empty { get; } ="
+        },
+        {
+          "name": "IsHabitual",
+          "kind": "method",
+          "signature": "IsHabitual(BehavioralObservationKind kind, string value, DateTimeOffset now, int minObservations, TimeSpan recencyWindow, TimeSpan retention)",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "UserDevice",

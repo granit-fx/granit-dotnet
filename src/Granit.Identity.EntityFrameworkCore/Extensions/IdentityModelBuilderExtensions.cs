@@ -25,6 +25,7 @@ public static class IdentityModelBuilderExtensions
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new UserSessionRiskEntityConfiguration());
         modelBuilder.ApplyConfiguration(new DeviceTrustEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new UserBehavioralProfileEntityConfiguration());
         return modelBuilder;
     }
 }

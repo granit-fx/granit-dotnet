@@ -1,3 +1,5 @@
+using System.Globalization;
+using Granit.Identity.AnomalyDetection.Internal;
 using Granit.IpGeolocation;
 using Granit.MultiTenancy;
 
@@ -19,6 +21,8 @@ public class UserSessionCreatedHandler
         IUserSessionRiskEvaluator evaluator,
         IUserSessionProvider sessionProvider,
         IIpGeolocationResolver geoResolver,
+        IUserBehavioralProfileStore profileStore,
+        TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
         // Distributed dispatch carries no ambient tenant — establish it from the event so the risk store, the
@@ -57,7 +61,26 @@ public class UserSessionCreatedHandler
             sessions, evt.SessionId, geoResolver, cancellationToken).ConfigureAwait(false);
 
         await evaluator.EvaluateAsync(candidate, history, evt.DeviceId, cancellationToken).ConfigureAwait(false);
+
+        // Record the candidate's observation into the durable profile AFTER assessment, so a genuinely-new first
+        // sighting still scores; repeated visits to the same country/device then become habitual and stop
+        // re-flagging. "unknown" device families are not recorded (they would not help suppression).
+        string deviceFamily = DeviceFingerprint.Family(evt.UserAgent);
+        await profileStore.RecordObservationAsync(
+            evt.UserId,
+            candidateLocation?.CountryCode,
+            deviceFamily == DeviceFingerprint.Unknown ? null : deviceFamily,
+            CoarseLocation(candidateLocation),
+            timeProvider.GetUtcNow(),
+            cancellationToken).ConfigureAwait(false);
     }
+
+    // A coarse geographic bucket (whole-degree latitude/longitude, ~111 km) — enough to recognise a habitual
+    // area without storing a precise position.
+    private static string? CoarseLocation(GeoLocation? location) =>
+        location is { Latitude: { } lat, Longitude: { } lon }
+            ? string.Create(CultureInfo.InvariantCulture, $"{(int)Math.Round(lat)},{(int)Math.Round(lon)}")
+            : null;
 
     // The provider returns the user's other sessions with raw IPs but no resolved location; resolve each here so
     // the heuristics (impossible travel, new country) can compare against history. Lookups are cache-backed and

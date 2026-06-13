@@ -20,6 +20,8 @@ internal sealed class UserSessionAnomalyDetector(
     IAICallRateLimiter rateLimiter,
     IOptions<IdentityAnomalyDetectionOptions> options,
     ICurrentTenant currentTenant,
+    IUserBehavioralProfileStore profileStore,
+    TimeProvider timeProvider,
     IdentityAnomalyDetectionMetrics metrics) : IUserSessionAnomalyDetector
 {
     private const string AiInstruction =
@@ -39,7 +41,15 @@ internal sealed class UserSessionAnomalyDetector(
         using Activity? activity = IdentityAnomalyDetectionActivitySource.Source.StartActivity("UserSession.AssessAnomaly");
 
         IdentityAnomalyDetectionOptions opts = options.Value;
-        UserSessionRiskAssessment heuristic = EvaluateHeuristics(candidate, history, opts);
+
+        // Source the "known" facts from the durable habitual profile (not just active sessions), so a familiar
+        // country/device is not re-flagged once active sessions for it have expired.
+        UserBehavioralProfile profile = candidate.UserId is { } profileUserId
+            ? await profileStore.GetAsync(profileUserId, cancellationToken).ConfigureAwait(false)
+            : UserBehavioralProfile.Empty;
+        DateTimeOffset now = timeProvider.GetUtcNow();
+
+        UserSessionRiskAssessment heuristic = EvaluateHeuristics(candidate, history, opts, profile, now);
         string? tenantId = currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
 
         if (!opts.UseAi)
@@ -65,7 +75,9 @@ internal sealed class UserSessionAnomalyDetector(
     private static UserSessionRiskAssessment EvaluateHeuristics(
         UserSessionDescriptor candidate,
         IReadOnlyList<UserSessionDescriptor> history,
-        IdentityAnomalyDetectionOptions opts)
+        IdentityAnomalyDetectionOptions opts,
+        UserBehavioralProfile profile,
+        DateTimeOffset now)
     {
         List<string> reasons = [];
         bool impossibleTravel = HasImpossibleTravel(candidate, history, opts.MaxTravelKilometersPerHour);
@@ -78,14 +90,20 @@ internal sealed class UserSessionAnomalyDetector(
         {
             string? country = candidate.Location?.CountryCode;
             if (!string.IsNullOrEmpty(country)
-                && !history.Any(h => string.Equals(h.Location?.CountryCode, country, StringComparison.OrdinalIgnoreCase)))
+                && !history.Any(h => string.Equals(h.Location?.CountryCode, country, StringComparison.OrdinalIgnoreCase))
+                && !profile.IsHabitual(
+                    BehavioralObservationKind.Country, country, now,
+                    opts.MinObservationsForHabitual, opts.HabitualRecencyWindow, opts.ProfileRetention))
             {
                 reasons.Add("new_country");
             }
 
             string device = DeviceFingerprint.Family(candidate.UserAgent);
             if (device != DeviceFingerprint.Unknown
-                && !history.Any(h => DeviceFingerprint.Family(h.UserAgent) == device))
+                && !history.Any(h => DeviceFingerprint.Family(h.UserAgent) == device)
+                && !profile.IsHabitual(
+                    BehavioralObservationKind.DeviceFamily, device, now,
+                    opts.MinObservationsForHabitual, opts.HabitualRecencyWindow, opts.ProfileRetention))
             {
                 reasons.Add("new_device");
             }

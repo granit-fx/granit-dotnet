@@ -43,6 +43,13 @@ internal sealed class IdentityDbContext(
     /// </summary>
     public DbSet<DeviceTrustEntity> DeviceTrusts => Set<DeviceTrustEntity>();
 
+    /// <summary>
+    /// Durable habitual-profile observations, keyed by <c>(UserId, Kind, Value)</c>. Persisted in the same
+    /// context as <see cref="User"/> — behavioural history is part of the identity domain (no separate context
+    /// per table).
+    /// </summary>
+    public DbSet<UserBehavioralProfileEntity> UserBehavioralProfiles => Set<UserBehavioralProfileEntity>();
+
     /// <inheritdoc />
     protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {

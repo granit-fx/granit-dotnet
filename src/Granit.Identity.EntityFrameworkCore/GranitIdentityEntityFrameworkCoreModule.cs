@@ -35,5 +35,9 @@ public sealed class GranitIdentityEntityFrameworkCoreModule : GranitModule
         // Durable device-trust store, in the same context — a device marked trusted survives restarts and is
         // honoured across instances. Overrides the in-memory default from Granit.Identity.Abstractions.
         context.Services.AddScoped<IDeviceTrustStore, EfCoreDeviceTrustStore>();
+
+        // Durable habitual-profile store, in the same context — a habitual location/device stays recognised
+        // between visits instead of resetting on restart. Overrides the in-memory default.
+        context.Services.AddScoped<IUserBehavioralProfileStore, EfCoreUserBehavioralProfileStore>();
     }
 }

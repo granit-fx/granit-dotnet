@@ -29,6 +29,15 @@ public sealed class UserSessionAnomalyDetectorTests
     private readonly IStructuredCompletion _structuredCompletion = Substitute.For<IStructuredCompletion>();
     private readonly IAICallRateLimiter _rateLimiter = Substitute.For<IAICallRateLimiter>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
+    private readonly IUserBehavioralProfileStore _profileStore = Substitute.For<IUserBehavioralProfileStore>();
+    private readonly TimeProvider _timeProvider = Substitute.For<TimeProvider>();
+
+    public UserSessionAnomalyDetectorTests()
+    {
+        _timeProvider.GetUtcNow().Returns(Now);
+        // Default: empty durable profile, so existing scenarios behave exactly as before (no suppression).
+        _profileStore.GetAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(UserBehavioralProfile.Empty);
+    }
 
     [Fact]
     public async Task AssessAsync_NoHistory_ReturnsNone()
@@ -153,12 +162,88 @@ public sealed class UserSessionAnomalyDetectorTests
             Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>());
     }
 
+    // ── Durable habitual profile suppresses familiar country/device (the second-residence fix) ──
+
+    [Fact]
+    public async Task AssessAsync_HabitualCountry_SuppressesNewCountry()
+    {
+        // BE is habitual in the durable profile (seen 5×), even though the only active session is in FR.
+        _profileStore.GetAsync("user-1", Arg.Any<CancellationToken>()).Returns(new UserBehavioralProfile(
+            [new BehavioralObservation(BehavioralObservationKind.Country, "BE", 5, Now.AddDays(-90), Now.AddDays(-5))]));
+
+        UserSessionAnomalyDetector sut = CreateDetector();
+        UserSessionDescriptor candidate = Session("s2", Brussels, Desktop, Now);
+        UserSessionDescriptor prior = Session("s1", Paris, Desktop, Now.AddHours(-10));
+
+        UserSessionRiskAssessment result = await sut.AssessAsync(candidate, [prior], Ct);
+
+        result.Reasons.ShouldNotContain("new_country");
+        result.Level.ShouldBe(UserSessionRiskLevel.None);
+    }
+
+    [Fact]
+    public async Task AssessAsync_HabitualCountryAndDevice_SuppressesBoth()
+    {
+        string mobileFamily = DeviceFingerprint.Family(Mobile);
+        _profileStore.GetAsync("user-1", Arg.Any<CancellationToken>()).Returns(new UserBehavioralProfile(
+        [
+            new BehavioralObservation(BehavioralObservationKind.Country, "BE", 5, Now.AddDays(-90), Now.AddDays(-5)),
+            new BehavioralObservation(BehavioralObservationKind.DeviceFamily, mobileFamily, 5, Now.AddDays(-90), Now.AddDays(-5)),
+        ]));
+
+        UserSessionAnomalyDetector sut = CreateDetector();
+        UserSessionDescriptor candidate = Session("s2", Brussels, Mobile, Now);
+        UserSessionDescriptor prior = Session("s1", Paris, Desktop, Now.AddHours(-10));
+
+        UserSessionRiskAssessment result = await sut.AssessAsync(candidate, [prior], Ct);
+
+        result.Reasons.ShouldNotContain("new_country");
+        result.Reasons.ShouldNotContain("new_device");
+        result.Level.ShouldBe(UserSessionRiskLevel.None);
+    }
+
+    [Fact]
+    public async Task AssessAsync_RecentlySeenCountryBelowFrequency_StillSuppressed()
+    {
+        // Seen once (< MinObservationsForHabitual = 3) but only 3 days ago (< 30-day recency window) — "you were
+        // just here", so it must not re-flag.
+        _profileStore.GetAsync("user-1", Arg.Any<CancellationToken>()).Returns(new UserBehavioralProfile(
+            [new BehavioralObservation(BehavioralObservationKind.Country, "BE", 1, Now.AddDays(-3), Now.AddDays(-3))]));
+
+        UserSessionAnomalyDetector sut = CreateDetector();
+        UserSessionDescriptor candidate = Session("s2", Brussels, Desktop, Now);
+        UserSessionDescriptor prior = Session("s1", Paris, Desktop, Now.AddHours(-10));
+
+        UserSessionRiskAssessment result = await sut.AssessAsync(candidate, [prior], Ct);
+
+        result.Reasons.ShouldNotContain("new_country");
+    }
+
+    [Fact]
+    public async Task AssessAsync_StaleCountryBeyondRetention_StillFlagged()
+    {
+        // Frequent long ago but last seen beyond the 180-day retention window — no longer counts, so it flags.
+        _profileStore.GetAsync("user-1", Arg.Any<CancellationToken>()).Returns(new UserBehavioralProfile(
+            [new BehavioralObservation(BehavioralObservationKind.Country, "BE", 5, Now.AddDays(-400), Now.AddDays(-200))]));
+
+        UserSessionAnomalyDetector sut = CreateDetector();
+        UserSessionDescriptor candidate = Session("s2", Brussels, Desktop, Now);
+        UserSessionDescriptor prior = Session("s1", Paris, Desktop, Now.AddHours(-10));
+
+        UserSessionRiskAssessment result = await sut.AssessAsync(candidate, [prior], Ct);
+
+        result.Reasons.ShouldContain("new_country");
+        result.Level.ShouldBe(UserSessionRiskLevel.Low);
+    }
+
     private UserSessionAnomalyDetector CreateDetector(bool useAi = false) =>
         new(
             _structuredCompletion,
             _rateLimiter,
             Microsoft.Extensions.Options.Options.Create(new IdentityAnomalyDetectionOptions { UseAi = useAi }),
             _currentTenant,
+            _profileStore,
+            _timeProvider,
             CreateMetrics());
 
     private static UserSessionDescriptor Session(string id, GeoLocation location, string userAgent, DateTimeOffset createdAt) =>

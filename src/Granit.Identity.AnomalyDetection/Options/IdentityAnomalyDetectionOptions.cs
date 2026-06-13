@@ -45,6 +45,26 @@ public sealed class IdentityAnomalyDetectionOptions
     public double MaxTravelKilometersPerHour { get; set; } = 1000d;
 
     /// <summary>
+    /// How long an observation in a user's durable habitual profile stays relevant. A country/device last seen
+    /// longer ago than this no longer suppresses a <c>new_country</c> / <c>new_device</c> signal. Default: 180 days.
+    /// </summary>
+    public TimeSpan ProfileRetention { get; set; } = TimeSpan.FromDays(180);
+
+    /// <summary>
+    /// How many times a value must be observed before it counts as habitual (and thus suppresses the
+    /// corresponding new-country/new-device signal) regardless of recency. Default: 3.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    public int MinObservationsForHabitual { get; set; } = 3;
+
+    /// <summary>
+    /// A value seen within this window counts as habitual even below <see cref="MinObservationsForHabitual"/> —
+    /// "you were just here". This is what stops a legitimate occasional location (e.g. a second residence) from
+    /// being re-flagged on each visit. Default: 30 days.
+    /// </summary>
+    public TimeSpan HabitualRecencyWindow { get; set; } = TimeSpan.FromDays(30);
+
+    /// <summary>
     /// When <c>true</c>, the raw client IP is carried on <c>SuspiciousUserSessionDetectedEto</c> so a
     /// downstream consumer (e.g. the alert email) can display it. <strong>Opt-in</strong>: the default
     /// (<c>false</c>) keeps alerts location-only. <strong>GDPR note:</strong> enabling this re-introduces the
