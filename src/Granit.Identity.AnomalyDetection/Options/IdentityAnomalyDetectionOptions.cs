@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 namespace Granit.Identity.AnomalyDetection.Options;
 
 /// <summary>
-/// Configuration for session anomaly detection, bound from <c>"UserSessions:AnomalyDetection"</c>.
+/// Configuration for session anomaly detection, bound from <c>"Identity:AnomalyDetection"</c>.
 /// </summary>
-public sealed class UserSessionsAnomalyDetectionOptions
+public sealed class IdentityAnomalyDetectionOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "UserSessions:AnomalyDetection";
+    public const string SectionName = "Identity:AnomalyDetection";
 
     /// <summary>
     /// When <c>true</c>, augments the always-on heuristics with an AI assessment via

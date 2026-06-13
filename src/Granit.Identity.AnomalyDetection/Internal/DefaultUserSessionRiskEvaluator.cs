@@ -24,7 +24,7 @@ internal sealed class DefaultUserSessionRiskEvaluator(
     IUserSessionRiskStore riskStore,
     TimeProvider timeProvider,
     ICurrentTenant currentTenant,
-    IOptions<UserSessionsAnomalyDetectionOptions> options,
+    IOptions<IdentityAnomalyDetectionOptions> options,
     IDistributedEventBus? eventBus = null) : IUserSessionRiskEvaluator
 {
     public async Task<UserSessionRiskAssessment> EvaluateAsync(

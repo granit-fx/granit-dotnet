@@ -157,17 +157,17 @@ public sealed class UserSessionAnomalyDetectorTests
         new(
             _structuredCompletion,
             _rateLimiter,
-            Microsoft.Extensions.Options.Options.Create(new UserSessionsAnomalyDetectionOptions { UseAi = useAi }),
+            Microsoft.Extensions.Options.Options.Create(new IdentityAnomalyDetectionOptions { UseAi = useAi }),
             _currentTenant,
             CreateMetrics());
 
     private static UserSessionDescriptor Session(string id, GeoLocation location, string userAgent, DateTimeOffset createdAt) =>
         new(id, "user-1", IsCurrent: false, createdAt, LastAccessedAt: createdAt, userAgent, IpAddress: "203.0.113.7", location);
 
-    private static UserSessionsAnomalyDetectionMetrics CreateMetrics()
+    private static IdentityAnomalyDetectionMetrics CreateMetrics()
     {
         IMeterFactory factory = Substitute.For<IMeterFactory>();
         factory.Create(Arg.Any<MeterOptions>()).Returns(call => new Meter(call.Arg<MeterOptions>().Name));
-        return new UserSessionsAnomalyDetectionMetrics(factory);
+        return new IdentityAnomalyDetectionMetrics(factory);
     }
 }

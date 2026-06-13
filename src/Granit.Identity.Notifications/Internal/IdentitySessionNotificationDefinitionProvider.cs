@@ -9,9 +9,9 @@ namespace Granit.Identity.Notifications.Internal;
 /// suspicious-sign-in alert is a security control); the Medium-tier review alert is
 /// informational and may be opted out of.
 /// </summary>
-internal sealed class UserSessionsNotificationDefinitionProvider : INotificationDefinitionProvider
+internal sealed class IdentitySessionNotificationDefinitionProvider : INotificationDefinitionProvider
 {
-    private const string GroupName = "UserSessions";
+    private const string GroupName = "Security";
 
     public void Define(INotificationDefinitionContext context)
     {

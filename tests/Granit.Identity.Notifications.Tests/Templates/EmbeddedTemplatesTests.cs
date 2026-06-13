@@ -15,8 +15,8 @@ public sealed class EmbeddedTemplatesTests
 {
     private static readonly string[] NotificationNames =
     [
-        "user_sessions.suspicious_session",
-        "user_sessions.new_session_review",
+        "identity.suspicious_session",
+        "identity.new_session_review",
     ];
 
     // Neutral (= EN) baseline ("") plus the 15 suffixed cultures.

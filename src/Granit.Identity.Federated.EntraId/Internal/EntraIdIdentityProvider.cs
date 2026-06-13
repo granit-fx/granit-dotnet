@@ -818,7 +818,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
         response.EnsureSuccessStatusCode();
 
-        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new UserSessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
 
         LogAllSessionsTerminated(userId);
 

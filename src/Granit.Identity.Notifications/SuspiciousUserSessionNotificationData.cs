@@ -13,7 +13,7 @@ namespace Granit.Identity.Notifications;
 /// <param name="City">Approximate city of the sign-in, when resolved; otherwise <see langword="null"/>.</param>
 /// <param name="CountryCode">Approximate country (ISO code) of the sign-in, when resolved.</param>
 /// <param name="IpAddress">Raw client IP of the sign-in, present only when the deployment opted into raw-IP
-/// exposure (<c>UserSessions:AnomalyDetection:IncludeClientIpInAlert</c>); otherwise <see langword="null"/> and
+/// exposure (<c>Identity:AnomalyDetection:IncludeClientIpInAlert</c>); otherwise <see langword="null"/> and
 /// the IP row is omitted. Personal data — never log it.</param>
 /// <param name="Browser">Coarse browser family ("Chrome", "Safari") derived from the raw User-Agent via
 /// <see cref="Internal.UserAgentDescriptor"/>; <see langword="null"/> when it could not be derived. Kept

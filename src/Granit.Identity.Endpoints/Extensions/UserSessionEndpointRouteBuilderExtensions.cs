@@ -32,12 +32,12 @@ public static class UserSessionEndpointRouteBuilderExtensions
         endpoints.MapGranitGroup($"{prefix}sessions")
             .WithTags(options.TagName)
             .RequireAuthorization()
-            .MapUserSessionEndpoints();
+            .MapMyUserSessionEndpoints();
 
         endpoints.MapGranitGroup($"{prefix}devices")
             .WithTags(options.TagName)
             .RequireAuthorization()
-            .MapUserDeviceEndpoints();
+            .MapMyUserDeviceEndpoints();
 
         return endpoints;
     }

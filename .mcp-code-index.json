@@ -23794,11 +23794,11 @@
       ]
     },
     {
-      "name": "UserSessionsAnomalyDetectionMetrics",
-      "fqn": "Granit.Identity.AnomalyDetection.Diagnostics.UserSessionsAnomalyDetectionMetrics",
+      "name": "IdentityAnomalyDetectionMetrics",
+      "fqn": "Granit.Identity.AnomalyDetection.Diagnostics.IdentityAnomalyDetectionMetrics",
       "kind": "class",
       "project": "Granit.Identity.AnomalyDetection",
-      "file": "src/Granit.Identity.AnomalyDetection/Diagnostics/UserSessionsAnomalyDetectionMetrics.cs",
+      "file": "src/Granit.Identity.AnomalyDetection/Diagnostics/IdentityAnomalyDetectionMetrics.cs",
       "line": 9,
       "members": [
         {
@@ -23858,11 +23858,11 @@
       ]
     },
     {
-      "name": "UserSessionsAnomalyDetectionOptions",
-      "fqn": "Granit.Identity.AnomalyDetection.Options.UserSessionsAnomalyDetectionOptions",
+      "name": "IdentityAnomalyDetectionOptions",
+      "fqn": "Granit.Identity.AnomalyDetection.Options.IdentityAnomalyDetectionOptions",
       "kind": "class",
       "project": "Granit.Identity.AnomalyDetection",
-      "file": "src/Granit.Identity.AnomalyDetection/Options/UserSessionsAnomalyDetectionOptions.cs",
+      "file": "src/Granit.Identity.AnomalyDetection/Options/IdentityAnomalyDetectionOptions.cs",
       "line": 8,
       "members": [
         {
@@ -24436,11 +24436,11 @@
       ]
     },
     {
-      "name": "GranitUserSessionsDbProperties",
-      "fqn": "Granit.Identity.EntityFrameworkCore.GranitUserSessionsDbProperties",
+      "name": "GranitIdentitySessionDbProperties",
+      "fqn": "Granit.Identity.EntityFrameworkCore.GranitIdentitySessionDbProperties",
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/GranitUserSessionsDbProperties.cs",
+      "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentitySessionDbProperties.cs",
       "line": 6,
       "members": [
         {
@@ -24485,15 +24485,6 @@
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityRoleRemovedEto.cs",
       "line": 10,
-      "members": []
-    },
-    {
-      "name": "IdentitySessionsRevokedEto",
-      "fqn": "Granit.Identity.Events.IdentitySessionsRevokedEto",
-      "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentitySessionsRevokedEto.cs",
-      "line": 9,
       "members": []
     },
     {
@@ -24548,6 +24539,15 @@
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/UserProfileChangedEto.cs",
       "line": 30,
+      "members": []
+    },
+    {
+      "name": "UserSessionsRevokedEto",
+      "fqn": "Granit.Identity.Events.UserSessionsRevokedEto",
+      "kind": "record",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Events/UserSessionsRevokedEto.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -28696,11 +28696,11 @@
       ]
     },
     {
-      "name": "UserSessionsNotificationOptions",
-      "fqn": "Granit.Identity.Notifications.Options.UserSessionsNotificationOptions",
+      "name": "IdentitySessionNotificationOptions",
+      "fqn": "Granit.Identity.Notifications.Options.IdentitySessionNotificationOptions",
       "kind": "class",
       "project": "Granit.Identity.Notifications",
-      "file": "src/Granit.Identity.Notifications/Options/UserSessionsNotificationOptions.cs",
+      "file": "src/Granit.Identity.Notifications/Options/IdentitySessionNotificationOptions.cs",
       "line": 9,
       "members": [
         {

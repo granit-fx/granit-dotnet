@@ -12,12 +12,12 @@ namespace Granit.Identity.Endpoints.Endpoints;
 /// <summary>
 /// The canonical <c>/devices</c> endpoint: lists the caller's devices.
 /// </summary>
-internal static class UserDeviceEndpoints
+internal static class MyUserDeviceEndpoints
 {
-    internal static RouteGroupBuilder MapUserDeviceEndpoints(this RouteGroupBuilder group)
+    internal static RouteGroupBuilder MapMyUserDeviceEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/", ListAsync)
-            .WithName("ListUserDevices")
+            .WithName("ListMyUserDevices")
             .WithSummary("Lists the caller's devices.")
             .WithDescription(
                 "Returns the devices the authenticated user has signed in from — device type, OS, browser, "

@@ -6,4 +6,4 @@ namespace Granit.Identity.Events;
 /// Published after a user's sessions are revoked.
 /// </summary>
 /// <param name="UserId">The user ID in the identity provider.</param>
-public sealed record IdentitySessionsRevokedEto(string UserId) : IIntegrationEvent;
+public sealed record UserSessionsRevokedEto(string UserId) : IIntegrationEvent;

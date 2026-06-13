@@ -5,7 +5,7 @@ namespace Granit.Identity.AnomalyDetection.Diagnostics;
 /// <summary>
 /// Central <see cref="ActivitySource"/> for <c>Granit.Identity.AnomalyDetection</c> distributed tracing.
 /// </summary>
-internal static class UserSessionsAnomalyDetectionActivitySource
+internal static class IdentityAnomalyDetectionActivitySource
 {
     /// <summary>The activity source name.</summary>
     internal const string Name = "Granit.Identity.AnomalyDetection";

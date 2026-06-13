@@ -4,16 +4,16 @@ using Xunit;
 
 namespace Granit.Identity.AnomalyDetection.Tests;
 
-public sealed class UserSessionsAnomalyDetectionOptionsTests
+public sealed class IdentityAnomalyDetectionOptionsTests
 {
     [Fact]
     public void SectionName_IsNamespaceAlignedHierarchicalPath() =>
-        UserSessionsAnomalyDetectionOptions.SectionName.ShouldBe("UserSessions:AnomalyDetection");
+        IdentityAnomalyDetectionOptions.SectionName.ShouldBe("Identity:AnomalyDetection");
 
     [Fact]
     public void Defaults_AreWithinValidatedRanges()
     {
-        UserSessionsAnomalyDetectionOptions options = new();
+        IdentityAnomalyDetectionOptions options = new();
 
         options.UseAi.ShouldBeFalse();
         options.MaxAiCallsPerHourPerTenant.ShouldBe(500);

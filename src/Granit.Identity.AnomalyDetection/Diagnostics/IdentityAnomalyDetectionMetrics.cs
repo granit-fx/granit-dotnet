@@ -6,7 +6,7 @@ namespace Granit.Identity.AnomalyDetection.Diagnostics;
 /// <summary>
 /// OpenTelemetry metrics for session anomaly detection. Meter: <c>Granit.Identity.AnomalyDetection</c>.
 /// </summary>
-public sealed class UserSessionsAnomalyDetectionMetrics
+public sealed class IdentityAnomalyDetectionMetrics
 {
     /// <summary>The meter name.</summary>
     public const string MeterName = "Granit.Identity.AnomalyDetection";
@@ -18,16 +18,16 @@ public sealed class UserSessionsAnomalyDetectionMetrics
     private readonly Counter<long> _aiCalls;
 
     /// <summary>Initializes the metrics from the shared <see cref="IMeterFactory"/>.</summary>
-    public UserSessionsAnomalyDetectionMetrics(IMeterFactory meterFactory)
+    public IdentityAnomalyDetectionMetrics(IMeterFactory meterFactory)
     {
         Meter meter = meterFactory.Create(MeterName);
 
         _assessments = meter.CreateCounter<long>(
-            "granit.user_sessions.anomaly.assessments",
+            "granit.identity.session.anomaly.assessments",
             description: "Number of session risk assessments, tagged with the resulting level.");
 
         _aiCalls = meter.CreateCounter<long>(
-            "granit.user_sessions.anomaly.ai_calls",
+            "granit.identity.session.anomaly.ai_calls",
             description: "Number of AI assessment attempts, tagged with the outcome.");
     }
 

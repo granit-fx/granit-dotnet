@@ -12,7 +12,7 @@ namespace Granit.Identity.AnomalyDetection.Tests;
 
 /// <summary>
 /// Verifies the raw-IP opt-in gate on the published <see cref="SuspiciousUserSessionDetectedEto"/>:
-/// location-only by default, raw IP carried only when <see cref="UserSessionsAnomalyDetectionOptions.IncludeClientIpInAlert"/>
+/// location-only by default, raw IP carried only when <see cref="IdentityAnomalyDetectionOptions.IncludeClientIpInAlert"/>
 /// is enabled.
 /// </summary>
 public sealed class DefaultUserSessionRiskEvaluatorTests
@@ -41,9 +41,9 @@ public sealed class DefaultUserSessionRiskEvaluatorTests
             Arg.Do<SuspiciousUserSessionDetectedEto>(e => captured = e),
             Arg.Any<CancellationToken>());
 
-        IOptions<UserSessionsAnomalyDetectionOptions> options =
+        IOptions<IdentityAnomalyDetectionOptions> options =
             Microsoft.Extensions.Options.Options.Create(
-                new UserSessionsAnomalyDetectionOptions { IncludeClientIpInAlert = includeIp });
+                new IdentityAnomalyDetectionOptions { IncludeClientIpInAlert = includeIp });
 
         var evaluator = new DefaultUserSessionRiskEvaluator(
             detector, store, TimeProvider.System, tenant, options, bus);

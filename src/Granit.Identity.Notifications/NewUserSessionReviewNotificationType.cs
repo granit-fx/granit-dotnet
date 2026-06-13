@@ -19,7 +19,7 @@ public sealed class NewUserSessionReviewNotificationType
     public static readonly NewUserSessionReviewNotificationType Instance = new();
 
     /// <inheritdoc />
-    public override string Name => "user_sessions.new_session_review";
+    public override string Name => "identity.new_session_review";
 
     /// <inheritdoc />
     public override NotificationSeverity DefaultSeverity => NotificationSeverity.Info;

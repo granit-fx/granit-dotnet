@@ -18,9 +18,9 @@ namespace Granit.Identity.AnomalyDetection.Internal;
 internal sealed class UserSessionAnomalyDetector(
     IStructuredCompletion structuredCompletion,
     IAICallRateLimiter rateLimiter,
-    IOptions<UserSessionsAnomalyDetectionOptions> options,
+    IOptions<IdentityAnomalyDetectionOptions> options,
     ICurrentTenant currentTenant,
-    UserSessionsAnomalyDetectionMetrics metrics) : IUserSessionAnomalyDetector
+    IdentityAnomalyDetectionMetrics metrics) : IUserSessionAnomalyDetector
 {
     private const string AiInstruction =
         "You are a security analyst. Assess whether the candidate session is anomalous given the user's "
@@ -36,9 +36,9 @@ internal sealed class UserSessionAnomalyDetector(
         ArgumentNullException.ThrowIfNull(candidate);
         ArgumentNullException.ThrowIfNull(history);
 
-        using Activity? activity = UserSessionsAnomalyDetectionActivitySource.Source.StartActivity("UserSession.AssessAnomaly");
+        using Activity? activity = IdentityAnomalyDetectionActivitySource.Source.StartActivity("UserSession.AssessAnomaly");
 
-        UserSessionsAnomalyDetectionOptions opts = options.Value;
+        IdentityAnomalyDetectionOptions opts = options.Value;
         UserSessionRiskAssessment heuristic = EvaluateHeuristics(candidate, history, opts);
         string? tenantId = currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
 
@@ -57,15 +57,15 @@ internal sealed class UserSessionAnomalyDetector(
 
     private static UserSessionRiskAssessment Tag(Activity? activity, UserSessionRiskAssessment assessment, bool aiUsed)
     {
-        activity?.SetTag("granit.user_sessions.anomaly.level", assessment.Level.ToString());
-        activity?.SetTag("granit.user_sessions.anomaly.ai_used", aiUsed);
+        activity?.SetTag("granit.identity.session.anomaly.level", assessment.Level.ToString());
+        activity?.SetTag("granit.identity.session.anomaly.ai_used", aiUsed);
         return assessment;
     }
 
     private static UserSessionRiskAssessment EvaluateHeuristics(
         UserSessionDescriptor candidate,
         IReadOnlyList<UserSessionDescriptor> history,
-        UserSessionsAnomalyDetectionOptions opts)
+        IdentityAnomalyDetectionOptions opts)
     {
         List<string> reasons = [];
         bool impossibleTravel = HasImpossibleTravel(candidate, history, opts.MaxTravelKilometersPerHour);
@@ -137,7 +137,7 @@ internal sealed class UserSessionAnomalyDetector(
     private async Task<UserSessionRiskAssessment?> TryAssessWithAiAsync(
         UserSessionDescriptor candidate,
         IReadOnlyList<UserSessionDescriptor> history,
-        UserSessionsAnomalyDetectionOptions opts,
+        IdentityAnomalyDetectionOptions opts,
         string? tenantId,
         CancellationToken cancellationToken)
     {

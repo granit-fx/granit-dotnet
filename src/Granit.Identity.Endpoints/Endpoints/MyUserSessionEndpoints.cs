@@ -14,15 +14,15 @@ namespace Granit.Identity.Endpoints.Endpoints;
 /// <summary>
 /// The canonical <c>/sessions</c> endpoints: list, revoke one, revoke others — the caller's own sessions.
 /// </summary>
-internal static class UserSessionEndpoints
+internal static class MyUserSessionEndpoints
 {
     /// <summary>Claim carrying the OIDC session id (<c>sid</c>), used to flag the current session.</summary>
     private const string SessionIdClaim = "sid";
 
-    internal static RouteGroupBuilder MapUserSessionEndpoints(this RouteGroupBuilder group)
+    internal static RouteGroupBuilder MapMyUserSessionEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/", ListAsync)
-            .WithName("ListUserSessions")
+            .WithName("ListMyUserSessions")
             .WithSummary("Lists the caller's active sessions.")
             .WithDescription(
                 "Returns the authenticated user's active sessions across the configured backend "
@@ -32,7 +32,7 @@ internal static class UserSessionEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapDelete("/{sessionId}", RevokeAsync)
-            .WithName("RevokeUserSession")
+            .WithName("RevokeMyUserSession")
             .WithSummary("Revokes one of the caller's sessions by ID.")
             .WithDescription("Revokes the specified session of the authenticated user. Returns 404 when no such session exists.")
             .Produces(StatusCodes.Status204NoContent)
@@ -40,7 +40,7 @@ internal static class UserSessionEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapDelete("/", RevokeOthersAsync)
-            .WithName("RevokeOtherUserSessions")
+            .WithName("RevokeMyOtherUserSessions")
             .WithSummary("Revokes all of the caller's sessions except the current one.")
             .WithDescription("Revokes every session of the authenticated user except the one making the request, and returns how many were revoked.")
             .Produces<UserSessionsRevokedResponse>()

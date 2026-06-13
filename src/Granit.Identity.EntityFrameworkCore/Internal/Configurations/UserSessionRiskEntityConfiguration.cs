@@ -10,7 +10,7 @@ internal sealed class UserSessionRiskEntityConfiguration : IEntityTypeConfigurat
 {
     public void Configure(EntityTypeBuilder<UserSessionRiskEntity> builder)
     {
-        builder.ToTable(GranitUserSessionsDbProperties.DbTablePrefix + "risks", GranitUserSessionsDbProperties.DbSchema);
+        builder.ToTable(GranitIdentitySessionDbProperties.DbTablePrefix + "risks", GranitIdentitySessionDbProperties.DbSchema);
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Id).ValueGeneratedNever();
         builder.Property(e => e.UserId).HasMaxLength(128).IsRequired();

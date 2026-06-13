@@ -349,7 +349,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
         _handler.Requests.ShouldBeEmpty();
 
         await _distributedEventBus.DidNotReceive().PublishAsync(
-            Arg.Any<IdentitySessionsRevokedEto>(),
+            Arg.Any<UserSessionsRevokedEto>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -414,7 +414,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             "user-1", currentSessionId: "s1", TestContext.Current.CancellationToken);
 
         await _distributedEventBus.Received(1).PublishAsync(
-            Arg.Is<IdentitySessionsRevokedEto>(e => e.UserId == "user-1"),
+            Arg.Is<UserSessionsRevokedEto>(e => e.UserId == "user-1"),
             Arg.Any<CancellationToken>());
     }
 

@@ -17,7 +17,7 @@ public sealed class MjmlTemplateBodyTests
     [Fact]
     public void SuspiciousSession_En_BodyStartsWithMjmlFragment()
     {
-        string body = ReadBodyAfterTitle("Templates.user_sessions.suspicious_session.html");
+        string body = ReadBodyAfterTitle("Templates.identity.suspicious_session.html");
 
         body.ShouldStartWith("<mj-", customMessage: "The EN body must be an MJML fragment so the layout injects it raw.");
         body.ShouldContain("<mj-button");

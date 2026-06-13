@@ -19,15 +19,15 @@ public sealed class GranitIdentityAnomalyDetectionModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        GranitActivitySourceRegistry.Register(UserSessionsAnomalyDetectionActivitySource.Name);
+        GranitActivitySourceRegistry.Register(IdentityAnomalyDetectionActivitySource.Name);
 
         context.Services
-            .AddOptions<UserSessionsAnomalyDetectionOptions>()
-            .BindConfiguration(UserSessionsAnomalyDetectionOptions.SectionName)
+            .AddOptions<IdentityAnomalyDetectionOptions>()
+            .BindConfiguration(IdentityAnomalyDetectionOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        context.Services.TryAddSingleton<UserSessionsAnomalyDetectionMetrics>();
+        context.Services.TryAddSingleton<IdentityAnomalyDetectionMetrics>();
         context.Services.AddScoped<IUserSessionAnomalyDetector, UserSessionAnomalyDetector>();
         context.Services.AddScoped<IUserSessionRiskEvaluator, DefaultUserSessionRiskEvaluator>();
     }

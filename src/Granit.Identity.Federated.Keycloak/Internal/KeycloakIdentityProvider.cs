@@ -248,7 +248,7 @@ internal sealed partial class KeycloakIdentityProvider(
     /// <inheritdoc/>
     /// <remarks>
     /// Keycloak revokes a single user session via <c>DELETE /admin/realms/{realm}/sessions/{id}</c>.
-    /// Publishes <see cref="IdentitySessionsRevokedEto"/> on success so downstream session caches
+    /// Publishes <see cref="UserSessionsRevokedEto"/> on success so downstream session caches
     /// invalidate, mirroring the previous bridge behaviour.
     /// </remarks>
     public async Task<bool> RevokeAsync(
@@ -273,7 +273,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogSessionTerminated(sessionId, userId);
 
-        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new UserSessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
 
         return true;
     }

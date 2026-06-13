@@ -38,12 +38,12 @@ public sealed class GranitIdentityNotificationsModule : GranitModule
 
         // Layout glob — the host application registers the actual `Layout.Email` template; if absent,
         // templates render without a layout (warning logged, no crash).
-        context.Services.AddTemplateLayout("user_sessions.*", "Layout.Email");
+        context.Services.AddTemplateLayout("identity.*", "Layout.Email");
 
-        context.Services.AddSingleton<INotificationDefinitionProvider, UserSessionsNotificationDefinitionProvider>();
+        context.Services.AddSingleton<INotificationDefinitionProvider, IdentitySessionNotificationDefinitionProvider>();
 
-        context.Services.AddOptions<Options.UserSessionsNotificationOptions>()
-            .BindConfiguration(Options.UserSessionsNotificationOptions.SectionName)
+        context.Services.AddOptions<Options.IdentitySessionNotificationOptions>()
+            .BindConfiguration(Options.IdentitySessionNotificationOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
     }

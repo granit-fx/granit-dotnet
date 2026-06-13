@@ -18,7 +18,7 @@ public sealed class SuspiciousUserSessionNotificationType
     public static readonly SuspiciousUserSessionNotificationType Instance = new();
 
     /// <inheritdoc />
-    public override string Name => "user_sessions.suspicious_session";
+    public override string Name => "identity.suspicious_session";
 
     /// <inheritdoc />
     public override NotificationSeverity DefaultSeverity => NotificationSeverity.Warning;

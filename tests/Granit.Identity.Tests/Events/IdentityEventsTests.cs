@@ -98,9 +98,9 @@ public sealed class IdentityEventsTests
     }
 
     [Fact]
-    public void IdentitySessionsRevokedEto_SetsUserId()
+    public void UserSessionsRevokedEto_SetsUserId()
     {
-        var evt = new IdentitySessionsRevokedEto("u1");
+        var evt = new UserSessionsRevokedEto("u1");
 
         evt.UserId.ShouldBe("u1");
     }
