@@ -621,7 +621,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         //           call 2 = GET /clients/uuid-1 → the client declares granit.device_kind = Tv.
         KeycloakIdentityProvider provider = CreateAdminSequenceProvider(
             """[{"id":"sess-1","ipAddress":"1.2.3.4","start":1700000000000,"lastAccess":1700001000000,"rememberMe":false,"clients":{"uuid-1":"tv-app"}}]""",
-            """{"id":"uuid-1","clientId":"tv-app","attributes":{"granit.device_kind":["Tv"]}}""");
+            """{"id":"uuid-1","clientId":"tv-app","attributes":{"granit.device_kind":"Tv"}}""");
 
         IReadOnlyList<UserDevice> result = await provider.ListAsync("user-1", TestContext.Current.CancellationToken);
 
@@ -632,9 +632,11 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     [Fact]
     public async Task ListDevicesAsync_AdminSessions_ClientWithoutDeviceKind_DefaultsToBrowser()
     {
+        // Real Keycloak client attributes are single strings (Map<String,String>), not lists — include a couple
+        // so this also guards against mis-typing the attribute bag.
         KeycloakIdentityProvider provider = CreateAdminSequenceProvider(
             """[{"id":"sess-1","ipAddress":"1.2.3.4","start":1700000000000,"lastAccess":1700001000000,"rememberMe":false,"clients":{"uuid-1":"web-app"}}]""",
-            """{"id":"uuid-1","clientId":"web-app","attributes":{}}""");
+            """{"id":"uuid-1","clientId":"web-app","attributes":{"post.logout.redirect.uris":"+","oauth2.device.authorization.grant.enabled":"false"}}""");
 
         IReadOnlyList<UserDevice> result = await provider.ListAsync("user-1", TestContext.Current.CancellationToken);
 
