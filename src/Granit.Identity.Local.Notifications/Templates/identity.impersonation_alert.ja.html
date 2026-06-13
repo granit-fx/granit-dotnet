@@ -1,3 +1,4 @@
+<title>管理者によるアカウントへのアクセス</title>
 <p>こんにちは、</p>
 <p>管理者{{ if model.impersonator_display_name != "" }}（<strong>{{ model.impersonator_display_name | html.escape }}</strong>）{{ end }}が <strong>{{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> にあなたのアカウントにアクセスしました。</p>
 <p>これはお客様の組織のセキュリティポリシーで許可された標準的な管理操作です。このセッション中に実行されたすべての操作は記録され、管理者に帰属されます。</p>

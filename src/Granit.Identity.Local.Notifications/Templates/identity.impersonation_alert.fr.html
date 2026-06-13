@@ -1,3 +1,4 @@
+<title>Accès administrateur à votre compte</title>
 <p>Bonjour,</p>
 <p>Un administrateur{{ if model.impersonator_display_name != "" }} (<strong>{{ model.impersonator_display_name | html.escape }}</strong>){{ end }} a accédé à votre compte le <strong>{{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>.</p>
 <p>Il s'agit d'une action administrative standard autorisée par la politique de sécurité de votre organisation. Toutes les actions effectuées pendant cette session sont enregistrées et attribuées à l'administrateur.</p>

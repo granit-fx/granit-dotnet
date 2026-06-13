@@ -1,3 +1,4 @@
+<title>Administratorzugriff auf Ihr Konto</title>
 <p>Hallo,</p>
 <p>Ein Administrator{{ if model.impersonator_display_name != "" }} (<strong>{{ model.impersonator_display_name | html.escape }}</strong>){{ end }} hat am <strong>{{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> auf Ihr Konto zugegriffen.</p>
 <p>Dies ist eine standardmäßige Verwaltungsmaßnahme, die gemäß der Sicherheitsrichtlinie Ihrer Organisation zulässig ist. Alle während dieser Sitzung durchgeführten Aktionen werden protokolliert und dem Administrator zugeordnet.</p>

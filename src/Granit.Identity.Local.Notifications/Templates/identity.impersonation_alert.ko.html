@@ -1,3 +1,4 @@
+<title>관리자의 계정 접근</title>
 <p>안녕하세요,</p>
 <p>관리자{{ if model.impersonator_display_name != "" }}（<strong>{{ model.impersonator_display_name | html.escape }}</strong>）{{ end }}가 <strong>{{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>에 귀하의 계정에 접근했습니다.</p>
 <p>이는 조직의 보안 정책에 의해 허용된 표준 관리 작업입니다. 이 세션 동안 수행된 모든 작업은 기록되며 관리자에게 귀속됩니다.</p>

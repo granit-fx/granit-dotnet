@@ -201,4 +201,30 @@ public sealed class EmbeddedTemplatesTests
         stream.ShouldNotBeNull($"Resource '{fullResourceName}' should be loadable.");
         stream.Length.ShouldBeGreaterThan(0, $"Resource '{fullResourceName}' should not be empty.");
     }
+
+    [Theory]
+    [MemberData(nameof(ExpectedTemplates))]
+    public void EachExpectedTemplate_DeclaresNonEmptySubjectTitle(string suffix)
+    {
+        Assembly assembly = typeof(GranitIdentityLocalNotificationsModule).Assembly;
+        string fullResourceName = $"{assembly.GetName().Name}.{suffix}";
+
+        using Stream? stream = assembly.GetManifestResourceStream(fullResourceName);
+        stream.ShouldNotBeNull($"Resource '{fullResourceName}' should be loadable.");
+
+        using StreamReader reader = new(stream);
+        string content = reader.ReadToEnd();
+
+        // EmailNotificationChannel.ExtractAndStripTitle reads the email subject from the
+        // <title>…</title> element (located anywhere in the document). A template that omits it
+        // silently falls back to the humanized notification-type name (e.g. "identity password_reset")
+        // — which is exactly how the localized variants regressed before they carried a subject.
+        int open = content.IndexOf("<title>", StringComparison.OrdinalIgnoreCase);
+        open.ShouldBeGreaterThanOrEqualTo(0, $"'{fullResourceName}' must declare a <title> email subject.");
+        int close = content.IndexOf("</title>", open, StringComparison.OrdinalIgnoreCase);
+        close.ShouldBeGreaterThan(open, $"'{fullResourceName}' must close its <title> element.");
+
+        string title = content[(open + "<title>".Length)..close].Trim();
+        title.ShouldNotBeNullOrWhiteSpace($"'{fullResourceName}' must declare a non-empty <title> email subject.");
+    }
 }

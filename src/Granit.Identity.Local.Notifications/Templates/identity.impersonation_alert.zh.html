@@ -1,3 +1,4 @@
+<title>管理员访问了您的账户</title>
 <p>您好，</p>
 <p>管理员{{ if model.impersonator_display_name != "" }}（<strong>{{ model.impersonator_display_name | html.escape }}</strong>）{{ end }}于 <strong>{{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> 访问了您的账户。</p>
 <p>这是您组织安全策略允许的标准管理操作。此会话期间执行的所有操作均已记录并归属于该管理员。</p>

@@ -1,3 +1,4 @@
+<title>Administratörsåtkomst till ditt konto</title>
 <p>Hej,</p>
 <p>En administratör{{ if model.impersonator_display_name != "" }} (<strong>{{ model.impersonator_display_name | html.escape }}</strong>){{ end }} fick åtkomst till ditt konto den <strong>{{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>.</p>
 <p>Detta är en standardadministrativ åtgärd som är tillåten enligt din organisations säkerhetspolicy. Alla åtgärder som utfördes under denna session loggas och tillskrivs administratören.</p>

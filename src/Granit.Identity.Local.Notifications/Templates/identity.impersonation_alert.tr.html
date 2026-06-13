@@ -1,3 +1,4 @@
+<title>Hesabınıza yönetici erişimi</title>
 <p>Merhaba,</p>
 <p>Bir yönetici{{ if model.impersonator_display_name != "" }} (<strong>{{ model.impersonator_display_name | html.escape }}</strong>){{ end }} <strong>{{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> tarihinde hesabınıza erişti.</p>
 <p>Bu, kuruluşunuzun güvenlik politikası tarafından izin verilen standart bir yönetim işlemidir. Bu oturum sırasında gerçekleştirilen tüm eylemler günlüğe kaydedilir ve yöneticiye atfedilir.</p>

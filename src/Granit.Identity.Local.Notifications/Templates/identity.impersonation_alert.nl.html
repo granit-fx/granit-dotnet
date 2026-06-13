@@ -1,3 +1,4 @@
+<title>Beheerderstoegang tot uw account</title>
 <p>Hallo,</p>
 <p>Een beheerder{{ if model.impersonator_display_name != "" }} (<strong>{{ model.impersonator_display_name | html.escape }}</strong>){{ end }} heeft toegang gekregen tot uw account op <strong>{{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>.</p>
 <p>Dit is een standaard beheerdersactie die is toegestaan door het beveiligingsbeleid van uw organisatie. Alle acties die tijdens deze sessie zijn uitgevoerd, worden geregistreerd en toegeschreven aan de beheerder.</p>
