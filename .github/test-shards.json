@@ -13,6 +13,7 @@
         "tests/Granit.AI.Ollama.Tests",
         "tests/Granit.AI.OpenAI.Tests",
         "tests/Granit.AI.Tests",
+        "tests/Granit.AI.Tools.Tests",
         "tests/Granit.AI.VectorData.Tests",
         "tests/Granit.Analyzers.CodeFixes.Tests",
         "tests/Granit.Analyzers.Tests",

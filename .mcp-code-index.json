@@ -89,6 +89,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.AI.Tools",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.AI.VectorData",
       "deps": [
         "Granit.AI"
@@ -4462,6 +4469,173 @@
       "file": "src/Granit.AI/Tenancy/AISettingNames.cs",
       "line": 23,
       "members": []
+    },
+    {
+      "name": "AIToolInvocationContext",
+      "fqn": "Granit.AI.Tools.AIToolInvocationContext",
+      "kind": "record",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/AIToolInvocationContext.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "AIToolRegistrationBuilder",
+      "fqn": "Granit.AI.Tools.AIToolRegistrationBuilder",
+      "kind": "class",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/AIToolRegistrationBuilder.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Services",
+          "kind": "property",
+          "signature": "IServiceCollection Services",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "AIToolResult",
+      "fqn": "Granit.AI.Tools.AIToolResult",
+      "kind": "record",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/AIToolResult.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Success",
+          "kind": "method",
+          "signature": "Success(string content)",
+          "returnType": "required string Content { get; init; } public bool IsError { get; init; } public AIToolResult"
+        },
+        {
+          "name": "Error",
+          "kind": "method",
+          "signature": "Error(string message)",
+          "returnType": "AIToolResult"
+        }
+      ]
+    },
+    {
+      "name": "AIToolSchema",
+      "fqn": "Granit.AI.Tools.AIToolSchema",
+      "kind": "class",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/AIToolSchema.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Parse",
+          "kind": "method",
+          "signature": "Parse(\"\"\"{\"type\":\"object\",\"properties\":{}}\"\"\")",
+          "returnType": "JsonElement Empty { get; } = JsonDocument."
+        }
+      ]
+    },
+    {
+      "name": "DuplicateAIToolException",
+      "fqn": "Granit.AI.Tools.Exceptions.DuplicateAIToolException",
+      "kind": "class",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/Exceptions/DuplicateAIToolException.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "InvalidAIToolNameException",
+      "fqn": "Granit.AI.Tools.Exceptions.InvalidAIToolNameException",
+      "kind": "class",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/Exceptions/InvalidAIToolNameException.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "AIToolsServiceCollectionExtensions",
+      "fqn": "Granit.AI.Tools.Extensions.AIToolsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/Extensions/AIToolsServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitAITools",
+          "kind": "method",
+          "signature": "AddGranitAITools(this IServiceCollection services, Action<AIToolRegistrationBuilder> configure)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIToolsModule",
+      "fqn": "Granit.AI.Tools.GranitAIToolsModule",
+      "kind": "class",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/GranitAIToolsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IAITool",
+      "fqn": "Granit.AI.Tools.IAITool",
+      "kind": "interface",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/IAITool.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "InvokeAsync",
+          "kind": "method",
+          "signature": "InvokeAsync(AIToolInvocationContext context, CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } string Description { get; } JsonElement ParameterSchema { get; } ValueTask<AIToolResult>"
+        }
+      ]
+    },
+    {
+      "name": "IAIToolProjector",
+      "fqn": "Granit.AI.Tools.IAIToolProjector",
+      "kind": "interface",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/IAIToolProjector.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Project",
+          "kind": "method",
+          "signature": "Project(IEnumerable<IAITool> tools)",
+          "returnType": "IReadOnlyList<AITool>"
+        },
+        {
+          "name": "ProjectAll",
+          "kind": "method",
+          "signature": "ProjectAll()",
+          "returnType": "IReadOnlyList<AITool>"
+        }
+      ]
+    },
+    {
+      "name": "IAIToolRegistry",
+      "fqn": "Granit.AI.Tools.IAIToolRegistry",
+      "kind": "interface",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/IAIToolRegistry.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "TryGet",
+          "kind": "method",
+          "signature": "TryGet(string name, [NotNullWhen(true)",
+          "returnType": "IReadOnlyList<IAITool> Tools { get; } bool"
+        }
+      ]
     },
     {
       "name": "VectorDataHostApplicationBuilderExtensions",
