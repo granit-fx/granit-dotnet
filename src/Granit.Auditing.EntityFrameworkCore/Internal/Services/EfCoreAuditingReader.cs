@@ -43,6 +43,7 @@ internal sealed class EfCoreAuditingReader(
         AuditEntry? entry = await dbContext.AuditEntries
             .Include(e => e.EntityChanges)
                 .ThenInclude(ec => ec.PropertyChanges)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(e => e.Id == id, cancellationToken)
             .ConfigureAwait(false);
 
@@ -84,6 +85,7 @@ internal sealed class EfCoreAuditingReader(
         IQueryable<AuditEntry> queryable = dbContext.AuditEntries
             .Include(e => e.EntityChanges)
                 .ThenInclude(ec => ec.PropertyChanges)
+            .AsSplitQuery()
             .Where(e => e.EntityChanges.Any(ec =>
                 matchTypes.Contains(ec.EntityType) && ec.EntityId == entityId))
             .AsNoTracking();
@@ -159,6 +161,7 @@ internal sealed class EfCoreAuditingReader(
         return await dbContext.AuditEntries
             .Include(e => e.EntityChanges)
                 .ThenInclude(ec => ec.PropertyChanges)
+            .AsSplitQuery()
             .Where(outer)
             .OrderByDescending(e => e.Timestamp)
             .Take(limit)
@@ -182,6 +185,7 @@ internal sealed class EfCoreAuditingReader(
         return await dbContext.AuditEntries
             .Include(e => e.EntityChanges)
                 .ThenInclude(ec => ec.PropertyChanges)
+            .AsSplitQuery()
             .Where(e => e.UserId == userId)
             .OrderByDescending(e => e.Timestamp)
             .Take(limit)
@@ -203,6 +207,7 @@ internal sealed class EfCoreAuditingReader(
         return await dbContext.AuditEntries
             .Include(e => e.EntityChanges)
                 .ThenInclude(ec => ec.PropertyChanges)
+            .AsSplitQuery()
             .Where(e => e.CorrelationId == correlationId)
             .OrderByDescending(e => e.Timestamp)
             .AsNoTracking()
