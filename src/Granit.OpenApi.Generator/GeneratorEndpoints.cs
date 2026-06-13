@@ -1,3 +1,4 @@
+using Granit.AI.Chat.Endpoints.Extensions;
 using Granit.AI.Endpoints.Extensions;
 using Granit.Auditing.Endpoints.Extensions;
 using Granit.Authentication.ApiKeys.Endpoints.Extensions;
@@ -42,6 +43,7 @@ internal static class GeneratorEndpoints
     public static readonly IReadOnlyList<OpenApiContractModule> All =
     [
         new("ai", e => e.MapGranitAI()),
+        new("ai-chat", e => e.MapGranitConversations()),
         new("auditing", e => e.MapGranitAuditing()),
         new("api-keys", e => e.MapGranitApiKeys()),
         new("authorization", e => e.MapGranitAuthorization()),

@@ -1,0 +1,87 @@
+using Granit.AI.Chat.Domain;
+using Granit.AI.Chat.EntityFrameworkCore.Internal;
+using Shouldly;
+
+namespace Granit.AI.Chat.EntityFrameworkCore.Tests;
+
+public sealed class EfConversationStoreTests : IDisposable
+{
+    private static readonly Guid UserA = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+    private static readonly Guid UserB = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+
+    private readonly TestDbContextFactory _factory = TestDbContextFactory.Create();
+    private readonly EfConversationStore _sut;
+
+    public EfConversationStoreTests() => _sut = new EfConversationStore(_factory);
+
+    public void Dispose() => _factory.Dispose();
+
+    private async Task<Conversation> SeedAsync(Guid owner, string title, params string[] messages)
+    {
+        var conversation = Conversation.Create(Guid.NewGuid(), owner, title);
+        foreach (string text in messages)
+        {
+            conversation.AddMessage(Guid.NewGuid(), MessageRole.User, text);
+        }
+
+        return await _sut.CreateAsync(conversation, TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Get_returns_the_owner_conversation_with_messages()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Brief", "hi", "there");
+
+        Conversation? loaded = await _sut.GetAsync(seeded.Id, UserA, TestContext.Current.CancellationToken);
+
+        loaded.ShouldNotBeNull();
+        loaded.Title.ShouldBe("Brief");
+        loaded.Messages.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public async Task Get_does_not_return_another_users_conversation()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Private");
+
+        Conversation? loaded = await _sut.GetAsync(seeded.Id, UserB, TestContext.Current.CancellationToken);
+
+        loaded.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task List_returns_only_the_owners_conversations()
+    {
+        await SeedAsync(UserA, "A1");
+        await SeedAsync(UserA, "A2");
+        await SeedAsync(UserB, "B1");
+
+        IReadOnlyList<Conversation> result = await _sut.ListAsync(UserA, TestContext.Current.CancellationToken);
+
+        result.Count.ShouldBe(2);
+        result.ShouldAllBe(c => c.OwnerId == UserA);
+    }
+
+    [Fact]
+    public async Task Rename_succeeds_for_the_owner_and_fails_for_others()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Old");
+
+        (await _sut.RenameAsync(seeded.Id, UserB, "Hijacked", TestContext.Current.CancellationToken)).ShouldBeFalse();
+        (await _sut.RenameAsync(seeded.Id, UserA, "New", TestContext.Current.CancellationToken)).ShouldBeTrue();
+
+        Conversation? loaded = await _sut.GetAsync(seeded.Id, UserA, TestContext.Current.CancellationToken);
+        loaded!.Title.ShouldBe("New");
+    }
+
+    [Fact]
+    public async Task Delete_succeeds_for_the_owner_and_fails_for_others()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Doomed");
+
+        (await _sut.DeleteAsync(seeded.Id, UserB, TestContext.Current.CancellationToken)).ShouldBeFalse();
+        (await _sut.DeleteAsync(seeded.Id, UserA, TestContext.Current.CancellationToken)).ShouldBeTrue();
+
+        (await _sut.GetAsync(seeded.Id, UserA, TestContext.Current.CancellationToken)).ShouldBeNull();
+    }
+}

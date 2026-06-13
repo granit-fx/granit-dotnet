@@ -13,6 +13,7 @@ namespace Granit.OpenApi.Generator;
 /// build if a module is added without being wired here.
 /// </remarks>
 [DependsOn(
+    typeof(Granit.AI.Chat.Endpoints.GranitAIChatEndpointsModule),
     typeof(Granit.AI.Endpoints.GranitAIEndpointsModule),
     typeof(Granit.Auditing.Endpoints.GranitAuditingEndpointsModule),
     typeof(Granit.Authentication.ApiKeys.Endpoints.GranitAuthenticationApiKeysEndpointsModule),

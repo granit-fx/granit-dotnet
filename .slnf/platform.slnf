@@ -2,6 +2,8 @@
   "solution": {
     "path": "Granit.slnx",
     "projects": [
+      "src/Granit.AI.Chat.Endpoints/Granit.AI.Chat.Endpoints.csproj",
+      "src/Granit.AI.Chat/Granit.AI.Chat.csproj",
       "src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj",
       "src/Granit.AI/Granit.AI.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",

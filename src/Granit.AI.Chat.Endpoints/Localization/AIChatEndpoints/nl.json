@@ -1,0 +1,9 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:AIChat": "AI-chat",
+    "Permission:AIChat.Conversations.Read": "Uw gesprekken bekijken",
+    "Permission:AIChat.Conversations.Manage": "Uw gesprekken aanmaken en hernoemen",
+    "Permission:AIChat.Conversations.Delete": "Uw gesprekken verwijderen"
+  }
+}

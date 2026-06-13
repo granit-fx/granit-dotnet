@@ -1543,6 +1543,31 @@
           "Microsoft.Extensions.AI.OpenAI": "[10.*, )"
         }
       },
+      "granit.ai.chat": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.ai.chat.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI.Chat": "[0.1.0-dev, )",
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.ai.chat.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI.Chat": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore": "[10.*, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
       "granit.ai.endpoints": {
         "type": "Project",
         "dependencies": {

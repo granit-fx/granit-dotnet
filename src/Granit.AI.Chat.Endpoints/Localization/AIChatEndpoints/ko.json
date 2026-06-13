@@ -1,0 +1,9 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:AIChat": "AI 채팅",
+    "Permission:AIChat.Conversations.Read": "내 대화 보기",
+    "Permission:AIChat.Conversations.Manage": "내 대화 만들기 및 이름 변경",
+    "Permission:AIChat.Conversations.Delete": "내 대화 삭제"
+  }
+}

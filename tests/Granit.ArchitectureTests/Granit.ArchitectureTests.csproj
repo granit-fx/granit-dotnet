@@ -35,6 +35,9 @@
     <ProjectReference Include="..\..\src\Granit.AI\Granit.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Anthropic\Granit.AI.Anthropic.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.AzureOpenAI\Granit.AI.AzureOpenAI.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AI.Chat\Granit.AI.Chat.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AI.Chat.EntityFrameworkCore\Granit.AI.Chat.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AI.Chat.Endpoints\Granit.AI.Chat.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Endpoints\Granit.AI.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.EntityFrameworkCore\Granit.AI.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Extraction\Granit.AI.Extraction.csproj" />

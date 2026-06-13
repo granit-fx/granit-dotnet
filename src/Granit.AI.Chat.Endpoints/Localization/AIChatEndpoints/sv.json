@@ -1,0 +1,9 @@
+{
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:AIChat": "AI-chatt",
+    "Permission:AIChat.Conversations.Read": "Visa dina konversationer",
+    "Permission:AIChat.Conversations.Manage": "Skapa och byt namn på dina konversationer",
+    "Permission:AIChat.Conversations.Delete": "Ta bort dina konversationer"
+  }
+}

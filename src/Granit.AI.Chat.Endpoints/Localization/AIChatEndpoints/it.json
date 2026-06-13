@@ -1,0 +1,9 @@
+{
+  "culture": "it",
+  "texts": {
+    "PermissionGroup:AIChat": "Chat IA",
+    "Permission:AIChat.Conversations.Read": "Visualizzare le tue conversazioni",
+    "Permission:AIChat.Conversations.Manage": "Creare e rinominare le tue conversazioni",
+    "Permission:AIChat.Conversations.Delete": "Eliminare le tue conversazioni"
+  }
+}

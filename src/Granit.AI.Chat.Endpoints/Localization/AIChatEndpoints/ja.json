@@ -1,0 +1,9 @@
+{
+  "culture": "ja",
+  "texts": {
+    "PermissionGroup:AIChat": "AIチャット",
+    "Permission:AIChat.Conversations.Read": "自分の会話を表示する",
+    "Permission:AIChat.Conversations.Manage": "自分の会話を作成・名前変更する",
+    "Permission:AIChat.Conversations.Delete": "自分の会話を削除する"
+  }
+}

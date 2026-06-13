@@ -6,6 +6,9 @@
       "projects": [
         "tests/Granit.AI.Anthropic.Tests",
         "tests/Granit.AI.AzureOpenAI.Tests",
+        "tests/Granit.AI.Chat.Tests",
+        "tests/Granit.AI.Chat.EntityFrameworkCore.Tests",
+        "tests/Granit.AI.Chat.Endpoints.Tests",
         "tests/Granit.AI.Endpoints.Tests",
         "tests/Granit.AI.EntityFrameworkCore.Tests",
         "tests/Granit.AI.Extraction.Tests",

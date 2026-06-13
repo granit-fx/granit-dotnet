@@ -1,0 +1,9 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:AIChat": "एआई चैट",
+    "Permission:AIChat.Conversations.Read": "अपनी बातचीत देखें",
+    "Permission:AIChat.Conversations.Manage": "अपनी बातचीत बनाएँ और नाम बदलें",
+    "Permission:AIChat.Conversations.Delete": "अपनी बातचीत हटाएँ"
+  }
+}

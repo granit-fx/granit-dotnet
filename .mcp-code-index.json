@@ -33,6 +33,32 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.AI.Chat",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.AI.Chat.Endpoints",
+      "deps": [
+        "Granit.AI.Chat",
+        "Granit.Authorization",
+        "Granit.Guids",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.AI.Chat.EntityFrameworkCore",
+      "deps": [
+        "Granit.AI.Chat",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.AI.Endpoints",
       "deps": [
         "Granit.AI",
@@ -1922,6 +1948,7 @@
       "name": "Granit.OpenApi.Generator",
       "deps": [
         "Granit.OpenApi.Generation",
+        "Granit.AI.Chat.Endpoints",
         "Granit.AI.Endpoints",
         "Granit.Auditing.Endpoints",
         "Granit.Authentication.ApiKeys.Endpoints",
@@ -3055,6 +3082,298 @@
           "kind": "property",
           "signature": "int MaxRetries",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "Conversation",
+      "fqn": "Granit.AI.Chat.Domain.Conversation",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Domain/Conversation.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "OwnerId",
+          "kind": "property",
+          "signature": "Guid OwnerId",
+          "returnType": "Guid"
+        }
+      ]
+    },
+    {
+      "name": "Message",
+      "fqn": "Granit.AI.Chat.Domain.Message",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Domain/Message.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "MessageRole",
+      "fqn": "Granit.AI.Chat.Domain.MessageRole",
+      "kind": "enum",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Domain/MessageRole.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "ConversationResponse",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.ConversationResponse",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "FromAggregate",
+          "kind": "method",
+          "signature": "FromAggregate(Conversation conversation)",
+          "returnType": "ConversationResponse"
+        }
+      ]
+    },
+    {
+      "name": "ConversationSummaryResponse",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.ConversationSummaryResponse",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "FromAggregate",
+          "kind": "method",
+          "signature": "FromAggregate(Conversation conversation)",
+          "returnType": "ConversationSummaryResponse"
+        }
+      ]
+    },
+    {
+      "name": "CreateConversationRequest",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.CreateConversationRequest",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "FromAggregate",
+          "kind": "method",
+          "signature": "FromAggregate(Conversation conversation)",
+          "returnType": "ConversationSummaryResponse"
+        }
+      ]
+    },
+    {
+      "name": "MessageResponse",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.MessageResponse",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "FromAggregate",
+          "kind": "method",
+          "signature": "FromAggregate(Conversation conversation)",
+          "returnType": "ConversationResponse"
+        }
+      ]
+    },
+    {
+      "name": "RenameConversationRequest",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.RenameConversationRequest",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "FromAggregate",
+          "kind": "method",
+          "signature": "FromAggregate(Conversation conversation)",
+          "returnType": "ConversationSummaryResponse"
+        }
+      ]
+    },
+    {
+      "name": "AIChatEndpointRouteBuilderExtensions",
+      "fqn": "Granit.AI.Chat.Endpoints.Extensions.AIChatEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Extensions/AIChatEndpointRouteBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "MapGranitConversations",
+          "kind": "method",
+          "signature": "MapGranitConversations(this IEndpointRouteBuilder endpoints, Action<AIChatEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIChatEndpointsModule",
+      "fqn": "Granit.AI.Chat.Endpoints.GranitAIChatEndpointsModule",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/GranitAIChatEndpointsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AIChatEndpointsOptions",
+      "fqn": "Granit.AI.Chat.Endpoints.Options.AIChatEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Options/AIChatEndpointsOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "AIChatPermissions",
+      "fqn": "Granit.AI.Chat.Endpoints.Permissions.AIChatPermissions",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Permissions/AIChatPermissions.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "Conversations",
+      "fqn": "Granit.AI.Chat.Endpoints.Permissions.Conversations",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Permissions/AIChatPermissions.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "AIChatEntityFrameworkCoreServiceCollectionExtensions",
+      "fqn": "Granit.AI.Chat.EntityFrameworkCore.Extensions.AIChatEntityFrameworkCoreServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Chat.EntityFrameworkCore",
+      "file": "src/Granit.AI.Chat.EntityFrameworkCore/Extensions/AIChatEntityFrameworkCoreServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitAIChatEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitAIChatEntityFrameworkCore(this IServiceCollection services, Action<DbContextOptionsBuilder> configureShared, Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null, Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null, Action<TenantSchemaOptions>? configureTenantSchema = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "AIChatModelBuilderExtensions",
+      "fqn": "Granit.AI.Chat.EntityFrameworkCore.Extensions.AIChatModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Chat.EntityFrameworkCore",
+      "file": "src/Granit.AI.Chat.EntityFrameworkCore/Extensions/AIChatModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureAIChatModule",
+          "kind": "method",
+          "signature": "ConfigureAIChatModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIChatDbProperties",
+      "fqn": "Granit.AI.Chat.EntityFrameworkCore.GranitAIChatDbProperties",
+      "kind": "class",
+      "project": "Granit.AI.Chat.EntityFrameworkCore",
+      "file": "src/Granit.AI.Chat.EntityFrameworkCore/GranitAIChatDbProperties.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIChatEntityFrameworkCoreModule",
+      "fqn": "Granit.AI.Chat.EntityFrameworkCore.GranitAIChatEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.AI.Chat.EntityFrameworkCore",
+      "file": "src/Granit.AI.Chat.EntityFrameworkCore/GranitAIChatEntityFrameworkCoreModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "GranitAIChatModule",
+      "fqn": "Granit.AI.Chat.GranitAIChatModule",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/GranitAIChatModule.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "IConversationStore",
+      "fqn": "Granit.AI.Chat.IConversationStore",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/IConversationStore.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(Conversation conversation, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Conversation>"
+        },
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Conversation?>"
+        },
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Conversation>>"
+        },
+        {
+          "name": "RenameAsync",
+          "kind": "method",
+          "signature": "RenameAsync(Guid id, Guid ownerId, string title, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -38099,7 +38418,7 @@
       "kind": "class",
       "project": "Granit.OpenApi.Generator",
       "file": "src/Granit.OpenApi.Generator/GeneratorModule.cs",
-      "line": 45,
+      "line": 46,
       "members": []
     },
     {

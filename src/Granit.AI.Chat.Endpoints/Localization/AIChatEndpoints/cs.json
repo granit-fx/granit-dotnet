@@ -1,0 +1,9 @@
+{
+  "culture": "cs",
+  "texts": {
+    "PermissionGroup:AIChat": "AI chat",
+    "Permission:AIChat.Conversations.Read": "Zobrazení vašich konverzací",
+    "Permission:AIChat.Conversations.Manage": "Vytváření a přejmenování vašich konverzací",
+    "Permission:AIChat.Conversations.Delete": "Mazání vašich konverzací"
+  }
+}
