@@ -22,6 +22,7 @@ internal sealed partial class AIToolOrchestrator(
     IAIWorkspaceProvider workspaceProvider,
     IAIToolProjector projector,
     IAIToolRegistry registry,
+    IAIToolAuthorizer toolAuthorizer,
     IAISystemPromptComposer systemPromptComposer,
     IAIUsageRecordFactory usageRecordFactory,
     IAIUsageTracker usageTracker,
@@ -51,7 +52,11 @@ internal sealed partial class AIToolOrchestrator(
             ?? throw new AIWorkspaceNotFoundException(workspaceName);
         string? tenantId = workspace.TenantId?.ToString();
 
-        IReadOnlyList<IAITool> tools = request.Tools ?? registry.Tools;
+        // Gate the candidate set to what the caller may use, so unauthorized tools are never
+        // declared to the model nor executable this run (per-tool permission gate, ADR-067).
+        IReadOnlyList<IAITool> tools = await toolAuthorizer
+            .FilterAuthorizedAsync(request.Tools ?? registry.Tools, cancellationToken)
+            .ConfigureAwait(false);
         Dictionary<string, IAITool> toolMap = new(tools.Count, StringComparer.Ordinal);
         foreach (IAITool tool in tools)
         {

@@ -23,5 +23,11 @@ internal sealed class AIPermissionDefinitionProvider : IPermissionDefinitionProv
         group.AddPermission(
             AIPermissions.Credentials.Manage,
             LocalizableString.Create<AILocalizationResource>("Permission:AI.Credentials.Manage"));
+
+        // Per-tool gating for agentic chat capability tools (ADR-067). Off by default — an admin
+        // grants the tool's permission to enable it for a user or role.
+        group.AddPermission(
+            AIPermissions.ChatTools.Translate,
+            LocalizableString.Create<AILocalizationResource>("Permission:AI.ChatTools.Translate"));
     }
 }

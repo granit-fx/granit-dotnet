@@ -16,6 +16,7 @@
     "AI.Columns.Timestamp": "Horodatage",
     "AI.Columns.Duration": "Durée",
     "PermissionGroup:AI": "IA",
-    "Permission:AI.Credentials.Manage": "Gérer les identifiants IA"
+    "Permission:AI.Credentials.Manage": "Gérer les identifiants IA",
+    "Permission:AI.ChatTools.Translate": "Utiliser l'outil de traduction IA"
   }
 }

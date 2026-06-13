@@ -1536,6 +1536,7 @@
       "name": "Granit.Localization.AI",
       "deps": [
         "Granit.AI",
+        "Granit.AI.Tools",
         "Granit.Localization"
       ],
       "framework": "net10.0"
@@ -4036,6 +4037,15 @@
       "members": []
     },
     {
+      "name": "ChatTools",
+      "fqn": "Granit.AI.Permissions.ChatTools",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Permissions/AIPermissions.cs",
+      "line": 28,
+      "members": []
+    },
+    {
       "name": "Credentials",
       "fqn": "Granit.AI.Permissions.Credentials",
       "kind": "class",
@@ -4660,6 +4670,22 @@
       ]
     },
     {
+      "name": "IAIToolAuthorizer",
+      "fqn": "Granit.AI.Tools.IAIToolAuthorizer",
+      "kind": "interface",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/IAIToolAuthorizer.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "FilterAuthorizedAsync",
+          "kind": "method",
+          "signature": "FilterAuthorizedAsync(IReadOnlyList<IAITool> tools, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<IAITool>>"
+        }
+      ]
+    },
+    {
       "name": "IAIToolInstructions",
       "fqn": "Granit.AI.Tools.IAIToolInstructions",
       "kind": "interface",
@@ -4721,6 +4747,15 @@
           "returnType": "IReadOnlyList<IAITool> Tools { get; } bool"
         }
       ]
+    },
+    {
+      "name": "IGatedAITool",
+      "fqn": "Granit.AI.Tools.IGatedAITool",
+      "kind": "interface",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/IGatedAITool.cs",
+      "line": 10,
+      "members": []
     },
     {
       "name": "GranitAIToolsOrchestrationOptions",
@@ -31861,12 +31896,28 @@
       ]
     },
     {
+      "name": "TranslateToolRegistrationExtensions",
+      "fqn": "Granit.Localization.AI.Extensions.TranslateToolRegistrationExtensions",
+      "kind": "class",
+      "project": "Granit.Localization.AI",
+      "file": "src/Granit.Localization.AI/Extensions/TranslateToolRegistrationExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddTranslateTool",
+          "kind": "method",
+          "signature": "AddTranslateTool(this AIToolRegistrationBuilder tools)",
+          "returnType": "AIToolRegistrationBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitLocalizationAIModule",
       "fqn": "Granit.Localization.AI.GranitLocalizationAIModule",
       "kind": "class",
       "project": "Granit.Localization.AI",
       "file": "src/Granit.Localization.AI/GranitLocalizationAIModule.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {

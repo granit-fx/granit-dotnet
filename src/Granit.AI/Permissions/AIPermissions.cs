@@ -19,4 +19,15 @@ public static class AIPermissions
         /// </summary>
         public const string Manage = "AI.Credentials.Manage";
     }
+
+    /// <summary>
+    /// Per-tool permissions for agentic chat capability tools (ADR-067). A gated tool is offered
+    /// to a user only when they hold the matching permission, so admins enable capabilities tool
+    /// by tool. The action segment is the capability name (a domain-specific action).
+    /// </summary>
+    public static class ChatTools
+    {
+        /// <summary>Grants the right to use the <c>translate</c> chat tool (Localization.AI).</summary>
+        public const string Translate = "AI.ChatTools.Translate";
+    }
 }

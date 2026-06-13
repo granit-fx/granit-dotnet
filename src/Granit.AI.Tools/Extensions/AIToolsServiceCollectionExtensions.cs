@@ -53,6 +53,7 @@ public static class AIToolsServiceCollectionExtensions
 
         services.TryAddScoped<IAIToolRegistry, AIToolRegistry>();
         services.TryAddScoped<IAIToolProjector, AIToolProjector>();
+        services.TryAddScoped<IAIToolAuthorizer, PermissionAIToolAuthorizer>();
         services.TryAddScoped<IAIToolOrchestrator, AIToolOrchestrator>();
         services.TryAddSingleton<IAIGuardrailProvider, DefaultAIGuardrailProvider>();
         services.TryAddSingleton<IAISystemPromptComposer, DefaultAISystemPromptComposer>();

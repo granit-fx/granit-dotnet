@@ -16,6 +16,7 @@
     "AI.Columns.Timestamp": "Tijdstempel",
     "AI.Columns.Duration": "Duur",
     "PermissionGroup:AI": "AI",
-    "Permission:AI.Credentials.Manage": "Manage AI credentials"
+    "Permission:AI.Credentials.Manage": "Manage AI credentials",
+    "Permission:AI.ChatTools.Translate": "De AI-vertaaltool gebruiken"
   }
 }

@@ -16,6 +16,7 @@
     "AI.Columns.Timestamp": "Timestamp",
     "AI.Columns.Duration": "Duration",
     "PermissionGroup:AI": "AI",
-    "Permission:AI.Credentials.Manage": "Manage AI credentials"
+    "Permission:AI.Credentials.Manage": "Manage AI credentials",
+    "Permission:AI.ChatTools.Translate": "AI翻訳ツールを使用する"
   }
 }

@@ -26,6 +26,13 @@ services.AddGranitAITools(tools =>
 });
 ```
 
+### Per-tool permission gating
+
+A tool may implement `IGatedAITool` to declare a required permission
+(`[Group].[Resource].[Action]`). The `IAIToolAuthorizer` filters such tools out of the agent's
+available set for any caller who lacks the permission, so admins enable capabilities tool by
+tool. Ungated tools are always available (subject to their own data ACLs).
+
 The orchestrator drives the agentic loop (think → call → execute → repeat), bounded by an
 iteration cap and per-result context guards, stamping usage on completion:
 

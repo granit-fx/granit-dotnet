@@ -65,11 +65,16 @@ public sealed class AIToolOrchestratorTests
 
         IAIUsageTracker usageTracker = Substitute.For<IAIUsageTracker>();
 
+        IAIToolAuthorizer authorizer = Substitute.For<IAIToolAuthorizer>();
+        authorizer.FilterAuthorizedAsync(Arg.Any<IReadOnlyList<IAITool>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => Task.FromResult(ci.Arg<IReadOnlyList<IAITool>>()));
+
         AIToolOrchestrator orchestrator = new(
             factory,
             workspaceProvider,
             projector,
             registry,
+            authorizer,
             new DefaultAISystemPromptComposer(new DefaultAIGuardrailProvider()),
             recordFactory,
             usageTracker,
