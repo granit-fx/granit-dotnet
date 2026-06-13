@@ -23907,6 +23907,31 @@
       "members": []
     },
     {
+      "name": "DeviceTrustLevel",
+      "fqn": "Granit.Identity.DeviceTrustLevel",
+      "kind": "enum",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/DeviceTrustLevel.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "DeviceTrustVerdict",
+      "fqn": "Granit.Identity.DeviceTrustVerdict",
+      "kind": "record",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/DeviceTrustVerdict.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "IsActive",
+          "kind": "method",
+          "signature": "IsActive(DateTimeOffset now)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
       "name": "IdentityMetrics",
       "fqn": "Granit.Identity.Diagnostics.IdentityMetrics",
       "kind": "class",
@@ -25812,6 +25837,40 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IDeviceTrustStore",
+      "fqn": "Granit.Identity.IDeviceTrustStore",
+      "kind": "interface",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IDeviceTrustStore.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "SetAsync",
+          "kind": "method",
+          "signature": "SetAsync(string userId, string deviceId, DeviceTrustVerdict verdict, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(string userId, string deviceId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DeviceTrustVerdict?>"
+        },
+        {
+          "name": "GetManyAsync",
+          "kind": "method",
+          "signature": "GetManyAsync(string userId, IReadOnlyCollection<string> deviceIds, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<string, DeviceTrustVerdict>>"
+        },
+        {
+          "name": "RevokeAsync",
+          "kind": "method",
+          "signature": "RevokeAsync(string userId, string deviceId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -28796,7 +28855,7 @@
       "kind": "record",
       "project": "Granit.Identity.Abstractions",
       "file": "src/Granit.Identity.Abstractions/UserDevice.cs",
-      "line": 22,
+      "line": 24,
       "members": []
     },
     {
@@ -28805,7 +28864,7 @@
       "kind": "record",
       "project": "Granit.Identity.Abstractions",
       "file": "src/Granit.Identity.Abstractions/UserSessionCreatedEto.cs",
-      "line": 30,
+      "line": 35,
       "members": []
     },
     {

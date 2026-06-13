@@ -37,6 +37,12 @@ internal sealed class IdentityDbContext(
     /// </summary>
     public DbSet<UserSessionRiskEntity> UserSessionRisks => Set<UserSessionRiskEntity>();
 
+    /// <summary>
+    /// Durable device-trust verdicts, keyed by <c>(UserId, DeviceId)</c>. Persisted in the same context as
+    /// <see cref="User"/> — device trust is part of the identity domain (no separate context per table).
+    /// </summary>
+    public DbSet<DeviceTrustEntity> DeviceTrusts => Set<DeviceTrustEntity>();
+
     /// <inheritdoc />
     protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {

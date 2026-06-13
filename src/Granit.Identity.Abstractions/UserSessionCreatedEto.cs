@@ -27,6 +27,11 @@ namespace Granit.Identity;
 /// <param name="UserAgent">User-Agent captured at establishment, when available (raw signal for downstream device labelling).</param>
 /// <param name="IpAddress">Raw client IP (server-side only) for off-critical-path geo resolution; never logged or exposed.</param>
 /// <param name="CreatedAt">When the session was established.</param>
+/// <param name="DeviceId">
+/// Stable device identifier resolved at the HTTP boundary (from the signed device-trust cookie), when present.
+/// Lets an asynchronous consumer (anomaly detection) look up device trust off the login critical path. Absent
+/// for sessions established without a browser device cookie (e.g. a pure IdP webhook).
+/// </param>
 public sealed record UserSessionCreatedEto(
     string UserId,
     string SessionId,
@@ -34,4 +39,5 @@ public sealed record UserSessionCreatedEto(
     UserSessionSource Source,
     string? UserAgent,
     string? IpAddress,
-    DateTimeOffset CreatedAt) : IIntegrationEvent;
+    DateTimeOffset CreatedAt,
+    string? DeviceId = null) : IIntegrationEvent;

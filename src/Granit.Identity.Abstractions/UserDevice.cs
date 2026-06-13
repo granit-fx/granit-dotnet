@@ -19,6 +19,8 @@ namespace Granit.Identity;
 /// <param name="LastSeen">Last observed activity from this device, when tracked.</param>
 /// <param name="SessionCount">Number of active sessions associated with this device.</param>
 /// <param name="LastLocation">Approximate location of the most recent activity, when resolved.</param>
+/// <param name="IsTrusted">Whether the user has marked this device trusted and the trust is still active.</param>
+/// <param name="TrustedUntil">When the active trust expires, when bounded; <see langword="null"/> when not trusted or open-ended.</param>
 public sealed record UserDevice(
     string DeviceId,
     DeviceKind Kind,
@@ -26,4 +28,6 @@ public sealed record UserDevice(
     string? Browser,
     DateTimeOffset? LastSeen,
     int SessionCount,
-    GeoLocation? LastLocation);
+    GeoLocation? LastLocation,
+    bool IsTrusted = false,
+    DateTimeOffset? TrustedUntil = null);

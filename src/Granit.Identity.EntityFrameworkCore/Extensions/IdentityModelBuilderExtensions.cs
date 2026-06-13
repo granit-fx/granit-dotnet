@@ -24,6 +24,7 @@ public static class IdentityModelBuilderExtensions
         ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new UserSessionRiskEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new DeviceTrustEntityConfiguration());
         return modelBuilder;
     }
 }
