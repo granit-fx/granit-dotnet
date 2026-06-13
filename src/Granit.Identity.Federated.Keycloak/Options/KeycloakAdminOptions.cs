@@ -182,6 +182,13 @@ public sealed class KeycloakAdminOptions
             : $"{BaseUrl.TrimEnd('/')}/admin/realms/{Realm}/clients?clientId={Uri.EscapeDataString(clientId)}";
 
     /// <summary>
+    /// Builds the Admin API URL for a single client by its internal UUID — the full representation,
+    /// including the client's <c>attributes</c> bag (used to read the declared device kind).
+    /// </summary>
+    internal string GetClientByUuidEndpoint(string clientUuid) =>
+        $"{BaseUrl.TrimEnd('/')}/admin/realms/{Realm}/clients/{Uri.EscapeDataString(clientUuid)}";
+
+    /// <summary>
     /// Builds the Admin API URL for listing client-scope roles of the given Keycloak client
     /// (identified by its internal UUID, not the OIDC client_id).
     /// </summary>

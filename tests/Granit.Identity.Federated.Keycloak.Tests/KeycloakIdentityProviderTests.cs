@@ -614,6 +614,52 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             () => _provider.ListAsync(null!, TestContext.Current.CancellationToken));
     }
 
+    [Fact]
+    public async Task ListDevicesAsync_AdminSessions_ClientDeclaresDeviceKind_ResolvesIt()
+    {
+        // Sequence: call 1 = GET sessions (one session bound to client uuid-1);
+        //           call 2 = GET /clients/uuid-1 → the client declares granit.device_kind = Tv.
+        KeycloakIdentityProvider provider = CreateAdminSequenceProvider(
+            """[{"id":"sess-1","ipAddress":"1.2.3.4","start":1700000000000,"lastAccess":1700001000000,"rememberMe":false,"clients":{"uuid-1":"tv-app"}}]""",
+            """{"id":"uuid-1","clientId":"tv-app","attributes":{"granit.device_kind":["Tv"]}}""");
+
+        IReadOnlyList<UserDevice> result = await provider.ListAsync("user-1", TestContext.Current.CancellationToken);
+
+        result.Count.ShouldBe(1);
+        result[0].Kind.ShouldBe(DeviceKind.Tv);
+    }
+
+    [Fact]
+    public async Task ListDevicesAsync_AdminSessions_ClientWithoutDeviceKind_DefaultsToBrowser()
+    {
+        KeycloakIdentityProvider provider = CreateAdminSequenceProvider(
+            """[{"id":"sess-1","ipAddress":"1.2.3.4","start":1700000000000,"lastAccess":1700001000000,"rememberMe":false,"clients":{"uuid-1":"web-app"}}]""",
+            """{"id":"uuid-1","clientId":"web-app","attributes":{}}""");
+
+        IReadOnlyList<UserDevice> result = await provider.ListAsync("user-1", TestContext.Current.CancellationToken);
+
+        result[0].Kind.ShouldBe(DeviceKind.Browser);
+    }
+
+    // Builds a provider whose admin "KeycloakAdmin" client serves the given responses in order (the admin-token
+    // service keeps its own separate handler, so it never consumes from this sequence).
+    private KeycloakIdentityProvider CreateAdminSequenceProvider(params string[] responses)
+    {
+        MockSequenceHttpMessageHandler seqHandler = new(responses);
+        HttpClient seqClient = new(seqHandler) { BaseAddress = new Uri("https://keycloak.test/") };
+        IHttpClientFactory seqFactory = Substitute.For<IHttpClientFactory>();
+        seqFactory.CreateClient("KeycloakAdmin").Returns(seqClient);
+
+        return new KeycloakIdentityProvider(
+            _tokenService,
+            _tokenExchangeService,
+            seqFactory,
+            Microsoft.Extensions.Options.Options.Create(_options),
+            _distributedEventBus,
+            _metrics,
+            NullLogger<KeycloakIdentityProvider>.Instance);
+    }
+
     // --- GetPasswordChangedAtAsync tests ---
 
     [Fact]

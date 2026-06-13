@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Granit.Diagnostics;
 using Granit.Events;
 using Granit.Identity.Diagnostics;
@@ -41,6 +42,13 @@ internal sealed partial class KeycloakIdentityProvider(
 {
     private const string ProviderName = "keycloak";
     private const string GetUserOperation = "get_user";
+
+    /// <summary>
+    /// Keycloak client attribute (operator-set on the client in Keycloak) declaring the device kind of the
+    /// devices that authenticate through it — the federated equivalent of the OpenIddict application's declared
+    /// kind. Value is a <see cref="DeviceKind"/> name (e.g. <c>"MobileApp"</c>, <c>"Tv"</c>).
+    /// </summary>
+    private const string DeviceKindClientAttribute = "granit.device_kind";
 
     /// <summary>
     /// Detects authorisation failures wrapped in <see cref="HttpRequestException"/>.
@@ -1008,17 +1016,101 @@ internal sealed partial class KeycloakIdentityProvider(
         string userId, CancellationToken cancellationToken)
     {
         List<KeycloakSessionRepresentation> sessions = await GetSessionsAsync(userId, cancellationToken).ConfigureAwait(false);
+        if (sessions.Count == 0)
+        {
+            return [];
+        }
 
-        // The admin sessions endpoint exposes no device metadata, so each session maps to its
-        // own browser-kind device keyed by the session id (the only stable signature available).
-        return sessions.ConvertAll(s => new UserDevice(
-            DeviceId: s.Id,
-            Kind: DeviceKind.Browser,
-            OperatingSystem: null,
-            Browser: null,
-            LastSeen: DateTimeOffset.FromUnixTimeMilliseconds(s.LastAccess),
-            SessionCount: 1,
-            LastLocation: null));
+        // The admin sessions endpoint exposes no device metadata, so each session maps to its own device keyed
+        // by the session id. The kind comes from the Keycloak client the session authenticated through, when
+        // that client declares one; otherwise Browser.
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        Dictionary<string, DeviceKind> kindByClientUuid = new(StringComparer.Ordinal);
+
+        var devices = new List<UserDevice>(sessions.Count);
+        foreach (KeycloakSessionRepresentation session in sessions)
+        {
+            DeviceKind kind = await ResolveSessionDeviceKindAsync(
+                client, session.Clients, kindByClientUuid, cancellationToken).ConfigureAwait(false);
+            devices.Add(new UserDevice(
+                DeviceId: session.Id,
+                Kind: kind,
+                OperatingSystem: null,
+                Browser: null,
+                LastSeen: DateTimeOffset.FromUnixTimeMilliseconds(session.LastAccess),
+                SessionCount: 1,
+                LastLocation: null));
+        }
+
+        return devices;
+    }
+
+    // The Keycloak client a session authenticated through declares its device kind via the client attribute
+    // "granit.device_kind" (e.g. "MobileApp" / "Tv"). A session can span several clients; the most specific
+    // declared kind wins. Absent / unparseable / Unknown — or any lookup failure — falls back to Browser, since
+    // an IdP-SSO session is browser-based unless the client says otherwise. Operators set the attribute on the
+    // client in Keycloak (Granit does not manage federated client config), so this path is read-only.
+    private async ValueTask<DeviceKind> ResolveSessionDeviceKindAsync(
+        HttpClient client,
+        Dictionary<string, string>? clients,
+        Dictionary<string, DeviceKind> cache,
+        CancellationToken cancellationToken)
+    {
+        if (clients is not { Count: > 0 })
+        {
+            return DeviceKind.Browser;
+        }
+
+        foreach (string clientUuid in clients.Keys)
+        {
+            DeviceKind kind = await ResolveClientDeviceKindAsync(client, clientUuid, cache, cancellationToken)
+                .ConfigureAwait(false);
+            if (kind is not DeviceKind.Browser)
+            {
+                return kind;
+            }
+        }
+
+        return DeviceKind.Browser;
+    }
+
+    private async ValueTask<DeviceKind> ResolveClientDeviceKindAsync(
+        HttpClient client,
+        string clientUuid,
+        Dictionary<string, DeviceKind> cache,
+        CancellationToken cancellationToken)
+    {
+        if (cache.TryGetValue(clientUuid, out DeviceKind cached))
+        {
+            return cached;
+        }
+
+        DeviceKind resolved = DeviceKind.Browser;
+        try
+        {
+            KeycloakClientRepresentation? rep = await client
+                .GetFromJsonAsync<KeycloakClientRepresentation>(
+                    options.Value.GetClientByUuidEndpoint(clientUuid), cancellationToken)
+                .ConfigureAwait(false);
+
+            if (rep?.Attributes is { } attributes
+                && attributes.TryGetValue(DeviceKindClientAttribute, out List<string>? values)
+                && values is [string raw, ..]
+                && Enum.TryParse(raw, ignoreCase: false, out DeviceKind kind)
+                && Enum.IsDefined(kind)
+                && kind != DeviceKind.Unknown)
+            {
+                resolved = kind;
+            }
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException or NotSupportedException)
+        {
+            // A client we cannot read (gone, forbidden, malformed) must not break device listing — default Browser.
+            LogKeycloakClientDeviceKindUnresolved(ex, clientUuid);
+        }
+
+        cache[clientUuid] = resolved;
+        return resolved;
     }
 
     private async Task<HttpClient> CreateAuthenticatedClientAsync(CancellationToken cancellationToken)
@@ -1160,6 +1252,9 @@ internal sealed partial class KeycloakIdentityProvider(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get device activity for user {UserId} from Keycloak. Returning empty list")]
     private partial void LogKeycloakGetDeviceActivityFailed(Exception exception, string userId);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Could not read the device kind for Keycloak client {ClientUuid}; defaulting to Browser.")]
+    private partial void LogKeycloakClientDeviceKindUnresolved(Exception exception, string clientUuid);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get credentials for user {UserId} from Keycloak. Returning null")]
     private partial void LogKeycloakGetCredentialsFailed(Exception exception, string userId);
