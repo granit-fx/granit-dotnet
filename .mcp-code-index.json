@@ -1401,6 +1401,7 @@
       "name": "Granit.Imaging.AI",
       "deps": [
         "Granit.AI",
+        "Granit.AI.Tools",
         "Granit.Imaging"
       ],
       "framework": "net10.0"
@@ -29729,6 +29730,15 @@
       "members": []
     },
     {
+      "name": "AIImageData",
+      "fqn": "Granit.Imaging.AI.AIImageData",
+      "kind": "record",
+      "project": "Granit.Imaging.AI",
+      "file": "src/Granit.Imaging.AI/IAIImageSource.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "ImagingAIMetrics",
       "fqn": "Granit.Imaging.AI.Diagnostics.ImagingAIMetrics",
       "kind": "class",
@@ -29757,6 +29767,22 @@
       ]
     },
     {
+      "name": "ExtractTextFromImageToolRegistrationExtensions",
+      "fqn": "Granit.Imaging.AI.Extensions.ExtractTextFromImageToolRegistrationExtensions",
+      "kind": "class",
+      "project": "Granit.Imaging.AI",
+      "file": "src/Granit.Imaging.AI/Extensions/ExtractTextFromImageToolRegistrationExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddImageTextExtractionTool",
+          "kind": "method",
+          "signature": "AddImageTextExtractionTool(this AIToolRegistrationBuilder tools)",
+          "returnType": "AIToolRegistrationBuilder"
+        }
+      ]
+    },
+    {
       "name": "ImagingAIHostApplicationBuilderExtensions",
       "fqn": "Granit.Imaging.AI.Extensions.ImagingAIHostApplicationBuilderExtensions",
       "kind": "class",
@@ -29778,7 +29804,7 @@
       "kind": "class",
       "project": "Granit.Imaging.AI",
       "file": "src/Granit.Imaging.AI/GranitImagingAIModule.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -29805,12 +29831,53 @@
       ]
     },
     {
+      "name": "IAIImageSource",
+      "fqn": "Granit.Imaging.AI.IAIImageSource",
+      "kind": "interface",
+      "project": "Granit.Imaging.AI",
+      "file": "src/Granit.Imaging.AI/IAIImageSource.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "GetImageAsync",
+          "kind": "method",
+          "signature": "GetImageAsync(string reference, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AIImageData?>"
+        }
+      ]
+    },
+    {
+      "name": "IImageTextExtractor",
+      "fqn": "Granit.Imaging.AI.IImageTextExtractor",
+      "kind": "interface",
+      "project": "Granit.Imaging.AI",
+      "file": "src/Granit.Imaging.AI/IImageTextExtractor.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ExtractTextAsync",
+          "kind": "method",
+          "signature": "ExtractTextAsync(ReadOnlyMemory<byte> imageData, string contentType, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ImageTextExtractionResult?>"
+        }
+      ]
+    },
+    {
       "name": "ImageAnalysis",
       "fqn": "Granit.Imaging.AI.ImageAnalysis",
       "kind": "record",
       "project": "Granit.Imaging.AI",
       "file": "src/Granit.Imaging.AI/ImageAnalysis.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "ImageTextExtractionResult",
+      "fqn": "Granit.Imaging.AI.ImageTextExtractionResult",
+      "kind": "record",
+      "project": "Granit.Imaging.AI",
+      "file": "src/Granit.Imaging.AI/IImageTextExtractor.cs",
+      "line": 6,
       "members": []
     },
     {

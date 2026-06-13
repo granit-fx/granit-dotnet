@@ -1,4 +1,5 @@
 using Granit.AI;
+using Granit.AI.Workspaces;
 using Granit.Imaging.AI.Extensions;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
@@ -25,8 +26,13 @@ public sealed class ImagingAIServiceRegistrationTests
         builder.Services.AddLogging();
         builder.Services.AddMetrics();
 
-        // Minimal stand-in for Granit.AI: register the scoped factory contract used by the analyzer.
+        // Minimal stand-in for Granit.AI: the scoped contracts the analyzer and the
+        // vision text-extractor capture.
         builder.Services.TryAddScoped(_ => Substitute.For<IAIChatClientFactory>());
+        builder.Services.TryAddScoped(_ => Substitute.For<IAIWorkspaceProvider>());
+        builder.Services.TryAddScoped(_ => Substitute.For<IAIWorkspaceCapabilityResolver>());
+        builder.Services.TryAddScoped(_ => Substitute.For<IAIUsageRecordFactory>());
+        builder.Services.TryAddScoped(_ => Substitute.For<IAIUsageTracker>());
 
         builder.AddGranitImagingAI();
 

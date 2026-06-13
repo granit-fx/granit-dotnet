@@ -1,4 +1,5 @@
 using Granit.AI;
+using Granit.AI.Tools;
 using Granit.Imaging.AI.Extensions;
 using Granit.Modularity;
 
@@ -15,7 +16,7 @@ namespace Granit.Imaging.AI;
 /// via <c>Granit.AI</c> workspaces.
 /// </para>
 /// </remarks>
-[DependsOn(typeof(GranitAIModule), typeof(GranitImagingModule))]
+[DependsOn(typeof(GranitAIModule), typeof(GranitAIToolsModule), typeof(GranitImagingModule))]
 public sealed class GranitImagingAIModule : GranitModule
 {
     /// <inheritdoc />

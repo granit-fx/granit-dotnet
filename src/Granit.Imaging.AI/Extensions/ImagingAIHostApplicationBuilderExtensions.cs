@@ -38,6 +38,11 @@ public static class ImagingAIHostApplicationBuilderExtensions
         // The analyzer carries no singleton-justifying state.
         builder.Services.TryAddScoped<IAIImageAnalyzer, LlmImageAnalyzer>();
 
+        // Vision text extraction for the extract_text_from_image chat tool (ADR-067). The image
+        // source is application-provided; the Null default resolves nothing until one is registered.
+        builder.Services.TryAddScoped<IImageTextExtractor, LlmImageTextExtractor>();
+        builder.Services.TryAddScoped<IAIImageSource, NullAIImageSource>();
+
         return builder;
     }
 }

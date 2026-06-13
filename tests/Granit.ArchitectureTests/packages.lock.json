@@ -2828,6 +2828,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",
+          "Granit.AI.Tools": "[0.1.0-dev, )",
           "Granit.Imaging": "[0.1.0-dev, )",
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
         }
