@@ -96,7 +96,12 @@ internal sealed class JsonSchemaWriter(IServiceScopeFactory scopeFactory) : IJso
     {
         switch (validator)
         {
-            case INotNullValidator or INotEmptyValidator:
+            // A conditional NotNull/NotEmpty (.When/.WhenAsync) — or a per-element rule from
+            // RuleForEach — is not an unconditional requirement. OpenAPI has no conditional-required,
+            // so promoting it to `required` over-constrains the contract (clients would be forced to
+            // send the property even when the guard is false). The server still enforces it at runtime.
+            case INotNullValidator or INotEmptyValidator
+                when !component.HasCondition && !component.HasAsyncCondition:
                 required ??= [];
                 if (!required.Any(node => node?.GetValue<string>() == propertyName))
                 {

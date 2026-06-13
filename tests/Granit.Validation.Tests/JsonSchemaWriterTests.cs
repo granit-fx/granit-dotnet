@@ -53,6 +53,22 @@ public sealed class JsonSchemaWriterTests
     }
 
     [Fact]
+    public void Write_ConditionalRuleForEach_DoesNotMarkCollectionRequired()
+    {
+        // Regression: a per-element RuleForEach(...).NotEmpty() guarded by .When(... is not null)
+        // is neither unconditional nor a presence rule on the collection — it must NOT promote the
+        // collection to `required` (OpenAPI has no conditional-required). The sibling unconditional
+        // NotEmpty on a scalar still becomes required.
+        JsonSchemaWriter writer = CreateWriter<ConditionalCollectionRequest, ConditionalCollectionRequestValidator>();
+
+        JsonObject schema = writer.Write(typeof(ConditionalCollectionRequest))!;
+
+        IEnumerable<string> required = schema["required"]!.AsArray().Select(n => n!.GetValue<string>());
+        required.ShouldContain("name");
+        required.ShouldNotContain("tags");
+    }
+
+    [Fact]
     public void Write_MaximumLength_SetsMaxLength()
     {
         JsonSchemaWriter writer = CreateWriter<MaxLengthRequest, MaxLengthRequestValidator>();
@@ -264,6 +280,17 @@ public sealed class JsonSchemaWriterTests
     private sealed class RequiredRequestValidator : GranitValidator<RequiredRequest>
     {
         public RequiredRequestValidator() => RuleFor(x => x.Name).NotEmpty();
+    }
+
+    private sealed record ConditionalCollectionRequest(string Name, string[]? Tags);
+
+    private sealed class ConditionalCollectionRequestValidator : GranitValidator<ConditionalCollectionRequest>
+    {
+        public ConditionalCollectionRequestValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleForEach(x => x.Tags).NotEmpty().When(x => x.Tags is not null);
+        }
     }
 
     private sealed record MaxLengthRequest(string Name);
