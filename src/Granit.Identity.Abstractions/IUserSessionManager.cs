@@ -50,6 +50,16 @@ public interface IUserSessionManager
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Revokes every session of <paramref name="userId"/>, including the caller's own. Intended for the
+    /// administrative "force sign-out everywhere" on another subject; the self-service surface uses
+    /// <see cref="RevokeOthersAsync"/> so a caller never logs itself out unexpectedly.
+    /// </summary>
+    /// <returns>The number of sessions revoked.</returns>
+    Task<int> RevokeAllAsync(
+        string userId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Lists <paramref name="userId"/>'s devices, enriched with geolocation.
     /// </summary>
     Task<IReadOnlyList<UserDevice>> ListDevicesAsync(

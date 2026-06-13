@@ -27,9 +27,11 @@ public sealed class IdentityEndpointsOptions
     public string WebhookTagName { get; set; } = "Identity - Webhook";
 
     /// <summary>
-    /// Gets or sets whether session and device endpoints expose the raw client IP address. When
+    /// Gets or sets whether the session endpoints return the raw client IP address. When
     /// <see langword="false"/> (default), the IP is masked (host portion zeroed) before being returned — GDPR
-    /// data minimisation. These endpoints are permission-gated, so a deployment may opt in to raw IPs.
+    /// data minimisation. The endpoints are permission-gated, so a deployment may opt in to raw IPs for
+    /// forensics. The raw IP is always kept server-side on <c>UserSessionDescriptor</c> for geolocation and
+    /// anomaly detection regardless of this flag; it governs only what is serialized to the client.
     /// </summary>
     public bool ExposeRawIpAddress { get; set; }
 }

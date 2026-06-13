@@ -1,8 +1,6 @@
 using Granit.Identity.Endpoints.Dtos;
 using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Options;
-using Granit.Identity.Models;
-using Granit.IpGeolocation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -13,7 +11,8 @@ using Microsoft.Extensions.Options;
 namespace Granit.Identity.Endpoints.Endpoints;
 
 /// <summary>
-/// Read endpoints for listing user sessions via the identity provider.
+/// Admin read endpoint for listing another user's sessions, served by the canonical
+/// <see cref="IUserSessionManager"/> (geolocation + persisted risk applied once, no raw IP exposed).
 /// </summary>
 internal static class IdentityProviderSessionReadEndpoints
 {
@@ -22,28 +21,25 @@ internal static class IdentityProviderSessionReadEndpoints
         group.MapGet("/", GetUserSessionsAsync)
             .WithName("GetIdentityProviderUserSessions")
             .WithSummary("Lists active sessions for a user.")
-            .WithDescription("Returns all active sessions for the specified user from the identity provider.")
-            .Produces<IReadOnlyList<IdentitySessionResponse>>();
+            .WithDescription("Returns all active sessions for the specified user, enriched with approximate location and persisted risk level. Raw IP addresses are never returned.")
+            .Produces<IReadOnlyList<UserSessionResponse>>();
 
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<IdentitySessionResponse>>> GetUserSessionsAsync(
+    private static async Task<Ok<IReadOnlyList<UserSessionResponse>>> GetUserSessionsAsync(
         string userId,
-        [FromServices] IIdentitySessionManager sessionManager,
-        [FromServices] IIpGeolocationResolver geoResolver,
-        [FromServices] IUserSessionRiskStore riskStore,
+        [FromServices] IUserSessionManager sessionManager,
         [FromServices] IOptions<IdentityEndpointsOptions> options,
         CancellationToken cancellationToken)
     {
-        IReadOnlyList<IdentitySession> sessions = await sessionManager
-            .GetUserSessionsAsync(userId, cancellationToken)
+        // Admin view of another subject: no "current session" to flag.
+        IReadOnlyList<UserSessionView> sessions = await sessionManager
+            .ListAsync(userId, currentSessionId: null, cancellationToken)
             .ConfigureAwait(false);
 
-        List<IdentitySessionResponse> enriched = await IdentitySessionEnrichment
-            .EnrichSessionsAsync(sessions, userId, geoResolver, riskStore, options.Value.ExposeRawIpAddress, cancellationToken)
-            .ConfigureAwait(false);
-
-        return TypedResults.Ok<IReadOnlyList<IdentitySessionResponse>>(enriched);
+        bool exposeRawIp = options.Value.ExposeRawIpAddress;
+        IReadOnlyList<UserSessionResponse> response = [.. sessions.Select(v => IdentityResponseMapper.ToResponse(v, exposeRawIp))];
+        return TypedResults.Ok(response);
     }
 }

@@ -1,10 +1,13 @@
 using Granit.Identity.Endpoints.Dtos;
+using Granit.Identity.Endpoints.Internal;
+using Granit.Identity.Endpoints.Options;
 using Granit.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Endpoints.Endpoints;
 
@@ -50,6 +53,7 @@ internal static class UserSessionEndpoints
     private static async Task<Results<Ok<IReadOnlyList<UserSessionResponse>>, ProblemHttpResult>> ListAsync(
         [FromServices] IUserSessionManager manager,
         [FromServices] ICurrentUserService currentUser,
+        [FromServices] IOptions<IdentityEndpointsOptions> options,
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
@@ -62,7 +66,8 @@ internal static class UserSessionEndpoints
             .ListAsync(currentUser.UserId, CurrentSessionId(httpContext), cancellationToken)
             .ConfigureAwait(false);
 
-        IReadOnlyList<UserSessionResponse> response = [.. views.Select(Map)];
+        bool exposeRawIp = options.Value.ExposeRawIpAddress;
+        IReadOnlyList<UserSessionResponse> response = [.. views.Select(v => IdentityResponseMapper.ToResponse(v, exposeRawIp))];
         return TypedResults.Ok(response);
     }
 
@@ -112,15 +117,4 @@ internal static class UserSessionEndpoints
         TypedResults.Problem(
             detail: "The request is not associated with a user subject.",
             statusCode: StatusCodes.Status401Unauthorized);
-
-    private static UserSessionResponse Map(UserSessionView view) =>
-        new(
-            view.Session.SessionId,
-            view.Session.IsCurrent,
-            view.Session.CreatedAt,
-            view.Session.LastAccessedAt,
-            view.Session.UserAgent,
-            view.Session.Location,
-            view.Risk?.Level,
-            view.Risk?.Reasons);
 }

@@ -62,6 +62,34 @@ public sealed class DefaultUserSessionManagerTests
     }
 
     [Fact]
+    public async Task RevokeAllAsync_RevokesEverySessionIncludingCurrent()
+    {
+        _sessions.ListAsync("user-1", null, Ct).Returns([Session("s1"), Session("s2")]);
+        _sessions.RevokeAsync("user-1", "s1", Ct).Returns(true);
+        _sessions.RevokeAsync("user-1", "s2", Ct).Returns(true);
+
+        int revoked = await _sut.RevokeAllAsync("user-1", Ct);
+
+        revoked.ShouldBe(2);
+        await _sessions.Received(1).RevokeAsync("user-1", "s1", Ct);
+        await _sessions.Received(1).RevokeAsync("user-1", "s2", Ct);
+    }
+
+    [Fact]
+    public async Task RevokeAllAsync_CountsOnlyRevokedSessions()
+    {
+        _sessions.ListAsync("user-1", null, Ct).Returns([Session("s1"), Session("s2")]);
+        _sessions.RevokeAsync("user-1", "s1", Ct).Returns(true);
+        _sessions.RevokeAsync("user-1", "s2", Ct).Returns(false);
+
+        (await _sut.RevokeAllAsync("user-1", Ct)).ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task RevokeAllAsync_BlankUserId_Throws() =>
+        await Should.ThrowAsync<ArgumentException>(() => _sut.RevokeAllAsync("", Ct));
+
+    [Fact]
     public async Task ListDevicesAsync_DelegatesToProvider()
     {
         UserDevice device = new("d1", DeviceKind.Browser, "Windows", "Chrome", null, 2, null);

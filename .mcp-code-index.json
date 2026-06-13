@@ -23969,21 +23969,12 @@
       ]
     },
     {
-      "name": "IdentityDeviceActivityResponse",
-      "fqn": "Granit.Identity.Endpoints.Dtos.IdentityDeviceActivityResponse",
-      "kind": "record",
-      "project": "Granit.Identity.Endpoints",
-      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 40,
-      "members": []
-    },
-    {
       "name": "IdentityGroupResponse",
       "fqn": "Granit.Identity.Endpoints.Dtos.IdentityGroupResponse",
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 22,
+      "line": 20,
       "members": []
     },
     {
@@ -24010,16 +24001,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 16,
-      "members": []
-    },
-    {
-      "name": "IdentitySessionResponse",
-      "fqn": "Granit.Identity.Endpoints.Dtos.IdentitySessionResponse",
-      "kind": "record",
-      "project": "Granit.Identity.Endpoints",
-      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 29,
+      "line": 14,
       "members": []
     },
     {
@@ -24073,7 +24055,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
-      "line": 6,
+      "line": 4,
       "members": []
     },
     {
@@ -24109,7 +24091,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 32,
+      "line": 34,
       "members": []
     },
     {
@@ -24118,7 +24100,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 14,
+      "line": 15,
       "members": []
     },
     {
@@ -24127,7 +24109,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 43,
+      "line": 45,
       "members": []
     },
     {
@@ -26305,6 +26287,12 @@
           "name": "RevokeOthersAsync",
           "kind": "method",
           "signature": "RevokeOthersAsync(string userId, string currentSessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        },
+        {
+          "name": "RevokeAllAsync",
+          "kind": "method",
+          "signature": "RevokeAllAsync(string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task<int>"
         },
         {

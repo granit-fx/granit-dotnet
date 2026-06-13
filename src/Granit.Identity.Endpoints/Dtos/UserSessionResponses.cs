@@ -2,12 +2,13 @@ using Granit.IpGeolocation;
 
 namespace Granit.Identity.Endpoints.Dtos;
 
-/// <summary>A single session in the canonical session list. The raw IP is never exposed — only the derived location.</summary>
+/// <summary>A single session in the canonical session list. The IP is masked by default (host portion zeroed); a deployment may opt in to the raw IP via <c>ExposeRawIpAddress</c>.</summary>
 /// <param name="SessionId">Opaque session identifier.</param>
 /// <param name="IsCurrent">Whether this is the caller's current session.</param>
 /// <param name="CreatedAt">When the session was established.</param>
 /// <param name="LastAccessedAt">Last observed activity, when tracked.</param>
 /// <param name="UserAgent">User-Agent captured at establishment, when available.</param>
+/// <param name="IpAddress">Client IP, masked to its network portion by default (GDPR data minimisation); the raw value only when the deployment opts in. <see langword="null"/> when not captured.</param>
 /// <param name="Location">Approximate location, when resolved.</param>
 /// <param name="RiskLevel">Persisted risk classification, when assessed.</param>
 /// <param name="RiskReasons">Machine-readable reason codes behind the risk level, when assessed.</param>
@@ -17,6 +18,7 @@ public sealed record UserSessionResponse(
     DateTimeOffset CreatedAt,
     DateTimeOffset? LastAccessedAt,
     string? UserAgent,
+    string? IpAddress,
     GeoLocation? Location,
     UserSessionRiskLevel? RiskLevel,
     IReadOnlyList<string>? RiskReasons);

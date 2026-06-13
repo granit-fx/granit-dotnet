@@ -1,4 +1,5 @@
 using Granit.Identity.Endpoints.Dtos;
+using Granit.Identity.Endpoints.Internal;
 using Granit.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -44,12 +45,8 @@ internal static class UserDeviceEndpoints
             .ListDevicesAsync(currentUser.UserId, cancellationToken)
             .ConfigureAwait(false);
 
-        IReadOnlyList<UserDeviceResponse> response = [.. devices.Select(Map)];
+        IReadOnlyList<UserDeviceResponse> response = [.. devices.Select(IdentityResponseMapper.ToResponse)];
         return TypedResults.Ok(response);
     }
 #pragma warning restore GRAPI003
-
-    private static UserDeviceResponse Map(UserDevice device) =>
-        new(device.DeviceId, device.Kind, device.OperatingSystem, device.Browser,
-            device.LastSeen, device.SessionCount, device.LastLocation);
 }

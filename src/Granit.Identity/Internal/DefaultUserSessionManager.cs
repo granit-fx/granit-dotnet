@@ -53,6 +53,28 @@ internal sealed class DefaultUserSessionManager(
         return sessionProvider.RevokeOthersAsync(userId, currentSessionId, cancellationToken);
     }
 
+    public async Task<int> RevokeAllAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(userId);
+
+        // No "current" session to spare (admin acting on another subject): list, then revoke each.
+        // The per-session path is uniform across backends; bulk optimisation, where a backend has one,
+        // can be added to its provider later without changing this contract.
+        IReadOnlyList<UserSessionDescriptor> sessions =
+            await sessionProvider.ListAsync(userId, currentSessionId: null, cancellationToken).ConfigureAwait(false);
+
+        int revoked = 0;
+        foreach (UserSessionDescriptor session in sessions)
+        {
+            if (await sessionProvider.RevokeAsync(userId, session.SessionId, cancellationToken).ConfigureAwait(false))
+            {
+                revoked++;
+            }
+        }
+
+        return revoked;
+    }
+
     public Task<IReadOnlyList<UserDevice>> ListDevicesAsync(
         string userId, CancellationToken cancellationToken = default)
     {

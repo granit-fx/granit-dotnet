@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Routing;
 namespace Granit.Identity.Endpoints.Endpoints;
 
 /// <summary>
-/// Write endpoints for terminating user sessions via the identity provider.
+/// Admin write endpoints for terminating another user's sessions via the canonical
+/// <see cref="IUserSessionManager"/>.
 /// </summary>
 internal static class IdentityProviderSessionWriteEndpoints
 {
@@ -16,8 +17,9 @@ internal static class IdentityProviderSessionWriteEndpoints
         group.MapDelete("/{sessionId}", TerminateSessionAsync)
             .WithName("TerminateIdentityProviderSession")
             .WithSummary("Terminates a specific user session.")
-            .WithDescription("Terminates the specified session, forcing the user to re-authenticate on that device. Returns 501 if the provider does not support individual session termination.")
+            .WithDescription("Terminates the specified session, forcing the user to re-authenticate on that device. Returns 501 if the provider does not support individual session termination, 404 when no such session exists.")
             .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status501NotImplemented);
 
         group.MapDelete("/", TerminateAllSessionsAsync)
@@ -29,10 +31,10 @@ internal static class IdentityProviderSessionWriteEndpoints
         return group;
     }
 
-    private static async Task<Results<NoContent, ProblemHttpResult>> TerminateSessionAsync(
+    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> TerminateSessionAsync(
         string userId,
         string sessionId,
-        [FromServices] IIdentitySessionManager sessionManager,
+        [FromServices] IUserSessionManager sessionManager,
         [FromServices] IIdentityProviderCapabilities capabilities,
         CancellationToken cancellationToken)
     {
@@ -43,20 +45,16 @@ internal static class IdentityProviderSessionWriteEndpoints
                 statusCode: StatusCodes.Status501NotImplemented);
         }
 
-        await sessionManager.TerminateSessionAsync(userId, sessionId, cancellationToken)
-            .ConfigureAwait(false);
-
-        return TypedResults.NoContent();
+        bool revoked = await sessionManager.RevokeAsync(userId, sessionId, cancellationToken).ConfigureAwait(false);
+        return revoked ? TypedResults.NoContent() : TypedResults.NotFound();
     }
 
     private static async Task<NoContent> TerminateAllSessionsAsync(
         string userId,
-        [FromServices] IIdentitySessionManager sessionManager,
+        [FromServices] IUserSessionManager sessionManager,
         CancellationToken cancellationToken)
     {
-        await sessionManager.TerminateAllSessionsAsync(userId, cancellationToken)
-            .ConfigureAwait(false);
-
+        await sessionManager.RevokeAllAsync(userId, cancellationToken).ConfigureAwait(false);
         return TypedResults.NoContent();
     }
 }
