@@ -40,10 +40,10 @@ public sealed class GranitIdentityNotificationsModule : GranitModule
         // templates render without a layout (warning logged, no crash).
         context.Services.AddTemplateLayout("identity.*", "Layout.Email");
 
-        context.Services.AddSingleton<INotificationDefinitionProvider, IdentitySessionNotificationDefinitionProvider>();
+        context.Services.AddSingleton<INotificationDefinitionProvider, IdentityUserSessionNotificationDefinitionProvider>();
 
-        context.Services.AddOptions<Options.IdentitySessionNotificationOptions>()
-            .BindConfiguration(Options.IdentitySessionNotificationOptions.SectionName)
+        context.Services.AddOptions<Options.IdentityUserSessionNotificationOptions>()
+            .BindConfiguration(Options.IdentityUserSessionNotificationOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
     }

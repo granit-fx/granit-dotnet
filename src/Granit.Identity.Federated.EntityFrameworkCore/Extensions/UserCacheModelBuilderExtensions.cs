@@ -25,8 +25,8 @@ public static class UserCacheModelBuilderExtensions
         builder.Entity<FederatedIdentity>(entity =>
         {
             entity.ToTable(
-                GranitIdentityDbProperties.DbTablePrefix + "user_cache_entries",
-                GranitIdentityDbProperties.DbSchema);
+                GranitIdentityFederatedDbProperties.DbTablePrefix + "user_cache_entries",
+                GranitIdentityFederatedDbProperties.DbSchema);
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.ExternalUserId).HasMaxLength(256).IsRequired();
@@ -48,12 +48,12 @@ public static class UserCacheModelBuilderExtensions
             // Unique: one cache entry per user per tenant
             entity.HasIndex(e => new { e.TenantId, e.ExternalUserId })
                   .IsUnique()
-                  .HasDatabaseName($"uq_{GranitIdentityDbProperties.DbTablePrefix}user_cache_tenant_external_id");
+                  .HasDatabaseName($"uq_{GranitIdentityFederatedDbProperties.DbTablePrefix}user_cache_tenant_external_id");
 
             // Exact-match search index — replaces the prior LIKE-scan over plaintext
             // (broken once Email became ciphertext).
             entity.HasIndex(e => new { e.TenantId, e.EmailHash })
-                  .HasDatabaseName($"ix_{GranitIdentityDbProperties.DbTablePrefix}user_cache_tenant_email_hash");
+                  .HasDatabaseName($"ix_{GranitIdentityFederatedDbProperties.DbTablePrefix}user_cache_tenant_email_hash");
 
             // NOTE: after encryption-at-rest was enabled the Username / Email / (LastName,FirstName)
             // indexes are dropped. LIKE-scans over encrypted columns would require

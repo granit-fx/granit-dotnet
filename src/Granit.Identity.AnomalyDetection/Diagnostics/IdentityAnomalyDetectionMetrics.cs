@@ -23,11 +23,11 @@ public sealed class IdentityAnomalyDetectionMetrics
         Meter meter = meterFactory.Create(MeterName);
 
         _assessments = meter.CreateCounter<long>(
-            "granit.identity.session.anomaly.assessments",
+            "granit.identity.user_session.anomaly.assessments",
             description: "Number of session risk assessments, tagged with the resulting level.");
 
         _aiCalls = meter.CreateCounter<long>(
-            "granit.identity.session.anomaly.ai_calls",
+            "granit.identity.user_session.anomaly.ai_calls",
             description: "Number of AI assessment attempts, tagged with the outcome.");
     }
 

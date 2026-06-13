@@ -3,14 +3,14 @@ using Granit.Persistence.EntityFrameworkCore;
 namespace Granit.Identity.Federated.EntityFrameworkCore;
 
 /// <summary>
-/// Provides configurable table-naming properties for the Identity EF Core module.
+/// Provides configurable table-naming properties for the federated identity EF Core store.
 /// </summary>
 /// <remarks>
 /// <b>Important:</b> Set these properties at application startup, before
 /// <c>ConfigureServices</c> completes. EF Core caches the compiled model
 /// after first use — later mutations have no effect.
 /// </remarks>
-public static class GranitIdentityDbProperties
+public static class GranitIdentityFederatedDbProperties
 {
     /// <summary>
     /// Table name prefix for all federated identity tables. Default: <c>"identity_federated_"</c>.

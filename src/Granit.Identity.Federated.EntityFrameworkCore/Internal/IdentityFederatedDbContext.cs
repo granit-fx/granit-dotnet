@@ -15,7 +15,7 @@ namespace Granit.Identity.Federated.EntityFrameworkCore.Internal;
 /// Dual-scope module: host-federated identities (host admins via the IDP) and
 /// tenant-federated identities coexist in the host schema with row-level tenant filtering
 /// on <see cref="FederatedIdentity.TenantId"/>. Tables live in
-/// <see cref="GranitDbDefaults.HostDbSchema"/> (see <see cref="GranitIdentityDbProperties.DbSchema"/>).
+/// <see cref="GranitDbDefaults.HostDbSchema"/> (see <see cref="GranitIdentityFederatedDbProperties.DbSchema"/>).
 /// </para>
 /// <para>
 /// Registered via <c>AddGranitDbContext&lt;IdentityFederatedDbContext&gt;</c> by

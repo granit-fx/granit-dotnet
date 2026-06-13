@@ -2,13 +2,13 @@ namespace Granit.Identity.Endpoints.Options;
 
 /// <summary>
 /// Configuration for the canonical user-session endpoints. Bind from
-/// <c>"Identity:Endpoints:Sessions"</c> or pass an action to
+/// <c>"Identity:Endpoints:UserSessions"</c> or pass an action to
 /// <see cref="Extensions.UserSessionEndpointRouteBuilderExtensions.MapGranitUserSessions"/>.
 /// </summary>
 public sealed class UserSessionsEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "Identity:Endpoints:Sessions";
+    public const string SectionName = "Identity:Endpoints:UserSessions";
 
     /// <summary>
     /// Optional route prefix prepended to <c>sessions</c> and <c>devices</c> (e.g. <c>"account"</c> →

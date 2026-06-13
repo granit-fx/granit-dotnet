@@ -57,8 +57,8 @@ internal sealed class UserSessionAnomalyDetector(
 
     private static UserSessionRiskAssessment Tag(Activity? activity, UserSessionRiskAssessment assessment, bool aiUsed)
     {
-        activity?.SetTag("granit.identity.session.anomaly.level", assessment.Level.ToString());
-        activity?.SetTag("granit.identity.session.anomaly.ai_used", aiUsed);
+        activity?.SetTag("granit.identity.user_session.anomaly.level", assessment.Level.ToString());
+        activity?.SetTag("granit.identity.user_session.anomaly.ai_used", aiUsed);
         return assessment;
     }
 

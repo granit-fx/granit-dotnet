@@ -24436,22 +24436,6 @@
       ]
     },
     {
-      "name": "GranitIdentitySessionDbProperties",
-      "fqn": "Granit.Identity.EntityFrameworkCore.GranitIdentitySessionDbProperties",
-      "kind": "class",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentitySessionDbProperties.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "DbTablePrefix",
-          "kind": "property",
-          "signature": "string DbTablePrefix",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "IdentityGroupMembershipChangedEto",
       "fqn": "Granit.Identity.Events.IdentityGroupMembershipChangedEto",
       "kind": "record",
@@ -24825,11 +24809,11 @@
       ]
     },
     {
-      "name": "GranitIdentityDbProperties",
-      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.GranitIdentityDbProperties",
+      "name": "GranitIdentityFederatedDbProperties",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.GranitIdentityFederatedDbProperties",
       "kind": "class",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
-      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityDbProperties.cs",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityFederatedDbProperties.cs",
       "line": 13,
       "members": [
         {
@@ -28696,11 +28680,11 @@
       ]
     },
     {
-      "name": "IdentitySessionNotificationOptions",
-      "fqn": "Granit.Identity.Notifications.Options.IdentitySessionNotificationOptions",
+      "name": "IdentityUserSessionNotificationOptions",
+      "fqn": "Granit.Identity.Notifications.Options.IdentityUserSessionNotificationOptions",
       "kind": "class",
       "project": "Granit.Identity.Notifications",
-      "file": "src/Granit.Identity.Notifications/Options/IdentitySessionNotificationOptions.cs",
+      "file": "src/Granit.Identity.Notifications/Options/IdentityUserSessionNotificationOptions.cs",
       "line": 9,
       "members": [
         {

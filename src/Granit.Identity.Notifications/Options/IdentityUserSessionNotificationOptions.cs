@@ -4,12 +4,12 @@ namespace Granit.Identity.Notifications.Options;
 
 /// <summary>
 /// Configuration for user-session notification URL generation.
-/// Bound to the <c>Identity:Notifications:Sessions</c> configuration section.
+/// Bound to the <c>Identity:Notifications:UserSessions</c> configuration section.
 /// </summary>
-public sealed class IdentitySessionNotificationOptions
+public sealed class IdentityUserSessionNotificationOptions
 {
     /// <summary>Configuration section name.</summary>
-    public const string SectionName = "Identity:Notifications:Sessions";
+    public const string SectionName = "Identity:Notifications:UserSessions";
 
     /// <summary>Base URL of the frontend application (e.g., <c>https://app.example.com</c>).</summary>
     [Required]
