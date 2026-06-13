@@ -10139,7 +10139,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffTokenInjectionMiddleware.cs",
-      "line": 34,
+      "line": 35,
       "members": []
     },
     {
@@ -29052,6 +29052,15 @@
       "project": "Granit.Identity.Abstractions",
       "file": "src/Granit.Identity.Abstractions/UserDevice.cs",
       "line": 24,
+      "members": []
+    },
+    {
+      "name": "UserSessionContextItems",
+      "fqn": "Granit.Identity.UserSessionContextItems",
+      "kind": "class",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/UserSessionContextItems.cs",
+      "line": 15,
       "members": []
     },
     {

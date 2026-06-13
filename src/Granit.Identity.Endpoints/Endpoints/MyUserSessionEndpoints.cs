@@ -110,8 +110,14 @@ internal static class MyUserSessionEndpoints
     }
 #pragma warning restore GRAPI003
 
+    // Prefer the session id surfaced by the session backend's middleware (the BFF stashes its own cookie session
+    // id here — a different identifier space from the OIDC sid, and one the access token never carries). Fall back
+    // to the sid claim for token-only backends (OpenIddict, Keycloak).
     private static string? CurrentSessionId(HttpContext httpContext) =>
-        httpContext.User.FindFirst(SessionIdClaim)?.Value;
+        httpContext.Items.TryGetValue(UserSessionContextItems.CurrentSessionId, out object? id)
+        && id is string sessionId && !string.IsNullOrEmpty(sessionId)
+            ? sessionId
+            : httpContext.User.FindFirst(SessionIdClaim)?.Value;
 
     private static ProblemHttpResult NoSubject() =>
         TypedResults.Problem(

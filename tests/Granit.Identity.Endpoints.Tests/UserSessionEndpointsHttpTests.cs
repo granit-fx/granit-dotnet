@@ -6,6 +6,7 @@ using Granit.IpGeolocation;
 using Granit.Testing.Endpoints;
 using Granit.Users;
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
@@ -23,6 +24,13 @@ public sealed class UserSessionEndpointsHttpTests : IAsyncDisposable
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
+    /// <summary>
+    /// Header a test client sets to have the pipeline stash a current-session id into
+    /// <see cref="UserSessionContextItems.CurrentSessionId"/>, standing in for what the in-process BFF
+    /// token-injection middleware does for cookie-backed sessions.
+    /// </summary>
+    private const string SessionIdHeader = "X-Test-Session-Id";
+
     public UserSessionEndpointsHttpTests()
     {
         _currentUser.UserId.Returns("user-1");
@@ -34,7 +42,20 @@ public sealed class UserSessionEndpointsHttpTests : IAsyncDisposable
                 services.AddSingleton(_manager);
                 services.AddSingleton(_currentUser);
             },
-            configureEndpoints: app => app.MapGranitUserSessions())
+            configureEndpoints: app =>
+            {
+                app.Use(async (ctx, next) =>
+                {
+                    if (ctx.Request.Headers.TryGetValue(SessionIdHeader, out Microsoft.Extensions.Primitives.StringValues sid)
+                        && !string.IsNullOrEmpty(sid))
+                    {
+                        ctx.Items[UserSessionContextItems.CurrentSessionId] = sid.ToString();
+                    }
+
+                    await next();
+                });
+                app.MapGranitUserSessions();
+            })
             .GetAwaiter().GetResult();
 
         _auth = _host.CreateAuthenticatedClient();
@@ -94,10 +115,42 @@ public sealed class UserSessionEndpointsHttpTests : IAsyncDisposable
     [Fact]
     public async Task RevokeOthers_WithoutCurrentSession_Returns400()
     {
-        // The test principal carries no 'sid' claim, so the current session cannot be identified.
+        // The test principal carries no 'sid' claim and no session id was stashed, so the current
+        // session cannot be identified.
         HttpResponseMessage response = await _auth.DeleteAsync("/sessions", Ct);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task RevokeOthers_WithSessionIdFromContextItems_RevokesUsingThatId()
+    {
+        // A BFF-backed session has no 'sid' claim; the in-process middleware surfaces the cookie session
+        // id via HttpContext.Items instead. The endpoint must honour it rather than failing with 400.
+        _manager.RevokeOthersAsync("user-1", "bff-session-7", Arg.Any<CancellationToken>()).Returns(3);
+        using var request = new HttpRequestMessage(HttpMethod.Delete, "/sessions");
+        request.Headers.Add(SessionIdHeader, "bff-session-7");
+
+        HttpResponseMessage response = await _auth.SendAsync(request, Ct);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        UserSessionsRevokedResponse? body = await response.Content.ReadFromJsonAsync<UserSessionsRevokedResponse>(Ct);
+        body!.RevokedCount.ShouldBe(3);
+        await _manager.Received(1).RevokeOthersAsync("user-1", "bff-session-7", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ListSessions_PassesContextItemsSessionIdAsCurrent()
+    {
+        // The stashed BFF session id flows through as the "current" id so the backend can flag IsCurrent.
+        _manager.ListAsync("user-1", "bff-session-7", Arg.Any<CancellationToken>()).Returns([]);
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/sessions");
+        request.Headers.Add(SessionIdHeader, "bff-session-7");
+
+        HttpResponseMessage response = await _auth.SendAsync(request, Ct);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        await _manager.Received(1).ListAsync("user-1", "bff-session-7", Arg.Any<CancellationToken>());
     }
 
     [Fact]

@@ -2,6 +2,7 @@ using System.Text.Json;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Options;
 using Granit.Http.Cookies;
+using Granit.Identity;
 using Granit.Oidc.ClientAuthentication;
 using Granit.Oidc.ClientAuthentication.Internal;
 using Granit.Oidc.DPoP;
@@ -80,6 +81,11 @@ public sealed partial class BffTokenInjectionMiddleware
             await _next(context).ConfigureAwait(false);
             return;
         }
+
+        // Surface the BFF session id for in-process endpoints (e.g. canonical /sessions) so they can identify
+        // the caller's own session — the downstream access token carries no equivalent id. Set before token
+        // injection so it is visible even on a CSRF/refresh short-circuit; harmless when no such endpoint reads it.
+        context.Items[UserSessionContextItems.CurrentSessionId] = sessionId;
 
         using System.Diagnostics.Activity? activity = BffActivitySource.Source.StartActivity(BffActivitySource.Proxy);
         metrics.RecordProxyRequest(null);
