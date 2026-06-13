@@ -10,7 +10,9 @@ namespace Granit.Identity.Internal;
 internal sealed class DefaultUserSessionManager(
     IUserSessionProvider sessionProvider,
     IUserDeviceProvider deviceProvider,
-    IUserSessionRiskStore riskStore) : IUserSessionManager
+    IUserSessionRiskStore riskStore,
+    IDeviceTrustStore deviceTrustStore,
+    TimeProvider timeProvider) : IUserSessionManager
 {
     public async Task<IReadOnlyList<UserSessionView>> ListAsync(
         string userId, string? currentSessionId, CancellationToken cancellationToken = default)
@@ -75,10 +77,36 @@ internal sealed class DefaultUserSessionManager(
         return revoked;
     }
 
-    public Task<IReadOnlyList<UserDevice>> ListDevicesAsync(
+    public async Task<IReadOnlyList<UserDevice>> ListDevicesAsync(
         string userId, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(userId);
-        return deviceProvider.ListAsync(userId, cancellationToken);
+
+        IReadOnlyList<UserDevice> devices =
+            await deviceProvider.ListAsync(userId, cancellationToken).ConfigureAwait(false);
+        if (devices.Count == 0)
+        {
+            return devices;
+        }
+
+        // Attach device-trust state from the store (best-effort: surfaces on devices whose backend id matches a
+        // trust key). The authoritative trust path for the current browser is the signed device cookie, consulted
+        // at the step-up decision — not list reconciliation.
+        IReadOnlyDictionary<string, DeviceTrustVerdict> trust = await deviceTrustStore
+            .GetManyAsync(userId, [.. devices.Select(d => d.DeviceId)], cancellationToken)
+            .ConfigureAwait(false);
+        if (trust.Count == 0)
+        {
+            return devices;
+        }
+
+        DateTimeOffset now = timeProvider.GetUtcNow();
+        return
+        [
+            .. devices.Select(d =>
+                trust.TryGetValue(d.DeviceId, out DeviceTrustVerdict? verdict) && verdict.IsActive(now)
+                    ? d with { IsTrusted = true, TrustedUntil = verdict.TrustedUntil }
+                    : d),
+        ];
     }
 }

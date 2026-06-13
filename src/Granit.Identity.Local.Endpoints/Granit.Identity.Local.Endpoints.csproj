@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.Http.SecurityHeaders\Granit.Http.SecurityHeaders.csproj" />
+    <ProjectReference Include="..\Granit.Identity.Endpoints\Granit.Identity.Endpoints.csproj" />
     <ProjectReference Include="..\Granit.Identity.Local\Granit.Identity.Local.csproj" />
     <ProjectReference Include="..\Granit.Settings\Granit.Settings.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />

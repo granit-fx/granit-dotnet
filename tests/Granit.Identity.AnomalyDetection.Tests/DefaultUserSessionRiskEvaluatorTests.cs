@@ -32,6 +32,7 @@ public sealed class DefaultUserSessionRiskEvaluatorTests
             .Returns(new UserSessionRiskAssessment(UserSessionRiskLevel.High, 0.9, ["impossible_travel"]));
 
         IUserSessionRiskStore store = Substitute.For<IUserSessionRiskStore>();
+        IDeviceTrustStore deviceTrustStore = Substitute.For<IDeviceTrustStore>();
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(false);
 
@@ -46,9 +47,9 @@ public sealed class DefaultUserSessionRiskEvaluatorTests
                 new IdentityAnomalyDetectionOptions { IncludeClientIpInAlert = includeIp });
 
         var evaluator = new DefaultUserSessionRiskEvaluator(
-            detector, store, TimeProvider.System, tenant, options, bus);
+            detector, store, deviceTrustStore, TimeProvider.System, tenant, options, bus);
 
-        await evaluator.EvaluateAsync(Candidate(), [], Ct);
+        await evaluator.EvaluateAsync(Candidate(), [], cancellationToken: Ct);
 
         return captured;
     }
@@ -71,5 +72,65 @@ public sealed class DefaultUserSessionRiskEvaluatorTests
 
         eto.ShouldNotBeNull();
         eto.IpAddress.ShouldBe("203.0.113.7");
+    }
+
+    [Fact]
+    public async Task EvaluateAsync_WhenDeviceTrusted_DowngradesMediumToLowAndSkipsAlert()
+    {
+        IUserSessionAnomalyDetector detector = Substitute.For<IUserSessionAnomalyDetector>();
+        detector.AssessAsync(Arg.Any<UserSessionDescriptor>(), Arg.Any<IReadOnlyList<UserSessionDescriptor>>(), Arg.Any<CancellationToken>())
+            .Returns(new UserSessionRiskAssessment(UserSessionRiskLevel.Medium, 0.5, ["new_country"]));
+
+        IUserSessionRiskStore store = Substitute.For<IUserSessionRiskStore>();
+        UserSessionRiskVerdict? storedVerdict = null;
+        await store.SetAsync("user-1", "s-new", Arg.Do<UserSessionRiskVerdict>(v => storedVerdict = v), Arg.Any<CancellationToken>());
+
+        IDeviceTrustStore deviceTrustStore = Substitute.For<IDeviceTrustStore>();
+        deviceTrustStore.GetAsync("user-1", "trusted-device", Arg.Any<CancellationToken>())
+            .Returns(new DeviceTrustVerdict(DeviceTrustLevel.Remembered, Now, DateTimeOffset.MaxValue, "user_marked"));
+
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.IsAvailable.Returns(false);
+        IDistributedEventBus bus = Substitute.For<IDistributedEventBus>();
+        IOptions<IdentityAnomalyDetectionOptions> options =
+            Microsoft.Extensions.Options.Options.Create(new IdentityAnomalyDetectionOptions());
+
+        var evaluator = new DefaultUserSessionRiskEvaluator(
+            detector, store, deviceTrustStore, TimeProvider.System, tenant, options, bus);
+
+        UserSessionRiskAssessment result = await evaluator.EvaluateAsync(Candidate(), [], "trusted-device", Ct);
+
+        // Medium downgraded to Low for the trusted device, with the reason recorded...
+        result.Level.ShouldBe(UserSessionRiskLevel.Low);
+        result.Reasons.ShouldContain("trusted_device");
+        storedVerdict.ShouldNotBeNull();
+        storedVerdict.Level.ShouldBe(UserSessionRiskLevel.Low);
+        // ...and no suspicious-session alert raised (Low is below the Medium alert threshold).
+        await bus.DidNotReceive().PublishAsync(Arg.Any<SuspiciousUserSessionDetectedEto>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task EvaluateAsync_WhenDeviceTrusted_PreservesHighRisk()
+    {
+        IUserSessionAnomalyDetector detector = Substitute.For<IUserSessionAnomalyDetector>();
+        detector.AssessAsync(Arg.Any<UserSessionDescriptor>(), Arg.Any<IReadOnlyList<UserSessionDescriptor>>(), Arg.Any<CancellationToken>())
+            .Returns(new UserSessionRiskAssessment(UserSessionRiskLevel.High, 0.95, ["impossible_travel"]));
+
+        IDeviceTrustStore deviceTrustStore = Substitute.For<IDeviceTrustStore>();
+        deviceTrustStore.GetAsync("user-1", "trusted-device", Arg.Any<CancellationToken>())
+            .Returns(new DeviceTrustVerdict(DeviceTrustLevel.Strong, Now, DateTimeOffset.MaxValue, "passkey"));
+
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.IsAvailable.Returns(false);
+        IDistributedEventBus bus = Substitute.For<IDistributedEventBus>();
+        var evaluator = new DefaultUserSessionRiskEvaluator(
+            detector, Substitute.For<IUserSessionRiskStore>(), deviceTrustStore, TimeProvider.System, tenant,
+            Microsoft.Extensions.Options.Options.Create(new IdentityAnomalyDetectionOptions()), bus);
+
+        UserSessionRiskAssessment result = await evaluator.EvaluateAsync(Candidate(), [], "trusted-device", Ct);
+
+        // A trusted device can still be compromised — a strong anomaly is never downgraded.
+        result.Level.ShouldBe(UserSessionRiskLevel.High);
+        result.Reasons.ShouldNotContain("trusted_device");
     }
 }

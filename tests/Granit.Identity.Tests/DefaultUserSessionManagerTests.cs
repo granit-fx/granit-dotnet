@@ -12,9 +12,11 @@ public sealed class DefaultUserSessionManagerTests
     private readonly IUserSessionProvider _sessions = Substitute.For<IUserSessionProvider>();
     private readonly IUserDeviceProvider _devices = Substitute.For<IUserDeviceProvider>();
     private readonly IUserSessionRiskStore _risk = Substitute.For<IUserSessionRiskStore>();
+    private readonly IDeviceTrustStore _deviceTrust = Substitute.For<IDeviceTrustStore>();
     private readonly DefaultUserSessionManager _sut;
 
-    public DefaultUserSessionManagerTests() => _sut = new(_sessions, _devices, _risk);
+    public DefaultUserSessionManagerTests() =>
+        _sut = new(_sessions, _devices, _risk, _deviceTrust, TimeProvider.System);
 
     private static UserSessionDescriptor Session(string id) =>
         new(id, "user-1", IsCurrent: id == "s1", CreatedAt: DateTimeOffset.UnixEpoch,

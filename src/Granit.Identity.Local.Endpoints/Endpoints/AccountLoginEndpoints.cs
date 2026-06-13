@@ -6,6 +6,8 @@ using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Events;
 using Granit.Http.Timing;
+using Granit.Identity.Endpoints;
+using Granit.Identity.Endpoints.Options;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
@@ -21,6 +23,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Local.Endpoints.Endpoints;
 
@@ -187,6 +190,20 @@ internal static partial class AccountLoginEndpoints
 
         if (result.RequiresTwoFactor)
         {
+            // Device-trust step-up bypass (opt-in via Identity:DeviceTrust:AllowMfaBypass). When the current
+            // browser is bound to a device this user previously trusted and the trust is still active, complete
+            // the sign-in without challenging 2FA. Off by default — bypassing MFA is a deliberate relaxation.
+            if (await TryCompleteForTrustedDeviceAsync(httpContext, signInManager, user, request.RememberMe,
+                    logger, cancellationToken).ConfigureAwait(false))
+            {
+                metrics?.RecordAuthenticationSuccess(null, LocalLoginMethod);
+                await TryWriteAuthAuditAsync(httpContext, logger,
+                    method: LocalLoginMethod, userId: user.Id.ToString(), userName: user.UserName,
+                    failureReason: null, cancellationToken).ConfigureAwait(false);
+
+                return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
+            }
+
             LogLoginTwoFactor(logger, user.Id.ToString());
 
             // Surface the factors the user can complete the challenge with so the SPA
@@ -595,10 +612,52 @@ internal static partial class AccountLoginEndpoints
         }
     }
 
+    /// <summary>
+    /// Completes the sign-in without a 2FA challenge when the deployment opted into MFA bypass and the current
+    /// browser is bound to an actively-trusted device for this user. Returns <see langword="false"/> (challenge
+    /// proceeds) when bypass is disabled, no device cookie is present, or the trust verdict is missing/expired.
+    /// </summary>
+    private static async Task<bool> TryCompleteForTrustedDeviceAsync(
+        HttpContext httpContext,
+        SignInManager<LocalIdentity> signInManager,
+        LocalIdentity user,
+        bool isPersistent,
+        ILogger logger,
+        CancellationToken cancellationToken)
+    {
+        IServiceProvider services = httpContext.RequestServices;
+        if (!services.GetRequiredService<IOptions<DeviceTrustOptions>>().Value.AllowMfaBypass)
+        {
+            return false;
+        }
+
+        string userId = user.Id.ToString();
+        string? deviceId = services.GetRequiredService<IDeviceTrustCookieService>()
+            .ResolveDeviceId(httpContext, userId);
+        if (deviceId is null)
+        {
+            return false;
+        }
+
+        DeviceTrustVerdict? verdict = await services.GetRequiredService<IDeviceTrustStore>()
+            .GetAsync(userId, deviceId, cancellationToken).ConfigureAwait(false);
+        if (verdict is null || !verdict.IsActive(services.GetRequiredService<TimeProvider>().GetUtcNow()))
+        {
+            return false;
+        }
+
+        await signInManager.SignInAsync(user, isPersistent).ConfigureAwait(false);
+        LogTwoFactorBypassedTrustedDevice(logger, userId);
+        return true;
+    }
+
     // ──── Source-generated log messages ────
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Headless login: user {UserId} authenticated successfully")]
     private static partial void LogLoginSuccess(ILogger logger, string userId);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Headless login: user {UserId} bypassed two-factor via a trusted device")]
+    private static partial void LogTwoFactorBypassedTrustedDevice(ILogger logger, string userId);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Headless login: user {UserId} requires two-factor authentication")]
     private static partial void LogLoginTwoFactor(ILogger logger, string userId);

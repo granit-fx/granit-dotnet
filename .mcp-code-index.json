@@ -1175,6 +1175,7 @@
       "name": "Granit.Identity.Endpoints",
       "deps": [
         "Granit.Http.ApiDocumentation",
+        "Granit.Http.Cookies",
         "Granit.Authorization",
         "Granit.Identity",
         "Granit.IpGeolocation",
@@ -1338,6 +1339,7 @@
         "Granit.Http.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.Http.SecurityHeaders",
+        "Granit.Identity.Endpoints",
         "Granit.Identity.Local",
         "Granit.Settings",
         "Granit.Validation",
@@ -23858,7 +23860,7 @@
         {
           "name": "EvaluateAsync",
           "kind": "method",
-          "signature": "EvaluateAsync(UserSessionDescriptor candidate, IReadOnlyList<UserSessionDescriptor> history, CancellationToken cancellationToken = default)",
+          "signature": "EvaluateAsync(UserSessionDescriptor candidate, IReadOnlyList<UserSessionDescriptor> history, string? deviceId = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<UserSessionRiskAssessment>"
         }
       ]
@@ -23904,6 +23906,15 @@
       "project": "Granit.Identity.Abstractions",
       "file": "src/Granit.Identity.Abstractions/DeviceKind.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "DeviceTrustContextItems",
+      "fqn": "Granit.Identity.DeviceTrustContextItems",
+      "kind": "class",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/DeviceTrustContextItems.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -23998,6 +24009,15 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "DeviceTrustedResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.DeviceTrustedResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/UserSessionResponses.cs",
+      "line": 54,
+      "members": []
     },
     {
       "name": "IdentityGroupResponse",
@@ -24122,7 +24142,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 34,
+      "line": 36,
       "members": []
     },
     {
@@ -24140,8 +24160,24 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/UserSessionResponses.cs",
-      "line": 45,
+      "line": 49,
       "members": []
+    },
+    {
+      "name": "DeviceTrustApplicationBuilderExtensions",
+      "fqn": "Granit.Identity.Endpoints.Extensions.DeviceTrustApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Extensions/DeviceTrustApplicationBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "UseGranitDeviceTrust",
+          "kind": "method",
+          "signature": "UseGranitDeviceTrust(this IApplicationBuilder app)",
+          "returnType": "IApplicationBuilder"
+        }
+      ]
     },
     {
       "name": "IdentityEndpointRouteBuilderExtensions",
@@ -24165,7 +24201,7 @@
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Extensions/IdentityEndpointsServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitIdentityEndpoints",
@@ -24220,6 +24256,56 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IDeviceTrustCookieService",
+      "fqn": "Granit.Identity.Endpoints.IDeviceTrustCookieService",
+      "kind": "interface",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/IDeviceTrustCookieService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ResolveDeviceId",
+          "kind": "method",
+          "signature": "ResolveDeviceId(HttpContext httpContext, string userId)",
+          "returnType": "string?"
+        },
+        {
+          "name": "IssueDeviceCookieAsync",
+          "kind": "method",
+          "signature": "IssueDeviceCookieAsync(HttpContext httpContext, string userId)",
+          "returnType": "Task<string>"
+        },
+        {
+          "name": "Clear",
+          "kind": "method",
+          "signature": "Clear(HttpContext httpContext)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTrustOptions",
+      "fqn": "Granit.Identity.Endpoints.Options.DeviceTrustOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Options/DeviceTrustOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(30)",
+          "returnType": "TimeSpan TrustDuration { get; set; } = TimeSpan."
+        },
+        {
+          "name": "AllowMfaBypass",
+          "kind": "property",
+          "signature": "bool AllowMfaBypass",
+          "returnType": "bool"
         }
       ]
     },

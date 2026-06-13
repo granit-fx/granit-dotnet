@@ -99,6 +99,9 @@ public sealed partial class OpenIddictUserSessionCreatedHandler(
         HttpRequest? request = context.Transaction.GetHttpRequest();
         string? ipAddress = request?.HttpContext.Connection.RemoteIpAddress?.ToString();
         string? userAgent = request?.Headers.UserAgent.FirstOrDefault() is { Length: > 0 } ua ? ua : null;
+        string? deviceId = request?.HttpContext is { } httpContext
+            ? ResolveTrustedDeviceId(httpContext, userId)
+            : null;
 
         // Announcing the session must never break token issuance — swallow any dispatch fault.
         try
@@ -111,7 +114,8 @@ public sealed partial class OpenIddictUserSessionCreatedHandler(
                     UserSessionSource.OpenIddict,
                     userAgent,
                     ipAddress,
-                    clock.Now),
+                    clock.Now,
+                    deviceId),
                 context.CancellationToken).ConfigureAwait(false);
 
             LogSessionAnnounced(logger, context.Request.GrantType ?? "(null)");
@@ -121,6 +125,17 @@ public sealed partial class OpenIddictUserSessionCreatedHandler(
             LogAnnounceFailed(logger, ex);
         }
     }
+
+    // Reads the device-trust binding stashed by the device-trust middleware, returning the device id only when
+    // it is bound to the same user the session belongs to. Null (untrusted) when the middleware did not run or no
+    // valid device cookie was presented (e.g. a back-channel grant with no browser).
+    private static string? ResolveTrustedDeviceId(HttpContext httpContext, string userId) =>
+        httpContext.Items.TryGetValue(DeviceTrustContextItems.UserId, out object? boundUser)
+        && boundUser is string boundUserId
+        && string.Equals(boundUserId, userId, StringComparison.Ordinal)
+        && httpContext.Items.TryGetValue(DeviceTrustContextItems.DeviceId, out object? deviceId)
+            ? deviceId as string
+            : null;
 
     [LoggerMessage(
         Level = LogLevel.Debug,

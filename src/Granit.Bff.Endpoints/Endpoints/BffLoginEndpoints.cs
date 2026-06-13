@@ -177,6 +177,17 @@ internal static partial class BffLoginEndpoints
 
     // Validates the authorization-response issuer (RFC 9207). Returns an error redirect to send
     // back, or null when the issuer is present and matches the configured authority.
+    // Reads the device-trust binding stashed by the device-trust middleware, returning the device id only when
+    // it is bound to the same user the session belongs to. Null (untrusted) when the middleware did not run or no
+    // valid device cookie was presented.
+    private static string? ResolveTrustedDeviceId(HttpContext httpContext, string userId) =>
+        httpContext.Items.TryGetValue(DeviceTrustContextItems.UserId, out object? boundUser)
+        && boundUser is string boundUserId
+        && string.Equals(boundUserId, userId, StringComparison.Ordinal)
+        && httpContext.Items.TryGetValue(DeviceTrustContextItems.DeviceId, out object? deviceId)
+            ? deviceId as string
+            : null;
+
     private static async Task<RedirectHttpResult?> ValidateCallbackIssuerAsync(
         HttpContext httpContext, GranitBffOptions bffOptions, BffFrontendOptions frontend,
         string? iss, CancellationToken cancellationToken)
@@ -321,7 +332,8 @@ internal static partial class BffLoginEndpoints
                     UserSessionSource.Bff,
                     tokens.UserAgent,
                     tokens.IpAddress,
-                    tokens.SessionCreatedAt),
+                    tokens.SessionCreatedAt,
+                    ResolveTrustedDeviceId(httpContext, userId)),
                 cancellationToken).ConfigureAwait(false);
         }
 

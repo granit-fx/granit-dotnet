@@ -44,6 +44,7 @@ public sealed class UserSessionCreatedHandlerTests
                 c.SessionId == "s-new" && c.IsCurrent && c.Location!.City == "Brussels"),
             Arg.Is<IReadOnlyList<UserSessionDescriptor>>(h =>
                 h.Count == 1 && h[0].SessionId == "s-old" && h[0].Location!.City == "Paris"),
+            Arg.Any<string?>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -93,7 +94,7 @@ public sealed class UserSessionCreatedHandlerTests
 
         await UserSessionCreatedHandler.HandleAsync(evt, tenant, evaluator, provider, geo, Ct);
 
-        await evaluator.DidNotReceiveWithAnyArgs().EvaluateAsync(default!, default!, Ct);
+        await evaluator.DidNotReceiveWithAnyArgs().EvaluateAsync(default!, default!, default, Ct);
         await geo.DidNotReceiveWithAnyArgs().ResolveAsync(default, Ct);
     }
 }

@@ -23,5 +23,5 @@ internal static class IdentityResponseMapper
 
     internal static UserDeviceResponse ToResponse(UserDevice device) =>
         new(device.DeviceId, device.Kind, device.OperatingSystem, device.Browser,
-            device.LastSeen, device.SessionCount, device.LastLocation);
+            device.LastSeen, device.SessionCount, device.LastLocation, device.IsTrusted, device.TrustedUntil);
 }

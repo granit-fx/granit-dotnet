@@ -22,6 +22,7 @@ namespace Granit.Identity.AnomalyDetection.Internal;
 internal sealed class DefaultUserSessionRiskEvaluator(
     IUserSessionAnomalyDetector detector,
     IUserSessionRiskStore riskStore,
+    IDeviceTrustStore deviceTrustStore,
     TimeProvider timeProvider,
     ICurrentTenant currentTenant,
     IOptions<IdentityAnomalyDetectionOptions> options,
@@ -30,10 +31,14 @@ internal sealed class DefaultUserSessionRiskEvaluator(
     public async Task<UserSessionRiskAssessment> EvaluateAsync(
         UserSessionDescriptor candidate,
         IReadOnlyList<UserSessionDescriptor> history,
+        string? deviceId = null,
         CancellationToken cancellationToken = default)
     {
         UserSessionRiskAssessment assessment = await detector
             .AssessAsync(candidate, history, cancellationToken)
+            .ConfigureAwait(false);
+
+        assessment = await ApplyDeviceTrustAsync(assessment, candidate.UserId, deviceId, cancellationToken)
             .ConfigureAwait(false);
 
         if (candidate.UserId is { } userId && assessment.Level != UserSessionRiskLevel.None)
@@ -68,5 +73,35 @@ internal sealed class DefaultUserSessionRiskEvaluator(
         }
 
         return assessment;
+    }
+
+    /// <summary>
+    /// Reduces noise for a device the user explicitly trusts: an active trust verdict downgrades a Medium
+    /// (notable) anomaly to Low (informational) and records the <c>trusted_device</c> reason. High anomalies are
+    /// left intact — a trusted device can still be compromised — and None/Low are unchanged.
+    /// </summary>
+    private async Task<UserSessionRiskAssessment> ApplyDeviceTrustAsync(
+        UserSessionRiskAssessment assessment,
+        string? userId,
+        string? deviceId,
+        CancellationToken cancellationToken)
+    {
+        if (deviceId is null || userId is null || assessment.Level != UserSessionRiskLevel.Medium)
+        {
+            return assessment;
+        }
+
+        DeviceTrustVerdict? trust = await deviceTrustStore.GetAsync(userId, deviceId, cancellationToken)
+            .ConfigureAwait(false);
+        if (trust is null || !trust.IsActive(timeProvider.GetUtcNow()))
+        {
+            return assessment;
+        }
+
+        return assessment with
+        {
+            Level = UserSessionRiskLevel.Low,
+            Reasons = [.. assessment.Reasons, "trusted_device"],
+        };
     }
 }

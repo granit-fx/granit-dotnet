@@ -2617,6 +2617,7 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Http.Cookies": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Identity.Abstractions": "[0.1.0-dev, )",
           "Granit.IpGeolocation": "[0.1.0-dev, )",
@@ -2771,6 +2772,7 @@
           "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Http.SecurityHeaders": "[0.1.0-dev, )",
+          "Granit.Identity.Endpoints": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
@@ -4158,8 +4160,8 @@
       "AngleSharp": {
         "type": "CentralTransitive",
         "requested": "[1.*, )",
-        "resolved": "1.5.0",
-        "contentHash": "REAdFOAlTxr6yqmxWFFLLMB/+uvIS3N6tXXUAWjoexA0LsQB/CfZYadg+z+DkcpAwJk8gF1VF4YLsq4U1Gficg=="
+        "resolved": "1.5.1",
+        "contentHash": "jFG0tKwFMNzIdv0rX3qvyiKyxAzUIvDyTLTJo2ORKtv/hiJC8juZTknc4b9DQmBFbrky+0twr58QQWt6DR48Og=="
       },
       "Anthropic": {
         "type": "CentralTransitive",
@@ -4206,19 +4208,19 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.9.4",
-        "contentHash": "fHnqBzCqVBPiZc8XKyKRiHxiYA0gYGv5Wi4TYM74Gox118q34tzeTHtRDDeH8xQbgxazNbVVD2gbeAcfb+zdEw==",
+        "resolved": "4.0.9.5",
+        "contentHash": "jRom+s0uHW4zA6tPV5rp1qjGjV8GJtsiLwFRT/PCCf7RHoHlZdjQaXQnEoCTmkXbtjd4e+aypmnHhlBAr7apJA==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.9, 5.0.0)"
+          "AWSSDK.Core": "[4.0.9.2, 5.0.0)"
         }
       },
       "AWSSDK.KeyManagementService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.12.4",
-        "contentHash": "T20E+szAWTGBH+/64223haNw3zExzGoF7bvmO+A/oqaY1iesypHn5N6jzzcwPANQ+md9kvDFB3ifb2lzAbzEMw==",
+        "resolved": "4.0.12.5",
+        "contentHash": "RnICgGseExGrWk9W9bakozkfzHYeWqJZ4oCVYnCxBY9/Lm9slmtezvMfjhALBmzY8aLqO7p+RddS8Hm2H4nh4g==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.9, 5.0.0)"
+          "AWSSDK.Core": "[4.0.9.2, 5.0.0)"
         }
       },
       "AWSSDK.S3": {
@@ -4233,10 +4235,10 @@
       "AWSSDK.SecretsManager": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.5.3",
-        "contentHash": "WQsetMo2H2EFcrI9fShTOZ2x6W+d1f+FueXd3t+bwO4AGabiCsCXW6+GVYKO4WTX4LW+c29SEdDs5t3wfbl/OQ==",
+        "resolved": "4.0.5.4",
+        "contentHash": "vKjc1Hlx1grNNXgLQuxI3n0mWxwvmv0T43/bsGh9Hk97PbCzlatpzb1Ky+36LBHJMOPVWsHTURIF/JBAgKF3Cw==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.9, 5.0.0)"
+          "AWSSDK.Core": "[4.0.9.2, 5.0.0)"
         }
       },
       "AWSSDK.SimpleEmailV2": {
@@ -4251,10 +4253,10 @@
       "AWSSDK.SimpleNotificationService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.3.3",
-        "contentHash": "pB1ehrah/EeKq+biE+uKnTqY0T7YfIns3ni8kFCGIu8k+EwxIltO9K1hExoSNbORjRx/Wwd8MJrR0vNs93ZyGQ==",
+        "resolved": "4.0.3.4",
+        "contentHash": "BWJ4sqzL5L8+5yetkpr86U9nqc9BXTEZy9h5WGlCEGydf6Pixf0UKrMa3xwZ2X7rubRDIA856m5HDvOTC5VLEQ==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.9, 5.0.0)"
+          "AWSSDK.Core": "[4.0.9.2, 5.0.0)"
         }
       },
       "Azure.AI.OpenAI": {

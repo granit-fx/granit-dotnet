@@ -608,6 +608,12 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.http.cookies": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
@@ -640,6 +646,7 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Http.Cookies": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Identity.Abstractions": "[0.1.0-dev, )",
           "Granit.IpGeolocation": "[0.1.0-dev, )",

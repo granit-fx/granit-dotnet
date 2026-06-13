@@ -1,3 +1,4 @@
+using Granit.Http.Cookies;
 using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Options;
 using Granit.Identity.Extensions;
@@ -20,6 +21,15 @@ public static class IdentityEndpointsServiceCollectionExtensions
         services.AddSingleton<WebhookSignatureValidator>();
         services.AddOptions<IdentityWebhookOptions>()
             .BindConfiguration(IdentityWebhookOptions.SectionName);
+
+        // Device trust: the signed-cookie binding service consumed by the manage endpoints, the login step-up
+        // decision, and the session-created emission sites.
+        services.AddOptions<DeviceTrustOptions>()
+            .BindConfiguration(DeviceTrustOptions.SectionName);
+        services.AddDataProtection();
+        services.AddScoped<IDeviceTrustCookieService, DeviceTrustCookieService>();
+        services.AddScoped<DeviceTrustResolutionMiddleware>();
+        services.AddSingleton<ICookieDefinitionContributor, DeviceTrustCookieDefinitionContributor>();
 
         services.AddHealthChecks()
             .AddCheck<UserCacheHealthCheck>(

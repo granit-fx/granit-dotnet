@@ -56,7 +56,7 @@ public class UserSessionCreatedHandler
         IReadOnlyList<UserSessionDescriptor> history = await BuildEnrichedHistoryAsync(
             sessions, evt.SessionId, geoResolver, cancellationToken).ConfigureAwait(false);
 
-        await evaluator.EvaluateAsync(candidate, history, cancellationToken).ConfigureAwait(false);
+        await evaluator.EvaluateAsync(candidate, history, evt.DeviceId, cancellationToken).ConfigureAwait(false);
     }
 
     // The provider returns the user's other sessions with raw IPs but no resolved location; resolve each here so
