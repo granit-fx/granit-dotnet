@@ -39,9 +39,6 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
     public static readonly string ImpersonatorUserIdString = ImpersonatorUserId.ToString();
     public static readonly DateTimeOffset FixedNow = new(2026, 1, 15, 10, 0, 0, TimeSpan.Zero);
 
-    private const string AuthenticatedRole = "authenticated";
-    private const string ImpersonateRole = "impersonate";
-
     private readonly WebApplication _app;
 
     public HttpClient AuthenticatedClient { get; }
@@ -205,10 +202,13 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestExternalAuthHandler>(
                 IdentityConstants.ExternalScheme, _ => { });
 
-        // Authorization policies matching the permission names used by the endpoints
+        // Authorization policies matching the permission names used by the endpoints.
+        // Authorization is permission-based: the policy is satisfied by a permission claim,
+        // never by a role.
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(IdentityLocalPermissions.Users.Impersonate,
-                policy => policy.RequireRole(ImpersonateRole));
+                policy => policy.RequireClaim(
+                    TestAuthHandler.PermissionClaimType, IdentityLocalPermissions.Users.Impersonate));
 
         // Service mocks
         builder.Services.AddSingleton(identityProvider);
@@ -260,15 +260,19 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         app.MapGranitAccount();
         await app.StartAsync().ConfigureAwait(false);
 
-        string allRoles = string.Join(",", AuthenticatedRole, ImpersonateRole);
-
+        // The authenticated and impersonated clients both carry the Impersonate permission —
+        // the only permission gating an endpoint here. The chain-impersonation guard that
+        // returns 403 lives in the endpoint handler, not the authorization policy, so the
+        // impersonated client must still pass authorization.
         HttpClient authenticatedClient = app.GetTestClient();
-        authenticatedClient.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, allRoles);
+        authenticatedClient.DefaultRequestHeaders.Add(
+            TestAuthHandler.PermissionsHeader, IdentityLocalPermissions.Users.Impersonate);
 
         HttpClient anonymousClient = app.GetTestClient();
 
         HttpClient impersonatedClient = app.GetTestClient();
-        impersonatedClient.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, allRoles);
+        impersonatedClient.DefaultRequestHeaders.Add(
+            TestAuthHandler.PermissionsHeader, IdentityLocalPermissions.Users.Impersonate);
         impersonatedClient.DefaultRequestHeaders.Add(
             TestAuthHandler.ImpersonatorIdHeader, ImpersonatorUserIdString);
 
@@ -300,10 +304,16 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
 }
 
 /// <summary>
-/// Fake authentication handler that authenticates when the <c>X-Test-Roles</c> header
-/// is present. The authenticated user has a fixed <c>sub</c> claim set to
-/// <see cref="AccountEndpointsTestServer.TestUserId"/>.
+/// Fake authentication handler that authenticates when the <c>X-Test-Permissions</c>
+/// header (or the legacy <c>X-Test-Roles</c> header) is present. The authenticated user
+/// has a fixed <c>sub</c> claim set to <see cref="AccountEndpointsTestServer.TestUserId"/>.
 /// </summary>
+/// <remarks>
+/// Authorization in Granit is permission-based, never role-based: permission policies
+/// gate on a <see cref="PermissionClaimType"/> claim emitted from <see cref="PermissionsHeader"/>.
+/// Role claims are still emitted from <see cref="RolesHeader"/> for completeness but never
+/// gate endpoint authorization.
+/// </remarks>
 internal sealed class TestAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
@@ -311,16 +321,22 @@ internal sealed class TestAuthHandler(
 {
     public const string SchemeName = "Test";
     public const string RolesHeader = "X-Test-Roles";
+    public const string PermissionsHeader = "X-Test-Permissions";
+    public const string PermissionClaimType = "permission";
     public const string ImpersonatorIdHeader = "X-Test-Impersonator-Id";
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader))
+        bool hasRoles = Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader);
+        bool hasPermissions = Request.Headers.TryGetValue(PermissionsHeader, out Microsoft.Extensions.Primitives.StringValues permsHeader);
+
+        if (!hasRoles && !hasPermissions)
         {
             return Task.FromResult(AuthenticateResult.NoResult());
         }
 
         string[] roles = rolesHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        string[] permissions = permsHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
         List<Claim> claims =
         [
             new("sub", AccountEndpointsTestServer.TestUserIdString),
@@ -332,6 +348,7 @@ internal sealed class TestAuthHandler(
             new("email_verified", "true"),
             new("jti", Guid.NewGuid().ToString()),
             .. roles.Select(r => new Claim(ClaimTypes.Role, r.Trim())),
+            .. permissions.Select(p => new Claim(PermissionClaimType, p.Trim())),
         ];
 
         // Support impersonation testing via X-Test-Impersonator-Id header

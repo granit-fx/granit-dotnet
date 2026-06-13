@@ -33,7 +33,7 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
             opts.RoutePrefix = "admin/wf";
         });
 
-        HttpClient client = BuildAdminClient(app);
+        HttpClient client = BuildAuthorizedClient(app);
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
@@ -52,7 +52,7 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
             .Returns(new PagedResult<WorkflowTransitionHistoryResponse>([], 0, HasMore: false));
 
         await using WebApplication app = BuildApp(historyQuery);
-        HttpClient client = BuildAdminClient(app);
+        HttpClient client = BuildAuthorizedClient(app);
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
@@ -73,7 +73,8 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(WorkflowPermissions.History.Read, policy => policy.RequireRole("granit-workflow-admin"));
+            .AddPolicy(WorkflowPermissions.History.Read, policy =>
+                policy.RequireClaim(TestAuthHandler.PermissionClaimType, WorkflowPermissions.History.Read));
         builder.Services.AddSingleton(Substitute.For<IWorkflowHistoryQuery>());
 
         WebApplication app = builder.Build();
@@ -102,7 +103,8 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(WorkflowPermissions.History.Read, policy => policy.RequireRole("granit-workflow-admin"));
+            .AddPolicy(WorkflowPermissions.History.Read, policy =>
+                policy.RequireClaim(TestAuthHandler.PermissionClaimType, WorkflowPermissions.History.Read));
         builder.Services.AddSingleton(historyQuery);
 
         WebApplication app = builder.Build();
@@ -112,10 +114,10 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
         return app;
     }
 
-    private static HttpClient BuildAdminClient(WebApplication app)
+    private static HttpClient BuildAuthorizedClient(WebApplication app)
     {
         HttpClient client = app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, "granit-workflow-admin");
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, WorkflowPermissions.History.Read);
         return client;
     }
 }

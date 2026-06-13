@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Endpoints.Permissions;
 using Granit.Identity.Models;
+using Granit.Testing.Endpoints;
 using Granit.Tests.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -19,8 +20,20 @@ namespace Granit.Identity.Endpoints.Tests;
 /// </summary>
 public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
 {
-    private const string AdminRole = "granit-identity-admin";
     private const string Prefix = "/identity/provider";
+
+    private static readonly string[] AdminPermissions =
+    [
+        IdentityPermissions.Users.Read,
+        IdentityPermissions.Users.Manage,
+        IdentityPermissions.Roles.Read,
+        IdentityPermissions.Roles.Manage,
+        IdentityPermissions.Groups.Read,
+        IdentityPermissions.Groups.Manage,
+        IdentityPermissions.Sessions.Read,
+        IdentityPermissions.Sessions.Manage,
+        IdentityPermissions.Passwords.Manage,
+    ];
 
     private readonly IIdentityUserReader _userReader = Substitute.For<IIdentityUserReader>();
     private readonly IIdentityUserWriter _userWriter = Substitute.For<IIdentityUserWriter>();
@@ -54,23 +67,23 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(IdentityPermissions.Users.Read,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Read))
             .AddPolicy(IdentityPermissions.Users.Manage,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Manage))
             .AddPolicy(IdentityPermissions.Roles.Read,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Roles.Read))
             .AddPolicy(IdentityPermissions.Roles.Manage,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Roles.Manage))
             .AddPolicy(IdentityPermissions.Groups.Read,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Groups.Read))
             .AddPolicy(IdentityPermissions.Groups.Manage,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Groups.Manage))
             .AddPolicy(IdentityPermissions.Sessions.Read,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Sessions.Read))
             .AddPolicy(IdentityPermissions.Sessions.Manage,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Sessions.Manage))
             .AddPolicy(IdentityPermissions.Passwords.Manage,
-                policy => policy.RequireRole(AdminRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Passwords.Manage));
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddSingleton(_userReader);
         builder.Services.AddSingleton(_userWriter);
@@ -80,9 +93,10 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
         _app.MapGranitIdentityProvider();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(AdminRole);
+        _adminClient = BuildClient(AdminPermissions);
         _anonClient = _app.GetTestClient();
-        _userClient = BuildClient("regular-user");
+        // Authenticated but holds only a read permission — must be forbidden (not 401) on the manage endpoint.
+        _userClient = BuildClient(IdentityPermissions.Users.Read);
     }
 
     public async ValueTask DisposeAsync() => await _app.DisposeAsync();
@@ -210,7 +224,7 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
     // -- Authorization --
 
     [Fact]
-    public async Task CreateUser_wrong_role_returns_403()
+    public async Task CreateUser_without_permission_returns_403()
     {
         HttpResponseMessage response = await _userClient.PostAsJsonAsync(
             $"{Prefix}/users",
@@ -220,10 +234,10 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(params string[] permissions)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 }

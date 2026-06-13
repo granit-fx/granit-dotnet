@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Granit.Settings.Definitions;
 using Granit.Settings.Endpoints.Extensions;
 using Granit.Settings.Services;
+using Granit.Testing.Endpoints;
 using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -20,8 +21,13 @@ namespace Granit.Settings.Endpoints.Tests;
 /// </summary>
 public sealed class UserSettingsEndpointAdditionalTests : IAsyncDisposable
 {
-    private const string AuthRole = "authenticated";
     private const string Prefix = "/settings/user";
+
+    // User-scoped endpoints use bare RequireAuthorization() — no permission gates them.
+    // The caller only needs to be authenticated; this non-empty marker makes the
+    // permissions header present (an empty header is dropped in transit) without
+    // granting any Settings permission.
+    private const string AuthenticatedMarker = "authenticated";
 
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
     private readonly ISettingManager _settingManager = Substitute.For<ISettingManager>();
@@ -57,7 +63,7 @@ public sealed class UserSettingsEndpointAdditionalTests : IAsyncDisposable
         _app.MapGranitUserSettings();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _authClient = BuildClient(AuthRole);
+        _authClient = BuildClient();
     }
 
     public async ValueTask DisposeAsync()
@@ -101,10 +107,10 @@ public sealed class UserSettingsEndpointAdditionalTests : IAsyncDisposable
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient()
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, AuthenticatedMarker);
         return client;
     }
 

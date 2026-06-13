@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Granit.Identity.Endpoints.Dtos;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Endpoints.Permissions;
+using Granit.Testing.Endpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -19,10 +20,22 @@ namespace Granit.Identity.Endpoints.Tests;
 /// </summary>
 public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
 {
-    private const string AdminRole = "granit-identity-admin";
-    private const string SessionsViewerRole = "granit-identity-sessions-viewer";
-    private const string SessionsManagerRole = "granit-identity-sessions-manager";
     private const string Prefix = "/identity/provider";
+
+    // The admin holds every permission; the narrowly-scoped callers each hold exactly one
+    // so the permission split between Sessions.Read and Sessions.Manage can be asserted.
+    private static readonly string[] AdminPermissions =
+    [
+        IdentityPermissions.Users.Read,
+        IdentityPermissions.Users.Manage,
+        IdentityPermissions.Roles.Read,
+        IdentityPermissions.Roles.Manage,
+        IdentityPermissions.Groups.Read,
+        IdentityPermissions.Groups.Manage,
+        IdentityPermissions.Sessions.Read,
+        IdentityPermissions.Sessions.Manage,
+        IdentityPermissions.Passwords.Manage,
+    ];
 
     private readonly IUserSessionManager _sessionManager = Substitute.For<IUserSessionManager>();
     private readonly IIdentityProviderCapabilities _capabilities = Substitute.For<IIdentityProviderCapabilities>();
@@ -58,20 +71,25 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        // Admin holds every permission; the narrowly-scoped roles each hold exactly one
-        // so the permission split between Sessions.Read and Sessions.Manage can be asserted.
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(IdentityPermissions.Users.Read, policy => policy.RequireRole(AdminRole))
-            .AddPolicy(IdentityPermissions.Users.Manage, policy => policy.RequireRole(AdminRole))
-            .AddPolicy(IdentityPermissions.Roles.Read, policy => policy.RequireRole(AdminRole))
-            .AddPolicy(IdentityPermissions.Roles.Manage, policy => policy.RequireRole(AdminRole))
-            .AddPolicy(IdentityPermissions.Groups.Read, policy => policy.RequireRole(AdminRole))
-            .AddPolicy(IdentityPermissions.Groups.Manage, policy => policy.RequireRole(AdminRole))
+            .AddPolicy(IdentityPermissions.Users.Read,
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Read))
+            .AddPolicy(IdentityPermissions.Users.Manage,
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Manage))
+            .AddPolicy(IdentityPermissions.Roles.Read,
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Roles.Read))
+            .AddPolicy(IdentityPermissions.Roles.Manage,
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Roles.Manage))
+            .AddPolicy(IdentityPermissions.Groups.Read,
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Groups.Read))
+            .AddPolicy(IdentityPermissions.Groups.Manage,
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Groups.Manage))
             .AddPolicy(IdentityPermissions.Sessions.Read,
-                policy => policy.RequireRole(AdminRole, SessionsViewerRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Sessions.Read))
             .AddPolicy(IdentityPermissions.Sessions.Manage,
-                policy => policy.RequireRole(AdminRole, SessionsManagerRole))
-            .AddPolicy(IdentityPermissions.Passwords.Manage, policy => policy.RequireRole(AdminRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Sessions.Manage))
+            .AddPolicy(IdentityPermissions.Passwords.Manage,
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Passwords.Manage));
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddSingleton(_sessionManager);
         builder.Services.AddSingleton(_capabilities);
@@ -80,9 +98,9 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
         _app.MapGranitIdentityProvider();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(AdminRole);
-        _sessionsViewerClient = BuildClient(SessionsViewerRole);
-        _sessionsManagerClient = BuildClient(SessionsManagerRole);
+        _adminClient = BuildClient(AdminPermissions);
+        _sessionsViewerClient = BuildClient(IdentityPermissions.Sessions.Read);
+        _sessionsManagerClient = BuildClient(IdentityPermissions.Sessions.Manage);
     }
 
     public async ValueTask DisposeAsync() => await _app.DisposeAsync();
@@ -217,10 +235,10 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
             Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(params string[] permissions)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 }

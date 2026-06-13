@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.OpenIddict.Endpoints\Granit.OpenIddict.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.OpenIddict.EntityFrameworkCore\Granit.OpenIddict.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
   </ItemGroup>
 
 </Project>

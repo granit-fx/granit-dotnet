@@ -23,22 +23,25 @@ namespace Granit.BackgroundJobs.Endpoints.Tests;
 /// <summary>
 /// Integration tests for all background jobs administration endpoints.
 /// Uses a TestServer + NSubstitute mocks for IBackgroundJobReader / IBackgroundJobWriter.
-/// A custom TestAuthHandler resolves authentication from X-Test-Roles header.
+/// A custom TestAuthHandler resolves authentication from the X-Test-Permissions header
+/// and emits one permission claim per granted permission (never role-based).
 /// </summary>
 public sealed class BackgroundJobsEndpointsTests : IAsyncDisposable
 {
-    private const string AdminRole = "granit-background-jobs-admin";
     private const string Prefix = "/background-jobs/jobs";
 
     private readonly IBackgroundJobReader _reader = Substitute.For<IBackgroundJobReader>();
     private readonly IBackgroundJobWriter _writer = Substitute.For<IBackgroundJobWriter>();
     private readonly WebApplication _app;
 
-    // Admin client: authenticated with the admin role.
+    // Admin client: granted both the read and manage permissions (exercises every endpoint).
     private readonly HttpClient _adminClient;
 
-    // Authenticated client without the admin role.
+    // Authenticated client carrying an unrelated permission — exercises authenticated-but-forbidden flows.
     private readonly HttpClient _userClient;
+
+    // A permission the endpoints never require, so its holder authenticates yet stays forbidden.
+    private const string UnrelatedPermission = "BackgroundJobs.Jobs.Unrelated";
 
     // Unauthenticated client.
     private readonly HttpClient _anonClient;
@@ -54,8 +57,8 @@ public sealed class BackgroundJobsEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(BackgroundJobsPermissions.Jobs.Read, policy => policy.RequireRole(AdminRole))
-            .AddPolicy(BackgroundJobsPermissions.Jobs.Manage, policy => policy.RequireRole(AdminRole));
+            .AddPolicy(BackgroundJobsPermissions.Jobs.Read, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, BackgroundJobsPermissions.Jobs.Read))
+            .AddPolicy(BackgroundJobsPermissions.Jobs.Manage, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, BackgroundJobsPermissions.Jobs.Manage));
         builder.Services.AddSingleton(_reader);
         builder.Services.AddSingleton(_writer);
 
@@ -63,8 +66,8 @@ public sealed class BackgroundJobsEndpointsTests : IAsyncDisposable
         _app.MapGranitBackgroundJobs();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(AdminRole);
-        _userClient = BuildClient("regular-user");
+        _adminClient = BuildClient(BackgroundJobsPermissions.Jobs.Read, BackgroundJobsPermissions.Jobs.Manage);
+        _userClient = BuildClient(UnrelatedPermission);
         _anonClient = _app.GetTestClient(); // no auth header
     }
 
@@ -104,7 +107,7 @@ public sealed class BackgroundJobsEndpointsTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task GetAll_WithWrongRole_Returns403()
+    public async Task GetAll_WithoutRequiredPermission_Returns403()
     {
         HttpResponseMessage response = await _userClient.GetAsync(Prefix, TestContext.Current.CancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
@@ -244,10 +247,10 @@ public sealed class BackgroundJobsEndpointsTests : IAsyncDisposable
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(params string[] permissions)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 
@@ -270,20 +273,25 @@ public sealed class BackgroundJobsEndpointsTests : IAsyncDisposable
         UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
     {
         public const string SchemeName = "Test";
-        public const string RolesHeader = "X-Test-Roles";
+
+        /// <summary>Header carrying the comma-separated permission names granted to the test caller.</summary>
+        public const string PermissionsHeader = "X-Test-Permissions";
+
+        /// <summary>Claim type each granted permission is emitted under; matched by <c>RequireClaim</c> in permission policies.</summary>
+        public const string PermissionClaimType = "permission";
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (!Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader))
+            if (!Request.Headers.TryGetValue(PermissionsHeader, out Microsoft.Extensions.Primitives.StringValues permsHeader))
             {
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            string[] roles = rolesHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+            string[] permissions = permsHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
             Claim[] claims =
             [
                 new(ClaimTypes.Name, "test-user"),
-                .. roles.Select(r => new Claim(ClaimTypes.Role, r.Trim())),
+                .. permissions.Select(p => new Claim(PermissionClaimType, p.Trim())),
             ];
 
             ClaimsIdentity identity = new(claims, SchemeName);

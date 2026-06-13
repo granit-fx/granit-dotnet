@@ -1,7 +1,5 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
 using Granit.Localization.Domain;
 using Granit.Localization.Endpoints.Extensions;
 using Granit.Localization.Endpoints.Permissions;
@@ -9,12 +7,11 @@ using Granit.Localization.Queries;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Meta;
+using Granit.Testing.Endpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -29,7 +26,7 @@ namespace Granit.Localization.Endpoints.Tests;
 public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
 {
     private const string Prefix = "/localization/overrides";
-    private const string ManageRole = "localization-admin";
+    private const string ManagePermission = LocalizationOverridesPermissions.Overrides.Manage;
 
     private readonly ILocalizationOverrideStoreReader _storeReader = Substitute.For<ILocalizationOverrideStoreReader>();
     private readonly ILocalizationOverrideStoreWriter _storeWriter = Substitute.For<ILocalizationOverrideStoreWriter>();
@@ -52,7 +49,7 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
 
         _queryableSource.GetQueryable().Returns(Array.Empty<LocalizationOverride>().AsQueryable());
 
-        _adminClient = BuildClient(ManageRole);
+        _adminClient = BuildClient(ManagePermission);
         _anonClient = _app.GetTestClient();
     }
 
@@ -180,7 +177,7 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
     {
         // Arrange
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, ManagePermission);
 
         // Act
         HttpResponseMessage response = await client.PutAsJsonAsync(
@@ -293,7 +290,7 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
     {
         // Arrange
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, ManagePermission);
 
         // Act
         HttpResponseMessage response = await client.DeleteAsync(
@@ -385,10 +382,10 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task GetOverrides_WithWrongRole_Returns403()
+    public async Task GetOverrides_WithoutPermission_Returns403()
     {
-        // Arrange
-        using HttpClient client = BuildClient(_app, "regular-user");
+        // Arrange -- authenticated, but lacking the Manage permission the policy requires.
+        using HttpClient client = BuildClientWithPermissions(_app);
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
@@ -399,10 +396,10 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task GetOverridesMeta_WithWrongRole_Returns403()
+    public async Task GetOverridesMeta_WithoutPermission_Returns403()
     {
-        // Arrange
-        using HttpClient client = BuildClient(_app, "regular-user");
+        // Arrange -- authenticated, but lacking the Manage permission the policy requires.
+        using HttpClient client = BuildClientWithPermissions(_app);
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
@@ -436,7 +433,7 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
         app.MapGranitLocalizationOverrides(opts => opts.RoutePrefix = "i18n");
         await app.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, ManagePermission);
 
         // Act -- default route must not be registered
         HttpResponseMessage notFound = await client.GetAsync(
@@ -471,7 +468,9 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(LocalizationOverridesPermissions.Overrides.Manage,
-                policy => policy.RequireRole(ManageRole));
+                policy => policy.RequireClaim(
+                    TestAuthHandler.PermissionClaimType,
+                    LocalizationOverridesPermissions.Overrides.Manage));
 
         // Query-engine surface still needs an engine + source so MapGranitQuery resolves cleanly;
         // only the writer is intentionally absent here.
@@ -495,7 +494,9 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
 
         services.AddAuthorizationBuilder()
             .AddPolicy(LocalizationOverridesPermissions.Overrides.Manage,
-                policy => policy.RequireRole(ManageRole));
+                policy => policy.RequireClaim(
+                    TestAuthHandler.PermissionClaimType,
+                    LocalizationOverridesPermissions.Overrides.Manage));
 
         services.AddSingleton(_storeReader);
         services.AddSingleton(_storeWriter);
@@ -505,46 +506,29 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
         services.AddSingleton<ICurrentTenant>(Substitute.For<ICurrentTenant>());
     }
 
-    private HttpClient BuildClient(string role) => BuildClient(_app, role);
+    /// <summary>Builds a client granted the given <paramref name="permissions"/> against the shared host.</summary>
+    private HttpClient BuildClient(params string[] permissions) => BuildClient(_app, permissions);
 
-    private static HttpClient BuildClient(WebApplication app, string role)
+    /// <summary>
+    /// Builds a client granted the given <paramref name="permissions"/> via the
+    /// <see cref="TestAuthHandler.PermissionsHeader"/> header. An empty set still authenticates the
+    /// caller (so authenticated-but-unauthorized 403 cases can be asserted) but grants no permission.
+    /// </summary>
+    private static HttpClient BuildClient(WebApplication app, params string[] permissions)
     {
         HttpClient client = app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(
+            TestAuthHandler.PermissionsHeader,
+            string.Join(',', permissions));
         return client;
     }
 
-    // =========================================================================
-    // Fake authentication handler (same pattern as BackgroundJobsEndpointsTests)
-    // =========================================================================
-
-    private sealed class TestAuthHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
-    {
-        public const string SchemeName = "Test";
-        public const string RolesHeader = "X-Test-Roles";
-
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-        {
-            if (!Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader))
-            {
-                return Task.FromResult(AuthenticateResult.NoResult());
-            }
-
-            string[] roles = rolesHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
-            Claim[] claims =
-            [
-                new(ClaimTypes.Name, "test-user"),
-                .. roles.Select(r => new Claim(ClaimTypes.Role, r.Trim())),
-            ];
-
-            ClaimsIdentity identity = new(claims, SchemeName);
-            ClaimsPrincipal principal = new(identity);
-            AuthenticationTicket ticket = new(principal, SchemeName);
-
-            return Task.FromResult(AuthenticateResult.Success(ticket));
-        }
-    }
+    /// <summary>
+    /// Builds an authenticated client that holds an unrelated permission (<c>Read</c>) but not the
+    /// <c>Manage</c> permission the endpoints require — the 403 case. A non-empty header is required
+    /// because <see cref="HttpClient"/> drops headers with an empty value, which would yield 401 (anonymous)
+    /// rather than 403 (authenticated-but-unauthorized).
+    /// </summary>
+    private static HttpClient BuildClientWithPermissions(WebApplication app) =>
+        BuildClient(app, LocalizationOverridesPermissions.Overrides.Read);
 }

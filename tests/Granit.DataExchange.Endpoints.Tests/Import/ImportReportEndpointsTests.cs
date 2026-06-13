@@ -29,7 +29,6 @@ namespace Granit.DataExchange.Endpoints.Tests.Import;
 /// </summary>
 public sealed class ImportReportEndpointsTests : IAsyncDisposable
 {
-    private const string AdminRole = "granit-data-exchange-admin";
     private const string Prefix = "/data-exchange/import";
 
     private readonly IImportJobReader _jobReader = Substitute.For<IImportJobReader>();
@@ -57,8 +56,8 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(DataExchangePermissions.Imports.Execute, policy => policy.RequireRole(AdminRole))
-            .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireRole(AdminRole));
+            .AddPolicy(DataExchangePermissions.Imports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Imports.Execute))
+            .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Exports.Execute));
         builder.Services.AddSingleton(_jobReader);
         builder.Services.AddSingleton(Substitute.For<IImportJobWriter>());
         builder.Services.AddSingleton(_fileProvider);
@@ -83,7 +82,7 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
         _app.MapGranitDataExchange();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(AdminRole);
+        _adminClient = BuildClient(DataExchangePermissions.Imports.Execute, DataExchangePermissions.Exports.Execute);
     }
 
     public async ValueTask DisposeAsync() => await _app.DisposeAsync();
@@ -209,10 +208,10 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(params string[] permissions)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 

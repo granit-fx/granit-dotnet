@@ -20,7 +20,6 @@ namespace Granit.Timeline.Endpoints.Tests;
 /// </summary>
 public sealed class TimelineFollowerEndpointsTests : IAsyncDisposable
 {
-    private const string UserRole = "granit-timeline-user";
     private const string Prefix = "/timeline";
     private const string TestUserId = "test-user-id";
 
@@ -43,9 +42,9 @@ public sealed class TimelineFollowerEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireRole(UserRole))
-            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole))
-            .AddPolicy(TimelinePermissions.Followers.Manage, policy => policy.RequireRole(UserRole));
+            .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TimelinePermissions.Entries.Read))
+            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TimelinePermissions.Entries.Create))
+            .AddPolicy(TimelinePermissions.Followers.Manage, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TimelinePermissions.Followers.Manage));
         builder.Services.AddSingleton(_followerService);
         builder.Services.AddSingleton(_currentUser);
         builder.Services.AddSingleton(Substitute.For<IPermissionChecker>());
@@ -59,7 +58,10 @@ public sealed class TimelineFollowerEndpointsTests : IAsyncDisposable
         _app.MapGranitTimeline();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _authClient = BuildClient(UserRole);
+        _authClient = BuildClient(
+            TimelinePermissions.Entries.Read,
+            TimelinePermissions.Entries.Create,
+            TimelinePermissions.Followers.Manage);
         _anonClient = _app.GetTestClient();
     }
 
@@ -171,17 +173,17 @@ public sealed class TimelineFollowerEndpointsTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task Follower_endpoints_with_wrong_role_returns_403()
+    public async Task Follower_endpoints_without_permission_returns_403()
     {
-        // Arrange
-        HttpClient wrongRoleClient = BuildClient("some-other-role");
+        // Arrange — authenticated but lacking the follower permissions
+        HttpClient unauthorizedClient = BuildClient("Timeline.Unrelated.Read");
 
         // Act
-        HttpResponseMessage followResp = await wrongRoleClient.PostAsync(
+        HttpResponseMessage followResp = await unauthorizedClient.PostAsync(
             $"{Prefix}/Patient/42/follow", null, TestContext.Current.CancellationToken);
-        HttpResponseMessage unfollowResp = await wrongRoleClient.DeleteAsync(
+        HttpResponseMessage unfollowResp = await unauthorizedClient.DeleteAsync(
             $"{Prefix}/Patient/42/follow", TestContext.Current.CancellationToken);
-        HttpResponseMessage getResp = await wrongRoleClient.GetAsync(
+        HttpResponseMessage getResp = await unauthorizedClient.GetAsync(
             $"{Prefix}/Patient/42/followers", TestContext.Current.CancellationToken);
 
         // Assert
@@ -192,10 +194,10 @@ public sealed class TimelineFollowerEndpointsTests : IAsyncDisposable
 
     // -- Helpers ---------------------------------------------------------------
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(params string[] permissions)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 }

@@ -20,7 +20,6 @@ namespace Granit.Workflow.Endpoints.Tests;
 /// </summary>
 public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
 {
-    private const string AdminRole = "granit-workflow-admin";
     private const string WorkflowPrefix = "/workflow";
 
     private readonly IWorkflowHistoryQuery _historyQuery = Substitute.For<IWorkflowHistoryQuery>();
@@ -39,14 +38,15 @@ public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(WorkflowPermissions.History.Read, policy => policy.RequireRole(AdminRole));
+            .AddPolicy(WorkflowPermissions.History.Read, policy =>
+                policy.RequireClaim(TestAuthHandler.PermissionClaimType, WorkflowPermissions.History.Read));
         builder.Services.AddSingleton(_historyQuery);
 
         _app = builder.Build();
         _app.MapGranitWorkflow();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(AdminRole);
+        _adminClient = BuildClient(WorkflowPermissions.History.Read);
         _anonClient = _app.GetTestClient();
     }
 
@@ -114,13 +114,13 @@ public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task GetHistory_with_wrong_role_returns_403()
+    public async Task GetHistory_without_permission_returns_403()
     {
-        // Arrange
-        HttpClient wrongRoleClient = BuildClient("some-other-role");
+        // Arrange — authenticated but lacking the required permission.
+        HttpClient unauthorizedClient = BuildClient("some.other.permission");
 
         // Act
-        HttpResponseMessage response = await wrongRoleClient.GetAsync(
+        HttpResponseMessage response = await unauthorizedClient.GetAsync(
             $"{WorkflowPrefix}/Order/42/history", TestContext.Current.CancellationToken);
 
         // Assert
@@ -151,10 +151,10 @@ public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
 
     // -- Helpers ---------------------------------------------------------------
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(string permission)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, permission);
         return client;
     }
 }

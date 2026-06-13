@@ -4,6 +4,7 @@ using Granit.Settings.Definitions;
 using Granit.Settings.Endpoints.Dtos;
 using Granit.Settings.Endpoints.Extensions;
 using Granit.Settings.Services;
+using Granit.Testing.Endpoints;
 using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -20,10 +21,14 @@ namespace Granit.Settings.Endpoints.Tests;
 /// </summary>
 public sealed class ProviderAllowListTests : IAsyncDisposable
 {
-    private const string AuthRole = "authenticated";
-
     /// <summary>Setting that allows only Global scope — no User writes.</summary>
     private const string GlobalOnlySetting = "Test.GlobalOnly";
+
+    // User-scoped endpoints use bare RequireAuthorization() — no permission gates them.
+    // The caller only needs to be authenticated; this non-empty marker makes the
+    // permissions header present (an empty header is dropped in transit) without
+    // granting any Settings permission.
+    private const string AuthenticatedMarker = "authenticated";
 
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
     private readonly ISettingManager _settingManager = Substitute.For<ISettingManager>();
@@ -57,7 +62,7 @@ public sealed class ProviderAllowListTests : IAsyncDisposable
         _app.MapGranitUserSettings();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _authClient = BuildClient(AuthRole);
+        _authClient = BuildClient();
     }
 
     public async ValueTask DisposeAsync()
@@ -100,10 +105,10 @@ public sealed class ProviderAllowListTests : IAsyncDisposable
         result.Value.ShouldBe("global-value");
     }
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient()
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, AuthenticatedMarker);
         return client;
     }
 

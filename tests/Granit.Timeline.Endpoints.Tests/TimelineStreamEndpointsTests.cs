@@ -20,7 +20,6 @@ namespace Granit.Timeline.Endpoints.Tests;
 /// </summary>
 public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
 {
-    private const string UserRole = "granit-timeline-user";
     private const string Prefix = "/timeline";
 
     private readonly ITimelineReader _reader = Substitute.For<ITimelineReader>();
@@ -44,9 +43,9 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireRole(UserRole))
-            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole))
-            .AddPolicy(TimelinePermissions.Followers.Manage, policy => policy.RequireRole(UserRole));
+            .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TimelinePermissions.Entries.Read))
+            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TimelinePermissions.Entries.Create))
+            .AddPolicy(TimelinePermissions.Followers.Manage, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TimelinePermissions.Followers.Manage));
         builder.Services.AddSingleton(_reader);
         builder.Services.AddSingleton(_permissionChecker);
 
@@ -66,7 +65,10 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
         _app.MapGranitTimeline();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _authClient = BuildClient(UserRole);
+        _authClient = BuildClient(
+            TimelinePermissions.Entries.Read,
+            TimelinePermissions.Entries.Create,
+            TimelinePermissions.Followers.Manage);
         _anonClient = _app.GetTestClient();
     }
 
@@ -154,13 +156,13 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task GetStream_with_wrong_role_returns_403()
+    public async Task GetStream_without_permission_returns_403()
     {
-        // Arrange
-        HttpClient wrongRoleClient = BuildClient("some-other-role");
+        // Arrange — authenticated but lacking the Entries.Read permission
+        HttpClient unauthorizedClient = BuildClient("Timeline.Unrelated.Read");
 
         // Act
-        HttpResponseMessage response = await wrongRoleClient.GetAsync(
+        HttpResponseMessage response = await unauthorizedClient.GetAsync(
             $"{Prefix}/Patient/42", TestContext.Current.CancellationToken);
 
         // Assert
@@ -169,10 +171,10 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
 
     // -- Helpers ---------------------------------------------------------------
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(params string[] permissions)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 }

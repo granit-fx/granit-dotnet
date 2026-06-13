@@ -31,7 +31,14 @@ namespace Granit.Templating.Endpoints.Tests;
 public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
 {
     private const string Prefix = "/templating/categories";
-    private const string ManageRole = "template-admin";
+
+    private static readonly string[] AllPermissions =
+    [
+        TemplatingPermissions.Templates.Read,
+        TemplatingPermissions.Templates.Manage,
+        TemplatingPermissions.Categories.Read,
+        TemplatingPermissions.Categories.Manage,
+    ];
 
     private readonly ITemplateCategoryStoreReader _categoryReader = Substitute.For<ITemplateCategoryStoreReader>();
     private readonly ITemplateCategoryStoreWriter _categoryWriter = Substitute.For<ITemplateCategoryStoreWriter>();
@@ -51,13 +58,13 @@ public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(TemplatingPermissions.Templates.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Read))
             .AddPolicy(TemplatingPermissions.Templates.Manage,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Manage))
             .AddPolicy(TemplatingPermissions.Categories.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Read))
             .AddPolicy(TemplatingPermissions.Categories.Manage,
-                policy => policy.RequireRole(ManageRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Manage));
 
         // Register category store mocks.
         builder.Services.AddSingleton(_categoryReader);
@@ -77,7 +84,7 @@ public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
         _app.MapGranitTemplating();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(_app, ManageRole);
+        _adminClient = BuildClient(_app, AllPermissions);
         _anonClient = _app.GetTestClient();
     }
 
@@ -96,7 +103,7 @@ public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
     public async Task ListCategories_WhenStoreNotRegistered_Returns501()
     {
         await using WebApplication app = await BuildAppWithoutCategoryStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.GetAsync(
             Prefix,
@@ -398,13 +405,13 @@ public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(TemplatingPermissions.Templates.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Read))
             .AddPolicy(TemplatingPermissions.Templates.Manage,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Manage))
             .AddPolicy(TemplatingPermissions.Categories.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Read))
             .AddPolicy(TemplatingPermissions.Categories.Manage,
-                policy => policy.RequireRole(ManageRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Manage));
 
         WebApplication app = builder.Build();
         app.MapGranitTemplating();
@@ -412,10 +419,10 @@ public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
         return app;
     }
 
-    private static HttpClient BuildClient(WebApplication app, string role)
+    private static HttpClient BuildClient(WebApplication app, params string[] permissions)
     {
         HttpClient client = app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 
@@ -425,20 +432,21 @@ public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
         UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
     {
         public const string SchemeName = "Test";
-        public const string RolesHeader = "X-Test-Roles";
+        public const string PermissionsHeader = "X-Test-Permissions";
+        public const string PermissionClaimType = "permission";
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (!Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader))
+            if (!Request.Headers.TryGetValue(PermissionsHeader, out Microsoft.Extensions.Primitives.StringValues permsHeader))
             {
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            string[] roles = rolesHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+            string[] permissions = permsHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
             Claim[] claims =
             [
                 new(ClaimTypes.Name, "test-user"),
-                .. roles.Select(r => new Claim(ClaimTypes.Role, r.Trim())),
+                .. permissions.Select(p => new Claim(PermissionClaimType, p.Trim())),
             ];
 
             ClaimsIdentity identity = new(claims, SchemeName);

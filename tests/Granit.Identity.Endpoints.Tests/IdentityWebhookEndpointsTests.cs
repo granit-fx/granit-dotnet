@@ -7,6 +7,7 @@ using Granit.Events;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Endpoints.Options;
 using Granit.Identity.Endpoints.Permissions;
+using Granit.Testing.Endpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -48,11 +49,11 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(IdentityPermissions.Users.Read,
-                policy => policy.RequireRole("granit-identity-admin"))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Read))
             .AddPolicy(IdentityPermissions.Users.Sync,
-                policy => policy.RequireRole("granit-identity-admin"))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Sync))
             .AddPolicy(IdentityPermissions.Users.Delete,
-                policy => policy.RequireRole("granit-identity-admin"));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Delete));
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddSingleton(_lookupService);
         builder.Services.AddSingleton(_cacheStats);
@@ -332,11 +333,11 @@ public sealed class IdentityWebhookEndpointsNoSecretTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(IdentityPermissions.Users.Read,
-                policy => policy.RequireRole("granit-identity-admin"))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Read))
             .AddPolicy(IdentityPermissions.Users.Sync,
-                policy => policy.RequireRole("granit-identity-admin"))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Sync))
             .AddPolicy(IdentityPermissions.Users.Delete,
-                policy => policy.RequireRole("granit-identity-admin"));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Delete));
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddSingleton(Substitute.For<IUserLookupService>());
         builder.Services.AddSingleton(Substitute.For<IUserCacheStats>());

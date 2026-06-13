@@ -25,7 +25,6 @@ namespace Granit.Timeline.Endpoints.Tests;
 /// </summary>
 public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
 {
-    private const string UserRole = "granit-timeline-user";
     private const string Prefix = "/timeline";
 
     private readonly ITimelineWriter _writer = Substitute.For<ITimelineWriter>();
@@ -51,10 +50,10 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireRole(UserRole))
-            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole))
-            .AddPolicy(TimelinePermissions.Entries.Manage, policy => policy.RequireRole(UserRole))
-            .AddPolicy(TimelinePermissions.Followers.Manage, policy => policy.RequireRole(UserRole));
+            .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TimelinePermissions.Entries.Read))
+            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TimelinePermissions.Entries.Create))
+            .AddPolicy(TimelinePermissions.Entries.Manage, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TimelinePermissions.Entries.Manage))
+            .AddPolicy(TimelinePermissions.Followers.Manage, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TimelinePermissions.Followers.Manage));
         builder.Services.AddSingleton(_writer);
         builder.Services.AddSingleton(_reader);
         builder.Services.AddSingleton(_followerService);
@@ -66,7 +65,11 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         _app.MapGranitTimeline();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _authClient = BuildClient(UserRole);
+        _authClient = BuildClient(
+            TimelinePermissions.Entries.Read,
+            TimelinePermissions.Entries.Create,
+            TimelinePermissions.Entries.Manage,
+            TimelinePermissions.Followers.Manage);
         _anonClient = _app.GetTestClient();
     }
 
@@ -385,10 +388,10 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
 
     // -- Helpers ---------------------------------------------------------------
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(params string[] permissions)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 }

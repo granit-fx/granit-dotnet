@@ -26,4 +26,11 @@ public sealed class EndpointAuthorizationConventionTests
             "ConnectIntrospectionEndpoints",
             "ConnectRevocationEndpoints",
             "ConnectVerifyEndpoints");
+
+    [Fact]
+    public void RequireRole_must_not_be_used_anywhere() =>
+        EndpointAuthorizationRules.RequireRoleMustNotBeUsed(
+            RepoRoot,
+            Path.Join(RepoRoot, "src"),
+            Path.Join(RepoRoot, "tests"));
 }

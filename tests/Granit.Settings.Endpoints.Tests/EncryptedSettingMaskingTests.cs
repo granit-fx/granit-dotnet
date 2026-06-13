@@ -7,6 +7,7 @@ using Granit.Settings.Endpoints.Extensions;
 using Granit.Settings.Endpoints.Permissions;
 using Granit.Settings.Services;
 using Granit.Settings.Values;
+using Granit.Testing.Endpoints;
 using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -31,9 +32,11 @@ public sealed class EncryptedSettingMaskingTests : IAsyncDisposable
 
     private static readonly Guid TenantId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
 
-    private const string GlobalReadRole = "global-read";
-    private const string TenantReadRole = "tenant-read";
-    private const string UserRole = "authenticated";
+    // The user-scoped read endpoint uses bare RequireAuthorization() — no permission
+    // gates it. The caller only needs to be authenticated; this non-empty marker makes
+    // the permissions header present (an empty header is dropped in transit) without
+    // granting any Settings permission.
+    private const string AuthenticatedMarker = "authenticated";
 
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
     private readonly ISettingManager _settingManager = Substitute.For<ISettingManager>();
@@ -61,9 +64,9 @@ public sealed class EncryptedSettingMaskingTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(SettingsPermissions.Global.Read,
-                policy => policy.RequireRole(GlobalReadRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, SettingsPermissions.Global.Read))
             .AddPolicy(SettingsPermissions.Tenant.Read,
-                policy => policy.RequireRole(TenantReadRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, SettingsPermissions.Tenant.Read));
 
         builder.Services.AddSingleton(_settingProvider);
         builder.Services.AddSingleton(_settingManager);
@@ -79,9 +82,9 @@ public sealed class EncryptedSettingMaskingTests : IAsyncDisposable
         _app.MapGranitUserSettings();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _globalReadClient = BuildClient(GlobalReadRole);
-        _tenantReadClient = BuildClient(TenantReadRole);
-        _userClient = BuildClient(UserRole);
+        _globalReadClient = BuildClient(SettingsPermissions.Global.Read);
+        _tenantReadClient = BuildClient(SettingsPermissions.Tenant.Read);
+        _userClient = BuildClient(AuthenticatedMarker);
     }
 
     public async ValueTask DisposeAsync()
@@ -218,10 +221,10 @@ public sealed class EncryptedSettingMaskingTests : IAsyncDisposable
     // Helpers
     // -------------------------------------------------------------------------
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(params string[] permissions)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 

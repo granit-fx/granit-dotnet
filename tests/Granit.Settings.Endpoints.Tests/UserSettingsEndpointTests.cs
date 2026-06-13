@@ -6,6 +6,7 @@ using Granit.Settings.Endpoints.Extensions;
 using Granit.Settings.Endpoints.Internal;
 using Granit.Settings.Services;
 using Granit.Settings.Values;
+using Granit.Testing.Endpoints;
 using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -19,8 +20,13 @@ namespace Granit.Settings.Endpoints.Tests;
 
 public sealed class UserSettingsEndpointTests : IAsyncDisposable
 {
-    private const string AuthRole = "authenticated";
     private const string Prefix = "/settings/user";
+
+    // User-scoped endpoints use bare RequireAuthorization() — no permission gates them.
+    // The caller only needs to be authenticated; this non-empty marker makes the
+    // permissions header present (an empty header is dropped in transit) without
+    // granting any Settings permission.
+    private const string AuthenticatedMarker = "authenticated";
 
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
     private readonly ISettingManager _settingManager = Substitute.For<ISettingManager>();
@@ -55,7 +61,7 @@ public sealed class UserSettingsEndpointTests : IAsyncDisposable
         _app.MapGranitUserSettings();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _authClient = BuildClient(AuthRole);
+        _authClient = BuildClient();
         _anonClient = _app.GetTestClient();
     }
 
@@ -260,10 +266,13 @@ public sealed class UserSettingsEndpointTests : IAsyncDisposable
     // Helpers
     // -------------------------------------------------------------------------
 
-    private HttpClient BuildClient(string role)
+    // User-scoped endpoints gate on authentication only (RequireAuthorization with no
+    // permission). Sending the permissions header authenticates the caller; the value
+    // is irrelevant to authorization, so any non-empty marker satisfies the endpoint.
+    private HttpClient BuildClient()
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, AuthenticatedMarker);
         return client;
     }
 }

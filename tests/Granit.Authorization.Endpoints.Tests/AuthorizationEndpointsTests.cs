@@ -1,18 +1,12 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
 using Granit.Authorization.Endpoints.Dtos;
 using Granit.Authorization.Endpoints.Extensions;
 using Granit.Authorization.Endpoints.Permissions;
 using Granit.Localization;
 using Granit.MultiTenancy;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
+using Granit.Testing.Endpoints;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -21,8 +15,10 @@ namespace Granit.Authorization.Endpoints.Tests;
 
 /// <summary>
 /// Integration tests for all authorization management endpoints.
-/// Uses a TestServer with NSubstitute mocks for authorization services.
-/// A custom TestAuthHandler resolves authentication from X-Test-Roles header.
+/// Uses <see cref="GranitEndpointTestHost"/> with NSubstitute mocks for authorization services.
+/// Authorization is permission-based: the shared <see cref="TestAuthHandler"/> resolves the caller's
+/// granted permissions from the X-Test-Permissions header, and the manually registered policies gate on
+/// the matching permission claim.
 /// </summary>
 public sealed class AuthorizationEndpointsTests : IAsyncDisposable
 {
@@ -34,9 +30,9 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
     private readonly IPermissionManagerWriter _permissionManagerWriter = Substitute.For<IPermissionManagerWriter>();
     private readonly IRoleMetadataStore _roleMetadataStore = Substitute.For<IRoleMetadataStore>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
-    private readonly WebApplication _app;
+    private readonly GranitEndpointTestHost _host;
 
-    // Admin client: has both admin permissions.
+    // Admin client: carries both admin permissions.
     private readonly HttpClient _adminClient;
 
     // Authenticated user without admin permissions.
@@ -61,40 +57,42 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
         // Set up the definition manager to return a default permission set.
         SetupDefaultDefinitions();
 
-        // Set up the dynamic policy provider to resolve permission policies.
-        // Since we're testing without GranitAuthorizationModule, we register permission
-        // policies manually so RequireAuthorization("Permission.Name") works.
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseTestServer();
+        // We test without GranitAuthorizationModule, so register the permission policies manually
+        // so RequireAuthorization("Permission.Name") works. Each policy is satisfied by the matching
+        // permission claim emitted by the shared TestAuthHandler from the X-Test-Permissions header.
+        _host = GranitEndpointTestHost.StartAsync(
+            configureServices: services =>
+            {
+                services.AddAuthorizationBuilder()
+                    .AddPolicy(AuthorizationEndpointsPermissions.Definitions.Read,
+                        policy => policy.RequireClaim(
+                            TestAuthHandler.PermissionClaimType,
+                            AuthorizationEndpointsPermissions.Definitions.Read))
+                    .AddPolicy(AuthorizationEndpointsPermissions.Grants.Manage,
+                        policy => policy.RequireClaim(
+                            TestAuthHandler.PermissionClaimType,
+                            AuthorizationEndpointsPermissions.Grants.Manage));
 
-        builder.Services
-            .AddAuthentication(TestAuthHandler.SchemeName)
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
-                TestAuthHandler.SchemeName, _ => { });
+                services.AddSingleton(_permissionChecker);
+                services.AddSingleton(_definitionManager);
+                services.AddSingleton(_permissionManagerReader);
+                services.AddSingleton(_permissionManagerWriter);
+                services.AddSingleton(_roleMetadataStore);
+                services.AddSingleton(_currentTenant);
+            },
+            configureEndpoints: app => app.MapGranitAuthorization())
+            .GetAwaiter().GetResult();
 
-        builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(AuthorizationEndpointsPermissions.Definitions.Read,
-                policy => policy.RequireRole("admin"))
-            .AddPolicy(AuthorizationEndpointsPermissions.Grants.Manage,
-                policy => policy.RequireRole("admin"));
-
-        builder.Services.AddSingleton(_permissionChecker);
-        builder.Services.AddSingleton(_definitionManager);
-        builder.Services.AddSingleton(_permissionManagerReader);
-        builder.Services.AddSingleton(_permissionManagerWriter);
-        builder.Services.AddSingleton(_roleMetadataStore);
-        builder.Services.AddSingleton(_currentTenant);
-
-        _app = builder.Build();
-        _app.MapGranitAuthorization();
-        _app.StartAsync().GetAwaiter().GetResult();
-
-        _adminClient = BuildClient("admin");
-        _userClient = BuildClient("regular-user");
-        _anonClient = _app.GetTestClient();
+        // Admin carries both gating permissions; the regular user is authenticated and holds an
+        // unrelated permission (never the gating ones), so the admin endpoints answer 403, not 401.
+        _adminClient = _host.CreateClientWithPermissions(
+            AuthorizationEndpointsPermissions.Definitions.Read,
+            AuthorizationEndpointsPermissions.Grants.Manage);
+        _userClient = _host.CreateClientWithPermissions("Invoices.Read");
+        _anonClient = _host.CreateAnonymousClient();
     }
 
-    public async ValueTask DisposeAsync() => await _app.DisposeAsync();
+    public async ValueTask DisposeAsync() => await _host.DisposeAsync();
 
     // ── GET /permissions ───────────────────────────────────────────────────────
 
@@ -330,13 +328,6 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
 
     // ── Helpers ────────────────────────────────────────────────────────────────
 
-    private HttpClient BuildClient(string role)
-    {
-        HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
-        return client;
-    }
-
     private void SetupDefaultDefinitions()
     {
         PermissionGroup invoicesGroup = new("Invoices", LocalizableString.Fixed("Invoice Management"));
@@ -351,37 +342,5 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
             string name = callInfo.Arg<string>();
             return invoicesGroup.Permissions.Any(p => p.Name == name);
         });
-    }
-
-    // ── Fake authentication handler ────────────────────────────────────────────
-
-    private sealed class TestAuthHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
-    {
-        public const string SchemeName = "Test";
-        public const string RolesHeader = "X-Test-Roles";
-
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-        {
-            if (!Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader))
-            {
-                return Task.FromResult(AuthenticateResult.NoResult());
-            }
-
-            string[] roles = rolesHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
-            Claim[] claims =
-            [
-                new(ClaimTypes.Name, "test-user"),
-                .. roles.Select(r => new Claim(ClaimTypes.Role, r.Trim())),
-            ];
-
-            ClaimsIdentity identity = new(claims, SchemeName);
-            ClaimsPrincipal principal = new(identity);
-            AuthenticationTicket ticket = new(principal, SchemeName);
-
-            return Task.FromResult(AuthenticateResult.Success(ticket));
-        }
     }
 }

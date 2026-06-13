@@ -37,14 +37,6 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
     public static readonly Guid TestUserId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
     public static readonly DateTimeOffset FixedNow = new(2026, 1, 15, 10, 0, 0, TimeSpan.Zero);
 
-    private const string AuthenticatedRole = "authenticated";
-    private const string ExportRole = "export";
-    private const string ExportOnBehalfOfRole = "export-on-behalf-of";
-    private const string DeletionRole = "deletion";
-    private const string PurposesReadRole = "purposes-read";
-    private const string AgreementsReadRole = "agreements-read";
-    private const string AgreementsCreateRole = "agreements-create";
-
     private readonly WebApplication _app;
 
     public HttpClient AuthenticatedClient { get; }
@@ -199,17 +191,17 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         // Authorization policies matching the permission names used by the endpoints
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(PrivacyPermissions.Exports.Execute,
-                policy => policy.RequireRole(ExportRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, PrivacyPermissions.Exports.Execute))
             .AddPolicy(PrivacyPermissions.Exports.ExecuteOnBehalfOf,
-                policy => policy.RequireRole(ExportOnBehalfOfRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, PrivacyPermissions.Exports.ExecuteOnBehalfOf))
             .AddPolicy(PrivacyPermissions.Deletions.Execute,
-                policy => policy.RequireRole(DeletionRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, PrivacyPermissions.Deletions.Execute))
             .AddPolicy(PrivacyPermissions.Purposes.Read,
-                policy => policy.RequireRole(PurposesReadRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, PrivacyPermissions.Purposes.Read))
             .AddPolicy(PrivacyPermissions.Agreements.Read,
-                policy => policy.RequireRole(AgreementsReadRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, PrivacyPermissions.Agreements.Read))
             .AddPolicy(PrivacyPermissions.Agreements.Create,
-                policy => policy.RequireRole(AgreementsCreateRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, PrivacyPermissions.Agreements.Create));
 
         // Service mocks
         builder.Services.AddSingleton(currentUser);
@@ -261,12 +253,16 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         app.MapGranitPrivacy();
         await app.StartAsync().ConfigureAwait(false);
 
-        string allRoles = string.Join(",",
-            AuthenticatedRole, ExportRole, ExportOnBehalfOfRole, DeletionRole,
-            PurposesReadRole, AgreementsReadRole, AgreementsCreateRole);
+        string allPermissions = string.Join(",",
+            PrivacyPermissions.Exports.Execute,
+            PrivacyPermissions.Exports.ExecuteOnBehalfOf,
+            PrivacyPermissions.Deletions.Execute,
+            PrivacyPermissions.Purposes.Read,
+            PrivacyPermissions.Agreements.Read,
+            PrivacyPermissions.Agreements.Create);
 
         HttpClient authenticatedClient = app.GetTestClient();
-        authenticatedClient.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, allRoles);
+        authenticatedClient.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, allPermissions);
 
         HttpClient anonymousClient = app.GetTestClient();
 
@@ -280,6 +276,18 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
             cookieManager, cookieRegistry);
     }
 
+    /// <summary>
+    /// Creates a test client authenticated with exactly the supplied permission names
+    /// (sent via <see cref="TestAuthHandler.PermissionsHeader"/>). Pass none to get an
+    /// authenticated-but-unauthorized caller.
+    /// </summary>
+    public HttpClient CreateClientWithPermissions(params string[] permissions)
+    {
+        HttpClient client = _app.GetTestClient();
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(",", permissions));
+        return client;
+    }
+
     public async ValueTask DisposeAsync()
     {
         AuthenticatedClient.Dispose();
@@ -289,10 +297,16 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
 }
 
 /// <summary>
-/// Fake authentication handler that authenticates when the <c>X-Test-Roles</c> header
-/// is present. The authenticated user has a fixed <c>sub</c> claim set to
-/// <see cref="PrivacyEndpointsTestServer.TestUserId"/>.
+/// Fake authentication handler that authenticates when the <c>X-Test-Permissions</c>
+/// header (or the legacy <c>X-Test-Roles</c> header) is present. The authenticated user
+/// has a fixed <c>sub</c> claim set to <see cref="PrivacyEndpointsTestServer.TestUserId"/>.
 /// </summary>
+/// <remarks>
+/// Authorization in Granit is permission-based: permission names sent via
+/// <see cref="PermissionsHeader"/> become <see cref="PermissionClaimType"/> claims, which
+/// permission policies satisfy with <c>RequireClaim(PermissionClaimType, permissionName)</c>.
+/// Role claims are still emitted from <see cref="RolesHeader"/> but never gate authorization.
+/// </remarks>
 internal sealed class TestAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
@@ -301,20 +315,31 @@ internal sealed class TestAuthHandler(
     public const string SchemeName = "Test";
     public const string RolesHeader = "X-Test-Roles";
 
+    /// <summary>Header carrying the comma-separated permission names granted to the test caller.</summary>
+    public const string PermissionsHeader = "X-Test-Permissions";
+
+    /// <summary>Claim type a permission name is emitted under; matched by <c>RequireClaim</c> in permission policies.</summary>
+    public const string PermissionClaimType = "permission";
+
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader))
+        bool hasRoles = Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader);
+        bool hasPermissions = Request.Headers.TryGetValue(PermissionsHeader, out Microsoft.Extensions.Primitives.StringValues permsHeader);
+
+        if (!hasRoles && !hasPermissions)
         {
             return Task.FromResult(AuthenticateResult.NoResult());
         }
 
         string[] roles = rolesHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        string[] permissions = permsHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
         Claim[] claims =
         [
             new("sub", PrivacyEndpointsTestServer.TestUserId.ToString()),
             new(ClaimTypes.NameIdentifier, PrivacyEndpointsTestServer.TestUserId.ToString()),
             new(ClaimTypes.Name, "test-user"),
             .. roles.Select(r => new Claim(ClaimTypes.Role, r.Trim())),
+            .. permissions.Select(p => new Claim(PermissionClaimType, p.Trim())),
         ];
 
         ClaimsIdentity identity = new(claims, SchemeName);

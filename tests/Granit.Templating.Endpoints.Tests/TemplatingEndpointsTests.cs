@@ -38,8 +38,15 @@ namespace Granit.Templating.Endpoints.Tests;
 public sealed class TemplatingEndpointsTests : IAsyncDisposable
 {
     private const string Prefix = "/templating/templates";
-    private const string ManageRole = "template-admin";
     private const string AnyStamp = "00000000-0000-0000-0000-000000000000";
+
+    private static readonly string[] AllPermissions =
+    [
+        TemplatingPermissions.Templates.Read,
+        TemplatingPermissions.Templates.Manage,
+        TemplatingPermissions.Categories.Read,
+        TemplatingPermissions.Categories.Manage,
+    ];
 
     private readonly IDocumentTemplateStoreReader _storeReader = Substitute.For<IDocumentTemplateStoreReader>();
     private readonly IDocumentTemplateStoreWriter _storeWriter = Substitute.For<IDocumentTemplateStoreWriter>();
@@ -60,13 +67,13 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(TemplatingPermissions.Templates.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Read))
             .AddPolicy(TemplatingPermissions.Templates.Manage,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Manage))
             .AddPolicy(TemplatingPermissions.Categories.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Read))
             .AddPolicy(TemplatingPermissions.Categories.Manage,
-                policy => policy.RequireRole(ManageRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Manage));
 
         builder.Services.AddSingleton(_storeReader);
         builder.Services.AddSingleton(_storeWriter);
@@ -78,7 +85,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         _app.MapGranitTemplating();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(ManageRole);
+        _adminClient = BuildClient(AllPermissions);
         _anonClient = _app.GetTestClient();
     }
 
@@ -104,7 +111,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     public async Task GetDetail_WhenStoreNotRegistered_Returns501()
     {
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.GetAsync(
             $"{Prefix}/Billing.Invoice",
@@ -246,7 +253,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     public async Task CreateDraft_WhenStoreNotRegistered_Returns501()
     {
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             Prefix,
@@ -338,7 +345,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     public async Task UpdateDraft_WhenStoreNotRegistered_Returns501()
     {
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.PutAsJsonAsync(
             $"{Prefix}/Billing.Invoice",
@@ -408,7 +415,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     public async Task DeleteDraft_WhenStoreNotRegistered_Returns501()
     {
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.DeleteAsync(
             $"{Prefix}/Billing.Invoice/draft",
@@ -475,7 +482,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     public async Task Publish_WhenStoreNotRegistered_Returns501()
     {
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.PostAsync(
             $"{Prefix}/Billing.Invoice/publish",
@@ -577,7 +584,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     public async Task Unpublish_WhenStoreNotRegistered_Returns501()
     {
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.PostAsync(
             $"{Prefix}/Billing.Invoice/unpublish",
@@ -639,7 +646,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     public async Task GetLifecycle_WhenStoreNotRegistered_Returns501()
     {
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.GetAsync(
             $"{Prefix}/Billing.Invoice/lifecycle",
@@ -725,7 +732,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     public async Task GetHistory_WhenStoreNotRegistered_Returns501()
     {
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.GetAsync(
             $"{Prefix}/Billing.Invoice/history",
@@ -864,7 +871,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     public async Task GetRevisionDetail_WhenStoreNotRegistered_Returns501()
     {
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.GetAsync(
             $"{Prefix}/Billing.Invoice/history/{Guid.NewGuid()}",
@@ -977,13 +984,13 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(TemplatingPermissions.Templates.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Read))
             .AddPolicy(TemplatingPermissions.Templates.Manage,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Manage))
             .AddPolicy(TemplatingPermissions.Categories.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Read))
             .AddPolicy(TemplatingPermissions.Categories.Manage,
-                policy => policy.RequireRole(ManageRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Manage));
         builder.Services.AddSingleton(_storeReader);
         builder.Services.AddSingleton(_storeWriter);
         builder.Services.AddSingleton<IValidator<SaveTemplateRequest>, SaveTemplateRequestValidator>();
@@ -996,7 +1003,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         });
         await app.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         // Probe a route that doesn't depend on the Query Engine wiring (variables endpoint
         // returns 200 unconditionally for a valid template name).
@@ -1020,7 +1027,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     public async Task Preview_WhenStoreNotRegistered_Returns501()
     {
         await using WebApplication app = await BuildAppWithoutStoreAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             $"{Prefix}/Billing.Invoice/preview",
@@ -1089,7 +1096,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         await using WebApplication app = await BuildAppWithEngineAsync(
             _storeReader, _storeWriter, _transitionHook,
             new TextRenderedContent("<h1>Hello World</h1>", DocumentFormat.Html) { RevisionId = revisionId });
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         JsonElement data = JsonSerializer.Deserialize<JsonElement>("""{"name": "World"}""");
         HttpResponseMessage response = await client.PostAsJsonAsync(
@@ -1127,7 +1134,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         await using WebApplication app = await BuildAppWithEngineAsync(
             _storeReader, _storeWriter, _transitionHook,
             new TextRenderedContent("<p>Bonjour</p>", DocumentFormat.Html) { RevisionId = revisionId });
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             $"{Prefix}/Billing.Invoice/preview",
@@ -1168,7 +1175,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         await using WebApplication app = await BuildAppWithEngineAsync(
             _storeReader, _storeWriter, _transitionHook, engine);
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             $"{Prefix}/Billing.Invoice/preview",
@@ -1199,7 +1206,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         await using WebApplication app = await BuildAppWithEngineAsync(
             _storeReader, _storeWriter, _transitionHook, engine);
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             $"{Prefix}/Billing.Invoice/preview",
@@ -1251,7 +1258,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         await using WebApplication app = await BuildAppWithEngineAsync(
             _storeReader, _storeWriter, _transitionHook,
             new TextRenderedContent("<p>No data</p>", DocumentFormat.Html) { RevisionId = revisionId });
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             $"{Prefix}/Billing.Invoice/preview",
@@ -1286,7 +1293,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     public async Task GetVariables_WithGlobalContext_ReturnsDiscoveredVariables()
     {
         await using WebApplication app = await BuildAppWithGlobalContextAsync();
-        using HttpClient client = BuildClient(app, ManageRole);
+        using HttpClient client = BuildClient(app, AllPermissions);
 
         HttpResponseMessage response = await client.GetAsync(
             $"{Prefix}/Billing.Invoice/variables",
@@ -1342,13 +1349,13 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(TemplatingPermissions.Templates.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Read))
             .AddPolicy(TemplatingPermissions.Templates.Manage,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Manage))
             .AddPolicy(TemplatingPermissions.Categories.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Read))
             .AddPolicy(TemplatingPermissions.Categories.Manage,
-                policy => policy.RequireRole(ManageRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Manage));
 
         IDocumentTemplateStoreReader storeReader = Substitute.For<IDocumentTemplateStoreReader>();
         IDocumentTemplateStoreWriter storeWriter = Substitute.For<IDocumentTemplateStoreWriter>();
@@ -1399,13 +1406,13 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(TemplatingPermissions.Templates.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Read))
             .AddPolicy(TemplatingPermissions.Templates.Manage,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Manage))
             .AddPolicy(TemplatingPermissions.Categories.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Read))
             .AddPolicy(TemplatingPermissions.Categories.Manage,
-                policy => policy.RequireRole(ManageRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Manage));
 
         builder.Services.AddSingleton(storeReader);
         builder.Services.AddSingleton(storeWriter);
@@ -1432,13 +1439,13 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(TemplatingPermissions.Templates.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Read))
             .AddPolicy(TemplatingPermissions.Templates.Manage,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Templates.Manage))
             .AddPolicy(TemplatingPermissions.Categories.Read,
-                policy => policy.RequireRole(ManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Read))
             .AddPolicy(TemplatingPermissions.Categories.Manage,
-                policy => policy.RequireRole(ManageRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, TemplatingPermissions.Categories.Manage));
 
         WebApplication app = builder.Build();
         app.MapGranitTemplating();
@@ -1446,12 +1453,12 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         return app;
     }
 
-    private HttpClient BuildClient(string role) => BuildClient(_app, role);
+    private HttpClient BuildClient(params string[] permissions) => BuildClient(_app, permissions);
 
-    private static HttpClient BuildClient(WebApplication app, string role)
+    private static HttpClient BuildClient(WebApplication app, params string[] permissions)
     {
         HttpClient client = app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 
@@ -1484,20 +1491,21 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
     {
         public const string SchemeName = "Test";
-        public const string RolesHeader = "X-Test-Roles";
+        public const string PermissionsHeader = "X-Test-Permissions";
+        public const string PermissionClaimType = "permission";
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (!Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader))
+            if (!Request.Headers.TryGetValue(PermissionsHeader, out Microsoft.Extensions.Primitives.StringValues permsHeader))
             {
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            string[] roles = rolesHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+            string[] permissions = permsHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
             Claim[] claims =
             [
                 new(ClaimTypes.Name, "test-user"),
-                .. roles.Select(r => new Claim(ClaimTypes.Role, r.Trim())),
+                .. permissions.Select(p => new Claim(PermissionClaimType, p.Trim())),
             ];
 
             ClaimsIdentity identity = new(claims, SchemeName);

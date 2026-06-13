@@ -28,7 +28,6 @@ namespace Granit.Authentication.ApiKeys.Endpoints.Tests;
 public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
 {
     private const string Prefix = "/authentication/api-keys";
-    private const string AdminRole = "granit-apikeys-admin";
 
     private readonly IApiKeyAdminStore _adminStore = Substitute.For<IApiKeyAdminStore>();
     private readonly IApiKeyGenerator _generator = Substitute.For<IApiKeyGenerator>();
@@ -57,11 +56,11 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(ApiKeyPermissions.Keys.Read, policy => policy.RequireRole(AdminRole))
-            .AddPolicy(ApiKeyPermissions.Keys.Create, policy => policy.RequireRole(AdminRole))
-            .AddPolicy(ApiKeyPermissions.Keys.Revoke, policy => policy.RequireRole(AdminRole))
-            .AddPolicy(ApiKeyPermissions.Keys.Rotate, policy => policy.RequireRole(AdminRole))
-            .AddPolicy(ApiKeyPermissions.Keys.UpdateScopes, policy => policy.RequireRole(AdminRole));
+            .AddPolicy(ApiKeyPermissions.Keys.Read, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, ApiKeyPermissions.Keys.Read))
+            .AddPolicy(ApiKeyPermissions.Keys.Create, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, ApiKeyPermissions.Keys.Create))
+            .AddPolicy(ApiKeyPermissions.Keys.Revoke, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, ApiKeyPermissions.Keys.Revoke))
+            .AddPolicy(ApiKeyPermissions.Keys.Rotate, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, ApiKeyPermissions.Keys.Rotate))
+            .AddPolicy(ApiKeyPermissions.Keys.UpdateScopes, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, ApiKeyPermissions.Keys.UpdateScopes));
 
         builder.Services.AddSingleton(_adminStore);
         builder.Services.AddSingleton(_generator);
@@ -74,7 +73,15 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
         _app.MapGranitApiKeys();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(_app, AdminRole);
+        // The admin client carries every API-key permission — the permission-based
+        // equivalent of the former admin role, which gated all five policies above.
+        _adminClient = BuildClient(
+            _app,
+            ApiKeyPermissions.Keys.Read,
+            ApiKeyPermissions.Keys.Create,
+            ApiKeyPermissions.Keys.Revoke,
+            ApiKeyPermissions.Keys.Rotate,
+            ApiKeyPermissions.Keys.UpdateScopes);
         _anonClient = _app.GetTestClient();
     }
 
@@ -436,10 +443,12 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
         return entry;
     }
 
-    private static HttpClient BuildClient(WebApplication app, string role)
+    private static HttpClient BuildClient(WebApplication app, params string[] permissions)
     {
         HttpClient client = app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(
+            TestAuthHandler.PermissionsHeader,
+            string.Join(',', permissions));
         return client;
     }
 
@@ -451,18 +460,29 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
         public const string SchemeName = "Test";
         public const string RolesHeader = "X-Test-Roles";
 
+        /// <summary>Header carrying the comma-separated permission names granted to the test caller.</summary>
+        public const string PermissionsHeader = "X-Test-Permissions";
+
+        /// <summary>Claim type a permission name is emitted under; matched by <c>RequireClaim</c> in permission policies.</summary>
+        public const string PermissionClaimType = "permission";
+
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (!Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader))
+            bool hasRoles = Request.Headers.TryGetValue(RolesHeader, out Microsoft.Extensions.Primitives.StringValues rolesHeader);
+            bool hasPermissions = Request.Headers.TryGetValue(PermissionsHeader, out Microsoft.Extensions.Primitives.StringValues permsHeader);
+
+            if (!hasRoles && !hasPermissions)
             {
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
             string[] roles = rolesHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+            string[] permissions = permsHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
             Claim[] claims =
             [
                 new(ClaimTypes.Name, "test-user"),
                 .. roles.Select(r => new Claim(ClaimTypes.Role, r.Trim())),
+                .. permissions.Select(p => new Claim(PermissionClaimType, p.Trim())),
             ];
 
             ClaimsIdentity identity = new(claims, SchemeName);

@@ -73,5 +73,20 @@ public sealed class GranitEndpointTestHost : IAsyncDisposable
         return client;
     }
 
+    /// <summary>
+    /// Returns a client granted the given <paramref name="permissions"/> via the
+    /// <see cref="TestAuthHandler.PermissionsHeader"/> header — the permission-based equivalent of
+    /// <see cref="CreateAuthenticatedClient"/>. An empty set still authenticates the caller (so
+    /// authenticated-but-unauthorized cases can be asserted) but grants no permission.
+    /// </summary>
+    public HttpClient CreateClientWithPermissions(params string[] permissions)
+    {
+        HttpClient client = _app.GetTestClient();
+        client.DefaultRequestHeaders.Add(
+            TestAuthHandler.PermissionsHeader,
+            string.Join(',', permissions));
+        return client;
+    }
+
     public async ValueTask DisposeAsync() => await _app.DisposeAsync().ConfigureAwait(false);
 }

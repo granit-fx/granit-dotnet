@@ -1,6 +1,7 @@
 using System.Net;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Endpoints.Permissions;
+using Granit.Testing.Endpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -16,8 +17,14 @@ namespace Granit.Identity.Endpoints.Tests;
 /// </summary>
 public sealed class IdentityUserCacheGdprEndpointsTests : IAsyncDisposable
 {
-    private const string AdminRole = "granit-identity-admin";
     private const string Prefix = "/identity/users";
+
+    private static readonly string[] AdminPermissions =
+    [
+        IdentityPermissions.Users.Read,
+        IdentityPermissions.Users.Sync,
+        IdentityPermissions.Users.Delete,
+    ];
 
     private readonly IUserLookupService _lookupService = Substitute.For<IUserLookupService>();
     private readonly IUserCacheStats _cacheStats = Substitute.For<IUserCacheStats>();
@@ -37,11 +44,11 @@ public sealed class IdentityUserCacheGdprEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(IdentityPermissions.Users.Read,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Read))
             .AddPolicy(IdentityPermissions.Users.Sync,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Sync))
             .AddPolicy(IdentityPermissions.Users.Delete,
-                policy => policy.RequireRole(AdminRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Delete));
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddSingleton(_lookupService);
         builder.Services.AddSingleton(_cacheStats);
@@ -50,8 +57,9 @@ public sealed class IdentityUserCacheGdprEndpointsTests : IAsyncDisposable
         _app.MapGranitIdentityUserCache();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(AdminRole);
-        _userClient = BuildClient("regular-user");
+        _adminClient = BuildClient(AdminPermissions);
+        // Authenticated but holds only a read permission — must be forbidden (not 401) on the delete endpoints.
+        _userClient = BuildClient(IdentityPermissions.Users.Read);
     }
 
     public async ValueTask DisposeAsync() => await _app.DisposeAsync();
@@ -69,7 +77,7 @@ public sealed class IdentityUserCacheGdprEndpointsTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task Erase_wrong_role_returns_403()
+    public async Task Erase_without_permission_returns_403()
     {
         HttpResponseMessage response = await _userClient.DeleteAsync(
             $"{Prefix}/user-1", TestContext.Current.CancellationToken);
@@ -90,7 +98,7 @@ public sealed class IdentityUserCacheGdprEndpointsTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task Pseudonymize_wrong_role_returns_403()
+    public async Task Pseudonymize_without_permission_returns_403()
     {
         HttpResponseMessage response = await _userClient.PatchAsync(
             $"{Prefix}/user-1/pseudonymize", null, TestContext.Current.CancellationToken);
@@ -98,10 +106,10 @@ public sealed class IdentityUserCacheGdprEndpointsTests : IAsyncDisposable
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(params string[] permissions)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 }

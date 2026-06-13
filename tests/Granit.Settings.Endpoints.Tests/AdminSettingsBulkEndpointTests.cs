@@ -9,6 +9,7 @@ using Granit.Settings.Endpoints.Permissions;
 using Granit.Settings.Endpoints.Validators;
 using Granit.Settings.Services;
 using Granit.Settings.Values;
+using Granit.Testing.Endpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -22,11 +23,6 @@ namespace Granit.Settings.Endpoints.Tests;
 public sealed class AdminSettingsBulkEndpointTests : IAsyncDisposable
 {
     private static readonly Guid TenantId = Guid.Parse("11111111-2222-3333-4444-555555555555");
-
-    private const string GlobalReadRole = "global-read";
-    private const string GlobalManageRole = "global-manage";
-    private const string TenantReadRole = "tenant-read";
-    private const string TenantManageRole = "tenant-manage";
 
     private const string IntSettingName = "App.MaxRetries";
     private const string BoolSettingName = "App.FeatureX";
@@ -58,13 +54,13 @@ public sealed class AdminSettingsBulkEndpointTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(SettingsPermissions.Global.Read,
-                policy => policy.RequireRole(GlobalReadRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, SettingsPermissions.Global.Read))
             .AddPolicy(SettingsPermissions.Global.Manage,
-                policy => policy.RequireRole(GlobalManageRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, SettingsPermissions.Global.Manage))
             .AddPolicy(SettingsPermissions.Tenant.Read,
-                policy => policy.RequireRole(TenantReadRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, SettingsPermissions.Tenant.Read))
             .AddPolicy(SettingsPermissions.Tenant.Manage,
-                policy => policy.RequireRole(TenantManageRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, SettingsPermissions.Tenant.Manage));
 
         builder.Services.AddSingleton(_settingProvider);
         builder.Services.AddSingleton(_settingManager);
@@ -79,10 +75,10 @@ public sealed class AdminSettingsBulkEndpointTests : IAsyncDisposable
         _app.MapGranitTenantSettings();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _globalReadClient = BuildClient(GlobalReadRole);
-        _globalManageClient = BuildClient(GlobalManageRole);
-        _tenantReadClient = BuildClient(TenantReadRole);
-        _tenantManageClient = BuildClient(TenantManageRole);
+        _globalReadClient = BuildClient(SettingsPermissions.Global.Read);
+        _globalManageClient = BuildClient(SettingsPermissions.Global.Manage);
+        _tenantReadClient = BuildClient(SettingsPermissions.Tenant.Read);
+        _tenantManageClient = BuildClient(SettingsPermissions.Tenant.Manage);
     }
 
     public async ValueTask DisposeAsync()
@@ -403,10 +399,10 @@ public sealed class AdminSettingsBulkEndpointTests : IAsyncDisposable
     // Helpers
     // -------------------------------------------------------------------------
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(string permission)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, permission);
         return client;
     }
 

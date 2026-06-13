@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Endpoints.Permissions;
 using Granit.Identity.Models;
+using Granit.Testing.Endpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -18,8 +19,20 @@ namespace Granit.Identity.Endpoints.Tests;
 /// </summary>
 public sealed class IdentityProviderGroupEndpointsTests : IAsyncDisposable
 {
-    private const string AdminRole = "granit-identity-admin";
     private const string Prefix = "/identity/provider";
+
+    private static readonly string[] AdminPermissions =
+    [
+        IdentityPermissions.Users.Read,
+        IdentityPermissions.Users.Manage,
+        IdentityPermissions.Roles.Read,
+        IdentityPermissions.Roles.Manage,
+        IdentityPermissions.Groups.Read,
+        IdentityPermissions.Groups.Manage,
+        IdentityPermissions.Sessions.Read,
+        IdentityPermissions.Sessions.Manage,
+        IdentityPermissions.Passwords.Manage,
+    ];
 
     private readonly IIdentityGroupManager _groupManager = Substitute.For<IIdentityGroupManager>();
     private readonly IIdentityProviderCapabilities _capabilities = Substitute.For<IIdentityProviderCapabilities>();
@@ -53,23 +66,23 @@ public sealed class IdentityProviderGroupEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(IdentityPermissions.Users.Read,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Read))
             .AddPolicy(IdentityPermissions.Users.Manage,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Users.Manage))
             .AddPolicy(IdentityPermissions.Roles.Read,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Roles.Read))
             .AddPolicy(IdentityPermissions.Roles.Manage,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Roles.Manage))
             .AddPolicy(IdentityPermissions.Groups.Read,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Groups.Read))
             .AddPolicy(IdentityPermissions.Groups.Manage,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Groups.Manage))
             .AddPolicy(IdentityPermissions.Sessions.Read,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Sessions.Read))
             .AddPolicy(IdentityPermissions.Sessions.Manage,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Sessions.Manage))
             .AddPolicy(IdentityPermissions.Passwords.Manage,
-                policy => policy.RequireRole(AdminRole));
+                policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, IdentityPermissions.Passwords.Manage));
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddSingleton(_groupManager);
         builder.Services.AddSingleton(_capabilities);
@@ -78,7 +91,7 @@ public sealed class IdentityProviderGroupEndpointsTests : IAsyncDisposable
         _app.MapGranitIdentityProvider();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(AdminRole);
+        _adminClient = BuildClient(AdminPermissions);
     }
 
     public async ValueTask DisposeAsync() => await _app.DisposeAsync();
@@ -142,10 +155,10 @@ public sealed class IdentityProviderGroupEndpointsTests : IAsyncDisposable
         await _groupManager.Received(1).RemoveUserFromGroupAsync("user-1", "group-1", Arg.Any<CancellationToken>());
     }
 
-    private HttpClient BuildClient(string role)
+    private HttpClient BuildClient(params string[] permissions)
     {
         HttpClient client = _app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, role);
+        client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, string.Join(',', permissions));
         return client;
     }
 }
