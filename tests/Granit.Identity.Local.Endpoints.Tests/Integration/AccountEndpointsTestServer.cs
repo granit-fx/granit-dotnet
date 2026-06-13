@@ -4,6 +4,7 @@ using FluentValidation;
 using Granit.Authentication.External;
 using Granit.DataFiltering;
 using Granit.Events;
+using Granit.Identity.Endpoints;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Endpoints;
@@ -72,6 +73,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
     public UserManager<LocalIdentity> UserManager { get; }
     public ICurrentTenant CurrentTenant { get; }
     public IDataFilter DataFilter { get; }
+    public IDeviceTrustCookieService DeviceTrustCookieService { get; }
+    public IDeviceTrustStore DeviceTrustStore { get; }
 
     private AccountEndpointsTestServer(
         WebApplication app,
@@ -100,7 +103,9 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         SignInManager<LocalIdentity> signInManager,
         UserManager<LocalIdentity> userManager,
         ICurrentTenant currentTenant,
-        IDataFilter dataFilter)
+        IDataFilter dataFilter,
+        IDeviceTrustCookieService deviceTrustCookieService,
+        IDeviceTrustStore deviceTrustStore)
     {
         _app = app;
         AuthenticatedClient = authenticatedClient;
@@ -129,6 +134,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         UserManager = userManager;
         CurrentTenant = currentTenant;
         DataFilter = dataFilter;
+        DeviceTrustCookieService = deviceTrustCookieService;
+        DeviceTrustStore = deviceTrustStore;
     }
 
     public static async Task<AccountEndpointsTestServer> CreateAsync(
@@ -148,6 +155,11 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         IExternalLoginService externalLoginService = Substitute.For<IExternalLoginService>();
         IExternalProviderRegistry externalProviderRegistry = Substitute.For<IExternalProviderRegistry>();
         IPasskeyService passkeyService = Substitute.For<IPasskeyService>();
+        // Device trust — a successful passkey assertion raises trust to Strong, but only on a device the user
+        // already bound (the cookie service resolves a device id). Default: no bound device (ResolveDeviceId
+        // returns null), so the raise is a no-op and pre-existing tests are unaffected.
+        IDeviceTrustCookieService deviceTrustCookieService = Substitute.For<IDeviceTrustCookieService>();
+        IDeviceTrustStore deviceTrustStore = Substitute.For<IDeviceTrustStore>();
         IImpersonationService impersonationService = Substitute.For<IImpersonationService>();
         IAccountDeletionService deletionService = Substitute.For<IAccountDeletionService>();
         IDistributedEventBus eventBus = Substitute.For<IDistributedEventBus>();
@@ -224,6 +236,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(externalLoginService);
         builder.Services.AddSingleton(externalProviderRegistry);
         builder.Services.AddSingleton(passkeyService);
+        builder.Services.AddSingleton(deviceTrustCookieService);
+        builder.Services.AddSingleton(deviceTrustStore);
         builder.Services.AddSingleton(impersonationService);
         builder.Services.AddSingleton(deletionService);
         builder.Services.AddSingleton(eventBus);
@@ -284,7 +298,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
             externalLoginService, externalProviderRegistry,
             passkeyService, impersonationService, deletionService,
             eventBus, fusionCache, settingProvider, timeProvider,
-            signInManager, userManager, currentTenant, dataFilter);
+            signInManager, userManager, currentTenant, dataFilter,
+            deviceTrustCookieService, deviceTrustStore);
     }
 
     /// <summary>

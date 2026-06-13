@@ -5,6 +5,7 @@ using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
+using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
@@ -604,6 +605,68 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         result.ShouldNotBeNull();
         result.Succeeded.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task CompletePasskeyAssertion_BoundDevice_RaisesTrustToStrong()
+    {
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
+
+        _server.PasskeyService
+            .CompleteAssertionAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new GranitPasskeyAssertionResult(true, AccountEndpointsTestServer.TestUserIdString));
+        _server.UserManager
+            .FindByIdAsync(AccountEndpointsTestServer.TestUserIdString)
+            .Returns(fakeUser);
+
+        // The browser is already bound to a device the user trusted ("remember this device").
+        _server.DeviceTrustCookieService
+            .ResolveDeviceId(Arg.Any<HttpContext>(), AccountEndpointsTestServer.TestUserIdString)
+            .Returns("device-123");
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/passkeys/assertion/complete",
+            new AccountPasskeyLoginRequest("""{"id":"cred123","response":{}}"""),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        // The passkey proves a device-bound credential — trust is raised to Strong with the "passkey" reason.
+        await _server.DeviceTrustStore.Received(1).SetAsync(
+            AccountEndpointsTestServer.TestUserIdString,
+            "device-123",
+            Arg.Is<DeviceTrustVerdict>(v => v.Level == DeviceTrustLevel.Strong && v.Reason == "passkey"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CompletePasskeyAssertion_UnboundDevice_DoesNotRaiseTrust()
+    {
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
+
+        _server.PasskeyService
+            .CompleteAssertionAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new GranitPasskeyAssertionResult(true, AccountEndpointsTestServer.TestUserIdString));
+        _server.UserManager
+            .FindByIdAsync(AccountEndpointsTestServer.TestUserIdString)
+            .Returns(fakeUser);
+
+        // No device cookie present (default) — a passkey can be a roaming authenticator on a public browser,
+        // so the assertion alone must not silently trust an unknown device.
+        _server.DeviceTrustCookieService
+            .ResolveDeviceId(Arg.Any<HttpContext>(), Arg.Any<string>())
+            .Returns((string?)null);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/passkeys/assertion/complete",
+            new AccountPasskeyLoginRequest("""{"id":"cred123","response":{}}"""),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        await _server.DeviceTrustStore.DidNotReceive().SetAsync(
+            Arg.Any<string>(), Arg.Any<string>(),
+            Arg.Any<DeviceTrustVerdict>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

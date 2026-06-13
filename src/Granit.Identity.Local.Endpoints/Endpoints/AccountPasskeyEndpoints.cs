@@ -3,6 +3,8 @@ using Granit.Auditing;
 using Granit.Auditing.Domain;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Http.SecurityHeaders.Extensions;
+using Granit.Identity.Endpoints;
+using Granit.Identity.Endpoints.Options;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
@@ -17,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Local.Endpoints.Endpoints;
 
@@ -208,6 +211,8 @@ internal static partial class AccountPasskeyEndpoints
         }
 
         await signInManager.SignInAsync(user, isPersistent: false).ConfigureAwait(false);
+        await TryRaiseDeviceTrustToStrongAsync(httpContext, logger, user.Id.ToString(), cancellationToken)
+            .ConfigureAwait(false);
         metrics?.RecordAuthenticationSuccess(null, "passkey");
         await TryWritePasskeyAuditAsync(httpContext, logger,
             userId: user.Id.ToString(), userName: user.UserName,
@@ -271,6 +276,56 @@ internal static partial class AccountPasskeyEndpoints
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Passkey login: failed to write authentication audit entry — login flow continues.")]
     private static partial void LogAuditWriteFailed(ILogger logger, Exception exception);
+
+    /// <summary>
+    /// Raises this browser's device-trust verdict to <see cref="DeviceTrustLevel.Strong"/> after a successful
+    /// passkey assertion — but only on a device the user has already bound (a valid signed device cookie is
+    /// present). A passkey can be a roaming authenticator (security key, phone via hybrid) used on a public
+    /// browser, so an assertion alone must never silently trust an unknown device; on an already-trusted device
+    /// it proves a device-bound credential and upgrades <see cref="DeviceTrustLevel.Remembered"/> to
+    /// <see cref="DeviceTrustLevel.Strong"/>, refreshing the trust window. No-op when the device-trust endpoint
+    /// services are not registered. Best-effort: a store failure never blocks the already-successful login.
+    /// </summary>
+    private static async Task TryRaiseDeviceTrustToStrongAsync(
+        HttpContext httpContext,
+        ILogger logger,
+        string userId,
+        CancellationToken cancellationToken)
+    {
+        IDeviceTrustCookieService? cookieService = httpContext.RequestServices.GetService<IDeviceTrustCookieService>();
+        IDeviceTrustStore? trustStore = httpContext.RequestServices.GetService<IDeviceTrustStore>();
+        if (cookieService is null || trustStore is null)
+        {
+            return;
+        }
+
+        string? deviceId = cookieService.ResolveDeviceId(httpContext, userId);
+        if (deviceId is null)
+        {
+            return;
+        }
+
+        TimeProvider timeProvider = httpContext.RequestServices.GetService<TimeProvider>() ?? TimeProvider.System;
+        DeviceTrustOptions options = httpContext.RequestServices
+            .GetService<IOptions<DeviceTrustOptions>>()?.Value ?? new DeviceTrustOptions();
+        DateTimeOffset now = timeProvider.GetUtcNow();
+
+        try
+        {
+            await trustStore.SetAsync(
+                userId,
+                deviceId,
+                new DeviceTrustVerdict(DeviceTrustLevel.Strong, now, now + options.TrustDuration, "passkey"),
+                cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogDeviceTrustRaiseFailed(logger, ex);
+        }
+    }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Passkey login: failed to raise device trust to Strong — login flow continues.")]
+    private static partial void LogDeviceTrustRaiseFailed(ILogger logger, Exception exception);
 
     private static async Task<Results<NoContent, ProblemHttpResult>> RenamePasskeyAsync(
         Guid id,
