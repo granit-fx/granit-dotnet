@@ -5,6 +5,7 @@ using System.Text.Json;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
 using Granit.Bff.Diagnostics;
+using Granit.Bff.Endpoints.Internal;
 using Granit.Bff.Options;
 using Granit.Events;
 using Granit.Http.Cookies;
@@ -305,7 +306,7 @@ internal static partial class BffLoginEndpoints
             .ConfigureAwait(false);
 
         metrics.RecordLogin(null);
-        LogLoginSuccess(logger, BffSessionEndpoints.MaskSessionId(sessionId), frontend.Name);
+        LogLoginSuccess(logger, BffSessionIdMasking.Mask(sessionId), frontend.Name);
 
         // Announce the new session out-of-band so consumers (anomaly detection, geo enrichment, notifications)
         // react without the login path waiting on them. Best-effort: a no-op when no distributed bus is wired.

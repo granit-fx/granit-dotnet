@@ -30,7 +30,6 @@ public sealed class LoggerMessagePiiConventionTests
         "BackChannelLogoutTokenValidator.SessionId",
         "BackChannelLogoutTokenValidator.SubjectId",
         "BffLoginEndpoints.SessionId",
-        "BffSessionEndpoints.SessionId",
         "DefaultBffLogoutOrchestrator.SessionId",
         "BffBackChannelLogoutEndpoints.Subject",
         "ConnectAuthorizationEndpoints.Subject",

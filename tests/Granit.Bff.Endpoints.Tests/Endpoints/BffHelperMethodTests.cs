@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using Granit.Bff.Endpoints.Endpoints;
 using Granit.Bff.Endpoints.Extensions;
+using Granit.Bff.Endpoints.Internal;
 using Granit.Bff.Options;
 using Shouldly;
 using Xunit;
@@ -142,12 +143,12 @@ public sealed class BffHelperMethodTests
         result.ShouldBeNull();
     }
 
-    // ──── MaskSessionId (BffSessionEndpoints) ────
+    // ──── BffSessionIdMasking.Mask ────
 
     [Fact]
     public void MaskSessionId_Session_LongSessionId_MasksMiddlePortion()
     {
-        string result = BffSessionEndpoints.MaskSessionId("abcdefghijklmnop");
+        string result = BffSessionIdMasking.Mask("abcdefghijklmnop");
 
         result.ShouldStartWith("abcd");
         result.ShouldEndWith("mnop");
@@ -157,7 +158,7 @@ public sealed class BffHelperMethodTests
     [Fact]
     public void MaskSessionId_Session_ShortSessionId_ReturnsFullMask()
     {
-        string result = BffSessionEndpoints.MaskSessionId("short");
+        string result = BffSessionIdMasking.Mask("short");
 
         result.ShouldBe("****");
     }
