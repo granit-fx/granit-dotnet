@@ -5343,12 +5343,12 @@
       "kind": "class",
       "project": "Granit.AI.Prompts",
       "file": "src/Granit.AI.Prompts/Seeding/GenericPrompts.cs",
-      "line": 8,
+      "line": 10,
       "members": [
         {
           "name": "new",
           "kind": "method",
-          "signature": "new(\"Prompt:Summarize:Name\", \"Prompt:Summarize:Description\", \"Summarise the selected content clearly and concisely, preserving the key points.\", \"sparkles\", \"#8B5CF6\")",
+          "signature": "new(\"Prompt:Summarize:Name\", \"Prompt:Summarize:Description\", SummarizeContent, \"sparkles\", \"#8B5CF6\")",
           "returnType": "IReadOnlyList<GenericPromptSeed> All { get; } ="
         }
       ]
