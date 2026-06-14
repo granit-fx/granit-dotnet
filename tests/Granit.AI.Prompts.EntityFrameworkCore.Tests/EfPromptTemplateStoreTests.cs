@@ -1,5 +1,6 @@
 using Granit.AI.Prompts.Domain;
 using Granit.AI.Prompts.EntityFrameworkCore.Internal;
+using Granit.Guids;
 using Shouldly;
 
 namespace Granit.AI.Prompts.EntityFrameworkCore.Tests;
@@ -12,7 +13,7 @@ public sealed class EfPromptTemplateStoreTests : IDisposable
     private readonly TestDbContextFactory _factory = TestDbContextFactory.Create();
     private readonly EfPromptTemplateStore _sut;
 
-    public EfPromptTemplateStoreTests() => _sut = new EfPromptTemplateStore(_factory);
+    public EfPromptTemplateStoreTests() => _sut = new EfPromptTemplateStore(_factory, new SimpleGuidGenerator());
 
     public void Dispose() => _factory.Dispose();
 
@@ -75,5 +76,53 @@ public sealed class EfPromptTemplateStoreTests : IDisposable
 
         catalogue.Select(p => p.Name).ShouldBe(["Zeta system", "Alpha mine"]); // system first, then owner's
         catalogue.ShouldNotContain(p => p.Name == "Other private");
+    }
+
+    [Fact]
+    public async Task Update_bumps_the_version_and_reconciles_categories()
+    {
+        var catA = Guid.NewGuid();
+        var catB = Guid.NewGuid();
+        var prompt = PromptTemplate.Create(Guid.NewGuid(), UserA, "Before", "x", "y");
+        prompt.AssignCategory(Guid.NewGuid(), catA);
+        await _sut.CreateAsync(prompt, TestContext.Current.CancellationToken);
+
+        PromptTemplate? updated = await _sut.UpdateAsync(
+            prompt.Id, UserA,
+            new PromptTemplateEdit("After", "new desc", "new content", "star", "#FF0000", [catB]),
+            TestContext.Current.CancellationToken);
+
+        updated.ShouldNotBeNull();
+        updated.Name.ShouldBe("After");
+        updated.Version.ShouldBe(2);
+        updated.CategoryLinks.Select(l => l.CategoryId).ShouldBe([catB]);
+    }
+
+    [Fact]
+    public async Task Update_returns_null_for_a_system_prompt_or_another_users_prompt()
+    {
+        PromptTemplate system = await _sut.CreateAsync(
+            PromptTemplate.CreateSystem(Guid.NewGuid(), "Prompt:Summarize:Name", "x", "z"), TestContext.Current.CancellationToken);
+        PromptTemplate other = await _sut.CreateAsync(
+            PromptTemplate.Create(Guid.NewGuid(), UserB, "Theirs", "x", "y"), TestContext.Current.CancellationToken);
+
+        var edit = new PromptTemplateEdit("Hijack", "x", "y", null, null, []);
+
+        (await _sut.UpdateAsync(system.Id, UserA, edit, TestContext.Current.CancellationToken)).ShouldBeNull();
+        (await _sut.UpdateAsync(other.Id, UserA, edit, TestContext.Current.CancellationToken)).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Delete_removes_an_owned_prompt_but_not_a_system_or_foreign_one()
+    {
+        PromptTemplate mine = await _sut.CreateAsync(
+            PromptTemplate.Create(Guid.NewGuid(), UserA, "Mine", "x", "y"), TestContext.Current.CancellationToken);
+        PromptTemplate system = await _sut.CreateAsync(
+            PromptTemplate.CreateSystem(Guid.NewGuid(), "Prompt:Draft:Name", "x", "z"), TestContext.Current.CancellationToken);
+
+        (await _sut.DeleteAsync(system.Id, UserA, TestContext.Current.CancellationToken)).ShouldBeFalse();
+        (await _sut.DeleteAsync(mine.Id, UserB, TestContext.Current.CancellationToken)).ShouldBeFalse();
+        (await _sut.DeleteAsync(mine.Id, UserA, TestContext.Current.CancellationToken)).ShouldBeTrue();
+        (await _sut.GetAsync(mine.Id, UserA, TestContext.Current.CancellationToken)).ShouldBeNull();
     }
 }

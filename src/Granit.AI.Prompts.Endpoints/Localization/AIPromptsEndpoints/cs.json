@@ -1,0 +1,10 @@
+{
+  "culture": "cs",
+  "texts": {
+    "PermissionGroup:AIPrompts": "Prompty AI",
+    "Permission:AIPrompts.Templates.Read": "Procházet katalog promptů",
+    "Permission:AIPrompts.Templates.Manage": "Vytvářet a upravovat vlastní prompty",
+    "Permission:AIPrompts.Templates.Delete": "Mazat vlastní prompty",
+    "AIPrompts:Validation:TooManyCategories": "Prompt může patřit nejvýše do 10 kategorií."
+  }
+}

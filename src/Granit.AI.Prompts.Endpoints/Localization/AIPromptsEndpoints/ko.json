@@ -1,0 +1,10 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:AIPrompts": "AI 프롬프트",
+    "Permission:AIPrompts.Templates.Read": "프롬프트 카탈로그 탐색",
+    "Permission:AIPrompts.Templates.Manage": "내 프롬프트 생성 및 편집",
+    "Permission:AIPrompts.Templates.Delete": "내 프롬프트 삭제",
+    "AIPrompts:Validation:TooManyCategories": "하나의 프롬프트는 최대 10개의 카테고리에 속할 수 있습니다."
+  }
+}

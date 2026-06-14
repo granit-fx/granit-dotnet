@@ -15,6 +15,7 @@
       "src/Granit.AI.Mcp/Granit.AI.Mcp.csproj",
       "src/Granit.AI.Ollama/Granit.AI.Ollama.csproj",
       "src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj",
+      "src/Granit.AI.Prompts.Endpoints/Granit.AI.Prompts.Endpoints.csproj",
       "src/Granit.AI.Prompts.EntityFrameworkCore/Granit.AI.Prompts.EntityFrameworkCore.csproj",
       "src/Granit.AI.Prompts/Granit.AI.Prompts.csproj",
       "src/Granit.AI.StackExchangeRedis/Granit.AI.StackExchangeRedis.csproj",

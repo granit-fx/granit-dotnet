@@ -32,9 +32,11 @@ internal sealed class PromptTemplateConfiguration : IEntityTypeConfiguration<Pro
         builder.HasIndex(e => new { e.TenantId, e.IsSystem, e.OwnerId, e.Name })
             .HasDatabaseName($"ix_{GranitAIPromptsDbProperties.DbTablePrefix}templates_tenant_system_owner_name");
 
+        // A link belongs to exactly one prompt; deleting the prompt cascades to its links.
         builder.HasMany(e => e.CategoryLinks)
             .WithOne()
             .HasForeignKey(l => l.PromptTemplateId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

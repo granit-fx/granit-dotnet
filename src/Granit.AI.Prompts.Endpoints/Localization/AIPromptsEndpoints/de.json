@@ -1,0 +1,10 @@
+{
+  "culture": "de",
+  "texts": {
+    "PermissionGroup:AIPrompts": "KI-Prompts",
+    "Permission:AIPrompts.Templates.Read": "Den Prompt-Katalog durchsuchen",
+    "Permission:AIPrompts.Templates.Manage": "Ihre Prompts erstellen und bearbeiten",
+    "Permission:AIPrompts.Templates.Delete": "Ihre Prompts löschen",
+    "AIPrompts:Validation:TooManyCategories": "Ein Prompt darf höchstens 10 Kategorien angehören."
+  }
+}

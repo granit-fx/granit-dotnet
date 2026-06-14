@@ -1,0 +1,10 @@
+{
+  "culture": "it",
+  "texts": {
+    "PermissionGroup:AIPrompts": "Prompt IA",
+    "Permission:AIPrompts.Templates.Read": "Sfogliare il catalogo dei prompt",
+    "Permission:AIPrompts.Templates.Manage": "Creare e modificare i tuoi prompt",
+    "Permission:AIPrompts.Templates.Delete": "Eliminare i tuoi prompt",
+    "AIPrompts:Validation:TooManyCategories": "Un prompt può appartenere al massimo a 10 categorie."
+  }
+}

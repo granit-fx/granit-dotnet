@@ -1,0 +1,10 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:AIPrompts": "AI-prompts",
+    "Permission:AIPrompts.Templates.Read": "Door de promptcatalogus bladeren",
+    "Permission:AIPrompts.Templates.Manage": "Uw prompts maken en bewerken",
+    "Permission:AIPrompts.Templates.Delete": "Uw prompts verwijderen",
+    "AIPrompts:Validation:TooManyCategories": "Een prompt kan tot maximaal 10 categorieën behoren."
+  }
+}

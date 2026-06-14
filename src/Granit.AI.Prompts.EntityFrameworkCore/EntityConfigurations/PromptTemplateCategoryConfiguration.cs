@@ -17,6 +17,10 @@ internal sealed class PromptTemplateCategoryConfiguration : IEntityTypeConfigura
 
         builder.HasKey(e => e.Id);
 
+        // Ids are client-generated (IGuidGenerator); without this EF treats a pre-set key as an
+        // existing row and tracks a link added to an existing prompt as Modified instead of Added.
+        builder.Property(e => e.Id).ValueGeneratedNever();
+
         builder.Property(e => e.CreatedBy).HasMaxLength(256);
 
         // A prompt is linked to a given category at most once.

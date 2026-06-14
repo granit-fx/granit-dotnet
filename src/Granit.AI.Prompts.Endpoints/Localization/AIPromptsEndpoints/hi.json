@@ -1,0 +1,10 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:AIPrompts": "एआई प्रॉम्प्ट",
+    "Permission:AIPrompts.Templates.Read": "प्रॉम्प्ट कैटलॉग ब्राउज़ करें",
+    "Permission:AIPrompts.Templates.Manage": "अपने प्रॉम्प्ट बनाएँ और संपादित करें",
+    "Permission:AIPrompts.Templates.Delete": "अपने प्रॉम्प्ट हटाएँ",
+    "AIPrompts:Validation:TooManyCategories": "एक प्रॉम्प्ट अधिकतम 10 श्रेणियों में हो सकता है।"
+  }
+}

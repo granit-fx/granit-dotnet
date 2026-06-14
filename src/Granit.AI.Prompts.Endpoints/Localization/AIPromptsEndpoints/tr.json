@@ -1,0 +1,10 @@
+{
+  "culture": "tr",
+  "texts": {
+    "PermissionGroup:AIPrompts": "Yapay Zekâ İstemleri",
+    "Permission:AIPrompts.Templates.Read": "İstem kataloğuna göz atma",
+    "Permission:AIPrompts.Templates.Manage": "Kendi istemlerinizi oluşturma ve düzenleme",
+    "Permission:AIPrompts.Templates.Delete": "Kendi istemlerinizi silme",
+    "AIPrompts:Validation:TooManyCategories": "Bir istem en fazla 10 kategoriye ait olabilir."
+  }
+}

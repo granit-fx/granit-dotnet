@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Granit.OpenApi.Generation\Granit.OpenApi.Generation.csproj" />
     <ProjectReference Include="..\Granit.AI.Chat.Endpoints\Granit.AI.Chat.Endpoints.csproj" />
     <ProjectReference Include="..\Granit.AI.Endpoints\Granit.AI.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.AI.Prompts.Endpoints\Granit.AI.Prompts.Endpoints.csproj" />
     <ProjectReference Include="..\Granit.Auditing.Endpoints\Granit.Auditing.Endpoints.csproj" />
     <ProjectReference Include="..\Granit.Authentication.ApiKeys.Endpoints\Granit.Authentication.ApiKeys.Endpoints.csproj" />
     <ProjectReference Include="..\Granit.Authorization.Endpoints\Granit.Authorization.Endpoints.csproj" />
