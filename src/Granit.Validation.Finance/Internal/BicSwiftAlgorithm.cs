@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Granit.Validation.Internal;
+namespace Granit.Validation.Finance.Internal;
 
 /// <summary>
 /// Validates BIC/SWIFT codes per ISO 9362.

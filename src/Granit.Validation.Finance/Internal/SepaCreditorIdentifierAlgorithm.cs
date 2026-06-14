@@ -1,4 +1,6 @@
-namespace Granit.Validation.Internal;
+using Granit.Validation.Internal;
+
+namespace Granit.Validation.Finance.Internal;
 
 /// <summary>
 /// Validates SEPA Creditor Identifiers (SCI) per the EPC262-08 specification.

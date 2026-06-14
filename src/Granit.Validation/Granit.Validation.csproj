@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Validation.Tests" />
+    <InternalsVisibleTo Include="Granit.Validation.Finance" />
+    <InternalsVisibleTo Include="Granit.Validation.Finance.Tests" />
     <InternalsVisibleTo Include="Granit.Validation.Europe" />
     <InternalsVisibleTo Include="Granit.Validation.Europe.Tests" />
     <InternalsVisibleTo Include="Granit.Validation.NorthAmerica" />

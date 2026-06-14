@@ -1,0 +1,12 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Validation:Format:AbaRouting": "Směrovací číslo ABA (USA) je neplatné (očekáváno 9 číslic s platným kontrolním součtem).",
+    "Validation:Format:BicSwift": "Kód BIC/SWIFT je neplatný (očekáváno 8 nebo 11 znaků dle ISO 9362).",
+    "Validation:Format:Bsb": "Kód BSB je neplatný (očekáváno 6 číslic).",
+    "Validation:Format:CanadianRouting": "Kanadské směrovací číslo je neplatné (očekáván 5místný transit a 3místná instituce).",
+    "Validation:Format:Iban": "IBAN je neplatný.",
+    "Validation:Format:Ifsc": "Kód IFSC je neplatný (očekáváno 11 znaků podle formátu RBI, např. SBIN0001234).",
+    "Validation:Format:SepaCreditorIdentifier": "Identifikátor věřitele SEPA (SCI) je neplatný."
+  }
+}

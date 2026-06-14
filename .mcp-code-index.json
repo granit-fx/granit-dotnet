@@ -2664,6 +2664,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Validation.Finance",
+      "deps": [
+        "Granit.Localization",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Validation.NorthAmerica",
       "deps": [
         "Granit.Localization",
@@ -52482,15 +52490,6 @@
       ]
     },
     {
-      "name": "PaymentValidatorExtensions",
-      "fqn": "Granit.Validation.Extensions.PaymentValidatorExtensions",
-      "kind": "class",
-      "project": "Granit.Validation",
-      "file": "src/Granit.Validation/Extensions/PaymentValidatorExtensions.cs",
-      "line": 14,
-      "members": []
-    },
-    {
       "name": "RuleBuilderExtensions",
       "fqn": "Granit.Validation.Extensions.RuleBuilderExtensions",
       "kind": "class",
@@ -52523,6 +52522,40 @@
           "returnType": "IServiceCollection"
         }
       ]
+    },
+    {
+      "name": "FinancePaymentValidatorExtensions",
+      "fqn": "Granit.Validation.Finance.Extensions.FinancePaymentValidatorExtensions",
+      "kind": "class",
+      "project": "Granit.Validation.Finance",
+      "file": "src/Granit.Validation.Finance/Extensions/FinancePaymentValidatorExtensions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "GranitValidationFinanceModule",
+      "fqn": "Granit.Validation.Finance.GranitValidationFinanceModule",
+      "kind": "class",
+      "project": "Granit.Validation.Finance",
+      "file": "src/Granit.Validation.Finance/GranitValidationFinanceModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ValidationFinanceLocalizationResource",
+      "fqn": "Granit.Validation.Finance.ValidationFinanceLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Validation.Finance",
+      "file": "src/Granit.Validation.Finance/ValidationFinanceLocalizationResource.cs",
+      "line": 18,
+      "members": []
     },
     {
       "name": "GranitValidationModule",

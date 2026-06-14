@@ -1,0 +1,12 @@
+{
+  "culture": "de",
+  "texts": {
+    "Validation:Format:AbaRouting": "Die US-ABA-Bankleitzahl ist ungültig (9 Ziffern mit gültiger Prüfsumme erwartet).",
+    "Validation:Format:BicSwift": "Der BIC/SWIFT-Code ist ungültig (8 oder 11 Zeichen erwartet, ISO 9362).",
+    "Validation:Format:Bsb": "Der BSB-Code ist ungültig (6 Ziffern erwartet).",
+    "Validation:Format:CanadianRouting": "Die kanadische Bankleitzahl ist ungültig (5-stellige Transit- und 3-stellige Institutsnummer erwartet).",
+    "Validation:Format:Iban": "Die IBAN ist ungültig.",
+    "Validation:Format:Ifsc": "Der IFSC-Code ist ungültig (11 Zeichen gemäß RBI-Format erwartet, z. B. SBIN0001234).",
+    "Validation:Format:SepaCreditorIdentifier": "Die SEPA-Gläubiger-Identifikationsnummer (SCI) ist ungültig."
+  }
+}

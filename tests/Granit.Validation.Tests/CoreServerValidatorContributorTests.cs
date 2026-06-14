@@ -14,20 +14,17 @@ public sealed class CoreServerValidatorContributorTests
     }
 
     [Fact]
-    public void GetValidators_Returns19Validators() =>
-        _validators.Count.ShouldBe(19);
+    public void GetValidators_Returns16Validators() =>
+        // IBAN / BIC/SWIFT / SEPA Creditor Identifier moved to Granit.Validation.Finance.
+        _validators.Count.ShouldBe(16);
 
     [Fact]
     public void AllErrorCodes_AreUnique() =>
         _validators.Select(v => v.ErrorCode).Distinct().Count().ShouldBe(_validators.Count);
 
     [Theory]
-    [InlineData("Validation:Format:Iban", "BE68539007547034", true)]
-    [InlineData("Validation:Format:Iban", "INVALID", false)]
     [InlineData("Validation:Format:Email", "user@example.com", true)]
     [InlineData("Validation:Format:Email", "not-an-email", false)]
-    [InlineData("Validation:Format:BicSwift", "GEBABEBB", true)]
-    [InlineData("Validation:Format:BicSwift", "X", false)]
     [InlineData("Validation:Format:Slug", "my-slug-123", true)]
     [InlineData("Validation:Format:Slug", "UPPER CASE", false)]
     [InlineData("Validation:Format:Url", "https://example.com", true)]

@@ -1,0 +1,9 @@
+{
+  "culture": "pt-BR",
+  "texts": {
+    "Validation:Format:AbaRouting": "O número de roteamento ABA (EUA) é inválido (esperados 9 dígitos com checksum válido).",
+    "Validation:Format:Bsb": "O código BSB é inválido (esperados 6 dígitos).",
+    "Validation:Format:CanadianRouting": "O número de roteamento canadense é inválido (esperados 5 dígitos de trânsito e 3 de instituição).",
+    "Validation:Format:Ifsc": "O código IFSC é inválido (esperados 11 caracteres no formato RBI, p. ex. SBIN0001234)."
+  }
+}

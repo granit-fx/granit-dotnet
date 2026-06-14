@@ -1,0 +1,12 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Validation:Format:AbaRouting": "Numer rozliczeniowy ABA (USA) jest nieprawidłowy (oczekiwano 9 cyfr z poprawną sumą kontrolną).",
+    "Validation:Format:BicSwift": "Kod BIC/SWIFT jest nieprawidłowy (wymagane 8 lub 11 znaków zgodnie z ISO 9362).",
+    "Validation:Format:Bsb": "Kod BSB jest nieprawidłowy (oczekiwano 6 cyfr).",
+    "Validation:Format:CanadianRouting": "Kanadyjski numer rozliczeniowy jest nieprawidłowy (oczekiwano 5-cyfrowego transit i 3-cyfrowej instytucji).",
+    "Validation:Format:Iban": "Numer IBAN jest nieprawidłowy.",
+    "Validation:Format:Ifsc": "Kod IFSC jest nieprawidłowy (oczekiwano 11 znaków w formacie RBI, np. SBIN0001234).",
+    "Validation:Format:SepaCreditorIdentifier": "Identyfikator wierzyciela SEPA (SCI) jest nieprawidłowy."
+  }
+}

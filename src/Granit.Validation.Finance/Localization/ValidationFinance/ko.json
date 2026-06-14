@@ -1,0 +1,12 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Validation:Format:AbaRouting": "미국 ABA 라우팅 번호가 잘못되었습니다(체크섬 포함 9자리 필요).",
+    "Validation:Format:BicSwift": "BIC/SWIFT 코드가 유효하지 않습니다(ISO 9362에 따라 8자 또는 11자가 필요합니다).",
+    "Validation:Format:Bsb": "BSB 코드가 잘못되었습니다(6자리 필요).",
+    "Validation:Format:CanadianRouting": "캐나다 라우팅 번호가 잘못되었습니다(5자리 트랜짓 및 3자리 기관 번호 필요).",
+    "Validation:Format:Iban": "IBAN이 유효하지 않습니다.",
+    "Validation:Format:Ifsc": "IFSC 코드가 잘못되었습니다(RBI 형식의 11자 필요, 예: SBIN0001234).",
+    "Validation:Format:SepaCreditorIdentifier": "SEPA 채권자 식별자(SCI)가 유효하지 않습니다."
+  }
+}
