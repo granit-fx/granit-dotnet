@@ -10,12 +10,26 @@ namespace Granit.MultiTenancy.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfTenantQueryableSource(
     IDbContextFactory<MultiTenancyDbContext> contextFactory)
-    : IQueryableSource<Tenant>, IDisposable
+    : IQueryableSource<Tenant>, IAsyncDisposable, IDisposable
 {
-    private readonly MultiTenancyDbContext _context = contextFactory.CreateDbContext();
+    private MultiTenancyDbContext? _context;
 
-    public IQueryable<Tenant> GetQueryable() =>
-        _context.Tenants.AsNoTracking();
+    public IQueryable<Tenant> GetQueryable()
+    {
+        _context ??= contextFactory.CreateDbContext();
+        return _context.Tenants.AsNoTracking();
+    }
 
-    public void Dispose() => _context.Dispose();
+    public ValueTask DisposeAsync()
+    {
+        MultiTenancyDbContext? context = _context;
+        _context = null;
+        return context?.DisposeAsync() ?? ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _context?.Dispose();
+        _context = null;
+    }
 }

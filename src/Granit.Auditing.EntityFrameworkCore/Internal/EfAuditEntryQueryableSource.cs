@@ -13,16 +13,31 @@ namespace Granit.Auditing.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfAuditEntryQueryableSource(
     IDbContextFactory<AuditingDbContext> contextFactory,
-    ICurrentTenant currentTenant) : IQueryableSource<AuditEntry>
+    ICurrentTenant currentTenant)
+    : IQueryableSource<AuditEntry>, IAsyncDisposable, IDisposable
 {
-    private readonly AuditingDbContext _context = contextFactory.CreateDbContext();
     private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
+    private AuditingDbContext? _context;
 
     public IQueryable<AuditEntry> GetQueryable()
     {
+        _context ??= contextFactory.CreateDbContext();
         IQueryable<AuditEntry> query = _context.AuditEntries.AsNoTracking();
         return _bypassTenantFilter
             ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             : query;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        AuditingDbContext? context = _context;
+        _context = null;
+        return context?.DisposeAsync() ?? ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _context?.Dispose();
+        _context = null;
     }
 }

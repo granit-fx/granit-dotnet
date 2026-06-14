@@ -15,13 +15,14 @@ namespace Granit.AI.EntityFrameworkCore.Internal;
 internal sealed class EfAIUsageQueryableSource(
     IDbContextFactory<AIDbContext> contextFactory,
     ICurrentTenant currentTenant)
-    : IQueryableSource<AIUsageRecord>
+    : IQueryableSource<AIUsageRecord>, IAsyncDisposable, IDisposable
 {
-    private readonly AIDbContext _context = contextFactory.CreateDbContext();
     private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
+    private AIDbContext? _context;
 
     public IQueryable<AIUsageRecord> GetQueryable()
     {
+        _context ??= contextFactory.CreateDbContext();
         IQueryable<AIUsageRecordEntity> query = _context.UsageRecords.AsNoTracking();
         if (_bypassTenantFilter)
         {
@@ -46,5 +47,18 @@ internal sealed class EfAIUsageQueryableSource(
             PromptTemplateName = e.PromptTemplateName,
             PromptTemplateVersion = e.PromptTemplateVersion,
         });
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        AIDbContext? context = _context;
+        _context = null;
+        return context?.DisposeAsync() ?? ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _context?.Dispose();
+        _context = null;
     }
 }

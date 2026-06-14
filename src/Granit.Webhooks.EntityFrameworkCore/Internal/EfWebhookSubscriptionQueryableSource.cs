@@ -13,16 +13,31 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfWebhookSubscriptionQueryableSource(
     IDbContextFactory<WebhooksDbContext> contextFactory,
-    ICurrentTenant currentTenant) : IQueryableSource<WebhookSubscription>
+    ICurrentTenant currentTenant)
+    : IQueryableSource<WebhookSubscription>, IAsyncDisposable, IDisposable
 {
-    private readonly WebhooksDbContext _context = contextFactory.CreateDbContext();
     private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
+    private WebhooksDbContext? _context;
 
     public IQueryable<WebhookSubscription> GetQueryable()
     {
+        _context ??= contextFactory.CreateDbContext();
         IQueryable<WebhookSubscription> query = _context.WebhookSubscriptions.AsNoTracking();
         return _bypassTenantFilter
             ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             : query;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        WebhooksDbContext? context = _context;
+        _context = null;
+        return context?.DisposeAsync() ?? ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _context?.Dispose();
+        _context = null;
     }
 }

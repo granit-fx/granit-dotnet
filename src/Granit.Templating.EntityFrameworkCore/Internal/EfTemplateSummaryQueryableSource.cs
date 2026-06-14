@@ -22,13 +22,14 @@ namespace Granit.Templating.EntityFrameworkCore.Internal;
 internal sealed class EfTemplateSummaryQueryableSource(
     IDbContextFactory<TemplatingDbContext> contextFactory,
     ICurrentTenant currentTenant)
-    : IQueryableSource<TemplateSummary>
+    : IQueryableSource<TemplateSummary>, IAsyncDisposable, IDisposable
 {
-    private readonly TemplatingDbContext _context = contextFactory.CreateDbContext();
     private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
+    private TemplatingDbContext? _context;
 
     public IQueryable<TemplateSummary> GetQueryable()
     {
+        _context ??= contextFactory.CreateDbContext();
         IQueryable<TemplateRevisionEntity> query = _context.TemplateRevisions
             .AsNoTracking()
             .IgnoreQueryFilters([GranitFilterNames.Publishable])
@@ -56,5 +57,18 @@ internal sealed class EfTemplateSummaryQueryableSource(
                 LayoutName = g.OrderByDescending(r => r.CreatedAt).Select(r => r.LayoutName).First(),
                 CategoryId = g.OrderByDescending(r => r.CreatedAt).Select(r => r.CategoryId).First(),
             });
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        TemplatingDbContext? context = _context;
+        _context = null;
+        return context?.DisposeAsync() ?? ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _context?.Dispose();
+        _context = null;
     }
 }

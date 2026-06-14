@@ -14,16 +14,31 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfApiKeyEntryQueryableSource(
     IDbContextFactory<AuthenticationApiKeysDbContext> contextFactory,
-    ICurrentTenant currentTenant) : IQueryableSource<ApiKeyEntry>
+    ICurrentTenant currentTenant)
+    : IQueryableSource<ApiKeyEntry>, IAsyncDisposable, IDisposable
 {
-    private readonly AuthenticationApiKeysDbContext _context = contextFactory.CreateDbContext();
     private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
+    private AuthenticationApiKeysDbContext? _context;
 
     public IQueryable<ApiKeyEntry> GetQueryable()
     {
+        _context ??= contextFactory.CreateDbContext();
         IQueryable<ApiKeyEntry> query = _context.ApiKeys.AsNoTracking();
         return _bypassTenantFilter
             ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             : query;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        AuthenticationApiKeysDbContext? context = _context;
+        _context = null;
+        return context?.DisposeAsync() ?? ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _context?.Dispose();
+        _context = null;
     }
 }
