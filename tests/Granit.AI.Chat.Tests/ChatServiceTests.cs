@@ -1,4 +1,6 @@
+using System.Text.Json;
 using Granit.AI.Chat.Attachments;
+using Granit.AI.Chat.Clarification;
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Internal;
@@ -231,6 +233,41 @@ public sealed class ChatServiceTests
 
         await Should.ThrowAsync<ConversationNotFoundException>(
             () => service.SendAsync(Request(conversationId), TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task Clarification_interrupt_is_surfaced_and_the_question_is_persisted()
+    {
+        ChatService service = CreateService();
+        var clarification = new AIClarificationRequest
+        {
+            Question = "Which environment?",
+            Options = [new AIClarificationOption { Label = "Prod" }, new AIClarificationOption { Label = "Test" }],
+            AllowOther = true,
+        };
+        string payload = JsonSerializer.Serialize(clarification, JsonSerializerOptions.Web);
+        _orchestrator.RunAsync(Arg.Any<AIOrchestrationRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new AIOrchestrationResult
+            {
+                Content = string.Empty,
+                Messages = [],
+                Iterations = 1,
+                MaxIterationsReached = false,
+                ToolInvocations = [],
+                Interrupt = new AIToolInterrupt(AIClarificationRequest.InterruptKind, payload),
+            });
+
+        ChatSendResult result = await service.SendAsync(Request(message: "deploy"), TestContext.Current.CancellationToken);
+
+        result.Clarification.ShouldNotBeNull();
+        result.Clarification.Question.ShouldBe("Which environment?");
+        result.Clarification.Options.Count.ShouldBe(2);
+        result.Clarification.AllowOther.ShouldBeTrue();
+        // The question text becomes the assistant content and is persisted in history.
+        result.Content.ShouldBe("Which environment?");
+        await _store.Received(1).CreateAsync(
+            Arg.Is<Conversation>(c => c.Messages.Count == 2 && c.Messages[1].Content == "Which environment?"),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]

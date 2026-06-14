@@ -37,4 +37,11 @@ public sealed record AIOrchestrationResult
 
     /// <summary>Wall-clock duration of the whole run.</summary>
     public TimeSpan Duration { get; init; }
+
+    /// <summary>
+    /// Set when a tool halted the loop (e.g. a clarification request). When non-null,
+    /// <see cref="Content"/> is empty and the caller should act on the interrupt rather than
+    /// treat the run as a settled answer.
+    /// </summary>
+    public AIToolInterrupt? Interrupt { get; init; }
 }

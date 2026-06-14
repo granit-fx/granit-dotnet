@@ -106,6 +106,16 @@ internal static class ChatSendEndpoints
                 SuggestedActions: [.. result.SuggestedActions.Select(a =>
                     new SuggestedActionResponse(a.Type, a.Label, a.DeepLink, a.Description))]);
         }
+
+        if (result.Clarification is { } clarification)
+        {
+            yield return new ChatStreamEvent(
+                "clarification",
+                Clarification: new ClarificationResponse(
+                    clarification.Question,
+                    [.. clarification.Options.Select(o => new ClarificationOptionResponse(o.Label, o.Value))],
+                    clarification.AllowOther));
+        }
     }
 
     /// <summary>Splits text into word-sized chunks (trailing space preserved) for token-like streaming.</summary>

@@ -9,7 +9,8 @@ namespace Granit.AI.Tools.Tests;
 internal sealed class FakeAITool(
     string name = "fake_tool",
     string description = "A fake tool.",
-    string result = "ok") : IAITool
+    string result = "ok",
+    AIToolInterrupt? interrupt = null) : IAITool
 {
     public string Name { get; } = name;
 
@@ -25,6 +26,8 @@ internal sealed class FakeAITool(
         CancellationToken cancellationToken = default)
     {
         LastArgumentsJson = context.Arguments.GetRawText();
-        return ValueTask.FromResult(AIToolResult.Success(result));
+        return ValueTask.FromResult(interrupt is null
+            ? AIToolResult.Success(result)
+            : new AIToolResult { Content = result, Interrupt = interrupt });
     }
 }

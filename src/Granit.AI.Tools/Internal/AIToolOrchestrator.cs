@@ -93,6 +93,7 @@ internal sealed partial class AIToolOrchestrator(
         int iteration = 0;
         bool maxReached = false;
         string finalText = string.Empty;
+        AIToolInterrupt? interrupt = null;
 
         while (true)
         {
@@ -132,7 +133,7 @@ internal sealed partial class AIToolOrchestrator(
             List<AIContent> results = new(calls.Count);
             foreach (FunctionCallContent call in calls)
             {
-                (string content, bool succeeded, bool truncated) =
+                (string content, bool succeeded, bool truncated, AIToolInterrupt? callInterrupt) =
                     await ExecuteToolAsync(call, toolMap, options, cancellationToken).ConfigureAwait(false);
 
                 results.Add(new FunctionResultContent(call.CallId, content));
@@ -150,9 +151,19 @@ internal sealed partial class AIToolOrchestrator(
                 {
                     metrics.RecordTruncation(tenantId, call.Name);
                 }
+
+                interrupt ??= callInterrupt;
             }
 
             transcript.Add(new ChatMessage(ChatRole.Tool, results));
+
+            // A tool asked to halt the loop (e.g. a clarification request) — surface it and stop
+            // rather than feeding the result back to the model.
+            if (interrupt is not null)
+            {
+                LogInterrupted(interrupt.Kind);
+                break;
+            }
         }
 
         TimeSpan duration = timeProvider.GetElapsedTime(startTimestamp);
@@ -186,10 +197,11 @@ internal sealed partial class AIToolOrchestrator(
             InputTokens = anyUsage ? (int)totalInput : null,
             OutputTokens = anyUsage ? (int)totalOutput : null,
             Duration = duration,
+            Interrupt = interrupt,
         };
     }
 
-    private async Task<(string Content, bool Succeeded, bool Truncated)> ExecuteToolAsync(
+    private async Task<(string Content, bool Succeeded, bool Truncated, AIToolInterrupt? Interrupt)> ExecuteToolAsync(
         FunctionCallContent call,
         Dictionary<string, IAITool> toolMap,
         GranitAIToolsOrchestrationOptions options,
@@ -198,7 +210,7 @@ internal sealed partial class AIToolOrchestrator(
         if (!toolMap.TryGetValue(call.Name, out IAITool? tool))
         {
             LogUnknownTool(call.Name);
-            return ($"Error: no tool named '{call.Name}' is available.", false, false);
+            return ($"Error: no tool named '{call.Name}' is available.", false, false, null);
         }
 
         JsonElement arguments = SerializeArguments(call.Arguments);
@@ -217,12 +229,12 @@ internal sealed partial class AIToolOrchestrator(
         catch (Exception ex)
         {
             LogToolFailed(ex, call.Name);
-            return ($"Error: tool '{call.Name}' failed and could not complete the request.", false, false);
+            return ($"Error: tool '{call.Name}' failed and could not complete the request.", false, false, null);
         }
 
         (string content, bool truncated) = Guard(result.Content, options.MaxToolResultCharacters);
         LogToolInvoked(call.Name, result.IsError, truncated);
-        return (content, !result.IsError, truncated);
+        return (content, !result.IsError, truncated, result.Interrupt);
     }
 
     private static JsonElement SerializeArguments(IDictionary<string, object?>? arguments) =>
@@ -252,6 +264,9 @@ internal sealed partial class AIToolOrchestrator(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI orchestration loop hit the iteration cap of {MaxIterations} before settling.")]
     private partial void LogMaxIterationsReached(int maxIterations);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "AI orchestration loop interrupted by a '{Kind}' tool; awaiting caller.")]
+    private partial void LogInterrupted(string kind);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "AI orchestration run on workspace '{Workspace}' completed in {Iterations} iteration(s) with {ToolCalls} tool call(s) (maxReached={MaxReached}).")]
     private partial void LogRunCompleted(string workspace, int iterations, int toolCalls, bool maxReached);

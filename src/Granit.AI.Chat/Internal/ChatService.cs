@@ -1,4 +1,6 @@
+using System.Text.Json;
 using Granit.AI.Chat.Attachments;
+using Granit.AI.Chat.Clarification;
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Mentions;
@@ -95,10 +97,16 @@ internal sealed class ChatService(
             },
             cancellationToken).ConfigureAwait(false);
 
+        // A clarification halts the loop: the assistant turn records the question and the structured
+        // request is surfaced so the front can render clickable options. The user's choice arrives
+        // as the next turn and resumes the loop normally.
+        AIClarificationRequest? clarification = TryReadClarification(result.Interrupt);
+        string assistantContent = clarification?.Question ?? result.Content;
+
         if (isNew)
         {
             conversation.AddMessage(guidGenerator.Create(), MessageRole.User, request.Message);
-            conversation.AddMessage(guidGenerator.Create(), MessageRole.Assistant, result.Content);
+            conversation.AddMessage(guidGenerator.Create(), MessageRole.Assistant, assistantContent);
             await conversationStore.CreateAsync(conversation, cancellationToken).ConfigureAwait(false);
         }
         else
@@ -108,7 +116,7 @@ internal sealed class ChatService(
                 request.OwnerId,
                 [
                     Message.Create(guidGenerator.Create(), conversation.Id, MessageRole.User, request.Message),
-                    Message.Create(guidGenerator.Create(), conversation.Id, MessageRole.Assistant, result.Content),
+                    Message.Create(guidGenerator.Create(), conversation.Id, MessageRole.Assistant, assistantContent),
                 ],
                 cancellationToken).ConfigureAwait(false);
         }
@@ -122,12 +130,34 @@ internal sealed class ChatService(
         return new ChatSendResult
         {
             ConversationId = conversation.Id,
-            Content = result.Content,
+            Content = assistantContent,
             MaxIterationsReached = result.MaxIterationsReached,
             InputTokens = result.InputTokens,
             OutputTokens = result.OutputTokens,
             SuggestedActions = suggestedActions,
+            Clarification = clarification,
         };
+    }
+
+    /// <summary>
+    /// Parses a clarification from a loop interrupt, or <see langword="null"/> when the interrupt is
+    /// absent, of another kind, or malformed (a malformed payload must not fail the turn).
+    /// </summary>
+    private static AIClarificationRequest? TryReadClarification(AIToolInterrupt? interrupt)
+    {
+        if (interrupt is null || interrupt.Kind != AIClarificationRequest.InterruptKind)
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<AIClarificationRequest>(interrupt.Payload, JsonSerializerOptions.Web);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 
     /// <summary>

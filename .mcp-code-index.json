@@ -3243,7 +3243,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 8,
+      "line": 9,
       "members": []
     },
     {
@@ -3252,7 +3252,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 36,
+      "line": 37,
       "members": [
         {
           "name": "ConversationId",
@@ -3261,6 +3261,24 @@
           "returnType": "required Guid"
         }
       ]
+    },
+    {
+      "name": "AIClarificationOption",
+      "fqn": "Granit.AI.Chat.Clarification.AIClarificationOption",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Clarification/AIClarificationRequest.cs",
+      "line": 26,
+      "members": []
+    },
+    {
+      "name": "AIClarificationRequest",
+      "fqn": "Granit.AI.Chat.Clarification.AIClarificationRequest",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Clarification/AIClarificationRequest.cs",
+      "line": 10,
+      "members": []
     },
     {
       "name": "Conversation",
@@ -3321,6 +3339,24 @@
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ChatWorkspacesResponse.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "ClarificationOptionResponse",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.ClarificationOptionResponse",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
+      "line": 52,
+      "members": []
+    },
+    {
+      "name": "ClarificationResponse",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.ClarificationResponse",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
+      "line": 47,
       "members": []
     },
     {
@@ -3427,7 +3463,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 47,
+      "line": 59,
       "members": []
     },
     {
@@ -3642,7 +3678,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/GranitAIChatModule.cs",
-      "line": 26,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
@@ -3658,7 +3694,7 @@
       "kind": "interface",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 64,
+      "line": 71,
       "members": [
         {
           "name": "SendAsync",
@@ -5503,6 +5539,15 @@
       "members": []
     },
     {
+      "name": "AIToolInterrupt",
+      "fqn": "Granit.AI.Tools.AIToolInterrupt",
+      "kind": "record",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/AIToolInterrupt.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "AIToolInvocationContext",
       "fqn": "Granit.AI.Tools.AIToolInvocationContext",
       "kind": "record",
@@ -5548,12 +5593,18 @@
           "name": "Success",
           "kind": "method",
           "signature": "Success(string content)",
-          "returnType": "required string Content { get; init; } public bool IsError { get; init; } public AIToolResult"
+          "returnType": "required string Content { get; init; } public bool IsError { get; init; } public AIToolInterrupt? Interrupt { get; init; } public AIToolResult"
         },
         {
           "name": "Error",
           "kind": "method",
           "signature": "Error(string message)",
+          "returnType": "AIToolResult"
+        },
+        {
+          "name": "Halt",
+          "kind": "method",
+          "signature": "Halt(string kind, string payload, string content)",
           "returnType": "AIToolResult"
         }
       ]

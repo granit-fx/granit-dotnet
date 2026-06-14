@@ -6,6 +6,7 @@ using Granit.Guids;
 using Granit.Modularity;
 using Granit.Settings;
 using Granit.TextExtraction;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.AI.Chat;
@@ -45,5 +46,9 @@ public sealed class GranitAIChatModule : GranitModule
         // The suggestion resolver is always present so a turn can carry suggested actions even
         // before any module contributes a provider (it then resolves to none).
         AIChatSuggestionsServiceCollectionExtensions.AddCoreServices(context.Services);
+
+        // The clarification tool is core chat behaviour — always available to the agent so it can
+        // ask clickable disambiguating questions (it halts the loop via the interrupt primitive).
+        context.Services.AddScoped<IAITool, RequestClarificationTool>();
     }
 }

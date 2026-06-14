@@ -112,6 +112,28 @@ public sealed class AIToolOrchestratorTests
     }
 
     [Fact]
+    public async Task A_halting_tool_stops_the_loop_and_surfaces_the_interrupt()
+    {
+        FakeAITool ask = new(name: "ask", result: "asked", interrupt: new AIToolInterrupt("clarification", "PAYLOAD"));
+        ScriptedChatClient client = new(
+            ToolCall("c1", "ask"),
+            FinalText("should never be reached"));
+        Harness harness = CreateHarness(client, [ask]);
+
+        AIOrchestrationResult result = await harness.Orchestrator.RunAsync(
+            UserSays("ambiguous"), TestContext.Current.CancellationToken);
+
+        result.Interrupt.ShouldNotBeNull();
+        result.Interrupt.Kind.ShouldBe("clarification");
+        result.Interrupt.Payload.ShouldBe("PAYLOAD");
+        result.Content.ShouldBeEmpty();
+        result.Iterations.ShouldBe(1);
+        // The loop halted: the model was only called once (no feed-back round-trip).
+        harness.ChatClient.Calls.Count.ShouldBe(1);
+        result.ToolInvocations.ShouldHaveSingleItem();
+    }
+
+    [Fact]
     public async Task Feeds_the_tool_result_back_into_the_next_model_call()
     {
         FakeAITool echo = new(name: "echo", result: "tool-said-hi");

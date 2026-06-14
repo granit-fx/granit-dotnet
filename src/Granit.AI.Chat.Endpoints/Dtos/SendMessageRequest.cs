@@ -37,7 +37,19 @@ public sealed record ChatStreamEvent(
     Guid? ConversationId = null,
     int? InputTokens = null,
     int? OutputTokens = null,
-    IReadOnlyList<SuggestedActionResponse>? SuggestedActions = null);
+    IReadOnlyList<SuggestedActionResponse>? SuggestedActions = null,
+    ClarificationResponse? Clarification = null);
+
+/// <summary>A typed clarification the front renders as clickable choices; the turn blocks until answered.</summary>
+/// <param name="Question">The disambiguating question.</param>
+/// <param name="Options">The discrete choices.</param>
+/// <param name="AllowOther">Whether to offer an "Other (describe)" free-text affordance.</param>
+public sealed record ClarificationResponse(string Question, IReadOnlyList<ClarificationOptionResponse> Options, bool AllowOther);
+
+/// <summary>One clickable choice of a <see cref="ClarificationResponse"/>.</summary>
+/// <param name="Label">The display label.</param>
+/// <param name="Value">The value sent back when chosen (falls back to <paramref name="Label"/> when null).</param>
+public sealed record ClarificationOptionResponse(string Label, string? Value);
 
 /// <summary>A typed, non-executing suggested action (a deep link the front renders).</summary>
 /// <param name="Type">The suggestion type, e.g. <c>calendar.connect</c>.</param>

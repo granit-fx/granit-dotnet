@@ -1,4 +1,5 @@
 using Granit.AI.Chat.Attachments;
+using Granit.AI.Chat.Clarification;
 using Granit.AI.Chat.Mentions;
 using Granit.AI.Chat.Suggestions;
 
@@ -55,6 +56,12 @@ public sealed record ChatSendResult
     /// renders). Empty when no provider offered any. See <see cref="AISuggestedAction"/>.
     /// </summary>
     public IReadOnlyList<AISuggestedAction> SuggestedActions { get; init; } = [];
+
+    /// <summary>
+    /// Set when the agent asked a clarifying question instead of answering (the turn is blocked
+    /// until the user picks an option). <see cref="Content"/> then carries the question text.
+    /// </summary>
+    public AIClarificationRequest? Clarification { get; init; }
 }
 
 /// <summary>

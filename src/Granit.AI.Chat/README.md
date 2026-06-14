@@ -109,6 +109,18 @@ internal sealed class CalendarSuggestionProvider(ICalendarReader calendars, ICur
 }
 ```
 
+## Clarification questions
+
+When the agent is ambiguous it can ask a clarifying question with clickable choices instead of
+guessing. It calls the built-in `request_clarification` tool, which **halts the agentic loop** (via
+the `Granit.AI.Tools` interrupt primitive) and surfaces a typed `AIClarificationRequest`
+(question + options + optional "Other") on `ChatSendResult.Clarification` — emitted as a
+`clarification` SSE frame. The user's choice arrives as the next turn and resumes the loop; the
+question and the answer are both persisted in history. Single-select in v1.
+
+Unlike a [suggested action](#suggested-actions) (a non-executing CTA), a clarification **blocks the
+turn until answered**. The tool is always available to chat agents — no opt-in needed.
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).
