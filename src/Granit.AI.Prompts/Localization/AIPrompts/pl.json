@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "Dzienny przegląd",
     "Prompt:DailyBrief:Description": "Zwięzłe podsumowanie tego, co dziś wymaga Twojej uwagi.",
     "Prompt:FindRelated:Name": "Znajdź powiązane",
-    "Prompt:FindRelated:Description": "Znajdź elementy powiązane z bieżącym kontekstem."
+    "Prompt:FindRelated:Description": "Znajdź elementy powiązane z bieżącym kontekstem.",
+    "AIPrompts.Columns.Name": "Nazwa",
+    "AIPrompts.Columns.Description": "Opis",
+    "AIPrompts.Columns.IsSystem": "Systemowy",
+    "AIPrompts.Columns.Owner": "Właściciel",
+    "AIPrompts.Columns.Version": "Wersja",
+    "AIPrompts.Columns.Tenant": "Najemca",
+    "AIPrompts.Columns.CreatedAt": "Utworzono"
   }
 }

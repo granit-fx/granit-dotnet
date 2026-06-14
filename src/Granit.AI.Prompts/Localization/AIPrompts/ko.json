@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "일일 브리핑",
     "Prompt:DailyBrief:Description": "오늘 주의가 필요한 사항에 대한 간결한 요약입니다.",
     "Prompt:FindRelated:Name": "관련 항목 찾기",
-    "Prompt:FindRelated:Description": "현재 컨텍스트와 관련된 항목을 찾습니다."
+    "Prompt:FindRelated:Description": "현재 컨텍스트와 관련된 항목을 찾습니다.",
+    "AIPrompts.Columns.Name": "이름",
+    "AIPrompts.Columns.Description": "설명",
+    "AIPrompts.Columns.IsSystem": "시스템",
+    "AIPrompts.Columns.Owner": "소유자",
+    "AIPrompts.Columns.Version": "버전",
+    "AIPrompts.Columns.Tenant": "테넌트",
+    "AIPrompts.Columns.CreatedAt": "생성일"
   }
 }

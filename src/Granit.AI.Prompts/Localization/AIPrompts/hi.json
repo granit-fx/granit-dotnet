@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "दैनिक ब्रीफ",
     "Prompt:DailyBrief:Description": "आज आपके ध्यान की आवश्यकता वाली बातों का संक्षिप्त विवरण।",
     "Prompt:FindRelated:Name": "संबंधित खोजें",
-    "Prompt:FindRelated:Description": "वर्तमान संदर्भ से संबंधित आइटम खोजें।"
+    "Prompt:FindRelated:Description": "वर्तमान संदर्भ से संबंधित आइटम खोजें।",
+    "AIPrompts.Columns.Name": "नाम",
+    "AIPrompts.Columns.Description": "विवरण",
+    "AIPrompts.Columns.IsSystem": "सिस्टम",
+    "AIPrompts.Columns.Owner": "स्वामी",
+    "AIPrompts.Columns.Version": "संस्करण",
+    "AIPrompts.Columns.Tenant": "किरायेदार",
+    "AIPrompts.Columns.CreatedAt": "निर्मित"
   }
 }

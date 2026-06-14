@@ -1,6 +1,11 @@
+using Granit.AI.Prompts.Domain;
+using Granit.AI.Prompts.Exports;
+using Granit.AI.Prompts.Queries;
+using Granit.DataExchange.Extensions;
 using Granit.Localization;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
+using Granit.QueryEngine.Extensions;
 
 namespace Granit.AI.Prompts;
 
@@ -14,6 +19,13 @@ namespace Granit.AI.Prompts;
 public sealed class GranitAIPromptsModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddLocalizationResource<AIPromptsLocalizationResource>();
+
+        // Admin-grid + take-out for the catalogue (ADR-020 Query↔Export pairing). The EF queryable
+        // source is registered by Granit.AI.Prompts.EntityFrameworkCore.
+        context.Services.AddQueryDefinition<PromptTemplate, PromptTemplateQueryDefinition>();
+        context.Services.AddExportDefinition<PromptTemplate, PromptTemplateExportDefinition>();
+    }
 }

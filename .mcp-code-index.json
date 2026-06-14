@@ -133,7 +133,9 @@
       "name": "Granit.AI.Prompts",
       "deps": [
         "Granit",
-        "Granit.Localization"
+        "Granit.DataExchange.Abstractions",
+        "Granit.Localization",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -153,7 +155,8 @@
       "deps": [
         "Granit.AI.Prompts",
         "Granit.Guids",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -5375,7 +5378,7 @@
       "kind": "class",
       "project": "Granit.AI.Prompts.EntityFrameworkCore",
       "file": "src/Granit.AI.Prompts.EntityFrameworkCore/Extensions/AIPromptsEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitAIPromptsEntityFrameworkCore",
@@ -5434,12 +5437,28 @@
       ]
     },
     {
+      "name": "PromptTemplateExportDefinition",
+      "fqn": "Granit.AI.Prompts.Exports.PromptTemplateExportDefinition",
+      "kind": "class",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/Exports/PromptTemplateExportDefinition.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "GranitAIPromptsModule",
       "fqn": "Granit.AI.Prompts.GranitAIPromptsModule",
       "kind": "class",
       "project": "Granit.AI.Prompts",
       "file": "src/Granit.AI.Prompts/GranitAIPromptsModule.cs",
-      "line": 14,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -5531,6 +5550,28 @@
       "file": "src/Granit.AI.Prompts/PromptTemplateEdit.cs",
       "line": 16,
       "members": []
+    },
+    {
+      "name": "PromptTemplateQueryDefinition",
+      "fqn": "Granit.AI.Prompts.Queries.PromptTemplateQueryDefinition",
+      "kind": "class",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/Queries/PromptTemplateQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(AIPromptsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
+        }
+      ]
     },
     {
       "name": "GenericPromptSeed",
@@ -15914,6 +15955,15 @@
       "project": "Granit.DataExchange.Abstractions",
       "file": "src/Granit.DataExchange.Abstractions/Export/ExportDefinitionBuilder.cs",
       "line": 20,
+      "members": []
+    },
+    {
+      "name": "ExportDefinitionBuilderAuditExtensions",
+      "fqn": "Granit.DataExchange.Export.ExportDefinitionBuilderAuditExtensions",
+      "kind": "class",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/ExportDefinitionBuilderAuditExtensions.cs",
+      "line": 9,
       "members": []
     },
     {

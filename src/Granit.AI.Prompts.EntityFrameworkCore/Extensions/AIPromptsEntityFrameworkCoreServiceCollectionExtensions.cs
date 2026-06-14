@@ -1,6 +1,8 @@
+using Granit.AI.Prompts.Domain;
 using Granit.AI.Prompts.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -37,6 +39,9 @@ public static class AIPromptsEntityFrameworkCoreServiceCollectionExtensions
 
         services.TryAddScoped<IPromptTemplateStore, EfPromptTemplateStore>();
         services.TryAddScoped<IPromptCategoryStore, EfPromptCategoryStore>();
+
+        // Backs the catalogue admin grid + export (PromptTemplateQueryDefinition / ExportDefinition).
+        services.TryAddScoped<IQueryableSource<PromptTemplate>, EfPromptTemplateQueryableSource>();
 
         return services;
     }

@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "Daglig översikt",
     "Prompt:DailyBrief:Description": "En kortfattad översikt av vad som kräver din uppmärksamhet idag.",
     "Prompt:FindRelated:Name": "Hitta relaterat",
-    "Prompt:FindRelated:Description": "Hitta objekt som är relaterade till det aktuella sammanhanget."
+    "Prompt:FindRelated:Description": "Hitta objekt som är relaterade till det aktuella sammanhanget.",
+    "AIPrompts.Columns.Name": "Namn",
+    "AIPrompts.Columns.Description": "Beskrivning",
+    "AIPrompts.Columns.IsSystem": "System",
+    "AIPrompts.Columns.Owner": "Ägare",
+    "AIPrompts.Columns.Version": "Version",
+    "AIPrompts.Columns.Tenant": "Klient",
+    "AIPrompts.Columns.CreatedAt": "Skapad"
   }
 }

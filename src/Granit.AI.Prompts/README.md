@@ -11,6 +11,10 @@ abstraction. Persistence is provided by `Granit.AI.Prompts.EntityFrameworkCore`.
 Framework-seeded generic prompts are flagged `IsSystem` and owned by no user; a user's own prompts
 are private (v1, sharing deferred to phase 2).
 
+The catalogue ships an admin-grid `QueryDefinition` and a take-out `ExportDefinition` for
+`PromptTemplate` (ADR-020 pairing), registered by `GranitAIPromptsModule`; the EF queryable source
+is registered by `Granit.AI.Prompts.EntityFrameworkCore`.
+
 Part of the [granit](https://granit-fx.dev) framework.
 
 ## Installation
@@ -22,6 +26,9 @@ dotnet add package Granit.AI.Prompts
 ## Dependencies
 
 - `Granit`
+- `Granit.Localization`
+- `Granit.QueryEngine.Abstractions`
+- `Granit.DataExchange.Abstractions`
 
 ## Documentation
 

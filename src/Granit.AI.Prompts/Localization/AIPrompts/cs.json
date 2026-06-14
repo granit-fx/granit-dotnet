@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "Denní přehled",
     "Prompt:DailyBrief:Description": "Stručný přehled toho, co dnes vyžaduje vaši pozornost.",
     "Prompt:FindRelated:Name": "Najít související",
-    "Prompt:FindRelated:Description": "Najdi položky související s aktuálním kontextem."
+    "Prompt:FindRelated:Description": "Najdi položky související s aktuálním kontextem.",
+    "AIPrompts.Columns.Name": "Název",
+    "AIPrompts.Columns.Description": "Popis",
+    "AIPrompts.Columns.IsSystem": "Systémový",
+    "AIPrompts.Columns.Owner": "Vlastník",
+    "AIPrompts.Columns.Version": "Verze",
+    "AIPrompts.Columns.Tenant": "Nájemce",
+    "AIPrompts.Columns.CreatedAt": "Vytvořeno"
   }
 }

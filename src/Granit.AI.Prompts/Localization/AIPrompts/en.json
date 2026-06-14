@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "Daily brief",
     "Prompt:DailyBrief:Description": "A concise brief of what needs your attention today.",
     "Prompt:FindRelated:Name": "Find related",
-    "Prompt:FindRelated:Description": "Find items related to the current context."
+    "Prompt:FindRelated:Description": "Find items related to the current context.",
+    "AIPrompts.Columns.Name": "Name",
+    "AIPrompts.Columns.Description": "Description",
+    "AIPrompts.Columns.IsSystem": "System",
+    "AIPrompts.Columns.Owner": "Owner",
+    "AIPrompts.Columns.Version": "Version",
+    "AIPrompts.Columns.Tenant": "Tenant",
+    "AIPrompts.Columns.CreatedAt": "Created At"
   }
 }

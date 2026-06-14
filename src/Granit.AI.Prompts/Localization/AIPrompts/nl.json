@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "Dagelijkse briefing",
     "Prompt:DailyBrief:Description": "Een beknopt overzicht van wat vandaag uw aandacht vraagt.",
     "Prompt:FindRelated:Name": "Gerelateerde zoeken",
-    "Prompt:FindRelated:Description": "Zoek items die verband houden met de huidige context."
+    "Prompt:FindRelated:Description": "Zoek items die verband houden met de huidige context.",
+    "AIPrompts.Columns.Name": "Naam",
+    "AIPrompts.Columns.Description": "Beschrijving",
+    "AIPrompts.Columns.IsSystem": "Systeem",
+    "AIPrompts.Columns.Owner": "Eigenaar",
+    "AIPrompts.Columns.Version": "Versie",
+    "AIPrompts.Columns.Tenant": "Tenant",
+    "AIPrompts.Columns.CreatedAt": "Aangemaakt op"
   }
 }

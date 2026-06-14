@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "Günlük özet",
     "Prompt:DailyBrief:Description": "Bugün dikkatini gerektiren şeylerin kısa bir özeti.",
     "Prompt:FindRelated:Name": "İlgili öğeleri bul",
-    "Prompt:FindRelated:Description": "Geçerli bağlamla ilgili öğeleri bul."
+    "Prompt:FindRelated:Description": "Geçerli bağlamla ilgili öğeleri bul.",
+    "AIPrompts.Columns.Name": "Ad",
+    "AIPrompts.Columns.Description": "Açıklama",
+    "AIPrompts.Columns.IsSystem": "Sistem",
+    "AIPrompts.Columns.Owner": "Sahip",
+    "AIPrompts.Columns.Version": "Sürüm",
+    "AIPrompts.Columns.Tenant": "Kiracı",
+    "AIPrompts.Columns.CreatedAt": "Oluşturulma"
   }
 }

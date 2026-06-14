@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "Resumo diário",
     "Prompt:DailyBrief:Description": "Um resumo conciso do que precisa da tua atenção hoje.",
     "Prompt:FindRelated:Name": "Encontrar relacionados",
-    "Prompt:FindRelated:Description": "Encontra itens relacionados com o contexto atual."
+    "Prompt:FindRelated:Description": "Encontra itens relacionados com o contexto atual.",
+    "AIPrompts.Columns.Name": "Nome",
+    "AIPrompts.Columns.Description": "Descrição",
+    "AIPrompts.Columns.IsSystem": "Sistema",
+    "AIPrompts.Columns.Owner": "Proprietário",
+    "AIPrompts.Columns.Version": "Versão",
+    "AIPrompts.Columns.Tenant": "Inquilino",
+    "AIPrompts.Columns.CreatedAt": "Criado em"
   }
 }

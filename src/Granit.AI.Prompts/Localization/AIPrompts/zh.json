@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "每日简报",
     "Prompt:DailyBrief:Description": "简要概述今天需要你关注的内容。",
     "Prompt:FindRelated:Name": "查找相关",
-    "Prompt:FindRelated:Description": "查找与当前上下文相关的条目。"
+    "Prompt:FindRelated:Description": "查找与当前上下文相关的条目。",
+    "AIPrompts.Columns.Name": "名称",
+    "AIPrompts.Columns.Description": "描述",
+    "AIPrompts.Columns.IsSystem": "系统",
+    "AIPrompts.Columns.Owner": "所有者",
+    "AIPrompts.Columns.Version": "版本",
+    "AIPrompts.Columns.Tenant": "租户",
+    "AIPrompts.Columns.CreatedAt": "创建时间"
   }
 }

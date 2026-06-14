@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "Tagesbriefing",
     "Prompt:DailyBrief:Description": "Eine knappe Übersicht, was heute Ihre Aufmerksamkeit erfordert.",
     "Prompt:FindRelated:Name": "Verwandtes finden",
-    "Prompt:FindRelated:Description": "Finde Elemente, die mit dem aktuellen Kontext zusammenhängen."
+    "Prompt:FindRelated:Description": "Finde Elemente, die mit dem aktuellen Kontext zusammenhängen.",
+    "AIPrompts.Columns.Name": "Name",
+    "AIPrompts.Columns.Description": "Beschreibung",
+    "AIPrompts.Columns.IsSystem": "System",
+    "AIPrompts.Columns.Owner": "Besitzer",
+    "AIPrompts.Columns.Version": "Version",
+    "AIPrompts.Columns.Tenant": "Mandant",
+    "AIPrompts.Columns.CreatedAt": "Erstellt am"
   }
 }

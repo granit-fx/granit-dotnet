@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "デイリーブリーフ",
     "Prompt:DailyBrief:Description": "今日注意すべき事項の簡潔なまとめ。",
     "Prompt:FindRelated:Name": "関連を検索",
-    "Prompt:FindRelated:Description": "現在のコンテキストに関連する項目を探します。"
+    "Prompt:FindRelated:Description": "現在のコンテキストに関連する項目を探します。",
+    "AIPrompts.Columns.Name": "名前",
+    "AIPrompts.Columns.Description": "説明",
+    "AIPrompts.Columns.IsSystem": "システム",
+    "AIPrompts.Columns.Owner": "所有者",
+    "AIPrompts.Columns.Version": "バージョン",
+    "AIPrompts.Columns.Tenant": "テナント",
+    "AIPrompts.Columns.CreatedAt": "作成日時"
   }
 }

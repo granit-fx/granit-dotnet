@@ -8,6 +8,13 @@
     "Prompt:DailyBrief:Name": "Brief du jour",
     "Prompt:DailyBrief:Description": "Un résumé concis de ce qui requiert votre attention aujourd'hui.",
     "Prompt:FindRelated:Name": "Trouver des éléments liés",
-    "Prompt:FindRelated:Description": "Trouve les éléments liés au contexte actuel."
+    "Prompt:FindRelated:Description": "Trouve les éléments liés au contexte actuel.",
+    "AIPrompts.Columns.Name": "Nom",
+    "AIPrompts.Columns.Description": "Description",
+    "AIPrompts.Columns.IsSystem": "Système",
+    "AIPrompts.Columns.Owner": "Propriétaire",
+    "AIPrompts.Columns.Version": "Version",
+    "AIPrompts.Columns.Tenant": "Locataire",
+    "AIPrompts.Columns.CreatedAt": "Créé le"
   }
 }
