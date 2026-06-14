@@ -1,0 +1,12 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Validation:Format:AbaRouting": "यूएस ABA रूटिंग नंबर अमान्य है (चेकसम सहित 9 अंक अपेक्षित)।",
+    "Validation:Format:BicSwift": "BIC/SWIFT कोड अमान्य है (ISO 9362 के अनुसार 8 या 11 अक्षर अपेक्षित हैं)।",
+    "Validation:Format:Bsb": "BSB कोड अमान्य है (6 अंक अपेक्षित)।",
+    "Validation:Format:CanadianRouting": "कनाडाई रूटिंग नंबर अमान्य है (5-अंकीय ट्रांज़िट और 3-अंकीय संस्थान अपेक्षित)।",
+    "Validation:Format:Iban": "IBAN अमान्य है।",
+    "Validation:Format:Ifsc": "IFSC कोड अमान्य है (RBI प्रारूप के अनुसार 11 वर्ण अपेक्षित, उदा. SBIN0001234)।",
+    "Validation:Format:SepaCreditorIdentifier": "SEPA क्रेडिटर आइडेंटिफ़ायर (SCI) अमान्य है।"
+  }
+}

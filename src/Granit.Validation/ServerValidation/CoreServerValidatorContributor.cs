@@ -16,9 +16,6 @@ internal sealed class CoreServerValidatorContributor : IServerValidatorContribut
     public IEnumerable<IServerValidator> GetValidators()
     {
         // Payment identifiers (algorithm-based)
-        yield return new DelegatingServerValidator("Validation:Format:Iban", IbanAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Validation:Format:BicSwift", BicSwiftAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Validation:Format:SepaCreditorIdentifier", SepaCreditorIdentifierAlgorithm.IsValid);
         yield return new DelegatingServerValidator("Validation:Format:CreditCard", CreditCardAlgorithm.IsValid, isSensitive: true);
         yield return new DelegatingServerValidator("Validation:Format:Lei", LeiAlgorithm.IsValid);
 

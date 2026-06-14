@@ -53,44 +53,6 @@ public sealed class IdentifierValidatorExtensionsTests
         result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:E164Phone");
     }
 
-    // =========================================================================
-    // Iban
-    // =========================================================================
-
-    [Theory]
-    [InlineData("BE68539007547034")]             // Belgian IBAN
-    [InlineData("BE68 5390 0754 7034")]          // with spaces
-    [InlineData("FR7630006000011234567890189")]  // French IBAN
-    [InlineData("DE89370400440532013000")]       // German IBAN
-    [InlineData("GB29NWBK60161331926819")]       // UK IBAN
-    public void Iban_ValidValues_PassValidation(string iban)
-    {
-        InlineValidator<TestModel> validator = [];
-        validator.RuleFor(x => x.Value).Iban();
-
-        ValidationResult result = validator.Validate(new TestModel(iban));
-
-        result.IsValid.ShouldBeTrue();
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("BE68539007547035")]         // wrong check digit
-    [InlineData("XX00123456789012345")]      // invalid country code (passes format, fails MOD-97)
-    [InlineData("BE685390075470")]           // too short
-    [InlineData("123456789")]               // no country code
-    public void Iban_InvalidValues_FailValidation(string? iban)
-    {
-        InlineValidator<TestModel> validator = [];
-        validator.RuleFor(x => x.Value).Iban();
-
-        ValidationResult result = validator.Validate(new TestModel(iban));
-
-        result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:Iban");
-    }
-
     // -------------------------------------------------------------------------
     // Test doubles
     // -------------------------------------------------------------------------

@@ -1,0 +1,12 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Validation:Format:AbaRouting": "美国 ABA 路由号码无效（需为带校验和的 9 位数字）。",
+    "Validation:Format:BicSwift": "BIC/SWIFT 代码无效（根据 ISO 9362 应为 8 或 11 个字符）。",
+    "Validation:Format:Bsb": "BSB 代码无效（需为 6 位数字）。",
+    "Validation:Format:CanadianRouting": "加拿大路由号码无效（需为 5 位转账行号和 3 位机构号）。",
+    "Validation:Format:Iban": "IBAN 无效。",
+    "Validation:Format:Ifsc": "IFSC 代码无效（需为符合 RBI 格式的 11 个字符，例如 SBIN0001234）。",
+    "Validation:Format:SepaCreditorIdentifier": "SEPA 债权人标识符（SCI）无效。"
+  }
+}

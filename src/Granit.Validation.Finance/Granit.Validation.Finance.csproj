@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Validation.Finance</PackageId>
+    <Description>Banking and payment identifier validators for Granit. Account/creditor identifiers (IBAN, BIC/SWIFT, SEPA Creditor Identifier) and domestic routing/clearing codes (US ABA, Australian/NZ BSB, Canadian routing, Indian IFSC), as FluentValidation extensions and server validators.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Validation.Finance.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Localization\Granit.Localization.csproj" />
+    <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+</Project>

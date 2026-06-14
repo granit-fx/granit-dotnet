@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Granit.Validation.Internal;
+namespace Granit.Validation.Finance.Internal;
 
 /// <summary>
 /// Validates International Bank Account Numbers (IBAN) per ISO 13616.

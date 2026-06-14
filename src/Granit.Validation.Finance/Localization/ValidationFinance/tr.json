@@ -1,0 +1,12 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Validation:Format:AbaRouting": "ABD ABA yönlendirme numarası geçersiz (geçerli sağlama toplamı ile 9 hane beklenir).",
+    "Validation:Format:BicSwift": "BIC/SWIFT kodu geçersiz (ISO 9362 uyarınca 8 veya 11 karakter bekleniyor).",
+    "Validation:Format:Bsb": "BSB kodu geçersiz (6 hane beklenir).",
+    "Validation:Format:CanadianRouting": "Kanada yönlendirme numarası geçersiz (5 haneli transit ve 3 haneli kurum beklenir).",
+    "Validation:Format:Iban": "IBAN geçersiz.",
+    "Validation:Format:Ifsc": "IFSC kodu geçersiz (RBI biçimine göre 11 karakter beklenir, örn. SBIN0001234).",
+    "Validation:Format:SepaCreditorIdentifier": "SEPA Alacaklı Tanımlayıcısı (SCI) geçersiz."
+  }
+}

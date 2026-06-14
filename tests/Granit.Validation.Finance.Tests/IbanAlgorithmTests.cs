@@ -1,8 +1,8 @@
-using Granit.Validation.Internal;
+using Granit.Validation.Finance.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Validation.Tests;
+namespace Granit.Validation.Finance.Tests;
 
 public sealed class IbanAlgorithmTests
 {

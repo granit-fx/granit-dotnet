@@ -1,0 +1,12 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Validation:Format:AbaRouting": "米国のABAルーティング番号が無効です（チェックサム付きの9桁が必要）。",
+    "Validation:Format:BicSwift": "BIC/SWIFT コードが無効です（ISO 9362 に基づき 8 文字または 11 文字が必要です）。",
+    "Validation:Format:Bsb": "BSBコードが無効です（6桁が必要）。",
+    "Validation:Format:CanadianRouting": "カナダのルーティング番号が無効です（5桁の支店番号と3桁の金融機関番号が必要）。",
+    "Validation:Format:Iban": "IBAN が無効です。",
+    "Validation:Format:Ifsc": "IFSCコードが無効です（RBI形式の11文字が必要、例: SBIN0001234）。",
+    "Validation:Format:SepaCreditorIdentifier": "SEPA 債権者識別子（SCI）が無効です。"
+  }
+}

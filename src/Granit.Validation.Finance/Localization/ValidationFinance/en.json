@@ -1,0 +1,12 @@
+{
+  "culture": "en",
+  "texts": {
+    "Validation:Format:AbaRouting": "The US ABA routing number is invalid (expected 9 digits with a valid checksum).",
+    "Validation:Format:BicSwift": "The BIC/SWIFT code is invalid (expected 8 or 11 characters per ISO 9362).",
+    "Validation:Format:Bsb": "The BSB code is invalid (expected 6 digits).",
+    "Validation:Format:CanadianRouting": "The Canadian routing number is invalid (expected a 5-digit transit and 3-digit institution).",
+    "Validation:Format:Iban": "The IBAN is invalid.",
+    "Validation:Format:Ifsc": "The IFSC code is invalid (expected 11 characters per RBI format, e.g. SBIN0001234).",
+    "Validation:Format:SepaCreditorIdentifier": "The SEPA Creditor Identifier (SCI) is invalid."
+  }
+}

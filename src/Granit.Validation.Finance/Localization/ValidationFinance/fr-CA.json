@@ -1,0 +1,9 @@
+{
+  "culture": "fr-CA",
+  "texts": {
+    "Validation:Format:AbaRouting": "Le numéro de routage ABA (États-Unis) est invalide (9 chiffres avec somme de contrôle attendue).",
+    "Validation:Format:Bsb": "Le code BSB est invalide (6 chiffres attendus).",
+    "Validation:Format:CanadianRouting": "Le numéro de routage canadien est invalide (transit à 5 chiffres et institution à 3 chiffres attendus).",
+    "Validation:Format:Ifsc": "Le code IFSC est invalide (11 caractères attendus selon le format RBI, p. ex. SBIN0001234)."
+  }
+}

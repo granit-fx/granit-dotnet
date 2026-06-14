@@ -1,0 +1,12 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Validation:Format:AbaRouting": "Het Amerikaanse ABA-routingnummer is ongeldig (9 cijfers met geldige controlesom verwacht).",
+    "Validation:Format:BicSwift": "De BIC/SWIFT-code is ongeldig (8 of 11 tekens verwacht, ISO 9362).",
+    "Validation:Format:Bsb": "De BSB-code is ongeldig (6 cijfers verwacht).",
+    "Validation:Format:CanadianRouting": "Het Canadese routingnummer is ongeldig (5-cijferig transit en 3-cijferige instelling verwacht).",
+    "Validation:Format:Iban": "Het IBAN-nummer is ongeldig.",
+    "Validation:Format:Ifsc": "De IFSC-code is ongeldig (11 tekens volgens RBI-formaat verwacht, bijv. SBIN0001234).",
+    "Validation:Format:SepaCreditorIdentifier": "De SEPA Creditor Identifier (SCI) is ongeldig."
+  }
+}

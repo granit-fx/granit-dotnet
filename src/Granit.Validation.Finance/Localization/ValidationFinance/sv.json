@@ -1,0 +1,12 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Validation:Format:AbaRouting": "Det amerikanska ABA-routingnumret är ogiltigt (9 siffror med giltig kontrollsumma förväntas).",
+    "Validation:Format:BicSwift": "BIC/SWIFT-koden är ogiltig (8 eller 11 tecken förväntas enligt ISO 9362).",
+    "Validation:Format:Bsb": "BSB-koden är ogiltig (6 siffror förväntas).",
+    "Validation:Format:CanadianRouting": "Det kanadensiska routingnumret är ogiltigt (5-siffrig transit och 3-siffrig institution förväntas).",
+    "Validation:Format:Iban": "IBAN är ogiltigt.",
+    "Validation:Format:Ifsc": "IFSC-koden är ogiltig (11 tecken enligt RBI-format förväntas, t.ex. SBIN0001234).",
+    "Validation:Format:SepaCreditorIdentifier": "SEPA-borgenärsidentifieraren (SCI) är ogiltig."
+  }
+}
