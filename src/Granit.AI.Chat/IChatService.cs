@@ -1,5 +1,6 @@
 using Granit.AI.Chat.Attachments;
 using Granit.AI.Chat.Mentions;
+using Granit.AI.Chat.Suggestions;
 
 namespace Granit.AI.Chat;
 
@@ -48,6 +49,12 @@ public sealed record ChatSendResult
 
     /// <summary>Total output tokens, if reported.</summary>
     public int? OutputTokens { get; init; }
+
+    /// <summary>
+    /// Typed, non-executing suggested actions surfaced alongside the answer (deep links the front
+    /// renders). Empty when no provider offered any. See <see cref="AISuggestedAction"/>.
+    /// </summary>
+    public IReadOnlyList<AISuggestedAction> SuggestedActions { get; init; } = [];
 }
 
 /// <summary>

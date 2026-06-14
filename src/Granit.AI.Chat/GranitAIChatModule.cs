@@ -41,5 +41,9 @@ public sealed class GranitAIChatModule : GranitModule
         // Per-user setting definitions (Granit.AI.Chat.*) are auto-discovered by GranitSettingsModule;
         // only the chat-capable workspace catalog for the settings UI needs registering here.
         context.Services.TryAddScoped<IChatWorkspaceCatalog, ChatWorkspaceCatalog>();
+
+        // The suggestion resolver is always present so a turn can carry suggested actions even
+        // before any module contributes a provider (it then resolves to none).
+        AIChatSuggestionsServiceCollectionExtensions.AddCoreServices(context.Services);
     }
 }

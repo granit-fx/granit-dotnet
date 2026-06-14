@@ -28,11 +28,20 @@ public sealed record AttachmentRequest(string Reference, string FileName, string
 /// <summary>
 /// A frame streamed over SSE for a send. <see cref="Type"/> discriminates the frame:
 /// <c>conversation</c> (carries <see cref="ConversationId"/>), <c>delta</c> (carries a
-/// <see cref="Content"/> chunk), or <c>usage</c> (carries the token counts).
+/// <see cref="Content"/> chunk), <c>usage</c> (carries the token counts), or <c>suggestions</c>
+/// (carries the typed <see cref="SuggestedActions"/>).
 /// </summary>
 public sealed record ChatStreamEvent(
     string Type,
     string? Content = null,
     Guid? ConversationId = null,
     int? InputTokens = null,
-    int? OutputTokens = null);
+    int? OutputTokens = null,
+    IReadOnlyList<SuggestedActionResponse>? SuggestedActions = null);
+
+/// <summary>A typed, non-executing suggested action (a deep link the front renders).</summary>
+/// <param name="Type">The suggestion type, e.g. <c>calendar.connect</c>.</param>
+/// <param name="Label">The display label for the call-to-action.</param>
+/// <param name="DeepLink">The deep link the front navigates to. Never auto-invoked.</param>
+/// <param name="Description">An optional one-line explanation of the suggestion.</param>
+public sealed record SuggestedActionResponse(string Type, string Label, string DeepLink, string? Description = null);

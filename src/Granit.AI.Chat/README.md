@@ -79,6 +79,36 @@ generic settings endpoints) tune the chat per user:
 
 The custom context never overrides the guardrails; it only refines behaviour.
 
+## Suggested actions
+
+The agent can surface typed, **non-executing** call-to-actions (deep links) alongside its answer —
+e.g. "connect a calendar" when none is linked. A module contributes a provider that detects its own
+gaps under the caller's ACLs; the framework gathers them onto the response (a `suggestions` SSE
+frame). v1 never executes a suggestion — it is display data plus a destination only.
+
+```csharp
+services.AddGranitChatSuggestions(s => s.Add<CalendarSuggestionProvider>());
+
+internal sealed class CalendarSuggestionProvider(ICalendarReader calendars, ICurrentUser user) : IAISuggestionProvider
+{
+    public async ValueTask<IReadOnlyList<AISuggestedAction>> GetSuggestionsAsync(
+        AISuggestionContext context, CancellationToken ct = default)
+    {
+        if (await calendars.IsConnectedAsync(ct))
+        {
+            return [];
+        }
+
+        return [new AISuggestedAction
+        {
+            Type = "calendar.connect",
+            Label = "Connect a calendar",
+            DeepLink = "/settings/integrations/calendar",
+        }];
+    }
+}
+```
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).

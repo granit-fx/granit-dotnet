@@ -4,6 +4,7 @@ using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Internal;
 using Granit.AI.Chat.Mentions;
 using Granit.AI.Chat.Settings;
+using Granit.AI.Chat.Suggestions;
 using Granit.AI.Options;
 using Granit.AI.Tools;
 using Granit.AI.Workspaces;
@@ -26,6 +27,7 @@ public sealed class ChatServiceTests
     private readonly IAIWorkspaceCapabilityResolver _capabilityResolver = Substitute.For<IAIWorkspaceCapabilityResolver>();
     private readonly IAIMentionContextResolver _mentionContextResolver = Substitute.For<IAIMentionContextResolver>();
     private readonly IAIAttachmentTextResolver _attachmentTextResolver = Substitute.For<IAIAttachmentTextResolver>();
+    private readonly IAISuggestionResolver _suggestionResolver = Substitute.For<IAISuggestionResolver>();
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
 
@@ -54,10 +56,12 @@ public sealed class ChatServiceTests
             .Returns((string?)null);
         _settingProvider.GetOrNullAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((string?)null);
+        _suggestionResolver.ResolveAsync(Arg.Any<AISuggestionContext>(), Arg.Any<CancellationToken>())
+            .Returns([]);
 
         return new ChatService(_store, _orchestrator, _workspaceProvider, _capabilityResolver,
-            _mentionContextResolver, _attachmentTextResolver, _settingProvider, _guidGenerator,
-            MsOptions.Create(new GranitAIOptions { DefaultWorkspace = "default" }));
+            _mentionContextResolver, _attachmentTextResolver, _suggestionResolver, _settingProvider,
+            _guidGenerator, MsOptions.Create(new GranitAIOptions { DefaultWorkspace = "default" }));
     }
 
     private static ChatSendRequest Request(
@@ -227,6 +231,20 @@ public sealed class ChatServiceTests
 
         await Should.ThrowAsync<ConversationNotFoundException>(
             () => service.SendAsync(Request(conversationId), TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task Suggested_actions_are_gathered_and_returned()
+    {
+        ChatService service = CreateService();
+        _suggestionResolver.ResolveAsync(Arg.Any<AISuggestionContext>(), Arg.Any<CancellationToken>())
+            .Returns([new AISuggestedAction { Type = "calendar.connect", Label = "Connect", DeepLink = "/settings/calendar" }]);
+
+        ChatSendResult result = await service.SendAsync(Request(), TestContext.Current.CancellationToken);
+
+        AISuggestedAction action = result.SuggestedActions.ShouldHaveSingleItem();
+        action.Type.ShouldBe("calendar.connect");
+        action.DeepLink.ShouldBe("/settings/calendar");
     }
 
     [Fact]

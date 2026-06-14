@@ -3,6 +3,7 @@ using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Mentions;
 using Granit.AI.Chat.Settings;
+using Granit.AI.Chat.Suggestions;
 using Granit.AI.Exceptions;
 using Granit.AI.Options;
 using Granit.AI.Tools;
@@ -25,6 +26,7 @@ internal sealed class ChatService(
     IAIWorkspaceCapabilityResolver capabilityResolver,
     IAIMentionContextResolver mentionContextResolver,
     IAIAttachmentTextResolver attachmentTextResolver,
+    IAISuggestionResolver suggestionResolver,
     ISettingProvider settingProvider,
     IGuidGenerator guidGenerator,
     IOptions<GranitAIOptions> aiOptions) : IChatService
@@ -111,6 +113,12 @@ internal sealed class ChatService(
                 cancellationToken).ConfigureAwait(false);
         }
 
+        // Gather typed, non-executing suggested actions from registered providers under the
+        // caller's ACLs. Ephemeral — surfaced with the answer, never persisted.
+        IReadOnlyList<AISuggestedAction> suggestedActions = await suggestionResolver
+            .ResolveAsync(new AISuggestionContext(request.OwnerId, request.Message), cancellationToken)
+            .ConfigureAwait(false);
+
         return new ChatSendResult
         {
             ConversationId = conversation.Id,
@@ -118,6 +126,7 @@ internal sealed class ChatService(
             MaxIterationsReached = result.MaxIterationsReached,
             InputTokens = result.InputTokens,
             OutputTokens = result.OutputTokens,
+            SuggestedActions = suggestedActions,
         };
     }
 

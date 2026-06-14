@@ -3146,7 +3146,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 7,
+      "line": 8,
       "members": []
     },
     {
@@ -3155,8 +3155,15 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 35,
-      "members": []
+      "line": 36,
+      "members": [
+        {
+          "name": "ConversationId",
+          "kind": "property",
+          "signature": "required Guid ConversationId",
+          "returnType": "required Guid"
+        }
+      ]
     },
     {
       "name": "Conversation",
@@ -3207,7 +3214,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 33,
+      "line": 34,
       "members": []
     },
     {
@@ -3315,6 +3322,15 @@
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "SuggestedActionResponse",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.SuggestedActionResponse",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
+      "line": 47,
       "members": []
     },
     {
@@ -3508,6 +3524,22 @@
       ]
     },
     {
+      "name": "AIChatSuggestionsServiceCollectionExtensions",
+      "fqn": "Granit.AI.Chat.Extensions.AIChatSuggestionsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Extensions/AIChatSuggestionsServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitChatSuggestions",
+          "kind": "method",
+          "signature": "AddGranitChatSuggestions(this IServiceCollection services, Action<AISuggestionRegistrationBuilder> configure)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "GranitAIChatModule",
       "fqn": "Granit.AI.Chat.GranitAIChatModule",
       "kind": "class",
@@ -3529,7 +3561,7 @@
       "kind": "interface",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 57,
+      "line": 64,
       "members": [
         {
           "name": "SendAsync",
@@ -3726,6 +3758,72 @@
           "kind": "method",
           "signature": "GetSelectableWorkspacesAsync(CancellationToken cancellationToken = default)",
           "returnType": "ValueTask<IReadOnlyList<string>>"
+        }
+      ]
+    },
+    {
+      "name": "AISuggestedAction",
+      "fqn": "Granit.AI.Chat.Suggestions.AISuggestedAction",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Suggestions/AISuggestedAction.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "AISuggestionContext",
+      "fqn": "Granit.AI.Chat.Suggestions.AISuggestionContext",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Suggestions/AISuggestionContext.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "AISuggestionRegistrationBuilder",
+      "fqn": "Granit.AI.Chat.Suggestions.AISuggestionRegistrationBuilder",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Suggestions/AISuggestionRegistrationBuilder.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Services",
+          "kind": "property",
+          "signature": "IServiceCollection Services",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "IAISuggestionProvider",
+      "fqn": "Granit.AI.Chat.Suggestions.IAISuggestionProvider",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Suggestions/IAISuggestionProvider.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "GetSuggestionsAsync",
+          "kind": "method",
+          "signature": "GetSuggestionsAsync(AISuggestionContext context, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<IReadOnlyList<AISuggestedAction>>"
+        }
+      ]
+    },
+    {
+      "name": "IAISuggestionResolver",
+      "fqn": "Granit.AI.Chat.Suggestions.IAISuggestionResolver",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Suggestions/IAISuggestionResolver.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(AISuggestionContext context, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<IReadOnlyList<AISuggestedAction>>"
         }
       ]
     },

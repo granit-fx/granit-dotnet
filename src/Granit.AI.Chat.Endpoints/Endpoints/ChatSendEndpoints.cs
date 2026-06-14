@@ -98,6 +98,14 @@ internal static class ChatSendEndpoints
         }
 
         yield return new ChatStreamEvent("usage", InputTokens: result.InputTokens, OutputTokens: result.OutputTokens);
+
+        if (result.SuggestedActions.Count > 0)
+        {
+            yield return new ChatStreamEvent(
+                "suggestions",
+                SuggestedActions: [.. result.SuggestedActions.Select(a =>
+                    new SuggestedActionResponse(a.Type, a.Label, a.DeepLink, a.Description))]);
+        }
     }
 
     /// <summary>Splits text into word-sized chunks (trailing space preserved) for token-like streaming.</summary>
