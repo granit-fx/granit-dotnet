@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AI.Chat.Privacy</PackageId>
+    <Description>Privacy integration for Granit.AI.Chat (ADR-067): a ConversationPrivacyDataProvider exporting the user's conversations for GDPR take-out, plus a personal-data deletion handler that erases their conversations on account deletion.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AI.Chat.Privacy.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI.Chat\Granit.AI.Chat.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.BlobStorage\Granit.Privacy.BlobStorage.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AI.Chat.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.AI.Chat (ADR-067): a distributed, cluster-wide recurring job that purges conversations past the configured retention window (GDPR data minimisation).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AI.Chat.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI.Chat\Granit.AI.Chat.csproj" />
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -4,8 +4,10 @@
     "projects": [
       "src/Granit.AI.Anthropic/Granit.AI.Anthropic.csproj",
       "src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj",
+      "src/Granit.AI.Chat.BackgroundJobs/Granit.AI.Chat.BackgroundJobs.csproj",
       "src/Granit.AI.Chat.Endpoints/Granit.AI.Chat.Endpoints.csproj",
       "src/Granit.AI.Chat.EntityFrameworkCore/Granit.AI.Chat.EntityFrameworkCore.csproj",
+      "src/Granit.AI.Chat.Privacy/Granit.AI.Chat.Privacy.csproj",
       "src/Granit.AI.Chat/Granit.AI.Chat.csproj",
       "src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj",
       "src/Granit.AI.EntityFrameworkCore/Granit.AI.EntityFrameworkCore.csproj",

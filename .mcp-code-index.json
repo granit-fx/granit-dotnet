@@ -45,6 +45,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.AI.Chat.BackgroundJobs",
+      "deps": [
+        "Granit.AI.Chat",
+        "Granit.BackgroundJobs"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.AI.Chat.Endpoints",
       "deps": [
         "Granit.AI.Chat",
@@ -60,6 +68,14 @@
       "deps": [
         "Granit.AI.Chat",
         "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.AI.Chat.Privacy",
+      "deps": [
+        "Granit.AI.Chat",
+        "Granit.Privacy.BlobStorage"
       ],
       "framework": "net10.0"
     },
@@ -3141,6 +3157,79 @@
       ]
     },
     {
+      "name": "GranitAIChatBackgroundJobsModule",
+      "fqn": "Granit.AI.Chat.BackgroundJobs.GranitAIChatBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.AI.Chat.BackgroundJobs",
+      "file": "src/Granit.AI.Chat.BackgroundJobs/GranitAIChatBackgroundJobsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IConversationRetentionService",
+      "fqn": "Granit.AI.Chat.BackgroundJobs.IConversationRetentionService",
+      "kind": "interface",
+      "project": "Granit.AI.Chat.BackgroundJobs",
+      "file": "src/Granit.AI.Chat.BackgroundJobs/IConversationRetentionService.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ConversationRetentionCleanupHandler",
+      "fqn": "Granit.AI.Chat.BackgroundJobs.Jobs.ConversationRetentionCleanupHandler",
+      "kind": "class",
+      "project": "Granit.AI.Chat.BackgroundJobs",
+      "file": "src/Granit.AI.Chat.BackgroundJobs/Jobs/ConversationRetentionCleanupHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ConversationRetentionCleanupJob _, IConversationRetentionService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ConversationRetentionCleanupJob",
+      "fqn": "Granit.AI.Chat.BackgroundJobs.Jobs.ConversationRetentionCleanupJob",
+      "kind": "record",
+      "project": "Granit.AI.Chat.BackgroundJobs",
+      "file": "src/Granit.AI.Chat.BackgroundJobs/Jobs/ConversationRetentionCleanupJob.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "GranitAIChatRetentionOptions",
+      "fqn": "Granit.AI.Chat.BackgroundJobs.Options.GranitAIChatRetentionOptions",
+      "kind": "class",
+      "project": "Granit.AI.Chat.BackgroundJobs",
+      "file": "src/Granit.AI.Chat.BackgroundJobs/Options/GranitAIChatRetentionOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "RetentionDays",
+          "kind": "property",
+          "signature": "int RetentionDays",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
       "name": "ChatSendRequest",
       "fqn": "Granit.AI.Chat.ChatSendRequest",
       "kind": "record",
@@ -3572,6 +3661,34 @@
       ]
     },
     {
+      "name": "IConversationDataManager",
+      "fqn": "Granit.AI.Chat.IConversationDataManager",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/IConversationDataManager.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "GetAllForOwnerAsync",
+          "kind": "method",
+          "signature": "GetAllForOwnerAsync(Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Conversation>>"
+        },
+        {
+          "name": "EraseOwnerAsync",
+          "kind": "method",
+          "signature": "EraseOwnerAsync(Guid? tenantId, Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        },
+        {
+          "name": "PurgeOlderThanAsync",
+          "kind": "method",
+          "signature": "PurgeOlderThanAsync(DateTimeOffset cutoff, int batchSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
       "name": "IConversationStore",
       "fqn": "Granit.AI.Chat.IConversationStore",
       "kind": "interface",
@@ -3724,6 +3841,104 @@
           "kind": "method",
           "signature": "new(StringComparer.OrdinalIgnoreCase)",
           "returnType": "HashSet<string> AllowedContentTypes { get; set; } ="
+        }
+      ]
+    },
+    {
+      "name": "ConversationPersonalDataDeletionHandler",
+      "fqn": "Granit.AI.Chat.Privacy.DataDeletion.ConversationPersonalDataDeletionHandler",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Privacy",
+      "file": "src/Granit.AI.Chat.Privacy/DataDeletion/ConversationPersonalDataDeletionHandler.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Handle",
+          "kind": "method",
+          "signature": "Handle(PersonalDataDeletionRequestedEto @event, IConversationDataManager dataManager, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AIChatPersonalDataExportHandler",
+      "fqn": "Granit.AI.Chat.Privacy.DataExport.AIChatPersonalDataExportHandler",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Privacy",
+      "file": "src/Granit.AI.Chat.Privacy/DataExport/AIChatPersonalDataExportHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataRequestedEto request, ConversationPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ConversationPrivacyDataProvider",
+      "fqn": "Granit.AI.Chat.Privacy.DataExport.ConversationPrivacyDataProvider",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Privacy",
+      "file": "src/Granit.AI.Chat.Privacy/DataExport/ConversationPrivacyDataProvider.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "DisplayKey",
+          "kind": "property",
+          "signature": "string DisplayKey",
+          "returnType": "string"
+        },
+        {
+          "name": "FeatureName",
+          "kind": "property",
+          "signature": "string? FeatureName",
+          "returnType": "string?"
+        },
+        {
+          "name": "HasDataAsync",
+          "kind": "method",
+          "signature": "HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyBuilderAIChatExtensions",
+      "fqn": "Granit.AI.Chat.Privacy.Extensions.PrivacyBuilderAIChatExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Privacy",
+      "file": "src/Granit.AI.Chat.Privacy/Extensions/PrivacyBuilderAIChatExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitAIChatPrivacyProvider",
+          "kind": "method",
+          "signature": "AddGranitAIChatPrivacyProvider(this GranitPrivacyBuilder builder)",
+          "returnType": "GranitPrivacyBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIChatPrivacyModule",
+      "fqn": "Granit.AI.Chat.Privacy.GranitAIChatPrivacyModule",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Privacy",
+      "file": "src/Granit.AI.Chat.Privacy/GranitAIChatPrivacyModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },
