@@ -39,7 +39,9 @@ public static class AIChatAttachmentsServiceCollectionExtensions
     internal static void AddCoreServices(IServiceCollection services)
     {
         services.AddOptions<GranitAIChatAttachmentOptions>()
-            .BindConfiguration(GranitAIChatAttachmentOptions.SectionName);
+            .BindConfiguration(GranitAIChatAttachmentOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.TryAddScoped<IAIAttachmentSource, NullAIAttachmentSource>();
         services.TryAddScoped<IAIAttachmentTextResolver, AIAttachmentTextResolver>();

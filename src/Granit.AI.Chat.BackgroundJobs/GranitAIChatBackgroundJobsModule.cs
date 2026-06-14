@@ -22,7 +22,9 @@ public sealed class GranitAIChatBackgroundJobsModule : GranitModule
     {
         context.Services
             .AddOptions<GranitAIChatRetentionOptions>()
-            .BindConfiguration(GranitAIChatRetentionOptions.SectionName);
+            .BindConfiguration(GranitAIChatRetentionOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         context.Services.TryAddTransient<IConversationRetentionService, ConversationRetentionService>();
     }

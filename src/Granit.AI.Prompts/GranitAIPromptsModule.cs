@@ -27,5 +27,7 @@ public sealed class GranitAIPromptsModule : GranitModule
         // source is registered by Granit.AI.Prompts.EntityFrameworkCore.
         context.Services.AddQueryDefinition<PromptTemplate, PromptTemplateQueryDefinition>();
         context.Services.AddExportDefinition<PromptTemplate, PromptTemplateExportDefinition>();
+        context.Services.AddQueryDefinition<PromptCategory, PromptCategoryQueryDefinition>();
+        context.Services.AddExportDefinition<PromptCategory, PromptCategoryExportDefinition>();
     }
 }

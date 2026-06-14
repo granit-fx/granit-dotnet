@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.AI.Chat.BackgroundJobs.Options;
 
 /// <summary>
@@ -14,8 +16,10 @@ public sealed class GranitAIChatRetentionOptions
     /// Conversations whose last activity is older than this many days are purged. 0 (default)
     /// disables retention purging entirely.
     /// </summary>
+    [Range(0, int.MaxValue)]
     public int RetentionDays { get; set; }
 
     /// <summary>Number of conversations deleted per batch. Default 500.</summary>
+    [Range(1, int.MaxValue)]
     public int CleanupBatchSize { get; set; } = 500;
 }

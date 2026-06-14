@@ -54,36 +54,36 @@ public sealed class ConversationPrivacyDataProvider(
             yield break;
         }
 
-        var dto = new ConversationsExportDto(
+        var export = new ConversationsExport(
             UserId: context.SubjectUserId,
             ConversationCount: conversations.Count,
             Conversations: [.. conversations.Select(Map)]);
 
         yield return await fragmentBuilder
-            .BuildJsonAsync(context, ProviderName, "ai-chat-conversations.json", dto, cancellationToken)
+            .BuildJsonAsync(context, ProviderName, "ai-chat-conversations.json", export, cancellationToken)
             .ConfigureAwait(false);
     }
 
-    private static ConversationExportDto Map(Conversation conversation) =>
+    private static ConversationExport Map(Conversation conversation) =>
         new(
             conversation.Id,
             conversation.Title,
             conversation.CreatedAt,
-            [.. conversation.Messages.Select(m => new MessageExportDto(m.Role.ToString(), m.Content, m.CreatedAt))]);
+            [.. conversation.Messages.Select(m => new MessageExport(m.Role.ToString(), m.Content, m.CreatedAt))]);
 }
 
-internal sealed record ConversationsExportDto(
+internal sealed record ConversationsExport(
     Guid UserId,
     int ConversationCount,
-    IReadOnlyList<ConversationExportDto> Conversations);
+    IReadOnlyList<ConversationExport> Conversations);
 
-internal sealed record ConversationExportDto(
+internal sealed record ConversationExport(
     Guid Id,
     string Title,
     DateTimeOffset CreatedAt,
-    IReadOnlyList<MessageExportDto> Messages);
+    IReadOnlyList<MessageExport> Messages);
 
-internal sealed record MessageExportDto(
+internal sealed record MessageExport(
     string Role,
     string Content,
     DateTimeOffset CreatedAt);

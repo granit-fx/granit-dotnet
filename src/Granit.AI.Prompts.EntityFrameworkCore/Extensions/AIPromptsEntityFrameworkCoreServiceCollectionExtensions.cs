@@ -42,6 +42,7 @@ public static class AIPromptsEntityFrameworkCoreServiceCollectionExtensions
 
         // Backs the catalogue admin grid + export (PromptTemplateQueryDefinition / ExportDefinition).
         services.TryAddScoped<IQueryableSource<PromptTemplate>, EfPromptTemplateQueryableSource>();
+        services.TryAddScoped<IQueryableSource<PromptCategory>, EfPromptCategoryQueryableSource>();
 
         return services;
     }

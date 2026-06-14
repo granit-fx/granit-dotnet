@@ -78,7 +78,7 @@ public sealed class ConversationPrivacyDataProviderTests
             Arg.Any<PrivacyExportContext>(),
             "ai-chat",
             "ai-chat-conversations.json",
-            Arg.Is<ConversationsExportDto>(d => d.ConversationCount == 1 && d.Conversations[0].Messages.Count == 1),
+            Arg.Is<ConversationsExport>(d => d.ConversationCount == 1 && d.Conversations[0].Messages.Count == 1),
             Arg.Any<CancellationToken>());
     }
 }

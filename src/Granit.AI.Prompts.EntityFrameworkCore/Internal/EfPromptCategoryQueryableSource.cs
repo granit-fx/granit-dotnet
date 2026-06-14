@@ -7,22 +7,22 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.AI.Prompts.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// EF Core <see cref="IQueryableSource{TEntity}"/> for <see cref="PromptTemplate"/>, backing the
-/// catalogue admin grid and export. When no tenant context is active (host admin) the multi-tenant
-/// query filter is bypassed so prompts are returned cross-tenant.
+/// EF Core <see cref="IQueryableSource{TEntity}"/> for <see cref="PromptCategory"/>, backing the
+/// category admin grid and export. When no tenant context is active (host admin) the multi-tenant
+/// query filter is bypassed so categories are returned cross-tenant.
 /// </summary>
-internal sealed class EfPromptTemplateQueryableSource(
+internal sealed class EfPromptCategoryQueryableSource(
     IDbContextFactory<AIPromptsDbContext> contextFactory,
     ICurrentTenant currentTenant)
-    : IQueryableSource<PromptTemplate>, IAsyncDisposable, IDisposable
+    : IQueryableSource<PromptCategory>, IAsyncDisposable, IDisposable
 {
     private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private AIPromptsDbContext? _context;
 
-    public IQueryable<PromptTemplate> GetQueryable()
+    public IQueryable<PromptCategory> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
-        IQueryable<PromptTemplate> query = _context.PromptTemplates.AsNoTracking();
+        IQueryable<PromptCategory> query = _context.PromptCategories.AsNoTracking();
         return _bypassTenantFilter
             ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             : query;

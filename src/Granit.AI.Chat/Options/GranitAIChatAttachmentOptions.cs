@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.AI.Chat.Options;
 
 /// <summary>
@@ -11,9 +13,11 @@ public sealed class GranitAIChatAttachmentOptions
     public const string SectionName = "AI:Chat:Attachments";
 
     /// <summary>Maximum number of attachments on a single turn. Default 5.</summary>
+    [Range(1, int.MaxValue)]
     public int MaxAttachments { get; set; } = 5;
 
     /// <summary>Maximum size, in bytes, of a single attachment. Default 10 MiB.</summary>
+    [Range(1, long.MaxValue)]
     public long MaxAttachmentBytes { get; set; } = 10 * 1024 * 1024;
 
     /// <summary>

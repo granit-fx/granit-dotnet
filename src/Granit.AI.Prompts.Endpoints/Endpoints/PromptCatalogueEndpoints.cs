@@ -47,20 +47,22 @@ internal static class PromptCatalogueEndpoints
         group.MapPost("/", CreateAsync)
             .WithName("CreatePrompt")
             .WithSummary("Creates a prompt owned by the caller.")
-            .WithDescription("Creates a private prompt with the given content, decoration, and categories, owned by the caller.")
+            .WithDescription("Creates a private prompt with the given content, decoration, and categories, owned by the caller. Returns 422 when a referenced category does not exist.")
             .Produces<PromptResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(AIPromptsPermissions.Templates.Manage);
 
         group.MapPut("/{id:guid}", UpdateAsync)
             .WithName("UpdatePrompt")
             .WithSummary("Updates one of the caller's own prompts.")
-            .WithDescription("Updates the prompt and bumps its version. System prompts are read-only and reported as not found; customise one to get an editable copy.")
+            .WithDescription("Updates the prompt and bumps its version. System prompts are read-only and reported as not found; customise one to get an editable copy. Returns 422 when a referenced category does not exist.")
             .Produces<PromptResponse>()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(AIPromptsPermissions.Templates.Manage);
 
         group.MapPost("/{id:guid}/customise", CustomiseAsync)
@@ -340,7 +342,7 @@ internal static class PromptCatalogueEndpoints
     }
 
     private static ProblemHttpResult UnknownCategory() =>
-        TypedResults.Problem(detail: "One or more categories do not exist.", statusCode: StatusCodes.Status400BadRequest);
+        TypedResults.Problem(detail: "One or more categories do not exist.", statusCode: StatusCodes.Status422UnprocessableEntity);
 
     private static HexColor? ParseColor(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : HexColor.Create(value);

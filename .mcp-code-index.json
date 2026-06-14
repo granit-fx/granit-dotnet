@@ -3260,7 +3260,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat.BackgroundJobs",
       "file": "src/Granit.AI.Chat.BackgroundJobs/Options/GranitAIChatRetentionOptions.cs",
-      "line": 8,
+      "line": 10,
       "members": [
         {
           "name": "RetentionDays",
@@ -3899,7 +3899,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/Options/GranitAIChatAttachmentOptions.cs",
-      "line": 8,
+      "line": 10,
       "members": [
         {
           "name": "MaxAttachments",
@@ -5446,6 +5446,22 @@
       ]
     },
     {
+      "name": "PromptCategoryExportDefinition",
+      "fqn": "Granit.AI.Prompts.Exports.PromptCategoryExportDefinition",
+      "kind": "class",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/Exports/PromptCategoryExportDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "PromptTemplateExportDefinition",
       "fqn": "Granit.AI.Prompts.Exports.PromptTemplateExportDefinition",
       "kind": "class",
@@ -5559,6 +5575,28 @@
       "file": "src/Granit.AI.Prompts/PromptTemplateEdit.cs",
       "line": 16,
       "members": []
+    },
+    {
+      "name": "PromptCategoryQueryDefinition",
+      "fqn": "Granit.AI.Prompts.Queries.PromptCategoryQueryDefinition",
+      "kind": "class",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/Queries/PromptCategoryQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(AIPromptsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
+        }
+      ]
     },
     {
       "name": "PromptTemplateQueryDefinition",
