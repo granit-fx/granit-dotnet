@@ -24705,6 +24705,22 @@
       ]
     },
     {
+      "name": "IpAddressAnonymizer",
+      "fqn": "Granit.Http.Security.IpAddressAnonymizer",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/IpAddressAnonymizer.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "Mask",
+          "kind": "method",
+          "signature": "Mask(IPAddress? address)",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
       "name": "HttpSecurityLocalizationResource",
       "fqn": "Granit.Http.Security.Localization.HttpSecurityLocalizationResource",
       "kind": "class",
