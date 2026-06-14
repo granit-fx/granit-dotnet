@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using System.Text.Json;
+using System.Runtime.CompilerServices;
 using Granit.AI.Endpoints.Dtos;
 using Granit.AI.Endpoints.Internal;
 using Granit.AI.Exceptions;
@@ -32,12 +32,12 @@ internal static class AIChatEndpoints
             .WithName("AIChatStream")
             .WithSummary("Streams a chat completion response via Server-Sent Events.")
             .WithDescription(
-                "Opens an SSE stream that emits incremental content chunks as they arrive from the provider. "
-                + "The stream ends with a [DONE] sentinel. If the provider returns an error after streaming has "
-                + "started, an SSE 'error' event is emitted before closing. "
-                + "Returns 404 if the workspace does not exist, 422 if the model is not found, "
-                + "or 502/503 if the provider is unavailable.")
-            .Produces<string>(StatusCodes.Status200OK, "text/event-stream")
+                "Opens an SSE stream that emits incremental 'delta' content frames as they arrive from the "
+                + "provider, then a 'usage' frame with the token counts; end-of-stream is the stream closing. "
+                + "A provider failure before any content is returned as an HTTP problem; a failure after "
+                + "streaming has started is emitted as an 'error' frame. Returns 404 if the workspace does "
+                + "not exist, or 502/503 if the provider is unavailable.")
+            .Produces<AIChatStreamEvent>(StatusCodes.Status200OK, "text/event-stream")
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status502BadGateway)
             .ProducesProblem(StatusCodes.Status503ServiceUnavailable);
@@ -88,14 +88,13 @@ internal static class AIChatEndpoints
             result.Duration));
     }
 
-    private static async Task StreamAsync(
+    private static async Task<Results<ServerSentEventsResult<AIChatStreamEvent>, ProblemHttpResult>> StreamAsync(
         string workspaceName,
         AIChatRequest request,
         [FromServices] IAIChatClientFactory chatClientFactory,
         [FromServices] IAIWorkspaceProvider workspaceProvider,
         [FromServices] IAIUsageTracker usageTracker,
         [FromServices] IAIUsageRecordFactory usageRecordFactory,
-        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         AIWorkspace? workspace = await workspaceProvider
@@ -104,8 +103,7 @@ internal static class AIChatEndpoints
 
         if (workspace is null)
         {
-            httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-            return;
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         IChatClient chatClient;
@@ -117,75 +115,90 @@ internal static class AIChatEndpoints
         }
         catch (Exception ex) when (ex is AIWorkspaceNotFoundException or AIProviderNotRegisteredException)
         {
-            // Do not echo ex.Message into the response body — return a stable, generic
-            // problem detail. The exception type already distinguishes the two config
-            // faults for server-side telemetry without leaking internal wiring detail.
-            httpContext.Response.StatusCode = StatusCodes.Status502BadGateway;
-            httpContext.Response.ContentType = "application/problem+json";
-            await JsonSerializer.SerializeAsync(
-                httpContext.Response.Body,
-                new { detail = "The requested AI workspace is not available.", status = 502 },
-                cancellationToken: cancellationToken).ConfigureAwait(false);
-            return;
+            return AIProviderExceptionMapper.MapException(ex);
         }
-
-        // CreateAsync builds a fresh client per call (no cache). A using declaration here
-        // disposes it on every exit path of the method (early returns + fall-through).
-        using IChatClient _ = chatClient;
 
         var messages = request.Messages
             .Select(m => new ChatMessage(MapRole(m.Role), m.Content))
             .ToList();
 
-        httpContext.Response.ContentType = "text/event-stream";
-        httpContext.Response.Headers.CacheControl = "no-cache";
-        httpContext.Response.Headers.Connection = "keep-alive";
+        // Peek the first update so a provider failure before any content surfaces as an HTTP problem
+        // (rate limit, timeout, model-not-found) rather than a 200 stream — preserving the contract the
+        // hand-rolled implementation had via its "headers not sent yet" guard.
+        IAsyncEnumerator<ChatResponseUpdate> updates = chatClient
+            .GetStreamingResponseAsync(messages, cancellationToken: cancellationToken)
+            .GetAsyncEnumerator(cancellationToken);
 
-        var stopwatch = Stopwatch.StartNew();
-        bool headersSent = false;
-        UsageContent? accumulatedUsage = null;
-
+        bool hasFirst;
         try
         {
-            await foreach (ChatResponseUpdate? update in chatClient.GetStreamingResponseAsync(
-                messages, cancellationToken: cancellationToken).ConfigureAwait(false))
-            {
-                foreach (UsageContent usage in update.Contents.OfType<UsageContent>())
-                {
-                    accumulatedUsage = usage;
-                }
-
-                foreach (TextContent content in update.Contents.OfType<TextContent>())
-                {
-                    headersSent = true;
-                    await httpContext.Response.WriteAsync(
-                        $"data: {JsonSerializer.Serialize(new { content = content.Text })}\n\n",
-                        cancellationToken).ConfigureAwait(false);
-                    await httpContext.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
-                }
-            }
+            hasFirst = await updates.MoveNextAsync().ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or IOException)
         {
-            if (!headersSent && !httpContext.Response.HasStarted)
-            {
-                httpContext.Response.ContentType = "application/problem+json";
-                ProblemHttpResult problem = AIProviderExceptionMapper.MapException(
-                    ex, workspace.Model, workspace.Provider);
-                await problem.ExecuteAsync(httpContext).ConfigureAwait(false);
-                return;
-            }
-
-            string errorMessage = AIProviderExceptionMapper.GetErrorMessage(
-                ex, workspace.Model, workspace.Provider);
-            await httpContext.Response.WriteAsync(
-                $"event: error\ndata: {JsonSerializer.Serialize(new { error = errorMessage })}\n\n",
-                CancellationToken.None).ConfigureAwait(false);
-            await httpContext.Response.Body.FlushAsync(CancellationToken.None).ConfigureAwait(false);
-            return;
+            await updates.DisposeAsync().ConfigureAwait(false);
+            chatClient.Dispose();
+            return AIProviderExceptionMapper.MapException(ex, workspace.Model, workspace.Provider);
         }
 
-        stopwatch.Stop();
+        return TypedResults.ServerSentEvents(StreamUpdatesAsync(
+            chatClient, updates, hasFirst, workspace, workspaceName, usageTracker, usageRecordFactory, cancellationToken));
+    }
+
+    private static async IAsyncEnumerable<AIChatStreamEvent> StreamUpdatesAsync(
+        IChatClient chatClient,
+        IAsyncEnumerator<ChatResponseUpdate> updates,
+        bool hasFirst,
+        AIWorkspace workspace,
+        string workspaceName,
+        IAIUsageTracker usageTracker,
+        IAIUsageRecordFactory usageRecordFactory,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        using IChatClient client = chatClient;
+        await using IAsyncEnumerator<ChatResponseUpdate> enumerator = updates;
+
+        long startTimestamp = Stopwatch.GetTimestamp();
+        UsageContent? accumulatedUsage = null;
+        string? streamError = null;
+
+        bool hasCurrent = hasFirst;
+        while (hasCurrent)
+        {
+            ChatResponseUpdate update = enumerator.Current;
+
+            foreach (UsageContent usage in update.Contents.OfType<UsageContent>())
+            {
+                accumulatedUsage = usage;
+            }
+
+            foreach (TextContent content in update.Contents.OfType<TextContent>())
+            {
+                yield return new AIChatStreamEvent("delta", Content: content.Text);
+            }
+
+            try
+            {
+                hasCurrent = await enumerator.MoveNextAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or IOException)
+            {
+                // A cancelled request has no client left to receive an error frame; just stop.
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    yield break;
+                }
+
+                streamError = AIProviderExceptionMapper.GetErrorMessage(ex, workspace.Model, workspace.Provider);
+                break;
+            }
+        }
+
+        if (streamError is not null)
+        {
+            yield return new AIChatStreamEvent("error", Error: streamError);
+            yield break;
+        }
 
         if (accumulatedUsage is not null)
         {
@@ -198,19 +211,12 @@ internal static class AIChatEndpoints
                 workspace.Model,
                 inputTokens,
                 outputTokens,
-                stopwatch.Elapsed);
+                Stopwatch.GetElapsedTime(startTimestamp));
 
             await usageTracker.RecordAsync(usageRecord, CancellationToken.None).ConfigureAwait(false);
 
-            await httpContext.Response.WriteAsync(
-                $"event: usage\ndata: {JsonSerializer.Serialize(new { inputTokens, outputTokens })}\n\n",
-                cancellationToken).ConfigureAwait(false);
-            await httpContext.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
+            yield return new AIChatStreamEvent("usage", InputTokens: inputTokens, OutputTokens: outputTokens);
         }
-
-        await httpContext.Response.WriteAsync("data: [DONE]\n\n", cancellationToken)
-            .ConfigureAwait(false);
-        await httpContext.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private static ChatRole MapRole(string role) => role switch

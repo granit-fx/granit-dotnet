@@ -4163,6 +4163,15 @@
       "members": []
     },
     {
+      "name": "AIChatStreamEvent",
+      "fqn": "Granit.AI.Endpoints.Dtos.AIChatStreamEvent",
+      "kind": "record",
+      "project": "Granit.AI.Endpoints",
+      "file": "src/Granit.AI.Endpoints/Dtos/AIChatStreamEvent.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "AIChatUsageResponse",
       "fqn": "Granit.AI.Endpoints.Dtos.AIChatUsageResponse",
       "kind": "record",
