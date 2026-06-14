@@ -40,6 +40,25 @@ internal sealed class EfConversationStore(IDbContextFactory<AIChatDbContext> con
             .ConfigureAwait(false);
     }
 
+    public async Task<bool> AppendMessagesAsync(
+        Guid id, Guid ownerId, IReadOnlyList<Message> messages, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(messages);
+
+        await using AIChatDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        bool owned = await context.Conversations
+            .AnyAsync(c => c.Id == id && c.OwnerId == ownerId, cancellationToken)
+            .ConfigureAwait(false);
+        if (!owned)
+        {
+            return false;
+        }
+
+        context.Set<Message>().AddRange(messages);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return true;
+    }
+
     public async Task<bool> RenameAsync(Guid id, Guid ownerId, string title, CancellationToken cancellationToken = default)
     {
         await using AIChatDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);

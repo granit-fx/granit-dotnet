@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:AIChat": "AI 채팅",
     "Permission:AIChat.Conversations.Read": "내 대화 보기",
+    "Permission:AIChat.Conversations.Send": "내 대화에서 메시지 보내기",
     "Permission:AIChat.Conversations.Manage": "내 대화 만들기 및 이름 변경",
     "Permission:AIChat.Conversations.Delete": "내 대화 삭제"
   }

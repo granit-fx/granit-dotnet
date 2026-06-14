@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:AIChat": "Yapay Zeka Sohbeti",
     "Permission:AIChat.Conversations.Read": "Sohbetlerinizi görüntüleyin",
+    "Permission:AIChat.Conversations.Send": "Sohbetlerinizde mesaj gönderin",
     "Permission:AIChat.Conversations.Manage": "Sohbetlerinizi oluşturun ve yeniden adlandırın",
     "Permission:AIChat.Conversations.Delete": "Sohbetlerinizi silin"
   }

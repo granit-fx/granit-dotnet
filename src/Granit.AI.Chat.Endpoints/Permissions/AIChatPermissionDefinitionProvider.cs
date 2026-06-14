@@ -21,6 +21,10 @@ internal sealed class AIChatPermissionDefinitionProvider : IPermissionDefinition
             LocalizableString.Create<AIChatEndpointsLocalizationResource>("Permission:AIChat.Conversations.Read"));
 
         group.AddPermission(
+            AIChatPermissions.Conversations.Send,
+            LocalizableString.Create<AIChatEndpointsLocalizationResource>("Permission:AIChat.Conversations.Send"));
+
+        group.AddPermission(
             AIChatPermissions.Conversations.Manage,
             LocalizableString.Create<AIChatEndpointsLocalizationResource>("Permission:AIChat.Conversations.Manage"));
 

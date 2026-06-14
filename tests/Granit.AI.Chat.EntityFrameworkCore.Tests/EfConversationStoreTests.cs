@@ -75,6 +75,24 @@ public sealed class EfConversationStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task AppendMessages_adds_to_the_owner_conversation_and_rejects_others()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Chat", "first");
+
+        Message[] toAppend =
+        [
+            Message.Create(Guid.NewGuid(), seeded.Id, MessageRole.User, "second"),
+            Message.Create(Guid.NewGuid(), seeded.Id, MessageRole.Assistant, "answer"),
+        ];
+
+        (await _sut.AppendMessagesAsync(seeded.Id, UserB, toAppend, TestContext.Current.CancellationToken)).ShouldBeFalse();
+        (await _sut.AppendMessagesAsync(seeded.Id, UserA, toAppend, TestContext.Current.CancellationToken)).ShouldBeTrue();
+
+        Conversation? loaded = await _sut.GetAsync(seeded.Id, UserA, TestContext.Current.CancellationToken);
+        loaded!.Messages.Count.ShouldBe(3);
+    }
+
+    [Fact]
     public async Task Delete_succeeds_for_the_owner_and_fails_for_others()
     {
         Conversation seeded = await SeedAsync(UserA, "Doomed");

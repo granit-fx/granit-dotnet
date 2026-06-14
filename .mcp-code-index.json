@@ -35,7 +35,10 @@
     {
       "name": "Granit.AI.Chat",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.AI",
+        "Granit.AI.Tools",
+        "Granit.Guids"
       ],
       "framework": "net10.0"
     },
@@ -3086,6 +3089,24 @@
       ]
     },
     {
+      "name": "ChatSendRequest",
+      "fqn": "Granit.AI.Chat.ChatSendRequest",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/IChatService.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "ChatSendResult",
+      "fqn": "Granit.AI.Chat.ChatSendResult",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/IChatService.cs",
+      "line": 20,
+      "members": []
+    },
+    {
       "name": "Conversation",
       "fqn": "Granit.AI.Chat.Domain.Conversation",
       "kind": "class",
@@ -3198,6 +3219,15 @@
           "returnType": "ConversationSummaryResponse"
         }
       ]
+    },
+    {
+      "name": "SendMessageRequest",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.SendMessageRequest",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
+      "line": 7,
+      "members": []
     },
     {
       "name": "AIChatEndpointRouteBuilderExtensions",
@@ -3329,13 +3359,54 @@
       "members": []
     },
     {
+      "name": "ConversationNotFoundException",
+      "fqn": "Granit.AI.Chat.Exceptions.ConversationNotFoundException",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Exceptions/ConversationNotFoundException.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "WorkspaceNotChatCapableException",
+      "fqn": "Granit.AI.Chat.Exceptions.WorkspaceNotChatCapableException",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Exceptions/WorkspaceNotChatCapableException.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "GranitAIChatModule",
       "fqn": "Granit.AI.Chat.GranitAIChatModule",
       "kind": "class",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/GranitAIChatModule.cs",
-      "line": 11,
-      "members": []
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IChatService",
+      "fqn": "Granit.AI.Chat.IChatService",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/IChatService.cs",
+      "line": 42,
+      "members": [
+        {
+          "name": "SendAsync",
+          "kind": "method",
+          "signature": "SendAsync(ChatSendRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ChatSendResult>"
+        }
+      ]
     },
     {
       "name": "IConversationStore",
@@ -3362,6 +3433,12 @@
           "kind": "method",
           "signature": "ListAsync(Guid ownerId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<Conversation>>"
+        },
+        {
+          "name": "AppendMessagesAsync",
+          "kind": "method",
+          "signature": "AppendMessagesAsync(Guid id, Guid ownerId, IReadOnlyList<Message> messages, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         },
         {
           "name": "RenameAsync",

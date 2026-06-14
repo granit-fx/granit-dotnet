@@ -27,6 +27,7 @@ public static class AIChatEndpointRouteBuilderExtensions
             .WithTags(options.TagName);
 
         group.MapConversationEndpoints();
+        group.MapChatSendEndpoint();
         return group;
     }
 }

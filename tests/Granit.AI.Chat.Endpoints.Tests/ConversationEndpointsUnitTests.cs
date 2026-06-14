@@ -32,8 +32,23 @@ public sealed class ConversationEndpointsUnitTests
         PermissionGroup group = context.Groups.ShouldHaveSingleItem();
         group.Name.ShouldBe("AIChat");
         group.Permissions.Select(p => p.Name).ShouldBe(
-            ["AIChat.Conversations.Read", "AIChat.Conversations.Manage", "AIChat.Conversations.Delete"],
+            [
+                "AIChat.Conversations.Read",
+                "AIChat.Conversations.Send",
+                "AIChat.Conversations.Manage",
+                "AIChat.Conversations.Delete",
+            ],
             ignoreOrder: true);
+    }
+
+    [Fact]
+    public void Send_validator_rejects_blank_and_overlong_messages()
+    {
+        SendMessageRequestValidator validator = new();
+
+        validator.Validate(new SendMessageRequest("")).IsValid.ShouldBeFalse();
+        validator.Validate(new SendMessageRequest(new string('x', 16001))).IsValid.ShouldBeFalse();
+        validator.Validate(new SendMessageRequest("What changed last week?")).IsValid.ShouldBeTrue();
     }
 
     [Fact]

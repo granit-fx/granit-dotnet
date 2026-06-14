@@ -18,6 +18,15 @@ public interface IConversationStore
     /// <summary>Returns the owner's conversations (without messages), newest first.</summary>
     Task<IReadOnlyList<Conversation>> ListAsync(Guid ownerId, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Appends messages to the owner's conversation; <see langword="false"/> if it is not theirs.
+    /// </summary>
+    Task<bool> AppendMessagesAsync(
+        Guid id,
+        Guid ownerId,
+        IReadOnlyList<Message> messages,
+        CancellationToken cancellationToken = default);
+
     /// <summary>Renames the owner's conversation; <see langword="false"/> if it is not theirs.</summary>
     Task<bool> RenameAsync(Guid id, Guid ownerId, string title, CancellationToken cancellationToken = default);
 

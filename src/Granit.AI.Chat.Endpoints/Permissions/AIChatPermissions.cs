@@ -15,6 +15,9 @@ public static class AIChatPermissions
         /// <summary>List and read one's own conversations.</summary>
         public const string Read = "AIChat.Conversations.Read";
 
+        /// <summary>Send messages and receive answers in one's own conversations.</summary>
+        public const string Send = "AIChat.Conversations.Send";
+
         /// <summary>Create and rename one's own conversations.</summary>
         public const string Manage = "AIChat.Conversations.Manage";
 

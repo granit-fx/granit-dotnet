@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:AIChat": "AI Chat",
     "Permission:AIChat.Conversations.Read": "View your conversations",
+    "Permission:AIChat.Conversations.Send": "Send messages in your conversations",
     "Permission:AIChat.Conversations.Manage": "Create and rename your conversations",
     "Permission:AIChat.Conversations.Delete": "Delete your conversations"
   }

@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:AIChat": "KI-Chat",
     "Permission:AIChat.Conversations.Read": "Ihre Konversationen anzeigen",
+    "Permission:AIChat.Conversations.Send": "Nachrichten in Ihren Konversationen senden",
     "Permission:AIChat.Conversations.Manage": "Ihre Konversationen erstellen und umbenennen",
     "Permission:AIChat.Conversations.Delete": "Ihre Konversationen löschen"
   }
