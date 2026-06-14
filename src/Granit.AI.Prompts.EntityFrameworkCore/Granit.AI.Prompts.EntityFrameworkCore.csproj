@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AI.Prompts.EntityFrameworkCore</PackageId>
+    <Description>EF Core persistence for Granit.AI.Prompts (ADR-067): an isolated, tenant-aware DbContext and the owner-scoped IPromptTemplateStore for the prompt catalogue.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AI.Prompts.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI.Prompts\Granit.AI.Prompts.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

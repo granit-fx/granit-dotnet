@@ -129,6 +129,21 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.AI.Prompts",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.AI.Prompts.EntityFrameworkCore",
+      "deps": [
+        "Granit.AI.Prompts",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.AI.StackExchangeRedis",
       "deps": [
         "Granit.AI"
@@ -5112,6 +5127,122 @@
           "kind": "method",
           "signature": "Wrap(string content)",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PromptTemplate",
+      "fqn": "Granit.AI.Prompts.Domain.PromptTemplate",
+      "kind": "class",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/Domain/PromptTemplate.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ShortDescription",
+          "kind": "property",
+          "signature": "string ShortDescription",
+          "returnType": "string"
+        },
+        {
+          "name": "Content",
+          "kind": "property",
+          "signature": "string Content",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "AIPromptsEntityFrameworkCoreServiceCollectionExtensions",
+      "fqn": "Granit.AI.Prompts.EntityFrameworkCore.Extensions.AIPromptsEntityFrameworkCoreServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.EntityFrameworkCore",
+      "file": "src/Granit.AI.Prompts.EntityFrameworkCore/Extensions/AIPromptsEntityFrameworkCoreServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitAIPromptsEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitAIPromptsEntityFrameworkCore(this IServiceCollection services, Action<DbContextOptionsBuilder> configureShared, Action<DbContextOptionsBuilder, string>? configureDatabasePerTenant = null, Action<DbContextOptionsBuilder>? configureSchemaPerTenant = null, Action<TenantSchemaOptions>? configureTenantSchema = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "AIPromptsModelBuilderExtensions",
+      "fqn": "Granit.AI.Prompts.EntityFrameworkCore.Extensions.AIPromptsModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.EntityFrameworkCore",
+      "file": "src/Granit.AI.Prompts.EntityFrameworkCore/Extensions/AIPromptsModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureAIPromptsModule",
+          "kind": "method",
+          "signature": "ConfigureAIPromptsModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIPromptsDbProperties",
+      "fqn": "Granit.AI.Prompts.EntityFrameworkCore.GranitAIPromptsDbProperties",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.EntityFrameworkCore",
+      "file": "src/Granit.AI.Prompts.EntityFrameworkCore/GranitAIPromptsDbProperties.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIPromptsEntityFrameworkCoreModule",
+      "fqn": "Granit.AI.Prompts.EntityFrameworkCore.GranitAIPromptsEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.EntityFrameworkCore",
+      "file": "src/Granit.AI.Prompts.EntityFrameworkCore/GranitAIPromptsEntityFrameworkCoreModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "GranitAIPromptsModule",
+      "fqn": "Granit.AI.Prompts.GranitAIPromptsModule",
+      "kind": "class",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/GranitAIPromptsModule.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "IPromptTemplateStore",
+      "fqn": "Granit.AI.Prompts.IPromptTemplateStore",
+      "kind": "interface",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/IPromptTemplateStore.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(PromptTemplate prompt, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PromptTemplate>"
+        },
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PromptTemplate?>"
+        },
+        {
+          "name": "ListCatalogueAsync",
+          "kind": "method",
+          "signature": "ListCatalogueAsync(Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PromptTemplate>>"
         }
       ]
     },
@@ -18573,6 +18704,28 @@
           "name": "FileName",
           "kind": "method",
           "signature": "FileName(string value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "HexColor",
+      "fqn": "Granit.Domain.ValueObjects.HexColor",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/HexColor.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string value)",
+          "returnType": "required string Value { get; init; } public HexColor"
+        },
+        {
+          "name": "HexColor",
+          "kind": "method",
+          "signature": "HexColor(string value)",
           "returnType": "implicit operator"
         }
       ]

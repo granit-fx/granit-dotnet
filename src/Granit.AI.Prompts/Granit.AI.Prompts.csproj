@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AI.Prompts</PackageId>
+    <Description>User-facing prompt catalogue for Granit (ADR-067): the PromptTemplate aggregate (owned, multi-tenant, versioned, icon+colour) and the IPromptTemplateStore abstraction behind the chat '/' picker.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AI.Prompts.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

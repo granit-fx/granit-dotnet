@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <!-- justification: the SQLite test harness's SqliteCompatibleModelCustomizer derives from
+         RelationalModelCustomizer and resolves ModelCustomizerDependencies — EF Core internal APIs
+         (EF1001) — to remap DateTimeOffset for SQLite. Test-only; the shipped package never touches them. -->
+    <NoWarn>$(NoWarn);EF1001</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.AI.Prompts.EntityFrameworkCore\Granit.AI.Prompts.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>
