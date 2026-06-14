@@ -38,6 +38,9 @@ internal sealed partial class AIToolOrchestrator(
     private static readonly JsonElement EmptyArguments =
         JsonDocument.Parse("{}").RootElement.Clone();
 
+    /// <summary>Bounded tag value for a model-issued call that names no registered tool.</summary>
+    private const string UnknownToolTag = "<unknown>";
+
     public async Task<AIOrchestrationResult> RunAsync(
         AIOrchestrationRequest request,
         CancellationToken cancellationToken = default)
@@ -146,10 +149,14 @@ internal sealed partial class AIToolOrchestrator(
                     Truncated = truncated,
                 });
 
-                metrics.RecordInvocation(tenantId, call.Name, succeeded ? "success" : "error");
+                // The model can emit (or be steered into emitting) arbitrary function-call names, so
+                // tag metrics by the resolved tool only — an unrecognised name collapses to a single
+                // bounded value, keeping tool-name cardinality bounded by the registered tool set.
+                string toolTag = toolMap.ContainsKey(call.Name) ? call.Name : UnknownToolTag;
+                metrics.RecordInvocation(tenantId, toolTag, succeeded ? "success" : "error");
                 if (truncated)
                 {
-                    metrics.RecordTruncation(tenantId, call.Name);
+                    metrics.RecordTruncation(tenantId, toolTag);
                 }
 
                 interrupt ??= callInterrupt;

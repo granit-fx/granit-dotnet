@@ -60,6 +60,7 @@
         "Granit.Authorization",
         "Granit.Guids",
         "Granit.Http.ApiDocumentation",
+        "Granit.Http.RateLimiting",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -157,6 +158,14 @@
         "Granit.Guids",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.AI.Prompts.Privacy",
+      "deps": [
+        "Granit.AI.Prompts",
+        "Granit.Privacy.BlobStorage"
       ],
       "framework": "net10.0"
     },
@@ -3521,7 +3530,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/GranitAIChatEndpointsModule.cs",
-      "line": 19,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -3560,6 +3569,15 @@
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Permissions/AIChatPermissions.cs",
       "line": 7,
+      "members": []
+    },
+    {
+      "name": "AIChatRateLimitPolicies",
+      "fqn": "Granit.AI.Chat.Endpoints.Permissions.AIChatRateLimitPolicies",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Permissions/AIChatRateLimitPolicies.cs",
+      "line": 23,
       "members": []
     },
     {
@@ -5528,6 +5546,28 @@
       ]
     },
     {
+      "name": "IPromptTemplateDataManager",
+      "fqn": "Granit.AI.Prompts.IPromptTemplateDataManager",
+      "kind": "interface",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/IPromptTemplateDataManager.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "GetAllForOwnerAsync",
+          "kind": "method",
+          "signature": "GetAllForOwnerAsync(Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PromptTemplate>>"
+        },
+        {
+          "name": "EraseOwnerAsync",
+          "kind": "method",
+          "signature": "EraseOwnerAsync(Guid? tenantId, Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
       "name": "IPromptTemplateStore",
       "fqn": "Granit.AI.Prompts.IPromptTemplateStore",
       "kind": "interface",
@@ -5564,6 +5604,104 @@
           "kind": "method",
           "signature": "DeleteAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "PromptTemplatePersonalDataDeletionHandler",
+      "fqn": "Granit.AI.Prompts.Privacy.DataDeletion.PromptTemplatePersonalDataDeletionHandler",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.Privacy",
+      "file": "src/Granit.AI.Prompts.Privacy/DataDeletion/PromptTemplatePersonalDataDeletionHandler.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Handle",
+          "kind": "method",
+          "signature": "Handle(PersonalDataDeletionRequestedEto @event, IPromptTemplateDataManager dataManager, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AIPromptsPersonalDataExportHandler",
+      "fqn": "Granit.AI.Prompts.Privacy.DataExport.AIPromptsPersonalDataExportHandler",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.Privacy",
+      "file": "src/Granit.AI.Prompts.Privacy/DataExport/AIPromptsPersonalDataExportHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataRequestedEto request, PromptTemplatePrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PromptTemplatePrivacyDataProvider",
+      "fqn": "Granit.AI.Prompts.Privacy.DataExport.PromptTemplatePrivacyDataProvider",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.Privacy",
+      "file": "src/Granit.AI.Prompts.Privacy/DataExport/PromptTemplatePrivacyDataProvider.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "DisplayKey",
+          "kind": "property",
+          "signature": "string DisplayKey",
+          "returnType": "string"
+        },
+        {
+          "name": "FeatureName",
+          "kind": "property",
+          "signature": "string? FeatureName",
+          "returnType": "string?"
+        },
+        {
+          "name": "HasDataAsync",
+          "kind": "method",
+          "signature": "HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyBuilderAIPromptsExtensions",
+      "fqn": "Granit.AI.Prompts.Privacy.Extensions.PrivacyBuilderAIPromptsExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.Privacy",
+      "file": "src/Granit.AI.Prompts.Privacy/Extensions/PrivacyBuilderAIPromptsExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitAIPromptsPrivacyProvider",
+          "kind": "method",
+          "signature": "AddGranitAIPromptsPrivacyProvider(this GranitPrivacyBuilder builder)",
+          "returnType": "GranitPrivacyBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIPromptsPrivacyModule",
+      "fqn": "Granit.AI.Prompts.Privacy.GranitAIPromptsPrivacyModule",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.Privacy",
+      "file": "src/Granit.AI.Prompts.Privacy/GranitAIPromptsPrivacyModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

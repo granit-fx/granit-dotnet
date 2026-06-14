@@ -40,6 +40,9 @@ public static class AIPromptsEntityFrameworkCoreServiceCollectionExtensions
         services.TryAddScoped<IPromptTemplateStore, EfPromptTemplateStore>();
         services.TryAddScoped<IPromptCategoryStore, EfPromptCategoryStore>();
 
+        // Privacy/data-lifecycle operations (export + erasure), used by Granit.AI.Prompts.Privacy.
+        services.TryAddScoped<IPromptTemplateDataManager, EfPromptTemplateDataManager>();
+
         // Backs the catalogue admin grid + export (PromptTemplateQueryDefinition / ExportDefinition).
         services.TryAddScoped<IQueryableSource<PromptTemplate>, EfPromptTemplateQueryableSource>();
         services.TryAddScoped<IQueryableSource<PromptCategory>, EfPromptCategoryQueryableSource>();

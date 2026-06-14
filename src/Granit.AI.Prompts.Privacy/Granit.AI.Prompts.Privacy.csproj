@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AI.Prompts.Privacy</PackageId>
+    <Description>Privacy integration for Granit.AI.Prompts (ADR-067): a PromptTemplatePrivacyDataProvider exporting the user's own prompts for GDPR take-out, plus a personal-data deletion handler that erases them on account deletion. Framework-seeded system prompts are never affected.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AI.Prompts.Privacy.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI.Prompts\Granit.AI.Prompts.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.BlobStorage\Granit.Privacy.BlobStorage.csproj" />
+  </ItemGroup>
+
+</Project>

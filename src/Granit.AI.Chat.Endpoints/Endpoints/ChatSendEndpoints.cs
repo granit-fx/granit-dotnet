@@ -5,6 +5,7 @@ using Granit.AI.Chat.Endpoints.Permissions;
 using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Mentions;
 using Granit.AI.Exceptions;
+using Granit.Http.RateLimiting.AspNetCore;
 using Granit.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -32,7 +33,11 @@ internal static class ChatSendEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
-            .RequireAuthorization(AIChatPermissions.Conversations.Send);
+            .ProducesProblem(StatusCodes.Status429TooManyRequests)
+            .RequireAuthorization(AIChatPermissions.Conversations.Send)
+            // The agentic loop costs real provider spend per call; bound per-user volume to prevent
+            // a "denial of wallet". No-op until the host configures the ai-chat-send policy.
+            .RequireGranitRateLimiting(AIChatRateLimitPolicies.Send);
 
         return group;
     }
