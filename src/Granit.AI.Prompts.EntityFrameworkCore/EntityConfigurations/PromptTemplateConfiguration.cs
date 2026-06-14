@@ -31,5 +31,10 @@ internal sealed class PromptTemplateConfiguration : IEntityTypeConfiguration<Pro
         // Catalogue listing: system prompts + the owner's, within the tenant, ordered by name.
         builder.HasIndex(e => new { e.TenantId, e.IsSystem, e.OwnerId, e.Name })
             .HasDatabaseName($"ix_{GranitAIPromptsDbProperties.DbTablePrefix}templates_tenant_system_owner_name");
+
+        builder.HasMany(e => e.CategoryLinks)
+            .WithOne()
+            .HasForeignKey(l => l.PromptTemplateId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -101,12 +101,27 @@ public sealed class PromptTemplate : FullAuditedAggregateRoot, IMultiTenant, IOw
     /// <summary>Owning tenant; stamped by the interceptor.</summary>
     public Guid? TenantId { get; private set; }
 
+    /// <summary>The category links (many-to-many) for this prompt. A prompt may sit in several categories.</summary>
+    public List<PromptTemplateCategory> CategoryLinks { get; private set; } = [];
+
     /// <inheritdoc/>
     Guid? IMultiTenant.TenantId
     {
         get => TenantId;
         set => TenantId = value;
     }
+
+    /// <summary>Assigns the prompt to a category (idempotent — a repeated assignment is ignored).</summary>
+    public void AssignCategory(Guid linkId, Guid categoryId)
+    {
+        if (!CategoryLinks.Any(l => l.CategoryId == categoryId))
+        {
+            CategoryLinks.Add(PromptTemplateCategory.Create(linkId, Id, categoryId));
+        }
+    }
+
+    /// <summary>Removes all category assignments.</summary>
+    public void ClearCategories() => CategoryLinks.Clear();
 
     /// <summary>Updates the editable fields and bumps the <see cref="Version"/>.</summary>
     public void Edit(string name, string shortDescription, string content, string? icon, HexColor? iconColor)

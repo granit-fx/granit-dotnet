@@ -5131,6 +5131,15 @@
       ]
     },
     {
+      "name": "PromptCategory",
+      "fqn": "Granit.AI.Prompts.Domain.PromptCategory",
+      "kind": "class",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/Domain/PromptCategory.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "PromptTemplate",
       "fqn": "Granit.AI.Prompts.Domain.PromptTemplate",
       "kind": "class",
@@ -5149,8 +5158,29 @@
           "kind": "property",
           "signature": "string Content",
           "returnType": "string"
+        },
+        {
+          "name": "Icon",
+          "kind": "property",
+          "signature": "string? Icon",
+          "returnType": "string?"
+        },
+        {
+          "name": "Edit",
+          "kind": "method",
+          "signature": "Edit(string name, string shortDescription, string content, string? icon, HexColor? iconColor)",
+          "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "PromptTemplateCategory",
+      "fqn": "Granit.AI.Prompts.Domain.PromptTemplateCategory",
+      "kind": "class",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/Domain/PromptTemplateCategory.cs",
+      "line": 9,
+      "members": []
     },
     {
       "name": "AIPromptsEntityFrameworkCoreServiceCollectionExtensions",
@@ -5217,6 +5247,40 @@
       "file": "src/Granit.AI.Prompts/GranitAIPromptsModule.cs",
       "line": 11,
       "members": []
+    },
+    {
+      "name": "IPromptCategoryStore",
+      "fqn": "Granit.AI.Prompts.IPromptCategoryStore",
+      "kind": "interface",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/IPromptCategoryStore.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(PromptCategory category, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PromptCategory>"
+        },
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PromptCategory?>"
+        },
+        {
+          "name": "GetByNameAsync",
+          "kind": "method",
+          "signature": "GetByNameAsync(string name, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PromptCategory?>"
+        },
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PromptCategory>>"
+        }
+      ]
     },
     {
       "name": "IPromptTemplateStore",

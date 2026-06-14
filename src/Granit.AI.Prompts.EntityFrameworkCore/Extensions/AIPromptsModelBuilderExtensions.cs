@@ -15,6 +15,8 @@ public static class AIPromptsModelBuilderExtensions
         ArgumentNullException.ThrowIfNull(modelBuilder);
 
         modelBuilder.ApplyConfiguration(new PromptTemplateConfiguration());
+        modelBuilder.ApplyConfiguration(new PromptTemplateCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new PromptCategoryConfiguration());
         return modelBuilder;
     }
 }

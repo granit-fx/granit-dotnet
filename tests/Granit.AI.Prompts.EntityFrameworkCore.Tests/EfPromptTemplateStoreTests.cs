@@ -49,6 +49,22 @@ public sealed class EfPromptTemplateStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task A_prompt_assigned_to_several_categories_round_trips_all_its_links()
+    {
+        var catA = Guid.NewGuid();
+        var catB = Guid.NewGuid();
+        var prompt = PromptTemplate.Create(Guid.NewGuid(), UserA, "Multi", "x", "y");
+        prompt.AssignCategory(Guid.NewGuid(), catA);
+        prompt.AssignCategory(Guid.NewGuid(), catB);
+        await _sut.CreateAsync(prompt, TestContext.Current.CancellationToken);
+
+        PromptTemplate? loaded = await _sut.GetAsync(prompt.Id, UserA, TestContext.Current.CancellationToken);
+
+        loaded.ShouldNotBeNull();
+        loaded.CategoryLinks.Select(l => l.CategoryId).ShouldBe([catA, catB], ignoreOrder: true);
+    }
+
+    [Fact]
     public async Task Catalogue_lists_system_prompts_first_then_the_owners_excluding_other_users()
     {
         await _sut.CreateAsync(PromptTemplate.CreateSystem(Guid.NewGuid(), "Zeta system", "x", "z"), TestContext.Current.CancellationToken);

@@ -36,6 +36,7 @@ public static class AIPromptsEntityFrameworkCoreServiceCollectionExtensions
             configureTenantSchema);
 
         services.TryAddScoped<IPromptTemplateStore, EfPromptTemplateStore>();
+        services.TryAddScoped<IPromptCategoryStore, EfPromptCategoryStore>();
 
         return services;
     }

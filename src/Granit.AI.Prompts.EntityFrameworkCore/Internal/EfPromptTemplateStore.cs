@@ -24,6 +24,7 @@ internal sealed class EfPromptTemplateStore(IDbContextFactory<AIPromptsDbContext
         await using AIPromptsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         return await context.PromptTemplates
             .AsNoTracking()
+            .Include(p => p.CategoryLinks)
             .FirstOrDefaultAsync(p => p.Id == id && (p.IsSystem || p.OwnerId == ownerId), cancellationToken)
             .ConfigureAwait(false);
     }
@@ -33,6 +34,7 @@ internal sealed class EfPromptTemplateStore(IDbContextFactory<AIPromptsDbContext
         await using AIPromptsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         return await context.PromptTemplates
             .AsNoTracking()
+            .Include(p => p.CategoryLinks)
             .Where(p => p.IsSystem || p.OwnerId == ownerId)
             .OrderByDescending(p => p.IsSystem)
             .ThenBy(p => p.Name)

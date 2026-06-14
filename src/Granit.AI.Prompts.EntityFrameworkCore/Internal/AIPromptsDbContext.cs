@@ -20,6 +20,9 @@ internal sealed class AIPromptsDbContext(
     /// <summary>Prompt templates.</summary>
     public DbSet<PromptTemplate> PromptTemplates => Set<PromptTemplate>();
 
+    /// <summary>Tenant-defined prompt categories.</summary>
+    public DbSet<PromptCategory> PromptCategories => Set<PromptCategory>();
+
     /// <inheritdoc/>
     protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {
