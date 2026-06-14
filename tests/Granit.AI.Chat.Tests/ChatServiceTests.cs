@@ -3,10 +3,12 @@ using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Internal;
 using Granit.AI.Chat.Mentions;
+using Granit.AI.Chat.Settings;
 using Granit.AI.Options;
 using Granit.AI.Tools;
 using Granit.AI.Workspaces;
 using Granit.Guids;
+using Granit.Settings.Services;
 using Microsoft.Extensions.AI;
 using NSubstitute;
 using Shouldly;
@@ -24,6 +26,7 @@ public sealed class ChatServiceTests
     private readonly IAIWorkspaceCapabilityResolver _capabilityResolver = Substitute.For<IAIWorkspaceCapabilityResolver>();
     private readonly IAIMentionContextResolver _mentionContextResolver = Substitute.For<IAIMentionContextResolver>();
     private readonly IAIAttachmentTextResolver _attachmentTextResolver = Substitute.For<IAIAttachmentTextResolver>();
+    private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
 
     private ChatService CreateService()
@@ -49,9 +52,12 @@ public sealed class ChatServiceTests
             .Returns((string?)null);
         _attachmentTextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIAttachment>>(), Arg.Any<CancellationToken>())
             .Returns((string?)null);
+        _settingProvider.GetOrNullAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((string?)null);
 
         return new ChatService(_store, _orchestrator, _workspaceProvider, _capabilityResolver,
-            _mentionContextResolver, _attachmentTextResolver, _guidGenerator, MsOptions.Create(new GranitAIOptions()));
+            _mentionContextResolver, _attachmentTextResolver, _settingProvider, _guidGenerator,
+            MsOptions.Create(new GranitAIOptions { DefaultWorkspace = "default" }));
     }
 
     private static ChatSendRequest Request(
@@ -221,5 +227,76 @@ public sealed class ChatServiceTests
 
         await Should.ThrowAsync<ConversationNotFoundException>(
             () => service.SendAsync(Request(conversationId), TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task User_default_workspace_setting_is_used_when_no_explicit_workspace()
+    {
+        ChatService service = CreateService();
+        _settingProvider.GetOrNullAsync(AIChatSettingNames.DefaultWorkspace, Arg.Any<CancellationToken>())
+            .Returns("my-workspace");
+
+        await service.SendAsync(Request(), TestContext.Current.CancellationToken);
+
+        await _orchestrator.Received(1).RunAsync(
+            Arg.Is<AIOrchestrationRequest>(r => r.WorkspaceName == "my-workspace"), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Reserved_auto_default_workspace_falls_back_to_the_configured_default()
+    {
+        ChatService service = CreateService();
+        _settingProvider.GetOrNullAsync(AIChatSettingNames.DefaultWorkspace, Arg.Any<CancellationToken>())
+            .Returns(AIChatSettingNames.ReservedAutoWorkspace);
+
+        await service.SendAsync(Request(), TestContext.Current.CancellationToken);
+
+        await _orchestrator.Received(1).RunAsync(
+            Arg.Is<AIOrchestrationRequest>(r => r.WorkspaceName == "default"), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Explicit_request_workspace_overrides_the_user_default_setting()
+    {
+        ChatService service = CreateService();
+        _settingProvider.GetOrNullAsync(AIChatSettingNames.DefaultWorkspace, Arg.Any<CancellationToken>())
+            .Returns("user-default");
+
+        await service.SendAsync(
+            Request() with { WorkspaceName = "explicit" }, TestContext.Current.CancellationToken);
+
+        await _orchestrator.Received(1).RunAsync(
+            Arg.Is<AIOrchestrationRequest>(r => r.WorkspaceName == "explicit"), Arg.Any<CancellationToken>());
+        await _settingProvider.DidNotReceive()
+            .GetOrNullAsync(AIChatSettingNames.DefaultWorkspace, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task User_custom_context_is_passed_to_the_orchestrator()
+    {
+        ChatService service = CreateService();
+        _settingProvider.GetOrNullAsync(AIChatSettingNames.CustomContext, Arg.Any<CancellationToken>())
+            .Returns("Always answer in British English.");
+
+        await service.SendAsync(Request(), TestContext.Current.CancellationToken);
+
+        await _orchestrator.Received(1).RunAsync(
+            Arg.Is<AIOrchestrationRequest>(r => r.UserCustomContext == "Always answer in British English."),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task User_custom_context_is_capped_at_the_maximum_length()
+    {
+        ChatService service = CreateService();
+        _settingProvider.GetOrNullAsync(AIChatSettingNames.CustomContext, Arg.Any<CancellationToken>())
+            .Returns(new string('x', AIChatSettingNames.MaxCustomContextLength + 500));
+
+        await service.SendAsync(Request(), TestContext.Current.CancellationToken);
+
+        await _orchestrator.Received(1).RunAsync(
+            Arg.Is<AIOrchestrationRequest>(r =>
+                r.UserCustomContext!.Length == AIChatSettingNames.MaxCustomContextLength),
+            Arg.Any<CancellationToken>());
     }
 }

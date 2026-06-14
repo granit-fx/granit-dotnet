@@ -62,6 +62,11 @@ internal static class UserSettingsWriteEndpoints
             return SettingsResponseMapper.ProviderNotAllowed(name, "User");
         }
 
+        if (!definition.IsValidValue(body.Value))
+        {
+            return SettingsResponseMapper.ValidationFailed(name);
+        }
+
         ICurrentUserService currentUser =
             context.RequestServices.GetRequiredService<ICurrentUserService>();
         ISettingManager settingManager =

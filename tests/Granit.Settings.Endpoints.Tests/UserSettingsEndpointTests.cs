@@ -54,6 +54,7 @@ public sealed class UserSettingsEndpointTests : IAsyncDisposable
         builder.Services.AddSingleton(_settingManager);
         builder.Services.AddSingleton(_currentUserService);
         builder.Services.AddSingleton<ISettingDefinitionProvider, WellKnownSettingDefinitionProvider>();
+        builder.Services.AddSingleton<ISettingDefinitionProvider, ConstrainedSettingDefinitionProvider>();
         builder.Services.AddSingleton(sp =>
             new SettingDefinitionManager(sp.GetServices<ISettingDefinitionProvider>()));
 
@@ -201,6 +202,41 @@ public sealed class UserSettingsEndpointTests : IAsyncDisposable
     }
 
     [Fact]
+    public async Task Put_Value_Outside_AllowList_Returns_400()
+    {
+        HttpResponseMessage response = await _authClient.PutAsJsonAsync(
+            $"{Prefix}/{ConstrainedSettingDefinitionProvider.PolicyName}",
+            new UpdateSettingValueRequest("nope"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        await _settingManager.DidNotReceive().SetForUserAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Put_Value_Exceeding_MaxLength_Returns_400()
+    {
+        HttpResponseMessage response = await _authClient.PutAsJsonAsync(
+            $"{Prefix}/{ConstrainedSettingDefinitionProvider.TextName}",
+            new UpdateSettingValueRequest("toolong"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Put_Valid_Constrained_Value_Returns_204()
+    {
+        HttpResponseMessage response = await _authClient.PutAsJsonAsync(
+            $"{Prefix}/{ConstrainedSettingDefinitionProvider.PolicyName}",
+            new UpdateSettingValueRequest("a"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
     public async Task Put_Unknown_Setting_Returns_404()
     {
         HttpResponseMessage response = await _authClient.PutAsJsonAsync(
@@ -274,5 +310,29 @@ public sealed class UserSettingsEndpointTests : IAsyncDisposable
         HttpClient client = _app.GetTestClient();
         client.DefaultRequestHeaders.Add(TestAuthHandler.PermissionsHeader, AuthenticatedMarker);
         return client;
+    }
+
+    /// <summary>Declares user-scoped settings with an allow-list and a max length, to exercise write validation.</summary>
+    private sealed class ConstrainedSettingDefinitionProvider : ISettingDefinitionProvider
+    {
+        public const string PolicyName = "Test.Policy";
+        public const string TextName = "Test.Text";
+
+        public void Define(ISettingDefinitionContext context)
+        {
+            context.Add(new SettingDefinition(PolicyName)
+            {
+                IsVisibleToClients = true,
+                Providers = { "U" },
+                AllowedValues = ["a", "b"],
+            });
+
+            context.Add(new SettingDefinition(TextName)
+            {
+                IsVisibleToClients = true,
+                Providers = { "U" },
+                MaxLength = 3,
+            });
+        }
     }
 }

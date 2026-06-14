@@ -76,6 +76,12 @@ internal static class SettingsResponseMapper
             detail: $"Setting '{name}' does not allow the {scope} scope.",
             statusCode: StatusCodes.Status400BadRequest);
 
+    /// <summary>400 problem when a value fails the setting's validation (kind, allow-list, length).</summary>
+    public static ProblemHttpResult ValidationFailed(string name) =>
+        TypedResults.Problem(
+            detail: $"The value for setting '{name}' does not match its expected format, allow-list or length.",
+            statusCode: StatusCodes.Status400BadRequest);
+
     /// <summary>400 problem when no tenant context is available.</summary>
     public static ProblemHttpResult NoTenantContext() =>
         TypedResults.Problem(

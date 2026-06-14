@@ -376,4 +376,38 @@ public sealed class SettingDefinitionTests
         def.IsValidValue("42").ShouldBeTrue();
         def.IsValidValue("abc").ShouldBeFalse();
     }
+
+    // -------------------------------------------------------------------------
+    // MaxLength
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void MaxLength_IsNull_ByDefault()
+    {
+        new SettingDefinition("test").MaxLength.ShouldBeNull();
+    }
+
+    [Fact]
+    public void IsValidValue_RejectsValueLongerThanMaxLength()
+    {
+        var def = new SettingDefinition("test") { MaxLength = 5 };
+
+        def.IsValidValue("12345").ShouldBeTrue();
+        def.IsValidValue("123456").ShouldBeFalse();
+        def.IsValidValue(null).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ValidateInvariants_NonPositiveMaxLength_Throws()
+    {
+        Should.Throw<InvalidOperationException>(
+            () => new SettingDefinition("test") { MaxLength = 0 }.ValidateInvariants());
+    }
+
+    [Fact]
+    public void ValidateInvariants_DefaultValueExceedingMaxLength_Throws()
+    {
+        Should.Throw<InvalidOperationException>(
+            () => new SettingDefinition("test") { MaxLength = 3, DefaultValue = "toolong" }.ValidateInvariants());
+    }
 }

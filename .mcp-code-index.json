@@ -39,6 +39,7 @@
         "Granit.AI",
         "Granit.AI.Tools",
         "Granit.Guids",
+        "Granit.Settings",
         "Granit.TextExtraction"
       ],
       "framework": "net10.0"
@@ -3210,6 +3211,15 @@
       "members": []
     },
     {
+      "name": "ChatWorkspacesResponse",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.ChatWorkspacesResponse",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/ChatWorkspacesResponse.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "ConversationResponse",
       "fqn": "Granit.AI.Chat.Endpoints.Dtos.ConversationResponse",
       "kind": "record",
@@ -3503,7 +3513,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/GranitAIChatModule.cs",
-      "line": 23,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -3682,6 +3692,40 @@
           "kind": "method",
           "signature": "new(StringComparer.OrdinalIgnoreCase)",
           "returnType": "HashSet<string> AllowedContentTypes { get; set; } ="
+        }
+      ]
+    },
+    {
+      "name": "AIChatSettingNames",
+      "fqn": "Granit.AI.Chat.Settings.AIChatSettingNames",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Settings/AIChatSettingNames.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "ChatWebSearchPolicy",
+      "fqn": "Granit.AI.Chat.Settings.ChatWebSearchPolicy",
+      "kind": "enum",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Settings/ChatWebSearchPolicy.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "IChatWorkspaceCatalog",
+      "fqn": "Granit.AI.Chat.Settings.IChatWorkspaceCatalog",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Settings/IChatWorkspaceCatalog.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetSelectableWorkspacesAsync",
+          "kind": "method",
+          "signature": "GetSelectableWorkspacesAsync(CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<IReadOnlyList<string>>"
         }
       ]
     },
@@ -47230,7 +47274,7 @@
           "name": "SettingDefinition",
           "kind": "method",
           "signature": "SettingDefinition(string name)",
-          "returnType": "IReadOnlyList<string>? AllowedValues { get; init; } public"
+          "returnType": "IReadOnlyList<string>? AllowedValues { get; init; } public int? MaxLength { get; init; } public"
         }
       ]
     },

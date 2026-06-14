@@ -55,6 +55,13 @@ public sealed class SettingDefinition
     /// </summary>
     public IReadOnlyList<string>? AllowedValues { get; init; }
 
+    /// <summary>
+    /// Optional maximum length, in characters, for a <see cref="ValueKind.String"/> setting. When
+    /// set, any write longer than this is rejected. Use for free-text settings (e.g. a custom
+    /// prompt context) that have no closed <see cref="AllowedValues"/> list.
+    /// </summary>
+    public int? MaxLength { get; init; }
+
     public SettingDefinition(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -95,6 +102,21 @@ public sealed class SettingDefinition
                     $"Setting '{Name}': AllowedValues entry '{unparseable}' is not parseable as {ValueKind}.");
             }
         }
+
+        if (MaxLength is { } maxLength)
+        {
+            if (maxLength <= 0)
+            {
+                throw new InvalidOperationException(
+                    $"Setting '{Name}': MaxLength must be positive.");
+            }
+
+            if (DefaultValue is not null && DefaultValue.Length > maxLength)
+            {
+                throw new InvalidOperationException(
+                    $"Setting '{Name}': DefaultValue exceeds MaxLength ({maxLength}).");
+            }
+        }
     }
 
     /// <summary>
@@ -116,6 +138,11 @@ public sealed class SettingDefinition
         }
 
         if (AllowedValues is { Count: > 0 } && !AllowedValues.Contains(value))
+        {
+            return false;
+        }
+
+        if (MaxLength is { } maxLength && value.Length > maxLength)
         {
             return false;
         }

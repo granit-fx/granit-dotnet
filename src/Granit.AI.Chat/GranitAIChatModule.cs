@@ -1,8 +1,10 @@
 using Granit.AI.Chat.Extensions;
 using Granit.AI.Chat.Internal;
+using Granit.AI.Chat.Settings;
 using Granit.AI.Tools;
 using Granit.Guids;
 using Granit.Modularity;
+using Granit.Settings;
 using Granit.TextExtraction;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -19,6 +21,7 @@ namespace Granit.AI.Chat;
     typeof(GranitAIModule),
     typeof(GranitAIToolsModule),
     typeof(GranitGuidsModule),
+    typeof(GranitSettingsModule),
     typeof(GranitTextExtractionModule))]
 public sealed class GranitAIChatModule : GranitModule
 {
@@ -34,5 +37,9 @@ public sealed class GranitAIChatModule : GranitModule
         // Likewise the attachment text resolver — with the Null source it resolves nothing until
         // the application registers its own IAIAttachmentSource over its transient blob store.
         AIChatAttachmentsServiceCollectionExtensions.AddCoreServices(context.Services);
+
+        // Per-user setting definitions (Granit.AI.Chat.*) are auto-discovered by GranitSettingsModule;
+        // only the chat-capable workspace catalog for the settings UI needs registering here.
+        context.Services.TryAddScoped<IChatWorkspaceCatalog, ChatWorkspaceCatalog>();
     }
 }

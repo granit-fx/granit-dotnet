@@ -2,11 +2,13 @@ using Granit.AI.Chat.Attachments;
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Mentions;
+using Granit.AI.Chat.Settings;
 using Granit.AI.Exceptions;
 using Granit.AI.Options;
 using Granit.AI.Tools;
 using Granit.AI.Workspaces;
 using Granit.Guids;
+using Granit.Settings.Services;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 
@@ -23,6 +25,7 @@ internal sealed class ChatService(
     IAIWorkspaceCapabilityResolver capabilityResolver,
     IAIMentionContextResolver mentionContextResolver,
     IAIAttachmentTextResolver attachmentTextResolver,
+    ISettingProvider settingProvider,
     IGuidGenerator guidGenerator,
     IOptions<GranitAIOptions> aiOptions) : IChatService
 {
@@ -33,7 +36,7 @@ internal sealed class ChatService(
         ArgumentNullException.ThrowIfNull(request);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.Message);
 
-        string workspaceName = request.WorkspaceName ?? aiOptions.Value.DefaultWorkspace;
+        string workspaceName = await ResolveWorkspaceNameAsync(request.WorkspaceName, cancellationToken).ConfigureAwait(false);
         AIWorkspace workspace = await workspaceProvider.GetAsync(workspaceName, cancellationToken).ConfigureAwait(false)
             ?? throw new AIWorkspaceNotFoundException(workspaceName);
 
@@ -86,6 +89,7 @@ internal sealed class ChatService(
             {
                 WorkspaceName = workspaceName,
                 Messages = loopMessages,
+                UserCustomContext = await ResolveCustomContextAsync(cancellationToken).ConfigureAwait(false),
             },
             cancellationToken).ConfigureAwait(false);
 
@@ -115,6 +119,46 @@ internal sealed class ChatService(
             InputTokens = result.InputTokens,
             OutputTokens = result.OutputTokens,
         };
+    }
+
+    /// <summary>
+    /// Resolves the workspace: an explicit per-request name wins; otherwise the user's default
+    /// (unless it is the reserved <c>Auto</c>); otherwise the configured default workspace.
+    /// </summary>
+    private async Task<string> ResolveWorkspaceNameAsync(string? explicitWorkspace, CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrWhiteSpace(explicitWorkspace))
+        {
+            return explicitWorkspace;
+        }
+
+        string? userDefault = await settingProvider
+            .GetOrNullAsync(AIChatSettingNames.DefaultWorkspace, cancellationToken).ConfigureAwait(false);
+        if (!string.IsNullOrWhiteSpace(userDefault)
+            && !string.Equals(userDefault, AIChatSettingNames.ReservedAutoWorkspace, StringComparison.OrdinalIgnoreCase))
+        {
+            return userDefault;
+        }
+
+        return aiOptions.Value.DefaultWorkspace;
+    }
+
+    /// <summary>
+    /// Reads the user's free-text custom context, capped at the configured maximum, for the
+    /// system-prompt composer. Returns <see langword="null"/> when unset or blank.
+    /// </summary>
+    private async Task<string?> ResolveCustomContextAsync(CancellationToken cancellationToken)
+    {
+        string? customContext = await settingProvider
+            .GetOrNullAsync(AIChatSettingNames.CustomContext, cancellationToken).ConfigureAwait(false);
+        if (string.IsNullOrWhiteSpace(customContext))
+        {
+            return null;
+        }
+
+        return customContext.Length > AIChatSettingNames.MaxCustomContextLength
+            ? customContext[..AIChatSettingNames.MaxCustomContextLength]
+            : customContext;
     }
 
     private static ChatMessage ToChatMessage(Message message) =>

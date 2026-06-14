@@ -66,6 +66,19 @@ internal sealed class BlobAttachmentSource(IBlobStore store, ICurrentUser user) 
 Type/size limits (`AI:Chat:Attachments`) are enforced at the endpoint (request validation) and
 re-checked against the resolved bytes server-side.
 
+## Per-user settings
+
+Three per-user settings (declared on the `Granit.Settings` `"U"` scope, read/written through the
+generic settings endpoints) tune the chat per user:
+
+| Setting | Effect |
+| ------- | ------ |
+| `Granit.AI.Chat.DefaultWorkspace` | Default chat workspace, or `Auto` to fall back to the configured default. Selectable list served by `GET {prefix}/workspaces` (chat-capable only). |
+| `Granit.AI.Chat.WebSearchPolicy` | `Deny` / `Allow` / `AlwaysAsk` (the web-search provider is phase 2). |
+| `Granit.AI.Chat.CustomContext` | Free text (≤ 4000 chars) layered into the system prompt below the framework guardrails. |
+
+The custom context never overrides the guardrails; it only refines behaviour.
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).
