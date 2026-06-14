@@ -1,3 +1,5 @@
+using Granit.Localization;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 
 namespace Granit.AI.Prompts;
@@ -8,4 +10,10 @@ namespace Granit.AI.Prompts;
 /// abstraction. Persistence is provided by <c>Granit.AI.Prompts.EntityFrameworkCore</c> and the
 /// HTTP surface by <c>Granit.AI.Prompts.Endpoints</c>.
 /// </summary>
-public sealed class GranitAIPromptsModule : GranitModule;
+[DependsOn(typeof(GranitLocalizationModule))]
+public sealed class GranitAIPromptsModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddLocalizationResource<AIPromptsLocalizationResource>();
+}

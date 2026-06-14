@@ -18,6 +18,7 @@
         "tests/Granit.AI.Ollama.Tests",
         "tests/Granit.AI.OpenAI.Tests",
         "tests/Granit.AI.Prompts.Tests",
+        "tests/Granit.AI.Prompts.Endpoints.Tests",
         "tests/Granit.AI.Prompts.EntityFrameworkCore.Tests",
         "tests/Granit.AI.Tests",
         "tests/Granit.AI.Tools.Tests",

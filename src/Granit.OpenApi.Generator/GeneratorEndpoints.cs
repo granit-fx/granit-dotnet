@@ -1,5 +1,6 @@
 using Granit.AI.Chat.Endpoints.Extensions;
 using Granit.AI.Endpoints.Extensions;
+using Granit.AI.Prompts.Endpoints.Extensions;
 using Granit.Auditing.Endpoints.Extensions;
 using Granit.Authentication.ApiKeys.Endpoints.Extensions;
 using Granit.Authorization.Endpoints.Extensions;
@@ -44,6 +45,7 @@ internal static class GeneratorEndpoints
     [
         new("ai", e => e.MapGranitAI()),
         new("ai-chat", e => e.MapGranitConversations()),
+        new("ai-prompts", e => e.MapGranitPrompts()),
         new("auditing", e => e.MapGranitAuditing()),
         new("api-keys", e => e.MapGranitApiKeys()),
         new("authorization", e => e.MapGranitAuthorization()),

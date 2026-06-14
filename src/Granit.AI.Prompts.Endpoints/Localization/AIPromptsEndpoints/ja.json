@@ -1,0 +1,10 @@
+{
+  "culture": "ja",
+  "texts": {
+    "PermissionGroup:AIPrompts": "AI プロンプト",
+    "Permission:AIPrompts.Templates.Read": "プロンプトカタログを閲覧する",
+    "Permission:AIPrompts.Templates.Manage": "自分のプロンプトを作成・編集する",
+    "Permission:AIPrompts.Templates.Delete": "自分のプロンプトを削除する",
+    "AIPrompts:Validation:TooManyCategories": "1 つのプロンプトは最大 10 個のカテゴリに属することができます。"
+  }
+}

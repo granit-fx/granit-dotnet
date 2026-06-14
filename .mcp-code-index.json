@@ -137,6 +137,17 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.AI.Prompts.Endpoints",
+      "deps": [
+        "Granit.AI.Prompts",
+        "Granit.Authorization",
+        "Granit.Guids",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.AI.Prompts.EntityFrameworkCore",
       "deps": [
         "Granit.AI.Prompts",
@@ -1988,6 +1999,7 @@
         "Granit.OpenApi.Generation",
         "Granit.AI.Chat.Endpoints",
         "Granit.AI.Endpoints",
+        "Granit.AI.Prompts.Endpoints",
         "Granit.Auditing.Endpoints",
         "Granit.Authentication.ApiKeys.Endpoints",
         "Granit.Authorization.Endpoints",
@@ -5194,6 +5206,169 @@
       "members": []
     },
     {
+      "name": "CreatePromptRequest",
+      "fqn": "Granit.AI.Prompts.Endpoints.Dtos.CreatePromptRequest",
+      "kind": "record",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/Dtos/PromptDtos.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "FromAggregate",
+          "kind": "method",
+          "signature": "FromAggregate(PromptTemplate prompt, string name, string shortDescription)",
+          "returnType": "PromptSummaryResponse"
+        }
+      ]
+    },
+    {
+      "name": "PromptPickerCategoryResponse",
+      "fqn": "Granit.AI.Prompts.Endpoints.Dtos.PromptPickerCategoryResponse",
+      "kind": "record",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/Dtos/PromptDtos.cs",
+      "line": 81,
+      "members": []
+    },
+    {
+      "name": "PromptPickerItemResponse",
+      "fqn": "Granit.AI.Prompts.Endpoints.Dtos.PromptPickerItemResponse",
+      "kind": "record",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/Dtos/PromptDtos.cs",
+      "line": 87,
+      "members": []
+    },
+    {
+      "name": "PromptPickerResponse",
+      "fqn": "Granit.AI.Prompts.Endpoints.Dtos.PromptPickerResponse",
+      "kind": "record",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/Dtos/PromptDtos.cs",
+      "line": 75,
+      "members": []
+    },
+    {
+      "name": "PromptResponse",
+      "fqn": "Granit.AI.Prompts.Endpoints.Dtos.PromptResponse",
+      "kind": "record",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/Dtos/PromptDtos.cs",
+      "line": 52,
+      "members": [
+        {
+          "name": "FromAggregate",
+          "kind": "method",
+          "signature": "FromAggregate(PromptTemplate prompt, string name, string shortDescription)",
+          "returnType": "PromptResponse"
+        }
+      ]
+    },
+    {
+      "name": "PromptSummaryResponse",
+      "fqn": "Granit.AI.Prompts.Endpoints.Dtos.PromptSummaryResponse",
+      "kind": "record",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/Dtos/PromptDtos.cs",
+      "line": 36,
+      "members": [
+        {
+          "name": "FromAggregate",
+          "kind": "method",
+          "signature": "FromAggregate(PromptTemplate prompt, string name, string shortDescription)",
+          "returnType": "PromptSummaryResponse"
+        }
+      ]
+    },
+    {
+      "name": "UpdatePromptRequest",
+      "fqn": "Granit.AI.Prompts.Endpoints.Dtos.UpdatePromptRequest",
+      "kind": "record",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/Dtos/PromptDtos.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "FromAggregate",
+          "kind": "method",
+          "signature": "FromAggregate(PromptTemplate prompt, string name, string shortDescription)",
+          "returnType": "PromptSummaryResponse"
+        }
+      ]
+    },
+    {
+      "name": "AIPromptsEndpointRouteBuilderExtensions",
+      "fqn": "Granit.AI.Prompts.Endpoints.Extensions.AIPromptsEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/Extensions/AIPromptsEndpointRouteBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "MapGranitPrompts",
+          "kind": "method",
+          "signature": "MapGranitPrompts(this IEndpointRouteBuilder endpoints, Action<AIPromptsEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIPromptsEndpointsModule",
+      "fqn": "Granit.AI.Prompts.Endpoints.GranitAIPromptsEndpointsModule",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/GranitAIPromptsEndpointsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AIPromptsEndpointsOptions",
+      "fqn": "Granit.AI.Prompts.Endpoints.Options.AIPromptsEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/Options/AIPromptsEndpointsOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "AIPromptsPermissions",
+      "fqn": "Granit.AI.Prompts.Endpoints.Permissions.AIPromptsPermissions",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/Permissions/AIPromptsPermissions.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "Templates",
+      "fqn": "Granit.AI.Prompts.Endpoints.Permissions.Templates",
+      "kind": "class",
+      "project": "Granit.AI.Prompts.Endpoints",
+      "file": "src/Granit.AI.Prompts.Endpoints/Permissions/AIPromptsPermissions.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "AIPromptsEntityFrameworkCoreServiceCollectionExtensions",
       "fqn": "Granit.AI.Prompts.EntityFrameworkCore.Extensions.AIPromptsEntityFrameworkCoreServiceCollectionExtensions",
       "kind": "class",
@@ -5263,8 +5438,15 @@
       "kind": "class",
       "project": "Granit.AI.Prompts",
       "file": "src/Granit.AI.Prompts/GranitAIPromptsModule.cs",
-      "line": 11,
-      "members": []
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IPromptCategoryStore",
@@ -5325,8 +5507,29 @@
           "kind": "method",
           "signature": "ListCatalogueAsync(Guid ownerId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<PromptTemplate>>"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Guid id, Guid ownerId, PromptTemplateEdit edit, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PromptTemplate?>"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
+    },
+    {
+      "name": "PromptTemplateEdit",
+      "fqn": "Granit.AI.Prompts.PromptTemplateEdit",
+      "kind": "record",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/PromptTemplateEdit.cs",
+      "line": 16,
+      "members": []
     },
     {
       "name": "GenericPromptSeed",
@@ -39402,7 +39605,7 @@
       "kind": "class",
       "project": "Granit.OpenApi.Generator",
       "file": "src/Granit.OpenApi.Generator/GeneratorModule.cs",
-      "line": 46,
+      "line": 47,
       "members": []
     },
     {

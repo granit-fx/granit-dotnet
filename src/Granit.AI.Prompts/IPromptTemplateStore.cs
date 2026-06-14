@@ -20,4 +20,19 @@ public interface IPromptTemplateStore
 
     /// <summary>Returns the owner's catalogue: system prompts plus their own, system-first then by name.</summary>
     Task<IReadOnlyList<PromptTemplate>> ListCatalogueAsync(Guid ownerId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Applies <paramref name="edit"/> to the owner's prompt (bumping its version) and reconciles its
+    /// category membership. Returns the updated prompt, or <see langword="null"/> when no editable
+    /// prompt with that id is owned by <paramref name="ownerId"/> (a system prompt is never editable —
+    /// customise it to a private copy first).
+    /// </summary>
+    Task<PromptTemplate?> UpdateAsync(Guid id, Guid ownerId, PromptTemplateEdit edit, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes the owner's prompt. Returns <see langword="true"/> when a prompt was deleted, or
+    /// <see langword="false"/> when no editable prompt with that id is owned by
+    /// <paramref name="ownerId"/> (system prompts cannot be deleted).
+    /// </summary>
+    Task<bool> DeleteAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default);
 }

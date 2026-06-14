@@ -338,6 +338,7 @@
     <Project Path="src/Granit.AI.Ollama/Granit.AI.Ollama.csproj" />
     <Project Path="src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj" />
     <Project Path="src/Granit.AI.Prompts/Granit.AI.Prompts.csproj" />
+    <Project Path="src/Granit.AI.Prompts.Endpoints/Granit.AI.Prompts.Endpoints.csproj" />
     <Project Path="src/Granit.AI.Prompts.EntityFrameworkCore/Granit.AI.Prompts.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.AI.StackExchangeRedis/Granit.AI.StackExchangeRedis.csproj" />
     <Project Path="src/Granit.AI.Tools/Granit.AI.Tools.csproj" />
@@ -709,6 +710,7 @@
     <Project Path="tests/Granit.AI.Ollama.Tests/Granit.AI.Ollama.Tests.csproj" />
     <Project Path="tests/Granit.AI.OpenAI.Tests/Granit.AI.OpenAI.Tests.csproj" />
     <Project Path="tests/Granit.AI.Prompts.Tests/Granit.AI.Prompts.Tests.csproj" />
+    <Project Path="tests/Granit.AI.Prompts.Endpoints.Tests/Granit.AI.Prompts.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.AI.Prompts.EntityFrameworkCore.Tests/Granit.AI.Prompts.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.AI.StackExchangeRedis.Tests.Integration/Granit.AI.StackExchangeRedis.Tests.Integration.csproj" />
     <Project Path="tests/Granit.AI.Tests/Granit.AI.Tests.csproj" />

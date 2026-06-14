@@ -1,0 +1,10 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:AIPrompts": "AI 提示词",
+    "Permission:AIPrompts.Templates.Read": "浏览提示词目录",
+    "Permission:AIPrompts.Templates.Manage": "创建和编辑您的提示词",
+    "Permission:AIPrompts.Templates.Delete": "删除您的提示词",
+    "AIPrompts:Validation:TooManyCategories": "一个提示词最多可属于 10 个类别。"
+  }
+}

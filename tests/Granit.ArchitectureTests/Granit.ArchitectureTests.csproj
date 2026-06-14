@@ -47,6 +47,7 @@
     <ProjectReference Include="..\..\src\Granit.AI.Ollama\Granit.AI.Ollama.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.OpenAI\Granit.AI.OpenAI.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Prompts\Granit.AI.Prompts.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AI.Prompts.Endpoints\Granit.AI.Prompts.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Prompts.EntityFrameworkCore\Granit.AI.Prompts.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.StackExchangeRedis\Granit.AI.StackExchangeRedis.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Tools.Search\Granit.AI.Tools.Search.csproj" />

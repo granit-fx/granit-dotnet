@@ -1,0 +1,10 @@
+{
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:AIPrompts": "AI-prompter",
+    "Permission:AIPrompts.Templates.Read": "Bläddra i promptkatalogen",
+    "Permission:AIPrompts.Templates.Manage": "Skapa och redigera dina prompter",
+    "Permission:AIPrompts.Templates.Delete": "Ta bort dina prompter",
+    "AIPrompts:Validation:TooManyCategories": "En prompt kan tillhöra högst 10 kategorier."
+  }
+}

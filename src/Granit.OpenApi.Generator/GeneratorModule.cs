@@ -15,6 +15,7 @@ namespace Granit.OpenApi.Generator;
 [DependsOn(
     typeof(Granit.AI.Chat.Endpoints.GranitAIChatEndpointsModule),
     typeof(Granit.AI.Endpoints.GranitAIEndpointsModule),
+    typeof(Granit.AI.Prompts.Endpoints.GranitAIPromptsEndpointsModule),
     typeof(Granit.Auditing.Endpoints.GranitAuditingEndpointsModule),
     typeof(Granit.Authentication.ApiKeys.Endpoints.GranitAuthenticationApiKeysEndpointsModule),
     typeof(Granit.Authorization.Endpoints.GranitAuthorizationEndpointsModule),
