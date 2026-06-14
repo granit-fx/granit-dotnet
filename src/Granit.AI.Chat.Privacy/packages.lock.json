@@ -342,10 +342,18 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.AI": "[0.1.0-dev, )",
+          "Granit.AI.Prompts": "[0.1.0-dev, )",
           "Granit.AI.Tools": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
           "Granit.TextExtraction": "[0.1.0-dev, )"
+        }
+      },
+      "granit.ai.prompts": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )"
         }
       },
       "granit.ai.tools": {

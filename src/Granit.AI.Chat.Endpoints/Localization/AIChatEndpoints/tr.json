@@ -9,6 +9,7 @@
     "AIChat:Validation:TooManyMentions": "Bir mesaj en fazla 25 öğeye başvurabilir.",
     "AIChat:Validation:TooManyAttachments": "Tek bir mesajda çok fazla ek var.",
     "AIChat:Validation:UnsupportedAttachmentType": "Bu dosya türü desteklenmiyor.",
-    "AIChat:Validation:AttachmentTooLarge": "Bu dosya izin verilen maksimum boyutu aşıyor."
+    "AIChat:Validation:AttachmentTooLarge": "Bu dosya izin verilen maksimum boyutu aşıyor.",
+    "AIChat:Validation:TooManyPromptRefs": "Bir mesaj en fazla 5 istem kullanabilir."
   }
 }

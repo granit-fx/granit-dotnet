@@ -9,6 +9,7 @@
     "AIChat:Validation:TooManyMentions": "메시지는 최대 25개 항목을 참조할 수 있습니다.",
     "AIChat:Validation:TooManyAttachments": "한 메시지에 첨부 파일이 너무 많습니다.",
     "AIChat:Validation:UnsupportedAttachmentType": "이 파일 형식은 지원되지 않습니다.",
-    "AIChat:Validation:AttachmentTooLarge": "이 파일은 최대 허용 크기를 초과합니다."
+    "AIChat:Validation:AttachmentTooLarge": "이 파일은 최대 허용 크기를 초과합니다.",
+    "AIChat:Validation:TooManyPromptRefs": "하나의 메시지는 최대 5개의 프롬프트를 사용할 수 있습니다."
   }
 }

@@ -9,6 +9,7 @@
     "AIChat:Validation:TooManyMentions": "1 つのメッセージで参照できる項目は最大 25 件です。",
     "AIChat:Validation:TooManyAttachments": "1 つのメッセージに添付ファイルが多すぎます。",
     "AIChat:Validation:UnsupportedAttachmentType": "このファイル形式はサポートされていません。",
-    "AIChat:Validation:AttachmentTooLarge": "このファイルは最大許容サイズを超えています。"
+    "AIChat:Validation:AttachmentTooLarge": "このファイルは最大許容サイズを超えています。",
+    "AIChat:Validation:TooManyPromptRefs": "1 つのメッセージで使用できるプロンプトは最大 5 個です。"
   }
 }

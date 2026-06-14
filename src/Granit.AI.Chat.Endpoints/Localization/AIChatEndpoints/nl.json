@@ -9,6 +9,7 @@
     "AIChat:Validation:TooManyMentions": "Een bericht kan maximaal 25 items vermelden.",
     "AIChat:Validation:TooManyAttachments": "Te veel bijlagen in één bericht.",
     "AIChat:Validation:UnsupportedAttachmentType": "Dit bestandstype wordt niet ondersteund.",
-    "AIChat:Validation:AttachmentTooLarge": "Dit bestand overschrijdt de maximaal toegestane grootte."
+    "AIChat:Validation:AttachmentTooLarge": "Dit bestand overschrijdt de maximaal toegestane grootte.",
+    "AIChat:Validation:TooManyPromptRefs": "Een bericht kan maximaal 5 prompts gebruiken."
   }
 }

@@ -37,6 +37,7 @@
       "deps": [
         "Granit",
         "Granit.AI",
+        "Granit.AI.Prompts",
         "Granit.AI.Tools",
         "Granit.Guids",
         "Granit.Settings",
@@ -3281,7 +3282,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 37,
+      "line": 44,
       "members": [
         {
           "name": "ConversationId",
@@ -3349,7 +3350,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 26,
+      "line": 28,
       "members": []
     },
     {
@@ -3358,7 +3359,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 34,
+      "line": 36,
       "members": []
     },
     {
@@ -3376,7 +3377,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 52,
+      "line": 54,
       "members": []
     },
     {
@@ -3385,7 +3386,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 47,
+      "line": 49,
       "members": []
     },
     {
@@ -3442,7 +3443,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 19,
+      "line": 21,
       "members": []
     },
     {
@@ -3483,7 +3484,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -3492,7 +3493,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 59,
+      "line": 61,
       "members": []
     },
     {
@@ -3707,7 +3708,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/GranitAIChatModule.cs",
-      "line": 27,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -3723,7 +3724,7 @@
       "kind": "interface",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 71,
+      "line": 78,
       "members": [
         {
           "name": "SendAsync",

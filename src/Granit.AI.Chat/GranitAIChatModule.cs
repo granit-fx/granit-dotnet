@@ -1,6 +1,7 @@
 using Granit.AI.Chat.Extensions;
 using Granit.AI.Chat.Internal;
 using Granit.AI.Chat.Settings;
+using Granit.AI.Prompts;
 using Granit.AI.Tools;
 using Granit.Guids;
 using Granit.Modularity;
@@ -20,6 +21,7 @@ namespace Granit.AI.Chat;
 /// </summary>
 [DependsOn(
     typeof(GranitAIModule),
+    typeof(GranitAIPromptsModule),
     typeof(GranitAIToolsModule),
     typeof(GranitGuidsModule),
     typeof(GranitSettingsModule),
@@ -30,6 +32,10 @@ public sealed class GranitAIChatModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.TryAddScoped<IChatService, ChatService>();
+
+        // Badge resolution expands the turn's '/' prompt-catalogue references into the instruction
+        // (owner-scoped via IPromptTemplateStore). Always present; resolves to nothing when no refs.
+        context.Services.TryAddScoped<IPromptBadgeResolver, PromptBadgeResolver>();
 
         // The mention registry and context resolver are always present so a turn can carry
         // mentions even before the application opts any resolver in (they then resolve to nothing).

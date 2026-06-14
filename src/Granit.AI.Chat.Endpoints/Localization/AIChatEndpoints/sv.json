@@ -9,6 +9,7 @@
     "AIChat:Validation:TooManyMentions": "Ett meddelande kan referera till högst 25 objekt.",
     "AIChat:Validation:TooManyAttachments": "För många bilagor i ett enskilt meddelande.",
     "AIChat:Validation:UnsupportedAttachmentType": "Den här filtypen stöds inte.",
-    "AIChat:Validation:AttachmentTooLarge": "Den här filen överskrider den högsta tillåtna storleken."
+    "AIChat:Validation:AttachmentTooLarge": "Den här filen överskrider den högsta tillåtna storleken.",
+    "AIChat:Validation:TooManyPromptRefs": "Ett meddelande kan använda högst 5 prompter."
   }
 }

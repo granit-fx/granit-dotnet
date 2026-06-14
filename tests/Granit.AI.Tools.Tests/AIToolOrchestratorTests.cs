@@ -262,6 +262,25 @@ public sealed class AIToolOrchestratorTests
     }
 
     [Fact]
+    public async Task Stamps_the_invoked_catalogue_prompt_into_the_usage_record()
+    {
+        ScriptedChatClient client = new(FinalText("done", input: 5, output: 2));
+        Harness harness = CreateHarness(client, []);
+
+        AIOrchestrationRequest request = UserSays("hi") with
+        {
+            InvokedPromptName = "Prompt:Summarize:Name",
+            InvokedPromptVersion = 4,
+        };
+
+        await harness.Orchestrator.RunAsync(request, TestContext.Current.CancellationToken);
+
+        await harness.UsageTracker.Received(1).RecordAsync(
+            Arg.Is<AIUsageRecord>(r => r.PromptTemplateName == "Prompt:Summarize:Name" && r.PromptTemplateVersion == 4),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Does_not_stamp_usage_when_the_provider_reports_none()
     {
         ScriptedChatClient client = new(FinalText("done"));

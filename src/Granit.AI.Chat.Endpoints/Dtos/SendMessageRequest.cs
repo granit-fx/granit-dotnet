@@ -6,12 +6,14 @@ namespace Granit.AI.Chat.Endpoints.Dtos;
 /// <param name="WorkspaceName">The chat-capable workspace to use, or <see langword="null"/> for the default.</param>
 /// <param name="Mentions">Entities <c>@</c>-referenced for this turn, resolved to context under the caller's ACLs.</param>
 /// <param name="Attachments">Files attached to this turn, resolved to extracted text under the caller's ACLs.</param>
+/// <param name="PromptRefs">Catalogue prompts inserted as <c>/</c> badges, composed with the message under the caller's ACLs.</param>
 public sealed record SendMessageRequest(
     string Message,
     Guid? ConversationId = null,
     string? WorkspaceName = null,
     IReadOnlyList<MentionRequest>? Mentions = null,
-    IReadOnlyList<AttachmentRequest>? Attachments = null);
+    IReadOnlyList<AttachmentRequest>? Attachments = null,
+    IReadOnlyList<Guid>? PromptRefs = null);
 
 /// <summary>An <c>@</c> mention on a send: a typed reference to an application entity.</summary>
 /// <param name="Type">The mention type, matching an application-registered resolver.</param>

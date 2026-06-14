@@ -29,6 +29,10 @@ internal sealed class AIUsageRecordEntity : CreationAuditedEntity, IMultiTenant
 
     public string? PromptVersion { get; set; }
 
+    public string? PromptTemplateName { get; set; }
+
+    public int? PromptTemplateVersion { get; set; }
+
     public static AIUsageRecordEntity FromRecord(AIUsageRecord record) => new()
     {
         Id = record.Id,
@@ -43,5 +47,7 @@ internal sealed class AIUsageRecordEntity : CreationAuditedEntity, IMultiTenant
         CostCurrency = record.CostCurrency,
         Duration = record.Duration,
         PromptVersion = record.PromptVersion,
+        PromptTemplateName = record.PromptTemplateName,
+        PromptTemplateVersion = record.PromptTemplateVersion,
     };
 }

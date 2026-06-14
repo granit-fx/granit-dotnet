@@ -180,6 +180,8 @@ internal sealed partial class AIToolOrchestrator(
                 duration) with
             {
                 PromptVersion = systemPrompt.Guardrails.Version,
+                PromptTemplateName = request.InvokedPromptName,
+                PromptTemplateVersion = request.InvokedPromptVersion,
             };
 
             await usageTracker.RecordAsync(record, cancellationToken).ConfigureAwait(false);

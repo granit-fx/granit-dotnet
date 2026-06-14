@@ -101,6 +101,19 @@ public sealed class ConversationEndpointsUnitTests
     }
 
     [Fact]
+    public void Send_validator_rejects_too_many_prompt_refs()
+    {
+        SendMessageRequestValidator validator = CreateSendValidator();
+
+        validator.Validate(new SendMessageRequest("hi", PromptRefs: [Guid.NewGuid()])).IsValid.ShouldBeTrue();
+
+        var tooMany = Enumerable.Range(0, SendMessageRequestValidator.MaxPromptRefs + 1)
+            .Select(_ => Guid.NewGuid())
+            .ToList();
+        validator.Validate(new SendMessageRequest("hi", PromptRefs: tooMany)).IsValid.ShouldBeFalse();
+    }
+
+    [Fact]
     public void Create_validator_rejects_blank_and_overlong_titles()
     {
         CreateConversationRequestValidator validator = new();

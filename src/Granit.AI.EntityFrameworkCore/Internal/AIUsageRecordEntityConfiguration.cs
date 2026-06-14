@@ -53,6 +53,11 @@ internal sealed class AIUsageRecordEntityConfiguration : IEntityTypeConfiguratio
         builder.Property(e => e.PromptVersion)
             .HasMaxLength(50);
 
+        builder.Property(e => e.PromptTemplateName)
+            .HasMaxLength(200);
+
+        builder.Property(e => e.PromptTemplateVersion);
+
         builder.Property(e => e.CreatedAt)
             .IsRequired();
 

@@ -30,6 +30,7 @@ public sealed class ChatServiceTests
     private readonly IAIMentionContextResolver _mentionContextResolver = Substitute.For<IAIMentionContextResolver>();
     private readonly IAIAttachmentTextResolver _attachmentTextResolver = Substitute.For<IAIAttachmentTextResolver>();
     private readonly IAISuggestionResolver _suggestionResolver = Substitute.For<IAISuggestionResolver>();
+    private readonly IPromptBadgeResolver _promptBadgeResolver = Substitute.For<IPromptBadgeResolver>();
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
 
@@ -62,15 +63,16 @@ public sealed class ChatServiceTests
             .Returns([]);
 
         return new ChatService(_store, _orchestrator, _workspaceProvider, _capabilityResolver,
-            _mentionContextResolver, _attachmentTextResolver, _suggestionResolver, _settingProvider,
-            _guidGenerator, MsOptions.Create(new GranitAIOptions { DefaultWorkspace = "default" }));
+            _mentionContextResolver, _attachmentTextResolver, _suggestionResolver, _promptBadgeResolver,
+            _settingProvider, _guidGenerator, MsOptions.Create(new GranitAIOptions { DefaultWorkspace = "default" }));
     }
 
     private static ChatSendRequest Request(
         Guid? conversationId = null,
         string message = "hello",
         IReadOnlyList<AIMention>? mentions = null,
-        IReadOnlyList<AIAttachment>? attachments = null) =>
+        IReadOnlyList<AIAttachment>? attachments = null,
+        IReadOnlyList<Guid>? promptRefs = null) =>
         new()
         {
             ConversationId = conversationId,
@@ -78,6 +80,7 @@ public sealed class ChatServiceTests
             Message = message,
             Mentions = mentions,
             Attachments = attachments,
+            PromptRefs = promptRefs,
         };
 
     [Fact]
@@ -324,6 +327,59 @@ public sealed class ChatServiceTests
             Arg.Is<AIOrchestrationRequest>(r => r.WorkspaceName == "explicit"), Arg.Any<CancellationToken>());
         await _settingProvider.DidNotReceive()
             .GetOrNullAsync(AIChatSettingNames.DefaultWorkspace, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Prompt_badges_drive_the_composed_instruction_and_stamp_the_primary_prompt()
+    {
+        ChatService service = CreateService();
+        var promptId = Guid.NewGuid();
+        _promptBadgeResolver
+            .ResolveAsync(Arg.Any<IReadOnlyList<Guid>>(), Owner, "my notes", Arg.Any<CancellationToken>())
+            .Returns(new PromptBadgeResolution
+            {
+                ComposedMessage = "Summarise the content.\n\nmy notes",
+                PrimaryPromptName = "Prompt:Summarize:Name",
+                PrimaryPromptVersion = 3,
+            });
+
+        await service.SendAsync(Request(message: "my notes", promptRefs: [promptId]), TestContext.Current.CancellationToken);
+
+        await _orchestrator.Received(1).RunAsync(
+            Arg.Is<AIOrchestrationRequest>(r =>
+                r.Messages[r.Messages.Count - 1].Text == "Summarise the content.\n\nmy notes"
+                && r.InvokedPromptName == "Prompt:Summarize:Name"
+                && r.InvokedPromptVersion == 3),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Prompt_badge_expansion_is_not_persisted_only_the_original_message_is()
+    {
+        ChatService service = CreateService();
+        _promptBadgeResolver
+            .ResolveAsync(Arg.Any<IReadOnlyList<Guid>>(), Owner, "my notes", Arg.Any<CancellationToken>())
+            .Returns(new PromptBadgeResolution { ComposedMessage = "Summarise the content.\n\nmy notes", PrimaryPromptName = "X", PrimaryPromptVersion = 1 });
+
+        await service.SendAsync(Request(message: "my notes", promptRefs: [Guid.NewGuid()]), TestContext.Current.CancellationToken);
+
+        await _store.Received(1).CreateAsync(
+            Arg.Is<Conversation>(c => c.Messages[0].Content == "my notes" && !c.Messages[0].Content.Contains("Summarise")),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task No_prompt_refs_skips_badge_resolution()
+    {
+        ChatService service = CreateService();
+
+        await service.SendAsync(Request(message: "plain"), TestContext.Current.CancellationToken);
+
+        await _promptBadgeResolver.DidNotReceive()
+            .ResolveAsync(Arg.Any<IReadOnlyList<Guid>>(), Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        await _orchestrator.Received(1).RunAsync(
+            Arg.Is<AIOrchestrationRequest>(r => r.InvokedPromptName == null && r.InvokedPromptVersion == null),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]

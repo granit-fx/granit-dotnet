@@ -51,4 +51,16 @@ public sealed record AIUsageRecord
     /// which prompt version produced which interaction — without persisting prompt content.
     /// </summary>
     public string? PromptVersion { get; init; }
+
+    /// <summary>
+    /// Name of the catalogue prompt template the user invoked for this interaction (ADR-067), or
+    /// <c>null</c> when none was used. When several prompts are referenced, the first is stamped.
+    /// </summary>
+    public string? PromptTemplateName { get; init; }
+
+    /// <summary>
+    /// Revision of the invoked catalogue prompt template (see <see cref="PromptTemplateName"/>), or
+    /// <c>null</c> when none was used. Stamped for auditability without persisting prompt content.
+    /// </summary>
+    public int? PromptTemplateVersion { get; init; }
 }

@@ -32,4 +32,16 @@ public sealed record AIOrchestrationRequest
     /// the guardrails.
     /// </summary>
     public string? UserCustomContext { get; init; }
+
+    /// <summary>
+    /// Name of the catalogue prompt template that drove this run (ADR-067 badge resolution), or
+    /// <see langword="null"/>. Stamped into the usage record for auditability; does not affect the loop.
+    /// </summary>
+    public string? InvokedPromptName { get; init; }
+
+    /// <summary>
+    /// Revision of the catalogue prompt template named by <see cref="InvokedPromptName"/>, or
+    /// <see langword="null"/>. Stamped into the usage record alongside the name.
+    /// </summary>
+    public int? InvokedPromptVersion { get; init; }
 }

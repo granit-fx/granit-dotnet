@@ -31,6 +31,13 @@ public sealed record ChatSendRequest
     /// and injected ahead of the message as untrusted context. <see langword="null"/> or empty when none.
     /// </summary>
     public IReadOnlyList<AIAttachment>? Attachments { get; init; }
+
+    /// <summary>
+    /// Catalogue prompt templates the user inserted as <c>/</c> badges for this turn, resolved under
+    /// the caller's ACLs and composed with <see cref="Message"/> into the final instruction. The first
+    /// resolved prompt is stamped into the usage record. <see langword="null"/> or empty when none.
+    /// </summary>
+    public IReadOnlyList<Guid>? PromptRefs { get; init; }
 }
 
 /// <summary>The outcome of a send: the (possibly new) conversation and the assistant's answer.</summary>

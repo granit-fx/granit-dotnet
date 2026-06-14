@@ -9,6 +9,7 @@
     "AIChat:Validation:TooManyMentions": "Eine Nachricht kann höchstens 25 Elemente referenzieren.",
     "AIChat:Validation:TooManyAttachments": "Zu viele Anhänge in einer einzelnen Nachricht.",
     "AIChat:Validation:UnsupportedAttachmentType": "Dieser Dateityp wird nicht unterstützt.",
-    "AIChat:Validation:AttachmentTooLarge": "Diese Datei überschreitet die maximal zulässige Größe."
+    "AIChat:Validation:AttachmentTooLarge": "Diese Datei überschreitet die maximal zulässige Größe.",
+    "AIChat:Validation:TooManyPromptRefs": "Eine Nachricht kann höchstens 5 Prompts verwenden."
   }
 }

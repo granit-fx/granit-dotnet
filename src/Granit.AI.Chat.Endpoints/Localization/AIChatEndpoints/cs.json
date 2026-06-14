@@ -9,6 +9,7 @@
     "AIChat:Validation:TooManyMentions": "Zpráva může odkazovat nejvýše na 25 položek.",
     "AIChat:Validation:TooManyAttachments": "Příliš mnoho příloh v jedné zprávě.",
     "AIChat:Validation:UnsupportedAttachmentType": "Tento typ souboru není podporován.",
-    "AIChat:Validation:AttachmentTooLarge": "Tento soubor překračuje maximální povolenou velikost."
+    "AIChat:Validation:AttachmentTooLarge": "Tento soubor překračuje maximální povolenou velikost.",
+    "AIChat:Validation:TooManyPromptRefs": "Zpráva může použít nejvýše 5 promptů."
   }
 }

@@ -9,6 +9,7 @@
     "AIChat:Validation:TooManyMentions": "A message can reference at most 25 items.",
     "AIChat:Validation:TooManyAttachments": "Too many attachments on a single message.",
     "AIChat:Validation:UnsupportedAttachmentType": "This file type is not supported.",
-    "AIChat:Validation:AttachmentTooLarge": "This file exceeds the maximum allowed size."
+    "AIChat:Validation:AttachmentTooLarge": "This file exceeds the maximum allowed size.",
+    "AIChat:Validation:TooManyPromptRefs": "A message can use at most 5 prompts."
   }
 }

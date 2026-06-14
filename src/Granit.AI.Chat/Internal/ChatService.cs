@@ -29,6 +29,7 @@ internal sealed class ChatService(
     IAIMentionContextResolver mentionContextResolver,
     IAIAttachmentTextResolver attachmentTextResolver,
     IAISuggestionResolver suggestionResolver,
+    IPromptBadgeResolver promptBadgeResolver,
     ISettingProvider settingProvider,
     IGuidGenerator guidGenerator,
     IOptions<GranitAIOptions> aiOptions) : IChatService
@@ -86,7 +87,14 @@ internal sealed class ChatService(
             }
         }
 
-        loopMessages.Add(new ChatMessage(ChatRole.User, request.Message));
+        // Expand any '/' prompt badges (owner-scoped) and compose them with the free text into the
+        // final instruction. The composed text drives this turn only; the user's original message is
+        // what gets persisted, so the badge expansion stays ephemeral like mentions and attachments.
+        PromptBadgeResolution badges = request.PromptRefs is { Count: > 0 } promptRefs
+            ? await promptBadgeResolver.ResolveAsync(promptRefs, request.OwnerId, request.Message, cancellationToken).ConfigureAwait(false)
+            : new PromptBadgeResolution { ComposedMessage = request.Message };
+
+        loopMessages.Add(new ChatMessage(ChatRole.User, badges.ComposedMessage));
 
         AIOrchestrationResult result = await orchestrator.RunAsync(
             new AIOrchestrationRequest
@@ -94,6 +102,8 @@ internal sealed class ChatService(
                 WorkspaceName = workspaceName,
                 Messages = loopMessages,
                 UserCustomContext = await ResolveCustomContextAsync(cancellationToken).ConfigureAwait(false),
+                InvokedPromptName = badges.PrimaryPromptName,
+                InvokedPromptVersion = badges.PrimaryPromptVersion,
             },
             cancellationToken).ConfigureAwait(false);
 

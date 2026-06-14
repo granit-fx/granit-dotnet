@@ -9,6 +9,7 @@
     "AIChat:Validation:TooManyMentions": "Un message peut référencer au maximum 25 éléments.",
     "AIChat:Validation:TooManyAttachments": "Trop de pièces jointes sur un même message.",
     "AIChat:Validation:UnsupportedAttachmentType": "Ce type de fichier n'est pas pris en charge.",
-    "AIChat:Validation:AttachmentTooLarge": "Ce fichier dépasse la taille maximale autorisée."
+    "AIChat:Validation:AttachmentTooLarge": "Ce fichier dépasse la taille maximale autorisée.",
+    "AIChat:Validation:TooManyPromptRefs": "Un message peut utiliser au maximum 5 prompts."
   }
 }

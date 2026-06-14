@@ -9,6 +9,7 @@
     "AIChat:Validation:TooManyMentions": "一条消息最多可引用 25 个项目。",
     "AIChat:Validation:TooManyAttachments": "单条消息的附件过多。",
     "AIChat:Validation:UnsupportedAttachmentType": "不支持此文件类型。",
-    "AIChat:Validation:AttachmentTooLarge": "此文件超过允许的最大大小。"
+    "AIChat:Validation:AttachmentTooLarge": "此文件超过允许的最大大小。",
+    "AIChat:Validation:TooManyPromptRefs": "一条消息最多可使用 5 个提示词。"
   }
 }

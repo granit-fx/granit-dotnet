@@ -9,6 +9,7 @@
     "AIChat:Validation:TooManyMentions": "एक संदेश अधिकतम 25 आइटम का संदर्भ दे सकता है।",
     "AIChat:Validation:TooManyAttachments": "एक ही संदेश में बहुत अधिक अनुलग्नक हैं।",
     "AIChat:Validation:UnsupportedAttachmentType": "यह फ़ाइल प्रकार समर्थित नहीं है।",
-    "AIChat:Validation:AttachmentTooLarge": "यह फ़ाइल अधिकतम अनुमत आकार से अधिक है।"
+    "AIChat:Validation:AttachmentTooLarge": "यह फ़ाइल अधिकतम अनुमत आकार से अधिक है।",
+    "AIChat:Validation:TooManyPromptRefs": "एक संदेश अधिकतम 5 प्रॉम्प्ट का उपयोग कर सकता है।"
   }
 }

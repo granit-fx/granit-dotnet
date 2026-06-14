@@ -16,6 +16,9 @@ internal sealed class SendMessageRequestValidator : GranitValidator<SendMessageR
     /// <summary>Maximum number of <c>@</c> mentions on a single turn.</summary>
     public const int MaxMentions = 25;
 
+    /// <summary>Maximum number of <c>/</c> prompt badges on a single turn.</summary>
+    public const int MaxPromptRefs = 5;
+
     public SendMessageRequestValidator(IOptions<GranitAIChatAttachmentOptions> attachmentOptions)
     {
         GranitAIChatAttachmentOptions limits = attachmentOptions.Value;
@@ -33,6 +36,10 @@ internal sealed class SendMessageRequestValidator : GranitValidator<SendMessageR
                 mention.RuleFor(m => m.Id).NotEmpty();
             })
             .When(x => x.Mentions is { Count: > 0 });
+
+        RuleFor(x => x.PromptRefs)
+            .Must(p => p is null || p.Count <= MaxPromptRefs)
+            .WithErrorCodeAndMessage("AIChat:Validation:TooManyPromptRefs");
 
         RuleFor(x => x.Attachments)
             .Must(a => a is null || a.Count <= limits.MaxAttachments)

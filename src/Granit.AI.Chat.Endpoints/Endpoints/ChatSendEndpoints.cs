@@ -63,6 +63,7 @@ internal static class ChatSendEndpoints
                     Mentions = request.Mentions?.Select(m => new AIMention(m.Type, m.Id)).ToList(),
                     Attachments = request.Attachments?
                         .Select(a => new AIAttachment(a.Reference, a.FileName, a.ContentType, a.SizeBytes)).ToList(),
+                    PromptRefs = request.PromptRefs,
                 },
                 cancellationToken).ConfigureAwait(false);
         }

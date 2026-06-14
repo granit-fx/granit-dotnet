@@ -42,6 +42,9 @@ internal sealed class EfAIUsageQueryableSource(
             CostCurrency = e.CostCurrency,
             Timestamp = e.CreatedAt,
             Duration = e.Duration,
+            PromptVersion = e.PromptVersion,
+            PromptTemplateName = e.PromptTemplateName,
+            PromptTemplateVersion = e.PromptTemplateVersion,
         });
     }
 }
