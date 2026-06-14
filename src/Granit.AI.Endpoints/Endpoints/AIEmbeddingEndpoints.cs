@@ -24,6 +24,7 @@ internal static class AIEmbeddingEndpoints
                 + "float vectors for each input. Returns 404 if the workspace does not exist, "
                 + "or 502 if the provider is unavailable.")
             .Produces<AIEmbeddingResponse>()
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status502BadGateway);
 
