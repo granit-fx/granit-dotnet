@@ -62,6 +62,46 @@ public sealed class NetworkValidatorExtensionsTests
     }
 
     // =========================================================================
+    // HttpsUrl
+    // =========================================================================
+
+    [Theory]
+    [InlineData("https://example.com")]
+    [InlineData("https://example.com/path?q=1&b=2")]
+    [InlineData("https://sub.example.com:8443/path")]
+    [InlineData("HTTPS://example.com")] // scheme is case-insensitive
+    public void HttpsUrl_ValidValues_PassValidation(string url)
+    {
+        InlineValidator<TestModel> validator = [];
+        validator.RuleFor(x => x.Value).HttpsUrl();
+
+        ValidationResult result = validator.Validate(new TestModel(url));
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("http://example.com")]        // plaintext scheme rejected
+    [InlineData("example.com")]               // no scheme
+    [InlineData("/relative/path")]            // not absolute
+    [InlineData("javascript:alert(1)")]       // non-HTTPS scheme
+    [InlineData("ftp://example.com")]         // non-HTTPS scheme
+    [InlineData("not a url")]
+    public void HttpsUrl_InvalidValues_FailValidation(string? url)
+    {
+        InlineValidator<TestModel> validator = [];
+        validator.RuleFor(x => x.Value).HttpsUrl();
+
+        ValidationResult result = validator.Validate(new TestModel(url));
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:UrlHttps");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:UrlHttps");
+    }
+
+    // =========================================================================
     // Ipv4Address
     // =========================================================================
 

@@ -52,6 +52,20 @@ public static partial class NetworkValidatorExtensions
             .WithErrorCodeAndMessage("Validation:Format:Url");
 
     /// <summary>
+    /// Validates an absolute URL with a required <c>https</c> scheme.
+    /// </summary>
+    /// <remarks>
+    /// Stricter than <see cref="Url{T}"/>, which also accepts <c>http</c>. Use this for
+    /// security-sensitive URLs that must never be transmitted in cleartext — OAuth/OIDC
+    /// redirect targets, webhook callbacks, payment-provider return URLs, etc. Rejects
+    /// relative URLs, non-HTTPS schemes (<c>http</c>, <c>javascript</c>, <c>ftp</c>, …) and null.
+    /// </remarks>
+    public static IRuleBuilderOptions<T, string?> HttpsUrl<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
+        ruleBuilder
+            .Must(IsValidHttpsUrl)
+            .WithErrorCodeAndMessage("Validation:Format:UrlHttps");
+
+    /// <summary>
     /// Validates an IPv4 address per RFC 791.
     /// </summary>
     /// <remarks>
@@ -97,6 +111,11 @@ public static partial class NetworkValidatorExtensions
 
     internal static bool IsValidUrl(string? value) =>
         value is not null && UrlRegex().IsMatch(value.Trim());
+
+    internal static bool IsValidHttpsUrl(string? value) =>
+        value is not null
+        && Uri.TryCreate(value.Trim(), UriKind.Absolute, out Uri? uri)
+        && uri.Scheme == Uri.UriSchemeHttps;
 
     internal static bool IsValidIpv4Address(string? value) =>
         value is not null && Ipv4Regex().IsMatch(value.Trim());
