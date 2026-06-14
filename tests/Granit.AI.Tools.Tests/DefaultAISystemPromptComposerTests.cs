@@ -77,7 +77,7 @@ public sealed class DefaultAISystemPromptComposerTests
         AISystemPrompt prompt = composer.Compose(new AISystemPromptContext());
 
         prompt.Guardrails.Name.ShouldBe("framework.guardrails");
-        prompt.Guardrails.Version.ShouldBe("1.0.0");
+        prompt.Guardrails.Version.ShouldBe("1.1.0");
     }
 
     [Fact]

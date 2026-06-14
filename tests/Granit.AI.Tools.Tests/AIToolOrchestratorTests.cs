@@ -257,7 +257,7 @@ public sealed class AIToolOrchestratorTests
         await harness.Orchestrator.RunAsync(UserSays("hi"), TestContext.Current.CancellationToken);
 
         await harness.UsageTracker.Received(1).RecordAsync(
-            Arg.Is<AIUsageRecord>(r => r.PromptVersion == "1.0.0"),
+            Arg.Is<AIUsageRecord>(r => r.PromptVersion == "1.1.0"),
             Arg.Any<CancellationToken>());
     }
 
