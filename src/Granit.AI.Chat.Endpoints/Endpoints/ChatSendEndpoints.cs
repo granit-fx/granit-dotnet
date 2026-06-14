@@ -2,10 +2,12 @@ using System.Runtime.CompilerServices;
 using Granit.AI.Chat.Endpoints.Dtos;
 using Granit.AI.Chat.Endpoints.Permissions;
 using Granit.AI.Chat.Exceptions;
+using Granit.AI.Chat.Mentions;
 using Granit.AI.Exceptions;
 using Granit.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
@@ -34,7 +36,7 @@ internal static class ChatSendEndpoints
         return group;
     }
 
-    private static async Task<IResult> SendAsync(
+    private static async Task<Results<ServerSentEventsResult<ChatStreamEvent>, ProblemHttpResult>> SendAsync(
         SendMessageRequest request,
         [FromServices] IChatService chatService,
         [FromServices] ICurrentUserService currentUser,
@@ -57,6 +59,7 @@ internal static class ChatSendEndpoints
                     OwnerId = ownerId,
                     WorkspaceName = request.WorkspaceName,
                     Message = request.Message,
+                    Mentions = request.Mentions?.Select(m => new AIMention(m.Type, m.Id)).ToList(),
                 },
                 cancellationToken).ConfigureAwait(false);
         }

@@ -3094,7 +3094,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 4,
+      "line": 6,
       "members": []
     },
     {
@@ -3103,7 +3103,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 20,
+      "line": 28,
       "members": []
     },
     {
@@ -3146,7 +3146,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 17,
+      "line": 24,
       "members": []
     },
     {
@@ -3198,6 +3198,15 @@
       ]
     },
     {
+      "name": "MentionRequest",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.MentionRequest",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "MessageResponse",
       "fqn": "Granit.AI.Chat.Endpoints.Dtos.MessageResponse",
       "kind": "record",
@@ -3235,7 +3244,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 7,
+      "line": 8,
       "members": []
     },
     {
@@ -3377,6 +3386,24 @@
       "members": []
     },
     {
+      "name": "DuplicateMentionResolverException",
+      "fqn": "Granit.AI.Chat.Exceptions.DuplicateMentionResolverException",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Exceptions/DuplicateMentionResolverException.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "InvalidMentionTypeException",
+      "fqn": "Granit.AI.Chat.Exceptions.InvalidMentionTypeException",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Exceptions/InvalidMentionTypeException.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "WorkspaceNotChatCapableException",
       "fqn": "Granit.AI.Chat.Exceptions.WorkspaceNotChatCapableException",
       "kind": "class",
@@ -3386,12 +3413,28 @@
       "members": []
     },
     {
+      "name": "AIChatMentionsServiceCollectionExtensions",
+      "fqn": "Granit.AI.Chat.Extensions.AIChatMentionsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Extensions/AIChatMentionsServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitChatMentions",
+          "kind": "method",
+          "signature": "AddGranitChatMentions(this IServiceCollection services, Action<AIMentionRegistrationBuilder> configure)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "GranitAIChatModule",
       "fqn": "Granit.AI.Chat.GranitAIChatModule",
       "kind": "class",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/GranitAIChatModule.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -3407,7 +3450,7 @@
       "kind": "interface",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 42,
+      "line": 50,
       "members": [
         {
           "name": "SendAsync",
@@ -3460,6 +3503,88 @@
           "kind": "method",
           "signature": "DeleteAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "AIMention",
+      "fqn": "Granit.AI.Chat.Mentions.AIMention",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Mentions/AIMention.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "AIMentionContext",
+      "fqn": "Granit.AI.Chat.Mentions.AIMentionContext",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Mentions/AIMentionContext.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "AIMentionRegistrationBuilder",
+      "fqn": "Granit.AI.Chat.Mentions.AIMentionRegistrationBuilder",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Mentions/AIMentionRegistrationBuilder.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Services",
+          "kind": "property",
+          "signature": "IServiceCollection Services",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "IAIMentionContextResolver",
+      "fqn": "Granit.AI.Chat.Mentions.IAIMentionContextResolver",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Mentions/IAIMentionContextResolver.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ResolveContextAsync",
+          "kind": "method",
+          "signature": "ResolveContextAsync(IReadOnlyList<AIMention> mentions, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<string?>"
+        }
+      ]
+    },
+    {
+      "name": "IAIMentionRegistry",
+      "fqn": "Granit.AI.Chat.Mentions.IAIMentionRegistry",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Mentions/IAIMentionRegistry.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "TryGet",
+          "kind": "method",
+          "signature": "TryGet(string type, [NotNullWhen(true)",
+          "returnType": "IReadOnlyList<IAIMentionResolver> Resolvers { get; } bool"
+        }
+      ]
+    },
+    {
+      "name": "IAIMentionResolver",
+      "fqn": "Granit.AI.Chat.Mentions.IAIMentionResolver",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Mentions/IAIMentionResolver.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(string id, CancellationToken cancellationToken = default)",
+          "returnType": "string Type { get; } ValueTask<AIMentionContext?>"
         }
       ]
     },

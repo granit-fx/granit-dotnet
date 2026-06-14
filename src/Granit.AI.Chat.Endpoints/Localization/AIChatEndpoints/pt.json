@@ -5,6 +5,7 @@
     "Permission:AIChat.Conversations.Read": "Ver as suas conversas",
     "Permission:AIChat.Conversations.Send": "Enviar mensagens nas suas conversas",
     "Permission:AIChat.Conversations.Manage": "Criar e renomear as suas conversas",
-    "Permission:AIChat.Conversations.Delete": "Eliminar as suas conversas"
+    "Permission:AIChat.Conversations.Delete": "Eliminar as suas conversas",
+    "AIChat:Validation:TooManyMentions": "Uma mensagem pode referenciar no máximo 25 itens."
   }
 }

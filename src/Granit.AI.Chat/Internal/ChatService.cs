@@ -1,5 +1,6 @@
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Exceptions;
+using Granit.AI.Chat.Mentions;
 using Granit.AI.Exceptions;
 using Granit.AI.Options;
 using Granit.AI.Tools;
@@ -19,6 +20,7 @@ internal sealed class ChatService(
     IAIToolOrchestrator orchestrator,
     IAIWorkspaceProvider workspaceProvider,
     IAIWorkspaceCapabilityResolver capabilityResolver,
+    IAIMentionContextResolver mentionContextResolver,
     IGuidGenerator guidGenerator,
     IOptions<GranitAIOptions> aiOptions) : IChatService
 {
@@ -49,7 +51,21 @@ internal sealed class ChatService(
             : await conversationStore.GetAsync(request.ConversationId!.Value, request.OwnerId, cancellationToken).ConfigureAwait(false)
                 ?? throw new ConversationNotFoundException(request.ConversationId.Value);
 
-        List<ChatMessage> loopMessages = [.. conversation.Messages.Select(ToChatMessage), new ChatMessage(ChatRole.User, request.Message)];
+        List<ChatMessage> loopMessages = [.. conversation.Messages.Select(ToChatMessage)];
+
+        // Resolve any @ mentions to context under the caller's ACLs and inject it ahead of the
+        // message as untrusted data. It feeds this turn only and is never persisted.
+        if (request.Mentions is { Count: > 0 } mentions)
+        {
+            string? mentionContext = await mentionContextResolver
+                .ResolveContextAsync(mentions, cancellationToken).ConfigureAwait(false);
+            if (mentionContext is not null)
+            {
+                loopMessages.Add(new ChatMessage(ChatRole.User, mentionContext));
+            }
+        }
+
+        loopMessages.Add(new ChatMessage(ChatRole.User, request.Message));
 
         AIOrchestrationResult result = await orchestrator.RunAsync(
             new AIOrchestrationRequest

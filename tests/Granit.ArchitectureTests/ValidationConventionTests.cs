@@ -26,6 +26,8 @@ public sealed class ValidationConventionTests
         "AIChatMessageRequest",
         // Nested sub-type validated via ChildRules + MeterEventRules
         "MeterEventRequest",
+        // Nested sub-type validated via ChildRules in SendMessageRequestValidator
+        "MentionRequest",
     };
 
     [Fact]

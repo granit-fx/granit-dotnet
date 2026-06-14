@@ -1,6 +1,7 @@
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Internal;
+using Granit.AI.Chat.Mentions;
 using Granit.AI.Options;
 using Granit.AI.Tools;
 using Granit.AI.Workspaces;
@@ -20,6 +21,7 @@ public sealed class ChatServiceTests
     private readonly IAIToolOrchestrator _orchestrator = Substitute.For<IAIToolOrchestrator>();
     private readonly IAIWorkspaceProvider _workspaceProvider = Substitute.For<IAIWorkspaceProvider>();
     private readonly IAIWorkspaceCapabilityResolver _capabilityResolver = Substitute.For<IAIWorkspaceCapabilityResolver>();
+    private readonly IAIMentionContextResolver _mentionContextResolver = Substitute.For<IAIMentionContextResolver>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
 
     private ChatService CreateService()
@@ -41,12 +43,18 @@ public sealed class ChatServiceTests
                 OutputTokens = 4,
             });
 
-        return new ChatService(_store, _orchestrator, _workspaceProvider, _capabilityResolver, _guidGenerator,
-            MsOptions.Create(new GranitAIOptions()));
+        _mentionContextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIMention>>(), Arg.Any<CancellationToken>())
+            .Returns((string?)null);
+
+        return new ChatService(_store, _orchestrator, _workspaceProvider, _capabilityResolver,
+            _mentionContextResolver, _guidGenerator, MsOptions.Create(new GranitAIOptions()));
     }
 
-    private static ChatSendRequest Request(Guid? conversationId = null, string message = "hello") =>
-        new() { ConversationId = conversationId, OwnerId = Owner, Message = message };
+    private static ChatSendRequest Request(
+        Guid? conversationId = null,
+        string message = "hello",
+        IReadOnlyList<AIMention>? mentions = null) =>
+        new() { ConversationId = conversationId, OwnerId = Owner, Message = message, Mentions = mentions };
 
     [Fact]
     public async Task New_conversation_runs_the_loop_and_persists_user_and_assistant_messages()
@@ -90,6 +98,58 @@ public sealed class ChatServiceTests
         await _store.Received(1).AppendMessagesAsync(conversationId, Owner,
             Arg.Is<IReadOnlyList<Message>>(m => m.Count == 2), Arg.Any<CancellationToken>());
         await _store.DidNotReceive().CreateAsync(Arg.Any<Conversation>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Resolved_mention_context_is_injected_before_the_user_message()
+    {
+        ChatService service = CreateService();
+        _mentionContextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIMention>>(), Arg.Any<CancellationToken>())
+            .Returns("<untrusted_document>invoice 42</untrusted_document>");
+
+        await service.SendAsync(
+            Request(message: "summarise", mentions: [new AIMention("invoice", "42")]),
+            TestContext.Current.CancellationToken);
+
+        await _orchestrator.Received(1).RunAsync(
+            Arg.Is<AIOrchestrationRequest>(r =>
+                r.Messages.Count == 2
+                && r.Messages[0].Role == ChatRole.User && r.Messages[0].Text!.Contains("invoice 42")
+                && r.Messages[1].Role == ChatRole.User && r.Messages[1].Text == "summarise"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Mention_context_is_not_persisted_only_the_user_message_is()
+    {
+        ChatService service = CreateService();
+        _mentionContextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIMention>>(), Arg.Any<CancellationToken>())
+            .Returns("<untrusted_document>secret</untrusted_document>");
+
+        await service.SendAsync(
+            Request(message: "summarise", mentions: [new AIMention("invoice", "42")]),
+            TestContext.Current.CancellationToken);
+
+        await _store.Received(1).CreateAsync(
+            Arg.Is<Conversation>(c =>
+                c.Messages.Count == 2
+                && c.Messages[0].Content == "summarise"
+                && !c.Messages[0].Content.Contains("secret")),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task No_mentions_inject_no_extra_message()
+    {
+        ChatService service = CreateService();
+
+        await service.SendAsync(Request(message: "plain"), TestContext.Current.CancellationToken);
+
+        await _orchestrator.Received(1).RunAsync(
+            Arg.Is<AIOrchestrationRequest>(r => r.Messages.Count == 1 && r.Messages[0].Text == "plain"),
+            Arg.Any<CancellationToken>());
+        await _mentionContextResolver.DidNotReceive()
+            .ResolveContextAsync(Arg.Any<IReadOnlyList<AIMention>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

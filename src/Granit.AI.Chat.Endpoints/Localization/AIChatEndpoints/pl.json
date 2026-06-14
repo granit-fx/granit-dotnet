@@ -5,6 +5,7 @@
     "Permission:AIChat.Conversations.Read": "Przeglądanie swoich rozmów",
     "Permission:AIChat.Conversations.Send": "Wysyłanie wiadomości w swoich rozmowach",
     "Permission:AIChat.Conversations.Manage": "Tworzenie i zmiana nazw swoich rozmów",
-    "Permission:AIChat.Conversations.Delete": "Usuwanie swoich rozmów"
+    "Permission:AIChat.Conversations.Delete": "Usuwanie swoich rozmów",
+    "AIChat:Validation:TooManyMentions": "Wiadomość może odwoływać się do maksymalnie 25 elementów."
   }
 }

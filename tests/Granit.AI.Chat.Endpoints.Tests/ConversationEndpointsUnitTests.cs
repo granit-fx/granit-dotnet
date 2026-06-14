@@ -52,6 +52,21 @@ public sealed class ConversationEndpointsUnitTests
     }
 
     [Fact]
+    public void Send_validator_rejects_blank_mention_fields_and_too_many()
+    {
+        SendMessageRequestValidator validator = new();
+
+        validator.Validate(new SendMessageRequest("hi", Mentions: [new MentionRequest("", "1")])).IsValid.ShouldBeFalse();
+        validator.Validate(new SendMessageRequest("hi", Mentions: [new MentionRequest("invoice", "")])).IsValid.ShouldBeFalse();
+        validator.Validate(new SendMessageRequest("hi", Mentions: [new MentionRequest("invoice", "42")])).IsValid.ShouldBeTrue();
+
+        var tooMany = Enumerable.Range(0, SendMessageRequestValidator.MaxMentions + 1)
+            .Select(i => new MentionRequest("invoice", i.ToString()))
+            .ToList();
+        validator.Validate(new SendMessageRequest("hi", Mentions: tooMany)).IsValid.ShouldBeFalse();
+    }
+
+    [Fact]
     public void Create_validator_rejects_blank_and_overlong_titles()
     {
         CreateConversationRequestValidator validator = new();

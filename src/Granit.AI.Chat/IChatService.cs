@@ -1,3 +1,5 @@
+using Granit.AI.Chat.Mentions;
+
 namespace Granit.AI.Chat;
 
 /// <summary>A request to send a message and obtain a tool-grounded answer.</summary>
@@ -14,6 +16,12 @@ public sealed record ChatSendRequest
 
     /// <summary>The user's message.</summary>
     public required string Message { get; init; }
+
+    /// <summary>
+    /// Entities the user <c>@</c>-referenced for this turn, resolved to context under the caller's
+    /// ACLs and injected ahead of the message. <see langword="null"/> or empty when none.
+    /// </summary>
+    public IReadOnlyList<AIMention>? Mentions { get; init; }
 }
 
 /// <summary>The outcome of a send: the (possibly new) conversation and the assistant's answer.</summary>

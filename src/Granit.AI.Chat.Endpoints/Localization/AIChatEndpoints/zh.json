@@ -5,6 +5,7 @@
     "Permission:AIChat.Conversations.Read": "查看您的对话",
     "Permission:AIChat.Conversations.Send": "在您的对话中发送消息",
     "Permission:AIChat.Conversations.Manage": "创建和重命名您的对话",
-    "Permission:AIChat.Conversations.Delete": "删除您的对话"
+    "Permission:AIChat.Conversations.Delete": "删除您的对话",
+    "AIChat:Validation:TooManyMentions": "一条消息最多可引用 25 个项目。"
   }
 }
