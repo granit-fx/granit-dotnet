@@ -1,4 +1,4 @@
-using System.Text.Json;
+using System.Runtime.CompilerServices;
 using Granit.AI.Chat.Endpoints.Dtos;
 using Granit.AI.Chat.Endpoints.Permissions;
 using Granit.AI.Chat.Exceptions;
@@ -22,9 +22,9 @@ internal static class ChatSendEndpoints
             .WithDescription(
                 "Runs the agentic loop within the caller's permissions, persists the user and "
                 + "assistant messages, and streams the answer as Server-Sent Events: a 'conversation' "
-                + "event with the (possibly new) conversation id, incremental 'data' content frames, a "
-                + "'usage' event, then '[DONE]'. Rejects a non-chat-capable workspace before streaming.")
-            .Produces<string>(StatusCodes.Status200OK, "text/event-stream")
+                + "frame with the (possibly new) conversation id, incremental 'delta' content frames, "
+                + "then a 'usage' frame. Rejects a non-chat-capable workspace before streaming.")
+            .Produces<ChatStreamEvent>(StatusCodes.Status200OK, "text/event-stream")
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -34,18 +34,17 @@ internal static class ChatSendEndpoints
         return group;
     }
 
-    private static async Task SendAsync(
+    private static async Task<IResult> SendAsync(
         SendMessageRequest request,
         [FromServices] IChatService chatService,
         [FromServices] ICurrentUserService currentUser,
-        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         if (currentUser.UserGuid is not { } ownerId)
         {
-            await WriteProblemAsync(httpContext, StatusCodes.Status401Unauthorized,
-                "The current identity has no user context.", cancellationToken).ConfigureAwait(false);
-            return;
+            return TypedResults.Problem(
+                detail: "The current identity has no user context.",
+                statusCode: StatusCodes.Status401Unauthorized);
         }
 
         ChatSendResult result;
@@ -63,54 +62,36 @@ internal static class ChatSendEndpoints
         }
         catch (WorkspaceNotChatCapableException ex)
         {
-            await WriteProblemAsync(httpContext, StatusCodes.Status422UnprocessableEntity, ex.Message, cancellationToken).ConfigureAwait(false);
-            return;
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status422UnprocessableEntity);
         }
         catch (AIWorkspaceNotFoundException ex)
         {
-            await WriteProblemAsync(httpContext, StatusCodes.Status404NotFound, ex.Message, cancellationToken).ConfigureAwait(false);
-            return;
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status404NotFound);
         }
         catch (ConversationNotFoundException ex)
         {
-            await WriteProblemAsync(httpContext, StatusCodes.Status404NotFound, ex.Message, cancellationToken).ConfigureAwait(false);
-            return;
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status404NotFound);
         }
 
-        httpContext.Response.ContentType = "text/event-stream";
-        httpContext.Response.Headers.CacheControl = "no-cache";
-        httpContext.Response.Headers.Connection = "keep-alive";
+        // Native .NET SSE: the framework handles framing, content-type and per-item flushing.
+        return TypedResults.ServerSentEvents(StreamAsync(result, cancellationToken));
+    }
 
-        await WriteFrameAsync(httpContext, "conversation",
-            JsonSerializer.Serialize(new { conversationId = result.ConversationId }), cancellationToken).ConfigureAwait(false);
+    private static async IAsyncEnumerable<ChatStreamEvent> StreamAsync(
+        ChatSendResult result,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        yield return new ChatStreamEvent("conversation", ConversationId: result.ConversationId);
 
         foreach (string chunk in Chunk(result.Content))
         {
-            await WriteFrameAsync(httpContext, eventName: null,
-                JsonSerializer.Serialize(new { content = chunk }), cancellationToken).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            yield return new ChatStreamEvent("delta", Content: chunk);
+            // Yield control between frames so each is flushed as its own SSE event.
+            await Task.Yield();
         }
 
-        await WriteFrameAsync(httpContext, "usage",
-            JsonSerializer.Serialize(new { inputTokens = result.InputTokens, outputTokens = result.OutputTokens }),
-            cancellationToken).ConfigureAwait(false);
-
-        await httpContext.Response.WriteAsync("data: [DONE]\n\n", cancellationToken).ConfigureAwait(false);
-        await httpContext.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    private static async Task WriteFrameAsync(HttpContext httpContext, string? eventName, string json, CancellationToken cancellationToken)
-    {
-        string frame = eventName is null ? $"data: {json}\n\n" : $"event: {eventName}\ndata: {json}\n\n";
-        await httpContext.Response.WriteAsync(frame, cancellationToken).ConfigureAwait(false);
-        await httpContext.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    private static async Task WriteProblemAsync(HttpContext httpContext, int statusCode, string detail, CancellationToken cancellationToken)
-    {
-        httpContext.Response.StatusCode = statusCode;
-        httpContext.Response.ContentType = "application/problem+json";
-        await httpContext.Response.WriteAsync(
-            JsonSerializer.Serialize(new { detail, status = statusCode }), cancellationToken).ConfigureAwait(false);
+        yield return new ChatStreamEvent("usage", InputTokens: result.InputTokens, OutputTokens: result.OutputTokens);
     }
 
     /// <summary>Splits text into word-sized chunks (trailing space preserved) for token-like streaming.</summary>

@@ -3141,6 +3141,15 @@
       "members": []
     },
     {
+      "name": "ChatStreamEvent",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.ChatStreamEvent",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "ConversationResponse",
       "fqn": "Granit.AI.Chat.Endpoints.Dtos.ConversationResponse",
       "kind": "record",

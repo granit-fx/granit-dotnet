@@ -8,3 +8,15 @@ public sealed record SendMessageRequest(
     string Message,
     Guid? ConversationId = null,
     string? WorkspaceName = null);
+
+/// <summary>
+/// A frame streamed over SSE for a send. <see cref="Type"/> discriminates the frame:
+/// <c>conversation</c> (carries <see cref="ConversationId"/>), <c>delta</c> (carries a
+/// <see cref="Content"/> chunk), or <c>usage</c> (carries the token counts).
+/// </summary>
+public sealed record ChatStreamEvent(
+    string Type,
+    string? Content = null,
+    Guid? ConversationId = null,
+    int? InputTokens = null,
+    int? OutputTokens = null);
