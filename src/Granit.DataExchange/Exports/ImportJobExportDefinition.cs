@@ -20,9 +20,6 @@ public sealed class ImportJobExportDefinition : ExportDefinition<ImportJob>
             .Field(e => e.Status)
             .Field(e => e.CompletedAt, f => f.Format("O"))
             .Field(e => e.TenantId)
-            .Field(e => e.CreatedAt, f => f.Format("O"))
-            .Field(e => e.CreatedBy)
-            .Field(e => e.ModifiedAt, f => f.Format("O"))
-            .Field(e => e.ModifiedBy);
+            .IncludeAuditFields();
     }
 }

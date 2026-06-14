@@ -20,9 +20,6 @@ public sealed class TenantExportDefinition : ExportDefinition<Tenant>
             .Field(t => t.IsDeleted)
             .Field(t => t.DeletedAt, f => f.Format("O"))
             .Field(t => t.DeletedBy)
-            .Field(t => t.CreatedAt, f => f.Format("O"))
-            .Field(t => t.CreatedBy)
-            .Field(t => t.ModifiedAt, f => f.Format("O"))
-            .Field(t => t.ModifiedBy);
+            .IncludeAuditFields();
     }
 }

@@ -16,9 +16,6 @@ public sealed class NotificationPreferenceExportDefinition : ExportDefinition<No
             .Field(e => e.ChannelName)
             .Field(e => e.IsEnabled)
             .Field(e => e.TenantId)
-            .Field(e => e.CreatedAt, f => f.Format("O"))
-            .Field(e => e.CreatedBy)
-            .Field(e => e.ModifiedAt, f => f.Format("O"))
-            .Field(e => e.ModifiedBy);
+            .IncludeAuditFields();
     }
 }

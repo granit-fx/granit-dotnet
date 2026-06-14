@@ -20,9 +20,6 @@ public sealed class ScheduledActionExportDefinition : ExportDefinition<Scheduled
             .Field(e => e.CancelledBy)
             .Field(e => e.FailureReason)
             .Field(e => e.TenantId)
-            .Field(e => e.CreatedAt, f => f.Format("O"))
-            .Field(e => e.CreatedBy)
-            .Field(e => e.ModifiedAt, f => f.Format("O"))
-            .Field(e => e.ModifiedBy);
+            .IncludeAuditFields();
     }
 }

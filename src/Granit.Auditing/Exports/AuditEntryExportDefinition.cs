@@ -19,7 +19,6 @@ public sealed class AuditEntryExportDefinition : ExportDefinition<AuditEntry>
             .Field(e => e.UserAgent)
             .Field(e => e.CorrelationId)
             .Field(e => e.TenantId)
-            .Field(e => e.CreatedAt, f => f.Format("O"))
-            .Field(e => e.CreatedBy);
+            .IncludeCreationAuditFields();
     }
 }

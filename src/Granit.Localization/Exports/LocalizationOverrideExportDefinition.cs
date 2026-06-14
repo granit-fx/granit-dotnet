@@ -16,9 +16,6 @@ public sealed class LocalizationOverrideExportDefinition : ExportDefinition<Loca
             .Field(e => e.Key)
             .Field(e => e.Value)
             .Field(e => e.TenantId)
-            .Field(e => e.CreatedAt, f => f.Format("O"))
-            .Field(e => e.CreatedBy)
-            .Field(e => e.ModifiedAt, f => f.Format("O"))
-            .Field(e => e.ModifiedBy);
+            .IncludeAuditFields();
     }
 }

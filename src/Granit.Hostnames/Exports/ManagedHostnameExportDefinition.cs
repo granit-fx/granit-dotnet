@@ -19,9 +19,6 @@ public sealed class ManagedHostnameExportDefinition : ExportDefinition<ManagedHo
             .Field(e => e.OwnerId)
             .Field(e => e.IsPrimary)
             .Field(e => e.Status)
-            .Field(e => e.CreatedAt, f => f.Format("O"))
-            .Field(e => e.CreatedBy)
-            .Field(e => e.ModifiedAt, f => f.Format("O"))
-            .Field(e => e.ModifiedBy);
+            .IncludeAuditFields();
     }
 }

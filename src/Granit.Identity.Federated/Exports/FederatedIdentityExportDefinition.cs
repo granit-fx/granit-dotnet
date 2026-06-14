@@ -21,10 +21,7 @@ public sealed class FederatedIdentityExportDefinition : ExportDefinition<Federat
             // as a JSON string). Preserved as-is for round-trip; re-hydrated from IdP on login.
             .Field(u => u.MetadataJson)
             .Field(u => u.TenantId)
-            .Field(u => u.CreatedAt, f => f.Format("O"))
-            .Field(u => u.CreatedBy)
-            .Field(u => u.ModifiedAt, f => f.Format("O"))
-            .Field(u => u.ModifiedBy);
+            .IncludeAuditFields();
         // Intentionally excluded: Username, Email, FirstName, LastName ([Encrypted]+[SensitiveData]),
         // EmailHash (peppered hash — security artifact, not portable). FederatedIdentity is a
         // cache entry re-hydrated from the IdP at login — PII export would expose plaintext

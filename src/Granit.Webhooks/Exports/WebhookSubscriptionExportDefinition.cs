@@ -21,10 +21,7 @@ public sealed class WebhookSubscriptionExportDefinition : ExportDefinition<Webho
             .Field(e => e.SuspendedAt, f => f.Format("O"))
             .Field(e => e.SuspendedBy)
             .Field(e => e.TenantId)
-            .Field(e => e.CreatedAt, f => f.Format("O"))
-            .Field(e => e.CreatedBy)
-            .Field(e => e.ModifiedAt, f => f.Format("O"))
-            .Field(e => e.ModifiedBy)
+            .IncludeAuditFields()
             .ComplexField("SigningKeys", e => e.SigningKeys
                 .Select(k => new WebhookSigningKeySnapshot(k.Id, k.Status, k.CreatedAt, k.ExpiresAt, k.RevokedAt))
                 .ToList());

@@ -15,9 +15,6 @@ public sealed class PermissionGrantExportDefinition : ExportDefinition<Permissio
             .Field(p => p.ProviderName)
             .Field(p => p.ProviderKey)
             .Field(p => p.TenantId)
-            .Field(p => p.CreatedAt, f => f.Format("O"))
-            .Field(p => p.CreatedBy)
-            .Field(p => p.ModifiedAt, f => f.Format("O"))
-            .Field(p => p.ModifiedBy);
+            .IncludeAuditFields();
     }
 }

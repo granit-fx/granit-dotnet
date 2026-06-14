@@ -15,9 +15,6 @@ public sealed class SettingRecordExportDefinition : ExportDefinition<SettingReco
             .Field(e => e.ProviderName)
             .Field(e => e.ProviderKey)
             .Field(e => e.Value)
-            .Field(e => e.CreatedAt, f => f.Format("O"))
-            .Field(e => e.CreatedBy)
-            .Field(e => e.ModifiedAt, f => f.Format("O"))
-            .Field(e => e.ModifiedBy);
+            .IncludeAuditFields();
     }
 }

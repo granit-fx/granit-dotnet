@@ -32,7 +32,6 @@ public sealed class ApiKeyEntryExportDefinition : ExportDefinition<ApiKeyEntry>
             .Field(e => e.RevokedAt, f => f.Format("O"))
             .Field(e => e.CacheBehavior)
             .Field(e => e.TenantId)
-            .Field(e => e.CreatedAt, f => f.Format("O"))
-            .Field(e => e.CreatedBy);
+            .IncludeCreationAuditFields();
     }
 }

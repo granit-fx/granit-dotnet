@@ -14,9 +14,6 @@ public sealed class GranitUserGroupExportDefinition : ExportDefinition<GranitUse
             .Field(g => g.Name)
             .Field(g => g.Description)
             .Field(g => g.TenantId)
-            .Field(g => g.CreatedAt, f => f.Format("O"))
-            .Field(g => g.CreatedBy)
-            .Field(g => g.ModifiedAt, f => f.Format("O"))
-            .Field(g => g.ModifiedBy);
+            .IncludeAuditFields();
     }
 }
