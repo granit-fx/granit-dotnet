@@ -38,7 +38,8 @@
         "Granit",
         "Granit.AI",
         "Granit.AI.Tools",
-        "Granit.Guids"
+        "Granit.Guids",
+        "Granit.TextExtraction"
       ],
       "framework": "net10.0"
     },
@@ -3089,12 +3090,62 @@
       ]
     },
     {
+      "name": "AIAttachment",
+      "fqn": "Granit.AI.Chat.Attachments.AIAttachment",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Attachments/AIAttachment.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "AIAttachmentData",
+      "fqn": "Granit.AI.Chat.Attachments.AIAttachmentData",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Attachments/AIAttachmentData.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "IAIAttachmentSource",
+      "fqn": "Granit.AI.Chat.Attachments.IAIAttachmentSource",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Attachments/IAIAttachmentSource.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(string reference, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AIAttachmentData?>"
+        }
+      ]
+    },
+    {
+      "name": "IAIAttachmentTextResolver",
+      "fqn": "Granit.AI.Chat.Attachments.IAIAttachmentTextResolver",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Attachments/IAIAttachmentTextResolver.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ResolveContextAsync",
+          "kind": "method",
+          "signature": "ResolveContextAsync(IReadOnlyList<AIAttachment> attachments, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<string?>"
+        }
+      ]
+    },
+    {
       "name": "ChatSendRequest",
       "fqn": "Granit.AI.Chat.ChatSendRequest",
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 6,
+      "line": 7,
       "members": []
     },
     {
@@ -3103,7 +3154,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 28,
+      "line": 35,
       "members": []
     },
     {
@@ -3141,12 +3192,21 @@
       "members": []
     },
     {
+      "name": "AttachmentRequest",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.AttachmentRequest",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
+      "line": 26,
+      "members": []
+    },
+    {
       "name": "ChatStreamEvent",
       "fqn": "Granit.AI.Chat.Endpoints.Dtos.ChatStreamEvent",
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 24,
+      "line": 33,
       "members": []
     },
     {
@@ -3203,7 +3263,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 17,
+      "line": 19,
       "members": []
     },
     {
@@ -3244,7 +3304,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 8,
+      "line": 9,
       "members": []
     },
     {
@@ -3413,6 +3473,15 @@
       "members": []
     },
     {
+      "name": "AIChatAttachmentsServiceCollectionExtensions",
+      "fqn": "Granit.AI.Chat.Extensions.AIChatAttachmentsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Extensions/AIChatAttachmentsServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "AIChatMentionsServiceCollectionExtensions",
       "fqn": "Granit.AI.Chat.Extensions.AIChatMentionsServiceCollectionExtensions",
       "kind": "class",
@@ -3434,7 +3503,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/GranitAIChatModule.cs",
-      "line": 21,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -3450,7 +3519,7 @@
       "kind": "interface",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 50,
+      "line": 57,
       "members": [
         {
           "name": "SendAsync",
@@ -3585,6 +3654,34 @@
           "kind": "method",
           "signature": "ResolveAsync(string id, CancellationToken cancellationToken = default)",
           "returnType": "string Type { get; } ValueTask<AIMentionContext?>"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIChatAttachmentOptions",
+      "fqn": "Granit.AI.Chat.Options.GranitAIChatAttachmentOptions",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Options/GranitAIChatAttachmentOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "MaxAttachments",
+          "kind": "property",
+          "signature": "int MaxAttachments",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxAttachmentBytes",
+          "kind": "property",
+          "signature": "long MaxAttachmentBytes",
+          "returnType": "long"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(StringComparer.OrdinalIgnoreCase)",
+          "returnType": "HashSet<string> AllowedContentTypes { get; set; } ="
         }
       ]
     },

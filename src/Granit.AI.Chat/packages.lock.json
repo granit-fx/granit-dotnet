@@ -164,6 +164,15 @@
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
+      "granit.textextraction": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {

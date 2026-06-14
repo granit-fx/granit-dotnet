@@ -2,14 +2,19 @@ using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Endpoints.Dtos;
 using Granit.AI.Chat.Endpoints.Permissions;
 using Granit.AI.Chat.Endpoints.Validators;
+using Granit.AI.Chat.Options;
 using Granit.Authorization;
 using Granit.Localization;
 using Shouldly;
+using MsOptions = Microsoft.Extensions.Options.Options;
 
 namespace Granit.AI.Chat.Endpoints.Tests;
 
 public sealed class ConversationEndpointsUnitTests
 {
+    private static SendMessageRequestValidator CreateSendValidator() =>
+        new(MsOptions.Create(new GranitAIChatAttachmentOptions()));
+
     private sealed class CapturingPermissionContext : IPermissionDefinitionContext
     {
         public List<PermissionGroup> Groups { get; } = [];
@@ -44,7 +49,7 @@ public sealed class ConversationEndpointsUnitTests
     [Fact]
     public void Send_validator_rejects_blank_and_overlong_messages()
     {
-        SendMessageRequestValidator validator = new();
+        SendMessageRequestValidator validator = CreateSendValidator();
 
         validator.Validate(new SendMessageRequest("")).IsValid.ShouldBeFalse();
         validator.Validate(new SendMessageRequest(new string('x', 16001))).IsValid.ShouldBeFalse();
@@ -54,7 +59,7 @@ public sealed class ConversationEndpointsUnitTests
     [Fact]
     public void Send_validator_rejects_blank_mention_fields_and_too_many()
     {
-        SendMessageRequestValidator validator = new();
+        SendMessageRequestValidator validator = CreateSendValidator();
 
         validator.Validate(new SendMessageRequest("hi", Mentions: [new MentionRequest("", "1")])).IsValid.ShouldBeFalse();
         validator.Validate(new SendMessageRequest("hi", Mentions: [new MentionRequest("invoice", "")])).IsValid.ShouldBeFalse();
@@ -64,6 +69,35 @@ public sealed class ConversationEndpointsUnitTests
             .Select(i => new MentionRequest("invoice", i.ToString()))
             .ToList();
         validator.Validate(new SendMessageRequest("hi", Mentions: tooMany)).IsValid.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Send_validator_enforces_attachment_type_size_and_count_limits()
+    {
+        var limits = new GranitAIChatAttachmentOptions();
+        SendMessageRequestValidator validator = CreateSendValidator();
+
+        // Supported type within size → valid.
+        validator.Validate(new SendMessageRequest("hi",
+            Attachments: [new AttachmentRequest("blob-1", "a.pdf", "application/pdf", 1024)])).IsValid.ShouldBeTrue();
+
+        // Unsupported content type → rejected.
+        validator.Validate(new SendMessageRequest("hi",
+            Attachments: [new AttachmentRequest("blob-1", "a.exe", "application/x-msdownload", 1024)])).IsValid.ShouldBeFalse();
+
+        // Over the size limit → rejected.
+        validator.Validate(new SendMessageRequest("hi",
+            Attachments: [new AttachmentRequest("blob-1", "a.pdf", "application/pdf", limits.MaxAttachmentBytes + 1)])).IsValid.ShouldBeFalse();
+
+        // Blank reference / file name → rejected.
+        validator.Validate(new SendMessageRequest("hi",
+            Attachments: [new AttachmentRequest("", "a.pdf", "application/pdf", 1024)])).IsValid.ShouldBeFalse();
+
+        // Too many → rejected.
+        var tooMany = Enumerable.Range(0, limits.MaxAttachments + 1)
+            .Select(i => new AttachmentRequest($"blob-{i}", "a.pdf", "application/pdf", 1024))
+            .ToList();
+        validator.Validate(new SendMessageRequest("hi", Attachments: tooMany)).IsValid.ShouldBeFalse();
     }
 
     [Fact]

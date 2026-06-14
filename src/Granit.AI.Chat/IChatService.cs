@@ -1,3 +1,4 @@
+using Granit.AI.Chat.Attachments;
 using Granit.AI.Chat.Mentions;
 
 namespace Granit.AI.Chat;
@@ -22,6 +23,12 @@ public sealed record ChatSendRequest
     /// ACLs and injected ahead of the message. <see langword="null"/> or empty when none.
     /// </summary>
     public IReadOnlyList<AIMention>? Mentions { get; init; }
+
+    /// <summary>
+    /// Files the user attached for this turn, resolved to extracted text under the caller's ACLs
+    /// and injected ahead of the message as untrusted context. <see langword="null"/> or empty when none.
+    /// </summary>
+    public IReadOnlyList<AIAttachment>? Attachments { get; init; }
 }
 
 /// <summary>The outcome of a send: the (possibly new) conversation and the assistant's answer.</summary>

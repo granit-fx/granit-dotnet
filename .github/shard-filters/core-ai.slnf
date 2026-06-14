@@ -88,6 +88,7 @@
       "src/Granit.Templating/Granit.Templating.csproj",
       "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
+      "src/Granit.TextExtraction/Granit.TextExtraction.csproj",
       "src/Granit.Timeline.AI/Granit.Timeline.AI.csproj",
       "src/Granit.Timeline/Granit.Timeline.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",

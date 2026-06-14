@@ -28,6 +28,8 @@ public sealed class ValidationConventionTests
         "MeterEventRequest",
         // Nested sub-type validated via ChildRules in SendMessageRequestValidator
         "MentionRequest",
+        // Nested sub-type validated via ChildRules in SendMessageRequestValidator
+        "AttachmentRequest",
     };
 
     [Fact]

@@ -6,6 +6,9 @@
     "Permission:AIChat.Conversations.Send": "Envoyer des messages dans vos conversations",
     "Permission:AIChat.Conversations.Manage": "Créer et renommer vos conversations",
     "Permission:AIChat.Conversations.Delete": "Supprimer vos conversations",
-    "AIChat:Validation:TooManyMentions": "Un message peut référencer au maximum 25 éléments."
+    "AIChat:Validation:TooManyMentions": "Un message peut référencer au maximum 25 éléments.",
+    "AIChat:Validation:TooManyAttachments": "Trop de pièces jointes sur un même message.",
+    "AIChat:Validation:UnsupportedAttachmentType": "Ce type de fichier n'est pas pris en charge.",
+    "AIChat:Validation:AttachmentTooLarge": "Ce fichier dépasse la taille maximale autorisée."
   }
 }

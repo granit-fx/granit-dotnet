@@ -3,6 +3,7 @@ using Granit.AI.Chat.Internal;
 using Granit.AI.Tools;
 using Granit.Guids;
 using Granit.Modularity;
+using Granit.TextExtraction;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.AI.Chat;
@@ -17,7 +18,8 @@ namespace Granit.AI.Chat;
 [DependsOn(
     typeof(GranitAIModule),
     typeof(GranitAIToolsModule),
-    typeof(GranitGuidsModule))]
+    typeof(GranitGuidsModule),
+    typeof(GranitTextExtractionModule))]
 public sealed class GranitAIChatModule : GranitModule
 {
     /// <inheritdoc/>
@@ -28,5 +30,9 @@ public sealed class GranitAIChatModule : GranitModule
         // The mention registry and context resolver are always present so a turn can carry
         // mentions even before the application opts any resolver in (they then resolve to nothing).
         AIChatMentionsServiceCollectionExtensions.AddCoreServices(context.Services);
+
+        // Likewise the attachment text resolver — with the Null source it resolves nothing until
+        // the application registers its own IAIAttachmentSource over its transient blob store.
+        AIChatAttachmentsServiceCollectionExtensions.AddCoreServices(context.Services);
     }
 }

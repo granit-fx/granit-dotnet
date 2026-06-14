@@ -42,6 +42,30 @@ internal sealed class InvoiceMentionResolver(IInvoiceReader reader, ICurrentUser
 }
 ```
 
+## File attachments
+
+A turn can carry file attachments. v1 uses the model-agnostic **text-extraction** path: the
+framework resolves each attachment's bytes via an application seam, extracts text
+(`Granit.TextExtraction`), and injects it as untrusted context. Storage (transient,
+conversation-scoped blob storage) is the application's concern, decoupled from the AI path.
+
+```csharp
+services.AddGranitChatAttachments<BlobAttachmentSource>(o => o.MaxAttachmentBytes = 5 * 1024 * 1024);
+
+internal sealed class BlobAttachmentSource(IBlobStore store, ICurrentUser user) : IAIAttachmentSource
+{
+    public async Task<AIAttachmentData?> GetAsync(string reference, CancellationToken ct = default)
+    {
+        // Return null when absent OR the caller may not read it — the attachment is then dropped.
+        Blob? blob = await store.FindForCallerAsync(reference, ct);
+        return blob is null ? null : new AIAttachmentData(blob.Bytes, blob.ContentType, blob.FileName);
+    }
+}
+```
+
+Type/size limits (`AI:Chat:Attachments`) are enforced at the endpoint (request validation) and
+re-checked against the resolved bytes server-side.
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).

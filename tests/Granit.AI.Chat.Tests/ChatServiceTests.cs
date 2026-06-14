@@ -1,3 +1,4 @@
+using Granit.AI.Chat.Attachments;
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Internal;
@@ -22,6 +23,7 @@ public sealed class ChatServiceTests
     private readonly IAIWorkspaceProvider _workspaceProvider = Substitute.For<IAIWorkspaceProvider>();
     private readonly IAIWorkspaceCapabilityResolver _capabilityResolver = Substitute.For<IAIWorkspaceCapabilityResolver>();
     private readonly IAIMentionContextResolver _mentionContextResolver = Substitute.For<IAIMentionContextResolver>();
+    private readonly IAIAttachmentTextResolver _attachmentTextResolver = Substitute.For<IAIAttachmentTextResolver>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
 
     private ChatService CreateService()
@@ -45,16 +47,26 @@ public sealed class ChatServiceTests
 
         _mentionContextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIMention>>(), Arg.Any<CancellationToken>())
             .Returns((string?)null);
+        _attachmentTextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIAttachment>>(), Arg.Any<CancellationToken>())
+            .Returns((string?)null);
 
         return new ChatService(_store, _orchestrator, _workspaceProvider, _capabilityResolver,
-            _mentionContextResolver, _guidGenerator, MsOptions.Create(new GranitAIOptions()));
+            _mentionContextResolver, _attachmentTextResolver, _guidGenerator, MsOptions.Create(new GranitAIOptions()));
     }
 
     private static ChatSendRequest Request(
         Guid? conversationId = null,
         string message = "hello",
-        IReadOnlyList<AIMention>? mentions = null) =>
-        new() { ConversationId = conversationId, OwnerId = Owner, Message = message, Mentions = mentions };
+        IReadOnlyList<AIMention>? mentions = null,
+        IReadOnlyList<AIAttachment>? attachments = null) =>
+        new()
+        {
+            ConversationId = conversationId,
+            OwnerId = Owner,
+            Message = message,
+            Mentions = mentions,
+            Attachments = attachments,
+        };
 
     [Fact]
     public async Task New_conversation_runs_the_loop_and_persists_user_and_assistant_messages()
@@ -135,6 +147,41 @@ public sealed class ChatServiceTests
                 c.Messages.Count == 2
                 && c.Messages[0].Content == "summarise"
                 && !c.Messages[0].Content.Contains("secret")),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Resolved_attachment_context_is_injected_before_the_user_message()
+    {
+        ChatService service = CreateService();
+        _attachmentTextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIAttachment>>(), Arg.Any<CancellationToken>())
+            .Returns("<untrusted_document>report.pdf</untrusted_document>");
+
+        await service.SendAsync(
+            Request(message: "summarise", attachments: [new AIAttachment("blob-1", "report.pdf", "application/pdf", 64)]),
+            TestContext.Current.CancellationToken);
+
+        await _orchestrator.Received(1).RunAsync(
+            Arg.Is<AIOrchestrationRequest>(r =>
+                r.Messages.Count == 2
+                && r.Messages[0].Role == ChatRole.User && r.Messages[0].Text!.Contains("report.pdf")
+                && r.Messages[1].Text == "summarise"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Attachment_context_is_not_persisted()
+    {
+        ChatService service = CreateService();
+        _attachmentTextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIAttachment>>(), Arg.Any<CancellationToken>())
+            .Returns("<untrusted_document>secret</untrusted_document>");
+
+        await service.SendAsync(
+            Request(message: "summarise", attachments: [new AIAttachment("blob-1", "report.pdf", "application/pdf", 64)]),
+            TestContext.Current.CancellationToken);
+
+        await _store.Received(1).CreateAsync(
+            Arg.Is<Conversation>(c => c.Messages.Count == 2 && !c.Messages[0].Content.Contains("secret")),
             Arg.Any<CancellationToken>());
     }
 

@@ -1,3 +1,4 @@
+using Granit.AI.Chat.Attachments;
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Mentions;
@@ -21,6 +22,7 @@ internal sealed class ChatService(
     IAIWorkspaceProvider workspaceProvider,
     IAIWorkspaceCapabilityResolver capabilityResolver,
     IAIMentionContextResolver mentionContextResolver,
+    IAIAttachmentTextResolver attachmentTextResolver,
     IGuidGenerator guidGenerator,
     IOptions<GranitAIOptions> aiOptions) : IChatService
 {
@@ -52,6 +54,18 @@ internal sealed class ChatService(
                 ?? throw new ConversationNotFoundException(request.ConversationId.Value);
 
         List<ChatMessage> loopMessages = [.. conversation.Messages.Select(ToChatMessage)];
+
+        // Resolve attached files to extracted text under the caller's ACLs and inject it ahead of
+        // the message as untrusted data. Per-turn only — never persisted.
+        if (request.Attachments is { Count: > 0 } attachments)
+        {
+            string? attachmentContext = await attachmentTextResolver
+                .ResolveContextAsync(attachments, cancellationToken).ConfigureAwait(false);
+            if (attachmentContext is not null)
+            {
+                loopMessages.Add(new ChatMessage(ChatRole.User, attachmentContext));
+            }
+        }
 
         // Resolve any @ mentions to context under the caller's ACLs and inject it ahead of the
         // message as untrusted data. It feeds this turn only and is never persisted.

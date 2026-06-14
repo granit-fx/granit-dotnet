@@ -6,6 +6,9 @@
     "Permission:AIChat.Conversations.Send": "Skicka meddelanden i dina konversationer",
     "Permission:AIChat.Conversations.Manage": "Skapa och byt namn på dina konversationer",
     "Permission:AIChat.Conversations.Delete": "Ta bort dina konversationer",
-    "AIChat:Validation:TooManyMentions": "Ett meddelande kan referera till högst 25 objekt."
+    "AIChat:Validation:TooManyMentions": "Ett meddelande kan referera till högst 25 objekt.",
+    "AIChat:Validation:TooManyAttachments": "För många bilagor i ett enskilt meddelande.",
+    "AIChat:Validation:UnsupportedAttachmentType": "Den här filtypen stöds inte.",
+    "AIChat:Validation:AttachmentTooLarge": "Den här filen överskrider den högsta tillåtna storleken."
   }
 }

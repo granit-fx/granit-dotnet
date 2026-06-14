@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Granit.AI.Chat.Attachments;
 using Granit.AI.Chat.Endpoints.Dtos;
 using Granit.AI.Chat.Endpoints.Permissions;
 using Granit.AI.Chat.Exceptions;
@@ -60,6 +61,8 @@ internal static class ChatSendEndpoints
                     WorkspaceName = request.WorkspaceName,
                     Message = request.Message,
                     Mentions = request.Mentions?.Select(m => new AIMention(m.Type, m.Id)).ToList(),
+                    Attachments = request.Attachments?
+                        .Select(a => new AIAttachment(a.Reference, a.FileName, a.ContentType, a.SizeBytes)).ToList(),
                 },
                 cancellationToken).ConfigureAwait(false);
         }

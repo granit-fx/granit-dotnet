@@ -6,6 +6,9 @@
     "Permission:AIChat.Conversations.Send": "自分の会話でメッセージを送信する",
     "Permission:AIChat.Conversations.Manage": "自分の会話を作成・名前変更する",
     "Permission:AIChat.Conversations.Delete": "自分の会話を削除する",
-    "AIChat:Validation:TooManyMentions": "1 つのメッセージで参照できる項目は最大 25 件です。"
+    "AIChat:Validation:TooManyMentions": "1 つのメッセージで参照できる項目は最大 25 件です。",
+    "AIChat:Validation:TooManyAttachments": "1 つのメッセージに添付ファイルが多すぎます。",
+    "AIChat:Validation:UnsupportedAttachmentType": "このファイル形式はサポートされていません。",
+    "AIChat:Validation:AttachmentTooLarge": "このファイルは最大許容サイズを超えています。"
   }
 }
