@@ -1,0 +1,13 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Prompt:Summarize:Name": "Sammanfatta",
+    "Prompt:Summarize:Description": "Sammanfatta urvalet och behåll de viktigaste punkterna.",
+    "Prompt:Draft:Name": "Utkast",
+    "Prompt:Draft:Description": "Skriv ett tydligt och välstrukturerat svar.",
+    "Prompt:DailyBrief:Name": "Daglig översikt",
+    "Prompt:DailyBrief:Description": "En kortfattad översikt av vad som kräver din uppmärksamhet idag.",
+    "Prompt:FindRelated:Name": "Hitta relaterat",
+    "Prompt:FindRelated:Description": "Hitta objekt som är relaterade till det aktuella sammanhanget."
+  }
+}

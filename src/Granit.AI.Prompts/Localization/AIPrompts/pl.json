@@ -1,0 +1,13 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Prompt:Summarize:Name": "Podsumuj",
+    "Prompt:Summarize:Description": "Podsumuj zaznaczenie, zachowując kluczowe punkty.",
+    "Prompt:Draft:Name": "Szkic",
+    "Prompt:Draft:Description": "Napisz jasną, dobrze ustrukturyzowaną odpowiedź.",
+    "Prompt:DailyBrief:Name": "Dzienny przegląd",
+    "Prompt:DailyBrief:Description": "Zwięzłe podsumowanie tego, co dziś wymaga Twojej uwagi.",
+    "Prompt:FindRelated:Name": "Znajdź powiązane",
+    "Prompt:FindRelated:Description": "Znajdź elementy powiązane z bieżącym kontekstem."
+  }
+}

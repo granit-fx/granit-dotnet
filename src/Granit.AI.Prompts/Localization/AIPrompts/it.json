@@ -1,0 +1,13 @@
+{
+  "culture": "it",
+  "texts": {
+    "Prompt:Summarize:Name": "Riepiloga",
+    "Prompt:Summarize:Description": "Riepiloga la selezione mantenendo i punti chiave.",
+    "Prompt:Draft:Name": "Bozza",
+    "Prompt:Draft:Description": "Scrivi una risposta chiara e ben strutturata.",
+    "Prompt:DailyBrief:Name": "Brief giornaliero",
+    "Prompt:DailyBrief:Description": "Una sintesi concisa di ciò che richiede la tua attenzione oggi.",
+    "Prompt:FindRelated:Name": "Trova correlati",
+    "Prompt:FindRelated:Description": "Trova elementi correlati al contesto attuale."
+  }
+}

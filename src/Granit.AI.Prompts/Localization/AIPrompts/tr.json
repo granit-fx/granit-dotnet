@@ -1,0 +1,13 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Prompt:Summarize:Name": "Özetle",
+    "Prompt:Summarize:Description": "Seçimi, önemli noktaları koruyarak özetle.",
+    "Prompt:Draft:Name": "Taslak oluştur",
+    "Prompt:Draft:Description": "Açık ve iyi yapılandırılmış bir yanıt taslağı oluştur.",
+    "Prompt:DailyBrief:Name": "Günlük özet",
+    "Prompt:DailyBrief:Description": "Bugün dikkatini gerektiren şeylerin kısa bir özeti.",
+    "Prompt:FindRelated:Name": "İlgili öğeleri bul",
+    "Prompt:FindRelated:Description": "Geçerli bağlamla ilgili öğeleri bul."
+  }
+}

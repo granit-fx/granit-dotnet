@@ -1,0 +1,13 @@
+{
+  "culture": "pt",
+  "texts": {
+    "Prompt:Summarize:Name": "Resumir",
+    "Prompt:Summarize:Description": "Resume a seleção mantendo os pontos principais.",
+    "Prompt:Draft:Name": "Rascunhar",
+    "Prompt:Draft:Description": "Redige uma resposta clara e bem estruturada.",
+    "Prompt:DailyBrief:Name": "Resumo diário",
+    "Prompt:DailyBrief:Description": "Um resumo conciso do que precisa da tua atenção hoje.",
+    "Prompt:FindRelated:Name": "Encontrar relacionados",
+    "Prompt:FindRelated:Description": "Encontra itens relacionados com o contexto atual."
+  }
+}

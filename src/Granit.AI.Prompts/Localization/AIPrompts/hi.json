@@ -1,0 +1,13 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Prompt:Summarize:Name": "सारांश",
+    "Prompt:Summarize:Description": "मुख्य बिंदुओं को बनाए रखते हुए चयन का सारांश दें।",
+    "Prompt:Draft:Name": "मसौदा",
+    "Prompt:Draft:Description": "एक स्पष्ट, सुव्यवस्थित उत्तर का मसौदा तैयार करें।",
+    "Prompt:DailyBrief:Name": "दैनिक ब्रीफ",
+    "Prompt:DailyBrief:Description": "आज आपके ध्यान की आवश्यकता वाली बातों का संक्षिप्त विवरण।",
+    "Prompt:FindRelated:Name": "संबंधित खोजें",
+    "Prompt:FindRelated:Description": "वर्तमान संदर्भ से संबंधित आइटम खोजें।"
+  }
+}

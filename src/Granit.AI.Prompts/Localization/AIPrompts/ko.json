@@ -1,0 +1,13 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Prompt:Summarize:Name": "요약",
+    "Prompt:Summarize:Description": "핵심을 유지하며 선택 항목을 요약합니다.",
+    "Prompt:Draft:Name": "초안 작성",
+    "Prompt:Draft:Description": "명확하고 잘 구성된 답변을 작성합니다.",
+    "Prompt:DailyBrief:Name": "일일 브리핑",
+    "Prompt:DailyBrief:Description": "오늘 주의가 필요한 사항에 대한 간결한 요약입니다.",
+    "Prompt:FindRelated:Name": "관련 항목 찾기",
+    "Prompt:FindRelated:Description": "현재 컨텍스트와 관련된 항목을 찾습니다."
+  }
+}

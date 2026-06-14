@@ -1,0 +1,13 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Prompt:Summarize:Name": "要約",
+    "Prompt:Summarize:Description": "要点を保ちながら選択範囲を要約します。",
+    "Prompt:Draft:Name": "下書き",
+    "Prompt:Draft:Description": "明確で構成の整った返信を作成します。",
+    "Prompt:DailyBrief:Name": "デイリーブリーフ",
+    "Prompt:DailyBrief:Description": "今日注意すべき事項の簡潔なまとめ。",
+    "Prompt:FindRelated:Name": "関連を検索",
+    "Prompt:FindRelated:Description": "現在のコンテキストに関連する項目を探します。"
+  }
+}

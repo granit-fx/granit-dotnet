@@ -1,0 +1,13 @@
+{
+  "culture": "de",
+  "texts": {
+    "Prompt:Summarize:Name": "Zusammenfassen",
+    "Prompt:Summarize:Description": "Fasse die Auswahl zusammen und bewahre die Kernpunkte.",
+    "Prompt:Draft:Name": "Entwerfen",
+    "Prompt:Draft:Description": "Entwirf eine klare, gut strukturierte Antwort.",
+    "Prompt:DailyBrief:Name": "Tagesbriefing",
+    "Prompt:DailyBrief:Description": "Eine knappe Übersicht, was heute Ihre Aufmerksamkeit erfordert.",
+    "Prompt:FindRelated:Name": "Verwandtes finden",
+    "Prompt:FindRelated:Description": "Finde Elemente, die mit dem aktuellen Kontext zusammenhängen."
+  }
+}

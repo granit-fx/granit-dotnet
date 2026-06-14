@@ -1,0 +1,13 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Prompt:Summarize:Name": "总结",
+    "Prompt:Summarize:Description": "总结所选内容，保留要点。",
+    "Prompt:Draft:Name": "起草",
+    "Prompt:Draft:Description": "起草一份清晰、结构良好的回复。",
+    "Prompt:DailyBrief:Name": "每日简报",
+    "Prompt:DailyBrief:Description": "简要概述今天需要你关注的内容。",
+    "Prompt:FindRelated:Name": "查找相关",
+    "Prompt:FindRelated:Description": "查找与当前上下文相关的条目。"
+  }
+}

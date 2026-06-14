@@ -131,7 +131,8 @@
     {
       "name": "Granit.AI.Prompts",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.Localization"
       ],
       "framework": "net10.0"
     },
@@ -139,6 +140,7 @@
       "name": "Granit.AI.Prompts.EntityFrameworkCore",
       "deps": [
         "Granit.AI.Prompts",
+        "Granit.Guids",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -5131,6 +5133,15 @@
       ]
     },
     {
+      "name": "AIPromptsLocalizationResource",
+      "fqn": "Granit.AI.Prompts.AIPromptsLocalizationResource",
+      "kind": "class",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/AIPromptsLocalizationResource.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "PromptCategory",
       "fqn": "Granit.AI.Prompts.Domain.PromptCategory",
       "kind": "class",
@@ -5236,8 +5247,15 @@
       "kind": "class",
       "project": "Granit.AI.Prompts.EntityFrameworkCore",
       "file": "src/Granit.AI.Prompts.EntityFrameworkCore/GranitAIPromptsEntityFrameworkCoreModule.cs",
-      "line": 14,
-      "members": []
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "GranitAIPromptsModule",
@@ -5307,6 +5325,31 @@
           "kind": "method",
           "signature": "ListCatalogueAsync(Guid ownerId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<PromptTemplate>>"
+        }
+      ]
+    },
+    {
+      "name": "GenericPromptSeed",
+      "fqn": "Granit.AI.Prompts.Seeding.GenericPromptSeed",
+      "kind": "record",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/Seeding/GenericPromptSeed.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "GenericPrompts",
+      "fqn": "Granit.AI.Prompts.Seeding.GenericPrompts",
+      "kind": "class",
+      "project": "Granit.AI.Prompts",
+      "file": "src/Granit.AI.Prompts/Seeding/GenericPrompts.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(\"Prompt:Summarize:Name\", \"Prompt:Summarize:Description\", \"Summarise the selected content clearly and concisely, preserving the key points.\", \"sparkles\", \"#8B5CF6\")",
+          "returnType": "IReadOnlyList<GenericPromptSeed> All { get; } ="
         }
       ]
     },

@@ -1,0 +1,13 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Prompt:Summarize:Name": "Samenvatten",
+    "Prompt:Summarize:Description": "Vat de selectie samen met behoud van de kernpunten.",
+    "Prompt:Draft:Name": "Opstellen",
+    "Prompt:Draft:Description": "Stel een helder, goed gestructureerd antwoord op.",
+    "Prompt:DailyBrief:Name": "Dagelijkse briefing",
+    "Prompt:DailyBrief:Description": "Een beknopt overzicht van wat vandaag uw aandacht vraagt.",
+    "Prompt:FindRelated:Name": "Gerelateerde zoeken",
+    "Prompt:FindRelated:Description": "Zoek items die verband houden met de huidige context."
+  }
+}

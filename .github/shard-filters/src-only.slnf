@@ -304,6 +304,7 @@
       "src/Granit.Validation.AI/Granit.Validation.AI.csproj",
       "src/Granit.Validation.Endpoints/Granit.Validation.Endpoints.csproj",
       "src/Granit.Validation.Europe/Granit.Validation.Europe.csproj",
+      "src/Granit.Validation.Finance/Granit.Validation.Finance.csproj",
       "src/Granit.Validation.NorthAmerica/Granit.Validation.NorthAmerica.csproj",
       "src/Granit.Validation.UnitedKingdom/Granit.Validation.UnitedKingdom.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",

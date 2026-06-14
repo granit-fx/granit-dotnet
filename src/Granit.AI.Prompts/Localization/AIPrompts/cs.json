@@ -1,0 +1,13 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Prompt:Summarize:Name": "Shrnout",
+    "Prompt:Summarize:Description": "Shrň výběr a zachovej klíčové body.",
+    "Prompt:Draft:Name": "Návrh",
+    "Prompt:Draft:Description": "Sestav jasnou a dobře strukturovanou odpověď.",
+    "Prompt:DailyBrief:Name": "Denní přehled",
+    "Prompt:DailyBrief:Description": "Stručný přehled toho, co dnes vyžaduje vaši pozornost.",
+    "Prompt:FindRelated:Name": "Najít související",
+    "Prompt:FindRelated:Description": "Najdi položky související s aktuálním kontextem."
+  }
+}
