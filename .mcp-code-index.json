@@ -5343,7 +5343,7 @@
       "kind": "class",
       "project": "Granit.AI.Prompts",
       "file": "src/Granit.AI.Prompts/Seeding/GenericPrompts.cs",
-      "line": 10,
+      "line": 16,
       "members": [
         {
           "name": "new",
