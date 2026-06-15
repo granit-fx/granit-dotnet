@@ -3038,6 +3038,22 @@
       ]
     },
     {
+      "name": "AnthropicHealthChecksBuilderExtensions",
+      "fqn": "Granit.AI.Anthropic.Extensions.AnthropicHealthChecksBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Anthropic",
+      "file": "src/Granit.AI.Anthropic/Extensions/AnthropicHealthChecksBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitAnthropicHealthCheck",
+          "kind": "method",
+          "signature": "AddGranitAnthropicHealthCheck(this IHealthChecksBuilder builder, string name = \"anthropic\", HealthStatus? failureStatus = null, TimeSpan? timeout = null)",
+          "returnType": "IHealthChecksBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitAIAnthropicModule",
       "fqn": "Granit.AI.Anthropic.GranitAIAnthropicModule",
       "kind": "class",
@@ -3099,6 +3115,22 @@
           "kind": "method",
           "signature": "AddGranitAIAzureOpenAI(this IHostApplicationBuilder builder)",
           "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "AzureOpenAIHealthChecksBuilderExtensions",
+      "fqn": "Granit.AI.AzureOpenAI.Extensions.AzureOpenAIHealthChecksBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.AI.AzureOpenAI",
+      "file": "src/Granit.AI.AzureOpenAI/Extensions/AzureOpenAIHealthChecksBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitAzureOpenAIHealthCheck",
+          "kind": "method",
+          "signature": "AddGranitAzureOpenAIHealthCheck(this IHealthChecksBuilder builder, string name = \"azure-openai\", HealthStatus? failureStatus = null, TimeSpan? timeout = null)",
+          "returnType": "IHealthChecksBuilder"
         }
       ]
     },
@@ -4990,6 +5022,22 @@
           "kind": "method",
           "signature": "AddGranitAIOpenAI(this IHostApplicationBuilder builder)",
           "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "OpenAIHealthChecksBuilderExtensions",
+      "fqn": "Granit.AI.OpenAI.Extensions.OpenAIHealthChecksBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.AI.OpenAI",
+      "file": "src/Granit.AI.OpenAI/Extensions/OpenAIHealthChecksBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitOpenAIHealthCheck",
+          "kind": "method",
+          "signature": "AddGranitOpenAIHealthCheck(this IHealthChecksBuilder builder, string name = \"openai\", HealthStatus? failureStatus = null, TimeSpan? timeout = null)",
+          "returnType": "IHealthChecksBuilder"
         }
       ]
     },
@@ -51301,6 +51349,22 @@
           "kind": "method",
           "signature": "AddTikaSidecarExtractor(this IServiceCollection services, Action<TikaSidecarOptions>? configure = null)",
           "returnType": "IHttpClientBuilder"
+        }
+      ]
+    },
+    {
+      "name": "TikaHealthChecksBuilderExtensions",
+      "fqn": "Granit.TextExtraction.Tika.Extensions.TikaHealthChecksBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Tika",
+      "file": "src/Granit.TextExtraction.Tika/Extensions/TikaHealthChecksBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitTikaHealthCheck",
+          "kind": "method",
+          "signature": "AddGranitTikaHealthCheck(this IHealthChecksBuilder builder, string name = \"tika\", HealthStatus? failureStatus = null, TimeSpan? timeout = null)",
+          "returnType": "IHealthChecksBuilder"
         }
       ]
     },
