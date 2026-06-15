@@ -281,6 +281,13 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
         }
       },
+      "granit.imaging.magicknet": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Imaging": "[0.1.0-dev, )",
+          "Magick.NET-Q8-AnyCPU": "[14.*, )"
+        }
+      },
       "granit.textextraction": {
         "type": "Project",
         "dependencies": {

@@ -1,3 +1,4 @@
+using Granit.Imaging.MagickNet.Extensions;
 using Granit.TextExtraction.Ocr.Tesseract.Extensions;
 using ImageMagick;
 using Microsoft.Extensions.Configuration;
@@ -77,6 +78,10 @@ public sealed class LiveTesseractRecognizerTests
         ServiceCollection services = [];
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging();
+        // TesseractOcrExtractor depends on IImageProcessor for its pre-decode pixel-bomb guard
+        // (the host must register an imaging provider — see the module docs). Magick.NET is the
+        // reference provider and is already used below to render the test fixtures.
+        services.AddGranitImagingMagickNet();
         services.AddTesseractOcrExtractor(o =>
         {
             o.DataPath = TessdataPath;

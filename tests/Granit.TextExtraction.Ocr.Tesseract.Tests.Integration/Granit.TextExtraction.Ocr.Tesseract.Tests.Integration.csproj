@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Imaging.MagickNet\Granit.Imaging.MagickNet.csproj" />
     <ProjectReference Include="..\..\src\Granit.TextExtraction.Ocr.Tesseract\Granit.TextExtraction.Ocr.Tesseract.csproj" />
     <ProjectReference Include="..\..\src\Granit.TextExtraction\Granit.TextExtraction.csproj" />
   </ItemGroup>

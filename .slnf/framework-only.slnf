@@ -124,6 +124,7 @@
       "src/Granit.Identity.Local.Endpoints/Granit.Identity.Local.Endpoints.csproj",
       "src/Granit.Identity.Local/Granit.Identity.Local.csproj",
       "src/Granit.Identity/Granit.Identity.csproj",
+      "src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj",
       "src/Granit.Imaging/Granit.Imaging.csproj",
       "src/Granit.Indexing.AI/Granit.Indexing.AI.csproj",
       "src/Granit.Indexing.BackgroundJobs/Granit.Indexing.BackgroundJobs.csproj",
