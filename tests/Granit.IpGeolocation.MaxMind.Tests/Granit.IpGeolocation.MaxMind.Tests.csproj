@@ -19,4 +19,9 @@
     <ProjectReference Include="..\..\src\Granit.IpGeolocation.MaxMind\Granit.IpGeolocation.MaxMind.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- MaxMind's official tiny test databases (maxmind/MaxMind-DB, test-data/). See TestData/README.md. -->
+    <None Include="TestData\*.mmdb" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

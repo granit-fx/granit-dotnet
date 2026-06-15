@@ -4171,6 +4171,15 @@
       ]
     },
     {
+      "name": "AIChatTracingProfile",
+      "fqn": "Granit.AI.Diagnostics.AIChatTracingProfile",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Diagnostics/AIChatTracingProfile.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "AIMetrics",
       "fqn": "Granit.AI.Diagnostics.AIMetrics",
       "kind": "class",
@@ -4183,6 +4192,22 @@
           "kind": "method",
           "signature": "RecordTokensUsed(string? tenantId, string model, string provider, long inputTokens, long outputTokens)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "TracingChatClient",
+      "fqn": "Granit.AI.Diagnostics.TracingChatClient",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Diagnostics/TracingChatClient.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "GetResponseAsync",
+          "kind": "method",
+          "signature": "GetResponseAsync(IEnumerable<ChatMessage> messages, ChatOptions? options = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ChatResponse>"
         }
       ]
     },

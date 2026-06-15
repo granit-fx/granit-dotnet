@@ -327,7 +327,7 @@ jobs:
             /d:sonar.token="${SONAR_TOKEN}" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
             /d:sonar.exclusions=".nuget/**,scripts/**" \
-            /d:sonar.coverage.exclusions="**/Tests/**,**/test/**,**/bundles/**,**/*HostApplicationBuilderExtensions.cs,**/Granit*Module.cs" \
+            /d:sonar.coverage.exclusions="**/Tests/**,**/test/**,**/bundles/**,**/*HostApplicationBuilderExtensions.cs,**/Granit*Module.cs,**/Granit.OpenApi.Generator/**,**/OpenApiContractGenerator.cs" \
             /d:sonar.issue.ignore.multicriteria="e1,e2,e3,e4" \
             /d:sonar.issue.ignore.multicriteria.e1.ruleKey="csharpsquid:S6608" \
             /d:sonar.issue.ignore.multicriteria.e1.resourceKey="**/*" \

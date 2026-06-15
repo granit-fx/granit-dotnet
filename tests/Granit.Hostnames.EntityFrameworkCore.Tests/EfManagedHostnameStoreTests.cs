@@ -202,4 +202,47 @@ public sealed class EfManagedHostnameStoreTests
         ManagedHostname? result = await store.GetByIdAsync(hostname.Id, TestContext.Current.CancellationToken);
         result.ShouldBeNull();
     }
+
+    // ── ListDueForVerificationAsync ─────────────────────────────────────────────
+
+    private static readonly DateTimeOffset Past = new(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset Future = new(2026, 12, 1, 0, 0, 0, TimeSpan.Zero);
+
+    [Fact]
+    public async Task ListDueForVerificationAsync_returns_due_hostnames_across_tenants()
+    {
+        string db = nameof(ListDueForVerificationAsync_returns_due_hostnames_across_tenants);
+        EfManagedHostnameStore store = CreateStore(db, TenantA);
+
+        // Errored with NextCheckAt in the past → due. Owned by TenantB: the poller is system-wide.
+        ManagedHostname due = MakeHostname("due.com", tenantId: TenantB);
+        due.MarkFailed([], Past);
+        // Still Pending (NextCheckAt is null) → never due automatically.
+        ManagedHostname pending = MakeHostname("pending.com");
+
+        await store.AddAsync(due, TestContext.Current.CancellationToken);
+        await store.AddAsync(pending, TestContext.Current.CancellationToken);
+
+        IReadOnlyList<ManagedHostname> result = await store.ListDueForVerificationAsync(
+            Future, cancellationToken: TestContext.Current.CancellationToken);
+
+        result.ShouldHaveSingleItem().Host.Value.ShouldBe("due.com");
+    }
+
+    [Fact]
+    public async Task ListDueForVerificationAsync_excludes_hostnames_not_yet_due()
+    {
+        string db = nameof(ListDueForVerificationAsync_excludes_hostnames_not_yet_due);
+        EfManagedHostnameStore store = CreateStore(db);
+
+        ManagedHostname errored = MakeHostname("future.com");
+        errored.MarkFailed([], Future); // NextCheckAt is just after Future.
+        await store.AddAsync(errored, TestContext.Current.CancellationToken);
+
+        // The poller runs at Past, before NextCheckAt → nothing due.
+        IReadOnlyList<ManagedHostname> result = await store.ListDueForVerificationAsync(
+            Past, cancellationToken: TestContext.Current.CancellationToken);
+
+        result.ShouldBeEmpty();
+    }
 }
