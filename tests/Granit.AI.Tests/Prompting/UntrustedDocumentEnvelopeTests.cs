@@ -45,10 +45,8 @@ public sealed class UntrustedDocumentEnvelopeTests
     }
 
     [Fact]
-    public void Wrap_rejects_null()
-    {
+    public void Wrap_rejects_null() =>
         Should.Throw<ArgumentNullException>(() => UntrustedDocumentEnvelope.Wrap(null!));
-    }
 
     private static int CountOccurrences(string haystack, string needle)
     {

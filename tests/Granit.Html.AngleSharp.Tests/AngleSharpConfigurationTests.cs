@@ -5,7 +5,7 @@ using AngleSharpLib = global::AngleSharp;
 
 namespace Granit.Html.AngleSharp.Tests;
 
-public sealed class AngleSharpConfigurationTests
+public sealed partial class AngleSharpConfigurationTests
 {
     // Reach the type through the global alias so the test namespace (which ends in
     // ".AngleSharp") doesn't shadow the library's `AngleSharp` root.
@@ -51,7 +51,7 @@ public sealed class AngleSharpConfigurationTests
         // Strip line + block comments so xml-doc mentions of the method name don't trip the check.
         string code = StripComments(source);
 
-        bool callsWithDefaultLoader = WithDefaultLoaderCallRegex.IsMatch(code);
+        bool callsWithDefaultLoader = WithDefaultLoaderCallRegex().IsMatch(code);
 
         callsWithDefaultLoader.ShouldBeFalse(
             "AngleSharpConfiguration must not invoke WithDefaultLoader — that " +
@@ -60,18 +60,18 @@ public sealed class AngleSharpConfigurationTests
             "update this invariant deliberately.");
     }
 
-    private static readonly Regex WithDefaultLoaderCallRegex =
-        new(@"\.\s*WithDefaultLoader\s*\(", RegexOptions.Compiled);
+    [GeneratedRegex(@"\.\s*WithDefaultLoader\s*\(")]
+    private static partial Regex WithDefaultLoaderCallRegex();
 
-    private static readonly Regex LineCommentRegex =
-        new(@"//.*?$", RegexOptions.Multiline | RegexOptions.Compiled);
+    [GeneratedRegex(@"//.*?$", RegexOptions.Multiline)]
+    private static partial Regex LineCommentRegex();
 
-    private static readonly Regex BlockCommentRegex =
-        new(@"/\*.*?\*/", RegexOptions.Singleline | RegexOptions.Compiled);
+    [GeneratedRegex(@"/\*.*?\*/", RegexOptions.Singleline)]
+    private static partial Regex BlockCommentRegex();
 
     private static string StripComments(string source)
     {
-        string withoutBlock = BlockCommentRegex.Replace(source, string.Empty);
-        return LineCommentRegex.Replace(withoutBlock, string.Empty);
+        string withoutBlock = BlockCommentRegex().Replace(source, string.Empty);
+        return LineCommentRegex().Replace(withoutBlock, string.Empty);
     }
 }

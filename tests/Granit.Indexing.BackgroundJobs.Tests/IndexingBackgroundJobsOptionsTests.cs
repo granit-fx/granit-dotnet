@@ -7,12 +7,10 @@ namespace Granit.Indexing.BackgroundJobs.Tests;
 public sealed class IndexingBackgroundJobsOptionsTests
 {
     [Fact]
-    public void SectionName_matches_namespace_aligned_canonical_path()
-    {
+    public void SectionName_matches_namespace_aligned_canonical_path() =>
         // Locked here so a rename of the project / namespace surfaces in CI before
         // it silently breaks host appsettings.json bindings.
         IndexingBackgroundJobsOptions.SectionName.ShouldBe("Indexing:BackgroundJobs");
-    }
 
     [Fact]
     public void Defaults_are_safe_for_production()

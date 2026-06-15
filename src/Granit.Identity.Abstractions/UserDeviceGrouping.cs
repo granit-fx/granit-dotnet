@@ -35,16 +35,7 @@ public static class UserDeviceGrouping
         ];
     }
 
-    private static DeviceKind ResolveGroupKind(IEnumerable<UserSessionDescriptor> group)
-    {
-        foreach (DeviceKind kind in group.Select(s => s.Kind))
-        {
-            if (kind is not DeviceKind.Unknown and not DeviceKind.Browser)
-            {
-                return kind;
-            }
-        }
-
-        return DeviceKind.Browser;
-    }
+    private static DeviceKind ResolveGroupKind(IEnumerable<UserSessionDescriptor> group) =>
+        group.Select(s => s.Kind)
+            .FirstOrDefault(kind => kind is not DeviceKind.Unknown and not DeviceKind.Browser, DeviceKind.Browser);
 }

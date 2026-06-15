@@ -13,6 +13,9 @@ namespace Granit.QueryEngine.AI.Internal;
 /// </summary>
 internal static class QueryDataSchema
 {
+    private const string DescriptionKey = "description";
+    private const string StringType = "string";
+
     /// <summary>Builds the tool parameter schema from a query definition's metadata.</summary>
     public static JsonElement Build(QueryMetadata metadata)
     {
@@ -29,15 +32,15 @@ internal static class QueryDataSchema
             properties["filters"] = new JsonObject
             {
                 ["type"] = "array",
-                ["description"] = "Filter clauses, ANDed together. Use only the listed fields and operators.",
+                [DescriptionKey] = "Filter clauses, ANDed together. Use only the listed fields and operators.",
                 ["items"] = new JsonObject
                 {
                     ["type"] = "object",
                     ["properties"] = new JsonObject
                     {
-                        ["field"] = new JsonObject { ["type"] = "string", ["enum"] = fieldNames },
-                        ["operator"] = new JsonObject { ["type"] = "string", ["enum"] = operators },
-                        ["value"] = new JsonObject { ["type"] = "string" },
+                        ["field"] = new JsonObject { ["type"] = StringType, ["enum"] = fieldNames },
+                        ["operator"] = new JsonObject { ["type"] = StringType, ["enum"] = operators },
+                        ["value"] = new JsonObject { ["type"] = StringType },
                     },
                     ["required"] = new JsonArray("field", "operator", "value"),
                     ["additionalProperties"] = false,
@@ -47,8 +50,8 @@ internal static class QueryDataSchema
 
         properties["search"] = new JsonObject
         {
-            ["type"] = "string",
-            ["description"] = "Free-text search across the definition's searchable fields, if any.",
+            ["type"] = StringType,
+            [DescriptionKey] = "Free-text search across the definition's searchable fields, if any.",
         };
 
         if (metadata.SortableFields.Count > 0)
@@ -56,8 +59,8 @@ internal static class QueryDataSchema
             string sortable = string.Join(", ", metadata.SortableFields.Select(s => s.Name));
             properties["sort"] = new JsonObject
             {
-                ["type"] = "string",
-                ["description"] = $"Comma-separated sort fields; prefix '-' for descending. Sortable: {sortable}.",
+                ["type"] = StringType,
+                [DescriptionKey] = $"Comma-separated sort fields; prefix '-' for descending. Sortable: {sortable}.",
             };
         }
 
@@ -67,7 +70,7 @@ internal static class QueryDataSchema
             ["type"] = "integer",
             ["minimum"] = 1,
             ["maximum"] = metadata.Pagination.MaxPageSize,
-            ["description"] = $"Defaults to {metadata.Pagination.DefaultPageSize}.",
+            [DescriptionKey] = $"Defaults to {metadata.Pagination.DefaultPageSize}.",
         };
 
         JsonObject schema = new()

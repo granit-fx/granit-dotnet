@@ -60,7 +60,7 @@ public sealed class SearchToolTests
     {
         ISemanticSearchService svc = Substitute.For<ISemanticSearchService>();
         svc.SearchAsync("documentation", "how to deploy", Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new List<SemanticSearchResult> { new("doc-1", 0.91, "Deploy with the CLI.") });
+            .Returns([new("doc-1", 0.91, "Deploy with the CLI.")]);
         SearchTool tool = SemanticTool(svc);
 
         AIToolResult result = await tool.InvokeAsync(

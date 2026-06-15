@@ -45,8 +45,9 @@ public sealed class GranitAIChatModule : GranitModule
         // the application registers its own IAIAttachmentSource over its transient blob store.
         AIChatAttachmentsServiceCollectionExtensions.AddCoreServices(context.Services);
 
-        // Per-user setting definitions (Granit.AI.Chat.*) are auto-discovered by GranitSettingsModule;
-        // only the chat-capable workspace catalog for the settings UI needs registering here.
+        // Per-user setting definitions in the Granit AI Chat namespace are auto-discovered by
+        // GranitSettingsModule. Only the chat-capable workspace catalog for the settings UI is
+        // registered here.
         context.Services.TryAddScoped<IChatWorkspaceCatalog, ChatWorkspaceCatalog>();
 
         // The suggestion resolver is always present so a turn can carry suggested actions even

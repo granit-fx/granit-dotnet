@@ -41,6 +41,7 @@ internal sealed partial class EntraIdIdentityProvider(
     ILogger<EntraIdIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager, IUserSessionProvider, IUserDeviceProvider
 {
     private const string ProviderName = "entra-id";
+    private const string Unknown = "unknown";
 
     /// <summary>
     /// Detects authorisation failures from Microsoft Graph (401 Unauthorized / 403 Forbidden).
@@ -247,8 +248,8 @@ internal sealed partial class EntraIdIdentityProvider(
             return signIns
                 .GroupBy(s => new
                 {
-                    Ip = s.IpAddress ?? "unknown",
-                    Os = s.DeviceDetail?.OperatingSystem ?? "unknown"
+                    Ip = s.IpAddress ?? Unknown,
+                    Os = s.DeviceDetail?.OperatingSystem ?? Unknown
                 })
                 .Select(group =>
                 {
@@ -258,7 +259,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
                     return new UserDevice(
                         // Entra ID sign-in audits carry no stable device id — synthesize one from OS + browser.
-                        DeviceId: $"{os ?? "unknown"}/{browser ?? "unknown"}",
+                        DeviceId: $"{os ?? Unknown}/{browser ?? Unknown}",
                         Kind: DeviceKind.Browser, // IdP SSO sign-ins are browser-based unless the backend says otherwise.
                         OperatingSystem: os,
                         Browser: browser,

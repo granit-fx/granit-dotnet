@@ -14,10 +14,8 @@ internal sealed class RecordingLogger<T> : ILogger<T>
 
     public void Log<TState>(
         LogLevel logLevel, EventId eventId, TState state, Exception? exception,
-        Func<TState, Exception?, string> formatter)
-    {
+        Func<TState, Exception?, string> formatter) =>
         Entries.Add((logLevel, formatter(state, exception)));
-    }
 
     private sealed class NullScope : IDisposable
     {

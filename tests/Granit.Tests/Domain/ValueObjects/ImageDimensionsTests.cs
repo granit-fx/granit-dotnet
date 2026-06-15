@@ -27,26 +27,20 @@ public sealed class ImageDimensionsTests
     [Theory]
     [InlineData(-1, 10)]
     [InlineData(10, -1)]
-    public void Ctor_NegativeDimension_Throws(int width, int height)
-    {
+    public void Ctor_NegativeDimension_Throws(int width, int height) =>
         Should.Throw<ArgumentOutOfRangeException>(() => new ImageDimensions(width, height));
-    }
 
     // -------------------------------------------------------------------------
     // Derived geometry
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void AspectRatio_DividesWidthByHeight()
-    {
+    public void AspectRatio_DividesWidthByHeight() =>
         new ImageDimensions(1600, 800).AspectRatio.ShouldBe(2d);
-    }
 
     [Fact]
-    public void AspectRatio_ZeroHeight_ReturnsZeroNotInfinity()
-    {
+    public void AspectRatio_ZeroHeight_ReturnsZeroNotInfinity() =>
         new ImageDimensions(100, 0).AspectRatio.ShouldBe(0d);
-    }
 
     [Theory]
     [InlineData(1200, 630, true, false, false)]
@@ -63,17 +57,13 @@ public sealed class ImageDimensionsTests
     }
 
     [Fact]
-    public void TotalPixels_DoesNotOverflowInt()
-    {
+    public void TotalPixels_DoesNotOverflowInt() =>
         // 50000 * 50000 = 2.5e9, beyond int.MaxValue (~2.147e9).
         new ImageDimensions(50_000, 50_000).TotalPixels.ShouldBe(2_500_000_000L);
-    }
 
     [Fact]
-    public void ToString_IsHumanReadable()
-    {
+    public void ToString_IsHumanReadable() =>
         new ImageDimensions(1200, 630).ToString().ShouldBe("1200x630px");
-    }
 
     // -------------------------------------------------------------------------
     // Value semantics
@@ -92,10 +82,8 @@ public sealed class ImageDimensionsTests
     }
 
     [Fact]
-    public void IsValueObject()
-    {
+    public void IsValueObject() =>
         new ImageDimensions(1, 1).ShouldBeAssignableTo<ValueObject>();
-    }
 
     // -------------------------------------------------------------------------
     // Serialization — only width/height; computed members are ignored

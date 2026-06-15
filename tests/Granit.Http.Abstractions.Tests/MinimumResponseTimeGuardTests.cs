@@ -11,16 +11,12 @@ namespace Granit.Http.Abstractions.Tests;
 public sealed class MinimumResponseTimeGuardTests
 {
     [Fact]
-    public void Begin_with_negative_minimum_throws()
-    {
+    public void Begin_with_negative_minimum_throws() =>
         Should.Throw<ArgumentOutOfRangeException>(() => MinimumResponseTimeGuard.Begin(-1, 10));
-    }
 
     [Fact]
-    public void Begin_with_maximum_less_than_minimum_throws()
-    {
+    public void Begin_with_maximum_less_than_minimum_throws() =>
         Should.Throw<ArgumentOutOfRangeException>(() => MinimumResponseTimeGuard.Begin(10, 5));
-    }
 
     [Fact]
     public void Begin_with_equal_minimum_and_maximum_is_allowed()

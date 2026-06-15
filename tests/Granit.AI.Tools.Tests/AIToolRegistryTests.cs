@@ -50,10 +50,8 @@ public sealed class AIToolRegistryTests
     [InlineData("has space")]
     [InlineData("bad!name")]
     [InlineData("dotted.name")]
-    public void Invalid_tool_names_throw(string name)
-    {
+    public void Invalid_tool_names_throw(string name) =>
         Should.Throw<InvalidAIToolNameException>(() => new AIToolRegistry([new FakeAITool(name: name)]));
-    }
 
     [Theory]
     [InlineData("query_data")]

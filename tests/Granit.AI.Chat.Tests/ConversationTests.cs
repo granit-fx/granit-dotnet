@@ -20,10 +20,8 @@ public sealed class ConversationTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    public void Create_rejects_blank_title(string title)
-    {
+    public void Create_rejects_blank_title(string title) =>
         Should.Throw<ArgumentException>(() => Conversation.Create(Guid.NewGuid(), Owner, title));
-    }
 
     [Fact]
     public void Rename_changes_the_title()

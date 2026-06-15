@@ -195,7 +195,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         twoFactorService.GetStatusAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new TwoFactorStatus(false, false, false, 0));
         twoFactorService.GetAvailableMethodsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new List<TwoFactorMethod>());
+            .Returns([]);
 
         // Default: no external logins
         externalLoginService.GetLoginsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())

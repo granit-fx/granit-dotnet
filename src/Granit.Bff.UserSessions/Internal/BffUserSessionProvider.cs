@@ -23,16 +23,16 @@ internal sealed class BffUserSessionProvider(
     {
         List<UserSessionDescriptor> sessions = [];
 
-        foreach (BffFrontendOptions frontend in options.Value.Frontends)
+        foreach (string frontendName in options.Value.Frontends.Select(f => f.Name))
         {
             IReadOnlyList<string> sessionIds = await tokenStore
-                .GetSessionIdsByUserAsync(frontend.Name, userId, cancellationToken)
+                .GetSessionIdsByUserAsync(frontendName, userId, cancellationToken)
                 .ConfigureAwait(false);
 
             foreach (string sessionId in sessionIds)
             {
                 BffTokenSet? tokens = await tokenStore
-                    .GetAsync(frontend.Name, sessionId, cancellationToken)
+                    .GetAsync(frontendName, sessionId, cancellationToken)
                     .ConfigureAwait(false);
                 if (tokens is null)
                 {
@@ -67,17 +67,17 @@ internal sealed class BffUserSessionProvider(
     public async Task<bool> RevokeAsync(
         string userId, string sessionId, CancellationToken cancellationToken = default)
     {
-        foreach (BffFrontendOptions frontend in options.Value.Frontends)
+        foreach (string frontendName in options.Value.Frontends.Select(f => f.Name))
         {
             BffTokenSet? tokens = await tokenStore
-                .GetAsync(frontend.Name, sessionId, cancellationToken)
+                .GetAsync(frontendName, sessionId, cancellationToken)
                 .ConfigureAwait(false);
 
             // Only revoke a session that exists on this frontend AND belongs to the caller —
             // never let one user revoke another's session by guessing an id.
             if (tokens is not null && tokens.UserId == userId)
             {
-                await tokenStore.RemoveAsync(frontend.Name, sessionId, cancellationToken).ConfigureAwait(false);
+                await tokenStore.RemoveAsync(frontendName, sessionId, cancellationToken).ConfigureAwait(false);
                 return true;
             }
         }
@@ -90,10 +90,10 @@ internal sealed class BffUserSessionProvider(
     {
         int revoked = 0;
 
-        foreach (BffFrontendOptions frontend in options.Value.Frontends)
+        foreach (string frontendName in options.Value.Frontends.Select(f => f.Name))
         {
             IReadOnlyList<string> sessionIds = await tokenStore
-                .GetSessionIdsByUserAsync(frontend.Name, userId, cancellationToken)
+                .GetSessionIdsByUserAsync(frontendName, userId, cancellationToken)
                 .ConfigureAwait(false);
 
             foreach (string sessionId in sessionIds)
@@ -103,7 +103,7 @@ internal sealed class BffUserSessionProvider(
                     continue;
                 }
 
-                await tokenStore.RemoveAsync(frontend.Name, sessionId, cancellationToken).ConfigureAwait(false);
+                await tokenStore.RemoveAsync(frontendName, sessionId, cancellationToken).ConfigureAwait(false);
                 revoked++;
             }
         }

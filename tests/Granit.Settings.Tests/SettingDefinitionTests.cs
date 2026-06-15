@@ -382,10 +382,8 @@ public sealed class SettingDefinitionTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void MaxLength_IsNull_ByDefault()
-    {
+    public void MaxLength_IsNull_ByDefault() =>
         new SettingDefinition("test").MaxLength.ShouldBeNull();
-    }
 
     [Fact]
     public void IsValidValue_RejectsValueLongerThanMaxLength()

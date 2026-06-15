@@ -55,8 +55,6 @@ public sealed class PromptTemplateTests
     [Theory]
     [InlineData("", "content")]
     [InlineData("name", "")]
-    public void Create_rejects_blank_name_or_content(string name, string content)
-    {
+    public void Create_rejects_blank_name_or_content(string name, string content) =>
         Should.Throw<ArgumentException>(() => PromptTemplate.Create(Guid.NewGuid(), Owner, name, "desc", content));
-    }
 }

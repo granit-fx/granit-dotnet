@@ -25,6 +25,8 @@ namespace Granit.Identity.Local.Endpoints.Endpoints;
 
 internal static partial class AccountPasskeyEndpoints
 {
+    private const string PasskeyMethod = "passkey";
+
     internal static RouteGroupBuilder MapAccountPasskeyEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/passkeys", ListPasskeysAsync)
@@ -213,7 +215,7 @@ internal static partial class AccountPasskeyEndpoints
         await signInManager.SignInAsync(user, isPersistent: false).ConfigureAwait(false);
         await TryRaiseDeviceTrustToStrongAsync(httpContext, logger, user.Id.ToString(), cancellationToken)
             .ConfigureAwait(false);
-        metrics?.RecordAuthenticationSuccess(null, "passkey");
+        metrics?.RecordAuthenticationSuccess(null, PasskeyMethod);
         await TryWritePasskeyAuditAsync(httpContext, logger,
             userId: user.Id.ToString(), userName: user.UserName,
             failureReason: null, cancellationToken).ConfigureAwait(false);
@@ -258,10 +260,10 @@ internal static partial class AccountPasskeyEndpoints
             ? AuthenticationAuditEntry.CreateSuccess(
                 timeProvider.GetUtcNow(),
                 auditUserId,
-                userName, method: "passkey", tenantId, ipAddress, userAgent, correlationId)
+                userName, method: PasskeyMethod, tenantId, ipAddress, userAgent, correlationId)
             : AuthenticationAuditEntry.CreateFailure(
                 timeProvider.GetUtcNow(), userId, userName,
-                method: "passkey", reason: failureReason,
+                method: PasskeyMethod, reason: failureReason,
                 tenantId, ipAddress, userAgent, correlationId);
 
         try
@@ -315,7 +317,7 @@ internal static partial class AccountPasskeyEndpoints
             await trustStore.SetAsync(
                 userId,
                 deviceId,
-                new DeviceTrustVerdict(DeviceTrustLevel.Strong, now, now + options.TrustDuration, "passkey"),
+                new DeviceTrustVerdict(DeviceTrustLevel.Strong, now, now + options.TrustDuration, PasskeyMethod),
                 cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)

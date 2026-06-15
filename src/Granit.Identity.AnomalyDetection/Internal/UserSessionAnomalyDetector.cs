@@ -112,11 +112,12 @@ internal sealed class UserSessionAnomalyDetector(
 
         UserSessionRiskLevel level = travel == TravelOutcome.Detected
             ? UserSessionRiskLevel.High
-            : reasons.Count >= 2
-                ? UserSessionRiskLevel.Medium
-                : reasons.Count == 1
-                    ? UserSessionRiskLevel.Low
-                    : UserSessionRiskLevel.None;
+            : reasons.Count switch
+            {
+                >= 2 => UserSessionRiskLevel.Medium,
+                1 => UserSessionRiskLevel.Low,
+                _ => UserSessionRiskLevel.None,
+            };
 
         // `low_geo_confidence` is explanatory — it records that a travel alert was withheld because the geo fix
         // was untrustworthy, without itself inflating the risk level (so it can never manufacture a Medium).
@@ -160,7 +161,11 @@ internal sealed class UserSessionAnomalyDetector(
             double km = GeoDistance.HaversineKm(lat, lon, priorLat, priorLon);
             DateTimeOffset priorTime = prior.LastAccessedAt ?? prior.CreatedAt;
             double hours = Math.Abs((candidate.CreatedAt - priorTime).TotalHours);
-            double speed = hours > 0.01 ? km / hours : km > 50d ? double.PositiveInfinity : 0d;
+
+            // With effectively-zero elapsed time, treat a real >50 km gap as an impossible (infinite) speed and a
+            // sub-50 km gap as stationary noise; otherwise it's distance over time.
+            double zeroTimeSpeed = km > 50d ? double.PositiveInfinity : 0d;
+            double speed = hours > 0.01 ? km / hours : zeroTimeSpeed;
 
             if (speed <= opts.MaxTravelKilometersPerHour)
             {

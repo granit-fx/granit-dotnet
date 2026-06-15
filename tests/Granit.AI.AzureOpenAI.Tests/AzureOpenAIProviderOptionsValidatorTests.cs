@@ -17,10 +17,8 @@ public sealed class AzureOpenAIProviderOptionsValidatorTests
     };
 
     [Fact]
-    public void Validate_ValidEndpoint_Succeeds()
-    {
+    public void Validate_ValidEndpoint_Succeeds() =>
         _validator.Validate(null, ValidOptions()).Succeeded.ShouldBeTrue();
-    }
 
     [Fact]
     public void Validate_EmptyEndpoint_Fails()

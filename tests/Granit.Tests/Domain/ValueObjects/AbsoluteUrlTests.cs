@@ -12,10 +12,8 @@ public sealed class AbsoluteUrlTests
     [InlineData("https://acme.com/about/team?x=1#frag")]
     [InlineData("http://localhost:3000/preview")] // dev / preview origins are http
     [InlineData("http://127.0.0.1:5000")]
-    public void Create_AbsoluteHttpOrHttps_Succeeds(string value)
-    {
+    public void Create_AbsoluteHttpOrHttps_Succeeds(string value) =>
         AbsoluteUrl.Create(value).Value.ShouldBe(value);
-    }
 
     [Theory]
     [InlineData("")]
@@ -25,10 +23,8 @@ public sealed class AbsoluteUrlTests
     [InlineData("ftp://acme.com/file")]
     [InlineData("mailto:hi@acme.com")]
     [InlineData("javascript:alert(1)")]
-    public void Create_NotAbsoluteHttpUrl_Throws(string value)
-    {
+    public void Create_NotAbsoluteHttpUrl_Throws(string value) =>
         Should.Throw<ArgumentException>(() => AbsoluteUrl.Create(value));
-    }
 
     [Fact]
     public void Create_TooLong_Throws()
@@ -55,8 +51,6 @@ public sealed class AbsoluteUrlTests
     }
 
     [Fact]
-    public void IsSingleValueObject()
-    {
+    public void IsSingleValueObject() =>
         AbsoluteUrl.Create("https://acme.com").ShouldBeAssignableTo<ValueObject>();
-    }
 }

@@ -64,12 +64,12 @@ public sealed class SafeTypeLoaderTests
         result.ShouldBeEmpty();
     }
 
-    public static TheoryData<Exception> MissingDependencyExceptions() => new()
-    {
+    public static TheoryData<Exception> MissingDependencyExceptions() =>
+    [
         new FileNotFoundException(),
         new FileLoadException(),
         new TypeLoadException(),
-    };
+    ];
 
     [Fact]
     public void Unexpected_exceptions_propagate()
@@ -79,8 +79,6 @@ public sealed class SafeTypeLoaderTests
     }
 
     [Fact]
-    public void Null_assembly_throws()
-    {
+    public void Null_assembly_throws() =>
         Should.Throw<ArgumentNullException>(() => ((Assembly)null!).GetLoadableTypes());
-    }
 }

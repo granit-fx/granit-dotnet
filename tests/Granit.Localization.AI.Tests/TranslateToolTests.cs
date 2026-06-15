@@ -38,7 +38,7 @@ public sealed class TranslateToolTests
         svc.SuggestTranslationsAsync("chat.translate", "Hello", "en",
                 Arg.Is<IReadOnlyList<string>>(t => t.Count == 1 && t[0] == "fr"),
                 TranslationContext.Description, Arg.Any<CancellationToken>())
-            .Returns(new List<TranslationSuggestion> { new("fr", "Bonjour") });
+            .Returns([new("fr", "Bonjour")]);
         TranslateTool tool = new(svc);
 
         AIToolResult result = await tool.InvokeAsync(

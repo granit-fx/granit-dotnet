@@ -22,10 +22,8 @@ public sealed class CompositeRegulationProfileMergerTests
     }
 
     [Fact]
-    public void Merge_EmptyList_Throws()
-    {
+    public void Merge_EmptyList_Throws() =>
         Should.Throw<ArgumentException>(() => CompositeRegulationProfileMerger.Merge([]));
-    }
 
     [Fact]
     public void Merge_GdprPlusCcpa_OptInWins()

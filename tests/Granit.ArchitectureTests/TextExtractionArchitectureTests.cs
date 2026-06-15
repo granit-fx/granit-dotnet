@@ -11,7 +11,7 @@ namespace Granit.ArchitectureTests;
 /// across the base package and the extractor providers (Email, Office, Pdf, Text, Tika,
 /// Ocr.AI, Ocr.Tesseract).
 /// </summary>
-public sealed class TextExtractionArchitectureTests
+public sealed partial class TextExtractionArchitectureTests
 {
     private static readonly string RepoRoot = FindRepoRoot();
     private static readonly string SrcRoot = Path.Join(RepoRoot, "src");
@@ -161,9 +161,7 @@ public sealed class TextExtractionArchitectureTests
         // and assert at least one references GranitTextExtractionModule. The looser
         // form keeps the pin honest for modules that legitimately depend on more
         // than one upstream module.
-        bool dependsOnBase = System.Text.RegularExpressions.Regex.IsMatch(
-            source,
-            @"\[DependsOn\([^\]]*typeof\(GranitTextExtractionModule\)[^\]]*\)\]");
+        bool dependsOnBase = DependsOnBaseModuleRegex().IsMatch(source);
 
         dependsOnBase.ShouldBeTrue(
             $"{projectName} must declare [DependsOn(... typeof(GranitTextExtractionModule) ...)] " +
@@ -222,37 +220,67 @@ public sealed class TextExtractionArchitectureTests
 
     private static readonly Regex[] ForbiddenNetworkingApiRegexes =
     [
-        new(@"\busing\s+System\.Net\.Http\b", RegexOptions.Compiled),
-        new(@"\busing\s+System\.Net\.Sockets\b", RegexOptions.Compiled),
-        new(@"\busing\s+System\.Net\s*;", RegexOptions.Compiled),
-        new(@"\bSystem\.Net\.Http\.", RegexOptions.Compiled),
-        new(@"\bSystem\.Net\.Sockets\.", RegexOptions.Compiled),
-        new(@"\bSystem\.Net\.(WebRequest|WebClient)\b", RegexOptions.Compiled),
-        new(@"\bHttpClient\b", RegexOptions.Compiled),
-        new(@"\bWebRequest\b", RegexOptions.Compiled),
-        new(@"\bWebClient\b", RegexOptions.Compiled),
+        UsingSystemNetHttpRegex(),
+        UsingSystemNetSocketsRegex(),
+        UsingSystemNetRegex(),
+        SystemNetHttpMemberRegex(),
+        SystemNetSocketsMemberRegex(),
+        SystemNetWebApiRegex(),
+        HttpClientRegex(),
+        WebRequestRegex(),
+        WebClientRegex(),
     ];
 
-    private static readonly Regex LineCommentRegex =
-        new(@"//.*?$", RegexOptions.Multiline | RegexOptions.Compiled);
+    [GeneratedRegex(@"\[DependsOn\([^\]]*typeof\(GranitTextExtractionModule\)[^\]]*\)\]")]
+    private static partial Regex DependsOnBaseModuleRegex();
 
-    private static readonly Regex BlockCommentRegex =
-        new(@"/\*.*?\*/", RegexOptions.Singleline | RegexOptions.Compiled);
+    [GeneratedRegex(@"\busing\s+System\.Net\.Http\b")]
+    private static partial Regex UsingSystemNetHttpRegex();
 
-    private static readonly Regex VerbatimStringRegex =
-        new(@"@""(?:""""|[^""])*""", RegexOptions.Compiled);
+    [GeneratedRegex(@"\busing\s+System\.Net\.Sockets\b")]
+    private static partial Regex UsingSystemNetSocketsRegex();
 
-    private static readonly Regex RegularStringRegex =
-        new(@"""(?:\\.|[^""\\])*""", RegexOptions.Compiled);
+    [GeneratedRegex(@"\busing\s+System\.Net\s*;")]
+    private static partial Regex UsingSystemNetRegex();
+
+    [GeneratedRegex(@"\bSystem\.Net\.Http\.")]
+    private static partial Regex SystemNetHttpMemberRegex();
+
+    [GeneratedRegex(@"\bSystem\.Net\.Sockets\.")]
+    private static partial Regex SystemNetSocketsMemberRegex();
+
+    [GeneratedRegex(@"\bSystem\.Net\.(WebRequest|WebClient)\b")]
+    private static partial Regex SystemNetWebApiRegex();
+
+    [GeneratedRegex(@"\bHttpClient\b")]
+    private static partial Regex HttpClientRegex();
+
+    [GeneratedRegex(@"\bWebRequest\b")]
+    private static partial Regex WebRequestRegex();
+
+    [GeneratedRegex(@"\bWebClient\b")]
+    private static partial Regex WebClientRegex();
+
+    [GeneratedRegex(@"//.*?$", RegexOptions.Multiline)]
+    private static partial Regex LineCommentRegex();
+
+    [GeneratedRegex(@"/\*.*?\*/", RegexOptions.Singleline)]
+    private static partial Regex BlockCommentRegex();
+
+    [GeneratedRegex(@"@""(?:""""|[^""])*""")]
+    private static partial Regex VerbatimStringRegex();
+
+    [GeneratedRegex(@"""(?:\\.|[^""\\])*""")]
+    private static partial Regex RegularStringRegex();
 
     private static string StripCommentsAndStrings(string source)
     {
         // Comments first so a `// HttpClient is forbidden` xml-doc note doesn't trip
         // the scan, then strings so `"HttpClient.cs"` literals don't either.
-        string s = BlockCommentRegex.Replace(source, string.Empty);
-        s = LineCommentRegex.Replace(s, string.Empty);
-        s = VerbatimStringRegex.Replace(s, "\"\"");
-        s = RegularStringRegex.Replace(s, "\"\"");
+        string s = BlockCommentRegex().Replace(source, string.Empty);
+        s = LineCommentRegex().Replace(s, string.Empty);
+        s = VerbatimStringRegex().Replace(s, "\"\"");
+        s = RegularStringRegex().Replace(s, "\"\"");
         return s;
     }
 

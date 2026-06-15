@@ -76,12 +76,10 @@ public sealed class OAuth2OptionsTests
     }
 
     [Fact]
-    public void Defaults_RedirectUriIsNull()
-    {
+    public void Defaults_RedirectUriIsNull() =>
         // null means "let Scalar apply its (currently broken) default";
         // consumers must set this explicitly until upstream #8165/#8187 ship.
         new OAuth2Options().RedirectUri.ShouldBeNull();
-    }
 
     [Fact]
     public void RedirectUri_Roundtrips()

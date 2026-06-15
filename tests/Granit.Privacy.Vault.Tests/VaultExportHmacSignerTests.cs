@@ -63,11 +63,9 @@ public sealed class VaultExportHmacSignerTests
     }
 
     [Fact]
-    public void Verify_ReturnsFalse_ForLegacyEphemeralTagFormat()
-    {
+    public void Verify_ReturnsFalse_ForLegacyEphemeralTagFormat() =>
         // Tag from EphemeralExportHmacSigner — vN:base64 with no gpv1 prefix.
         _sut.Verify(MakeParameters(), "v1:abc123").ShouldBeFalse();
-    }
 
     [Fact]
     public void Verify_ReturnsFalse_WhenTagIsExpired()
@@ -93,8 +91,6 @@ public sealed class VaultExportHmacSignerTests
     }
 
     [Fact]
-    public void VerifyBytes_RejectsLegacyTagFormat()
-    {
+    public void VerifyBytes_RejectsLegacyTagFormat() =>
         _sut.VerifyBytes(Encoding.UTF8.GetBytes("manifest-bytes"), "v1:abc").ShouldBeFalse();
-    }
 }

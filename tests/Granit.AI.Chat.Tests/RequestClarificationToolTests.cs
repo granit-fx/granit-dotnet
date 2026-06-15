@@ -15,10 +15,8 @@ public sealed class RequestClarificationToolTests
         await new RequestClarificationTool().InvokeAsync(Args(json), TestContext.Current.CancellationToken);
 
     [Fact]
-    public void Tool_is_named_request_clarification()
-    {
+    public void Tool_is_named_request_clarification() =>
         new RequestClarificationTool().Name.ShouldBe("request_clarification");
-    }
 
     [Fact]
     public async Task Valid_call_halts_the_loop_with_a_clarification_payload()

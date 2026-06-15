@@ -13,10 +13,8 @@ public sealed class ScopedPermissionCheckerTests
     // --- TryCreate ---
 
     [Fact]
-    public void TryCreate_ReturnsNull_WhenScopeFactoryIsNull()
-    {
+    public void TryCreate_ReturnsNull_WhenScopeFactoryIsNull() =>
         ScopedPermissionChecker.TryCreate(null).ShouldBeNull();
-    }
 
     [Fact]
     public async Task TryCreate_ReturnsNull_WhenInnerCheckerNotRegistered()

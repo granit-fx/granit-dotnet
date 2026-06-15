@@ -19,26 +19,20 @@ public sealed class HexColorTests
     }
 
     [Fact]
-    public void Create_normalises_to_upper_case_and_trims()
-    {
+    public void Create_normalises_to_upper_case_and_trims() =>
         HexColor.Create("  #8b5cf6  ").Value.ShouldBe("#8B5CF6");
-    }
 
     [Theory]
     [InlineData("8B5CF6")]      // missing '#'
     [InlineData("#12345")]      // 5 digits
     [InlineData("#GGGGGG")]     // non-hex
     [InlineData("#8B5CF")]      // too short
-    public void Create_rejects_malformed_values(string value)
-    {
+    public void Create_rejects_malformed_values(string value) =>
         Should.Throw<ArgumentException>(() => HexColor.Create(value));
-    }
 
     [Fact]
-    public void Create_rejects_null_or_whitespace()
-    {
+    public void Create_rejects_null_or_whitespace() =>
         Should.Throw<ArgumentException>(() => HexColor.Create("  "));
-    }
 
     [Fact]
     public void Implicit_conversions_round_trip_through_string()

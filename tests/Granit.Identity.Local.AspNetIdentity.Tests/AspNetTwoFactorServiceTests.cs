@@ -27,7 +27,7 @@ public sealed class AspNetTwoFactorServiceTests
         _userManager.FindByIdAsync(UserId).Returns(_user);
 
         // Default: no email-OTP claim. Individual tests override.
-        _userManager.GetClaimsAsync(_user).Returns(new List<Claim>());
+        _userManager.GetClaimsAsync(_user).Returns([]);
 
         _sut = new AspNetTwoFactorService(_userManager);
     }
@@ -56,7 +56,7 @@ public sealed class AspNetTwoFactorServiceTests
         _userManager.GetAuthenticatorKeyAsync(_user).Returns((string?)null);
         _userManager.CountRecoveryCodesAsync(_user).Returns(0);
         _userManager.GetClaimsAsync(_user).Returns(
-            new List<Claim> { new("granit:2fa:email_otp", "true") });
+            [new("granit:2fa:email_otp", "true")]);
 
         TwoFactorStatus status = await _sut.GetStatusAsync(UserId, TestContext.Current.CancellationToken);
 
@@ -82,7 +82,7 @@ public sealed class AspNetTwoFactorServiceTests
         _userManager.GetAuthenticatorKeyAsync(_user).Returns("KEY");
         _userManager.CountRecoveryCodesAsync(_user).Returns(3);
         _userManager.GetClaimsAsync(_user).Returns(
-            new List<Claim> { new("granit:2fa:email_otp", "true") });
+            [new("granit:2fa:email_otp", "true")]);
 
         IReadOnlyList<TwoFactorMethod> methods = await _sut.GetAvailableMethodsAsync(
             UserId, TestContext.Current.CancellationToken);
@@ -108,7 +108,7 @@ public sealed class AspNetTwoFactorServiceTests
         _userManager.GetAuthenticatorKeyAsync(_user).Returns((string?)null);
         _userManager.CountRecoveryCodesAsync(_user).Returns(0);
         _userManager.GetClaimsAsync(_user).Returns(
-            new List<Claim> { new("granit:2fa:email_otp", "true") });
+            [new("granit:2fa:email_otp", "true")]);
 
         IReadOnlyList<TwoFactorMethod> methods = await _sut.GetAvailableMethodsAsync(
             UserId, TestContext.Current.CancellationToken);
@@ -122,7 +122,7 @@ public sealed class AspNetTwoFactorServiceTests
     public async Task DisableAllAsync_ClearsEveryFactorAndRotatesStamp()
     {
         _userManager.GetClaimsAsync(_user).Returns(
-            new List<Claim> { new("granit:2fa:email_otp", "true") });
+            [new("granit:2fa:email_otp", "true")]);
 
         await _sut.DisableAllAsync(UserId, TestContext.Current.CancellationToken);
 

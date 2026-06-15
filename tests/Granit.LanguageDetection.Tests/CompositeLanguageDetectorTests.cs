@@ -56,13 +56,11 @@ public sealed class CompositeLanguageDetectorTests
     }
 
     [Fact]
-    public void Composite_does_not_implement_provider_marker()
-    {
+    public void Composite_does_not_implement_provider_marker() =>
         // Type-system guarantee that a composite cannot accidentally be passed back
         // into another composite's provider list — the bug the runtime filter used to
         // guard against is now impossible to express.
         typeof(ILanguageDetectorProvider).IsAssignableFrom(typeof(CompositeLanguageDetector)).ShouldBeFalse();
-    }
 
     [Fact]
     public void Composite_advertises_max_priority() =>

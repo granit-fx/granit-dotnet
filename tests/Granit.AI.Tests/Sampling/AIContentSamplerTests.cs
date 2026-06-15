@@ -6,22 +6,16 @@ namespace Granit.AI.Tests.Sampling;
 public sealed class AIContentSamplerTests
 {
     [Fact]
-    public void Returns_content_unchanged_when_shorter_than_cap()
-    {
+    public void Returns_content_unchanged_when_shorter_than_cap() =>
         AIContentSampler.TruncateOnCodePoint("short", 100).ShouldBe("short");
-    }
 
     [Fact]
-    public void Returns_content_unchanged_when_exactly_at_cap()
-    {
+    public void Returns_content_unchanged_when_exactly_at_cap() =>
         AIContentSampler.TruncateOnCodePoint("abcde", 5).ShouldBe("abcde");
-    }
 
     [Fact]
-    public void Truncates_to_cap_on_plain_ascii()
-    {
+    public void Truncates_to_cap_on_plain_ascii() =>
         AIContentSampler.TruncateOnCodePoint("abcdefghij", 4).ShouldBe("abcd");
-    }
 
     [Fact]
     public void Backs_off_one_unit_when_cut_would_split_a_surrogate_pair()

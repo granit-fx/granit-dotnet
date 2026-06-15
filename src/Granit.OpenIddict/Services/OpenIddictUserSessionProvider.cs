@@ -50,6 +50,18 @@ internal sealed class OpenIddictUserSessionProvider(
         return sessions;
     }
 
+    public async Task<IReadOnlyList<UserDevice>> ListAsync(
+        string userId, CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<UserSessionDescriptor> sessions =
+            await ListAsync(userId, currentSessionId: null, cancellationToken).ConfigureAwait(false);
+
+        // The OpenIddict backend exposes no stable device id, OS or browser — only the raw IP. Synthesize one
+        // device per IP from its own sessions; the kind carried on each session (declared on the OIDC
+        // application, heuristic otherwise) drives the group's device kind.
+        return UserDeviceGrouping.ByIpAddress(sessions);
+    }
+
     // Maps a single OpenIddict token to a UserSessionDescriptor, or null when the token is not a
     // valid refresh token (the only kind that represents a live session) or carries no id.
     private async Task<UserSessionDescriptor?> MapTokenToSessionAsync(
@@ -213,31 +225,19 @@ internal sealed class OpenIddictUserSessionProvider(
             await ListAsync(userId, currentSessionId, cancellationToken).ConfigureAwait(false);
 
         int revoked = 0;
-        foreach (UserSessionDescriptor session in sessions)
+        foreach (string sessionId in sessions.Select(s => s.SessionId))
         {
-            if (session.SessionId == currentSessionId)
+            if (sessionId == currentSessionId)
             {
                 continue;
             }
 
-            if (await RevokeAsync(userId, session.SessionId, cancellationToken).ConfigureAwait(false))
+            if (await RevokeAsync(userId, sessionId, cancellationToken).ConfigureAwait(false))
             {
                 revoked++;
             }
         }
 
         return revoked;
-    }
-
-    public async Task<IReadOnlyList<UserDevice>> ListAsync(
-        string userId, CancellationToken cancellationToken = default)
-    {
-        IReadOnlyList<UserSessionDescriptor> sessions =
-            await ListAsync(userId, currentSessionId: null, cancellationToken).ConfigureAwait(false);
-
-        // The OpenIddict backend exposes no stable device id, OS or browser — only the raw IP. Synthesize one
-        // device per IP from its own sessions; the kind carried on each session (declared on the OIDC
-        // application, heuristic otherwise) drives the group's device kind.
-        return UserDeviceGrouping.ByIpAddress(sessions);
     }
 }

@@ -14,6 +14,8 @@ namespace Granit.AI.Chat.Internal;
 /// </summary>
 internal sealed class RequestClarificationTool : IAITool, IAIToolInstructions
 {
+    private const string DescriptionKey = "description";
+
     private static readonly JsonElement Schema = BuildSchema();
 
     private static readonly JsonSerializerOptions PayloadOptions = JsonSerializerOptions.Web;
@@ -85,18 +87,18 @@ internal sealed class RequestClarificationTool : IAITool, IAIToolInstructions
             ["type"] = "object",
             ["properties"] = new JsonObject
             {
-                ["question"] = new JsonObject { ["type"] = "string", ["description"] = "The disambiguating question." },
+                ["question"] = new JsonObject { ["type"] = "string", [DescriptionKey] = "The disambiguating question." },
                 ["options"] = new JsonObject
                 {
                     ["type"] = "array",
-                    ["description"] = "The discrete choices (2-5 recommended).",
+                    [DescriptionKey] = "The discrete choices (2-5 recommended).",
                     ["items"] = new JsonObject
                     {
                         ["type"] = "object",
                         ["properties"] = new JsonObject
                         {
-                            ["label"] = new JsonObject { ["type"] = "string", ["description"] = "Display label." },
-                            ["value"] = new JsonObject { ["type"] = "string", ["description"] = "Optional value sent back when chosen." },
+                            ["label"] = new JsonObject { ["type"] = "string", [DescriptionKey] = "Display label." },
+                            ["value"] = new JsonObject { ["type"] = "string", [DescriptionKey] = "Optional value sent back when chosen." },
                         },
                         ["required"] = new JsonArray("label"),
                         ["additionalProperties"] = false,
@@ -105,7 +107,7 @@ internal sealed class RequestClarificationTool : IAITool, IAIToolInstructions
                 ["allow_other"] = new JsonObject
                 {
                     ["type"] = "boolean",
-                    ["description"] = "Offer an 'Other (describe)' free-text affordance.",
+                    [DescriptionKey] = "Offer an 'Other (describe)' free-text affordance.",
                 },
             },
             ["required"] = new JsonArray("question", "options"),

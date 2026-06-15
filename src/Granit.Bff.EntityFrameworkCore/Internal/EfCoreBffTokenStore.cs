@@ -176,11 +176,25 @@ internal sealed partial class EfCoreBffTokenStore(
         return JsonSerializer.Deserialize<BffTokenSet>(json, JsonOptions);
     }
 
-    private string? EncryptIp(string? ipAddress) =>
-        ipAddress is null ? null : _encryptionEnabled ? encryptionService!.Encrypt(ipAddress) : ipAddress;
+    private string? EncryptIp(string? ipAddress)
+    {
+        if (ipAddress is null)
+        {
+            return null;
+        }
 
-    private string? DecryptIp(string? stored) =>
-        stored is null ? null : _encryptionEnabled ? encryptionService!.Decrypt(stored) ?? stored : stored;
+        return _encryptionEnabled ? encryptionService!.Encrypt(ipAddress) : ipAddress;
+    }
+
+    private string? DecryptIp(string? stored)
+    {
+        if (stored is null)
+        {
+            return null;
+        }
+
+        return _encryptionEnabled ? encryptionService!.Decrypt(stored) ?? stored : stored;
+    }
 
     private static bool InitEncryption(IStringEncryptionService? service, ILogger logger)
     {

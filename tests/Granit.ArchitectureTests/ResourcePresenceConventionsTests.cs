@@ -16,22 +16,16 @@ public sealed partial class ResourcePresenceConventionsTests
     private static readonly string RepoRoot = FindRepoRoot();
 
     [Fact]
-    public void IResourcePresenceTracker_lives_in_abstractions_namespace()
-    {
+    public void IResourcePresenceTracker_lives_in_abstractions_namespace() =>
         typeof(IResourcePresenceTracker).Namespace.ShouldBe("Granit.Presence.Abstractions");
-    }
 
     [Fact]
-    public void IResourcePresenceVisibilityPolicy_lives_in_abstractions_namespace()
-    {
+    public void IResourcePresenceVisibilityPolicy_lives_in_abstractions_namespace() =>
         typeof(IResourcePresenceVisibilityPolicy).Namespace.ShouldBe("Granit.Presence.Abstractions");
-    }
 
     [Fact]
-    public void ResourceRef_lives_in_abstractions_namespace()
-    {
+    public void ResourceRef_lives_in_abstractions_namespace() =>
         typeof(ResourceRef).Namespace.ShouldBe("Granit.Presence.Abstractions");
-    }
 
     [Fact]
     public void FusionCacheResourcePresenceTracker_is_internal_sealed()

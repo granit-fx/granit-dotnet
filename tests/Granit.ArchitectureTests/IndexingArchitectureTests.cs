@@ -192,10 +192,8 @@ public sealed partial class IndexingArchitectureTests
     /// </summary>
     [Theory]
     [MemberData(nameof(AllIndexingPackages))]
-    public void Granit_Indexing_packages_must_not_reference_Microsoft_AspNetCore(string packageName)
-    {
+    public void Granit_Indexing_packages_must_not_reference_Microsoft_AspNetCore(string packageName) =>
         AssertNoPackageReferenceStartsWith(packageName, "Microsoft.AspNetCore.");
-    }
 
     /// <summary>
     /// Layer purity: EF Core dependencies are confined to the

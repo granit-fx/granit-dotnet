@@ -65,12 +65,12 @@ internal static class FeaturesReadEndpoints
         IReadOnlyList<FeatureDefinition> definitions = definitionStore.GetAll();
         Dictionary<string, string> result = new(definitions.Count, StringComparer.Ordinal);
 
-        foreach (FeatureDefinition definition in definitions)
+        foreach (string name in definitions.Select(d => d.Name))
         {
             string value = await featureChecker
-                .GetValueAsync(definition.Name, cancellationToken)
+                .GetValueAsync(name, cancellationToken)
                 .ConfigureAwait(false);
-            result[definition.Name] = value;
+            result[name] = value;
         }
 
         return TypedResults.Ok<IReadOnlyDictionary<string, string>>(result);

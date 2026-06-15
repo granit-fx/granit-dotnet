@@ -29,11 +29,11 @@ public sealed class UserSessionCreatedHandlerTests
 
         // The provider returns the user's sessions (candidate + one prior), locations unresolved.
         provider.ListAsync("user-1", "s-new", Arg.Any<CancellationToken>())
-            .Returns(new List<UserSessionDescriptor>
-            {
+            .Returns(
+            [
                 new("s-new", "user-1", IsCurrent: true, Now, null, "ua", "1.1.1.1", Location: null),
                 new("s-old", "user-1", IsCurrent: false, Now.AddDays(-1), Now.AddDays(-1), "ua2", "2.2.2.2", Location: null),
-            });
+            ]);
 
         IUserBehavioralProfileStore profileStore = Substitute.For<IUserBehavioralProfileStore>();
         TimeProvider timeProvider = Substitute.For<TimeProvider>();
@@ -67,10 +67,10 @@ public sealed class UserSessionCreatedHandlerTests
         tenant.IsAvailable.Returns(false);
         tenant.Change(Arg.Any<Guid?>()).Returns(Substitute.For<IDisposable>());
         provider.ListAsync("user-1", "s1", Arg.Any<CancellationToken>())
-            .Returns(new List<UserSessionDescriptor>
-            {
+            .Returns(
+            [
                 new("s1", "user-1", IsCurrent: true, Now, null, "ua", null, Location: null),
-            });
+            ]);
 
         IUserBehavioralProfileStore profileStore = Substitute.For<IUserBehavioralProfileStore>();
         TimeProvider timeProvider = Substitute.For<TimeProvider>();
@@ -96,10 +96,10 @@ public sealed class UserSessionCreatedHandlerTests
         // The active provider surfaces only an unrelated session — the candidate belongs to another topology
         // layer (e.g. an OpenIddict refresh-token event reaching a BFF deployment), so it must be ignored.
         provider.ListAsync("user-1", "oidc-token-id", Arg.Any<CancellationToken>())
-            .Returns(new List<UserSessionDescriptor>
-            {
+            .Returns(
+            [
                 new("bff-sid", "user-1", IsCurrent: true, Now, null, "ua", "1.1.1.1", Location: null),
-            });
+            ]);
 
         IUserBehavioralProfileStore profileStore = Substitute.For<IUserBehavioralProfileStore>();
         TimeProvider timeProvider = Substitute.For<TimeProvider>();

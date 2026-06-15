@@ -12,10 +12,8 @@ public sealed class ScopedLocalEventBusTests
     private sealed record SampleEvent(string Value);
 
     [Fact]
-    public async Task TryCreate_ReturnsNull_WhenScopeFactoryIsNull()
-    {
+    public async Task TryCreate_ReturnsNull_WhenScopeFactoryIsNull() =>
         ScopedLocalEventBus.TryCreate(null).ShouldBeNull();
-    }
 
     [Fact]
     public async Task TryCreate_ReturnsNull_WhenInnerBusNotRegistered()

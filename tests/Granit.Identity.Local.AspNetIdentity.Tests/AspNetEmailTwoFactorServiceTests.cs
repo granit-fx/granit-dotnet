@@ -28,7 +28,7 @@ public sealed class AspNetEmailTwoFactorServiceTests
 
         _user = new LocalIdentity { Id = Guid.Parse(UserId), Email = "user@test.com", UserName = "testuser" };
         _userManager.FindByIdAsync(UserId).Returns(_user);
-        _userManager.GetClaimsAsync(_user).Returns(new List<Claim>());
+        _userManager.GetClaimsAsync(_user).Returns([]);
 
         _sut = new AspNetEmailTwoFactorService(_userManager, _eventBus);
     }
@@ -107,7 +107,7 @@ public sealed class AspNetEmailTwoFactorServiceTests
     [Fact]
     public async Task DisableAsync_NoOtherFactor_RemovesClaimAndDisablesMaster()
     {
-        _userManager.GetClaimsAsync(_user).Returns(new List<Claim> { new(EmailOtpClaim, "true") });
+        _userManager.GetClaimsAsync(_user).Returns([new(EmailOtpClaim, "true")]);
         _userManager.GetAuthenticatorKeyAsync(_user).Returns((string?)null);
 
         await _sut.DisableAsync(UserId, TestContext.Current.CancellationToken);
@@ -121,7 +121,7 @@ public sealed class AspNetEmailTwoFactorServiceTests
     [Fact]
     public async Task DisableAsync_AuthenticatorStillActive_KeepsMasterOn()
     {
-        _userManager.GetClaimsAsync(_user).Returns(new List<Claim> { new(EmailOtpClaim, "true") });
+        _userManager.GetClaimsAsync(_user).Returns([new(EmailOtpClaim, "true")]);
         _userManager.GetAuthenticatorKeyAsync(_user).Returns("STILL-HAS-AUTHENTICATOR");
 
         await _sut.DisableAsync(UserId, TestContext.Current.CancellationToken);
@@ -136,7 +136,7 @@ public sealed class AspNetEmailTwoFactorServiceTests
     [Fact]
     public async Task IsEnabledAsync_ClaimPresent_ReturnsTrue()
     {
-        _userManager.GetClaimsAsync(_user).Returns(new List<Claim> { new(EmailOtpClaim, "true") });
+        _userManager.GetClaimsAsync(_user).Returns([new(EmailOtpClaim, "true")]);
 
         bool enabled = await _sut.IsEnabledAsync(UserId, TestContext.Current.CancellationToken);
 

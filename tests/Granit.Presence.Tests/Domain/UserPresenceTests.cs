@@ -29,10 +29,8 @@ public sealed class UserPresenceTests
     }
 
     [Fact]
-    public void Create_rejects_empty_user_id()
-    {
+    public void Create_rejects_empty_user_id() =>
         Should.Throw<ArgumentException>(() => UserPresence.Create(Guid.Empty, CreateClock()));
-    }
 
     [Fact]
     public void SetOverride_records_status_and_until()
