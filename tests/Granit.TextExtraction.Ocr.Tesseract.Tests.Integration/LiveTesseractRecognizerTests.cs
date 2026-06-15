@@ -78,6 +78,9 @@ public sealed class LiveTesseractRecognizerTests
         ServiceCollection services = [];
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging();
+        // ImagingMetrics (pulled in by AddGranitImagingMagickNet) ctor-injects IMeterFactory,
+        // which the generic host registers automatically but a bare ServiceCollection does not.
+        services.AddMetrics();
         // TesseractOcrExtractor depends on IImageProcessor for its pre-decode pixel-bomb guard
         // (the host must register an imaging provider — see the module docs). Magick.NET is the
         // reference provider and is already used below to render the test fixtures.
