@@ -1,26 +1,47 @@
 namespace Granit.Domain;
 
 /// <summary>
-/// Opts a <see cref="SingleValueObject{T}"/> entity column into the <b>queryable</b> persistence
-/// strategy (ADR-070, strategy B): the value object is mapped as an EF
-/// <c>ComplexProperty</c> so its underlying <c>.Value</c> is a genuinely mapped scalar column,
-/// rather than the default opaque <c>ValueConverter</c>.
+/// Storage strategy for a <see cref="QueryableValueObjectAttribute"/> column (ADR-070).
+/// </summary>
+public enum QueryableValueObjectStorage
+{
+    /// <summary>
+    /// EF <c>ComplexProperty</c> — the inner <c>.Value</c> is a real scalar column (indexable, no
+    /// storage change). The default. <b>Non-nullable columns only.</b>
+    /// </summary>
+    ComplexProperty,
+
+    /// <summary>
+    /// EF JSON column (<c>OwnsOne(...).ToJson()</c>) — the only strategy that supports a
+    /// <b>nullable</b> searchable value object. Stores <c>{"Value":"…"}</c> (a data migration to
+    /// adopt) and indexes more weakly than a real column.
+    /// </summary>
+    Json,
+}
+
+/// <summary>
+/// Opts a <see cref="SingleValueObject{T}"/> entity column into a <b>queryable</b> persistence
+/// strategy (ADR-070): the value object is mapped so its underlying <c>.Value</c> is queryable
+/// (substring search, group-by, sort) instead of the default opaque <c>ValueConverter</c>.
 /// </summary>
 /// <remarks>
 /// <para>
-/// The default converter mapping makes a value-object column searchable only by equality/IN
-/// (EF Core cannot translate <c>LIKE</c>, <c>GROUP BY</c> or keyset comparisons over a value
-/// converter — see ADR-070 and issue #2767). Marking the property with this attribute tells the
-/// QueryEngine to <b>drill into <c>.Value</c></b> — substring search, range filters and group-by
-/// then translate against the real column.
+/// The default <see cref="QueryableValueObjectStorage.ComplexProperty"/> exposes <c>.Value</c> as a
+/// real scalar column (non-nullable only). For a <b>nullable</b> searchable column use
+/// <see cref="QueryableValueObjectStorage.Json"/>. Either way the QueryEngine drills into
+/// <c>.Value</c> — substring/range/group-by translate against the underlying value.
 /// </para>
 /// <para>
-/// The owning <c>DbContext</c> must map the property as a complex property with the inner value
-/// named to match the column, e.g.
-/// <c>builder.ComplexProperty(e =&gt; e.Slug, b =&gt; b.Property(s =&gt; s.Value).HasColumnName("Slug"))</c>.
-/// Only <b>non-nullable</b> value-object columns are supported (a nullable complex property throws
-/// on a null value — verified, EF Core 10).
+/// <c>ApplyGranitConventions</c> applies the mapping automatically; no manual configuration needed.
+/// EF Core cannot translate these operations over the default value converter (see ADR-070 and
+/// <see href="https://github.com/dotnet/efcore/issues/10434">dotnet/efcore#10434</see>).
 /// </para>
 /// </remarks>
+/// <param name="storage">The persistence strategy (defaults to <see cref="QueryableValueObjectStorage.ComplexProperty"/>).</param>
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-public sealed class QueryableValueObjectAttribute : Attribute;
+public sealed class QueryableValueObjectAttribute(
+    QueryableValueObjectStorage storage = QueryableValueObjectStorage.ComplexProperty) : Attribute
+{
+    /// <summary>The persistence strategy for this column.</summary>
+    public QueryableValueObjectStorage Storage { get; } = storage;
+}
