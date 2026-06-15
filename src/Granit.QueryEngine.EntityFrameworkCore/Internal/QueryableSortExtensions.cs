@@ -119,7 +119,9 @@ internal static class QueryableSortExtensions
         where TEntity : class
     {
         ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
-        MemberExpression member = Expression.Property(parameter, property);
+        // A [QueryableValueObject] column sorts by its real `.Value` scalar column (ADR-070);
+        // a plain converter-mapped VO still sorts whole-value (the converter round-trips).
+        Expression member = ValueObjectMemberResolver.Resolve(parameter, property);
         LambdaExpression keySelector = Expression.Lambda(member, parameter);
 
         string methodName = (isFirst, descending) switch
@@ -133,7 +135,7 @@ internal static class QueryableSortExtensions
         MethodCallExpression call = Expression.Call(
             typeof(Queryable),
             methodName,
-            [typeof(TEntity), property.PropertyType],
+            [typeof(TEntity), member.Type],
             source.Expression,
             Expression.Quote(keySelector));
 

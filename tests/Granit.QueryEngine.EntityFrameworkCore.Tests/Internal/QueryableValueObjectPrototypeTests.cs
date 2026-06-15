@@ -69,6 +69,31 @@ public sealed class QueryableValueObjectPrototypeTests : IDisposable
             .ShouldBe(["other"]);
     }
 
+    [Fact]
+    public void Sort_translates_on_a_queryable_value_object()
+    {
+        QueryDefinitionBuilder<Site> builder = new();
+        builder.Column(e => e.Slug, c => c.Sortable());
+
+        using SiteCtx ctx = new(_options);
+        List<string> ordered = [.. ctx.Sites.ApplySort("-slug", builder).Select(s => s.Slug.Value)];
+
+        ordered.ShouldBe(["other", "my-shop", "my-blog"]);
+    }
+
+    [Fact]
+    public async Task GroupBy_translates_on_a_queryable_value_object()
+    {
+        QueryDefinitionBuilder<Site> builder = new();
+        builder.AllowGroupBy(e => e.Slug);
+
+        await using SiteCtx ctx = new(_options);
+        GroupedResult<Site> result = await ctx.Sites.ApplyGroupByAsync(nameof(Site.Slug), builder, 100, TestContext.Current.CancellationToken);
+
+        result.Groups.Select(g => (string)g.Value!).ShouldBe(["my-blog", "my-shop", "other"], ignoreOrder: true);
+        result.Groups.ShouldAllBe(g => g.Count == 1);
+    }
+
     private List<string> Query(FilterCriteria criteria)
     {
         Expression<Func<Site, bool>>? expr = FilterExpressionBuilder.Build<Site>(criteria);
@@ -100,12 +125,8 @@ public sealed class QueryableValueObjectPrototypeTests : IDisposable
         public DbSet<Site> Sites => Set<Site>();
 
         protected override void OnModelCreating(ModelBuilder b)
-        {
-            // Strategy B mapping: VO as a complex property, inner Value named to match the column.
-            b.Entity<Site>().ComplexProperty(e => e.Slug, cb => cb.Property(s => s.Value).HasColumnName("Slug"));
-            // Coexists with the framework conventions (the complex property is not a scalar
-            // property nor an entity type, so the SVO converter/removal passes leave it alone).
-            b.ApplyGranitConventions();
-        }
+            // The [QueryableValueObject] attribute alone drives the ComplexProperty mapping
+            // (inner Value as the "Slug" column) — ApplyGranitConventions does it, no manual config.
+            => b.ApplyGranitConventions();
     }
 }
