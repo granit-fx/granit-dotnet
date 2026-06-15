@@ -207,15 +207,17 @@ internal static partial class ConnectAuthorizationEndpoints
         ImmutableArray<string> scopes,
         CancellationToken cancellationToken)
     {
-        await foreach (object auth in authorizationManager.FindAsync(
+        await using IAsyncEnumerator<object> existing = authorizationManager.FindAsync(
             subject: subject,
             client: applicationId,
             status: OpenIddictConstants.Statuses.Valid,
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             scopes: scopes,
-            cancellationToken: cancellationToken).ConfigureAwait(false))
+            cancellationToken: cancellationToken).GetAsyncEnumerator(cancellationToken);
+
+        if (await existing.MoveNextAsync().ConfigureAwait(false))
         {
-            return auth;
+            return existing.Current;
         }
 
         return await authorizationManager.CreateAsync(
