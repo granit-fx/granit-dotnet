@@ -61,9 +61,9 @@
       },
       "PuppeteerSharp": {
         "type": "Direct",
-        "requested": "[24.*, )",
-        "resolved": "24.42.0",
-        "contentHash": "t019+FnCRx4aH9bTRqwcDrhjqcuJ3+Da3ijmYw/dmH/3UzPbcdhjRxESG725Kz6o1W0sL5AjPRQwwo0n/cX1Uw==",
+        "requested": "[25.*, )",
+        "resolved": "25.1.1",
+        "contentHash": "Ma6MJ+qsnFQr/KZw/Vt4ngAhuhgeWSzBrAG/OWtJWxODkWd70jDzOQ2v3gjkqJ64mayreBhb+axAEHEjVc35Ow==",
         "dependencies": {
           "Microsoft.Extensions.Logging": "10.0.0",
           "Microsoft.IO.RecyclableMemoryStream": "3.0.1",
@@ -176,7 +176,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
-          "OpenTelemetry.Api": "[1.15.*, )",
+          "OpenTelemetry.Api": "[1.16.*, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
           "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
@@ -347,9 +347,9 @@
       },
       "OpenTelemetry.Api": {
         "type": "CentralTransitive",
-        "requested": "[1.15.*, )",
-        "resolved": "1.15.3",
-        "contentHash": "fX+fkCysfPut+qCcT3bKqyX4QN9Saf4CgX8HLOHywEVD+Xr7sULtfuypITpoDysjx8R59dn/3mWhgimMH8cm/g=="
+        "requested": "[1.16.*, )",
+        "resolved": "1.16.0",
+        "contentHash": "WZP8Eb6vZTeNqeV+fjBitc7iefBoTHIhaWorqg/h/YiQBlcQJu0bICuTqKV0XRyjiE0eWs80yLlnUtHAFSkFWA=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",

@@ -10,11 +10,11 @@
       },
       "ModelContextProtocol.AspNetCore": {
         "type": "Direct",
-        "requested": "[1.3.*, )",
-        "resolved": "1.3.0",
-        "contentHash": "bKQAVc9Npwbbxaa53PTY5NCszoxkSIZ1ZyCpoVFHMQqZtEmXaYNz+2QUXmf0ILWQduRMd2GYi9TL431mMnpbCA==",
+        "requested": "[1.4.*, )",
+        "resolved": "1.4.0",
+        "contentHash": "Q/xGhfhbCfZsoeEsEqBeiyzr6AJw2cBUTKN3Giz3QRmWyRzn62ISsgJCTnk2/VPMNj2/Spb2jYpPahnMZWvaPg==",
         "dependencies": {
-          "ModelContextProtocol": "1.3.0"
+          "ModelContextProtocol": "1.4.0"
         }
       },
       "Microsoft.OpenApi": {
@@ -24,8 +24,8 @@
       },
       "ModelContextProtocol.Core": {
         "type": "Transitive",
-        "resolved": "1.3.0",
-        "contentHash": "OWmdxDSwA7K9pNNg4t98MXNIssHG/wOQEr/G8pG5B7synDdw4MnmZ/IIVeb3yUdeznPqnDHvd3FBCK0jRk4IZQ==",
+        "resolved": "1.4.0",
+        "contentHash": "6ZJFQTgYwdu0IacUUTNExAY2Z+JFuTd10CPeORalQtuGPY4hdUqq0BXxTpNEP0n7ajruNsGXyCKQLP0erIZmog==",
         "dependencies": {
           "Microsoft.Extensions.AI.Abstractions": "10.5.2"
         }
@@ -52,7 +52,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
-          "OpenTelemetry.Api": "[1.15.*, )",
+          "OpenTelemetry.Api": "[1.16.*, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
           "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
@@ -100,7 +100,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "ModelContextProtocol": "[1.3.*, )"
+          "ModelContextProtocol": "[1.4.*, )"
         }
       },
       "granit.queryengine.abstractions": {
@@ -164,18 +164,18 @@
       },
       "ModelContextProtocol": {
         "type": "CentralTransitive",
-        "requested": "[1.3.*, )",
-        "resolved": "1.3.0",
-        "contentHash": "WDaD6z9KkkCUHSo15xK7tYBERHy8uqP+cIUp8uIxhR0yrlpJLXTRcJcUUVqpXlBkV7MK9Eo3mTrAnctLnJuHDQ==",
+        "requested": "[1.4.*, )",
+        "resolved": "1.4.0",
+        "contentHash": "CAmnAMQIMax2t9naUgyDAkVBj329EhQCiHcbfirMFNgP6ShQ8hJdJb0OLoaBpeGjkunH3IOjRXLdwXGKKwMlLA==",
         "dependencies": {
-          "ModelContextProtocol.Core": "1.3.0"
+          "ModelContextProtocol.Core": "1.4.0"
         }
       },
       "OpenTelemetry.Api": {
         "type": "CentralTransitive",
-        "requested": "[1.15.*, )",
-        "resolved": "1.15.3",
-        "contentHash": "fX+fkCysfPut+qCcT3bKqyX4QN9Saf4CgX8HLOHywEVD+Xr7sULtfuypITpoDysjx8R59dn/3mWhgimMH8cm/g=="
+        "requested": "[1.16.*, )",
+        "resolved": "1.16.0",
+        "contentHash": "WZP8Eb6vZTeNqeV+fjBitc7iefBoTHIhaWorqg/h/YiQBlcQJu0bICuTqKV0XRyjiE0eWs80yLlnUtHAFSkFWA=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",

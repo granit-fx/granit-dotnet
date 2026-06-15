@@ -4,9 +4,9 @@
     "net10.0": {
       "Elastic.Clients.Elasticsearch": {
         "type": "Direct",
-        "requested": "[8.*, )",
-        "resolved": "8.19.23",
-        "contentHash": "HTA5Lzk6agTbJW4ke60Tgyd6V1Xdpml/Q9SIphnfzeRRmai4zuR/2zn0BD6JPq12+eZdFsDies43975OprPulw==",
+        "requested": "[9.*, )",
+        "resolved": "9.4.2",
+        "contentHash": "sMzOK9HgGqlSBjmX2ad88vDLQ0ySWXi4bYGe9T6xHVmhz41ikRYZ8G0VgkOYmRGgVwpkvupGDFztF+6KyPiYEw==",
         "dependencies": {
           "Elastic.Esql": "0.11.0",
           "Elastic.Transport": "0.17.1"
@@ -105,7 +105,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
-          "OpenTelemetry.Api": "[1.15.*, )",
+          "OpenTelemetry.Api": "[1.16.*, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
           "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
@@ -302,9 +302,9 @@
       },
       "OpenTelemetry.Api": {
         "type": "CentralTransitive",
-        "requested": "[1.15.*, )",
-        "resolved": "1.15.3",
-        "contentHash": "fX+fkCysfPut+qCcT3bKqyX4QN9Saf4CgX8HLOHywEVD+Xr7sULtfuypITpoDysjx8R59dn/3mWhgimMH8cm/g=="
+        "requested": "[1.16.*, )",
+        "resolved": "1.16.0",
+        "contentHash": "WZP8Eb6vZTeNqeV+fjBitc7iefBoTHIhaWorqg/h/YiQBlcQJu0bICuTqKV0XRyjiE0eWs80yLlnUtHAFSkFWA=="
       },
       "ZiggyCreatures.FusionCache": {
         "type": "CentralTransitive",

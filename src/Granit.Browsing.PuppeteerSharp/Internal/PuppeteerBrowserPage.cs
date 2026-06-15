@@ -17,6 +17,7 @@ using BrowsingScreenshotOptions = Granit.Browsing.Options.ScreenshotOptions;
 using IPuppeteerPage = PuppeteerSharp.IPage;
 using PuppeteerNavigationOptions = PuppeteerSharp.NavigationOptions;
 using PuppeteerScreenshotOptions = PuppeteerSharp.ScreenshotOptions;
+using PuppeteerSetContentOptions = PuppeteerSharp.SetContentOptions;
 
 namespace Granit.Browsing.PuppeteerSharp.Internal;
 
@@ -194,7 +195,7 @@ internal sealed partial class PuppeteerBrowserPage : IBrowserPage
     {
         ArgumentNullException.ThrowIfNull(html);
         return BrowsingTimeout.RunAsync(
-            ct => _page.SetContentAsync(html, ToPuppeteerNavigation(options)),
+            ct => _page.SetContentAsync(html, ToPuppeteerSetContent(options)),
             _maxRenderDuration,
             cancellationToken);
     }
@@ -457,6 +458,21 @@ internal sealed partial class PuppeteerBrowserPage : IBrowserPage
             _ => WaitUntilNavigation.Load,
         };
         return new PuppeteerNavigationOptions
+        {
+            WaitUntil = [waitUntil],
+            Timeout = (int?)options?.Timeout?.TotalMilliseconds ?? 30_000,
+        };
+    }
+
+    private static PuppeteerSetContentOptions ToPuppeteerSetContent(BrowsingNavigationOptions? options)
+    {
+        WaitUntilNavigation waitUntil = options?.WaitUntil switch
+        {
+            LoadState.DomContentLoaded => WaitUntilNavigation.DOMContentLoaded,
+            LoadState.NetworkIdle => WaitUntilNavigation.Networkidle0,
+            _ => WaitUntilNavigation.Load,
+        };
+        return new PuppeteerSetContentOptions
         {
             WaitUntil = [waitUntil],
             Timeout = (int?)options?.Timeout?.TotalMilliseconds ?? 30_000,
