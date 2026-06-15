@@ -203,7 +203,7 @@ Direct project ref with a `*Module` → declare it. Transitive → omit. `Granit
 
 **Endpoint harness.** For `*.Endpoints` HTTP tests use `Granit.Testing.Endpoints.GranitEndpointTestHost` — canonical harness, replaces ~60 lines of `WebApplicationBuilder` boilerplate (reference: `Granit.Validation.Endpoints.Tests`, #2132).
 
-9 parallel shards (7 unit-test layers + `integration` + `architecture`), each with an auto-generated `.slnf`. Adding a test project: edit `.github/test-shards.json` (`*.Tests.Integration` → `integration` shard always; else → its domain shard), run `python3 scripts/generate-shard-filters.py`, commit both. Pre-push hook auto-regenerates and amends. **Without registration, CI silently skips the project.**
+11 parallel shards (9 unit-test layers + `integration` + `architecture`), each with an auto-generated `.slnf`. Adding a test project: edit `.github/test-shards.json` (`*.Tests.Integration` → `integration` shard always; else → its domain shard), run `python3 scripts/generate-shard-filters.py`, commit both. Pre-push hook auto-regenerates and amends. **Without registration, CI silently skips the project.**
 
 ## Anti-patterns
 

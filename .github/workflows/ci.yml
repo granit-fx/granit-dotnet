@@ -85,10 +85,14 @@ jobs:
             label: "API & Http + Data"
           - name: infrastructure
             label: "Infrastructure"
+          - name: notifications
+            label: "Notifications"
           - name: search
             label: "Search Pipeline"
           - name: security
             label: "Security & Compliance"
+          - name: identity
+            label: "Identity"
           - name: integration
             label: "Integration Tests"
           - name: architecture
@@ -247,7 +251,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [core, ai, application, api-data, infrastructure, search, security, integration, architecture]
+        shard: [core, ai, application, api-data, infrastructure, notifications, search, security, identity, integration, architecture]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
