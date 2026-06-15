@@ -8,7 +8,7 @@ Seules les **dépendances directes** y figurent. Les dépendances transitives
 sont couvertes par leurs propres avis de licence, restaurés depuis NuGet par
 le consommateur (les packages Granit ne redistribuent pas leurs binaires).
 
-Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.TextExtraction.Ocr.Tesseract lit les dimensions via Granit.Imaging / Magick.NET ; ajout de Markdig pour Granit.TextExtraction.Text)
+Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.TextExtraction.Ocr.Tesseract lit les dimensions via Granit.Imaging / Magick.NET ; ajout de Markdig pour Granit.TextExtraction.Text ; montées de version : PuppeteerSharp 25.1.1, ModelContextProtocol 1.4.0, OpenTelemetry 1.16.0, Testcontainers.MsSql 4.12.0)
 
 ---
 
@@ -92,7 +92,7 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 | PdfPig | 0.1.14 | Copyright (c) Eliot Jones |
 | PDFtoImage | 5.2.1 | Copyright (c) David Sungaila |
 | Pgvector.EntityFrameworkCore | 0.3.0 | Copyright (c) Andrew Kane |
-| PuppeteerSharp | 24.42.0 | PuppeteerSharp Contributors |
+| PuppeteerSharp | 25.1.1 | PuppeteerSharp Contributors |
 | Scalar.AspNetCore | 2.14.14 | Scalar Contributors |
 | Sep | 0.14.1 | Copyright (c) 2023 nietras |
 | SmartFormat | 3.6.1 | Copyright 2011-2025 SmartFormat Project |
@@ -135,17 +135,17 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 | Google.Cloud.Storage.V1 | 4.14.0 | Copyright (c) Google LLC |
 | Magick.NET-Q8-AnyCPU | 14.13.1 | Copyright 2013-2026 Dirk Lemstra |
 | MaxMind.GeoIP2 | 6.0.0 | Copyright (c) MaxMind, Inc. |
-| ModelContextProtocol | 1.3.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
-| ModelContextProtocol.AspNetCore | 1.3.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
+| ModelContextProtocol | 1.4.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
+| ModelContextProtocol.AspNetCore | 1.4.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | OpenIddict | 7.5.0 | Copyright (c) Kévin Chalet |
 | OpenIddict.EntityFrameworkCore | 7.5.0 | Copyright (c) Kévin Chalet |
 | OpenIddict.Server.AspNetCore | 7.5.0 | Copyright (c) Kévin Chalet |
 | OpenIddict.Validation.AspNetCore | 7.5.0 | Copyright (c) Kévin Chalet |
 | OpenIddict.Validation.SystemNetHttp | 7.5.0 | Copyright (c) Kévin Chalet |
-| OpenTelemetry | 1.15.3 | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Api | 1.15.3 | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.15.3 | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Extensions.Hosting | 1.15.3 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry | 1.16.0 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Api | 1.16.0 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.16.0 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Extensions.Hosting | 1.16.0 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Instrumentation.AspNetCore | 1.15.2 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Instrumentation.AWS | 1.15.1 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Instrumentation.EntityFrameworkCore | 1.15.1-beta.1 | Copyright The OpenTelemetry Authors |
@@ -205,7 +205,7 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 | Microsoft.NET.Test.Sdk | 18.5.1 | (c) Microsoft Corporation |
 | Testcontainers.Elasticsearch | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
 | Testcontainers.Keycloak | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
-| Testcontainers.MsSql | 4.11.0 | Copyright (c) 2019-2025 Andre Hofmeister |
+| Testcontainers.MsSql | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
 | Testcontainers.PostgreSql | 4.12.0 | Copyright (c) 2019-2025 Andre Hofmeister |
 | Testcontainers.Redis | 4.12.0 | Copyright (c) 2019-2025 Andre Hofmeister |
 

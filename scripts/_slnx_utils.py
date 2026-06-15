@@ -8,6 +8,7 @@ No external dependencies — runs with Python 3.8+.
 
 from __future__ import annotations
 
+import glob
 import json
 import re
 import sys
@@ -61,6 +62,14 @@ def parse_project_references(csproj: Path) -> list[Path]:
         rel = match.replace("\\", "/")
         # Skip MSBuild property references like $(MSBuildThisFileDirectory)
         if "$(" in rel:
+            continue
+        if "*" in rel:
+            # MSBuild wildcard ProjectReference (e.g. Granit.*.Endpoints/Granit.*.Endpoints.csproj).
+            # glob matches MSBuild's '*' semantics (no separator crossing) and resolves the '..'.
+            for matched in sorted(glob.glob(str(csproj.parent / rel))):
+                resolved = Path(matched).resolve()
+                if resolved.is_file() and resolved not in refs:
+                    refs.append(resolved)
             continue
         resolved = (csproj.parent / rel).resolve()
         if resolved.is_file():

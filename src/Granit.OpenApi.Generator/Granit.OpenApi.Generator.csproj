@@ -22,37 +22,11 @@
     <!-- Shared doc-gen orchestration: OpenApiContractGenerator.RunAsync (per-module slicing, infra
          neutralization, the minimal-API binding probe). Brings Granit + Granit.Http.ApiDocumentation. -->
     <ProjectReference Include="..\Granit.OpenApi.Generation\Granit.OpenApi.Generation.csproj" />
-    <ProjectReference Include="..\Granit.AI.Chat.Endpoints\Granit.AI.Chat.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.AI.Endpoints\Granit.AI.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.AI.Prompts.Endpoints\Granit.AI.Prompts.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Auditing.Endpoints\Granit.Auditing.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Authentication.ApiKeys.Endpoints\Granit.Authentication.ApiKeys.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Authorization.Endpoints\Granit.Authorization.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.BackgroundJobs.Endpoints\Granit.BackgroundJobs.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Bff.Endpoints\Granit.Bff.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.BlobStorage.Endpoints\Granit.BlobStorage.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.DataExchange.Endpoints\Granit.DataExchange.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.DataLookup.Endpoints\Granit.DataLookup.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Diagnostics.Endpoints\Granit.Diagnostics.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Features.Endpoints\Granit.Features.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Hostnames.Endpoints\Granit.Hostnames.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Http.Cookies.Endpoints\Granit.Http.Cookies.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Http.SecurityHeaders.Endpoints\Granit.Http.SecurityHeaders.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Identity.Endpoints\Granit.Identity.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Identity.Local.Endpoints\Granit.Identity.Local.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Localization.Endpoints\Granit.Localization.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.MultiTenancy.Endpoints\Granit.MultiTenancy.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Notifications.Endpoints\Granit.Notifications.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.OpenIddict.Endpoints\Granit.OpenIddict.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Presence.Endpoints\Granit.Presence.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Privacy.Endpoints\Granit.Privacy.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Scheduling.Endpoints\Granit.Scheduling.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Settings.Endpoints\Granit.Settings.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Templating.Endpoints\Granit.Templating.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Timeline.Endpoints\Granit.Timeline.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Validation.Endpoints\Granit.Validation.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Webhooks.Endpoints\Granit.Webhooks.Endpoints.csproj" />
-    <ProjectReference Include="..\Granit.Workflow.Endpoints\Granit.Workflow.Endpoints.csproj" />
+    <!-- Reference every Granit.{Module}.Endpoints via wildcard so a newly added endpoint module
+         is picked up automatically (no manual edit here). NOTE: this only auto-wires the compile
+         reference. The module still MUST be added to GeneratorModule's [DependsOn] (service config)
+         AND GeneratorEndpoints.All (slug + route mapping) — those drive generation, not the glob. -->
+    <ProjectReference Include="..\Granit.*.Endpoints\Granit.*.Endpoints.csproj" />
   </ItemGroup>
 
 </Project>
