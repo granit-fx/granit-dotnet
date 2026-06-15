@@ -2010,37 +2010,7 @@
       "name": "Granit.OpenApi.Generator",
       "deps": [
         "Granit.OpenApi.Generation",
-        "Granit.AI.Chat.Endpoints",
-        "Granit.AI.Endpoints",
-        "Granit.AI.Prompts.Endpoints",
-        "Granit.Auditing.Endpoints",
-        "Granit.Authentication.ApiKeys.Endpoints",
-        "Granit.Authorization.Endpoints",
-        "Granit.BackgroundJobs.Endpoints",
-        "Granit.Bff.Endpoints",
-        "Granit.BlobStorage.Endpoints",
-        "Granit.DataExchange.Endpoints",
-        "Granit.DataLookup.Endpoints",
-        "Granit.Diagnostics.Endpoints",
-        "Granit.Features.Endpoints",
-        "Granit.Hostnames.Endpoints",
-        "Granit.Http.Cookies.Endpoints",
-        "Granit.Http.SecurityHeaders.Endpoints",
-        "Granit.Identity.Endpoints",
-        "Granit.Identity.Local.Endpoints",
-        "Granit.Localization.Endpoints",
-        "Granit.MultiTenancy.Endpoints",
-        "Granit.Notifications.Endpoints",
-        "Granit.OpenIddict.Endpoints",
-        "Granit.Presence.Endpoints",
-        "Granit.Privacy.Endpoints",
-        "Granit.Scheduling.Endpoints",
-        "Granit.Settings.Endpoints",
-        "Granit.Templating.Endpoints",
-        "Granit.Timeline.Endpoints",
-        "Granit.Validation.Endpoints",
-        "Granit.Webhooks.Endpoints",
-        "Granit.Workflow.Endpoints"
+        "Granit.*.Endpoints"
       ],
       "framework": "net10.0"
     },
@@ -5197,15 +5167,6 @@
       "project": "Granit.AI",
       "file": "src/Granit.AI/Permissions/AIPermissions.cs",
       "line": 6,
-      "members": []
-    },
-    {
-      "name": "ChatTools",
-      "fqn": "Granit.AI.Permissions.ChatTools",
-      "kind": "class",
-      "project": "Granit.AI",
-      "file": "src/Granit.AI/Permissions/AIPermissions.cs",
-      "line": 28,
       "members": []
     },
     {
@@ -33904,6 +33865,24 @@
           "returnType": "int"
         }
       ]
+    },
+    {
+      "name": "ChatTools",
+      "fqn": "Granit.Localization.AI.Permissions.ChatTools",
+      "kind": "class",
+      "project": "Granit.Localization.AI",
+      "file": "src/Granit.Localization.AI/Permissions/LocalizationAIPermissions.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "LocalizationAIPermissions",
+      "fqn": "Granit.Localization.AI.Permissions.LocalizationAIPermissions",
+      "kind": "class",
+      "project": "Granit.Localization.AI",
+      "file": "src/Granit.Localization.AI/Permissions/LocalizationAIPermissions.cs",
+      "line": 9,
+      "members": []
     },
     {
       "name": "TranslationItem",

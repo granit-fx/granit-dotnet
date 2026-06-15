@@ -1,14 +1,14 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Granit.AI.Permissions;
 using Granit.AI.Tools;
+using Granit.Localization.AI.Permissions;
 
 namespace Granit.Localization.AI.Internal;
 
 /// <summary>
 /// A gated capability tool (ADR-067, "agent-as-tool" single-shot sub-agent) that wraps
 /// <see cref="ITranslationSuggestionService"/> as the <c>translate</c> chat tool. Gated by
-/// <see cref="AIPermissions.ChatTools.Translate"/> so admins enable it per user/role.
+/// <see cref="LocalizationAIPermissions.ChatTools.Translate"/> so admins enable it per user/role.
 /// </summary>
 /// <remarks>
 /// This is the reference pattern for wrapping an existing <c>*.AI</c> capability as a chat tool:
@@ -26,7 +26,7 @@ internal sealed class TranslateTool(ITranslationSuggestionService translationSer
     public string Description =>
         "Translate a short piece of text into a target language. Returns the translated text.";
 
-    public string RequiredPermission => AIPermissions.ChatTools.Translate;
+    public string RequiredPermission => LocalizationAIPermissions.ChatTools.Translate;
 
     public JsonElement ParameterSchema => Schema;
 

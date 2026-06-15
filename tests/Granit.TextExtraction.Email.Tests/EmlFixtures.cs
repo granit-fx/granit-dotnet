@@ -127,16 +127,18 @@ internal static class EmlFixtures
         // Build a multipart/encrypted body shaped like an OpenPGP-MIME message
         // without any real cryptographic material — the extractor only inspects
         // the wrapper type to decide to short-circuit.
-        MultipartEncrypted encrypted = new();
+        MultipartEncrypted encrypted =
+        [
+            new MimePart("application", "pgp-encrypted")
+            {
+                Content = new MimeContent(new MemoryStream(Encoding.ASCII.GetBytes("Version: 1\n"))),
+            },
+            new MimePart("application", "octet-stream")
+            {
+                Content = new MimeContent(new MemoryStream(Encoding.ASCII.GetBytes("encrypted-blob"))),
+            },
+        ];
         encrypted.ContentType.Parameters["protocol"] = "application/pgp-encrypted";
-        encrypted.Add(new MimePart("application", "pgp-encrypted")
-        {
-            Content = new MimeContent(new MemoryStream(Encoding.ASCII.GetBytes("Version: 1\n"))),
-        });
-        encrypted.Add(new MimePart("application", "octet-stream")
-        {
-            Content = new MimeContent(new MemoryStream(Encoding.ASCII.GetBytes("encrypted-blob"))),
-        });
         message.Body = encrypted;
         return Serialize(message);
     }

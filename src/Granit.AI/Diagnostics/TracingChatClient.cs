@@ -126,8 +126,23 @@ public abstract class TracingChatClient(
     /// <inheritdoc />
     public void Dispose()
     {
-        inner.Dispose();
+        Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Disposes the decorator. Releases the wrapped <see cref="IChatClient"/>; override to release
+    /// resources a provider subclass adds, always calling the base implementation.
+    /// </summary>
+    /// <param name="disposing">
+    /// <see langword="true"/> when called from <see cref="Dispose()"/>; <see langword="false"/> from a finalizer.
+    /// </param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            inner.Dispose();
+        }
     }
 
     private Activity? StartActivity(string operationName)

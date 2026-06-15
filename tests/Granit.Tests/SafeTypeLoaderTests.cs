@@ -55,21 +55,18 @@ public sealed class SafeTypeLoaderTests
     }
 
     [Theory]
-    [MemberData(nameof(MissingDependencyExceptions))]
-    public void Missing_dependency_failures_return_empty(Exception exception)
+    [InlineData(typeof(FileNotFoundException))]
+    [InlineData(typeof(FileLoadException))]
+    [InlineData(typeof(TypeLoadException))]
+    public void Missing_dependency_failures_return_empty(Type exceptionType)
     {
+        var exception = (Exception)Activator.CreateInstance(exceptionType)!;
+
         IReadOnlyList<Type> result = SafeTypeLoader.Load(
             typeof(SafeTypeLoader).Assembly, _ => throw exception);
 
         result.ShouldBeEmpty();
     }
-
-    public static TheoryData<Exception> MissingDependencyExceptions() =>
-    [
-        new FileNotFoundException(),
-        new FileLoadException(),
-        new TypeLoadException(),
-    ];
 
     [Fact]
     public void Unexpected_exceptions_propagate()

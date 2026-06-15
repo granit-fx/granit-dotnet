@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Granit.AI.Permissions;
 using Granit.AI.Tools;
 using Granit.Localization.AI.Internal;
+using Granit.Localization.AI.Permissions;
 using NSubstitute;
 using Shouldly;
 
@@ -19,7 +19,7 @@ public sealed class TranslateToolTests
 
         tool.Name.ShouldBe("translate");
         tool.ShouldBeAssignableTo<IGatedAITool>();
-        ((IGatedAITool)tool).RequiredPermission.ShouldBe(AIPermissions.ChatTools.Translate);
+        ((IGatedAITool)tool).RequiredPermission.ShouldBe(LocalizationAIPermissions.ChatTools.Translate);
     }
 
     [Fact]

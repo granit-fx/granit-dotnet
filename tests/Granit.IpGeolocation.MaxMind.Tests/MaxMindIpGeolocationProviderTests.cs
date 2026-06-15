@@ -25,10 +25,8 @@ public sealed class MaxMindIpGeolocationProviderTests
     }
 
     [Fact]
-    public void ProviderName_comes_from_options()
-    {
+    public void ProviderName_comes_from_options() =>
         Build(providerName: "OnPremGeo").ProviderName.ShouldBe("OnPremGeo");
-    }
 
     [Fact]
     public async Task ResolveAsync_returns_a_location_for_a_known_address()

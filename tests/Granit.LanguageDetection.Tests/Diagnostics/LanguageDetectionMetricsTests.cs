@@ -51,10 +51,8 @@ public sealed class LanguageDetectionMetricsTests
     }
 
     [Fact]
-    public void Constructor_rejects_a_null_meter_factory()
-    {
+    public void Constructor_rejects_a_null_meter_factory() =>
         Should.Throw<ArgumentNullException>(() => new LanguageDetectionMetrics(null!));
-    }
 
     private sealed class Harness : IDisposable
     {
