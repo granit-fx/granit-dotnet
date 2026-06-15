@@ -550,8 +550,10 @@ public static class ModelBuilderExtensions
     // queryable (ADR-070), instead of the default opaque value converter:
     //   - ComplexProperty (default): .Value as a real scalar column named after the property (no
     //     "_Value" suffix — switching from the converter keeps the same column name, no rename).
-    //     Non-nullable only (EF complex-type columns cannot be optional).
-    //   - Json: OwnsOne(...).ToJson() — the only strategy that supports a nullable searchable VO.
+    //     Nullable columns get a shadow discriminator (EF requirement for an all-optional complex
+    //     type) — the .Value column stays a real, indexable scalar.
+    //   - Json: OwnsOne(...).ToJson() — an alternative for nullable VOs that avoids the
+    //     discriminator column (at the cost of JSON storage + weaker indexing).
     // Either way the QueryEngine drills into .Value (mapping-agnostic).
     private static void ApplyQueryableValueObjectMappings(ModelBuilder modelBuilder)
     {
@@ -582,19 +584,24 @@ public static class ModelBuilderExtensions
                     continue;
                 }
 
-                if (IsNullableReference(nullabilityContext, property))
+                Microsoft.EntityFrameworkCore.Metadata.Builders.ComplexPropertyBuilder complexBuilder =
+                    modelBuilder.Entity(entityType.ClrType).ComplexProperty(property.Name);
+
+                bool nullable = IsNullableReference(nullabilityContext, property);
+                if (nullable)
                 {
-                    throw new InvalidOperationException(
-                        $"'{entityType.ClrType.Name}.{property.Name}' is a nullable [QueryableValueObject] " +
-                        $"column. EF complex-type columns cannot be optional — make it non-nullable, use " +
-                        $"[QueryableValueObject(QueryableValueObjectStorage.Json)], or a plain string column. " +
-                        $"See ADR-070.");
+                    // An optional complex type whose only contained property is also optional cannot
+                    // distinguish 'null VO' from 'present VO with a null/empty value' by column
+                    // values alone — EF requires a shadow discriminator. This keeps .Value a real,
+                    // indexable scalar column (unlike the JSON strategy). See ADR-070.
+                    complexBuilder.IsRequired(false);
+                    complexBuilder.HasDiscriminator();
                 }
 
-                modelBuilder.Entity(entityType.ClrType)
-                    .ComplexProperty(property.Name)
+                complexBuilder
                     .Property(nameof(SingleValueObject<string>.Value))
-                    .HasColumnName(property.Name);
+                    .HasColumnName(property.Name)
+                    .IsRequired(!nullable);
             }
         }
     }
