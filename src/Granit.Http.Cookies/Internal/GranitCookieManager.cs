@@ -49,7 +49,7 @@ internal sealed class GranitCookieManager(
         {
             MaxAge = TimeSpan.FromDays(definition.RetentionDays),
             HttpOnly = definition.IsHttpOnly, // NOSONAR S3330 - intentional: HttpOnly is configurable per cookie (analytics cookies like _ga require JS access)
-            Secure = !environment.IsDevelopment() || httpContext.Request.IsHttps,
+            Secure = !environment.IsDevelopment() || httpContext.Request.IsHttps, // NOSONAR S2092 - intentional: Secure is enforced everywhere except local Development over plain HTTP
             SameSite = definition.SameSite,
             Path = definition.Path,
             Domain = definition.Domain,
@@ -81,7 +81,7 @@ internal sealed class GranitCookieManager(
         httpContext.Response.Cookies.Delete(cookieName, new CookieOptions
         {
             HttpOnly = definition.IsHttpOnly, // NOSONAR S3330 - intentional: must match SetCookieAsync options for browser to delete the cookie
-            Secure = !environment.IsDevelopment() || httpContext.Request.IsHttps,
+            Secure = !environment.IsDevelopment() || httpContext.Request.IsHttps, // NOSONAR S2092 - intentional: must mirror SetCookieAsync; Secure enforced except local Development over plain HTTP
             SameSite = definition.SameSite,
             Path = definition.Path,
             Domain = definition.Domain, // must mirror Set; omitting leaves the cookie stranded in browser

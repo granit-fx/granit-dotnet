@@ -41,10 +41,10 @@ public static partial class AIEndpointValidator
     /// <summary>Cloud metadata IP literals blocked regardless of policy.</summary>
     private static readonly FrozenSet<string> BlockedMetadataIps = new[]
     {
-        "169.254.169.254",       // AWS / Azure / GCP IMDSv1
-        "100.100.100.200",       // Alibaba Cloud metadata
-        "192.0.0.192",           // Oracle Cloud metadata
-        "fd00:ec2::254",         // AWS IMDS IPv6
+        "169.254.169.254", // NOSONAR S1313 - intentional: AWS / Azure / GCP IMDSv1 metadata IP, hardcoded to block SSRF
+        "100.100.100.200", // NOSONAR S1313 - intentional: Alibaba Cloud metadata IP, hardcoded to block SSRF
+        "192.0.0.192",     // NOSONAR S1313 - intentional: Oracle Cloud metadata IP, hardcoded to block SSRF
+        "fd00:ec2::254",   // NOSONAR S1313 - intentional: AWS IMDS IPv6 metadata IP, hardcoded to block SSRF
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Matches dotted-quad IPv4 (e.g. 127.0.0.1) — rejects compact / decimal / octal / hex forms.</summary>
