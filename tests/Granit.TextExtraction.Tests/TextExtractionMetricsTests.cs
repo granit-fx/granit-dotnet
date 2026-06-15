@@ -29,7 +29,8 @@ public sealed class TextExtractionMetricsTests : IDisposable
         using MeterListener listener = new();
         listener.InstrumentPublished = (instrument, ml) =>
         {
-            if (instrument.Name == "granit.text_extraction.document.extracted")
+            if (instrument.Name == "granit.text_extraction.document.extracted"
+                && _meterFactory.Meters.Contains(instrument.Meter))
             {
                 ml.EnableMeasurementEvents(instrument);
             }
@@ -61,7 +62,8 @@ public sealed class TextExtractionMetricsTests : IDisposable
         using MeterListener listener = new();
         listener.InstrumentPublished = (instrument, ml) =>
         {
-            if (instrument.Name == "granit.text_extraction.document.truncated")
+            if (instrument.Name == "granit.text_extraction.document.truncated"
+                && _meterFactory.Meters.Contains(instrument.Meter))
             {
                 ml.EnableMeasurementEvents(instrument);
             }
@@ -82,7 +84,8 @@ public sealed class TextExtractionMetricsTests : IDisposable
         using MeterListener listener = new();
         listener.InstrumentPublished = (instrument, ml) =>
         {
-            if (instrument.Name == "granit.text_extraction.document.skipped")
+            if (instrument.Name == "granit.text_extraction.document.skipped"
+                && _meterFactory.Meters.Contains(instrument.Meter))
             {
                 ml.EnableMeasurementEvents(instrument);
             }
@@ -133,7 +136,8 @@ public sealed class TextExtractionMetricsTests : IDisposable
         using MeterListener listener = new();
         listener.InstrumentPublished = (instrument, ml) =>
         {
-            if (instrument.Name == "granit.text_extraction.document.skipped")
+            if (instrument.Name == "granit.text_extraction.document.skipped"
+                && _meterFactory.Meters.Contains(instrument.Meter))
             {
                 ml.EnableMeasurementEvents(instrument);
             }
@@ -164,7 +168,8 @@ public sealed class TextExtractionMetricsTests : IDisposable
         using MeterListener listener = new();
         listener.InstrumentPublished = (instrument, ml) =>
         {
-            if (instrument.Name == "granit.text_extraction.document.failed")
+            if (instrument.Name == "granit.text_extraction.document.failed"
+                && _meterFactory.Meters.Contains(instrument.Meter))
             {
                 ml.EnableMeasurementEvents(instrument);
             }
