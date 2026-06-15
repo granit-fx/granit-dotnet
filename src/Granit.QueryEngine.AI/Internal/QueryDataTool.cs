@@ -19,12 +19,6 @@ internal sealed class QueryDataTool<TEntity>(
     IQueryableSource<TEntity> source) : IAITool, IAIToolInstructions
     where TEntity : class
 {
-    private static readonly JsonSerializerOptions ResultSerializerOptions = new(JsonSerializerDefaults.Web)
-    {
-        ReferenceHandler = ReferenceHandler.IgnoreCycles,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-    };
-
     private readonly QueryMetadata _metadata = engine.GetMetadata();
 
     public string Name => $"query_{name}";
@@ -61,6 +55,20 @@ internal sealed class QueryDataTool<TEntity>(
             items = result.Items,
         };
 
-        return AIToolResult.Success(JsonSerializer.Serialize(payload, ResultSerializerOptions));
+        return AIToolResult.Success(JsonSerializer.Serialize(payload, QueryDataToolSerialization.ResultSerializerOptions));
     }
+}
+
+/// <summary>
+/// Holds the JSON options shared by every closed <see cref="QueryDataTool{TEntity}"/>. A non-generic holder so
+/// the options are allocated once, not once per <c>TEntity</c> (a static field in a generic type is per close
+/// constructed type).
+/// </summary>
+file static class QueryDataToolSerialization
+{
+    public static readonly JsonSerializerOptions ResultSerializerOptions = new(JsonSerializerDefaults.Web)
+    {
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    };
 }

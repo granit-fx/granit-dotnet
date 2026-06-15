@@ -235,20 +235,11 @@ internal static partial class BffLoginEndpoints
         Activity? activity = BffActivitySource.Source.StartActivity(BffActivitySource.Callback);
         using IDisposable? activityScope = activity;
 
-        if (!string.IsNullOrEmpty(error))
+        RedirectHttpResult? parameterError = await ValidateCallbackParametersAsync(
+            httpContext, frontend, code, state, error, cancellationToken).ConfigureAwait(false);
+        if (parameterError is not null)
         {
-            string safeError = KnownOidcErrors.Contains(error) ? error : "unknown_error";
-            LogCallbackError(logger, safeError, frontend.Name);
-            await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
-                failureReason: safeError, cancellationToken).ConfigureAwait(false);
-            return RedirectToError(frontend, safeError);
-        }
-
-        if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(state))
-        {
-            await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
-                failureReason: "missing_code_or_state", cancellationToken).ConfigureAwait(false);
-            return RedirectToError(frontend, "missing_code_or_state");
+            return parameterError;
         }
 
         // Verify authorization response issuer (RFC 9207, FAPI 2.0 §5.3.3.2)
@@ -282,7 +273,7 @@ internal static partial class BffLoginEndpoints
         string pathPrefix = string.IsNullOrEmpty(frontend.PathPrefix) ? "" : frontend.PathPrefix;
         string callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{pathPrefix}/bff/callback";
         BffTokenSet? tokens = await ExchangeCodeForTokensAsync(
-            services, frontend, code, pkceState.CodeVerifier, callbackUrl,
+            services, frontend, code!, pkceState.CodeVerifier, callbackUrl,
             pkceState.DPoPPrivateKeyJwk, cancellationToken)
             .ConfigureAwait(false);
 
@@ -354,6 +345,38 @@ internal static partial class BffLoginEndpoints
             : frontend.EffectivePostLoginRedirectPath;
 
         return TypedResults.Redirect(redirectUrl);
+    }
+
+    // Rejects malformed callback parameters before any state is consumed: a provider-reported error, or a
+    // missing authorization code / state. Returns an error redirect (audited) or null when the basics are sound.
+    private static async Task<RedirectHttpResult?> ValidateCallbackParametersAsync(
+        HttpContext httpContext,
+        BffFrontendOptions frontend,
+        string? code,
+        string? state,
+        string? error,
+        CancellationToken cancellationToken)
+    {
+        ILogger logger = httpContext.RequestServices.GetRequiredService<ILoggerFactory>()
+            .CreateLogger(LoggerCategory);
+
+        if (!string.IsNullOrEmpty(error))
+        {
+            string safeError = KnownOidcErrors.Contains(error) ? error : "unknown_error";
+            LogCallbackError(logger, safeError, frontend.Name);
+            await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
+                failureReason: safeError, cancellationToken).ConfigureAwait(false);
+            return RedirectToError(frontend, safeError);
+        }
+
+        if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(state))
+        {
+            await TryWriteAuthAuditAsync(httpContext, logger, userId: null, userName: null,
+                failureReason: "missing_code_or_state", cancellationToken).ConfigureAwait(false);
+            return RedirectToError(frontend, "missing_code_or_state");
+        }
+
+        return null;
     }
 
 #pragma warning disable GRSEC003 // Method handles tokens — server-side only

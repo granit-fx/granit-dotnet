@@ -27,7 +27,8 @@ internal sealed class EfCoreUserSessionRiskStore(
         // Upsert with one retry: two concurrent assessments of the same (userId, sessionId) both miss the
         // existing row and both insert, tripping the unique index. On that conflict, re-read and update the
         // row the winner created instead of surfacing the DbUpdateException. Provider-agnostic (no ON CONFLICT).
-        for (int attempt = 0; ; attempt++)
+        // The second attempt's own DbUpdateException is not caught (filter is attempt == 0), so it surfaces.
+        for (int attempt = 0; attempt <= 1; attempt++)
         {
             await using IdentityDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
                 .ConfigureAwait(false);

@@ -342,32 +342,9 @@ internal static class AdminOidcEndpoints
             descriptor.ConsentType = request.ConsentType;
         }
 
-        if (request.Permissions is not null)
-        {
-            descriptor.Permissions.Clear();
-            foreach (string permission in request.Permissions)
-            {
-                descriptor.Permissions.Add(permission);
-            }
-        }
-
-        if (request.RedirectUris is not null)
-        {
-            descriptor.RedirectUris.Clear();
-            foreach (string uri in request.RedirectUris)
-            {
-                descriptor.RedirectUris.Add(new Uri(uri));
-            }
-        }
-
-        if (request.PostLogoutRedirectUris is not null)
-        {
-            descriptor.PostLogoutRedirectUris.Clear();
-            foreach (string uri in request.PostLogoutRedirectUris)
-            {
-                descriptor.PostLogoutRedirectUris.Add(new Uri(uri));
-            }
-        }
+        ReplaceCollection(descriptor.Permissions, request.Permissions, static p => p);
+        ReplaceCollection(descriptor.RedirectUris, request.RedirectUris, static u => new Uri(u));
+        ReplaceCollection(descriptor.PostLogoutRedirectUris, request.PostLogoutRedirectUris, static u => new Uri(u));
 
         if (request.SigningKeyJwk is not null)
         {
@@ -386,6 +363,23 @@ internal static class AdminOidcEndpoints
         {
             // SetDeviceKind treats Unknown as "clear the declaration".
             descriptor.SetDeviceKind(request.DeviceKind.Value);
+        }
+    }
+
+    // Replaces the full contents of a descriptor collection from a request field: null leaves it untouched,
+    // a present field clears then refills it (mapping each raw string through <paramref name="map"/>).
+    private static void ReplaceCollection<T>(
+        ICollection<T> target, IReadOnlyList<string>? source, Func<string, T> map)
+    {
+        if (source is null)
+        {
+            return;
+        }
+
+        target.Clear();
+        foreach (string item in source)
+        {
+            target.Add(map(item));
         }
     }
 
