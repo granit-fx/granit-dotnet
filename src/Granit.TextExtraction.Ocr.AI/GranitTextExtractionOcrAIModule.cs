@@ -1,3 +1,4 @@
+using Granit.AI;
 using Granit.Modularity;
 
 namespace Granit.TextExtraction.Ocr.AI;
@@ -9,5 +10,5 @@ namespace Granit.TextExtraction.Ocr.AI;
 /// the module itself does not auto-register anything because enabling vision OCR sends
 /// document bytes to a third-party LLM provider (GDPR Article 28 disclosure required).
 /// </summary>
-[DependsOn(typeof(GranitTextExtractionModule))]
+[DependsOn(typeof(GranitAIModule), typeof(GranitTextExtractionModule))]
 public sealed class GranitTextExtractionOcrAIModule : GranitModule;

@@ -1,3 +1,4 @@
+using Granit.AI;
 using Granit.Modularity;
 using Shouldly;
 using Xunit;
@@ -21,6 +22,17 @@ public sealed class GranitTextExtractionOcrAIModuleTests
             .GetCustomAttributes(typeof(DependsOnAttribute), inherit: true);
 
         attrs.SelectMany(a => a.DependedTypes).ShouldContain(typeof(GranitTextExtractionModule));
+    }
+
+    [Fact]
+    public void Module_DependsOn_GranitAIModule()
+    {
+        // The module references Granit.AI directly (IAIChatClientFactory), so it must
+        // declare GranitAIModule in [DependsOn] like every other AI-consuming module.
+        var attrs = (DependsOnAttribute[])typeof(GranitTextExtractionOcrAIModule)
+            .GetCustomAttributes(typeof(DependsOnAttribute), inherit: true);
+
+        attrs.SelectMany(a => a.DependedTypes).ShouldContain(typeof(GranitAIModule));
     }
 
     [Fact]
