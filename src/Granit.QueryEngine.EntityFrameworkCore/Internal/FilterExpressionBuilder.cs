@@ -74,9 +74,9 @@ internal static class FilterExpressionBuilder
         Expression? body = criteria.Operator switch
         {
             FilterOperator.Eq => BuildEqualsExpression(member, criteria.Value, propertyType, logger, criteria.Field),
-            FilterOperator.Contains => BuildStringMethodExpression(member, criteria.Value, StringContainsMethod),
-            FilterOperator.StartsWith => BuildStringMethodExpression(member, criteria.Value, StringStartsWithMethod),
-            FilterOperator.EndsWith => BuildStringMethodExpression(member, criteria.Value, StringEndsWithMethod),
+            FilterOperator.Contains => BuildStringMethodExpression(member, criteria.Value, StringContainsMethod, logger, criteria.Field),
+            FilterOperator.StartsWith => BuildStringMethodExpression(member, criteria.Value, StringStartsWithMethod, logger, criteria.Field),
+            FilterOperator.EndsWith => BuildStringMethodExpression(member, criteria.Value, StringEndsWithMethod, logger, criteria.Field),
             FilterOperator.Gt => BuildComparisonExpression(member, criteria.Value, propertyType, Expression.GreaterThan, logger, criteria.Field),
             FilterOperator.Gte => BuildComparisonExpression(member, criteria.Value, propertyType, Expression.GreaterThanOrEqual, logger, criteria.Field),
             FilterOperator.Lt => BuildComparisonExpression(member, criteria.Value, propertyType, Expression.LessThan, logger, criteria.Field),
@@ -109,10 +109,21 @@ internal static class FilterExpressionBuilder
     }
 
     private static BinaryExpression? BuildStringMethodExpression(
-        Expression member, string value, MethodInfo method)
+        Expression member, string value, MethodInfo method,
+        ILogger? logger = null, string? field = null)
     {
         if (member.Type != typeof(string))
         {
+            // A value-object column (SingleValueObject<string>) is mapped by a ValueConverter;
+            // EF Core cannot translate LIKE over it, so a substring filter would either be
+            // dropped or mistranslated. Surface it instead of silently returning no predicate
+            // (which previously made the criterion vanish from the query). See issue #2767.
+            if (logger is not null)
+            {
+                QueryEngineEfCoreLog.SubstringFilterOnNonStringColumnIgnored(
+                    logger, field ?? "(unknown)", member.Type.Name);
+            }
+
             return null;
         }
 

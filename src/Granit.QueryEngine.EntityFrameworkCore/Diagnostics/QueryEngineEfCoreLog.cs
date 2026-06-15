@@ -27,4 +27,9 @@ internal static partial class QueryEngineEfCoreLog
         Message = "Stream limit reached for entity type {EntityType}: {Limit} items — results are truncated")]
     public static partial void StreamLimitReached(
         ILogger logger, string entityType, int limit);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Substring filter (contains/startsWith/endsWith) on field '{Field}' of non-string type {ColumnType} is ignored — EF Core cannot translate LIKE over a value-object/non-string column. See issue #2767.")]
+    public static partial void SubstringFilterOnNonStringColumnIgnored(
+        ILogger logger, string field, string columnType);
 }

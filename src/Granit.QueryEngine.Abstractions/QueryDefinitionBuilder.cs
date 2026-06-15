@@ -154,6 +154,25 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     {
         foreach (Expression<Func<TEntity, string?>> property in properties)
         {
+            // Reject a value-object column smuggled in via its implicit string operator
+            // (e.g. a SingleValueObject<string> selected as `x => x.Host`): the compiler
+            // wraps the member access in a Convert node whose operand is the non-string VO
+            // type. Such a column is mapped by a ValueConverter, which EF Core treats as an
+            // opaque whole-value round-trip — LIKE never translates, so the search term is
+            // silently dropped and the whole (scoped) table is returned. Fail loud here
+            // instead of shipping a no-op global search. See issue #2767.
+            if (property.Body is UnaryExpression { NodeType: ExpressionType.Convert } convert
+                && convert.Operand.Type != typeof(string))
+            {
+                throw new ArgumentException(
+                    $"GlobalSearch property '{GetPropertyName(property)}' has CLR type " +
+                    $"'{convert.Operand.Type.Name}', not string. Value-object columns " +
+                    $"(SingleValueObject<string>) cannot be substring-searched: EF Core cannot " +
+                    $"translate LIKE over a ValueConverter, so the term would be silently ignored. " +
+                    $"Use a plain string column for global search. See issue #2767.",
+                    nameof(properties));
+            }
+
             GlobalSearchProperties.Add(GetPropertyName(property));
         }
 
@@ -469,8 +488,20 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
 
         if (member is null || member.Expression is not ParameterExpression)
         {
+            // A nested access such as `x => x.Host.Value` (drilling into a SingleValueObject
+            // to reach its primitive) is the common cause: the value object is mapped as a
+            // whole-value ValueConverter, so the inner `.Value` is not an independently
+            // queryable column. Point the author at the real constraint rather than emitting
+            // an opaque error. See issue #2767.
+            string hint = member?.Expression is MemberExpression inner
+                ? $" Nested access like 'x => x.{inner.Member.Name}.{member.Member.Name}' is not " +
+                  $"supported; if '{inner.Member.Name}' is a SingleValueObject, value-object columns " +
+                  $"cannot be substring-searched or filtered (see issue #2767) — select a plain " +
+                  $"string column instead."
+                : string.Empty;
+
             throw new ArgumentException(
-                "Expression must be a simple property access (e.g. x => x.Name).",
+                "Expression must be a simple property access (e.g. x => x.Name)." + hint,
                 nameof(expression));
         }
 
