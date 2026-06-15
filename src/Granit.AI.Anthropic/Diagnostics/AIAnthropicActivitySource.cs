@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Granit.AI.Diagnostics;
 
 namespace Granit.AI.Anthropic.Diagnostics;
 
@@ -24,4 +25,8 @@ internal static class AIAnthropicActivitySource
 
     /// <summary>Shared activity source instance.</summary>
     internal static readonly ActivitySource Source = new(Name);
+
+    /// <summary>Tracing identity supplied to <see cref="TracingChatClient"/>.</summary>
+    internal static readonly AIChatTracingProfile TracingProfile =
+        new(Source, SystemTagValue, ChatOperation, ChatStreamOperation);
 }
