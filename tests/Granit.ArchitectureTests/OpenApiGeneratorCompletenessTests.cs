@@ -43,9 +43,18 @@ public sealed partial class OpenApiGeneratorCompletenessTests
                 .Where(name => name.EndsWith(".Endpoints", StringComparison.Ordinal))
                 .OrderBy(name => name, StringComparer.Ordinal)];
 
+        // A single wildcard ProjectReference (Granit.*.Endpoints) compile-references every
+        // endpoints module by construction, so a new module is wired in automatically — there
+        // is nothing to drift. Accept it as exhaustive. (DependsOn + registry completeness are
+        // still enforced by the other two facts; the glob only auto-wires the compile reference.)
+        if (referenced is ["Granit.*.Endpoints"])
+        {
+            return;
+        }
+
         referenced.ShouldBe(EndpointsProjectNames,
             "Granit.OpenApi.Generator.csproj must <ProjectReference> exactly every src/Granit.*.Endpoints " +
-            "project — no missing modules, no stale references.");
+            "project (or the single Granit.*.Endpoints wildcard) — no missing modules, no stale references.");
     }
 
     [Fact]

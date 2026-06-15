@@ -18,7 +18,11 @@ internal sealed partial class MaxMindDatabaseProvider : IDisposable
 {
     private readonly MaxMindIpGeolocationOptions _options;
     private readonly ILogger<MaxMindDatabaseProvider> _logger;
-    private readonly Lock _gate = new();
+
+    // Read/write lock (not System.Threading.Lock): lookups are concurrent readers held for the whole
+    // read, the hot-reload swap is the exclusive writer. Disposing the superseded reader under the write
+    // lock guarantees no in-flight lookup is still reading its memory-mapped buffer (ObjectDisposedException).
+    private readonly ReaderWriterLockSlim _gate = new();
     private DatabaseReader _reader;
     private bool _isCityDatabase;
     private FileSystemWatcher? _watcher;
@@ -40,15 +44,15 @@ internal sealed partial class MaxMindDatabaseProvider : IDisposable
     /// <summary>Looks up <paramref name="address"/>, returning <c>null</c> when it is absent from the database.</summary>
     public GeoLocation? Lookup(IPAddress address)
     {
-        DatabaseReader reader;
-        bool isCity;
-        lock (_gate)
+        _gate.EnterReadLock();
+        try
         {
-            reader = _reader;
-            isCity = _isCityDatabase;
+            return _isCityDatabase ? LookupCity(_reader, address) : LookupCountry(_reader, address);
         }
-
-        return isCity ? LookupCity(reader, address) : LookupCountry(reader, address);
+        finally
+        {
+            _gate.ExitReadLock();
+        }
     }
 
     private static GeoLocation? LookupCity(DatabaseReader reader, IPAddress address)
@@ -126,14 +130,22 @@ internal sealed partial class MaxMindDatabaseProvider : IDisposable
         {
             (DatabaseReader newReader, bool isCity) = Open();
             DatabaseReader previous;
-            lock (_gate)
+            _gate.EnterWriteLock();
+            try
             {
                 previous = _reader;
                 _reader = newReader;
                 _isCityDatabase = isCity;
+
+                // Dispose under the write lock: all concurrent lookups have drained, so the
+                // superseded reader's memory-mapped buffer can no longer be read mid-disposal.
+                previous.Dispose();
+            }
+            finally
+            {
+                _gate.ExitWriteLock();
             }
 
-            previous.Dispose();
             LogDatabaseReloaded();
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDatabaseException)
@@ -145,8 +157,20 @@ internal sealed partial class MaxMindDatabaseProvider : IDisposable
 
     public void Dispose()
     {
+        // Stop the watcher first so no reload races the teardown, then dispose the live reader
+        // under the write lock to wait out any in-flight lookup.
         _watcher?.Dispose();
-        _reader.Dispose();
+        _gate.EnterWriteLock();
+        try
+        {
+            _reader.Dispose();
+        }
+        finally
+        {
+            _gate.ExitWriteLock();
+        }
+
+        _gate.Dispose();
     }
 
     [LoggerMessage(EventId = 1, Level = LogLevel.Information, Message = "MaxMind geolocation database reloaded.")]
