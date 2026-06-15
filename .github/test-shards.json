@@ -1,8 +1,39 @@
 {
   "shards": [
     {
-      "name": "core-ai",
-      "label": "Core + AI",
+      "name": "core",
+      "label": "Core",
+      "projects": [
+        "tests/Granit.Analyzers.CodeFixes.Tests",
+        "tests/Granit.Analyzers.Tests",
+        "tests/Granit.Bundle.Tests",
+        "tests/Granit.Diagnostics.Endpoints.Tests",
+        "tests/Granit.Diagnostics.Tests",
+        "tests/Granit.Guids.Tests",
+        "tests/Granit.Mcp.Client.Tests",
+        "tests/Granit.Mcp.Server.Tests",
+        "tests/Granit.Mcp.Tests",
+        "tests/Granit.EntityMerge.BackgroundJobs.Tests",
+        "tests/Granit.EntityMerge.EntityFrameworkCore.Tests",
+        "tests/Granit.EntityMerge.Tests",
+        "tests/Granit.Observability.AI.Tests",
+        "tests/Granit.Observability.Tests",
+        "tests/Granit.Testing.EntityFrameworkCore.Tests",
+        "tests/Granit.Testing.Tests",
+        "tests/Granit.Tests",
+        "tests/Granit.Timing.Tests",
+        "tests/Granit.Validation.AI.Tests",
+        "tests/Granit.Validation.Endpoints.Tests",
+        "tests/Granit.Validation.Europe.Tests",
+        "tests/Granit.Validation.Finance.Tests",
+        "tests/Granit.Validation.NorthAmerica.Tests",
+        "tests/Granit.Validation.Tests",
+        "tests/Granit.Validation.UnitedKingdom.Tests"
+      ]
+    },
+    {
+      "name": "ai",
+      "label": "AI",
       "projects": [
         "tests/Granit.AI.Anthropic.Tests",
         "tests/Granit.AI.AzureOpenAI.Tests",
@@ -24,45 +55,7 @@
         "tests/Granit.AI.Tests",
         "tests/Granit.AI.Tools.Tests",
         "tests/Granit.AI.Tools.Search.Tests",
-        "tests/Granit.AI.VectorData.Tests",
-        "tests/Granit.Analyzers.CodeFixes.Tests",
-        "tests/Granit.Analyzers.Tests",
-        "tests/Granit.Authorization.AI.Tests",
-        "tests/Granit.BlobStorage.AI.Tests",
-        "tests/Granit.Bundle.Tests",
-        "tests/Granit.DataExchange.AI.Tests",
-        "tests/Granit.Diagnostics.Endpoints.Tests",
-        "tests/Granit.Diagnostics.Tests",
-        "tests/Granit.Guids.Tests",
-        "tests/Granit.Imaging.AI.Tests",
-        "tests/Granit.Indexing.AI.Tests",
-        "tests/Granit.LanguageDetection.AI.Tests",
-        "tests/Granit.Localization.AI.Tests",
-        "tests/Granit.Mcp.Client.Tests",
-        "tests/Granit.Mcp.Server.Tests",
-        "tests/Granit.Mcp.Tests",
-        "tests/Granit.EntityMerge.BackgroundJobs.Tests",
-        "tests/Granit.EntityMerge.EntityFrameworkCore.Tests",
-        "tests/Granit.EntityMerge.Tests",
-        "tests/Granit.Notifications.AI.Tests",
-        "tests/Granit.Observability.AI.Tests",
-        "tests/Granit.Observability.Tests",
-        "tests/Granit.Privacy.AI.Tests",
-        "tests/Granit.QueryEngine.AI.Tests",
-        "tests/Granit.Templating.AI.Tests",
-        "tests/Granit.Testing.EntityFrameworkCore.Tests",
-        "tests/Granit.Testing.Tests",
-        "tests/Granit.Tests",
-        "tests/Granit.Timeline.AI.Tests",
-        "tests/Granit.Timing.Tests",
-        "tests/Granit.Validation.AI.Tests",
-        "tests/Granit.Validation.Endpoints.Tests",
-        "tests/Granit.Validation.Europe.Tests",
-        "tests/Granit.Validation.Finance.Tests",
-        "tests/Granit.Validation.NorthAmerica.Tests",
-        "tests/Granit.Validation.Tests",
-        "tests/Granit.Validation.UnitedKingdom.Tests",
-        "tests/Granit.Workflow.AI.Tests"
+        "tests/Granit.AI.VectorData.Tests"
       ]
     },
     {
@@ -106,7 +99,12 @@
         "tests/Granit.Workflow.EntityFrameworkCore.Tests",
         "tests/Granit.Workflow.Notifications.Tests",
         "tests/Granit.Workflow.Tests",
-        "tests/Granit.Workspaces.Abstractions.Tests"
+        "tests/Granit.Workspaces.Abstractions.Tests",
+        "tests/Granit.DataExchange.AI.Tests",
+        "tests/Granit.QueryEngine.AI.Tests",
+        "tests/Granit.Templating.AI.Tests",
+        "tests/Granit.Timeline.AI.Tests",
+        "tests/Granit.Workflow.AI.Tests"
       ]
     },
     {
@@ -173,7 +171,9 @@
         "tests/Granit.Webhooks.EntityFrameworkCore.Tests",
         "tests/Granit.Webhooks.Notifications.Tests",
         "tests/Granit.Webhooks.Tests",
-        "tests/Granit.Webhooks.Wolverine.Tests"
+        "tests/Granit.Webhooks.Wolverine.Tests",
+        "tests/Granit.BlobStorage.AI.Tests",
+        "tests/Granit.Imaging.AI.Tests"
       ]
     },
     {
@@ -257,7 +257,9 @@
         "tests/Granit.Wolverine.Encryption.Tests",
         "tests/Granit.Wolverine.Postgresql.Tests",
         "tests/Granit.Wolverine.SqlServer.Tests",
-        "tests/Granit.Wolverine.Tests"
+        "tests/Granit.Wolverine.Tests",
+        "tests/Granit.Localization.AI.Tests",
+        "tests/Granit.Notifications.AI.Tests"
       ]
     },
     {
@@ -280,7 +282,9 @@
         "tests/Granit.TextExtraction.Text.Tests",
         "tests/Granit.TextExtraction.Tika.Tests",
         "tests/Granit.TextExtraction.Ocr.Tesseract.Tests",
-        "tests/Granit.TextExtraction.Ocr.AI.Tests"
+        "tests/Granit.TextExtraction.Ocr.AI.Tests",
+        "tests/Granit.Indexing.AI.Tests",
+        "tests/Granit.LanguageDetection.AI.Tests"
       ]
     },
     {
@@ -365,7 +369,9 @@
         "tests/Granit.Vault.Azure.Tests",
         "tests/Granit.Vault.GoogleCloud.Tests",
         "tests/Granit.Vault.HashiCorp.Tests",
-        "tests/Granit.Vault.Tests"
+        "tests/Granit.Vault.Tests",
+        "tests/Granit.Authorization.AI.Tests",
+        "tests/Granit.Privacy.AI.Tests"
       ]
     },
     {

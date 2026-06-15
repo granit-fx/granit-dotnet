@@ -46,22 +46,16 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+      - name: Setup .NET + NuGet cache
+        uses: ./.github/actions/dotnet-setup
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: NuGet cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
-          restore-keys: nuget-${{ runner.os }}-
 
       - name: Build (src only)
         run: >
           dotnet build .github/shard-filters/src-only.slnf
           -c $CONFIGURATION -m:4
+          -p:RestoreLockedMode=true
 
       - name: Check formatting (src only)
         run: dotnet format .github/shard-filters/src-only.slnf --verify-no-changes --no-restore
@@ -81,8 +75,10 @@ jobs:
       fail-fast: false
       matrix:
         shard:
-          - name: core-ai
-            label: "Core + AI"
+          - name: core
+            label: "Core"
+          - name: ai
+            label: "AI"
           - name: application
             label: "Application Layer"
           - name: api-data
@@ -101,17 +97,10 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+      - name: Setup .NET + NuGet cache
+        uses: ./.github/actions/dotnet-setup
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: NuGet cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
-          restore-keys: nuget-${{ runner.os }}-
 
       # libtesseract is a runtime native dep for Granit.TextExtraction.Ocr.Tesseract's
       # integration suite. Without TESSDATA_PREFIX set the live OCR tests skip
@@ -170,6 +159,7 @@ jobs:
         run: >
           dotnet build .github/shard-filters/${{ matrix.shard.name }}.slnf
           -c $CONFIGURATION -m:4
+          -p:RestoreLockedMode=true
           -p:RunAnalyzers=false
           -p:EnforceCodeStyleInBuild=false
 
@@ -181,6 +171,10 @@ jobs:
           --collect:"XPlat Code Coverage"
           -- RunConfiguration.MaxCpuCount=4
           DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover,cobertura
+
+      - name: Summarise test results
+        if: always()
+        run: python3 scripts/trx-summary.py . >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload test results
         if: always()
@@ -203,6 +197,7 @@ jobs:
   # ---------------------------------------------------------------------------
   secret-detection:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -219,6 +214,7 @@ jobs:
 
   trivy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
@@ -251,21 +247,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [core-ai, application, api-data, infrastructure, search, security, integration, architecture]
+        shard: [core, ai, application, api-data, infrastructure, search, security, integration, architecture]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+      - name: Setup .NET + NuGet cache
+        uses: ./.github/actions/dotnet-setup
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: NuGet cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
-          restore-keys: nuget-${{ runner.os }}-
 
       - name: Restore (locked mode)
         run: dotnet restore .github/shard-filters/${{ matrix.shard }}.slnf --locked-mode
@@ -296,8 +285,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+      - name: Setup .NET + NuGet cache
+        uses: ./.github/actions/dotnet-setup
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -306,13 +295,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-
-      - name: NuGet cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
-          restore-keys: nuget-${{ runner.os }}-
 
       - name: SonarCloud cache
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
@@ -353,7 +335,7 @@ jobs:
             /d:sonar.issue.ignore.multicriteria.e4.resourceKey="**/AesCacheValueEncryptor.cs" \
             /d:sonar.python.version="3.12" \
             /d:sonar.qualitygate.wait="true"
-          dotnet build -c $CONFIGURATION
+          dotnet build -c $CONFIGURATION -m:4 -p:RestoreLockedMode=true
           dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
 
   # ---------------------------------------------------------------------------
@@ -362,6 +344,7 @@ jobs:
   pack:
     needs: test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     permissions:
       contents: read
@@ -370,17 +353,10 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+      - name: Setup .NET + NuGet cache
+        uses: ./.github/actions/dotnet-setup
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: NuGet cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
-          restore-keys: nuget-${{ runner.os }}-
 
       - name: Determine version
         id: version
@@ -392,7 +368,7 @@ jobs:
           fi
 
       - name: Build
-        run: dotnet build -c $CONFIGURATION
+        run: dotnet build -c $CONFIGURATION -m:4 -p:RestoreLockedMode=true
 
       - name: Pack
         run: dotnet pack -c $CONFIGURATION --no-build -p:PackageVersion=${{ steps.version.outputs.version }} -o ./nupkgs
@@ -420,23 +396,17 @@ jobs:
   sbom:
     needs: test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     permissions:
       contents: write  # read for checkout, write for release asset upload
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+      - name: Setup .NET + NuGet cache
+        uses: ./.github/actions/dotnet-setup
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: NuGet cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
-          restore-keys: nuget-${{ runner.os }}-
 
       - name: Install CycloneDX
         run: dotnet tool install --global CycloneDX
@@ -498,6 +468,9 @@ jobs:
   publish-gitlab:
     needs: [pack, sbom]
     runs-on: ubuntu-latest
+    # Covers a normal publish plus the slow-service retry path (up to 3×--timeout 900);
+    # a job still running past this is genuinely stuck, not just slow.
+    timeout-minutes: 30
     if: |
       always()
       && needs.pack.result == 'success'
@@ -549,6 +522,7 @@ jobs:
   publish-nuget:
     needs: [pack, sbom]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     if: startsWith(github.ref, 'refs/tags/v')
     environment: nuget-publish
     steps:
@@ -577,9 +551,11 @@ jobs:
   # The file is generated locally via pre-commit hook and committed with code.
   # This job fails the CI if someone forgot to regenerate after changing sources.
   # ---------------------------------------------------------------------------
+  # Drift checks: no test artifacts consumed, so they run in parallel with
+  # build/test for fast feedback rather than gating behind the whole test matrix.
   code-index:
-    needs: test
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -596,8 +572,8 @@ jobs:
           fi
 
   shard-filters:
-    needs: test
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6

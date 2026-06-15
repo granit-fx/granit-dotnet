@@ -1,0 +1,29 @@
+# Composite action: install the pinned .NET SDK and restore the shared NuGet
+# package cache. Keyed on packages.lock.json (the authoritative resolved-version
+# manifest) rather than *.csproj — under Central Package Management a .csproj
+# rarely changes when a version bumps, so the lockfiles are the correct cache key.
+# Used by every job that checks out and runs the SDK (build, test, audit, sonar,
+# pack, sbom). Publish jobs push prebuilt nupkgs and need neither.
+name: "Setup .NET + NuGet cache"
+description: "Installs the pinned .NET SDK and restores the lockfile-keyed NuGet cache."
+
+inputs:
+  dotnet-version:
+    description: ".NET SDK version to install."
+    required: false
+    default: "10.0.x"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+      with:
+        dotnet-version: ${{ inputs.dotnet-version }}
+
+    - name: NuGet cache
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+      with:
+        path: ~/.nuget/packages
+        key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: nuget-${{ runner.os }}-
