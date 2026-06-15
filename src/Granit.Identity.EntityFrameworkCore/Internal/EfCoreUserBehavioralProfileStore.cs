@@ -48,7 +48,8 @@ internal sealed class EfCoreUserBehavioralProfileStore(
         // Upsert+increment each signal with one retry: two concurrent observations of the same
         // (userId, kind, value) can both miss the existing row and both insert, tripping the unique index. On
         // that conflict, re-read and increment the winner's row instead of surfacing the DbUpdateException.
-        for (int attempt = 0; ; attempt++)
+        // The second attempt's own DbUpdateException is not caught (filter is attempt == 0), so it surfaces.
+        for (int attempt = 0; attempt <= 1; attempt++)
         {
             await using IdentityDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
                 .ConfigureAwait(false);

@@ -172,7 +172,7 @@ internal sealed class UserSessionAnomalyDetector(
                 continue;
             }
 
-            if (IsLowConfidence(candidate.Location, opts) || IsLowConfidence(prior.Location, opts))
+            if (PairIsLowConfidence(candidate.Location, prior.Location, opts))
             {
                 suppressed = true;
                 continue;
@@ -183,6 +183,11 @@ internal sealed class UserSessionAnomalyDetector(
 
         return suppressed ? TravelOutcome.SuppressedLowConfidence : TravelOutcome.None;
     }
+
+    // A travel pair is low-confidence when either endpoint's fix is untrustworthy.
+    private static bool PairIsLowConfidence(
+        GeoLocation candidate, GeoLocation prior, IdentityAnomalyDetectionOptions opts) =>
+        IsLowConfidence(candidate, opts) || IsLowConfidence(prior, opts);
 
     // A fix is low-confidence when its reported accuracy radius is too coarse, or the IP is flagged anonymising
     // (and the deployment opts to suppress those). null fields mean "the provider does not classify this" — they
