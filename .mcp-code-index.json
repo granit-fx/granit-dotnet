@@ -51305,22 +51305,6 @@
       ]
     },
     {
-      "name": "TikaHealthChecksBuilderExtensions",
-      "fqn": "Granit.TextExtraction.Tika.Extensions.TikaHealthChecksBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.TextExtraction.Tika",
-      "file": "src/Granit.TextExtraction.Tika/Extensions/TikaHealthChecksBuilderExtensions.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "AddGranitTikaHealthCheck",
-          "kind": "method",
-          "signature": "AddGranitTikaHealthCheck(this IHealthChecksBuilder builder, string name = \"tika\", HealthStatus? failureStatus = null, TimeSpan? timeout = null)",
-          "returnType": "IHealthChecksBuilder"
-        }
-      ]
-    },
-    {
       "name": "GranitTextExtractionTikaModule",
       "fqn": "Granit.TextExtraction.Tika.GranitTextExtractionTikaModule",
       "kind": "class",

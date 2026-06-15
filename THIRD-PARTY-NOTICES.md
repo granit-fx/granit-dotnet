@@ -123,7 +123,7 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 | AWSSDK.SecretsManager | 4.0.4.24 | Amazon Web Services, Inc. |
 | AWSSDK.SimpleEmailV2 | 4.0.13 | Amazon Web Services, Inc. |
 | AWSSDK.SimpleNotificationService | 4.0.2.34 | Amazon Web Services, Inc. |
-| Elastic.Clients.Elasticsearch | 8.18.0 | Copyright Elasticsearch B.V. |
+| Elastic.Clients.Elasticsearch | 9.4.2 | Copyright Elasticsearch B.V. |
 | Fido2 | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.AspNet | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.Models | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |

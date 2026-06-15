@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Indexing.Elasticsearch</PackageId>
-    <Description>Elasticsearch 8.x backend for Granit.Indexing — opt-in BM25 search over per-language analyzers with shared / per-tenant index strategies. Replaces the default EF/tsvector implementations at registration time.</Description>
+    <Description>Elasticsearch 9.x backend for Granit.Indexing — opt-in BM25 search over per-language analyzers with shared / per-tenant index strategies. Replaces the default EF/tsvector implementations at registration time.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

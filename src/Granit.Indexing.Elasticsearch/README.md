@@ -1,6 +1,6 @@
 # Granit.Indexing.Elasticsearch
 
-Opt-in Elasticsearch 8.x backend for `Granit.Indexing`. Replaces the default EF/tsvector
+Opt-in Elasticsearch 9.x backend for `Granit.Indexing`. Replaces the default EF/tsvector
 implementations with a BM25 multi-field search over per-language analyzers.
 
 ## Why use it
