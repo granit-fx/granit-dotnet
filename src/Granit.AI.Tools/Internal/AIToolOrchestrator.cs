@@ -90,6 +90,60 @@ internal sealed partial class AIToolOrchestrator(
         List<AIToolInvocationOutcome> outcomes = [];
         long startTimestamp = timeProvider.GetTimestamp();
 
+        ConversationOutcome outcome = await RunConversationAsync(
+            chatClient, transcript, chatOptions, toolMap, options, maxIterations, tenantId, outcomes, cancellationToken)
+            .ConfigureAwait(false);
+
+        TimeSpan duration = timeProvider.GetElapsedTime(startTimestamp);
+        metrics.RecordIterations(tenantId, outcome.Iterations);
+
+        if (outcome.AnyUsage)
+        {
+            AIUsageRecord record = usageRecordFactory.Create(
+                workspaceName,
+                workspace.Provider,
+                workspace.Model,
+                (int)outcome.TotalInput,
+                (int)outcome.TotalOutput,
+                duration) with
+            {
+                PromptVersion = systemPrompt.Guardrails.Version,
+                PromptTemplateName = request.InvokedPromptName,
+                PromptTemplateVersion = request.InvokedPromptVersion,
+            };
+
+            await usageTracker.RecordAsync(record, cancellationToken).ConfigureAwait(false);
+        }
+
+        LogRunCompleted(workspaceName, outcome.Iterations, outcomes.Count, outcome.MaxReached);
+
+        return new AIOrchestrationResult
+        {
+            Content = outcome.FinalText,
+            Messages = transcript,
+            Iterations = outcome.Iterations,
+            MaxIterationsReached = outcome.MaxReached,
+            ToolInvocations = outcomes,
+            InputTokens = outcome.AnyUsage ? (int)outcome.TotalInput : null,
+            OutputTokens = outcome.AnyUsage ? (int)outcome.TotalOutput : null,
+            Duration = duration,
+            Interrupt = outcome.Interrupt,
+        };
+    }
+
+    // The think → call → execute → repeat loop. Drives the chat client, accumulates usage, dispatches each
+    // round of tool calls, and stops on a text-only response, the iteration cap, or a tool-requested interrupt.
+    private async Task<ConversationOutcome> RunConversationAsync(
+        IChatClient chatClient,
+        List<ChatMessage> transcript,
+        ChatOptions chatOptions,
+        Dictionary<string, IAITool> toolMap,
+        GranitAIToolsOrchestrationOptions options,
+        int maxIterations,
+        string? tenantId,
+        List<AIToolInvocationOutcome> outcomes,
+        CancellationToken cancellationToken)
+    {
         long totalInput = 0;
         long totalOutput = 0;
         bool anyUsage = false;
@@ -133,36 +187,11 @@ internal sealed partial class AIToolOrchestrator(
                 break;
             }
 
-            List<AIContent> results = new(calls.Count);
-            foreach (FunctionCallContent call in calls)
-            {
-                (string content, bool succeeded, bool truncated, AIToolInterrupt? callInterrupt) =
-                    await ExecuteToolAsync(call, toolMap, options, cancellationToken).ConfigureAwait(false);
-
-                results.Add(new FunctionResultContent(call.CallId, content));
-                outcomes.Add(new AIToolInvocationOutcome
-                {
-                    ToolName = call.Name,
-                    CallId = call.CallId,
-                    Iteration = iteration,
-                    Succeeded = succeeded,
-                    Truncated = truncated,
-                });
-
-                // The model can emit (or be steered into emitting) arbitrary function-call names, so
-                // tag metrics by the resolved tool only — an unrecognised name collapses to a single
-                // bounded value, keeping tool-name cardinality bounded by the registered tool set.
-                string toolTag = toolMap.ContainsKey(call.Name) ? call.Name : UnknownToolTag;
-                metrics.RecordInvocation(tenantId, toolTag, succeeded ? "success" : "error");
-                if (truncated)
-                {
-                    metrics.RecordTruncation(tenantId, toolTag);
-                }
-
-                interrupt ??= callInterrupt;
-            }
+            (List<AIContent> results, AIToolInterrupt? callsInterrupt) = await ExecuteCallsAsync(
+                calls, toolMap, options, tenantId, iteration, outcomes, cancellationToken).ConfigureAwait(false);
 
             transcript.Add(new ChatMessage(ChatRole.Tool, results));
+            interrupt ??= callsInterrupt;
 
             // A tool asked to halt the loop (e.g. a clarification request) — surface it and stop
             // rather than feeding the result back to the model.
@@ -173,42 +202,63 @@ internal sealed partial class AIToolOrchestrator(
             }
         }
 
-        TimeSpan duration = timeProvider.GetElapsedTime(startTimestamp);
-        metrics.RecordIterations(tenantId, iteration);
+        return new ConversationOutcome(finalText, maxReached, interrupt, totalInput, totalOutput, anyUsage, iteration);
+    }
 
-        if (anyUsage)
+    // Executes every tool call in one round, recording the outcome and metrics for each, and returns the
+    // tool-result contents plus the first interrupt a tool raised (null when none asked to halt).
+    private async Task<(List<AIContent> Results, AIToolInterrupt? Interrupt)> ExecuteCallsAsync(
+        List<FunctionCallContent> calls,
+        Dictionary<string, IAITool> toolMap,
+        GranitAIToolsOrchestrationOptions options,
+        string? tenantId,
+        int iteration,
+        List<AIToolInvocationOutcome> outcomes,
+        CancellationToken cancellationToken)
+    {
+        List<AIContent> results = new(calls.Count);
+        AIToolInterrupt? interrupt = null;
+
+        foreach (FunctionCallContent call in calls)
         {
-            AIUsageRecord record = usageRecordFactory.Create(
-                workspaceName,
-                workspace.Provider,
-                workspace.Model,
-                (int)totalInput,
-                (int)totalOutput,
-                duration) with
-            {
-                PromptVersion = systemPrompt.Guardrails.Version,
-                PromptTemplateName = request.InvokedPromptName,
-                PromptTemplateVersion = request.InvokedPromptVersion,
-            };
+            (string content, bool succeeded, bool truncated, AIToolInterrupt? callInterrupt) =
+                await ExecuteToolAsync(call, toolMap, options, cancellationToken).ConfigureAwait(false);
 
-            await usageTracker.RecordAsync(record, cancellationToken).ConfigureAwait(false);
+            results.Add(new FunctionResultContent(call.CallId, content));
+            outcomes.Add(new AIToolInvocationOutcome
+            {
+                ToolName = call.Name,
+                CallId = call.CallId,
+                Iteration = iteration,
+                Succeeded = succeeded,
+                Truncated = truncated,
+            });
+
+            // The model can emit (or be steered into emitting) arbitrary function-call names, so
+            // tag metrics by the resolved tool only — an unrecognised name collapses to a single
+            // bounded value, keeping tool-name cardinality bounded by the registered tool set.
+            string toolTag = toolMap.ContainsKey(call.Name) ? call.Name : UnknownToolTag;
+            metrics.RecordInvocation(tenantId, toolTag, succeeded ? "success" : "error");
+            if (truncated)
+            {
+                metrics.RecordTruncation(tenantId, toolTag);
+            }
+
+            interrupt ??= callInterrupt;
         }
 
-        LogRunCompleted(workspaceName, iteration, outcomes.Count, maxReached);
-
-        return new AIOrchestrationResult
-        {
-            Content = finalText,
-            Messages = transcript,
-            Iterations = iteration,
-            MaxIterationsReached = maxReached,
-            ToolInvocations = outcomes,
-            InputTokens = anyUsage ? (int)totalInput : null,
-            OutputTokens = anyUsage ? (int)totalOutput : null,
-            Duration = duration,
-            Interrupt = interrupt,
-        };
+        return (results, interrupt);
     }
+
+    // Carries the result of the conversation loop back to the orchestration entry point.
+    private readonly record struct ConversationOutcome(
+        string FinalText,
+        bool MaxReached,
+        AIToolInterrupt? Interrupt,
+        long TotalInput,
+        long TotalOutput,
+        bool AnyUsage,
+        int Iterations);
 
     private async Task<(string Content, bool Succeeded, bool Truncated, AIToolInterrupt? Interrupt)> ExecuteToolAsync(
         FunctionCallContent call,
