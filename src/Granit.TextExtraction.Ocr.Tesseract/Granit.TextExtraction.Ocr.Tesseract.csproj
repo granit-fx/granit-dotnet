@@ -13,13 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp" />
     <PackageReference Include="Tesseract" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Granit.Imaging\Granit.Imaging.csproj" />
     <ProjectReference Include="..\Granit.TextExtraction\Granit.TextExtraction.csproj" />
   </ItemGroup>
 

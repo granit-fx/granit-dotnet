@@ -1,10 +1,10 @@
+using Granit.Imaging;
+using Granit.Imaging.Exceptions;
 using Granit.TextExtraction.Ocr.Tesseract.Options;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
 using ExtractionOptions = Granit.TextExtraction.Options.GranitTextExtractionOptions;
 using MEOptions = Microsoft.Extensions.Options.Options;
@@ -18,7 +18,8 @@ public sealed class TesseractOcrExtractorTests
     private static (TesseractOcrExtractor extractor, ITesseractRecognizer recognizer) CreateExtractor(
         string recognizedText = "recognised text",
         ExtractionOptions? extractionOptions = null,
-        TesseractOcrOptions? ocrOptions = null)
+        TesseractOcrOptions? ocrOptions = null,
+        IImageProcessor? imageProcessor = null)
     {
         ITesseractRecognizer recognizer = Substitute.For<ITesseractRecognizer>();
         recognizer.RecognizeAsync(Arg.Any<byte[]>(), Arg.Any<CancellationToken>())
@@ -26,6 +27,7 @@ public sealed class TesseractOcrExtractorTests
 
         TesseractOcrExtractor extractor = new(
             recognizer,
+            imageProcessor ?? ImageProcessorReturning(32, 32),
             MEOptions.Create(extractionOptions ?? new ExtractionOptions()),
             MEOptions.Create(ocrOptions ?? new TesseractOcrOptions { DataPath = "/tmp/tessdata" }),
             NullLogger<TesseractOcrExtractor>.Instance);
@@ -33,13 +35,19 @@ public sealed class TesseractOcrExtractorTests
         return (extractor, recognizer);
     }
 
-    private static byte[] PngBytes(int width, int height)
+    // The real header read lives in Granit.Imaging.MagickNet (covered by its own tests and the
+    // OCR .Tests.Integration project). Here we mock IImageProcessor so the extractor's pixel-bomb
+    // and skip logic can be exercised deterministically without a native imaging dependency.
+    private static IImageProcessor ImageProcessorReturning(int width, int height)
     {
-        using Image<Rgba32> img = new(width, height);
-        using MemoryStream ms = new();
-        img.SaveAsPng(ms);
-        return ms.ToArray();
+        IImageProcessor processor = Substitute.For<IImageProcessor>();
+        processor.Identify(Arg.Any<ReadOnlyMemory<byte>>())
+            .Returns(new ImageInfo(new ImageSize(width, height), ImageFormat.Png));
+        return processor;
     }
+
+    private static byte[] SampleImageBytes(int length = 64) =>
+        [.. Enumerable.Range(0, length).Select(static i => (byte)i)];
 
     [Theory]
     [InlineData("image/png", true)]
@@ -62,7 +70,7 @@ public sealed class TesseractOcrExtractorTests
         (TesseractOcrExtractor extractor, ITesseractRecognizer recognizer) =
             CreateExtractor("Hello, OCR!");
 
-        byte[] imageBytes = PngBytes(32, 32);
+        byte[] imageBytes = SampleImageBytes();
         using MemoryStream input = new(imageBytes);
 
         TextExtractionResult result = await extractor.ExtractAsync(
@@ -82,7 +90,7 @@ public sealed class TesseractOcrExtractorTests
     public async Task Truncates_when_recognition_exceeds_max_char_length()
     {
         (TesseractOcrExtractor extractor, _) = CreateExtractor(new string('x', 5_000));
-        using MemoryStream input = new(PngBytes(16, 16));
+        using MemoryStream input = new(SampleImageBytes());
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 100,
@@ -95,16 +103,16 @@ public sealed class TesseractOcrExtractorTests
     [Fact]
     public async Task Pixel_bomb_is_rejected_before_calling_recognizer()
     {
-        // 32×32 image = 1024 pixels, cap at 4 → exceeds, soft-skip.
+        // IImageProcessor reports 32×32 = 1024 pixels; cap at 4 → exceeds, soft-skip.
         TesseractOcrOptions tight = new()
         {
             DataPath = "/tmp/tessdata",
             MaxImagePixels = 4,
         };
         (TesseractOcrExtractor extractor, ITesseractRecognizer recognizer) =
-            CreateExtractor(ocrOptions: tight);
+            CreateExtractor(ocrOptions: tight, imageProcessor: ImageProcessorReturning(32, 32));
 
-        using MemoryStream input = new(PngBytes(32, 32));
+        using MemoryStream input = new(SampleImageBytes());
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024,
@@ -121,9 +129,13 @@ public sealed class TesseractOcrExtractorTests
     [Fact]
     public async Task Malformed_image_bytes_soft_skip()
     {
-        (TesseractOcrExtractor extractor, ITesseractRecognizer recognizer) = CreateExtractor();
+        IImageProcessor unreadable = Substitute.For<IImageProcessor>();
+        unreadable.Identify(Arg.Any<ReadOnlyMemory<byte>>())
+            .Throws(new UnsupportedImageFormatException("unknown"));
+        (TesseractOcrExtractor extractor, ITesseractRecognizer recognizer) =
+            CreateExtractor(imageProcessor: unreadable);
 
-        // Random bytes — no PNG/JPEG/etc header → ImageSharp throws UnknownImageFormatException.
+        // No PNG/JPEG/etc header → the imaging provider rejects it as an unsupported format.
         byte[] junk = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09];
         using MemoryStream input = new(junk);
 
@@ -146,11 +158,12 @@ public sealed class TesseractOcrExtractorTests
 
         TesseractOcrExtractor extractor = new(
             recognizer,
+            ImageProcessorReturning(16, 16),
             MEOptions.Create(new ExtractionOptions()),
             MEOptions.Create(new TesseractOcrOptions { DataPath = "/tmp/tessdata" }),
             NullLogger<TesseractOcrExtractor>.Instance);
 
-        using MemoryStream input = new(PngBytes(16, 16));
+        using MemoryStream input = new(SampleImageBytes());
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024,
@@ -166,8 +179,8 @@ public sealed class TesseractOcrExtractorTests
         ExtractionOptions extraction = new() { MaxBodySizeBytes = 16 };
         (TesseractOcrExtractor extractor, _) = CreateExtractor(extractionOptions: extraction);
 
-        // A real PNG even of 1×1 is ~70 bytes — exceeds the 16-byte cap easily.
-        using MemoryStream input = new(PngBytes(8, 8));
+        // 64-byte payload exceeds the 16-byte body cap, which trips before the image is identified.
+        using MemoryStream input = new(SampleImageBytes());
 
         TextExtraction.Exceptions.TextExtractionException tex =
             await Should.ThrowAsync<TextExtraction.Exceptions.TextExtractionException>(
@@ -182,15 +195,17 @@ public sealed class TesseractOcrExtractorTests
     public void Constructor_rejects_null_arguments()
     {
         ITesseractRecognizer recognizer = Substitute.For<ITesseractRecognizer>();
+        IImageProcessor imageProcessor = Substitute.For<IImageProcessor>();
         Microsoft.Extensions.Options.IOptions<ExtractionOptions> extraction =
             MEOptions.Create(new ExtractionOptions());
         Microsoft.Extensions.Options.IOptions<TesseractOcrOptions> ocr =
             MEOptions.Create(new TesseractOcrOptions { DataPath = "/tmp/tessdata" });
         NullLogger<TesseractOcrExtractor> logger = NullLogger<TesseractOcrExtractor>.Instance;
 
-        Should.Throw<ArgumentNullException>(() => new TesseractOcrExtractor(null!, extraction, ocr, logger));
-        Should.Throw<ArgumentNullException>(() => new TesseractOcrExtractor(recognizer, null!, ocr, logger));
-        Should.Throw<ArgumentNullException>(() => new TesseractOcrExtractor(recognizer, extraction, null!, logger));
-        Should.Throw<ArgumentNullException>(() => new TesseractOcrExtractor(recognizer, extraction, ocr, null!));
+        Should.Throw<ArgumentNullException>(() => new TesseractOcrExtractor(null!, imageProcessor, extraction, ocr, logger));
+        Should.Throw<ArgumentNullException>(() => new TesseractOcrExtractor(recognizer, null!, extraction, ocr, logger));
+        Should.Throw<ArgumentNullException>(() => new TesseractOcrExtractor(recognizer, imageProcessor, null!, ocr, logger));
+        Should.Throw<ArgumentNullException>(() => new TesseractOcrExtractor(recognizer, imageProcessor, extraction, null!, logger));
+        Should.Throw<ArgumentNullException>(() => new TesseractOcrExtractor(recognizer, imageProcessor, extraction, ocr, null!));
     }
 }

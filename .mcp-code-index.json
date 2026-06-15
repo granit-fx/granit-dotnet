@@ -2570,6 +2570,7 @@
     {
       "name": "Granit.TextExtraction.Ocr.Tesseract",
       "deps": [
+        "Granit.Imaging",
         "Granit.TextExtraction"
       ],
       "framework": "net10.0"
@@ -31834,6 +31835,12 @@
           "kind": "method",
           "signature": "Load(ReadOnlyMemory<byte> source)",
           "returnType": "IImagePipeline"
+        },
+        {
+          "name": "Identify",
+          "kind": "method",
+          "signature": "Identify(ReadOnlyMemory<byte> source)",
+          "returnType": "ImageInfo"
         }
       ]
     },
@@ -50807,7 +50814,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction.Ocr.Tesseract",
       "file": "src/Granit.TextExtraction.Ocr.Tesseract/GranitTextExtractionOcrTesseractModule.cs",
-      "line": 14,
+      "line": 17,
       "members": []
     },
     {
@@ -50860,7 +50867,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction.Ocr.Tesseract",
       "file": "src/Granit.TextExtraction.Ocr.Tesseract/TesseractOcrExtractor.cs",
-      "line": 32,
+      "line": 33,
       "members": [
         {
           "name": "CanHandle",
@@ -51294,6 +51301,22 @@
           "kind": "method",
           "signature": "AddTikaSidecarExtractor(this IServiceCollection services, Action<TikaSidecarOptions>? configure = null)",
           "returnType": "IHttpClientBuilder"
+        }
+      ]
+    },
+    {
+      "name": "TikaHealthChecksBuilderExtensions",
+      "fqn": "Granit.TextExtraction.Tika.Extensions.TikaHealthChecksBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.TextExtraction.Tika",
+      "file": "src/Granit.TextExtraction.Tika/Extensions/TikaHealthChecksBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitTikaHealthCheck",
+          "kind": "method",
+          "signature": "AddGranitTikaHealthCheck(this IHealthChecksBuilder builder, string name = \"tika\", HealthStatus? failureStatus = null, TimeSpan? timeout = null)",
+          "returnType": "IHealthChecksBuilder"
         }
       ]
     },

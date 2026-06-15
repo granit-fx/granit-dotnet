@@ -48,6 +48,30 @@ internal sealed class MagickNetImageProcessor(ImagingMetrics metrics, ImagingMag
         return new MagickNetImagePipeline(image, metrics);
     }
 
+    /// <inheritdoc/>
+    public ImageInfo Identify(ReadOnlyMemory<byte> source)
+    {
+        // Header-only: deliberately NO size validation here. Identify never allocates a
+        // decoded surface, so a large byte buffer is harmless — and callers rely on it
+        // precisely to vet declared pixel dimensions BEFORE deciding whether to decode.
+        if (!ImageFormatDetector.IsSafeRasterFormat(source.Span))
+        {
+            throw new UnsupportedImageFormatException("unknown");
+        }
+
+        try
+        {
+            MagickImageInfo info = new(source.Span);
+            return new ImageInfo(
+                new ImageSize((int)info.Width, (int)info.Height),
+                MagickFormatMapper.FromMagickFormat(info.Format));
+        }
+        catch (MagickException ex)
+        {
+            throw new UnsupportedImageFormatException("unreadable", ex);
+        }
+    }
+
     private void ValidateInputSize(long length)
     {
         if (options.MaxInputBytes > 0 && length > options.MaxInputBytes)

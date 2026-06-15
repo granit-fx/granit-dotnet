@@ -49,12 +49,6 @@
           "EmptyFiles": "4.4.0"
         }
       },
-      "SixLabors.ImageSharp": {
-        "type": "Direct",
-        "requested": "[2.*, )",
-        "resolved": "2.1.13",
-        "contentHash": "zmVHZR13XE477TBAVXE71VcMhqhiv1PbzMWIfuIDytVdBPl3KZlvYYBkqcuQSDdszVY2XHanW98VmDffoNzSSw=="
-      },
       "xunit.runner.visualstudio": {
         "type": "Direct",
         "requested": "[3.1.*, )",
@@ -288,6 +282,13 @@
       "granit": {
         "type": "Project"
       },
+      "granit.imaging": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
+        }
+      },
       "granit.textextraction": {
         "type": "Project",
         "dependencies": {
@@ -300,10 +301,10 @@
       "granit.textextraction.ocr.tesseract": {
         "type": "Project",
         "dependencies": {
+          "Granit.Imaging": "[0.1.0-dev, )",
           "Granit.TextExtraction": "[0.1.0-dev, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
-          "SixLabors.ImageSharp": "[2.*, )",
           "Tesseract": "[5.*, )"
         }
       },

@@ -1,8 +1,9 @@
+using Granit.Imaging;
+using Granit.Imaging.Exceptions;
 using Granit.TextExtraction.Ocr.Tesseract.Options;
 using Granit.TextExtraction.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SixLabors.ImageSharp;
 
 namespace Granit.TextExtraction.Ocr.Tesseract;
 
@@ -35,6 +36,7 @@ public sealed partial class TesseractOcrExtractor : ITextExtractor
     public const string ExtractorName = "granit.text-extraction.ocr-tesseract";
 
     private readonly ITesseractRecognizer _recognizer;
+    private readonly IImageProcessor _imageProcessor;
     private readonly GranitTextExtractionOptions _extractionOptions;
     private readonly TesseractOcrOptions _ocrOptions;
     private readonly ILogger<TesseractOcrExtractor> _logger;
@@ -42,16 +44,19 @@ public sealed partial class TesseractOcrExtractor : ITextExtractor
 
     public TesseractOcrExtractor(
         ITesseractRecognizer recognizer,
+        IImageProcessor imageProcessor,
         IOptions<GranitTextExtractionOptions> extractionOptions,
         IOptions<TesseractOcrOptions> ocrOptions,
         ILogger<TesseractOcrExtractor> logger)
     {
         ArgumentNullException.ThrowIfNull(recognizer);
+        ArgumentNullException.ThrowIfNull(imageProcessor);
         ArgumentNullException.ThrowIfNull(extractionOptions);
         ArgumentNullException.ThrowIfNull(ocrOptions);
         ArgumentNullException.ThrowIfNull(logger);
 
         _recognizer = recognizer;
+        _imageProcessor = imageProcessor;
         _extractionOptions = extractionOptions.Value;
         _ocrOptions = ocrOptions.Value;
         _logger = logger;
@@ -93,27 +98,21 @@ public sealed partial class TesseractOcrExtractor : ITextExtractor
         // Pixel-bomb defence — identify dimensions from the format header without
         // decoding. A 100 KB PNG can claim 100 000 × 100 000 pixels (~40 GB RGBA buffer);
         // we reject those before they hit Leptonica.
-        IImageInfo? info;
+        ImageInfo info;
         try
         {
-            info = Image.Identify(bytes);
+            info = _imageProcessor.Identify(bytes);
         }
-        catch (Exception ex) when (ex is UnknownImageFormatException or InvalidImageContentException)
+        catch (UnsupportedImageFormatException ex)
         {
             LogUnreadableImageSkipped(ex, contentType);
             return Skipped();
         }
 
-        if (info is null)
-        {
-            LogUnreadableImageSkipped(null, contentType);
-            return Skipped();
-        }
-
-        long pixels = (long)info.Width * info.Height;
+        long pixels = (long)info.Size.Width * info.Size.Height;
         if (pixels > _ocrOptions.MaxImagePixels)
         {
-            LogImageRejectedByPixelCap(info.Width, info.Height, _ocrOptions.MaxImagePixels);
+            LogImageRejectedByPixelCap(info.Size.Width, info.Size.Height, _ocrOptions.MaxImagePixels);
             return Skipped();
         }
 

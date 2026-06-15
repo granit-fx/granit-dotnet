@@ -8,7 +8,7 @@ Seules les **dépendances directes** y figurent. Les dépendances transitives
 sont couvertes par leurs propres avis de licence, restaurés depuis NuGet par
 le consommateur (les packages Granit ne redistribuent pas leurs binaires).
 
-Dernière mise à jour : 2026-06-12 (ajout de MaxMind.GeoIP2 pour le module Granit.IpGeolocation.MaxMind — géolocalisation IP hors-ligne)
+Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.TextExtraction.Ocr.Tesseract lit désormais les dimensions via Granit.Imaging / Magick.NET)
 
 ---
 
@@ -17,7 +17,7 @@ Dernière mise à jour : 2026-06-12 (ajout de MaxMind.GeoIP2 pour le module Gran
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
 | MIT          | 95                 |
-| Apache-2.0   | 41                 |
+| Apache-2.0   | 40                 |
 | BSD-3-Clause | 3                  |
 | BSD-2-Clause | 1                  |
 | PostgreSQL   | 2                  |
@@ -153,7 +153,6 @@ Dernière mise à jour : 2026-06-12 (ajout de MaxMind.GeoIP2 pour le module Gran
 | OpenTelemetry.Instrumentation.StackExchangeRedis | 1.15.1-beta.1 | Copyright The OpenTelemetry Authors |
 | Serilog.AspNetCore | 10.0.0 | Serilog Contributors |
 | Serilog.Sinks.OpenTelemetry | 4.2.0 | Serilog Contributors |
-| SixLabors.ImageSharp | 2.1.13 | Copyright (c) Six Labors |
 | Tesseract | 5.2.0 | Copyright (c) Charles Weld |
 | VaultSharp | 1.17.5.1 | Copyright (c) 2024 Raja Nadar |
 
@@ -401,15 +400,6 @@ et s'aligner sur l'exigence transitive de MailKit 4.16.0.
 Ce SDK est utilisé par les modules `Granit.*.AI` pour l'intégration avec des
 modèles de langage locaux via Ollama. Les données restent sur l'infrastructure
 de l'organisation (aucun appel vers des services cloud externes).
-
-### SixLabors.ImageSharp
-
-Ce package est utilisé par `Granit.TextExtraction.Ocr.Tesseract` uniquement pour
-identifier les dimensions d'une image (entête du format) AVANT décodage —
-défense contre les attaques pixel-bomb. La version est épinglée à
-**2.\*** car la branche 3.x est passée sous la Six Labors Split License, incompatible
-avec la distribution Apache-2.0 propre de Granit. Aucune donnée de santé ne transite
-par les serveurs Six Labors (bibliothèque purement locale).
 
 ### Tesseract
 

@@ -1,5 +1,6 @@
 using System.Diagnostics.Metrics;
 using Granit.Imaging.Diagnostics;
+using Granit.Imaging.Exceptions;
 using Granit.Imaging.MagickNet.Internal;
 using Granit.Imaging.MagickNet.Options;
 using NSubstitute;
@@ -58,6 +59,30 @@ public sealed class MagickNetImageProcessorTests
         // Assert
         pipeline.SourceFormat.ShouldBe(ImageFormat.Png);
         pipeline.SourceSize.ShouldBe(new ImageSize(100, 100));
+    }
+
+    [Fact]
+    public void Identify_FromReadOnlyMemory_ReturnsHeaderInfoWithoutDecoding()
+    {
+        // Arrange
+        ReadOnlyMemory<byte> bytes = GetTestImageBytes();
+
+        // Act
+        ImageInfo info = _processor.Identify(bytes);
+
+        // Assert
+        info.Format.ShouldBe(ImageFormat.Png);
+        info.Size.ShouldBe(new ImageSize(100, 100));
+    }
+
+    [Fact]
+    public void Identify_UnknownFormat_ThrowsUnsupportedImageFormat()
+    {
+        // Arrange — random bytes with no recognized raster header.
+        ReadOnlyMemory<byte> junk = new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07 };
+
+        // Act / Assert
+        Should.Throw<UnsupportedImageFormatException>(() => _processor.Identify(junk));
     }
 
     [Fact]

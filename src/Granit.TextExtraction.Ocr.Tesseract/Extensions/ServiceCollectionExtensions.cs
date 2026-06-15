@@ -18,7 +18,9 @@ public static class ServiceCollectionExtensions
     /// <see cref="ITesseractRecognizer"/>. The host MUST also ensure native
     /// <c>libtesseract</c> is on the loader path and that the configured
     /// <see cref="TesseractOcrOptions.DataPath"/> contains the requested
-    /// <c>*.traineddata</c> files.
+    /// <c>*.traineddata</c> files, and register an imaging provider (e.g.
+    /// <c>AddGranitImagingMagickNet()</c>) so the extractor can resolve
+    /// <c>IImageProcessor</c> for its pre-decode pixel-bomb guard.
     /// </summary>
     public static IServiceCollection AddTesseractOcrExtractor(
         this IServiceCollection services,
