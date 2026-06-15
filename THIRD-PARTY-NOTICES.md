@@ -8,7 +8,7 @@ Seules les **dépendances directes** y figurent. Les dépendances transitives
 sont couvertes par leurs propres avis de licence, restaurés depuis NuGet par
 le consommateur (les packages Granit ne redistribuent pas leurs binaires).
 
-Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.TextExtraction.Ocr.Tesseract lit désormais les dimensions via Granit.Imaging / Magick.NET)
+Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.TextExtraction.Ocr.Tesseract lit les dimensions via Granit.Imaging / Magick.NET ; ajout de Markdig pour Granit.TextExtraction.Text)
 
 ---
 
@@ -19,7 +19,7 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 | MIT          | 95                 |
 | Apache-2.0   | 40                 |
 | BSD-3-Clause | 3                  |
-| BSD-2-Clause | 1                  |
+| BSD-2-Clause | 2                  |
 | PostgreSQL   | 2                  |
 
 ---
@@ -160,6 +160,7 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
+| Markdig | 1.3.0 | Copyright (c) Alexandre Mutel |
 | Scriban | 7.2.1 | Copyright (c) Alexandre Mutel |
 
 ### BSD-3-Clause
