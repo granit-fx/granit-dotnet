@@ -19116,7 +19116,23 @@
       "kind": "class",
       "project": "Granit",
       "file": "src/Granit/Domain/QueryableValueObjectAttribute.cs",
-      "line": 26,
+      "line": 42,
+      "members": [
+        {
+          "name": "Storage",
+          "kind": "property",
+          "signature": "QueryableValueObjectStorage Storage",
+          "returnType": "QueryableValueObjectStorage"
+        }
+      ]
+    },
+    {
+      "name": "QueryableValueObjectStorage",
+      "fqn": "Granit.Domain.QueryableValueObjectStorage",
+      "kind": "enum",
+      "project": "Granit",
+      "file": "src/Granit/Domain/QueryableValueObjectAttribute.cs",
+      "line": 6,
       "members": []
     },
     {
