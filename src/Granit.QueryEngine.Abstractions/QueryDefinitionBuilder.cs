@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Reflection;
 using Granit.Domain;
 using Granit.QueryEngine.Filtering;
 using Granit.QueryEngine.Options;
@@ -163,7 +164,8 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
             // silently dropped and the whole (scoped) table is returned. Fail loud here
             // instead of shipping a no-op global search. See issue #2767.
             if (property.Body is UnaryExpression { NodeType: ExpressionType.Convert } convert
-                && convert.Operand.Type != typeof(string))
+                && convert.Operand.Type != typeof(string)
+                && !IsQueryableValueObjectMember(convert.Operand))
             {
                 throw new ArgumentException(
                     $"GlobalSearch property '{GetPropertyName(property)}' has CLR type " +
@@ -517,6 +519,12 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
 
         return member.Member.Name;
     }
+
+    // A value-object selector is allowed in global search when the property opts into the
+    // queryable (ComplexProperty) strategy — the engine then drills into `.Value` (a real column).
+    private static bool IsQueryableValueObjectMember(Expression operand) =>
+        operand is MemberExpression { Member: PropertyInfo property }
+        && property.GetCustomAttribute<QueryableValueObjectAttribute>() is not null;
 
     // Rejects a SingleValueObject<T> column on paths that need an orderable/aggregatable scalar.
     // The value object is mapped as an opaque whole-value ValueConverter, so cursor keyset

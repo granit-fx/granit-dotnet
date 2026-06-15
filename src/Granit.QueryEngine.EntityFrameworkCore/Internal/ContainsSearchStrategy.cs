@@ -29,7 +29,14 @@ internal sealed class ContainsSearchStrategy<TEntity> : IGlobalSearchStrategy<TE
 
         foreach (string propertyName in searchProperties)
         {
-            MemberExpression member = Expression.Property(parameter, propertyName);
+            // A [QueryableValueObject] column is drilled to its `.Value` string column so LIKE
+            // translates (ADR-070, strategy B). A plain value-object column stays the VO type and
+            // is skipped below (substring is unsupported on a value-converted column).
+            System.Reflection.PropertyInfo? property = typeof(TEntity).GetProperty(propertyName);
+            Expression member = property is not null
+                ? ValueObjectMemberResolver.Resolve(parameter, property)
+                : Expression.Property(parameter, propertyName);
+
             if (member.Type != typeof(string))
             {
                 continue;
