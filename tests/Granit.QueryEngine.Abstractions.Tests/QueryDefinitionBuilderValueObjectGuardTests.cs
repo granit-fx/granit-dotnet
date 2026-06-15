@@ -1,4 +1,5 @@
 using Granit.Domain;
+using Granit.QueryEngine.Filtering;
 using Shouldly;
 using Xunit;
 
@@ -63,6 +64,46 @@ public sealed class QueryDefinitionBuilderValueObjectGuardTests
         builder.Column(e => e.Slug, c => c.Sortable());
 
         builder.Columns.ShouldContain(c => c.PropertyName == nameof(SampleEntity.Slug));
+    }
+
+    [Fact]
+    public void AllowGroupBy_on_value_object_throws()
+    {
+        QueryDefinitionBuilder<SampleEntity> builder = new();
+
+        ArgumentException ex = Should.Throw<ArgumentException>(() => builder.AllowGroupBy(e => e.Slug));
+        ex.Message.ShouldContain("#2767");
+        ex.Message.ShouldContain(nameof(SampleEntity.Slug));
+    }
+
+    [Fact]
+    public void Aggregate_on_value_object_throws()
+    {
+        QueryDefinitionBuilder<SampleEntity> builder = new();
+
+        ArgumentException ex = Should.Throw<ArgumentException>(
+            () => builder.Aggregate(e => e.Slug, AggregateFunction.Count, "slugCount"));
+        ex.Message.ShouldContain("#2767");
+    }
+
+    [Fact]
+    public void SupportsCursorPagination_on_value_object_throws()
+    {
+        QueryDefinitionBuilder<SampleEntity> builder = new();
+
+        ArgumentException ex = Should.Throw<ArgumentException>(
+            () => builder.SupportsCursorPagination(e => e.Slug));
+        ex.Message.ShouldContain("#2767");
+    }
+
+    [Fact]
+    public void AllowGroupBy_on_scalar_column_succeeds()
+    {
+        QueryDefinitionBuilder<SampleEntity> builder = new();
+
+        builder.AllowGroupBy(e => e.Name);
+
+        builder.GroupByFields.ShouldContain(g => g.PropertyName == nameof(SampleEntity.Name));
     }
 
     private sealed class SampleEntity

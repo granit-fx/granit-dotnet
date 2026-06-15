@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Granit.Domain;
 using Granit.QueryEngine.Filtering;
 using Granit.QueryEngine.Options;
 using Granit.QueryEngine.Search;
@@ -269,9 +270,12 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     public QueryDefinitionBuilder<TEntity> AllowGroupBy<TProp>(
         Expression<Func<TEntity, TProp>> property)
     {
+        string propertyName = GetPropertyName(property);
+        ThrowIfValueObjectColumn<TProp>(propertyName, "grouped by", nameof(property));
+
         GroupByFields.Add(new GroupByDescriptor
         {
-            PropertyName = GetPropertyName(property),
+            PropertyName = propertyName,
             ClrType = typeof(TProp),
         });
 
@@ -290,9 +294,12 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
         AggregateFunction function,
         string alias)
     {
+        string propertyName = GetPropertyName(property);
+        ThrowIfValueObjectColumn<TProp>(propertyName, "aggregated", nameof(property));
+
         Aggregates.Add(new AggregateDescriptor
         {
-            PropertyName = GetPropertyName(property),
+            PropertyName = propertyName,
             ClrType = typeof(TProp),
             Function = function,
             Alias = alias,
@@ -391,7 +398,10 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     public QueryDefinitionBuilder<TEntity> SupportsCursorPagination<TProp>(
         Expression<Func<TEntity, TProp>> property)
     {
-        CursorPropertyName = GetPropertyName(property);
+        string propertyName = GetPropertyName(property);
+        ThrowIfValueObjectColumn<TProp>(propertyName, "used as a cursor key", nameof(property));
+
+        CursorPropertyName = propertyName;
         return this;
     }
 
@@ -506,5 +516,25 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
         }
 
         return member.Member.Name;
+    }
+
+    // Rejects a SingleValueObject<T> column on paths that need an orderable/aggregatable scalar.
+    // The value object is mapped as an opaque whole-value ValueConverter, so cursor keyset
+    // comparisons, GROUP BY keys and aggregate functions over it either cannot translate or are
+    // meaningless. Equality/IN filtering and sorting remain supported. See issue #2767.
+    private static void ThrowIfValueObjectColumn<TProp>(string propertyName, string operation, string paramName)
+    {
+        Type openType = typeof(SingleValueObject<>);
+        for (Type? current = typeof(TProp); current is not null && current != typeof(object); current = current.BaseType)
+        {
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == openType)
+            {
+                throw new ArgumentException(
+                    $"Property '{propertyName}' is a value object ({typeof(TProp).Name}) and cannot be " +
+                    $"{operation}: it is mapped as an opaque whole-value ValueConverter (no orderable/" +
+                    $"aggregatable scalar). Use a plain scalar column instead. See issue #2767.",
+                    paramName);
+            }
+        }
     }
 }
