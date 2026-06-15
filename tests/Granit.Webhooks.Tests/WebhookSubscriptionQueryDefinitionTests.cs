@@ -7,20 +7,19 @@ using Xunit;
 namespace Granit.Webhooks.Tests;
 
 // Issue #2767: TargetUrl is a HttpsUrl value object (SingleValueObject<string>) mapped via a
-// ValueConverter, so it cannot be filtered (an Eq filter mistranslates; substring cannot reach
-// LIKE). It must stay display-only — not .Filterable() — so the grid does not advertise a broken
-// filter affordance.
+// ValueConverter. It supports equality/IN filtering (whole-value round-trips), but not substring
+// search/LIKE — so it is .Filterable() yet absent from GlobalSearch.
 public sealed class WebhookSubscriptionQueryDefinitionTests
 {
     [Fact]
-    public void TargetUrl_value_object_column_is_not_filterable()
+    public void TargetUrl_value_object_column_is_filterable()
     {
         WebhookSubscriptionQueryDefinition definition = new();
 
         ColumnDescriptor targetUrl = definition.GetColumns()
             .Single(c => c.PropertyName == nameof(WebhookSubscription.TargetUrl));
 
-        targetUrl.IsFilterable.ShouldBeFalse();
+        targetUrl.IsFilterable.ShouldBeTrue();
     }
 
     [Fact]

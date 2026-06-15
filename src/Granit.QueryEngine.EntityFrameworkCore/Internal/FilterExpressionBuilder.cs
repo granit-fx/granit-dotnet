@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using Granit.Domain;
 using Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
 using Granit.QueryEngine.Filtering;
 using Microsoft.EntityFrameworkCore;
@@ -99,8 +101,12 @@ internal static class FilterExpressionBuilder
         ILogger? logger = null, string? field = null)
     {
         object? converted = ConvertValue(value, propertyType, logger, field);
-        if (converted is null && propertyType.IsValueType)
+        if (converted is null)
         {
+            // Conversion failed (unparseable value, or a value object the engine cannot build):
+            // drop the criterion. Previously, a null on a reference-typed column (e.g. a value
+            // object) fell through and built `column == null`, silently matching the wrong rows.
+            // See issue #2767.
             return null;
         }
 
@@ -141,6 +147,13 @@ internal static class FilterExpressionBuilder
         Func<Expression, Expression, BinaryExpression> comparison,
         ILogger? logger = null, string? field = null)
     {
+        // Value objects define no ordering operators — a Gt/Lt over one would throw at
+        // expression build. Range operators are not meaningful on an identifier-like VO. See #2767.
+        if (GetSingleValueObjectBase(member.Type) is not null)
+        {
+            return null;
+        }
+
         object? converted = ConvertValue(value, propertyType, logger, field);
         if (converted is null)
         {
@@ -210,6 +223,12 @@ internal static class FilterExpressionBuilder
         Expression member, string value, Type propertyType,
         ILogger? logger = null, string? field = null)
     {
+        // See BuildComparisonExpression — range operators are unsupported on value objects.
+        if (GetSingleValueObjectBase(member.Type) is not null)
+        {
+            return null;
+        }
+
         string[] parts = value.Split(',', StringSplitOptions.TrimEntries);
         if (parts.Length != 2)
         {
@@ -264,6 +283,17 @@ internal static class FilterExpressionBuilder
     {
         try
         {
+            // SingleValueObject<TPrimitive>: parse the string to the underlying primitive, then
+            // reconstruct the value object so EF Core compares it through its ValueConverter
+            // (whole-value equality / IN translate; substring/LIKE does not and is rejected on
+            // the substring paths). See issue #2767.
+            Type? svoBase = GetSingleValueObjectBase(targetType);
+            if (svoBase is not null)
+            {
+                object? primitive = ConvertValue(value, svoBase.GetGenericArguments()[0], logger, field);
+                return primitive is null ? null : ReconstructValueObject(targetType, primitive);
+            }
+
             if (targetType == typeof(string))
             {
                 return value;
@@ -317,5 +347,32 @@ internal static class FilterExpressionBuilder
 
             return null;
         }
+    }
+
+    // Returns the SingleValueObject<TPrimitive> base type for a value-object CLR type, or null.
+    private static Type? GetSingleValueObjectBase(Type type)
+    {
+        Type openType = typeof(SingleValueObject<>);
+        for (Type? current = type; current is not null && current != typeof(object); current = current.BaseType)
+        {
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == openType)
+            {
+                return current;
+            }
+        }
+
+        return null;
+    }
+
+    // Builds a value object whose Value equals the parsed primitive, without running the
+    // domain factory's validation. The instance only feeds an EF Core comparison constant —
+    // an invalid filter value simply matches no rows — so this mirrors how
+    // SingleValueObjectConverter materialises rows from the database.
+    private static object ReconstructValueObject(Type valueObjectType, object primitive)
+    {
+        object instance = RuntimeHelpers.GetUninitializedObject(valueObjectType);
+        PropertyInfo valueProperty = valueObjectType.GetProperty(nameof(SingleValueObject<string>.Value))!;
+        valueProperty.SetValue(instance, primitive);
+        return instance;
     }
 }

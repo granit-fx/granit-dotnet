@@ -8,8 +8,9 @@ namespace Granit.Hostnames.Tests;
 
 // Regression for issue #2767: the definition previously used `e => e.Host.Value` (drilling into
 // the Hostname value object), which threw ArgumentException at construction — the grid was
-// uninstantiable and untested. Host is now a display/sort-only column (value objects cannot be
-// substring-searched or filtered), and global search is on the plain-string OwnerType.
+// uninstantiable and untested. Host is now selected as the whole value object: filterable
+// (equality/IN) and sortable, but absent from global search (value objects cannot be
+// substring-searched). Global search is on the plain-string OwnerType.
 public sealed class ManagedHostnameQueryDefinitionTests
 {
     [Fact]
@@ -21,7 +22,7 @@ public sealed class ManagedHostnameQueryDefinitionTests
     }
 
     [Fact]
-    public void Host_column_is_sortable_but_not_filterable()
+    public void Host_column_is_filterable_and_sortable()
     {
         ManagedHostnameQueryDefinition definition = new();
 
@@ -29,7 +30,7 @@ public sealed class ManagedHostnameQueryDefinitionTests
             .Single(c => c.PropertyName == nameof(ManagedHostname.Host));
 
         host.IsSortable.ShouldBeTrue();
-        host.IsFilterable.ShouldBeFalse();
+        host.IsFilterable.ShouldBeTrue();
     }
 
     [Fact]
