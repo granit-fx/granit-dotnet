@@ -19252,6 +19252,48 @@
           "returnType": "required string Value { get; init; } public ContentType"
         },
         {
+          "name": "SubType",
+          "kind": "property",
+          "signature": "string SubType",
+          "returnType": "string"
+        },
+        {
+          "name": "IsTopLevelType",
+          "kind": "method",
+          "signature": "IsTopLevelType(\"image\")",
+          "returnType": "bool IsImage =>"
+        },
+        {
+          "name": "IsTopLevelType",
+          "kind": "method",
+          "signature": "IsTopLevelType(\"video\")",
+          "returnType": "bool IsVideo =>"
+        },
+        {
+          "name": "IsTopLevelType",
+          "kind": "method",
+          "signature": "IsTopLevelType(\"audio\")",
+          "returnType": "bool IsAudio =>"
+        },
+        {
+          "name": "IsTopLevelType",
+          "kind": "method",
+          "signature": "IsTopLevelType(\"text\")",
+          "returnType": "bool IsText =>"
+        },
+        {
+          "name": "IsTopLevelType",
+          "kind": "method",
+          "signature": "IsTopLevelType(string topLevelType)",
+          "returnType": "bool"
+        },
+        {
+          "name": "string",
+          "kind": "method",
+          "signature": "string(ContentType contentType)",
+          "returnType": "implicit operator"
+        },
+        {
           "name": "ContentType",
           "kind": "method",
           "signature": "ContentType(string value)",

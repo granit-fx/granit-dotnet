@@ -104,6 +104,49 @@ public sealed class ContentTypeTests
     }
 
     // -------------------------------------------------------------------------
+    // Top-level type / subtype decomposition + type predicates
+    // -------------------------------------------------------------------------
+
+    [Theory]
+    [InlineData("image/png", "image", "png")]
+    [InlineData("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
+    [InlineData("text/plain", "text", "plain")]
+    public void TopLevelTypeAndSubType_AreSplitOnSlash(string mime, string expectedTop, string expectedSub)
+    {
+        var contentType = ContentType.Create(mime);
+
+        contentType.TopLevelType.ShouldBe(expectedTop);
+        contentType.SubType.ShouldBe(expectedSub);
+    }
+
+    [Fact]
+    public void TypePredicates_MatchTopLevelType()
+    {
+        ContentType.Create("image/png").IsImage.ShouldBeTrue();
+        ContentType.Create("video/mp4").IsVideo.ShouldBeTrue();
+        ContentType.Create("audio/mpeg").IsAudio.ShouldBeTrue();
+        ContentType.Create("text/html").IsText.ShouldBeTrue();
+
+        ContentType.Create("application/pdf").IsImage.ShouldBeFalse();
+        ContentType.Create("image/png").IsVideo.ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData("IMAGE/PNG")]
+    [InlineData("Image/Png")]
+    public void TypePredicates_AreCaseInsensitive(string mime) => ContentType.Create(mime).IsImage.ShouldBeTrue();
+
+    [Fact]
+    public void IsTopLevelType_MatchesArbitraryType_CaseInsensitive()
+    {
+        var contentType = ContentType.Create("application/json");
+
+        contentType.IsTopLevelType("application").ShouldBeTrue();
+        contentType.IsTopLevelType("APPLICATION").ShouldBeTrue();
+        contentType.IsTopLevelType("image").ShouldBeFalse();
+    }
+
+    // -------------------------------------------------------------------------
     // Inheritance
     // -------------------------------------------------------------------------
 
