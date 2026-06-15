@@ -41299,6 +41299,15 @@
       ]
     },
     {
+      "name": "ImageDimensionsModelBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.ImageDimensionsModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/ImageDimensionsModelBuilderExtensions.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "JsonPropertyBuilderExtensions",
       "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.JsonPropertyBuilderExtensions",
       "kind": "class",
