@@ -40,22 +40,25 @@ internal static class QueryableGroupByExtensions
 
         // Build dynamic GroupBy: source.GroupBy(e => e.Property)
         ParameterExpression parameter = Expression.Parameter(typeof(T), "e");
-        MemberExpression member = Expression.Property(parameter, property);
+        // A [QueryableValueObject] column groups by its real `.Value` scalar column (ADR-070), so
+        // the key is the underlying primitive (e.g. string) and GROUP BY translates.
+        Expression member = ValueObjectMemberResolver.Resolve(parameter, property);
         LambdaExpression keySelector = Expression.Lambda(member, parameter);
+        Type keyType = member.Type;
 
         // Use runtime GroupBy via reflection to support dynamic key types
         MethodInfo groupByMethod = typeof(Queryable)
             .GetMethods()
             .First(m => m.Name == nameof(Queryable.GroupBy)
                 && m.GetParameters().Length == 2)
-            .MakeGenericMethod(typeof(T), property.PropertyType);
+            .MakeGenericMethod(typeof(T), keyType);
 
         object groupedQuery = groupByMethod.Invoke(null, [source, keySelector])!;
 
         // Materialize groups with count
         // We need to project to a known type
         List<GroupEntry<T>> groups = await MaterializeGroupsAsync<T>(
-            groupedQuery, property, groupByField, maxGroupCount, cancellationToken).ConfigureAwait(false);
+            groupedQuery, keyType, groupByField, maxGroupCount, cancellationToken).ConfigureAwait(false);
 
         int totalCount = groups.Sum(g => g.Count);
 
@@ -64,14 +67,13 @@ internal static class QueryableGroupByExtensions
 
     private static async Task<List<GroupEntry<T>>> MaterializeGroupsAsync<T>(
         object groupedQuery,
-        PropertyInfo property,
+        Type keyType,
         string fieldName,
         int maxGroupCount,
         CancellationToken cancellationToken)
         where T : class
     {
         // Use dynamic approach to handle different key types
-        Type keyType = property.PropertyType;
         Type groupingType = typeof(IGrouping<,>).MakeGenericType(keyType, typeof(T));
         // Select each group's key and count
         // Build: groups.Select(g => new { Key = g.Key, Count = g.Count() })

@@ -273,7 +273,10 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
         Expression<Func<TEntity, TProp>> property)
     {
         string propertyName = GetPropertyName(property);
-        ThrowIfValueObjectColumn<TProp>(propertyName, "grouped by", nameof(property));
+        if (!IsQueryableValueObjectMember(property.Body))
+        {
+            ThrowIfValueObjectColumn<TProp>(propertyName, "grouped by", nameof(property));
+        }
 
         GroupByFields.Add(new GroupByDescriptor
         {
@@ -520,11 +523,19 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
         return member.Member.Name;
     }
 
-    // A value-object selector is allowed in global search when the property opts into the
+    // A value-object selector is allowed in global search / group-by when the property opts into the
     // queryable (ComplexProperty) strategy — the engine then drills into `.Value` (a real column).
-    private static bool IsQueryableValueObjectMember(Expression operand) =>
-        operand is MemberExpression { Member: PropertyInfo property }
-        && property.GetCustomAttribute<QueryableValueObjectAttribute>() is not null;
+    // Unwraps an implicit string-conversion (the shape GlobalSearch's `Func<,string?>` produces).
+    private static bool IsQueryableValueObjectMember(Expression operand)
+    {
+        if (operand is UnaryExpression { NodeType: ExpressionType.Convert } convert)
+        {
+            operand = convert.Operand;
+        }
+
+        return operand is MemberExpression { Member: PropertyInfo property }
+            && property.GetCustomAttribute<QueryableValueObjectAttribute>() is not null;
+    }
 
     // Rejects a SingleValueObject<T> column on paths that need an orderable/aggregatable scalar.
     // The value object is mapped as an opaque whole-value ValueConverter, so cursor keyset

@@ -196,6 +196,13 @@ public static class ModelBuilderExtensions
         }
 
         // --- Value object conventions ---
+        // 0. Map [QueryableValueObject] SingleValueObject<string> properties as EF ComplexProperty
+        //    (the inner .Value becomes a real scalar column named after the property) instead of the
+        //    opaque scalar converter — so substring search / group-by / range translate (ADR-070,
+        //    strategy B). Declared first so the SVO type is a complex type, not an entity type:
+        //    steps 1-2 below then leave it alone. Nullable columns are rejected (EF limit).
+        ApplyQueryableValueObjectComplexProperties(modelBuilder);
+
         // 1. Remove any ValueObject type that EF Core auto-discovered as an entity type.
         //    Value objects (e.g. PlanId, OpenGraph, ImageDimensions) have no identity and
         //    must NOT be treated as entities. Each is re-attached to its owner as a column:
@@ -537,6 +544,58 @@ public static class ModelBuilderExtensions
         property.SetValueConverter(new JsonValueObjectConverter<T>());
         property.SetValueComparer(new JsonValueObjectComparer<T>());
         property.SetAnnotation(GranitPersistenceAnnotationNames.JsonSerialized, true);
+    }
+
+    // Maps each [QueryableValueObject] SingleValueObject<string> property as an EF ComplexProperty,
+    // exposing the inner .Value as a real scalar column named after the property (no "_Value" suffix —
+    // so switching a column from the converter strategy keeps the same column name, no rename). This
+    // is the opt-in for ADR-070 strategy B (substring/group-by/range become translatable). A nullable
+    // [QueryableValueObject] column is rejected: EF complex-type columns cannot be optional.
+    private static void ApplyQueryableValueObjectComplexProperties(ModelBuilder modelBuilder)
+    {
+        NullabilityInfoContext nullabilityContext = new();
+
+        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes().ToList()) // NOSONAR S3445 - ToList(): ComplexProperty mutates the model, cannot enumerate the live collection
+        {
+            foreach (PropertyInfo property in entityType.ClrType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (property.GetCustomAttribute<QueryableValueObjectAttribute>() is null)
+                {
+                    continue;
+                }
+
+                if (GetSingleValueObjectBase(property.PropertyType) is null)
+                {
+                    throw new InvalidOperationException(
+                        $"'{entityType.ClrType.Name}.{property.Name}' is marked [QueryableValueObject] " +
+                        $"but its type '{property.PropertyType.Name}' is not a SingleValueObject<T>.");
+                }
+
+                if (IsNullableReference(nullabilityContext, property))
+                {
+                    throw new InvalidOperationException(
+                        $"'{entityType.ClrType.Name}.{property.Name}' is a nullable [QueryableValueObject] " +
+                        $"column. EF complex-type columns cannot be optional — make it non-nullable, or use " +
+                        $"a plain string column for a nullable searchable value. See ADR-070.");
+                }
+
+                modelBuilder.Entity(entityType.ClrType)
+                    .ComplexProperty(property.Name)
+                    .Property(nameof(SingleValueObject<string>.Value))
+                    .HasColumnName(property.Name);
+            }
+        }
+    }
+
+    private static bool IsNullableReference(NullabilityInfoContext context, PropertyInfo property)
+    {
+        if (Nullable.GetUnderlyingType(property.PropertyType) is not null)
+        {
+            return true;
+        }
+
+        NullabilityInfo info = context.Create(property);
+        return info.ReadState == NullabilityState.Nullable || info.WriteState == NullabilityState.Nullable;
     }
 
     // Scans all entity properties for SingleValueObject<T> types and applies a ValueConverter
