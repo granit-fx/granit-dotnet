@@ -111,6 +111,11 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         result!.Id.ShouldBe(entryId);
         result.Body.ShouldBe("Test comment");
         result.EntryType.ShouldBe(TimelineStreamEntryType.Comment);
+        // A freshly posted entry is always native and never edited.
+        result.Origin.ShouldBe(TimelineEntryOrigin.Native);
+        result.SourceKey.ShouldBe(TimelineSourceKeys.Native);
+        result.SourceId.ShouldBeNull();
+        result.EditedAt.ShouldBeNull();
     }
 
     [Fact]

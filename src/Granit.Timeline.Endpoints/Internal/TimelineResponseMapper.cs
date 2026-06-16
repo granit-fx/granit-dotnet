@@ -9,7 +9,8 @@ internal static class TimelineResponseMapper
         TimelineStreamEntry entry,
         IReadOnlyDictionary<string, ReactionAggregateResponse>? reactions = null) =>
         new(entry.Id, entry.OccurredAt, entry.EntryType, entry.AuthorId, entry.AuthorName, entry.Body,
-            [.. entry.Attachments.Select(ToResponse)], entry.ParentEntryId, reactions);
+            [.. entry.Attachments.Select(ToResponse)], entry.ParentEntryId,
+            entry.Origin, entry.SourceKey, entry.SourceId, entry.EditedAt, reactions);
 
     internal static TimelineAttachmentInfoResponse ToResponse(TimelineAttachmentInfo attachment) =>
         new(attachment.Id, attachment.BlobId, attachment.FileName, attachment.ContentType, attachment.SizeBytes);

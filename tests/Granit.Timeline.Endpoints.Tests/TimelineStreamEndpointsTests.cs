@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Granit.Authorization;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.Endpoints.Dtos;
 using Granit.Timeline.Endpoints.Extensions;
 using Granit.Timeline.Endpoints.Permissions;
 using Microsoft.AspNetCore.Authentication;
@@ -106,6 +107,69 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
         page.Items.Count.ShouldBe(1);
         page.Items[0].Body.ShouldBe("Hello");
         page.Items[0].AuthorName.ShouldBe("Alice");
+    }
+
+    [Fact]
+    public async Task GetStream_surfaces_external_federation_fields()
+    {
+        // Arrange — an external (projected) entry carries provenance the front renders.
+        var entry = new TimelineStreamEntry
+        {
+            Id = Guid.NewGuid(),
+            OccurredAt = DateTimeOffset.UtcNow,
+            EntryType = TimelineStreamEntryType.SystemLog,
+            Body = "Audit event",
+            Origin = TimelineEntryOrigin.External,
+            SourceKey = "auditing",
+            SourceId = "audit-42",
+        };
+
+        _reader.GetStreamAsync("Patient", "42", 1, QueryEngineDefaults.DefaultPageSize, Arg.Any<CancellationToken>())
+            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>([entry], 1, HasMore: false), []));
+
+        // Act
+        HttpResponseMessage response = await _authClient.GetAsync(
+            $"{Prefix}/Patient/42", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        PagedResult<TimelineStreamEntryResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<TimelineStreamEntryResponse>>(TestContext.Current.CancellationToken);
+        TimelineStreamEntryResponse item = page!.Items[0];
+
+        item.Origin.ShouldBe(TimelineEntryOrigin.External);
+        item.SourceKey.ShouldBe("auditing");
+        item.SourceId.ShouldBe("audit-42");
+        item.EditedAt.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task GetStream_emits_native_source_key_for_native_entries()
+    {
+        var entry = new TimelineStreamEntry
+        {
+            Id = Guid.NewGuid(),
+            OccurredAt = DateTimeOffset.UtcNow,
+            EntryType = TimelineStreamEntryType.Comment,
+            AuthorId = "user-1",
+            AuthorName = "Alice",
+            Body = "Hello",
+        };
+
+        _reader.GetStreamAsync("Patient", "42", 1, QueryEngineDefaults.DefaultPageSize, Arg.Any<CancellationToken>())
+            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>([entry], 1, HasMore: false), []));
+
+        HttpResponseMessage response = await _authClient.GetAsync(
+            $"{Prefix}/Patient/42", TestContext.Current.CancellationToken);
+
+        PagedResult<TimelineStreamEntryResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<TimelineStreamEntryResponse>>(TestContext.Current.CancellationToken);
+        TimelineStreamEntryResponse item = page!.Items[0];
+
+        item.Origin.ShouldBe(TimelineEntryOrigin.Native);
+        // Native rows emit the reserved "native" key (never null) so the front can rely on a string.
+        item.SourceKey.ShouldBe(TimelineSourceKeys.Native);
+        item.SourceId.ShouldBeNull();
     }
 
     [Fact]

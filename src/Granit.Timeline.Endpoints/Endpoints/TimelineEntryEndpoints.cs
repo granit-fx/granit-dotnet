@@ -89,6 +89,7 @@ internal static class TimelineEntryEndpoints
             await notifier.NotifyMentionedUsersAsync(entry, mentionedUserIds, cancellationToken).ConfigureAwait(false);
         }
 
+        // A freshly posted entry is always native and never edited.
         TimelineStreamEntryResponse result = new(
             entry.Id,
             entry.CreatedAt,
@@ -97,7 +98,11 @@ internal static class TimelineEntryEndpoints
             entry.AuthorName,
             entry.Body,
             [],
-            entry.ParentEntryId);
+            entry.ParentEntryId,
+            TimelineEntryOrigin.Native,
+            TimelineSourceKeys.Native,
+            SourceId: null,
+            EditedAt: null);
 
         return TypedResults.Created($"/api/timeline/{entityType}/{entityId}/entries/{entry.Id}", result);
     }

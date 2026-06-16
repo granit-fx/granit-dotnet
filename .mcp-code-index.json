@@ -52115,7 +52115,7 @@
       "kind": "record",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
-      "line": 24,
+      "line": 37,
       "members": []
     },
     {
@@ -52124,7 +52124,7 @@
       "kind": "record",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
-      "line": 12,
+      "line": 21,
       "members": []
     },
     {
