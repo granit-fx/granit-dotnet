@@ -1,5 +1,6 @@
 using Granit.Authorization.Domain;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Authorization.EntityFrameworkCore.Stores;
@@ -56,10 +57,14 @@ internal sealed class EfCoreRoleMetadataStore<TContext>(TContext context)
     }
 
     /// <inheritdoc />
-    public async Task UpdateAsync(RoleMetadata role, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(RoleMetadata role, string? concurrencyStamp = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(role);
         context.RoleMetadata.Update(role);
+        if (concurrencyStamp is not null)
+        {
+            context.SetConcurrencyStampOriginalValue(role, concurrencyStamp);
+        }
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 

@@ -11315,7 +11315,7 @@
         {
           "name": "UpdateAsync",
           "kind": "method",
-          "signature": "UpdateAsync(RoleMetadata role, CancellationToken cancellationToken = default)",
+          "signature": "UpdateAsync(RoleMetadata role, string? concurrencyStamp = null, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
@@ -29413,7 +29413,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/RoleUpdateRequest.cs",
-      "line": 6,
+      "line": 9,
       "members": []
     },
     {
@@ -30631,7 +30631,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/IGranitRoleOrchestrator.cs",
-      "line": 60,
+      "line": 66,
       "members": []
     },
     {
@@ -30875,7 +30875,7 @@
         {
           "name": "RenameAsync",
           "kind": "method",
-          "signature": "RenameAsync(Guid roleId, string newName, string? newDescription, CancellationToken cancellationToken = default)",
+          "signature": "RenameAsync(Guid roleId, string newName, string? newDescription, string concurrencyStamp, CancellationToken cancellationToken = default)",
           "returnType": "Task<RoleMetadata>"
         },
         {

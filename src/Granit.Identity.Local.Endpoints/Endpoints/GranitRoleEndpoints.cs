@@ -215,7 +215,7 @@ internal static class GranitRoleEndpoints
         try
         {
             RoleMetadata updated = await orchestrator
-                .RenameAsync(id, request.Name, request.Description, cancellationToken)
+                .RenameAsync(id, request.Name, request.Description, request.ConcurrencyStamp, cancellationToken)
                 .ConfigureAwait(false);
             return TypedResults.Ok(Map(updated));
         }

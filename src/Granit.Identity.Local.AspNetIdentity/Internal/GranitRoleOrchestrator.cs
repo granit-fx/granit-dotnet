@@ -4,6 +4,7 @@ using Granit.Authorization.Domain;
 using Granit.Guids;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.SharedConnection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -75,9 +76,11 @@ internal sealed partial class GranitRoleOrchestrator(
         Guid roleId,
         string newName,
         string? newDescription,
+        string concurrencyStamp,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(newName);
+        ArgumentException.ThrowIfNullOrEmpty(concurrencyStamp);
 
         AtomicResolution atomic = await TryResolveAtomicContextsAsync(cancellationToken)
             .ConfigureAwait(false);
@@ -87,12 +90,12 @@ internal sealed partial class GranitRoleOrchestrator(
             await using (atomic.HostContext)
             {
                 return await ExecuteAtomicRenameAsync(
-                    atomic.IdentityContext!, atomic.HostContext!, roleId, newName, newDescription, cancellationToken)
+                    atomic.IdentityContext!, atomic.HostContext!, roleId, newName, newDescription, concurrencyStamp, cancellationToken)
                     .ConfigureAwait(false);
             }
         }
 
-        return await ExecuteCompensatingRenameAsync(roleId, newName, newDescription, cancellationToken)
+        return await ExecuteCompensatingRenameAsync(roleId, newName, newDescription, concurrencyStamp, cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -264,6 +267,7 @@ internal sealed partial class GranitRoleOrchestrator(
         Guid roleId,
         string newName,
         string? newDescription,
+        string concurrencyStamp,
         CancellationToken cancellationToken)
     {
         RoleMetadata? updated = null;
@@ -311,6 +315,7 @@ internal sealed partial class GranitRoleOrchestrator(
                             string.Join("; ", updateResult.Errors.Select(e => $"{e.Code}: {e.Description}")));
                     }
 
+                    hostCtx.SetConcurrencyStampOriginalValue(metadata, concurrencyStamp);
                     metadata.Rename(newName, newDescription);
                     await hostCtx.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
@@ -452,6 +457,7 @@ internal sealed partial class GranitRoleOrchestrator(
         Guid roleId,
         string newName,
         string? newDescription,
+        string concurrencyStamp,
         CancellationToken cancellationToken)
     {
         RoleMetadata? existingMetadata = await roleMetadataStore.FindByIdAsync(roleId, cancellationToken)
@@ -484,7 +490,7 @@ internal sealed partial class GranitRoleOrchestrator(
         try
         {
             existingMetadata.Rename(newName, newDescription);
-            await roleMetadataStore.UpdateAsync(existingMetadata, cancellationToken).ConfigureAwait(false);
+            await roleMetadataStore.UpdateAsync(existingMetadata, concurrencyStamp, cancellationToken).ConfigureAwait(false);
             return existingMetadata;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)

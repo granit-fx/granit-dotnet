@@ -37,10 +37,16 @@ public interface IGranitRoleOrchestrator
     /// Renames the role (both local and metadata side) and optionally updates its
     /// description. Side and tenant scope are immutable after creation.
     /// </summary>
+    /// <param name="roleId">Identifier of the role to rename.</param>
+    /// <param name="newName">New display name.</param>
+    /// <param name="newDescription">New description, or <see langword="null"/> to clear.</param>
+    /// <param name="concurrencyStamp">Stamp from the client's last read; must match the stored value — mismatch throws a concurrency exception (→ HTTP 409).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task<RoleMetadata> RenameAsync(
         Guid roleId,
         string newName,
         string? newDescription,
+        string concurrencyStamp,
         CancellationToken cancellationToken = default);
 
     /// <summary>

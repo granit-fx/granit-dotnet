@@ -13,6 +13,9 @@ internal sealed class RoleUpdateRequestValidator : GranitValidator<RoleUpdateReq
             .NotEmpty()
             .MaximumLength(256);
 
+        RuleFor(x => x.ConcurrencyStamp)
+            .NotEmpty();
+
         RuleFor(x => x.Description)
             .MaximumLength(2048);
     }

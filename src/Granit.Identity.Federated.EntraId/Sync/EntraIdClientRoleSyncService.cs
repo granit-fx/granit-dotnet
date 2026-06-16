@@ -109,13 +109,13 @@ public sealed partial class EntraIdClientRoleSyncService(
                 {
                     existing.Rename(existing.Name, role.Description);
                 }
-                await roleMetadataStore.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
+                await roleMetadataStore.UpdateAsync(existing, cancellationToken: cancellationToken).ConfigureAwait(false);
                 restored++;
             }
             else if (!string.Equals(existing.Description, role.Description, StringComparison.Ordinal))
             {
                 existing.Rename(existing.Name, role.Description);
-                await roleMetadataStore.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
+                await roleMetadataStore.UpdateAsync(existing, cancellationToken: cancellationToken).ConfigureAwait(false);
                 updated++;
             }
             else
@@ -162,7 +162,7 @@ public sealed partial class EntraIdClientRoleSyncService(
                     if (!row.IsOrphaned)
                     {
                         row.MarkAsOrphaned(clock.Now);
-                        await roleMetadataStore.UpdateAsync(row, cancellationToken).ConfigureAwait(false);
+                        await roleMetadataStore.UpdateAsync(row, cancellationToken: cancellationToken).ConfigureAwait(false);
                         LogOrphanSoftDeleted(logger, row.Name, appId);
                         softDeleted++;
                     }

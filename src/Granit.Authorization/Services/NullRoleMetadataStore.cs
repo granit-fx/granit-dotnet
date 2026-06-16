@@ -37,7 +37,7 @@ internal sealed class NullRoleMetadataStore : IRoleMetadataStore
             "Add Granit.Authorization.EntityFrameworkCore (or an equivalent provider) and wire the store.");
 
     /// <inheritdoc />
-    public Task UpdateAsync(RoleMetadata role, CancellationToken cancellationToken = default) =>
+    public Task UpdateAsync(RoleMetadata role, string? concurrencyStamp = null, CancellationToken cancellationToken = default) =>
         throw new InvalidOperationException(
             "No IRoleMetadataStore implementation is registered.");
 

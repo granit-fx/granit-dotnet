@@ -62,7 +62,10 @@ public interface IRoleMetadataStore
     Task AddAsync(RoleMetadata role, CancellationToken cancellationToken = default);
 
     /// <summary>Persists modifications applied to a tracked <see cref="RoleMetadata"/>.</summary>
-    Task UpdateAsync(RoleMetadata role, CancellationToken cancellationToken = default);
+    /// <param name="role">Modified aggregate.</param>
+    /// <param name="concurrencyStamp">When provided, overrides the EF Core original-value for the concurrency token so a mismatch throws a concurrency exception (→ HTTP 409).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task UpdateAsync(RoleMetadata role, string? concurrencyStamp = null, CancellationToken cancellationToken = default);
 
     /// <summary>Removes a role metadata row.</summary>
     Task RemoveAsync(RoleMetadata role, CancellationToken cancellationToken = default);
