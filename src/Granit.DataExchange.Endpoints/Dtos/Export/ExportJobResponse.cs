@@ -15,12 +15,14 @@ public sealed record ExportJobResponse(
     string? FileName,
     string? ErrorMessage,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? CompletedAt)
+    DateTimeOffset? CompletedAt,
+    DateTimeOffset? ModifiedAt,
+    string? ModifiedBy)
 {
     /// <summary>
     /// Maps an <see cref="ExportJob"/> domain entity to a response DTO.
     /// </summary>
     internal static ExportJobResponse FromJob(ExportJob job) =>
         new(job.Id, job.DefinitionName, job.Format, job.Status, job.RowCount,
-            job.FileName, job.ErrorMessage, job.CreatedAt, job.CompletedAt);
+            job.FileName, job.ErrorMessage, job.CreatedAt, job.CompletedAt, job.ModifiedAt, job.ModifiedBy);
 }

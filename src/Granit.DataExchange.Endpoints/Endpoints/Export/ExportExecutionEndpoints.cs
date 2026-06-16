@@ -85,7 +85,7 @@ internal static class ExportExecutionEndpoints
         ExportJobResponse response = job is not null
             ? ExportJobResponse.FromJob(job)
             : new ExportJobResponse(result.JobId, request.DefinitionName, request.Format,
-                result.Status, null, null, null, clock.Now, null);
+                result.Status, null, null, null, clock.Now, null, null, null);
 
         return TypedResults.Created($"/jobs/{result.JobId}", response);
     }
