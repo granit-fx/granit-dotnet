@@ -6,6 +6,16 @@
     <!-- Granit analyzers target production code — test projects legitimately use
          Guid.NewGuid(), DateTimeOffset.UtcNow, and test secrets for setup/assertions. -->
     <NoWarn>$(NoWarn);GRSEC001;GRSEC002;GRSEC003;GRSEC004;GREF001;RS0030</NoWarn>
+    <!-- Coverage instrumentation needs the full reference closure on disk: the coverlet
+         collector (Mono.Cecil) must resolve every reference of the assembly-under-test.
+         PreserveCompilationContext copies the reference closure (including shared-framework
+         assemblies such as Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions) into
+         refs/, which CopyLocalLockFileAssemblies alone does NOT — framework assemblies are
+         marked non-copy-local. Without this, modules referencing those transitive deps fail
+         with CecilAssemblyResolutionException on the CI runner and silently report 0% in
+         SonarCloud (e.g. Granit.Persistence.EntityFrameworkCore.Postgres/.SqlServer). -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
 
   <ItemGroup>
