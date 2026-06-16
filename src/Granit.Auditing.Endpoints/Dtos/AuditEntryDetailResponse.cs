@@ -9,6 +9,7 @@ namespace Granit.Auditing.Endpoints.Dtos;
 /// <param name="UserName">Actor display name.</param>
 /// <param name="Category">Audit log category.</param>
 /// <param name="IpAddress">Source IP address.</param>
+/// <param name="UserAgent">Client user-agent string captured at the time of the operation.</param>
 /// <param name="TenantId">Tenant identifier.</param>
 /// <param name="CorrelationId">Distributed tracing correlation ID.</param>
 /// <param name="EntityChanges">Nested entity and property changes.</param>
@@ -19,6 +20,7 @@ public sealed record AuditEntryDetailResponse(
     string? UserName,
     string Category,
     string? IpAddress,
+    string? UserAgent,
     Guid? TenantId,
     string? CorrelationId,
     IReadOnlyList<AuditEntityChangeResponse> EntityChanges);

@@ -31,6 +31,7 @@ internal static class AuditingResponseMapper
             entry.UserName,
             entry.Category.ToString(),
             entry.IpAddress,
+            entry.UserAgent,
             entry.TenantId,
             entry.CorrelationId,
             entry.EntityChanges.Select(ToEntityChangeResponse).ToList());

@@ -27,6 +27,7 @@ public sealed class AuditEntryDetailResponseTests
             "Jane Doe",
             "ConfigurationChange",
             "10.0.0.1",
+            "Mozilla/5.0",
             null,
             "trace-1",
             changes);
@@ -36,6 +37,8 @@ public sealed class AuditEntryDetailResponseTests
         response.UserId.ShouldBe("user-1");
         response.UserName.ShouldBe("Jane Doe");
         response.Category.ShouldBe("ConfigurationChange");
+        response.IpAddress.ShouldBe("10.0.0.1");
+        response.UserAgent.ShouldBe("Mozilla/5.0");
         response.EntityChanges.ShouldHaveSingleItem();
         response.EntityChanges[0].EntityType.ShouldBe("Patient");
         response.EntityChanges[0].PropertyChanges.ShouldHaveSingleItem();
@@ -50,6 +53,7 @@ public sealed class AuditEntryDetailResponseTests
             "user-1",
             null,
             "DataMutation",
+            null,
             null,
             null,
             null,
