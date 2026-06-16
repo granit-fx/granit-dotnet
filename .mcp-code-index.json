@@ -7677,7 +7677,7 @@
       "kind": "record",
       "project": "Granit.Auditing.Endpoints",
       "file": "src/Granit.Auditing.Endpoints/Dtos/AuditEntryDetailResponse.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -15837,7 +15837,7 @@
       "kind": "record",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Dtos/Import/ImportJobResponse.cs",
-      "line": 17,
+      "line": 20,
       "members": []
     },
     {
@@ -44906,7 +44906,7 @@
       "kind": "record",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyExportStatusResponse.cs",
-      "line": 17,
+      "line": 19,
       "members": []
     },
     {
@@ -49466,7 +49466,7 @@
       "kind": "record",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Dtos/TemplateRevisionResponse.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {

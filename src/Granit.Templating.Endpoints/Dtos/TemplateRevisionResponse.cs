@@ -6,6 +6,7 @@ namespace Granit.Templating.Endpoints.Dtos;
 /// <param name="Content">Raw template source content.</param>
 /// <param name="MimeType">MIME type of the content (e.g. <c>text/html</c>).</param>
 /// <param name="Status">Lifecycle status (<c>Draft</c>, <c>Published</c>, or <c>Archived</c>).</param>
+/// <param name="Version">Monotonically increasing version number within the same template key.</param>
 /// <param name="CreatedAt">UTC timestamp of creation.</param>
 /// <param name="CreatedBy">Identity of the user who created this revision.</param>
 /// <param name="PublishedAt">UTC timestamp of publication; <c>null</c> for drafts.</param>
@@ -17,6 +18,7 @@ public sealed record TemplateRevisionResponse(
     string Content,
     string MimeType,
     WorkflowLifecycleStatus Status,
+    int Version,
     DateTimeOffset CreatedAt,
     string CreatedBy,
     DateTimeOffset? PublishedAt,

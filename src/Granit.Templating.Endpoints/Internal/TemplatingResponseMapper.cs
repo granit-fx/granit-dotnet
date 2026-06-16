@@ -24,6 +24,7 @@ internal static class TemplatingResponseMapper
             revision.Content,
             revision.MimeType,
             revision.Status,
+            revision.Version,
             revision.CreatedAt,
             revision.CreatedBy,
             revision.PublishedAt,
