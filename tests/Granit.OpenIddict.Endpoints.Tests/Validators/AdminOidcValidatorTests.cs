@@ -80,6 +80,102 @@ public sealed class AdminOidcCreateApplicationRequestValidatorTests
         TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
         result.ShouldNotHaveValidationErrorFor(x => x.DisplayName);
     }
+
+    [Fact]
+    public void ConsentType_exceeding_max_length_fails()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", ConsentType: new string('a', 65));
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldHaveValidationErrorFor(x => x.ConsentType);
+    }
+
+    [Fact]
+    public void ConsentType_at_max_length_passes()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", ConsentType: new string('a', 64));
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldNotHaveValidationErrorFor(x => x.ConsentType);
+    }
+
+    [Fact]
+    public void SigningKeyJwk_exceeding_max_length_fails()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", SigningKeyJwk: new string('a', 65537));
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldHaveValidationErrorFor(x => x.SigningKeyJwk);
+    }
+
+    [Fact]
+    public void SigningKeyJwk_at_max_length_passes()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", SigningKeyJwk: new string('a', 65536));
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldNotHaveValidationErrorFor(x => x.SigningKeyJwk);
+    }
+
+    [Fact]
+    public void Permission_empty_string_in_array_fails()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", Permissions: ["ept:token", ""]);
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldHaveValidationErrorFor("Permissions[1]");
+    }
+
+    [Fact]
+    public void Permission_exceeding_max_length_fails()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", Permissions: [new string('a', 513)]);
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldHaveValidationErrorFor("Permissions[0]");
+    }
+
+    [Fact]
+    public void Null_permissions_skips_element_validation()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", Permissions: null);
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Fact]
+    public void RedirectUri_relative_uri_fails()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", RedirectUris: ["not-absolute"]);
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldHaveValidationErrorFor("RedirectUris[0]");
+    }
+
+    [Fact]
+    public void RedirectUri_absolute_uri_passes()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", RedirectUris: ["https://example.com/callback"]);
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldNotHaveValidationErrorFor("RedirectUris[0]");
+    }
+
+    [Fact]
+    public void Null_redirect_uris_skips_element_validation()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", RedirectUris: null);
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Fact]
+    public void PostLogoutRedirectUri_relative_uri_fails()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", PostLogoutRedirectUris: ["not-absolute"]);
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldHaveValidationErrorFor("PostLogoutRedirectUris[0]");
+    }
+
+    [Fact]
+    public void Null_post_logout_redirect_uris_skips_element_validation()
+    {
+        AdminOidcCreateApplicationRequest request = new("valid-client", PostLogoutRedirectUris: null);
+        TestValidationResult<AdminOidcCreateApplicationRequest> result = _validator.TestValidate(request);
+        result.ShouldNotHaveAnyValidationErrors();
+    }
 }
 
 public sealed class AdminOidcCreateScopeRequestValidatorTests

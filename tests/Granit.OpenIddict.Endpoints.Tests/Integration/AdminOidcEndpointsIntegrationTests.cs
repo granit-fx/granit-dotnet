@@ -1060,6 +1060,45 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     }
 
     // -------------------------------------------------------------------------
+    // ConsentOidcEndpoints — GET /oidc/applications/{clientId}
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task GetApplicationInfo_ExistingApp_ReturnsClientIdAndDisplayName()
+    {
+        object app = new();
+
+        _server.ApplicationManager.FindByClientIdAsync("consent-client", Arg.Any<CancellationToken>())
+            .Returns(app);
+        _server.ApplicationManager.GetDisplayNameAsync(app, Arg.Any<CancellationToken>())
+            .Returns("Consent App");
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .GetAsync("/oidc/applications/consent-client", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        OidcApplicationInfoResponse? result = await response.Content
+            .ReadFromJsonAsync<OidcApplicationInfoResponse>(TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.ClientId.ShouldBe("consent-client");
+        result.DisplayName.ShouldBe("Consent App");
+    }
+
+    [Fact]
+    public async Task GetApplicationInfo_NotFound_Returns404()
+    {
+        _server.ApplicationManager.FindByClientIdAsync("unknown-client", Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .GetAsync("/oidc/applications/unknown-client", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 

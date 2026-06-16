@@ -94,6 +94,23 @@ public sealed class OidcPrincipalFactoryTests
     }
 
     [Fact]
+    public async Task CreateUserPrincipal_OnlyLastName_SetsNameAndFamilyNameWithoutGivenName()
+    {
+        LocalIdentity user = CreateTestUser();
+        user.FirstName = null;
+        user.LastName = "Doe";
+        SetupUserManager(user);
+
+        ClaimsPrincipal principal = await _factory.CreateUserPrincipalAsync(
+            user, [], "TestScheme", TestContext.Current.CancellationToken);
+
+        ClaimsIdentity identity = principal.Identity.ShouldBeOfType<ClaimsIdentity>();
+        identity.FindFirst(OpenIddictConstants.Claims.Name)?.Value.ShouldBe("Doe");
+        identity.FindFirst(OpenIddictConstants.Claims.FamilyName)?.Value.ShouldBe("Doe");
+        identity.FindFirst(OpenIddictConstants.Claims.GivenName).ShouldBeNull();
+    }
+
+    [Fact]
     public async Task CreateUserPrincipal_NullNames_NoNameClaim()
     {
         LocalIdentity user = CreateTestUser();
