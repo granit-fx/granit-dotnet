@@ -18,6 +18,7 @@ namespace Granit.Authentication.ApiKeys.Endpoints.Dtos;
 /// <param name="RevokedAt">Revocation timestamp, if revoked.</param>
 /// <param name="CacheBehavior">Cache behavior.</param>
 /// <param name="CreatedAt">Creation timestamp.</param>
+/// <param name="ModifiedAt">Last modification timestamp; <c>null</c> until the key is first modified (e.g. scope update).</param>
 public sealed record ApiKeyResponse(
     Guid Id,
     string Name,
@@ -31,7 +32,8 @@ public sealed record ApiKeyResponse(
     DateTimeOffset? LastUsedAt,
     DateTimeOffset? RevokedAt,
     CacheBehavior CacheBehavior,
-    DateTimeOffset CreatedAt)
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? ModifiedAt)
 {
     /// <summary>Maps an <see cref="ApiKeyEntry"/> to a response DTO.</summary>
     internal static ApiKeyResponse FromEntry(ApiKeyEntry entry) =>
@@ -47,5 +49,6 @@ public sealed record ApiKeyResponse(
             entry.LastUsedAt,
             entry.RevokedAt,
             entry.CacheBehavior,
-            entry.CreatedAt);
+            entry.CreatedAt,
+            entry.ModifiedAt);
 }

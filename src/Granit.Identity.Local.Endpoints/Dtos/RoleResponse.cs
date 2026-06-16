@@ -12,6 +12,7 @@ namespace Granit.Identity.Local.Endpoints.Dtos;
 /// <param name="IsSystem"><c>true</c> for platform-seeded roles (cannot be renamed or deleted).</param>
 /// <param name="CreatedAt">Creation timestamp.</param>
 /// <param name="ModifiedAt">Last modification timestamp.</param>
+/// <param name="ConcurrencyStamp">Opaque optimistic-concurrency token. Pass back in update requests to detect concurrent modifications (HTTP 409).</param>
 public sealed record RoleResponse(
     Guid Id,
     string Name,
@@ -21,4 +22,5 @@ public sealed record RoleResponse(
     string? Description,
     bool IsSystem,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? ModifiedAt);
+    DateTimeOffset? ModifiedAt,
+    string ConcurrencyStamp);

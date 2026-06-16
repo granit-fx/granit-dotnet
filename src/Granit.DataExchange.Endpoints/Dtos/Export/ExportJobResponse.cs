@@ -5,6 +5,7 @@ namespace Granit.DataExchange.Endpoints.Dtos.Export;
 
 /// <summary>
 /// Response DTO for an export job summary.
+/// <para><c>ConcurrencyStamp</c>: opaque optimistic-concurrency token; pass back in update requests to detect concurrent modifications (HTTP 409).</para>
 /// </summary>
 public sealed record ExportJobResponse(
     Guid Id,
@@ -17,12 +18,14 @@ public sealed record ExportJobResponse(
     DateTimeOffset CreatedAt,
     DateTimeOffset? CompletedAt,
     DateTimeOffset? ModifiedAt,
-    string? ModifiedBy)
+    string? ModifiedBy,
+    string ConcurrencyStamp)
 {
     /// <summary>
     /// Maps an <see cref="ExportJob"/> domain entity to a response DTO.
     /// </summary>
     internal static ExportJobResponse FromJob(ExportJob job) =>
         new(job.Id, job.DefinitionName, job.Format, job.Status, job.RowCount,
-            job.FileName, job.ErrorMessage, job.CreatedAt, job.CompletedAt, job.ModifiedAt, job.ModifiedBy);
+            job.FileName, job.ErrorMessage, job.CreatedAt, job.CompletedAt, job.ModifiedAt, job.ModifiedBy,
+            job.ConcurrencyStamp);
 }

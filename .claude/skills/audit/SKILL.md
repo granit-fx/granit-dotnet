@@ -68,7 +68,7 @@ FLAGS
     naming        Permissions, events, jobs, DTOs, module homogeneity, SectionName hierarchy
     http          HTTP conventions, status codes, pagination, caching
     openapi       Endpoint metadata (5 mandatory elements)
-    persistence   DbContext, EF Core, interceptors, concurrency
+    persistence   DbContext, EF Core, interceptors, concurrency, DTO stamp/audit gaps
     ddd           Aggregate roots, value objects, factory methods
     validation    FluentValidation, localization, MapGranitGroup
     events        Domain events (*Event) and integration events (*Eto)
@@ -309,6 +309,22 @@ After auditing individual modules, perform cross-cutting checks:
    in-memory caches used as source of truth, migrations applied at boot, and
    liveness probes coupled to external dependencies. These patterns tend to repeat
    module-to-module, so call them out as a cross-cutting cluster, not one-offs.
+14. **DTO enrichment completeness** (`--scope persistence` / `--scope ddd`,
+   checklist §6d–§6f) — scan every module that has a `.Endpoints` satellite for two
+   systemic gaps. Cluster findings as "DTO enrichment gaps" and propose exact DTO
+   parameter additions following the `ImportJobResponse` pattern.
+
+   **Missing `ConcurrencyStamp`**: entity implements `IConcurrencyAware` AND a
+   mutation endpoint (PUT/PATCH/state-change POST) exists, but the `*Response` DTO
+   does not include `ConcurrencyStamp`. The client cannot build a conflict-safe
+   round-trip without it. Severity: `IMPROVEMENT` (bumps to `CONVENTION` when a
+   `409` path is already declared on the endpoint).
+
+   **Missing `ModifiedAt`**: entity inherits `AuditedAggregateRoot`,
+   `FullAuditedAggregateRoot`, `AuditedEntity`, or `FullAuditedEntity`, but the
+   `*Response` DTO omits `modifiedAt` (`DateTimeOffset?`, nullable). `CreationAudited*`
+   entities that correctly expose only `createdAt` are NOT a finding. Severity:
+   `IMPROVEMENT` (bumps to `CONVENTION` when a mutation endpoint exists).
 
 ### Context window discipline
 

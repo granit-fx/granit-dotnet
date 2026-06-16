@@ -55,5 +55,6 @@ internal static class SchedulingReadEndpoints
             action.ExecutedAt,
             action.CancelledBy,
             action.FailureReason,
-            action.CreatedAt);
+            action.CreatedAt,
+            action.ModifiedAt);
 }

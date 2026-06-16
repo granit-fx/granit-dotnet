@@ -8697,7 +8697,7 @@
       "kind": "record",
       "project": "Granit.Authentication.ApiKeys.Endpoints",
       "file": "src/Granit.Authentication.ApiKeys.Endpoints/Dtos/ApiKeyResponse.cs",
-      "line": 21,
+      "line": 22,
       "members": []
     },
     {
@@ -15801,7 +15801,7 @@
       "kind": "record",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Dtos/Export/ExportJobResponse.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -29404,7 +29404,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/RoleResponse.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -47980,7 +47980,7 @@
       "kind": "record",
       "project": "Granit.Scheduling.Endpoints",
       "file": "src/Granit.Scheduling.Endpoints/Dtos/ScheduledActionResponse.cs",
-      "line": 17,
+      "line": 18,
       "members": []
     },
     {

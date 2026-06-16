@@ -855,7 +855,75 @@ Ref: `docs-site/…/data/interceptors.mdx`
 - [ ] Tests use SQLite or Testcontainers — never `UseInMemoryDatabase()` for
   concurrency (ignores tokens → false positive)
 
+**Detection strategy — `ConcurrencyStamp` gap in response DTOs:**
+
+1. Find all `IConcurrencyAware` entities in the module:
+
+   ```bash
+   grep -rl "IConcurrencyAware" src/Granit.{Module}/ --include="*.cs"
+   ```
+
+2. For each entity, confirm at least one **mutation** endpoint exists (PUT, PATCH,
+   or a POST that updates state) in the matching `.Endpoints` project.
+3. Locate the corresponding `*Response` DTO (usually `{EntityName}Response.cs` in
+   `src/Granit.{Module}.Endpoints/Dtos/`).
+4. Check whether `ConcurrencyStamp` (type `string`, non-null) is among the record
+   parameters. If absent while the entity implements `IConcurrencyAware` AND a
+   mutation endpoint exists → **IMPROVEMENT** finding.
+   - Severity bumps to **CONVENTION** when a round-trip conflict path (409) is
+     already declared on the endpoint but the stamp is not exposed — the client
+     cannot build the ETag without it.
+5. Also check the matching `*Request` DTO for the mutation endpoint: it should accept
+   the stamp back via `IConcurrencyStampRequest` (separate story — flag as
+   **IMPROVEMENT** if missing but do not block on it).
+
+Reference implementation: `ImportJobResponse` / `ExportJobResponse` in
+`Granit.DataExchange.Endpoints`.
+
 Ref: `docs-site/…/data/concurrency.mdx`
+
+### 6f. Response DTO completeness — audit fields
+
+Every `*Response` DTO must expose the audit fields that its domain entity inherits
+from the base class, so that clients can display provenance and sort/filter
+without a second request.
+
+**Rules by base class:**
+
+| Entity base | Required in `*Response` | Optional |
+| ----------- | ----------------------- | -------- |
+| `AuditedEntity` / `AuditedAggregateRoot` | `createdAt` (non-null), `modifiedAt` (nullable) | `createdBy`, `modifiedBy` |
+| `FullAuditedEntity` / `FullAuditedAggregateRoot` | `createdAt`, `modifiedAt` (nullable) | `createdBy`, `modifiedBy`, `deletedAt`, `deletedBy` |
+| `CreationAuditedEntity` / `CreationAuditedAggregateRoot` | `createdAt` (non-null) | `createdBy` — **do NOT add `modifiedAt`** (not provided by base) |
+| `Entity` | — | nothing |
+
+`modifiedAt` is always **nullable** (`DateTimeOffset?`) — `null` until the first
+mutation occurs. Never use `updatedAt` (convention: `modifiedAt`).
+
+**Detection strategy:**
+
+1. For each domain entity in `src/Granit.{Module}/`, inspect its base class:
+
+   ```bash
+   grep -rn "AuditedAggregateRoot\|FullAuditedAggregateRoot\|AuditedEntity\|FullAuditedEntity" \
+     src/Granit.{Module}/ --include="*.cs"
+   ```
+
+2. Locate the corresponding `*Response` DTO in `src/Granit.{Module}.Endpoints/Dtos/`.
+
+3. Check whether `ModifiedAt` (or `modifiedAt`) appears in the record parameter list.
+   Absence on an `Audited*` entity → **IMPROVEMENT** finding (bumps to **CONVENTION**
+   if the entity has a mutation endpoint, because the client cannot know the
+   last-update time without polling).
+
+4. `CreationAudited*` entities that correctly expose only `CreatedAt` are **NOT** a
+   finding — do not flag the absence of `ModifiedAt` on these.
+
+Reference implementations: `RoleResponse` (with `ModifiedAt`),
+`NotificationSubscriptionResponse` (correctly `CreatedAt`-only,
+`CreationAuditedEntity`), `ImportJobResponse` (full set).
+
+Ref: `CLAUDE.md §DTOs`, `docs-site/…/data/persistence.mdx`
 
 ### 6e. Migrations
 

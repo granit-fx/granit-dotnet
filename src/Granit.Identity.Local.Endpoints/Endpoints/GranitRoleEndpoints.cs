@@ -313,5 +313,6 @@ internal static class GranitRoleEndpoints
             role.Description,
             role.IsSystem,
             role.CreatedAt,
-            role.ModifiedAt);
+            role.ModifiedAt,
+            role.ConcurrencyStamp);
 }

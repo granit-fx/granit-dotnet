@@ -14,6 +14,7 @@ namespace Granit.Scheduling.Endpoints.Dtos;
 /// <param name="CancelledBy">The user who cancelled the action (null if not cancelled).</param>
 /// <param name="FailureReason">Error message if the action failed.</param>
 /// <param name="CreatedAt">The UTC timestamp when the action was created.</param>
+/// <param name="ModifiedAt">The UTC timestamp of the last state change (reschedule, cancellation, execution); <c>null</c> if the action was never modified.</param>
 public sealed record ScheduledActionResponse(
     Guid Id,
     string PayloadType,
@@ -23,4 +24,5 @@ public sealed record ScheduledActionResponse(
     DateTimeOffset? ExecutedAt,
     string? CancelledBy,
     string? FailureReason,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? ModifiedAt);
