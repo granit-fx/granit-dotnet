@@ -144,6 +144,8 @@ group.MapGet("/{id:guid}", GetByIdAsync)
 
 `Ok<T>`→`.Produces<T>()`, `Created<T>`→`.Produces<T>(201)`, `NotFound`→`.ProducesProblem(404)`, `ValidationProblem`→`.ProducesValidationProblem()`, `FileStreamHttpResult`→`.Produces(200, contentType: "application/octet-stream")`.
 
+Handlers are `private static` **named methods** referenced by method-group (`MapGet("/", GetByIdAsync)`) — never inline lambdas (lambdas can't carry OpenAPI metadata cleanly and aren't testable in isolation). `internal static` reserved for shared helpers/factories. Endpoints are tested at HTTP level via `Granit.Testing.Endpoints.GranitEndpointTestHost`, not by invoking handlers directly. Rare trampolines (`(...) => HandleXxxAsync(...)`) are allowed only where Minimal API can't bind the handler signature (streaming, manual `HttpContext`, OpenIddict transactions) — delegate to a named method, document inline.
+
 ### OpenAPI tags (STRICT)
 
 Every `*.Endpoints` module attaches `.WithTags(...)` on its root group. Format: `Title Case With Spaces` (`Blob Storage`, `Background Jobs`) — NEVER glued PascalCase, kebab-case, or snake_case. Multi-tag: `<Module> - <SubGroup>` (space-dash-space) — `AI - Workspaces`, `Identity - Webhook`. Expose via `TagName` on `*EndpointsOptions` (overridable per-app). `Granit.Http.ApiDocumentation` auto-emits a sorted `document.Tags` array.
