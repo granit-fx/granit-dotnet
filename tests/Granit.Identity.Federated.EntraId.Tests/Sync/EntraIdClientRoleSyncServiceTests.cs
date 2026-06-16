@@ -81,7 +81,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
             Arg.Is<RoleMetadata>(r => r.ClientId == appId && r.MultiTenancySides == MultiTenancySides.Host
                 && !r.IsSystem && r.TenantId == null),
             Arg.Any<CancellationToken>());
-        await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
+        await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
         await sut.SyncAsync(TestContext.Current.CancellationToken);
 
         await _store.DidNotReceive().AddAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
-        await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
+        await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
 
         await _store.Received(1).UpdateAsync(
             Arg.Is<RoleMetadata>(r => r.Description == "NEW description"),
-            Arg.Any<CancellationToken>());
+            Arg.Any<string?>(), Arg.Any<CancellationToken>());
         await _store.DidNotReceive().AddAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
     }
 
@@ -158,7 +158,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
         await sut.SyncAsync(TestContext.Current.CancellationToken);
 
         orphan.IsOrphaned.ShouldBeFalse();
-        await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
+        await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
         await _store.DidNotReceive().RemoveAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
     }
 
@@ -179,7 +179,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
         orphan.IsOrphaned.ShouldBeTrue();
         orphan.OrphanedAt.ShouldBe(_clock.Now);
         await _store.Received(1).UpdateAsync(
-            Arg.Is<RoleMetadata>(r => r.IsOrphaned), Arg.Any<CancellationToken>());
+            Arg.Is<RoleMetadata>(r => r.IsOrphaned), Arg.Any<string?>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
 
         await sut.SyncAsync(TestContext.Current.CancellationToken);
 
-        await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
+        await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -239,6 +239,6 @@ public sealed class EntraIdClientRoleSyncServiceTests
         previouslyOrphaned.OrphanedAt.ShouldBeNull();
         await _store.Received(1).UpdateAsync(
             Arg.Is<RoleMetadata>(r => !r.IsOrphaned && r.Name == "Editor"),
-            Arg.Any<CancellationToken>());
+            Arg.Any<string?>(), Arg.Any<CancellationToken>());
     }
 }

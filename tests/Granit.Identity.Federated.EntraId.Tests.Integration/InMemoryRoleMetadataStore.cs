@@ -39,7 +39,7 @@ internal sealed class InMemoryRoleMetadataStore : IRoleMetadataStore
         return Task.CompletedTask;
     }
 
-    public Task UpdateAsync(RoleMetadata role, CancellationToken cancellationToken = default) =>
+    public Task UpdateAsync(RoleMetadata role, string? concurrencyStamp = null, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
 
     public Task RemoveAsync(RoleMetadata role, CancellationToken cancellationToken = default)

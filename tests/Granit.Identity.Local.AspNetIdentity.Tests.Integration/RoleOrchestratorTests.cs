@@ -109,6 +109,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
             created.Id,
             newName: "AlphaPrime",
             newDescription: "Renamed.",
+            concurrencyStamp: created.ConcurrencyStamp,
             TestContext.Current.CancellationToken);
 
         GranitRole? identityRole = await roleManager.FindByIdAsync(created.Id.ToString("D"));
@@ -145,6 +146,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
                 alpha.Id,
                 newName: "Beta",
                 newDescription: null,
+                concurrencyStamp: alpha.ConcurrencyStamp,
                 TestContext.Current.CancellationToken));
 
         // Invariant: the Identity-side GranitRole kept its original name.
@@ -168,6 +170,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
         InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(async () =>
             await orchestrator.RenameAsync(
                 system.Id, newName: "NotSuperAdmin", newDescription: null,
+                concurrencyStamp: system.ConcurrencyStamp,
                 TestContext.Current.CancellationToken));
 
         ex.Message.ShouldContain("system role");

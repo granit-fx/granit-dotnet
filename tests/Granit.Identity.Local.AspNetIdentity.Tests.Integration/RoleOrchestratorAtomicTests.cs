@@ -111,6 +111,7 @@ public sealed class RoleOrchestratorAtomicTests
 
         await renameOrchestrator.RenameAsync(
             created.Id, newName: "AlphaPrime", newDescription: "renamed",
+            concurrencyStamp: created.ConcurrencyStamp,
             TestContext.Current.CancellationToken);
 
         GranitRole? identityRole = await roleManager.FindByIdAsync(created.Id.ToString("D"));
