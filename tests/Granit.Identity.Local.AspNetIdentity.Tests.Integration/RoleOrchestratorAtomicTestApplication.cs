@@ -3,6 +3,7 @@ using Granit.Guids.Extensions;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.Persistence.EntityFrameworkCore.SharedConnection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -49,7 +50,10 @@ public sealed class RoleOrchestratorAtomicTestApplication : IAsyncLifetime
         // Host DbContext registered via factory — the atomic path's IAuthorizationHostDbContextAccessor
         // requires IDbContextFactory<THost> to create a fresh context for SetDbConnection.
         services.AddDbContextFactory<TestHostDbContext>(opts =>
-            opts.UseNpgsql(_postgres.ConnectionString));
+        {
+            opts.UseNpgsql(_postgres.ConnectionString);
+            opts.AddInterceptors(new ConcurrencyStampInterceptor());
+        });
 
         services.AddIdentityCore<LocalIdentity>()
             .AddRoles<GranitRole>()

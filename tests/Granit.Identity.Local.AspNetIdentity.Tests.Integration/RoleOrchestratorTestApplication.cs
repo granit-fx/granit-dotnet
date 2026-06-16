@@ -3,6 +3,7 @@ using Granit.Guids.Extensions;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -45,7 +46,10 @@ public sealed class RoleOrchestratorTestApplication : IAsyncLifetime
         services.AddDbContext<TestIdentityDbContext>(opts =>
             opts.UseNpgsql(_postgres.ConnectionString));
         services.AddDbContext<TestHostDbContext>(opts =>
-            opts.UseNpgsql(_postgres.ConnectionString));
+        {
+            opts.UseNpgsql(_postgres.ConnectionString);
+            opts.AddInterceptors(new ConcurrencyStampInterceptor());
+        });
 
         // ASP.NET Core Identity — lightweight IdentityCore pipeline is enough for the
         // orchestrator; no cookies / token providers / email services required.

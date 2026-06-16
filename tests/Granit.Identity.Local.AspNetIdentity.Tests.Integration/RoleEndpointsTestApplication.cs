@@ -5,6 +5,7 @@ using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Extensions;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.Testing.Fakes;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -71,7 +72,10 @@ public sealed class RoleEndpointsTestApplication : IAsyncLifetime
         builder.Services.AddDbContext<TestIdentityDbContext>(opts =>
             opts.UseNpgsql(_postgres.ConnectionString));
         builder.Services.AddDbContext<TestHostDbContext>(opts =>
-            opts.UseNpgsql(_postgres.ConnectionString));
+        {
+            opts.UseNpgsql(_postgres.ConnectionString);
+            opts.AddInterceptors(new ConcurrencyStampInterceptor());
+        });
 
         builder.Services.AddIdentityCore<LocalIdentity>()
             .AddRoles<GranitRole>()

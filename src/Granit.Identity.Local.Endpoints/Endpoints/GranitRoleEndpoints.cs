@@ -295,6 +295,11 @@ internal static class GranitRoleEndpoints
     /// </summary>
     private static bool CanMutate(RoleMetadata role, ICurrentTenant currentTenant)
     {
+        if (role.IsSystem)
+        {
+            return false;
+        }
+
         if (!currentTenant.IsAvailable)
         {
             return true;

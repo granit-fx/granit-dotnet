@@ -200,12 +200,12 @@ public sealed class GranitRoleEndpointsTests
     {
         using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
 
-        Guid roleId = await CreateViaEndpointAsync(
+        RoleResponseLite created = await CreateViaEndpointAsync(
             "Manager", MultiTenancySides.Tenant, tenantId: _tenantA);
 
         HttpResponseMessage response = await _app.HttpClient.PutAsJsonAsync(
-            $"/admin/roles/{roleId:D}",
-            new { name = "SeniorManager", description = "Renamed" },
+            $"/admin/roles/{created.Id:D}",
+            new { name = "SeniorManager", description = "Renamed", concurrencyStamp = created.ConcurrencyStamp },
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -221,16 +221,16 @@ public sealed class GranitRoleEndpointsTests
     {
         using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
 
-        Guid roleId = await CreateViaEndpointAsync(
+        RoleResponseLite created = await CreateViaEndpointAsync(
             "Manager", MultiTenancySides.Tenant, tenantId: _tenantA);
 
         HttpResponseMessage response = await _app.HttpClient.DeleteAsync(
-            $"/admin/roles/{roleId:D}", TestContext.Current.CancellationToken);
+            $"/admin/roles/{created.Id:D}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         HttpResponseMessage getAfter = await _app.HttpClient.GetAsync(
-            $"/admin/roles/{roleId:D}", TestContext.Current.CancellationToken);
+            $"/admin/roles/{created.Id:D}", TestContext.Current.CancellationToken);
         getAfter.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
@@ -317,7 +317,7 @@ public sealed class GranitRoleEndpointsTests
     // helpers
     // ─────────────────────────────────────────────────────────────────────
 
-    private async Task<Guid> CreateViaEndpointAsync(
+    private async Task<RoleResponseLite> CreateViaEndpointAsync(
         string name, MultiTenancySides side, Guid? tenantId)
     {
         HttpResponseMessage response = await _app.HttpClient.PostAsJsonAsync(
@@ -333,7 +333,7 @@ public sealed class GranitRoleEndpointsTests
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         RoleResponseLite? created = await response.Content
             .ReadFromJsonAsync<RoleResponseLite>(TestContext.Current.CancellationToken);
-        return created!.Id;
+        return created!;
     }
 
     private async Task<RoleMetadata> SeedMetadataAsync(
@@ -362,5 +362,6 @@ public sealed class GranitRoleEndpointsTests
         Guid? TenantId,
         string? ClientId,
         string? Description,
-        bool IsSystem);
+        bool IsSystem,
+        string ConcurrencyStamp);
 }
