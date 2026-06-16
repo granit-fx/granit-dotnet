@@ -1,0 +1,18 @@
+<Project>
+  <!--
+    Activate Husky git hooks once per developer environment.
+    Skipped in CI (CI env var is set by all major CI/CD platforms).
+    The sentinel file (.git/.husky-configured) prevents the race condition
+    that occurs when MSBuild evaluates this target in parallel across all
+    projects on the first restore — subsequent builds are a no-op.
+  -->
+  <PropertyGroup>
+    <_HuskySentinel>$(MSBuildThisFileDirectory).git/.husky-configured</_HuskySentinel>
+  </PropertyGroup>
+
+  <Target Name="SetupGitHooks" BeforeTargets="Build"
+          Condition="'$(CI)' != 'true' AND !Exists('$(_HuskySentinel)')">
+    <Exec Command="git config core.hooksPath .husky" ContinueOnError="true" />
+    <Touch Files="$(_HuskySentinel)" AlwaysCreate="true" />
+  </Target>
+</Project>
