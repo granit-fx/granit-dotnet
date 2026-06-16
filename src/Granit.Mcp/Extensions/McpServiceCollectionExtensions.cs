@@ -101,13 +101,32 @@ public static class McpServiceCollectionExtensions
 
         foreach (Assembly assembly in moduleAssemblies)
         {
-            mcpBuilder.WithToolsFromAssembly(assembly);
-            mcpBuilder.WithPromptsFromAssembly(assembly);
+            try
+            {
+                mcpBuilder.WithToolsFromAssembly(assembly);
+                mcpBuilder.WithPromptsFromAssembly(assembly);
+            }
+            catch (ReflectionTypeLoadException)
+            {
+                // Assembly references internal types from another assembly via InternalsVisibleTo
+                // (e.g. EFC modules consuming an internal DbContext). No MCP tools live in those
+                // assemblies, so skipping is safe.
+            }
         }
 
         foreach (Assembly assembly in moduleAssemblies)
         {
-            IEnumerable<Type> contributorTypes = assembly.GetTypes()
+            Type[] types;
+            try
+            {
+                types = assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                types = ex.Types.Where(t => t is not null).ToArray()!;
+            }
+
+            IEnumerable<Type> contributorTypes = types
                 .Where(t => t is { IsAbstract: false, IsInterface: false }
                     && typeof(IMcpToolContributor).IsAssignableFrom(t));
 
