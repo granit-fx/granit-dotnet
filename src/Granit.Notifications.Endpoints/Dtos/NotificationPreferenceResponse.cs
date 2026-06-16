@@ -8,4 +8,6 @@ public sealed record NotificationPreferenceResponse(
     string UserId,
     string NotificationTypeName,
     string ChannelName,
-    bool IsEnabled);
+    bool IsEnabled,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? ModifiedAt);

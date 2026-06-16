@@ -58,7 +58,7 @@ internal static class PreferenceEndpoints
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
         IReadOnlyList<NotificationPreference> preferences = await reader.GetListAsync(userId, tenantId).ConfigureAwait(false);
         var result = preferences
-            .Select(p => new NotificationPreferenceResponse(p.Id, p.UserId, p.NotificationTypeName, p.ChannelName, p.IsEnabled))
+            .Select(p => new NotificationPreferenceResponse(p.Id, p.UserId, p.NotificationTypeName, p.ChannelName, p.IsEnabled, p.CreatedAt, p.ModifiedAt))
             .ToList();
         return TypedResults.Ok(result);
     }

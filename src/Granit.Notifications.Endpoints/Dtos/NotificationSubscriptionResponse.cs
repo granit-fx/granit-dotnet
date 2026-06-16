@@ -8,4 +8,5 @@ public sealed record NotificationSubscriptionResponse(
     string UserId,
     string NotificationTypeName,
     string? EntityType,
-    string? EntityId);
+    string? EntityId,
+    DateTimeOffset CreatedAt);

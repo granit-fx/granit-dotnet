@@ -21,7 +21,7 @@ internal static class NotificationsResponseMapper
     public static List<NotificationSubscriptionResponse> ToSubscriptionResponses(
         IReadOnlyList<NotificationSubscription> subscriptions) =>
         subscriptions.Select(s => new NotificationSubscriptionResponse(
-            s.Id, s.UserId, s.NotificationTypeName, s.EntityType, s.EntityId)).ToList();
+            s.Id, s.UserId, s.NotificationTypeName, s.EntityType, s.EntityId, s.CreatedAt)).ToList();
 
     /// <summary>Extracts the user identifier from the current <see cref="ClaimsPrincipal"/>.</summary>
     /// <exception cref="UnauthorizedAccessException">Thrown when no user identifier claim is found.</exception>
