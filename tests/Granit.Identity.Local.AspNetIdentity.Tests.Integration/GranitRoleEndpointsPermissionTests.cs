@@ -153,7 +153,7 @@ public sealed class GranitRoleEndpointsPermissionTests
 
         HttpResponseMessage put = await client.PutAsJsonAsync(
             $"/admin/roles/{created!.Id:D}",
-            new { name = "SeniorAuditor" },
+            new { name = "SeniorAuditor", concurrencyStamp = created.ConcurrencyStamp },
             TestContext.Current.CancellationToken);
         put.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
@@ -282,5 +282,6 @@ public sealed class GranitRoleEndpointsPermissionTests
         Guid? TenantId,
         string? ClientId,
         string? Description,
-        bool IsSystem);
+        bool IsSystem,
+        string ConcurrencyStamp);
 }
