@@ -847,38 +847,67 @@ Ref: `docs-site/…/data/interceptors.mdx`
 
 ### 6d. Concurrency
 
+Checklist items cover the full 7-link round-trip from entity to HTTP response and
+back to the database conflict check.
+
 - [ ] `IConcurrencyAware` entities have `ConcurrencyStamp` property
-- [ ] Response DTOs include `ConcurrencyStamp`
-- [ ] Request DTOs accept stamp back (implement `IConcurrencyStampRequest`)
-- [ ] `DbUpdateConcurrencyException` mapped to HTTP 409 via
-  `EfCoreExceptionStatusCodeMapper`
-- [ ] Tests use SQLite or Testcontainers — never `UseInMemoryDatabase()` for
-  concurrency (ignores tokens → false positive)
+- [ ] `*Response` DTO includes `string ConcurrencyStamp` (non-null, no default)
+- [ ] `*Request` DTO for the mutation endpoint implements `IConcurrencyStampRequest`
+  with a `string ConcurrencyStamp` parameter
+- [ ] `*RequestValidator` enforces `RuleFor(x => x.ConcurrencyStamp).NotEmpty()`
+- [ ] Service / orchestrator interface mutation method accepts `string concurrencyStamp`
+  as a **required** (non-optional) parameter before `CancellationToken`
+- [ ] Store interface `UpdateAsync` (or equivalent) accepts
+  `string? concurrencyStamp = null` — optional so internal callers that never hold a
+  client stamp compile without change
+- [ ] Store implementation calls
+  `context.SetConcurrencyStampOriginalValue(entity, concurrencyStamp)` **after**
+  `context.Update(entity)` / attach, **before** `SaveChangesAsync` — the order is
+  critical; calling it before `Update()` loses the override because `Update()` resets
+  entry state
+- [ ] `DbUpdateConcurrencyException` mapped to HTTP 409 via `EfCoreExceptionStatusCodeMapper`
+- [ ] Tests use SQLite or Testcontainers — never `UseInMemoryDatabase()` for concurrency
+  (in-memory provider ignores concurrency tokens → false positive)
 
-**Detection strategy — `ConcurrencyStamp` gap in response DTOs:**
+**Detection strategy — full concurrency round-trip:**
 
-1. Find all `IConcurrencyAware` entities in the module:
+For each `IConcurrencyAware` entity that has a mutation endpoint (PUT/PATCH/state-change
+POST) in the matching `.Endpoints` project, verify the **7-link chain** in order:
 
-   ```bash
-   grep -rl "IConcurrencyAware" src/Granit.{Module}/ --include="*.cs"
-   ```
+| # | Link | What to check |
+| --- | --- | --- |
+| 1 | Entity | Implements `IConcurrencyAware` (has `ConcurrencyStamp`) |
+| 2 | `*Response` DTO | `string ConcurrencyStamp` record param (non-null, no default) |
+| 3 | `*Request` DTO | Implements `IConcurrencyStampRequest`; has `string ConcurrencyStamp` |
+| 4 | `*RequestValidator` | `RuleFor(x => x.ConcurrencyStamp).NotEmpty()` |
+| 5 | Service interface | Mutation signature includes `string concurrencyStamp` (required) |
+| 6 | Store interface | `UpdateAsync(entity, string? concurrencyStamp = null, CancellationToken ct = default)` |
+| 7 | Store implementation | `SetConcurrencyStampOriginalValue` after attach, before `SaveChangesAsync` |
 
-2. For each entity, confirm at least one **mutation** endpoint exists (PUT, PATCH,
-   or a POST that updates state) in the matching `.Endpoints` project.
-3. Locate the corresponding `*Response` DTO (usually `{EntityName}Response.cs` in
-   `src/Granit.{Module}.Endpoints/Dtos/`).
-4. Check whether `ConcurrencyStamp` (type `string`, non-null) is among the record
-   parameters. If absent while the entity implements `IConcurrencyAware` AND a
-   mutation endpoint exists → **IMPROVEMENT** finding.
-   - Severity bumps to **CONVENTION** when a round-trip conflict path (409) is
-     already declared on the endpoint but the stamp is not exposed — the client
-     cannot build the ETag without it.
-5. Also check the matching `*Request` DTO for the mutation endpoint: it should accept
-   the stamp back via `IConcurrencyStampRequest` (separate story — flag as
-   **IMPROVEMENT** if missing but do not block on it).
+Severity by broken link:
 
-Reference implementation: `ImportJobResponse` / `ExportJobResponse` in
-`Granit.DataExchange.Endpoints`.
+| Missing link | Severity |
+| --- | --- |
+| Link 2 absent | IMPROVEMENT (→ CONVENTION when 409 path is declared on endpoint) |
+| Links 3–5 absent while link 2 is present | CONVENTION (stamp is exposed but client cannot use it for conflict detection) |
+| Link 6 absent (store ignores the stamp parameter) | CONVENTION |
+| Link 7 absent (stamp accepted but never set as original value) | BREAKING — silent overwrite; the interceptor regenerates the stamp on save, so the EF token always matches; 409 never fires |
+
+**Caller fixup risk when adding link 6.** Inserting `string? concurrencyStamp = null`
+before `CancellationToken` in an existing store interface shifts `CancellationToken`
+from position 2 to position 3. Existing positional callers `UpdateAsync(entity, ct)`
+pass the token as `concurrencyStamp`. When the types differ (`CancellationToken` vs
+`string?`) the compiler catches it; when they are accidentally compatible it is a
+silent bug. Fix: add named `cancellationToken: ct` to every non-stamp caller. Grep:
+
+```bash
+grep -rn "\.UpdateAsync([^)]*,\s*cancellationToken)" src/ --include="*.cs"
+```
+
+**Reference implementation:** `RoleMetadata` → `RoleUpdateRequest : IConcurrencyStampRequest`
+→ `RoleUpdateRequestValidator` → `IGranitRoleOrchestrator.RenameAsync(…, string concurrencyStamp, …)`
+→ `IRoleMetadataStore.UpdateAsync(…, string? concurrencyStamp = null, …)`
+→ `EfCoreRoleMetadataStore.UpdateAsync` calls `context.SetConcurrencyStampOriginalValue`.
 
 Ref: `docs-site/…/data/concurrency.mdx`
 

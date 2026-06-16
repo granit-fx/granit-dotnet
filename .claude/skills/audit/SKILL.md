@@ -314,11 +314,35 @@ After auditing individual modules, perform cross-cutting checks:
    systemic gaps. Cluster findings as "DTO enrichment gaps" and propose exact DTO
    parameter additions following the `ImportJobResponse` pattern.
 
-   **Missing `ConcurrencyStamp`**: entity implements `IConcurrencyAware` AND a
-   mutation endpoint (PUT/PATCH/state-change POST) exists, but the `*Response` DTO
-   does not include `ConcurrencyStamp`. The client cannot build a conflict-safe
-   round-trip without it. Severity: `IMPROVEMENT` (bumps to `CONVENTION` when a
-   `409` path is already declared on the endpoint).
+   **`ConcurrencyStamp` — two-stage check (checklist §6d, 7-link chain):**
+
+   Stage 1 — **Exposure gap** (`*Response` DTO): entity implements `IConcurrencyAware`
+   AND a mutation endpoint exists, but the `*Response` DTO does not include
+   `string ConcurrencyStamp`. The client cannot build a conflict-safe round-trip without
+   it. Severity: `IMPROVEMENT` (→ `CONVENTION` when a `409` path is already declared
+   on the endpoint).
+
+   Stage 2 — **Wiring gap** (links 3–7): the stamp is present in the `*Response` DTO
+   but the round-trip is incomplete. Check each link in order and report the first
+   broken one. **Link 3** (`CONVENTION`): `*Request` DTO does not implement
+   `IConcurrencyStampRequest` / missing `string ConcurrencyStamp` parameter.
+   **Link 4** (`CONVENTION`): `*RequestValidator` missing
+   `RuleFor(x => x.ConcurrencyStamp).NotEmpty()`. **Link 5** (`CONVENTION`): service
+   / orchestrator interface mutation method does not accept `string concurrencyStamp`.
+   **Link 6** (`CONVENTION`): store interface `UpdateAsync` does not accept
+   `string? concurrencyStamp`. **Link 7** (`BREAKING`): store implementation does not
+   call `SetConcurrencyStampOriginalValue` after `Update()`/attach and before
+   `SaveChangesAsync` — silent overwrite; the interceptor always regenerates the stamp
+   on save, so EF's token always matches and `409` never fires.
+
+   When flagging link 6, also grep for positional callers that may have broken silently:
+
+   ```bash
+   grep -rn "\.UpdateAsync([^)]*,\s*cancellationToken)" src/ --include="*.cs"
+   ```
+
+   Reference implementation: `RoleMetadata` / `RoleUpdateRequest` /
+   `GranitRoleOrchestrator` / `EfCoreRoleMetadataStore` (PR #2781).
 
    **Missing `ModifiedAt`**: entity inherits `AuditedAggregateRoot`,
    `FullAuditedAggregateRoot`, `AuditedEntity`, or `FullAuditedEntity`, but the
