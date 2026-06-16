@@ -10,6 +10,9 @@ internal sealed class LegalDocumentUpdateRequestValidator : AbstractValidator<Le
 {
     public LegalDocumentUpdateRequestValidator()
     {
+        RuleFor(x => x.ConcurrencyStamp)
+            .NotEmpty();
+
         RuleFor(x => x.DisplayName)
             .NotEmpty()
             .MaximumLength(500);

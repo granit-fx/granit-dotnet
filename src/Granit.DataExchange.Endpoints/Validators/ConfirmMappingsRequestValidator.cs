@@ -12,6 +12,9 @@ internal sealed class ConfirmMappingsRequestValidator : GranitValidator<ConfirmM
 {
     public ConfirmMappingsRequestValidator()
     {
+        RuleFor(x => x.ConcurrencyStamp)
+            .NotEmpty();
+
         RuleFor(x => x.Mappings)
             .NotEmpty()
             .Must(m => m.Any(mapping => mapping.TargetProperty is not null))

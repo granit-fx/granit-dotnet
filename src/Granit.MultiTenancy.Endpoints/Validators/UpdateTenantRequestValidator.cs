@@ -15,6 +15,9 @@ internal sealed class UpdateTenantRequestValidator : GranitValidator<UpdateTenan
 
     public UpdateTenantRequestValidator()
     {
+        RuleFor(x => x.ConcurrencyStamp)
+            .NotEmpty();
+
         RuleFor(x => x.Name)
             .NotEmpty()
             .MaximumLength(MaxNameLength);

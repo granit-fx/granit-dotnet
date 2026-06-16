@@ -41,5 +41,9 @@ internal sealed class SaveTemplateRequestValidator : GranitValidator<SaveTemplat
             .Matches(TemplatingPatterns.Bcp47Pattern())
             .WithErrorCodeAndMessage("Validation:InvalidBcp47LanguageTag")
             .When(x => x.Culture is not null);
+
+        RuleFor(x => x.ConcurrencyStamp)
+            .NotEmpty()
+            .When(x => x.ConcurrencyStamp is not null);
     }
 }
