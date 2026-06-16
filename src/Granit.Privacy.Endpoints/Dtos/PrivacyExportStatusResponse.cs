@@ -6,6 +6,8 @@ namespace Granit.Privacy.Endpoints.Dtos;
 /// Status of a personal data export request (GDPR Art. 15/20).
 /// </summary>
 /// <param name="RequestId">Correlation ID of the export saga.</param>
+/// <param name="SubjectUserId">User whose personal data was exported (the data subject).</param>
+/// <param name="CallerUserId">User who requested the export — differs from <paramref name="SubjectUserId"/> in on-behalf-of flows.</param>
 /// <param name="State">Current state: Pending, Completed, PartiallyCompleted, or TimedOut.</param>
 /// <param name="RequestedAt">Timestamp when the export was requested (UTC).</param>
 /// <param name="CompletedAt">Timestamp when the export completed (UTC), or <c>null</c> if still pending.</param>
@@ -16,6 +18,8 @@ namespace Granit.Privacy.Endpoints.Dtos;
 /// <param name="MissingProviders">Data providers that did not respond before timeout (empty if fully completed).</param>
 public sealed record PrivacyExportStatusResponse(
     Guid RequestId,
+    Guid SubjectUserId,
+    Guid CallerUserId,
     string State,
     DateTimeOffset RequestedAt,
     DateTimeOffset? CompletedAt,

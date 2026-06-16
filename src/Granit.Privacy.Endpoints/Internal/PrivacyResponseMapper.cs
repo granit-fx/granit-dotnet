@@ -52,6 +52,8 @@ internal static class PrivacyResponseMapper
     internal static PrivacyExportStatusResponse MapExportStatus(ExportRequestStatus status) =>
         new(
             status.RequestId,
+            status.SubjectUserId,
+            status.CallerUserId,
             status.State.ToString(),
             status.RequestedAt,
             status.CompletedAt,

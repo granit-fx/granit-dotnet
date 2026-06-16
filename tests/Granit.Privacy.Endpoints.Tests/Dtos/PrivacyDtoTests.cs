@@ -22,14 +22,18 @@ public sealed class PrivacyDtoTests
     public void PrivacyExportStatusResponse_HoldsAllProperties()
     {
         var requestId = Guid.NewGuid();
+        var subjectUserId = Guid.NewGuid();
+        var callerUserId = Guid.NewGuid();
         DateTimeOffset requested = DateTimeOffset.UtcNow;
         DateTimeOffset completed = requested.AddMinutes(3);
         List<string> missing = ["provider-a"];
 
         PrivacyExportStatusResponse response = new(
-            requestId, "Completed", requested, completed, "gdpr-export/123", missing);
+            requestId, subjectUserId, callerUserId, "Completed", requested, completed, "gdpr-export/123", missing);
 
         response.RequestId.ShouldBe(requestId);
+        response.SubjectUserId.ShouldBe(subjectUserId);
+        response.CallerUserId.ShouldBe(callerUserId);
         response.State.ShouldBe("Completed");
         response.RequestedAt.ShouldBe(requested);
         response.CompletedAt.ShouldBe(completed);
