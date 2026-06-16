@@ -56,8 +56,8 @@ public sealed class GranitValidationModule : GranitModule
         // Auto-discover validators from all loaded module assemblies.
         foreach (Assembly assembly in context.ModuleAssemblies)
         {
-            context.Services.AddValidatorsFromAssembly(
-                assembly, ServiceLifetime.Scoped, includeInternalTypes: true);
+            assembly.TryScan(a => context.Services.AddValidatorsFromAssembly(
+                a, ServiceLifetime.Scoped, includeInternalTypes: true));
         }
 
         // Auto-discover IServerValidatorContributor from all loaded module assemblies.

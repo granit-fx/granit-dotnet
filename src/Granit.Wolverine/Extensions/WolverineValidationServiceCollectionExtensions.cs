@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentValidation;
+using Granit.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Wolverine.Attributes;
 
@@ -38,8 +39,8 @@ public static class WolverineValidationServiceCollectionExtensions
         foreach (Assembly? assembly in AppDomain.CurrentDomain.GetAssemblies()
             .Where(a => a.GetCustomAttribute<WolverineHandlerModuleAttribute>() is not null))
         {
-            services.AddValidatorsFromAssembly(
-                assembly, ServiceLifetime.Scoped, includeInternalTypes: true);
+            assembly.TryScan(a => services.AddValidatorsFromAssembly(
+                a, ServiceLifetime.Scoped, includeInternalTypes: true));
         }
 
         return services;

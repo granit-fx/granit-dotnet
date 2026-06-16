@@ -28,6 +28,37 @@ public static class SafeTypeLoader
         Load(assembly, static a => a.GetExportedTypes());
 
     /// <summary>
+    /// Invokes <paramref name="scan"/> against <paramref name="assembly"/>, swallowing
+    /// <see cref="ReflectionTypeLoadException"/> and missing-dependency load failures.
+    /// Use this when a third-party scanner (FluentValidation, MCP SDK, …) calls
+    /// <see cref="Assembly.GetTypes"/> internally and cannot be given a pre-filtered type list.
+    /// </summary>
+    public static void TryScan(this Assembly assembly, Action<Assembly> scan)
+    {
+        ArgumentNullException.ThrowIfNull(assembly);
+        ArgumentNullException.ThrowIfNull(scan);
+
+        if (assembly.IsDynamic)
+        {
+            return;
+        }
+
+        try
+        {
+            scan(assembly);
+        }
+        catch (ReflectionTypeLoadException)
+        {
+            // Assembly references internal types from another assembly via InternalsVisibleTo.
+            // No discoverable registrations live in those assemblies — skip safely.
+        }
+        catch (Exception ex) when (ex is FileNotFoundException or FileLoadException or TypeLoadException)
+        {
+            // Assembly's public surface references an unloaded dependency — skip safely.
+        }
+    }
+
+    /// <summary>
     /// Shared resilience core. On <see cref="ReflectionTypeLoadException"/> returns the partial set that
     /// did load; on a missing-dependency load failure returns empty; any other exception propagates.
     /// </summary>

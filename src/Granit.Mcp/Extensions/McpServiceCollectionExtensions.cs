@@ -7,6 +7,7 @@ using Granit.Mcp.Diagnostics;
 using Granit.Mcp.Options;
 using Granit.Mcp.Sanitization;
 using Granit.MultiTenancy;
+using Granit.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -101,32 +102,16 @@ public static class McpServiceCollectionExtensions
 
         foreach (Assembly assembly in moduleAssemblies)
         {
-            try
+            assembly.TryScan(a =>
             {
-                mcpBuilder.WithToolsFromAssembly(assembly);
-                mcpBuilder.WithPromptsFromAssembly(assembly);
-            }
-            catch (ReflectionTypeLoadException)
-            {
-                // Assembly references internal types from another assembly via InternalsVisibleTo
-                // (e.g. EFC modules consuming an internal DbContext). No MCP tools live in those
-                // assemblies, so skipping is safe.
-            }
+                mcpBuilder.WithToolsFromAssembly(a);
+                mcpBuilder.WithPromptsFromAssembly(a);
+            });
         }
 
         foreach (Assembly assembly in moduleAssemblies)
         {
-            Type[] types;
-            try
-            {
-                types = assembly.GetTypes();
-            }
-            catch (ReflectionTypeLoadException ex)
-            {
-                types = ex.Types.Where(t => t is not null).ToArray()!;
-            }
-
-            IEnumerable<Type> contributorTypes = types
+            IEnumerable<Type> contributorTypes = assembly.GetLoadableTypes()
                 .Where(t => t is { IsAbstract: false, IsInterface: false }
                     && typeof(IMcpToolContributor).IsAssignableFrom(t));
 

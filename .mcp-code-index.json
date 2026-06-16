@@ -34626,7 +34626,7 @@
       "kind": "class",
       "project": "Granit.Mcp",
       "file": "src/Granit.Mcp/Extensions/McpServiceCollectionExtensions.cs",
-      "line": 22,
+      "line": 23,
       "members": []
     },
     {
@@ -47831,6 +47831,12 @@
           "kind": "method",
           "signature": "GetLoadableExportedTypes(this Assembly assembly)",
           "returnType": "IReadOnlyList<Type>"
+        },
+        {
+          "name": "TryScan",
+          "kind": "method",
+          "signature": "TryScan(this Assembly assembly, Action<Assembly> scan)",
+          "returnType": "void"
         }
       ]
     },
@@ -56198,7 +56204,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Extensions/WolverineValidationServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitValidatorsFromWolverineHandlerModules",
