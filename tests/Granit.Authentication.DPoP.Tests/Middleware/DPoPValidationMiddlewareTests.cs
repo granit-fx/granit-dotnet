@@ -168,6 +168,33 @@ public sealed class DPoPValidationMiddlewareTests
     }
 
     [Fact]
+    public async Task InvokeAsync_ExcludedPathPrefix_SkipsValidationAndCallsNext()
+    {
+        bool nextCalled = false;
+        DefaultHttpContext context = new();
+        context.Request.Method = "POST";
+        context.Request.Scheme = "https";
+        context.Request.Host = new HostString("api.example.com");
+        // Default ExcludedPathPrefixes includes "/connect" — the co-located OIDC token endpoint.
+        context.Request.Path = "/connect/token";
+        context.Request.Headers.Append("DPoP", "proof.jwt");
+
+        DPoPValidationMiddleware middleware = CreateMiddleware(new DPoPValidationOptions(), _ =>
+        {
+            nextCalled = true;
+            return Task.CompletedTask;
+        });
+
+        await middleware.InvokeAsync(context);
+
+        nextCalled.ShouldBeTrue();
+        context.Response.StatusCode.ShouldBe(200);
+        // The proof must NOT be validated here — that is the AS pipeline's job.
+        await _validator.DidNotReceive().ValidateAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task InvokeAsync_ValidProof_ServerNonceSet_AddsResponseHeader()
     {
         DefaultHttpContext context = new();

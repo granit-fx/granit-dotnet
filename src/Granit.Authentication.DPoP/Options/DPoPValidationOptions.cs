@@ -64,4 +64,22 @@ public sealed class DPoPValidationOptions
     /// Default: 2048 (NIST SP 800-57 recommendation).
     /// </summary>
     public int MinimumRsaKeySize { get; set; } = 2048;
+
+    /// <summary>
+    /// Gets or sets request path prefixes the resource-side validation middleware skips
+    /// entirely (case-insensitive segment match). Requests under these prefixes pass
+    /// straight through without proof validation.
+    /// <para>
+    /// This matters when the OpenID Connect authorization server is co-located with the
+    /// resource server (a monolith). The DPoP proof presented at the token endpoint
+    /// (<c>/connect/token</c>) is validated server-side by the OIDC pipeline, which records
+    /// the proof's <c>jti</c> for replay protection. If this middleware also validated the
+    /// same proof, it would record the <c>jti</c> first, so the server handler would then
+    /// see a duplicate <c>jti</c> → "proof replay detected" → the token exchange fails.
+    /// Excluding the OIDC endpoints avoids the double validation. On a standalone resource
+    /// server these paths do not exist, so the default is harmless.
+    /// </para>
+    /// Default: <c>["/connect"]</c> (the Granit OpenIddict server endpoint prefix).
+    /// </summary>
+    public string[] ExcludedPathPrefixes { get; set; } = ["/connect"];
 }
