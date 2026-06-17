@@ -23,6 +23,20 @@ internal sealed partial class DPoPValidationMiddleware(
     {
         DPoPValidationOptions opts = options.Value;
 
+        // Skip the OIDC authorization-server endpoints when co-located (monolith): the proof
+        // presented at /connect/token is validated server-side, which records its jti for
+        // replay protection. Validating the same proof here first would make the server handler
+        // see a duplicate jti → "proof replay detected" → token exchange fails. See
+        // DPoPValidationOptions.ExcludedPathPrefixes.
+        foreach (string prefix in opts.ExcludedPathPrefixes)
+        {
+            if (context.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                await next(context).ConfigureAwait(false);
+                return;
+            }
+        }
+
         // Only process authenticated requests with DPoP header or when DPoP is required
         bool hasDPoPHeader = context.Request.Headers.ContainsKey("DPoP");
         bool hasDPoPScheme = context.Request.Headers.Authorization
