@@ -2,6 +2,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace Granit.OpenIddict.Server.Handlers;
 
@@ -18,16 +19,18 @@ namespace Granit.OpenIddict.Server.Handlers;
 public sealed class DPoPValidationTokenExtractionHandler
     : IOpenIddictValidationHandler<OpenIddictValidationEvents.ProcessAuthenticationContext>
 {
-    // OpenIddict internals (from reflection on 7.5.0):
-    //   EvaluateValidatedTokens.Order     = -2_147_383_648
-    //   ExtractAccessTokenFromAuth.Order  = EvaluateValidatedTokens.Order + 500  = -2_147_383_148
-    // This handler runs one slot later as a fallback.
-    private const int HandlerOrder = -2_147_383_148 + 1;
+    // Run one slot after the built-in Bearer extractor so this acts as a fallback.
+    // Reference its public Descriptor.Order rather than a hardcoded constant: the
+    // order then tracks the built-in automatically across OpenIddict version bumps.
+    private static readonly int HandlerOrder = checked((int)(
+        OpenIddictValidationAspNetCoreHandlers.ExtractAccessTokenFromAuthorizationHeader
+            .Descriptor.Order + 1));
 
     /// <summary>Handler descriptor registered with the OpenIddict validation pipeline.</summary>
     public static OpenIddictValidationHandlerDescriptor Descriptor { get; }
         = OpenIddictValidationHandlerDescriptor
             .CreateBuilder<OpenIddictValidationEvents.ProcessAuthenticationContext>()
+            .AddFilter<OpenIddictValidationAspNetCoreHandlerFilters.RequireHttpRequest>()
             .UseSingletonHandler<DPoPValidationTokenExtractionHandler>()
             .SetOrder(HandlerOrder)
             .SetType(OpenIddictValidationHandlerType.Custom)

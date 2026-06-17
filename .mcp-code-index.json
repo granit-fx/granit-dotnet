@@ -40972,7 +40972,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/Handlers/DPoPValidationTokenExtractionHandler.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "Descriptor",
