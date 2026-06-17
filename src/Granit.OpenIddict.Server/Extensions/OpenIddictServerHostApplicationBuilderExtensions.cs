@@ -226,6 +226,11 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
         {
             options.UseLocalServer();
             options.UseAspNetCore();
+
+            // OpenIddict 7.x's built-in extraction handler only accepts "Bearer" scheme.
+            // This handler picks up "Authorization: DPoP <token>" so BFF sessions with
+            // UseDPoP=true authenticate correctly against the local server (monolith).
+            options.AddEventHandler(DPoPValidationTokenExtractionHandler.Descriptor);
         });
 
         // Normalize OIDC short-name "role" claims emitted by OpenIddict.Validation into
