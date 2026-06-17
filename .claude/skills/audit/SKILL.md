@@ -1,7 +1,7 @@
 ---
 name: audit
 description: "Framework architect: audit Granit .NET modules against framework conventions, architecture rules, and CLAUDE.md standards. Checks module anatomy, DDD, naming, OpenAPI, persistence, validation, events, metrics, localization, documentation, and cross-cutting concerns. Invoke to verify convention compliance before merge or during tech-debt sprints."
-argument-hint: "[help | all | <module> | pr] [--fix] [--scope {anatomy|layer-purity|code|naming|http|openapi|persistence|ddd|validation|events|metrics|localization|deps|compliance|microservices|docs|all}] [--base <branch>]"
+argument-hint: "[help | all | <module> | pr] [--fix] [--scope {anatomy|layer-purity|code|naming|http|openapi|persistence|ddd|validation|events|metrics|logging|localization|deps|compliance|microservices|docs|all}] [--base <branch>]"
 ---
 
 # Framework Audit — Granit .NET
@@ -73,6 +73,7 @@ FLAGS
     validation    FluentValidation, localization, MapGranitGroup
     events        Domain events (*Event) and integration events (*Eto)
     metrics       Meters, ActivitySource, health checks, diagnostics
+    logging       Logger correctness ([LoggerMessage], levels, PII) + dev-observability coverage
     localization  18-culture JSON completeness (15 base + 3 regional)
     deps          [DependsOn], project refs, circular refs, vendor SDK confinement
     compliance    GDPR, ISO 27001, security, analyzers
@@ -100,6 +101,7 @@ EXAMPLES
   /audit Encryption --scope ddd --fix
   /audit Analytics --scope layer-purity
   /audit BackgroundJobs --scope microservices
+  /audit Identity --scope logging
 ```
 
 **Stop here** — do NOT proceed with an actual audit.
@@ -294,6 +296,11 @@ After auditing individual modules, perform cross-cutting checks:
    `Granit.ArchitectureTests`. Audit checks (a) the assertion lines up with
    `Granit.{X}.Y` namespace, (b) `templates/granit-*/appsettings.json` keys are
    aligned, (c) doc/XML comments reference the canonical path
+5d. **Logging uniformity** (`--scope logging`, checklist §10e–§10f) — across modules,
+   look for the recurring logging hazards: runtime-formatted logs bypassing
+   `[LoggerMessage]` (and therefore the PII archi-test), silently swallowed
+   `catch` blocks, and silent no-op branches that return empty/default without a
+   `Debug` line. These repeat module-to-module — report as a cross-cutting cluster.
 6. **Health check uniformity** — readiness/startup tags, 10s timeout, no PII
 7. **Localization completeness** — all 18 cultures present in every module
 8. **[DependsOn] consistency** — matches actual `<ProjectReference>` graph

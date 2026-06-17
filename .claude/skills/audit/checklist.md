@@ -1127,6 +1127,77 @@ Ref: `docs-site/…/data/entity-lifecycle-events.mdx`
 
 Ref: `CLAUDE.md §Metrics`, `docs-site/…/core/diagnostics.mdx`
 
+### 10e. Logging correctness (`--scope logging`)
+
+Logging is the third diagnostics pillar (alongside metrics §10a and tracing §10b).
+This sub-section audits **how** the logger is used. The hard PII rule is already
+CI-enforced — verify coverage, do not re-derive it.
+
+- [ ] **`[LoggerMessage]` source-gen at every call site** — never runtime-formatted
+  `logger.LogInformation($"...")` (interpolation) or `logger.LogInformation("... {X}", x)`
+  on the hot path. Generated methods live in a `static partial class` (commonly
+  `{Type}Log` or a `partial` host class). (`CLAUDE.md §code style`, blog
+  _LoggerMessage over string interpolation_)
+- [ ] **No interpolation/concatenation inside the `Message` template** — named
+  placeholders only (`"... {TenantId}"`), never `$"..."` or `"..." + x`.
+- [ ] **Structured placeholders are PascalCase named tokens** (`{BlobId}`), not
+  positional `{0}` — they become queryable fields in Loki.
+- [ ] **Level fits intent**: `Trace`/`Debug` for dev-only detail, `Information` for
+  lifecycle milestones, `Warning` for recoverable anomalies, `Error` for failures,
+  `Critical` for unrecoverable. Flag `Information` on a high-frequency hot path
+  (log noise) and `Error` where `Warning` is correct (false alarm fatigue).
+- [ ] **Exceptions passed as the first argument** to the generated method so the
+  stack trace is captured — never `LogError(ex.Message)` (loses the trace) nor
+  `{Ex}` interpolation.
+- [ ] **PII redaction**: any email/phone/token/IP/username in a template goes through
+  `Granit.Diagnostics.LogRedaction.*` (`Email`, `Phone`, `Token`, `IpAddress`,
+  `Username`, `HashPrefix`). GUIDs are pseudonymous and exempt. **Verify the module
+  is covered by `LoggerMessagePiiConventionTests`** (`Granit.ArchitectureTests`) —
+  do not flag what the archi-test already guards; flag only call sites the test
+  cannot reach (runtime-formatted logs bypass the source-gen the test scans).
+- [ ] **No secrets / connection strings / raw request bodies / auth tokens** in any
+  log (security baseline) — even at `Debug`.
+- [ ] **Typed category**: logger obtained via DI `ILogger<T>`, not
+  `ILoggerFactory.CreateLogger("some-string")` or a static/global logger.
+- [ ] **`EventId` consistency** _(IMPROVEMENT)_: repo usage is mixed — some modules
+  assign explicit `EventId`s, most do not. If a module uses them, they must be
+  unique and stable within the module; mixing explicit and implicit within one
+  class is a `CLEANUP` nit. Do not mandate `EventId` where the module never used it.
+- [ ] **No manual tenant/correlation stuffing**: `tenant_id`, user, module, and
+  correlation-id are added by Serilog enrichers (ADR-001) — re-injecting them into
+  every `Message` template is redundant noise.
+
+### 10f. Logging sufficiency — dev observability (`--scope logging`)
+
+Audits **whether enough is logged to diagnose behavior in dev**. These are
+judgment calls — default to `IMPROVEMENT`, bump only with a concrete failure path.
+Audits the _why nothing happened_ gaps as much as the _what failed_ ones.
+
+- [ ] **No silently swallowed exceptions** — a `catch` that neither logs nor
+  rethrows hides failures. `BREAKING` when it masks a real error path (silent data
+  loss / wrong result); otherwise `CONVENTION`. A deliberate ignore must carry a
+  `// why` comment and ideally a `Debug`/`Trace` line.
+- [ ] **Silent no-op branches are logged** — a decision that quietly returns
+  empty/default (provider absent, feature disabled, cache cold, guard short-circuit)
+  emits at least a `Debug` line so a developer can see _why_ nothing happened.
+  This is the exact class of bug that costs hours of blind debugging (e.g. a session
+  provider returning `200 []` because its backend module was never registered).
+- [ ] **Error paths log with context** — when an endpoint/handler returns a
+  `Problem`/`4xx`/`5xx` or throws, the cause is logged once with the relevant ids
+  (not the full entity, not PII).
+- [ ] **Key lifecycle events are observable** at `Information`/`Debug`: background
+  job start/finish/failure, external-call failure, retry/circuit-breaker
+  transitions, migration/seed actions, module wiring decisions taken at startup.
+- [ ] **Logged once, at the boundary** — flag the log-and-rethrow-at-every-layer
+  anti-pattern (same error logged 3× as it bubbles up). Log where it is handled.
+- [ ] **Hot-path discipline** — per-item/per-request detail sits at `Trace`/`Debug`
+  (off in prod, switchable on in dev via config), never `Information` in a loop.
+
+Ref: `CLAUDE.md §code style` (`[LoggerMessage]`), `§Security baseline`;
+`docs-site/…/core/observability.mdx` (LogRedaction, enrichers);
+ADR-001; archi-tests `LoggerMessagePiiConventionTests`,
+`ActivitySourcePiiConventionTests`.
+
 ---
 
 ## 11. Localization (`--scope localization`)
