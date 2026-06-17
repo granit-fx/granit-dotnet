@@ -11,10 +11,13 @@ namespace Granit.OpenIddict.Server.Handlers;
 /// <c>Authorization: DPoP &lt;token&gt;</c> scheme (RFC 9449 §7.1).
 /// </summary>
 /// <remarks>
-/// OpenIddict 7.x's built-in <c>ExtractAccessTokenFromAuthorizationHeader</c> only accepts
-/// the <c>Bearer</c> scheme. This handler runs immediately after it and picks up
-/// DPoP-schemed tokens, enabling the local-server validation pipeline (monolith) to
-/// authenticate requests sent by the Granit BFF when <c>UseDPoP</c> is enabled.
+/// OpenIddict has no DPoP support of its own — its built-in
+/// <c>ExtractAccessTokenFromAuthorizationHeader</c> only handles the <c>Bearer</c> scheme.
+/// DPoP is implemented entirely by Granit on top of OpenIddict's pipeline, so extracting
+/// DPoP-schemed tokens in the validation stack is an intrinsic, permanent part of that
+/// integration — not a workaround for an upstream defect. This handler runs as a fallback
+/// after the Bearer extractor and populates the access token for any DPoP client: a BFF, or
+/// a no-BFF consumer (SPA, mobile, native) where mTLS token binding is impractical.
 /// </remarks>
 public sealed class DPoPValidationTokenExtractionHandler
     : IOpenIddictValidationHandler<OpenIddictValidationEvents.ProcessAuthenticationContext>

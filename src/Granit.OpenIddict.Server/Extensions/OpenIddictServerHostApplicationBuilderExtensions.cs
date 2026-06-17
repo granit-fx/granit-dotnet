@@ -227,9 +227,11 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             options.UseLocalServer();
             options.UseAspNetCore();
 
-            // OpenIddict 7.x's built-in extraction handler only accepts "Bearer" scheme.
-            // This handler picks up "Authorization: DPoP <token>" so BFF sessions with
-            // UseDPoP=true authenticate correctly against the local server (monolith).
+            // OpenIddict has no DPoP support; its built-in extractor only accepts "Bearer".
+            // Granit owns the whole DPoP chain, so this handler picks up
+            // "Authorization: DPoP <token>" (RFC 9449 §7.1) for every DPoP client — BFF
+            // sessions as well as no-BFF consumers (SPA, mobile, native) where mTLS is
+            // impractical. It is a permanent part of the integration, not a stopgap.
             options.AddEventHandler(DPoPValidationTokenExtractionHandler.Descriptor);
         });
 
