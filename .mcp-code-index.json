@@ -9496,6 +9496,12 @@
           "kind": "property",
           "signature": "bool RequireNonce",
           "returnType": "bool"
+        },
+        {
+          "name": "ExcludedPathPrefixes",
+          "kind": "property",
+          "signature": "string[] ExcludedPathPrefixes",
+          "returnType": "string[]"
         }
       ]
     },
