@@ -142,6 +142,10 @@ internal sealed partial class AIToolOrchestrator(
         HashSet<string> announcedResults = new(StringComparer.Ordinal);
         List<ChatResponseUpdate> allUpdates = [];
 
+        // Drops reasoning-model think blocks from the streamed text. Run-local: a fresh filter per run
+        // so its tag-straddling state never bleeds across conversations.
+        ReasoningTextFilter reasoningFilter = new();
+
         // Stream the agentic loop: text deltas and tool activity flow out as they happen; the updates
         // are also accumulated so the settled response (final text, usage, finish reason, transcript)
         // can be reassembled once the loop ends.
@@ -156,7 +160,12 @@ internal sealed partial class AIToolOrchestrator(
                 switch (content)
                 {
                     case TextContent text when !string.IsNullOrEmpty(text.Text):
-                        yield return AIOrchestrationUpdate.Delta(text.Text);
+                        string visible = reasoningFilter.Process(text.Text);
+                        if (visible.Length > 0)
+                        {
+                            yield return AIOrchestrationUpdate.Delta(visible);
+                        }
+
                         break;
 
                     // Streamed function calls arrive fragmented; announce each call once (when a
@@ -181,6 +190,13 @@ internal sealed partial class AIToolOrchestrator(
             }
         }
 
+        // Surface any text the filter held back while it waited to see whether a tail was a partial tag.
+        string tail = reasoningFilter.Flush();
+        if (tail.Length > 0)
+        {
+            yield return AIOrchestrationUpdate.Delta(tail);
+        }
+
         yield return AIOrchestrationUpdate.Completed(await FinalizeAsync(
             new RunTelemetry(allUpdates, loopClient, state, maxIterations, startTimestamp, anyUsage, totalInput, totalOutput, tenantId),
             workspaceName,
@@ -199,7 +215,10 @@ internal sealed partial class AIToolOrchestrator(
         AIOrchestrationRequest request)
     {
         var finalResponse = telemetry.Updates.ToChatResponse();
-        string finalText = finalResponse.Text ?? string.Empty;
+
+        // Strip think blocks from the settled text too, so the persisted assistant turn (and the history
+        // replayed to the model next turn) matches the reasoning-free text the client was streamed.
+        string finalText = ReasoningTextFilter.StripReasoning(finalResponse.Text ?? string.Empty);
 
         // One iteration per model round-trip.
         int iterations = Math.Max(1, telemetry.LoopClient.Calls);
