@@ -232,8 +232,8 @@
       },
       "WebDriverBiDi": {
         "type": "Transitive",
-        "resolved": "0.0.49",
-        "contentHash": "KXTJjGny4f4yO+HJGMMgX+qaWqweQvcrtMQPkUw+lw2nUQpJV0VfE3oW4t25bgXOq62cdE9yVEVSjssKRBa98A=="
+        "resolved": "0.0.54",
+        "contentHash": "yo9iqgBySD7tpwQMk1rgkTGwZaE9gSehirixwtPVFyllsT+qM3POB95SryE3n1g+bZ+/POoSokSbMiS0ETbBog=="
       },
       "xunit.analyzers": {
         "type": "Transitive",
@@ -587,12 +587,12 @@
       "PuppeteerSharp": {
         "type": "CentralTransitive",
         "requested": "[25.*, )",
-        "resolved": "25.1.1",
-        "contentHash": "Ma6MJ+qsnFQr/KZw/Vt4ngAhuhgeWSzBrAG/OWtJWxODkWd70jDzOQ2v3gjkqJ64mayreBhb+axAEHEjVc35Ow==",
+        "resolved": "25.1.2",
+        "contentHash": "I7WCyZOcpNpnTJtQQXPviVkwFhlm7WO2PuqFIUsn660C+Lf4vpnNIsvVH/mJwwXhNCYSfT7p6Phxdg0SckK7/g==",
         "dependencies": {
           "Microsoft.Extensions.Logging": "10.0.0",
           "Microsoft.IO.RecyclableMemoryStream": "3.0.1",
-          "WebDriverBiDi": "0.0.49"
+          "WebDriverBiDi": "0.0.54"
         }
       },
       "SmartFormat": {
