@@ -17,6 +17,12 @@ public interface IConversationDataManager
     Task<IReadOnlyList<Conversation>> GetAllForOwnerAsync(Guid ownerId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Returns every message report raised by <paramref name="ownerId"/>, for a data take-out.
+    /// Respects the ambient tenant scope.
+    /// </summary>
+    Task<IReadOnlyList<MessageReport>> GetReportsForOwnerAsync(Guid ownerId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Permanently erases (hard delete, bypassing soft-delete) every conversation and message owned
     /// by <paramref name="ownerId"/>, optionally constrained to <paramref name="tenantId"/>. Returns
     /// the number of conversations removed. Idempotent.

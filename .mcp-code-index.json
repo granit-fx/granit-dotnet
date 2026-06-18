@@ -3874,6 +3874,12 @@
           "returnType": "Task<IReadOnlyList<Conversation>>"
         },
         {
+          "name": "GetReportsForOwnerAsync",
+          "kind": "method",
+          "signature": "GetReportsForOwnerAsync(Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<MessageReport>>"
+        },
+        {
           "name": "EraseOwnerAsync",
           "kind": "method",
           "signature": "EraseOwnerAsync(Guid? tenantId, Guid ownerId, CancellationToken cancellationToken = default)",

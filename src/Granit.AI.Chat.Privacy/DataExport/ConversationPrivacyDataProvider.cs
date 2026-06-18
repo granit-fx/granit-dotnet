@@ -8,9 +8,9 @@ namespace Granit.AI.Chat.Privacy.DataExport;
 
 /// <summary>
 /// Privacy data provider for Granit.AI.Chat. Emits the user's conversations (with their messages)
-/// as a single staged JSON fragment during the scatter-gather export saga (GDPR Art. 15/20).
-/// Attachment <em>content</em> is not held by the chat module — it is transient and owned by the
-/// application's blob store, which contributes its own provider.
+/// and the message reports they raised as a single staged JSON fragment during the scatter-gather
+/// export saga (GDPR Art. 15/20). Attachment <em>content</em> is not held by the chat module — it is
+/// transient and owned by the application's blob store, which contributes its own provider.
 /// </summary>
 public sealed class ConversationPrivacyDataProvider(
     IConversationStore store,
@@ -33,7 +33,15 @@ public sealed class ConversationPrivacyDataProvider(
         // Cheap presence check — the summary list omits messages.
         IReadOnlyList<Conversation> summaries = await store
             .ListAsync(context.SubjectUserId, cancellationToken).ConfigureAwait(false);
-        return summaries.Count > 0;
+        if (summaries.Count > 0)
+        {
+            return true;
+        }
+
+        // A report can outlive its conversation (soft-deleted), so check reports independently.
+        IReadOnlyList<MessageReport> reports = await dataManager
+            .GetReportsForOwnerAsync(context.SubjectUserId, cancellationToken).ConfigureAwait(false);
+        return reports.Count > 0;
     }
 
     /// <inheritdoc />
@@ -49,7 +57,9 @@ public sealed class ConversationPrivacyDataProvider(
     {
         IReadOnlyList<Conversation> conversations = await dataManager
             .GetAllForOwnerAsync(context.SubjectUserId, cancellationToken).ConfigureAwait(false);
-        if (conversations.Count == 0)
+        IReadOnlyList<MessageReport> reports = await dataManager
+            .GetReportsForOwnerAsync(context.SubjectUserId, cancellationToken).ConfigureAwait(false);
+        if (conversations.Count == 0 && reports.Count == 0)
         {
             yield break;
         }
@@ -57,7 +67,9 @@ public sealed class ConversationPrivacyDataProvider(
         var export = new ConversationsExport(
             UserId: context.SubjectUserId,
             ConversationCount: conversations.Count,
-            Conversations: [.. conversations.Select(Map)]);
+            Conversations: [.. conversations.Select(Map)],
+            ReportCount: reports.Count,
+            Reports: [.. reports.Select(Map)]);
 
         yield return await fragmentBuilder
             .BuildJsonAsync(context, ProviderName, "ai-chat-conversations.json", export, cancellationToken)
@@ -70,12 +82,23 @@ public sealed class ConversationPrivacyDataProvider(
             conversation.Title,
             conversation.CreatedAt,
             [.. conversation.Messages.Select(m => new MessageExport(m.Role.ToString().ToLowerInvariant(), m.Content, m.CreatedAt))]);
+
+    private static ReportExport Map(MessageReport report) =>
+        new(
+            report.Id,
+            report.MessageId,
+            report.ConversationId,
+            report.Reason,
+            report.Category?.ToString(),
+            report.CreatedAt);
 }
 
 internal sealed record ConversationsExport(
     Guid UserId,
     int ConversationCount,
-    IReadOnlyList<ConversationExport> Conversations);
+    IReadOnlyList<ConversationExport> Conversations,
+    int ReportCount,
+    IReadOnlyList<ReportExport> Reports);
 
 internal sealed record ConversationExport(
     Guid Id,
@@ -86,4 +109,12 @@ internal sealed record ConversationExport(
 internal sealed record MessageExport(
     string Role,
     string Content,
+    DateTimeOffset CreatedAt);
+
+internal sealed record ReportExport(
+    Guid Id,
+    Guid MessageId,
+    Guid ConversationId,
+    string Reason,
+    string? Category,
     DateTimeOffset CreatedAt);

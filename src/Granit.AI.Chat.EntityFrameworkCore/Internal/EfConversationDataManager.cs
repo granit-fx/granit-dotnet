@@ -23,6 +23,17 @@ internal sealed class EfConversationDataManager(IDbContextFactory<AIChatDbContex
             .ConfigureAwait(false);
     }
 
+    public async Task<IReadOnlyList<MessageReport>> GetReportsForOwnerAsync(Guid ownerId, CancellationToken cancellationToken = default)
+    {
+        await using AIChatDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        return await context.MessageReports
+            .AsNoTracking()
+            .Where(r => r.OwnerId == ownerId)
+            .OrderBy(r => r.CreatedAt)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
     public async Task<int> EraseOwnerAsync(Guid? tenantId, Guid ownerId, CancellationToken cancellationToken = default)
     {
         await using AIChatDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);

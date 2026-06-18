@@ -62,12 +62,18 @@ internal sealed partial class AIToolOrchestrator(
         return result!;
     }
 
-    public async IAsyncEnumerable<AIOrchestrationUpdate> RunStreamingAsync(
+    public IAsyncEnumerable<AIOrchestrationUpdate> RunStreamingAsync(
         AIOrchestrationRequest request,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
+        return RunStreamingCoreAsync(request, cancellationToken);
+    }
 
+    private async IAsyncEnumerable<AIOrchestrationUpdate> RunStreamingCoreAsync(
+        AIOrchestrationRequest request,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
         GranitAIToolsOrchestrationOptions options = orchestrationOptions.Value;
         int maxIterations = Math.Max(1, options.MaxIterations);
 
@@ -120,8 +126,8 @@ internal sealed partial class AIToolOrchestrator(
         using FunctionInvokingChatClient agentClient = new(loopClient)
         {
             MaximumIterationsPerRequest = maxIterations,
-            // An unknown call yields an error result and the loop continues (the model self-corrects);
-            // it never halts the loop.
+            // An unknown call yields an error result and the loop keeps going so the model can
+            // self-correct, rather than halting the run.
             TerminateOnUnknownCalls = false,
             FunctionInvoker = (ctx, ct) => InvokeToolAsync(state, options, ctx, ct),
         };
@@ -175,68 +181,109 @@ internal sealed partial class AIToolOrchestrator(
             }
         }
 
-        var finalResponse = allUpdates.ToChatResponse();
+        yield return AIOrchestrationUpdate.Completed(await FinalizeAsync(
+            new RunTelemetry(allUpdates, loopClient, state, maxIterations, startTimestamp, anyUsage, totalInput, totalOutput, tenantId),
+            workspaceName,
+            workspace,
+            systemPrompt,
+            request).ConfigureAwait(false));
+    }
+
+    // Assembles the settled result once the stream ends: reconstructs the final response, derives the
+    // iteration / max-reached signals, records iteration + usage metrics, and logs the run outcome.
+    private async Task<AIOrchestrationResult> FinalizeAsync(
+        RunTelemetry telemetry,
+        string workspaceName,
+        AIWorkspace workspace,
+        AISystemPrompt systemPrompt,
+        AIOrchestrationRequest request)
+    {
+        var finalResponse = telemetry.Updates.ToChatResponse();
         string finalText = finalResponse.Text ?? string.Empty;
 
         // One iteration per model round-trip.
-        int iterations = Math.Max(1, loopClient.Calls);
+        int iterations = Math.Max(1, telemetry.LoopClient.Calls);
 
         // The loop hit the cap iff it ran the maximum number of round-trips and the last one still
         // wanted tools (so the model intended to continue) — as opposed to settling on a final answer
         // or being halted by a tool interrupt.
-        bool maxReached = loopClient.Calls >= maxIterations
-            && loopClient.LastResponseHadToolCalls
-            && state.Interrupt is null;
+        bool maxReached = telemetry.LoopClient.Calls >= telemetry.MaxIterations
+            && telemetry.LoopClient.LastResponseHadToolCalls
+            && telemetry.State.Interrupt is null;
 
-        TimeSpan duration = timeProvider.GetElapsedTime(startTimestamp);
-        metrics.RecordIterations(tenantId, iterations);
+        TimeSpan duration = timeProvider.GetElapsedTime(telemetry.StartTimestamp);
+        metrics.RecordIterations(telemetry.TenantId, iterations);
 
         if (maxReached)
         {
-            LogMaxIterationsReached(maxIterations);
+            LogMaxIterationsReached(telemetry.MaxIterations);
         }
 
-        if (state.Interrupt is not null)
+        if (telemetry.State.Interrupt is not null)
         {
-            LogInterrupted(state.Interrupt.Kind);
+            LogInterrupted(telemetry.State.Interrupt.Kind);
         }
 
-        if (anyUsage)
+        if (telemetry.AnyUsage)
         {
-            AIUsageRecord record = usageRecordFactory.Create(
-                workspaceName,
-                workspace.Provider,
-                workspace.Model,
-                (int)totalInput,
-                (int)totalOutput,
-                duration) with
-            {
-                PromptVersion = systemPrompt.Guardrails.Version,
-                PromptTemplateName = request.InvokedPromptName,
-                PromptTemplateVersion = request.InvokedPromptVersion,
-            };
-
-            // Stamp usage even if the caller's request was aborted mid-stream, but cap the write so a
-            // stuck sink can't leak an orphaned task.
-            using CancellationTokenSource usageCts = new(TimeSpan.FromSeconds(5));
-            await usageTracker.RecordAsync(record, usageCts.Token).ConfigureAwait(false);
+            await RecordUsageAsync(telemetry, workspaceName, workspace, systemPrompt, request, duration)
+                .ConfigureAwait(false);
         }
 
-        LogRunCompleted(workspaceName, iterations, state.Outcomes.Count, maxReached);
+        LogRunCompleted(workspaceName, iterations, telemetry.State.Outcomes.Count, maxReached);
 
-        yield return AIOrchestrationUpdate.Completed(new AIOrchestrationResult
+        return new AIOrchestrationResult
         {
             Content = finalText,
             Messages = [.. finalResponse.Messages],
             Iterations = iterations,
             MaxIterationsReached = maxReached,
-            ToolInvocations = state.Outcomes,
-            InputTokens = anyUsage ? (int)totalInput : null,
-            OutputTokens = anyUsage ? (int)totalOutput : null,
+            ToolInvocations = telemetry.State.Outcomes,
+            InputTokens = telemetry.AnyUsage ? (int)telemetry.TotalInput : null,
+            OutputTokens = telemetry.AnyUsage ? (int)telemetry.TotalOutput : null,
             Duration = duration,
-            Interrupt = state.Interrupt,
-        });
+            Interrupt = telemetry.State.Interrupt,
+        };
     }
+
+    private async Task RecordUsageAsync(
+        RunTelemetry telemetry,
+        string workspaceName,
+        AIWorkspace workspace,
+        AISystemPrompt systemPrompt,
+        AIOrchestrationRequest request,
+        TimeSpan duration)
+    {
+        AIUsageRecord record = usageRecordFactory.Create(
+            workspaceName,
+            workspace.Provider,
+            workspace.Model,
+            (int)telemetry.TotalInput,
+            (int)telemetry.TotalOutput,
+            duration) with
+        {
+            PromptVersion = systemPrompt.Guardrails.Version,
+            PromptTemplateName = request.InvokedPromptName,
+            PromptTemplateVersion = request.InvokedPromptVersion,
+        };
+
+        // Stamp usage even if the caller's request was aborted mid-stream, but cap the write so a
+        // stuck sink can't leak an orphaned task.
+        using CancellationTokenSource usageCts = new(TimeSpan.FromSeconds(5));
+        await usageTracker.RecordAsync(record, usageCts.Token).ConfigureAwait(false);
+    }
+
+    // The accumulated signals the loop hands to FinalizeAsync once the stream ends.
+    private sealed record RunTelemetry(
+        List<ChatResponseUpdate> Updates,
+        ModelLoopChatClient LoopClient,
+        RunState State,
+        int MaxIterations,
+        long StartTimestamp,
+        bool AnyUsage,
+        long TotalInput,
+        long TotalOutput,
+        string? TenantId);
 
     // The FunctionInvokingChatClient invocation hook: runs the resolved tool under the caller's gate,
     // guards the result size, records metrics and the audit outcome, and turns a tool-raised interrupt

@@ -67,6 +67,19 @@ public sealed class EfConversationDataManagerTests : IDisposable
     }
 
     [Fact]
+    public async Task GetReportsForOwner_returns_only_that_owners_reports_oldest_first()
+    {
+        Conversation a = await SeedAsync(UserA, When(2024), "a1");
+        Conversation b = await SeedAsync(UserB, When(2024), "b1");
+        await ReportAsync(a.Messages[0].Id, a.Id, UserA);
+        await ReportAsync(b.Messages[0].Id, b.Id, UserB);
+
+        IReadOnlyList<MessageReport> reports = await _sut.GetReportsForOwnerAsync(UserA, TestContext.Current.CancellationToken);
+
+        reports.ShouldHaveSingleItem().OwnerId.ShouldBe(UserA);
+    }
+
+    [Fact]
     public async Task EraseOwner_also_hard_deletes_the_owners_message_reports()
     {
         Conversation a = await SeedAsync(UserA, When(2024), "a1");

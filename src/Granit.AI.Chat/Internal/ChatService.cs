@@ -112,12 +112,18 @@ internal sealed class ChatService(
         };
     }
 
-    public async IAsyncEnumerable<ChatTurnUpdate> StreamAsync(
+    public IAsyncEnumerable<ChatTurnUpdate> StreamAsync(
         ChatSendHandle handle,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(handle);
+        return StreamCoreAsync(handle, cancellationToken);
+    }
 
+    private async IAsyncEnumerable<ChatTurnUpdate> StreamCoreAsync(
+        ChatSendHandle handle,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
         // Persist the user turn before the loop runs: the message and conversation then survive a
         // crash mid-stream (only the regenerable assistant turn can be lost — see ADR-068).
         await PersistUserTurnAsync(handle, cancellationToken).ConfigureAwait(false);
