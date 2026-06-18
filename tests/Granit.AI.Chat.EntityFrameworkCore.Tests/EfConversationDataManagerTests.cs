@@ -67,6 +67,42 @@ public sealed class EfConversationDataManagerTests : IDisposable
     }
 
     [Fact]
+    public async Task EraseOwner_also_hard_deletes_the_owners_message_reports()
+    {
+        Conversation a = await SeedAsync(UserA, When(2024), "a1");
+        Conversation b = await SeedAsync(UserB, When(2024), "b1");
+        await ReportAsync(a.Messages[0].Id, a.Id, UserA);
+        await ReportAsync(b.Messages[0].Id, b.Id, UserB);
+
+        await _sut.EraseOwnerAsync(tenantId: null, UserA, TestContext.Current.CancellationToken);
+
+        await using AIChatDbContext context = _factory.CreateDbContext();
+        IReadOnlyList<MessageReport> reports = await context.MessageReports.IgnoreQueryFilters()
+            .ToListAsync(TestContext.Current.CancellationToken);
+        reports.ShouldHaveSingleItem().OwnerId.ShouldBe(UserB); // UserA's report erased, UserB's survives
+    }
+
+    [Fact]
+    public async Task PurgeOlderThan_also_removes_reports_for_purged_conversations()
+    {
+        Conversation old = await SeedAsync(UserA, When(2020), "old");
+        await ReportAsync(old.Messages[0].Id, old.Id, UserA);
+
+        await _sut.PurgeOlderThanAsync(When(2023), batchSize: 100, TestContext.Current.CancellationToken);
+
+        await using AIChatDbContext context = _factory.CreateDbContext();
+        (await context.MessageReports.IgnoreQueryFilters().CountAsync(TestContext.Current.CancellationToken)).ShouldBe(0);
+    }
+
+    private async Task ReportAsync(Guid messageId, Guid conversationId, Guid ownerId)
+    {
+        await using AIChatDbContext context = _factory.CreateDbContext();
+        context.MessageReports.Add(MessageReport.Create(
+            Guid.NewGuid(), messageId, conversationId, ownerId, "reason", MessageReportCategory.Other));
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
     public async Task EraseOwner_is_idempotent()
     {
         await SeedAsync(UserA, When(2024), "a1");

@@ -6,6 +6,7 @@
     "Permission:AIChat.Conversations.Send": "Odesílání zpráv ve vašich konverzacích",
     "Permission:AIChat.Conversations.Manage": "Vytváření a přejmenování vašich konverzací",
     "Permission:AIChat.Conversations.Delete": "Mazání vašich konverzací",
+    "Permission:AIChat.Conversations.Report": "Nahlásit zprávy ve svých konverzacích",
     "AIChat:Validation:TooManyMentions": "Zpráva může odkazovat nejvýše na 25 položek.",
     "AIChat:Validation:TooManyAttachments": "Příliš mnoho příloh v jedné zprávě.",
     "AIChat:Validation:UnsupportedAttachmentType": "Tento typ souboru není podporován.",

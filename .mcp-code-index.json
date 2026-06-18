@@ -3410,6 +3410,24 @@
       "members": []
     },
     {
+      "name": "MessageReport",
+      "fqn": "Granit.AI.Chat.Domain.MessageReport",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Domain/MessageReport.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "MessageReportCategory",
+      "fqn": "Granit.AI.Chat.Domain.MessageReportCategory",
+      "kind": "enum",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Domain/MessageReportCategory.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "MessageRole",
       "fqn": "Granit.AI.Chat.Domain.MessageRole",
       "kind": "enum",
@@ -3551,6 +3569,15 @@
           "returnType": "ConversationSummaryResponse"
         }
       ]
+    },
+    {
+      "name": "ReportMessageRequest",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.ReportMessageRequest",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/ReportMessageRequest.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "SendMessageRequest",
@@ -3706,6 +3733,15 @@
       "project": "Granit.AI.Chat.EntityFrameworkCore",
       "file": "src/Granit.AI.Chat.EntityFrameworkCore/GranitAIChatEntityFrameworkCoreModule.cs",
       "line": 14,
+      "members": []
+    },
+    {
+      "name": "ChatMessageReportedEvent",
+      "fqn": "Granit.AI.Chat.Events.ChatMessageReportedEvent",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Events/ChatMessageReportedEvent.cs",
+      "line": 18,
       "members": []
     },
     {
@@ -3881,6 +3917,12 @@
           "name": "AppendMessagesAsync",
           "kind": "method",
           "signature": "AppendMessagesAsync(Guid id, Guid ownerId, IReadOnlyList<Message> messages, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "ReportMessageAsync",
+          "kind": "method",
+          "signature": "ReportMessageAsync(Guid reportId, Guid messageId, Guid ownerId, string reason, MessageReportCategory? category, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
         },
         {

@@ -23,5 +23,8 @@ public static class AIChatPermissions
 
         /// <summary>Delete one's own conversations.</summary>
         public const string Delete = "AIChat.Conversations.Delete";
+
+        /// <summary>Report (flag) a message in one's own conversations for review.</summary>
+        public const string Report = "AIChat.Conversations.Report";
     }
 }

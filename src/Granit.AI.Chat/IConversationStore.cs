@@ -27,6 +27,19 @@ public interface IConversationStore
         IReadOnlyList<Message> messages,
         CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Records a report flagging a message in one of the owner's conversations. Returns
+    /// <see langword="false"/> when the message does not exist or its conversation is not the
+    /// owner's, so a caller can never probe another user's messages.
+    /// </summary>
+    Task<bool> ReportMessageAsync(
+        Guid reportId,
+        Guid messageId,
+        Guid ownerId,
+        string reason,
+        MessageReportCategory? category,
+        CancellationToken cancellationToken = default);
+
     /// <summary>Renames the owner's conversation; <see langword="false"/> if it is not theirs.</summary>
     Task<bool> RenameAsync(Guid id, Guid ownerId, string title, CancellationToken cancellationToken = default);
 

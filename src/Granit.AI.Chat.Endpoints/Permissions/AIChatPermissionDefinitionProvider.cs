@@ -31,5 +31,9 @@ internal sealed class AIChatPermissionDefinitionProvider : IPermissionDefinition
         group.AddPermission(
             AIChatPermissions.Conversations.Delete,
             LocalizableString.Create<AIChatEndpointsLocalizationResource>("Permission:AIChat.Conversations.Delete"));
+
+        group.AddPermission(
+            AIChatPermissions.Conversations.Report,
+            LocalizableString.Create<AIChatEndpointsLocalizationResource>("Permission:AIChat.Conversations.Report"));
     }
 }

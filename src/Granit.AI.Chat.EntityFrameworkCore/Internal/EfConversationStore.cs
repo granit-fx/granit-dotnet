@@ -59,6 +59,36 @@ internal sealed class EfConversationStore(IDbContextFactory<AIChatDbContext> con
         return true;
     }
 
+    public async Task<bool> ReportMessageAsync(
+        Guid reportId,
+        Guid messageId,
+        Guid ownerId,
+        string reason,
+        MessageReportCategory? category,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+
+        await using AIChatDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        // Resolve the conversation only through the owner's own conversations: a message in someone
+        // else's conversation (or a non-existent one) yields null, reported back as "not found".
+        Guid? conversationId = await context.Conversations
+            .Where(c => c.OwnerId == ownerId && c.Messages.Any(m => m.Id == messageId))
+            .Select(c => (Guid?)c.Id)
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (conversationId is not { } resolvedConversationId)
+        {
+            return false;
+        }
+
+        var report = MessageReport.Create(reportId, messageId, resolvedConversationId, ownerId, reason, category);
+        context.MessageReports.Add(report);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return true;
+    }
+
     public async Task<bool> RenameAsync(Guid id, Guid ownerId, string title, CancellationToken cancellationToken = default)
     {
         await using AIChatDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);

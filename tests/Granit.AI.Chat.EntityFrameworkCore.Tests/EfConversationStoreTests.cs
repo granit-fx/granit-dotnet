@@ -93,6 +93,52 @@ public sealed class EfConversationStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task ReportMessage_persists_a_report_for_the_owner()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Chat", "hello");
+        Guid messageId = seeded.Messages[0].Id;
+
+        bool reported = await _sut.ReportMessageAsync(
+            Guid.NewGuid(), messageId, UserA, "Wrong answer", MessageReportCategory.Inaccurate, TestContext.Current.CancellationToken);
+
+        reported.ShouldBeTrue();
+
+        await using AIChatDbContext context = _factory.CreateDbContext();
+        MessageReport stored = context.MessageReports.Single();
+        stored.MessageId.ShouldBe(messageId);
+        stored.ConversationId.ShouldBe(seeded.Id);
+        stored.OwnerId.ShouldBe(UserA);
+        stored.Reason.ShouldBe("Wrong answer");
+        stored.Category.ShouldBe(MessageReportCategory.Inaccurate);
+    }
+
+    [Fact]
+    public async Task ReportMessage_rejects_a_message_in_another_users_conversation()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Private", "secret");
+        Guid messageId = seeded.Messages[0].Id;
+
+        bool reported = await _sut.ReportMessageAsync(
+            Guid.NewGuid(), messageId, UserB, "Probing", MessageReportCategory.Other, TestContext.Current.CancellationToken);
+
+        reported.ShouldBeFalse();
+
+        await using AIChatDbContext context = _factory.CreateDbContext();
+        context.MessageReports.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task ReportMessage_returns_false_when_the_message_is_unknown()
+    {
+        await SeedAsync(UserA, "Chat", "hello");
+
+        bool reported = await _sut.ReportMessageAsync(
+            Guid.NewGuid(), Guid.NewGuid(), UserA, "No such message", category: null, TestContext.Current.CancellationToken);
+
+        reported.ShouldBeFalse();
+    }
+
+    [Fact]
     public async Task Delete_succeeds_for_the_owner_and_fails_for_others()
     {
         Conversation seeded = await SeedAsync(UserA, "Doomed");

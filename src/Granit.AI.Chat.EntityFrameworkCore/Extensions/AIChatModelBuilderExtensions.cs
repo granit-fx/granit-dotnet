@@ -16,6 +16,7 @@ public static class AIChatModelBuilderExtensions
 
         modelBuilder.ApplyConfiguration(new ConversationConfiguration());
         modelBuilder.ApplyConfiguration(new MessageConfiguration());
+        modelBuilder.ApplyConfiguration(new MessageReportConfiguration());
         return modelBuilder;
     }
 }

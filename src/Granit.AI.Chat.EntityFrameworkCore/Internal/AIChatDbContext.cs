@@ -20,6 +20,9 @@ internal sealed class AIChatDbContext(
     /// <summary>Conversations.</summary>
     public DbSet<Conversation> Conversations => Set<Conversation>();
 
+    /// <summary>User reports flagging a message for review.</summary>
+    public DbSet<MessageReport> MessageReports => Set<MessageReport>();
+
     /// <inheritdoc/>
     protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {

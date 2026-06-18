@@ -6,6 +6,7 @@
     "Permission:AIChat.Conversations.Send": "在您的对话中发送消息",
     "Permission:AIChat.Conversations.Manage": "创建和重命名您的对话",
     "Permission:AIChat.Conversations.Delete": "删除您的对话",
+    "Permission:AIChat.Conversations.Report": "举报对话中的消息",
     "AIChat:Validation:TooManyMentions": "一条消息最多可引用 25 个项目。",
     "AIChat:Validation:TooManyAttachments": "单条消息的附件过多。",
     "AIChat:Validation:UnsupportedAttachmentType": "不支持此文件类型。",

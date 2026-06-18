@@ -6,6 +6,7 @@
     "Permission:AIChat.Conversations.Send": "Berichten in uw gesprekken verzenden",
     "Permission:AIChat.Conversations.Manage": "Uw gesprekken aanmaken en hernoemen",
     "Permission:AIChat.Conversations.Delete": "Uw gesprekken verwijderen",
+    "Permission:AIChat.Conversations.Report": "Berichten in uw gesprekken rapporteren",
     "AIChat:Validation:TooManyMentions": "Een bericht kan maximaal 25 items vermelden.",
     "AIChat:Validation:TooManyAttachments": "Te veel bijlagen in één bericht.",
     "AIChat:Validation:UnsupportedAttachmentType": "Dit bestandstype wordt niet ondersteund.",

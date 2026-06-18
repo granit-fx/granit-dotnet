@@ -32,6 +32,7 @@ internal static class ChatSendEndpoints
                 + "'clarification' when applicable). Rejects a non-chat-capable workspace before streaming.")
             .Produces<ChatStreamEvent>(StatusCodes.Status200OK, "text/event-stream")
             .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status429TooManyRequests)

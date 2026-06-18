@@ -6,6 +6,7 @@
     "Permission:AIChat.Conversations.Send": "Sohbetlerinizde mesaj gönderin",
     "Permission:AIChat.Conversations.Manage": "Sohbetlerinizi oluşturun ve yeniden adlandırın",
     "Permission:AIChat.Conversations.Delete": "Sohbetlerinizi silin",
+    "Permission:AIChat.Conversations.Report": "Sohbetlerinizdeki mesajları bildirme",
     "AIChat:Validation:TooManyMentions": "Bir mesaj en fazla 25 öğeye başvurabilir.",
     "AIChat:Validation:TooManyAttachments": "Tek bir mesajda çok fazla ek var.",
     "AIChat:Validation:UnsupportedAttachmentType": "Bu dosya türü desteklenmiyor.",

@@ -6,6 +6,7 @@
     "Permission:AIChat.Conversations.Send": "अपनी बातचीत में संदेश भेजें",
     "Permission:AIChat.Conversations.Manage": "अपनी बातचीत बनाएँ और नाम बदलें",
     "Permission:AIChat.Conversations.Delete": "अपनी बातचीत हटाएँ",
+    "Permission:AIChat.Conversations.Report": "अपनी बातचीत में संदेशों की रिपोर्ट करें",
     "AIChat:Validation:TooManyMentions": "एक संदेश अधिकतम 25 आइटम का संदर्भ दे सकता है।",
     "AIChat:Validation:TooManyAttachments": "एक ही संदेश में बहुत अधिक अनुलग्नक हैं।",
     "AIChat:Validation:UnsupportedAttachmentType": "यह फ़ाइल प्रकार समर्थित नहीं है।",

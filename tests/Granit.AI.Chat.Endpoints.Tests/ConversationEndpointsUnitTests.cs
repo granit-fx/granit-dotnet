@@ -28,7 +28,7 @@ public sealed class ConversationEndpointsUnitTests
     }
 
     [Fact]
-    public void Permission_provider_declares_read_manage_delete()
+    public void Permission_provider_declares_read_send_manage_delete_report()
     {
         CapturingPermissionContext context = new();
 
@@ -42,6 +42,7 @@ public sealed class ConversationEndpointsUnitTests
                 "AIChat.Conversations.Send",
                 "AIChat.Conversations.Manage",
                 "AIChat.Conversations.Delete",
+                "AIChat.Conversations.Report",
             ],
             ignoreOrder: true);
     }
@@ -130,6 +131,17 @@ public sealed class ConversationEndpointsUnitTests
 
         validator.Validate(new RenameConversationRequest("  ")).IsValid.ShouldBeFalse();
         validator.Validate(new RenameConversationRequest("Renamed")).IsValid.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Report_validator_rejects_blank_and_overlong_reasons()
+    {
+        ReportMessageRequestValidator validator = new();
+
+        validator.Validate(new ReportMessageRequest("  ")).IsValid.ShouldBeFalse();
+        validator.Validate(new ReportMessageRequest(new string('x', MessageReport.MaxReasonLength + 1))).IsValid.ShouldBeFalse();
+        validator.Validate(new ReportMessageRequest("This answer is wrong.")).IsValid.ShouldBeTrue();
+        validator.Validate(new ReportMessageRequest("Unsafe.", MessageReportCategory.Harmful)).IsValid.ShouldBeTrue();
     }
 
     [Fact]

@@ -6,6 +6,7 @@
     "Permission:AIChat.Conversations.Send": "내 대화에서 메시지 보내기",
     "Permission:AIChat.Conversations.Manage": "내 대화 만들기 및 이름 변경",
     "Permission:AIChat.Conversations.Delete": "내 대화 삭제",
+    "Permission:AIChat.Conversations.Report": "대화의 메시지 신고",
     "AIChat:Validation:TooManyMentions": "메시지는 최대 25개 항목을 참조할 수 있습니다.",
     "AIChat:Validation:TooManyAttachments": "한 메시지에 첨부 파일이 너무 많습니다.",
     "AIChat:Validation:UnsupportedAttachmentType": "이 파일 형식은 지원되지 않습니다.",

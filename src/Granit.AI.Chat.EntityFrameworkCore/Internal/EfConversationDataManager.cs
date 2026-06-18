@@ -44,6 +44,13 @@ internal sealed class EfConversationDataManager(IDbContextFactory<AIChatDbContex
             .ExecuteDeleteAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        // Reports carry the owner's id (personal data) — erase the owner's reports too (GDPR).
+        await context.MessageReports
+            .IgnoreQueryFilters([GranitFilterNames.SoftDelete, GranitFilterNames.MultiTenant])
+            .Where(r => r.OwnerId == ownerId && (tenantId == null || r.TenantId == tenantId))
+            .ExecuteDeleteAsync(cancellationToken)
+            .ConfigureAwait(false);
+
         return await context.Conversations
             .IgnoreQueryFilters([GranitFilterNames.SoftDelete, GranitFilterNames.MultiTenant])
             .Where(c => ids.Contains(c.Id))
@@ -75,6 +82,13 @@ internal sealed class EfConversationDataManager(IDbContextFactory<AIChatDbContex
             await context.Set<Message>()
                 .IgnoreQueryFilters([GranitFilterNames.SoftDelete, GranitFilterNames.MultiTenant])
                 .Where(m => ids.Contains(m.ConversationId))
+                .ExecuteDeleteAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            // Purge reports for the conversations being retired so no personal data outlives them.
+            await context.MessageReports
+                .IgnoreQueryFilters([GranitFilterNames.SoftDelete, GranitFilterNames.MultiTenant])
+                .Where(r => ids.Contains(r.ConversationId))
                 .ExecuteDeleteAsync(cancellationToken)
                 .ConfigureAwait(false);
 

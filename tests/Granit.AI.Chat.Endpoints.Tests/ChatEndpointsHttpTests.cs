@@ -42,7 +42,8 @@ public sealed class ChatEndpointsHttpTests
                     .AddPolicy(AIChatPermissions.Conversations.Read, p => p.RequireClaim(TestAuthHandler.PermissionClaimType, AIChatPermissions.Conversations.Read))
                     .AddPolicy(AIChatPermissions.Conversations.Send, p => p.RequireClaim(TestAuthHandler.PermissionClaimType, AIChatPermissions.Conversations.Send))
                     .AddPolicy(AIChatPermissions.Conversations.Manage, p => p.RequireClaim(TestAuthHandler.PermissionClaimType, AIChatPermissions.Conversations.Manage))
-                    .AddPolicy(AIChatPermissions.Conversations.Delete, p => p.RequireClaim(TestAuthHandler.PermissionClaimType, AIChatPermissions.Conversations.Delete));
+                    .AddPolicy(AIChatPermissions.Conversations.Delete, p => p.RequireClaim(TestAuthHandler.PermissionClaimType, AIChatPermissions.Conversations.Delete))
+                    .AddPolicy(AIChatPermissions.Conversations.Report, p => p.RequireClaim(TestAuthHandler.PermissionClaimType, AIChatPermissions.Conversations.Report));
 
                 services.AddSingleton(_store);
                 services.AddSingleton(_chatService);
@@ -64,7 +65,8 @@ public sealed class ChatEndpointsHttpTests
         AIChatPermissions.Conversations.Read,
         AIChatPermissions.Conversations.Send,
         AIChatPermissions.Conversations.Manage,
-        AIChatPermissions.Conversations.Delete);
+        AIChatPermissions.Conversations.Delete,
+        AIChatPermissions.Conversations.Report);
 
     // ── Conversation CRUD ───────────────────────────────────────────────────────
 
@@ -186,6 +188,71 @@ public sealed class ChatEndpointsHttpTests
         HttpResponseMessage response = await FullAccess(host).DeleteAsync($"/conversations/{id}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    // ── Report a message ─────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task Report_returns_202_when_recorded()
+    {
+        var messageId = Guid.NewGuid();
+        _store.ReportMessageAsync(
+                Arg.Any<Guid>(), messageId, Owner, "Wrong answer", MessageReportCategory.Inaccurate, Arg.Any<CancellationToken>())
+            .Returns(true);
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
+            $"/conversations/messages/{messageId}/report",
+            new ReportMessageRequest("Wrong answer", MessageReportCategory.Inaccurate),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+        await _store.Received(1).ReportMessageAsync(
+            Arg.Any<Guid>(), messageId, Owner, "Wrong answer", MessageReportCategory.Inaccurate, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Report_returns_404_when_the_message_is_not_the_callers()
+    {
+        var messageId = Guid.NewGuid();
+        _store.ReportMessageAsync(
+                Arg.Any<Guid>(), messageId, Owner, Arg.Any<string>(), Arg.Any<MessageReportCategory?>(), Arg.Any<CancellationToken>())
+            .Returns(false);
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
+            $"/conversations/messages/{messageId}/report",
+            new ReportMessageRequest("Probing"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Report_without_a_user_context_is_unauthorized()
+    {
+        await using GranitEndpointTestHost host = await StartAsync(userId: null);
+
+        HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
+            $"/conversations/messages/{Guid.NewGuid()}/report",
+            new ReportMessageRequest("Wrong answer"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Report_without_the_report_permission_is_forbidden()
+    {
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpClient client = host.CreateClientWithPermissions(AIChatPermissions.Conversations.Read);
+        HttpResponseMessage response = await client.PostAsJsonAsync(
+            $"/conversations/messages/{Guid.NewGuid()}/report",
+            new ReportMessageRequest("Wrong answer"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     // ── Workspaces ──────────────────────────────────────────────────────────────

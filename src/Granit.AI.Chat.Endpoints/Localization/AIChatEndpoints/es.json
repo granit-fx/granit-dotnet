@@ -6,6 +6,7 @@
     "Permission:AIChat.Conversations.Send": "Enviar mensajes en tus conversaciones",
     "Permission:AIChat.Conversations.Manage": "Crear y renombrar tus conversaciones",
     "Permission:AIChat.Conversations.Delete": "Eliminar tus conversaciones",
+    "Permission:AIChat.Conversations.Report": "Denunciar mensajes en tus conversaciones",
     "AIChat:Validation:TooManyMentions": "Un mensaje puede referenciar como máximo 25 elementos.",
     "AIChat:Validation:TooManyAttachments": "Demasiados archivos adjuntos en un solo mensaje.",
     "AIChat:Validation:UnsupportedAttachmentType": "Este tipo de archivo no es compatible.",

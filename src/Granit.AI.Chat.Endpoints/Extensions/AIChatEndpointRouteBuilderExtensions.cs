@@ -28,6 +28,7 @@ public static class AIChatEndpointRouteBuilderExtensions
 
         group.MapConversationEndpoints();
         group.MapChatSendEndpoint();
+        group.MapMessageReportEndpoint();
         group.MapChatWorkspaceEndpoint();
         return group;
     }
