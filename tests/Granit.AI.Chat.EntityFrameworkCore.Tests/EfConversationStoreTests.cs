@@ -75,6 +75,41 @@ public sealed class EfConversationStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task Conversations_are_not_favorite_by_default()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Plain");
+
+        Conversation? loaded = await _sut.GetAsync(seeded.Id, UserA, TestContext.Current.CancellationToken);
+
+        loaded!.IsFavorite.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task SetFavorite_persists_the_explicit_state_for_the_owner_and_is_idempotent()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Pinned");
+
+        (await _sut.SetFavoriteAsync(seeded.Id, UserA, true, TestContext.Current.CancellationToken)).ShouldBeTrue();
+        (await _sut.GetAsync(seeded.Id, UserA, TestContext.Current.CancellationToken))!.IsFavorite.ShouldBeTrue();
+
+        // Setting the same state again is a no-op success (set semantics, not a toggle).
+        (await _sut.SetFavoriteAsync(seeded.Id, UserA, true, TestContext.Current.CancellationToken)).ShouldBeTrue();
+        (await _sut.GetAsync(seeded.Id, UserA, TestContext.Current.CancellationToken))!.IsFavorite.ShouldBeTrue();
+
+        (await _sut.SetFavoriteAsync(seeded.Id, UserA, false, TestContext.Current.CancellationToken)).ShouldBeTrue();
+        (await _sut.GetAsync(seeded.Id, UserA, TestContext.Current.CancellationToken))!.IsFavorite.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task SetFavorite_fails_for_another_user()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Private");
+
+        (await _sut.SetFavoriteAsync(seeded.Id, UserB, true, TestContext.Current.CancellationToken)).ShouldBeFalse();
+        (await _sut.GetAsync(seeded.Id, UserA, TestContext.Current.CancellationToken))!.IsFavorite.ShouldBeFalse();
+    }
+
+    [Fact]
     public async Task AppendMessages_adds_to_the_owner_conversation_and_rejects_others()
     {
         Conversation seeded = await SeedAsync(UserA, "Chat", "first");

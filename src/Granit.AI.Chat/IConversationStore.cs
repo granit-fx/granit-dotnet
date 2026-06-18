@@ -43,6 +43,12 @@ public interface IConversationStore
     /// <summary>Renames the owner's conversation; <see langword="false"/> if it is not theirs.</summary>
     Task<bool> RenameAsync(Guid id, Guid ownerId, string title, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Sets the favorite flag on the owner's conversation to <paramref name="isFavorite"/>
+    /// (idempotent, not a toggle); <see langword="false"/> if the conversation is not theirs.
+    /// </summary>
+    Task<bool> SetFavoriteAsync(Guid id, Guid ownerId, bool isFavorite, CancellationToken cancellationToken = default);
+
     /// <summary>Deletes the owner's conversation; <see langword="false"/> if it is not theirs.</summary>
     Task<bool> DeleteAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default);
 }

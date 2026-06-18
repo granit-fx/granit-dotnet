@@ -34,6 +34,9 @@ public sealed class Conversation : FullAuditedAggregateRoot, IMultiTenant, IOwna
     /// <summary>The user who owns this conversation.</summary>
     public Guid OwnerId { get; private set; }
 
+    /// <summary>Whether the owner has marked this conversation as a favorite.</summary>
+    public bool IsFavorite { get; private set; }
+
     /// <summary>The messages exchanged, oldest first.</summary>
     public List<Message> Messages { get; private set; } = [];
 
@@ -53,6 +56,9 @@ public sealed class Conversation : FullAuditedAggregateRoot, IMultiTenant, IOwna
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
         Title = title;
     }
+
+    /// <summary>Sets the favorite flag to the given state (idempotent — not a toggle).</summary>
+    public void SetFavorite(bool isFavorite) => IsFavorite = isFavorite;
 
     /// <summary>Appends a message and returns it.</summary>
     public Message AddMessage(Guid id, MessageRole role, string content)

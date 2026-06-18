@@ -149,13 +149,27 @@ public sealed class ConversationEndpointsUnitTests
     {
         var conversation = Conversation.Create(Guid.NewGuid(), Guid.NewGuid(), "Chat");
         conversation.AddMessage(Guid.NewGuid(), MessageRole.Assistant, "Hi");
+        conversation.SetFavorite(true);
 
         var response = ConversationResponse.FromAggregate(conversation);
 
         response.Title.ShouldBe("Chat");
         response.OwnerId.ShouldBe(conversation.OwnerId);
+        response.IsFavorite.ShouldBeTrue();
         MessageResponse message = response.Messages.ShouldHaveSingleItem();
         message.Role.ShouldBe("assistant");
         message.Content.ShouldBe("Hi");
+    }
+
+    [Fact]
+    public void Summary_projects_the_favorite_flag()
+    {
+        var conversation = Conversation.Create(Guid.NewGuid(), Guid.NewGuid(), "Chat");
+        conversation.SetFavorite(true);
+
+        var summary = ConversationSummaryResponse.FromAggregate(conversation);
+
+        summary.Title.ShouldBe("Chat");
+        summary.IsFavorite.ShouldBeTrue();
     }
 }
