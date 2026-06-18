@@ -50,6 +50,29 @@ public sealed class EfConversationStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task GetMetadata_returns_the_owner_conversation_without_loading_messages()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Brief", "hi", "there");
+
+        Conversation? loaded = await _sut.GetMetadataAsync(seeded.Id, UserA, TestContext.Current.CancellationToken);
+
+        loaded.ShouldNotBeNull();
+        loaded.Title.ShouldBe("Brief");
+        // Metadata read: the message collection is not materialised even though the thread has rows.
+        loaded.Messages.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task GetMetadata_does_not_return_another_users_conversation()
+    {
+        Conversation seeded = await SeedAsync(UserA, "Private");
+
+        Conversation? loaded = await _sut.GetMetadataAsync(seeded.Id, UserB, TestContext.Current.CancellationToken);
+
+        loaded.ShouldBeNull();
+    }
+
+    [Fact]
     public async Task List_returns_only_the_owners_conversations()
     {
         await SeedAsync(UserA, "A1");

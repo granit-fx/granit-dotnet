@@ -28,7 +28,6 @@ internal static class ChatMessagesEndpoints
                 "nextCursor to load the page of older messages; nextCursor is null at the start of " +
                 "history. Scoped to the caller: another user's conversation is reported as not found.")
             .Produces<PagedResult<MessageResponse>>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(AIChatPermissions.Conversations.Read);
 

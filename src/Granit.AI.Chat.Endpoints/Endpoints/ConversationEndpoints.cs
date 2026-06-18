@@ -21,15 +21,13 @@ internal static class ConversationEndpoints
             .WithSummary("Lists the current user's conversations.")
             .WithDescription("Returns the caller's own conversations, newest first, without their messages.")
             .Produces<IReadOnlyList<ConversationSummaryResponse>>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIChatPermissions.Conversations.Read);
 
         group.MapGet("/{id:guid}", GetByIdAsync)
             .WithName("GetConversation")
             .WithSummary("Returns one of the current user's conversations by ID.")
-            .WithDescription("Returns the conversation and its messages. Scoped to the caller: another user's conversation is reported as not found.")
+            .WithDescription("Returns the conversation's metadata (title, favorite, timestamps); its messages are paged separately via GET /{id}/messages. Scoped to the caller: another user's conversation is reported as not found.")
             .Produces<ConversationResponse>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(AIChatPermissions.Conversations.Read);
 
@@ -39,7 +37,6 @@ internal static class ConversationEndpoints
             .WithDescription("Creates an empty conversation with the given title, owned by the caller.")
             .Produces<ConversationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIChatPermissions.Conversations.Manage);
 
         group.MapPut("/{id:guid}/title", RenameAsync)
@@ -48,7 +45,6 @@ internal static class ConversationEndpoints
             .WithDescription("Updates the conversation title. Scoped to the caller: another user's conversation is reported as not found.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(AIChatPermissions.Conversations.Manage);
 
@@ -58,7 +54,6 @@ internal static class ConversationEndpoints
             .WithDescription("Sets the conversation's favorite flag to the requested state (idempotent, not a toggle). Scoped to the caller: another user's conversation is reported as not found.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(AIChatPermissions.Conversations.Manage);
 
@@ -67,7 +62,6 @@ internal static class ConversationEndpoints
             .WithSummary("Deletes one of the current user's conversations.")
             .WithDescription("Soft-deletes the conversation. Scoped to the caller: another user's conversation is reported as not found.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(AIChatPermissions.Conversations.Delete);
 
@@ -101,7 +95,7 @@ internal static class ConversationEndpoints
             return Unauthorized();
         }
 
-        Conversation? conversation = await store.GetAsync(id, ownerId, cancellationToken).ConfigureAwait(false);
+        Conversation? conversation = await store.GetMetadataAsync(id, ownerId, cancellationToken).ConfigureAwait(false);
         return conversation is null
             ? TypedResults.Problem(statusCode: StatusCodes.Status404NotFound)
             : TypedResults.Ok(ConversationResponse.FromAggregate(conversation));

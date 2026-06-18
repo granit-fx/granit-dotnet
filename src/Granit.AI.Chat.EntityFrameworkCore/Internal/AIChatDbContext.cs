@@ -11,6 +11,12 @@ namespace Granit.AI.Chat.EntityFrameworkCore.Internal;
 /// Isolated, tenant-aware DbContext for chat conversations. Inherits <see cref="GranitDbContext"/>
 /// so the multi-tenant query filter is parameterised per request.
 /// </summary>
+/// <remarks>
+/// <paramref name="currentTenant"/> is non-nullable by design: the base <see cref="GranitDbContext"/>
+/// owns the tenant context and rejects null. The "optional <c>ICurrentTenant?</c>" convention applies
+/// only to contexts that do not inherit <see cref="GranitDbContext"/> and pass the tenant to
+/// <c>ApplyGranitConventions</c> themselves.
+/// </remarks>
 internal sealed class AIChatDbContext(
     DbContextOptions<AIChatDbContext> options,
     ICurrentTenant currentTenant,

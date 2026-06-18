@@ -32,6 +32,18 @@ internal sealed class EfConversationStore(
             .ConfigureAwait(false);
     }
 
+    public async Task<Conversation?> GetMetadataAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default)
+    {
+        // No message include: the GET-by-id endpoint only needs metadata, and clients page the
+        // thread via GetMessagesPageAsync. Loading the whole history here would scale with thread
+        // length on every header read.
+        await using AIChatDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        return await context.Conversations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id && c.OwnerId == ownerId, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
     public async Task<PagedResult<Message>?> GetMessagesPageAsync(
         Guid conversationId,
         Guid ownerId,

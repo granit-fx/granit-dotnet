@@ -5,7 +5,8 @@ personal data, so this package makes them participate in the `Granit.Privacy` fl
 
 - **Take-out (Art. 15/20)** — `ConversationPrivacyDataProvider` exports the user's conversations
   (with messages) as a staged JSON fragment in the scatter-gather export saga.
-- **Erasure (Art. 17)** — a personal-data deletion handler hard-deletes the subject's conversations
+- **Erasure (Art. 17)** — a personal-data deletion handler hard-deletes the subject's conversations,
+  their messages, and any message reports (the user-entered report reason is free-text personal data)
   on account deletion (soft delete would leave message content recoverable).
 
 Attachment *content* is transient and owned by the application's blob store, which contributes its

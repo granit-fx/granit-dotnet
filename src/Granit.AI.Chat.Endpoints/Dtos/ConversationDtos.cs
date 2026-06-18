@@ -33,7 +33,7 @@ public sealed record ConversationSummaryResponse(
 /// The author, lower-cased ("user"/"assistant"/"system"/"tool") to match the AI-SDK wire
 /// convention the <c>@granit/ai-chat</c> client contract expects. The default
 /// <see cref="System.Text.Json.Serialization.JsonStringEnumConverter"/> would emit PascalCase, so
-/// the role is mapped explicitly here — see <see cref="ConversationResponse.FromAggregate"/>.
+/// the role is mapped explicitly here — see <see cref="MessageResponse.FromEntity"/>.
 /// </param>
 /// <param name="Content">The message text.</param>
 /// <param name="CreatedAt">When the message was created.</param>
@@ -47,17 +47,20 @@ public sealed record MessageResponse(Guid Id, string Role, string Content, DateT
     }
 }
 
-/// <summary>A conversation with its messages.</summary>
+/// <summary>
+/// A conversation's metadata (title, favorite, timestamps), without its messages. The thread is
+/// paged separately via <c>GET /conversations/{id}/messages</c>, so detail reads never materialise
+/// an entire history just to render the header.
+/// </summary>
 public sealed record ConversationResponse(
     Guid Id,
     string Title,
     Guid OwnerId,
     bool IsFavorite,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? ModifiedAt,
-    IReadOnlyList<MessageResponse> Messages)
+    DateTimeOffset? ModifiedAt)
 {
-    /// <summary>Projects a <see cref="Conversation"/> (with messages) to a response.</summary>
+    /// <summary>Projects a <see cref="Conversation"/> to its metadata response.</summary>
     public static ConversationResponse FromAggregate(Conversation conversation) =>
         new(
             conversation.Id,
@@ -65,6 +68,5 @@ public sealed record ConversationResponse(
             conversation.OwnerId,
             conversation.IsFavorite,
             conversation.CreatedAt,
-            conversation.ModifiedAt,
-            [.. conversation.Messages.Select(MessageResponse.FromEntity)]);
+            conversation.ModifiedAt);
 }

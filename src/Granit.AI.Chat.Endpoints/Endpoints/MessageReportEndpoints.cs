@@ -25,7 +25,6 @@ internal static class MessageReportEndpoints
                 + "user-entered reason — never the message content (ADR-071).")
             .Produces(StatusCodes.Status202Accepted)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(AIChatPermissions.Conversations.Report);
 

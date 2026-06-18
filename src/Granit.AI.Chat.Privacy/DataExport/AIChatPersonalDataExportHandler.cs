@@ -10,7 +10,7 @@ namespace Granit.AI.Chat.Privacy.DataExport;
 /// </summary>
 public class AIChatPersonalDataExportHandler
 {
-    public static Task HandleAsync(
+    public static Task Handle(
         PersonalDataRequestedEto request,
         ConversationPrivacyDataProvider provider,
         PrivacyFragmentUploader uploader,

@@ -145,7 +145,7 @@ public sealed class ConversationEndpointsUnitTests
     }
 
     [Fact]
-    public void Response_projects_the_aggregate_with_messages()
+    public void Response_projects_the_aggregate_metadata()
     {
         var conversation = Conversation.Create(Guid.NewGuid(), Guid.NewGuid(), "Chat");
         conversation.AddMessage(Guid.NewGuid(), MessageRole.Assistant, "Hi");
@@ -156,9 +156,6 @@ public sealed class ConversationEndpointsUnitTests
         response.Title.ShouldBe("Chat");
         response.OwnerId.ShouldBe(conversation.OwnerId);
         response.IsFavorite.ShouldBeTrue();
-        MessageResponse message = response.Messages.ShouldHaveSingleItem();
-        message.Role.ShouldBe("assistant");
-        message.Content.ShouldBe("Hi");
     }
 
     [Fact]

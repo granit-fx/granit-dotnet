@@ -40,9 +40,7 @@ internal static partial class ChatSendEndpoints
                 + "200 response, not an HTTP status. A client-cancelled request emits no 'error' frame.")
             .Produces<ChatStreamEvent>(StatusCodes.Status200OK, "text/event-stream")
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status429TooManyRequests)
             .RequireAuthorization(AIChatPermissions.Conversations.Send)
             // The agentic loop costs real provider spend per call; bound per-user volume to prevent

@@ -3502,7 +3502,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
-      "line": 51,
+      "line": 55,
       "members": [
         {
           "name": "FromAggregate",
@@ -3945,6 +3945,12 @@
           "returnType": "Task<Conversation?>"
         },
         {
+          "name": "GetMetadataAsync",
+          "kind": "method",
+          "signature": "GetMetadataAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Conversation?>"
+        },
+        {
           "name": "GetMessagesPageAsync",
           "kind": "method",
           "signature": "GetMessagesPageAsync(Guid conversationId, Guid ownerId, string? cursor, int? pageSize, CancellationToken cancellationToken = default)",
@@ -4126,7 +4132,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat.Privacy",
       "file": "src/Granit.AI.Chat.Privacy/DataDeletion/ConversationPersonalDataDeletionHandler.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "Handle",
@@ -4145,9 +4151,9 @@
       "line": 11,
       "members": [
         {
-          "name": "HandleAsync",
+          "name": "Handle",
           "kind": "method",
-          "signature": "HandleAsync(PersonalDataRequestedEto request, ConversationPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
+          "signature": "Handle(PersonalDataRequestedEto request, ConversationPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]

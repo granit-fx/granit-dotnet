@@ -5,7 +5,8 @@ using Granit.Privacy.DataDeletion.Events;
 namespace Granit.AI.Chat.Privacy.DataDeletion;
 
 /// <summary>
-/// Wolverine handler that erases a data subject's conversations (and their messages) on a
+/// Wolverine handler that erases a data subject's conversations — including their messages and any
+/// message reports (the user-entered report reason is free-text personal data) — on a
 /// <see cref="PersonalDataDeletionRequestedEto"/> (GDPR Art. 17). Hard deletes via
 /// <see cref="IConversationDataManager.EraseOwnerAsync"/> — soft delete would leave the message
 /// content recoverable, which the right to erasure forbids.

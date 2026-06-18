@@ -14,7 +14,20 @@ public interface IConversationStore
     Task<Conversation> CreateAsync(Conversation conversation, CancellationToken cancellationToken = default);
 
     /// <summary>Returns the owner's conversation including its messages, or <see langword="null"/>.</summary>
+    /// <remarks>
+    /// Materialises the full message history; this is the variant the chat turn needs to send the
+    /// thread to the model. For metadata-only reads (the GET-by-id endpoint) use
+    /// <see cref="GetMetadataAsync"/>, which skips the message include.
+    /// </remarks>
     Task<Conversation?> GetAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the owner's conversation <b>without</b> its messages, or <see langword="null"/>.
+    /// Backs the GET-by-id endpoint, whose clients page the thread separately via
+    /// <see cref="GetMessagesPageAsync"/>; skipping the message include avoids loading an entire
+    /// history just to read the conversation's metadata (title, favorite flag, timestamps).
+    /// </summary>
+    Task<Conversation?> GetMetadataAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Returns one backwards-paginated page of the owner's conversation messages (newest first),

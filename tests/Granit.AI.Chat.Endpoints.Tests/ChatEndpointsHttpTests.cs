@@ -110,7 +110,7 @@ public sealed class ChatEndpointsHttpTests
     public async Task GetById_returns_404_when_absent()
     {
         var id = Guid.NewGuid();
-        _store.GetAsync(id, Owner, Arg.Any<CancellationToken>()).Returns((Conversation?)null);
+        _store.GetMetadataAsync(id, Owner, Arg.Any<CancellationToken>()).Returns((Conversation?)null);
         await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
 
         HttpResponseMessage response = await FullAccess(host).GetAsync($"/conversations/{id}", TestContext.Current.CancellationToken);
@@ -122,7 +122,7 @@ public sealed class ChatEndpointsHttpTests
     public async Task GetById_returns_the_conversation_when_found()
     {
         var conversation = Conversation.Create(Guid.NewGuid(), Owner, "Found");
-        _store.GetAsync(conversation.Id, Owner, Arg.Any<CancellationToken>()).Returns(conversation);
+        _store.GetMetadataAsync(conversation.Id, Owner, Arg.Any<CancellationToken>()).Returns(conversation);
         await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
 
         HttpResponseMessage response = await FullAccess(host).GetAsync($"/conversations/{conversation.Id}", TestContext.Current.CancellationToken);
