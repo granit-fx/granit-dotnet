@@ -70,7 +70,11 @@ internal sealed class EfManagedHostnameStore(
         ListAsync(
             Spec.For<ManagedHostname>()
                 .Where(h => h.OwnerType == ownerType && h.OwnerId == ownerId)
-                .OrderBy(h => (object)h.Host.Value)
+                // Order by the whole Host value object — its ValueConverter round-trips the whole
+                // value to a single column, so EF can translate ORDER BY over `h.Host`. Reaching
+                // into `h.Host.Value` is NOT translatable (the converter has no member mapping for
+                // `.Value`) and throws "could not be translated" at query time.
+                .OrderBy(h => (object)h.Host)
                 .Limit(Math.Min(maxResults, MaxListByOwnerResults)),
             cancellationToken);
 

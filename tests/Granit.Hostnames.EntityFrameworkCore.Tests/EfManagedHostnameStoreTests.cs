@@ -153,23 +153,10 @@ public sealed class EfManagedHostnameStoreTests
         result.ShouldBeEmpty();
     }
 
-    [Fact]
-    public async Task ListByOwnerAsync_returns_only_matching_owner()
-    {
-        string db = nameof(ListByOwnerAsync_returns_only_matching_owner);
-        EfManagedHostnameStore store = CreateStore(db);
-        var otherOwner = Guid.NewGuid();
-
-        await store.AddAsync(MakeHostname("a.com", ownerId: OwnerId), TestContext.Current.CancellationToken);
-        await store.AddAsync(MakeHostname("b.com", ownerId: OwnerId), TestContext.Current.CancellationToken);
-        await store.AddAsync(MakeHostname("c.com", ownerId: otherOwner), TestContext.Current.CancellationToken);
-
-        IReadOnlyList<ManagedHostname> result = await store.ListByOwnerAsync(
-            "cms.site", OwnerId, cancellationToken: TestContext.Current.CancellationToken);
-
-        result.Count.ShouldBe(2);
-        result.ShouldAllBe(h => h.OwnerId == OwnerId);
-    }
+    // ListByOwnerAsync orders by the value-converted Host column. The in-memory provider sorts
+    // client-side and the Hostname value object is not IComparable, so a non-empty ordered result
+    // can only be exercised against a relational provider — see
+    // EfManagedHostnameStoreRelationalTests.ListByOwnerAsync_orders_by_host_and_filters_owner.
 
     // ── UpdateAsync ───────────────────────────────────────────────────────────
 
