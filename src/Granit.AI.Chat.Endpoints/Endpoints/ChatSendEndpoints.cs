@@ -30,8 +30,10 @@ internal static partial class ChatSendEndpoints
                 + "assistant messages, and streams the answer as Server-Sent Events: a 'conversation' "
                 + "frame with the (possibly new) conversation id (flushed immediately), then live "
                 + "'tool_call'/'tool_result' frames as the agent uses tools and incremental 'delta' "
-                + "content frames as the model writes, then a 'usage' frame (and 'suggestions' / "
-                + "'clarification' when applicable). Rejects a non-chat-capable workspace before streaming. "
+                + "content frames as the model writes, then (on a successful turn) a 'persisted' frame "
+                + "carrying the turn's saved user and assistant messages with their real ids and server "
+                + "timestamps, then a 'usage' frame (and 'suggestions' / 'clarification' when applicable). "
+                + "Rejects a non-chat-capable workspace before streaming. "
                 + "If the agent fails after the stream is committed (provider quota exhausted, a provider "
                 + "5xx/timeout, or any other fault), the stream ends with a terminal 'error' frame carrying "
                 + "a machine 'code' (rate_limit / provider_unavailable / server_error) — a frame within the "
@@ -244,9 +246,23 @@ internal static partial class ChatSendEndpoints
         Message = "Chat send stream failed mid-stream for conversation {ConversationId}; emitting an '{Code}' error frame.")]
     private static partial void LogStreamFailed(ILogger logger, Exception exception, Guid conversationId, string code);
 
-    /// <summary>The terminal frames derived from the settled result: usage, then any suggestions and clarification.</summary>
+    /// <summary>
+    /// The terminal frames derived from the settled result: the turn's persisted identities, then
+    /// usage, then any suggestions and clarification.
+    /// </summary>
     private static IEnumerable<ChatStreamEvent> CompletionFrames(ChatSendResult result)
     {
+        // Surface the turn's persisted rows (real ids + server timestamps) so the client renders the
+        // actual messages and can report the just-streamed answer. Suppressed on a clarification (no
+        // answer to append) and when no ids are available — the client then keeps its optimistic append.
+        if (result.Clarification is null && result.PersistedMessages.Count > 0)
+        {
+            yield return new ChatStreamEvent(
+                "persisted",
+                Messages: [.. result.PersistedMessages.Select(m =>
+                    new MessageResponse(m.Id, m.Role, m.Content, m.CreatedAt))]);
+        }
+
         yield return new ChatStreamEvent("usage", InputTokens: result.InputTokens, OutputTokens: result.OutputTokens);
 
         if (result.SuggestedActions.Count > 0)

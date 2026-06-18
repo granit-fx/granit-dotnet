@@ -125,8 +125,10 @@ internal sealed class ChatService(
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         // Persist the user turn before the loop runs: the message and conversation then survive a
-        // crash mid-stream (only the regenerable assistant turn can be lost — see ADR-068).
-        await PersistUserTurnAsync(handle, cancellationToken).ConfigureAwait(false);
+        // crash mid-stream (only the regenerable assistant turn can be lost — see ADR-068). The
+        // persisted entity (real id + server timestamp) is carried into the settled result so the
+        // endpoint can stream the turn's identities back to the client.
+        Message userMessage = await PersistUserTurnAsync(handle, cancellationToken).ConfigureAwait(false);
 
         var orchestrationRequest = new AIOrchestrationRequest
         {
@@ -179,7 +181,7 @@ internal sealed class ChatService(
             yield return ChatTurnUpdate.ForDelta(assistantContent);
         }
 
-        await PersistAssistantTurnAsync(handle, assistantContent, cancellationToken).ConfigureAwait(false);
+        Message assistantMessage = await PersistAssistantTurnAsync(handle, assistantContent, cancellationToken).ConfigureAwait(false);
 
         // Gather typed, non-executing suggested actions from registered providers under the caller's
         // ACLs. Ephemeral — surfaced with the answer, never persisted.
@@ -196,32 +198,48 @@ internal sealed class ChatService(
             OutputTokens = result.OutputTokens,
             SuggestedActions = suggestedActions,
             Clarification = clarification,
+            // Both turns are saved by now (CreatedAt stamped by the audit interceptor) — carry their
+            // identities oldest-first so the endpoint can emit them. The endpoint suppresses the frame
+            // on a clarification (no answer to append).
+            PersistedMessages = [ToPersisted(userMessage), ToPersisted(assistantMessage)],
         });
     }
 
-    private async Task PersistUserTurnAsync(ChatSendHandle handle, CancellationToken cancellationToken)
+    private async Task<Message> PersistUserTurnAsync(ChatSendHandle handle, CancellationToken cancellationToken)
     {
         if (handle.IsNew)
         {
-            handle.Conversation.AddMessage(guidGenerator.Create(), MessageRole.User, handle.OriginalMessage);
+            Message userMessage = handle.Conversation.AddMessage(guidGenerator.Create(), MessageRole.User, handle.OriginalMessage);
             await conversationStore.CreateAsync(handle.Conversation, cancellationToken).ConfigureAwait(false);
+            return userMessage;
         }
-        else
-        {
-            await conversationStore.AppendMessagesAsync(
-                handle.ConversationId,
-                handle.OwnerId,
-                [Message.Create(guidGenerator.Create(), handle.ConversationId, MessageRole.User, handle.OriginalMessage)],
-                cancellationToken).ConfigureAwait(false);
-        }
-    }
 
-    private Task<bool> PersistAssistantTurnAsync(ChatSendHandle handle, string assistantContent, CancellationToken cancellationToken) =>
-        conversationStore.AppendMessagesAsync(
+        var message = Message.Create(guidGenerator.Create(), handle.ConversationId, MessageRole.User, handle.OriginalMessage);
+        await conversationStore.AppendMessagesAsync(
             handle.ConversationId,
             handle.OwnerId,
-            [Message.Create(guidGenerator.Create(), handle.ConversationId, MessageRole.Assistant, assistantContent)],
-            cancellationToken);
+            [message],
+            cancellationToken).ConfigureAwait(false);
+        return message;
+    }
+
+    private async Task<Message> PersistAssistantTurnAsync(ChatSendHandle handle, string assistantContent, CancellationToken cancellationToken)
+    {
+        var message = Message.Create(guidGenerator.Create(), handle.ConversationId, MessageRole.Assistant, assistantContent);
+        await conversationStore.AppendMessagesAsync(
+            handle.ConversationId,
+            handle.OwnerId,
+            [message],
+            cancellationToken).ConfigureAwait(false);
+        return message;
+    }
+
+    /// <summary>
+    /// Projects a persisted <see cref="Message"/> to the wire identity carried in the settled result.
+    /// The role is lower-cased to match the client wire convention (as in the conversation read model).
+    /// </summary>
+    private static PersistedChatMessage ToPersisted(Message message) =>
+        new(message.Id, message.Role.ToString().ToLowerInvariant(), message.Content, message.CreatedAt);
 
     /// <summary>
     /// Parses a clarification from a loop interrupt, or <see langword="null"/> when the interrupt is

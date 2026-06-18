@@ -3288,7 +3288,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 84,
+      "line": 105,
       "members": [
         {
           "name": "ConversationId",
@@ -3313,13 +3313,19 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 47,
+      "line": 59,
       "members": [
         {
           "name": "ConversationId",
           "kind": "property",
           "signature": "required Guid ConversationId",
           "returnType": "required Guid"
+        },
+        {
+          "name": "Clarification",
+          "kind": "property",
+          "signature": "AIClarificationRequest? Clarification",
+          "returnType": "AIClarificationRequest?"
         }
       ]
     },
@@ -3329,7 +3335,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 135,
+      "line": 156,
       "members": [
         {
           "name": "ForDelta",
@@ -3363,7 +3369,7 @@
       "kind": "enum",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 115,
+      "line": 136,
       "members": []
     },
     {
@@ -3457,7 +3463,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 60,
+      "line": 69,
       "members": []
     },
     {
@@ -3475,7 +3481,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 82,
+      "line": 92,
       "members": []
     },
     {
@@ -3484,7 +3490,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 77,
+      "line": 87,
       "members": []
     },
     {
@@ -3616,7 +3622,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 89,
+      "line": 99,
       "members": []
     },
     {
@@ -3865,7 +3871,7 @@
       "kind": "interface",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 183,
+      "line": 204,
       "members": [
         {
           "name": "PrepareAsync",
@@ -4080,6 +4086,28 @@
           "kind": "method",
           "signature": "new(StringComparer.OrdinalIgnoreCase)",
           "returnType": "HashSet<string> AllowedContentTypes { get; set; } ="
+        }
+      ]
+    },
+    {
+      "name": "PersistedChatMessage",
+      "fqn": "Granit.AI.Chat.PersistedChatMessage",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/IChatService.cs",
+      "line": 56,
+      "members": [
+        {
+          "name": "ConversationId",
+          "kind": "property",
+          "signature": "required Guid ConversationId",
+          "returnType": "required Guid"
+        },
+        {
+          "name": "Clarification",
+          "kind": "property",
+          "signature": "AIClarificationRequest? Clarification",
+          "returnType": "AIClarificationRequest?"
         }
       ]
     },

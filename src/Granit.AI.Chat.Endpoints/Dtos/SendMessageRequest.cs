@@ -32,11 +32,20 @@ public sealed record AttachmentRequest(string Reference, string FileName, string
 /// <c>conversation</c> (carries <see cref="ConversationId"/>), <c>delta</c> (carries a
 /// <see cref="Content"/> chunk), <c>tool_call</c> (a tool started — carries <see cref="ToolName"/> +
 /// <see cref="ToolCallId"/>), <c>tool_result</c> (a tool finished — adds <see cref="Succeeded"/>),
-/// <c>usage</c> (carries the token counts), <c>suggestions</c> (carries the typed
-/// <see cref="SuggestedActions"/>), <c>clarification</c>, or <c>error</c> (a mid-stream failure —
-/// carries <see cref="Code"/>).
+/// <c>persisted</c> (the turn's saved messages — carries <see cref="Messages"/>), <c>usage</c>
+/// (carries the token counts), <c>suggestions</c> (carries the typed <see cref="SuggestedActions"/>),
+/// <c>clarification</c>, or <c>error</c> (a mid-stream failure — carries <see cref="Code"/>).
 /// </summary>
 /// <remarks>
+/// <para>
+/// The <c>persisted</c> frame carries the turn's newly-saved message rows (<see cref="Messages"/>,
+/// the user message then the assistant message, oldest-first) with their real ids and server
+/// timestamps, emitted once on a successful turn just before <c>usage</c>. It lets the client render
+/// the actual rows — and report the just-streamed assistant message — instead of synthesising ids. It
+/// is <em>not</em> emitted on a clarification turn (there is no answer to append) nor on the
+/// <c>error</c> frame; when it is absent the client falls back to its optimistic, client-id append.
+/// Older clients ignore the unknown frame, so it is backward compatible.
+/// </para>
 /// <para>
 /// Tool frames carry only the tool's name and call id — never its arguments or raw result (privacy);
 /// the front maps the name to a localized label. A "thinking" indicator is derived front-side from a
@@ -68,7 +77,8 @@ public sealed record ChatStreamEvent(
     string? ToolName = null,
     string? ToolCallId = null,
     bool? Succeeded = null,
-    string? Code = null);
+    string? Code = null,
+    IReadOnlyList<MessageResponse>? Messages = null);
 
 /// <summary>A typed clarification the front renders as clickable choices; the turn blocks until answered.</summary>
 /// <param name="Question">The disambiguating question.</param>

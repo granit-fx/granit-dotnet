@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
+using Granit.AI.Chat.Clarification;
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Endpoints.Dtos;
 using Granit.AI.Chat.Endpoints.Extensions;
@@ -446,6 +447,87 @@ public sealed class ChatEndpointsHttpTests
     }
 
     [Fact]
+    public async Task Send_emits_one_persisted_frame_with_the_turns_real_messages_before_usage()
+    {
+        var conversationId = Guid.NewGuid();
+        var userMessageId = Guid.NewGuid();
+        var assistantMessageId = Guid.NewGuid();
+        var createdAt = new DateTimeOffset(2026, 6, 18, 9, 30, 0, TimeSpan.Zero);
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new ChatSendHandle { ConversationId = conversationId });
+        _chatService.StreamAsync(Arg.Any<ChatSendHandle>(), Arg.Any<CancellationToken>())
+            .Returns(_ => Stream(
+                ChatTurnUpdate.ForDelta("Hello world"),
+                ChatTurnUpdate.ForCompleted(new ChatSendResult
+                {
+                    ConversationId = conversationId,
+                    Content = "Hello world",
+                    InputTokens = 3,
+                    OutputTokens = 2,
+                    PersistedMessages =
+                    [
+                        new PersistedChatMessage(userMessageId, "user", "Hi", createdAt),
+                        new PersistedChatMessage(assistantMessageId, "assistant", "Hello world", createdAt),
+                    ],
+                })));
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
+            "/conversations/messages", new SendMessageRequest("Hi"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        // Exactly one persisted frame, carrying both real message ids, ordered before usage.
+        int persistedAt = body.IndexOf("\"type\":\"persisted\"", StringComparison.Ordinal);
+        persistedAt.ShouldBeGreaterThanOrEqualTo(0);
+        body.IndexOf("\"type\":\"persisted\"", persistedAt + 1, StringComparison.Ordinal).ShouldBe(-1);
+        persistedAt.ShouldBeLessThan(body.IndexOf("\"type\":\"usage\"", StringComparison.Ordinal));
+        body.ShouldContain(userMessageId.ToString());
+        body.ShouldContain(assistantMessageId.ToString());
+        // The camelCase MessageResponse shape the GET endpoint already uses is reused verbatim.
+        body.ShouldContain("\"role\":\"assistant\"");
+        body.ShouldContain("\"createdAt\":");
+    }
+
+    [Fact]
+    public async Task Send_emits_no_persisted_frame_on_a_clarification_turn()
+    {
+        var conversationId = Guid.NewGuid();
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new ChatSendHandle { ConversationId = conversationId });
+        // The service persists the question as an assistant row, so the identities ride along — but the
+        // endpoint must suppress the frame: there is no answer bubble to append, only clickable options.
+        _chatService.StreamAsync(Arg.Any<ChatSendHandle>(), Arg.Any<CancellationToken>())
+            .Returns(_ => Stream(
+                ChatTurnUpdate.ForCompleted(new ChatSendResult
+                {
+                    ConversationId = conversationId,
+                    Content = "Which environment?",
+                    Clarification = new AIClarificationRequest
+                    {
+                        Question = "Which environment?",
+                        Options = [new AIClarificationOption { Label = "Prod" }, new AIClarificationOption { Label = "Test" }],
+                        AllowOther = false,
+                    },
+                    PersistedMessages =
+                    [
+                        new PersistedChatMessage(Guid.NewGuid(), "user", "deploy", default),
+                        new PersistedChatMessage(Guid.NewGuid(), "assistant", "Which environment?", default),
+                    ],
+                })));
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
+            "/conversations/messages", new SendMessageRequest("deploy"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        body.ShouldContain("clarification");
+        body.ShouldNotContain("\"type\":\"persisted\"");
+    }
+
+    [Fact]
     public async Task Send_flushes_the_conversation_frame_before_the_agent_settles()
     {
         var conversationId = Guid.NewGuid();
@@ -538,6 +620,8 @@ public sealed class ChatEndpointsHttpTests
         string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         body.ShouldContain("\"type\":\"error\"");
         body.ShouldContain("server_error");
+        // A failed turn settles no result, so no persisted identities are emitted.
+        body.ShouldNotContain("\"type\":\"persisted\"");
     }
 
     [Fact]

@@ -130,6 +130,17 @@ public sealed class ChatServiceTests
         result.Content.ShouldBe("the answer");
         result.InputTokens.ShouldBe(10);
 
+        // The turn's persisted identities ride along, user then assistant (oldest-first), carrying the
+        // real ids the endpoint streams back as the 'persisted' frame.
+        result.PersistedMessages.Count.ShouldBe(2);
+        result.PersistedMessages[0].Role.ShouldBe("user");
+        result.PersistedMessages[0].Content.ShouldBe("What changed?");
+        result.PersistedMessages[0].Id.ShouldNotBe(Guid.Empty);
+        result.PersistedMessages[1].Role.ShouldBe("assistant");
+        result.PersistedMessages[1].Content.ShouldBe("the answer");
+        result.PersistedMessages[1].Id.ShouldNotBe(Guid.Empty);
+        result.PersistedMessages[0].Id.ShouldNotBe(result.PersistedMessages[1].Id);
+
         // The user turn is persisted up front (conversation created with just the user message)...
         await _store.Received(1).CreateAsync(
             Arg.Is<Conversation>(c =>
@@ -144,6 +155,32 @@ public sealed class ChatServiceTests
             Arg.Is<IReadOnlyList<Message>>(m =>
                 m.Count == 1 && m[0].Role == MessageRole.Assistant && m[0].Content == "the answer"),
             Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Persisted_message_identities_match_the_entities_written_to_the_store()
+    {
+        ChatService service = CreateService();
+        Conversation? created = null;
+        Message? appendedAssistant = null;
+        // Configured after CreateService so these capturing stubs win over its defaults.
+        _store.CreateAsync(Arg.Any<Conversation>(), Arg.Any<CancellationToken>())
+            .Returns(ci => Task.FromResult(created = ci.Arg<Conversation>()));
+        _store.AppendMessagesAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<IReadOnlyList<Message>>(), Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                appendedAssistant = ci.Arg<IReadOnlyList<Message>>()[0];
+                return Task.FromResult(true);
+            });
+
+        ChatSendResult result = await SendAsync(service, Request(message: "What changed?"), TestContext.Current.CancellationToken);
+
+        // The user identity is the row stored on the new conversation; the assistant identity is the
+        // row appended afterwards — so the front can render/report exactly what GET returns.
+        created.ShouldNotBeNull();
+        appendedAssistant.ShouldNotBeNull();
+        result.PersistedMessages[0].Id.ShouldBe(created.Messages[0].Id);
+        result.PersistedMessages[1].Id.ShouldBe(appendedAssistant.Id);
     }
 
     [Fact]

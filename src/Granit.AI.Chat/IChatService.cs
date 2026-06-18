@@ -43,6 +43,18 @@ public sealed record ChatSendRequest
     public IReadOnlyList<Guid>? PromptRefs { get; init; }
 }
 
+/// <summary>
+/// A message persisted during a turn, projected so the streaming endpoint can surface the turn's real
+/// identities (server-assigned id + timestamp) to the client without re-loading the conversation.
+/// Mirrors the fields of the conversation read model's message projection (id, role, content,
+/// created-at); <see cref="Role"/> is lower-cased ("user"/"assistant") to match the client wire convention.
+/// </summary>
+/// <param name="Id">The server-assigned message identifier.</param>
+/// <param name="Role">The author, lower-cased ("user"/"assistant") to match the client wire convention.</param>
+/// <param name="Content">The message text, as persisted.</param>
+/// <param name="CreatedAt">The server creation timestamp.</param>
+public sealed record PersistedChatMessage(Guid Id, string Role, string Content, DateTimeOffset CreatedAt);
+
 /// <summary>The outcome of a send: the (possibly new) conversation and the assistant's answer.</summary>
 public sealed record ChatSendResult
 {
@@ -72,6 +84,15 @@ public sealed record ChatSendResult
     /// until the user picks an option). <see cref="Content"/> then carries the question text.
     /// </summary>
     public AIClarificationRequest? Clarification { get; init; }
+
+    /// <summary>
+    /// The turn's newly-persisted messages — the user message (saved before the loop) then the
+    /// assistant message (saved after it), oldest-first — carrying their real ids and server
+    /// timestamps. The streaming endpoint emits these as a <c>persisted</c> frame so the client can
+    /// render the actual rows (and report the just-streamed message) instead of synthesising ids.
+    /// Empty when no turn was persisted.
+    /// </summary>
+    public IReadOnlyList<PersistedChatMessage> PersistedMessages { get; init; } = [];
 }
 
 /// <summary>
