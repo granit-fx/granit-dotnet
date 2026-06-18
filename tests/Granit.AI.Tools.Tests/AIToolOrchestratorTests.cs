@@ -260,7 +260,7 @@ public sealed class AIToolOrchestratorTests
         await harness.Orchestrator.RunAsync(UserSays("hi"), TestContext.Current.CancellationToken);
 
         await harness.UsageTracker.Received(1).RecordAsync(
-            Arg.Is<AIUsageRecord>(r => r.PromptVersion == "1.1.0"),
+            Arg.Is<AIUsageRecord>(r => r.PromptVersion == "1.2.0"),
             Arg.Any<CancellationToken>());
     }
 
@@ -317,6 +317,28 @@ public sealed class AIToolOrchestratorTests
             .Where(u => u.Kind == AIOrchestrationUpdateKind.Delta)
             .Select(u => u.TextDelta));
         streamed.ShouldBe("Hello world");
+    }
+
+    [Fact]
+    public async Task Strips_a_reasoning_think_block_from_the_streamed_text_and_the_settled_content()
+    {
+        // DeepSeek-R1 over Ollama emits its chain-of-thought inline as a leading <think> block; it must
+        // never reach the client or the persisted turn.
+        ScriptedChatClient client = new(FinalText("<think>weighing options</think>\n\nThe answer is 42."));
+        Harness harness = CreateHarness(client, []);
+
+        List<AIOrchestrationUpdate> updates = [];
+        await foreach (AIOrchestrationUpdate update in harness.Orchestrator
+            .RunStreamingAsync(UserSays("hi"), TestContext.Current.CancellationToken))
+        {
+            updates.Add(update);
+        }
+
+        string streamed = string.Concat(updates
+            .Where(u => u.Kind == AIOrchestrationUpdateKind.Delta)
+            .Select(u => u.TextDelta));
+        streamed.ShouldBe("The answer is 42.");
+        updates[^1].Result!.Content.ShouldBe("The answer is 42.");
     }
 
     [Fact]
