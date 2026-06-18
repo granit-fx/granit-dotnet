@@ -15,6 +15,7 @@
     "AI.Columns.CostCurrency": "Währung",
     "AI.Columns.Timestamp": "Zeitstempel",
     "AI.Columns.Duration": "Dauer",
+    "AI.Columns.ConversationId": "Unterhaltung",
     "PermissionGroup:AI": "AI",
     "Permission:AI.Credentials.Manage": "Manage AI credentials",
     "Permission:AI.ChatTools.Translate": "KI-Übersetzungstool verwenden"

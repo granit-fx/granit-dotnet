@@ -15,6 +15,7 @@
     "AI.Columns.CostCurrency": "Para birimi",
     "AI.Columns.Timestamp": "Timestamp",
     "AI.Columns.Duration": "Duration",
+    "AI.Columns.ConversationId": "Konuşma",
     "PermissionGroup:AI": "AI",
     "Permission:AI.Credentials.Manage": "Manage AI credentials",
     "Permission:AI.ChatTools.Translate": "Yapay zeka çeviri aracını kullan"

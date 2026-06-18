@@ -50,6 +50,8 @@ internal sealed class AIUsageRecordEntityConfiguration : IEntityTypeConfiguratio
 
         builder.Property(e => e.Duration);
 
+        builder.Property(e => e.ConversationId);
+
         builder.Property(e => e.PromptVersion)
             .HasMaxLength(50);
 
@@ -72,5 +74,9 @@ internal sealed class AIUsageRecordEntityConfiguration : IEntityTypeConfiguratio
         // Cost aggregation queries by provider/model.
         builder.HasIndex(e => new { e.TenantId, e.Provider, e.Model })
             .HasDatabaseName($"ix_{GranitAIDbProperties.DbTablePrefix}usage_records_tenant_provider_model");
+
+        // Per-conversation usage slicing (billing, audit). Sparse: null for non-chat interactions.
+        builder.HasIndex(e => new { e.TenantId, e.ConversationId })
+            .HasDatabaseName($"ix_{GranitAIDbProperties.DbTablePrefix}usage_records_tenant_conversation");
     }
 }

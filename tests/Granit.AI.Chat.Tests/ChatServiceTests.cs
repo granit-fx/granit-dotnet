@@ -161,7 +161,8 @@ public sealed class ChatServiceTests
             Arg.Is<AIOrchestrationRequest>(r =>
                 r.Messages.Count == 2
                 && r.Messages[0].Role == ChatRole.User && r.Messages[0].Text == "previous"
-                && r.Messages[1].Text == "follow up"),
+                && r.Messages[1].Text == "follow up"
+                && r.ConversationId == conversationId),
             Arg.Any<CancellationToken>());
         await _store.Received(1).AppendMessagesAsync(conversationId, Owner,
             Arg.Is<IReadOnlyList<Message>>(m => m.Count == 1 && m[0].Role == MessageRole.User && m[0].Content == "follow up"),

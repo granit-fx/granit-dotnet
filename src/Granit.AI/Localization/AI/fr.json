@@ -15,6 +15,7 @@
     "AI.Columns.CostCurrency": "Devise",
     "AI.Columns.Timestamp": "Horodatage",
     "AI.Columns.Duration": "Durée",
+    "AI.Columns.ConversationId": "Conversation",
     "PermissionGroup:AI": "IA",
     "Permission:AI.Credentials.Manage": "Gérer les identifiants IA",
     "Permission:AI.ChatTools.Translate": "Utiliser l'outil de traduction IA"

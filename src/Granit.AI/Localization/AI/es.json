@@ -15,6 +15,7 @@
     "AI.Columns.CostCurrency": "Moneda",
     "AI.Columns.Timestamp": "Marca de tiempo",
     "AI.Columns.Duration": "Duración",
+    "AI.Columns.ConversationId": "Conversación",
     "PermissionGroup:AI": "AI",
     "Permission:AI.Credentials.Manage": "Manage AI credentials",
     "Permission:AI.ChatTools.Translate": "Usar la herramienta de traducción de IA"

@@ -28,6 +28,7 @@ public sealed class AIUsageRecordExportDefinition : ExportDefinition<AIUsageReco
             .Field(r => r.EstimatedCost, f => f.Format("#,##0.0000"))
             .Field(r => r.CostCurrency)
             .Field(r => r.Timestamp, f => f.Format("O"))
-            .Field(r => r.Duration);
+            .Field(r => r.Duration)
+            .Field(r => r.ConversationId);
     }
 }

@@ -55,6 +55,7 @@ public sealed class EfAIUsageStoreTests : IAsyncDisposable
             CostCurrency = "USD",
             Timestamp = DateTimeOffset.UtcNow,
             Duration = TimeSpan.FromMilliseconds(450),
+            ConversationId = Guid.NewGuid(),
         };
 
         await _store.RecordAsync(record, TestContext.Current.CancellationToken);
@@ -71,7 +72,38 @@ public sealed class EfAIUsageStoreTests : IAsyncDisposable
         entity.OutputTokens.ShouldBe(200);
         entity.EstimatedCost.ShouldBe(0.00525m);
         entity.CostCurrency.ShouldBe("USD");
+        entity.ConversationId.ShouldBe(record.ConversationId);
     }
+
+    [Fact]
+    public async Task QueryableSource_FiltersByConversationId()
+    {
+        var conversationId = Guid.NewGuid();
+        await _store.RecordAsync(UsageFor(conversationId), TestContext.Current.CancellationToken);
+        await _store.RecordAsync(UsageFor(conversationId), TestContext.Current.CancellationToken);
+        await _store.RecordAsync(UsageFor(Guid.NewGuid()), TestContext.Current.CancellationToken);
+        await _store.RecordAsync(UsageFor(conversationId: null), TestContext.Current.CancellationToken);
+
+        await using var source = new EfAIUsageQueryableSource(_factory, Substitute.For<ICurrentTenant>());
+        List<AIUsageRecord> forConversation = await source.GetQueryable()
+            .Where(r => r.ConversationId == conversationId)
+            .ToListAsync(TestContext.Current.CancellationToken);
+
+        forConversation.Count.ShouldBe(2);
+        forConversation.ShouldAllBe(r => r.ConversationId == conversationId);
+    }
+
+    private static AIUsageRecord UsageFor(Guid? conversationId) => new()
+    {
+        Id = Guid.NewGuid(),
+        WorkspaceName = "support-chat",
+        Provider = "OpenAI",
+        Model = "gpt-4o",
+        InputTokens = 10,
+        OutputTokens = 20,
+        Timestamp = DateTimeOffset.UtcNow,
+        ConversationId = conversationId,
+    };
 
     // Shared DataFilter across all tests in this class so the first-created AIDbContext
     // in the AppDomain captures a non-null filter proxy — avoids poisoning the EF Core

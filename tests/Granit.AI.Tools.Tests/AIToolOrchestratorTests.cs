@@ -284,6 +284,35 @@ public sealed class AIToolOrchestratorTests
     }
 
     [Fact]
+    public async Task Stamps_the_conversation_into_the_usage_record()
+    {
+        ScriptedChatClient client = new(FinalText("done", input: 5, output: 2));
+        Harness harness = CreateHarness(client, []);
+
+        var conversationId = Guid.NewGuid();
+        AIOrchestrationRequest request = UserSays("hi") with { ConversationId = conversationId };
+
+        await harness.Orchestrator.RunAsync(request, TestContext.Current.CancellationToken);
+
+        await harness.UsageTracker.Received(1).RecordAsync(
+            Arg.Is<AIUsageRecord>(r => r.ConversationId == conversationId),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Leaves_the_conversation_null_when_the_request_carries_none()
+    {
+        ScriptedChatClient client = new(FinalText("done", input: 5, output: 2));
+        Harness harness = CreateHarness(client, []);
+
+        await harness.Orchestrator.RunAsync(UserSays("hi"), TestContext.Current.CancellationToken);
+
+        await harness.UsageTracker.Received(1).RecordAsync(
+            Arg.Is<AIUsageRecord>(r => r.ConversationId == null),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Does_not_stamp_usage_when_the_provider_reports_none()
     {
         ScriptedChatClient client = new(FinalText("done"));

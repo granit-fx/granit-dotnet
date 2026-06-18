@@ -15,6 +15,7 @@
     "AI.Columns.CostCurrency": "通貨",
     "AI.Columns.Timestamp": "Timestamp",
     "AI.Columns.Duration": "Duration",
+    "AI.Columns.ConversationId": "会話",
     "PermissionGroup:AI": "AI",
     "Permission:AI.Credentials.Manage": "Manage AI credentials",
     "Permission:AI.ChatTools.Translate": "AI翻訳ツールを使用する"

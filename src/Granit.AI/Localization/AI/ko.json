@@ -15,6 +15,7 @@
     "AI.Columns.CostCurrency": "통화",
     "AI.Columns.Timestamp": "Timestamp",
     "AI.Columns.Duration": "Duration",
+    "AI.Columns.ConversationId": "대화",
     "PermissionGroup:AI": "AI",
     "Permission:AI.Credentials.Manage": "Manage AI credentials",
     "Permission:AI.ChatTools.Translate": "AI 번역 도구 사용"

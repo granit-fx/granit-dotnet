@@ -281,6 +281,7 @@ internal sealed partial class AIToolOrchestrator(
             (int)telemetry.TotalOutput,
             duration) with
         {
+            ConversationId = request.ConversationId,
             PromptVersion = systemPrompt.Guardrails.Version,
             PromptTemplateName = request.InvokedPromptName,
             PromptTemplateVersion = request.InvokedPromptVersion,

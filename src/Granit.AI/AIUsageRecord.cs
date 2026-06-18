@@ -39,6 +39,14 @@ public sealed record AIUsageRecord
     /// <summary>ISO 4217 currency code for <see cref="EstimatedCost"/> (e.g. <c>USD</c>, <c>CNY</c>).</summary>
     public string? CostCurrency { get; init; }
 
+    /// <summary>
+    /// Conversation this interaction belongs to (per ADR-067 chat orchestration), or <c>null</c>
+    /// when the interaction had no conversation context (embeddings, structured completion, image
+    /// extraction). Stamped at write time to allow per-conversation usage slicing for billing and
+    /// audit; the agentic loop's N model calls for one turn all carry the same value.
+    /// </summary>
+    public Guid? ConversationId { get; init; }
+
     /// <summary>When the interaction occurred (UTC).</summary>
     public required DateTimeOffset Timestamp { get; init; }
 

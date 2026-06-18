@@ -15,6 +15,7 @@
     "AI.Columns.CostCurrency": "Měna",
     "AI.Columns.Timestamp": "Timestamp",
     "AI.Columns.Duration": "Duration",
+    "AI.Columns.ConversationId": "Konverzace",
     "PermissionGroup:AI": "AI",
     "Permission:AI.Credentials.Manage": "Manage AI credentials",
     "Permission:AI.ChatTools.Translate": "Použít nástroj překladu AI"

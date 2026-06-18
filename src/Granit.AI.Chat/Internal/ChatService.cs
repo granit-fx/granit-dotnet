@@ -133,6 +133,7 @@ internal sealed class ChatService(
             WorkspaceName = handle.WorkspaceName,
             Messages = handle.LoopMessages,
             UserCustomContext = await ResolveCustomContextAsync(cancellationToken).ConfigureAwait(false),
+            ConversationId = handle.ConversationId,
             InvokedPromptName = handle.InvokedPromptName,
             InvokedPromptVersion = handle.InvokedPromptVersion,
         };

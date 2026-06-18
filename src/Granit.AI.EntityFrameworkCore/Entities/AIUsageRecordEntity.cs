@@ -27,6 +27,8 @@ internal sealed class AIUsageRecordEntity : CreationAuditedEntity, IMultiTenant
 
     public TimeSpan? Duration { get; set; }
 
+    public Guid? ConversationId { get; set; }
+
     public string? PromptVersion { get; set; }
 
     public string? PromptTemplateName { get; set; }
@@ -46,6 +48,7 @@ internal sealed class AIUsageRecordEntity : CreationAuditedEntity, IMultiTenant
         EstimatedCost = record.EstimatedCost,
         CostCurrency = record.CostCurrency,
         Duration = record.Duration,
+        ConversationId = record.ConversationId,
         PromptVersion = record.PromptVersion,
         PromptTemplateName = record.PromptTemplateName,
         PromptTemplateVersion = record.PromptTemplateVersion,

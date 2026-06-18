@@ -34,6 +34,13 @@ public sealed record AIOrchestrationRequest
     public string? UserCustomContext { get; init; }
 
     /// <summary>
+    /// Conversation this run belongs to, or <see langword="null"/> when the caller has no
+    /// conversation context. Stamped into the usage record for per-conversation billing and audit;
+    /// does not affect the loop.
+    /// </summary>
+    public Guid? ConversationId { get; init; }
+
+    /// <summary>
     /// Name of the catalogue prompt template that drove this run (ADR-067 badge resolution), or
     /// <see langword="null"/>. Stamped into the usage record for auditability; does not affect the loop.
     /// </summary>

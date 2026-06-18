@@ -10,6 +10,7 @@
     "AI.Columns.CostCurrency": "Moeda",
     "AI.Columns.Timestamp": "Timestamp",
     "AI.Columns.Duration": "Duration",
+    "AI.Columns.ConversationId": "Conversa",
     "PermissionGroup:AI": "AI",
     "Permission:AI.Credentials.Manage": "Manage AI credentials"
   }

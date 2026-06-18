@@ -15,6 +15,7 @@
     "AI.Columns.CostCurrency": "मुद्रा",
     "AI.Columns.Timestamp": "Timestamp",
     "AI.Columns.Duration": "Duration",
+    "AI.Columns.ConversationId": "वार्तालाप",
     "PermissionGroup:AI": "AI",
     "Permission:AI.Credentials.Manage": "Manage AI credentials",
     "Permission:AI.ChatTools.Translate": "एआई अनुवाद टूल का उपयोग करें"
