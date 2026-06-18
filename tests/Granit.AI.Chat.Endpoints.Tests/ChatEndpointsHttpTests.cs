@@ -479,6 +479,114 @@ public sealed class ChatEndpointsHttpTests
         }
     }
 
+    [Fact]
+    public async Task Send_ends_with_a_rate_limit_error_frame_when_the_provider_is_throttled_mid_stream()
+    {
+        var conversationId = Guid.NewGuid();
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new ChatSendHandle { ConversationId = conversationId });
+        // The provider returns 429 part-way through the stream — a "denial of wallet" mid-flight.
+        _chatService.StreamAsync(Arg.Any<ChatSendHandle>(), Arg.Any<CancellationToken>())
+            .Returns(_ => ThrowingStream(
+                new HttpRequestException("secret-provider-detail", null, HttpStatusCode.TooManyRequests)));
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
+            "/conversations/messages", new SendMessageRequest("Hi"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        body.ShouldContain("\"type\":\"error\"");
+        body.ShouldContain("rate_limit");
+        // The raw provider detail never reaches the wire — only the machine code does.
+        body.ShouldNotContain("secret-provider-detail");
+    }
+
+    [Fact]
+    public async Task Send_ends_with_a_provider_unavailable_error_frame_on_a_provider_5xx()
+    {
+        var conversationId = Guid.NewGuid();
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new ChatSendHandle { ConversationId = conversationId });
+        _chatService.StreamAsync(Arg.Any<ChatSendHandle>(), Arg.Any<CancellationToken>())
+            .Returns(_ => ThrowingStream(
+                new HttpRequestException("upstream down", null, HttpStatusCode.ServiceUnavailable)));
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
+            "/conversations/messages", new SendMessageRequest("Hi"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        body.ShouldContain("provider_unavailable");
+    }
+
+    [Fact]
+    public async Task Send_ends_with_a_server_error_frame_for_an_unclassified_failure()
+    {
+        var conversationId = Guid.NewGuid();
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new ChatSendHandle { ConversationId = conversationId });
+        _chatService.StreamAsync(Arg.Any<ChatSendHandle>(), Arg.Any<CancellationToken>())
+            .Returns(_ => ThrowingStream(new InvalidOperationException("boom")));
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
+            "/conversations/messages", new SendMessageRequest("Hi"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        body.ShouldContain("\"type\":\"error\"");
+        body.ShouldContain("server_error");
+    }
+
+    [Fact]
+    public async Task Send_does_not_convert_a_client_cancellation_into_an_error_frame()
+    {
+        var conversationId = Guid.NewGuid();
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new ChatSendHandle { ConversationId = conversationId });
+        // The stream blocks until the request is cancelled, then surfaces an OperationCanceledException
+        // with the request token set — the client-abort case the endpoint must not turn into an error.
+        _chatService.StreamAsync(Arg.Any<ChatSendHandle>(), Arg.Any<CancellationToken>())
+            .Returns(ci => BlockingStream(ci.Arg<CancellationToken>()));
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        using var cts = new CancellationTokenSource();
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/conversations/messages")
+        {
+            Content = JsonContent.Create(new SendMessageRequest("Hi")),
+        };
+        using HttpResponseMessage response = await FullAccess(host).SendAsync(
+            request, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var seen = new System.Text.StringBuilder();
+        try
+        {
+            await using Stream stream = await response.Content.ReadAsStreamAsync(cts.Token);
+            using var reader = new StreamReader(stream);
+            char[] buffer = new char[64];
+            int read;
+            while ((read = await reader.ReadAsync(buffer, cts.Token)) > 0)
+            {
+                seen.Append(buffer, 0, read);
+                // The conversation frame proves the stream committed; now cancel like a closing client.
+                if (seen.ToString().Contains("conversation"))
+                {
+                    await cts.CancelAsync();
+                }
+            }
+        }
+        catch (Exception ex) when (ex is OperationCanceledException or IOException)
+        {
+            // Expected: the cancellation aborts the stream rather than producing an error frame.
+        }
+
+        seen.ToString().ShouldContain("conversation");
+        seen.ToString().ShouldNotContain("error");
+    }
+
     private static async IAsyncEnumerable<ChatTurnUpdate> Stream(params ChatTurnUpdate[] updates)
     {
         foreach (ChatTurnUpdate update in updates)
@@ -486,6 +594,22 @@ public sealed class ChatEndpointsHttpTests
             await Task.Yield();
             yield return update;
         }
+    }
+
+    private static async IAsyncEnumerable<ChatTurnUpdate> ThrowingStream(Exception error)
+    {
+        await Task.Yield();
+        yield return ChatTurnUpdate.ForDelta("partial");
+        throw error;
+    }
+
+    private static async IAsyncEnumerable<ChatTurnUpdate> BlockingStream(
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        // The endpoint emits the conversation frame itself; this never yields and blocks until the
+        // request is cancelled, at which point Task.Delay throws with the token set.
+        await Task.Delay(Timeout.Infinite, cancellationToken);
+        yield break;
     }
 
     private static async IAsyncEnumerable<ChatTurnUpdate> GatedStream(

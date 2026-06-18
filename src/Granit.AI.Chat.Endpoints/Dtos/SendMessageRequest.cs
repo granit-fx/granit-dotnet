@@ -33,12 +33,29 @@ public sealed record AttachmentRequest(string Reference, string FileName, string
 /// <see cref="Content"/> chunk), <c>tool_call</c> (a tool started — carries <see cref="ToolName"/> +
 /// <see cref="ToolCallId"/>), <c>tool_result</c> (a tool finished — adds <see cref="Succeeded"/>),
 /// <c>usage</c> (carries the token counts), <c>suggestions</c> (carries the typed
-/// <see cref="SuggestedActions"/>), or <c>clarification</c>.
+/// <see cref="SuggestedActions"/>), <c>clarification</c>, or <c>error</c> (a mid-stream failure —
+/// carries <see cref="Code"/>).
 /// </summary>
 /// <remarks>
+/// <para>
 /// Tool frames carry only the tool's name and call id — never its arguments or raw result (privacy);
 /// the front maps the name to a localized label. A "thinking" indicator is derived front-side from a
 /// <c>tool_result</c> not yet followed by a <c>delta</c>, so there is no thinking frame on the wire.
+/// </para>
+/// <para>
+/// An <c>error</c> frame is the terminal frame when the agentic loop fails <em>after</em> the stream
+/// has been committed (a HTTP problem is no longer possible at that point — see the send endpoint,
+/// which validates and returns 401/404/422/429 <em>before</em> opening the stream). It carries only
+/// <see cref="Code"/>; <see cref="Content"/> stays <see langword="null"/> so no raw provider detail
+/// leaks. The front maps the machine code to a localized message and never trusts backend text. A
+/// client-initiated cancellation is <em>not</em> an error and produces no <c>error</c> frame.
+/// </para>
+/// <para>
+/// <see cref="Code"/> is a stable, machine-readable code (<c>snake_case</c>) present only on the
+/// <c>error</c> frame. The closed set is: <c>rate_limit</c> (provider quota exhausted / 429 mid-stream
+/// — "denial of wallet"), <c>provider_unavailable</c> (provider 5xx, timeout, or connection failure),
+/// and <c>server_error</c> (any other, unclassified failure — the default).
+/// </para>
 /// </remarks>
 public sealed record ChatStreamEvent(
     string Type,
@@ -50,7 +67,8 @@ public sealed record ChatStreamEvent(
     ClarificationResponse? Clarification = null,
     string? ToolName = null,
     string? ToolCallId = null,
-    bool? Succeeded = null);
+    bool? Succeeded = null,
+    string? Code = null);
 
 /// <summary>A typed clarification the front renders as clickable choices; the turn blocks until answered.</summary>
 /// <param name="Question">The disambiguating question.</param>

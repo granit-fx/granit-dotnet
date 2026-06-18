@@ -456,4 +456,40 @@ public sealed class ChatServiceTests
                 r.UserCustomContext!.Length == AIChatSettingNames.MaxCustomContextLength),
             Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task A_loop_failure_mid_stream_persists_the_user_turn_but_no_assistant_turn()
+    {
+        ChatService service = CreateService();
+        // The loop emits a delta, then the provider faults mid-stream. Only the regenerable assistant
+        // turn may be lost — the user turn, persisted up front, survives (ADR-068).
+        _orchestrator.RunStreamingAsync(Arg.Any<AIOrchestrationRequest>(), Arg.Any<CancellationToken>())
+            .Returns(_ => FaultingStream());
+        ChatSendHandle handle = await service.PrepareAsync(Request(message: "boom"), TestContext.Current.CancellationToken);
+
+        await Should.ThrowAsync<InvalidOperationException>(async () =>
+        {
+            await foreach (ChatTurnUpdate _ in service.StreamAsync(handle, TestContext.Current.CancellationToken))
+            {
+            }
+        });
+
+        // The user turn is persisted before the loop runs...
+        await _store.Received(1).CreateAsync(
+            Arg.Is<Conversation>(c =>
+                c.Messages.Count == 1 && c.Messages[0].Role == MessageRole.User && c.Messages[0].Content == "boom"),
+            Arg.Any<CancellationToken>());
+        // ...but the failed turn appends no assistant message.
+        await _store.DidNotReceive().AppendMessagesAsync(
+            Arg.Any<Guid>(), Arg.Any<Guid>(),
+            Arg.Is<IReadOnlyList<Message>>(m => m.Any(x => x.Role == MessageRole.Assistant)),
+            Arg.Any<CancellationToken>());
+    }
+
+    private static async IAsyncEnumerable<AIOrchestrationUpdate> FaultingStream()
+    {
+        yield return AIOrchestrationUpdate.Delta("partial");
+        await Task.Yield();
+        throw new InvalidOperationException("provider exploded mid-stream");
+    }
 }
