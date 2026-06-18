@@ -1,4 +1,5 @@
 using Granit.AI.Chat.Suggestions;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.AI.Chat.Internal;
 
@@ -8,7 +9,9 @@ namespace Granit.AI.Chat.Internal;
 /// each <see cref="AISuggestedAction.Type"/>. A provider that throws is skipped so one module
 /// cannot break the turn.
 /// </summary>
-internal sealed class AISuggestionResolver(IEnumerable<IAISuggestionProvider> providers) : IAISuggestionResolver
+internal sealed partial class AISuggestionResolver(
+    IEnumerable<IAISuggestionProvider> providers,
+    ILogger<AISuggestionResolver> logger) : IAISuggestionResolver
 {
     public async ValueTask<IReadOnlyList<AISuggestedAction>> ResolveAsync(
         AISuggestionContext context,
@@ -30,9 +33,11 @@ internal sealed class AISuggestionResolver(IEnumerable<IAISuggestionProvider> pr
             {
                 throw;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // A misbehaving suggestion provider must never fail the turn — its answer stands.
+                // Log so a developer can see why suggestions are missing instead of debugging blind.
+                LogProviderFailed(ex, provider.GetType().Name);
                 continue;
             }
 
@@ -49,4 +54,9 @@ internal sealed class AISuggestionResolver(IEnumerable<IAISuggestionProvider> pr
 
         return collected ?? [];
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "AI suggestion provider '{Provider}' threw and was skipped; the turn continues without its suggestions.")]
+    private partial void LogProviderFailed(Exception exception, string provider);
 }

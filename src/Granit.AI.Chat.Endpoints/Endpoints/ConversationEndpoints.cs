@@ -21,7 +21,6 @@ internal static class ConversationEndpoints
             .WithSummary("Lists the current user's conversations.")
             .WithDescription("Returns the caller's own conversations, newest first, without their messages.")
             .Produces<IReadOnlyList<ConversationSummaryResponse>>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIChatPermissions.Conversations.Read);
 
         group.MapGet("/{id:guid}", GetByIdAsync)
@@ -30,7 +29,6 @@ internal static class ConversationEndpoints
             .WithDescription("Returns the conversation and its messages. Scoped to the caller: another user's conversation is reported as not found.")
             .Produces<ConversationResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIChatPermissions.Conversations.Read);
 
         group.MapPost("/", CreateAsync)
@@ -39,7 +37,6 @@ internal static class ConversationEndpoints
             .WithDescription("Creates an empty conversation with the given title, owned by the caller.")
             .Produces<ConversationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIChatPermissions.Conversations.Manage);
 
         group.MapPut("/{id:guid}/title", RenameAsync)
@@ -49,7 +46,6 @@ internal static class ConversationEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIChatPermissions.Conversations.Manage);
 
         group.MapDelete("/{id:guid}", DeleteAsync)
@@ -58,7 +54,6 @@ internal static class ConversationEndpoints
             .WithDescription("Soft-deletes the conversation. Scoped to the caller: another user's conversation is reported as not found.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIChatPermissions.Conversations.Delete);
 
         return group;

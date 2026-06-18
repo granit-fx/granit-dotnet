@@ -22,7 +22,6 @@ internal static class ChatWorkspaceEndpoints
                 + "reserved 'Auto' option plus the chat-capable workspaces visible to the tenant. "
                 + "Vector/embedding-only workspaces are excluded.")
             .Produces<ChatWorkspacesResponse>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIChatPermissions.Conversations.Read);
 
         return group;
