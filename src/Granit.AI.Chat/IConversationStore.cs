@@ -1,4 +1,5 @@
 using Granit.AI.Chat.Domain;
+using Granit.QueryEngine;
 
 namespace Granit.AI.Chat;
 
@@ -14,6 +15,25 @@ public interface IConversationStore
 
     /// <summary>Returns the owner's conversation including its messages, or <see langword="null"/>.</summary>
     Task<Conversation?> GetAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns one backwards-paginated page of the owner's conversation messages (newest first),
+    /// or <see langword="null"/> when the conversation is absent or not the owner's (reported as
+    /// "not found", so a caller can never page another user's thread).
+    /// </summary>
+    /// <remarks>
+    /// Pass <paramref name="cursor"/> <see langword="null"/> for the newest page, then the returned
+    /// <see cref="PagedResult{T}.NextCursor"/> for each older page; the cursor is <see langword="null"/>
+    /// at the start of history. <paramref name="pageSize"/> is clamped to the query definition's
+    /// bounds (default 30, max 100). The result's <c>TotalCount</c> is always <see langword="null"/>
+    /// (keyset pagination does not count).
+    /// </remarks>
+    Task<PagedResult<Message>?> GetMessagesPageAsync(
+        Guid conversationId,
+        Guid ownerId,
+        string? cursor,
+        int? pageSize,
+        CancellationToken cancellationToken = default);
 
     /// <summary>Returns the owner's conversations (without messages), newest first.</summary>
     Task<IReadOnlyList<Conversation>> ListAsync(Guid ownerId, CancellationToken cancellationToken = default);

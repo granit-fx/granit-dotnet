@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.AI.Chat\Granit.AI.Chat.csproj" />
     <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.EntityFrameworkCore\Granit.QueryEngine.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

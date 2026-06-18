@@ -40,6 +40,7 @@
         "Granit.AI.Prompts",
         "Granit.AI.Tools",
         "Granit.Guids",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Settings",
         "Granit.TextExtraction"
       ],
@@ -61,6 +62,7 @@
         "Granit.Guids",
         "Granit.Http.ApiDocumentation",
         "Granit.Http.RateLimiting",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -69,7 +71,8 @@
       "name": "Granit.AI.Chat.EntityFrameworkCore",
       "deps": [
         "Granit.AI.Chat",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.QueryEngine.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -3499,7 +3502,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
-      "line": 43,
+      "line": 51,
       "members": [
         {
           "name": "FromAggregate",
@@ -3559,10 +3562,10 @@
       "line": 40,
       "members": [
         {
-          "name": "FromAggregate",
+          "name": "FromEntity",
           "kind": "method",
-          "signature": "FromAggregate(Conversation conversation)",
-          "returnType": "ConversationResponse"
+          "signature": "FromEntity(Message message)",
+          "returnType": "MessageResponse"
         }
       ]
     },
@@ -3760,7 +3763,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat.EntityFrameworkCore",
       "file": "src/Granit.AI.Chat.EntityFrameworkCore/GranitAIChatEntityFrameworkCoreModule.cs",
-      "line": 14,
+      "line": 17,
       "members": []
     },
     {
@@ -3855,7 +3858,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/GranitAIChatModule.cs",
-      "line": 29,
+      "line": 34,
       "members": [
         {
           "name": "ConfigureServices",
@@ -3927,7 +3930,7 @@
       "kind": "interface",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IConversationStore.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "CreateAsync",
@@ -3940,6 +3943,12 @@
           "kind": "method",
           "signature": "GetAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default)",
           "returnType": "Task<Conversation?>"
+        },
+        {
+          "name": "GetMessagesPageAsync",
+          "kind": "method",
+          "signature": "GetMessagesPageAsync(Guid conversationId, Guid ownerId, string? cursor, int? pageSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PagedResult<Message>?>"
         },
         {
           "name": "ListAsync",
@@ -4206,6 +4215,22 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ChatMessageQueryDefinition",
+      "fqn": "Granit.AI.Chat.Queries.ChatMessageQueryDefinition",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Queries/ChatMessageQueryDefinition.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },

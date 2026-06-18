@@ -536,6 +536,7 @@
           "Granit.AI.Prompts": "[0.1.0-dev, )",
           "Granit.AI.Tools": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
           "Granit.TextExtraction": "[0.1.0-dev, )"
         }
@@ -548,6 +549,7 @@
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Http.RateLimiting": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },

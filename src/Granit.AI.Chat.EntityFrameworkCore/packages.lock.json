@@ -140,6 +140,7 @@
           "Granit.AI.Prompts": "[0.1.0-dev, )",
           "Granit.AI.Tools": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
           "Granit.TextExtraction": "[0.1.0-dev, )"
         }
@@ -275,11 +276,27 @@
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
         }
       },
+      "granit.queryengine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.queryengine.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
+          "Microsoft.Extensions.Localization.Abstractions": "[10.*, )"
         }
       },
       "granit.settings": {

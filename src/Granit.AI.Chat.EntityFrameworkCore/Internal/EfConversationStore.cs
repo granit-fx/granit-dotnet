@@ -1,4 +1,5 @@
 using Granit.AI.Chat.Domain;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.AI.Chat.EntityFrameworkCore.Internal;
@@ -7,7 +8,9 @@ namespace Granit.AI.Chat.EntityFrameworkCore.Internal;
 /// EF Core <see cref="IConversationStore"/>. Every query is scoped to the owner (and the tenant,
 /// via the DbContext filter), so a caller can only reach their own conversations.
 /// </summary>
-internal sealed class EfConversationStore(IDbContextFactory<AIChatDbContext> contextFactory) : IConversationStore
+internal sealed class EfConversationStore(
+    IDbContextFactory<AIChatDbContext> contextFactory,
+    IQueryEngine<Message> messageQueryEngine) : IConversationStore
 {
     public async Task<Conversation> CreateAsync(Conversation conversation, CancellationToken cancellationToken = default)
     {
@@ -27,6 +30,37 @@ internal sealed class EfConversationStore(IDbContextFactory<AIChatDbContext> con
             .Include(c => c.Messages.OrderBy(m => m.CreatedAt))
             .FirstOrDefaultAsync(c => c.Id == id && c.OwnerId == ownerId, cancellationToken)
             .ConfigureAwait(false);
+    }
+
+    public async Task<PagedResult<Message>?> GetMessagesPageAsync(
+        Guid conversationId,
+        Guid ownerId,
+        string? cursor,
+        int? pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        await using AIChatDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        // Ownership gate first: a foreign or absent conversation is "not found", so a caller can
+        // never page another user's thread. Message rows carry no tenant/owner filter of their own.
+        bool owned = await context.Conversations
+            .AsNoTracking()
+            .AnyAsync(c => c.Id == conversationId && c.OwnerId == ownerId, cancellationToken)
+            .ConfigureAwait(false);
+        if (!owned)
+        {
+            return null;
+        }
+
+        IQueryable<Message> source = context.Set<Message>()
+            .AsNoTracking()
+            .Where(m => m.ConversationId == conversationId);
+
+        // An empty (non-null) cursor selects keyset mode for the first page: a null cursor would fall
+        // to offset pagination (no NextCursor), whereas an empty one returns the newest page AND a
+        // NextCursor to walk older. PageSize defaults/clamps via the query definition.
+        QueryRequest request = new() { Cursor = cursor ?? string.Empty, PageSize = pageSize };
+        return await messageQueryEngine.ExecuteAsync(source, request, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<IReadOnlyList<Conversation>> ListAsync(Guid ownerId, CancellationToken cancellationToken = default)

@@ -12,7 +12,7 @@ public sealed class EfConversationStoreTests : IDisposable
     private readonly TestDbContextFactory _factory = TestDbContextFactory.Create();
     private readonly EfConversationStore _sut;
 
-    public EfConversationStoreTests() => _sut = new EfConversationStore(_factory);
+    public EfConversationStoreTests() => _sut = new EfConversationStore(_factory, TestQueryEngine.ForMessages());
 
     public void Dispose() => _factory.Dispose();
 

@@ -21,6 +21,7 @@ internal static class PairingExemptions
     public static readonly HashSet<string> Infrastructure = new(StringComparer.Ordinal)
     {
         "Granit.AI.AIUsageRecord",                                                        // [INFRA] AI cost / audit log
+        "Granit.AI.Chat.Domain.Message",                                                  // [INFRA] owner-private chat content; cursor-paginated thread view only, never an admin grid/export (GDPR export via Granit.AI.Chat.Privacy)
         "Granit.Auditing.Domain.AuditEntityChange",                                       // [INFRA] audit log
         "Granit.Auditing.Domain.AuditEntry",                                              // [INFRA] audit log
         "Granit.Authorization.Domain.PermissionGrant",                                    // [INFRA] RBAC config

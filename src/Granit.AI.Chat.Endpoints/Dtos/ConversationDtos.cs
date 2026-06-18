@@ -37,7 +37,15 @@ public sealed record ConversationSummaryResponse(
 /// </param>
 /// <param name="Content">The message text.</param>
 /// <param name="CreatedAt">When the message was created.</param>
-public sealed record MessageResponse(Guid Id, string Role, string Content, DateTimeOffset CreatedAt);
+public sealed record MessageResponse(Guid Id, string Role, string Content, DateTimeOffset CreatedAt)
+{
+    /// <summary>Projects a <see cref="Message"/> to a response, lower-casing the role for the wire.</summary>
+    public static MessageResponse FromEntity(Message message)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+        return new MessageResponse(message.Id, message.Role.ToString().ToLowerInvariant(), message.Content, message.CreatedAt);
+    }
+}
 
 /// <summary>A conversation with its messages.</summary>
 public sealed record ConversationResponse(
@@ -58,6 +66,5 @@ public sealed record ConversationResponse(
             conversation.IsFavorite,
             conversation.CreatedAt,
             conversation.ModifiedAt,
-            [.. conversation.Messages.Select(m =>
-                new MessageResponse(m.Id, m.Role.ToString().ToLowerInvariant(), m.Content, m.CreatedAt))]);
+            [.. conversation.Messages.Select(MessageResponse.FromEntity)]);
 }

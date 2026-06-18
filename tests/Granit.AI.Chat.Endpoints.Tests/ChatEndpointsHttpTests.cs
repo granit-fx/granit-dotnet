@@ -11,6 +11,7 @@ using Granit.AI.Chat.Settings;
 using Granit.AI.Exceptions;
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.QueryEngine;
 using Granit.RateLimiting.Extensions;
 using Granit.Testing.Endpoints;
 using Granit.Users;
@@ -127,6 +128,83 @@ public sealed class ChatEndpointsHttpTests
         HttpResponseMessage response = await FullAccess(host).GetAsync($"/conversations/{conversation.Id}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
+    // ── Messages (backwards keyset pagination) ───────────────────────────────────
+
+    [Fact]
+    public async Task Messages_without_a_user_context_is_unauthorized()
+    {
+        await using GranitEndpointTestHost host = await StartAsync(userId: null);
+
+        HttpResponseMessage response = await FullAccess(host)
+            .GetAsync($"/conversations/{Guid.NewGuid()}/messages", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Messages_returns_404_for_a_conversation_that_is_not_the_callers()
+    {
+        var id = Guid.NewGuid();
+        _store.GetMessagesPageAsync(id, Owner, Arg.Any<string?>(), Arg.Any<int?>(), Arg.Any<CancellationToken>())
+            .Returns((PagedResult<Message>?)null);
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host)
+            .GetAsync($"/conversations/{id}/messages", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Messages_returns_the_newest_page_first_with_a_cursor()
+    {
+        var id = Guid.NewGuid();
+        var newer = Message.Create(Guid.NewGuid(), id, MessageRole.Assistant, "newer");
+        var older = Message.Create(Guid.NewGuid(), id, MessageRole.User, "older");
+        _store.GetMessagesPageAsync(id, Owner, null, Arg.Any<int?>(), Arg.Any<CancellationToken>())
+            .Returns(new PagedResult<Message>([newer, older], TotalCount: null, HasMore: true, NextCursor: "older-cursor"));
+
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        PagedResult<MessageResponse>? body = await FullAccess(host)
+            .GetFromJsonAsync<PagedResult<MessageResponse>>($"/conversations/{id}/messages", TestContext.Current.CancellationToken);
+
+        body.ShouldNotBeNull();
+        body.Items.Select(m => m.Content).ShouldBe(["newer", "older"]);
+        body.Items[0].Role.ShouldBe("assistant");
+        body.TotalCount.ShouldBeNull();
+        body.NextCursor.ShouldBe("older-cursor");
+    }
+
+    [Fact]
+    public async Task Messages_passes_the_cursor_and_pageSize_through_for_older_pages()
+    {
+        var id = Guid.NewGuid();
+        _store.GetMessagesPageAsync(id, Owner, "older-cursor", 10, Arg.Any<CancellationToken>())
+            .Returns(new PagedResult<Message>([], TotalCount: null, HasMore: false, NextCursor: null));
+
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host)
+            .GetAsync($"/conversations/{id}/messages?cursor=older-cursor&pageSize=10", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        // The cursor and page size flow straight through to the owner-scoped store query.
+        await _store.Received(1).GetMessagesPageAsync(id, Owner, "older-cursor", 10, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Messages_without_the_read_permission_is_forbidden()
+    {
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpClient client = host.CreateClientWithPermissions("AIChat.Conversations.Other");
+        HttpResponseMessage response = await client.GetAsync(
+            $"/conversations/{Guid.NewGuid()}/messages", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
