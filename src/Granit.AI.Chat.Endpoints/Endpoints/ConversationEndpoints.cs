@@ -52,6 +52,16 @@ internal static class ConversationEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(AIChatPermissions.Conversations.Manage);
 
+        group.MapPut("/{id:guid}/favorite", SetFavoriteAsync)
+            .WithName("SetConversationFavorite")
+            .WithSummary("Sets the favorite flag on one of the current user's conversations.")
+            .WithDescription("Sets the conversation's favorite flag to the requested state (idempotent, not a toggle). Scoped to the caller: another user's conversation is reported as not found.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(AIChatPermissions.Conversations.Manage);
+
         group.MapDelete("/{id:guid}", DeleteAsync)
             .WithName("DeleteConversation")
             .WithSummary("Deletes one of the current user's conversations.")
@@ -130,6 +140,24 @@ internal static class ConversationEndpoints
 
         bool renamed = await store.RenameAsync(id, ownerId, request.Title, cancellationToken).ConfigureAwait(false);
         return renamed
+            ? TypedResults.NoContent()
+            : TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+    }
+
+    private static async Task<Results<NoContent, ProblemHttpResult>> SetFavoriteAsync(
+        Guid id,
+        SetConversationFavoriteRequest request,
+        [FromServices] IConversationStore store,
+        [FromServices] ICurrentUserService currentUser,
+        CancellationToken cancellationToken)
+    {
+        if (currentUser.UserGuid is not { } ownerId)
+        {
+            return Unauthorized();
+        }
+
+        bool updated = await store.SetFavoriteAsync(id, ownerId, request.IsFavorite, cancellationToken).ConfigureAwait(false);
+        return updated
             ? TypedResults.NoContent()
             : TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
     }

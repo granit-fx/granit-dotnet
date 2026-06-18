@@ -105,6 +105,22 @@ internal sealed class EfConversationStore(IDbContextFactory<AIChatDbContext> con
         return true;
     }
 
+    public async Task<bool> SetFavoriteAsync(Guid id, Guid ownerId, bool isFavorite, CancellationToken cancellationToken = default)
+    {
+        await using AIChatDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        Conversation? conversation = await context.Conversations
+            .FirstOrDefaultAsync(c => c.Id == id && c.OwnerId == ownerId, cancellationToken)
+            .ConfigureAwait(false);
+        if (conversation is null)
+        {
+            return false;
+        }
+
+        conversation.SetFavorite(isFavorite);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return true;
+    }
+
     public async Task<bool> DeleteAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default)
     {
         await using AIChatDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);

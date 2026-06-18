@@ -10,16 +10,21 @@ public sealed record CreateConversationRequest(string Title);
 /// <param name="Title">The new title.</param>
 public sealed record RenameConversationRequest(string Title);
 
+/// <summary>Request to set a conversation's favorite flag to an explicit state (not a toggle).</summary>
+/// <param name="IsFavorite">The desired favorite state.</param>
+public sealed record SetConversationFavoriteRequest(bool IsFavorite);
+
 /// <summary>A conversation in a list (without messages).</summary>
 public sealed record ConversationSummaryResponse(
     Guid Id,
     string Title,
+    bool IsFavorite,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt)
 {
     /// <summary>Projects a <see cref="Conversation"/> to a summary.</summary>
     public static ConversationSummaryResponse FromAggregate(Conversation conversation) =>
-        new(conversation.Id, conversation.Title, conversation.CreatedAt, conversation.ModifiedAt);
+        new(conversation.Id, conversation.Title, conversation.IsFavorite, conversation.CreatedAt, conversation.ModifiedAt);
 }
 
 /// <summary>A message in a conversation.</summary>
@@ -39,6 +44,7 @@ public sealed record ConversationResponse(
     Guid Id,
     string Title,
     Guid OwnerId,
+    bool IsFavorite,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt,
     IReadOnlyList<MessageResponse> Messages)
@@ -49,6 +55,7 @@ public sealed record ConversationResponse(
             conversation.Id,
             conversation.Title,
             conversation.OwnerId,
+            conversation.IsFavorite,
             conversation.CreatedAt,
             conversation.ModifiedAt,
             [.. conversation.Messages.Select(m =>

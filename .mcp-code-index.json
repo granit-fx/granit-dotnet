@@ -3397,6 +3397,12 @@
           "kind": "property",
           "signature": "Guid OwnerId",
           "returnType": "Guid"
+        },
+        {
+          "name": "AddMessage",
+          "kind": "method",
+          "signature": "AddMessage(Guid id, MessageRole role, string content)",
+          "returnType": "Message"
         }
       ]
     },
@@ -3487,7 +3493,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
-      "line": 38,
+      "line": 43,
       "members": [
         {
           "name": "FromAggregate",
@@ -3503,7 +3509,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
-      "line": 14,
+      "line": 18,
       "members": [
         {
           "name": "FromAggregate",
@@ -3544,7 +3550,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
-      "line": 35,
+      "line": 40,
       "members": [
         {
           "name": "FromAggregate",
@@ -3587,6 +3593,22 @@
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
       "line": 10,
       "members": []
+    },
+    {
+      "name": "SetConversationFavoriteRequest",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.SetConversationFavoriteRequest",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "FromAggregate",
+          "kind": "method",
+          "signature": "FromAggregate(Conversation conversation)",
+          "returnType": "ConversationSummaryResponse"
+        }
+      ]
     },
     {
       "name": "SuggestedActionResponse",
@@ -3935,6 +3957,12 @@
           "name": "RenameAsync",
           "kind": "method",
           "signature": "RenameAsync(Guid id, Guid ownerId, string title, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "SetFavoriteAsync",
+          "kind": "method",
+          "signature": "SetFavoriteAsync(Guid id, Guid ownerId, bool isFavorite, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
         },
         {

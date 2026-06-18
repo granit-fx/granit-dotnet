@@ -167,6 +167,70 @@ public sealed class ChatEndpointsHttpTests
     }
 
     [Fact]
+    public async Task SetFavorite_returns_204_when_updated()
+    {
+        var id = Guid.NewGuid();
+        _store.SetFavoriteAsync(id, Owner, true, Arg.Any<CancellationToken>()).Returns(true);
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host).PutAsJsonAsync(
+            $"/conversations/{id}/favorite", new SetConversationFavoriteRequest(true), TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        await _store.Received(1).SetFavoriteAsync(id, Owner, true, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SetFavorite_passes_the_explicit_false_state_through()
+    {
+        var id = Guid.NewGuid();
+        _store.SetFavoriteAsync(id, Owner, false, Arg.Any<CancellationToken>()).Returns(true);
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host).PutAsJsonAsync(
+            $"/conversations/{id}/favorite", new SetConversationFavoriteRequest(false), TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        await _store.Received(1).SetFavoriteAsync(id, Owner, false, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SetFavorite_returns_404_when_absent()
+    {
+        var id = Guid.NewGuid();
+        _store.SetFavoriteAsync(id, Owner, Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(false);
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host).PutAsJsonAsync(
+            $"/conversations/{id}/favorite", new SetConversationFavoriteRequest(true), TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task SetFavorite_without_the_manage_permission_is_forbidden()
+    {
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpClient client = host.CreateClientWithPermissions(AIChatPermissions.Conversations.Read);
+        HttpResponseMessage response = await client.PutAsJsonAsync(
+            $"/conversations/{Guid.NewGuid()}/favorite", new SetConversationFavoriteRequest(true), TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task SetFavorite_without_a_user_context_is_unauthorized()
+    {
+        await using GranitEndpointTestHost host = await StartAsync(userId: null);
+
+        HttpResponseMessage response = await FullAccess(host).PutAsJsonAsync(
+            $"/conversations/{Guid.NewGuid()}/favorite", new SetConversationFavoriteRequest(true), TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
     public async Task Delete_returns_204_when_deleted()
     {
         var id = Guid.NewGuid();

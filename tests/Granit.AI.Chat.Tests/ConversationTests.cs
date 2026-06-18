@@ -42,6 +42,29 @@ public sealed class ConversationTests
     }
 
     [Fact]
+    public void Create_defaults_to_not_favorite()
+    {
+        var conversation = Conversation.Create(Guid.NewGuid(), Owner, "Chat");
+
+        conversation.IsFavorite.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void SetFavorite_sets_the_explicit_state_and_is_idempotent()
+    {
+        var conversation = Conversation.Create(Guid.NewGuid(), Owner, "Chat");
+
+        conversation.SetFavorite(true);
+        conversation.IsFavorite.ShouldBeTrue();
+
+        conversation.SetFavorite(true);
+        conversation.IsFavorite.ShouldBeTrue();
+
+        conversation.SetFavorite(false);
+        conversation.IsFavorite.ShouldBeFalse();
+    }
+
+    [Fact]
     public void AddMessage_appends_a_message_bound_to_the_conversation()
     {
         var conversation = Conversation.Create(Guid.NewGuid(), Owner, "Chat");
