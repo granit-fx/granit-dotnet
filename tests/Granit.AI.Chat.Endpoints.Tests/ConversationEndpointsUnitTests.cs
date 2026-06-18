@@ -143,7 +143,7 @@ public sealed class ConversationEndpointsUnitTests
         response.Title.ShouldBe("Chat");
         response.OwnerId.ShouldBe(conversation.OwnerId);
         MessageResponse message = response.Messages.ShouldHaveSingleItem();
-        message.Role.ShouldBe("Assistant");
+        message.Role.ShouldBe("assistant");
         message.Content.ShouldBe("Hi");
     }
 }

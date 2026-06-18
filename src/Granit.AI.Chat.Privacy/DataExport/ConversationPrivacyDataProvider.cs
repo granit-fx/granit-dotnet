@@ -69,7 +69,7 @@ public sealed class ConversationPrivacyDataProvider(
             conversation.Id,
             conversation.Title,
             conversation.CreatedAt,
-            [.. conversation.Messages.Select(m => new MessageExport(m.Role.ToString(), m.Content, m.CreatedAt))]);
+            [.. conversation.Messages.Select(m => new MessageExport(m.Role.ToString().ToLowerInvariant(), m.Content, m.CreatedAt))]);
 }
 
 internal sealed record ConversationsExport(

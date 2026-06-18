@@ -23,6 +23,15 @@ public sealed record ConversationSummaryResponse(
 }
 
 /// <summary>A message in a conversation.</summary>
+/// <param name="Id">The message identifier.</param>
+/// <param name="Role">
+/// The author, lower-cased ("user"/"assistant"/"system"/"tool") to match the AI-SDK wire
+/// convention the <c>@granit/ai-chat</c> client contract expects. The default
+/// <see cref="System.Text.Json.Serialization.JsonStringEnumConverter"/> would emit PascalCase, so
+/// the role is mapped explicitly here — see <see cref="ConversationResponse.FromAggregate"/>.
+/// </param>
+/// <param name="Content">The message text.</param>
+/// <param name="CreatedAt">When the message was created.</param>
 public sealed record MessageResponse(Guid Id, string Role, string Content, DateTimeOffset CreatedAt);
 
 /// <summary>A conversation with its messages.</summary>
@@ -43,5 +52,5 @@ public sealed record ConversationResponse(
             conversation.CreatedAt,
             conversation.ModifiedAt,
             [.. conversation.Messages.Select(m =>
-                new MessageResponse(m.Id, m.Role.ToString(), m.Content, m.CreatedAt))]);
+                new MessageResponse(m.Id, m.Role.ToString().ToLowerInvariant(), m.Content, m.CreatedAt))]);
 }
