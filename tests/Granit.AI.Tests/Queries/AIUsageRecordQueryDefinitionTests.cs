@@ -15,7 +15,7 @@ public sealed class AIUsageRecordQueryDefinitionTests
     public void Declares_expected_columns()
     {
         System.Collections.Generic.IReadOnlyList<Granit.QueryEngine.ColumnDescriptor> columns = _definition.GetColumns();
-        columns.Count.ShouldBe(9);
+        columns.Count.ShouldBe(10);
         columns.Select(c => c.PropertyName).ShouldContain("WorkspaceName");
         columns.Select(c => c.PropertyName).ShouldContain("Provider");
         columns.Select(c => c.PropertyName).ShouldContain("Model");
@@ -25,16 +25,18 @@ public sealed class AIUsageRecordQueryDefinitionTests
         columns.Select(c => c.PropertyName).ShouldContain("CostCurrency");
         columns.Select(c => c.PropertyName).ShouldContain("Timestamp");
         columns.Select(c => c.PropertyName).ShouldContain("Duration");
+        columns.Select(c => c.PropertyName).ShouldContain("ConversationId");
     }
 
     [Fact]
     public void Declares_groupby_fields()
     {
         System.Collections.Generic.IReadOnlyList<Granit.QueryEngine.Filtering.GroupByDescriptor> groupByFields = _definition.GetGroupByFields();
-        groupByFields.Count.ShouldBe(3);
+        groupByFields.Count.ShouldBe(4);
         groupByFields.Select(g => g.PropertyName).ShouldContain("WorkspaceName");
         groupByFields.Select(g => g.PropertyName).ShouldContain("Provider");
         groupByFields.Select(g => g.PropertyName).ShouldContain("Model");
+        groupByFields.Select(g => g.PropertyName).ShouldContain("ConversationId");
     }
 
     [Fact]
