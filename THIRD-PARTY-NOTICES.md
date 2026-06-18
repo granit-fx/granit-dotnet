@@ -214,6 +214,8 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
+| SQLitePCLRaw.bundle_e_sqlite3 | 3.0.3 | Copyright (c) SourceGear, LLC (Eric Sink) |
+| SQLitePCLRaw.core | 3.0.3 | Copyright (c) SourceGear, LLC (Eric Sink) |
 | TngTech.ArchUnitNET | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
 | TngTech.ArchUnitNET.xUnit | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
 | WireMock.Net | 2.7.0 | Copyright (c) WireMock.Net Contributors |

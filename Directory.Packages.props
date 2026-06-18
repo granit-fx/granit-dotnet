@@ -73,6 +73,21 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.*" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.*" />
   </ItemGroup>
+
+  <!--
+    Security override (test-only). Microsoft.EntityFrameworkCore.Sqlite 10.x still pulls
+    SQLitePCLRaw 2.1.11, whose bundled e_sqlite3 is affected by CVE-2025-6965 (GHSA-2m69-gcr7-jv3q,
+    HIGH — SQLite integer truncation). The fix only ships in the SQLitePCLRaw 3.x line, which drops
+    the vulnerable SQLitePCLRaw.lib.e_sqlite3 in favour of the patched SourceGear.sqlite3 (3.50.x).
+    Referenced directly (not transitively pinned) by the SQLite-backed test projects via
+    Directory.Build.targets, so the native library is upgraded without enabling global transitive
+    pinning (which would disturb the deliberate Roslyn analyzer pins). SQLite is a test-only
+    dependency in Granit; PostgreSQL is the production database.
+  -->
+  <ItemGroup Label="Security overrides">
+    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
+    <PackageVersion Include="SQLitePCLRaw.core" Version="3.0.3" />
+  </ItemGroup>
   <ItemGroup Label="Geospatial">
     <PackageVersion Include="NetTopologySuite" Version="2.*" />
   </ItemGroup>
