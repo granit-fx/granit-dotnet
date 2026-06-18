@@ -169,9 +169,10 @@ public sealed class AIToolOrchestratorTests
             UserSays("loop"), TestContext.Current.CancellationToken);
 
         result.MaxIterationsReached.ShouldBeTrue();
-        result.Iterations.ShouldBe(2);
-        // Only iteration 1 executes tools; iteration 2 hits the cap before executing.
-        result.ToolInvocations.ShouldHaveSingleItem();
+        // MaxIterations caps the tool-handling rounds; the loop makes one final round-trip that still
+        // wants tools (which signals the cap) before stopping.
+        result.Iterations.ShouldBe(3);
+        result.ToolInvocations.Count.ShouldBe(2);
     }
 
     [Fact]
@@ -207,14 +208,16 @@ public sealed class AIToolOrchestratorTests
         AIOrchestrationResult result = await harness.Orchestrator.RunAsync(
             UserSays("call ghost"), TestContext.Current.CancellationToken);
 
+        // A call to a tool that was never declared is handled by the function-invoking client itself:
+        // it feeds an error result back and the loop continues to a second model round-trip.
         result.Content.ShouldBe("recovered");
-        result.ToolInvocations[0].Succeeded.ShouldBeFalse();
+        harness.ChatClient.Calls.Count.ShouldBe(2);
 
         FunctionResultContent fed = harness.ChatClient.Calls[1]
             .SelectMany(m => m.Contents)
             .OfType<FunctionResultContent>()
-            .Single();
-        fed.Result.ShouldBeOfType<string>().ShouldContain("no tool named 'ghost'");
+            .ShouldHaveSingleItem();
+        fed.CallId.ShouldBe("c1");
     }
 
     [Fact]
@@ -292,5 +295,66 @@ public sealed class AIToolOrchestratorTests
         result.InputTokens.ShouldBeNull();
         await harness.UsageTracker.DidNotReceive().RecordAsync(
             Arg.Any<AIUsageRecord>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RunStreamingAsync_streams_text_deltas_then_a_completion()
+    {
+        ScriptedChatClient client = new(FinalText("Hello world"));
+        Harness harness = CreateHarness(client, []);
+
+        List<AIOrchestrationUpdate> updates = [];
+        await foreach (AIOrchestrationUpdate update in harness.Orchestrator
+            .RunStreamingAsync(UserSays("hi"), TestContext.Current.CancellationToken))
+        {
+            updates.Add(update);
+        }
+
+        updates[^1].Kind.ShouldBe(AIOrchestrationUpdateKind.Completed);
+        updates[^1].Result!.Content.ShouldBe("Hello world");
+
+        string streamed = string.Concat(updates
+            .Where(u => u.Kind == AIOrchestrationUpdateKind.Delta)
+            .Select(u => u.TextDelta));
+        streamed.ShouldBe("Hello world");
+    }
+
+    [Fact]
+    public async Task RunStreamingAsync_emits_tool_call_then_tool_result_once_each()
+    {
+        FakeAITool echo = new(name: "echo", result: "r");
+        ScriptedChatClient client = new(ToolCall("c1", "echo"), FinalText("done"));
+        Harness harness = CreateHarness(client, [echo]);
+
+        List<AIOrchestrationUpdate> updates = [];
+        await foreach (AIOrchestrationUpdate update in harness.Orchestrator
+            .RunStreamingAsync(UserSays("hi"), TestContext.Current.CancellationToken))
+        {
+            updates.Add(update);
+        }
+
+        AIOrchestrationUpdate call = updates.Single(u => u.Kind == AIOrchestrationUpdateKind.ToolCall);
+        AIOrchestrationUpdate toolResult = updates.Single(u => u.Kind == AIOrchestrationUpdateKind.ToolResult);
+        call.ToolName.ShouldBe("echo");
+        call.ToolCallId.ShouldBe("c1");
+        toolResult.ToolCallId.ShouldBe("c1");
+        toolResult.Succeeded.ShouldBe(true);
+        updates.IndexOf(call).ShouldBeLessThan(updates.IndexOf(toolResult));
+    }
+
+    [Fact]
+    public async Task RunStreamingAsync_propagates_cancellation()
+    {
+        ScriptedChatClient client = new(FinalText("never"));
+        Harness harness = CreateHarness(client, []);
+        using CancellationTokenSource cts = new();
+        await cts.CancelAsync();
+
+        await Should.ThrowAsync<OperationCanceledException>(async () =>
+        {
+            await foreach (AIOrchestrationUpdate _ in harness.Orchestrator.RunStreamingAsync(UserSays("hi"), cts.Token))
+            {
+            }
+        });
     }
 }

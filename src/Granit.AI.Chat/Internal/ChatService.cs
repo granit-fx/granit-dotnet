@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Granit.AI.Chat.Attachments;
 using Granit.AI.Chat.Clarification;
@@ -18,8 +19,9 @@ using Microsoft.Extensions.Options;
 namespace Granit.AI.Chat.Internal;
 
 /// <summary>
-/// Default <see cref="IChatService"/>. Resolves and guards the workspace, runs the agentic tool
-/// loop over the conversation history, and persists the user and assistant turns.
+/// Default <see cref="IChatService"/>. Resolves and guards the workspace (<see cref="PrepareAsync"/>),
+/// then streams the agentic tool loop over the conversation history, persisting the user turn before
+/// the loop and the assistant turn at the end (<see cref="StreamAsync"/>).
 /// </summary>
 internal sealed class ChatService(
     IConversationStore conversationStore,
@@ -36,7 +38,7 @@ internal sealed class ChatService(
 {
     private const int MaxTitleLength = 100;
 
-    public async Task<ChatSendResult> SendAsync(ChatSendRequest request, CancellationToken cancellationToken = default)
+    public async Task<ChatSendHandle> PrepareAsync(ChatSendRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.Message);
@@ -96,58 +98,123 @@ internal sealed class ChatService(
 
         loopMessages.Add(new ChatMessage(ChatRole.User, badges.ComposedMessage));
 
-        AIOrchestrationResult result = await orchestrator.RunAsync(
-            new AIOrchestrationRequest
+        return new ChatSendHandle
+        {
+            ConversationId = conversation.Id,
+            Conversation = conversation,
+            IsNew = isNew,
+            OwnerId = request.OwnerId,
+            OriginalMessage = request.Message,
+            WorkspaceName = workspaceName,
+            LoopMessages = loopMessages,
+            InvokedPromptName = badges.PrimaryPromptName,
+            InvokedPromptVersion = badges.PrimaryPromptVersion,
+        };
+    }
+
+    public async IAsyncEnumerable<ChatTurnUpdate> StreamAsync(
+        ChatSendHandle handle,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(handle);
+
+        // Persist the user turn before the loop runs: the message and conversation then survive a
+        // crash mid-stream (only the regenerable assistant turn can be lost — see ADR-068).
+        await PersistUserTurnAsync(handle, cancellationToken).ConfigureAwait(false);
+
+        var orchestrationRequest = new AIOrchestrationRequest
+        {
+            WorkspaceName = handle.WorkspaceName,
+            Messages = handle.LoopMessages,
+            UserCustomContext = await ResolveCustomContextAsync(cancellationToken).ConfigureAwait(false),
+            InvokedPromptName = handle.InvokedPromptName,
+            InvokedPromptVersion = handle.InvokedPromptVersion,
+        };
+
+        AIOrchestrationResult? orchestrationResult = null;
+        bool anyDelta = false;
+
+        await foreach (AIOrchestrationUpdate update in orchestrator
+            .RunStreamingAsync(orchestrationRequest, cancellationToken)
+            .ConfigureAwait(false))
+        {
+            switch (update.Kind)
             {
-                WorkspaceName = workspaceName,
-                Messages = loopMessages,
-                UserCustomContext = await ResolveCustomContextAsync(cancellationToken).ConfigureAwait(false),
-                InvokedPromptName = badges.PrimaryPromptName,
-                InvokedPromptVersion = badges.PrimaryPromptVersion,
-            },
-            cancellationToken).ConfigureAwait(false);
+                case AIOrchestrationUpdateKind.Delta:
+                    anyDelta = true;
+                    yield return ChatTurnUpdate.ForDelta(update.TextDelta!);
+                    break;
+                case AIOrchestrationUpdateKind.ToolCall:
+                    yield return ChatTurnUpdate.ForToolCall(update.ToolName!, update.ToolCallId!);
+                    break;
+                case AIOrchestrationUpdateKind.ToolResult:
+                    yield return ChatTurnUpdate.ForToolResult(update.ToolName!, update.ToolCallId!, update.Succeeded ?? true);
+                    break;
+                case AIOrchestrationUpdateKind.Completed:
+                    orchestrationResult = update.Result;
+                    break;
+            }
+        }
+
+        AIOrchestrationResult result = orchestrationResult!;
 
         // A clarification halts the loop: the assistant turn records the question and the structured
-        // request is surfaced so the front can render clickable options. The user's choice arrives
-        // as the next turn and resumes the loop normally.
+        // request is surfaced so the front can render clickable options. The user's choice arrives as
+        // the next turn and resumes the loop normally.
         AIClarificationRequest? clarification = TryReadClarification(result.Interrupt);
         string assistantContent = clarification?.Question ?? result.Content;
 
-        if (isNew)
+        // Never leave the text channel empty: if nothing streamed (a non-streaming provider, or a
+        // clarification with no model text), emit the settled answer as a single delta — but not for a
+        // clarification, whose content travels on the dedicated clarification frame.
+        if (!anyDelta && clarification is null && assistantContent.Length > 0)
         {
-            conversation.AddMessage(guidGenerator.Create(), MessageRole.User, request.Message);
-            conversation.AddMessage(guidGenerator.Create(), MessageRole.Assistant, assistantContent);
-            await conversationStore.CreateAsync(conversation, cancellationToken).ConfigureAwait(false);
-        }
-        else
-        {
-            await conversationStore.AppendMessagesAsync(
-                conversation.Id,
-                request.OwnerId,
-                [
-                    Message.Create(guidGenerator.Create(), conversation.Id, MessageRole.User, request.Message),
-                    Message.Create(guidGenerator.Create(), conversation.Id, MessageRole.Assistant, assistantContent),
-                ],
-                cancellationToken).ConfigureAwait(false);
+            yield return ChatTurnUpdate.ForDelta(assistantContent);
         }
 
-        // Gather typed, non-executing suggested actions from registered providers under the
-        // caller's ACLs. Ephemeral — surfaced with the answer, never persisted.
+        await PersistAssistantTurnAsync(handle, assistantContent, cancellationToken).ConfigureAwait(false);
+
+        // Gather typed, non-executing suggested actions from registered providers under the caller's
+        // ACLs. Ephemeral — surfaced with the answer, never persisted.
         IReadOnlyList<AISuggestedAction> suggestedActions = await suggestionResolver
-            .ResolveAsync(new AISuggestionContext(request.OwnerId, request.Message), cancellationToken)
+            .ResolveAsync(new AISuggestionContext(handle.OwnerId, handle.OriginalMessage), cancellationToken)
             .ConfigureAwait(false);
 
-        return new ChatSendResult
+        yield return ChatTurnUpdate.ForCompleted(new ChatSendResult
         {
-            ConversationId = conversation.Id,
+            ConversationId = handle.ConversationId,
             Content = assistantContent,
             MaxIterationsReached = result.MaxIterationsReached,
             InputTokens = result.InputTokens,
             OutputTokens = result.OutputTokens,
             SuggestedActions = suggestedActions,
             Clarification = clarification,
-        };
+        });
     }
+
+    private async Task PersistUserTurnAsync(ChatSendHandle handle, CancellationToken cancellationToken)
+    {
+        if (handle.IsNew)
+        {
+            handle.Conversation.AddMessage(guidGenerator.Create(), MessageRole.User, handle.OriginalMessage);
+            await conversationStore.CreateAsync(handle.Conversation, cancellationToken).ConfigureAwait(false);
+        }
+        else
+        {
+            await conversationStore.AppendMessagesAsync(
+                handle.ConversationId,
+                handle.OwnerId,
+                [Message.Create(guidGenerator.Create(), handle.ConversationId, MessageRole.User, handle.OriginalMessage)],
+                cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private Task<bool> PersistAssistantTurnAsync(ChatSendHandle handle, string assistantContent, CancellationToken cancellationToken) =>
+        conversationStore.AppendMessagesAsync(
+            handle.ConversationId,
+            handle.OwnerId,
+            [Message.Create(guidGenerator.Create(), handle.ConversationId, MessageRole.Assistant, assistantContent)],
+            cancellationToken);
 
     /// <summary>
     /// Parses a clarification from a loop interrupt, or <see langword="null"/> when the interrupt is

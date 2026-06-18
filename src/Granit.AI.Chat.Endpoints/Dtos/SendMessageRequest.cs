@@ -30,9 +30,16 @@ public sealed record AttachmentRequest(string Reference, string FileName, string
 /// <summary>
 /// A frame streamed over SSE for a send. <see cref="Type"/> discriminates the frame:
 /// <c>conversation</c> (carries <see cref="ConversationId"/>), <c>delta</c> (carries a
-/// <see cref="Content"/> chunk), <c>usage</c> (carries the token counts), or <c>suggestions</c>
-/// (carries the typed <see cref="SuggestedActions"/>).
+/// <see cref="Content"/> chunk), <c>tool_call</c> (a tool started — carries <see cref="ToolName"/> +
+/// <see cref="ToolCallId"/>), <c>tool_result</c> (a tool finished — adds <see cref="Succeeded"/>),
+/// <c>usage</c> (carries the token counts), <c>suggestions</c> (carries the typed
+/// <see cref="SuggestedActions"/>), or <c>clarification</c>.
 /// </summary>
+/// <remarks>
+/// Tool frames carry only the tool's name and call id — never its arguments or raw result (privacy);
+/// the front maps the name to a localized label. A "thinking" indicator is derived front-side from a
+/// <c>tool_result</c> not yet followed by a <c>delta</c>, so there is no thinking frame on the wire.
+/// </remarks>
 public sealed record ChatStreamEvent(
     string Type,
     string? Content = null,
@@ -40,7 +47,10 @@ public sealed record ChatStreamEvent(
     int? InputTokens = null,
     int? OutputTokens = null,
     IReadOnlyList<SuggestedActionResponse>? SuggestedActions = null,
-    ClarificationResponse? Clarification = null);
+    ClarificationResponse? Clarification = null,
+    string? ToolName = null,
+    string? ToolCallId = null,
+    bool? Succeeded = null);
 
 /// <summary>A typed clarification the front renders as clickable choices; the turn blocks until answered.</summary>
 /// <param name="Question">The disambiguating question.</param>

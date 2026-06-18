@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Granit.AI.Chat.Attachments;
 using Granit.AI.Chat.Clarification;
@@ -34,6 +35,17 @@ public sealed class ChatServiceTests
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
 
+    private static readonly AIOrchestrationResult DefaultResult = new()
+    {
+        Content = "the answer",
+        Messages = [],
+        Iterations = 1,
+        MaxIterationsReached = false,
+        ToolInvocations = [],
+        InputTokens = 10,
+        OutputTokens = 4,
+    };
+
     private ChatService CreateService()
     {
         _guidGenerator.Create().Returns(_ => Guid.NewGuid());
@@ -41,17 +53,7 @@ public sealed class ChatServiceTests
             .Returns(new AIWorkspace { Name = "default", Provider = "OpenAI", Model = "gpt-4o" });
         _capabilityResolver.ResolveAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new AIModelCapabilities { Chat = true });
-        _orchestrator.RunAsync(Arg.Any<AIOrchestrationRequest>(), Arg.Any<CancellationToken>())
-            .Returns(new AIOrchestrationResult
-            {
-                Content = "the answer",
-                Messages = [],
-                Iterations = 1,
-                MaxIterationsReached = false,
-                ToolInvocations = [],
-                InputTokens = 10,
-                OutputTokens = 4,
-            });
+        StubLoop(DefaultResult);
 
         _mentionContextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIMention>>(), Arg.Any<CancellationToken>())
             .Returns((string?)null);
@@ -61,10 +63,45 @@ public sealed class ChatServiceTests
             .Returns((string?)null);
         _suggestionResolver.ResolveAsync(Arg.Any<AISuggestionContext>(), Arg.Any<CancellationToken>())
             .Returns([]);
+        _store.AppendMessagesAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<IReadOnlyList<Message>>(), Arg.Any<CancellationToken>())
+            .Returns(true);
 
         return new ChatService(_store, _orchestrator, _workspaceProvider, _capabilityResolver,
             _mentionContextResolver, _attachmentTextResolver, _suggestionResolver, _promptBadgeResolver,
             _settingProvider, _guidGenerator, MsOptions.Create(new GranitAIOptions { DefaultWorkspace = "default" }));
+    }
+
+    private void StubLoop(AIOrchestrationResult result) =>
+        _orchestrator.RunStreamingAsync(Arg.Any<AIOrchestrationRequest>(), Arg.Any<CancellationToken>())
+            .Returns(_ => ToStream(result));
+
+    private static async IAsyncEnumerable<AIOrchestrationUpdate> ToStream(
+        AIOrchestrationResult result,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        if (!string.IsNullOrEmpty(result.Content))
+        {
+            yield return AIOrchestrationUpdate.Delta(result.Content);
+        }
+
+        yield return AIOrchestrationUpdate.Completed(result);
+        await Task.CompletedTask;
+    }
+
+    /// <summary>Prepares then drains the stream, returning the settled result the endpoint would surface.</summary>
+    private static async Task<ChatSendResult> SendAsync(ChatService service, ChatSendRequest request, CancellationToken cancellationToken)
+    {
+        ChatSendHandle handle = await service.PrepareAsync(request, cancellationToken);
+        ChatSendResult? result = null;
+        await foreach (ChatTurnUpdate update in service.StreamAsync(handle, cancellationToken))
+        {
+            if (update.Kind == ChatTurnUpdateKind.Completed)
+            {
+                result = update.Result;
+            }
+        }
+
+        return result!;
     }
 
     private static ChatSendRequest Request(
@@ -84,46 +121,54 @@ public sealed class ChatServiceTests
         };
 
     [Fact]
-    public async Task New_conversation_runs_the_loop_and_persists_user_and_assistant_messages()
+    public async Task New_conversation_runs_the_loop_and_persists_user_then_assistant_messages()
     {
         ChatService service = CreateService();
 
-        ChatSendResult result = await service.SendAsync(Request(message: "What changed?"), TestContext.Current.CancellationToken);
+        ChatSendResult result = await SendAsync(service, Request(message: "What changed?"), TestContext.Current.CancellationToken);
 
         result.Content.ShouldBe("the answer");
         result.InputTokens.ShouldBe(10);
 
+        // The user turn is persisted up front (conversation created with just the user message)...
         await _store.Received(1).CreateAsync(
             Arg.Is<Conversation>(c =>
                 c.OwnerId == Owner
-                && c.Messages.Count == 2
+                && c.Messages.Count == 1
                 && c.Messages[0].Role == MessageRole.User
-                && c.Messages[1].Role == MessageRole.Assistant
-                && c.Messages[1].Content == "the answer"),
+                && c.Messages[0].Content == "What changed?"),
+            Arg.Any<CancellationToken>());
+        // ...and the assistant turn is appended once the stream settles.
+        await _store.Received(1).AppendMessagesAsync(
+            Arg.Any<Guid>(), Owner,
+            Arg.Is<IReadOnlyList<Message>>(m =>
+                m.Count == 1 && m[0].Role == MessageRole.Assistant && m[0].Content == "the answer"),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Existing_conversation_feeds_history_to_the_loop_and_appends_messages()
+    public async Task Existing_conversation_feeds_history_to_the_loop_and_appends_both_turns()
     {
         var conversationId = Guid.NewGuid();
         var existing = Conversation.Create(conversationId, Owner, "Earlier");
         existing.AddMessage(Guid.NewGuid(), MessageRole.User, "previous");
         _store.GetAsync(conversationId, Owner, Arg.Any<CancellationToken>()).Returns(existing);
-        _store.AppendMessagesAsync(conversationId, Owner, Arg.Any<IReadOnlyList<Message>>(), Arg.Any<CancellationToken>())
-            .Returns(true);
         ChatService service = CreateService();
 
-        await service.SendAsync(Request(conversationId, "follow up"), TestContext.Current.CancellationToken);
+        await SendAsync(service, Request(conversationId, "follow up"), TestContext.Current.CancellationToken);
 
-        await _orchestrator.Received(1).RunAsync(
+        _orchestrator.Received(1).RunStreamingAsync(
             Arg.Is<AIOrchestrationRequest>(r =>
                 r.Messages.Count == 2
                 && r.Messages[0].Role == ChatRole.User && r.Messages[0].Text == "previous"
                 && r.Messages[1].Text == "follow up"),
             Arg.Any<CancellationToken>());
         await _store.Received(1).AppendMessagesAsync(conversationId, Owner,
-            Arg.Is<IReadOnlyList<Message>>(m => m.Count == 2), Arg.Any<CancellationToken>());
+            Arg.Is<IReadOnlyList<Message>>(m => m.Count == 1 && m[0].Role == MessageRole.User && m[0].Content == "follow up"),
+            Arg.Any<CancellationToken>());
+        await _store.Received(1).AppendMessagesAsync(conversationId, Owner,
+            Arg.Is<IReadOnlyList<Message>>(m => m.Count == 1 && m[0].Role == MessageRole.Assistant && m[0].Content == "the answer"),
+            Arg.Any<CancellationToken>());
         await _store.DidNotReceive().CreateAsync(Arg.Any<Conversation>(), Arg.Any<CancellationToken>());
     }
 
@@ -134,11 +179,11 @@ public sealed class ChatServiceTests
         _mentionContextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIMention>>(), Arg.Any<CancellationToken>())
             .Returns("<untrusted_document>invoice 42</untrusted_document>");
 
-        await service.SendAsync(
+        await SendAsync(service,
             Request(message: "summarise", mentions: [new AIMention("invoice", "42")]),
             TestContext.Current.CancellationToken);
 
-        await _orchestrator.Received(1).RunAsync(
+        _orchestrator.Received(1).RunStreamingAsync(
             Arg.Is<AIOrchestrationRequest>(r =>
                 r.Messages.Count == 2
                 && r.Messages[0].Role == ChatRole.User && r.Messages[0].Text!.Contains("invoice 42")
@@ -153,13 +198,13 @@ public sealed class ChatServiceTests
         _mentionContextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIMention>>(), Arg.Any<CancellationToken>())
             .Returns("<untrusted_document>secret</untrusted_document>");
 
-        await service.SendAsync(
+        await SendAsync(service,
             Request(message: "summarise", mentions: [new AIMention("invoice", "42")]),
             TestContext.Current.CancellationToken);
 
         await _store.Received(1).CreateAsync(
             Arg.Is<Conversation>(c =>
-                c.Messages.Count == 2
+                c.Messages.Count == 1
                 && c.Messages[0].Content == "summarise"
                 && !c.Messages[0].Content.Contains("secret")),
             Arg.Any<CancellationToken>());
@@ -172,11 +217,11 @@ public sealed class ChatServiceTests
         _attachmentTextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIAttachment>>(), Arg.Any<CancellationToken>())
             .Returns("<untrusted_document>report.pdf</untrusted_document>");
 
-        await service.SendAsync(
+        await SendAsync(service,
             Request(message: "summarise", attachments: [new AIAttachment("blob-1", "report.pdf", "application/pdf", 64)]),
             TestContext.Current.CancellationToken);
 
-        await _orchestrator.Received(1).RunAsync(
+        _orchestrator.Received(1).RunStreamingAsync(
             Arg.Is<AIOrchestrationRequest>(r =>
                 r.Messages.Count == 2
                 && r.Messages[0].Role == ChatRole.User && r.Messages[0].Text!.Contains("report.pdf")
@@ -191,12 +236,12 @@ public sealed class ChatServiceTests
         _attachmentTextResolver.ResolveContextAsync(Arg.Any<IReadOnlyList<AIAttachment>>(), Arg.Any<CancellationToken>())
             .Returns("<untrusted_document>secret</untrusted_document>");
 
-        await service.SendAsync(
+        await SendAsync(service,
             Request(message: "summarise", attachments: [new AIAttachment("blob-1", "report.pdf", "application/pdf", 64)]),
             TestContext.Current.CancellationToken);
 
         await _store.Received(1).CreateAsync(
-            Arg.Is<Conversation>(c => c.Messages.Count == 2 && !c.Messages[0].Content.Contains("secret")),
+            Arg.Is<Conversation>(c => c.Messages.Count == 1 && !c.Messages[0].Content.Contains("secret")),
             Arg.Any<CancellationToken>());
     }
 
@@ -205,9 +250,9 @@ public sealed class ChatServiceTests
     {
         ChatService service = CreateService();
 
-        await service.SendAsync(Request(message: "plain"), TestContext.Current.CancellationToken);
+        await SendAsync(service, Request(message: "plain"), TestContext.Current.CancellationToken);
 
-        await _orchestrator.Received(1).RunAsync(
+        _orchestrator.Received(1).RunStreamingAsync(
             Arg.Is<AIOrchestrationRequest>(r => r.Messages.Count == 1 && r.Messages[0].Text == "plain"),
             Arg.Any<CancellationToken>());
         await _mentionContextResolver.DidNotReceive()
@@ -221,10 +266,11 @@ public sealed class ChatServiceTests
         _capabilityResolver.ResolveAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new AIModelCapabilities { Chat = false });
 
+        // The guard runs in PrepareAsync, before the SSE stream opens, so it surfaces as an exception.
         await Should.ThrowAsync<WorkspaceNotChatCapableException>(
-            () => service.SendAsync(Request(), TestContext.Current.CancellationToken));
+            () => service.PrepareAsync(Request(), TestContext.Current.CancellationToken));
 
-        await _orchestrator.DidNotReceive().RunAsync(Arg.Any<AIOrchestrationRequest>(), Arg.Any<CancellationToken>());
+        _orchestrator.DidNotReceive().RunStreamingAsync(Arg.Any<AIOrchestrationRequest>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -235,7 +281,7 @@ public sealed class ChatServiceTests
         ChatService service = CreateService();
 
         await Should.ThrowAsync<ConversationNotFoundException>(
-            () => service.SendAsync(Request(conversationId), TestContext.Current.CancellationToken));
+            () => service.PrepareAsync(Request(conversationId), TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -249,18 +295,17 @@ public sealed class ChatServiceTests
             AllowOther = true,
         };
         string payload = JsonSerializer.Serialize(clarification, JsonSerializerOptions.Web);
-        _orchestrator.RunAsync(Arg.Any<AIOrchestrationRequest>(), Arg.Any<CancellationToken>())
-            .Returns(new AIOrchestrationResult
-            {
-                Content = string.Empty,
-                Messages = [],
-                Iterations = 1,
-                MaxIterationsReached = false,
-                ToolInvocations = [],
-                Interrupt = new AIToolInterrupt(AIClarificationRequest.InterruptKind, payload),
-            });
+        StubLoop(new AIOrchestrationResult
+        {
+            Content = string.Empty,
+            Messages = [],
+            Iterations = 1,
+            MaxIterationsReached = false,
+            ToolInvocations = [],
+            Interrupt = new AIToolInterrupt(AIClarificationRequest.InterruptKind, payload),
+        });
 
-        ChatSendResult result = await service.SendAsync(Request(message: "deploy"), TestContext.Current.CancellationToken);
+        ChatSendResult result = await SendAsync(service, Request(message: "deploy"), TestContext.Current.CancellationToken);
 
         result.Clarification.ShouldNotBeNull();
         result.Clarification.Question.ShouldBe("Which environment?");
@@ -268,8 +313,10 @@ public sealed class ChatServiceTests
         result.Clarification.AllowOther.ShouldBeTrue();
         // The question text becomes the assistant content and is persisted in history.
         result.Content.ShouldBe("Which environment?");
-        await _store.Received(1).CreateAsync(
-            Arg.Is<Conversation>(c => c.Messages.Count == 2 && c.Messages[1].Content == "Which environment?"),
+        await _store.Received(1).AppendMessagesAsync(
+            Arg.Any<Guid>(), Owner,
+            Arg.Is<IReadOnlyList<Message>>(m =>
+                m.Count == 1 && m[0].Role == MessageRole.Assistant && m[0].Content == "Which environment?"),
             Arg.Any<CancellationToken>());
     }
 
@@ -280,7 +327,7 @@ public sealed class ChatServiceTests
         _suggestionResolver.ResolveAsync(Arg.Any<AISuggestionContext>(), Arg.Any<CancellationToken>())
             .Returns([new AISuggestedAction { Type = "calendar.connect", Label = "Connect", DeepLink = "/settings/calendar" }]);
 
-        ChatSendResult result = await service.SendAsync(Request(), TestContext.Current.CancellationToken);
+        ChatSendResult result = await SendAsync(service, Request(), TestContext.Current.CancellationToken);
 
         AISuggestedAction action = result.SuggestedActions.ShouldHaveSingleItem();
         action.Type.ShouldBe("calendar.connect");
@@ -294,9 +341,9 @@ public sealed class ChatServiceTests
         _settingProvider.GetOrNullAsync(AIChatSettingNames.DefaultWorkspace, Arg.Any<CancellationToken>())
             .Returns("my-workspace");
 
-        await service.SendAsync(Request(), TestContext.Current.CancellationToken);
+        await SendAsync(service, Request(), TestContext.Current.CancellationToken);
 
-        await _orchestrator.Received(1).RunAsync(
+        _orchestrator.Received(1).RunStreamingAsync(
             Arg.Is<AIOrchestrationRequest>(r => r.WorkspaceName == "my-workspace"), Arg.Any<CancellationToken>());
     }
 
@@ -307,9 +354,9 @@ public sealed class ChatServiceTests
         _settingProvider.GetOrNullAsync(AIChatSettingNames.DefaultWorkspace, Arg.Any<CancellationToken>())
             .Returns(AIChatSettingNames.ReservedAutoWorkspace);
 
-        await service.SendAsync(Request(), TestContext.Current.CancellationToken);
+        await SendAsync(service, Request(), TestContext.Current.CancellationToken);
 
-        await _orchestrator.Received(1).RunAsync(
+        _orchestrator.Received(1).RunStreamingAsync(
             Arg.Is<AIOrchestrationRequest>(r => r.WorkspaceName == "default"), Arg.Any<CancellationToken>());
     }
 
@@ -320,10 +367,9 @@ public sealed class ChatServiceTests
         _settingProvider.GetOrNullAsync(AIChatSettingNames.DefaultWorkspace, Arg.Any<CancellationToken>())
             .Returns("user-default");
 
-        await service.SendAsync(
-            Request() with { WorkspaceName = "explicit" }, TestContext.Current.CancellationToken);
+        await SendAsync(service, Request() with { WorkspaceName = "explicit" }, TestContext.Current.CancellationToken);
 
-        await _orchestrator.Received(1).RunAsync(
+        _orchestrator.Received(1).RunStreamingAsync(
             Arg.Is<AIOrchestrationRequest>(r => r.WorkspaceName == "explicit"), Arg.Any<CancellationToken>());
         await _settingProvider.DidNotReceive()
             .GetOrNullAsync(AIChatSettingNames.DefaultWorkspace, Arg.Any<CancellationToken>());
@@ -343,9 +389,9 @@ public sealed class ChatServiceTests
                 PrimaryPromptVersion = 3,
             });
 
-        await service.SendAsync(Request(message: "my notes", promptRefs: [promptId]), TestContext.Current.CancellationToken);
+        await SendAsync(service, Request(message: "my notes", promptRefs: [promptId]), TestContext.Current.CancellationToken);
 
-        await _orchestrator.Received(1).RunAsync(
+        _orchestrator.Received(1).RunStreamingAsync(
             Arg.Is<AIOrchestrationRequest>(r =>
                 r.Messages[r.Messages.Count - 1].Text == "Summarise the content.\n\nmy notes"
                 && r.InvokedPromptName == "Prompt:Summarize:Name"
@@ -361,7 +407,7 @@ public sealed class ChatServiceTests
             .ResolveAsync(Arg.Any<IReadOnlyList<Guid>>(), Owner, "my notes", Arg.Any<CancellationToken>())
             .Returns(new PromptBadgeResolution { ComposedMessage = "Summarise the content.\n\nmy notes", PrimaryPromptName = "X", PrimaryPromptVersion = 1 });
 
-        await service.SendAsync(Request(message: "my notes", promptRefs: [Guid.NewGuid()]), TestContext.Current.CancellationToken);
+        await SendAsync(service, Request(message: "my notes", promptRefs: [Guid.NewGuid()]), TestContext.Current.CancellationToken);
 
         await _store.Received(1).CreateAsync(
             Arg.Is<Conversation>(c => c.Messages[0].Content == "my notes" && !c.Messages[0].Content.Contains("Summarise")),
@@ -373,11 +419,11 @@ public sealed class ChatServiceTests
     {
         ChatService service = CreateService();
 
-        await service.SendAsync(Request(message: "plain"), TestContext.Current.CancellationToken);
+        await SendAsync(service, Request(message: "plain"), TestContext.Current.CancellationToken);
 
         await _promptBadgeResolver.DidNotReceive()
             .ResolveAsync(Arg.Any<IReadOnlyList<Guid>>(), Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        await _orchestrator.Received(1).RunAsync(
+        _orchestrator.Received(1).RunStreamingAsync(
             Arg.Is<AIOrchestrationRequest>(r => r.InvokedPromptName == null && r.InvokedPromptVersion == null),
             Arg.Any<CancellationToken>());
     }
@@ -389,9 +435,9 @@ public sealed class ChatServiceTests
         _settingProvider.GetOrNullAsync(AIChatSettingNames.CustomContext, Arg.Any<CancellationToken>())
             .Returns("Always answer in British English.");
 
-        await service.SendAsync(Request(), TestContext.Current.CancellationToken);
+        await SendAsync(service, Request(), TestContext.Current.CancellationToken);
 
-        await _orchestrator.Received(1).RunAsync(
+        _orchestrator.Received(1).RunStreamingAsync(
             Arg.Is<AIOrchestrationRequest>(r => r.UserCustomContext == "Always answer in British English."),
             Arg.Any<CancellationToken>());
     }
@@ -403,9 +449,9 @@ public sealed class ChatServiceTests
         _settingProvider.GetOrNullAsync(AIChatSettingNames.CustomContext, Arg.Any<CancellationToken>())
             .Returns(new string('x', AIChatSettingNames.MaxCustomContextLength + 500));
 
-        await service.SendAsync(Request(), TestContext.Current.CancellationToken);
+        await SendAsync(service, Request(), TestContext.Current.CancellationToken);
 
-        await _orchestrator.Received(1).RunAsync(
+        _orchestrator.Received(1).RunStreamingAsync(
             Arg.Is<AIOrchestrationRequest>(r =>
                 r.UserCustomContext!.Length == AIChatSettingNames.MaxCustomContextLength),
             Arg.Any<CancellationToken>());

@@ -26,8 +26,10 @@ internal static class ChatSendEndpoints
             .WithDescription(
                 "Runs the agentic loop within the caller's permissions, persists the user and "
                 + "assistant messages, and streams the answer as Server-Sent Events: a 'conversation' "
-                + "frame with the (possibly new) conversation id, incremental 'delta' content frames, "
-                + "then a 'usage' frame. Rejects a non-chat-capable workspace before streaming.")
+                + "frame with the (possibly new) conversation id (flushed immediately), then live "
+                + "'tool_call'/'tool_result' frames as the agent uses tools and incremental 'delta' "
+                + "content frames as the model writes, then a 'usage' frame (and 'suggestions' / "
+                + "'clarification' when applicable). Rejects a non-chat-capable workspace before streaming.")
             .Produces<ChatStreamEvent>(StatusCodes.Status200OK, "text/event-stream")
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -55,10 +57,12 @@ internal static class ChatSendEndpoints
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
-        ChatSendResult result;
+        // Validate and resolve synchronously so an HTTP problem (404/422) is returned before the SSE
+        // stream opens — once the stream is committed we can only emit frames, not a ProblemHttpResult.
+        ChatSendHandle handle;
         try
         {
-            result = await chatService.SendAsync(
+            handle = await chatService.PrepareAsync(
                 new ChatSendRequest
                 {
                     ConversationId = request.ConversationId,
@@ -86,23 +90,49 @@ internal static class ChatSendEndpoints
         }
 
         // Native .NET SSE: the framework handles framing, content-type and per-item flushing.
-        return TypedResults.ServerSentEvents(StreamAsync(result, cancellationToken));
+        return TypedResults.ServerSentEvents(StreamAsync(handle, chatService, cancellationToken));
     }
 
     private static async IAsyncEnumerable<ChatStreamEvent> StreamAsync(
-        ChatSendResult result,
+        ChatSendHandle handle,
+        IChatService chatService,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        yield return new ChatStreamEvent("conversation", ConversationId: result.ConversationId);
+        // Flush the conversation id first — its frame commits the SSE headers in milliseconds, long
+        // before the agent settles, so the client never times out waiting for the first byte.
+        yield return new ChatStreamEvent("conversation", ConversationId: handle.ConversationId);
 
-        foreach (string chunk in Chunk(result.Content))
+        await foreach (ChatTurnUpdate update in chatService.StreamAsync(handle, cancellationToken).ConfigureAwait(false))
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            yield return new ChatStreamEvent("delta", Content: chunk);
-            // Yield control between frames so each is flushed as its own SSE event.
-            await Task.Yield();
-        }
+            switch (update.Kind)
+            {
+                case ChatTurnUpdateKind.Delta:
+                    yield return new ChatStreamEvent("delta", Content: update.Delta);
+                    break;
 
+                case ChatTurnUpdateKind.ToolCall:
+                    yield return new ChatStreamEvent("tool_call", ToolName: update.ToolName, ToolCallId: update.ToolCallId);
+                    break;
+
+                case ChatTurnUpdateKind.ToolResult:
+                    yield return new ChatStreamEvent(
+                        "tool_result", ToolName: update.ToolName, ToolCallId: update.ToolCallId, Succeeded: update.Succeeded);
+                    break;
+
+                case ChatTurnUpdateKind.Completed:
+                    foreach (ChatStreamEvent frame in CompletionFrames(update.Result!))
+                    {
+                        yield return frame;
+                    }
+
+                    break;
+            }
+        }
+    }
+
+    /// <summary>The terminal frames derived from the settled result: usage, then any suggestions and clarification.</summary>
+    private static IEnumerable<ChatStreamEvent> CompletionFrames(ChatSendResult result)
+    {
         yield return new ChatStreamEvent("usage", InputTokens: result.InputTokens, OutputTokens: result.OutputTokens);
 
         if (result.SuggestedActions.Count > 0)
@@ -121,24 +151,6 @@ internal static class ChatSendEndpoints
                     clarification.Question,
                     [.. clarification.Options.Select(o => new ClarificationOptionResponse(o.Label, o.Value))],
                     clarification.AllowOther));
-        }
-    }
-
-    /// <summary>Splits text into word-sized chunks (trailing space preserved) for token-like streaming.</summary>
-    private static IEnumerable<string> Chunk(string text)
-    {
-        int index = 0;
-        while (index < text.Length)
-        {
-            int space = text.IndexOf(' ', index);
-            if (space < 0)
-            {
-                yield return text[index..];
-                yield break;
-            }
-
-            yield return text[index..(space + 1)];
-            index = space + 1;
         }
     }
 }

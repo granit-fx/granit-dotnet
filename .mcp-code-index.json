@@ -3283,21 +3283,12 @@
       ]
     },
     {
-      "name": "ChatSendRequest",
-      "fqn": "Granit.AI.Chat.ChatSendRequest",
+      "name": "ChatSendHandle",
+      "fqn": "Granit.AI.Chat.ChatSendHandle",
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "ChatSendResult",
-      "fqn": "Granit.AI.Chat.ChatSendResult",
-      "kind": "record",
-      "project": "Granit.AI.Chat",
-      "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 44,
+      "line": 84,
       "members": [
         {
           "name": "ConversationId",
@@ -3306,6 +3297,74 @@
           "returnType": "required Guid"
         }
       ]
+    },
+    {
+      "name": "ChatSendRequest",
+      "fqn": "Granit.AI.Chat.ChatSendRequest",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/IChatService.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "ChatSendResult",
+      "fqn": "Granit.AI.Chat.ChatSendResult",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/IChatService.cs",
+      "line": 47,
+      "members": [
+        {
+          "name": "ConversationId",
+          "kind": "property",
+          "signature": "required Guid ConversationId",
+          "returnType": "required Guid"
+        }
+      ]
+    },
+    {
+      "name": "ChatTurnUpdate",
+      "fqn": "Granit.AI.Chat.ChatTurnUpdate",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/IChatService.cs",
+      "line": 135,
+      "members": [
+        {
+          "name": "ForDelta",
+          "kind": "method",
+          "signature": "ForDelta(string delta)",
+          "returnType": "required ChatTurnUpdateKind Kind { get; init; } public string? Delta { get; init; } public string? ToolName { get; init; } public string? ToolCallId { get; init; } public bool? Succeeded { get; init; } public ChatSendResult? Result { get; init; } public ChatTurnUpdate"
+        },
+        {
+          "name": "ForToolCall",
+          "kind": "method",
+          "signature": "ForToolCall(string toolName, string callId)",
+          "returnType": "ChatTurnUpdate"
+        },
+        {
+          "name": "ForToolResult",
+          "kind": "method",
+          "signature": "ForToolResult(string toolName, string callId, bool succeeded)",
+          "returnType": "ChatTurnUpdate"
+        },
+        {
+          "name": "ForCompleted",
+          "kind": "method",
+          "signature": "ForCompleted(ChatSendResult result)",
+          "returnType": "ChatTurnUpdate"
+        }
+      ]
+    },
+    {
+      "name": "ChatTurnUpdateKind",
+      "fqn": "Granit.AI.Chat.ChatTurnUpdateKind",
+      "kind": "enum",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/IChatService.cs",
+      "line": 115,
+      "members": []
     },
     {
       "name": "AIClarificationOption",
@@ -3374,7 +3433,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 36,
+      "line": 43,
       "members": []
     },
     {
@@ -3392,7 +3451,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 54,
+      "line": 64,
       "members": []
     },
     {
@@ -3401,7 +3460,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 49,
+      "line": 59,
       "members": []
     },
     {
@@ -3410,7 +3469,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
-      "line": 29,
+      "line": 38,
       "members": [
         {
           "name": "FromAggregate",
@@ -3467,7 +3526,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
-      "line": 26,
+      "line": 35,
       "members": [
         {
           "name": "FromAggregate",
@@ -3508,7 +3567,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/SendMessageRequest.cs",
-      "line": 61,
+      "line": 71,
       "members": []
     },
     {
@@ -3748,13 +3807,19 @@
       "kind": "interface",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 78,
+      "line": 183,
       "members": [
         {
-          "name": "SendAsync",
+          "name": "PrepareAsync",
           "kind": "method",
-          "signature": "SendAsync(ChatSendRequest request, CancellationToken cancellationToken = default)",
-          "returnType": "Task<ChatSendResult>"
+          "signature": "PrepareAsync(ChatSendRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ChatSendHandle>"
+        },
+        {
+          "name": "StreamAsync",
+          "kind": "method",
+          "signature": "StreamAsync(ChatSendHandle handle, CancellationToken cancellationToken = default)",
+          "returnType": "IAsyncEnumerable<ChatTurnUpdate>"
         }
       ]
     },
@@ -6242,6 +6307,49 @@
       "members": []
     },
     {
+      "name": "AIOrchestrationUpdate",
+      "fqn": "Granit.AI.Tools.AIOrchestrationUpdate",
+      "kind": "record",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/AIOrchestrationUpdate.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Delta",
+          "kind": "method",
+          "signature": "Delta(string text)",
+          "returnType": "required AIOrchestrationUpdateKind Kind { get; init; } public string? TextDelta { get; init; } public string? ToolName { get; init; } public string? ToolCallId { get; init; } public bool? Succeeded { get; init; } public AIOrchestrationResult? Result { get; init; } public AIOrchestrationUpdate"
+        },
+        {
+          "name": "ToolCall",
+          "kind": "method",
+          "signature": "ToolCall(string toolName, string callId)",
+          "returnType": "AIOrchestrationUpdate"
+        },
+        {
+          "name": "ToolResult",
+          "kind": "method",
+          "signature": "ToolResult(string toolName, string callId, bool succeeded)",
+          "returnType": "AIOrchestrationUpdate"
+        },
+        {
+          "name": "Completed",
+          "kind": "method",
+          "signature": "Completed(AIOrchestrationResult result)",
+          "returnType": "AIOrchestrationUpdate"
+        }
+      ]
+    },
+    {
+      "name": "AIOrchestrationUpdateKind",
+      "fqn": "Granit.AI.Tools.AIOrchestrationUpdateKind",
+      "kind": "enum",
+      "project": "Granit.AI.Tools",
+      "file": "src/Granit.AI.Tools/AIOrchestrationUpdate.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "AIToolInterrupt",
       "fqn": "Granit.AI.Tools.AIToolInterrupt",
       "kind": "record",
@@ -6449,6 +6557,12 @@
       "file": "src/Granit.AI.Tools/IAIToolOrchestrator.cs",
       "line": 9,
       "members": [
+        {
+          "name": "RunStreamingAsync",
+          "kind": "method",
+          "signature": "RunStreamingAsync(AIOrchestrationRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "IAsyncEnumerable<AIOrchestrationUpdate>"
+        },
         {
           "name": "RunAsync",
           "kind": "method",

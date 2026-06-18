@@ -1,7 +1,10 @@
 using Granit.AI.Chat.Attachments;
 using Granit.AI.Chat.Clarification;
+using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Mentions;
 using Granit.AI.Chat.Suggestions;
+using Granit.AI.Exceptions;
+using Microsoft.Extensions.AI;
 
 namespace Granit.AI.Chat;
 
@@ -72,13 +75,127 @@ public sealed record ChatSendResult
 }
 
 /// <summary>
+/// A resolved, validated send ready to run: the (possibly new) conversation, the loop history with
+/// per-turn context already injected, and the workspace. Produced by <see cref="IChatService.PrepareAsync"/>
+/// and consumed by <see cref="IChatService.StreamAsync"/>. <see cref="ConversationId"/> is known before
+/// the agent runs, so the endpoint can flush the SSE <c>conversation</c> frame immediately; the rest of
+/// the resolved state is internal to the chat module.
+/// </summary>
+public sealed record ChatSendHandle
+{
+    /// <summary>The conversation the message will be added to (new or existing), known up front.</summary>
+    public required Guid ConversationId { get; init; }
+
+    /// <summary>The resolved conversation aggregate (new or loaded under the caller's ownership).</summary>
+    internal Conversation Conversation { get; init; } = null!;
+
+    /// <summary>Whether the conversation is new and must be created (vs. appended to).</summary>
+    internal bool IsNew { get; init; }
+
+    /// <summary>The owner the turn is persisted and resolved under.</summary>
+    internal Guid OwnerId { get; init; }
+
+    /// <summary>The user's original message, as persisted (before badge expansion).</summary>
+    internal string OriginalMessage { get; init; } = string.Empty;
+
+    /// <summary>The resolved chat-capable workspace to run the loop against.</summary>
+    internal string WorkspaceName { get; init; } = string.Empty;
+
+    /// <summary>The loop history with attachment, mention and prompt-badge context already injected.</summary>
+    internal IReadOnlyList<ChatMessage> LoopMessages { get; init; } = [];
+
+    /// <summary>The primary prompt-template name stamped into the usage record, if any.</summary>
+    internal string? InvokedPromptName { get; init; }
+
+    /// <summary>The primary prompt-template version stamped into the usage record, if any.</summary>
+    internal int? InvokedPromptVersion { get; init; }
+}
+
+/// <summary>Discriminates a <see cref="ChatTurnUpdate"/>.</summary>
+public enum ChatTurnUpdateKind
+{
+    /// <summary>An incremental slice of assistant text.</summary>
+    Delta,
+
+    /// <summary>A tool invocation started.</summary>
+    ToolCall,
+
+    /// <summary>A tool invocation finished.</summary>
+    ToolResult,
+
+    /// <summary>The terminal update carrying the settled <see cref="ChatSendResult"/>.</summary>
+    Completed,
+}
+
+/// <summary>
+/// One update streamed by <see cref="IChatService.StreamAsync"/> as a chat turn runs: assistant text
+/// deltas and tool activity, ending with exactly one <see cref="ChatTurnUpdateKind.Completed"/> update
+/// carrying the persisted <see cref="ChatSendResult"/> (usage, suggestions, clarification).
+/// </summary>
+public sealed record ChatTurnUpdate
+{
+    /// <summary>Which kind of update this is.</summary>
+    public required ChatTurnUpdateKind Kind { get; init; }
+
+    /// <summary>The text slice, set when <see cref="Kind"/> is <see cref="ChatTurnUpdateKind.Delta"/>.</summary>
+    public string? Delta { get; init; }
+
+    /// <summary>The tool's wire name, set for <see cref="ChatTurnUpdateKind.ToolCall"/> / <see cref="ChatTurnUpdateKind.ToolResult"/>.</summary>
+    public string? ToolName { get; init; }
+
+    /// <summary>The model-issued call id correlating a tool call to its result.</summary>
+    public string? ToolCallId { get; init; }
+
+    /// <summary>Whether the tool succeeded, set for <see cref="ChatTurnUpdateKind.ToolResult"/>.</summary>
+    public bool? Succeeded { get; init; }
+
+    /// <summary>The settled, persisted result, set when <see cref="Kind"/> is <see cref="ChatTurnUpdateKind.Completed"/>.</summary>
+    public ChatSendResult? Result { get; init; }
+
+    /// <summary>Creates a text-delta update.</summary>
+    public static ChatTurnUpdate ForDelta(string delta) =>
+        new() { Kind = ChatTurnUpdateKind.Delta, Delta = delta };
+
+    /// <summary>Creates a tool-call-started update.</summary>
+    public static ChatTurnUpdate ForToolCall(string toolName, string callId) =>
+        new() { Kind = ChatTurnUpdateKind.ToolCall, ToolName = toolName, ToolCallId = callId };
+
+    /// <summary>Creates a tool-call-finished update.</summary>
+    public static ChatTurnUpdate ForToolResult(string toolName, string callId, bool succeeded) =>
+        new() { Kind = ChatTurnUpdateKind.ToolResult, ToolName = toolName, ToolCallId = callId, Succeeded = succeeded };
+
+    /// <summary>Creates the terminal completion update.</summary>
+    public static ChatTurnUpdate ForCompleted(ChatSendResult result) =>
+        new() { Kind = ChatTurnUpdateKind.Completed, Result = result };
+}
+
+/// <summary>
 /// Drives a chat turn (ADR-067): guards workspace chat-capability, runs the agentic tool loop over
 /// the conversation's history within the caller's ACLs, and persists the user and assistant messages.
 /// </summary>
+/// <remarks>
+/// The turn is split into two phases so the SSE response can commit its headers in milliseconds:
+/// <see cref="PrepareAsync"/> does all the fast validation and context resolution (and can still fail
+/// with an HTTP-mappable exception <em>before</em> the stream opens), then <see cref="StreamAsync"/>
+/// streams the agentic loop's text and tool activity and persists — by which point the endpoint has
+/// already flushed the <c>conversation</c> frame.
+/// </remarks>
 public interface IChatService
 {
-    /// <summary>Sends a message and returns the persisted, tool-grounded answer.</summary>
+    /// <summary>
+    /// Validates and resolves the send — workspace + chat-capability, conversation ownership, and the
+    /// per-turn mention/attachment/prompt context — into a <see cref="ChatSendHandle"/> whose
+    /// <see cref="ChatSendHandle.ConversationId"/> is known before the agent runs. Fast: no model work.
+    /// </summary>
     /// <exception cref="Exceptions.WorkspaceNotChatCapableException">The workspace is not chat-capable.</exception>
+    /// <exception cref="AIWorkspaceNotFoundException">The resolved workspace does not exist.</exception>
     /// <exception cref="Exceptions.ConversationNotFoundException">The target conversation is not the caller's.</exception>
-    Task<ChatSendResult> SendAsync(ChatSendRequest request, CancellationToken cancellationToken = default);
+    Task<ChatSendHandle> PrepareAsync(ChatSendRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Streams the agentic loop for a prepared handle — assistant text deltas and tool activity as they
+    /// happen — persisting the user turn before the loop and the assistant turn at the end. Ends with a
+    /// single <see cref="ChatTurnUpdateKind.Completed"/> update.
+    /// </summary>
+    IAsyncEnumerable<ChatTurnUpdate> StreamAsync(ChatSendHandle handle, CancellationToken cancellationToken = default);
 }

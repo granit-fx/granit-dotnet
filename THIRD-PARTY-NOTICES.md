@@ -63,6 +63,7 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 | Microsoft.EntityFrameworkCore | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.EntityFrameworkCore.Relational | 10.0.8 | (c) Microsoft Corporation |
 | Microsoft.EntityFrameworkCore.SqlServer | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.Extensions.AI | 10.7.0 | (c) Microsoft Corporation |
 | Microsoft.Extensions.AI.Abstractions | 10.6.0 | (c) Microsoft Corporation |
 | Microsoft.Extensions.AI.OpenAI | 10.6.0 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Caching.Abstractions | 10.0.8 | (c) Microsoft Corporation |

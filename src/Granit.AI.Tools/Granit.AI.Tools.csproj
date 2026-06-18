@@ -13,6 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- FunctionInvokingChatClient (the agentic loop + streaming) lives in the middleware
+         package, not Abstractions. Drives the orchestrator (ADR-067 / ADR-068). -->
+    <PackageReference Include="Microsoft.Extensions.AI" />
     <PackageReference Include="Microsoft.Extensions.AI.Abstractions" />
   </ItemGroup>
 

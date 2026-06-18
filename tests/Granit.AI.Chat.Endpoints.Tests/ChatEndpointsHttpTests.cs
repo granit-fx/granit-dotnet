@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Endpoints.Dtos;
 using Granit.AI.Chat.Endpoints.Extensions;
@@ -216,57 +217,65 @@ public sealed class ChatEndpointsHttpTests
     }
 
     [Fact]
-    public async Task Send_maps_a_non_chat_capable_workspace_to_422()
+    public async Task Send_maps_a_non_chat_capable_workspace_to_422_before_streaming()
     {
-        _chatService.SendAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
-            .Returns<ChatSendResult>(_ => throw new WorkspaceNotChatCapableException("vectors"));
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns<ChatSendHandle>(_ => throw new WorkspaceNotChatCapableException("vectors"));
         await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
 
         HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
             "/conversations/messages", new SendMessageRequest("Hi", WorkspaceName: "vectors"), TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
+        // The failure is returned as a plain problem, not an opened SSE stream.
+        response.Content.Headers.ContentType!.MediaType.ShouldNotBe("text/event-stream");
     }
 
     [Fact]
-    public async Task Send_maps_an_unknown_conversation_to_404()
+    public async Task Send_maps_an_unknown_conversation_to_404_before_streaming()
     {
         var id = Guid.NewGuid();
-        _chatService.SendAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
-            .Returns<ChatSendResult>(_ => throw new ConversationNotFoundException(id));
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns<ChatSendHandle>(_ => throw new ConversationNotFoundException(id));
         await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
 
         HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
             "/conversations/messages", new SendMessageRequest("Hi", ConversationId: id), TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        response.Content.Headers.ContentType!.MediaType.ShouldNotBe("text/event-stream");
     }
 
     [Fact]
-    public async Task Send_maps_an_unknown_workspace_to_404()
+    public async Task Send_maps_an_unknown_workspace_to_404_before_streaming()
     {
-        _chatService.SendAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
-            .Returns<ChatSendResult>(_ => throw new AIWorkspaceNotFoundException("ghost"));
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns<ChatSendHandle>(_ => throw new AIWorkspaceNotFoundException("ghost"));
         await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
 
         HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
             "/conversations/messages", new SendMessageRequest("Hi", WorkspaceName: "ghost"), TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        response.Content.Headers.ContentType!.MediaType.ShouldNotBe("text/event-stream");
     }
 
     [Fact]
     public async Task Send_streams_the_answer_as_server_sent_events()
     {
         var conversationId = Guid.NewGuid();
-        _chatService.SendAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
-            .Returns(new ChatSendResult
-            {
-                ConversationId = conversationId,
-                Content = "Hello world",
-                InputTokens = 3,
-                OutputTokens = 2,
-            });
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new ChatSendHandle { ConversationId = conversationId });
+        _chatService.StreamAsync(Arg.Any<ChatSendHandle>(), Arg.Any<CancellationToken>())
+            .Returns(_ => Stream(
+                ChatTurnUpdate.ForDelta("Hello world"),
+                ChatTurnUpdate.ForCompleted(new ChatSendResult
+                {
+                    ConversationId = conversationId,
+                    Content = "Hello world",
+                    InputTokens = 3,
+                    OutputTokens = 2,
+                })));
         await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
 
         HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
@@ -279,6 +288,82 @@ public sealed class ChatEndpointsHttpTests
         body.ShouldContain("delta");
         body.ShouldContain("Hello");
         body.ShouldContain("usage");
+    }
+
+    [Fact]
+    public async Task Send_streams_tool_call_and_tool_result_frames()
+    {
+        var conversationId = Guid.NewGuid();
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new ChatSendHandle { ConversationId = conversationId });
+        _chatService.StreamAsync(Arg.Any<ChatSendHandle>(), Arg.Any<CancellationToken>())
+            .Returns(_ => Stream(
+                ChatTurnUpdate.ForToolCall("query_data", "call-1"),
+                ChatTurnUpdate.ForToolResult("query_data", "call-1", true),
+                ChatTurnUpdate.ForDelta("Done"),
+                ChatTurnUpdate.ForCompleted(new ChatSendResult { ConversationId = conversationId, Content = "Done" })));
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        HttpResponseMessage response = await FullAccess(host).PostAsJsonAsync(
+            "/conversations/messages", new SendMessageRequest("Hi"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        body.ShouldContain("tool_call");
+        body.ShouldContain("tool_result");
+        body.ShouldContain("query_data");
+    }
+
+    [Fact]
+    public async Task Send_flushes_the_conversation_frame_before_the_agent_settles()
+    {
+        var conversationId = Guid.NewGuid();
+        var gate = new TaskCompletionSource();
+        _chatService.PrepareAsync(Arg.Any<ChatSendRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new ChatSendHandle { ConversationId = conversationId });
+        // The agent is gated open: StreamAsync never produces a frame until the test releases it.
+        _chatService.StreamAsync(Arg.Any<ChatSendHandle>(), Arg.Any<CancellationToken>())
+            .Returns(_ => GatedStream(gate.Task, conversationId));
+        await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
+
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/conversations/messages")
+            {
+                Content = JsonContent.Create(new SendMessageRequest("Hi")),
+            };
+
+            // Headers (and the conversation frame that triggers them) must arrive while the agent is
+            // still blocked — the whole point of the early flush. ResponseHeadersRead returns as soon
+            // as they do; if the pipeline were buffered this would hang until the gate is released.
+            using HttpResponseMessage response = await FullAccess(host).SendAsync(
+                request, HttpCompletionOption.ResponseHeadersRead, TestContext.Current.CancellationToken);
+
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            response.Content.Headers.ContentType!.MediaType.ShouldBe("text/event-stream");
+        }
+        finally
+        {
+            gate.SetResult();
+        }
+    }
+
+    private static async IAsyncEnumerable<ChatTurnUpdate> Stream(params ChatTurnUpdate[] updates)
+    {
+        foreach (ChatTurnUpdate update in updates)
+        {
+            await Task.Yield();
+            yield return update;
+        }
+    }
+
+    private static async IAsyncEnumerable<ChatTurnUpdate> GatedStream(
+        Task gate,
+        Guid conversationId,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        await gate.WaitAsync(cancellationToken);
+        yield return ChatTurnUpdate.ForCompleted(new ChatSendResult { ConversationId = conversationId, Content = string.Empty });
     }
 
     private sealed class StubWorkspaceCatalog : IChatWorkspaceCatalog
