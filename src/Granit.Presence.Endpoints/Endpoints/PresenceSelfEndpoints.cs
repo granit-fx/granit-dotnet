@@ -23,8 +23,7 @@ internal static class PresenceSelfEndpoints
             .WithName("GetMyPresence")
             .WithSummary("Returns the caller's current presence snapshot.")
             .WithDescription("Computes the effective presence status for the authenticated user by blending their manual override (if any) with their last reported heartbeat.")
-            .Produces<PresenceResponse>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized);
+            .Produces<PresenceResponse>();
 
         group.MapPut("/my", SetMyPresenceAsync)
             .WithName("SetMyPresence")
@@ -33,7 +32,6 @@ internal static class PresenceSelfEndpoints
             .RequireGranitRateLimiting(PresenceRateLimitPolicies.Mutate)
             .Produces<PresenceResponse>()
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapDelete("/my/override", ClearMyPresenceAsync)
@@ -42,7 +40,6 @@ internal static class PresenceSelfEndpoints
             .WithDescription("Removes any active manual override so the effective status is derived from the heartbeat alone.")
             .RequireGranitRateLimiting(PresenceRateLimitPolicies.Mutate)
             .Produces<PresenceResponse>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapPost("/my/poll", PollMyPresenceAsync)
@@ -52,7 +49,6 @@ internal static class PresenceSelfEndpoints
             .RequireGranitRateLimiting(PresenceRateLimitPolicies.Poll)
             .Produces<PresenceResponse>()
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         return group;

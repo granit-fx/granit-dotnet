@@ -29,9 +29,7 @@ internal static class CspAuditEndpoints
                 "implementations. Contributors that branch on request-scoped state beyond " +
                 "endpoint metadata (e.g. authenticated user, tenant) will under-report — the " +
                 "audit synthesises requests carrying only the matched endpoint.")
-            .Produces<CspAuditResponse>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .Produces<CspAuditResponse>();
     }
 
     internal static Ok<CspAuditResponse> HandleGetCspAudit(

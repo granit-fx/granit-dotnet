@@ -24,8 +24,7 @@ internal static class MyUserDeviceEndpoints
             .WithDescription(
                 "Returns the devices the authenticated user has signed in from — device type, OS, browser, "
                 + "last activity and approximate location — aggregated across the configured session backend.")
-            .Produces<IReadOnlyList<UserDeviceResponse>>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized);
+            .Produces<IReadOnlyList<UserDeviceResponse>>();
 
         group.MapPost("/trust", TrustAsync)
             .WithName("TrustMyDevice")
@@ -34,8 +33,7 @@ internal static class MyUserDeviceEndpoints
                 "Binds the current browser to a stable device identity (signed cookie) and records a trust "
                 + "verdict for the configured duration. A trusted device may, when the deployment opts in, skip "
                 + "the two-factor step-up on subsequent logins.")
-            .Produces<DeviceTrustedResponse>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized);
+            .Produces<DeviceTrustedResponse>();
 
         group.MapDelete("/{deviceId}/trust", RevokeTrustAsync)
             .WithName("RevokeMyDeviceTrust")
@@ -43,8 +41,7 @@ internal static class MyUserDeviceEndpoints
             .WithDescription(
                 "Removes the trust verdict for the given device id. When it is the current device, the signed "
                 + "device-trust cookie is also cleared so the device is no longer recognised.")
-            .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status401Unauthorized);
+            .Produces(StatusCodes.Status204NoContent);
 
         return group;
     }

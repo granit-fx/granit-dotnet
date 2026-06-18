@@ -32,8 +32,7 @@ internal static class ReactionEndpoints
             .WithSummary("Toggles a reaction on a timeline entry by the calling user.")
             .WithDescription("Idempotent toggle — adds the reaction if absent, removes if present. Accepts any well-formed Unicode emoji sequence (see EmojiValidator); rejects malformed input with 400 and Granit:Timeline:InvalidEmoji. Emits ReactionToggledEvent on the local bus on success. Concurrent double-POST is collapsed by the unique (EntryId, UserId, Emoji) DB index.")
             .Produces<ReactionToggleResponse>()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized);
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         return group;
     }

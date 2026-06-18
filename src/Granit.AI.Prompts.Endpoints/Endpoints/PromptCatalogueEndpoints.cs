@@ -24,7 +24,6 @@ internal static class PromptCatalogueEndpoints
             .WithSummary("Lists the caller's prompt catalogue.")
             .WithDescription("Returns the framework-seeded system prompts plus the caller's own prompts, system prompts first then by name, without their instruction text.")
             .Produces<IReadOnlyList<PromptSummaryResponse>>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIPromptsPermissions.Templates.Read);
 
         group.MapGet("/picker", PickerAsync)
@@ -32,7 +31,6 @@ internal static class PromptCatalogueEndpoints
             .WithSummary("Returns the catalogue grouped by category for the chat picker.")
             .WithDescription("Returns the caller's catalogue grouped by category, each prompt carrying its icon, colour, and short description. Uncategorised prompts fall under the \"General\" group.")
             .Produces<PromptPickerResponse>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIPromptsPermissions.Templates.Read);
 
         group.MapGet("/{id:guid}", GetByIdAsync)
@@ -41,7 +39,6 @@ internal static class PromptCatalogueEndpoints
             .WithDescription("Returns the prompt with its instruction text. Scoped to the caller: another user's private prompt is reported as not found.")
             .Produces<PromptResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIPromptsPermissions.Templates.Read);
 
         group.MapPost("/", CreateAsync)
@@ -50,7 +47,6 @@ internal static class PromptCatalogueEndpoints
             .WithDescription("Creates a private prompt with the given content, decoration, and categories, owned by the caller. Returns 422 when a referenced category does not exist.")
             .Produces<PromptResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(AIPromptsPermissions.Templates.Manage);
 
@@ -61,7 +57,6 @@ internal static class PromptCatalogueEndpoints
             .Produces<PromptResponse>()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(AIPromptsPermissions.Templates.Manage);
 
@@ -72,7 +67,6 @@ internal static class PromptCatalogueEndpoints
             .Produces<PromptResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIPromptsPermissions.Templates.Manage);
 
         group.MapDelete("/{id:guid}", DeleteAsync)
@@ -81,7 +75,6 @@ internal static class PromptCatalogueEndpoints
             .WithDescription("Deletes the prompt. System prompts cannot be deleted; another user's prompt is reported as not found.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization(AIPromptsPermissions.Templates.Delete);
 
         return group;

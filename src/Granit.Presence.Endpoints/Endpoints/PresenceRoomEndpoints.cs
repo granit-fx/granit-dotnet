@@ -31,7 +31,6 @@ internal static class PresenceRoomEndpoints
             .RequireAuthorization(PresencePermissions.Rooms.Join)
             .Produces<ResourceRoomResponse>()
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
@@ -43,7 +42,6 @@ internal static class PresenceRoomEndpoints
             .RequireAuthorization(PresencePermissions.Rooms.Read)
             .Produces<ResourceRoomResponse>()
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
@@ -55,7 +53,6 @@ internal static class PresenceRoomEndpoints
             .RequireAuthorization(PresencePermissions.Rooms.Join)
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         return group;

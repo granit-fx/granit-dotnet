@@ -45,7 +45,6 @@ internal static class PrivacyExportDownloadEndpoints
                 + "GET /exports/{requestId}/download/manifest to discover the shard count. "
                 + "Step-up authentication required when DownloadStepUpRequired is enabled (default).")
             .Produces(StatusCodes.Status200OK, contentType: "application/octet-stream")
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
@@ -58,7 +57,6 @@ internal static class PrivacyExportDownloadEndpoints
                 + "the shard count and per-shard sha256/integrity tag before pulling each ZIP. "
                 + "Step-up authentication required when DownloadStepUpRequired is enabled (default).")
             .Produces(StatusCodes.Status200OK, contentType: "application/json")
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
@@ -71,7 +69,6 @@ internal static class PrivacyExportDownloadEndpoints
                 + "Shard indices outside the manifest's bounds return 404. "
                 + "Step-up authentication required when DownloadStepUpRequired is enabled (default).")
             .Produces(StatusCodes.Status200OK, contentType: "application/zip")
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
