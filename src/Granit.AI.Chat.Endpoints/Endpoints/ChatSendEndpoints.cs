@@ -258,7 +258,7 @@ internal static partial class ChatSendEndpoints
             yield return new ChatStreamEvent(
                 "persisted",
                 Messages: [.. result.PersistedMessages.Select(m =>
-                    new MessageResponse(m.Id, m.Role, m.Content, m.CreatedAt))]);
+                    new MessageResponse(m.Id, m.Role, m.Content, m.WorkspaceKey, m.CreatedAt))]);
         }
 
         yield return new ChatStreamEvent("usage", InputTokens: result.InputTokens, OutputTokens: result.OutputTokens);

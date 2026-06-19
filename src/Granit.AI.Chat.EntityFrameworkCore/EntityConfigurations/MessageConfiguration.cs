@@ -18,6 +18,7 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.Content).IsRequired();
+        builder.Property(e => e.WorkspaceKey).HasMaxLength(256);
         builder.Property(e => e.CreatedBy).HasMaxLength(256);
 
         // Role persists as its PascalCase string name via ApplyGranitConventions.

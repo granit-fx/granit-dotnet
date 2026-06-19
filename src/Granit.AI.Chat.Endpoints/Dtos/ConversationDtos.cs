@@ -37,14 +37,23 @@ public sealed record ConversationSummaryResponse(
 /// the role is mapped explicitly here — see <see cref="MessageResponse.FromEntity"/>.
 /// </param>
 /// <param name="Content">The message text.</param>
+/// <param name="WorkspaceKey">
+/// Machine key of the workspace that produced this message, or <see langword="null"/> for messages
+/// predating this field. Lets the UI show which AI was used per turn.
+/// </param>
 /// <param name="CreatedAt">When the message was created.</param>
-public sealed record MessageResponse(Guid Id, string Role, string Content, DateTimeOffset CreatedAt)
+public sealed record MessageResponse(Guid Id, string Role, string Content, string? WorkspaceKey, DateTimeOffset CreatedAt)
 {
     /// <summary>Projects a <see cref="Message"/> to a response, lower-casing the role for the wire.</summary>
     public static MessageResponse FromEntity(Message message)
     {
         ArgumentNullException.ThrowIfNull(message);
-        return new MessageResponse(message.Id, message.Role.ToString().ToLowerInvariant(), message.Content, message.CreatedAt);
+        return new MessageResponse(
+            message.Id,
+            message.Role.ToString().ToLowerInvariant(),
+            message.Content,
+            message.WorkspaceKey,
+            message.CreatedAt);
     }
 }
 

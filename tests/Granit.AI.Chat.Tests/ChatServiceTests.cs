@@ -540,6 +540,21 @@ public sealed class ChatServiceTests
     }
 
     [Fact]
+    public async Task Persisted_messages_carry_the_resolved_workspace_key()
+    {
+        ChatService service = CreateService();
+        _workspaceProvider.GetAsync("analytics", Arg.Any<CancellationToken>())
+            .Returns(new AIWorkspace { Name = "analytics", Provider = "OpenAI", Model = "gpt-4o" });
+
+        ChatSendResult result = await SendAsync(
+            service, Request() with { WorkspaceName = "analytics" }, TestContext.Current.CancellationToken);
+
+        result.PersistedMessages.Count.ShouldBe(2);
+        result.PersistedMessages[0].WorkspaceKey.ShouldBe("analytics");
+        result.PersistedMessages[1].WorkspaceKey.ShouldBe("analytics");
+    }
+
+    [Fact]
     public async Task A_loop_failure_mid_stream_persists_the_user_turn_but_no_assistant_turn()
     {
         ChatService service = CreateService();

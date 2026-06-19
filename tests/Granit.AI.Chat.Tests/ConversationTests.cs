@@ -92,4 +92,24 @@ public sealed class ConversationTests
 
         conversation.WorkspaceKey.ShouldBeNull();
     }
+
+    [Fact]
+    public void AddMessage_records_the_workspace_key_on_the_message()
+    {
+        var conversation = Conversation.Create(Guid.NewGuid(), Owner, "Chat");
+
+        Message message = conversation.AddMessage(Guid.NewGuid(), MessageRole.User, "Hello", "analytics");
+
+        message.WorkspaceKey.ShouldBe("analytics");
+    }
+
+    [Fact]
+    public void AddMessage_leaves_workspace_key_null_when_omitted()
+    {
+        var conversation = Conversation.Create(Guid.NewGuid(), Owner, "Chat");
+
+        Message message = conversation.AddMessage(Guid.NewGuid(), MessageRole.User, "Hello");
+
+        message.WorkspaceKey.ShouldBeNull();
+    }
 }

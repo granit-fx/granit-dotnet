@@ -3291,7 +3291,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 105,
+      "line": 109,
       "members": [
         {
           "name": "ConversationId",
@@ -3316,7 +3316,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 59,
+      "line": 63,
       "members": [
         {
           "name": "ConversationId",
@@ -3338,7 +3338,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 156,
+      "line": 160,
       "members": [
         {
           "name": "ForDelta",
@@ -3372,7 +3372,7 @@
       "kind": "enum",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 136,
+      "line": 140,
       "members": []
     },
     {
@@ -3410,7 +3410,7 @@
         {
           "name": "AddMessage",
           "kind": "method",
-          "signature": "AddMessage(Guid id, MessageRole role, string content)",
+          "signature": "AddMessage(Guid id, MessageRole role, string content, string? workspaceKey = null)",
           "returnType": "Message"
         }
       ]
@@ -3502,7 +3502,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
-      "line": 56,
+      "line": 65,
       "members": [
         {
           "name": "FromAggregate",
@@ -3559,7 +3559,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
-      "line": 41,
+      "line": 45,
       "members": [
         {
           "name": "FromEntity",
@@ -3874,7 +3874,7 @@
       "kind": "interface",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 204,
+      "line": 208,
       "members": [
         {
           "name": "PrepareAsync",
@@ -4110,7 +4110,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/IChatService.cs",
-      "line": 56,
+      "line": 60,
       "members": [
         {
           "name": "ConversationId",

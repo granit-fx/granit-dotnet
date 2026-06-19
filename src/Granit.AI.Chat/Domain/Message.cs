@@ -13,7 +13,12 @@ public sealed class Message : CreationAuditedEntity
     }
 
     /// <summary>Creates a message belonging to <paramref name="conversationId"/>.</summary>
-    public static Message Create(Guid id, Guid conversationId, MessageRole role, string content)
+    public static Message Create(
+        Guid id,
+        Guid conversationId,
+        MessageRole role,
+        string content,
+        string? workspaceKey = null)
     {
         ArgumentNullException.ThrowIfNull(content);
 
@@ -23,6 +28,7 @@ public sealed class Message : CreationAuditedEntity
             ConversationId = conversationId,
             Role = role,
             Content = content,
+            WorkspaceKey = workspaceKey,
         };
     }
 
@@ -34,4 +40,11 @@ public sealed class Message : CreationAuditedEntity
 
     /// <summary>The message text.</summary>
     public string Content { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Machine key of the workspace that produced this message (e.g. <c>support-chat</c>),
+    /// or <see langword="null"/> for messages predating this field. Allows the UI to show
+    /// which AI was used per turn and to restore the workspace selector.
+    /// </summary>
+    public string? WorkspaceKey { get; private set; }
 }

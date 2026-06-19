@@ -52,8 +52,12 @@ public sealed record ChatSendRequest
 /// <param name="Id">The server-assigned message identifier.</param>
 /// <param name="Role">The author, lower-cased ("user"/"assistant") to match the client wire convention.</param>
 /// <param name="Content">The message text, as persisted.</param>
+/// <param name="WorkspaceKey">
+/// Machine key of the workspace that produced this message, or <see langword="null"/> for messages
+/// predating this field. Mirrors <c>MessageResponse.WorkspaceKey</c>.
+/// </param>
 /// <param name="CreatedAt">The server creation timestamp.</param>
-public sealed record PersistedChatMessage(Guid Id, string Role, string Content, DateTimeOffset CreatedAt);
+public sealed record PersistedChatMessage(Guid Id, string Role, string Content, string? WorkspaceKey, DateTimeOffset CreatedAt);
 
 /// <summary>The outcome of a send: the (possibly new) conversation and the assistant's answer.</summary>
 public sealed record ChatSendResult

@@ -73,9 +73,9 @@ public sealed class Conversation : FullAuditedAggregateRoot, IMultiTenant, IOwna
     public void SetFavorite(bool isFavorite) => IsFavorite = isFavorite;
 
     /// <summary>Appends a message and returns it.</summary>
-    public Message AddMessage(Guid id, MessageRole role, string content)
+    public Message AddMessage(Guid id, MessageRole role, string content, string? workspaceKey = null)
     {
-        var message = Message.Create(id, Id, role, content);
+        var message = Message.Create(id, Id, role, content, workspaceKey);
         Messages.Add(message);
         return message;
     }

@@ -209,12 +209,14 @@ internal sealed class ChatService(
     {
         if (handle.IsNew)
         {
-            Message userMessage = handle.Conversation.AddMessage(guidGenerator.Create(), MessageRole.User, handle.OriginalMessage);
+            Message userMessage = handle.Conversation.AddMessage(
+                guidGenerator.Create(), MessageRole.User, handle.OriginalMessage, handle.WorkspaceName);
             await conversationStore.CreateAsync(handle.Conversation, cancellationToken).ConfigureAwait(false);
             return userMessage;
         }
 
-        var message = Message.Create(guidGenerator.Create(), handle.ConversationId, MessageRole.User, handle.OriginalMessage);
+        var message = Message.Create(
+            guidGenerator.Create(), handle.ConversationId, MessageRole.User, handle.OriginalMessage, handle.WorkspaceName);
         await conversationStore.AppendMessagesAsync(
             handle.ConversationId,
             handle.OwnerId,
@@ -225,7 +227,8 @@ internal sealed class ChatService(
 
     private async Task<Message> PersistAssistantTurnAsync(ChatSendHandle handle, string assistantContent, CancellationToken cancellationToken)
     {
-        var message = Message.Create(guidGenerator.Create(), handle.ConversationId, MessageRole.Assistant, assistantContent);
+        var message = Message.Create(
+            guidGenerator.Create(), handle.ConversationId, MessageRole.Assistant, assistantContent, handle.WorkspaceName);
         await conversationStore.AppendMessagesAsync(
             handle.ConversationId,
             handle.OwnerId,
@@ -239,7 +242,7 @@ internal sealed class ChatService(
     /// The role is lower-cased to match the client wire convention (as in the conversation read model).
     /// </summary>
     private static PersistedChatMessage ToPersisted(Message message) =>
-        new(message.Id, message.Role.ToString().ToLowerInvariant(), message.Content, message.CreatedAt);
+        new(message.Id, message.Role.ToString().ToLowerInvariant(), message.Content, message.WorkspaceKey, message.CreatedAt);
 
     /// <summary>
     /// Parses a clarification from a loop interrupt, or <see langword="null"/> when the interrupt is
