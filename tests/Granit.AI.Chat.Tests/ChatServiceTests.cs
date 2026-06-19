@@ -1,7 +1,9 @@
+using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Granit.AI.Chat.Attachments;
 using Granit.AI.Chat.Clarification;
+using Granit.AI.Chat.Diagnostics;
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Internal;
@@ -12,6 +14,7 @@ using Granit.AI.Options;
 using Granit.AI.Tools;
 using Granit.AI.Workspaces;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Settings.Services;
 using Microsoft.Extensions.AI;
 using NSubstitute;
@@ -68,7 +71,16 @@ public sealed class ChatServiceTests
 
         return new ChatService(_store, _orchestrator, _workspaceProvider, _capabilityResolver,
             _mentionContextResolver, _attachmentTextResolver, _suggestionResolver, _promptBadgeResolver,
-            _settingProvider, _guidGenerator, MsOptions.Create(new GranitAIOptions { DefaultWorkspace = "default" }));
+            _settingProvider, _guidGenerator,
+            new AIChatMetrics(new TestMeterFactory()),
+            NullTenantContext.Instance,
+            MsOptions.Create(new GranitAIOptions { DefaultWorkspace = "default" }));
+    }
+
+    private sealed class TestMeterFactory : IMeterFactory
+    {
+        public Meter Create(MeterOptions options) => new(options);
+        public void Dispose() { }
     }
 
     private void StubLoop(AIOrchestrationResult result) =>

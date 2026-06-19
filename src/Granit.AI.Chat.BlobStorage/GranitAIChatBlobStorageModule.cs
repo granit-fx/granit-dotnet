@@ -9,8 +9,9 @@ namespace Granit.AI.Chat.BlobStorage;
 /// Attachment references are resolved as validated blob bytes via <see cref="IBlobContentReader"/>,
 /// then injected as untrusted document context in the AI turn (ADR-067).
 /// </summary>
-[DependsOn(typeof(GranitAIChatModule))]
-[DependsOn(typeof(GranitBlobStorageModule))]
+[DependsOn(
+    typeof(GranitAIChatModule),
+    typeof(GranitBlobStorageModule))]
 public sealed class GranitAIChatBlobStorageModule : GranitModule
 {
     /// <inheritdoc/>

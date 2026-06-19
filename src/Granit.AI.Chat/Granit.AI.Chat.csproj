@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
+    <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
     <ProjectReference Include="..\Granit.AI.Prompts\Granit.AI.Prompts.csproj" />
     <ProjectReference Include="..\Granit.AI.Tools\Granit.AI.Tools.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />

@@ -49,8 +49,10 @@ public sealed class Conversation : FullAuditedAggregateRoot, IMultiTenant, IOwna
     /// </summary>
     public string? WorkspaceKey { get; private set; }
 
+    private List<Message> _messages = [];
+
     /// <summary>The messages exchanged, oldest first.</summary>
-    public List<Message> Messages { get; private set; } = [];
+    public IReadOnlyList<Message> Messages => _messages;
 
     /// <summary>Owning tenant; stamped by the interceptor.</summary>
     public Guid? TenantId { get; private set; }
@@ -76,7 +78,7 @@ public sealed class Conversation : FullAuditedAggregateRoot, IMultiTenant, IOwna
     public Message AddMessage(Guid id, MessageRole role, string content, string? workspaceKey = null)
     {
         var message = Message.Create(id, Id, role, content, workspaceKey);
-        Messages.Add(message);
+        _messages.Add(message);
         return message;
     }
 }

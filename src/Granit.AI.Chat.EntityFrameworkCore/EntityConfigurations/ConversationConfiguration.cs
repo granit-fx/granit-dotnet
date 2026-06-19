@@ -33,5 +33,7 @@ internal sealed class ConversationConfiguration : IEntityTypeConfiguration<Conve
             .WithOne()
             .HasForeignKey(m => m.ConversationId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Navigation(e => e.Messages).HasField("_messages");
     }
 }

@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Granit.AI.Chat.Attachments;
 using Granit.AI.Chat.Clarification;
+using Granit.AI.Chat.Diagnostics;
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Exceptions;
 using Granit.AI.Chat.Mentions;
@@ -12,6 +13,7 @@ using Granit.AI.Options;
 using Granit.AI.Tools;
 using Granit.AI.Workspaces;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Settings.Services;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
@@ -34,6 +36,8 @@ internal sealed class ChatService(
     IPromptBadgeResolver promptBadgeResolver,
     ISettingProvider settingProvider,
     IGuidGenerator guidGenerator,
+    AIChatMetrics metrics,
+    ICurrentTenant currentTenant,
     IOptions<GranitAIOptions> aiOptions) : IChatService
 {
     private const int MaxTitleLength = 100;
@@ -189,6 +193,12 @@ internal sealed class ChatService(
             .ResolveAsync(new AISuggestionContext(handle.OwnerId, handle.OriginalMessage), cancellationToken)
             .ConfigureAwait(false);
 
+        metrics.RecordTurnCompleted(
+            currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null,
+            handle.WorkspaceName,
+            result.InputTokens ?? 0,
+            result.OutputTokens ?? 0);
+
         yield return ChatTurnUpdate.ForCompleted(new ChatSendResult
         {
             ConversationId = handle.ConversationId,
@@ -212,6 +222,7 @@ internal sealed class ChatService(
             Message userMessage = handle.Conversation.AddMessage(
                 guidGenerator.Create(), MessageRole.User, handle.OriginalMessage, handle.WorkspaceName);
             await conversationStore.CreateAsync(handle.Conversation, cancellationToken).ConfigureAwait(false);
+            metrics.RecordConversationCreated(currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null, handle.WorkspaceName);
             return userMessage;
         }
 

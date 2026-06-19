@@ -37,6 +37,7 @@
       "deps": [
         "Granit",
         "Granit.AI",
+        "Granit.MultiTenancy",
         "Granit.AI.Prompts",
         "Granit.AI.Tools",
         "Granit.Guids",
@@ -3315,7 +3316,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat.BlobStorage",
       "file": "src/Granit.AI.Chat.BlobStorage/GranitAIChatBlobStorageModule.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -3434,6 +3435,22 @@
       "members": []
     },
     {
+      "name": "AIChatMetrics",
+      "fqn": "Granit.AI.Chat.Diagnostics.AIChatMetrics",
+      "kind": "class",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Diagnostics/AIChatMetrics.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "RecordTurnCompleted",
+          "kind": "method",
+          "signature": "RecordTurnCompleted(string? tenantId, string workspaceKey, int inputTokens, int outputTokens)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "Conversation",
       "fqn": "Granit.AI.Chat.Domain.Conversation",
       "kind": "class",
@@ -3446,6 +3463,12 @@
           "kind": "property",
           "signature": "Guid OwnerId",
           "returnType": "Guid"
+        },
+        {
+          "name": "Messages",
+          "kind": "property",
+          "signature": "IReadOnlyList<Message> Messages",
+          "returnType": "IReadOnlyList<Message>"
         },
         {
           "name": "AddMessage",
@@ -3898,7 +3921,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat",
       "file": "src/Granit.AI.Chat/GranitAIChatModule.cs",
-      "line": 34,
+      "line": 36,
       "members": [
         {
           "name": "ConfigureServices",
@@ -4188,7 +4211,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat.Privacy",
       "file": "src/Granit.AI.Chat.Privacy/DataExport/AIChatPersonalDataExportHandler.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "Handle",

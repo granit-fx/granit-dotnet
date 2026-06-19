@@ -1,3 +1,4 @@
+using Granit.AI.Chat.Diagnostics;
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Extensions;
 using Granit.AI.Chat.Internal;
@@ -5,6 +6,7 @@ using Granit.AI.Chat.Queries;
 using Granit.AI.Chat.Settings;
 using Granit.AI.Prompts;
 using Granit.AI.Tools;
+using Granit.Diagnostics;
 using Granit.Guids;
 using Granit.Modularity;
 using Granit.QueryEngine;
@@ -36,6 +38,9 @@ public sealed class GranitAIChatModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        GranitActivitySourceRegistry.Register(AIChatActivitySource.Name);
+        context.Services.TryAddSingleton<AIChatMetrics>();
+
         context.Services.TryAddScoped<IChatService, ChatService>();
 
         // Keyset (cursor) query definition backing the backwards-paginated messages endpoint.

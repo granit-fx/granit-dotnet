@@ -97,7 +97,7 @@ internal static partial class ChatSendEndpoints
         }
 
         // Native .NET SSE: the framework handles framing, content-type and per-item flushing.
-        ILogger logger = loggerFactory.CreateLogger("Granit.AI.Chat.Endpoints.Endpoints.ChatSendEndpoints");
+        ILogger logger = loggerFactory.CreateLogger(typeof(ChatSendEndpoints).FullName!);
         return TypedResults.ServerSentEvents(StreamAsync(handle, chatService, logger, cancellationToken));
     }
 
