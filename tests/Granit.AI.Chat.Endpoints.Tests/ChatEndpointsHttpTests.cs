@@ -544,8 +544,8 @@ public sealed class ChatEndpointsHttpTests
                     OutputTokens = 2,
                     PersistedMessages =
                     [
-                        new PersistedChatMessage(userMessageId, "user", "Hi", createdAt),
-                        new PersistedChatMessage(assistantMessageId, "assistant", "Hello world", createdAt),
+                        new PersistedChatMessage(userMessageId, "user", "Hi", null, createdAt),
+                        new PersistedChatMessage(assistantMessageId, "assistant", "Hello world", null, createdAt),
                     ],
                 })));
         await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
@@ -590,8 +590,8 @@ public sealed class ChatEndpointsHttpTests
                     },
                     PersistedMessages =
                     [
-                        new PersistedChatMessage(Guid.NewGuid(), "user", "deploy", default),
-                        new PersistedChatMessage(Guid.NewGuid(), "assistant", "Which environment?", default),
+                        new PersistedChatMessage(Guid.NewGuid(), "user", "deploy", null, default),
+                        new PersistedChatMessage(Guid.NewGuid(), "assistant", "Which environment?", null, default),
                     ],
                 })));
         await using GranitEndpointTestHost host = await StartAsync(Owner.ToString());
