@@ -36,10 +36,8 @@ public sealed class ValueObjectColumnTranslationTests : IDisposable
     }
 
     [Fact]
-    public void Eq_filter_translates_and_matches_the_value()
-    {
+    public void Eq_filter_translates_and_matches_the_value() =>
         Query(new("Slug", FilterOperator.Eq, "beta")).ShouldBe(["beta"]);
-    }
 
     [Fact]
     public void In_filter_translates_to_sql_in()
@@ -54,11 +52,8 @@ public sealed class ValueObjectColumnTranslationTests : IDisposable
     [InlineData(FilterOperator.EndsWith)]
     [InlineData(FilterOperator.Gt)]
     [InlineData(FilterOperator.Lt)]
-    public void Unsupported_operators_are_dropped_not_thrown(FilterOperator op)
-    {
-        // The criterion produces no predicate (dropped) — never a mistranslation or a throw.
+    public void Unsupported_operators_are_dropped_not_thrown(FilterOperator op) =>
         FilterExpressionBuilder.Build<VoProbe>(new("Slug", op, "beta")).ShouldBeNull();
-    }
 
     [Fact]
     public void Sorting_by_a_value_object_column_translates()

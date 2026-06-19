@@ -351,13 +351,16 @@ internal static class FilterExpressionBuilder
         }
         catch (Exception ex)
         {
-            if (logger is not null)
-            {
-                QueryEngineEfCoreLog.FilterValueConversionFailed(
-                    logger, field ?? "(unknown)", targetType.Name, ex);
-            }
-
+            LogConversionFailure(logger, field, targetType, ex);
             return null;
+        }
+    }
+
+    private static void LogConversionFailure(ILogger? logger, string? field, Type targetType, Exception ex)
+    {
+        if (logger is not null)
+        {
+            QueryEngineEfCoreLog.FilterValueConversionFailed(logger, field ?? "(unknown)", targetType.Name, ex);
         }
     }
 

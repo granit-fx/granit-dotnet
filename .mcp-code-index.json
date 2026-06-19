@@ -34105,8 +34105,15 @@
       "kind": "class",
       "project": "Granit.Localization.AI",
       "file": "src/Granit.Localization.AI/GranitLocalizationAIModule.cs",
-      "line": 16,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "ITranslationSuggestionService",

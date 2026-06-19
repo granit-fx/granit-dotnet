@@ -97,7 +97,7 @@ public sealed class DPoPValidationTokenExtractionHandlerTests
             httpContext.Request.Path = "/resource";
             if (authorization is not null)
             {
-                httpContext.Request.Headers["Authorization"] = authorization;
+                httpContext.Request.Headers.Authorization = authorization;
             }
 
             // OpenIddictValidationAspNetCoreHelpers.GetHttpRequest() reads a

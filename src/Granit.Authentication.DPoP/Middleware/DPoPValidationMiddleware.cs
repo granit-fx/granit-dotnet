@@ -28,13 +28,11 @@ internal sealed partial class DPoPValidationMiddleware(
         // replay protection. Validating the same proof here first would make the server handler
         // see a duplicate jti → "proof replay detected" → token exchange fails. See
         // DPoPValidationOptions.ExcludedPathPrefixes.
-        foreach (string prefix in opts.ExcludedPathPrefixes)
+        if (opts.ExcludedPathPrefixes.Any(p =>
+                context.Request.Path.StartsWithSegments(p, StringComparison.OrdinalIgnoreCase)))
         {
-            if (context.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase))
-            {
-                await next(context).ConfigureAwait(false);
-                return;
-            }
+            await next(context).ConfigureAwait(false);
+            return;
         }
 
         // Only process authenticated requests with DPoP header or when DPoP is required

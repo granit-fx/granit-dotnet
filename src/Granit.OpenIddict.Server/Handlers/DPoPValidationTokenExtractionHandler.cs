@@ -25,9 +25,9 @@ public sealed class DPoPValidationTokenExtractionHandler
     // Run one slot after the built-in Bearer extractor so this acts as a fallback.
     // Reference its public Descriptor.Order rather than a hardcoded constant: the
     // order then tracks the built-in automatically across OpenIddict version bumps.
-    private static readonly int HandlerOrder = checked((int)(
+    private static readonly int HandlerOrder = checked(
         OpenIddictValidationAspNetCoreHandlers.ExtractAccessTokenFromAuthorizationHeader
-            .Descriptor.Order + 1));
+            .Descriptor.Order + 1);
 
     /// <summary>Handler descriptor registered with the OpenIddict validation pipeline.</summary>
     public static OpenIddictValidationHandlerDescriptor Descriptor { get; }

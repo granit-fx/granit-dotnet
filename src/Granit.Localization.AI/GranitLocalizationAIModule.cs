@@ -1,5 +1,7 @@
 using Granit.AI;
 using Granit.AI.Tools;
+using Granit.Localization.AI.Internal;
+using Granit.Localization.Extensions;
 using Granit.Modularity;
 
 namespace Granit.Localization.AI;
@@ -13,4 +15,9 @@ namespace Granit.Localization.AI;
 /// (e.g. <c>Granit.AI.OpenAI</c>) to function.
 /// </remarks>
 [DependsOn(typeof(GranitAIModule), typeof(GranitAIToolsModule), typeof(GranitLocalizationModule))]
-public sealed class GranitLocalizationAIModule : GranitModule;
+public sealed class GranitLocalizationAIModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddLocalizationResource<LocalizationAILocalizationResource>();
+}
