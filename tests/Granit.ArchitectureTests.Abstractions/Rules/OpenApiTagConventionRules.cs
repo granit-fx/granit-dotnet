@@ -138,6 +138,48 @@ public static partial class OpenApiTagConventionRules
             $"Could not find repository root (.git directory) starting from '{callerAssembly.Location}'.");
     }
 
+    /// <summary>
+    /// Asserts that every <c>*.Endpoints</c> package directory directly under
+    /// <paramref name="srcDir"/> contains at least one <c>*EndpointsOptions.cs</c> file.
+    /// Without an options class the <see cref="AllTagNameDefaultsShouldFollowConvention"/> rule
+    /// cannot observe the package's <c>TagName</c> defaults, and host applications have no
+    /// override surface.
+    /// Packages whose tag names are computed dynamically at runtime (instead of being declared as
+    /// a static options default) may be exempted by passing their folder name in
+    /// <paramref name="exemptPackageNames"/>.
+    /// </summary>
+    public static void EveryEndpointsPackageShouldHaveEndpointsOptions(
+        string srcDir,
+        params string[] exemptPackageNames)
+    {
+        HashSet<string> exemptions = new(exemptPackageNames, StringComparer.OrdinalIgnoreCase);
+        List<string> violations = [];
+
+        foreach (string packageDir in Directory.GetDirectories(srcDir, "*.Endpoints", SearchOption.TopDirectoryOnly))
+        {
+            string packageName = Path.GetFileName(packageDir);
+            if (exemptions.Contains(packageName))
+            {
+                continue;
+            }
+
+            bool hasOptions = Directory.GetFiles(packageDir, "*EndpointsOptions.cs", SearchOption.AllDirectories)
+                .Any(f => !IsInBuildOutput(f));
+
+            if (!hasOptions)
+            {
+                violations.Add(packageName);
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Every *.Endpoints package must ship at least one *EndpointsOptions class so that its " +
+            "TagName defaults are observable by the convention tests and overridable by host apps. " +
+            "Packages whose tags are computed dynamically at runtime may be listed in exemptPackageNames. " +
+            $"{violations.Count} violation(s):" + Environment.NewLine +
+            string.Join(Environment.NewLine, violations.Order(StringComparer.Ordinal)));
+    }
+
     // ────────────────────────────────────────────────────────────────────────────
     // Internals
     // ────────────────────────────────────────────────────────────────────────────

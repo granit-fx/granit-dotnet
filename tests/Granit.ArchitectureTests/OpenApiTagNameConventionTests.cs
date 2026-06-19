@@ -22,4 +22,12 @@ public sealed class OpenApiTagNameConventionTests
     [Fact]
     public void All_TagName_defaults_should_follow_TitleCase_or_module_subgroup_format()
         => OpenApiTagConventionRules.AllTagNameDefaultsShouldFollowConvention(SrcDir);
+
+    [Fact]
+    public void Every_Endpoints_package_should_have_an_EndpointsOptions_class()
+        => OpenApiTagConventionRules.EveryEndpointsPackageShouldHaveEndpointsOptions(
+            SrcDir,
+            // Uses dynamic per-frontend tags ($"BFF - {frontend.Name}") — no static options default.
+            "Granit.Bff.Endpoints");
+
 }
