@@ -328,6 +328,7 @@
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
     <Project Path="src/Granit.AI.Chat/Granit.AI.Chat.csproj" />
     <Project Path="src/Granit.AI.Chat.BackgroundJobs/Granit.AI.Chat.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.AI.Chat.BlobStorage/Granit.AI.Chat.BlobStorage.csproj" />
     <Project Path="src/Granit.AI.Chat.EntityFrameworkCore/Granit.AI.Chat.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.AI.Chat.Endpoints/Granit.AI.Chat.Endpoints.csproj" />
     <Project Path="src/Granit.AI.Chat.Privacy/Granit.AI.Chat.Privacy.csproj" />
@@ -701,6 +702,7 @@
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />
     <Project Path="tests/Granit.AI.Chat.Tests/Granit.AI.Chat.Tests.csproj" />
     <Project Path="tests/Granit.AI.Chat.BackgroundJobs.Tests/Granit.AI.Chat.BackgroundJobs.Tests.csproj" />
+    <Project Path="tests/Granit.AI.Chat.BlobStorage.Tests/Granit.AI.Chat.BlobStorage.Tests.csproj" />
     <Project Path="tests/Granit.AI.Chat.EntityFrameworkCore.Tests/Granit.AI.Chat.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.AI.Chat.Endpoints.Tests/Granit.AI.Chat.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.AI.Chat.Privacy.Tests/Granit.AI.Chat.Privacy.Tests.csproj" />

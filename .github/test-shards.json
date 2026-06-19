@@ -39,6 +39,7 @@
         "tests/Granit.AI.AzureOpenAI.Tests",
         "tests/Granit.AI.Chat.Tests",
         "tests/Granit.AI.Chat.BackgroundJobs.Tests",
+        "tests/Granit.AI.Chat.BlobStorage.Tests",
         "tests/Granit.AI.Chat.Privacy.Tests",
         "tests/Granit.AI.Chat.EntityFrameworkCore.Tests",
         "tests/Granit.AI.Chat.Endpoints.Tests",

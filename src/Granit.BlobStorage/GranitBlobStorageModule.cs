@@ -1,6 +1,7 @@
 using Granit.BlobStorage.Diagnostics;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Exports;
+using Granit.BlobStorage.Internal;
 using Granit.BlobStorage.Queries;
 using Granit.BlobStorage.Validators;
 using Granit.DataExchange.Extensions;
@@ -42,5 +43,7 @@ public sealed class GranitBlobStorageModule : GranitModule
 
         context.Services.AddQueryDefinition<BlobDescriptor, BlobDescriptorQueryDefinition>();
         context.Services.AddExportDefinition<BlobDescriptor, BlobDescriptorExportDefinition>();
+
+        context.Services.TryAddScoped<IBlobContentReader, DefaultBlobContentReader>();
     }
 }

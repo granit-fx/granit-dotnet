@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AI.Chat.BlobStorage</PackageId>
+    <Description>Wires Granit.BlobStorage as the IAIAttachmentSource for Granit.AI.Chat: resolves a blobId reference to validated bytes via IBlobContentReader and surfaces them for text extraction and injection as untrusted prompt context (ADR-067).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AI.Chat.BlobStorage.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI.Chat\Granit.AI.Chat.csproj" />
+    <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
+  </ItemGroup>
+
+</Project>

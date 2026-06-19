@@ -5,6 +5,7 @@
       "src/Granit.AI.Anthropic/Granit.AI.Anthropic.csproj",
       "src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj",
       "src/Granit.AI.Chat.BackgroundJobs/Granit.AI.Chat.BackgroundJobs.csproj",
+      "src/Granit.AI.Chat.BlobStorage/Granit.AI.Chat.BlobStorage.csproj",
       "src/Granit.AI.Chat.Endpoints/Granit.AI.Chat.Endpoints.csproj",
       "src/Granit.AI.Chat.EntityFrameworkCore/Granit.AI.Chat.EntityFrameworkCore.csproj",
       "src/Granit.AI.Chat.Privacy/Granit.AI.Chat.Privacy.csproj",
