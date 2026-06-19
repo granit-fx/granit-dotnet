@@ -55,6 +55,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.AI.Chat.BlobStorage",
+      "deps": [
+        "Granit.AI.Chat",
+        "Granit.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.AI.Chat.Endpoints",
       "deps": [
         "Granit.AI.Chat",
@@ -3282,6 +3290,38 @@
           "kind": "property",
           "signature": "int RetentionDays",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "AIChatBlobStorageServiceCollectionExtensions",
+      "fqn": "Granit.AI.Chat.BlobStorage.Extensions.AIChatBlobStorageServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Chat.BlobStorage",
+      "file": "src/Granit.AI.Chat.BlobStorage/Extensions/AIChatBlobStorageServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddBlobStorageChatAttachments",
+          "kind": "method",
+          "signature": "AddBlobStorageChatAttachments(this IServiceCollection services, Action<GranitAIChatAttachmentOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIChatBlobStorageModule",
+      "fqn": "Granit.AI.Chat.BlobStorage.GranitAIChatBlobStorageModule",
+      "kind": "class",
+      "project": "Granit.AI.Chat.BlobStorage",
+      "file": "src/Granit.AI.Chat.BlobStorage/GranitAIChatBlobStorageModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },
@@ -13196,6 +13236,15 @@
       "members": []
     },
     {
+      "name": "BlobContent",
+      "fqn": "Granit.BlobStorage.BlobContent",
+      "kind": "record",
+      "project": "Granit.BlobStorage",
+      "file": "src/Granit.BlobStorage/BlobContent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "BlobStorageLocalizationResource",
       "fqn": "Granit.BlobStorage.BlobStorageLocalizationResource",
       "kind": "class",
@@ -13880,13 +13929,29 @@
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/GranitBlobStorageModule.cs",
-      "line": 31,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IBlobContentReader",
+      "fqn": "Granit.BlobStorage.IBlobContentReader",
+      "kind": "interface",
+      "project": "Granit.BlobStorage",
+      "file": "src/Granit.BlobStorage/IBlobContentReader.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ReadAsync",
+          "kind": "method",
+          "signature": "ReadAsync(Guid blobId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<BlobContent?>"
         }
       ]
     },

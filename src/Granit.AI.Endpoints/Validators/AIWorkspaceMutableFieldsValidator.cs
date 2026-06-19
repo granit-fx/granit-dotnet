@@ -22,6 +22,10 @@ internal sealed class AIWorkspaceMutableFieldsValidator<T> : GranitValidator<T>
             .NotEmpty()
             .MaximumLength(128);
 
+        RuleFor(x => x.WorkspaceModelName)
+            .MaximumLength(64)
+            .When(x => x.WorkspaceModelName is not null);
+
         RuleFor(x => x.SystemPrompt)
             .MaximumLength(32_000)
             .When(x => x.SystemPrompt is not null);

@@ -79,4 +79,20 @@ public sealed class AIWorkspaceCreateRequestValidatorTests
         TestValidationResult<AIWorkspaceCreateRequest> result = _validator.TestValidate(request);
         result.ShouldHaveValidationErrorFor(x => x.MaxOutputTokens);
     }
+
+    [Fact]
+    public void WorkspaceModelName_too_long_fails()
+    {
+        AIWorkspaceCreateRequest request = new("test", "OpenAI", "gpt-4o", new string('x', 65), null, null, null);
+        TestValidationResult<AIWorkspaceCreateRequest> result = _validator.TestValidate(request);
+        result.ShouldHaveValidationErrorFor(x => x.WorkspaceModelName);
+    }
+
+    [Fact]
+    public void WorkspaceModelName_null_passes()
+    {
+        AIWorkspaceCreateRequest request = new("test", "OpenAI", "gpt-4o", null, null, null, null);
+        TestValidationResult<AIWorkspaceCreateRequest> result = _validator.TestValidate(request);
+        result.ShouldNotHaveValidationErrorFor(x => x.WorkspaceModelName);
+    }
 }

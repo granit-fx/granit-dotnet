@@ -34,7 +34,7 @@ internal sealed class AIWorkspaceEntityConfiguration : IEntityTypeConfiguration<
             .IsRequired();
 
         builder.Property(e => e.WorkspaceModelName)
-            .HasMaxLength(256);
+            .HasMaxLength(64);
 
         builder.Property(e => e.SystemPrompt)
             .HasMaxLength(10000);
