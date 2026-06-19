@@ -28,6 +28,12 @@ public sealed record AIWorkspace
     public required string Model { get; init; }
 
     /// <summary>
+    /// Human-readable display label for this workspace (e.g. <c>GPT-4o</c>, <c>Support AI</c>).
+    /// When <see langword="null"/>, consumers should fall back to <see cref="Model"/>.
+    /// </summary>
+    public string? WorkspaceModelName { get; init; }
+
+    /// <summary>
     /// Optional system prompt prepended to all conversations in this workspace.
     /// </summary>
     public string? SystemPrompt { get; init; }

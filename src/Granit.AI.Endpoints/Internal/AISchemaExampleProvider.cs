@@ -52,6 +52,7 @@ internal sealed class AISchemaExampleProvider : ISchemaExampleProvider
                 ["name"] = "support-triage",
                 ["provider"] = "OpenAI",
                 ["model"] = "gpt-4o",
+                ["workspaceModelName"] = "GPT-4o Support",
                 ["systemPrompt"] = "You classify incoming support tickets into one of: billing, bug, feature-request, other.",
                 ["temperature"] = 0.2f,
                 ["maxOutputTokens"] = 512,
@@ -60,6 +61,7 @@ internal sealed class AISchemaExampleProvider : ISchemaExampleProvider
             {
                 ["provider"] = "OpenAI",
                 ["model"] = "gpt-4o-mini",
+                ["workspaceModelName"] = "GPT-4o mini",
                 ["systemPrompt"] = "You classify incoming support tickets into one of: billing, bug, feature-request, other.",
                 ["temperature"] = 0.2f,
                 ["maxOutputTokens"] = 512,

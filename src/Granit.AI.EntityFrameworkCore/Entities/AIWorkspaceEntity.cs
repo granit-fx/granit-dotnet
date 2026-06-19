@@ -16,6 +16,8 @@ internal sealed class AIWorkspaceEntity : AuditedEntity, IActive, IMultiTenant, 
 
     public string Model { get; set; } = string.Empty;
 
+    public string? WorkspaceModelName { get; set; }
+
     public string? SystemPrompt { get; set; }
 
     public float? Temperature { get; set; }
@@ -54,6 +56,7 @@ internal sealed class AIWorkspaceEntity : AuditedEntity, IActive, IMultiTenant, 
         Name = Name,
         Provider = Provider,
         Model = Model,
+        WorkspaceModelName = WorkspaceModelName,
         SystemPrompt = SystemPrompt,
         Temperature = Temperature,
         MaxOutputTokens = MaxOutputTokens,
@@ -69,6 +72,7 @@ internal sealed class AIWorkspaceEntity : AuditedEntity, IActive, IMultiTenant, 
         Name = workspace.Name,
         Provider = workspace.Provider,
         Model = workspace.Model,
+        WorkspaceModelName = workspace.WorkspaceModelName,
         SystemPrompt = workspace.SystemPrompt,
         Temperature = workspace.Temperature,
         MaxOutputTokens = workspace.MaxOutputTokens,

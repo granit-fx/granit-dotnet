@@ -93,6 +93,7 @@ internal sealed class EfAIWorkspaceStore(
 
                 entity.Provider = workspace.Provider;
                 entity.Model = workspace.Model;
+                entity.WorkspaceModelName = workspace.WorkspaceModelName;
                 entity.SystemPrompt = workspace.SystemPrompt;
                 entity.Temperature = workspace.Temperature;
                 entity.MaxOutputTokens = workspace.MaxOutputTokens;

@@ -76,4 +76,20 @@ public sealed class ConversationTests
         message.Role.ShouldBe(MessageRole.User);
         message.Content.ShouldBe("Hello");
     }
+
+    [Fact]
+    public void Create_stores_the_workspace_key()
+    {
+        var conversation = Conversation.Create(Guid.NewGuid(), Owner, "Chat", "support-chat");
+
+        conversation.WorkspaceKey.ShouldBe("support-chat");
+    }
+
+    [Fact]
+    public void Create_leaves_workspace_key_null_when_omitted()
+    {
+        var conversation = Conversation.Create(Guid.NewGuid(), Owner, "Chat");
+
+        conversation.WorkspaceKey.ShouldBeNull();
+    }
 }

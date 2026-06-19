@@ -12,7 +12,7 @@ public sealed class AIWorkspaceCreateRequestValidatorTests
     [Fact]
     public void Valid_request_passes()
     {
-        AIWorkspaceCreateRequest request = new("my-workspace", "OpenAI", "gpt-4o", null, 0.7f, 4096);
+        AIWorkspaceCreateRequest request = new("my-workspace", "OpenAI", "gpt-4o", null, null, 0.7f, 4096);
         TestValidationResult<AIWorkspaceCreateRequest> result = _validator.TestValidate(request);
         result.ShouldNotHaveAnyValidationErrors();
     }
@@ -22,7 +22,7 @@ public sealed class AIWorkspaceCreateRequestValidatorTests
     [InlineData(null)]
     public void Name_empty_fails(string? name)
     {
-        AIWorkspaceCreateRequest request = new(name!, "OpenAI", "gpt-4o", null, null, null);
+        AIWorkspaceCreateRequest request = new(name!, "OpenAI", "gpt-4o", null, null, null, null);
         TestValidationResult<AIWorkspaceCreateRequest> result = _validator.TestValidate(request);
         result.ShouldHaveValidationErrorFor(x => x.Name);
     }
@@ -33,7 +33,7 @@ public sealed class AIWorkspaceCreateRequestValidatorTests
     [InlineData("-starts-with-dash")]
     public void Name_invalid_format_fails(string name)
     {
-        AIWorkspaceCreateRequest request = new(name, "OpenAI", "gpt-4o", null, null, null);
+        AIWorkspaceCreateRequest request = new(name, "OpenAI", "gpt-4o", null, null, null, null);
         TestValidationResult<AIWorkspaceCreateRequest> result = _validator.TestValidate(request);
         result.ShouldHaveValidationErrorFor(x => x.Name);
     }
@@ -41,7 +41,7 @@ public sealed class AIWorkspaceCreateRequestValidatorTests
     [Fact]
     public void Provider_empty_fails()
     {
-        AIWorkspaceCreateRequest request = new("test", "", "gpt-4o", null, null, null);
+        AIWorkspaceCreateRequest request = new("test", "", "gpt-4o", null, null, null, null);
         TestValidationResult<AIWorkspaceCreateRequest> result = _validator.TestValidate(request);
         result.ShouldHaveValidationErrorFor(x => x.Provider);
     }
@@ -49,7 +49,7 @@ public sealed class AIWorkspaceCreateRequestValidatorTests
     [Fact]
     public void Model_empty_fails()
     {
-        AIWorkspaceCreateRequest request = new("test", "OpenAI", "", null, null, null);
+        AIWorkspaceCreateRequest request = new("test", "OpenAI", "", null, null, null, null);
         TestValidationResult<AIWorkspaceCreateRequest> result = _validator.TestValidate(request);
         result.ShouldHaveValidationErrorFor(x => x.Model);
     }
@@ -59,7 +59,7 @@ public sealed class AIWorkspaceCreateRequestValidatorTests
     [InlineData(2.1f)]
     public void Temperature_out_of_range_fails(float temperature)
     {
-        AIWorkspaceCreateRequest request = new("test", "OpenAI", "gpt-4o", null, temperature, null);
+        AIWorkspaceCreateRequest request = new("test", "OpenAI", "gpt-4o", null, null, temperature, null);
         TestValidationResult<AIWorkspaceCreateRequest> result = _validator.TestValidate(request);
         result.ShouldHaveValidationErrorFor(x => x.Temperature);
     }
@@ -67,7 +67,7 @@ public sealed class AIWorkspaceCreateRequestValidatorTests
     [Fact]
     public void Temperature_null_passes()
     {
-        AIWorkspaceCreateRequest request = new("test", "OpenAI", "gpt-4o", null, null, null);
+        AIWorkspaceCreateRequest request = new("test", "OpenAI", "gpt-4o", null, null, null, null);
         TestValidationResult<AIWorkspaceCreateRequest> result = _validator.TestValidate(request);
         result.ShouldNotHaveValidationErrorFor(x => x.Temperature);
     }
@@ -75,7 +75,7 @@ public sealed class AIWorkspaceCreateRequestValidatorTests
     [Fact]
     public void MaxOutputTokens_zero_fails()
     {
-        AIWorkspaceCreateRequest request = new("test", "OpenAI", "gpt-4o", null, null, 0);
+        AIWorkspaceCreateRequest request = new("test", "OpenAI", "gpt-4o", null, null, null, 0);
         TestValidationResult<AIWorkspaceCreateRequest> result = _validator.TestValidate(request);
         result.ShouldHaveValidationErrorFor(x => x.MaxOutputTokens);
     }

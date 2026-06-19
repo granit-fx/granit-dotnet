@@ -19,12 +19,13 @@ public sealed record ConversationSummaryResponse(
     Guid Id,
     string Title,
     bool IsFavorite,
+    string? WorkspaceKey,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt)
 {
     /// <summary>Projects a <see cref="Conversation"/> to a summary.</summary>
     public static ConversationSummaryResponse FromAggregate(Conversation conversation) =>
-        new(conversation.Id, conversation.Title, conversation.IsFavorite, conversation.CreatedAt, conversation.ModifiedAt);
+        new(conversation.Id, conversation.Title, conversation.IsFavorite, conversation.WorkspaceKey, conversation.CreatedAt, conversation.ModifiedAt);
 }
 
 /// <summary>A message in a conversation.</summary>
@@ -57,6 +58,7 @@ public sealed record ConversationResponse(
     string Title,
     Guid OwnerId,
     bool IsFavorite,
+    string? WorkspaceKey,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt)
 {
@@ -67,6 +69,7 @@ public sealed record ConversationResponse(
             conversation.Title,
             conversation.OwnerId,
             conversation.IsFavorite,
+            conversation.WorkspaceKey,
             conversation.CreatedAt,
             conversation.ModifiedAt);
 }

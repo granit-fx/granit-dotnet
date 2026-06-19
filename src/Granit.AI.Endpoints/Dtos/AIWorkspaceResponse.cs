@@ -8,6 +8,9 @@ namespace Granit.AI.Endpoints.Dtos;
 /// <param name="Name">Unique workspace name.</param>
 /// <param name="Provider">Provider identifier (e.g. <c>OpenAI</c>, <c>AzureOpenAI</c>).</param>
 /// <param name="Model">Model identifier (e.g. <c>gpt-4o</c>).</param>
+/// <param name="WorkspaceModelName">
+/// Human-readable display label, or <c>null</c> when unset (fall back to <paramref name="Model"/>).
+/// </param>
 /// <param name="SystemPrompt">Optional system prompt.</param>
 /// <param name="Temperature">Sampling temperature (0.0–2.0).</param>
 /// <param name="MaxOutputTokens">Maximum tokens to generate.</param>
@@ -18,6 +21,7 @@ public sealed record AIWorkspaceResponse(
     string Name,
     string Provider,
     string Model,
+    string? WorkspaceModelName,
     string? SystemPrompt,
     float? Temperature,
     int? MaxOutputTokens,

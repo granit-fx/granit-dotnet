@@ -16,7 +16,11 @@ public sealed class Conversation : FullAuditedAggregateRoot, IMultiTenant, IOwna
     /// Creates a conversation owned by <paramref name="ownerId"/>. The tenant is stamped by the
     /// persistence interceptor on save.
     /// </summary>
-    public static Conversation Create(Guid id, Guid ownerId, string title)
+    public static Conversation Create(
+        Guid id,
+        Guid ownerId,
+        string title,
+        string? workspaceKey = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
 
@@ -25,6 +29,7 @@ public sealed class Conversation : FullAuditedAggregateRoot, IMultiTenant, IOwna
             Id = id,
             OwnerId = ownerId,
             Title = title,
+            WorkspaceKey = workspaceKey,
         };
     }
 
@@ -36,6 +41,13 @@ public sealed class Conversation : FullAuditedAggregateRoot, IMultiTenant, IOwna
 
     /// <summary>Whether the owner has marked this conversation as a favorite.</summary>
     public bool IsFavorite { get; private set; }
+
+    /// <summary>
+    /// Machine key of the workspace used when the conversation was created (e.g.
+    /// <c>support-chat</c>), or <see langword="null"/> for conversations predating this field.
+    /// Frozen at creation — subsequent turns do not overwrite it.
+    /// </summary>
+    public string? WorkspaceKey { get; private set; }
 
     /// <summary>The messages exchanged, oldest first.</summary>
     public List<Message> Messages { get; private set; } = [];

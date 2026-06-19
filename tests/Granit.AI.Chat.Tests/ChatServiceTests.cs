@@ -496,6 +496,50 @@ public sealed class ChatServiceTests
     }
 
     [Fact]
+    public async Task New_conversation_is_created_with_the_resolved_workspace_key()
+    {
+        ChatService service = CreateService();
+        Conversation? created = null;
+        _store.CreateAsync(Arg.Any<Conversation>(), Arg.Any<CancellationToken>())
+            .Returns(ci => Task.FromResult(created = ci.Arg<Conversation>()));
+
+        await SendAsync(service, Request() with { WorkspaceName = "support" }, TestContext.Current.CancellationToken);
+
+        created.ShouldNotBeNull();
+        created.WorkspaceKey.ShouldBe("support");
+    }
+
+    [Fact]
+    public async Task New_conversation_stores_the_resolved_workspace_key_even_when_defaulted()
+    {
+        ChatService service = CreateService();
+        Conversation? created = null;
+        _store.CreateAsync(Arg.Any<Conversation>(), Arg.Any<CancellationToken>())
+            .Returns(ci => Task.FromResult(created = ci.Arg<Conversation>()));
+
+        // No explicit workspace — resolved to the configured default "default".
+        await SendAsync(service, Request(), TestContext.Current.CancellationToken);
+
+        created.ShouldNotBeNull();
+        created.WorkspaceKey.ShouldBe("default");
+    }
+
+    [Fact]
+    public async Task Existing_conversation_workspace_key_is_not_overwritten_on_subsequent_turns()
+    {
+        var conversationId = Guid.NewGuid();
+        var existing = Conversation.Create(conversationId, Owner, "Existing", "original");
+        _store.GetAsync(conversationId, Owner, Arg.Any<CancellationToken>()).Returns(existing);
+        ChatService service = CreateService();
+
+        // Send with a different workspace — must not mutate the stored aggregate.
+        await SendAsync(service, Request(conversationId) with { WorkspaceName = "other" }, TestContext.Current.CancellationToken);
+
+        existing.WorkspaceKey.ShouldBe("original");
+        await _store.DidNotReceive().CreateAsync(Arg.Any<Conversation>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task A_loop_failure_mid_stream_persists_the_user_turn_but_no_assistant_turn()
     {
         ChatService service = CreateService();

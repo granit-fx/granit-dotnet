@@ -20,6 +20,7 @@ internal sealed class ConversationConfiguration : IEntityTypeConfiguration<Conve
         builder.Property(e => e.Title).HasMaxLength(500).IsRequired();
         builder.Property(e => e.OwnerId).IsRequired();
         builder.Property(e => e.IsFavorite).HasDefaultValue(false);
+        builder.Property(e => e.WorkspaceKey).HasMaxLength(256);
         builder.Property(e => e.CreatedBy).HasMaxLength(256);
         builder.Property(e => e.ModifiedBy).HasMaxLength(256);
         builder.Property(e => e.DeletedBy).HasMaxLength(256);

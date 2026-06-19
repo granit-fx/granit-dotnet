@@ -59,7 +59,7 @@ internal sealed class ChatService(
 
         bool isNew = request.ConversationId is null;
         Conversation conversation = isNew
-            ? Conversation.Create(guidGenerator.Create(), request.OwnerId, DeriveTitle(request.Message))
+            ? Conversation.Create(guidGenerator.Create(), request.OwnerId, DeriveTitle(request.Message), workspaceName)
             : await conversationStore.GetAsync(request.ConversationId!.Value, request.OwnerId, cancellationToken).ConfigureAwait(false)
                 ?? throw new ConversationNotFoundException(request.ConversationId.Value);
 

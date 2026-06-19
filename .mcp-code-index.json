@@ -3502,7 +3502,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
-      "line": 55,
+      "line": 56,
       "members": [
         {
           "name": "FromAggregate",
@@ -3559,7 +3559,7 @@
       "kind": "record",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/Dtos/ConversationDtos.cs",
-      "line": 40,
+      "line": 41,
       "members": [
         {
           "name": "FromEntity",
@@ -4486,7 +4486,7 @@
       "kind": "record",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Dtos/AIWorkspaceCreateRequest.cs",
-      "line": 12,
+      "line": 16,
       "members": []
     },
     {
@@ -4504,7 +4504,7 @@
       "kind": "record",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Dtos/AIWorkspaceResponse.cs",
-      "line": 17,
+      "line": 20,
       "members": []
     },
     {
@@ -4513,7 +4513,7 @@
       "kind": "record",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Dtos/AIWorkspaceUpdateRequest.cs",
-      "line": 12,
+      "line": 16,
       "members": []
     },
     {

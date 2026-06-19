@@ -5,6 +5,10 @@ namespace Granit.AI.Endpoints.Dtos;
 /// </summary>
 /// <param name="Provider">Provider identifier.</param>
 /// <param name="Model">Model identifier.</param>
+/// <param name="WorkspaceModelName">
+/// Optional human-readable display label (e.g. <c>GPT-4o</c>, <c>Support AI</c>).
+/// Pass <see langword="null"/> to clear the label and fall back to the model identifier.
+/// </param>
 /// <param name="SystemPrompt">Optional system prompt.</param>
 /// <param name="Temperature">Optional sampling temperature (0.0–2.0).</param>
 /// <param name="MaxOutputTokens">Optional maximum output tokens.</param>
@@ -12,6 +16,7 @@ namespace Granit.AI.Endpoints.Dtos;
 public sealed record AIWorkspaceUpdateRequest(
     string Provider,
     string Model,
+    string? WorkspaceModelName = null,
     string? SystemPrompt = null,
     float? Temperature = null,
     int? MaxOutputTokens = null,

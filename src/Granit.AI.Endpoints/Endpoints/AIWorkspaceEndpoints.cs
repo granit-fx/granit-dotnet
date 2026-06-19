@@ -128,6 +128,7 @@ internal static class AIWorkspaceEndpoints
             Name = request.Name,
             Provider = request.Provider,
             Model = request.Model,
+            WorkspaceModelName = request.WorkspaceModelName,
             SystemPrompt = request.SystemPrompt,
             Temperature = request.Temperature,
             MaxOutputTokens = request.MaxOutputTokens,
@@ -180,6 +181,7 @@ internal static class AIWorkspaceEndpoints
         {
             Provider = request.Provider,
             Model = request.Model,
+            WorkspaceModelName = request.WorkspaceModelName,
             SystemPrompt = request.SystemPrompt,
             Temperature = request.Temperature,
             MaxOutputTokens = request.MaxOutputTokens,
@@ -225,6 +227,7 @@ internal static class AIWorkspaceEndpoints
         workspace.Name,
         workspace.Provider,
         workspace.Model,
+        workspace.WorkspaceModelName,
         workspace.SystemPrompt,
         workspace.Temperature,
         workspace.MaxOutputTokens,
