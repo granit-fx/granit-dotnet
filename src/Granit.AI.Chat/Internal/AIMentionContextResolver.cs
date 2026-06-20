@@ -1,16 +1,19 @@
 using System.Text;
 using Granit.AI.Chat.Mentions;
 using Granit.AI.Prompting;
+using Granit.Mentions;
 
 namespace Granit.AI.Chat.Internal;
 
 /// <summary>
 /// Default <see cref="IAIMentionContextResolver"/>. Dispatches each mention to its opted-in
-/// resolver under the caller's ACLs, drops unknown types and denied entities, and wraps every
-/// resolved entity in the <see cref="UntrustedDocumentEnvelope"/> so referenced data can never
-/// pose as instructions (OWASP LLM01).
+/// <see cref="IMentionResolver"/> under the caller's ACLs (via <see cref="IMentionAuthorizer"/>),
+/// drops unknown types and denied or absent entities, and wraps every resolved entity in the
+/// <see cref="UntrustedDocumentEnvelope"/> so referenced data can never pose as instructions
+/// (OWASP LLM01). The mention seam itself is domain-neutral (<c>Granit.Mentions</c>); this is the
+/// AI-specific consumer that turns a resolved target into untrusted prompt context.
 /// </summary>
-internal sealed class AIMentionContextResolver(IAIMentionRegistry registry, IAIMentionAuthorizer authorizer)
+internal sealed class AIMentionContextResolver(IMentionRegistry registry, IMentionAuthorizer authorizer)
     : IAIMentionContextResolver
 {
     private const string Preamble =
@@ -30,7 +33,7 @@ internal sealed class AIMentionContextResolver(IAIMentionRegistry registry, IAIM
         StringBuilder? builder = null;
         foreach (AIMention mention in mentions)
         {
-            if (!registry.TryGet(mention.Type, out IAIMentionResolver? resolver))
+            if (!registry.TryGet(mention.Type, out IMentionResolver? resolver))
             {
                 // Unknown type: the application never exposed it — skip, do not leak.
                 continue;
@@ -42,8 +45,8 @@ internal sealed class AIMentionContextResolver(IAIMentionRegistry registry, IAIM
                 continue;
             }
 
-            AIMentionContext? context = await resolver.ResolveAsync(mention.Id, cancellationToken).ConfigureAwait(false);
-            if (context is null)
+            MentionTarget? target = await resolver.ResolveAsync(mention.Id, cancellationToken).ConfigureAwait(false);
+            if (target is null)
             {
                 // Absent or ACL-denied: silently dropped, nothing enters the prompt.
                 continue;
@@ -51,7 +54,7 @@ internal sealed class AIMentionContextResolver(IAIMentionRegistry registry, IAIM
 
             builder ??= new StringBuilder(Preamble);
             builder.Append("\n\n").Append(
-                UntrustedDocumentEnvelope.Wrap($"{context.Type}: {context.Label}\n{context.Content}"));
+                UntrustedDocumentEnvelope.Wrap($"{target.Type}: {target.Label}\n{target.Content}"));
         }
 
         return builder?.ToString();

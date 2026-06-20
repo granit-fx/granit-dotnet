@@ -194,6 +194,7 @@
       "src/Granit.Mcp.Client/Granit.Mcp.Client.csproj",
       "src/Granit.Mcp.Server/Granit.Mcp.Server.csproj",
       "src/Granit.Mcp/Granit.Mcp.csproj",
+      "src/Granit.Mentions/Granit.Mentions.csproj",
       "src/Granit.MultiTenancy.Auditing/Granit.MultiTenancy.Auditing.csproj",
       "src/Granit.MultiTenancy.Authorization/Granit.MultiTenancy.Authorization.csproj",
       "src/Granit.MultiTenancy.Endpoints/Granit.MultiTenancy.Endpoints.csproj",

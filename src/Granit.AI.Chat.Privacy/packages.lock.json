@@ -350,6 +350,8 @@
           "Granit.AI.Prompts": "[0.1.0-dev, )",
           "Granit.AI.Tools": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Mentions": "[0.1.0-dev, )",
+          "Granit.Mentions.Abstractions": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
@@ -416,6 +418,14 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.datalookup": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )"
         }
       },
       "granit.datalookup.abstractions": {
@@ -488,6 +498,22 @@
           "Microsoft.Extensions.Localization": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "SmartFormat": "[3.*, )"
+        }
+      },
+      "granit.mentions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.DataLookup": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )",
+          "Granit.Mentions.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.mentions.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.multitenancy": {
@@ -746,8 +772,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.13.0",
-        "contentHash": "y5euuCos9zoEmDVXDlyItro2BOqHrCLdjFP8mUvzSAbb8tY3C5oaaMTKNsQQ3GMoK6PLJ7sog5HfdEYbt/7o4g==",
+        "resolved": "6.13.1",
+        "contentHash": "HQvtFTZaoegRXMQk3CYvkaPcbzD/njHOeAFIWf/eoSZ7edQClKaLrjMmOvvt0OUviHTY4+5wXLARmGkRrTKtpA==",
         "dependencies": {
           "JasperFx": "2.13.0",
           "JasperFx.Events": "2.13.0",

@@ -125,6 +125,14 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.datalookup": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )"
+        }
+      },
       "granit.datalookup.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -177,6 +185,15 @@
           "Microsoft.Extensions.Localization": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "SmartFormat": "[3.*, )"
+        }
+      },
+      "granit.mentions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.DataLookup": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.multitenancy": {

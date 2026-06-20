@@ -2,12 +2,14 @@ using Granit.AI.Chat.Diagnostics;
 using Granit.AI.Chat.Domain;
 using Granit.AI.Chat.Extensions;
 using Granit.AI.Chat.Internal;
+using Granit.AI.Chat.Mentions;
 using Granit.AI.Chat.Queries;
 using Granit.AI.Chat.Settings;
 using Granit.AI.Prompts;
 using Granit.AI.Tools;
 using Granit.Diagnostics;
 using Granit.Guids;
+using Granit.Mentions;
 using Granit.Modularity;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
@@ -30,6 +32,7 @@ namespace Granit.AI.Chat;
     typeof(GranitAIPromptsModule),
     typeof(GranitAIToolsModule),
     typeof(GranitGuidsModule),
+    typeof(GranitMentionsModule),
     typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitSettingsModule),
     typeof(GranitTextExtractionModule))]
@@ -51,9 +54,10 @@ public sealed class GranitAIChatModule : GranitModule
         // (owner-scoped via IPromptTemplateStore). Always present; resolves to nothing when no refs.
         context.Services.TryAddScoped<IPromptBadgeResolver, PromptBadgeResolver>();
 
-        // The mention registry and context resolver are always present so a turn can carry
-        // mentions even before the application opts any resolver in (they then resolve to nothing).
-        AIChatMentionsServiceCollectionExtensions.AddCoreServices(context.Services);
+        // The mention registry/authorizer and the 'mentions' picker facade come from
+        // GranitMentionsModule (a dependency); the AI-specific per-turn context resolver that wraps a
+        // resolved mention as untrusted prompt context is registered here.
+        context.Services.TryAddScoped<IAIMentionContextResolver, AIMentionContextResolver>();
 
         // Likewise the attachment text resolver — with the Null source it resolves nothing until
         // the application registers its own IAIAttachmentSource over its transient blob store.

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Mentions</PackageId>
+    <Description>Runtime for the @ mention seam: an IMentionRegistry and a MentionLookupSource facade that exposes every opted-in IMentionResolver through Granit.DataLookup (GET /lookups/mentions) — multi-type search with lenient per-type ACL, plus composite resolve. No changes to the DataLookup framework.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Mentions.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.DataLookup\Granit.DataLookup.csproj" />
+    <ProjectReference Include="..\Granit.DataLookup.Abstractions\Granit.DataLookup.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
+  </ItemGroup>
+
+</Project>

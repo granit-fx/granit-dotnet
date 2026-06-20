@@ -40,7 +40,6 @@
         "tests/Granit.AI.Chat.Tests",
         "tests/Granit.AI.Chat.BackgroundJobs.Tests",
         "tests/Granit.AI.Chat.BlobStorage.Tests",
-        "tests/Granit.AI.Chat.Identity.Tests",
         "tests/Granit.AI.Chat.Privacy.Tests",
         "tests/Granit.AI.Chat.EntityFrameworkCore.Tests",
         "tests/Granit.AI.Chat.Endpoints.Tests",
@@ -77,6 +76,7 @@
         "tests/Granit.DataLookup.Endpoints.Tests",
         "tests/Granit.DataLookup.EntityFrameworkCore.Tests",
         "tests/Granit.DataLookup.Tests",
+        "tests/Granit.Mentions.Tests",
         "tests/Granit.DocumentGeneration.Excel.Tests",
         "tests/Granit.DocumentGeneration.Pdf.Tests",
         "tests/Granit.DocumentGeneration.Tests",
@@ -384,6 +384,7 @@
         "tests/Granit.Identity.Local.Notifications.Tests",
         "tests/Granit.Identity.Local.Privacy.Tests",
         "tests/Granit.Identity.Local.Tests",
+        "tests/Granit.Identity.Mentions.Tests",
         "tests/Granit.Identity.Notifications.Tests",
         "tests/Granit.Identity.Tests"
       ]
