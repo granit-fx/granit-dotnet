@@ -86,6 +86,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.AI.Chat.Identity",
+      "deps": [
+        "Granit.AI.Chat",
+        "Granit.Identity"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.AI.Chat.Privacy",
       "deps": [
         "Granit.AI.Chat",
@@ -3617,6 +3625,24 @@
       "members": []
     },
     {
+      "name": "MentionSearchResponse",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.MentionSearchResponse",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/MentionSearchResponse.cs",
+      "line": 5,
+      "members": []
+    },
+    {
+      "name": "MentionSuggestionResponse",
+      "fqn": "Granit.AI.Chat.Endpoints.Dtos.MentionSuggestionResponse",
+      "kind": "record",
+      "project": "Granit.AI.Chat.Endpoints",
+      "file": "src/Granit.AI.Chat.Endpoints/Dtos/MentionSearchResponse.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "MessageResponse",
       "fqn": "Granit.AI.Chat.Endpoints.Dtos.MessageResponse",
       "kind": "record",
@@ -4058,6 +4084,38 @@
       ]
     },
     {
+      "name": "AIChatIdentityServiceCollectionExtensions",
+      "fqn": "Granit.AI.Chat.Identity.Extensions.AIChatIdentityServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Identity",
+      "file": "src/Granit.AI.Chat.Identity/Extensions/AIChatIdentityServiceCollectionExtensions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "AddIdentityChatMentions",
+          "kind": "method",
+          "signature": "AddIdentityChatMentions(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIChatIdentityModule",
+      "fqn": "Granit.AI.Chat.Identity.GranitAIChatIdentityModule",
+      "kind": "class",
+      "project": "Granit.AI.Chat.Identity",
+      "file": "src/Granit.AI.Chat.Identity/GranitAIChatIdentityModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "AIMention",
       "fqn": "Granit.AI.Chat.Mentions.AIMention",
       "kind": "record",
@@ -4090,6 +4148,15 @@
           "returnType": "IServiceCollection"
         }
       ]
+    },
+    {
+      "name": "AIMentionSuggestion",
+      "fqn": "Granit.AI.Chat.Mentions.AIMentionSuggestion",
+      "kind": "record",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Mentions/AIMentionSuggestion.cs",
+      "line": 14,
+      "members": []
     },
     {
       "name": "IAIMentionContextResolver",
@@ -4136,6 +4203,28 @@
           "kind": "method",
           "signature": "ResolveAsync(string id, CancellationToken cancellationToken = default)",
           "returnType": "string Type { get; } ValueTask<AIMentionContext?>"
+        },
+        {
+          "name": "SearchAsync",
+          "kind": "method",
+          "signature": "SearchAsync(string query, int limit, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<IReadOnlyList<AIMentionSuggestion>>"
+        }
+      ]
+    },
+    {
+      "name": "IAIMentionSearchService",
+      "fqn": "Granit.AI.Chat.Mentions.IAIMentionSearchService",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Mentions/IAIMentionSearchService.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "SearchAsync",
+          "kind": "method",
+          "signature": "SearchAsync(string query, string? type = null, int limit = 8, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<IReadOnlyList<AIMentionSuggestion>>"
         }
       ]
     },

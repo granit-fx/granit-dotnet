@@ -8,6 +8,7 @@
       "src/Granit.AI.Chat.BlobStorage/Granit.AI.Chat.BlobStorage.csproj",
       "src/Granit.AI.Chat.Endpoints/Granit.AI.Chat.Endpoints.csproj",
       "src/Granit.AI.Chat.EntityFrameworkCore/Granit.AI.Chat.EntityFrameworkCore.csproj",
+      "src/Granit.AI.Chat.Identity/Granit.AI.Chat.Identity.csproj",
       "src/Granit.AI.Chat.Privacy/Granit.AI.Chat.Privacy.csproj",
       "src/Granit.AI.Chat/Granit.AI.Chat.csproj",
       "src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj",

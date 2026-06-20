@@ -46,7 +46,7 @@ internal sealed partial class LlmImageTextExtractor(
         long startTimestamp = Stopwatch.GetTimestamp();
 
         using IChatClient client = await chatClientFactory
-            .CreateAsync(workspace.Name, cancellationToken)
+            .CreateAsync(workspace.Key, cancellationToken)
             .ConfigureAwait(false);
 
         ChatMessage message = new(ChatRole.User,
@@ -65,7 +65,7 @@ internal sealed partial class LlmImageTextExtractor(
         if (response.Usage is { } usage)
         {
             AIUsageRecord record = usageRecordFactory.Create(
-                workspace.Name,
+                workspace.Key,
                 workspace.Provider,
                 workspace.Model,
                 (int)(usage.InputTokenCount ?? 0),
@@ -75,7 +75,7 @@ internal sealed partial class LlmImageTextExtractor(
             await usageTracker.RecordAsync(record, cancellationToken).ConfigureAwait(false);
         }
 
-        return new ImageTextExtractionResult(response.Text ?? string.Empty, workspace.Name);
+        return new ImageTextExtractionResult(response.Text ?? string.Empty, workspace.Key);
     }
 
     private async Task<AIWorkspace?> ResolveVisionWorkspaceAsync(CancellationToken cancellationToken)

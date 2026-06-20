@@ -30,6 +30,9 @@ public sealed partial class AuditPiiConventionTests
         // AuditEntry.UserId/UserName are the audit actor — required for ISO 27001 A.12.4.1.
         "AuditEntry.UserId",
         "AuditEntry.UserName",
+        // AIWorkspaceEntity.DisplayName is a workspace's display label (e.g. "Support Bot"),
+        // capped at 64 chars — a configuration label, not a person's name or any personal data.
+        "AIWorkspaceEntity.DisplayName",
     };
 
     /// <summary>
