@@ -428,7 +428,9 @@
           "Granit.AI": "[0.1.0-dev, )",
           "Granit.AI.Prompts": "[0.1.0-dev, )",
           "Granit.AI.Tools": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Mentions": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
@@ -980,6 +982,15 @@
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.mentions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.DataLookup": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.multitenancy": {
