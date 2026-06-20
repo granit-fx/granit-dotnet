@@ -21,8 +21,8 @@ public sealed class LlmImageTextExtractorTests
     private readonly IAIUsageRecordFactory _usageRecordFactory = Substitute.For<IAIUsageRecordFactory>();
     private readonly IAIUsageTracker _usageTracker = Substitute.For<IAIUsageTracker>();
 
-    private static AIWorkspace Workspace(string name, string provider = "OpenAI", string model = "gpt-4o") =>
-        new() { Name = name, Provider = provider, Model = model };
+    private static AIWorkspace Workspace(string key, string provider = "OpenAI", string model = "gpt-4o") =>
+        new() { Key = key, Provider = provider, Model = model };
 
     private void SetupResponse(string text, int? input = 10, int? output = 4)
     {
