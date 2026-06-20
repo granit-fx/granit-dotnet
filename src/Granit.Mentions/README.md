@@ -14,24 +14,40 @@ queryable) becomes mentionable with a single line and **zero new classes**.
   whole picker), merges and caps, and re-stamps each item's value as a composite `type:value` so one
   source resolves any type.
 
-## Usage
+## Host wiring
 
-Expose an entity as a lookup (reusing its `QueryDefinition`), then tag it mentionable:
+Mentions are served by the **`Granit.DataLookup` endpoints** — there is no mention-specific
+endpoint. A host that wants the `@` picker:
 
 ```csharp
+// 1. Expose each entity as a lookup, then tag it mentionable.
 services.AddQueryDefinitionLookup<Invoice, MyDbContext>();   // Granit.DataLookup.EntityFrameworkCore
 services.AddMentionSource("invoice");
+services.AddUserDirectoryLookup().AddMentionSource("user");  // Granit.Identity.EntityFrameworkCore — @user
+
+// 2. Map the DataLookup endpoints (this is what serves the picker).
+app.MapGranitDataLookups();
 ```
 
-Front-end picker:
+## Endpoints
 
-```text
-GET /lookups/mentions?search=<q>&scope.type=<optional type>
-```
+| Purpose | Route |
+| ------- | ----- |
+| Search the picker | `GET /lookups/mentions?search=<q>&scope.type=<optional type>` |
+| Resolve a selection | `GET /lookups/mentions/resolve?value=<type>:<id>` |
+| List mentionable + other sources | `GET /lookups` |
 
-Selecting a suggestion yields the composite value `type:value`; resolve rehydrates it via
-`GET /lookups/mentions/resolve?value=type:value`. AI chat resolves the same way and injects the
-result into the turn wrapped in the untrusted-document envelope.
+Each suggestion's `value` is the composite `type:id` (e.g. `user:3f2a…`) and `extra.type` carries
+the type — the front sends `type:id` back, and an AI-chat turn carries it as a `MentionRequest`. AI
+chat resolves through the same facade and injects the result wrapped in the untrusted-document
+envelope.
+
+## Authorization
+
+Two layers: the whole `/lookups` group requires `DataLookup.Lookups.Read` (access to pickers), and
+each tagged source's own `RequiredPermission` is checked **leniently** inside the facade — an
+unauthorized type is dropped from the results, never a 403 for the whole picker. For `@user` the
+per-type gate is `Identity.Users.Read`.
 
 ## Why no `IMentionResolver`
 
