@@ -2,6 +2,7 @@ using Granit.Authorization;
 using Granit.DataLookup.Descriptors;
 using Granit.DataLookup.Registry;
 using Granit.DataLookup.Sources;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Mentions.Internal;
@@ -20,11 +21,17 @@ namespace Granit.Mentions.Internal;
 /// </remarks>
 internal sealed partial class MentionLookupSource(
     IEnumerable<MentionSource> mentionSources,
-    ILookupRegistry lookupRegistry,
+    IServiceProvider serviceProvider,
     IPermissionChecker permissionChecker,
     ILogger<MentionLookupSource> logger) : ILookupSource
 {
     private const char Separator = ':';
+
+    // Resolved lazily, not constructor-injected: LookupRegistry consumes IEnumerable<ILookupSource>,
+    // which includes this source, so a constructor dependency on ILookupRegistry forms a DI cycle.
+    // Both this source and the registry are scoped, so by the time SearchAsync runs this instance is
+    // already cached in the scope — resolving the registry here reuses it, no recursion. (#2833)
+    private ILookupRegistry Registry => serviceProvider.GetRequiredService<ILookupRegistry>();
 
     public string Name => MentionLookup.SourceName;
 
@@ -54,7 +61,7 @@ internal sealed partial class MentionLookupSource(
         List<LookupItem> items = [];
         foreach (string name in SelectNames(type))
         {
-            ILookupSource? source = lookupRegistry.Resolve(name);
+            ILookupSource? source = Registry.Resolve(name);
             if (source is null || !await IsAuthorizedAsync(source, cancellationToken).ConfigureAwait(false))
             {
                 LogSourceSkipped(name);
@@ -86,7 +93,7 @@ internal sealed partial class MentionLookupSource(
             return null;
         }
 
-        ILookupSource? source = lookupRegistry.Resolve(type);
+        ILookupSource? source = Registry.Resolve(type);
         if (source is null || !await IsAuthorizedAsync(source, cancellationToken).ConfigureAwait(false))
         {
             return null;

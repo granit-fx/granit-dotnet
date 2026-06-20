@@ -3,6 +3,7 @@ using Granit.DataLookup.Descriptors;
 using Granit.DataLookup.Registry;
 using Granit.DataLookup.Sources;
 using Granit.Mentions.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
@@ -44,9 +45,16 @@ public sealed class MentionLookupSourceTests
 
     private readonly IPermissionChecker _checker = Substitute.For<IPermissionChecker>();
 
-    private MentionLookupSource Build(ILookupSource[] sources, params string[] mentionable) =>
-        new([.. mentionable.Select(n => new MentionSource(n))], new FakeLookupRegistry(sources), _checker,
+    private MentionLookupSource Build(ILookupSource[] sources, params string[] mentionable)
+    {
+        // MentionLookupSource resolves ILookupRegistry lazily off IServiceProvider (breaks the DI cycle);
+        // hand it a provider carrying the fake registry.
+        ServiceProvider provider = new ServiceCollection()
+            .AddSingleton<ILookupRegistry>(new FakeLookupRegistry(sources))
+            .BuildServiceProvider();
+        return new([.. mentionable.Select(n => new MentionSource(n))], provider, _checker,
             NullLogger<MentionLookupSource>.Instance);
+    }
 
     private static LookupQuery Query(string? search = "a", int pageSize = 8, string? type = null) =>
         new(Search: search, PageSize: pageSize,

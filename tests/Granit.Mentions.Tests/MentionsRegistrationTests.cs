@@ -1,7 +1,12 @@
+using Granit.Authorization;
+using Granit.DataLookup.Descriptors;
+using Granit.DataLookup.Extensions;
+using Granit.DataLookup.Registry;
 using Granit.DataLookup.Sources;
 using Granit.Mentions.Extensions;
 using Granit.Mentions.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 using Shouldly;
 
 namespace Granit.Mentions.Tests;
@@ -43,5 +48,47 @@ public sealed class MentionsRegistrationTests
         // A non-idempotent registration would register MentionLookupSource twice; LookupRegistry
         // throws on a duplicate source name, so exactly one descriptor proves TryAddEnumerable holds.
         MentionFacadeCount(services).ShouldBe(1);
+    }
+
+    /// <summary>A minimal registered lookup source, so the mention facade has a real sibling to fan out to.</summary>
+    private sealed class StubLookupSource(string name) : ILookupSource
+    {
+        public string Name => name;
+        public string? RequiredPermission => null;
+        public IReadOnlyList<string> ScopeKeys => [];
+
+        public ValueTask<LookupResult> SearchAsync(LookupQuery query, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(new LookupResult([new LookupItem($"{name}-1", $"{name} 1")]));
+
+        public ValueTask<LookupItem?> ResolveByValueAsync(object value, CancellationToken cancellationToken) =>
+            ValueTask.FromResult<LookupItem?>(null);
+    }
+
+    /// <summary>
+    /// Regression for the DI cycle (#2833). <c>LookupRegistry</c> consumes <see cref="IEnumerable{T}"/> of
+    /// <see cref="ILookupSource"/> — which includes the mention facade — and the facade used to
+    /// constructor-inject <see cref="ILookupRegistry"/>, closing a structural cycle. The container threw
+    /// <c>"A circular dependency was detected for the service of type 'ILookupRegistry'"</c> at startup.
+    /// <c>ValidateOnBuild</c> reproduces that detection; resolving the registry and facade proves the
+    /// lazy <see cref="IServiceProvider"/> resolution broke the cycle without breaking the fan-out.
+    /// </summary>
+    [Fact]
+    public void Container_validates_and_resolves_with_the_mention_facade_in_the_lookup_graph()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddMetrics();
+        services.AddSingleton(Substitute.For<IPermissionChecker>());
+        services.AddGranitDataLookup();
+        services.AddScoped<ILookupSource>(_ => new StubLookupSource("user"));
+        services.AddMentionSource("user");
+
+        ServiceProvider provider = services.BuildServiceProvider(
+            new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
+
+        using IServiceScope scope = provider.CreateScope();
+        scope.ServiceProvider.GetRequiredService<ILookupRegistry>().ShouldNotBeNull();
+        scope.ServiceProvider.GetServices<ILookupSource>()
+            .ShouldContain(source => source is MentionLookupSource);
     }
 }
