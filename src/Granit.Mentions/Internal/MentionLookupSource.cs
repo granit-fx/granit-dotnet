@@ -2,6 +2,7 @@ using Granit.Authorization;
 using Granit.DataLookup.Descriptors;
 using Granit.DataLookup.Registry;
 using Granit.DataLookup.Sources;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.Mentions.Internal;
 
@@ -17,10 +18,11 @@ namespace Granit.Mentions.Internal;
 /// is silently skipped, never a 403 for the whole picker — merges and caps, and re-stamps each
 /// item's value as a composite <c>type:value</c> so a single source resolves any type.
 /// </remarks>
-internal sealed class MentionLookupSource(
+internal sealed partial class MentionLookupSource(
     IEnumerable<MentionSource> mentionSources,
     ILookupRegistry lookupRegistry,
-    IPermissionChecker permissionChecker) : ILookupSource
+    IPermissionChecker permissionChecker,
+    ILogger<MentionLookupSource> logger) : ILookupSource
 {
     private const char Separator = ':';
 
@@ -55,6 +57,7 @@ internal sealed class MentionLookupSource(
             ILookupSource? source = lookupRegistry.Resolve(name);
             if (source is null || !await IsAuthorizedAsync(source, cancellationToken).ConfigureAwait(false))
             {
+                LogSourceSkipped(name);
                 continue;
             }
 
@@ -138,4 +141,9 @@ internal sealed class MentionLookupSource(
         inner = composite[(separator + 1)..];
         return true;
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Mention type '{Type}' was skipped from the picker: the source is unregistered or the caller lacks its required permission.")]
+    private partial void LogSourceSkipped(string type);
 }

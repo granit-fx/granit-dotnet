@@ -3,6 +3,7 @@ using Granit.DataLookup.Descriptors;
 using Granit.DataLookup.Registry;
 using Granit.DataLookup.Sources;
 using Granit.Mentions.Internal;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
 
@@ -44,7 +45,8 @@ public sealed class MentionLookupSourceTests
     private readonly IPermissionChecker _checker = Substitute.For<IPermissionChecker>();
 
     private MentionLookupSource Build(ILookupSource[] sources, params string[] mentionable) =>
-        new([.. mentionable.Select(n => new MentionSource(n))], new FakeLookupRegistry(sources), _checker);
+        new([.. mentionable.Select(n => new MentionSource(n))], new FakeLookupRegistry(sources), _checker,
+            NullLogger<MentionLookupSource>.Instance);
 
     private static LookupQuery Query(string? search = "a", int pageSize = 8, string? type = null) =>
         new(Search: search, PageSize: pageSize,

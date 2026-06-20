@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Mentions</PackageId>
-    <Description>Runtime for the @ mention seam: an IMentionRegistry and a MentionLookupSource facade that exposes every opted-in IMentionResolver through Granit.DataLookup (GET /lookups/mentions) — multi-type search with lenient per-type ACL, plus composite resolve. No changes to the DataLookup framework.</Description>
+    <Description>The @ mention picker, built on Granit.DataLookup with no mention-specific contract: a mention is just an existing lookup source tagged mentionable via AddMentionSource. A single 'mentions' facade source (GET /lookups/mentions) fans the picker across the tagged sources — multi-type search with lenient per-type ACL, plus composite type:value resolve. No changes to the DataLookup framework.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

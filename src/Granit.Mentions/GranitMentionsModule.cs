@@ -6,10 +6,10 @@ using Granit.Modularity;
 namespace Granit.Mentions;
 
 /// <summary>
-/// Registers the domain-neutral <c>@</c> mention seam: the registry and the <c>mentions</c> facade
-/// over <c>Granit.DataLookup</c>. Applications add resolvers with
-/// <c>AddGranitMentions(b =&gt; b.Add&lt;TResolver&gt;())</c>. Depends on the data-lookup module (the
-/// picker transport) and the authorization module (per-type ACL).
+/// Registers the domain-neutral <c>@</c> mention seam: the <c>mentions</c> facade source over
+/// <c>Granit.DataLookup</c>. A mention is just an existing lookup source tagged mentionable;
+/// applications opt sources in with <c>services.AddMentionSource("user")</c>. Depends on the
+/// data-lookup module (the picker transport) and the authorization module (per-type ACL).
 /// </summary>
 [DependsOn(
     typeof(GranitAuthorizationModule),
