@@ -25,7 +25,7 @@ public sealed class TemplateSummaryQueryDefinition : QueryDefinition<TemplateSum
             .Column(s => s.CurrentStatus, c => c.Label("Status").LabelKey("Template.Columns.Status").Filterable().Sortable())
             .Column(s => s.HasPublishedVersion, c => c.Label("Has Published Version").LabelKey("Template.Columns.HasPublishedVersion").Filterable())
             .Column(s => s.LayoutName, c => c.Label("Layout").LabelKey("Template.Columns.LayoutName").Filterable())
-            .Column(s => s.CategoryId, c => c.Label("Category").LabelKey("Template.Columns.Category").Filterable())
+            .Column(s => s.CategoryId, c => c.Label("Category").LabelKey("Template.Columns.Category").Filterable().Lookup("template-categories", requiredPermission: "Templating.Categories.Read"))
             .Column(s => s.LastModifiedAt, c => c.Label("Last Modified").LabelKey("Template.Columns.LastModifiedAt").Sortable())
             .Column(s => s.LastModifiedBy, c => c.Label("Last Modified By").LabelKey("Template.Columns.LastModifiedBy").Filterable())
             .GlobalSearch(s => s.Name)

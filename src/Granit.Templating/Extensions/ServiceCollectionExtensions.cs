@@ -1,5 +1,6 @@
 using System.Reflection;
 using Granit.DataExchange.Extensions;
+using Granit.DataLookup.Sources;
 using Granit.Diagnostics;
 using Granit.QueryEngine.Extensions;
 using Granit.Templating.Diagnostics;
@@ -59,6 +60,10 @@ public static class ServiceCollectionExtensions
         // Query + Export definitions (ADR-020: owned by the base module).
         services.AddQueryDefinition<TemplateSummary, TemplateSummaryQueryDefinition>();
         services.AddExportDefinition<TemplateSummary, TemplateSummaryExportDefinition>();
+
+        // 'template-categories' lookup backing the CategoryId column picker (and the @ mention path
+        // when tagged). Registered once; coexists with other ILookupSource registrations.
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<ILookupSource, TemplateCategoryLookupSource>());
 
         return services;
     }

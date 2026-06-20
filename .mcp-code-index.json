@@ -2463,6 +2463,7 @@
       "name": "Granit.Templating",
       "deps": [
         "Granit.DataExchange.Abstractions",
+        "Granit.DataLookup.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing",
         "Granit.Workflow"
@@ -50060,7 +50061,7 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Extensions/ServiceCollectionExtensions.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "AddGranitTemplating",
