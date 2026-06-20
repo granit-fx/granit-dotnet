@@ -1,6 +1,7 @@
 using Granit.Authorization;
 using Granit.DataLookup.Descriptors;
 using Granit.Mentions.Internal;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
 
@@ -34,7 +35,8 @@ public sealed class MentionLookupSourceTests
     private readonly IPermissionChecker _checker = Substitute.For<IPermissionChecker>();
 
     private MentionLookupSource Build(params IMentionResolver[] resolvers) =>
-        new(new MentionRegistry(resolvers), new PermissionMentionAuthorizer(_checker));
+        new(new MentionRegistry(resolvers), new PermissionMentionAuthorizer(_checker),
+            NullLogger<MentionLookupSource>.Instance);
 
     private static LookupQuery Query(string? search = "a", int pageSize = 8, string? type = null) =>
         new(Search: search, PageSize: pageSize,

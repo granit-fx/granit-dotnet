@@ -1,6 +1,6 @@
 # Granit.Identity.Mentions
 
-Wires `Granit.Identity` as an [`IMentionResolver`](../Granit.Mentions.Abstractions/IMentionResolver.cs)
+Wires `Granit.Identity` as an [`IMentionResolver`](../Granit.Mentions/IMentionResolver.cs)
 for the domain-neutral `@` mention seam. The picker can search the identity directory and a `@user`
 mention resolves to that user's context — both under the caller's ACLs.
 

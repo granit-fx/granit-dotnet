@@ -12,8 +12,8 @@ namespace Granit.Mentions;
 /// picker transport) and the authorization module (per-type ACL).
 /// </summary>
 [DependsOn(
-    typeof(GranitDataLookupModule),
-    typeof(GranitAuthorizationModule))]
+    typeof(GranitAuthorizationModule),
+    typeof(GranitDataLookupModule))]
 public sealed class GranitMentionsModule : GranitModule
 {
     /// <inheritdoc/>

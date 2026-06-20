@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Granit.AI.Chat.Internal;
 using Granit.AI.Chat.Mentions;
 using Granit.Mentions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 
 namespace Granit.AI.Chat.Tests;
@@ -59,7 +60,7 @@ public sealed class AIMentionContextResolverTests
     }
 
     private static AIMentionContextResolver Build(IMentionAuthorizer authorizer, params IMentionResolver[] resolvers) =>
-        new(new FakeRegistry(resolvers), authorizer);
+        new(new FakeRegistry(resolvers), authorizer, NullLogger<AIMentionContextResolver>.Instance);
 
     private static AIMentionContextResolver Build(params IMentionResolver[] resolvers) =>
         Build(new StubAuthorizer(), resolvers);

@@ -2,6 +2,7 @@ using System.Text;
 using Granit.AI.Chat.Mentions;
 using Granit.AI.Prompting;
 using Granit.Mentions;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.AI.Chat.Internal;
 
@@ -13,7 +14,8 @@ namespace Granit.AI.Chat.Internal;
 /// (OWASP LLM01). The mention seam itself is domain-neutral (<c>Granit.Mentions</c>); this is the
 /// AI-specific consumer that turns a resolved target into untrusted prompt context.
 /// </summary>
-internal sealed class AIMentionContextResolver(IMentionRegistry registry, IMentionAuthorizer authorizer)
+internal sealed partial class AIMentionContextResolver(
+    IMentionRegistry registry, IMentionAuthorizer authorizer, ILogger<AIMentionContextResolver> logger)
     : IAIMentionContextResolver
 {
     private const string Preamble =
@@ -36,12 +38,14 @@ internal sealed class AIMentionContextResolver(IMentionRegistry registry, IMenti
             if (!registry.TryGet(mention.Type, out IMentionResolver? resolver))
             {
                 // Unknown type: the application never exposed it — skip, do not leak.
+                LogMentionDropped(mention.Type, "unknown type");
                 continue;
             }
 
             if (!await authorizer.IsAuthorizedAsync(resolver, cancellationToken).ConfigureAwait(false))
             {
                 // Caller lacks the type's RequiredPermission — drop, even on a hand-crafted send.
+                LogMentionDropped(mention.Type, "caller not authorized");
                 continue;
             }
 
@@ -49,6 +53,7 @@ internal sealed class AIMentionContextResolver(IMentionRegistry registry, IMenti
             if (target is null)
             {
                 // Absent or ACL-denied: silently dropped, nothing enters the prompt.
+                LogMentionDropped(mention.Type, "absent or not visible to caller");
                 continue;
             }
 
@@ -59,4 +64,9 @@ internal sealed class AIMentionContextResolver(IMentionRegistry registry, IMenti
 
         return builder?.ToString();
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Mention of type '{Type}' was dropped from the turn context ({Reason}); nothing entered the prompt.")]
+    private partial void LogMentionDropped(string type, string reason);
 }

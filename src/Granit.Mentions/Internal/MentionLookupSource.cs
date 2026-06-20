@@ -1,5 +1,6 @@
 using Granit.DataLookup.Descriptors;
 using Granit.DataLookup.Sources;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.Mentions.Internal;
 
@@ -12,7 +13,8 @@ namespace Granit.Mentions.Internal;
 /// whole picker — merges and caps the suggestions, and encodes the chosen reference as a composite
 /// <c>type:id</c> value so a single source can resolve any mention type.
 /// </summary>
-internal sealed class MentionLookupSource(IMentionRegistry registry, IMentionAuthorizer authorizer)
+internal sealed partial class MentionLookupSource(
+    IMentionRegistry registry, IMentionAuthorizer authorizer, ILogger<MentionLookupSource> logger)
     : ILookupSource
 {
     /// <summary>The registry key under which the facade is exposed.</summary>
@@ -50,6 +52,7 @@ internal sealed class MentionLookupSource(IMentionRegistry registry, IMentionAut
         {
             if (!await IsAuthorizedAsync(resolver, cancellationToken).ConfigureAwait(false))
             {
+                LogResolverSkipped(resolver.Type);
                 continue;
             }
 
@@ -134,4 +137,9 @@ internal sealed class MentionLookupSource(IMentionRegistry registry, IMentionAut
         id = composite[(separator + 1)..];
         return true;
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Mention type '{Type}' was skipped from the picker: the caller lacks its required permission.")]
+    private partial void LogResolverSkipped(string type);
 }

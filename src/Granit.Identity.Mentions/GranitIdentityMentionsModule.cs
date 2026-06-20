@@ -12,9 +12,9 @@ namespace Granit.Identity.Mentions;
 /// declared at runtime.
 /// </summary>
 [DependsOn(
-    typeof(GranitMentionsModule),
+    typeof(GranitIdentityEndpointsModule),
     typeof(GranitIdentityModule),
-    typeof(GranitIdentityEndpointsModule))]
+    typeof(GranitMentionsModule))]
 public sealed class GranitIdentityMentionsModule : GranitModule
 {
     /// <inheritdoc/>
