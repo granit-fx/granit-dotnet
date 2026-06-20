@@ -332,7 +332,6 @@
     <Project Path="src/Granit.AI.Chat.EntityFrameworkCore/Granit.AI.Chat.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.AI.Chat.Endpoints/Granit.AI.Chat.Endpoints.csproj" />
     <Project Path="src/Granit.Mentions/Granit.Mentions.csproj" />
-    <Project Path="src/Granit.Identity.Mentions/Granit.Identity.Mentions.csproj" />
     <Project Path="src/Granit.AI.Chat.Privacy/Granit.AI.Chat.Privacy.csproj" />
     <Project Path="src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj" />
     <Project Path="src/Granit.AI.EntityFrameworkCore/Granit.AI.EntityFrameworkCore.csproj" />
@@ -708,7 +707,6 @@
     <Project Path="tests/Granit.AI.Chat.EntityFrameworkCore.Tests/Granit.AI.Chat.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.AI.Chat.Endpoints.Tests/Granit.AI.Chat.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Mentions.Tests/Granit.Mentions.Tests.csproj" />
-    <Project Path="tests/Granit.Identity.Mentions.Tests/Granit.Identity.Mentions.Tests.csproj" />
     <Project Path="tests/Granit.AI.Chat.Privacy.Tests/Granit.AI.Chat.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.AI.Endpoints.Tests/Granit.AI.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.AI.EntityFrameworkCore.Tests/Granit.AI.EntityFrameworkCore.Tests.csproj" />

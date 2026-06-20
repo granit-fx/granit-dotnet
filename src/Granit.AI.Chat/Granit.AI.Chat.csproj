@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
     <ProjectReference Include="..\Granit.AI.Prompts\Granit.AI.Prompts.csproj" />
     <ProjectReference Include="..\Granit.AI.Tools\Granit.AI.Tools.csproj" />
+    <ProjectReference Include="..\Granit.DataLookup.Abstractions\Granit.DataLookup.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Mentions\Granit.Mentions.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />

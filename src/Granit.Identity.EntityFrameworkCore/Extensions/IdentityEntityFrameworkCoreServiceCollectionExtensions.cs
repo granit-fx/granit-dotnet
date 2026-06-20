@@ -1,3 +1,5 @@
+using Granit.DataLookup.EntityFrameworkCore.Sources;
+using Granit.DataLookup.Sources;
 using Granit.Identity.Domain;
 using Granit.Identity.EntityFrameworkCore.Internal;
 using Granit.Identity.Internal;
@@ -61,6 +63,34 @@ public static class IdentityEntityFrameworkCoreServiceCollectionExtensions
         services.AddScoped<UserLookupHashInterceptor>();
         services.AddScoped<IGranitAutoInterceptor>(sp =>
             sp.GetRequiredService<UserLookupHashInterceptor>());
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the canonical user directory as a <c>Granit.DataLookup</c> source named <c>user</c>
+    /// — a typeahead over <see cref="IUserDirectoryQueryableSource"/> (label = <c>DisplayName</c>,
+    /// gated on <c>Identity.Users.Read</c>), available for form-field pickers and, once tagged via
+    /// <c>AddMentionSource("user")</c>, the <c>@</c> mention picker. Works in every provider mode
+    /// (the canonical <c>User</c> table is synced for local and federated).
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddUserDirectoryLookup(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services.AddScoped<ILookupSource>(sp =>
+        {
+            IUserDirectoryQueryableSource directory = sp.GetRequiredService<IUserDirectoryQueryableSource>();
+            return new QueryableLookupSource<User>(
+                name: "user",
+                queryableFactory: directory.GetQueryable,
+                valueSelector: u => u.Id,
+                labelSelector: u => u.DisplayName,
+                searchPredicate: (u, term) => u.DisplayName.Contains(term),
+                requiredPermission: "Identity.Users.Read"); // mirrors IdentityPermissions.Users.Read
+        });
 
         return services;
     }

@@ -2,7 +2,7 @@ namespace Granit.AI.Chat.Mentions;
 
 /// <summary>
 /// Resolves the <c>@</c> mentions on a turn to a single context block to inject ahead of the
-/// user's message. Each mention is dispatched to its opted-in <see cref="Granit.Mentions.IMentionResolver"/>
+/// user's message. Each mention is resolved through the <c>Granit.Mentions</c> picker facade
 /// under the caller's ACLs; unknown types and mentions the caller cannot see are dropped, and
 /// every resolved entity is wrapped in the untrusted-data envelope.
 /// </summary>

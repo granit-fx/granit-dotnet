@@ -1,37 +1,39 @@
+using Granit.Authorization;
 using Granit.DataLookup.Descriptors;
+using Granit.DataLookup.Registry;
 using Granit.DataLookup.Sources;
-using Microsoft.Extensions.Logging;
 
 namespace Granit.Mentions.Internal;
 
 /// <summary>
-/// Exposes every opted-in <see cref="IMentionResolver"/> as a single <see cref="ILookupSource"/>
-/// named <c>mentions</c>, so the <c>@</c> picker rides on <c>Granit.DataLookup</c>
-/// (<c>GET /lookups/mentions</c>) with no changes to that framework. Fans out the query across the
-/// resolvers (optionally narrowed to one <c>type</c> via <see cref="LookupQuery.Scope"/>), applies
-/// lenient per-type authorization — an unauthorized type is silently skipped, never a 403 for the
-/// whole picker — merges and caps the suggestions, and encodes the chosen reference as a composite
-/// <c>type:id</c> value so a single source can resolve any mention type.
+/// The <c>mentions</c> facade <see cref="ILookupSource"/>: it exposes every lookup source tagged
+/// mentionable (<see cref="MentionSource"/>) through one source, so the <c>@</c> picker rides on
+/// <c>Granit.DataLookup</c> (<c>GET /lookups/mentions</c>) with no changes to that framework and no
+/// mention-specific contract. A mention type is simply a lookup source opted into the picker.
 /// </summary>
-internal sealed partial class MentionLookupSource(
-    IMentionRegistry registry, IMentionAuthorizer authorizer, ILogger<MentionLookupSource> logger)
-    : ILookupSource
+/// <remarks>
+/// Fans the query out across the tagged sources (optionally narrowed to one <c>type</c> via
+/// <see cref="LookupQuery.Scope"/>), applies lenient per-type authorization — an unauthorized type
+/// is silently skipped, never a 403 for the whole picker — merges and caps, and re-stamps each
+/// item's value as a composite <c>type:value</c> so a single source resolves any type.
+/// </remarks>
+internal sealed class MentionLookupSource(
+    IEnumerable<MentionSource> mentionSources,
+    ILookupRegistry lookupRegistry,
+    IPermissionChecker permissionChecker) : ILookupSource
 {
-    /// <summary>The registry key under which the facade is exposed.</summary>
-    public const string SourceName = "mentions";
-
-    /// <summary>Optional <see cref="LookupQuery.Scope"/> key narrowing the search to one type.</summary>
-    public const string TypeScopeKey = "type";
-
     private const char Separator = ':';
 
-    public string Name => SourceName;
+    public string Name => MentionLookup.SourceName;
 
     /// <summary>Public to any caller who may use mentions; each type's own permission is checked internally.</summary>
     public string? RequiredPermission => null;
 
     /// <summary><c>type</c> is an optional filter, not a required scope.</summary>
     public IReadOnlyList<string> ScopeKeys => [];
+
+    private IEnumerable<string> MentionableNames =>
+        mentionSources.Select(s => s.Name).Distinct(StringComparer.OrdinalIgnoreCase);
 
     public async ValueTask<LookupResult> SearchAsync(LookupQuery query, CancellationToken cancellationToken)
     {
@@ -43,24 +45,23 @@ internal sealed partial class MentionLookupSource(
             return new LookupResult([]);
         }
 
-        string search = query.Search ?? string.Empty;
         string? type = null;
-        query.Scope?.TryGetValue(TypeScopeKey, out type);
+        query.Scope?.TryGetValue(MentionLookup.TypeScopeKey, out type);
+        var inner = new LookupQuery(query.Search, Page: 1, PageSize: limit);
 
         List<LookupItem> items = [];
-        foreach (IMentionResolver resolver in SelectResolvers(type))
+        foreach (string name in SelectNames(type))
         {
-            if (!await IsAuthorizedAsync(resolver, cancellationToken).ConfigureAwait(false))
+            ILookupSource? source = lookupRegistry.Resolve(name);
+            if (source is null || !await IsAuthorizedAsync(source, cancellationToken).ConfigureAwait(false))
             {
-                LogResolverSkipped(resolver.Type);
                 continue;
             }
 
-            IReadOnlyList<MentionSuggestion> suggestions =
-                await resolver.SearchAsync(search, limit, cancellationToken).ConfigureAwait(false);
-            foreach (MentionSuggestion suggestion in suggestions)
+            LookupResult result = await source.SearchAsync(inner, cancellationToken).ConfigureAwait(false);
+            foreach (LookupItem item in result.Items)
             {
-                items.Add(ToItem(resolver.Type, suggestion));
+                items.Add(Restamp(name, item));
             }
 
             if (items.Count >= limit)
@@ -76,52 +77,52 @@ internal sealed partial class MentionLookupSource(
     {
         ArgumentNullException.ThrowIfNull(value);
 
-        if (!TryDecode(value.ToString(), out string type, out string id)
-            || !registry.TryGet(type, out IMentionResolver? resolver)
-            || !await IsAuthorizedAsync(resolver, cancellationToken).ConfigureAwait(false))
+        if (!TryDecode(value.ToString(), out string type, out string inner)
+            || !MentionableNames.Contains(type, StringComparer.OrdinalIgnoreCase))
         {
             return null;
         }
 
-        MentionTarget? target = await resolver.ResolveAsync(id, cancellationToken).ConfigureAwait(false);
-        return target is null
-            ? null
-            : new LookupItem(
-                Encode(target.Type, target.Id),
-                target.Label,
-                new Dictionary<string, object?> { ["type"] = target.Type, ["content"] = target.Content });
+        ILookupSource? source = lookupRegistry.Resolve(type);
+        if (source is null || !await IsAuthorizedAsync(source, cancellationToken).ConfigureAwait(false))
+        {
+            return null;
+        }
+
+        LookupItem? item = await source.ResolveByValueAsync(inner, cancellationToken).ConfigureAwait(false);
+        return item is null ? null : Restamp(type, item);
     }
 
-    private IReadOnlyList<IMentionResolver> SelectResolvers(string? type)
+    private IEnumerable<string> SelectNames(string? type)
     {
         if (string.IsNullOrWhiteSpace(type))
         {
-            return registry.Resolvers;
+            return MentionableNames;
         }
 
-        return registry.TryGet(type, out IMentionResolver? resolver) ? [resolver] : [];
+        return MentionableNames.Contains(type, StringComparer.OrdinalIgnoreCase) ? [type] : [];
     }
 
-    private ValueTask<bool> IsAuthorizedAsync(IMentionResolver resolver, CancellationToken cancellationToken) =>
-        authorizer.IsAuthorizedAsync(resolver, cancellationToken);
-
-    private static LookupItem ToItem(string type, MentionSuggestion suggestion)
+    private async ValueTask<bool> IsAuthorizedAsync(ILookupSource source, CancellationToken cancellationToken)
     {
-        Dictionary<string, object?> extra = new() { ["type"] = type };
-        if (suggestion.Description is not null)
-        {
-            extra["description"] = suggestion.Description;
-        }
-
-        return new LookupItem(Encode(type, suggestion.Id), suggestion.Label, extra);
+        string? permission = source.RequiredPermission;
+        return string.IsNullOrWhiteSpace(permission)
+            || await permissionChecker.IsGrantedAsync(permission, cancellationToken).ConfigureAwait(false);
     }
 
-    private static string Encode(string type, string id) => $"{type}{Separator}{id}";
+    private static LookupItem Restamp(string type, LookupItem item)
+    {
+        Dictionary<string, object?> extra = item.Extra is null
+            ? []
+            : new Dictionary<string, object?>(item.Extra);
+        extra[MentionLookup.TypeScopeKey] = type;
+        return new LookupItem($"{type}{Separator}{item.Value}", item.Label, extra);
+    }
 
-    private static bool TryDecode(string? composite, out string type, out string id)
+    private static bool TryDecode(string? composite, out string type, out string inner)
     {
         type = string.Empty;
-        id = string.Empty;
+        inner = string.Empty;
         if (string.IsNullOrEmpty(composite))
         {
             return false;
@@ -134,12 +135,7 @@ internal sealed partial class MentionLookupSource(
         }
 
         type = composite[..separator];
-        id = composite[(separator + 1)..];
+        inner = composite[(separator + 1)..];
         return true;
     }
-
-    [LoggerMessage(
-        Level = LogLevel.Debug,
-        Message = "Mention type '{Type}' was skipped from the picker: the caller lacks its required permission.")]
-    private partial void LogResolverSkipped(string type);
 }

@@ -169,7 +169,6 @@
       "src/Granit.Identity.Local.Notifications/Granit.Identity.Local.Notifications.csproj",
       "src/Granit.Identity.Local.Privacy/Granit.Identity.Local.Privacy.csproj",
       "src/Granit.Identity.Local/Granit.Identity.Local.csproj",
-      "src/Granit.Identity.Mentions/Granit.Identity.Mentions.csproj",
       "src/Granit.Identity.Notifications/Granit.Identity.Notifications.csproj",
       "src/Granit.Identity/Granit.Identity.csproj",
       "src/Granit.Imaging.AI/Granit.Imaging.AI.csproj",
