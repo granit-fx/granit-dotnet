@@ -17,7 +17,7 @@ public sealed class NotificationPreferenceQueryDefinition : QueryDefinition<Noti
     {
         builder
             .Column(e => e.TenantId, c => c.Label("Tenant").LabelKey("Notifications.Columns.Tenant").Filterable().Sortable())
-            .Column(e => e.UserId, c => c.Label("User").LabelKey("Notifications.Columns.UserId").Filterable().Sortable())
+            .Column(e => e.UserId, c => c.Label("User").LabelKey("Notifications.Columns.UserId").Filterable().Sortable().Lookup("users", requiredPermission: "Identity.Users.Read"))
             .Column(e => e.NotificationTypeName, c => c.Label("Notification Type").LabelKey("Notifications.Columns.NotificationTypeName").Filterable().Sortable())
             .Column(e => e.ChannelName, c => c.Label("Channel").LabelKey("Notifications.Columns.ChannelName").Filterable().Sortable())
             .Column(e => e.IsEnabled, c => c.Label("Enabled").LabelKey("Notifications.Columns.IsEnabled").Filterable().Sortable())

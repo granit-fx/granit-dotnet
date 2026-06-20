@@ -22,7 +22,7 @@ public sealed class PromptTemplateQueryDefinition : QueryDefinition<PromptTempla
             .Column(p => p.Name, c => c.Label("Name").LabelKey("AIPrompts.Columns.Name").Filterable().Sortable())
             .Column(p => p.ShortDescription, c => c.Label("Description").LabelKey("AIPrompts.Columns.Description").Filterable())
             .Column(p => p.IsSystem, c => c.Label("System").LabelKey("AIPrompts.Columns.IsSystem").Filterable().Sortable())
-            .Column(p => p.OwnerId, c => c.Label("Owner").LabelKey("AIPrompts.Columns.Owner").Filterable())
+            .Column(p => p.OwnerId, c => c.Label("Owner").LabelKey("AIPrompts.Columns.Owner").Filterable().Lookup("users", requiredPermission: "Identity.Users.Read"))
             .Column(p => p.Version, c => c.Label("Version").LabelKey("AIPrompts.Columns.Version").Sortable())
             .Column(p => p.TenantId, c => c.Label("Tenant").LabelKey("AIPrompts.Columns.Tenant").Filterable())
             .Column(p => p.CreatedAt, c => c.Label("Created At").LabelKey("AIPrompts.Columns.CreatedAt").Sortable())

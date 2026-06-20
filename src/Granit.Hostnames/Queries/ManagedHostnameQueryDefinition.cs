@@ -20,7 +20,7 @@ public sealed class ManagedHostnameQueryDefinition : QueryDefinition<ManagedHost
             // `e => e.Host.Value` to dodge that throws at definition build. See issue #2767.
             .Column(e => e.Host, c => c.Label("Host").LabelKey("Hostnames.Columns.Host").Filterable().Sortable())
             .Column(e => e.OwnerType, c => c.Label("Owner Type").LabelKey("Hostnames.Columns.OwnerType").Filterable().Sortable())
-            .Column(e => e.OwnerId, c => c.Label("Owner Id").LabelKey("Hostnames.Columns.OwnerId").Filterable())
+            .Column(e => e.OwnerId, c => c.Label("Owner Id").LabelKey("Hostnames.Columns.OwnerId").Filterable().Lookup("users", requiredPermission: "Identity.Users.Read"))
             .Column(e => e.IsPrimary, c => c.Label("Primary").LabelKey("Hostnames.Columns.IsPrimary").Filterable().Sortable())
             .Column(e => e.Status, c => c.Label("Status").LabelKey("Hostnames.Columns.Status").Filterable().Sortable())
             .Column(e => e.CreatedAt, c => c.Label("Created At").LabelKey("Hostnames.Columns.CreatedAt").Sortable())

@@ -8,7 +8,8 @@ queryable) becomes mentionable with a single line and **zero new classes**.
 ## How it works
 
 - A single facade `ILookupSource` named `mentions` is registered (`AddGranitMentions`).
-- `AddMentionSource("user")` tags an existing lookup source as mentionable.
+- `AddMentionSource("users")` tags an existing lookup source as mentionable. Source names follow the
+  DataLookup convention: a plural, kebab-case collection noun (`users`, `tenants`, `ref-countries`).
 - The facade fans the picker out across the tagged sources (optionally narrowed by `scope.type`),
   applies **lenient** per-type authorization (an unauthorized type is skipped, never a 403 for the
   whole picker), merges and caps, and re-stamps each item's value as a composite `type:value` so one
@@ -22,8 +23,8 @@ endpoint. A host that wants the `@` picker:
 ```csharp
 // 1. Expose each entity as a lookup, then tag it mentionable.
 services.AddQueryDefinitionLookup<Invoice, MyDbContext>();   // Granit.DataLookup.EntityFrameworkCore
-services.AddMentionSource("invoice");
-services.AddUserDirectoryLookup().AddMentionSource("user");  // Granit.Identity.EntityFrameworkCore — @user
+services.AddMentionSource("invoices");
+services.AddMentionSource("users");   // the "users" lookup is auto-registered by AddGranitIdentityEntityFrameworkCore — @user
 
 // 2. Map the DataLookup endpoints (this is what serves the picker).
 app.MapGranitDataLookups();
@@ -37,7 +38,7 @@ app.MapGranitDataLookups();
 | Resolve a selection | `GET /lookups/mentions/resolve?value=<type>:<id>` |
 | List mentionable + other sources | `GET /lookups` |
 
-Each suggestion's `value` is the composite `type:id` (e.g. `user:3f2a…`) and `extra.type` carries
+Each suggestion's `value` is the composite `type:id` (e.g. `users:3f2a…`) and `extra.type` carries
 the type — the front sends `type:id` back, and an AI-chat turn carries it as a `MentionRequest`. AI
 chat resolves through the same facade and injects the result wrapped in the untrusted-document
 envelope.

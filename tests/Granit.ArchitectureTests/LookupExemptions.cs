@@ -43,15 +43,8 @@ internal static class LookupExemptions
         "Granit.Auditing.Domain.AuditEntry.UserId",                              // [PERMANENT] actor on the audit log (ISO 27001 A.12.4); not a picker
         "Granit.Webhooks.Domain.WebhookDeliveryAttempt.SubscriptionId",          // [PERMANENT] delivery-log FK (infra)
 
-        // ── [BACKLOG] user foreign keys → wire .Lookup("user") once AddUserDirectoryLookup is standard ──
-        "Granit.AI.Prompts.Domain.PromptTemplate.OwnerId",                       // [BACKLOG] → .Lookup("user")
-        "Granit.Hostnames.Domain.ManagedHostname.OwnerId",                       // [BACKLOG] → .Lookup("user")
-        "Granit.Notifications.Domain.NotificationPreference.UserId",             // [BACKLOG] → .Lookup("user")
-        "Granit.Notifications.Domain.UserNotification.RecipientUserId",          // [BACKLOG] → .Lookup("user")
-        "Granit.Timeline.Domain.TimelineEntry.AuthorId",                         // [BACKLOG] → .Lookup("user")
-
         // ── [BACKLOG] other entity foreign keys → wire a lookup once the source exists ──
-        "Granit.Templating.Store.TemplateSummary.CategoryId",                    // [BACKLOG] → .Lookup("template-category")
+        "Granit.Templating.Store.TemplateSummary.CategoryId",                    // [BACKLOG] → .Lookup("template-category") — no category lookup source yet
 
         // ── [PERMANENT] TenantId — cross-cutting tenant scoping; no framework tenant lookup shipped ──
         "Granit.AI.Prompts.Domain.PromptCategory.TenantId",                      // [PERMANENT] tenant scope

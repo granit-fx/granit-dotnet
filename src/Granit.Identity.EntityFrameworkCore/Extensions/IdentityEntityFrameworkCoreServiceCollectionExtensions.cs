@@ -64,15 +64,20 @@ public static class IdentityEntityFrameworkCoreServiceCollectionExtensions
         services.AddScoped<IGranitAutoInterceptor>(sp =>
             sp.GetRequiredService<UserLookupHashInterceptor>());
 
+        // The canonical user directory is exposed as the "users" lookup so any column declaring
+        // .Lookup("users") (and the @ mention picker) resolves wherever identity-EF is wired.
+        services.AddUserDirectoryLookup();
+
         return services;
     }
 
     /// <summary>
-    /// Registers the canonical user directory as a <c>Granit.DataLookup</c> source named <c>user</c>
-    /// — a typeahead over <see cref="IUserDirectoryQueryableSource"/> (label = <c>DisplayName</c>,
-    /// gated on <c>Identity.Users.Read</c>), available for form-field pickers and, once tagged via
-    /// <c>AddMentionSource("user")</c>, the <c>@</c> mention picker. Works in every provider mode
-    /// (the canonical <c>User</c> table is synced for local and federated).
+    /// Registers the canonical user directory as a <c>Granit.DataLookup</c> source named
+    /// <c>users</c> — a typeahead over <see cref="IUserDirectoryQueryableSource"/> (label =
+    /// <c>DisplayName</c>, gated on <c>Identity.Users.Read</c>), available for form-field pickers and,
+    /// once tagged via <c>AddMentionSource("users")</c>, the <c>@</c> mention picker. Works in every
+    /// provider mode (the canonical <c>User</c> table is synced for local and federated). Idempotent —
+    /// <see cref="AddGranitIdentityEntityFrameworkCore"/> already calls it.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
@@ -80,11 +85,17 @@ public static class IdentityEntityFrameworkCoreServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        if (services.Any(d => d.ServiceType == typeof(UserDirectoryLookupMarker)))
+        {
+            return services;
+        }
+
+        services.AddSingleton<UserDirectoryLookupMarker>();
         services.AddScoped<ILookupSource>(sp =>
         {
             IUserDirectoryQueryableSource directory = sp.GetRequiredService<IUserDirectoryQueryableSource>();
             return new QueryableLookupSource<User>(
-                name: "user",
+                name: "users",
                 queryableFactory: directory.GetQueryable,
                 valueSelector: u => u.Id,
                 labelSelector: u => u.DisplayName,
@@ -94,4 +105,7 @@ public static class IdentityEntityFrameworkCoreServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>Sentinel ensuring the <c>users</c> lookup is registered at most once.</summary>
+    private sealed class UserDirectoryLookupMarker;
 }

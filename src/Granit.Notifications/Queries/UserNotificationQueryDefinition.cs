@@ -17,7 +17,7 @@ public sealed class UserNotificationQueryDefinition : QueryDefinition<UserNotifi
     {
         builder
             .Column(e => e.TenantId, c => c.Label("Tenant").LabelKey("Notifications.Columns.Tenant").Filterable().Sortable())
-            .Column(e => e.RecipientUserId, c => c.Label("Recipient").LabelKey("Notifications.Columns.RecipientUserId").Filterable().Sortable())
+            .Column(e => e.RecipientUserId, c => c.Label("Recipient").LabelKey("Notifications.Columns.RecipientUserId").Filterable().Sortable().Lookup("users", requiredPermission: "Identity.Users.Read"))
             .Column(e => e.NotificationTypeName, c => c.Label("Notification Type").LabelKey("Notifications.Columns.NotificationTypeName").Filterable().Sortable())
             .Column(e => e.Severity, c => c.Label("Severity").LabelKey("Notifications.Columns.Severity").Filterable().Sortable())
             .Column(e => e.State, c => c.Label("State").LabelKey("Notifications.Columns.State").Filterable().Sortable())
