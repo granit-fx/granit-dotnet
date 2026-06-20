@@ -31,4 +31,19 @@ public interface IAIMentionResolver
     /// may not see it — in which case the mention is dropped and never leaked into the prompt.
     /// </returns>
     ValueTask<AIMentionContext?> ResolveAsync(string id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Searches the entities of this <see cref="Type"/> the caller may mention, for the <c>@</c>
+    /// picker. Runs per scope under the caller's ACLs, exactly like <see cref="ResolveAsync"/>:
+    /// surface only entities the caller may see.
+    /// </summary>
+    /// <param name="query">The user's free-text query (may be empty for an initial suggestion list).</param>
+    /// <param name="limit">The maximum number of suggestions to return.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>
+    /// Up to <paramref name="limit"/> candidate suggestions, or an empty list when nothing matches
+    /// or this type is not searchable. Never <see langword="null"/>.
+    /// </returns>
+    ValueTask<IReadOnlyList<AIMentionSuggestion>> SearchAsync(
+        string query, int limit, CancellationToken cancellationToken = default);
 }

@@ -13,6 +13,10 @@ public sealed class AIMentionRegistryTests
 
         public ValueTask<AIMentionContext?> ResolveAsync(string id, CancellationToken cancellationToken = default) =>
             ValueTask.FromResult<AIMentionContext?>(null);
+
+        public ValueTask<IReadOnlyList<AIMentionSuggestion>> SearchAsync(
+            string query, int limit, CancellationToken cancellationToken = default) =>
+            ValueTask.FromResult<IReadOnlyList<AIMentionSuggestion>>([]);
     }
 
     [Fact]
