@@ -22,6 +22,14 @@ public interface IAIMentionResolver
     string Type { get; }
 
     /// <summary>
+    /// The permission a caller must hold to search or resolve this type, or <see langword="null"/>
+    /// when the type is available to any caller who may use the chat (the default). Enforced by the
+    /// host's <see cref="IAIMentionAuthorizer"/> — the resolver itself never checks permissions, so
+    /// it stays free of an authorization dependency and usable from non-HTTP contexts.
+    /// </summary>
+    string? RequiredPermission => null;
+
+    /// <summary>
     /// Resolves the referenced entity to context, under the caller's ACLs.
     /// </summary>
     /// <param name="id">The opaque identifier from the mention.</param>

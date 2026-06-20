@@ -4,9 +4,11 @@ namespace Granit.AI.Chat.Internal;
 
 /// <summary>
 /// Default <see cref="IAIMentionSearchService"/>. Dispatches a picker query to the opted-in
-/// resolvers under the caller's ACLs, merges their suggestions, and caps the result.
+/// resolvers under the caller's ACLs, skipping any the caller is not authorized for, merges their
+/// suggestions, and caps the result.
 /// </summary>
-internal sealed class AIMentionSearchService(IAIMentionRegistry registry) : IAIMentionSearchService
+internal sealed class AIMentionSearchService(IAIMentionRegistry registry, IAIMentionAuthorizer authorizer)
+    : IAIMentionSearchService
 {
     public async ValueTask<IReadOnlyList<AIMentionSuggestion>> SearchAsync(
         string query, string? type = null, int limit = 8, CancellationToken cancellationToken = default)
@@ -19,6 +21,7 @@ internal sealed class AIMentionSearchService(IAIMentionRegistry registry) : IAIM
         if (type is not null)
         {
             return registry.TryGet(type, out IAIMentionResolver? resolver)
+                && await authorizer.IsAuthorizedAsync(resolver, cancellationToken).ConfigureAwait(false)
                 ? await SearchOneAsync(resolver, query, limit, cancellationToken).ConfigureAwait(false)
                 : [];
         }
@@ -26,6 +29,11 @@ internal sealed class AIMentionSearchService(IAIMentionRegistry registry) : IAIM
         List<AIMentionSuggestion> merged = [];
         foreach (IAIMentionResolver resolver in registry.Resolvers)
         {
+            if (!await authorizer.IsAuthorizedAsync(resolver, cancellationToken).ConfigureAwait(false))
+            {
+                continue;
+            }
+
             IReadOnlyList<AIMentionSuggestion> suggestions =
                 await SearchOneAsync(resolver, query, limit, cancellationToken).ConfigureAwait(false);
             merged.AddRange(suggestions);

@@ -32,8 +32,20 @@ public sealed class AIMentionSearchServiceTests
         }
     }
 
+    /// <summary>Authorizes every resolver except those whose Type is in the denied set.</summary>
+    private sealed class DenyingAuthorizer(params string[] deniedTypes) : IAIMentionAuthorizer
+    {
+        private readonly HashSet<string> _denied = new(deniedTypes, StringComparer.OrdinalIgnoreCase);
+
+        public ValueTask<bool> IsAuthorizedAsync(IAIMentionResolver resolver, CancellationToken cancellationToken = default) =>
+            ValueTask.FromResult(!_denied.Contains(resolver.Type));
+    }
+
     private static AIMentionSearchService Build(params IAIMentionResolver[] resolvers) =>
-        new(new AIMentionRegistry(resolvers));
+        new(new AIMentionRegistry(resolvers), new AllowAllMentionAuthorizer());
+
+    private static AIMentionSearchService Build(IAIMentionAuthorizer authorizer, params IAIMentionResolver[] resolvers) =>
+        new(new AIMentionRegistry(resolvers), authorizer);
 
     [Fact]
     public async Task Search_by_type_targets_only_that_resolver()
@@ -89,6 +101,30 @@ public sealed class AIMentionSearchServiceTests
             await service.SearchAsync("a", null, 3, TestContext.Current.CancellationToken);
 
         results.Count.ShouldBe(3);
+    }
+
+    [Fact]
+    public async Task Unauthorized_type_is_skipped_in_a_targeted_search()
+    {
+        AIMentionSearchService service = Build(new DenyingAuthorizer("invoice"), new FakeResolver("invoice"));
+
+        IReadOnlyList<AIMentionSuggestion> results =
+            await service.SearchAsync("a", "invoice", 10, TestContext.Current.CancellationToken);
+
+        results.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Unauthorized_types_are_filtered_out_of_a_cross_type_search()
+    {
+        AIMentionSearchService service = Build(
+            new DenyingAuthorizer("invoice"), new FakeResolver("user", 2), new FakeResolver("invoice", 2));
+
+        IReadOnlyList<AIMentionSuggestion> results =
+            await service.SearchAsync("a", null, 10, TestContext.Current.CancellationToken);
+
+        results.ShouldNotBeEmpty();
+        results.ShouldAllBe(s => s.Type == "user");
     }
 
     [Fact]

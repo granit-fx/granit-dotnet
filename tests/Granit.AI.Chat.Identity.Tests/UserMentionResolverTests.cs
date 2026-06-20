@@ -29,6 +29,12 @@ public sealed class UserMentionResolverTests
     }
 
     [Fact]
+    public void Required_permission_matches_the_canonical_identity_users_read_constant()
+    {
+        Build().RequiredPermission.ShouldBe(Granit.Identity.Endpoints.Permissions.IdentityPermissions.Users.Read);
+    }
+
+    [Fact]
     public async Task Resolve_returns_null_when_the_user_is_absent()
     {
         _users.GetUserAsync("ghost", Arg.Any<CancellationToken>()).Returns((IIdentityUser?)null);

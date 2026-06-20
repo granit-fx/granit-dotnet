@@ -22,7 +22,7 @@ public sealed class AIMentionContextResolverTests
     }
 
     private static AIMentionContextResolver Build(params IAIMentionResolver[] resolvers) =>
-        new(new AIMentionRegistry(resolvers));
+        new(new AIMentionRegistry(resolvers), new AllowAllMentionAuthorizer());
 
     [Fact]
     public async Task Empty_mentions_resolve_to_null()
@@ -72,6 +72,25 @@ public sealed class AIMentionContextResolverTests
         context.ShouldNotBeNull();
         context.ShouldContain("content-of-42");
         context.ShouldNotContain("999");
+    }
+
+    [Fact]
+    public async Task Mention_of_a_type_the_caller_is_not_authorized_for_is_dropped()
+    {
+        var registry = new AIMentionRegistry([new FakeResolver("invoice", new HashSet<string> { "42" })]);
+        var resolver = new AIMentionContextResolver(registry, new DenyAuthorizer("invoice"));
+
+        // Even a hand-crafted send naming an accessible id is dropped when the type is not authorized.
+        string? context = await resolver.ResolveContextAsync(
+            [new AIMention("invoice", "42")], TestContext.Current.CancellationToken);
+
+        context.ShouldBeNull();
+    }
+
+    private sealed class DenyAuthorizer(string deniedType) : IAIMentionAuthorizer
+    {
+        public ValueTask<bool> IsAuthorizedAsync(IAIMentionResolver resolver, CancellationToken cancellationToken = default) =>
+            ValueTask.FromResult(resolver.Type != deniedType);
     }
 
     [Fact]

@@ -89,7 +89,8 @@
       "name": "Granit.AI.Chat.Identity",
       "deps": [
         "Granit.AI.Chat",
-        "Granit.Identity"
+        "Granit.Identity",
+        "Granit.Identity.Endpoints"
       ],
       "framework": "net10.0"
     },
@@ -3739,7 +3740,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat.Endpoints",
       "file": "src/Granit.AI.Chat.Endpoints/GranitAIChatEndpointsModule.cs",
-      "line": 22,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",
@@ -4105,7 +4106,7 @@
       "kind": "class",
       "project": "Granit.AI.Chat.Identity",
       "file": "src/Granit.AI.Chat.Identity/GranitAIChatIdentityModule.cs",
-      "line": 15,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -4159,6 +4160,22 @@
       "members": []
     },
     {
+      "name": "IAIMentionAuthorizer",
+      "fqn": "Granit.AI.Chat.Mentions.IAIMentionAuthorizer",
+      "kind": "interface",
+      "project": "Granit.AI.Chat",
+      "file": "src/Granit.AI.Chat/Mentions/IAIMentionAuthorizer.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "IsAuthorizedAsync",
+          "kind": "method",
+          "signature": "IsAuthorizedAsync(IAIMentionResolver resolver, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
       "name": "IAIMentionContextResolver",
       "fqn": "Granit.AI.Chat.Mentions.IAIMentionContextResolver",
       "kind": "interface",
@@ -4199,10 +4216,16 @@
       "line": 16,
       "members": [
         {
+          "name": "Type",
+          "kind": "property",
+          "signature": "string Type",
+          "returnType": "string"
+        },
+        {
           "name": "ResolveAsync",
           "kind": "method",
           "signature": "ResolveAsync(string id, CancellationToken cancellationToken = default)",
-          "returnType": "string Type { get; } ValueTask<AIMentionContext?>"
+          "returnType": "ValueTask<AIMentionContext?>"
         },
         {
           "name": "SearchAsync",

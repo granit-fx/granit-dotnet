@@ -14,6 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.AI.Chat\Granit.AI.Chat.csproj" />
     <ProjectReference Include="..\Granit.Identity\Granit.Identity.csproj" />
+    <!-- For IdentityPermissions.Users.Read — the canonical gate the @user resolver reuses. -->
+    <ProjectReference Include="..\Granit.Identity.Endpoints\Granit.Identity.Endpoints.csproj" />
   </ItemGroup>
 
 </Project>

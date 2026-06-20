@@ -47,5 +47,6 @@ public static class AIChatMentionsServiceCollectionExtensions
         services.TryAddScoped<IAIMentionRegistry, AIMentionRegistry>();
         services.TryAddScoped<IAIMentionContextResolver, AIMentionContextResolver>();
         services.TryAddScoped<IAIMentionSearchService, AIMentionSearchService>();
+        services.TryAddScoped<IAIMentionAuthorizer, AllowAllMentionAuthorizer>();
     }
 }

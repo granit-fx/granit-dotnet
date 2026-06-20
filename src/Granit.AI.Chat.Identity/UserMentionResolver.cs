@@ -1,5 +1,6 @@
 using Granit.AI.Chat.Mentions;
 using Granit.Identity;
+using Granit.Identity.Endpoints.Permissions;
 
 namespace Granit.AI.Chat.Identity;
 
@@ -13,7 +14,15 @@ internal sealed class UserMentionResolver(IIdentityUserReader users) : IAIMentio
     /// <summary>The mention type. Apps referencing users elsewhere should reuse this literal.</summary>
     public const string MentionType = "user";
 
+    /// <summary>
+    /// The same gate as <c>GET /identity/users</c> (<see cref="IdentityPermissions.Users.Read"/>):
+    /// a caller who may chat but may not read the directory sees no <c>@user</c> suggestions.
+    /// </summary>
+    public const string ReadUsersPermission = IdentityPermissions.Users.Read;
+
     public string Type => MentionType;
+
+    public string? RequiredPermission => ReadUsersPermission;
 
     public async ValueTask<AIMentionContext?> ResolveAsync(string id, CancellationToken cancellationToken = default)
     {
