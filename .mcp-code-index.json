@@ -2200,6 +2200,7 @@
       "name": "Granit.Privacy",
       "deps": [
         "Granit",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Settings",
         "Granit.Workflow"
       ],
@@ -2259,6 +2260,7 @@
         "Granit.Http.RateLimiting",
         "Granit.Privacy",
         "Granit.Privacy.Regulations",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -2269,8 +2271,9 @@
       "deps": [
         "Granit.Encryption.EntityFrameworkCore",
         "Granit.Guids",
+        "Granit.Persistence.EntityFrameworkCore",
         "Granit.Privacy",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -45097,6 +45100,15 @@
       ]
     },
     {
+      "name": "LegalDocumentDetailResponse",
+      "fqn": "Granit.Privacy.Dtos.LegalDocumentDetailResponse",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/Dtos/LegalDocumentDetailResponse.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "GpcDiscoveryEndpointRouteBuilderExtensions",
       "fqn": "Granit.Privacy.Endpoints.Discovery.GpcDiscoveryEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -45135,15 +45147,6 @@
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Dtos/LegalDocumentCreateRequest.cs",
       "line": 8,
-      "members": []
-    },
-    {
-      "name": "LegalDocumentDetailResponse",
-      "fqn": "Granit.Privacy.Endpoints.Dtos.LegalDocumentDetailResponse",
-      "kind": "record",
-      "project": "Granit.Privacy.Endpoints",
-      "file": "src/Granit.Privacy.Endpoints/Dtos/LegalDocumentDetailResponse.cs",
-      "line": 15,
       "members": []
     },
     {
@@ -45529,7 +45532,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitPrivacyEntityFrameworkCore",
@@ -45595,7 +45598,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/Extensions/PrivacyServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitPrivacy",
@@ -46527,6 +46530,22 @@
       "file": "src/Granit.Privacy/ProcessingPurposes/ProcessingPurposeDefinition.cs",
       "line": 14,
       "members": []
+    },
+    {
+      "name": "LegalDocumentQueryDefinition",
+      "fqn": "Granit.Privacy.Queries.LegalDocumentQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/Queries/LegalDocumentQueryDefinition.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "ConsentModel",

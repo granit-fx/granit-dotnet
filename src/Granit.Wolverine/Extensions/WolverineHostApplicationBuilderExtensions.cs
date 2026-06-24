@@ -96,12 +96,13 @@ public static class WolverineHostApplicationBuilderExtensions
         // WolverineCurrentUserService: AsyncLocal override + IHttpContextAccessor fallback.
         // Registered as the ICurrentUserService for Wolverine — restores user identity in
         // background handlers so EF Core audit interceptors record the correct ModifiedBy.
+        // Two separate scoped instances per scope is intentional: all AsyncLocal fields are
+        // static, so setter.Change() and currentUser.UserId share state regardless of instance.
+        // Direct AddScoped<IFoo, TConcrete>() (not a lambda factory) keeps both registrations
+        // codegen-clean for Wolverine static mode.
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddScoped<WolverineCurrentUserService>();
-        builder.Services.AddScoped<ICurrentUserService>(
-            sp => sp.GetRequiredService<WolverineCurrentUserService>());
-        builder.Services.AddScoped<IWolverineUserContextSetter>(
-            sp => sp.GetRequiredService<WolverineCurrentUserService>());
+        builder.Services.AddScoped<ICurrentUserService, WolverineCurrentUserService>();
+        builder.Services.AddScoped<IWolverineUserContextSetter, WolverineCurrentUserService>();
 
         // FluentValidation — auto-discover validators from [WolverineHandlerModule] assemblies.
         // Modules without Wolverine handlers must still register manually.
@@ -156,17 +157,12 @@ public static class WolverineHostApplicationBuilderExtensions
             // forces fail-fast.
             opts.CodeGeneration.TypeLoadMode = messagingOptions.CodeGenerationMode;
 
-            // Service-location policy for code generation. Wolverine 6 defaults to NotAllowed,
-            // which ABORTS `codegen write` (Static) when a chain dependency can't be inlined —
-            // true for three framework registrations reached via the context-propagation
-            // middleware on every chain: ICurrentUserService + IWolverineUserContextSetter
-            // (scoped forwarding factories onto the shared WolverineCurrentUserService) and the
-            // internal INotificationPublisher impl. AllowedButWarn lets codegen fall back to
-            // runtime service location for those (everything else still inlines), so Static works
-            // without each consumer setting it. The cleaner long-term fix is to make those
-            // registrations inline-able (direct interface→concrete + InternalsVisibleTo
-            // "WolverineHandlers") so NotAllowed can be restored — tracked as a follow-up.
-            opts.ServiceLocationPolicy = ServiceLocationPolicy.AllowedButWarn;
+            // Service-location policy: NotAllowed aborts `codegen write` when a dependency
+            // can't be inlined. All three previously-problematic registrations are now clean:
+            // ICurrentUserService + IWolverineUserContextSetter use direct AddScoped<IFoo, TConcrete>
+            // (no lambda); INotificationPublisher impls are internal but InternalsVisibleTo
+            // "WolverineHandlers" is declared in Granit.Notifications and Granit.Notifications.Wolverine.
+            opts.ServiceLocationPolicy = ServiceLocationPolicy.NotAllowed;
 
             // IDomainEvent — force local routing, never forward to external transports.
             // IIntegrationEvent routing is configured by the provider package.

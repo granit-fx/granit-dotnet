@@ -9,6 +9,7 @@
     <InternalsVisibleTo Include="Granit.Notifications.Wolverine" />
     <InternalsVisibleTo Include="Granit.Notifications.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.Notifications.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="WolverineHandlers" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
   <ItemGroup>
