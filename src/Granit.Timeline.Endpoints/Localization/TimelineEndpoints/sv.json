@@ -1,7 +1,8 @@
 {
   "culture": "sv",
   "texts": {
-    "Validation:TooManyAttachments": "Det går inte att bifoga fler än 20 filer.",
+    "Timeline:Validation:TooManyAttachments": "Det går inte att bifoga fler än 20 filer.",
+    "Timeline:Validation:InvalidSourceKey": "Ogiltigt format för källnyckel.",
     "Permission:Timeline.Entries.Create": "Publicera kommentarer och följa/sluta följa entiteter",
     "Permission:Timeline.Entries.Manage": "Hantera (ta bort) tidslinjepost oavsett ägare",
     "Permission:Timeline.Entries.Read": "Visa aktivitetsflöden och revisionshistorik",

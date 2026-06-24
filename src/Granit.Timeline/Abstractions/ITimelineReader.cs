@@ -25,4 +25,17 @@ public interface ITimelineReader
         int page = 1,
         int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns a single native timeline entry projected as a <see cref="TimelineStreamEntry"/>,
+    /// or <see langword="null"/> when no matching entry exists (wrong entity, soft-deleted, or
+    /// unknown id). Scoped to the current tenant by the same query filter as
+    /// <see cref="GetStreamAsync"/>. Used for targeted lookups such as ownership checks, where
+    /// scanning a page would be both wasteful and incorrect beyond the page bound.
+    /// </summary>
+    Task<TimelineStreamEntry?> GetEntryAsync(
+        string entityType,
+        string entityId,
+        Guid entryId,
+        CancellationToken cancellationToken = default);
 }

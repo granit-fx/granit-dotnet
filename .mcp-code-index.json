@@ -52150,6 +52150,12 @@
           "kind": "method",
           "signature": "GetStreamAsync(string entityType, string entityId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
           "returnType": "Task<TimelineStreamResult>"
+        },
+        {
+          "name": "GetEntryAsync",
+          "kind": "method",
+          "signature": "GetEntryAsync(string entityType, string entityId, Guid entryId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TimelineStreamEntry?>"
         }
       ]
     },
@@ -52754,7 +52760,7 @@
       "kind": "class",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/GranitTimelineModule.cs",
-      "line": 21,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",

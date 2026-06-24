@@ -1,7 +1,8 @@
 {
   "culture": "fr",
   "texts": {
-    "Validation:TooManyAttachments": "Impossible de joindre plus de 20 fichiers.",
+    "Timeline:Validation:TooManyAttachments": "Impossible de joindre plus de 20 fichiers.",
+    "Timeline:Validation:InvalidSourceKey": "Format de clé de source non valide.",
     "Permission:Timeline.Entries.Create": "Poster des commentaires et suivre/ne plus suivre des entités",
     "Permission:Timeline.Entries.Manage": "Gérer (supprimer) toute entrée de fil d'activité quel que soit le propriétaire",
     "Permission:Timeline.Entries.Read": "Consulter les flux d'activité et l'historique d'audit",

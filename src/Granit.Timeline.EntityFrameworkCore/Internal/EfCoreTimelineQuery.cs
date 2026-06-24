@@ -74,25 +74,55 @@ internal sealed class EfCoreTimelineQuery(
 
         ILookup<Guid, TimelineAttachment> attachmentLookup = attachments.ToLookup(a => a.EntryId);
 
-        return [..
-            entries.Select(e => new TimelineStreamEntry
-            {
-                Id = e.Id,
-                OccurredAt = e.CreatedAt,
-                EntryType = (TimelineStreamEntryType)e.EntryType,
-                AuthorId = e.AuthorId,
-                AuthorName = e.AuthorName,
-                Body = e.Body,
-                ParentEntryId = e.ParentEntryId,
-                Origin = e.SourceKey is null ? TimelineEntryOrigin.Native : TimelineEntryOrigin.External,
-                SourceKey = e.SourceKey ?? TimelineSourceKeys.Native,
-                SourceId = e.SourceId,
-                EditedAt = e.EditedAt,
-                Attachments = [..
-                    attachmentLookup[e.Id]
-                        .Select(a => new TimelineAttachmentInfo(a.Id, a.BlobId, a.FileName, a.ContentType, a.SizeBytes))],
-            })];
+        return [.. entries.Select(e => MapToStreamEntry(e, attachmentLookup[e.Id]))];
     }
+
+    /// <inheritdoc/>
+    public async Task<TimelineStreamEntry?> GetEntryAsync(
+        string entityType,
+        string entityId,
+        Guid entryId,
+        CancellationToken cancellationToken = default)
+    {
+        await using TimelineDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        TimelineEntry? entry = await db.TimelineEntries
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                e => e.Id == entryId && e.EntityType == entityType && e.EntityId == entityId,
+                cancellationToken).ConfigureAwait(false);
+
+        if (entry is null)
+        {
+            return null;
+        }
+
+        List<TimelineAttachment> attachments = await db.TimelineAttachments
+            .AsNoTracking()
+            .Where(a => a.EntryId == entryId)
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+        return MapToStreamEntry(entry, attachments);
+    }
+
+    private static TimelineStreamEntry MapToStreamEntry(
+        TimelineEntry entry, IEnumerable<TimelineAttachment> attachments) =>
+        new()
+        {
+            Id = entry.Id,
+            OccurredAt = entry.CreatedAt,
+            EntryType = (TimelineStreamEntryType)entry.EntryType,
+            AuthorId = entry.AuthorId,
+            AuthorName = entry.AuthorName,
+            Body = entry.Body,
+            ParentEntryId = entry.ParentEntryId,
+            Origin = entry.SourceKey is null ? TimelineEntryOrigin.Native : TimelineEntryOrigin.External,
+            SourceKey = entry.SourceKey ?? TimelineSourceKeys.Native,
+            SourceId = entry.SourceId,
+            EditedAt = entry.EditedAt,
+            Attachments = [..
+                attachments.Select(a => new TimelineAttachmentInfo(a.Id, a.BlobId, a.FileName, a.ContentType, a.SizeBytes))],
+        };
 
     private async Task<int> CountNativeAsync(string entityType, string entityId, CancellationToken cancellationToken)
     {

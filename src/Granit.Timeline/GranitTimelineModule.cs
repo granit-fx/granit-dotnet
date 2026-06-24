@@ -1,3 +1,4 @@
+using Granit.DataExchange;
 using Granit.Guids;
 using Granit.Modularity;
 using Granit.QueryEngine;
@@ -15,6 +16,7 @@ namespace Granit.Timeline;
 /// to enable durable persistence.
 /// </remarks>
 [DependsOn(
+    typeof(GranitDataExchangeAbstractionsModule),
     typeof(GranitGuidsModule),
     typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitTimingModule))]

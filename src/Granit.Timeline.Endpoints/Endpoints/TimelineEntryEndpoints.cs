@@ -54,6 +54,7 @@ internal static class TimelineEntryEndpoints
             .WithSummary("Soft-deletes a comment or internal note (GDPR right to erasure).")
             .WithDescription("Performs a soft-delete on the timeline entry. Only the author or users with Timeline.Entries.Manage permission can delete. SystemLog entries are immutable (ISO 27001). Returns 404 if the entry does not exist.")
             .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
@@ -66,6 +67,7 @@ internal static class TimelineEntryEndpoints
         [FromServices] ITimelineWriter writer,
         [FromServices] ITimelineFollowerService followerService,
         [FromServices] ITimelineNotifier notifier,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         TimelineEntry entry = await writer.PostEntryAsync(
@@ -104,7 +106,10 @@ internal static class TimelineEntryEndpoints
             SourceId: null,
             EditedAt: null);
 
-        return TypedResults.Created($"/api/timeline/{entityType}/{entityId}/entries/{entry.Id}", result);
+        // Location is built from the actual request path so it honours the host's configured
+        // route prefix (TimelineEndpointsOptions.RoutePrefix) and mount point.
+        string location = $"{httpContext.Request.Path}/{entry.Id}";
+        return TypedResults.Created(location, result);
     }
 
     private static async Task<Results<Ok<AnchorTimelineEntryResponse>, ProblemHttpResult>> AnchorExternalAsync(
@@ -176,8 +181,7 @@ internal static class TimelineEntryEndpoints
 
         if (!isAdmin)
         {
-            TimelineStreamResult stream = await reader.GetStreamAsync(entityType, entityId, 1, 1000, cancellationToken).ConfigureAwait(false);
-            TimelineStreamEntry? target = stream.Page.Items.FirstOrDefault(e => e.Id == entryId);
+            TimelineStreamEntry? target = await reader.GetEntryAsync(entityType, entityId, entryId, cancellationToken).ConfigureAwait(false);
 
             if (target is null)
             {

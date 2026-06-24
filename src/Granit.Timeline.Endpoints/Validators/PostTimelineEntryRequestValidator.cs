@@ -19,6 +19,6 @@ internal sealed class PostTimelineEntryRequestValidator : AbstractValidator<Post
             .NotEqual(TimelineEntryType.SystemLog);
         RuleFor(x => x.AttachmentBlobIds)
             .Must(ids => ids is null || ids.Count <= 20)
-            .WithErrorCodeAndMessage("Validation:TooManyAttachments");
+            .WithErrorCodeAndMessage("Timeline:Validation:TooManyAttachments");
     }
 }

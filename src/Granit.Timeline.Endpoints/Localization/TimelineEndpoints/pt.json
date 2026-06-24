@@ -1,7 +1,8 @@
 {
   "culture": "pt",
   "texts": {
-    "Validation:TooManyAttachments": "Não é possível anexar mais de 20 ficheiros.",
+    "Timeline:Validation:TooManyAttachments": "Não é possível anexar mais de 20 ficheiros.",
+    "Timeline:Validation:InvalidSourceKey": "Formato da chave de origem inválido.",
     "Permission:Timeline.Entries.Create": "Publicar comentários e seguir/deixar de seguir entidades",
     "Permission:Timeline.Entries.Manage": "Gerir (eliminar) qualquer entrada de cronologia independentemente do proprietário",
     "Permission:Timeline.Entries.Read": "Ver fluxos de atividade e histórico de auditoria",

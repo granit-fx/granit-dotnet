@@ -30,7 +30,7 @@ internal sealed partial class MentionLookupSource(
     // Resolved lazily, not constructor-injected: LookupRegistry consumes IEnumerable<ILookupSource>,
     // which includes this source, so a constructor dependency on ILookupRegistry forms a DI cycle.
     // Both this source and the registry are scoped, so by the time SearchAsync runs this instance is
-    // already cached in the scope — resolving the registry here reuses it, no recursion. (#2833)
+    // already cached in the scope — resolving the registry here reuses it, no recursion. (#2834)
     private ILookupRegistry Registry => serviceProvider.GetRequiredService<ILookupRegistry>();
 
     public string Name => MentionLookup.SourceName;

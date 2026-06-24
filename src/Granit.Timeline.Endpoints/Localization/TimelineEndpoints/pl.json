@@ -1,7 +1,8 @@
 {
   "culture": "pl",
   "texts": {
-    "Validation:TooManyAttachments": "Nie można dołączyć więcej niż 20 plików.",
+    "Timeline:Validation:TooManyAttachments": "Nie można dołączyć więcej niż 20 plików.",
+    "Timeline:Validation:InvalidSourceKey": "Nieprawidłowy format klucza źródła.",
     "Permission:Timeline.Entries.Create": "Dodawanie komentarzy i śledzenie/zaprzestanie śledzenia encji",
     "Permission:Timeline.Entries.Manage": "Zarządzanie (usuwanie) wpisów osi czasu niezależnie od właściciela",
     "Permission:Timeline.Entries.Read": "Wyświetlanie kanałów aktywności i historii audytu",
