@@ -14413,7 +14413,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/Validators/MagicBytesValidator.cs",
-      "line": 21,
+      "line": 26,
       "members": [
         {
           "name": "Order",
