@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.Diagnostics;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Internal;
 using Granit.Timeline.Options;
@@ -28,15 +30,19 @@ internal sealed class EfCoreTimelineStore(
     IGuidGenerator guidGenerator,
     ICurrentTenant currentTenant,
     IOptions<TimelineOptions> options,
-    IEnumerable<ITimelineSource>? sources = null)
+    IEnumerable<ITimelineSource>? sources = null,
+    TimelineMetrics? metrics = null)
     : EfStoreBase<TimelineEntry, TimelineDbContext>(dbContextFactory, currentTenant), ITimelineWriter
 {
     private readonly AuditContext _audit = new(guidGenerator, clock, currentUser, currentTenant);
     private readonly TimelineOptions _options = options.Value;
     private readonly IEnumerable<ITimelineSource> _sources = sources ?? [];
+    private readonly TimelineMetrics? _metrics = metrics;
+
+    private string? TenantTag() => _audit.CurrentTenant.IsAvailable ? _audit.CurrentTenant.Id.ToString() : null;
 
     /// <inheritdoc/>
-    public Task<TimelineEntry> PostEntryAsync(
+    public async Task<TimelineEntry> PostEntryAsync(
         string entityType,
         string entityId,
         TimelineEntryType entryType,
@@ -44,22 +50,28 @@ internal sealed class EfCoreTimelineStore(
         Guid? parentEntryId = null,
         CancellationToken cancellationToken = default)
     {
+        using Activity? activity = TimelineActivitySource.Source.StartActivity("Timeline.PostEntry");
         TimelineEntry entry = TimelineEntityFactory.CreateEntry(
             entityType, entityId, entryType, body, parentEntryId, _audit);
         entry.RaisePostedEvent();
 
-        return WriteAsync(
+        await WriteAsync(
             async db =>
             {
                 db.TimelineEntries.Add(entry);
                 return entry;
             },
-            cancellationToken);
+            cancellationToken).ConfigureAwait(false);
+
+        _metrics?.RecordEntryPosted(TenantTag(), entry.EntityType, entry.EntryType.ToString());
+        return entry;
     }
 
     /// <inheritdoc/>
-    public Task DeleteEntryAsync(Guid entryId, CancellationToken cancellationToken = default) =>
-        WriteAsync(
+    public async Task DeleteEntryAsync(Guid entryId, CancellationToken cancellationToken = default)
+    {
+        using Activity? activity = TimelineActivitySource.Source.StartActivity("Timeline.DeleteEntry");
+        string entityType = await WriteAsync(
             async db =>
             {
                 TimelineEntry entry = await db.TimelineEntries
@@ -68,15 +80,20 @@ internal sealed class EfCoreTimelineStore(
                     ?? throw new KeyNotFoundException($"Timeline entry '{entryId}' not found.");
 
                 entry.SoftDelete(clock.Now, currentUser.UserId);
+                return entry.EntityType;
             },
-            cancellationToken);
+            cancellationToken).ConfigureAwait(false);
+
+        _metrics?.RecordEntryDeleted(TenantTag(), entityType);
+    }
 
     /// <inheritdoc/>
-    public Task UpdateEntryBodyAsync(Guid entryId, string newBody, CancellationToken cancellationToken = default)
+    public async Task UpdateEntryBodyAsync(Guid entryId, string newBody, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(newBody);
 
-        return WriteAsync(
+        using Activity? activity = TimelineActivitySource.Source.StartActivity("Timeline.UpdateEntryBody");
+        string entityType = await WriteAsync(
             async db =>
             {
                 TimelineEntry entry = await db.TimelineEntries
@@ -85,8 +102,11 @@ internal sealed class EfCoreTimelineStore(
 
                 TimelineEditGate.EnsureEditable(entry, currentUser.UserId, clock.Now, _options.EditWindow);
                 entry.UpdateBody(newBody, clock.Now);
+                return entry.EntityType;
             },
-            cancellationToken);
+            cancellationToken).ConfigureAwait(false);
+
+        _metrics?.RecordEntryEdited(TenantTag(), entityType);
     }
 
     /// <inheritdoc/>
@@ -97,6 +117,7 @@ internal sealed class EfCoreTimelineStore(
         string sourceId,
         CancellationToken cancellationToken = default)
     {
+        using Activity? activity = TimelineActivitySource.Source.StartActivity("Timeline.AnchorExternal");
         ITimelineSource source = TimelineAnchor.ResolveSource(_sources, sourceKey);
 
         Guid? tenantId = _audit.CurrentTenant.IsAvailable ? _audit.CurrentTenant.Id : null;
@@ -127,6 +148,8 @@ internal sealed class EfCoreTimelineStore(
                     return shadow.Id;
                 },
                 cancellationToken).ConfigureAwait(false);
+
+            _metrics?.RecordAnchorCreated(TenantTag(), entityType, sourceKey);
         }
         catch (DbUpdateException)
         {

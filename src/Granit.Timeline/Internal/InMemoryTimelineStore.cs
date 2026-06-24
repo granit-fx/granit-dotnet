@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.Diagnostics;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Options;
 using Granit.Timing;
@@ -19,14 +21,18 @@ internal sealed class InMemoryTimelineStore(
     IGuidGenerator guidGenerator,
     ICurrentTenant currentTenant,
     IOptions<TimelineOptions> options,
-    IEnumerable<ITimelineSource>? sources = null) : ITimelineWriter
+    IEnumerable<ITimelineSource>? sources = null,
+    TimelineMetrics? metrics = null) : ITimelineWriter
 {
     private readonly AuditContext _audit = new(guidGenerator, clock, currentUser, currentTenant);
     private readonly TimelineOptions _options = options.Value;
     private readonly IEnumerable<ITimelineSource> _sources = sources ?? [];
+    private readonly TimelineMetrics? _metrics = metrics;
 
     internal readonly ConcurrentDictionary<Guid, TimelineEntry> Entries = new();
     internal readonly ConcurrentDictionary<Guid, TimelineAttachment> Attachments = new();
+
+    private string? TenantTag() => currentTenant.IsAvailable ? currentTenant.Id.ToString() : null;
 
     /// <inheritdoc/>
     public Task<TimelineEntry> PostEntryAsync(
@@ -37,23 +43,27 @@ internal sealed class InMemoryTimelineStore(
         Guid? parentEntryId = null,
         CancellationToken cancellationToken = default)
     {
+        using Activity? activity = TimelineActivitySource.Source.StartActivity("Timeline.PostEntry");
         TimelineEntry entry = TimelineEntityFactory.CreateEntry(
             entityType, entityId, entryType, body, parentEntryId, _audit);
         entry.RaisePostedEvent();
 
         Entries[entry.Id] = entry;
+        _metrics?.RecordEntryPosted(TenantTag(), entry.EntityType, entry.EntryType.ToString());
         return Task.FromResult(entry);
     }
 
     /// <inheritdoc/>
     public Task DeleteEntryAsync(Guid entryId, CancellationToken cancellationToken = default)
     {
+        using Activity? activity = TimelineActivitySource.Source.StartActivity("Timeline.DeleteEntry");
         if (!Entries.TryGetValue(entryId, out TimelineEntry? entry))
         {
             throw new KeyNotFoundException($"Timeline entry '{entryId}' not found.");
         }
 
         entry.SoftDelete(clock.Now, currentUser.UserId);
+        _metrics?.RecordEntryDeleted(TenantTag(), entry.EntityType);
         return Task.CompletedTask;
     }
 
@@ -62,6 +72,7 @@ internal sealed class InMemoryTimelineStore(
     {
         ArgumentException.ThrowIfNullOrEmpty(newBody);
 
+        using Activity? activity = TimelineActivitySource.Source.StartActivity("Timeline.UpdateEntryBody");
         if (!Entries.TryGetValue(entryId, out TimelineEntry? entry))
         {
             throw new KeyNotFoundException($"Timeline entry '{entryId}' not found.");
@@ -69,6 +80,7 @@ internal sealed class InMemoryTimelineStore(
 
         TimelineEditGate.EnsureEditable(entry, currentUser.UserId, clock.Now, _options.EditWindow);
         entry.UpdateBody(newBody, clock.Now);
+        _metrics?.RecordEntryEdited(TenantTag(), entry.EntityType);
         return Task.CompletedTask;
     }
 
@@ -80,6 +92,7 @@ internal sealed class InMemoryTimelineStore(
         string sourceId,
         CancellationToken cancellationToken = default)
     {
+        using Activity? activity = TimelineActivitySource.Source.StartActivity("Timeline.AnchorExternal");
         ITimelineSource source = TimelineAnchor.ResolveSource(_sources, sourceKey);
 
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
@@ -100,7 +113,11 @@ internal sealed class InMemoryTimelineStore(
             entityType, entityId, sourceKey, sourceId, projection, _audit);
 
         // TryAdd is the equivalent of INSERT ... ON CONFLICT DO NOTHING.
-        Entries.TryAdd(shadow.Id, shadow);
+        if (Entries.TryAdd(shadow.Id, shadow))
+        {
+            _metrics?.RecordAnchorCreated(TenantTag(), entityType, sourceKey);
+        }
+
         return shadow.Id;
     }
 

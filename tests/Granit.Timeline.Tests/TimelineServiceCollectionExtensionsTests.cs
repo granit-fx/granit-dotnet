@@ -4,9 +4,12 @@
 // Verifies that AddGranitTimeline registers all expected services.
 // =============================================================================
 
+using System.Diagnostics.Metrics;
+using Granit.Diagnostics;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.Diagnostics;
 using Granit.Timeline.Extensions;
 using Granit.Timing;
 using Granit.Users;
@@ -71,11 +74,39 @@ public sealed class TimelineServiceCollectionExtensionsTests
         notifier.ShouldNotBeNull();
     }
 
+    [Fact]
+    public void AddGranitTimeline_RegistersTimelineMetrics()
+    {
+        ServiceCollection services = new();
+        AddRequiredDependencies(services);
+
+        services.AddGranitTimeline();
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+        TimelineMetrics? metrics = sp.GetService<TimelineMetrics>();
+        metrics.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void AddGranitTimeline_RegistersActivitySource()
+    {
+        ServiceCollection services = new();
+        AddRequiredDependencies(services);
+
+        services.AddGranitTimeline();
+
+        GranitActivitySourceRegistry.GetRegisteredSources()
+            .ShouldContain(TimelineActivitySource.Name);
+    }
+
     private static void AddRequiredDependencies(ServiceCollection services)
     {
         services.AddSingleton(Substitute.For<IClock>());
         services.AddSingleton(Substitute.For<IGuidGenerator>());
         services.AddSingleton(Substitute.For<ICurrentUserService>());
         services.AddSingleton(Substitute.For<ICurrentTenant>());
+        // The stores depend on TimelineMetrics, which the host supplies an IMeterFactory for
+        // (AddMetrics / OpenTelemetry). Mirror that here so the writer/reader resolve.
+        services.AddSingleton(Substitute.For<IMeterFactory>());
     }
 }

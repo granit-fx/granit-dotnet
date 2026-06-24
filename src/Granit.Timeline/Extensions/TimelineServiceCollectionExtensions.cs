@@ -1,6 +1,8 @@
 using Granit.DataExchange.Extensions;
+using Granit.Diagnostics;
 using Granit.QueryEngine.Extensions;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.Diagnostics;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Exports;
 using Granit.Timeline.Internal;
@@ -24,6 +26,11 @@ public static class TimelineServiceCollectionExtensions
     public static IServiceCollection AddGranitTimeline(this IServiceCollection services)
     {
         services.AddOptions<TimelineOptions>();
+
+        // Diagnostics: meter resolved from IMeterFactory (host adds it via AddMetrics);
+        // ActivitySource exported for the host's OpenTelemetry tracer pipeline.
+        GranitActivitySourceRegistry.Register(TimelineActivitySource.Name);
+        services.TryAddSingleton<TimelineMetrics>();
 
         // Core stores (default: in-memory, replaced by EF Core package).
         // Scoped: depends on ICurrentUserService (scoped per-request).
