@@ -7,5 +7,5 @@ namespace Granit.Vault;
 /// JSON files: <c>Localization/Vault/{culture}.json</c>, embedded in this assembly.
 /// Auto-discovered by <see cref="LocalizationResourceNameAttribute"/>.
 /// </summary>
-[LocalizationResourceName("Vault", DefaultCulture = "fr")]
+[LocalizationResourceName("Vault", DefaultCulture = "en")]
 public sealed class VaultLocalizationResource;

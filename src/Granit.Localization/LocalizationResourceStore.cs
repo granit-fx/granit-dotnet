@@ -20,9 +20,9 @@ public sealed class LocalizationResourceStore
     /// If the type is already registered, the entry is replaced.
     /// </summary>
     /// <typeparam name="TResource">Marker type of the resource.</typeparam>
-    /// <param name="defaultCulture">Default culture (default: "fr").</param>
+    /// <param name="defaultCulture">Default culture (default: "en").</param>
     /// <returns>Resource info for fluent chaining.</returns>
-    public LocalizationResourceInfo Add<TResource>(string defaultCulture = "fr")
+    public LocalizationResourceInfo Add<TResource>(string defaultCulture = "en")
         => Add(typeof(TResource), defaultCulture);
 
     /// <summary>
@@ -31,9 +31,9 @@ public sealed class LocalizationResourceStore
     /// If the type is already registered, the entry is replaced.
     /// </summary>
     /// <param name="resourceType">Marker type of the resource.</param>
-    /// <param name="defaultCulture">Default culture (default: "fr").</param>
+    /// <param name="defaultCulture">Default culture (default: "en").</param>
     /// <returns>Resource info for fluent chaining.</returns>
-    public LocalizationResourceInfo Add(Type resourceType, string defaultCulture = "fr")
+    public LocalizationResourceInfo Add(Type resourceType, string defaultCulture = "en")
     {
         LocalizationResourceInfo info = new(resourceType, defaultCulture);
         _resources[resourceType] = info;

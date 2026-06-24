@@ -25,12 +25,12 @@ public sealed class VaultLocalizationResourceTests
     }
 
     [Fact]
-    public void DefaultCulture_IsFrench()
+    public void DefaultCulture_IsEnglish()
     {
         var attribute = (LocalizationResourceNameAttribute)
             Attribute.GetCustomAttribute(typeof(VaultLocalizationResource), typeof(LocalizationResourceNameAttribute))!;
 
-        attribute.DefaultCulture.ShouldBe("fr");
+        attribute.DefaultCulture.ShouldBe("en");
     }
 
     [Fact]

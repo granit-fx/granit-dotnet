@@ -44,7 +44,7 @@ public sealed partial class GranitFeaturesModule : GranitModule
         context.Services.Configure<GranitLocalizationOptions>(options =>
         {
             options.Resources
-                .Add<FeaturesLocalizationResource>("fr")
+                .Add<FeaturesLocalizationResource>("en")
                 .AddJson(
                     typeof(FeaturesLocalizationResource).Assembly,
                     "Granit.Features.Localization.Features");

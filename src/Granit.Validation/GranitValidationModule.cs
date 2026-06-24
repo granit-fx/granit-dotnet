@@ -47,7 +47,7 @@ public sealed class GranitValidationModule : GranitModule
         context.Services.Configure<GranitLocalizationOptions>(options =>
         {
             options.Resources
-                .Add<ValidationLocalizationResource>("fr")
+                .Add<ValidationLocalizationResource>("en")
                 .AddJson(
                     typeof(ValidationLocalizationResource).Assembly,
                     "Granit.Validation.Localization.Validation");

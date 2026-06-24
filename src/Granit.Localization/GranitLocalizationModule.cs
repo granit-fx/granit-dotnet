@@ -30,7 +30,7 @@ public sealed class GranitLocalizationModule : GranitModule
             options.EnableAutoDiscovery = true;
 
             options.Resources
-                .Add<GranitLocalizationResource>("fr")
+                .Add<GranitLocalizationResource>("en")
                 .AddJson(
                     typeof(GranitLocalizationResource).Assembly,
                     "Granit.Localization.Localization.Granit");
