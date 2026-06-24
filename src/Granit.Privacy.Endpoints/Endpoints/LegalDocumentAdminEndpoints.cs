@@ -3,6 +3,7 @@ using Granit.Privacy.Endpoints.Dtos;
 using Granit.Privacy.Endpoints.Permissions;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Domain;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -36,14 +37,13 @@ internal static class LegalDocumentAdminEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(PrivacyPermissions.LegalDocuments.Read);
 
-        group.MapGet("/", ListAsync)
-            .WithName("ListLegalDocumentVersions")
-            .WithSummary("Lists all versions of a legal document.")
-            .WithDescription(
-                "Returns the version history for the specified document ID, ordered by version descending. "
-                + "Includes drafts, published, and archived versions.")
-            .Produces<IReadOnlyList<LegalDocumentDetailResponse>>()
-            .RequireAuthorization(PrivacyPermissions.LegalDocuments.Read);
+        // GET / and GET /meta — served by the query engine (filtering, sorting, search, pagination).
+        // GET /        → PagedResult<LegalDocumentDetailResponse>
+        // GET /meta    → query metadata (columns, filters, sorts, presets)
+        // The "published" quick filter is the default; pass ?quickFilters=draft to see drafts.
+        // Filter by document ID via ?filter[documentId.eq]=privacy-policy to view version history.
+        group.MapGranitQuery<LegalDocument>(configure: opts =>
+            opts.AuthorizationPolicy = PrivacyPermissions.LegalDocuments.Read);
 
         group.MapPut("/{id:guid}", UpdateAsync)
             .WithName("UpdateLegalDocument")
@@ -105,21 +105,6 @@ internal static class LegalDocumentAdminEndpoints
         return document is null
             ? TypedResults.Problem(statusCode: StatusCodes.Status404NotFound)
             : TypedResults.Ok(ToResponse(document));
-    }
-
-    private static async Task<Ok<IReadOnlyList<LegalDocumentDetailResponse>>> ListAsync(
-        [FromQuery] string documentId,
-        [FromServices] ILegalDocumentReader reader,
-        CancellationToken cancellationToken)
-    {
-        IReadOnlyList<LegalDocument> documents = await reader
-            .GetVersionHistoryAsync(documentId, cancellationToken)
-            .ConfigureAwait(false);
-
-        IReadOnlyList<LegalDocumentDetailResponse> response = documents
-            .Select(ToResponse).ToList();
-
-        return TypedResults.Ok(response);
     }
 
     private static async Task<Results<Ok<LegalDocumentDetailResponse>, ProblemHttpResult>> UpdateAsync(

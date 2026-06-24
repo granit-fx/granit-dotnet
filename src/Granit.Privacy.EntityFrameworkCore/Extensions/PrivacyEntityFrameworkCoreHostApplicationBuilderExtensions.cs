@@ -4,6 +4,8 @@ using Granit.Privacy.DataExport;
 using Granit.Privacy.EntityFrameworkCore.DataExport.Internal;
 using Granit.Privacy.EntityFrameworkCore.Internal;
 using Granit.Privacy.LegalAgreements;
+using Granit.Privacy.LegalAgreements.Domain;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -56,6 +58,7 @@ public static class PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddScoped<EfLegalDocumentStore>();
         builder.Services.TryAddScoped<ILegalDocumentReader>(sp => sp.GetRequiredService<EfLegalDocumentStore>());
         builder.Services.TryAddScoped<ILegalDocumentWriter>(sp => sp.GetRequiredService<EfLegalDocumentStore>());
+        builder.Services.TryAddScoped<IQueryableSource<LegalDocument>, EfLegalDocumentQueryableSource>();
 
         builder.Services.TryAddScoped<ILegalDocumentPublicationService, LegalDocumentPublicationService>();
 

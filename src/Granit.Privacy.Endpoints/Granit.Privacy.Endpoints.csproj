@@ -24,8 +24,9 @@
     <ProjectReference Include="..\Granit.Http.RateLimiting\Granit.Http.RateLimiting.csproj" />
     <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
     <ProjectReference Include="..\Granit.Privacy.Regulations\Granit.Privacy.Regulations.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.AspNetCore\Granit.QueryEngine.AspNetCore.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
-      <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
