@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Granit.MultiTenancy;
 using Granit.TextExtraction.Diagnostics;
 using Granit.TextExtraction.Exceptions;
@@ -67,6 +68,17 @@ internal sealed class TextExtractionPipeline : ITextExtractionPipeline, IDisposa
         ITextExtractor selected = SelectExtractor(contentType);
         string? tenantId = ResolveTenantId();
 
+        // One span per extraction so the queue-wait + parse latency (Tika HTTP hop, OCR
+        // render) is visible per extractor/MIME and propagates W3C trace context downstream.
+        using Activity? activity = TextExtractionActivitySource.Source.StartActivity(
+            TextExtractionActivitySource.Extract);
+        if (activity is not null)
+        {
+            activity.SetTag("extractor", selected.Name);
+            activity.SetTag("content_type", TextExtractionMetrics.NormalizeContentType(contentType));
+            activity.SetTag("tenant_id", tenantId ?? TextExtractionMetrics.GlobalTenant);
+        }
+
         // Bound the number of in-flight extractions across the host process.
         // Done OUTSIDE the timeout link so queue time doesn't eat the per-extraction budget.
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -92,6 +104,12 @@ internal sealed class TextExtractionPipeline : ITextExtractionPipeline, IDisposa
                     .ExtractAsync(source, contentType, _options.MaxExtractedCharLength, effectiveToken)
                     .ConfigureAwait(false);
 
+                if (activity is not null)
+                {
+                    activity.SetTag("char_count", result.CharCount);
+                    activity.SetTag("truncated", result.IsTruncated);
+                }
+
                 _metrics.RecordSuccess(tenantId, result.ExtractorName, contentType);
                 if (result.IsTruncated)
                 {
@@ -107,11 +125,13 @@ internal sealed class TextExtractionPipeline : ITextExtractionPipeline, IDisposa
             {
                 // Our timeout fired (not the caller's token) — re-surface as a structured
                 // pipeline failure so consumers can branch on `reason == "extraction_timeout"`.
+                activity?.SetStatus(ActivityStatusCode.Error, "extraction_timeout");
                 _metrics.RecordFailed(tenantId, selected.Name, contentType, "extraction_timeout");
                 throw new TextExtractionException("extraction_timeout");
             }
             catch (TextExtractionException tex)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, tex.Reason);
                 _metrics.RecordFailed(tenantId, selected.Name, contentType, tex.Reason);
                 throw;
             }
@@ -121,6 +141,7 @@ internal sealed class TextExtractionPipeline : ITextExtractionPipeline, IDisposa
             }
             catch (Exception ex)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.GetType().Name);
                 _metrics.RecordFailed(tenantId, selected.Name, contentType, ex.GetType().Name);
                 throw;
             }

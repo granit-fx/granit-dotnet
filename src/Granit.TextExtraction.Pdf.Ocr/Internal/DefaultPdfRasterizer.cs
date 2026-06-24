@@ -28,19 +28,6 @@ internal sealed class DefaultPdfRasterizer : IPdfRasterizer
 {
     private readonly Lock _gate = new();
 
-    public int GetPageCount(ReadOnlyMemory<byte> pdfBytes, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        lock (_gate)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            // PDFtoImage's byte[] overload reads everything synchronously; allocating
-            // the array is unavoidable because Conversion.GetPageCount has no Memory<>
-            // overload.
-            return Conversion.GetPageCount(pdfBytes.ToArray());
-        }
-    }
-
     public Task<byte[]> RasterisePageAsync(
         ReadOnlyMemory<byte> pdfBytes,
         int pageIndex,

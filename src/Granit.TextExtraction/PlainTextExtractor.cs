@@ -11,8 +11,6 @@ namespace Granit.TextExtraction;
 /// </summary>
 public sealed class PlainTextExtractor(IOptions<GranitTextExtractionOptions> options) : ITextExtractor
 {
-    private const string PlainText = "text/plain";
-
     /// <summary>The stable extractor identifier surfaced on metrics and spans.</summary>
     public const string ExtractorName = "granit.text-extraction.plain-text";
 
@@ -94,10 +92,4 @@ public sealed class PlainTextExtractor(IOptions<GranitTextExtractionOptions> opt
             ExtractorName: ExtractorName,
             Confidence: ExtractionConfidence.Deterministic);
     }
-
-    /// <summary>
-    /// Stable singleton MIME used when callers don't know the source content type and want
-    /// to force the plain-text path. Kept as a constant so consumers don't allocate strings.
-    /// </summary>
-    internal const string FallbackContentType = PlainText;
 }

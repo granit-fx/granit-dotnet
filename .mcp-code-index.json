@@ -51064,7 +51064,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction",
       "file": "src/Granit.TextExtraction/Extensions/ServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitTextExtraction",
@@ -51451,7 +51451,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction",
       "file": "src/Granit.TextExtraction/Options/GranitTextExtractionOptions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "MaxConcurrentExtractions",
@@ -51562,12 +51562,6 @@
       "file": "src/Granit.TextExtraction.Pdf.Ocr/IPdfRasterizer.cs",
       "line": 10,
       "members": [
-        {
-          "name": "GetPageCount",
-          "kind": "method",
-          "signature": "GetPageCount(ReadOnlyMemory<byte> pdfBytes, CancellationToken cancellationToken)",
-          "returnType": "int"
-        },
         {
           "name": "RasterisePageAsync",
           "kind": "method",

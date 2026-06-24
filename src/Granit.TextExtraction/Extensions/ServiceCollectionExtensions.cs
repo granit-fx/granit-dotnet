@@ -5,7 +5,6 @@ using Granit.TextExtraction.Internal;
 using Granit.TextExtraction.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace Granit.TextExtraction.Extensions;
 
@@ -26,10 +25,9 @@ public static class ServiceCollectionExtensions
         GranitActivitySourceRegistry.Register(TextExtractionActivitySource.Name);
 
         services.AddOptions<GranitTextExtractionOptions>()
-            .BindConfiguration(GranitTextExtractionOptions.SectionName);
-
-        services.TryAddSingleton(sp =>
-            sp.GetRequiredService<IOptions<GranitTextExtractionOptions>>().Value);
+            .BindConfiguration(GranitTextExtractionOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.TryAddSingleton<TextExtractionMetrics>();
         services.TryAddSingleton<PlainTextExtractor>();
