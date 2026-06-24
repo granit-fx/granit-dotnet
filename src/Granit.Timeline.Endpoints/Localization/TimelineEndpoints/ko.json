@@ -1,7 +1,8 @@
 {
   "culture": "ko",
   "texts": {
-    "Validation:TooManyAttachments": "20개 이상의 파일을 첨부할 수 없습니다.",
+    "Timeline:Validation:TooManyAttachments": "20개 이상의 파일을 첨부할 수 없습니다.",
+    "Timeline:Validation:InvalidSourceKey": "소스 키 형식이 잘못되었습니다.",
     "Permission:Timeline.Entries.Create": "댓글 작성 및 엔티티 팔로우/언팔로우",
     "Permission:Timeline.Entries.Manage": "소유자에 관계없이 타임라인 항목 관리(삭제)",
     "Permission:Timeline.Entries.Read": "활동 피드 및 감사 이력 보기",

@@ -16,7 +16,7 @@ internal sealed class AnchorTimelineEntryRequestValidator : AbstractValidator<An
         RuleFor(x => x.SourceKey)
             .NotEmpty()
             .Must(TimelineSourceKeys.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidSourceKey");
+            .WithErrorCodeAndMessage("Timeline:Validation:InvalidSourceKey");
         RuleFor(x => x.SourceId).NotEmpty().MaximumLength(128);
     }
 }

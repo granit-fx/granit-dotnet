@@ -1,7 +1,8 @@
 {
   "culture": "en",
   "texts": {
-    "Validation:TooManyAttachments": "Cannot attach more than 20 files.",
+    "Timeline:Validation:TooManyAttachments": "Cannot attach more than 20 files.",
+    "Timeline:Validation:InvalidSourceKey": "Invalid source key format.",
     "Permission:Timeline.Entries.Create": "Post comments and follow/unfollow entities",
     "Permission:Timeline.Entries.Manage": "Manage (delete) any timeline entry regardless of ownership",
     "Permission:Timeline.Entries.Read": "View activity feeds and audit history",

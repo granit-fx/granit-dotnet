@@ -44,6 +44,21 @@ internal sealed class InMemoryTimelineQuery(
             _logger,
             cancellationToken);
 
+    /// <inheritdoc/>
+    public Task<TimelineStreamEntry?> GetEntryAsync(
+        string entityType,
+        string entityId,
+        Guid entryId,
+        CancellationToken cancellationToken = default)
+    {
+        TimelineStreamEntry? entry =
+            store.Entries.TryGetValue(entryId, out TimelineEntry? e)
+                && e.EntityType == entityType && e.EntityId == entityId && !e.IsDeleted
+                ? MapToStreamEntry(e)
+                : null;
+        return Task.FromResult(entry);
+    }
+
     private TimelineStreamEntry MapToStreamEntry(TimelineEntry entry) =>
         new()
         {

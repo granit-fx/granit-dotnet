@@ -1,7 +1,8 @@
 {
   "culture": "cs",
   "texts": {
-    "Validation:TooManyAttachments": "Nelze připojit více než 20 souborů.",
+    "Timeline:Validation:TooManyAttachments": "Nelze připojit více než 20 souborů.",
+    "Timeline:Validation:InvalidSourceKey": "Neplatný formát klíče zdroje.",
     "Permission:Timeline.Entries.Create": "Přidávat komentáře a sledovat/přestat sledovat entity",
     "Permission:Timeline.Entries.Manage": "Spravovat (mazat) libovolnou položku časové osy bez ohledu na vlastníka",
     "Permission:Timeline.Entries.Read": "Zobrazit aktivity a historii auditu",

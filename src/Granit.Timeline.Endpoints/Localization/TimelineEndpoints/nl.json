@@ -1,7 +1,8 @@
 {
   "culture": "nl",
   "texts": {
-    "Validation:TooManyAttachments": "U kunt niet meer dan 20 bestanden bijvoegen.",
+    "Timeline:Validation:TooManyAttachments": "U kunt niet meer dan 20 bestanden bijvoegen.",
+    "Timeline:Validation:InvalidSourceKey": "Ongeldige indeling van bronsleutel.",
     "Permission:Timeline.Entries.Create": "Reacties plaatsen en entiteiten volgen/ontvolgen",
     "Permission:Timeline.Entries.Manage": "Alle tijdlijnvermeldingen beheren (verwijderen) ongeacht eigenaar",
     "Permission:Timeline.Entries.Read": "Activiteitsfeeds en auditgeschiedenis bekijken",

@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using Granit.Authorization;
 using Granit.Domain;
-using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Domain.ValueObjects;
@@ -319,8 +318,8 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
             Body = "my comment",
         };
 
-        _reader.GetStreamAsync("Patient", "42", 1, 1000, Arg.Any<CancellationToken>())
-            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>([streamEntry], 1, HasMore: false), []));
+        _reader.GetEntryAsync("Patient", "42", entryId, Arg.Any<CancellationToken>())
+            .Returns(streamEntry);
 
         // Act
         HttpResponseMessage response = await _authClient.DeleteAsync(
@@ -349,8 +348,8 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
             Body = "their comment",
         };
 
-        _reader.GetStreamAsync("Patient", "42", 1, 1000, Arg.Any<CancellationToken>())
-            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>([streamEntry], 1, HasMore: false), []));
+        _reader.GetEntryAsync("Patient", "42", entryId, Arg.Any<CancellationToken>())
+            .Returns(streamEntry);
 
         // Act
         HttpResponseMessage response = await _authClient.DeleteAsync(
@@ -368,8 +367,8 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         _permissionChecker.IsGrantedAsync(TimelinePermissions.Entries.Manage, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        _reader.GetStreamAsync("Patient", "42", 1, 1000, Arg.Any<CancellationToken>())
-            .Returns(new TimelineStreamResult(new PagedResult<TimelineStreamEntry>([], 0, HasMore: false), []));
+        _reader.GetEntryAsync("Patient", "42", entryId, Arg.Any<CancellationToken>())
+            .Returns((TimelineStreamEntry?)null);
 
         // Act
         HttpResponseMessage response = await _authClient.DeleteAsync(
