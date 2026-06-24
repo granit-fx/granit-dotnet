@@ -34687,7 +34687,7 @@
         {
           "name": "Add",
           "kind": "method",
-          "signature": "Add(Type resourceType, string defaultCulture = \"fr\")",
+          "signature": "Add(Type resourceType, string defaultCulture = \"en\")",
           "returnType": "LocalizationResourceInfo"
         },
         {
@@ -53378,7 +53378,7 @@
       "kind": "class",
       "project": "Granit.Validation.AI",
       "file": "src/Granit.Validation.AI/Options/ValidationAIOptions.cs",
-      "line": 9,
+      "line": 12,
       "members": [
         {
           "name": "WorkspaceName",
@@ -53485,7 +53485,7 @@
       "kind": "class",
       "project": "Granit.Validation.Endpoints",
       "file": "src/Granit.Validation.Endpoints/Extensions/ValidationEndpointRouteBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitValidation",
@@ -53647,7 +53647,7 @@
       "kind": "class",
       "project": "Granit.Validation.Europe",
       "file": "src/Granit.Validation.Europe/GranitValidationEuropeModule.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",

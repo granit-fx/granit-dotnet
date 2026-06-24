@@ -14,9 +14,10 @@ public sealed class CoreServerValidatorContributorTests
     }
 
     [Fact]
-    public void GetValidators_Returns17Validators() =>
-        // IBAN / BIC/SWIFT / SEPA Creditor Identifier moved to Granit.Validation.Finance.
-        _validators.Count.ShouldBe(17);
+    public void GetValidators_Returns18Validators() =>
+        // IBAN / BIC/SWIFT / SEPA Creditor Identifier moved to Granit.Validation.Finance;
+        // AbsoluteUri server-validator added to mirror the AbsoluteUri() rule.
+        _validators.Count.ShouldBe(18);
 
     [Fact]
     public void AllErrorCodes_AreUnique() =>

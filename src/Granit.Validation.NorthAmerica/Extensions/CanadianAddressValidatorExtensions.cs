@@ -20,5 +20,5 @@ public static class CanadianAddressValidatorExtensions
     public static IRuleBuilderOptions<T, string?> CanadianPostalCode<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(CanadianPostalCodeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidCanadianPostalCode");
+            .WithErrorCodeAndMessage("Validation:Format:CanadianPostalCode");
 }

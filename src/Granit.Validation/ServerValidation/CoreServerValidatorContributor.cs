@@ -34,6 +34,7 @@ internal sealed class CoreServerValidatorContributor : IServerValidatorContribut
         yield return new DelegatingServerValidator("Validation:Format:ColorHex", FormatValidatorExtensions.IsValidColorHex);
 
         // Network identifiers (regex + algorithm)
+        yield return new DelegatingServerValidator("Validation:Format:AbsoluteUri", NetworkValidatorExtensions.IsValidAbsoluteUri);
         yield return new DelegatingServerValidator("Validation:Format:Url", NetworkValidatorExtensions.IsValidUrl);
         yield return new DelegatingServerValidator("Validation:Format:UrlHttps", NetworkValidatorExtensions.IsValidHttpsUrl);
         yield return new DelegatingServerValidator("Validation:Format:Ipv4Address", NetworkValidatorExtensions.IsValidIpv4Address);

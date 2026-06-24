@@ -55,8 +55,8 @@ public sealed class GermanIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(steuerId));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidGermanSteuerId");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidGermanSteuerId");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:GermanSteuerId");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:GermanSteuerId");
     }
 
     // =========================================================================
@@ -93,8 +93,8 @@ public sealed class GermanIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidGermanPostalCode");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidGermanPostalCode");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:GermanPostalCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:GermanPostalCode");
     }
 
     // -------------------------------------------------------------------------

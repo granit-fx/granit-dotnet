@@ -13,15 +13,15 @@ internal sealed class NorthAmericaServerValidatorContributor : IServerValidatorC
     public IEnumerable<IServerValidator> GetValidators()
     {
         // --- United States ---
-        yield return new DelegatingServerValidator("Validation:InvalidUsSsn", SsnAlgorithm.IsValid, isSensitive: true);
-        yield return new DelegatingServerValidator("Validation:InvalidUsEin", EinAlgorithm.IsValid, isSensitive: true);
-        yield return new DelegatingServerValidator("Validation:InvalidUsStateCode", UsStateCodeAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Validation:InvalidUsZipCode", ZipCodeAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Validation:InvalidNanpPhoneNumber", NanpPhoneAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:Format:UsSsn", SsnAlgorithm.IsValid, isSensitive: true);
+        yield return new DelegatingServerValidator("Validation:Format:UsEin", EinAlgorithm.IsValid, isSensitive: true);
+        yield return new DelegatingServerValidator("Validation:Format:UsStateCode", UsStateCodeAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:Format:UsZipCode", ZipCodeAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:Format:NanpPhoneNumber", NanpPhoneAlgorithm.IsValid);
 
         // --- Canada ---
-        yield return new DelegatingServerValidator("Validation:InvalidCanadianSin", SinAlgorithm.IsValid, isSensitive: true);
-        yield return new DelegatingServerValidator("Validation:InvalidCanadianBusinessNumber", BusinessNumberAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Validation:InvalidCanadianPostalCode", CanadianPostalCodeAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:Format:CanadianSin", SinAlgorithm.IsValid, isSensitive: true);
+        yield return new DelegatingServerValidator("Validation:Format:CanadianBusinessNumber", BusinessNumberAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Validation:Format:CanadianPostalCode", CanadianPostalCodeAlgorithm.IsValid);
     }
 }

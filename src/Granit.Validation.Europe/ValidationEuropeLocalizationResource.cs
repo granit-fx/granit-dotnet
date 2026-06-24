@@ -7,8 +7,8 @@ namespace Granit.Validation.Europe;
 /// JSON files: <c>Localization/ValidationEurope/{culture}.json</c>, embedded in this assembly.
 /// </summary>
 /// <remarks>
-/// Covers European regulatory identifier error codes (<c>Validation:InvalidFrench*</c>,
-/// <c>Validation:InvalidBelgian*</c>, <c>Validation:InvalidEuropean*</c>).
+/// Covers European regulatory identifier error codes (<c>Validation:Format:French*</c>,
+/// <c>Validation:Format:Belgian*</c>, <c>Validation:Format:European*</c>).
 /// Inherits from <see cref="ValidationLocalizationResource"/> for shared error code resolution.
 /// </remarks>
 [LocalizationResourceName("ValidationEurope")]

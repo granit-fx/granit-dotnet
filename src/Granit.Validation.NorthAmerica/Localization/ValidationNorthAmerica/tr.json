@@ -1,13 +1,13 @@
 {
   "culture": "tr",
   "texts": {
-    "Validation:InvalidUsSsn": "ABD Sosyal Güvenlik Numarası (SSN) geçersiz.",
-    "Validation:InvalidUsEin": "ABD İşveren Kimlik Numarası (EIN) geçersiz.",
-    "Validation:InvalidUsZipCode": "ABD posta kodu (ZIP) geçersiz (5 rakam veya ZIP+4 biçimi bekleniyor).",
-    "Validation:InvalidNanpPhoneNumber": "Telefon numarası geçersiz (NANP biçimi bekleniyor: NXX-NXX-XXXX).",
-    "Validation:InvalidUsStateCode": "ABD eyalet veya bölge kodu geçersiz.",
-    "Validation:InvalidCanadianSin": "Kanada Sosyal Sigorta Numarası (SIN) geçersiz.",
-    "Validation:InvalidCanadianPostalCode": "Kanada posta kodu geçersiz (beklenen biçim: A1A 1A1).",
-    "Validation:InvalidCanadianBusinessNumber": "Kanada İşletme Numarası (BN) geçersiz."
+    "Validation:Format:UsSsn": "ABD Sosyal Güvenlik Numarası (SSN) geçersiz.",
+    "Validation:Format:UsEin": "ABD İşveren Kimlik Numarası (EIN) geçersiz.",
+    "Validation:Format:UsZipCode": "ABD posta kodu (ZIP) geçersiz (5 rakam veya ZIP+4 biçimi bekleniyor).",
+    "Validation:Format:NanpPhoneNumber": "Telefon numarası geçersiz (NANP biçimi bekleniyor: NXX-NXX-XXXX).",
+    "Validation:Format:UsStateCode": "ABD eyalet veya bölge kodu geçersiz.",
+    "Validation:Format:CanadianSin": "Kanada Sosyal Sigorta Numarası (SIN) geçersiz.",
+    "Validation:Format:CanadianPostalCode": "Kanada posta kodu geçersiz (beklenen biçim: A1A 1A1).",
+    "Validation:Format:CanadianBusinessNumber": "Kanada İşletme Numarası (BN) geçersiz."
   }
 }

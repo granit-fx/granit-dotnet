@@ -19,4 +19,12 @@ public sealed class ValidationEndpointsOptions
     /// Default: <c>"Validation"</c>.
     /// </summary>
     public string TagName { get; set; } = "Validation";
+
+    /// <summary>
+    /// Authorization policy applied to all validation endpoints. When <see langword="null"/>
+    /// or empty (the default), the endpoints are mapped with an explicit <c>AllowAnonymous</c>
+    /// stance — suitable for public forms (registration, contact). Set a policy name to
+    /// require authorization instead.
+    /// </summary>
+    public string? AuthorizationPolicy { get; set; }
 }

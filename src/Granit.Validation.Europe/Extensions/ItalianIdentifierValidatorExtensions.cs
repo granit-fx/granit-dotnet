@@ -21,7 +21,7 @@ public static class ItalianIdentifierValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(CodiceFiscaleAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidItalianCodiceFiscale");
+            .WithErrorCodeAndMessage("Validation:Format:ItalianCodiceFiscale");
 
     /// <summary>
     /// Validates an Italian Partita IVA (VAT identification number).
@@ -34,7 +34,7 @@ public static class ItalianIdentifierValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(PartitaIvaAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidItalianPartitaIva");
+            .WithErrorCodeAndMessage("Validation:Format:ItalianPartitaIva");
 
     /// <summary>
     /// Validates an Italian postal code (CAP — Codice di Avviamento Postale).
@@ -46,5 +46,5 @@ public static class ItalianIdentifierValidatorExtensions
         this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(ItalianPostalCodeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidItalianPostalCode");
+            .WithErrorCodeAndMessage("Validation:Format:ItalianPostalCode");
 }

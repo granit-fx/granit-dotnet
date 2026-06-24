@@ -19,7 +19,7 @@ public static class SpanishIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> SpanishNif<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(NifAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidSpanishNif");
+            .WithErrorCodeAndMessage("Validation:Format:SpanishNif");
 
     /// <summary>
     /// Validates a Spanish NIE (Número de Identidad de Extranjero).
@@ -32,7 +32,7 @@ public static class SpanishIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> SpanishNie<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(NieAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidSpanishNie");
+            .WithErrorCodeAndMessage("Validation:Format:SpanishNie");
 
     /// <summary>
     /// Validates a Spanish CIF (Código de Identificación Fiscal) for legal entities.
@@ -45,7 +45,7 @@ public static class SpanishIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> SpanishCif<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(CifAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidSpanishCif");
+            .WithErrorCodeAndMessage("Validation:Format:SpanishCif");
 
     /// <summary>
     /// Validates a Spanish postal code (código postal).
@@ -57,5 +57,5 @@ public static class SpanishIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> SpanishPostalCode<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(SpanishPostalCodeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidSpanishPostalCode");
+            .WithErrorCodeAndMessage("Validation:Format:SpanishPostalCode");
 }

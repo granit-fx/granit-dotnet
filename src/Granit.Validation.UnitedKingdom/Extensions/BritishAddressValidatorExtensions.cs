@@ -19,5 +19,5 @@ public static class BritishAddressValidatorExtensions
     public static IRuleBuilderOptions<T, string?> UkPostcode<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(UkPostcodeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidUkPostcode");
+            .WithErrorCodeAndMessage("Validation:Format:UkPostcode");
 }

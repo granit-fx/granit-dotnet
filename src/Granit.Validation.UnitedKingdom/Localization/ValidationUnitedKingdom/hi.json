@@ -1,12 +1,12 @@
 {
   "culture": "hi",
   "texts": {
-    "Validation:InvalidUkNationalInsuranceNumber": "UK राष्ट्रीय बीमा नंबर अमान्य है।",
-    "Validation:InvalidUkNhsNumber": "NHS नंबर अमान्य है।",
-    "Validation:InvalidUkUtr": "विशिष्ट करदाता संदर्भ (UTR) अमान्य है।",
-    "Validation:InvalidUkVat": "UK VAT पंजीकरण संख्या अमान्य है।",
-    "Validation:InvalidUkCompaniesHouseNumber": "Companies House पंजीकरण संख्या अमान्य है।",
-    "Validation:InvalidUkPostcode": "UK पोस्टकोड अमान्य है।",
-    "Validation:InvalidUkSortCode": "UK बैंक सॉर्ट कोड अमान्य है (6 अंक अपेक्षित हैं)।"
+    "Validation:Format:UkNationalInsuranceNumber": "UK राष्ट्रीय बीमा नंबर अमान्य है।",
+    "Validation:Format:UkNhsNumber": "NHS नंबर अमान्य है।",
+    "Validation:Format:UkUtr": "विशिष्ट करदाता संदर्भ (UTR) अमान्य है।",
+    "Validation:Format:UkVat": "UK VAT पंजीकरण संख्या अमान्य है।",
+    "Validation:Format:UkCompaniesHouseNumber": "Companies House पंजीकरण संख्या अमान्य है।",
+    "Validation:Format:UkPostcode": "UK पोस्टकोड अमान्य है।",
+    "Validation:Format:UkSortCode": "UK बैंक सॉर्ट कोड अमान्य है (6 अंक अपेक्षित हैं)।"
   }
 }

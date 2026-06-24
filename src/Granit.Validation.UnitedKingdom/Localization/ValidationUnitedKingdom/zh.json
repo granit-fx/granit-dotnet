@@ -1,12 +1,12 @@
 {
   "culture": "zh",
   "texts": {
-    "Validation:InvalidUkNationalInsuranceNumber": "英国国民保险号码无效。",
-    "Validation:InvalidUkNhsNumber": "NHS 号码无效。",
-    "Validation:InvalidUkUtr": "唯一纳税人参考号 (UTR) 无效。",
-    "Validation:InvalidUkVat": "英国增值税登记号无效。",
-    "Validation:InvalidUkCompaniesHouseNumber": "Companies House 注册号无效。",
-    "Validation:InvalidUkPostcode": "英国邮政编码无效。",
-    "Validation:InvalidUkSortCode": "英国银行分类代码无效（需要6位数字）。"
+    "Validation:Format:UkNationalInsuranceNumber": "英国国民保险号码无效。",
+    "Validation:Format:UkNhsNumber": "NHS 号码无效。",
+    "Validation:Format:UkUtr": "唯一纳税人参考号 (UTR) 无效。",
+    "Validation:Format:UkVat": "英国增值税登记号无效。",
+    "Validation:Format:UkCompaniesHouseNumber": "Companies House 注册号无效。",
+    "Validation:Format:UkPostcode": "英国邮政编码无效。",
+    "Validation:Format:UkSortCode": "英国银行分类代码无效（需要6位数字）。"
   }
 }

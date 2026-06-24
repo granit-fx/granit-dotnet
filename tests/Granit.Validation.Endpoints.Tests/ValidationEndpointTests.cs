@@ -68,9 +68,9 @@ public sealed class ValidationEndpointTests
     public void HandleValidate_SensitiveValidator_Unauthenticated_Returns404()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
+            new DelegatingServerValidator("Validation:Format:UsSsn", _ => true, isSensitive: true));
 
-        var request = new ValidationFieldValidateRequest("Validation:InvalidUsSsn", "123-45-6789");
+        var request = new ValidationFieldValidateRequest("Validation:Format:UsSsn", "123-45-6789");
         Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
             ValidationEndpoints.HandleValidate(request, registry, CreateMetrics(), CreateAnonymousContext());
 
@@ -82,9 +82,9 @@ public sealed class ValidationEndpointTests
     public void HandleValidate_SensitiveValidator_Authenticated_Validates()
     {
         ServerValidatorRegistry registry = CreateRegistry(
-            new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
+            new DelegatingServerValidator("Validation:Format:UsSsn", _ => true, isSensitive: true));
 
-        var request = new ValidationFieldValidateRequest("Validation:InvalidUsSsn", "123-45-6789");
+        var request = new ValidationFieldValidateRequest("Validation:Format:UsSsn", "123-45-6789");
         Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
             ValidationEndpoints.HandleValidate(request, registry, CreateMetrics(), CreateAuthenticatedContext());
 
@@ -126,12 +126,12 @@ public sealed class ValidationEndpointTests
     {
         ServerValidatorRegistry registry = CreateRegistry(
             new DelegatingServerValidator("Validation:Format:Iban", _ => true),
-            new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
+            new DelegatingServerValidator("Validation:Format:UsSsn", _ => true, isSensitive: true));
 
         var request = new ValidationFieldValidateBatchRequest(
         [
             new("Validation:Format:Iban", "BE68539007547034"),
-            new("Validation:InvalidUsSsn", "123-45-6789"),
+            new("Validation:Format:UsSsn", "123-45-6789"),
         ]);
 
         Ok<ValidationFieldValidateBatchResponse> result =
@@ -168,7 +168,7 @@ public sealed class ValidationEndpointTests
     {
         ServerValidatorRegistry registry = CreateRegistry(
             new DelegatingServerValidator("Validation:Format:Iban", _ => true),
-            new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
+            new DelegatingServerValidator("Validation:Format:UsSsn", _ => true, isSensitive: true));
 
         Ok<IReadOnlyList<string>> result =
             ValidationEndpoints.HandleGetValidators(registry, CreateAnonymousContext());
@@ -183,7 +183,7 @@ public sealed class ValidationEndpointTests
     {
         ServerValidatorRegistry registry = CreateRegistry(
             new DelegatingServerValidator("Validation:Format:Iban", _ => true),
-            new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
+            new DelegatingServerValidator("Validation:Format:UsSsn", _ => true, isSensitive: true));
 
         Ok<IReadOnlyList<string>> result =
             ValidationEndpoints.HandleGetValidators(registry, CreateAuthenticatedContext());

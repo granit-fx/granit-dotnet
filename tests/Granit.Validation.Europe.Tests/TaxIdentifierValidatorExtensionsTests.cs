@@ -50,8 +50,8 @@ public sealed class TaxIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(vat));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidBelgianVat");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidBelgianVat");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:BelgianVat");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:BelgianVat");
     }
 
     // =========================================================================
@@ -90,8 +90,8 @@ public sealed class TaxIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(vat));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidFrenchVat");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidFrenchVat");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:FrenchVat");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:FrenchVat");
     }
 
     // =========================================================================
@@ -130,8 +130,8 @@ public sealed class TaxIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(vat));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidEuropeanVat");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidEuropeanVat");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:EuropeanVat");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:EuropeanVat");
     }
 
     // -------------------------------------------------------------------------

@@ -1,13 +1,13 @@
 {
   "culture": "cs",
   "texts": {
-    "Validation:InvalidUsSsn": "Americké číslo sociálního pojištění (SSN) je neplatné.",
-    "Validation:InvalidUsEin": "Americké identifikační číslo zaměstnavatele (EIN) je neplatné.",
-    "Validation:InvalidUsZipCode": "Americké poštovní směrovací číslo (ZIP) je neplatné (očekáváno 5 číslic nebo formát ZIP+4).",
-    "Validation:InvalidNanpPhoneNumber": "Telefonní číslo je neplatné (očekáván formát NANP: NXX-NXX-XXXX).",
-    "Validation:InvalidUsStateCode": "Kód amerického státu nebo území je neplatný.",
-    "Validation:InvalidCanadianSin": "Kanadské číslo sociálního pojištění (SIN) je neplatné.",
-    "Validation:InvalidCanadianPostalCode": "Kanadské poštovní směrovací číslo je neplatné (očekávaný formát: A1A 1A1).",
-    "Validation:InvalidCanadianBusinessNumber": "Kanadské obchodní číslo (BN) je neplatné."
+    "Validation:Format:UsSsn": "Americké číslo sociálního pojištění (SSN) je neplatné.",
+    "Validation:Format:UsEin": "Americké identifikační číslo zaměstnavatele (EIN) je neplatné.",
+    "Validation:Format:UsZipCode": "Americké poštovní směrovací číslo (ZIP) je neplatné (očekáváno 5 číslic nebo formát ZIP+4).",
+    "Validation:Format:NanpPhoneNumber": "Telefonní číslo je neplatné (očekáván formát NANP: NXX-NXX-XXXX).",
+    "Validation:Format:UsStateCode": "Kód amerického státu nebo území je neplatný.",
+    "Validation:Format:CanadianSin": "Kanadské číslo sociálního pojištění (SIN) je neplatné.",
+    "Validation:Format:CanadianPostalCode": "Kanadské poštovní směrovací číslo je neplatné (očekávaný formát: A1A 1A1).",
+    "Validation:Format:CanadianBusinessNumber": "Kanadské obchodní číslo (BN) je neplatné."
   }
 }

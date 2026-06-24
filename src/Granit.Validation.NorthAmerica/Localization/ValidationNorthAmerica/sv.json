@@ -1,13 +1,13 @@
 {
   "culture": "sv",
   "texts": {
-    "Validation:InvalidUsSsn": "Det amerikanska socialförsäkringsnumret (SSN) är ogiltigt.",
-    "Validation:InvalidUsEin": "Det amerikanska arbetsgivaridentifikationsnumret (EIN) är ogiltigt.",
-    "Validation:InvalidUsZipCode": "Det amerikanska postnumret (ZIP) är ogiltigt (5 siffror eller ZIP+4-format förväntas).",
-    "Validation:InvalidNanpPhoneNumber": "Telefonnumret är ogiltigt (NANP-format förväntas: NXX-NXX-XXXX).",
-    "Validation:InvalidUsStateCode": "Den amerikanska delstats- eller territorialkoden är ogiltig.",
-    "Validation:InvalidCanadianSin": "Det kanadensiska socialförsäkringsnumret (SIN) är ogiltigt.",
-    "Validation:InvalidCanadianPostalCode": "Det kanadensiska postnumret är ogiltigt (förväntat format: A1A 1A1).",
-    "Validation:InvalidCanadianBusinessNumber": "Det kanadensiska företagsnumret (BN) är ogiltigt."
+    "Validation:Format:UsSsn": "Det amerikanska socialförsäkringsnumret (SSN) är ogiltigt.",
+    "Validation:Format:UsEin": "Det amerikanska arbetsgivaridentifikationsnumret (EIN) är ogiltigt.",
+    "Validation:Format:UsZipCode": "Det amerikanska postnumret (ZIP) är ogiltigt (5 siffror eller ZIP+4-format förväntas).",
+    "Validation:Format:NanpPhoneNumber": "Telefonnumret är ogiltigt (NANP-format förväntas: NXX-NXX-XXXX).",
+    "Validation:Format:UsStateCode": "Den amerikanska delstats- eller territorialkoden är ogiltig.",
+    "Validation:Format:CanadianSin": "Det kanadensiska socialförsäkringsnumret (SIN) är ogiltigt.",
+    "Validation:Format:CanadianPostalCode": "Det kanadensiska postnumret är ogiltigt (förväntat format: A1A 1A1).",
+    "Validation:Format:CanadianBusinessNumber": "Det kanadensiska företagsnumret (BN) är ogiltigt."
   }
 }

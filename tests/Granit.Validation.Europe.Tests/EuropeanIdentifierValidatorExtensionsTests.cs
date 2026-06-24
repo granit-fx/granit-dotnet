@@ -51,8 +51,8 @@ public sealed class EuropeanIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(value));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidEori");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidEori");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:Eori");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:Eori");
     }
 
     // -------------------------------------------------------------------------

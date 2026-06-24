@@ -19,7 +19,7 @@ public static class PersonalIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> BelgianNiss<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(NissAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidBelgianNiss");
+            .WithErrorCodeAndMessage("Validation:Format:BelgianNiss");
 
     /// <summary>
     /// Validates a French NIR (Numéro d'Identification au Répertoire / Numéro de Sécurité Sociale).
@@ -32,7 +32,7 @@ public static class PersonalIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchNir<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(NirAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidFrenchNir");
+            .WithErrorCodeAndMessage("Validation:Format:FrenchNir");
 
     /// <summary>
     /// Validates a Belgian electronic identity card number (eID).
@@ -44,5 +44,5 @@ public static class PersonalIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> BelgianEid<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(EidAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidBelgianEid");
+            .WithErrorCodeAndMessage("Validation:Format:BelgianEid");
 }

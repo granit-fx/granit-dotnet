@@ -51,7 +51,7 @@ public sealed class CanadianIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(sin));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidCanadianSin");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:CanadianSin");
     }
 
     // =========================================================================
@@ -87,7 +87,7 @@ public sealed class CanadianIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(bn));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidCanadianBusinessNumber");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:CanadianBusinessNumber");
     }
 
     // -------------------------------------------------------------------------

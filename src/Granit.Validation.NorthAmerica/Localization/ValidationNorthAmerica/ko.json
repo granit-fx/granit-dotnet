@@ -1,13 +1,13 @@
 {
   "culture": "ko",
   "texts": {
-    "Validation:InvalidUsSsn": "미국 사회보장번호 (SSN)가 유효하지 않습니다.",
-    "Validation:InvalidUsEin": "미국 고용주 식별번호 (EIN)가 유효하지 않습니다.",
-    "Validation:InvalidUsZipCode": "미국 우편번호 (ZIP)가 유효하지 않습니다 (5자리 또는 ZIP+4 형식 필요).",
-    "Validation:InvalidNanpPhoneNumber": "전화번호가 유효하지 않습니다 (NANP 형식 필요: NXX-NXX-XXXX).",
-    "Validation:InvalidUsStateCode": "미국 주 또는 준주 코드가 유효하지 않습니다.",
-    "Validation:InvalidCanadianSin": "캐나다 사회보험번호 (SIN)가 유효하지 않습니다.",
-    "Validation:InvalidCanadianPostalCode": "캐나다 우편번호가 유효하지 않습니다 (형식: A1A 1A1).",
-    "Validation:InvalidCanadianBusinessNumber": "캐나다 사업자번호 (BN)가 유효하지 않습니다."
+    "Validation:Format:UsSsn": "미국 사회보장번호 (SSN)가 유효하지 않습니다.",
+    "Validation:Format:UsEin": "미국 고용주 식별번호 (EIN)가 유효하지 않습니다.",
+    "Validation:Format:UsZipCode": "미국 우편번호 (ZIP)가 유효하지 않습니다 (5자리 또는 ZIP+4 형식 필요).",
+    "Validation:Format:NanpPhoneNumber": "전화번호가 유효하지 않습니다 (NANP 형식 필요: NXX-NXX-XXXX).",
+    "Validation:Format:UsStateCode": "미국 주 또는 준주 코드가 유효하지 않습니다.",
+    "Validation:Format:CanadianSin": "캐나다 사회보험번호 (SIN)가 유효하지 않습니다.",
+    "Validation:Format:CanadianPostalCode": "캐나다 우편번호가 유효하지 않습니다 (형식: A1A 1A1).",
+    "Validation:Format:CanadianBusinessNumber": "캐나다 사업자번호 (BN)가 유효하지 않습니다."
   }
 }

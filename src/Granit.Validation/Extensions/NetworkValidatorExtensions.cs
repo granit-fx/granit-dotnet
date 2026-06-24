@@ -36,7 +36,7 @@ public static partial class NetworkValidatorExtensions
     /// </remarks>
     public static IRuleBuilderOptions<T, string?> AbsoluteUri<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
-            .Must(value => value != null && Uri.TryCreate(value.Trim(), UriKind.Absolute, out _))
+            .Must(IsValidAbsoluteUri)
             .WithErrorCodeAndMessage("Validation:Format:AbsoluteUri");
 
     /// <summary>
@@ -108,6 +108,9 @@ public static partial class NetworkValidatorExtensions
     // -------------------------------------------------------------------------
     // Server-side single-field validation delegates
     // -------------------------------------------------------------------------
+
+    internal static bool IsValidAbsoluteUri(string? value) =>
+        value is not null && Uri.TryCreate(value.Trim(), UriKind.Absolute, out _);
 
     internal static bool IsValidUrl(string? value) =>
         value is not null && UrlRegex().IsMatch(value.Trim());

@@ -59,7 +59,7 @@ public sealed class AmericanIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(ssn));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUsSsn");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:UsSsn");
     }
 
     // =========================================================================
@@ -99,7 +99,7 @@ public sealed class AmericanIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(ein));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUsEin");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:UsEin");
     }
 
     // =========================================================================
@@ -141,7 +141,7 @@ public sealed class AmericanIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUsStateCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:UsStateCode");
     }
 
     // -------------------------------------------------------------------------

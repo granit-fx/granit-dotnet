@@ -20,7 +20,7 @@ public static class GermanIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> GermanSteuerId<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(SteuerIdAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidGermanSteuerId");
+            .WithErrorCodeAndMessage("Validation:Format:GermanSteuerId");
 
     /// <summary>
     /// Validates a German postal code (Postleitzahl / PLZ).
@@ -32,5 +32,5 @@ public static class GermanIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> GermanPostalCode<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(GermanPostalCodeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidGermanPostalCode");
+            .WithErrorCodeAndMessage("Validation:Format:GermanPostalCode");
 }

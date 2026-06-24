@@ -19,7 +19,7 @@ public static class ProfessionalRegistryValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchRpps<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(RppsAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidFrenchRpps");
+            .WithErrorCodeAndMessage("Validation:Format:FrenchRpps");
 
     /// <summary>
     /// Validates a French ADELI number (Automatisation DEs LIstes).
@@ -30,7 +30,7 @@ public static class ProfessionalRegistryValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchAdeli<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(AdeliAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidFrenchAdeli");
+            .WithErrorCodeAndMessage("Validation:Format:FrenchAdeli");
 
     /// <summary>
     /// Validates a French Finess number (Fichier National des Établissements Sanitaires et Sociaux).
@@ -42,7 +42,7 @@ public static class ProfessionalRegistryValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchFiness<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(FinesAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidFrenchFiness");
+            .WithErrorCodeAndMessage("Validation:Format:FrenchFiness");
 
     /// <summary>
     /// Validates a Belgian INAMI number (Institut National d'Assurance Maladie-Invalidité / RIZIV).
@@ -54,5 +54,5 @@ public static class ProfessionalRegistryValidatorExtensions
     public static IRuleBuilderOptions<T, string?> BelgianInami<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(InamiAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidBelgianInami");
+            .WithErrorCodeAndMessage("Validation:Format:BelgianInami");
 }

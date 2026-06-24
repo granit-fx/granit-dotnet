@@ -7,8 +7,8 @@ namespace Granit.Validation.NorthAmerica;
 /// JSON files: <c>Localization/ValidationNorthAmerica/{culture}.json</c>, embedded in this assembly.
 /// </summary>
 /// <remarks>
-/// Covers North American identifier error codes (<c>Validation:InvalidUs*</c>,
-/// <c>Validation:InvalidCanadian*</c>).
+/// Covers North American identifier error codes (<c>Validation:Format:Us*</c>,
+/// <c>Validation:Format:Canadian*</c>).
 /// Inherits from <see cref="ValidationLocalizationResource"/> for shared error code resolution.
 /// </remarks>
 [LocalizationResourceName("ValidationNorthAmerica")]

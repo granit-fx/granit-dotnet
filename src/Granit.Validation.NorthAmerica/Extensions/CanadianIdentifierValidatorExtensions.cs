@@ -19,7 +19,7 @@ public static class CanadianIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> SocialInsuranceNumber<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(SinAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidCanadianSin");
+            .WithErrorCodeAndMessage("Validation:Format:CanadianSin");
 
     /// <summary>
     /// Validates a Canadian Business Number (BN / NE).
@@ -31,5 +31,5 @@ public static class CanadianIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> CanadianBusinessNumber<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(BusinessNumberAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidCanadianBusinessNumber");
+            .WithErrorCodeAndMessage("Validation:Format:CanadianBusinessNumber");
 }

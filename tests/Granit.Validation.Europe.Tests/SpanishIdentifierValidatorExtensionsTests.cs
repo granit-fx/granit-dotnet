@@ -53,8 +53,8 @@ public sealed class SpanishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(nif));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidSpanishNif");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidSpanishNif");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:SpanishNif");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:SpanishNif");
     }
 
     // =========================================================================
@@ -93,8 +93,8 @@ public sealed class SpanishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(nie));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidSpanishNie");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidSpanishNie");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:SpanishNie");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:SpanishNie");
     }
 
     // =========================================================================
@@ -135,8 +135,8 @@ public sealed class SpanishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(cif));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidSpanishCif");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidSpanishCif");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:SpanishCif");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:SpanishCif");
     }
 
     // =========================================================================
@@ -174,8 +174,8 @@ public sealed class SpanishIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidSpanishPostalCode");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidSpanishPostalCode");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:SpanishPostalCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:SpanishPostalCode");
     }
 
     // -------------------------------------------------------------------------

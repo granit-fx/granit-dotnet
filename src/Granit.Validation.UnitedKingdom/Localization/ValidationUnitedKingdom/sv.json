@@ -1,12 +1,12 @@
 {
   "culture": "sv",
   "texts": {
-    "Validation:InvalidUkNationalInsuranceNumber": "Det brittiska National Insurance-numret är ogiltigt.",
-    "Validation:InvalidUkNhsNumber": "NHS-numret är ogiltigt.",
-    "Validation:InvalidUkUtr": "Unique Taxpayer Reference (UTR) är ogiltigt.",
-    "Validation:InvalidUkVat": "Det brittiska momsnumret är ogiltigt.",
-    "Validation:InvalidUkCompaniesHouseNumber": "Companies House-registreringsnumret är ogiltigt.",
-    "Validation:InvalidUkPostcode": "Det brittiska postnumret är ogiltigt.",
-    "Validation:InvalidUkSortCode": "Den brittiska bank sort code är ogiltig (6 siffror förväntas)."
+    "Validation:Format:UkNationalInsuranceNumber": "Det brittiska National Insurance-numret är ogiltigt.",
+    "Validation:Format:UkNhsNumber": "NHS-numret är ogiltigt.",
+    "Validation:Format:UkUtr": "Unique Taxpayer Reference (UTR) är ogiltigt.",
+    "Validation:Format:UkVat": "Det brittiska momsnumret är ogiltigt.",
+    "Validation:Format:UkCompaniesHouseNumber": "Companies House-registreringsnumret är ogiltigt.",
+    "Validation:Format:UkPostcode": "Det brittiska postnumret är ogiltigt.",
+    "Validation:Format:UkSortCode": "Den brittiska bank sort code är ogiltig (6 siffror förväntas)."
   }
 }

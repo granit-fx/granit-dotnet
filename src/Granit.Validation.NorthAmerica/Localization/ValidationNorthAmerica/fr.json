@@ -1,13 +1,13 @@
 {
   "culture": "fr",
   "texts": {
-    "Validation:InvalidUsSsn": "Le numéro de sécurité sociale américain (SSN) est invalide.",
-    "Validation:InvalidUsEin": "Le numéro d'identification d'employeur américain (EIN) est invalide.",
-    "Validation:InvalidUsZipCode": "Le code postal américain (ZIP) est invalide (5 chiffres ou format ZIP+4 attendu).",
-    "Validation:InvalidNanpPhoneNumber": "Le numéro de téléphone est invalide (format NANP attendu : NXX-NXX-XXXX).",
-    "Validation:InvalidUsStateCode": "Le code d'État ou territoire américain est invalide.",
-    "Validation:InvalidCanadianSin": "Le numéro d'assurance sociale canadien (NAS) est invalide.",
-    "Validation:InvalidCanadianPostalCode": "Le code postal canadien est invalide (format attendu : A1A 1A1).",
-    "Validation:InvalidCanadianBusinessNumber": "Le numéro d'entreprise canadien (NE) est invalide."
+    "Validation:Format:UsSsn": "Le numéro de sécurité sociale américain (SSN) est invalide.",
+    "Validation:Format:UsEin": "Le numéro d'identification d'employeur américain (EIN) est invalide.",
+    "Validation:Format:UsZipCode": "Le code postal américain (ZIP) est invalide (5 chiffres ou format ZIP+4 attendu).",
+    "Validation:Format:NanpPhoneNumber": "Le numéro de téléphone est invalide (format NANP attendu : NXX-NXX-XXXX).",
+    "Validation:Format:UsStateCode": "Le code d'État ou territoire américain est invalide.",
+    "Validation:Format:CanadianSin": "Le numéro d'assurance sociale canadien (NAS) est invalide.",
+    "Validation:Format:CanadianPostalCode": "Le code postal canadien est invalide (format attendu : A1A 1A1).",
+    "Validation:Format:CanadianBusinessNumber": "Le numéro d'entreprise canadien (NE) est invalide."
   }
 }

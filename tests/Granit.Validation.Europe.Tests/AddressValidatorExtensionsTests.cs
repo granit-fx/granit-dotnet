@@ -52,8 +52,8 @@ public sealed class AddressValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidFrenchPostalCode");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidFrenchPostalCode");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:FrenchPostalCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:FrenchPostalCode");
     }
 
     // =========================================================================
@@ -90,8 +90,8 @@ public sealed class AddressValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidBelgianPostalCode");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidBelgianPostalCode");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:BelgianPostalCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:BelgianPostalCode");
     }
 
     // =========================================================================
@@ -131,8 +131,8 @@ public sealed class AddressValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidFrenchInseeCode");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidFrenchInseeCode");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:FrenchInseeCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:FrenchInseeCode");
     }
 
     // -------------------------------------------------------------------------

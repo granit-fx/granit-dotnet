@@ -1,12 +1,12 @@
 {
   "culture": "pl",
   "texts": {
-    "Validation:InvalidUkNationalInsuranceNumber": "Brytyjski numer National Insurance jest nieprawidłowy.",
-    "Validation:InvalidUkNhsNumber": "Numer NHS jest nieprawidłowy.",
-    "Validation:InvalidUkUtr": "Numer Unique Taxpayer Reference (UTR) jest nieprawidłowy.",
-    "Validation:InvalidUkVat": "Brytyjski numer VAT jest nieprawidłowy.",
-    "Validation:InvalidUkCompaniesHouseNumber": "Numer Companies House jest nieprawidłowy.",
-    "Validation:InvalidUkPostcode": "Brytyjski kod pocztowy jest nieprawidłowy.",
-    "Validation:InvalidUkSortCode": "Brytyjski sort code bankowy jest nieprawidłowy (oczekiwano 6 cyfr)."
+    "Validation:Format:UkNationalInsuranceNumber": "Brytyjski numer National Insurance jest nieprawidłowy.",
+    "Validation:Format:UkNhsNumber": "Numer NHS jest nieprawidłowy.",
+    "Validation:Format:UkUtr": "Numer Unique Taxpayer Reference (UTR) jest nieprawidłowy.",
+    "Validation:Format:UkVat": "Brytyjski numer VAT jest nieprawidłowy.",
+    "Validation:Format:UkCompaniesHouseNumber": "Numer Companies House jest nieprawidłowy.",
+    "Validation:Format:UkPostcode": "Brytyjski kod pocztowy jest nieprawidłowy.",
+    "Validation:Format:UkSortCode": "Brytyjski sort code bankowy jest nieprawidłowy (oczekiwano 6 cyfr)."
   }
 }

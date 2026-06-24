@@ -1,12 +1,12 @@
 {
   "culture": "it",
   "texts": {
-    "Validation:InvalidUkNationalInsuranceNumber": "Il numero National Insurance britannico non è valido.",
-    "Validation:InvalidUkNhsNumber": "Il numero NHS non è valido.",
-    "Validation:InvalidUkUtr": "La Unique Taxpayer Reference (UTR) non è valida.",
-    "Validation:InvalidUkVat": "Il numero di partita IVA britannico non è valido.",
-    "Validation:InvalidUkCompaniesHouseNumber": "Il numero Companies House non è valido.",
-    "Validation:InvalidUkPostcode": "Il codice postale britannico non è valido.",
-    "Validation:InvalidUkSortCode": "Il sort code bancario britannico non è valido (6 cifre previste)."
+    "Validation:Format:UkNationalInsuranceNumber": "Il numero National Insurance britannico non è valido.",
+    "Validation:Format:UkNhsNumber": "Il numero NHS non è valido.",
+    "Validation:Format:UkUtr": "La Unique Taxpayer Reference (UTR) non è valida.",
+    "Validation:Format:UkVat": "Il numero di partita IVA britannico non è valido.",
+    "Validation:Format:UkCompaniesHouseNumber": "Il numero Companies House non è valido.",
+    "Validation:Format:UkPostcode": "Il codice postale britannico non è valido.",
+    "Validation:Format:UkSortCode": "Il sort code bancario britannico non è valido (6 cifre previste)."
   }
 }

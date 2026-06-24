@@ -19,5 +19,5 @@ public static class EuropeanIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> Eori<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(EoriAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidEori");
+            .WithErrorCodeAndMessage("Validation:Format:Eori");
 }

@@ -28,12 +28,8 @@ public static class ValidationAIHostApplicationBuilderExtensions
         builder.Services
             .AddOptions<ValidationAIOptions>()
             .BindConfiguration(ValidationAIOptions.SectionName)
-            .Validate(
-                o => o.TimeoutSeconds is > 0 and <= 30,
-                "TimeoutSeconds must be between 1 and 30.")
-            .Validate(
-                o => o.SeverityThreshold is >= 0.0 and <= 1.0,
-                "SeverityThreshold must be between 0.0 and 1.0.");
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         builder.Services.TryAddScoped<IAIContentModerator, LlmContentModerator>();
 

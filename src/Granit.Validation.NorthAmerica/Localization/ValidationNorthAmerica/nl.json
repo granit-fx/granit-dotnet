@@ -1,13 +1,13 @@
 {
   "culture": "nl",
   "texts": {
-    "Validation:InvalidUsSsn": "Het Amerikaanse socialezekerheidsnummer (SSN) is ongeldig.",
-    "Validation:InvalidUsEin": "Het Amerikaanse werkgeversnummer (EIN) is ongeldig.",
-    "Validation:InvalidUsZipCode": "De Amerikaanse postcode (ZIP) is ongeldig (5 cijfers of ZIP+4 formaat verwacht).",
-    "Validation:InvalidNanpPhoneNumber": "Het telefoonnummer is ongeldig (NANP-formaat verwacht: NXX-NXX-XXXX).",
-    "Validation:InvalidUsStateCode": "De Amerikaanse staat- of gebiedscode is ongeldig.",
-    "Validation:InvalidCanadianSin": "Het Canadese sociaalverzekeringsnummer (SIN) is ongeldig.",
-    "Validation:InvalidCanadianPostalCode": "De Canadese postcode is ongeldig (verwacht formaat: A1A 1A1).",
-    "Validation:InvalidCanadianBusinessNumber": "Het Canadese bedrijfsnummer (BN) is ongeldig."
+    "Validation:Format:UsSsn": "Het Amerikaanse socialezekerheidsnummer (SSN) is ongeldig.",
+    "Validation:Format:UsEin": "Het Amerikaanse werkgeversnummer (EIN) is ongeldig.",
+    "Validation:Format:UsZipCode": "De Amerikaanse postcode (ZIP) is ongeldig (5 cijfers of ZIP+4 formaat verwacht).",
+    "Validation:Format:NanpPhoneNumber": "Het telefoonnummer is ongeldig (NANP-formaat verwacht: NXX-NXX-XXXX).",
+    "Validation:Format:UsStateCode": "De Amerikaanse staat- of gebiedscode is ongeldig.",
+    "Validation:Format:CanadianSin": "Het Canadese sociaalverzekeringsnummer (SIN) is ongeldig.",
+    "Validation:Format:CanadianPostalCode": "De Canadese postcode is ongeldig (verwacht formaat: A1A 1A1).",
+    "Validation:Format:CanadianBusinessNumber": "Het Canadese bedrijfsnummer (BN) is ongeldig."
   }
 }

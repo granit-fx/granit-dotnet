@@ -18,7 +18,7 @@ public static class BritishTaxValidatorExtensions
     public static IRuleBuilderOptions<T, string?> UniqueTaxpayerReference<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(UtrAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidUkUtr");
+            .WithErrorCodeAndMessage("Validation:Format:UkUtr");
 
     /// <summary>
     /// Validates a UK VAT registration number.
@@ -30,7 +30,7 @@ public static class BritishTaxValidatorExtensions
     public static IRuleBuilderOptions<T, string?> UkVat<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(UkVatAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidUkVat");
+            .WithErrorCodeAndMessage("Validation:Format:UkVat");
 
     /// <summary>
     /// Validates a Companies House registration number.
@@ -41,5 +41,5 @@ public static class BritishTaxValidatorExtensions
     public static IRuleBuilderOptions<T, string?> CompaniesHouseNumber<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(CompaniesHouseNumberAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidUkCompaniesHouseNumber");
+            .WithErrorCodeAndMessage("Validation:Format:UkCompaniesHouseNumber");
 }

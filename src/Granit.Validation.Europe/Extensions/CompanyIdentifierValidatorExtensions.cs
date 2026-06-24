@@ -24,7 +24,7 @@ public static partial class CompanyIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchSiren<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(SirenAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidFrenchSiren");
+            .WithErrorCodeAndMessage("Validation:Format:FrenchSiren");
 
     /// <summary>
     /// Validates a French SIRET number (Système d'Identification du Répertoire des ÉTablissements).
@@ -36,7 +36,7 @@ public static partial class CompanyIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchSiret<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(SiretAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidFrenchSiret");
+            .WithErrorCodeAndMessage("Validation:Format:FrenchSiret");
 
     /// <summary>
     /// Validates a Belgian BCE enterprise number (Banque-Carrefour des Entreprises / KBO).
@@ -48,7 +48,7 @@ public static partial class CompanyIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> BelgianBce<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(BceAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidBelgianBce");
+            .WithErrorCodeAndMessage("Validation:Format:BelgianBce");
 
     /// <summary>
     /// Validates a French NAF/APE activity code (Nomenclature des Activités Françaises).
@@ -60,7 +60,7 @@ public static partial class CompanyIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> FrenchNafCode<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value => value != null && NafCodeRegex().IsMatch(value.Trim().ToUpperInvariant()))
-            .WithErrorCodeAndMessage("Validation:InvalidFrenchNafCode");
+            .WithErrorCodeAndMessage("Validation:Format:FrenchNafCode");
 
     // -------------------------------------------------------------------------
     // Server-side single-field validation delegates

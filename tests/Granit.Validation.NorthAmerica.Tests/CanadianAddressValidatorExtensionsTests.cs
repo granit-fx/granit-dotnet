@@ -60,7 +60,7 @@ public sealed class CanadianAddressValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(postal));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidCanadianPostalCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:CanadianPostalCode");
     }
 
     // -------------------------------------------------------------------------

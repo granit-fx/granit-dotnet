@@ -52,8 +52,8 @@ public sealed class CompanyIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(siren));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidFrenchSiren");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidFrenchSiren");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:FrenchSiren");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:FrenchSiren");
     }
 
     // =========================================================================
@@ -90,8 +90,8 @@ public sealed class CompanyIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(siret));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidFrenchSiret");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidFrenchSiret");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:FrenchSiret");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:FrenchSiret");
     }
 
     // =========================================================================
@@ -130,8 +130,8 @@ public sealed class CompanyIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(bce));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidBelgianBce");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidBelgianBce");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:BelgianBce");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:BelgianBce");
     }
 
     // =========================================================================
@@ -168,8 +168,8 @@ public sealed class CompanyIdentifierValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(code));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorMessage.ShouldBe("Validation:InvalidFrenchNafCode");
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidFrenchNafCode");
+        result.Errors[0].ErrorMessage.ShouldBe("Validation:Format:FrenchNafCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:FrenchNafCode");
     }
 
     // -------------------------------------------------------------------------

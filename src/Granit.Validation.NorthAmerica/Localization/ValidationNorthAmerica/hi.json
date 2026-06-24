@@ -1,13 +1,13 @@
 {
   "culture": "hi",
   "texts": {
-    "Validation:InvalidUsSsn": "US सामाजिक सुरक्षा नंबर (SSN) अमान्य है।",
-    "Validation:InvalidUsEin": "US नियोक्ता पहचान संख्या (EIN) अमान्य है।",
-    "Validation:InvalidUsZipCode": "US ZIP कोड अमान्य है (5 अंक या ZIP+4 प्रारूप अपेक्षित है)।",
-    "Validation:InvalidNanpPhoneNumber": "फ़ोन नंबर अमान्य है (NANP प्रारूप अपेक्षित: NXX-NXX-XXXX)।",
-    "Validation:InvalidUsStateCode": "US राज्य या क्षेत्र कोड अमान्य है।",
-    "Validation:InvalidCanadianSin": "कनाडाई सामाजिक बीमा नंबर (SIN) अमान्य है।",
-    "Validation:InvalidCanadianPostalCode": "कनाडाई पिन कोड अमान्य है (अपेक्षित प्रारूप: A1A 1A1)।",
-    "Validation:InvalidCanadianBusinessNumber": "कनाडाई व्यापार नंबर (BN) अमान्य है।"
+    "Validation:Format:UsSsn": "US सामाजिक सुरक्षा नंबर (SSN) अमान्य है।",
+    "Validation:Format:UsEin": "US नियोक्ता पहचान संख्या (EIN) अमान्य है।",
+    "Validation:Format:UsZipCode": "US ZIP कोड अमान्य है (5 अंक या ZIP+4 प्रारूप अपेक्षित है)।",
+    "Validation:Format:NanpPhoneNumber": "फ़ोन नंबर अमान्य है (NANP प्रारूप अपेक्षित: NXX-NXX-XXXX)।",
+    "Validation:Format:UsStateCode": "US राज्य या क्षेत्र कोड अमान्य है।",
+    "Validation:Format:CanadianSin": "कनाडाई सामाजिक बीमा नंबर (SIN) अमान्य है।",
+    "Validation:Format:CanadianPostalCode": "कनाडाई पिन कोड अमान्य है (अपेक्षित प्रारूप: A1A 1A1)।",
+    "Validation:Format:CanadianBusinessNumber": "कनाडाई व्यापार नंबर (BN) अमान्य है।"
   }
 }

@@ -48,7 +48,7 @@ public sealed class BritishPaymentValidatorExtensionsTests
         ValidationResult result = validator.Validate(new TestModel(sortCode));
 
         result.IsValid.ShouldBeFalse();
-        result.Errors[0].ErrorCode.ShouldBe("Validation:InvalidUkSortCode");
+        result.Errors[0].ErrorCode.ShouldBe("Validation:Format:UkSortCode");
     }
 
     // -------------------------------------------------------------------------

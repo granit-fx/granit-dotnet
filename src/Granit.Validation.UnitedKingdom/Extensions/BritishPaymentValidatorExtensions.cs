@@ -18,5 +18,5 @@ public static class BritishPaymentValidatorExtensions
     public static IRuleBuilderOptions<T, string?> SortCode<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(SortCodeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidUkSortCode");
+            .WithErrorCodeAndMessage("Validation:Format:UkSortCode");
 }

@@ -1,12 +1,12 @@
 {
   "culture": "nl",
   "texts": {
-    "Validation:InvalidUkNationalInsuranceNumber": "Het Britse National Insurance-nummer is ongeldig.",
-    "Validation:InvalidUkNhsNumber": "Het NHS-nummer is ongeldig.",
-    "Validation:InvalidUkUtr": "De Unique Taxpayer Reference (UTR) is ongeldig.",
-    "Validation:InvalidUkVat": "Het Britse btw-nummer is ongeldig.",
-    "Validation:InvalidUkCompaniesHouseNumber": "Het Companies House-registratienummer is ongeldig.",
-    "Validation:InvalidUkPostcode": "De Britse postcode is ongeldig.",
-    "Validation:InvalidUkSortCode": "De Britse bank sort code is ongeldig (6 cijfers verwacht)."
+    "Validation:Format:UkNationalInsuranceNumber": "Het Britse National Insurance-nummer is ongeldig.",
+    "Validation:Format:UkNhsNumber": "Het NHS-nummer is ongeldig.",
+    "Validation:Format:UkUtr": "De Unique Taxpayer Reference (UTR) is ongeldig.",
+    "Validation:Format:UkVat": "Het Britse btw-nummer is ongeldig.",
+    "Validation:Format:UkCompaniesHouseNumber": "Het Companies House-registratienummer is ongeldig.",
+    "Validation:Format:UkPostcode": "De Britse postcode is ongeldig.",
+    "Validation:Format:UkSortCode": "De Britse bank sort code is ongeldig (6 cijfers verwacht)."
   }
 }

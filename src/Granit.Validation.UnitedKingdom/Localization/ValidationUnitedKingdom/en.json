@@ -1,12 +1,12 @@
 {
   "culture": "en",
   "texts": {
-    "Validation:InvalidUkNationalInsuranceNumber": "The UK National Insurance number is invalid.",
-    "Validation:InvalidUkNhsNumber": "The NHS number is invalid.",
-    "Validation:InvalidUkUtr": "The Unique Taxpayer Reference (UTR) is invalid.",
-    "Validation:InvalidUkVat": "The UK VAT registration number is invalid.",
-    "Validation:InvalidUkCompaniesHouseNumber": "The Companies House registration number is invalid.",
-    "Validation:InvalidUkPostcode": "The UK postcode is invalid.",
-    "Validation:InvalidUkSortCode": "The UK bank sort code is invalid (expected 6 digits)."
+    "Validation:Format:UkNationalInsuranceNumber": "The UK National Insurance number is invalid.",
+    "Validation:Format:UkNhsNumber": "The NHS number is invalid.",
+    "Validation:Format:UkUtr": "The Unique Taxpayer Reference (UTR) is invalid.",
+    "Validation:Format:UkVat": "The UK VAT registration number is invalid.",
+    "Validation:Format:UkCompaniesHouseNumber": "The Companies House registration number is invalid.",
+    "Validation:Format:UkPostcode": "The UK postcode is invalid.",
+    "Validation:Format:UkSortCode": "The UK bank sort code is invalid (expected 6 digits)."
   }
 }

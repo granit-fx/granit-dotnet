@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Validation.Europe</PackageId>
-    <Description>European regulatory identifier validators for Granit (France, Belgium). SIREN, SIRET, NISS, NIR, BCE, eID, RPPS, ADELI, FINESS, INAMI, VAT, RIB, postal codes and more.</Description>
+    <Description>European regulatory identifier validators for Granit (Belgium, France, Germany, Italy, Luxembourg, Netherlands, Spain). SIREN, SIRET, NISS, NIR, BCE, eID, RPPS, ADELI, FINESS, INAMI, VAT, RIB, Steuer-ID, BSN, KvK, Codice Fiscale, Partita IVA, NIF, NIE, CIF, postal codes and more.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

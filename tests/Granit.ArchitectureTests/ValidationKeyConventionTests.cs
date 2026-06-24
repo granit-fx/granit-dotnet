@@ -9,7 +9,7 @@ namespace Granit.ArchitectureTests;
 /// Enforces the framework validation-key naming convention (ADR-066 / "Proposition 1"):
 /// every key in the <c>Granit.Validation</c> resource under the <c>Validation:</c>
 /// namespace MUST be <c>Validation:{Category}:{Rule}</c> where
-/// <c>Category ∈ { Builtin, Format, Hint, Problem }</c> and <c>Rule</c> is PascalCase.
+/// <c>Category ∈ { Builtin, Format, Hint, Problem, Rule }</c> and <c>Rule</c> is PascalCase.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -56,7 +56,7 @@ public sealed partial class ValidationKeyConventionTests
 
         violations.ShouldBeEmpty(
             $"{violations.Count} validation key(s) violate the convention. Use "
-            + "Validation:{Builtin|Format|Hint|Problem}:{PascalCase}, OR move domain-specific "
+            + "Validation:{Builtin|Format|Hint|Problem|Rule}:{PascalCase}, OR move domain-specific "
             + "messages to their owning module's resource as {Module}:Validation:{Rule}. "
             + "If a key is intentionally legacy, add it to PendingMigration with justification:"
             + Environment.NewLine + string.Join(Environment.NewLine, violations));
@@ -77,14 +77,47 @@ public sealed partial class ValidationKeyConventionTests
             + Environment.NewLine + string.Join(Environment.NewLine, stale));
     }
 
-    private static IReadOnlyList<string> LoadFrameworkValidationKeys()
+    public static readonly TheoryData<string, string> RegionalResources = new()
     {
-        string dir = Path.Join(
-            RepoRoot, "src", "Granit.Validation", "Localization", "Validation");
+        { "Granit.Validation.Europe", "ValidationEurope" },
+        { "Granit.Validation.Finance", "ValidationFinance" },
+        { "Granit.Validation.NorthAmerica", "ValidationNorthAmerica" },
+        { "Granit.Validation.UnitedKingdom", "ValidationUnitedKingdom" },
+    };
+
+    /// <summary>
+    /// The regional/identifier validator packs ship their own resources but use the
+    /// SAME framework <c>Validation:Format:{Rule}</c> namespace (matching
+    /// <c>Granit.Validation.Finance</c>), so they must satisfy the category convention too.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(RegionalResources))]
+    public void Regional_validation_keys_follow_the_category_convention(string project, string resource)
+    {
+        IReadOnlyList<string> keys = LoadValidationKeys(project, resource);
+        keys.ShouldNotBeEmpty($"Expected at least one Validation: key in {project}/{resource}.");
+
+        List<string> violations = [.. keys
+            .Where(k => !ConformingKey().IsMatch(k))
+            .Order(StringComparer.Ordinal)];
+
+        violations.ShouldBeEmpty(
+            $"{violations.Count} validation key(s) in {project} violate the convention — "
+            + "regional/identifier validators MUST use Validation:Format:{PascalCase} "
+            + "(matching Granit.Validation.Finance):"
+            + Environment.NewLine + string.Join(Environment.NewLine, violations));
+    }
+
+    private static IReadOnlyList<string> LoadFrameworkValidationKeys()
+        => LoadValidationKeys("Granit.Validation", "Validation");
+
+    private static IReadOnlyList<string> LoadValidationKeys(string project, string resource)
+    {
+        string dir = Path.Join(RepoRoot, "src", project, "Localization", resource);
 
         // The default-culture file carries the full key set; regional files only differ.
         string enFile = Path.Join(dir, "en.json");
-        File.Exists(enFile).ShouldBeTrue($"Expected framework validation resource at {enFile}.");
+        File.Exists(enFile).ShouldBeTrue($"Expected validation resource at {enFile}.");
 
         using FileStream stream = File.OpenRead(enFile);
         using var document = JsonDocument.Parse(stream);

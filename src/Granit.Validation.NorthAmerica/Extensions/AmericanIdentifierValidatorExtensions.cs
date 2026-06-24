@@ -19,7 +19,7 @@ public static class AmericanIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> SocialSecurityNumber<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(SsnAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidUsSsn");
+            .WithErrorCodeAndMessage("Validation:Format:UsSsn");
 
     /// <summary>
     /// Validates a US Employer Identification Number (EIN).
@@ -31,7 +31,7 @@ public static class AmericanIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> Ein<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(EinAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidUsEin");
+            .WithErrorCodeAndMessage("Validation:Format:UsEin");
 
     /// <summary>
     /// Validates a USPS state or territory code (2-letter abbreviation).
@@ -43,5 +43,5 @@ public static class AmericanIdentifierValidatorExtensions
     public static IRuleBuilderOptions<T, string?> UsStateCode<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(UsStateCodeAlgorithm.IsValid)
-            .WithErrorCodeAndMessage("Validation:InvalidUsStateCode");
+            .WithErrorCodeAndMessage("Validation:Format:UsStateCode");
 }

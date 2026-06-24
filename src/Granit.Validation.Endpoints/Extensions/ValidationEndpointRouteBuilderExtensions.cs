@@ -1,6 +1,7 @@
 using Granit.Validation.AspNetCore;
 using Granit.Validation.Endpoints.Endpoints;
 using Granit.Validation.Endpoints.Options;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
@@ -16,9 +17,12 @@ public static class ValidationEndpointRouteBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The returned <see cref="RouteGroupBuilder"/> has <strong>no authentication</strong>
-    /// by default — suitable for public forms (registration, contact).
-    /// Chain <c>.RequireAuthorization()</c> for authenticated applications.
+    /// The endpoints declare an <strong>explicit authorization stance</strong>: mapped
+    /// <c>AllowAnonymous</c> by default — suitable for public forms (registration, contact).
+    /// To require authorization instead, set
+    /// <see cref="ValidationEndpointsOptions.AuthorizationPolicy"/> via <paramref name="configure"/>
+    /// (chaining <c>.RequireAuthorization()</c> on the returned group is ignored — the default
+    /// <c>AllowAnonymous</c> stance wins).
     /// </para>
     /// <para>
     /// <strong>Rate limiting is strongly recommended</strong> for public endpoints.
@@ -38,6 +42,17 @@ public static class ValidationEndpointRouteBuilderExtensions
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
+
+        // Explicit authorization stance (never implicit): public by default for anonymous
+        // forms, or a required policy when the host configures one via options.
+        if (string.IsNullOrEmpty(options.AuthorizationPolicy))
+        {
+            group.AllowAnonymous();
+        }
+        else
+        {
+            group.RequireAuthorization(options.AuthorizationPolicy);
+        }
 
         group.MapValidationEndpoints();
 

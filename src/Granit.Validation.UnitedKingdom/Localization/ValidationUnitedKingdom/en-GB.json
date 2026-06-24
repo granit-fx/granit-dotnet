@@ -1,6 +1,6 @@
 {
   "culture": "en-GB",
   "texts": {
-    "Validation:InvalidUkPostcode": "The postcode is invalid."
+    "Validation:Format:UkPostcode": "The postcode is invalid."
   }
 }

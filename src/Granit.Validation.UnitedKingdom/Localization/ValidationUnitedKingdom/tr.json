@@ -1,12 +1,12 @@
 {
   "culture": "tr",
   "texts": {
-    "Validation:InvalidUkNationalInsuranceNumber": "Birleşik Krallık National Insurance numarası geçersiz.",
-    "Validation:InvalidUkNhsNumber": "NHS numarası geçersiz.",
-    "Validation:InvalidUkUtr": "Unique Taxpayer Reference (UTR) geçersiz.",
-    "Validation:InvalidUkVat": "Birleşik Krallık KDV numarası geçersiz.",
-    "Validation:InvalidUkCompaniesHouseNumber": "Companies House kayıt numarası geçersiz.",
-    "Validation:InvalidUkPostcode": "Birleşik Krallık posta kodu geçersiz.",
-    "Validation:InvalidUkSortCode": "Birleşik Krallık banka sort code'u geçersiz (6 rakam bekleniyor)."
+    "Validation:Format:UkNationalInsuranceNumber": "Birleşik Krallık National Insurance numarası geçersiz.",
+    "Validation:Format:UkNhsNumber": "NHS numarası geçersiz.",
+    "Validation:Format:UkUtr": "Unique Taxpayer Reference (UTR) geçersiz.",
+    "Validation:Format:UkVat": "Birleşik Krallık KDV numarası geçersiz.",
+    "Validation:Format:UkCompaniesHouseNumber": "Companies House kayıt numarası geçersiz.",
+    "Validation:Format:UkPostcode": "Birleşik Krallık posta kodu geçersiz.",
+    "Validation:Format:UkSortCode": "Birleşik Krallık banka sort code'u geçersiz (6 rakam bekleniyor)."
   }
 }

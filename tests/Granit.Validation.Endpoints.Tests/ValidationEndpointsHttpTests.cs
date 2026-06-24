@@ -101,12 +101,12 @@ public sealed class ValidationEndpointsHttpTests
     public async Task PostValidate_SensitiveValidator_Anonymous_Returns404()
     {
         await using GranitEndpointTestHost host = await StartAsync(
-            new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
+            new DelegatingServerValidator("Validation:Format:UsSsn", _ => true, isSensitive: true));
         using HttpClient client = host.CreateAnonymousClient();
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             $"{Prefix}/validate",
-            new ValidationFieldValidateRequest("Validation:InvalidUsSsn", "123-45-6789"),
+            new ValidationFieldValidateRequest("Validation:Format:UsSsn", "123-45-6789"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
@@ -116,12 +116,12 @@ public sealed class ValidationEndpointsHttpTests
     public async Task PostValidate_SensitiveValidator_Authenticated_Returns200()
     {
         await using GranitEndpointTestHost host = await StartAsync(
-            new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
+            new DelegatingServerValidator("Validation:Format:UsSsn", _ => true, isSensitive: true));
         using HttpClient client = host.CreateAuthenticatedClient();
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             $"{Prefix}/validate",
-            new ValidationFieldValidateRequest("Validation:InvalidUsSsn", "123-45-6789"),
+            new ValidationFieldValidateRequest("Validation:Format:UsSsn", "123-45-6789"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -215,7 +215,7 @@ public sealed class ValidationEndpointsHttpTests
         await using GranitEndpointTestHost host = await StartAsync(
             new DelegatingServerValidator("Validation:Format:Email", _ => true),
             new DelegatingServerValidator("Validation:Format:BicSwift", _ => true),
-            new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
+            new DelegatingServerValidator("Validation:Format:UsSsn", _ => true, isSensitive: true));
         using HttpClient client = host.CreateAnonymousClient();
 
         HttpResponseMessage response = await client.GetAsync(
@@ -233,7 +233,7 @@ public sealed class ValidationEndpointsHttpTests
     {
         await using GranitEndpointTestHost host = await StartAsync(
             new DelegatingServerValidator("Validation:Format:Iban", _ => true),
-            new DelegatingServerValidator("Validation:InvalidUsSsn", _ => true, isSensitive: true));
+            new DelegatingServerValidator("Validation:Format:UsSsn", _ => true, isSensitive: true));
         using HttpClient client = host.CreateAuthenticatedClient();
 
         HttpResponseMessage response = await client.GetAsync(

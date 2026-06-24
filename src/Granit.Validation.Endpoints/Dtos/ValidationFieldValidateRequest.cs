@@ -4,7 +4,7 @@ namespace Granit.Validation.Endpoints.Dtos;
 /// Request to validate a single field value against a server-side validator.
 /// </summary>
 /// <param name="ErrorCode">
-/// The validator error code (e.g. <c>Validation:InvalidIban</c>).
+/// The validator error code (e.g. <c>Validation:Format:Iban</c>).
 /// Must match the <c>x-granit-validator</c> extension in the OpenAPI schema.
 /// </param>
 /// <param name="Value">The value to validate.</param>

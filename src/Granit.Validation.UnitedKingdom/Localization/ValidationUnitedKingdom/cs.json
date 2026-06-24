@@ -1,12 +1,12 @@
 {
   "culture": "cs",
   "texts": {
-    "Validation:InvalidUkNationalInsuranceNumber": "Britské číslo National Insurance je neplatné.",
-    "Validation:InvalidUkNhsNumber": "Číslo NHS je neplatné.",
-    "Validation:InvalidUkUtr": "Unique Taxpayer Reference (UTR) je neplatné.",
-    "Validation:InvalidUkVat": "Britské číslo DPH je neplatné.",
-    "Validation:InvalidUkCompaniesHouseNumber": "Registrační číslo Companies House je neplatné.",
-    "Validation:InvalidUkPostcode": "Britské poštovní směrovací číslo je neplatné.",
-    "Validation:InvalidUkSortCode": "Britský bankovní sort code je neplatný (očekáváno 6 číslic)."
+    "Validation:Format:UkNationalInsuranceNumber": "Britské číslo National Insurance je neplatné.",
+    "Validation:Format:UkNhsNumber": "Číslo NHS je neplatné.",
+    "Validation:Format:UkUtr": "Unique Taxpayer Reference (UTR) je neplatné.",
+    "Validation:Format:UkVat": "Britské číslo DPH je neplatné.",
+    "Validation:Format:UkCompaniesHouseNumber": "Registrační číslo Companies House je neplatné.",
+    "Validation:Format:UkPostcode": "Britské poštovní směrovací číslo je neplatné.",
+    "Validation:Format:UkSortCode": "Britský bankovní sort code je neplatný (očekáváno 6 číslic)."
   }
 }

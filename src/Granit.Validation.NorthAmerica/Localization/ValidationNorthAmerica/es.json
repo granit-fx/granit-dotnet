@@ -1,13 +1,13 @@
 {
   "culture": "es",
   "texts": {
-    "Validation:InvalidUsSsn": "El número de seguro social estadounidense (SSN) no es válido.",
-    "Validation:InvalidUsEin": "El número de identificación del empleador estadounidense (EIN) no es válido.",
-    "Validation:InvalidUsZipCode": "El código postal estadounidense (ZIP) no es válido (se esperan 5 dígitos o formato ZIP+4).",
-    "Validation:InvalidNanpPhoneNumber": "El número de teléfono no es válido (formato NANP esperado: NXX-NXX-XXXX).",
-    "Validation:InvalidUsStateCode": "El código de estado o territorio estadounidense no es válido.",
-    "Validation:InvalidCanadianSin": "El número de seguro social canadiense (SIN) no es válido.",
-    "Validation:InvalidCanadianPostalCode": "El código postal canadiense no es válido (formato esperado: A1A 1A1).",
-    "Validation:InvalidCanadianBusinessNumber": "El número de empresa canadiense (BN) no es válido."
+    "Validation:Format:UsSsn": "El número de seguro social estadounidense (SSN) no es válido.",
+    "Validation:Format:UsEin": "El número de identificación del empleador estadounidense (EIN) no es válido.",
+    "Validation:Format:UsZipCode": "El código postal estadounidense (ZIP) no es válido (se esperan 5 dígitos o formato ZIP+4).",
+    "Validation:Format:NanpPhoneNumber": "El número de teléfono no es válido (formato NANP esperado: NXX-NXX-XXXX).",
+    "Validation:Format:UsStateCode": "El código de estado o territorio estadounidense no es válido.",
+    "Validation:Format:CanadianSin": "El número de seguro social canadiense (SIN) no es válido.",
+    "Validation:Format:CanadianPostalCode": "El código postal canadiense no es válido (formato esperado: A1A 1A1).",
+    "Validation:Format:CanadianBusinessNumber": "El número de empresa canadiense (BN) no es válido."
   }
 }

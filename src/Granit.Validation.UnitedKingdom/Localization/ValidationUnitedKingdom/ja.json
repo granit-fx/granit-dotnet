@@ -1,12 +1,12 @@
 {
   "culture": "ja",
   "texts": {
-    "Validation:InvalidUkNationalInsuranceNumber": "英国国民保険番号が無効です。",
-    "Validation:InvalidUkNhsNumber": "NHS 番号が無効です。",
-    "Validation:InvalidUkUtr": "固有納税者参照番号 (UTR) が無効です。",
-    "Validation:InvalidUkVat": "英国の付加価値税登録番号が無効です。",
-    "Validation:InvalidUkCompaniesHouseNumber": "Companies House 登録番号が無効です。",
-    "Validation:InvalidUkPostcode": "英国の郵便番号が無効です。",
-    "Validation:InvalidUkSortCode": "英国の銀行ソートコードが無効です（6桁が必要です）。"
+    "Validation:Format:UkNationalInsuranceNumber": "英国国民保険番号が無効です。",
+    "Validation:Format:UkNhsNumber": "NHS 番号が無効です。",
+    "Validation:Format:UkUtr": "固有納税者参照番号 (UTR) が無効です。",
+    "Validation:Format:UkVat": "英国の付加価値税登録番号が無効です。",
+    "Validation:Format:UkCompaniesHouseNumber": "Companies House 登録番号が無効です。",
+    "Validation:Format:UkPostcode": "英国の郵便番号が無効です。",
+    "Validation:Format:UkSortCode": "英国の銀行ソートコードが無効です（6桁が必要です）。"
   }
 }
