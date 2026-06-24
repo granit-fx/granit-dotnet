@@ -86,7 +86,7 @@ internal sealed class QueryEngine<TEntity>(
 
             int? precomputedCount = request.SkipTotalCount
                 ? null
-                : await filtered.CountAsync(cancellationToken).ConfigureAwait(false);
+                : await filtered.CountSafeAsync(cancellationToken).ConfigureAwait(false);
 
             IQueryable<TEntity> query = filtered.ApplySort(request.Sort, _builder);
 
@@ -129,7 +129,7 @@ internal sealed class QueryEngine<TEntity>(
 
         int? precomputedCount = request.SkipTotalCount
             ? null
-            : await filtered.CountAsync(cancellationToken).ConfigureAwait(false);
+            : await filtered.CountSafeAsync(cancellationToken).ConfigureAwait(false);
 
         IQueryable<TEntity> sorted2 = filtered.ApplySort(request.Sort, _builder);
         int skip = (page - 1) * pageSize;
@@ -141,7 +141,7 @@ internal sealed class QueryEngine<TEntity>(
                 .Skip(skip)
                 .Take(pageSize + 1)
                 .Select(projection)
-                .ToListAsync(cancellationToken)
+                .ToListSafeAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             bool hasMore = items.Count > pageSize;
@@ -157,7 +157,7 @@ internal sealed class QueryEngine<TEntity>(
             .Skip(skip)
             .Take(pageSize)
             .Select(projection)
-            .ToListAsync(cancellationToken)
+            .ToListSafeAsync(cancellationToken)
             .ConfigureAwait(false);
 
         bool hasMorePages = skip + pagedItems.Count < precomputedCount.Value;
@@ -217,7 +217,7 @@ internal sealed class QueryEngine<TEntity>(
             IQueryable<TEntity> sorted = query.ApplySort(request.Sort, _builder);
             List<TEntity> allItems = await sorted
                 .Take(_builder.MaxPageSizeValue * entityResult.Groups.Count)
-                .ToListAsync(cancellationToken)
+                .ToListSafeAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             PropertyInfo? groupProp = typeof(TEntity).GetProperty(
@@ -268,7 +268,7 @@ internal sealed class QueryEngine<TEntity>(
         int limit = _builder.MaxStreamSizeValue;
         int count = 0;
 
-        await foreach (TEntity entity in query.Take(limit).AsAsyncEnumerable().WithCancellation(cancellationToken).ConfigureAwait(false))
+        await foreach (TEntity entity in query.Take(limit).AsAsyncEnumerableSafe().WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             count++;
             yield return entity;
@@ -420,7 +420,7 @@ internal sealed class QueryEngine<TEntity>(
         List<TProjection> items = await query
             .Take(pageSize + 1)
             .Select(projection)
-            .ToListAsync(cancellationToken)
+            .ToListSafeAsync(cancellationToken)
             .ConfigureAwait(false);
 
         bool hasMore = items.Count > pageSize;

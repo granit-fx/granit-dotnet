@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.QueryEngine.EntityFrameworkCore.Internal;
@@ -30,7 +29,7 @@ internal static class QueryablePaginationExtensions
             List<T> items = await source
                 .Skip(skip)
                 .Take(pageSize + 1)
-                .ToListAsync(cancellationToken)
+                .ToListSafeAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             bool hasMore = items.Count > pageSize;
@@ -47,7 +46,7 @@ internal static class QueryablePaginationExtensions
         List<T> pagedItems = await source
             .Skip(skip)
             .Take(pageSize)
-            .ToListAsync(cancellationToken)
+            .ToListSafeAsync(cancellationToken)
             .ConfigureAwait(false);
 
         bool hasMorePages = skip + pagedItems.Count < totalCount;
@@ -78,7 +77,7 @@ internal static class QueryablePaginationExtensions
 
         if (cursorProperty is null)
         {
-            List<T> fallback = await source.Take(pageSize).ToListAsync(cancellationToken).ConfigureAwait(false);
+            List<T> fallback = await source.Take(pageSize).ToListSafeAsync(cancellationToken).ConfigureAwait(false);
             return new PagedResult<T>(fallback, TotalCount: null, HasMore: false);
         }
 
@@ -105,7 +104,7 @@ internal static class QueryablePaginationExtensions
         // Take pageSize + 1 to determine if there are more pages
         List<T> items = await query
             .Take(pageSize + 1)
-            .ToListAsync(cancellationToken)
+            .ToListSafeAsync(cancellationToken)
             .ConfigureAwait(false);
 
         string? nextCursor = null;

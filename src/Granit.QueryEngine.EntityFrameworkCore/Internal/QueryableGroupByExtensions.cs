@@ -55,10 +55,12 @@ internal static class QueryableGroupByExtensions
 
         object groupedQuery = groupByMethod.Invoke(null, [source, keySelector])!;
 
+        bool isAsyncProvider = source.Provider is Microsoft.EntityFrameworkCore.Query.IAsyncQueryProvider;
+
         // Materialize groups with count
         // We need to project to a known type
         List<GroupEntry<T>> groups = await MaterializeGroupsAsync<T>(
-            groupedQuery, keyType, groupByField, maxGroupCount, cancellationToken).ConfigureAwait(false);
+            groupedQuery, keyType, groupByField, maxGroupCount, isAsyncProvider, cancellationToken).ConfigureAwait(false);
 
         int totalCount = groups.Sum(g => g.Count);
 
@@ -70,6 +72,7 @@ internal static class QueryableGroupByExtensions
         Type keyType,
         string fieldName,
         int maxGroupCount,
+        bool isAsyncProvider,
         CancellationToken cancellationToken)
         where T : class
     {
@@ -109,15 +112,28 @@ internal static class QueryableGroupByExtensions
 
         projected = takeMethod.Invoke(null, [projected, maxGroupCount])!;
 
-        // Materialize via ToListAsync
-        MethodInfo toListAsync = typeof(EntityFrameworkQueryableExtensions)
-            .GetMethods()
-            .First(m => m.Name == nameof(EntityFrameworkQueryableExtensions.ToListAsync)
-                && m.GetParameters().Length == 2)
-            .MakeGenericMethod(resultType);
+        // Materialize — use async EF Core path for real DbContext sources, sync fallback for in-memory.
+        System.Collections.IList materialized;
+        if (isAsyncProvider)
+        {
+            MethodInfo toListAsync = typeof(EntityFrameworkQueryableExtensions)
+                .GetMethods()
+                .First(m => m.Name == nameof(EntityFrameworkQueryableExtensions.ToListAsync)
+                    && m.GetParameters().Length == 2)
+                .MakeGenericMethod(resultType);
 
-        dynamic task = toListAsync.Invoke(null, [projected, cancellationToken])!;
-        var materialized = (System.Collections.IList)await task.ConfigureAwait(false);
+            dynamic task = toListAsync.Invoke(null, [projected, cancellationToken])!;
+            materialized = (System.Collections.IList)await task.ConfigureAwait(false);
+        }
+        else
+        {
+            MethodInfo toList = typeof(Enumerable)
+                .GetMethods()
+                .First(m => m.Name == nameof(Enumerable.ToList) && m.GetParameters().Length == 1)
+                .MakeGenericMethod(resultType);
+
+            materialized = (System.Collections.IList)toList.Invoke(null, [projected])!;
+        }
 
         List<GroupEntry<T>> entries = [];
         PropertyInfo keyProp = resultType.GetProperty("Key")!;
