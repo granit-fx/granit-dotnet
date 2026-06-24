@@ -21,7 +21,21 @@ internal sealed class EfBlobQueryableSource(
 
     public IQueryable<BlobDescriptor> GetQueryable()
     {
-        _context ??= contextFactory.CreateDbContext();
+        if (_context is null)
+        {
+            try
+            {
+                _context = contextFactory.CreateDbContext();
+            }
+            catch (InvalidOperationException) when (_bypassTenantFilter)
+            {
+                // Per-tenant factory (SchemaPerTenant / DatabasePerTenant) requires a resolved
+                // tenant; none is active in the host context. Return empty so analytics runners
+                // report "no data" rather than crashing the metric endpoint.
+                return Enumerable.Empty<BlobDescriptor>().AsQueryable();
+            }
+        }
+
         IQueryable<BlobDescriptor> query = _context.Blobs.AsNoTracking();
         return _bypassTenantFilter
             ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
