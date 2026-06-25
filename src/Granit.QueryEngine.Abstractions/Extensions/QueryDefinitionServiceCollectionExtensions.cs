@@ -21,17 +21,32 @@ public static class QueryDefinitionServiceCollectionExtensions
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
     /// <remarks>
+    /// <para>
     /// The concrete <typeparamref name="TDefinition"/> is registered as a resolvable
     /// singleton so callers (and the <c>Granit.Entities</c> integrity check) can locate
     /// it through DI — both the base <see cref="QueryDefinition{TEntity}"/> service and
     /// the non-generic <see cref="IQueryDefinitionDescriptor"/> resolve to the same
     /// instance.
+    /// </para>
+    /// <para>
+    /// Idempotent: registering the same <typeparamref name="TDefinition"/> more than once
+    /// is a no-op. Several modules that share a base module (e.g. the Scriban and MJML
+    /// templating engines both calling <c>AddGranitTemplating</c>) would otherwise register
+    /// duplicate <see cref="IQueryDefinitionDescriptor"/> entries, producing two aggregate
+    /// runners with the same name and crashing the analytics runner registry on a
+    /// duplicate-key <c>ToDictionary</c>.
+    /// </para>
     /// </remarks>
     public static IServiceCollection AddQueryDefinition<TEntity, TDefinition>(
         this IServiceCollection services)
         where TEntity : class
         where TDefinition : QueryDefinition<TEntity>, new()
     {
+        if (services.Any(d => d.ServiceType == typeof(TDefinition)))
+        {
+            return services;
+        }
+
         services.AddSingleton<TDefinition>(sp =>
         {
             TDefinition definition = new();
