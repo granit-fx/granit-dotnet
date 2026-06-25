@@ -1,8 +1,10 @@
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Audit;
 using Granit.Privacy.DataExport.Internal;
 using Granit.Privacy.Diagnostics;
+using Granit.Privacy.Exports;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Domain;
 using Granit.Privacy.LegalAgreements.Internal;
@@ -35,6 +37,7 @@ public static class PrivacyServiceCollectionExtensions
         GranitActivitySourceRegistry.Register(PrivacyActivitySource.Name);
         services.TryAddSingleton<PrivacyMetrics>();
         services.AddQueryDefinition<LegalDocument, LegalDocumentQueryDefinition>();
+        services.AddExportDefinition<LegalDocument, LegalDocumentExportDefinition>();
 
         services.AddOptions<GranitPrivacyOptions>()
             .BindConfiguration(GranitPrivacyOptions.SectionName)

@@ -2200,6 +2200,7 @@
       "name": "Granit.Privacy",
       "deps": [
         "Granit",
+        "Granit.DataExchange.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Settings",
         "Granit.Workflow"
@@ -45602,12 +45603,28 @@
       "members": []
     },
     {
+      "name": "LegalDocumentExportDefinition",
+      "fqn": "Granit.Privacy.Exports.LegalDocumentExportDefinition",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/Exports/LegalDocumentExportDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "PrivacyServiceCollectionExtensions",
       "fqn": "Granit.Privacy.Extensions.PrivacyServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/Extensions/PrivacyServiceCollectionExtensions.cs",
-      "line": 22,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitPrivacy",

@@ -36,6 +36,7 @@ internal static class LookupExemptions
         "Granit.Identity.Federated.Domain.FederatedIdentity.ExternalUserId",     // [PERMANENT] external IdP subject (opaque)
         "Granit.Authorization.Domain.RoleMetadata.ClientId",                     // [PERMANENT] external OAuth client id
         "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication.ClientId", // [PERMANENT] external OAuth client id
+        "Granit.Privacy.LegalAgreements.Domain.LegalDocument.DocumentId",        // [PERMANENT] opaque business slug (e.g. "privacy-policy"); not an FK
 
         // ── [PERMANENT] audit / infra logs — not interactive admin grids ──
         "Granit.AI.AIUsageRecord.ConversationId",                                // [PERMANENT] AI cost/audit log; owner-private chat ref

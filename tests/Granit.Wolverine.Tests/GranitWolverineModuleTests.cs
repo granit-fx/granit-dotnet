@@ -71,11 +71,17 @@ public sealed class GranitWolverineModuleTests
     [Fact]
     public void AddGranitWolverine_RegistersICurrentUserService_Scoped()
     {
+        // WolverineCurrentUserService is no longer registered as its own concrete service:
+        // it is bound directly to ICurrentUserService and IWolverineUserContextSetter via
+        // AddScoped<IFoo, TConcrete> so both registrations stay inline-able under Wolverine
+        // static codegen (ServiceLocationPolicy.NotAllowed). All AsyncLocal state is static,
+        // so the two distinct scoped instances still share user context.
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         builder.AddGranitWolverine();
 
         builder.Services.ShouldContain(d =>
             d.ServiceType == typeof(ICurrentUserService) &&
+            d.ImplementationType == typeof(WolverineCurrentUserService) &&
             d.Lifetime == ServiceLifetime.Scoped);
     }
 
@@ -87,17 +93,7 @@ public sealed class GranitWolverineModuleTests
 
         builder.Services.ShouldContain(d =>
             d.ServiceType == typeof(IWolverineUserContextSetter) &&
-            d.Lifetime == ServiceLifetime.Scoped);
-    }
-
-    [Fact]
-    public void AddGranitWolverine_RegistersWolverineCurrentUserService_Scoped()
-    {
-        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-        builder.AddGranitWolverine();
-
-        builder.Services.ShouldContain(d =>
-            d.ServiceType == typeof(WolverineCurrentUserService) &&
+            d.ImplementationType == typeof(WolverineCurrentUserService) &&
             d.Lifetime == ServiceLifetime.Scoped);
     }
 
@@ -175,17 +171,18 @@ public sealed class GranitWolverineModuleTests
     }
 
     [Fact]
-    public void AddGranitWolverine_RelaxesServiceLocationPolicy_ForStaticCodegen()
+    public void AddGranitWolverine_SetsServiceLocationPolicy_NotAllowed()
     {
-        // Wolverine 6 defaults to ServiceLocationPolicy.NotAllowed, which aborts `codegen write`
-        // because the context-propagation middleware on every chain reaches framework services
-        // that can't be inlined (ICurrentUserService / IWolverineUserContextSetter forwarding
-        // factories, internal INotificationPublisher). AllowedButWarn keeps Static codegen usable.
+        // ServiceLocationPolicy.NotAllowed aborts `codegen write` when a chain dependency can't
+        // be inlined. The three previously-problematic registrations are now codegen-clean:
+        // ICurrentUserService + IWolverineUserContextSetter use direct AddScoped<IFoo, TConcrete>
+        // (no lambda factory), and the internal INotificationPublisher impls are reachable via
+        // InternalsVisibleTo "WolverineHandlers" — so NotAllowed is restored for fail-fast codegen.
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         builder.AddGranitWolverine();
 
         ResolveWolverineOptions(builder).ServiceLocationPolicy
-            .ShouldBe(ServiceLocationPolicy.AllowedButWarn);
+            .ShouldBe(ServiceLocationPolicy.NotAllowed);
     }
 
     private static global::Wolverine.WolverineOptions ResolveWolverineOptions(HostApplicationBuilder builder) =>
