@@ -112,6 +112,32 @@ public sealed class EntityDefinitionTests
     }
 
     [Fact]
+    public void FieldBuilder_EnumField_DefaultsToSelect_WithAutoOptions()
+    {
+        EntityDefinitionDescriptor d = new SampleEntityDefinition().Descriptor;
+        FieldDescriptor kind = d.Forms[0].Sections.SelectMany(s => s.Fields).First(f => f.PropertyName == "Kind");
+
+        kind.Component.ShouldBe("select");
+        kind.Config.ShouldNotBeNull();
+        IReadOnlyList<FieldSelectOption> options = kind.Config!["options"].ShouldBeAssignableTo<IReadOnlyList<FieldSelectOption>>()!;
+        options.Select(o => o.Value).ShouldBe(["Individual", "Company"]);
+        options.Select(o => o.LabelKey).ShouldBe(["Enum:SampleKind.Individual", "Enum:SampleKind.Company"]);
+    }
+
+    [Fact]
+    public void FieldBuilder_FlagsEnumField_DefaultsToMultiselect_DroppingZeroMember()
+    {
+        EntityDefinitionDescriptor d = new SampleEntityDefinition().Descriptor;
+        FieldDescriptor roles = d.Forms[0].Sections.SelectMany(s => s.Fields).First(f => f.PropertyName == "Roles");
+
+        roles.Component.ShouldBe("multiselect");
+        roles.Config.ShouldNotBeNull();
+        IReadOnlyList<FieldSelectOption> options = roles.Config!["options"].ShouldBeAssignableTo<IReadOnlyList<FieldSelectOption>>()!;
+        // None (0) is dropped — the empty selection already represents it.
+        options.Select(o => o.Value).ShouldBe(["Customer", "Supplier"]);
+    }
+
+    [Fact]
     public void FieldBuilder_OverridesComponent_AndConfig()
     {
         EntityDefinitionDescriptor d = new SampleEntityDefinition().Descriptor;
@@ -187,6 +213,22 @@ public sealed class EntityDefinitionTests
         public DateTimeOffset IssuedAt { get; set; }
         public string Status { get; set; } = "";
         public string? Notes { get; set; }
+        public SampleKind Kind { get; set; }
+        public SampleRoles Roles { get; set; }
+    }
+
+    private enum SampleKind
+    {
+        Individual = 0,
+        Company = 1,
+    }
+
+    [Flags]
+    private enum SampleRoles
+    {
+        None = 0,
+        Customer = 1 << 0,
+        Supplier = 1 << 1,
     }
 
     private sealed class SampleQueryDefinition;
@@ -223,6 +265,8 @@ public sealed class EntityDefinitionTests
                         .RequiresPermission("Sample.SampleEntities.Manage"))
                     .Field(x => x.Active)
                     .Field(x => x.IssuedAt)
+                    .Field(x => x.Kind)
+                    .Field(x => x.Roles)
                     .Field(x => x.Notes, fld => fld.VisibleIf("Status", FieldOp.Eq, "Draft")))
                 .Customizable());
 

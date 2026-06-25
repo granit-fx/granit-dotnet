@@ -20517,7 +20517,7 @@
       "kind": "class",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Forms/FieldBuilder.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -20527,6 +20527,15 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Forms/FieldDescriptor.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "FieldSelectOption",
+      "fqn": "Granit.Entities.Forms.FieldSelectOption",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Forms/FieldSelectOption.cs",
+      "line": 17,
       "members": []
     },
     {

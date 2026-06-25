@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using Granit.DataLookup.Descriptors;
@@ -153,7 +154,7 @@ public sealed class FieldBuilder<TEntity, TProperty>
             PropertyName = _propertyName,
             ClrType = _clrType,
             Component = _component,
-            Config = _config,
+            Config = ResolveConfig(),
             LabelKey = _labelKey,
             HelpKey = _helpKey,
             RequiresPermission = _requiresPermission,
@@ -162,6 +163,59 @@ public sealed class FieldBuilder<TEntity, TProperty>
             VisibleIf = _visibleIf,
             Lookup = _lookup,
         };
+
+    /// <summary>
+    /// Auto-populates <c>config["options"]</c> for an enum-backed choice component so the
+    /// renderer never receives a <c>select</c>/<c>multiselect</c> with no options (ADR-041 —
+    /// both require an <c>options[]</c> config). Skipped when the field declares a data lookup
+    /// (the picker supplies its own values) or the caller already provided <c>options</c>.
+    /// </summary>
+    private Dictionary<string, object?>? ResolveConfig()
+    {
+        Type unwrapped = Nullable.GetUnderlyingType(_clrType) ?? _clrType;
+        bool autoOptions = unwrapped.IsEnum
+            && _lookup is null
+            && _component is "select" or "multiselect" or "status"
+            && (_config is null || !_config.ContainsKey("options"));
+
+        if (!autoOptions)
+        {
+            return _config;
+        }
+
+        Dictionary<string, object?> config = _config is null
+            ? new Dictionary<string, object?>(StringComparer.Ordinal)
+            : new Dictionary<string, object?>(_config, StringComparer.Ordinal);
+        config["options"] = BuildEnumOptions(unwrapped);
+        return config;
+    }
+
+    /// <summary>
+    /// Materializes an enum's members as <see cref="FieldSelectOption"/>s — value = the member's
+    /// PascalCase name (symmetric with the wire enum format), label = the
+    /// <c>Enum:{TypeName}.{Value}</c> i18n key (ADR-023, shared with <c>EnumLookupSource</c>).
+    /// For <c>[Flags]</c> enums the zero member (the empty set) is dropped — selecting nothing
+    /// already represents it in a multiselect.
+    /// </summary>
+    private static List<FieldSelectOption> BuildEnumOptions(Type enumType)
+    {
+        bool isFlags = enumType.IsDefined(typeof(FlagsAttribute), inherit: false);
+        string[] names = Enum.GetNames(enumType);
+        List<FieldSelectOption> options = new(names.Length);
+
+        foreach (string name in names)
+        {
+            if (isFlags
+                && Convert.ToInt64(Enum.Parse(enumType, name), CultureInfo.InvariantCulture) == 0)
+            {
+                continue;
+            }
+
+            options.Add(new FieldSelectOption(name, $"Enum:{enumType.Name}.{name}"));
+        }
+
+        return options;
+    }
 
     /// <summary>
     /// Picks a sensible default component from the standard catalog (per ADR-041) based on the
@@ -203,7 +257,8 @@ public sealed class FieldBuilder<TEntity, TProperty>
 
         if (unwrapped.IsEnum)
         {
-            return "select";
+            // [Flags] enums are a set, not a single choice → multiselect (ADR-041).
+            return unwrapped.IsDefined(typeof(FlagsAttribute), inherit: false) ? "multiselect" : "select";
         }
 
         return "text";
