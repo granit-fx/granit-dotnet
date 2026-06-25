@@ -122,15 +122,48 @@ public sealed class QueryableSortExtensionsTests
     }
 
     [Fact]
-    public void Empty_sort_and_no_default_returns_unsorted()
+    public void Empty_sort_and_no_default_falls_back_to_id()
     {
+        // No request sort, no DefaultSort → must still order deterministically (by Id)
+        // so downstream Skip/Take is stable and EF Core does not warn.
         QueryDefinitionBuilder<TestProduct> builder = new();
-        List<TestProduct> source = [new() { Name = "B" }, new() { Name = "A" }];
+        var first = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var second = Guid.Parse("00000000-0000-0000-0000-000000000002");
+        List<TestProduct> source =
+        [
+            new() { Id = second, Name = "B" },
+            new() { Id = first, Name = "A" },
+        ];
 
         var result = source.AsQueryable()
             .ApplySort("", builder)
             .ToList();
 
         result.Count.ShouldBe(2);
+        result[0].Id.ShouldBe(first);
+        result[1].Id.ShouldBe(second);
+    }
+
+    [Fact]
+    public void Non_whitelisted_only_sort_falls_back_to_cursor_key()
+    {
+        // Requested field is not sortable → nothing resolves → fall back to the cursor key.
+        QueryDefinitionBuilder<TestProduct> builder = new();
+        builder.SupportsCursorPagination(p => p.Price);
+
+        List<TestProduct> source =
+        [
+            new() { Name = "B", Price = 30 },
+            new() { Name = "A", Price = 10 },
+            new() { Name = "C", Price = 20 },
+        ];
+
+        var result = source.AsQueryable()
+            .ApplySort("Name", builder)
+            .ToList();
+
+        result[0].Price.ShouldBe(10);
+        result[1].Price.ShouldBe(20);
+        result[2].Price.ShouldBe(30);
     }
 }
