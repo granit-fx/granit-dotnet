@@ -16,8 +16,9 @@ namespace Granit.QueryEngine.AspNetCore.Dtos;
 /// frontend surfaces a query without a base path as not-yet-routable.
 /// </param>
 /// <param name="Label">
-/// Human-facing label for the dropdown. The descriptor carries no display metadata, so this
-/// degrades gracefully to <see cref="Name"/>.
+/// Human-facing label for the dropdown, resolved from the query's localization resource via the
+/// key <c>"Query:{Name}"</c> in the request culture. Degrades gracefully to <see cref="Name"/>
+/// when the module has not declared that key (localization is opt-in per module).
 /// </param>
 public sealed record QueryCatalogEntryResponse(
     string Name,

@@ -7,6 +7,7 @@ using Granit.QueryEngine.Internal;
 using Granit.Testing.Endpoints;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Localization;
 using Shouldly;
 using Xunit;
 
@@ -14,9 +15,10 @@ namespace Granit.QueryEngine.AspNetCore.Tests.Endpoints;
 
 /// <summary>
 /// HTTP-level tests for <c>GET /catalog</c> driven through <see cref="GranitEndpointTestHost"/>.
-/// Exercises the live EndpointDataSource / LinkGenerator route resolution the projection unit
-/// tests cannot reach: a mapped query resolves its base path, a registered-but-unmapped query
-/// surfaces a null base path, and the authenticated-only gate holds.
+/// Exercises the live EndpointDataSource / LinkGenerator route resolution and the localized-label
+/// resolution the projection unit tests cannot reach: a mapped query resolves its base path, a
+/// registered-but-unmapped query surfaces a null base path, the <c>Query:{Name}</c> localization
+/// key drives the label (falling back to the raw name), and the authenticated-only gate holds.
 /// </summary>
 public sealed class QueryCatalogEndpointsHttpTests
 {
@@ -25,8 +27,11 @@ public sealed class QueryCatalogEndpointsHttpTests
             configureServices: services =>
             {
                 services.AddAuthorizationBuilder();
+                services.AddSingleton<IStringLocalizerFactory>(new StubLocalizerFactory());
 
-                // Two definitions registered; only the routed one is mapped below.
+                // Two definitions registered; only the routed one is mapped below. The routed
+                // definition declares a localization resource carrying a "Query:Test.Routed" label;
+                // the unrouted one declares none (label falls back to its name).
                 services.AddQueryDefinition<RoutedEntity, RoutedQueryDefinition>();
                 services.AddQueryDefinition<UnroutedEntity, UnroutedQueryDefinition>();
                 services.TryAddSingleton<IQueryDefinitionRegistry, QueryDefinitionRegistry>();
@@ -49,7 +54,6 @@ public sealed class QueryCatalogEndpointsHttpTests
 
         body.ShouldNotBeNull();
         body.Select(e => e.Name).ShouldBe(["Test.Routed", "Test.Unrouted"]);
-        body.ShouldAllBe(e => e.Label == e.Name);
     }
 
     [Fact]
@@ -77,6 +81,30 @@ public sealed class QueryCatalogEndpointsHttpTests
     }
 
     [Fact]
+    public async Task Catalog_resolves_the_label_from_the_Query_prefixed_localization_key()
+    {
+        await using GranitEndpointTestHost host = await StartAsync();
+
+        List<QueryCatalogEntryResponse>? body = await host.CreateAuthenticatedClient()
+            .GetFromJsonAsync<List<QueryCatalogEntryResponse>>("/catalog", TestContext.Current.CancellationToken);
+
+        QueryCatalogEntryResponse routed = body!.Single(e => e.Name == "Test.Routed");
+        routed.Label.ShouldBe("Routed Things");
+    }
+
+    [Fact]
+    public async Task Catalog_falls_back_to_the_name_when_no_localization_key_exists()
+    {
+        await using GranitEndpointTestHost host = await StartAsync();
+
+        List<QueryCatalogEntryResponse>? body = await host.CreateAuthenticatedClient()
+            .GetFromJsonAsync<List<QueryCatalogEntryResponse>>("/catalog", TestContext.Current.CancellationToken);
+
+        QueryCatalogEntryResponse unrouted = body!.Single(e => e.Name == "Test.Unrouted");
+        unrouted.Label.ShouldBe("Test.Unrouted");
+    }
+
+    [Fact]
     public async Task Catalog_is_unauthorized_for_an_anonymous_caller()
     {
         await using GranitEndpointTestHost host = await StartAsync();
@@ -101,6 +129,8 @@ public sealed class QueryCatalogEndpointsHttpTests
     {
         public override string Name => "Test.Routed";
 
+        public override Type LocalizationResourceType => typeof(TestQueryLabelsResource);
+
         protected override void Configure(QueryDefinitionBuilder<RoutedEntity> builder) =>
             builder.Column(e => e.Name);
     }
@@ -111,5 +141,32 @@ public sealed class QueryCatalogEndpointsHttpTests
 
         protected override void Configure(QueryDefinitionBuilder<UnroutedEntity> builder) =>
             builder.Column(e => e.Name);
+    }
+
+    private sealed class TestQueryLabelsResource;
+
+    private sealed class StubLocalizerFactory : IStringLocalizerFactory
+    {
+        private static readonly Dictionary<string, string> RoutedLabels =
+            new() { ["Query:Test.Routed"] = "Routed Things" };
+
+        public IStringLocalizer Create(Type resourceSource) =>
+            resourceSource == typeof(TestQueryLabelsResource)
+                ? new StubLocalizer(RoutedLabels)
+                : new StubLocalizer(new Dictionary<string, string>());
+
+        public IStringLocalizer Create(string baseName, string location) => new StubLocalizer(new Dictionary<string, string>());
+    }
+
+    private sealed class StubLocalizer(IReadOnlyDictionary<string, string> map) : IStringLocalizer
+    {
+        public LocalizedString this[string name] =>
+            map.TryGetValue(name, out string? value)
+                ? new LocalizedString(name, value, resourceNotFound: false)
+                : new LocalizedString(name, name, resourceNotFound: true);
+
+        public LocalizedString this[string name, params object[] arguments] => this[name];
+
+        public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) => [];
     }
 }

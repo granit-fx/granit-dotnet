@@ -14,28 +14,31 @@ internal static class QueryCatalogProjection
     /// Projects <paramref name="descriptors"/> (already ordered by the registry) into catalog
     /// entries. <paramref name="basePathByEntityType"/> maps an entity CLR type to the resolved
     /// base path of its <c>List</c> endpoint; a descriptor whose entity type is absent gets a
-    /// <c>null</c> base path — never a forged URL.
+    /// <c>null</c> base path — never a forged URL. <paramref name="resolveLabel"/> produces the
+    /// human-facing dropdown label for a descriptor (the localized <c>"Query:{Name}"</c> string,
+    /// or the raw <c>Name</c> as fallback).
     /// </summary>
     public static IReadOnlyList<QueryCatalogEntryResponse> Project(
         IEnumerable<IQueryDefinitionDescriptor> descriptors,
-        IReadOnlyDictionary<Type, string> basePathByEntityType)
+        IReadOnlyDictionary<Type, string> basePathByEntityType,
+        Func<IQueryDefinitionDescriptor, string> resolveLabel)
     {
         ArgumentNullException.ThrowIfNull(descriptors);
         ArgumentNullException.ThrowIfNull(basePathByEntityType);
+        ArgumentNullException.ThrowIfNull(resolveLabel);
 
-        return [.. descriptors.Select(d => ToResponse(d, basePathByEntityType))];
+        return [.. descriptors.Select(d => ToResponse(d, basePathByEntityType, resolveLabel))];
     }
 
     private static QueryCatalogEntryResponse ToResponse(
         IQueryDefinitionDescriptor descriptor,
-        IReadOnlyDictionary<Type, string> basePathByEntityType)
+        IReadOnlyDictionary<Type, string> basePathByEntityType,
+        Func<IQueryDefinitionDescriptor, string> resolveLabel)
     {
         string? basePath = basePathByEntityType.TryGetValue(descriptor.EntityType, out string? path)
             ? path
             : null;
 
-        // The descriptor exposes no display label, so the dropdown label degrades to the
-        // wire identifier. A richer label can be layered on later without a wire break.
-        return new QueryCatalogEntryResponse(descriptor.Name, basePath, descriptor.Name);
+        return new QueryCatalogEntryResponse(descriptor.Name, basePath, resolveLabel(descriptor));
     }
 }
