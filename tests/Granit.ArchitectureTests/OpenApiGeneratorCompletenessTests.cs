@@ -32,6 +32,16 @@ public sealed partial class OpenApiGeneratorCompletenessTests
             .Where(name => File.Exists(Path.Join(RepoRoot, "src", name, $"{name}.csproj")))
             .OrderBy(name => name, StringComparer.Ordinal)];
 
+    /// <summary>
+    /// Slugs for HTTP surfaces that ship from a package whose name does NOT end in
+    /// <c>.Endpoints</c>, so the <c>Granit.*.Endpoints</c> glob cannot discover them. Each must be
+    /// wired into the generator explicitly (csproj <c>ProjectReference</c>, <c>GeneratorModule</c>
+    /// <c>[DependsOn]</c>, and a <c>GeneratorEndpoints.All</c> entry) — they are counted here so the
+    /// registry-completeness assertion stays exact. The query-engine exposes its query catalogue
+    /// (<c>GET /catalog</c>) from <c>Granit.QueryEngine.AspNetCore</c>.
+    /// </summary>
+    private static readonly IReadOnlyList<string> NonEndpointsDocumentSlugs = ["query-engine"];
+
     [Fact]
     public void Generator_csproj_references_exactly_the_endpoints_projects()
     {
@@ -76,10 +86,19 @@ public sealed partial class OpenApiGeneratorCompletenessTests
         string registrySource = File.ReadAllText(Path.Join(GeneratorDir, "GeneratorEndpoints.cs"));
 
         int entries = RegistryEntryRegex().Count(registrySource);
+        int expected = EndpointsProjectNames.Count + NonEndpointsDocumentSlugs.Count;
 
-        entries.ShouldBe(EndpointsProjectNames.Count,
-            $"GeneratorEndpoints.All must declare one document per endpoints module " +
-            $"({EndpointsProjectNames.Count} expected, found {entries}). Every module's routes must be mounted.");
+        entries.ShouldBe(expected,
+            $"GeneratorEndpoints.All must declare one document per endpoints module plus the " +
+            $"{NonEndpointsDocumentSlugs.Count} non-.Endpoints surface(s) [{string.Join(", ", NonEndpointsDocumentSlugs)}] " +
+            $"({expected} expected, found {entries}). Every module's routes must be mounted.");
+
+        // Each explicitly-wired non-.Endpoints surface must carry its declared slug.
+        List<string> missing =
+            [.. NonEndpointsDocumentSlugs.Where(slug => !registrySource.Contains($"new(\"{slug}\"", StringComparison.Ordinal))];
+
+        missing.ShouldBeEmpty(
+            "GeneratorEndpoints.All is missing a registry entry for non-.Endpoints surface(s): " + string.Join(", ", missing));
     }
 
     [GeneratedRegex("""<ProjectReference\s+Include="[^"]*\\(?<name>[^"\\]+)\.csproj""")]

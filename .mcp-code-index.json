@@ -2035,7 +2035,8 @@
       "name": "Granit.OpenApi.Generator",
       "deps": [
         "Granit.OpenApi.Generation",
-        "Granit.*.Endpoints"
+        "Granit.*.Endpoints",
+        "Granit.QueryEngine.AspNetCore"
       ],
       "framework": "net10.0"
     },
@@ -40310,7 +40311,7 @@
       "kind": "class",
       "project": "Granit.OpenApi.Generator",
       "file": "src/Granit.OpenApi.Generator/GeneratorModule.cs",
-      "line": 47,
+      "line": 50,
       "members": []
     },
     {

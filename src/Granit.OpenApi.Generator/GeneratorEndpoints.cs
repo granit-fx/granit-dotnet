@@ -24,6 +24,7 @@ using Granit.OpenIddict.Endpoints.Extensions;
 using Granit.Presence.Endpoints.Extensions;
 using Granit.Privacy.Endpoints.Discovery;
 using Granit.Privacy.Endpoints.Extensions;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Scheduling.Endpoints.Extensions;
 using Granit.Settings.Endpoints.Extensions;
 using Granit.Templating.Endpoints.Extensions;
@@ -87,6 +88,8 @@ internal static class GeneratorEndpoints
             e.MapGranitPrivacy();
             e.MapGranitPrivacyGpcDiscovery();
         }),
+        // Non-".Endpoints" surface: the query catalogue ships from Granit.QueryEngine.AspNetCore.
+        new("query-engine", e => e.MapGranitQueryCatalog()),
         new("scheduling", e => e.MapGranitScheduling()),
         new("settings", e =>
         {
