@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.QueryEngine.AspNetCore\Granit.QueryEngine.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
   </ItemGroup>
 
 </Project>

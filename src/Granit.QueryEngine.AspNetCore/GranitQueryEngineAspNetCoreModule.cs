@@ -3,7 +3,9 @@ using Granit.Http.ApiDocumentation;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.QueryEngine.AspNetCore.Internal;
+using Granit.QueryEngine.Internal;
 using Granit.Validation;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.QueryEngine.AspNetCore;
 
@@ -28,5 +30,8 @@ public sealed class GranitQueryEngineAspNetCoreModule : GranitModule
     {
         ArgumentNullException.ThrowIfNull(context);
         context.Services.AddLocalizationResource<QueryEngineAspNetCoreLocalizationResource>();
+
+        // Surfaces every registered IQueryDefinitionDescriptor to the GET /catalog endpoint.
+        context.Services.TryAddSingleton<IQueryDefinitionRegistry, QueryDefinitionRegistry>();
     }
 }

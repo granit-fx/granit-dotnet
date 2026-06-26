@@ -47254,6 +47254,31 @@
       ]
     },
     {
+      "name": "QueryCatalogEntryResponse",
+      "fqn": "Granit.QueryEngine.AspNetCore.Dtos.QueryCatalogEntryResponse",
+      "kind": "record",
+      "project": "Granit.QueryEngine.AspNetCore",
+      "file": "src/Granit.QueryEngine.AspNetCore/Dtos/QueryCatalogEntryResponse.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "QueryCatalogEndpointRouteBuilderExtensions",
+      "fqn": "Granit.QueryEngine.AspNetCore.Extensions.QueryCatalogEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.QueryEngine.AspNetCore",
+      "file": "src/Granit.QueryEngine.AspNetCore/Extensions/QueryCatalogEndpointRouteBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "MapGranitQueryCatalog",
+          "kind": "method",
+          "signature": "MapGranitQueryCatalog(this IEndpointRouteBuilder endpoints, string prefix = \"\")",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
       "name": "QueryEndpointRouteBuilderExtensions",
       "fqn": "Granit.QueryEngine.AspNetCore.Extensions.QueryEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -47268,7 +47293,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.AspNetCore",
       "file": "src/Granit.QueryEngine.AspNetCore/GranitQueryEngineAspNetCoreModule.cs",
-      "line": 24,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -47564,6 +47589,28 @@
       "file": "src/Granit.QueryEngine.Abstractions/IQueryDefinitionDescriptor.cs",
       "line": 7,
       "members": []
+    },
+    {
+      "name": "IQueryDefinitionRegistry",
+      "fqn": "Granit.QueryEngine.IQueryDefinitionRegistry",
+      "kind": "interface",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/IQueryDefinitionRegistry.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "GetAll",
+          "kind": "method",
+          "signature": "GetAll()",
+          "returnType": "IReadOnlyList<IQueryDefinitionDescriptor>"
+        },
+        {
+          "name": "Find",
+          "kind": "method",
+          "signature": "Find(string name)",
+          "returnType": "IQueryDefinitionDescriptor?"
+        }
+      ]
     },
     {
       "name": "IQueryEngine",
