@@ -59,6 +59,7 @@ public sealed class ValidationMetricsTests
 
     private sealed class Recorder : IDisposable
     {
+        private readonly ServiceProvider _provider;
         private readonly MeterListener _listener;
         private readonly List<Measurement> _measurements = [];
 
@@ -66,15 +67,21 @@ public sealed class ValidationMetricsTests
 
         private Recorder()
         {
-            IMeterFactory factory = new ServiceCollection().AddMetrics()
-                .BuildServiceProvider().GetRequiredService<IMeterFactory>();
+            _provider = new ServiceCollection().AddMetrics().BuildServiceProvider();
+            IMeterFactory factory = _provider.GetRequiredService<IMeterFactory>();
             Metrics = new ValidationMetrics(factory);
 
             _listener = new MeterListener
             {
                 InstrumentPublished = (instrument, listener) =>
                 {
-                    if (instrument.Meter.Name == ValidationMetrics.MeterName)
+                    // The listener is process-global: filtering by meter name alone would also
+                    // capture measurements emitted by parallel test classes that hit the live
+                    // endpoints (ValidationEndpointsHttpTests) under the same meter name. Scope
+                    // to THIS factory's meter — the default IMeterFactory stamps Meter.Scope
+                    // with the factory instance.
+                    if (instrument.Meter.Name == ValidationMetrics.MeterName
+                        && ReferenceEquals(instrument.Meter.Scope, factory))
                     {
                         listener.EnableMeasurementEvents(instrument);
                     }
@@ -90,6 +97,10 @@ public sealed class ValidationMetricsTests
         // Measurements are delivered synchronously on Add, so the list is already populated.
         public Measurement Single() => _measurements.ShouldHaveSingleItem();
 
-        public void Dispose() => _listener.Dispose();
+        public void Dispose()
+        {
+            _listener.Dispose();
+            _provider.Dispose();
+        }
     }
 }
