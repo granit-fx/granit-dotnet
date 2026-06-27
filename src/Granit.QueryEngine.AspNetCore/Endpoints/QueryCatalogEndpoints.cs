@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 
 namespace Granit.QueryEngine.AspNetCore.Endpoints;
 
@@ -16,9 +15,10 @@ namespace Granit.QueryEngine.AspNetCore.Endpoints;
 internal static class QueryCatalogEndpoints
 {
     /// <summary>
-    /// Localization-key prefix for a query's display label. The localizer (resolved from the
-    /// definition's <see cref="IQueryDefinitionDescriptor.LocalizationResourceType"/>) is queried
-    /// with <c>"Query:{Name}"</c>; a module opts in by adding that key to its own resource.
+    /// Localization-key prefix used as the fallback label key when a query's target entity is not
+    /// registered (so its already-translated <c>DisplayKey</c> cannot be reused). A module opts in
+    /// by adding <c>"Query:{Name}"</c> to its own localization resource; the frontend resolves the
+    /// key against the merged i18n bundle, exactly as it resolves entity display names.
     /// </summary>
     private const string LabelKeyPrefix = "Query:";
 
@@ -35,10 +35,11 @@ internal static class QueryCatalogEndpoints
             .WithDescription(
                 "Returns the full query catalogue surfaced by IQueryDefinitionRegistry so a "
                 + "dashboard editor can offer a dropdown of queries instead of a free-text "
-                + "queryName. Each entry carries the wire identifier and, when a MapGranitQuery "
-                + "route exposes it, the resolved base path of its list endpoint. Registration "
-                + "and routing are decoupled: a query registered without a mapped route is "
-                + "returned with a null base path rather than a forged URL.")
+                + "queryName. Each entry carries the wire identifier, a localization key for the "
+                + "label (the target entity's display key when registered, else Query:{Name}), and "
+                + "— when a MapGranitQuery route exposes it — the resolved base path of its list "
+                + "endpoint. Registration and routing are decoupled: a query registered without a "
+                + "mapped route is returned with a null base path rather than a forged URL.")
             .Produces<IReadOnlyList<QueryCatalogEntryResponse>>();
 
         return group;
@@ -48,10 +49,8 @@ internal static class QueryCatalogEndpoints
         [FromServices] IQueryDefinitionRegistry registry,
         [FromServices] EndpointDataSource endpointDataSource,
         [FromServices] LinkGenerator linkGenerator,
-        HttpContext httpContext,
-        // Optional — a host without Granit.Localization wired still serves the catalogue,
-        // with labels falling back to the raw query name.
-        [FromServices] IStringLocalizerFactory? localizerFactory = null)
+        [FromServices] IEnumerable<IEntityDefinitionDescriptor> entityDescriptors,
+        HttpContext httpContext)
     {
         // Resolve each List-tagged endpoint's URL via LinkGenerator so route parameters
         // (e.g. /api/v{version:apiVersion}/patients) are substituted into the path.
@@ -81,34 +80,37 @@ internal static class QueryCatalogEndpoints
             .GroupBy(x => x.Meta!.EntityType)
             .ToDictionary(g => g.Key, g => NormalizeRoutePath(g.First().Path!));
 
+        Dictionary<Type, string> entityDisplayKeys = BuildEntityDisplayKeyIndex(entityDescriptors);
+
         return TypedResults.Ok(QueryCatalogProjection.Project(
             registry.GetAll(),
             routeIndex,
-            descriptor => ResolveLabel(descriptor, localizerFactory)));
+            descriptor => ResolveLabelKey(descriptor, entityDisplayKeys)));
     }
 
     /// <summary>
-    /// Resolves a query's display label by querying its localization resource with
-    /// <c>"Query:{Name}"</c>, mirroring how the query engine resolves column labels. Falls back to
-    /// the raw <see cref="IQueryDefinitionDescriptor.Name"/> when no factory, no resource, or no
-    /// matching key is found — so the label is always present and localization stays opt-in.
+    /// Returns the localization key the frontend resolves for a query's dropdown label: the target
+    /// entity's <c>DisplayKey</c> when that entity is registered — reusing its already-translated
+    /// name — otherwise the <c>"Query:{Name}"</c> convention key. The server emits a key, never a
+    /// resolved string; translation happens client-side, consistent with entity discovery.
     /// </summary>
-    private static string ResolveLabel(
+    private static string ResolveLabelKey(
         IQueryDefinitionDescriptor descriptor,
-        IStringLocalizerFactory? localizerFactory)
-    {
-        if (localizerFactory is not null && descriptor.LocalizationResourceType is { } resourceType)
-        {
-            IStringLocalizer localizer = localizerFactory.Create(resourceType);
-            LocalizedString localized = localizer[LabelKeyPrefix + descriptor.Name];
-            if (!localized.ResourceNotFound)
-            {
-                return localized.Value;
-            }
-        }
+        Dictionary<Type, string> entityDisplayKeys) =>
+        entityDisplayKeys.TryGetValue(descriptor.EntityType, out string? displayKey)
+            ? displayKey
+            : LabelKeyPrefix + descriptor.Name;
 
-        return descriptor.Name;
-    }
+    /// <summary>
+    /// Indexes registered entity definitions by CLR type → <c>DisplayKey</c>, skipping entities
+    /// that declare no display key. A query whose entity is absent falls back to its own label key.
+    /// </summary>
+    private static Dictionary<Type, string> BuildEntityDisplayKeyIndex(
+        IEnumerable<IEntityDefinitionDescriptor> entityDescriptors) =>
+        entityDescriptors
+            .Where(d => d.Descriptor.DisplayKey is not null)
+            .GroupBy(d => d.EntityType)
+            .ToDictionary(g => g.Key, g => g.First().Descriptor.DisplayKey!);
 
     /// <summary>
     /// Normalises a resolved list-endpoint path for use as a base path. Drops any query
@@ -118,7 +120,7 @@ internal static class QueryCatalogEndpoints
     /// </summary>
     private static string NormalizeRoutePath(string path)
     {
-        int query = path.IndexOf('?');
+        int query = path.IndexOf('?', StringComparison.Ordinal);
         if (query >= 0)
         {
             path = path[..query];

@@ -36,14 +36,14 @@ public sealed class QueryCatalogProjectionTests
     }
 
     [Fact]
-    public void Project_uses_the_label_resolver_for_the_label()
+    public void Project_uses_the_label_key_resolver_for_the_label_key()
     {
         IReadOnlyList<QueryCatalogEntryResponse> entries = QueryCatalogProjection.Project(
             [new FakeDescriptor("Acme.Patients", typeof(Patient))],
             new Dictionary<Type, string>(),
-            d => $"Localized:{d.Name}");
+            d => $"Entity:{d.Name}");
 
-        entries.ShouldHaveSingleItem().Label.ShouldBe("Localized:Acme.Patients");
+        entries.ShouldHaveSingleItem().LabelKey.ShouldBe("Entity:Acme.Patients");
     }
 
     [Fact]
@@ -60,8 +60,7 @@ public sealed class QueryCatalogProjectionTests
         entries.Select(e => e.Name).ShouldBe(["Acme.Appointments", "Acme.Doctors"]);
     }
 
-    private sealed record FakeDescriptor(string Name, Type EntityType, Type? LocalizationResourceType = null)
-        : IQueryDefinitionDescriptor;
+    private sealed record FakeDescriptor(string Name, Type EntityType) : IQueryDefinitionDescriptor;
 
     private sealed class Patient;
 

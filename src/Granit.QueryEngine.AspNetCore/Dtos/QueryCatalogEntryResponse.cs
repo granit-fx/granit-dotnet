@@ -15,12 +15,15 @@ namespace Granit.QueryEngine.AspNetCore.Dtos;
 /// it. Registration and routing are decoupled, so a forged URL is never emitted — the
 /// frontend surfaces a query without a base path as not-yet-routable.
 /// </param>
-/// <param name="Label">
-/// Human-facing label for the dropdown, resolved from the query's localization resource via the
-/// key <c>"Query:{Name}"</c> in the request culture. Degrades gracefully to <see cref="Name"/>
-/// when the module has not declared that key (localization is opt-in per module).
+/// <param name="LabelKey">
+/// Localization key the frontend resolves for the dropdown label, in the same way it resolves
+/// entity display names. It is the target entity's <c>DisplayKey</c> (e.g. <c>"Entity:Party"</c>)
+/// when the query targets a registered entity — reusing the already-translated entity name — and
+/// otherwise <c>"Query:{Name}"</c>, a key a module may declare in its own localization resource.
+/// The server emits a key, never a resolved string: translation happens client-side against the
+/// merged i18n bundle, consistent with entity discovery, permissions and validation.
 /// </param>
 public sealed record QueryCatalogEntryResponse(
     string Name,
     string? BasePath,
-    string Label);
+    string LabelKey);

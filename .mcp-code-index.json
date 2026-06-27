@@ -47260,7 +47260,7 @@
       "kind": "record",
       "project": "Granit.QueryEngine.AspNetCore",
       "file": "src/Granit.QueryEngine.AspNetCore/Dtos/QueryCatalogEntryResponse.cs",
-      "line": 23,
+      "line": 26,
       "members": []
     },
     {

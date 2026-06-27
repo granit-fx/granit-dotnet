@@ -71,8 +71,7 @@ public sealed class QueryDefinitionRegistryTests
         registry.GetAll().ShouldHaveSingleItem().Name.ShouldBe("Acme.Patients");
     }
 
-    private sealed record FakeDescriptor(string Name, Type EntityType, Type? LocalizationResourceType = null)
-        : IQueryDefinitionDescriptor;
+    private sealed record FakeDescriptor(string Name, Type EntityType) : IQueryDefinitionDescriptor;
 
     private sealed class Patient
     {
