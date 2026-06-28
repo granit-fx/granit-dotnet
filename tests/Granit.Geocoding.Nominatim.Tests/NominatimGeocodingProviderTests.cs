@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Text;
+using Granit.Domain.ValueObjects;
 using Granit.Geocoding.Nominatim.Internal;
 using Granit.Geocoding.Nominatim.Options;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -18,14 +19,14 @@ public sealed class NominatimGeocodingProviderTests
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
     [Fact]
-    public async Task ResolveAsync_SuccessfulResponse_MapsFirstResultToGeoPoint()
+    public async Task ResolveAsync_SuccessfulResponse_MapsFirstResultToGeoCoordinate()
     {
         const string json = """
             [{"lat":"50.8476","lon":"4.3572","display_name":"Brussels, Belgium"}]
             """;
         NominatimGeocodingProvider sut = CreateProvider(json, out _);
 
-        GeoPoint? result = await sut.ResolveAsync(Brussels, Ct);
+        GeoCoordinate? result = await sut.ResolveAsync(Brussels, Ct);
 
         result.ShouldNotBeNull();
         result.Latitude.ShouldBe(50.8476);

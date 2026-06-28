@@ -1,6 +1,6 @@
 # Granit.Geocoding
 
-Forward-geocoding engine for `granit`: turn a `PostalAddress` into a `GeoPoint`
+Forward-geocoding engine for `granit`: turn a `PostalAddress` into a `GeoCoordinate`
 through a pluggable, cached provider chain.
 
 Part of the [granit](https://granit-fx.dev) framework.
@@ -18,7 +18,7 @@ With no provider package installed it is a privacy-first no-op: every address
 resolves to `null` without ever throwing or calling out.
 
 ```csharp
-GeoPoint? point = await geocoder.GeocodeAsync(
+GeoCoordinate? point = await geocoder.GeocodeAsync(
     new PostalAddress(Street: "Rue de la Loi 16", PostalCode: "1000",
                       Locality: "Brussels", Country: "BE"));
 ```

@@ -1,8 +1,10 @@
+using Granit.Domain.ValueObjects;
+
 namespace Granit.Geocoding;
 
 /// <summary>
-/// Forward-geocodes a <see cref="PostalAddress"/> to an approximate <see cref="GeoPoint"/>, applying the configured
-/// provider fallback order and result caching.
+/// Forward-geocodes a <see cref="PostalAddress"/> to an approximate <see cref="GeoCoordinate"/>, applying the
+/// configured provider fallback order and result caching.
 /// </summary>
 /// <remarks>
 /// This is the primary entry point consumers inject. It is a privacy-first no-op when no provider is registered or
@@ -19,5 +21,5 @@ public interface IGeocodingService
     /// The resolved coordinate, or <c>null</c> when the address is not geocodable, no provider is enabled, or every
     /// provider in the fallback chain failed or had no match. <strong>Never throws</strong> for these cases.
     /// </returns>
-    Task<GeoPoint?> GeocodeAsync(PostalAddress address, CancellationToken cancellationToken = default);
+    Task<GeoCoordinate?> GeocodeAsync(PostalAddress address, CancellationToken cancellationToken = default);
 }

@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Granit.Domain.ValueObjects;
 using Granit.Geocoding.Nominatim.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -46,7 +47,7 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
 
     public void Dispose() => _throttleGate.Dispose();
 
-    public async Task<GeoPoint?> ResolveAsync(PostalAddress address, CancellationToken cancellationToken = default)
+    public async Task<GeoCoordinate?> ResolveAsync(PostalAddress address, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(address);
 
@@ -70,7 +71,7 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
                 .ReadFromJsonAsync<List<NominatimPlace>>(cancellationToken)
                 .ConfigureAwait(false);
 
-            GeoPoint? point = Map(places);
+            GeoCoordinate? point = Map(places);
             if (point is null && places is { Count: > 0 })
             {
                 // A result was returned but its coordinate was unparseable or out of WGS 84 range — treat the
@@ -129,7 +130,7 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
         }
     }
 
-    private static GeoPoint? Map(List<NominatimPlace>? places)
+    private static GeoCoordinate? Map(List<NominatimPlace>? places)
     {
         if (places is not { Count: > 0 })
         {
@@ -137,15 +138,13 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
         }
 
         NominatimPlace first = places[0];
-        if (double.TryParse(first.Lat, NumberStyles.Float, CultureInfo.InvariantCulture, out double lat)
-            && double.TryParse(first.Lon, NumberStyles.Float, CultureInfo.InvariantCulture, out double lon)
-            && lat is >= -90 and <= 90
-            && lon is >= -180 and <= 180)
-        {
-            return new GeoPoint(lat, lon);
-        }
 
-        return null;
+        // Untrusted external input: TryCreate returns null for an unparseable or out-of-range coordinate, which
+        // ResolveAsync reports as a miss rather than surfacing a bogus point.
+        return double.TryParse(first.Lat, NumberStyles.Float, CultureInfo.InvariantCulture, out double lat)
+            && double.TryParse(first.Lon, NumberStyles.Float, CultureInfo.InvariantCulture, out double lon)
+            ? GeoCoordinate.TryCreate(lat, lon)
+            : null;
     }
 
     private async Task ThrottleAsync(CancellationToken cancellationToken)

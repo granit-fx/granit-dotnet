@@ -1,4 +1,5 @@
 using System.Diagnostics.Metrics;
+using Granit.Domain.ValueObjects;
 using Granit.Geocoding.Diagnostics;
 using Granit.Geocoding.Internal;
 using Granit.Geocoding.Options;
@@ -15,7 +16,7 @@ public sealed class DefaultGeocodingServiceTests
     private static readonly PostalAddress Brussels =
         new(Street: "Rue de la Loi 16", PostalCode: "1000", Locality: "Brussels", Country: "BE");
 
-    private static readonly GeoPoint BrusselsPoint = new(50.8503, 4.3517);
+    private static readonly GeoCoordinate BrusselsPoint = new(50.8503, 4.3517);
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
@@ -73,7 +74,7 @@ public sealed class DefaultGeocodingServiceTests
         IGeocodingProvider faulty = Substitute.For<IGeocodingProvider>();
         faulty.ProviderName.Returns("Faulty");
         faulty.ResolveAsync(Brussels, Arg.Any<CancellationToken>())
-            .Returns<Task<GeoPoint?>>(_ => throw new InvalidOperationException("boom"));
+            .Returns<Task<GeoCoordinate?>>(_ => throw new InvalidOperationException("boom"));
         IGeocodingProvider healthy = StubProvider("Healthy", Brussels, BrusselsPoint);
 
         DefaultGeocodingService sut = CreateService(
@@ -125,14 +126,14 @@ public sealed class DefaultGeocodingServiceTests
     [Fact]
     public async Task GeocodeAsync_ProviderOrder_DeterminesPriority()
     {
-        IGeocodingProvider first = StubProvider("First", Brussels, new GeoPoint(1, 1));
-        IGeocodingProvider second = StubProvider("Second", Brussels, new GeoPoint(2, 2));
+        IGeocodingProvider first = StubProvider("First", Brussels, new GeoCoordinate(1, 1));
+        IGeocodingProvider second = StubProvider("Second", Brussels, new GeoCoordinate(2, 2));
 
         DefaultGeocodingService sut = CreateService(
             [first, second],
             new GranitGeocodingOptions { ProviderOrder = { "Second", "First" } });
 
-        (await sut.GeocodeAsync(Brussels, Ct)).ShouldBe(new GeoPoint(2, 2));
+        (await sut.GeocodeAsync(Brussels, Ct)).ShouldBe(new GeoCoordinate(2, 2));
         await first.DidNotReceive().ResolveAsync(Arg.Any<PostalAddress>(), Arg.Any<CancellationToken>());
     }
 
@@ -178,7 +179,7 @@ public sealed class DefaultGeocodingServiceTests
         key.ShouldNotBe(DefaultGeocodingService.BuildCacheKey("paris||paris|fr"));        // distinct per address
     }
 
-    private static IGeocodingProvider StubProvider(string name, PostalAddress address, GeoPoint? result)
+    private static IGeocodingProvider StubProvider(string name, PostalAddress address, GeoCoordinate? result)
     {
         IGeocodingProvider provider = Substitute.For<IGeocodingProvider>();
         provider.ProviderName.Returns(name);

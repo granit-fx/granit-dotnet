@@ -34,14 +34,4 @@ public sealed class PostalAddressTests
 
         b.ShouldNotBe(a);
     }
-
-    [Fact]
-    public void GeoPoint_carries_latitude_and_longitude()
-    {
-        GeoPoint point = new(50.8503, 4.3517);
-
-        point.Latitude.ShouldBe(50.8503);
-        point.Longitude.ShouldBe(4.3517);
-        point.ShouldBe(new GeoPoint(50.8503, 4.3517));
-    }
 }

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using Granit.Domain.ValueObjects;
 using Granit.Geocoding.Diagnostics;
 using Granit.Geocoding.Options;
 using Microsoft.Extensions.Logging;
@@ -46,7 +47,7 @@ internal sealed partial class DefaultGeocodingService : IGeocodingService
         _providers = OrderProviders(providers, _options.ProviderOrder);
     }
 
-    public async Task<GeoPoint?> GeocodeAsync(PostalAddress address, CancellationToken cancellationToken = default)
+    public async Task<GeoCoordinate?> GeocodeAsync(PostalAddress address, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(address);
 
@@ -70,13 +71,13 @@ internal sealed partial class DefaultGeocodingService : IGeocodingService
         // bounds cost, third-party rate limits, and duplicate GDPR transfers. Negative results are cached too —
         // with the shorter FailureCacheDuration applied adaptively inside the factory.
         bool resolvedFresh = false;
-        GeoPoint? resolved = await _cache.GetOrSetAsync<GeoPoint?>(
+        GeoCoordinate? resolved = await _cache.GetOrSetAsync<GeoCoordinate?>(
             cacheKey,
             async (ctx, ct) =>
             {
                 resolvedFresh = true;
                 long start = Stopwatch.GetTimestamp();
-                GeoPoint? r = await QueryProvidersAsync(address, ct).ConfigureAwait(false);
+                GeoCoordinate? r = await QueryProvidersAsync(address, ct).ConfigureAwait(false);
                 ctx.Options.Duration = r is null ? _options.FailureCacheDuration : _options.SuccessCacheDuration;
                 _metrics.RecordLookupDuration(r is null ? "not_found" : "found", Stopwatch.GetElapsedTime(start));
                 return r;
@@ -130,7 +131,7 @@ internal sealed partial class DefaultGeocodingService : IGeocodingService
             ? string.Empty
             : WhitespaceRegex().Replace(value.Trim(), " ").ToLower(CultureInfo.InvariantCulture);
 
-    private async Task<GeoPoint?> QueryProvidersAsync(PostalAddress address, CancellationToken cancellationToken)
+    private async Task<GeoCoordinate?> QueryProvidersAsync(PostalAddress address, CancellationToken cancellationToken)
     {
         foreach (IGeocodingProvider provider in _providers)
         {
@@ -138,7 +139,7 @@ internal sealed partial class DefaultGeocodingService : IGeocodingService
 
             try
             {
-                GeoPoint? result = await provider.ResolveAsync(address, cancellationToken).ConfigureAwait(false);
+                GeoCoordinate? result = await provider.ResolveAsync(address, cancellationToken).ConfigureAwait(false);
                 if (result is not null)
                 {
                     _metrics.RecordProviderAttempt(provider.ProviderName, "hit");

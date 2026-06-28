@@ -19685,6 +19685,22 @@
       ]
     },
     {
+      "name": "GeoCoordinate",
+      "fqn": "Granit.Domain.ValueObjects.GeoCoordinate",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/GeoCoordinate.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "TryCreate",
+          "kind": "method",
+          "signature": "TryCreate(double latitude, double longitude)",
+          "returnType": "GeoCoordinate?"
+        }
+      ]
+    },
+    {
       "name": "HexColor",
       "fqn": "Granit.Domain.ValueObjects.HexColor",
       "kind": "class",
@@ -22554,15 +22570,6 @@
       ]
     },
     {
-      "name": "GeoPoint",
-      "fqn": "Granit.Geocoding.GeoPoint",
-      "kind": "record",
-      "project": "Granit.Geocoding.Abstractions",
-      "file": "src/Granit.Geocoding.Abstractions/GeoPoint.cs",
-      "line": 8,
-      "members": []
-    },
-    {
       "name": "GranitGeocodingModule",
       "fqn": "Granit.Geocoding.GranitGeocodingModule",
       "kind": "class",
@@ -22584,13 +22591,13 @@
       "kind": "interface",
       "project": "Granit.Geocoding.Abstractions",
       "file": "src/Granit.Geocoding.Abstractions/IGeocodingProvider.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "ResolveAsync",
           "kind": "method",
           "signature": "ResolveAsync(PostalAddress address, CancellationToken cancellationToken = default)",
-          "returnType": "string ProviderName { get; } Task<GeoPoint?>"
+          "returnType": "string ProviderName { get; } Task<GeoCoordinate?>"
         }
       ]
     },
@@ -22600,13 +22607,13 @@
       "kind": "interface",
       "project": "Granit.Geocoding.Abstractions",
       "file": "src/Granit.Geocoding.Abstractions/IGeocodingService.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "GeocodeAsync",
           "kind": "method",
           "signature": "GeocodeAsync(PostalAddress address, CancellationToken cancellationToken = default)",
-          "returnType": "Task<GeoPoint?>"
+          "returnType": "Task<GeoCoordinate?>"
         }
       ]
     },

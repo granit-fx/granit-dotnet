@@ -1,15 +1,15 @@
 # Granit.Geocoding.Abstractions
 
 Source-agnostic forward-geocoding contract for `granit`: turn a `PostalAddress`
-into a `GeoPoint` (latitude/longitude), **without** taking a runtime dependency on
-the `Granit.Geocoding` engine or any concrete provider.
+into a `GeoCoordinate` (latitude/longitude), **without** taking a runtime dependency
+on the `Granit.Geocoding` engine or any concrete provider.
 
 Part of the [granit](https://granit-fx.dev) framework.
 
 ## Why a separate package
 
 A consumer that only needs the *contract* — to inject `IGeocodingService`, accept a
-`PostalAddress`, store a `GeoPoint` — should not pull in the engine, its provider
+`PostalAddress`, store a `GeoCoordinate` — should not pull in the engine, its provider
 chain, or its caching stack. This package holds the contract alone, so the
 implementation stays an optional, swappable concern.
 
@@ -19,18 +19,21 @@ implementation stays an optional, swappable concern.
 public interface IGeocodingService
 {
     // Returns null when not geocodable — never throws.
-    Task<GeoPoint?> GeocodeAsync(PostalAddress address, CancellationToken ct = default);
+    Task<GeoCoordinate?> GeocodeAsync(PostalAddress address, CancellationToken ct = default);
 }
 
 public interface IGeocodingProvider          // low-level, one per provider package
 {
     string ProviderName { get; }
-    Task<GeoPoint?> ResolveAsync(PostalAddress address, CancellationToken ct = default);
+    Task<GeoCoordinate?> ResolveAsync(PostalAddress address, CancellationToken ct = default);
 }
 
 public sealed record PostalAddress(string? Street, string? PostalCode, string Locality, string Country);
-public sealed record GeoPoint(double Latitude, double Longitude);
 ```
+
+The coordinate is the shared `Granit.Domain.ValueObjects.GeoCoordinate` value object
+(WGS 84, range-validated) — not a geocoding-specific type — so a `GeoCoordinate`
+produced here is the same shape any other domain (e.g. IP geolocation) records.
 
 ## Why `PostalAddress` and not `Granit.Domain.ValueObjects.Address`
 
@@ -46,6 +49,6 @@ invariants, and the two concerns evolve independently.
 ## See also
 
 - [`Granit.Geocoding`](../Granit.Geocoding/README.md) — the engine that produces
-  `GeoPoint` through a pluggable, cached provider chain.
+  `GeoCoordinate` through a pluggable, cached provider chain.
 - [`Granit.Geocoding.Nominatim`](../Granit.Geocoding.Nominatim/README.md) — the
   OpenStreetMap Nominatim provider.

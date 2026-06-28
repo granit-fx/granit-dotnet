@@ -1,3 +1,5 @@
+using Granit.Domain.ValueObjects;
+
 namespace Granit.Geocoding;
 
 /// <summary>
@@ -20,5 +22,5 @@ public interface IGeocodingProvider
     /// <param name="address">The address to geocode.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The resolved coordinate, or <c>null</c> when this provider has no match for the address.</returns>
-    Task<GeoPoint?> ResolveAsync(PostalAddress address, CancellationToken cancellationToken = default);
+    Task<GeoCoordinate?> ResolveAsync(PostalAddress address, CancellationToken cancellationToken = default);
 }
