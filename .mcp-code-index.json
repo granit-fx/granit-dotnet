@@ -19498,6 +19498,40 @@
       ]
     },
     {
+      "name": "Address",
+      "fqn": "Granit.Domain.ValueObjects.Address",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/Address.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string street1, string city, string postalCode, string country, string? street2 = null, string? state = null)",
+          "returnType": "Address"
+        },
+        {
+          "name": "Street2",
+          "kind": "property",
+          "signature": "string? Street2",
+          "returnType": "string?"
+        },
+        {
+          "name": "PostalCode",
+          "kind": "property",
+          "signature": "string PostalCode",
+          "returnType": "string"
+        },
+        {
+          "name": "State",
+          "kind": "property",
+          "signature": "string? State",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
       "name": "BlobReference",
       "fqn": "Granit.Domain.ValueObjects.BlobReference",
       "kind": "class",
