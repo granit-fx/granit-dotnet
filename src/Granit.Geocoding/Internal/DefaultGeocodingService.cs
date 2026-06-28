@@ -54,6 +54,8 @@ internal sealed partial class DefaultGeocodingService : IGeocodingService
         if (_providers.Count == 0
             || (string.IsNullOrWhiteSpace(address.Locality) && string.IsNullOrWhiteSpace(address.Country)))
         {
+            // GDPR: log the coarse reason only — never the address.
+            LogResolutionSkipped(_providers.Count == 0 ? "no enabled provider" : "address not geocodable");
             _metrics.RecordLookup("skipped");
             return null;
         }
@@ -203,6 +205,12 @@ internal sealed partial class DefaultGeocodingService : IGeocodingService
         Level = LogLevel.Warning,
         Message = "Geocoding provider '{Provider}' failed; falling back to the next provider.")]
     private partial void LogProviderFailed(string provider, Exception exception);
+
+    [LoggerMessage(
+        EventId = 3,
+        Level = LogLevel.Debug,
+        Message = "Geocoding resolution skipped ({Reason}); returning null.")]
+    private partial void LogResolutionSkipped(string reason);
 
     [LoggerMessage(
         EventId = 2,

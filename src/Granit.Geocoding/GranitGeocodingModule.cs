@@ -6,6 +6,7 @@ using Granit.Geocoding.Options;
 using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Geocoding;
 
@@ -30,6 +31,8 @@ public sealed class GranitGeocodingModule : GranitModule
         context.Services
             .AddOptions<GranitGeocodingOptions>()
             .BindConfiguration(GranitGeocodingOptions.SectionName);
+
+        context.Services.TryAddSingleton<IValidateOptions<GranitGeocodingOptions>, GranitGeocodingOptionsValidator>();
 
         context.Services.TryAddSingleton<GeocodingMetrics>();
         context.Services.TryAddSingleton<IGeocodingService, DefaultGeocodingService>();

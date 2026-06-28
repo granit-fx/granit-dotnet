@@ -69,7 +69,16 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
             List<NominatimPlace>? places = await response.Content
                 .ReadFromJsonAsync<List<NominatimPlace>>(cancellationToken)
                 .ConfigureAwait(false);
-            return Map(places);
+
+            GeoPoint? point = Map(places);
+            if (point is null && places is { Count: > 0 })
+            {
+                // A result was returned but its coordinate was unparseable or out of WGS 84 range — treat the
+                // untrusted response as a miss rather than surfacing a bogus coordinate.
+                LogLookupFailed("InvalidCoordinate");
+            }
+
+            return point;
         }
         catch (HttpRequestException)
         {
@@ -129,7 +138,9 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
 
         NominatimPlace first = places[0];
         if (double.TryParse(first.Lat, NumberStyles.Float, CultureInfo.InvariantCulture, out double lat)
-            && double.TryParse(first.Lon, NumberStyles.Float, CultureInfo.InvariantCulture, out double lon))
+            && double.TryParse(first.Lon, NumberStyles.Float, CultureInfo.InvariantCulture, out double lon)
+            && lat is >= -90 and <= 90
+            && lon is >= -180 and <= 180)
         {
             return new GeoPoint(lat, lon);
         }

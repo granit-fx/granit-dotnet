@@ -22568,7 +22568,7 @@
       "kind": "class",
       "project": "Granit.Geocoding",
       "file": "src/Granit.Geocoding/GranitGeocodingModule.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",

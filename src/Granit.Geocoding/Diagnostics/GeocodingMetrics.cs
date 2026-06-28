@@ -31,7 +31,7 @@ public sealed class GeocodingMetrics
         Meter meter = meterFactory.Create(MeterName);
 
         _lookups = meter.CreateCounter<long>(
-            "granit.geocoding.lookups",
+            "granit.geocoding.lookup.count",
             description: "Number of geocode lookups, tagged with the terminal result.");
 
         _cacheHits = meter.CreateCounter<long>(
