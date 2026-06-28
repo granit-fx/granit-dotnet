@@ -18,6 +18,9 @@
     <Project Path="src/Granit.EntityMerge.BackgroundJobs/Granit.EntityMerge.BackgroundJobs.csproj" />
     <Project Path="src/Granit.EntityMerge.EntityFrameworkCore/Granit.EntityMerge.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.EntityMerge/Granit.EntityMerge.csproj" />
+    <Project Path="src/Granit.Geocoding.Abstractions/Granit.Geocoding.Abstractions.csproj" />
+    <Project Path="src/Granit.Geocoding.Nominatim/Granit.Geocoding.Nominatim.csproj" />
+    <Project Path="src/Granit.Geocoding/Granit.Geocoding.csproj" />
     <Project Path="src/Granit.Guids/Granit.Guids.csproj" />
     <Project Path="src/Granit.Hostnames.BackgroundJobs/Granit.Hostnames.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Hostnames.Endpoints/Granit.Hostnames.Endpoints.csproj" />
@@ -376,6 +379,9 @@
     <Project Path="tests/Granit.EntityMerge.BackgroundJobs.Tests/Granit.EntityMerge.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.EntityMerge.EntityFrameworkCore.Tests/Granit.EntityMerge.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.EntityMerge.Tests/Granit.EntityMerge.Tests.csproj" />
+    <Project Path="tests/Granit.Geocoding.Abstractions.Tests/Granit.Geocoding.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.Geocoding.Nominatim.Tests/Granit.Geocoding.Nominatim.Tests.csproj" />
+    <Project Path="tests/Granit.Geocoding.Tests/Granit.Geocoding.Tests.csproj" />
     <Project Path="tests/Granit.Guids.Tests/Granit.Guids.Tests.csproj" />
     <Project Path="tests/Granit.Hostnames.BackgroundJobs.Tests/Granit.Hostnames.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Hostnames.Endpoints.Tests/Granit.Hostnames.Endpoints.Tests.csproj" />

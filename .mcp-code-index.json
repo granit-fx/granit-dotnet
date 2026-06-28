@@ -1015,6 +1015,29 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Geocoding",
+      "deps": [
+        "Granit",
+        "Granit.Caching",
+        "Granit.Geocoding.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Geocoding.Abstractions",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Geocoding.Nominatim",
+      "deps": [
+        "Granit.Geocoding"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Guids",
       "deps": [
         "Granit.Timing"
@@ -22495,6 +22518,205 @@
           "returnType": "Task"
         }
       ]
+    },
+    {
+      "name": "GeocodingMetrics",
+      "fqn": "Granit.Geocoding.Diagnostics.GeocodingMetrics",
+      "kind": "class",
+      "project": "Granit.Geocoding",
+      "file": "src/Granit.Geocoding/Diagnostics/GeocodingMetrics.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "RecordCacheHit",
+          "kind": "method",
+          "signature": "RecordCacheHit()",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCacheMiss",
+          "kind": "method",
+          "signature": "RecordCacheMiss()",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordProviderAttempt",
+          "kind": "method",
+          "signature": "RecordProviderAttempt(string provider, string outcome)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordLookupDuration",
+          "kind": "method",
+          "signature": "RecordLookupDuration(string result, TimeSpan duration)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GeoPoint",
+      "fqn": "Granit.Geocoding.GeoPoint",
+      "kind": "record",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/GeoPoint.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "GranitGeocodingModule",
+      "fqn": "Granit.Geocoding.GranitGeocodingModule",
+      "kind": "class",
+      "project": "Granit.Geocoding",
+      "file": "src/Granit.Geocoding/GranitGeocodingModule.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IGeocodingProvider",
+      "fqn": "Granit.Geocoding.IGeocodingProvider",
+      "kind": "interface",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/IGeocodingProvider.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(PostalAddress address, CancellationToken cancellationToken = default)",
+          "returnType": "string ProviderName { get; } Task<GeoPoint?>"
+        }
+      ]
+    },
+    {
+      "name": "IGeocodingService",
+      "fqn": "Granit.Geocoding.IGeocodingService",
+      "kind": "interface",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/IGeocodingService.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "GeocodeAsync",
+          "kind": "method",
+          "signature": "GeocodeAsync(PostalAddress address, CancellationToken cancellationToken = default)",
+          "returnType": "Task<GeoPoint?>"
+        }
+      ]
+    },
+    {
+      "name": "GeocodingNominatimHostApplicationBuilderExtensions",
+      "fqn": "Granit.Geocoding.Nominatim.Extensions.GeocodingNominatimHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Geocoding.Nominatim",
+      "file": "src/Granit.Geocoding.Nominatim/Extensions/GeocodingNominatimHostApplicationBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitGeocodingNominatim",
+          "kind": "method",
+          "signature": "AddGranitGeocodingNominatim(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitGeocodingNominatimModule",
+      "fqn": "Granit.Geocoding.Nominatim.GranitGeocodingNominatimModule",
+      "kind": "class",
+      "project": "Granit.Geocoding.Nominatim",
+      "file": "src/Granit.Geocoding.Nominatim/GranitGeocodingNominatimModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "NominatimGeocodingOptions",
+      "fqn": "Granit.Geocoding.Nominatim.Options.NominatimGeocodingOptions",
+      "kind": "class",
+      "project": "Granit.Geocoding.Nominatim",
+      "file": "src/Granit.Geocoding.Nominatim/Options/NominatimGeocodingOptions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(\"https://nominatim.openstreetmap.org\")",
+          "returnType": "Uri BaseAddress { get; set; } ="
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(5)",
+          "returnType": "TimeSpan Timeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxResponseSizeBytes",
+          "kind": "property",
+          "signature": "long MaxResponseSizeBytes",
+          "returnType": "long"
+        },
+        {
+          "name": "UserAgent",
+          "kind": "property",
+          "signature": "string UserAgent",
+          "returnType": "string"
+        },
+        {
+          "name": "RateLimitPerSecond",
+          "kind": "property",
+          "signature": "double RateLimitPerSecond",
+          "returnType": "double"
+        }
+      ]
+    },
+    {
+      "name": "GranitGeocodingOptions",
+      "fqn": "Granit.Geocoding.Options.GranitGeocodingOptions",
+      "kind": "class",
+      "project": "Granit.Geocoding",
+      "file": "src/Granit.Geocoding/Options/GranitGeocodingOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ProviderOrder",
+          "kind": "property",
+          "signature": "IList<string> ProviderOrder",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(90)",
+          "returnType": "TimeSpan SuccessCacheDuration { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(1)",
+          "returnType": "TimeSpan FailureCacheDuration { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "PostalAddress",
+      "fqn": "Granit.Geocoding.PostalAddress",
+      "kind": "record",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/PostalAddress.cs",
+      "line": 18,
+      "members": []
     },
     {
       "name": "GuidsServiceCollectionExtensions",

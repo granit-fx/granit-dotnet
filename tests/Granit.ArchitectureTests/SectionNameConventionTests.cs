@@ -36,6 +36,7 @@ public sealed partial class SectionNameConventionTests
         "Browsing",
         "Cache",
         "Encryption",
+        "Geocoding",
         "Indexing",
         "IpGeolocation",
         "Mcp",

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Geocoding.Nominatim</PackageId>
+    <Description>OpenStreetMap Nominatim forward-geocoding provider for Granit.Geocoding. Issues a structured /search query over plain HttpClient + System.Text.Json (no external SDK). Honours the Nominatim usage policy: a mandatory User-Agent and a configurable per-second rate limit (default 1 req/s for the public endpoint, relax when self-hosting). Because it transmits the address to an external service, it is disabled unless explicitly registered and listed in ProviderOrder.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Geocoding.Nominatim.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Geocoding\Granit.Geocoding.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Geocoding.Abstractions</PackageId>
+    <Description>Source-agnostic forward-geocoding contract for Granit: turn a PostalAddress into a GeoPoint (latitude/longitude). Holds the IGeocodingService / IGeocodingProvider interfaces and the PostalAddress / GeoPoint shapes so any module can depend on the contract without taking a runtime dependency on the Granit.Geocoding engine or a concrete provider.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>
