@@ -1,6 +1,7 @@
 using System.Diagnostics.Metrics;
 using Granit.AI;
 using Granit.AI.RateLimiting;
+using Granit.Domain.ValueObjects;
 using Granit.Identity.AnomalyDetection.Diagnostics;
 using Granit.Identity.AnomalyDetection.Internal;
 using Granit.Identity.AnomalyDetection.Options;
@@ -17,9 +18,9 @@ public sealed class UserSessionAnomalyDetectorTests
     private static readonly DateTimeOffset Now = new(2026, 6, 12, 12, 0, 0, TimeSpan.Zero);
 
     // Brussels and Sydney — ~16,000 km apart.
-    private static readonly GeoLocation Brussels = new() { City = "Brussels", CountryCode = "BE", Latitude = 50.85, Longitude = 4.35 };
-    private static readonly GeoLocation Paris = new() { City = "Paris", CountryCode = "FR", Latitude = 48.85, Longitude = 2.35 };
-    private static readonly GeoLocation Sydney = new() { City = "Sydney", CountryCode = "AU", Latitude = -33.87, Longitude = 151.2 };
+    private static readonly GeoLocation Brussels = new() { City = "Brussels", CountryCode = "BE", Coordinate = new GeoCoordinate(50.85, 4.35) };
+    private static readonly GeoLocation Paris = new() { City = "Paris", CountryCode = "FR", Coordinate = new GeoCoordinate(48.85, 2.35) };
+    private static readonly GeoLocation Sydney = new() { City = "Sydney", CountryCode = "AU", Coordinate = new GeoCoordinate(-33.87, 151.2) };
 
     private const string Desktop = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/140";
     private const string Mobile = "Mozilla/5.0 (iPhone; CPU iPhone OS 19_0) Safari/605";

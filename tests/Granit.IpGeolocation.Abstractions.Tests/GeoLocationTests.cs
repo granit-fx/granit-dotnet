@@ -1,3 +1,4 @@
+using Granit.Domain.ValueObjects;
 using Shouldly;
 using Xunit;
 
@@ -14,8 +15,7 @@ public sealed class GeoLocationTests
         location.CountryCode.ShouldBe("BE");
         location.City.ShouldBeNull();
         location.Region.ShouldBeNull();
-        location.Latitude.ShouldBeNull();
-        location.Longitude.ShouldBeNull();
+        location.Coordinate.ShouldBeNull();
     }
 
     [Fact]
@@ -27,8 +27,7 @@ public sealed class GeoLocationTests
             Region = "Brussels-Capital",
             Country = "Belgium",
             CountryCode = "BE",
-            Latitude = 50.8476,
-            Longitude = 4.3572,
+            Coordinate = new GeoCoordinate(50.8476, 4.3572),
         };
         GeoLocation b = new()
         {
@@ -36,8 +35,7 @@ public sealed class GeoLocationTests
             Region = "Brussels-Capital",
             Country = "Belgium",
             CountryCode = "BE",
-            Latitude = 50.8476,
-            Longitude = 4.3572,
+            Coordinate = new GeoCoordinate(50.8476, 4.3572),
         };
 
         b.ShouldBe(a);
@@ -47,8 +45,8 @@ public sealed class GeoLocationTests
     [Fact]
     public void Differing_coordinates_break_equality()
     {
-        GeoLocation a = new() { City = "Brussels", Latitude = 50.85 };
-        GeoLocation b = a with { Latitude = 51.0 };
+        GeoLocation a = new() { City = "Brussels", Coordinate = new GeoCoordinate(50.85, 4.35) };
+        GeoLocation b = a with { Coordinate = new GeoCoordinate(51.0, 4.35) };
 
         b.ShouldNotBe(a);
     }

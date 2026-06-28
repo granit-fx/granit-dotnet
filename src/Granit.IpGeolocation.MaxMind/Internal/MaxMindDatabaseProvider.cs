@@ -1,4 +1,5 @@
 using System.Net;
+using Granit.Domain.ValueObjects;
 using Granit.IpGeolocation.MaxMind.Options;
 using MaxMind.Db;
 using MaxMind.GeoIP2;
@@ -68,8 +69,9 @@ internal sealed partial class MaxMindDatabaseProvider : IDisposable
             Region = response.MostSpecificSubdivision?.Name,
             Country = response.Country?.Name,
             CountryCode = response.Country?.IsoCode,
-            Latitude = response.Location?.Latitude,
-            Longitude = response.Location?.Longitude,
+            Coordinate = response.Location is { Latitude: { } lat, Longitude: { } lon }
+                ? GeoCoordinate.TryCreate(lat, lon)
+                : null,
             // The City database supplies an accuracy radius (km) — the primary low-confidence signal (mobile
             // NAT / sparse data give a large radius). Anonymising-IP classification (VPN/proxy/hosting) needs a
             // separate MaxMind Anonymous-IP database and is left to the IpInfo privacy provider / a follow-up,

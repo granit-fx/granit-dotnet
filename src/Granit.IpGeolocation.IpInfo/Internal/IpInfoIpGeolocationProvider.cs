@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Granit.Domain.ValueObjects;
 using Granit.IpGeolocation.IpInfo.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -110,8 +111,9 @@ internal sealed partial class IpInfoIpGeolocationProvider(
             City = body.City,
             Region = body.Region,
             CountryCode = body.Country,
-            Latitude = latitude,
-            Longitude = longitude,
+            Coordinate = latitude is { } lat && longitude is { } lon
+                ? GeoCoordinate.TryCreate(lat, lon)
+                : null,
             IsAnonymousProxy = anonymousProxy,
             IsHostingProvider = privacy?.Hosting,
             IsVpn = privacy?.Vpn,

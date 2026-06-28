@@ -24,18 +24,19 @@ regardless of how it was resolved — so a future non-IP geolocation module
 ```csharp
 public sealed record GeoLocation
 {
-    public string? City { get; init; }         // "Brussels"
-    public string? Region { get; init; }       // "Brussels-Capital"
-    public string? Country { get; init; }      // "Belgium"
-    public string? CountryCode { get; init; }  // ISO 3166-1 alpha-2, "BE"
-    public double? Latitude { get; init; }
-    public double? Longitude { get; init; }
+    public string? City { get; init; }              // "Brussels"
+    public string? Region { get; init; }            // "Brussels-Capital"
+    public string? Country { get; init; }           // "Belgium"
+    public string? CountryCode { get; init; }       // ISO 3166-1 alpha-2, "BE"
+    public GeoCoordinate? Coordinate { get; init; }  // shared Granit.Domain.ValueObjects value object
 }
 ```
 
 Every member is optional: a provider populates only what its data source
-supports. An offline country-only database leaves `City` and the coordinates
-`null`; a city-grade source fills them in.
+supports. An offline country-only database leaves `City` and the `Coordinate`
+`null`; a city-grade source fills them in. The coordinate is the shared,
+range-validated `Granit.Domain.ValueObjects.GeoCoordinate` — the same type address
+geocoding produces — so latitude and longitude always travel together as one unit.
 
 ## See also
 

@@ -30,8 +30,9 @@ public sealed class IpInfoIpGeolocationProviderTests
         result.Region.ShouldBe("California");
         result.CountryCode.ShouldBe("US");
         result.Country.ShouldBeNull();
-        result.Latitude.ShouldBe(37.4056);
-        result.Longitude.ShouldBe(-122.0775);
+        result.Coordinate.ShouldNotBeNull();
+        result.Coordinate.Latitude.ShouldBe(37.4056);
+        result.Coordinate.Longitude.ShouldBe(-122.0775);
     }
 
     [Fact]

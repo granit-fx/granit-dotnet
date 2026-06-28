@@ -1,3 +1,5 @@
+using Granit.Domain.ValueObjects;
+
 namespace Granit.IpGeolocation;
 
 /// <summary>
@@ -7,7 +9,7 @@ namespace Granit.IpGeolocation;
 /// The shape is deliberately source-agnostic — a city/region/country is a location regardless of how it was
 /// resolved — so a future non-IP geolocation module (e.g. address geocoding) can reuse this contract.
 /// Every member is optional: a provider populates only what its data source supports (an offline
-/// country-only database leaves <see cref="City"/> and the coordinates <c>null</c>).
+/// country-only database leaves <see cref="City"/> and the <see cref="Coordinate"/> <c>null</c>).
 /// </remarks>
 public sealed record GeoLocation
 {
@@ -23,11 +25,12 @@ public sealed record GeoLocation
     /// <summary>ISO 3166-1 alpha-2 country code (e.g. <c>"BE"</c>).</summary>
     public string? CountryCode { get; init; }
 
-    /// <summary>Approximate latitude in decimal degrees, when available.</summary>
-    public double? Latitude { get; init; }
-
-    /// <summary>Approximate longitude in decimal degrees, when available.</summary>
-    public double? Longitude { get; init; }
+    /// <summary>
+    /// Approximate WGS 84 coordinate, when the source resolves to one. Latitude and longitude are a single unit —
+    /// a source provides both or neither — so they are modelled as one range-validated value object rather than two
+    /// independently-nullable doubles.
+    /// </summary>
+    public GeoCoordinate? Coordinate { get; init; }
 
     /// <summary>
     /// Radius in kilometres within which the true position lies with ~67% confidence, when the source reports

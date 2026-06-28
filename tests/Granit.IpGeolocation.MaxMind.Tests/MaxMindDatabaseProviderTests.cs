@@ -54,8 +54,7 @@ public sealed class MaxMindDatabaseProviderTests
         location.ShouldNotBeNull();
         location.CountryCode.ShouldBe("GB");
         location.City.ShouldNotBeNullOrEmpty();
-        location.Latitude.ShouldNotBeNull();
-        location.Longitude.ShouldNotBeNull();
+        location.Coordinate.ShouldNotBeNull();
         location.AccuracyRadiusKm.ShouldNotBeNull();
     }
 
@@ -70,7 +69,7 @@ public sealed class MaxMindDatabaseProviderTests
         location.CountryCode.ShouldBe("GB");
         // The country database carries no city / coordinate data.
         location.City.ShouldBeNull();
-        location.Latitude.ShouldBeNull();
+        location.Coordinate.ShouldBeNull();
     }
 
     [Fact]

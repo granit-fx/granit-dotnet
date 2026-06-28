@@ -78,8 +78,9 @@ public class UserSessionCreatedHandler
     // A coarse geographic bucket (whole-degree latitude/longitude, ~111 km) — enough to recognise a habitual
     // area without storing a precise position.
     private static string? CoarseLocation(GeoLocation? location) =>
-        location is { Latitude: { } lat, Longitude: { } lon }
-            ? string.Create(CultureInfo.InvariantCulture, $"{(int)Math.Round(lat)},{(int)Math.Round(lon)}")
+        location?.Coordinate is { } coord
+            ? string.Create(CultureInfo.InvariantCulture,
+                $"{(int)Math.Round(coord.Latitude)},{(int)Math.Round(coord.Longitude)}")
             : null;
 
     // The provider returns the user's other sessions with raw IPs but no resolved location; resolve each here so

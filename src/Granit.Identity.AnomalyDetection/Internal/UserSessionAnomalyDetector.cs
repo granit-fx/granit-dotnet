@@ -144,7 +144,7 @@ internal sealed class UserSessionAnomalyDetector(
         IReadOnlyList<UserSessionDescriptor> history,
         IdentityAnomalyDetectionOptions opts)
     {
-        if (candidate.Location is not { Latitude: { } lat, Longitude: { } lon })
+        if (candidate.Location is not { Coordinate: { } coord })
         {
             return TravelOutcome.None;
         }
@@ -153,12 +153,13 @@ internal sealed class UserSessionAnomalyDetector(
         foreach (UserSessionDescriptor prior in history)
         {
             if (prior.SessionId == candidate.SessionId
-                || prior.Location is not { Latitude: { } priorLat, Longitude: { } priorLon })
+                || prior.Location is not { Coordinate: { } priorCoord })
             {
                 continue;
             }
 
-            double km = GeoDistance.HaversineKm(lat, lon, priorLat, priorLon);
+            double km = GeoDistance.HaversineKm(
+                coord.Latitude, coord.Longitude, priorCoord.Latitude, priorCoord.Longitude);
             DateTimeOffset priorTime = prior.LastAccessedAt ?? prior.CreatedAt;
             double hours = Math.Abs((candidate.CreatedAt - priorTime).TotalHours);
 
