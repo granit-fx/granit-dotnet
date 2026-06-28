@@ -1038,6 +1038,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Geocoding.Photon",
+      "deps": [
+        "Granit.Geocoding"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Guids",
       "deps": [
         "Granit.Timing"
@@ -22713,6 +22720,71 @@
           "kind": "method",
           "signature": "FromDays(1)",
           "returnType": "TimeSpan FailureCacheDuration { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "GeocodingPhotonHostApplicationBuilderExtensions",
+      "fqn": "Granit.Geocoding.Photon.Extensions.GeocodingPhotonHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Geocoding.Photon",
+      "file": "src/Granit.Geocoding.Photon/Extensions/GeocodingPhotonHostApplicationBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitGeocodingPhoton",
+          "kind": "method",
+          "signature": "AddGranitGeocodingPhoton(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitGeocodingPhotonModule",
+      "fqn": "Granit.Geocoding.Photon.GranitGeocodingPhotonModule",
+      "kind": "class",
+      "project": "Granit.Geocoding.Photon",
+      "file": "src/Granit.Geocoding.Photon/GranitGeocodingPhotonModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "PhotonGeocodingOptions",
+      "fqn": "Granit.Geocoding.Photon.Options.PhotonGeocodingOptions",
+      "kind": "class",
+      "project": "Granit.Geocoding.Photon",
+      "file": "src/Granit.Geocoding.Photon/Options/PhotonGeocodingOptions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(\"https://photon.komoot.io\")",
+          "returnType": "Uri BaseAddress { get; set; } ="
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(5)",
+          "returnType": "TimeSpan Timeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxResponseSizeBytes",
+          "kind": "property",
+          "signature": "long MaxResponseSizeBytes",
+          "returnType": "long"
+        },
+        {
+          "name": "UserAgent",
+          "kind": "property",
+          "signature": "string? UserAgent",
+          "returnType": "string?"
         }
       ]
     },

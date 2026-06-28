@@ -196,6 +196,7 @@
         "tests/Granit.Geocoding.Abstractions.Tests",
         "tests/Granit.Geocoding.Tests",
         "tests/Granit.Geocoding.Nominatim.Tests",
+        "tests/Granit.Geocoding.Photon.Tests",
         "tests/Granit.Hostnames.Tests",
         "tests/Granit.Hostnames.EntityFrameworkCore.Tests",
         "tests/Granit.Hostnames.Endpoints.Tests",

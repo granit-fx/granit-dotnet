@@ -120,6 +120,7 @@
       "src/Granit.Features/Granit.Features.csproj",
       "src/Granit.Geocoding.Abstractions/Granit.Geocoding.Abstractions.csproj",
       "src/Granit.Geocoding.Nominatim/Granit.Geocoding.Nominatim.csproj",
+      "src/Granit.Geocoding.Photon/Granit.Geocoding.Photon.csproj",
       "src/Granit.Geocoding/Granit.Geocoding.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",
       "src/Granit.Hostnames.BackgroundJobs/Granit.Hostnames.BackgroundJobs.csproj",
