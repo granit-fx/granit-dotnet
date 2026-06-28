@@ -5,6 +5,11 @@ namespace Granit.QueryEngine.AspNetCore.Dtos;
 /// subset of <see cref="IQueryDefinitionDescriptor"/>, letting a dashboard editor offer a
 /// dropdown of registered queries instead of a free-text <c>queryName</c>.
 /// </summary>
+/// <param name="ModuleName">
+/// Owning module of the query — e.g. <c>"Auditing"</c> for both <c>AuditEntryQuery</c> and
+/// <c>AuditEntityChangeQuery</c>. The catalogue is ordered by module, then by name, so a
+/// dashboard editor can present queries grouped under their module heading.
+/// </param>
 /// <param name="Name">
 /// Wire identifier of the query definition — e.g. <c>"Acme.Patients"</c>. Stable across
 /// processes; safe to persist as the selected query in a dashboard widget.
@@ -24,6 +29,7 @@ namespace Granit.QueryEngine.AspNetCore.Dtos;
 /// merged i18n bundle, consistent with entity discovery, permissions and validation.
 /// </param>
 public sealed record QueryCatalogEntryResponse(
+    string ModuleName,
     string Name,
     string? BasePath,
     string LabelKey);

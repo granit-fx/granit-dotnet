@@ -48,6 +48,13 @@ public abstract class QueryDefinition<TEntity> : IQueryDefinitionDescriptor wher
     public Type EntityType => typeof(TEntity);
 
     /// <summary>
+    /// Owning module of this query, used to group and sort the query catalogue. Defaults to the
+    /// target entity's owning assembly with the framework <c>Granit.</c> prefix stripped (e.g.
+    /// <c>"Auditing"</c>). Override only when the entity does not live in its module's assembly.
+    /// </summary>
+    public virtual string ModuleName => IQueryDefinitionDescriptor.ModuleOf(typeof(TEntity));
+
+    /// <summary>
     /// The localization resource type used to resolve <see cref="ColumnDescriptor.LabelKey"/> values.
     /// Override in derived classes to point to the module's localization resource marker class.
     /// When <c>null</c>, no localization is attempted and <see cref="ColumnDescriptor.Label"/>

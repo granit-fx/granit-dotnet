@@ -59,6 +59,20 @@ public sealed class QueryCatalogEndpointsHttpTests
     }
 
     [Fact]
+    public async Task Catalog_carries_the_module_derived_from_the_entity_assembly()
+    {
+        await using GranitEndpointTestHost host = await StartAsync();
+
+        List<QueryCatalogEntryResponse>? body = await host.CreateAuthenticatedClient()
+            .GetFromJsonAsync<List<QueryCatalogEntryResponse>>("/catalog", TestContext.Current.CancellationToken);
+
+        // Both test entities live in this test assembly (Granit.QueryEngine.AspNetCore.Tests), so
+        // the default derivation strips the "Granit." prefix to "QueryEngine.AspNetCore.Tests".
+        QueryCatalogEntryResponse routed = body!.Single(e => e.Name == "Test.Routed");
+        routed.ModuleName.ShouldBe("QueryEngine.AspNetCore.Tests");
+    }
+
+    [Fact]
     public async Task Catalog_resolves_the_base_path_of_a_mapped_query()
     {
         await using GranitEndpointTestHost host = await StartAsync();

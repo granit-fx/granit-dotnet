@@ -47260,7 +47260,7 @@
       "kind": "record",
       "project": "Granit.QueryEngine.AspNetCore",
       "file": "src/Granit.QueryEngine.AspNetCore/Dtos/QueryCatalogEntryResponse.cs",
-      "line": 26,
+      "line": 31,
       "members": []
     },
     {
@@ -47589,7 +47589,14 @@
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/IQueryDefinitionDescriptor.cs",
       "line": 7,
-      "members": []
+      "members": [
+        {
+          "name": "ModuleOf",
+          "kind": "method",
+          "signature": "ModuleOf(Type entityType)",
+          "returnType": "string Name { get; } Type EntityType { get; } string ModuleName { get; } string"
+        }
+      ]
     },
     {
       "name": "IQueryDefinitionRegistry",
@@ -47831,6 +47838,12 @@
           "kind": "method",
           "signature": "typeof(TEntity)",
           "returnType": "string Name { get; } public Type EntityType =>"
+        },
+        {
+          "name": "ModuleOf",
+          "kind": "method",
+          "signature": "ModuleOf(typeof(TEntity)",
+          "returnType": "string ModuleName => IQueryDefinitionDescriptor."
         },
         {
           "name": "LocalizationResourceType",

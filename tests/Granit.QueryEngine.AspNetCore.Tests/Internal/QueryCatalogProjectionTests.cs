@@ -60,7 +60,19 @@ public sealed class QueryCatalogProjectionTests
         entries.Select(e => e.Name).ShouldBe(["Acme.Appointments", "Acme.Doctors"]);
     }
 
-    private sealed record FakeDescriptor(string Name, Type EntityType) : IQueryDefinitionDescriptor;
+    [Fact]
+    public void Project_carries_the_owning_module()
+    {
+        IReadOnlyList<QueryCatalogEntryResponse> entries = QueryCatalogProjection.Project(
+            [new FakeDescriptor("Acme.Patients", typeof(Patient), ModuleName: "Acme")],
+            new Dictionary<Type, string>(),
+            ByName);
+
+        entries.ShouldHaveSingleItem().ModuleName.ShouldBe("Acme");
+    }
+
+    private sealed record FakeDescriptor(string Name, Type EntityType, string ModuleName = "Acme")
+        : IQueryDefinitionDescriptor;
 
     private sealed class Patient;
 

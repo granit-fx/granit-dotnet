@@ -9,7 +9,7 @@ namespace Granit.QueryEngine.Abstractions.Tests;
 public sealed class QueryDefinitionRegistryTests
 {
     [Fact]
-    public void GetAll_orders_by_name_ordinal()
+    public void GetAll_orders_by_name_ordinal_within_a_module()
     {
         QueryDefinitionRegistry registry = new(
         [
@@ -22,6 +22,25 @@ public sealed class QueryDefinitionRegistryTests
             "Acme.Appointments",
             "Acme.Doctors",
             "Acme.Patients",
+        ]);
+    }
+
+    [Fact]
+    public void GetAll_orders_by_module_then_name()
+    {
+        // Two modules, names interleaved alphabetically across them: the catalogue must group by
+        // module first (so a dashboard editor can render module headings), then sort by name.
+        QueryDefinitionRegistry registry = new(
+        [
+            new FakeDescriptor("Identity.UsersQuery", typeof(Patient), ModuleName: "Identity"),
+            new FakeDescriptor("Auditing.AuditEntryQuery", typeof(Doctor), ModuleName: "Auditing"),
+            new FakeDescriptor("Auditing.AuditEntityChangeQuery", typeof(Appointment), ModuleName: "Auditing"),
+        ]);
+
+        registry.GetAll().Select(d => (d.ModuleName, d.Name)).ShouldBe([
+            ("Auditing", "Auditing.AuditEntityChangeQuery"),
+            ("Auditing", "Auditing.AuditEntryQuery"),
+            ("Identity", "Identity.UsersQuery"),
         ]);
     }
 
@@ -71,7 +90,8 @@ public sealed class QueryDefinitionRegistryTests
         registry.GetAll().ShouldHaveSingleItem().Name.ShouldBe("Acme.Patients");
     }
 
-    private sealed record FakeDescriptor(string Name, Type EntityType) : IQueryDefinitionDescriptor;
+    private sealed record FakeDescriptor(string Name, Type EntityType, string ModuleName = "Acme")
+        : IQueryDefinitionDescriptor;
 
     private sealed class Patient
     {

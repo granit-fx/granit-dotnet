@@ -16,9 +16,14 @@ internal sealed class QueryDefinitionRegistry : IQueryDefinitionRegistry
 
         IQueryDefinitionDescriptor[] snapshot = descriptors.ToArray();
 
-        // Stable ordering by name. Ordinal comparison keeps test fixtures deterministic
-        // and matches the wire identifier's culture-invariant nature.
-        _ordered = [.. snapshot.OrderBy(d => d.Name, StringComparer.Ordinal)];
+        // Stable ordering by module, then by name. Ordinal comparison keeps test fixtures
+        // deterministic and matches the wire identifier's culture-invariant nature.
+        _ordered =
+        [
+            .. snapshot
+                .OrderBy(d => d.ModuleName, StringComparer.Ordinal)
+                .ThenBy(d => d.Name, StringComparer.Ordinal),
+        ];
 
         _byName = snapshot.ToDictionary(d => d.Name, StringComparer.Ordinal);
     }

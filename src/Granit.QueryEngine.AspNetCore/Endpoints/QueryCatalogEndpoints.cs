@@ -25,7 +25,7 @@ internal static class QueryCatalogEndpoints
     /// <summary>
     /// Maps <c>GET /catalog</c> on the supplied route group. Returns every registered
     /// <see cref="QueryDefinition{TEntity}"/> projected through
-    /// <see cref="QueryCatalogEntryResponse"/>, in the registry's stable (name-ordinal) order.
+    /// <see cref="QueryCatalogEntryResponse"/>, in the registry's stable order (module, then name).
     /// </summary>
     public static RouteGroupBuilder MapQueryCatalogEndpoints(this RouteGroupBuilder group)
     {
@@ -35,8 +35,10 @@ internal static class QueryCatalogEndpoints
             .WithDescription(
                 "Returns the full query catalogue surfaced by IQueryDefinitionRegistry so a "
                 + "dashboard editor can offer a dropdown of queries instead of a free-text "
-                + "queryName. Each entry carries the wire identifier, a localization key for the "
-                + "label (the target entity's display key when registered, else Query:{Name}), and "
+                + "queryName. Entries are ordered by owning module, then by name, so the editor "
+                + "can group them under module headings. Each entry carries the wire identifier, "
+                + "its owning module, a localization key for the label (the target entity's "
+                + "display key when registered, else Query:{Name}), and "
                 + "— when a MapGranitQuery route exposes it — the resolved base path of its list "
                 + "endpoint. Registration and routing are decoupled: a query registered without a "
                 + "mapped route is returned with a null base path rather than a forged URL.")

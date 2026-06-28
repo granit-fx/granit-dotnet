@@ -39,6 +39,7 @@ internal static class QueryCatalogProjection
             ? path
             : null;
 
-        return new QueryCatalogEntryResponse(descriptor.Name, basePath, resolveLabelKey(descriptor));
+        return new QueryCatalogEntryResponse(
+            descriptor.ModuleName, descriptor.Name, basePath, resolveLabelKey(descriptor));
     }
 }
