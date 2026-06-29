@@ -19,6 +19,18 @@ public sealed class EfImportJobStoreTests
     private static EfImportJobStore CreateStore(string dbName) =>
         new(new InMemoryDataExchangeContextFactory(dbName), Substitute.For<ICurrentTenant>());
 
+    // Store + context factory MUST share the same active tenant. With the tenant write
+    // guard and fail-closed reads (#2873), a job persisted under an explicit TenantId is
+    // only visible when ICurrentTenant.IsAvailable is true and Id matches that tenant —
+    // an unsignaled absent tenant restricts reads to the host partition (TenantId == null).
+    private static EfImportJobStore CreateStore(string dbName, Guid tenantId)
+    {
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.IsAvailable.Returns(true);
+        tenant.Id.Returns(tenantId);
+        return new(new InMemoryDataExchangeContextFactory(dbName, tenant), tenant);
+    }
+
     private static ImportJob CreateJob(Guid? id = null) =>
         CreateJobWithTenant(tenantId: null, id);
 
@@ -120,8 +132,8 @@ public sealed class EfImportJobStoreTests
     {
         // Arrange
         string dbName = NewDb();
-        EfImportJobStore store = CreateStore(dbName);
         var tenantId = Guid.NewGuid();
+        EfImportJobStore store = CreateStore(dbName, tenantId);
         ImportJob job = CreateJobWithTenant(tenantId);
         ImportColumnMapping[] mappings = [new("A", null, MappingConfidence.Manual)];
         ImportReport report = new()
