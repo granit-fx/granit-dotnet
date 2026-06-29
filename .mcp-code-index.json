@@ -21520,7 +21520,7 @@
       "kind": "class",
       "project": "Granit.EntityMerge",
       "file": "src/Granit.EntityMerge/Exceptions/MergeException.cs",
-      "line": 8,
+      "line": 15,
       "members": []
     },
     {

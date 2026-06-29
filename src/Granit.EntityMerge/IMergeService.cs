@@ -29,8 +29,10 @@ public interface IMergeService<TAggregate>
         CancellationToken cancellationToken);
 
     /// <summary>
-    /// Executes a merge atomically. Throws <see cref="Granit.EntityMerge.Exceptions.MergeException"/> when a hard invariant
-    /// is violated. Idempotency-key replays return the cached result.
+    /// Executes a merge atomically. Throws <see cref="Granit.EntityMerge.Exceptions.MergeException"/> (422) when a hard
+    /// invariant is violated, <see cref="Granit.Exceptions.EntityNotFoundException"/> (404) when a survivor/loser is
+    /// missing, and <see cref="Granit.Exceptions.ConflictException"/> (409) when a survivor/loser is already merged or an
+    /// idempotency key is reused with a different body. Matching idempotency-key replays return the cached result.
     /// </summary>
     Task<MergeResult<TAggregate>> MergeAsync(
         MergeRequest request,
