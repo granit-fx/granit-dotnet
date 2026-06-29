@@ -19,18 +19,49 @@ public sealed class NominatimGeocodingProviderTests
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
     [Fact]
-    public async Task ResolveAsync_SuccessfulResponse_MapsFirstResultToGeoCoordinate()
+    public async Task ResolveAsync_SuccessfulResponse_MapsFirstResultToCoordinate()
     {
         const string json = """
             [{"lat":"50.8476","lon":"4.3572","display_name":"Brussels, Belgium"}]
             """;
         NominatimGeocodingProvider sut = CreateProvider(json, out _);
 
-        GeoCoordinate? result = await sut.ResolveAsync(Brussels, Ct);
+        GeocodingResult? result = await sut.ResolveAsync(Brussels, Ct);
 
         result.ShouldNotBeNull();
-        result.Latitude.ShouldBe(50.8476);
-        result.Longitude.ShouldBe(4.3572);
+        result.Coordinate.Latitude.ShouldBe(50.8476);
+        result.Coordinate.Longitude.ShouldBe(4.3572);
+    }
+
+    [Fact]
+    public async Task ResolveAsync_HouseNumberMatch_IsRooftopWithParsedComponents()
+    {
+        const string json = """
+            [{"lat":"50.8476","lon":"4.3572","addresstype":"house","place_rank":30,
+              "address":{"house_number":"16","postcode":"1000","country_code":"be"}}]
+            """;
+        NominatimGeocodingProvider sut = CreateProvider(json, out _);
+
+        GeocodingResult result = (await sut.ResolveAsync(Brussels, Ct)).ShouldNotBeNull();
+
+        result.Precision.ShouldBe(GeocodeMatchPrecision.Rooftop);
+        result.HouseNumber.ShouldBe("16");
+        result.PostalCode.ShouldBe("1000");
+        result.CountryCode.ShouldBe("be");
+    }
+
+    [Fact]
+    public async Task ResolveAsync_LocalityMatch_IsLocalityPrecisionWithoutHouseNumber()
+    {
+        const string json = """
+            [{"lat":"50.8503","lon":"4.3517","addresstype":"city","place_rank":16,"address":{"country_code":"be"}}]
+            """;
+        NominatimGeocodingProvider sut = CreateProvider(json, out _);
+
+        GeocodingResult result = (await sut.ResolveAsync(Brussels, Ct)).ShouldNotBeNull();
+
+        result.Precision.ShouldBe(GeocodeMatchPrecision.Locality);
+        result.HouseNumber.ShouldBeNull();
     }
 
     [Fact]
@@ -66,6 +97,7 @@ public sealed class NominatimGeocodingProviderTests
         uri.ShouldContain("country=BE");
         uri.ShouldContain("format=jsonv2");
         uri.ShouldContain("limit=1");
+        uri.ShouldContain("addressdetails=1");
     }
 
     [Fact]

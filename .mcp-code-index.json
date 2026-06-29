@@ -22724,6 +22724,15 @@
       ]
     },
     {
+      "name": "GeocodingResult",
+      "fqn": "Granit.Geocoding.GeocodingResult",
+      "kind": "record",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/GeocodingResult.cs",
+      "line": 19,
+      "members": []
+    },
+    {
       "name": "GranitGeocodingModule",
       "fqn": "Granit.Geocoding.GranitGeocodingModule",
       "kind": "class",
@@ -22745,13 +22754,13 @@
       "kind": "interface",
       "project": "Granit.Geocoding.Abstractions",
       "file": "src/Granit.Geocoding.Abstractions/IGeocodingProvider.cs",
-      "line": 12,
+      "line": 10,
       "members": [
         {
           "name": "ResolveAsync",
           "kind": "method",
           "signature": "ResolveAsync(PostalAddress address, CancellationToken cancellationToken = default)",
-          "returnType": "string ProviderName { get; } Task<GeoCoordinate?>"
+          "returnType": "string ProviderName { get; } Task<GeocodingResult?>"
         }
       ]
     },
@@ -22761,13 +22770,13 @@
       "kind": "interface",
       "project": "Granit.Geocoding.Abstractions",
       "file": "src/Granit.Geocoding.Abstractions/IGeocodingService.cs",
-      "line": 13,
+      "line": 11,
       "members": [
         {
           "name": "GeocodeAsync",
           "kind": "method",
           "signature": "GeocodeAsync(PostalAddress address, CancellationToken cancellationToken = default)",
-          "returnType": "Task<GeoCoordinate?>"
+          "returnType": "Task<GeocodingResult?>"
         }
       ]
     },

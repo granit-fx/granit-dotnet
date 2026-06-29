@@ -21,6 +21,9 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
 {
     internal const string HttpClientName = "Granit.Geocoding.Nominatim";
 
+    // Upper bound on a parsed address component persisted downstream (hardening against oversized OSM fields).
+    private const int MaxComponentLength = 64;
+
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IOptions<NominatimGeocodingOptions> _options;
     private readonly ILogger<NominatimGeocodingProvider> _logger;
@@ -47,7 +50,7 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
 
     public void Dispose() => _throttleGate.Dispose();
 
-    public async Task<GeoCoordinate?> ResolveAsync(PostalAddress address, CancellationToken cancellationToken = default)
+    public async Task<GeocodingResult?> ResolveAsync(PostalAddress address, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(address);
 
@@ -71,15 +74,15 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
                 .ReadFromJsonAsync<List<NominatimPlace>>(cancellationToken)
                 .ConfigureAwait(false);
 
-            GeoCoordinate? point = Map(places);
-            if (point is null && places is { Count: > 0 })
+            GeocodingResult? result = Map(places);
+            if (result is null && places is { Count: > 0 })
             {
                 // A result was returned but its coordinate was unparseable or out of WGS 84 range — treat the
                 // untrusted response as a miss rather than surfacing a bogus coordinate.
                 LogLookupFailed("InvalidCoordinate");
             }
 
-            return point;
+            return result;
         }
         catch (HttpRequestException)
         {
@@ -118,7 +121,9 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
         AppendIfPresent(parameters, "country", address.Country);
         parameters.Add("format=jsonv2");
         parameters.Add("limit=1");
-        parameters.Add("addressdetails=0");
+        // addressdetails=1 returns the parsed address components (house_number, postcode, country_code) and,
+        // with addresstype/place_rank, the match granularity — used for the result's precision and cross-check.
+        parameters.Add("addressdetails=1");
         return string.Join('&', parameters);
     }
 
@@ -130,7 +135,7 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
         }
     }
 
-    private static GeoCoordinate? Map(List<NominatimPlace>? places)
+    private static GeocodingResult? Map(List<NominatimPlace>? places)
     {
         if (places is not { Count: > 0 })
         {
@@ -141,10 +146,54 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
 
         // Untrusted external input: TryCreate returns null for an unparseable or out-of-range coordinate, which
         // ResolveAsync reports as a miss rather than surfacing a bogus point.
-        return double.TryParse(first.Lat, NumberStyles.Float, CultureInfo.InvariantCulture, out double lat)
-            && double.TryParse(first.Lon, NumberStyles.Float, CultureInfo.InvariantCulture, out double lon)
-            ? GeoCoordinate.TryCreate(lat, lon)
-            : null;
+        if (!double.TryParse(first.Lat, NumberStyles.Float, CultureInfo.InvariantCulture, out double lat)
+            || !double.TryParse(first.Lon, NumberStyles.Float, CultureInfo.InvariantCulture, out double lon)
+            || GeoCoordinate.TryCreate(lat, lon) is not { } coordinate)
+        {
+            return null;
+        }
+
+        return new GeocodingResult(
+            coordinate,
+            DeterminePrecision(first),
+            HouseNumber: Sanitize(first.Address?.HouseNumber),
+            PostalCode: Sanitize(first.Address?.Postcode),
+            CountryCode: Sanitize(first.Address?.CountryCode));
+    }
+
+    // Map the Nominatim granularity hints to a coarse precision: a parsed house number (or a house/building
+    // address type) is rooftop; a road is street; everything else falls back to a place_rank threshold.
+    private static GeocodeMatchPrecision DeterminePrecision(NominatimPlace place)
+    {
+        if (!string.IsNullOrWhiteSpace(place.Address?.HouseNumber))
+        {
+            return GeocodeMatchPrecision.Rooftop;
+        }
+
+        return place.AddressType switch
+        {
+            "house" or "building" or "residential" => GeocodeMatchPrecision.Rooftop,
+            "road" or "street" or "pedestrian" or "footway" => GeocodeMatchPrecision.Street,
+            _ => place.PlaceRank switch
+            {
+                >= 30 => GeocodeMatchPrecision.Rooftop,
+                >= 26 => GeocodeMatchPrecision.Street,
+                _ => GeocodeMatchPrecision.Locality,
+            },
+        };
+    }
+
+    // Hardening: provider responses are untrusted input we persist downstream — trim and bound the length so a
+    // garbage / oversized OSM field cannot bloat a stored row.
+    private static string? Sanitize(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        string trimmed = value.Trim();
+        return trimmed.Length <= MaxComponentLength ? trimmed : trimmed[..MaxComponentLength];
     }
 
     private async Task ThrottleAsync(CancellationToken cancellationToken)

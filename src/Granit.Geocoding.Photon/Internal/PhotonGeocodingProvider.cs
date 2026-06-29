@@ -21,6 +21,9 @@ internal sealed partial class PhotonGeocodingProvider : IGeocodingProvider, IDis
 {
     internal const string HttpClientName = "Granit.Geocoding.Photon";
 
+    // Upper bound on a parsed address component persisted downstream (hardening against oversized OSM fields).
+    private const int MaxComponentLength = 64;
+
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IOptions<PhotonGeocodingOptions> _options;
     private readonly ILogger<PhotonGeocodingProvider> _logger;
@@ -47,7 +50,7 @@ internal sealed partial class PhotonGeocodingProvider : IGeocodingProvider, IDis
 
     public void Dispose() => _throttleGate.Dispose();
 
-    public async Task<GeoCoordinate?> ResolveAsync(PostalAddress address, CancellationToken cancellationToken = default)
+    public async Task<GeocodingResult?> ResolveAsync(PostalAddress address, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(address);
 
@@ -71,15 +74,15 @@ internal sealed partial class PhotonGeocodingProvider : IGeocodingProvider, IDis
                 .ReadFromJsonAsync<PhotonResponse>(cancellationToken)
                 .ConfigureAwait(false);
 
-            GeoCoordinate? point = Map(body);
-            if (point is null && body?.Features is { Count: > 0 })
+            GeocodingResult? result = Map(body);
+            if (result is null && body?.Features is { Count: > 0 })
             {
                 // A result was returned but its coordinate was missing or out of WGS 84 range — treat the
                 // untrusted response as a miss rather than surfacing a bogus coordinate.
                 LogLookupFailed("InvalidCoordinate");
             }
 
-            return point;
+            return result;
         }
         catch (HttpRequestException)
         {
@@ -138,19 +141,60 @@ internal sealed partial class PhotonGeocodingProvider : IGeocodingProvider, IDis
         }
     }
 
-    private static GeoCoordinate? Map(PhotonResponse? response)
+    private static GeocodingResult? Map(PhotonResponse? response)
     {
         if (response?.Features is not { Count: > 0 })
         {
             return null;
         }
 
+        PhotonFeature feature = response.Features[0];
+
         // Untrusted external input: GeoJSON orders coordinates [longitude, latitude]. TryCreate returns null for a
         // missing or out-of-range pair, which ResolveAsync reports as a miss.
-        IReadOnlyList<double>? coordinates = response.Features[0].Geometry?.Coordinates;
-        return coordinates is { Count: >= 2 }
-            ? GeoCoordinate.TryCreate(coordinates[1], coordinates[0])
-            : null;
+        IReadOnlyList<double>? coordinates = feature.Geometry?.Coordinates;
+        if (coordinates is not { Count: >= 2 }
+            || GeoCoordinate.TryCreate(coordinates[1], coordinates[0]) is not { } coordinate)
+        {
+            return null;
+        }
+
+        PhotonProperties? properties = feature.Properties;
+        return new GeocodingResult(
+            coordinate,
+            DeterminePrecision(properties),
+            HouseNumber: Sanitize(properties?.HouseNumber),
+            PostalCode: Sanitize(properties?.Postcode),
+            CountryCode: Sanitize(properties?.CountryCode));
+    }
+
+    // Photon's feature type carries the granularity: a house number (or type "house") is rooftop, "street" is
+    // street, everything else (locality/city/district/region/country) is locality.
+    private static GeocodeMatchPrecision DeterminePrecision(PhotonProperties? properties)
+    {
+        if (!string.IsNullOrWhiteSpace(properties?.HouseNumber))
+        {
+            return GeocodeMatchPrecision.Rooftop;
+        }
+
+        return properties?.Type switch
+        {
+            "house" => GeocodeMatchPrecision.Rooftop,
+            "street" => GeocodeMatchPrecision.Street,
+            _ => GeocodeMatchPrecision.Locality,
+        };
+    }
+
+    // Hardening: provider responses are untrusted input we persist downstream — trim and bound the length.
+    private static string? Sanitize(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        string trimmed = value.Trim();
+        return trimmed.Length <= MaxComponentLength ? trimmed : trimmed[..MaxComponentLength];
     }
 
     private async Task ThrottleAsync(CancellationToken cancellationToken)

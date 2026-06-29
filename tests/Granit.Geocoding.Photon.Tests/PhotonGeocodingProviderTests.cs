@@ -23,15 +23,46 @@ public sealed class PhotonGeocodingProviderTests
         """{"type":"FeatureCollection","features":[{"geometry":{"type":"Point","coordinates":[4.3572,50.8476]}}]}""";
 
     [Fact]
-    public async Task ResolveAsync_SuccessfulResponse_MapsFirstFeatureToGeoCoordinate()
+    public async Task ResolveAsync_SuccessfulResponse_MapsFirstFeatureToCoordinate()
     {
         PhotonGeocodingProvider sut = CreateProvider(BrusselsFeature, out _);
 
-        GeoCoordinate? result = await sut.ResolveAsync(Brussels, Ct);
+        GeocodingResult? result = await sut.ResolveAsync(Brussels, Ct);
 
         result.ShouldNotBeNull();
-        result.Latitude.ShouldBe(50.8476);
-        result.Longitude.ShouldBe(4.3572);
+        result.Coordinate.Latitude.ShouldBe(50.8476);
+        result.Coordinate.Longitude.ShouldBe(4.3572);
+    }
+
+    [Fact]
+    public async Task ResolveAsync_HouseFeature_IsRooftopWithParsedComponents()
+    {
+        const string json = """
+            {"features":[{"geometry":{"coordinates":[4.3572,50.8476]},
+              "properties":{"type":"house","housenumber":"16","postcode":"1000","countrycode":"BE"}}]}
+            """;
+        PhotonGeocodingProvider sut = CreateProvider(json, out _);
+
+        GeocodingResult result = (await sut.ResolveAsync(Brussels, Ct)).ShouldNotBeNull();
+
+        result.Precision.ShouldBe(GeocodeMatchPrecision.Rooftop);
+        result.HouseNumber.ShouldBe("16");
+        result.PostalCode.ShouldBe("1000");
+        result.CountryCode.ShouldBe("BE");
+    }
+
+    [Fact]
+    public async Task ResolveAsync_CityFeature_IsLocalityPrecision()
+    {
+        const string json = """
+            {"features":[{"geometry":{"coordinates":[4.3517,50.8503]},"properties":{"type":"city","countrycode":"BE"}}]}
+            """;
+        PhotonGeocodingProvider sut = CreateProvider(json, out _);
+
+        GeocodingResult result = (await sut.ResolveAsync(Brussels, Ct)).ShouldNotBeNull();
+
+        result.Precision.ShouldBe(GeocodeMatchPrecision.Locality);
+        result.HouseNumber.ShouldBeNull();
     }
 
     [Fact]

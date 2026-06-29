@@ -3,8 +3,8 @@ using System.Text.Json.Serialization;
 namespace Granit.Geocoding.Photon.Internal;
 
 /// <summary>
-/// The Photon <c>/api</c> response — a GeoJSON <c>FeatureCollection</c>. Only the geometry is read; the rich
-/// textual properties of each feature are ignored (we need only the coordinate).
+/// The Photon <c>/api</c> response — a GeoJSON <c>FeatureCollection</c>. The geometry yields the coordinate and
+/// the feature <c>properties</c> the match granularity and parsed components.
 /// </summary>
 internal sealed record PhotonResponse
 {
@@ -17,6 +17,9 @@ internal sealed record PhotonFeature
 {
     [JsonPropertyName("geometry")]
     public PhotonGeometry? Geometry { get; init; }
+
+    [JsonPropertyName("properties")]
+    public PhotonProperties? Properties { get; init; }
 }
 
 /// <summary>
@@ -27,4 +30,23 @@ internal sealed record PhotonGeometry
 {
     [JsonPropertyName("coordinates")]
     public IReadOnlyList<double>? Coordinates { get; init; }
+}
+
+/// <summary>
+/// Photon feature properties: <c>type</c> (<c>house</c>/<c>street</c>/<c>locality</c>/…) gives the match
+/// granularity; the remaining fields are the parsed address components.
+/// </summary>
+internal sealed record PhotonProperties
+{
+    [JsonPropertyName("type")]
+    public string? Type { get; init; }
+
+    [JsonPropertyName("housenumber")]
+    public string? HouseNumber { get; init; }
+
+    [JsonPropertyName("postcode")]
+    public string? Postcode { get; init; }
+
+    [JsonPropertyName("countrycode")]
+    public string? CountryCode { get; init; }
 }

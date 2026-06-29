@@ -1,9 +1,7 @@
-using Granit.Domain.ValueObjects;
-
 namespace Granit.Geocoding;
 
 /// <summary>
-/// Forward-geocodes a <see cref="PostalAddress"/> to an approximate <see cref="GeoCoordinate"/>, applying the
+/// Forward-geocodes a <see cref="PostalAddress"/> to an approximate <see cref="GeocodingResult"/>, applying the
 /// configured provider fallback order and result caching.
 /// </summary>
 /// <remarks>
@@ -13,13 +11,13 @@ namespace Granit.Geocoding;
 public interface IGeocodingService
 {
     /// <summary>
-    /// Resolves <paramref name="address"/> to an approximate coordinate.
+    /// Resolves <paramref name="address"/> to an approximate coordinate with its match precision and parsed components.
     /// </summary>
     /// <param name="address">The address to geocode.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>
-    /// The resolved coordinate, or <c>null</c> when the address is not geocodable, no provider is enabled, or every
+    /// The resolved result, or <c>null</c> when the address is not geocodable, no provider is enabled, or every
     /// provider in the fallback chain failed or had no match. <strong>Never throws</strong> for these cases.
     /// </returns>
-    Task<GeoCoordinate?> GeocodeAsync(PostalAddress address, CancellationToken cancellationToken = default);
+    Task<GeocodingResult?> GeocodeAsync(PostalAddress address, CancellationToken cancellationToken = default);
 }
