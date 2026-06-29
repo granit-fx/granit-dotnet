@@ -22826,12 +22826,21 @@
       "members": []
     },
     {
+      "name": "GeocodingReverseRequest",
+      "fqn": "Granit.Geocoding.Endpoints.Dtos.GeocodingReverseRequest",
+      "kind": "record",
+      "project": "Granit.Geocoding.Endpoints",
+      "file": "src/Granit.Geocoding.Endpoints/Dtos/GeocodingReverseRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "GeocodingReverseResponse",
       "fqn": "Granit.Geocoding.Endpoints.Dtos.GeocodingReverseResponse",
       "kind": "record",
       "project": "Granit.Geocoding.Endpoints",
       "file": "src/Granit.Geocoding.Endpoints/Dtos/GeocodingReverseResponse.cs",
-      "line": 9,
+      "line": 11,
       "members": []
     },
     {
@@ -22865,7 +22874,7 @@
       "kind": "class",
       "project": "Granit.Geocoding.Endpoints",
       "file": "src/Granit.Geocoding.Endpoints/GranitGeocodingEndpointsModule.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",

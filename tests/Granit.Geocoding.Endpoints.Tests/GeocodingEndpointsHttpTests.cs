@@ -1,8 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+using FluentValidation;
 using Granit.Domain.ValueObjects;
 using Granit.Geocoding.Endpoints.Dtos;
 using Granit.Geocoding.Endpoints.Extensions;
+using Granit.Geocoding.Endpoints.Validators;
 using Granit.Testing.Endpoints;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -43,6 +45,7 @@ public sealed class GeocodingEndpointsHttpTests : IAsyncDisposable
                 services.AddSingleton(_autocomplete);
                 services.AddSingleton(_reverse);
                 services.AddSingleton(new GeocodingCapabilities(Forward: true, Autocomplete: true, Reverse: true));
+                services.AddScoped<IValidator<GeocodingReverseRequest>, GeocodingReverseRequestValidator>();
             },
             configureEndpoints: app => app.MapGranitGeocoding())
             .GetAwaiter().GetResult();
@@ -84,15 +87,16 @@ public sealed class GeocodingEndpointsHttpTests : IAsyncDisposable
 
         body.ShouldNotBeNull();
         body.Locality.ShouldBe("Brussels");
-        body.Precision.ShouldBe("Rooftop");
+        body.Precision.ShouldBe(GeocodeMatchPrecision.Rooftop);
     }
 
     [Fact]
-    public async Task Reverse_OutOfRangeCoordinate_Returns400()
+    public async Task Reverse_OutOfRangeCoordinate_Returns422()
     {
+        // The coordinate validator surfaces out-of-range bounds as a localized 422 (FluentValidation auto-filter).
         HttpResponseMessage response = await _client.GetAsync("/geocoding/reverse?lat=999&lon=4.35", Ct);
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
     }
 
     [Fact]

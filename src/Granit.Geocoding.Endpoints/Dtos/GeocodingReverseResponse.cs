@@ -1,3 +1,5 @@
+using Granit.Domain.ValueObjects;
+
 namespace Granit.Geocoding.Endpoints.Dtos;
 
 /// <summary>The postal address nearest a reverse-geocoded coordinate.</summary>
@@ -5,10 +7,10 @@ namespace Granit.Geocoding.Endpoints.Dtos;
 /// <param name="PostalCode">Postal code, or <c>null</c>.</param>
 /// <param name="Locality">Locality (city/town).</param>
 /// <param name="Country">Country (ISO 3166-1 alpha-2).</param>
-/// <param name="Precision">Match granularity: <c>Rooftop</c>, <c>Street</c> or <c>Locality</c>.</param>
+/// <param name="Precision">Match granularity (rooftop / street / locality).</param>
 public sealed record GeocodingReverseResponse(
     string? Street,
     string? PostalCode,
     string Locality,
     string Country,
-    string Precision);
+    GeocodeMatchPrecision Precision);

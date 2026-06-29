@@ -1,5 +1,6 @@
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
+using Granit.Validation;
 
 namespace Granit.Geocoding.Endpoints;
 
@@ -12,8 +13,9 @@ namespace Granit.Geocoding.Endpoints;
 /// capable provider is installed.
 /// </remarks>
 [DependsOn(
+    typeof(GranitGeocodingModule),
     typeof(GranitHttpApiDocumentationModule),
-    typeof(GranitGeocodingModule))]
+    typeof(GranitValidationModule))]
 public sealed class GranitGeocodingEndpointsModule : GranitModule
 {
     /// <inheritdoc/>
