@@ -5,7 +5,9 @@ using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Persistence.EntityFrameworkCore;
 
@@ -127,6 +129,32 @@ public abstract class GranitDbContext : DbContext
         //    filter separately, with parameterised SQL. Runs LAST so the SVO cleanup
         //    is the final pass over the model surface.
         modelBuilder.ApplyGranitConventions(currentTenant: null, DataFilter);
+
+        // 4) External, opt-in model extensions registered in DI by separate packages — applied LAST so they
+        //    get the final say (after conventions). Lets e.g. a PostGIS package add a generated geography
+        //    column to a module's address table without the module depending on NetTopologySuite. Each
+        //    extension self-guards on provider + target entity type (it sees every context's model).
+        ApplyModelExtensions(modelBuilder);
+    }
+
+    /// <summary>
+    /// Resolves and applies the registered <see cref="IGranitModelExtension"/> set from the application
+    /// service provider. No-op when none are registered (the common case) or the provider is unavailable.
+    /// </summary>
+    private void ApplyModelExtensions(ModelBuilder modelBuilder)
+    {
+        IServiceProvider? applicationServices = this.GetService<IDbContextOptions>()
+            .FindExtension<CoreOptionsExtension>()?.ApplicationServiceProvider;
+
+        if (applicationServices is null)
+        {
+            return;
+        }
+
+        foreach (IGranitModelExtension extension in applicationServices.GetServices<IGranitModelExtension>())
+        {
+            extension.Apply(modelBuilder, this);
+        }
     }
 
     /// <summary>
