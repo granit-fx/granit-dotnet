@@ -11,6 +11,11 @@ namespace Granit.Persistence.EntityFrameworkCore;
 /// process) would share whichever model was built first. Including the extension signature keeps each
 /// distinct configuration on its own cached model. Equivalent to the default key when no extensions exist.
 /// </summary>
+/// <remarks>
+/// The signature folds extension <i>types</i> only, not their configuration. Two instances of the same
+/// extension type configured differently would collide on one cached model — keep extensions stateless and
+/// register them as singletons (the documented contract on <see cref="IGranitModelExtension"/>).
+/// </remarks>
 public sealed class GranitModelCacheKeyFactory : IModelCacheKeyFactory
 {
     /// <inheritdoc />

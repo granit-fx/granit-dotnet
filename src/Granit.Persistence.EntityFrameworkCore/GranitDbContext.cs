@@ -141,6 +141,13 @@ public abstract class GranitDbContext : DbContext
     /// Resolves and applies the registered <see cref="IGranitModelExtension"/> set from the application
     /// service provider. No-op when none are registered (the common case) or the provider is unavailable.
     /// </summary>
+    /// <remarks>
+    /// The cross-configuration bleed protection for the augmented model lives elsewhere:
+    /// <see cref="DbContextOptionsBuilderExtensions.UseGranitInterceptors"/> installs
+    /// <see cref="GranitModelCacheKeyFactory"/>, which folds the extension set into the model cache key. A
+    /// context that augments its model but does NOT go through <c>UseGranitInterceptors</c> would lose that
+    /// safety net — keep the two wired together.
+    /// </remarks>
     private void ApplyModelExtensions(ModelBuilder modelBuilder)
     {
         IServiceProvider? applicationServices = this.GetService<IDbContextOptions>()

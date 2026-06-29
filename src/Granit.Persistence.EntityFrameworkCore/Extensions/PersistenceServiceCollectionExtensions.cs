@@ -75,6 +75,33 @@ public static class PersistenceServiceCollectionExtensions
     }
 
     /// <summary>
+    /// Registers an <see cref="IGranitModelExtension"/> that augments the EF Core model of one or more Granit
+    /// modules without those modules depending on the augmenting package's technology (e.g. a PostGIS package
+    /// adding a <c>geography</c> column to an address table while NetTopologySuite stays out of the base module).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Registered as a <b>singleton</b>: <see cref="GranitDbContext"/> resolves the extension set once per model
+    /// build and folds it into the model cache key (<see cref="GranitModelCacheKeyFactory"/>). A non-singleton
+    /// lifetime would rebuild the resolved set per scope without invalidating the cached model. Idempotent —
+    /// registering the same <typeparamref name="TExtension"/> twice adds a single entry.
+    /// </para>
+    /// <para>
+    /// Each implementation MUST self-guard on the active provider and its target entity types, since the same
+    /// set is applied to <b>every</b> Granit DbContext in the application — see <see cref="IGranitModelExtension"/>.
+    /// </para>
+    /// </remarks>
+    /// <typeparam name="TExtension">The model extension implementation.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddGranitModelExtension<TExtension>(this IServiceCollection services)
+        where TExtension : class, IGranitModelExtension
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IGranitModelExtension, TExtension>());
+        return services;
+    }
+
+    /// <summary>
     /// Adds the Granit data seeding infrastructure:
     /// <list type="bullet">
     ///   <item><see cref="IDataSeeder"/> as a singleton (orchestrates contributors).</item>

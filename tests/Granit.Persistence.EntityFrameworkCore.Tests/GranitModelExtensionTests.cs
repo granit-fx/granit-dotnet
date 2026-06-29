@@ -1,5 +1,6 @@
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Testing.Fakes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -58,6 +59,23 @@ public sealed class GranitModelExtensionTests : IAsyncLifetime
         context.Model.FindEntityType(typeof(Widget))!
             .FindProperty(AugmentedColumn)
             .ShouldNotBeNull("the registered IGranitModelExtension must have added the shadow property");
+    }
+
+    [Fact]
+    public void AddGranitModelExtension_RegistersSingleton_AndIsIdempotent()
+    {
+        ServiceProvider app = new ServiceCollection()
+            .AddGranitModelExtension<AddShadowPropertyExtension>()
+            .AddGranitModelExtension<AddShadowPropertyExtension>()
+            .BuildServiceProvider();
+
+        IGranitModelExtension[] resolved = [.. app.GetServices<IGranitModelExtension>()];
+
+        resolved.ShouldHaveSingleItem().ShouldBeOfType<AddShadowPropertyExtension>();
+
+        using IServiceScope scope = app.CreateScope();
+        scope.ServiceProvider.GetRequiredService<IGranitModelExtension>()
+            .ShouldBeSameAs(resolved[0], "the extension must be a singleton so the cached model stays valid");
     }
 
     [Fact]

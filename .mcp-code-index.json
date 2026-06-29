@@ -42663,7 +42663,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/GranitModelCacheKeyFactory.cs",
-      "line": 14,
+      "line": 19,
       "members": [
         {
           "name": "Create",
