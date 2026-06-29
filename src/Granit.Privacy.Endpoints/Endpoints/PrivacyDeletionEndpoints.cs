@@ -36,7 +36,7 @@ internal static class PrivacyDeletionEndpoints
                  + "Do not include personally identifiable information in the Reason field.")
              .Produces<PrivacyDeletionRequestResponse>(StatusCodes.Status202Accepted)
              .ProducesProblem(StatusCodes.Status409Conflict)
-             .ProducesValidationProblem();
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapPost("/deletions/{requestId:guid}/cancel", HandleCancelDeletionAsync)
              .RequireAuthorization(PrivacyPermissions.Deletions.Execute)

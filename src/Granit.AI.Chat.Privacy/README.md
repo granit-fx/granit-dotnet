@@ -22,9 +22,22 @@ dotnet add package Granit.AI.Chat.Privacy
 
 ## Usage
 
+First wire the module into the host's module graph so its Wolverine export/erasure handlers are
+scanned and the chat EF data manager is loaded:
+
 ```csharp
-services.AddGranitPrivacy(p => p.AddGranitAIChatPrivacyProvider());
+[DependsOn(typeof(GranitAIChatPrivacyModule))]
+public class MyAppModule : GranitModule { }
 ```
+
+Then opt-in on the privacy builder:
+
+```csharp
+services.AddGranitPrivacy(privacy => privacy.AddGranitAIChatPrivacyProvider());
+```
+
+The `[DependsOn]` is mandatory: without it the module's domain and persistence dependencies are
+never loaded, causing runtime failures during privacy export.
 
 ## Dependencies
 

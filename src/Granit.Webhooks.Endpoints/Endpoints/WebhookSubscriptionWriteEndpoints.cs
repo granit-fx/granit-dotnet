@@ -23,7 +23,7 @@ internal static class WebhookSubscriptionWriteEndpoints
                 + "The subscription starts in the Active status.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<WebhookSubscriptionCreatedResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem();
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapPut("/subscriptions/{id:guid}", Update)
             .WithName("UpdateWebhookSubscription")
@@ -35,7 +35,7 @@ internal static class WebhookSubscriptionWriteEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<WebhookSubscriptionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesValidationProblem();
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapDelete("/subscriptions/{id:guid}", Delete)
             .WithName("DeleteWebhookSubscription")

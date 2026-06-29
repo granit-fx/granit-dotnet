@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Transactions;
 using Granit.Domain;
 using Granit.Encryption;
+using Granit.Exceptions;
 using Granit.Guids;
 using Granit.EntityMerge.Domain;
 using Granit.EntityMerge.Exceptions;
@@ -105,7 +106,7 @@ internal sealed class EfMergeService<TAggregate>(
         // 4. Load survivor + loser via the per-aggregate adapter (bypasses the tombstone
         //    filter so the loser row stays observable). The IMultiTenant filter remains
         //    active inside LoadAsync — cross-tenant reads return null and ValidatePair
-        //    throws "not found".
+        //    throws EntityNotFoundException (404), never disclosing cross-tenant existence.
         TAggregate? survivor = await adapter.LoadAsync(request.SurvivorId, cancellationToken)
             .ConfigureAwait(false);
         TAggregate? loser = await adapter.LoadAsync(request.LoserId, cancellationToken)
@@ -195,11 +196,14 @@ internal sealed class EfMergeService<TAggregate>(
     {
         if (survivor is null)
         {
-            throw new MergeException($"Survivor aggregate '{request.SurvivorId}' was not found.");
+            // Missing aggregate is a 404, not a 422 invariant. EntityNotFoundException returns a
+            // generic client message ("resource not found") while preserving the type+id for logs —
+            // it never echoes the looked-up id back to the caller.
+            throw new EntityNotFoundException(typeof(TAggregate), request.SurvivorId);
         }
         if (loser is null)
         {
-            throw new MergeException($"Loser aggregate '{request.LoserId}' was not found.");
+            throw new EntityNotFoundException(typeof(TAggregate), request.LoserId);
         }
         if (request.SurvivorId == request.LoserId)
         {
@@ -217,15 +221,17 @@ internal sealed class EfMergeService<TAggregate>(
         }
         if (survivor.MergedIntoId is not null)
         {
-            // Generic wording — never disclose the chain pointer to the caller. The internal
-            // pointer is logged via the orchestrator's diagnostic surface, never surfaced in
-            // the user-visible exception message (CWE-209).
-            throw new MergeException(
+            // Already-merged is a state conflict (409), not a 422 invariant. Generic wording —
+            // never disclose the chain pointer to the caller. The internal pointer is logged via
+            // the orchestrator's diagnostic surface, never surfaced in the message (CWE-209).
+            throw new ConflictException(
+                "EntityMerge:SurvivorAlreadyMerged",
                 $"Survivor '{request.SurvivorId}' has itself been merged — pick the current survivor.");
         }
         if (loser.MergedIntoId is not null)
         {
-            throw new MergeException(
+            throw new ConflictException(
+                "EntityMerge:LoserAlreadyMerged",
                 $"Loser '{request.LoserId}' has already been merged.");
         }
     }
@@ -294,7 +300,8 @@ internal sealed class EfMergeService<TAggregate>(
             .ConfigureAwait(false);
         if (keyClash)
         {
-            throw new MergeException(
+            throw new ConflictException(
+                "EntityMerge:IdempotencyKeyReused",
                 $"Idempotency key '{request.IdempotencyKey}' was reused with a different request body. " +
                 "Use a fresh key for a different merge intent.");
         }

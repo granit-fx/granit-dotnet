@@ -29,7 +29,7 @@ internal static class TemplatingPreviewEndpoints
              .WithSummary("Renders the current draft with optional test data and returns the HTML output.")
              .WithDescription("Renders the template's current draft content using the configured template engine (Liquid, Razor, etc.) with optional test data. Returns the rendered HTML. Useful for live preview in the template editor. Returns 404 if the template or draft does not exist.")
              .Produces<TemplatePreviewResponse>()
-             .ProducesValidationProblem()
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status501NotImplemented);

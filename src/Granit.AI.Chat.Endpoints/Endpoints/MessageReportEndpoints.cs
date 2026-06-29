@@ -24,7 +24,7 @@ internal static class MessageReportEndpoints
                 + "conversations is reported as not found. The report stores identifiers plus the "
                 + "user-entered reason — never the message content (ADR-071).")
             .Produces(StatusCodes.Status202Accepted)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(AIChatPermissions.Conversations.Report);
 

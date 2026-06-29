@@ -1,4 +1,4 @@
-# Granit.Persistence.Postgres
+# Granit.Persistence.EntityFrameworkCore.Postgres
 
 PostgreSQL-specific persistence extensions for Granit applications.
 
@@ -18,6 +18,8 @@ builder.AddGranitMigrateSupport();
 Or via module dependency:
 
 ```csharp
-[DependsOn(typeof(GranitPersistencePostgresModule))]
+using Granit.Persistence.EntityFrameworkCore.Postgres;
+
+[DependsOn(typeof(GranitPersistenceEntityFrameworkCorePostgresModule))]
 public sealed class AppHostModule : GranitModule { }
 ```

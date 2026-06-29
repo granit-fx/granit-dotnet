@@ -16,6 +16,22 @@ dotnet add package Granit.Authorization.Endpoints
 
 - `Granit.Authorization`
 
+## Usage
+
+Reference the module from your host module so its services are registered:
+
+```csharp
+[DependsOn(typeof(GranitAuthorizationEndpointsModule))]
+public sealed class MyAppModule : GranitModule { }
+```
+
+Then expose the endpoints by calling `MapGranitAuthorization()` (or
+`api.MapGranitAuthorization()` inside a route group):
+
+```csharp
+api.MapGranitAuthorization();
+```
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).

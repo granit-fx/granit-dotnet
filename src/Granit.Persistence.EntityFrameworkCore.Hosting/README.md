@@ -1,4 +1,4 @@
-# Granit.Persistence.Hosting
+# Granit.Persistence.EntityFrameworkCore.Hosting
 
 EF Core migration runner with `--migrate` CLI support for Granit applications.
 

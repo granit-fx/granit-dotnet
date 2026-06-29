@@ -43,7 +43,7 @@ internal static partial class PermissionGrantEndpoints
             .WithSummary("Grants a permission to a role. No-op if already granted.")
             .WithDescription("Grants the specified permission to the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). The calling user must hold the permission being granted (privilege escalation prevention). Idempotent — granting an already-granted permission is a no-op. Returns 404 when the role is not visible in the caller's context.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         adminGroup.MapDelete("/{roleName}/{permissionName}", RevokePermissionAsync)
@@ -51,7 +51,7 @@ internal static partial class PermissionGrantEndpoints
             .WithSummary("Revokes a permission from a role. No-op if not granted.")
             .WithDescription("Revokes the specified permission from the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). The calling user must hold the permission being revoked (privilege escalation prevention). Idempotent — revoking a non-granted permission is a no-op. Returns 404 when the role is not visible in the caller's context.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;

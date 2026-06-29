@@ -30,7 +30,7 @@ internal static class AccountProfileEndpoints
                 + "Returns the updated profile.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AccountProfileResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization();
 
         return group;

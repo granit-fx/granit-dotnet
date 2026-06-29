@@ -37,15 +37,23 @@ builder.Services.AddGranitAI();
 builder.Services.AddGranitIndexing();
 builder.Services.AddGranitIndexingEntityFrameworkCore(opts => opts.UseNpgsql(cs), typeof(Guid));
 
-// 3. Storage backend's VECTOR extension.
+// 3. Storage backend's lexical search backend (ISearchBackend).
+builder.Services.AddGranitIndexingBackend<Guid, MyResult>(
+    row => new MyResult(row.Key, row.Content));
+
+// 4. Storage backend's VECTOR extension (IVectorSearchBackend).
 builder.Services.AddGranitIndexingEmbeddingsBackend<Guid, MyResult>(
     row => new MyResult(row.Key, row.Content));
 
-// 4. This package — decorates indexer + search backend.
+// 5. This package — decorates indexer + search backend.
 builder.Services.AddGranitIndexingEmbeddings();
 builder.Services.AddGranitIndexingEmbeddingsWriter<Guid>();
 builder.Services.AddGranitIndexingHybridSearch<Guid, MyResult>();
 ```
+
+`AddGranitIndexingHybridSearch` requires BOTH an `ISearchBackend` (from
+`AddGranitIndexingBackend`) AND an `IVectorSearchBackend` (from
+`AddGranitIndexingEmbeddingsBackend`) registered first, or it throws at composition time.
 
 `AddGranitIndexingEmbeddingsWriter` and `AddGranitIndexingHybridSearch` MUST be the
 LAST decorators applied to their target services so the embedding write reaches the

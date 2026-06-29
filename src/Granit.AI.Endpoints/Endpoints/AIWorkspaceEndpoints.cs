@@ -39,7 +39,7 @@ internal static class AIWorkspaceEndpoints
                 "Registers a new user-defined workspace with the specified provider and model configuration. "
                 + "Returns 409 if a workspace with the same name already exists.")
             .Produces<AIWorkspaceResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPut("/workspaces/{name}", UpdateAsync)
@@ -50,7 +50,7 @@ internal static class AIWorkspaceEndpoints
                 + "System workspaces cannot be modified and return 422. "
                 + "Returns 404 if the workspace does not exist.")
             .Produces<AIWorkspaceResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
 

@@ -47,7 +47,7 @@ internal static class AccountTwoFactorEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AccountTwoFactorEnableResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization()
             .WithNoStoreResponse();
 
@@ -60,7 +60,7 @@ internal static class AccountTwoFactorEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization();
 
         group.MapPost("/two-factor/recovery-codes", GenerateRecoveryCodesAsync)
@@ -73,7 +73,7 @@ internal static class AccountTwoFactorEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AccountRecoveryCodesResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization()
             .WithNoStoreResponse();
 
@@ -98,7 +98,7 @@ internal static class AccountTwoFactorEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization();
 
         group.MapPost("/two-factor/email/disable", DisableEmailAsync)
@@ -110,7 +110,7 @@ internal static class AccountTwoFactorEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization();
 
         return group;

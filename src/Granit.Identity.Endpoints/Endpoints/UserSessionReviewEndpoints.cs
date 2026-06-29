@@ -38,7 +38,7 @@ internal static class UserSessionReviewEndpoints
                 + "profile; \"No\" revokes all the user's sessions and triggers credential-reset remediation. "
                 + "Single-use: a repeat submission (double-click, prefetch) is an idempotent no-op.")
             .Produces<SessionReviewResultResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         return group;

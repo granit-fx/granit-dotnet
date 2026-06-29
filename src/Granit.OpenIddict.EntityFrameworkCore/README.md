@@ -22,9 +22,14 @@ dotnet add package Granit.OpenIddict.EntityFrameworkCore
 
 ## Migrations
 
-`OpenIddictDbContext` tables are created automatically during `--migrate` via
-`IInternalDbContextEnsurer`. No `dotnet ef migrations add` is required — the
-framework handles table creation idempotently using `CreateTablesAsync()`.
+`OpenIddictDbContext` tables are created automatically during `--migrate`,
+provided you have registered the module via
+`builder.AddGranitOpenIddict(options => options.UseNpgsql(connectionString))`
+in `Program.cs` (this is what registers `OpenIddictDbContext`). Without that
+call the context is never registered and the migration infrastructure has
+nothing to create. No `dotnet ef migrations add` is required — the framework
+handles table creation idempotently via `IMigrationProgressDbEnsurer`
+(`CreateTablesAsync()`).
 
 ## Key constraints
 

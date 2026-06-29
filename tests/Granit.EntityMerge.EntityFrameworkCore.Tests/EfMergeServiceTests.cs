@@ -4,6 +4,7 @@ using Granit.EntityMerge.Domain;
 using Granit.EntityMerge.EntityFrameworkCore.Internal;
 using Granit.EntityMerge.EntityFrameworkCore.Options;
 using Granit.EntityMerge.Exceptions;
+using Granit.Exceptions;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
@@ -107,8 +108,10 @@ public sealed class EfMergeServiceTests
         FakeAdapter adapter = new(survivor, loser);
         EfMergeService<FakeAggregate> sut = CreateSut(adapter, []);
 
-        MergeException ex = await Should.ThrowAsync<MergeException>(() =>
+        ConflictException ex = await Should.ThrowAsync<ConflictException>(() =>
             sut.MergeAsync(new MergeRequest(SurvivorId, LoserId, MergeFieldChoices.Empty), TestContext.Current.CancellationToken));
+        // Already-merged is a 409 conflict, distinguishable from a 422 invariant.
+        ex.ErrorCode.ShouldBe("EntityMerge:SurvivorAlreadyMerged");
         // Must not embed the chain pointer in the user-visible message (info disclosure).
         ex.Message.ShouldNotContain(chainTarget.ToString());
     }
@@ -122,8 +125,9 @@ public sealed class EfMergeServiceTests
         FakeAdapter adapter = new(survivor, loser);
         EfMergeService<FakeAggregate> sut = CreateSut(adapter, []);
 
-        MergeException ex = await Should.ThrowAsync<MergeException>(() =>
+        ConflictException ex = await Should.ThrowAsync<ConflictException>(() =>
             sut.MergeAsync(new MergeRequest(SurvivorId, LoserId, MergeFieldChoices.Empty), TestContext.Current.CancellationToken));
+        ex.ErrorCode.ShouldBe("EntityMerge:LoserAlreadyMerged");
         ex.Message.ShouldNotContain(chainTarget.ToString());
     }
 
@@ -139,14 +143,16 @@ public sealed class EfMergeServiceTests
     }
 
     [Fact]
-    public async Task MergeAsync_LoserNotFound_Throws()
+    public async Task MergeAsync_LoserNotFound_Throws404()
     {
         FakeAggregate survivor = new(SurvivorId, "Survivor");
         FakeAdapter adapter = new(survivor, loser: null);
         EfMergeService<FakeAggregate> sut = CreateSut(adapter, []);
 
-        await Should.ThrowAsync<MergeException>(() =>
+        // Missing aggregate is a 404, not a 422 invariant; the generic message never echoes the id.
+        EntityNotFoundException ex = await Should.ThrowAsync<EntityNotFoundException>(() =>
             sut.MergeAsync(new MergeRequest(SurvivorId, LoserId, MergeFieldChoices.Empty), TestContext.Current.CancellationToken));
+        ex.Message.ShouldNotContain(LoserId.ToString());
     }
 
     [Fact]
@@ -205,10 +211,11 @@ public sealed class EfMergeServiceTests
         FakeAdapter adapter2 = new(fresh, other);
         EfMergeService<FakeAggregate> sut2 = CreateSut(adapter2, []);
 
-        await Should.ThrowAsync<MergeException>(() =>
+        ConflictException ex = await Should.ThrowAsync<ConflictException>(() =>
             sut2.MergeAsync(
                 new MergeRequest(fresh.Id, other.Id, MergeFieldChoices.Empty, Reason: "second", IdempotencyKey: "shared-key"),
                 TestContext.Current.CancellationToken));
+        ex.ErrorCode.ShouldBe("EntityMerge:IdempotencyKeyReused");
     }
 
     [Fact]

@@ -33,7 +33,7 @@ internal static class PresenceQueryEndpoints
             .WithDescription("Returns a dictionary keyed by user id. POST is used because UUID lists exceed practical URL length around 50 entries. Targets the caller is not allowed to read (per IPresenceVisibilityPolicy) are silently omitted from the response — not 403'd — to avoid leaking an enumeration channel.")
             .RequireGranitRateLimiting(PresenceRateLimitPolicies.Query)
             .Produces<BatchPresenceResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         return group;

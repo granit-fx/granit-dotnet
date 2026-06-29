@@ -29,7 +29,7 @@ internal static class TimelineEntryEndpoints
             .WithSummary("Posts a new comment, internal note, or system log entry.")
             .WithDescription("Creates a new timeline entry for the specified entity. Supports Comment and InternalNote types (SystemLog is system-only). The body supports Markdown. @mentions in the body trigger one-time mention notifications (max 10 per entry). Supports threaded replies via parentEntryId.")
             .Produces<TimelineStreamEntryResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem();
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapPost("/{entityType}/{entityId}/anchor", AnchorExternalAsync)
             .RequireAuthorization(TimelinePermissions.Entries.Create)

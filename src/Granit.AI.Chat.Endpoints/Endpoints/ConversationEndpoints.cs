@@ -36,7 +36,7 @@ internal static class ConversationEndpoints
             .WithSummary("Creates a conversation owned by the current user.")
             .WithDescription("Creates an empty conversation with the given title, owned by the caller.")
             .Produces<ConversationResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(AIChatPermissions.Conversations.Manage);
 
         group.MapPut("/{id:guid}/title", RenameAsync)
@@ -44,7 +44,7 @@ internal static class ConversationEndpoints
             .WithSummary("Renames one of the current user's conversations.")
             .WithDescription("Updates the conversation title. Scoped to the caller: another user's conversation is reported as not found.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(AIChatPermissions.Conversations.Manage);
 
@@ -53,7 +53,7 @@ internal static class ConversationEndpoints
             .WithSummary("Sets the favorite flag on one of the current user's conversations.")
             .WithDescription("Sets the conversation's favorite flag to the requested state (idempotent, not a toggle). Scoped to the caller: another user's conversation is reported as not found.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(AIChatPermissions.Conversations.Manage);
 

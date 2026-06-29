@@ -17,6 +17,26 @@ Part of the [granit](https://granit-fx.dev) framework.
 dotnet add package Granit.Http.Cookies.Klaro
 ```
 
+## Usage
+
+> For new projects, use `Granit.Http.Cookies.CookieConsent` instead. This block
+> is for maintainers of existing Klaro integrations.
+
+`UseKlaro()` is a `GranitCookiesBuilder` extension chained inside the
+`AddGranitCookies` callback:
+
+```csharp
+context.Services.AddGranitCookies(cookies =>
+{
+    cookies.UseKlaro();
+});
+```
+
+Configuration lives under the `Http:Cookies:Klaro` section; `CookieName` is
+optional (default: `"klaro"`). Service-to-category mappings now live under
+`Cookies:ThirdPartyServices` (consumed via `IThirdPartyServiceRegistry`), not in
+the Klaro section.
+
 ## Dependencies
 
 - `Granit.Http.Cookies`

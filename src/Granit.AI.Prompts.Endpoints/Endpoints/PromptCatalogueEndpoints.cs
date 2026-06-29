@@ -46,7 +46,7 @@ internal static class PromptCatalogueEndpoints
             .WithSummary("Creates a prompt owned by the caller.")
             .WithDescription("Creates a private prompt with the given content, decoration, and categories, owned by the caller. Returns 422 when a referenced category does not exist.")
             .Produces<PromptResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(AIPromptsPermissions.Templates.Manage);
 
@@ -55,7 +55,7 @@ internal static class PromptCatalogueEndpoints
             .WithSummary("Updates one of the caller's own prompts.")
             .WithDescription("Updates the prompt and bumps its version. System prompts are read-only and reported as not found; customise one to get an editable copy. Returns 422 when a referenced category does not exist.")
             .Produces<PromptResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(AIPromptsPermissions.Templates.Manage);

@@ -17,6 +17,17 @@ dotnet add package Granit.Browsing.PuppeteerSharp   # or .Playwright
 
 ## Usage
 
+> **Prerequisite.** `AddGranitBrowsingPuppeteerSharp` (and the Playwright
+> equivalent) assumes `GranitBrowsingModule` has already run — it registers
+> `BrowsingMetrics`, `IBrowserSandboxProfile`, and `IHarScrubber` that the
+> provider's capabilities depend on. In module-based hosts this is automatic:
+> the provider module (e.g. `GranitBrowsingPuppeteerSharpModule`) declares
+> `[DependsOn(typeof(GranitBrowsingModule))]`, so wiring
+> `[DependsOn(typeof(GranitBrowsingPuppeteerSharpModule))]` on your host module
+> pulls the core in transitively. In a plain `IServiceCollection` host you must
+> register those core services yourself before the provider extension, or DI
+> resolution fails at runtime.
+
 ```csharp
 // Host wires a provider. The base package alone is contracts-only.
 services.AddGranitBrowsingPuppeteerSharp(opts =>

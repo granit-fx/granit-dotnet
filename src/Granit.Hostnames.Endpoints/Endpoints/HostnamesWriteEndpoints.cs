@@ -22,7 +22,7 @@ internal static class HostnamesWriteEndpoints
             .WithDescription("Registers a fully-qualified hostname against an owning resource. The hostname must be globally unique — a second registration for the same host, regardless of owner, is rejected with 409. Returns the created hostname record with a 201 status. Requires the Hostnames.Manage permission.")
             .Produces<ManagedHostnameResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapDelete("/{id:guid}", HandleDeleteAsync)

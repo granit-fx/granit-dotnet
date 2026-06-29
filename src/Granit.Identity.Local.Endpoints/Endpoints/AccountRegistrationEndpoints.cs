@@ -32,7 +32,7 @@ internal static class AccountRegistrationEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status202Accepted)
             .ProducesProblem(StatusCodes.Status403Forbidden)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .AllowAnonymous()
             .RequireRateLimiting("authentication");
