@@ -35,7 +35,7 @@ internal static class AdminSettingsWriteEndpoints
              .WithSummary("Applies multiple global setting updates in a single request.")
              .WithDescription("Applies every entry individually — a failure on one entry (unknown key, disallowed provider, invalid value) does not roll back the others. Returns HTTP 200 with a per-entry outcome envelope; clients inspect each BulkSettingResult to determine success. Pass null in Value to clear an override. Malformed request bodies (empty list, too many entries) return 400. Requires the Settings.Global.Manage permission.")
              .Produces<BulkUpdateSettingsResponse>()
-             .ProducesValidationProblem();
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         return group;
     }
@@ -59,7 +59,7 @@ internal static class AdminSettingsWriteEndpoints
              .WithDescription("Applies every entry individually for the current tenant — a failure on one entry (unknown key, disallowed provider, invalid value) does not roll back the others. Returns HTTP 200 with a per-entry outcome envelope; clients inspect each BulkSettingResult to determine success. Pass null in Value to clear an override. Returns 400 if no tenant context is available or if the request body is malformed. Requires the Settings.Tenant.Manage permission.")
              .Produces<BulkUpdateSettingsResponse>()
              .ProducesProblem(StatusCodes.Status400BadRequest)
-             .ProducesValidationProblem();
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         return group;
     }

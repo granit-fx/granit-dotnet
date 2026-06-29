@@ -39,7 +39,7 @@ internal static partial class ChatSendEndpoints
                 + "a machine 'code' (rate_limit / provider_unavailable / server_error) — a frame within the "
                 + "200 response, not an HTTP status. A client-cancelled request emits no 'error' frame.")
             .Produces<ChatStreamEvent>(StatusCodes.Status200OK, "text/event-stream")
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status429TooManyRequests)
             .RequireAuthorization(AIChatPermissions.Conversations.Send)

@@ -25,7 +25,7 @@ internal static class AIChatEndpoints
                 + "Returns the assistant's reply, token usage, and response duration. "
                 + "Returns 404 if the workspace does not exist, or 502 if the provider is unavailable.")
             .Produces<AIChatResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status502BadGateway);
 
@@ -39,7 +39,7 @@ internal static class AIChatEndpoints
                 + "streaming has started is emitted as an 'error' frame. Returns 404 if the workspace does "
                 + "not exist, or 502/503 if the provider is unavailable.")
             .Produces<AIChatStreamEvent>(StatusCodes.Status200OK, "text/event-stream")
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status502BadGateway)
             .ProducesProblem(StatusCodes.Status503ServiceUnavailable);

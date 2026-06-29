@@ -35,7 +35,7 @@ internal static class BlobWriteEndpoints
                 + "A containerName and deletionReason must be supplied in the request body.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;

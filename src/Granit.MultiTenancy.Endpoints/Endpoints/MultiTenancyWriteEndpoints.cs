@@ -25,7 +25,7 @@ internal static class MultiTenancyWriteEndpoints
              .WithSummary("Creates a new tenant.")
              .WithDescription("Creates a new active tenant with the specified name and identifier. The identifier must be unique, lowercase alphanumeric with hyphens (slug format). Returns the created tenant. Requires the MultiTenancy.Tenants.Create permission.")
              .Produces<TenantResponse>(StatusCodes.Status201Created)
-             .ProducesValidationProblem();
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapPut("/{id:guid}", UpdateAsync)
              .RequireAuthorization(MultiTenancyPermissions.Tenants.Update)
@@ -35,7 +35,7 @@ internal static class MultiTenancyWriteEndpoints
              .Produces(StatusCodes.Status204NoContent)
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status409Conflict)
-             .ProducesValidationProblem();
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapPost("/{id:guid}/activate", ActivateAsync)
              .RequireAuthorization(MultiTenancyPermissions.Tenants.Manage)

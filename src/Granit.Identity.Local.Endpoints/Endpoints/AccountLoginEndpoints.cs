@@ -68,7 +68,7 @@ internal static partial class AccountLoginEndpoints
                 + "Returns 401 if the code is invalid or the 2FA session has expired.")
             .Produces<AccountLoginResponse>()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .AllowAnonymous()
             .RequireRateLimiting("authentication");
 

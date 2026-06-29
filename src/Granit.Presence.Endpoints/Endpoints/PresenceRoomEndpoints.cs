@@ -30,7 +30,7 @@ internal static class PresenceRoomEndpoints
             .RequireGranitRateLimiting(PresenceRateLimitPolicies.Poll)
             .RequireAuthorization(PresencePermissions.Rooms.Join)
             .Produces<ResourceRoomResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
@@ -41,7 +41,7 @@ internal static class PresenceRoomEndpoints
             .RequireGranitRateLimiting(PresenceRateLimitPolicies.Query)
             .RequireAuthorization(PresencePermissions.Rooms.Read)
             .Produces<ResourceRoomResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
@@ -52,7 +52,7 @@ internal static class PresenceRoomEndpoints
             .RequireGranitRateLimiting(PresenceRateLimitPolicies.Mutate)
             .RequireAuthorization(PresencePermissions.Rooms.Join)
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         return group;

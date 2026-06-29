@@ -78,7 +78,7 @@ internal static partial class AccountPasskeyEndpoints
                 + "or no matching user is found.")
             .Produces<AccountLoginResponse>()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .AllowAnonymous()
             .RequireRateLimiting("authentication");
 

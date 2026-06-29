@@ -61,7 +61,7 @@ internal static class GranitRoleEndpoints
                 + "Set RoleEndpointsOptions.AllowTenantRoles = false to disable Tenant-scope creation entirely.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<RoleResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .RequireAuthorization(IdentityLocalPermissions.Roles.Manage);
@@ -72,7 +72,7 @@ internal static class GranitRoleEndpoints
             .WithDescription("Side and tenant scope are immutable. System roles and non-visible roles cannot be renamed.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<RoleResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .RequireAuthorization(IdentityLocalPermissions.Roles.Manage);

@@ -35,7 +35,7 @@ internal static class GeocodingEndpoints
                 .WithSummary("Reverse-geocodes a coordinate to the nearest address.")
                 .WithDescription("Returns the postal address nearest the given latitude/longitude. Mapped only when a reverse-capable provider is registered.")
                 .Produces<GeocodingReverseResponse>()
-                .ProducesValidationProblem()
+                .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
                 .ProducesProblem(StatusCodes.Status404NotFound);
         }
 

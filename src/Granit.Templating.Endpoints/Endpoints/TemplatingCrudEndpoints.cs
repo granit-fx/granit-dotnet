@@ -38,7 +38,7 @@ internal static class TemplatingCrudEndpoints
              .WithSummary("Creates a new template draft.")
              .WithDescription("Creates a new template with an initial draft revision. The template name must be unique. The draft can be previewed and edited before publishing. Returns 201 Created with the template detail.")
              .Produces<TemplateDetailResponse>(StatusCodes.Status201Created)
-             .ProducesValidationProblem()
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
@@ -48,7 +48,7 @@ internal static class TemplatingCrudEndpoints
              .WithSummary("Updates an existing template draft.")
              .WithDescription("Replaces the draft revision content and metadata. Only the draft revision is affected — published and archived revisions are immutable. Creates a new draft if none exists. Returns 409 if the concurrency stamp does not match the stored draft. Returns 404 if the template does not exist.")
              .Produces<TemplateDetailResponse>()
-             .ProducesValidationProblem()
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
