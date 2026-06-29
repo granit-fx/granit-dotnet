@@ -13,6 +13,25 @@ Part of the [granit](https://granit-fx.dev) framework.
 dotnet add package Granit.Auditing.EntityFrameworkCore
 ```
 
+## Configuration
+
+After registering the isolated `AuditingDbContext` via
+`builder.AddGranitAuditingEntityFrameworkCore(...)`, the host application's DbContext must wire the
+change-tracking interceptor:
+
+```csharp
+services.AddDbContextFactory<MyAppDbContext>((sp, options) =>
+{
+    options.UseNpgsql(connectionString);
+    options.UseGranitInterceptors(sp);          // Framework interceptors first
+    options.UseGranitAuditingInterceptor(sp);   // Auditing interceptor after
+}, ServiceLifetime.Scoped);
+```
+
+`UseGranitAuditingInterceptor(sp)` must come **after** `UseGranitInterceptors(sp)` so audit fields
+and soft-delete state are already applied when the audit interceptor reads them. Without this step,
+entity changes are not captured by the audit trail.
+
 ## Dependencies
 
 - `Granit.Auditing`

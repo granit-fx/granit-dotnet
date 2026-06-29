@@ -18,6 +18,18 @@ dotnet add package Granit.Workflow.Endpoints
 - `Granit.Validation`
 - `Granit.Workflow`
 
+## Usage
+
+The module calls `AddGranitWorkflowEndpoints()` automatically once referenced.
+The only manual step is mapping the routes — call `MapGranitWorkflow()` on your
+API route group (after `UseAuthorization()`):
+
+```csharp
+api.MapGranitWorkflow();
+```
+
+Without this call the transition-history endpoints are never exposed.
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).

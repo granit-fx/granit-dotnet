@@ -24,6 +24,31 @@ dotnet add package Granit.RateLimiting
 - `Granit`
 - `Granit.Features`
 
+## Configuration
+
+Policies are bound from the `RateLimiting` section (`GranitRateLimitingOptions`):
+
+```jsonc
+{
+  "RateLimiting": {
+    "Enabled": true,                          // default true
+    "KeyPrefix": "rl",                        // counter-key prefix
+    "FallbackOnCounterStoreFailure": "Deny",  // Allow | Deny (default Deny)
+    "Policies": {
+      "uploads": {
+        "Algorithm": "SlidingWindow",  // SlidingWindow | FixedWindow | TokenBucket | Concurrency
+        "PartitionBy": "Tenant",       // Tenant | TenantAndIp | Ip | User | TenantAndUser
+        "PermitLimit": 100,
+        "Window": "00:01:00"
+      }
+    }
+  }
+}
+```
+
+Each named policy is referenced by the transport binding (e.g.
+`.RequireGranitRateLimiting("uploads")` in `Granit.Http.RateLimiting`).
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).

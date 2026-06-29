@@ -59,6 +59,10 @@ Caching is disabled by default for security-by-default. Enable with:
 The cache decorator is only wired when `CacheSeconds > 0`; otherwise FusionCache is a
 zero-cost transitive dependency. Recommended TTL: ≤ 300 s to limit exposure after rotation.
 
+This package ships only the abstractions — caching (and every `ISecretStore`
+operation) applies once a provider package (`Granit.Vault.HashiCorp`,
+`Granit.Vault.Azure`, …) is registered via its own `AddGranit*` extension.
+
 ### Retry
 
 `ISecretStore` does **not** retry automatically. Transient failures (429, 503, timeouts,

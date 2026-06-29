@@ -10,6 +10,17 @@ Part of the [granit](https://granit-fx.dev) framework.
 dotnet add package Granit.Http.ApiDocumentation
 ```
 
+## Usage
+
+Call `app.UseGranitApiDocumentation()` in `Program.cs` (after `UseAuthorization`)
+to map the OpenAPI JSON endpoints (`/openapi/v{n}.json`) and the Scalar UI:
+
+```csharp
+app.UseGranitApiDocumentation();
+```
+
+Without this call no documentation endpoints are exposed.
+
 ## Dependencies
 
 - `Granit.Http.ApiVersioning`

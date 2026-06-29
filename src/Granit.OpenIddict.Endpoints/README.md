@@ -43,6 +43,23 @@ assignment and user impersonation. All protected by `OpenIddictPermissions.*`.
 CRUD on `/api/admin/oidc/applications`, `/api/admin/oidc/scopes`, `/api/admin/oidc/authorizations`
 with secret rotation and per-user authorization revocation.
 
+## Endpoint mapping
+
+The endpoints this package owns are not auto-registered — map them during
+endpoint registration:
+
+```csharp
+// Admin management API (/api/admin/oidc/*):
+api.MapGranitOpenIddict();
+
+// OIDC server protocol endpoints (/connect/*):
+app.MapGranitOpenIddictServer(opts => { /* ... */ });
+```
+
+The account self-service API (`/api/account/*`) is mapped by
+`api.MapGranitAccount()` from the separate `Granit.Identity.Local.Endpoints`
+package — see that module's README.
+
 ## Dependencies
 
 - `Granit.Authorization`

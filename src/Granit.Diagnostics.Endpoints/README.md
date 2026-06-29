@@ -18,6 +18,22 @@ dotnet add package Granit.Diagnostics.Endpoints
 - `Granit.Diagnostics`
 - `Granit.Http.ApiDocumentation`
 - `Granit.Validation`
+- `Granit.Workspaces.Abstractions`
+
+## Usage
+
+Referencing the module via `[DependsOn]` registers its services, but the
+monitoring endpoint is not auto-mapped. Map it on your API route group:
+
+```csharp
+using Granit.Diagnostics.Endpoints.Extensions;
+
+api.MapGranitDiagnosticsMonitoring();
+```
+
+This exposes `GET {prefix}/diagnostics/health` (default prefix `diagnostics`,
+e.g. `/api/v1/diagnostics/health` under a versioned group). The endpoint
+requires authorization and is gated by `Diagnostics.Monitoring.Read`.
 
 ## Documentation
 

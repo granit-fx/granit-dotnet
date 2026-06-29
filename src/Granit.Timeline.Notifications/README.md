@@ -17,6 +17,21 @@ dotnet add package Granit.Timeline.Notifications
 - `Granit.Notifications`
 - `Granit.Timeline`
 
+## Integration
+
+Reference the module on your host module so its services replace the default
+no-op `ITimelineNotifier` and its email templates ship:
+
+```csharp
+[DependsOn(typeof(GranitTimelineNotificationsModule))]
+public class AppModule : GranitModule { }
+```
+
+The transitive module dependencies (`GranitTimelineModule`,
+`GranitNotificationsAbstractionsModule`, `GranitTemplatingModule`) are pulled in
+automatically. Prerequisite: `Granit.Notifications` must be configured in your
+infrastructure for the notification fan-out to actually deliver.
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).

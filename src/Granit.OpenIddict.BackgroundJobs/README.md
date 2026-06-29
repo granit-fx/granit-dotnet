@@ -21,6 +21,20 @@ dotnet add package Granit.OpenIddict.BackgroundJobs
 Both jobs are concurrency-safe via Wolverine Outbox (single execution in multi-node).
 Cron schedules are overridable via `BackgroundJobs:Jobs:{job-name}` in configuration.
 
+## Integration
+
+Wire the module into your host's module graph so its `ConfigureServices` runs and
+the jobs are registered:
+
+```csharp
+[DependsOn(typeof(GranitOpenIddictBackgroundJobsModule))]
+public sealed class AppHostModule : GranitModule { }
+```
+
+The jobs are auto-registered during module initialization — there is no explicit
+`Add*`/`Map*` call. Without this `[DependsOn]` edge the module is never loaded and
+the cleanup/idle-enforcement jobs never run.
+
 ## Dependencies
 
 - `Granit.BackgroundJobs`

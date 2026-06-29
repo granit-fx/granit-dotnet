@@ -1,8 +1,9 @@
 # Granit.QueryEngine.AspNetCore
 
-Minimal API endpoints for Granit.QueryEngine. Provides `MapGranitQuery<T, TDto>()`
-fluent API, `filter[field.op]=value` query string binding, `GET /meta` metadata
-endpoint, and OpenAPI documentation conventions.
+Minimal API endpoints for Granit.QueryEngine. Provides the `MapGranitQuery<T>()`
+fluent API (auto-resolving from `IQueryableSource<T>` or an explicit
+`sourceProvider` delegate), `filter[field.op]=value` query string binding,
+`GET /meta` metadata endpoint, and OpenAPI documentation conventions.
 
 Part of the [granit](https://granit-fx.dev) framework.
 
@@ -16,6 +17,7 @@ dotnet add package Granit.QueryEngine.AspNetCore
 
 - `Granit.Http.ApiDocumentation`
 - `Granit.Authorization`
+- `Granit.Entities.Abstractions`
 - `Granit.QueryEngine`
 - `Granit.Validation`
 

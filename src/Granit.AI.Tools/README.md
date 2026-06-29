@@ -13,12 +13,23 @@ Part of the [granit](https://granit-fx.dev) framework.
 dotnet add package Granit.AI.Tools
 ```
 
+## Module registration
+
+Declare the module on your host module so its `ConfigureServices` (which calls
+`AddGranitAITools()` for you) runs:
+
+```csharp
+[DependsOn(typeof(GranitAIToolsModule))]
+public sealed class MyHostModule : GranitModule { }
+```
+
 ## Usage
 
 Tools are exposed by explicit application registration — never by a framework-wide
 attribute. Every tool runs strictly under the calling user's identity and ACLs.
 
 ```csharp
+// GranitAIToolsModule already calls AddGranitAITools(); add your application tools on top:
 services.AddGranitAITools(tools =>
 {
     tools.Add<QueryDataTool>();
