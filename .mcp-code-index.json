@@ -7301,6 +7301,22 @@
       "members": []
     },
     {
+      "name": "AddressEnrichmentServiceExtensions",
+      "fqn": "Granit.AddressEnrichment.Extensions.AddressEnrichmentServiceExtensions",
+      "kind": "class",
+      "project": "Granit.AddressEnrichment",
+      "file": "src/Granit.AddressEnrichment/Extensions/AddressEnrichmentServiceExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "EnrichAsync",
+          "kind": "method",
+          "signature": "EnrichAsync(this IAddressEnrichmentService service, IGeoEnrichedAddress holder, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "GranitAddressEnrichmentModule",
       "fqn": "Granit.AddressEnrichment.GranitAddressEnrichmentModule",
       "kind": "class",
@@ -19370,6 +19386,22 @@
       "file": "src/Granit/Domain/IEntityEtoProvider.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "IGeoEnrichedAddress",
+      "fqn": "Granit.Domain.IGeoEnrichedAddress",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/Domain/IGeoEnrichedAddress.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "ApplyEnrichment",
+          "kind": "method",
+          "signature": "ApplyEnrichment(AddressGeocoding geocoding, AddressVerification verification)",
+          "returnType": "Address Address { get; } AddressGeocoding Geocoding { get; } AddressVerification Verification { get; } void"
+        }
+      ]
     },
     {
       "name": "IHasEntityEto",
