@@ -13,7 +13,9 @@ dotnet add package Granit.Authorization
 ## Dependencies
 
 - `Granit.Caching`
-- `Granit.Users`
+
+The `Users` types it builds on are part of the core `Granit` package (there is no
+standalone `Granit.Users` package) and come in transitively.
 
 ## Documentation
 

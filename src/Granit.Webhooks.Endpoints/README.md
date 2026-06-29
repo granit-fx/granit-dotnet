@@ -17,6 +17,21 @@ dotnet add package Granit.Webhooks.Endpoints
 - `Granit.QueryEngine.AspNetCore`
 - `Granit.Validation`
 
+## Integration
+
+Map the webhook administration endpoints on your `IEndpointRouteBuilder` (or API
+route group) after the Granit modules are loaded. Without these calls the
+endpoints are never registered:
+
+```csharp
+api.MapGranitWebhooksConfig("webhooks");
+api.MapGranitWebhooks().RequireAuthorization();
+api.MapGranitWebhooksRedelivery("webhooks");
+```
+
+`MapGranitWebhooks()` is provided by this package; `MapGranitWebhooksConfig` and
+`MapGranitWebhooksRedelivery` come transitively from `Granit.Webhooks`.
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).

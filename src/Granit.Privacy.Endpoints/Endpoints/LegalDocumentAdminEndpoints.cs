@@ -24,7 +24,7 @@ internal static class LegalDocumentAdminEndpoints
                 + "The document can be edited and then published to become the active version. "
                 + "Publishing auto-archives the previous active version.")
             .Produces<LegalDocumentDetailResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(PrivacyPermissions.LegalDocuments.Create);
 
         group.MapGet("/{id:guid}", GetByIdAsync)
@@ -56,7 +56,7 @@ internal static class LegalDocumentAdminEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(PrivacyPermissions.LegalDocuments.Manage);
 
         group.MapPost("/{id:guid}/publish", PublishAsync)

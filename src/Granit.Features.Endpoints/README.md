@@ -14,7 +14,9 @@ dotnet add package Granit.Features.Endpoints
 
 - `Granit.Authorization`
 - `Granit.Features`
+- `Granit.Http.ApiDocumentation`
 - `Granit.Validation`
+- `Granit.Workspaces.Abstractions` (the module registers a `FeaturesFeatureProvider : IFeatureProvider`)
 
 ## Documentation
 

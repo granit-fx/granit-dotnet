@@ -14,6 +14,21 @@ Part of the [granit](https://granit-fx.dev) framework.
 dotnet add package Granit.AI.Chat.BackgroundJobs
 ```
 
+## Usage
+
+The module has no auto-discovery and no `OnApplicationInitialization` hook: it activates only when
+pulled into the host's module graph. Declare it on your root module so its `ConfigureServices` runs
+and the recurring job is registered:
+
+```csharp
+[DependsOn(typeof(GranitAIChatBackgroundJobsModule))]
+public sealed class MyAppModule : GranitModule { }
+```
+
+Without this `[DependsOn]` edge, `ConversationRetentionCleanupJob` is never registered and the
+`ai-chat-retention-cleanup` recurring job never runs — the Configuration below also takes effect
+only once the module is loaded.
+
 ## Configuration
 
 ```jsonc

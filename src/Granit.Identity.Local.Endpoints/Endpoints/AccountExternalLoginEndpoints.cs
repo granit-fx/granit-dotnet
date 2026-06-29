@@ -101,7 +101,7 @@ internal static partial class AccountExternalLoginEndpoints
                 + "disabled or the token does not match the current tenant, 409 if the email is "
                 + "already taken, 422 if the email does not match the provider-verified one.")
             .Produces<AccountLoginResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status409Conflict)

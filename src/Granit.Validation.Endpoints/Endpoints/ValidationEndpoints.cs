@@ -23,14 +23,14 @@ internal static class ValidationEndpoints
              .WithDescription("Looks up the validator by error code and returns the validation result. Returns 404 if no validator is registered for the specified error code. Use the GET /validators endpoint to discover available validators.")
              .Produces<ValidationFieldValidateResponse>()
              .ProducesProblem(StatusCodes.Status404NotFound)
-             .ProducesValidationProblem();
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapPost("/validate-batch", HandleValidateBatch)
              .WithName("ValidateFieldBatch")
              .WithSummary("Validates multiple field values in a single round-trip (max 20).")
              .WithDescription("For each field, looks up the validator by error code and returns the result. Unknown error codes return ValidatorNotFound status instead of failing the entire batch.")
              .Produces<ValidationFieldValidateBatchResponse>()
-             .ProducesValidationProblem();
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapGet("/validators", HandleGetValidators)
              .WithName("GetRegisteredValidators")

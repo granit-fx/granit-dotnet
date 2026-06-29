@@ -30,7 +30,7 @@ internal static class SchedulingWriteEndpoints
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .ProducesValidationProblem();
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         return group;
     }

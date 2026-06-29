@@ -19,7 +19,8 @@ dotnet add package Granit.Privacy.Notifications
 ## Dependencies
 
 - `Granit.Privacy`
-- `Granit.Notifications`
+- `Granit.Privacy.Regulations`
+- `Granit.Notifications.Abstractions`
 - `Granit.Templating`
 
 ## Documentation

@@ -19,28 +19,26 @@ dotnet add package Granit.AI.Chat
 ## `@` mentions
 
 A turn can carry `@` mentions — typed references to application entities the user wants the
-agent to consider. Resolution reuses the same opt-in, ACL-bound model as tools: register a
-resolver per mention type, resolved per scope so it runs under the caller's identity.
+agent to consider. There is **no** mention-specific contract: a mention is simply an existing
+[`Granit.DataLookup`](../Granit.DataLookup) source tagged mentionable through
+[`Granit.Mentions`](../Granit.Mentions)' `AddMentionSource`. Tag the sources you want to expose:
 
 ```csharp
-services.AddGranitChatMentions(mentions => mentions.Add<InvoiceMentionResolver>());
+// Tag the canonical user directory (auto-registered by AddGranitIdentityEntityFrameworkCore).
+services.AddUserDirectoryLookup().AddMentionSource("user");
 
-internal sealed class InvoiceMentionResolver(IInvoiceReader reader, ICurrentUser user) : IAIMentionResolver
-{
-    public string Type => "invoice";
-
-    public async ValueTask<AIMentionContext?> ResolveAsync(string id, CancellationToken ct = default)
-    {
-        // Return null when absent OR the caller may not see it — the mention is then dropped,
-        // never leaked into the prompt. Resolved content is wrapped as untrusted data.
-        Invoice? invoice = await reader.FindForCallerAsync(id, ct);
-        return invoice is null ? null : new AIMentionContext
-        {
-            Type = Type, Id = id, Label = $"Invoice #{invoice.Number}", Content = invoice.ToSummary(),
-        };
-    }
-}
+// Tag any other entity already backed by a query definition.
+services.AddQueryDefinitionLookup<Invoice, AppDbContext>().AddMentionSource("invoice");
 ```
+
+`AddMentionSource(name)` opts an already-registered lookup source into the `@` picker; the
+`mentions` facade source fans the picker across the tagged sources, each resolved per scope under
+the caller's identity and ACLs.
+
+On the AI side the chat module consumes the tagged sources through its internal
+`IAIMentionContextResolver` — resolved per-scope under the caller's ACLs and wrapped in the
+untrusted-document envelope before it reaches the prompt. No application-defined per-type resolver
+is registered.
 
 ## File attachments
 

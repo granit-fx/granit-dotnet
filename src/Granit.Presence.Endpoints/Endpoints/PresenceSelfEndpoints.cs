@@ -31,7 +31,7 @@ internal static class PresenceSelfEndpoints
             .WithDescription("Replaces the caller's manual override. Passing ManualStatus=Available clears the override. UntilUtc is optional and bounded by Presence:MaxOverrideDuration.")
             .RequireGranitRateLimiting(PresenceRateLimitPolicies.Mutate)
             .Produces<PresenceResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapDelete("/my/override", ClearMyPresenceAsync)
@@ -48,7 +48,7 @@ internal static class PresenceSelfEndpoints
             .WithDescription("Clients should call this every 30-60 seconds with the user's local idle duration (in seconds). The server reconstructs the LastActivityUtc using its own clock to avoid client clock-skew issues, and applies a MAX merge across concurrent tabs.")
             .RequireGranitRateLimiting(PresenceRateLimitPolicies.Poll)
             .Produces<PresenceResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         return group;

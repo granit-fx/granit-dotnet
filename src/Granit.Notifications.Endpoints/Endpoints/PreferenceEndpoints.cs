@@ -37,7 +37,7 @@ internal static class PreferenceEndpoints
             .WithSummary("Creates or updates a notification delivery preference.")
             .WithDescription("Creates or updates a delivery preference for a specific notification type and channel. If a preference already exists for the same type and channel, it is replaced (upsert).")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem();
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapGet("/types", GetNotificationTypes)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Read)

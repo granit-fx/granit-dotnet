@@ -18,9 +18,11 @@ With no provider package installed it is a privacy-first no-op: every address
 resolves to `null` without ever throwing or calling out.
 
 ```csharp
-GeoCoordinate? point = await geocoder.GeocodeAsync(
+GeocodingResult? result = await geocoder.GeocodeAsync(
     new PostalAddress(Street: "Rue de la Loi 16", PostalCode: "1000",
                       Locality: "Brussels", Country: "BE"));
+
+GeoCoordinate? point = result?.Coordinate; // null when not geocodable
 ```
 
 ## Registration

@@ -13,15 +13,19 @@ Add the module to your host application:
 public class MyAppModule : GranitModule { }
 ```
 
-Configure the container name (optional, defaults to `data-exchange`):
+Configure the container name and default content type (both optional):
 
 ```json
 {
-  "Granit:DataExchange:BlobStorage": {
-    "ContainerName": "data-exchange"
+  "DataExchange:BlobStorage": {
+    "ContainerName": "data-exchange",
+    "DefaultContentType": "application/octet-stream"
   }
 }
 ```
+
+`ContainerName` defaults to `data-exchange` and `DefaultContentType` to
+`application/octet-stream`.
 
 ## How it works
 

@@ -49,7 +49,7 @@ internal static class TemplatingCategoryEndpoints
              .WithSummary("Creates a new template category.")
              .WithDescription("Creates a new template category with the given name and sort order. The name must be unique.")
              .Produces<TemplateCategoryResponse>(StatusCodes.Status201Created)
-             .ProducesValidationProblem()
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
@@ -59,7 +59,7 @@ internal static class TemplatingCategoryEndpoints
              .WithSummary("Updates an existing template category.")
              .WithDescription("Updates the name and sort order of an existing category. Returns 404 if the category does not exist.")
              .Produces<TemplateCategoryResponse>()
-             .ProducesValidationProblem()
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesProblem(StatusCodes.Status501NotImplemented);

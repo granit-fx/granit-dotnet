@@ -30,7 +30,7 @@ internal static class AccountEmailChangeEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status202Accepted)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization();
 
         group.MapPost("/confirm-email-change", ConfirmEmailChangeAsync)
@@ -42,7 +42,7 @@ internal static class AccountEmailChangeEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .AllowAnonymous();
 
         return group;

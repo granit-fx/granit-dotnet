@@ -14,6 +14,7 @@ dotnet add package Granit.Scheduling.BackgroundJobs
 
 - `Granit.BackgroundJobs`
 - `Granit.Scheduling`
+- `Granit.Scheduling.Wolverine`
 
 ## Documentation
 

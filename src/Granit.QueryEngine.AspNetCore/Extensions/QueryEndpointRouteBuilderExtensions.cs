@@ -185,7 +185,7 @@ public static class QueryEndpointRouteBuilderExtensions
         .WithDescription($"Executes a dynamic query against {entityName} using the Granit query engine. Accepts filter expressions, sort directives, column selection, pagination, and free-text search via query parameters. Returns a PagedResult by default. When the groupBy query parameter is specified, returns a GroupedResult instead (same status code, different shape).")
         .Produces<PagedResult<TEntity>>()
         .Produces<GroupedResult<TEntity>>(StatusCodes.Status200OK)
-        .ProducesValidationProblem()
+        .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
         .AddOpenApiOperationTransformer((op, ctx, ct) =>
             DescribeQueryEndpointAsync(op, ctx, typeof(PagedResult<TEntity>), typeof(GroupedResult<TEntity>), ct));
     }
@@ -231,7 +231,7 @@ public static class QueryEndpointRouteBuilderExtensions
         .WithDescription($"Executes a dynamic query against {entityName} using the Granit query engine and projects each row to {dtoName}. Accepts filter expressions, sort directives, column selection, pagination, and free-text search via query parameters. Returns a PagedResult<{dtoName}> by default. When the groupBy query parameter is specified, returns a GroupedResult<{dtoName}> with the same projection applied to the items inside each group.")
         .Produces<PagedResult<TDto>>()
         .Produces<GroupedResult<TDto>>(StatusCodes.Status200OK)
-        .ProducesValidationProblem()
+        .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
         .AddOpenApiOperationTransformer((op, ctx, ct) =>
             DescribeQueryEndpointAsync(op, ctx, typeof(PagedResult<TDto>), typeof(GroupedResult<TDto>), ct));
     }

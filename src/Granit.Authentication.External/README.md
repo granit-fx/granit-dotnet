@@ -26,6 +26,11 @@ configuration — no bespoke wiring.
 `Name` to run several instances of the same kind). Credentials should come from
 user-secrets / environment variables / Vault — never committed.
 
+`AutoRegisterExternalUsers` (default `true`) sits alongside `Providers` under
+`Authentication:External`: when `true`, an external login for an unknown email
+automatically provisions a new `LocalIdentity` user. Set it `false` to reject
+unknown users and require admin pre-provisioning.
+
 ## Key types
 
 - `ExternalAuthOptions` / `ExternalAuthProvider` — the bound configuration.

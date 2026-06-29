@@ -140,7 +140,7 @@ group.MapGet("/{id:guid}", GetByIdAsync)
     .ProducesProblem(StatusCodes.Status404NotFound);     // one per error path
 ```
 
-`Ok<T>`→`.Produces<T>()`, `Created<T>`→`.Produces<T>(201)`, `NotFound`→`.ProducesProblem(404)`, `ValidationProblem`→`.ProducesValidationProblem()`, `FileStreamHttpResult`→`.Produces(200, contentType: "application/octet-stream")`.
+`Ok<T>`→`.Produces<T>()`, `Created<T>`→`.Produces<T>(201)`, `NotFound`→`.ProducesProblem(404)`, `ValidationProblem`→`.ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)` (NEVER bare — defaults to 400, but the FluentValidation filter returns 422; enforced by `ValidationStatusCodeConventionTests`), `FileStreamHttpResult`→`.Produces(200, contentType: "application/octet-stream")`.
 
 Handlers are `private static` **named methods** referenced by method-group (`MapGet("/", GetByIdAsync)`) — never inline lambdas (can't carry OpenAPI metadata cleanly, not testable in isolation). `internal static` reserved for shared helpers/factories. Endpoints tested at HTTP level via `Granit.Testing.Endpoints.GranitEndpointTestHost`, not by invoking handlers directly. Rare trampolines (`(...) => HandleXxxAsync(...)`) allowed only where Minimal API can't bind the signature (streaming, manual `HttpContext`, OpenIddict transactions) — delegate to a named method, document inline.
 

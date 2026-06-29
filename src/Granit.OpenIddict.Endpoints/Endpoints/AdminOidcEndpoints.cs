@@ -45,7 +45,7 @@ internal static class AdminOidcEndpoints
             .WithDescription("Registers a new OIDC client with the specified permissions, redirect URIs, and consent policy. For confidential clients, a client secret is generated and returned once in the response. Returns 409 Conflict if a client with the same client ID already exists.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcApplicationResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(OpenIddictPermissions.Applications.Manage);
 
         apps.MapPut("/{clientId}", UpdateApplicationAsync)
@@ -54,7 +54,7 @@ internal static class AdminOidcEndpoints
             .WithDescription("Updates the configuration of an existing OIDC application. Only non-null fields are applied; null leaves the existing value unchanged. Pass an empty array to clear a collection. Returns 404 if the application does not exist.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcApplicationResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(OpenIddictPermissions.Applications.Manage);
 
@@ -97,7 +97,7 @@ internal static class AdminOidcEndpoints
             .WithDescription("Registers a new OIDC scope with the specified name, display name, and associated resources. The scope name must be unique. Returns 409 Conflict if a scope with the same name already exists.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcScopeResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(OpenIddictPermissions.Scopes.Manage);
 
         scopes.MapPut("/{scopeName}", UpdateScopeAsync)
@@ -106,7 +106,7 @@ internal static class AdminOidcEndpoints
             .WithDescription("Updates the display name, description, or resource server identifiers of an existing OIDC scope. Null fields are left unchanged; an empty Resources array clears all resources. Returns 404 if the scope does not exist.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcScopeResponse>()
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(OpenIddictPermissions.Scopes.Manage);
 
@@ -128,7 +128,7 @@ internal static class AdminOidcEndpoints
             .WithDescription("Pre-grants consent for a subject (user ID) to a client application with the specified scopes. Useful for admin-driven consent flows where the user cannot complete the interactive consent page.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcAuthorizationResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem()
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(OpenIddictPermissions.Authorizations.Create);
 
