@@ -14,6 +14,39 @@ dotnet add package Granit.BlobStorage.S3
 
 - `Granit.BlobStorage`
 
+## Configuration
+
+Register the provider in your host (or infrastructure) module:
+
+```csharp
+context.Builder.AddGranitBlobStorageS3();
+```
+
+This binds `S3BlobOptions` from the `BlobStorage` configuration section and
+validates it on startup, so the section is **mandatory**:
+
+```json
+{
+  "BlobStorage": {
+    "ServiceUrl": "https://s3.<region>.amazonaws.com",
+    "DefaultBucket": "my-bucket",
+    "ForcePathStyle": false
+  }
+}
+```
+
+For MinIO use `"ServiceUrl": "http://localhost:9000"` and `"ForcePathStyle": true`.
+
+`AccessKey` / `SecretKey` are secrets: inject them from `Granit.Vault` or
+environment variables (`BlobStorage__AccessKey`, `BlobStorage__SecretKey`) —
+never commit them to `appsettings.json`.
+
+Optionally add an S3 connectivity readiness probe:
+
+```csharp
+healthChecks.AddGranitS3HealthCheck();
+```
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).

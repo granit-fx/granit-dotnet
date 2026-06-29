@@ -13,7 +13,27 @@ dotnet add package Granit.Http.Idempotency
 ## Dependencies
 
 - `Granit.Caching`
-- `Granit.Users`
+
+## Quick start
+
+Two steps are required:
+
+1. **Register the module** — adds `IdempotencyMiddleware` + DI (the module does
+   not add middleware to the pipeline by itself):
+
+   ```csharp
+   [DependsOn(typeof(GranitHttpIdempotencyModule))]
+   public sealed class AppHostModule : GranitModule { }
+   ```
+
+2. **Wire the middleware** in `Program.cs`, **after** authentication so
+   `ICurrentUserService` / `ICurrentTenant` are populated when it runs:
+
+   ```csharp
+   app.UseAuthentication();
+   app.UseAuthorization();
+   app.UseGranitIdempotency();   // must run after auth
+   ```
 
 ## Documentation
 

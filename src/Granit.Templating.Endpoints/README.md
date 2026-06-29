@@ -16,9 +16,10 @@ dotnet add package Granit.Templating.Endpoints
 
 - `Granit.Http.ApiDocumentation`
 - `Granit.Authorization`
-- `Granit.Users`
+- `Granit.QueryEngine.AspNetCore`
 - `Granit.Templating`
 - `Granit.Validation`
+- `Granit.Workspaces.Abstractions`
 
 ## Documentation
 

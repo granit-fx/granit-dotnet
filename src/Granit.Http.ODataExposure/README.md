@@ -20,7 +20,7 @@ filtering, soft-delete, and per-EntitySet permissions.
 ```csharp
 // Program.cs
 builder.Services
-    .AddGranitOData()                // wires the OData runtime + ODataQueryOptions<T> binding
+    .AddGranitODataExposure()        // wires the OData runtime + ODataQueryOptions<T> binding
     .AddGranitQueryEngine()          // host's existing QueryEngine registration
     .AddQueryDefinition<Invoice, InvoiceQueryDefinition>();
 

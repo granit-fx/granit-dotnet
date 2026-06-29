@@ -17,6 +17,19 @@ Each endpoint is **capability-gated**: it is mapped only when a capable provider
 Nominatim only, `/reverse` exists but `/autocomplete` does not; add Photon and `/autocomplete`
 appears too.
 
+## Registration
+
+Register the module **before** mapping the endpoints — `MapGranitGeocoding()`
+resolves `GeocodingCapabilities` from DI and throws at startup otherwise. The
+Granit module loader discovers modules strictly by traversing `[DependsOn]`
+from the root (no assembly auto-scan), so declare the dependency on your host
+module:
+
+```csharp
+[DependsOn(typeof(GranitGeocodingEndpointsModule))]   // transitively pulls GranitGeocodingModule (supplies GeocodingCapabilities)
+public sealed class AppHostModule : GranitModule { }
+```
+
 ## Usage
 
 ```csharp

@@ -22,10 +22,26 @@ distributed cache means one API call per IP per cluster.
 
 ## Registration
 
+The `builder.AddGranitIpGeolocationIpInfo()` call alone is **not sufficient**:
+it registers only the IpInfo provider (`IIpGeolocationProvider`) + options +
+`HttpClient`. The resolver consumers actually inject — `IIpGeolocationResolver` —
+is registered by `GranitIpGeolocationModule`, which the Granit module loader
+only pulls in when it is reachable via `[DependsOn]` from the root (there is no
+assembly auto-scan). Declare the module on your host, then make the registration
+call:
+
+```csharp
+[DependsOn(typeof(GranitIpGeolocationIpInfoModule))]   // pulls GranitIpGeolocationModule → registers IIpGeolocationResolver
+public sealed class AppHostModule : GranitModule { }
+```
+
 ```csharp
 // Program.cs
 builder.AddGranitIpGeolocationIpInfo();
 ```
+
+Without the `[DependsOn]`, `IIpGeolocationResolver` is never registered and
+consumers fail at DI build / `ValidateOnStart`.
 
 ```json
 {
