@@ -19538,7 +19538,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(string street1, string city, string postalCode, string country, string? street2 = null, string? state = null)",
+          "signature": "Create(string street1, string city, string postalCode, string country, string? street2 = null, string? state = null, AddressDeliveryPointType? deliveryPointType = null)",
           "returnType": "Address"
         },
         {
@@ -19558,8 +19558,130 @@
           "kind": "property",
           "signature": "string? State",
           "returnType": "string?"
+        },
+        {
+          "name": "GetEqualityComponents",
+          "kind": "method",
+          "signature": "GetEqualityComponents()",
+          "returnType": "AddressDeliveryPointType? DeliveryPointType { get; init; } protected IEnumerable<object?>"
         }
       ]
+    },
+    {
+      "name": "AddressDeliveryPointType",
+      "fqn": "Granit.Domain.ValueObjects.AddressDeliveryPointType",
+      "kind": "enum",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/AddressDeliveryPointType.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "AddressGeocoding",
+      "fqn": "Granit.Domain.ValueObjects.AddressGeocoding",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/AddressGeocoding.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "AddressGeocoding Pending { get; } ="
+        },
+        {
+          "name": "Resolved",
+          "kind": "method",
+          "signature": "Resolved(GeoCoordinate coordinate, GeocodeMatchPrecision precision, DateTimeOffset geocodedAt, string? houseNumber = null, string? poBox = null)",
+          "returnType": "AddressGeocoding"
+        },
+        {
+          "name": "AsStale",
+          "kind": "method",
+          "signature": "AsStale()",
+          "returnType": "AddressGeocoding"
+        },
+        {
+          "name": "Latitude",
+          "kind": "property",
+          "signature": "double? Latitude",
+          "returnType": "double?"
+        },
+        {
+          "name": "MatchPrecision",
+          "kind": "property",
+          "signature": "GeocodeMatchPrecision? MatchPrecision",
+          "returnType": "GeocodeMatchPrecision?"
+        }
+      ]
+    },
+    {
+      "name": "AddressGeocodingStatus",
+      "fqn": "Granit.Domain.ValueObjects.AddressGeocodingStatus",
+      "kind": "enum",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/AddressGeocodingStatus.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "AddressVerification",
+      "fqn": "Granit.Domain.ValueObjects.AddressVerification",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/AddressVerification.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "AddressVerification Unverified { get; } ="
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(AddressVerificationStatus status, AddressVerificationSource source, DateTimeOffset verifiedAt, string? verifiedBy = null, string? evidence = null)",
+          "returnType": "AddressVerification"
+        },
+        {
+          "name": "Status",
+          "kind": "property",
+          "signature": "AddressVerificationStatus Status",
+          "returnType": "AddressVerificationStatus"
+        },
+        {
+          "name": "Source",
+          "kind": "property",
+          "signature": "AddressVerificationSource Source",
+          "returnType": "AddressVerificationSource"
+        },
+        {
+          "name": "GetEqualityComponents",
+          "kind": "method",
+          "signature": "GetEqualityComponents()",
+          "returnType": "DateTimeOffset? VerifiedAt { get; init; } public string? VerifiedBy { get; init; } public string? Evidence { get; init; } protected IEnumerable<object?>"
+        }
+      ]
+    },
+    {
+      "name": "AddressVerificationSource",
+      "fqn": "Granit.Domain.ValueObjects.AddressVerificationSource",
+      "kind": "enum",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/AddressVerificationSource.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "AddressVerificationStatus",
+      "fqn": "Granit.Domain.ValueObjects.AddressVerificationStatus",
+      "kind": "enum",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/AddressVerificationStatus.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "BlobReference",
@@ -19706,6 +19828,15 @@
           "returnType": "GeoCoordinate?"
         }
       ]
+    },
+    {
+      "name": "GeocodeMatchPrecision",
+      "fqn": "Granit.Domain.ValueObjects.GeocodeMatchPrecision",
+      "kind": "enum",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/GeocodeMatchPrecision.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "HexColor",
@@ -22539,6 +22670,22 @@
           "kind": "method",
           "signature": "BeforeAsync(object message, IFeatureChecker featureChecker, CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AddressExtensions",
+      "fqn": "Granit.Geocoding.AddressExtensions",
+      "kind": "class",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/AddressExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ToPostalAddress",
+          "kind": "method",
+          "signature": "ToPostalAddress(this Address address)",
+          "returnType": "PostalAddress"
         }
       ]
     },
@@ -41970,6 +42117,15 @@
           "returnType": "bool"
         }
       ]
+    },
+    {
+      "name": "AddressEnrichmentModelBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.AddressEnrichmentModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/AddressEnrichmentModelBuilderExtensions.cs",
+      "line": 20,
+      "members": []
     },
     {
       "name": "ConcurrencyStampExtensions",

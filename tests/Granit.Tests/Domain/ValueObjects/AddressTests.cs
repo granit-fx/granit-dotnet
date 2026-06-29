@@ -77,4 +77,23 @@ public sealed class AddressTests
 
         a.ShouldNotBe(b);
     }
+
+    [Fact]
+    public void Create_WithDeliveryPointType_SetsIt()
+    {
+        var addr = Address.Create(
+            "L1", "C", "1000", "BE", deliveryPointType: AddressDeliveryPointType.PoBox);
+
+        addr.DeliveryPointType.ShouldBe(AddressDeliveryPointType.PoBox);
+    }
+
+    [Fact]
+    public void DeliveryPointType_DefaultsToNull_AndIsPartOfEquality()
+    {
+        var a = Address.Create("L1", "C", "1000", "BE");
+        var b = Address.Create("L1", "C", "1000", "BE", deliveryPointType: AddressDeliveryPointType.Street);
+
+        a.DeliveryPointType.ShouldBeNull();
+        a.ShouldNotBe(b);
+    }
 }
