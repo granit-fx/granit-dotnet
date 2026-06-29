@@ -14,7 +14,7 @@ dotnet add package Granit.QueryEngine.EntityFrameworkCore
 
 ## Dependencies
 
-- `Granit.Persistence`
+- `Granit.Persistence.EntityFrameworkCore`
 - `Granit.QueryEngine`
 
 ## Documentation

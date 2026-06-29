@@ -10,6 +10,22 @@ Part of the [granit](https://granit-fx.dev) framework.
 dotnet add package Granit.AI.Endpoints
 ```
 
+## Integration
+
+Declare the module on your host module so its `ConfigureServices` runs, then map the endpoints on
+your API route group:
+
+```csharp
+// In your host module:
+[DependsOn(typeof(GranitAIEndpointsModule))]
+public sealed class MyHostModule : GranitModule { }
+
+// In Program.cs, on the API route group:
+api.MapGranitAI();
+```
+
+Without `MapGranitAI()` the endpoints are never mapped, even with the package referenced.
+
 ## Dependencies
 
 - `Granit.AI`

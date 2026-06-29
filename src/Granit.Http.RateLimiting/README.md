@@ -16,14 +16,38 @@ dotnet add package Granit.Http.RateLimiting
 ## Usage
 
 Reference `GranitHttpRateLimitingModule` — it pulls in the core `GranitRateLimitingModule`
-automatically — then guard endpoints with the filter:
+automatically:
+
+```csharp
+[DependsOn(typeof(GranitHttpRateLimitingModule))]
+public sealed class AppHostModule : GranitModule { }
+```
+
+Then guard endpoints with the filter:
 
 ```csharp
 group.MapPost("/uploads", UploadAsync)
     .RequireGranitRateLimiting("uploads"); // policy under RateLimiting:Policies:uploads
 ```
 
-Policies are configured under `RateLimiting:Policies` (see `Granit.RateLimiting`).
+Policies are configured under `RateLimiting:Policies` (see `Granit.RateLimiting`):
+
+```json
+{
+  "RateLimiting": {
+    "Enabled": true,
+    "KeyPrefix": "rl",
+    "Policies": {
+      "uploads": {
+        "Algorithm": "SlidingWindow",
+        "PermitLimit": 100,
+        "Window": "00:01:00",
+        "PartitionBy": "Tenant"
+      }
+    }
+  }
+}
+```
 
 ## Dependencies
 

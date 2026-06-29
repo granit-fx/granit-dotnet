@@ -4,7 +4,7 @@ namespace Granit.Http.Cors.Options;
 
 /// <summary>
 /// Configuration options for the Granit CORS module.
-/// Bound from the <c>"Cors"</c> section of <c>appsettings.json</c>.
+/// Bound from the <c>"Http:Cors"</c> section of <c>appsettings.json</c>.
 /// </summary>
 /// <remarks>
 /// ISO 27001 compliance: wildcard (<c>*</c>) origins are rejected in non-development

@@ -9,7 +9,14 @@ and any other conventions declared on the underlying `DbContext`.
 
 ## Registration
 
+`AddQueryableLookup` and `AddQueryDefinitionLookup` live in the
+`Granit.DataLookup.EntityFrameworkCore.Extensions` namespace (not the
+conventional `Microsoft.Extensions.DependencyInjection`), so the `using` is
+mandatory for compilation:
+
 ```csharp
+using Granit.DataLookup.EntityFrameworkCore.Extensions;
+
 services.AddQueryableLookup<Tenant, TenantsDbContext>(
     name: "tenants",
     valueSelector: t => t.Id,

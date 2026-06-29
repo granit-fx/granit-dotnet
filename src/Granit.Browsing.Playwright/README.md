@@ -14,6 +14,16 @@ dotnet add package Granit.Browsing.Playwright
 
 ## Usage
 
+> **Prerequisite.** `AddGranitBrowsingPlaywright` registers only this provider's
+> own services and depends on the `Granit.Browsing` core (`BrowsingMetrics`,
+> `IBrowserSandboxProfile`, `IUrlSafetyValidator`, `IClock`, `IGuidGenerator`).
+> The recommended path is the module system: declare
+> `[DependsOn(typeof(GranitBrowsingPlaywrightModule))]` on your host module, which
+> transitively pulls in `GranitBrowsingModule`. For hosts not using the module
+> system, register the core services before calling `AddGranitBrowsingPlaywright`,
+> otherwise resolving `IHeadlessBrowser` / the Chromium `IPdfCapability` factory
+> throws "BrowsingMetrics not registered" at resolution time.
+
 ```csharp
 services.AddGranitBrowsingPlaywright(
     configureBrowsing: opts => { opts.MaxBrowsers = 2; },

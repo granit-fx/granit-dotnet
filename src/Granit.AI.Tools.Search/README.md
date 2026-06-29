@@ -12,7 +12,20 @@ Part of the [granit](https://granit-fx.dev) framework.
 dotnet add package Granit.AI.Tools.Search
 ```
 
+## Module registration
+
+Declare the module on your host module so its abstractions are wired before the `AddSearch`
+registration below runs:
+
+```csharp
+[DependsOn(typeof(GranitAIToolsSearchModule))]
+public sealed class MyHostModule : GranitModule { }
+```
+
 ## Usage
+
+The search builder extends the `AddGranitAITools` flow (which requires `GranitAIToolsModule` via
+`[DependsOn]`):
 
 ```csharp
 services.AddGranitAITools(tools => tools.AddSearch(s =>

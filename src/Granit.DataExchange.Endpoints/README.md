@@ -23,6 +23,7 @@ dotnet add package Granit.DataExchange.Endpoints
 - `Granit.DataExchange`
 - `Granit.Guids`
 - `Granit.Validation`
+- `Granit.Workspaces.Abstractions`
 
 ## Documentation
 

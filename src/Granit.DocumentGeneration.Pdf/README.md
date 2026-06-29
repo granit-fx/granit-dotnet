@@ -23,6 +23,19 @@ services.AddGranitBrowsingPuppeteerSharp();
 services.AddGranitDocumentGenerationPdf();
 ```
 
+### Module integration
+
+In a modular host, wire both modules via `[DependsOn]` instead of calling the
+extension methods directly — each module's `ConfigureServices` already calls
+`AddGranitBrowsingPuppeteerSharp()` / `AddGranitDocumentGenerationPdf()`
+internally, so no manual `services.Add*()` call is needed:
+
+```csharp
+[DependsOn(typeof(GranitBrowsingPuppeteerSharpModule))]
+[DependsOn(typeof(GranitDocumentGenerationPdfModule))]
+public sealed class MyHostModule : GranitModule { }
+```
+
 Configuration section `DocumentGeneration:Pdf` binds to `PdfRenderOptions`
 (paper format, orientation, margins, header/footer templates,
 `PrintBackground`, `RenderTimeoutMs`). Browser-pool sizing, Chromium executable

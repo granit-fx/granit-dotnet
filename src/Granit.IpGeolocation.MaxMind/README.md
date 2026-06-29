@@ -47,6 +47,20 @@ builder.AddGranitIpGeolocationMaxMind();
 | `ReloadOnChange` | `true` | Hot-reload the database when the file changes |
 | `FileAccess` | `Memory` | `Memory` (no lock) or `MemoryMapped` |
 
+`AddGranitIpGeolocationMaxMind()` registers the MaxMind provider
+(`IIpGeolocationProvider`). The `IIpGeolocationResolver` that orders/chains providers is
+registered by the core `GranitIpGeolocationModule`, which is pulled into the module graph
+when your root host module declares the MaxMind module:
+
+```csharp
+[DependsOn(typeof(GranitIpGeolocationMaxMindModule))]
+public sealed class YourHostModule : GranitModule;
+```
+
+`GranitIpGeolocationMaxMindModule` already `[DependsOn]` the core module, so referencing
+the MaxMind module is sufficient. Without that module reference the provider is registered
+but `IIpGeolocationResolver` is not, and injecting it fails at startup.
+
 ## Provisioning the database
 
 Download a `.mmdb` from MaxMind (GeoLite2 — free, account required) or DB-IP

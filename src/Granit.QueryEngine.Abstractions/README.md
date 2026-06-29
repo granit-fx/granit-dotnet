@@ -16,6 +16,7 @@ dotnet add package Granit.QueryEngine.Abstractions
 ## Dependencies
 
 - `Granit`
+- `Granit.DataLookup.Abstractions`
 
 ## Documentation
 

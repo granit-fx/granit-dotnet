@@ -30,16 +30,40 @@ App policy requires `update` on `transit/hmac/<key>` and `transit/verify/<key>`.
 
 ## Configuration
 
+> **The module is disabled in Development.** `IsEnabled()` returns
+> `!Environment.IsDevelopment()`, so Vault is **not** initialized at all when
+> running locally — for local testing run in a non-Development environment or
+> mock the Vault-backed services.
+
+Production (Kubernetes auth — the default):
+
 ```json
 {
   "Vault": {
     "Address": "https://vault.example.com",
-    "Token": "...",
-    "TransitKeyName": "granit-encryption",
-    "DatabaseRoleName": "granit-db"
+    "AuthMethod": "Kubernetes",
+    "KubernetesRole": "my-backend",
+    "DatabaseRoleName": "readwrite"
+  },
+  "Encryption": {
+    "ProviderName": "Vault",
+    "VaultKeyName": "string-encryption"
   }
 }
 ```
+
+Notes:
+
+- `AuthMethod` defaults to `"Kubernetes"` (with `KubernetesRole` /
+  `KubernetesTokenPath`). Set `"AuthMethod": "Token"` with a `Token` value only
+  for **local development** — `Token` is dev-only and must **never** appear in
+  production config.
+- There is **no** `TransitKeyName` option. The Transit key used for string
+  encryption is `VaultKeyName` under the separate `Encryption` section
+  (`StringEncryptionOptions`, default `"string-encryption"`), which also requires
+  `ProviderName: "Vault"`.
+- `DatabaseRoleName` lives in the `Vault` section; its default is `"readwrite"`
+  (override only if your Vault database role differs).
 
 ## Dependencies
 

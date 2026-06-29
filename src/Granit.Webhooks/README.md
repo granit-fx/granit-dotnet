@@ -1,6 +1,6 @@
 # Granit.Webhooks
 
-Outgoing webhook engine for Granit. Asynchronous dispatch via Wolverine Outbox, HMAC-SHA256 anti-replay signature, durable exponential backoff.
+Outgoing webhook engine for Granit. In-process channel-based asynchronous dispatch by default (bounded channels + background worker); HMAC-SHA256 anti-replay signature, durable exponential backoff. For durable outbox-backed dispatch, add the `Granit.Webhooks.Wolverine` package and wire `GranitWebhooksWolverineModule`.
 
 Part of the [granit](https://granit-fx.dev) framework.
 

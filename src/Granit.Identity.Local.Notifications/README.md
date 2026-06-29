@@ -31,11 +31,13 @@ dotnet add package Granit.Identity.Local.Notifications
 ```json
 {
   "Identity": {
-    "Notifications": {
-      "FrontendBaseUrl": "https://app.example.com",
-      "ResetPasswordPath": "reset-password",
-      "ConfirmEmailPath": "confirm-email",
-      "ChangeEmailPath": "confirm-email-change"
+    "Local": {
+      "Notifications": {
+        "FrontendBaseUrl": "https://app.example.com",
+        "ResetPasswordPath": "reset-password",
+        "ConfirmEmailPath": "confirm-email",
+        "ChangeEmailPath": "confirm-email-change"
+      }
     }
   }
 }

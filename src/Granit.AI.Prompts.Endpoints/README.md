@@ -14,9 +14,20 @@ dotnet add package Granit.AI.Prompts.Endpoints
 
 ## Usage
 
+Declare the module on your host module so its `ConfigureServices` runs, then map the endpoints:
+
 ```csharp
+// Step 1: add the module dependency
+[DependsOn(typeof(GranitAIPromptsEndpointsModule))]
+public sealed class MyHostModule : GranitModule { }
+
+// Step 2: map the endpoints on your API route group
 app.MapGranitPrompts();
 ```
+
+Persistence is a separate concern: wire `Granit.AI.Prompts.EntityFrameworkCore`
+(`builder.AddGranitAIPromptsEntityFrameworkCore(...)`) so the catalogue can persist and load
+system/user prompts.
 
 Endpoints are gated by `AIPrompts.Templates.{Read,Manage,Delete}` and scoped to the calling user.
 The catalogue is the framework-seeded system prompts plus the caller's own; system prompts are

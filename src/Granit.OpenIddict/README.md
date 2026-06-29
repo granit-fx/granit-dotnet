@@ -45,6 +45,41 @@ dotnet add package Granit.OpenIddict
 - `Granit.Users`
 - `Granit.Timing`
 
+## Integration
+
+This is the abstractions package; the OpenIddict module only activates once it is
+pulled into the host's module graph and wired in the composition root.
+
+1. Declare the module on your host module — the sibling server/EFC/endpoints
+   modules resolve transitively, so you only list this one:
+
+   ```csharp
+   [DependsOn(typeof(GranitOpenIddictModule))]
+   public sealed class AppHostModule : GranitModule { }
+   ```
+
+2. Call the mandatory entry point in your composition root. This registers
+   ASP.NET Core Identity, OpenIddict core/server/validation, the isolated
+   `OpenIddictDbContext`, the session/device provider, and the query-engine sources:
+
+   ```csharp
+   builder.AddGranitOpenIddict(options => options.UseNpgsql(connectionString));
+   ```
+
+   (Defined in `Granit.OpenIddict.EntityFrameworkCore.Extensions`.)
+
+3. Expose the OIDC server protocol endpoints:
+
+   ```csharp
+   app.MapGranitOpenIddictServer();
+   ```
+
+4. Expose the account/admin API on your route group:
+
+   ```csharp
+   api.MapGranitOpenIddict();
+   ```
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).
