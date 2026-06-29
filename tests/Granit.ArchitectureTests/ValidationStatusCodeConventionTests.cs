@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Granit.ArchitectureTests.Abstractions.Rules;
 using Shouldly;
 using Xunit;
 
@@ -29,49 +30,16 @@ namespace Granit.ArchitectureTests;
 /// <c>Granit.Http.ExceptionHandling</c>. The OpenAPI side is the per-endpoint
 /// <c>.ProducesValidationProblem(...)</c> metadata, scanned across all of <c>src/</c>.
 /// </remarks>
-public sealed partial class ValidationStatusCodeConventionTests
+public sealed class ValidationStatusCodeConventionTests
 {
     private static readonly string RepoRoot = FindRepoRoot();
 
     private const string ValidationStatus = "Status422UnprocessableEntity";
 
     [Fact]
-    public void ProducesValidationProblem_metadata_must_target_422_not_400()
-    {
-        string srcDir = Path.Join(RepoRoot, "src");
-        List<string> violations = [];
-
-        foreach (string csFile in GetSourceFiles(srcDir))
-        {
-            string[] lines = File.ReadAllLines(csFile);
-            for (int i = 0; i < lines.Length; i++)
-            {
-                Match call = ProducesValidationProblemPattern().Match(lines[i]);
-                if (!call.Success)
-                {
-                    continue;
-                }
-
-                string args = call.Groups["args"].Value;
-                if (args.Contains(ValidationStatus, StringComparison.Ordinal)
-                    || args.Contains("422", StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                violations.Add(
-                    $"  {Path.GetRelativePath(RepoRoot, csFile)}:{i + 1} — " +
-                    ".ProducesValidationProblem() defaults to 400; declare " +
-                    ".ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity).");
-            }
-        }
-
-        violations.ShouldBeEmpty(
-            "Every .ProducesValidationProblem(...) must target 422 to match the runtime " +
-            "FluentValidationAutoEndpointFilter, otherwise the generated OpenAPI document " +
-            "advertises a 400 that no validation failure ever returns." +
-            Environment.NewLine + string.Join(Environment.NewLine, violations));
-    }
+    public void ProducesValidationProblem_metadata_must_target_422_not_400() =>
+        ApiConventionRules.ProducesValidationProblemShouldTarget422(
+            Path.Join(RepoRoot, "src"), RepoRoot);
 
     [Fact]
     public void FluentValidation_filter_returns_422_for_body_validation_failures()
@@ -119,25 +87,6 @@ public sealed partial class ValidationStatusCodeConventionTests
             "If it was renamed or moved, update this convention test to point at its new home.");
 
         return File.ReadAllText(match);
-    }
-
-    /// <summary>
-    /// Matches a single <c>.ProducesValidationProblem(...)</c> invocation and captures
-    /// its argument list (empty for the bare, 400-defaulting form). The metadata call
-    /// is always written on one line in the Granit codebase.
-    /// </summary>
-    [GeneratedRegex(@"\.ProducesValidationProblem\s*\(\s*(?<args>[^)]*)\)")]
-    private static partial Regex ProducesValidationProblemPattern();
-
-    private static IEnumerable<string> GetSourceFiles(string srcDir)
-    {
-        foreach (string csFile in Directory.GetFiles(srcDir, "*.cs", SearchOption.AllDirectories))
-        {
-            if (!IsBuildArtifact(csFile))
-            {
-                yield return csFile;
-            }
-        }
     }
 
     private static bool IsBuildArtifact(string path) =>

@@ -206,6 +206,80 @@ public static partial class ApiConventionRules
             $"Violators: {string.Join("; ", violations)}");
     }
 
+    /// <summary>
+    /// Every <c>.ProducesValidationProblem(...)</c> OpenAPI annotation must declare
+    /// <c>422 Unprocessable Entity</c> explicitly. A bare <c>.ProducesValidationProblem()</c>
+    /// defaults to <c>400</c> in the generated document while the runtime
+    /// <c>FluentValidationAutoEndpointFilter</c> returns <c>422</c> — the drift that ships a
+    /// phantom <c>400</c> into the OpenAPI snapshots that no validation failure ever returns.
+    /// <c>400</c> stays reserved for malformed requests and domain errors carrying an error code.
+    /// </summary>
+    /// <param name="srcDir">Path to the <c>src/</c> directory.</param>
+    /// <param name="repoRoot">Repo root for relative path messages.</param>
+    public static void ProducesValidationProblemShouldTarget422(
+        string srcDir,
+        string repoRoot)
+    {
+        List<string> violations = [];
+
+        foreach (string csFile in GetEndpointSourceFiles(srcDir))
+        {
+            string content = File.ReadAllText(csFile);
+
+            foreach (Match match in ProducesValidationProblemCall().Matches(content))
+            {
+                string args = match.Groups["args"].Value;
+                if (args.Contains("Status422UnprocessableEntity", StringComparison.Ordinal)
+                    || args.Contains("422", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                string relativePath = Path.GetRelativePath(repoRoot, csFile);
+                int lineNumber = content[..match.Index].Count(c => c == '\n') + 1;
+                violations.Add(
+                    $"{relativePath}:{lineNumber} — .ProducesValidationProblem() defaults to 400; " +
+                    "declare .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity).");
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Every .ProducesValidationProblem(...) must target 422 to match the runtime " +
+            "FluentValidationAutoEndpointFilter, otherwise the generated OpenAPI document " +
+            "advertises a 400 that no validation failure ever returns. " +
+            $"Violators: {string.Join("; ", violations)}");
+    }
+
+    /// <summary>
+    /// Minimal API handlers bound to bodyless HTTP verbs (<c>DELETE</c>, <c>GET</c>, <c>HEAD</c>)
+    /// must carry an explicit <c>[FromBody]</c> (or another explicit <c>[From*]</c>) on any complex
+    /// <c>*Request</c> DTO parameter. ASP.NET Core 10 rejects an inferred body parameter on these
+    /// verbs at endpoint construction (<c>InvalidOperationException: Body was inferred but the
+    /// method does not allow inferred body parameters</c>), failing app startup — a regression that
+    /// escapes compile-time checks.
+    /// </summary>
+    /// <param name="srcDir">Path to the <c>src/</c> directory.</param>
+    /// <param name="repoRoot">Repo root for relative path messages.</param>
+    public static void BodylessVerbHandlersShouldAnnotateRequestDtoParameters(
+        string srcDir,
+        string repoRoot)
+    {
+        List<string> violations = [];
+
+        foreach (string csFile in GetEndpointSourceFiles(srcDir))
+        {
+            string[] lines = File.ReadAllLines(csFile);
+            CheckBodylessFile(csFile, repoRoot, lines, violations);
+        }
+
+        violations.ShouldBeEmpty(
+            "Minimal API handlers bound to DELETE/GET/HEAD must declare an explicit " +
+            "[FromBody] (or another explicit [From*]) attribute on any *Request DTO parameter. " +
+            "Without it, ASP.NET Core 10 throws 'Body was inferred but the method does not allow " +
+            "inferred body parameters' at endpoint construction, breaking app startup. " +
+            $"Violators: {string.Join("; ", violations)}");
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────────
 
     private static IEnumerable<string> GetEndpointPackageSourceFiles(string srcDir)
@@ -313,6 +387,166 @@ public static partial class ApiConventionRules
         return types.All(t => simple.Contains(t));
     }
 
+    /// <summary>
+    /// Granit convention: every body-shaped input DTO ends with the <c>Request</c> suffix. A
+    /// parameter whose type ends with this suffix on a <c>DELETE</c>/<c>GET</c>/<c>HEAD</c> handler
+    /// is therefore always a body parameter and must be annotated explicitly.
+    /// </summary>
+    private const string BodyDtoSuffix = "Request";
+
+    private static readonly HashSet<string> ExplicitBindingAttributes = new(StringComparer.Ordinal)
+    {
+        "FromBody",
+        "FromServices",
+        "FromKeyedServices",
+        "FromQuery",
+        "FromRoute",
+        "FromHeader",
+        "FromForm",
+        "AsParameters",
+    };
+
+    private static void CheckBodylessFile(string csFile, string repoRoot, string[] lines, List<string> violations)
+    {
+        HashSet<string> bodylessHandlerNames = CollectBodylessHandlerReferences(lines);
+        if (bodylessHandlerNames.Count == 0)
+        {
+            return;
+        }
+
+        string relativePath = Path.GetRelativePath(repoRoot, csFile);
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            Match decl = MethodDeclarationPattern().Match(lines[i]);
+            if (!decl.Success)
+            {
+                continue;
+            }
+
+            string methodName = decl.Groups["name"].Value;
+            if (!bodylessHandlerNames.Contains(methodName))
+            {
+                continue;
+            }
+
+            ValidateBodylessHandlerParameters(relativePath, lines, methodStartLine: i, methodName, violations);
+        }
+    }
+
+    /// <summary>
+    /// First pass: find every <c>Map(Delete|Get|Head)("...", HandlerIdentifier)</c> invocation and
+    /// collect the handler identifier. Lambda handlers are skipped — they would need full Roslyn
+    /// parsing to extract param lists reliably and are rare in the Granit codebase.
+    /// </summary>
+    private static HashSet<string> CollectBodylessHandlerReferences(string[] lines)
+    {
+        HashSet<string> result = new(StringComparer.Ordinal);
+        foreach (string line in lines)
+        {
+            foreach (Match m in BodylessMapInvocationPattern().Matches(line))
+            {
+                result.Add(m.Groups["handler"].Value);
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Walks the parameter list of the handler method (multi-line) and reports any parameter whose
+    /// declared type ends in <c>Request</c> but is not preceded by an explicit binding attribute.
+    /// </summary>
+    private static void ValidateBodylessHandlerParameters(
+        string relativePath,
+        string[] lines,
+        int methodStartLine,
+        string methodName,
+        List<string> violations)
+    {
+        // Walk lines until we close the param list (paren depth returns to zero).
+        int depth = 0;
+        bool started = false;
+        for (int i = methodStartLine; i < lines.Length; i++)
+        {
+            foreach (char c in lines[i])
+            {
+                if (c == '(')
+                {
+                    depth++;
+                    started = true;
+                }
+                else if (c == ')')
+                {
+                    depth--;
+                }
+            }
+
+            if (started && depth == 0)
+            {
+                // Past the closing paren — stop scanning.
+                CheckBodylessParamLine(relativePath, lines, i, methodName, violations);
+                return;
+            }
+
+            // Mid-list parameter line.
+            if (started)
+            {
+                CheckBodylessParamLine(relativePath, lines, i, methodName, violations);
+            }
+        }
+    }
+
+    private static void CheckBodylessParamLine(
+        string relativePath,
+        string[] lines,
+        int lineIndex,
+        string methodName,
+        List<string> violations)
+    {
+        string line = lines[lineIndex];
+        Match paramMatch = RequestParamPattern().Match(line);
+        if (!paramMatch.Success)
+        {
+            return;
+        }
+
+        string typeName = paramMatch.Groups["type"].Value;
+
+        if (HasExplicitBindingAttribute(line))
+        {
+            return;
+        }
+
+        // Also accept an attribute on the preceding non-blank line (both shapes are allowed).
+        for (int j = lineIndex - 1; j >= Math.Max(0, lineIndex - 3); j--)
+        {
+            string prev = lines[j].TrimStart();
+            if (string.IsNullOrWhiteSpace(prev))
+            {
+                continue;
+            }
+
+            if (HasExplicitBindingAttribute(prev))
+            {
+                return;
+            }
+
+            break;
+        }
+
+        violations.Add(
+            $"{relativePath}:{lineIndex + 1} — '{methodName}' parameter of type '{typeName}' " +
+            "needs [FromBody] (bodyless verb handler).");
+    }
+
+    private static bool HasExplicitBindingAttribute(string line) =>
+        ExplicitBindingAttributes.Any(attr =>
+            line.Contains($"[{attr}]", StringComparison.Ordinal) ||
+            line.Contains($"[{attr}(", StringComparison.Ordinal) ||
+            line.Contains($"[{attr} ", StringComparison.Ordinal) ||
+            line.Contains($"[{attr},", StringComparison.Ordinal));
+
     [GeneratedRegex(@"(?:Task<IResult>|IResult)\s+\w+Async?\s*\(", RegexOptions.Multiline)]
     private static partial Regex BareIResultReturn();
 
@@ -321,6 +555,30 @@ public static partial class ApiConventionRules
 
     [GeneratedRegex(@"\.Map(Get|Post|Put|Delete|Patch)\s*\(", RegexOptions.Multiline)]
     private static partial Regex EndpointRegistration();
+
+    [GeneratedRegex(@"\.ProducesValidationProblem\s*\(\s*(?<args>[^)]*)\)", RegexOptions.Multiline)]
+    private static partial Regex ProducesValidationProblemCall();
+
+    /// <summary>
+    /// Matches <c>Map(Delete|Get|Head)("…route…", HandlerIdentifier)</c> where the second argument
+    /// is a bare identifier (method-group reference). Lambdas are intentionally excluded.
+    /// </summary>
+    [GeneratedRegex(@"\bMap(?:Delete|Get|Head)\s*\(\s*""[^""]*""\s*,\s*(?<handler>[A-Za-z_][\w]*)\s*\)")]
+    private static partial Regex BodylessMapInvocationPattern();
+
+    /// <summary>
+    /// Matches a method declaration line — captures the method name. Conservative; we accept
+    /// partial matches and rely on the handler-name set built in pass 1 to filter to real handlers.
+    /// </summary>
+    [GeneratedRegex(@"\b(?:private|internal|public|protected)\s+(?:static\s+)?(?:async\s+)?[\w<>,\s\.\?\[\]]+?\s+(?<name>[A-Z][\w]*)\s*\(")]
+    private static partial Regex MethodDeclarationPattern();
+
+    /// <summary>
+    /// Matches a single parameter line whose type ends in <c>Request</c>
+    /// (e.g. <c>BlobDeleteRequest request,</c> or <c>RevokePublicLinkRequest? request,</c>).
+    /// </summary>
+    [GeneratedRegex(@"(?<type>[A-Z][\w]*" + BodyDtoSuffix + @")\??\s+\w+\s*[,)]")]
+    private static partial Regex RequestParamPattern();
 
     [GeneratedRegex(
         @"public\s+static\s+\S+\s+(Map\w+?)(?:<[^>]+>)?\s*\(\s*this\s+IEndpointRouteBuilder",
