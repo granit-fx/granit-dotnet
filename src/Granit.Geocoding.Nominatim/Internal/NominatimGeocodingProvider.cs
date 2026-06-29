@@ -22,7 +22,8 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
     internal const string HttpClientName = "Granit.Geocoding.Nominatim";
 
     // Upper bound on a parsed address component persisted downstream (hardening against oversized OSM fields).
-    private const int MaxComponentLength = 64;
+    // Aligned with the AddressGeocoding flat-column width (MapAddressGeocoding maps HouseNumber to varchar(32)).
+    private const int MaxComponentLength = 32;
 
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IOptions<NominatimGeocodingOptions> _options;

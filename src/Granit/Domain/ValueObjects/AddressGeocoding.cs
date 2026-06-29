@@ -17,7 +17,7 @@ namespace Granit.Domain.ValueObjects;
 /// never the source.
 /// </para>
 /// <para>
-/// Persisted as flat columns via the framework's <c>ConfigureAddressGeocoding</c> EF helper (not the
+/// Persisted as flat columns via the framework's <c>MapAddressGeocoding</c> EF helper (not the
 /// default value-object JSON path), so <see cref="Status"/> stays directly queryable for dashboards and the
 /// coordinate feeds map widgets without a JSON projection. Equality is structural over all stored components.
 /// </para>

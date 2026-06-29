@@ -22,15 +22,15 @@ public interface IAddressEnrichmentService
 public sealed record AddressEnrichmentResult(AddressGeocoding Geocoding, AddressVerification Verification);
 ```
 
-It sits **above** `Granit.Geocoding` and `Granit.AddressVerification.Abstractions` (it
-never makes the geocoding engine depend on verification).
+It sits **above** `Granit.Geocoding` and `Granit.AddressDeliverability.Abstractions` (it
+never makes the geocoding engine depend on deliverability).
 
 ## Behaviour
 
 - **Tier 0 (always):** geocodes via `IGeocodingService`; a hit becomes
   `AddressGeocoding.Resolved` (or `Approximate` for a locality centroid), a miss becomes
   `AddressGeocoding.Failed`.
-- **Tier 1 (optional):** if an `IAddressVerificationService` provider is registered, it is
+- **Tier 1 (optional):** if an `IAddressDeliverabilityService` provider is registered, it is
   called and the provider outcome is mapped onto `AddressVerificationStatus`
   (`Verified → ProviderVerified`, `Corrected → Corrected`, `Invalid → Invalid`,
   `Unverifiable → Unverified`). With no provider, the verdict stays `Unverified`.
@@ -44,4 +44,4 @@ The verification provider is an optional soft dependency, resolved at registrati
 ## See also
 
 - [`Granit.Geocoding`](../Granit.Geocoding/README.md) — tier 0 engine.
-- [`Granit.AddressVerification.Abstractions`](../Granit.AddressVerification.Abstractions/README.md) — tier 1 contract.
+- [`Granit.AddressDeliverability.Abstractions`](../Granit.AddressDeliverability.Abstractions/README.md) — tier 1 contract.

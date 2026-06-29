@@ -15,7 +15,7 @@ namespace Granit.Domain.ValueObjects;
 /// evidence but can originate from a system signal.
 /// </para>
 /// <para>
-/// Persisted as flat columns via the framework's <c>ConfigureAddressVerification</c> EF helper. Equality is
+/// Persisted as flat columns via the framework's <c>MapAddressVerification</c> EF helper. Equality is
 /// structural over all stored components.
 /// </para>
 /// </remarks>

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.AddressEnrichment</PackageId>
-    <Description>Address enrichment orchestrator for Granit: turns a domain Address into its geocoding outcome (AddressGeocoding) and deliverability verdict (AddressVerification) by composing the geocoding engine (tier 0) and an optional address-verification provider (tier 1). A thin layer above Granit.Geocoding and Granit.AddressVerification.Abstractions so any address-holding module materializes both axes the same way.</Description>
+    <Description>Address enrichment orchestrator for Granit: turns a domain Address into its geocoding outcome (AddressGeocoding) and deliverability verdict (AddressVerification) by composing the geocoding engine (tier 0) and an optional address-verification provider (tier 1). A thin layer above Granit.Geocoding and Granit.AddressDeliverability.Abstractions so any address-holding module materializes both axes the same way.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
