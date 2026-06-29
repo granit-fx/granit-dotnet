@@ -1,4 +1,5 @@
 using Granit.Domain.ValueObjects;
+using Granit.Geocoding.Extensions;
 using Shouldly;
 using Xunit;
 

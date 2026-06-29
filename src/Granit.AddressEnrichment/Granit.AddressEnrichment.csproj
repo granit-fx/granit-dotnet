@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AddressEnrichment</PackageId>
+    <Description>Address enrichment orchestrator for Granit: turns a domain Address into its geocoding outcome (AddressGeocoding) and deliverability verdict (AddressVerification) by composing the geocoding engine (tier 0) and an optional address-verification provider (tier 1). A thin layer above Granit.Geocoding and Granit.AddressVerification.Abstractions so any address-holding module materializes both axes the same way.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AddressEnrichment.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal types in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Geocoding\Granit.Geocoding.csproj" />
+    <ProjectReference Include="..\Granit.AddressDeliverability.Abstractions\Granit.AddressDeliverability.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

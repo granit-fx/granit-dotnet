@@ -215,6 +215,22 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.AddressDeliverability.Abstractions",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.AddressEnrichment",
+      "deps": [
+        "Granit",
+        "Granit.Geocoding",
+        "Granit.AddressDeliverability.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Auditing",
       "deps": [
         "Granit",
@@ -7229,6 +7245,81 @@
           "kind": "method",
           "signature": "DeleteAsync(string workspaceName, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AddressDeliverabilityOutcome",
+      "fqn": "Granit.AddressDeliverability.AddressDeliverabilityOutcome",
+      "kind": "enum",
+      "project": "Granit.AddressDeliverability.Abstractions",
+      "file": "src/Granit.AddressDeliverability.Abstractions/AddressDeliverabilityOutcome.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "AddressDeliverabilityResult",
+      "fqn": "Granit.AddressDeliverability.AddressDeliverabilityResult",
+      "kind": "record",
+      "project": "Granit.AddressDeliverability.Abstractions",
+      "file": "src/Granit.AddressDeliverability.Abstractions/AddressDeliverabilityResult.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "IAddressDeliverabilityService",
+      "fqn": "Granit.AddressDeliverability.IAddressDeliverabilityService",
+      "kind": "interface",
+      "project": "Granit.AddressDeliverability.Abstractions",
+      "file": "src/Granit.AddressDeliverability.Abstractions/IAddressDeliverabilityService.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "CheckAsync",
+          "kind": "method",
+          "signature": "CheckAsync(Address address, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AddressDeliverabilityResult>"
+        }
+      ]
+    },
+    {
+      "name": "AddressEnrichmentResult",
+      "fqn": "Granit.AddressEnrichment.AddressEnrichmentResult",
+      "kind": "record",
+      "project": "Granit.AddressEnrichment",
+      "file": "src/Granit.AddressEnrichment/AddressEnrichmentResult.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "GranitAddressEnrichmentModule",
+      "fqn": "Granit.AddressEnrichment.GranitAddressEnrichmentModule",
+      "kind": "class",
+      "project": "Granit.AddressEnrichment",
+      "file": "src/Granit.AddressEnrichment/GranitAddressEnrichmentModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IAddressEnrichmentService",
+      "fqn": "Granit.AddressEnrichment.IAddressEnrichmentService",
+      "kind": "interface",
+      "project": "Granit.AddressEnrichment",
+      "file": "src/Granit.AddressEnrichment/IAddressEnrichmentService.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "EnrichAsync",
+          "kind": "method",
+          "signature": "EnrichAsync(Address address, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AddressEnrichmentResult>"
         }
       ]
     },
@@ -22674,22 +22765,6 @@
       ]
     },
     {
-      "name": "AddressExtensions",
-      "fqn": "Granit.Geocoding.AddressExtensions",
-      "kind": "class",
-      "project": "Granit.Geocoding.Abstractions",
-      "file": "src/Granit.Geocoding.Abstractions/AddressExtensions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "ToPostalAddress",
-          "kind": "method",
-          "signature": "ToPostalAddress(this Address address)",
-          "returnType": "PostalAddress"
-        }
-      ]
-    },
-    {
       "name": "GeocodingMetrics",
       "fqn": "Granit.Geocoding.Diagnostics.GeocodingMetrics",
       "kind": "class",
@@ -22720,6 +22795,22 @@
           "kind": "method",
           "signature": "RecordLookupDuration(string result, TimeSpan duration)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AddressExtensions",
+      "fqn": "Granit.Geocoding.Extensions.AddressExtensions",
+      "kind": "class",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/Extensions/AddressExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ToPostalAddress",
+          "kind": "method",
+          "signature": "ToPostalAddress(this Address address)",
+          "returnType": "PostalAddress"
         }
       ]
     },

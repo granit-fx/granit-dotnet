@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AddressDeliverability.Abstractions</PackageId>
+    <Description>Address-deliverability (authoritative verification) contract for Granit: check a domain Address against an authoritative source and get back an outcome, a standardized address, provider flags and a match code. Holds IAddressDeliverabilityService and AddressDeliverabilityResult so modules and providers depend on the contract without a concrete provider. Tier-1 of the address platform — distinct from geocoding plausibility and from the FluentValidation-based Granit.Validation family. Named "Deliverability" so its namespace never collides with the Granit.Domain.ValueObjects.AddressVerification verdict value object it feeds.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

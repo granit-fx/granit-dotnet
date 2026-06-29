@@ -325,6 +325,8 @@
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Granit.AddressDeliverability.Abstractions/Granit.AddressDeliverability.Abstractions.csproj" />
+    <Project Path="src/Granit.AddressEnrichment/Granit.AddressEnrichment.csproj" />
     <Project Path="src/Granit.Validation.Finance/Granit.Validation.Finance.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
@@ -704,6 +706,8 @@
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Granit.AddressDeliverability.Abstractions.Tests/Granit.AddressDeliverability.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.AddressEnrichment.Tests/Granit.AddressEnrichment.Tests.csproj" />
     <Project Path="tests/Granit.Validation.Finance.Tests/Granit.Validation.Finance.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">

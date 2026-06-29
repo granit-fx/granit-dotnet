@@ -4,6 +4,8 @@
     "projects": [
       "src/Granit.AI.Tools/Granit.AI.Tools.csproj",
       "src/Granit.AI/Granit.AI.csproj",
+      "src/Granit.AddressDeliverability.Abstractions/Granit.AddressDeliverability.Abstractions.csproj",
+      "src/Granit.AddressEnrichment/Granit.AddressEnrichment.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
       "src/Granit.Auditing.Abstractions/Granit.Auditing.Abstractions.csproj",
@@ -99,6 +101,8 @@
       "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
+      "tests/Granit.AddressDeliverability.Abstractions.Tests/Granit.AddressDeliverability.Abstractions.Tests.csproj",
+      "tests/Granit.AddressEnrichment.Tests/Granit.AddressEnrichment.Tests.csproj",
       "tests/Granit.BackgroundJobs.Endpoints.Tests/Granit.BackgroundJobs.Endpoints.Tests.csproj",
       "tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.BackgroundJobs.Notifications.Tests/Granit.BackgroundJobs.Notifications.Tests.csproj",

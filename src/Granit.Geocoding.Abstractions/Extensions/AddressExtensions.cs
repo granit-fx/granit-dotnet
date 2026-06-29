@@ -1,6 +1,6 @@
 using Granit.Domain.ValueObjects;
 
-namespace Granit.Geocoding;
+namespace Granit.Geocoding.Extensions;
 
 /// <summary>
 /// Conversions from the domain <see cref="Address"/> value object to the geocoding
