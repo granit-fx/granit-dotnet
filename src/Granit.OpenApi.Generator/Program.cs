@@ -1,5 +1,6 @@
 using Granit.Authentication.ApiKeys.Endpoints.Extensions;
 using Granit.BlobStorage.Endpoints.Extensions;
+using Granit.Geocoding;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.OpenApi.Generation;
 using Granit.OpenApi.Generator;
@@ -19,4 +20,16 @@ await OpenApiContractGenerator.RunAsync<GeneratorModule>(
         builder.Services.AddGranitApiKeysEndpoints();
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddGranitWorkflowEndpoints();
+
+        // Geocoding endpoints are capability-gated on the registered provider set, so a provider-less graph
+        // emits an empty geocoding contract. Register a no-op provider covering all three capabilities so the
+        // generated document includes the geocoding paths without pulling in a real (billable, config-bound)
+        // provider package.
+        builder.Services.AddSingleton<GeneratorStubGeocodingProvider>();
+        builder.Services.AddSingleton<IGeocodingProvider>(
+            static sp => sp.GetRequiredService<GeneratorStubGeocodingProvider>());
+        builder.Services.AddSingleton<IReverseGeocodingProvider>(
+            static sp => sp.GetRequiredService<GeneratorStubGeocodingProvider>());
+        builder.Services.AddSingleton<IAddressAutocompleteProvider>(
+            static sp => sp.GetRequiredService<GeneratorStubGeocodingProvider>());
     });
