@@ -147,6 +147,47 @@ public sealed class NominatimGeocodingProviderTests
         elapsed.ShouldBeGreaterThanOrEqualTo(TimeSpan.FromMilliseconds(50));
     }
 
+    [Fact]
+    public async Task ReverseAsync_SuccessfulResponse_MapsToPostalAddress()
+    {
+        const string json = """
+            {"lat":"50.8476","lon":"4.3572","addresstype":"house","place_rank":30,
+             "address":{"house_number":"16","road":"Rue de la Loi","postcode":"1000","city":"Brussels","country_code":"be"}}
+            """;
+        NominatimGeocodingProvider sut = CreateProvider(json, out _);
+
+        ReverseGeocodingResult result = (await sut.ReverseAsync(new GeoCoordinate(50.8476, 4.3572), Ct)).ShouldNotBeNull();
+
+        result.Address.Locality.ShouldBe("Brussels");
+        result.Address.Country.ShouldBe("BE");                 // upper-cased from "be"
+        result.Address.Street.ShouldBe("Rue de la Loi 16");    // road + house number
+        result.Address.PostalCode.ShouldBe("1000");
+        result.Precision.ShouldBe(GeocodeMatchPrecision.Rooftop);
+    }
+
+    [Fact]
+    public async Task ReverseAsync_WithoutLocality_ReturnsNull()
+    {
+        NominatimGeocodingProvider sut = CreateProvider("""{"lat":"0","lon":"0","address":{"country_code":"be"}}""", out _);
+
+        (await sut.ReverseAsync(new GeoCoordinate(0, 0), Ct)).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ReverseAsync_BuildsReverseQueryFromCoordinate()
+    {
+        NominatimGeocodingProvider sut = CreateProvider("{}", out StubHttpMessageHandler handler);
+
+        await sut.ReverseAsync(new GeoCoordinate(50.8476, 4.3572), Ct);
+
+        string uri = handler.LastRequest!.RequestUri!.AbsoluteUri;
+        uri.ShouldContain("reverse?");
+        uri.ShouldContain("lat=50.8476");
+        uri.ShouldContain("lon=4.3572");
+        uri.ShouldContain("format=jsonv2");
+        uri.ShouldContain("addressdetails=1");
+    }
+
     private static NominatimGeocodingProvider CreateProvider(
         string json,
         out StubHttpMessageHandler handler,

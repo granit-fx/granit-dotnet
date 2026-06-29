@@ -170,6 +170,45 @@ public sealed class PhotonGeocodingProviderTests
         elapsed.ShouldBeGreaterThanOrEqualTo(TimeSpan.FromMilliseconds(50));
     }
 
+    [Fact]
+    public async Task ReverseAsync_SuccessfulResponse_MapsToPostalAddress()
+    {
+        const string json = """
+            {"features":[{"geometry":{"coordinates":[4.3572,50.8476]},
+              "properties":{"type":"house","housenumber":"16","street":"Rue de la Loi","postcode":"1000","city":"Brussels","countrycode":"BE"}}]}
+            """;
+        PhotonGeocodingProvider sut = CreateProvider(json, out _);
+
+        ReverseGeocodingResult result = (await sut.ReverseAsync(new GeoCoordinate(50.8476, 4.3572), Ct)).ShouldNotBeNull();
+
+        result.Address.Locality.ShouldBe("Brussels");
+        result.Address.Country.ShouldBe("BE");
+        result.Address.Street.ShouldBe("Rue de la Loi 16");
+        result.Address.PostalCode.ShouldBe("1000");
+        result.Precision.ShouldBe(GeocodeMatchPrecision.Rooftop);
+    }
+
+    [Fact]
+    public async Task ReverseAsync_WithoutCity_ReturnsNull()
+    {
+        PhotonGeocodingProvider sut = CreateProvider("""{"features":[{"properties":{"countrycode":"BE"}}]}""", out _);
+
+        (await sut.ReverseAsync(new GeoCoordinate(0, 0), Ct)).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ReverseAsync_BuildsReverseQueryFromCoordinate()
+    {
+        PhotonGeocodingProvider sut = CreateProvider("""{"features":[]}""", out StubHttpMessageHandler handler);
+
+        await sut.ReverseAsync(new GeoCoordinate(50.8476, 4.3572), Ct);
+
+        string uri = handler.LastRequest!.RequestUri!.AbsoluteUri;
+        uri.ShouldContain("reverse?");
+        uri.ShouldContain("lat=50.8476");
+        uri.ShouldContain("lon=4.3572");
+    }
+
     private static PhotonGeocodingProvider CreateProvider(
         string json,
         out StubHttpMessageHandler handler,

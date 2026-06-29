@@ -17,7 +17,7 @@ namespace Granit.Geocoding.Photon.Internal;
 /// <see cref="PhotonGeocodingOptions.RateLimitPerSecond"/>, honouring komoot's fair-use policy. Failures are caught
 /// here and the address is never logged.
 /// </remarks>
-internal sealed partial class PhotonGeocodingProvider : IGeocodingProvider, IDisposable
+internal sealed partial class PhotonGeocodingProvider : IGeocodingProvider, IReverseGeocodingProvider, IDisposable
 {
     internal const string HttpClientName = "Granit.Geocoding.Photon";
 
@@ -109,6 +109,110 @@ internal sealed partial class PhotonGeocodingProvider : IGeocodingProvider, IDis
             LogLookupFailed(nameof(NotSupportedException));
             return null;
         }
+    }
+
+    public async Task<ReverseGeocodingResult?> ReverseAsync(
+        GeoCoordinate coordinate, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(coordinate);
+
+        string query = BuildReverseQuery(coordinate, _options.Value.Language);
+        HttpClient client = _httpClientFactory.CreateClient(HttpClientName);
+
+        try
+        {
+            // Shared throttle: forward and reverse calls pace through the same gate (komoot fair-use policy).
+            await ThrottleAsync(cancellationToken).ConfigureAwait(false);
+
+            using HttpRequestMessage request = new(HttpMethod.Get, $"reverse?{query}");
+            using HttpResponseMessage response =
+                await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                LogRequestUnsuccessful((int)response.StatusCode);
+                return null;
+            }
+
+            PhotonResponse? body = await response.Content
+                .ReadFromJsonAsync<PhotonResponse>(cancellationToken)
+                .ConfigureAwait(false);
+
+            return MapReverse(body);
+        }
+        catch (HttpRequestException)
+        {
+            LogLookupFailed(nameof(HttpRequestException));
+            return null;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (OperationCanceledException)
+        {
+            LogLookupFailed("Timeout");
+            return null;
+        }
+        catch (JsonException)
+        {
+            LogLookupFailed(nameof(JsonException));
+            return null;
+        }
+        catch (NotSupportedException)
+        {
+            LogLookupFailed(nameof(NotSupportedException));
+            return null;
+        }
+    }
+
+    private static string BuildReverseQuery(GeoCoordinate coordinate, string? language)
+    {
+        string lat = coordinate.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        string lon = coordinate.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        List<string> parameters = [$"lat={lat}", $"lon={lon}"];
+        if (!string.IsNullOrWhiteSpace(language))
+        {
+            parameters.Add($"lang={Uri.EscapeDataString(language.Trim())}");
+        }
+
+        return string.Join('&', parameters);
+    }
+
+    private static ReverseGeocodingResult? MapReverse(PhotonResponse? response)
+    {
+        if (response?.Features is not { Count: > 0 })
+        {
+            return null;
+        }
+
+        PhotonProperties? properties = response.Features[0].Properties;
+
+        // A usable reverse result needs at least a locality and a country; below that, treat it as a miss.
+        if (Sanitize(properties?.City) is not { } locality
+            || Sanitize(properties?.CountryCode) is not { } country)
+        {
+            return null;
+        }
+
+        PostalAddress postal = new(
+            Street: BuildStreet(properties!),
+            PostalCode: Sanitize(properties!.Postcode),
+            Locality: locality,
+            Country: country.ToUpperInvariant());
+
+        return new ReverseGeocodingResult(postal, DeterminePrecision(properties));
+    }
+
+    private static string? BuildStreet(PhotonProperties properties)
+    {
+        string? street = Sanitize(properties.Street) ?? Sanitize(properties.Name);
+        string? houseNumber = Sanitize(properties.HouseNumber);
+        if (street is null)
+        {
+            return houseNumber;
+        }
+
+        return houseNumber is null ? street : $"{street} {houseNumber}";
     }
 
     private static string BuildQuery(PostalAddress address, string? language)

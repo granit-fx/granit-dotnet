@@ -69,7 +69,13 @@ public static class GeocodingPhotonHostApplicationBuilderExtensions
             })
             .AddHttpMessageHandler<AddressTelemetryRedactionHandler>();
 
-        builder.Services.AddSingleton<IGeocodingProvider, PhotonGeocodingProvider>();
+        // Register ONE shared instance for both capabilities so forward and reverse calls pace through the same
+        // rate-limit throttle (separate instances would each get their own gate and could exceed the policy).
+        builder.Services.AddSingleton<PhotonGeocodingProvider>();
+        builder.Services.AddSingleton<IGeocodingProvider>(
+            static sp => sp.GetRequiredService<PhotonGeocodingProvider>());
+        builder.Services.AddSingleton<IReverseGeocodingProvider>(
+            static sp => sp.GetRequiredService<PhotonGeocodingProvider>());
 
         return builder;
     }

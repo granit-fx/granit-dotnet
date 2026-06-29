@@ -22872,6 +22872,38 @@
       ]
     },
     {
+      "name": "IReverseGeocodingProvider",
+      "fqn": "Granit.Geocoding.IReverseGeocodingProvider",
+      "kind": "interface",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/IReverseGeocodingProvider.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ReverseAsync",
+          "kind": "method",
+          "signature": "ReverseAsync(GeoCoordinate coordinate, CancellationToken cancellationToken = default)",
+          "returnType": "string ProviderName { get; } Task<ReverseGeocodingResult?>"
+        }
+      ]
+    },
+    {
+      "name": "IReverseGeocodingService",
+      "fqn": "Granit.Geocoding.IReverseGeocodingService",
+      "kind": "interface",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/IReverseGeocodingService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ReverseAsync",
+          "kind": "method",
+          "signature": "ReverseAsync(GeoCoordinate coordinate, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ReverseGeocodingResult?>"
+        }
+      ]
+    },
+    {
       "name": "GeocodingNominatimHostApplicationBuilderExtensions",
       "fqn": "Granit.Geocoding.Nominatim.Extensions.GeocodingNominatimHostApplicationBuilderExtensions",
       "kind": "class",
@@ -23042,6 +23074,15 @@
       "project": "Granit.Geocoding.Abstractions",
       "file": "src/Granit.Geocoding.Abstractions/PostalAddress.cs",
       "line": 18,
+      "members": []
+    },
+    {
+      "name": "ReverseGeocodingResult",
+      "fqn": "Granit.Geocoding.ReverseGeocodingResult",
+      "kind": "record",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/ReverseGeocodingResult.cs",
+      "line": 15,
       "members": []
     },
     {

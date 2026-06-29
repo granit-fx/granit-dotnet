@@ -17,7 +17,7 @@ namespace Granit.Geocoding.Nominatim.Internal;
 /// requests are serialised through a throttle that paces them to <see cref="NominatimGeocodingOptions.RateLimitPerSecond"/>,
 /// honouring the public endpoint's 1 req/s policy. Failures are caught here and the address is never logged.
 /// </remarks>
-internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, IDisposable
+internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, IReverseGeocodingProvider, IDisposable
 {
     internal const string HttpClientName = "Granit.Geocoding.Nominatim";
 
@@ -109,6 +109,99 @@ internal sealed partial class NominatimGeocodingProvider : IGeocodingProvider, I
             LogLookupFailed(nameof(NotSupportedException));
             return null;
         }
+    }
+
+    public async Task<ReverseGeocodingResult?> ReverseAsync(
+        GeoCoordinate coordinate, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(coordinate);
+
+        string query = BuildReverseQuery(coordinate);
+        HttpClient client = _httpClientFactory.CreateClient(HttpClientName);
+
+        try
+        {
+            // Shared throttle: forward and reverse calls pace through the same gate, honouring the 1 req/s policy.
+            await ThrottleAsync(cancellationToken).ConfigureAwait(false);
+
+            using HttpRequestMessage request = new(HttpMethod.Get, $"reverse?{query}");
+            using HttpResponseMessage response =
+                await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                LogRequestUnsuccessful((int)response.StatusCode);
+                return null;
+            }
+
+            // Nominatim /reverse returns a single place object (not an array).
+            NominatimPlace? place = await response.Content
+                .ReadFromJsonAsync<NominatimPlace>(cancellationToken)
+                .ConfigureAwait(false);
+
+            return MapReverse(place);
+        }
+        catch (HttpRequestException)
+        {
+            LogLookupFailed(nameof(HttpRequestException));
+            return null;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (OperationCanceledException)
+        {
+            LogLookupFailed("Timeout");
+            return null;
+        }
+        catch (JsonException)
+        {
+            LogLookupFailed(nameof(JsonException));
+            return null;
+        }
+        catch (NotSupportedException)
+        {
+            LogLookupFailed(nameof(NotSupportedException));
+            return null;
+        }
+    }
+
+    private static string BuildReverseQuery(GeoCoordinate coordinate)
+    {
+        string lat = coordinate.Latitude.ToString(CultureInfo.InvariantCulture);
+        string lon = coordinate.Longitude.ToString(CultureInfo.InvariantCulture);
+        return $"lat={lat}&lon={lon}&format=jsonv2&addressdetails=1";
+    }
+
+    private static ReverseGeocodingResult? MapReverse(NominatimPlace? place)
+    {
+        // A usable reverse result needs at least a locality and a country; below that, treat it as a miss.
+        if (place?.Address is not { } address
+            || Sanitize(address.Locality) is not { } locality
+            || Sanitize(address.CountryCode) is not { } country)
+        {
+            return null;
+        }
+
+        PostalAddress postal = new(
+            Street: BuildStreet(address),
+            PostalCode: Sanitize(address.Postcode),
+            Locality: locality,
+            Country: country.ToUpperInvariant());
+
+        return new ReverseGeocodingResult(postal, DeterminePrecision(place));
+    }
+
+    private static string? BuildStreet(NominatimAddress address)
+    {
+        string? road = Sanitize(address.Road);
+        string? houseNumber = Sanitize(address.HouseNumber);
+        if (road is null)
+        {
+            return houseNumber;
+        }
+
+        return houseNumber is null ? road : $"{road} {houseNumber}";
     }
 
     private static string BuildQuery(PostalAddress address)

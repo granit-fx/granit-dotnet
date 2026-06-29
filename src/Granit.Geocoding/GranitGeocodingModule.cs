@@ -36,5 +36,6 @@ public sealed class GranitGeocodingModule : GranitModule
 
         context.Services.TryAddSingleton<GeocodingMetrics>();
         context.Services.TryAddSingleton<IGeocodingService, DefaultGeocodingService>();
+        context.Services.TryAddSingleton<IReverseGeocodingService, DefaultReverseGeocodingService>();
     }
 }

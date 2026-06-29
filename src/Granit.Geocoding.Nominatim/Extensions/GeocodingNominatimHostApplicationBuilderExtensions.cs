@@ -66,7 +66,13 @@ public static class GeocodingNominatimHostApplicationBuilderExtensions
             })
             .AddHttpMessageHandler<AddressTelemetryRedactionHandler>();
 
-        builder.Services.AddSingleton<IGeocodingProvider, NominatimGeocodingProvider>();
+        // Register ONE shared instance for both capabilities so forward and reverse calls pace through the same
+        // rate-limit throttle (separate instances would each get their own gate and could exceed the policy).
+        builder.Services.AddSingleton<NominatimGeocodingProvider>();
+        builder.Services.AddSingleton<IGeocodingProvider>(
+            static sp => sp.GetRequiredService<NominatimGeocodingProvider>());
+        builder.Services.AddSingleton<IReverseGeocodingProvider>(
+            static sp => sp.GetRequiredService<NominatimGeocodingProvider>());
 
         return builder;
     }

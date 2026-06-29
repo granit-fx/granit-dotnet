@@ -31,9 +31,28 @@ internal sealed record NominatimAddress
     [JsonPropertyName("house_number")]
     public string? HouseNumber { get; init; }
 
+    [JsonPropertyName("road")]
+    public string? Road { get; init; }
+
     [JsonPropertyName("postcode")]
     public string? Postcode { get; init; }
 
+    // Nominatim names the locality differently by place type; the first non-empty one wins.
+    [JsonPropertyName("city")]
+    public string? City { get; init; }
+
+    [JsonPropertyName("town")]
+    public string? Town { get; init; }
+
+    [JsonPropertyName("village")]
+    public string? Village { get; init; }
+
+    [JsonPropertyName("state")]
+    public string? State { get; init; }
+
     [JsonPropertyName("country_code")]
     public string? CountryCode { get; init; }
+
+    /// <summary>The locality from whichever of city/town/village the response carries.</summary>
+    public string? Locality => City ?? Town ?? Village;
 }
