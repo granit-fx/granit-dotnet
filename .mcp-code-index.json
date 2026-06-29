@@ -42432,7 +42432,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/DbContextOptionsBuilderExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "UseGranitInterceptors",
@@ -42559,7 +42559,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/GranitDbContext.cs",
-      "line": 45,
+      "line": 47,
       "members": [
         {
           "name": "IsMultiTenantFilterEnabled",
@@ -42624,6 +42624,22 @@
       "file": "src/Granit.Persistence.EntityFrameworkCore/GranitFilterNames.cs",
       "line": 13,
       "members": []
+    },
+    {
+      "name": "GranitModelCacheKeyFactory",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.GranitModelCacheKeyFactory",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/GranitModelCacheKeyFactory.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(DbContext context, bool designTime)",
+          "returnType": "object"
+        }
+      ]
     },
     {
       "name": "GranitPersistenceAnnotationNames",
@@ -42815,6 +42831,22 @@
           "kind": "method",
           "signature": "FromSeconds(5)",
           "returnType": "TimeSpan RetryDelay { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "IGranitModelExtension",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.IGranitModelExtension",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/IGranitModelExtension.cs",
+      "line": 36,
+      "members": [
+        {
+          "name": "Apply",
+          "kind": "method",
+          "signature": "Apply(ModelBuilder modelBuilder, DbContext context)",
+          "returnType": "void"
         }
       ]
     },

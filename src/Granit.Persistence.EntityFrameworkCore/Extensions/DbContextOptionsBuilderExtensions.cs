@@ -1,6 +1,7 @@
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -67,6 +68,10 @@ public static class DbContextOptionsBuilderExtensions
         // build options manually, so without this call the lookup returns null and
         // audit capture is silently skipped on every isolated DbContext.
         options.UseApplicationServiceProvider(serviceProvider);
+
+        // Make the model cache aware of the registered IGranitModelExtension set (applied at the end of
+        // GranitDbContext.OnModelCreating), so a different extension set yields a distinct cached model.
+        options.ReplaceService<IModelCacheKeyFactory, GranitModelCacheKeyFactory>();
 
         // Order matters: Audit → Versioning → ConcurrencyStamp → DomainEvents → SoftDelete.
         // SoftDelete must be last because it converts Deleted → Modified,
