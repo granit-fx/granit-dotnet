@@ -197,6 +197,7 @@
         "tests/Granit.Features.Wolverine.Tests",
         "tests/Granit.Geocoding.Abstractions.Tests",
         "tests/Granit.Geocoding.Tests",
+        "tests/Granit.Geocoding.Endpoints.Tests",
         "tests/Granit.Geocoding.Nominatim.Tests",
         "tests/Granit.Geocoding.Photon.Tests",
         "tests/Granit.Hostnames.Tests",

@@ -121,6 +121,7 @@
       "src/Granit.Features.Wolverine/Granit.Features.Wolverine.csproj",
       "src/Granit.Features/Granit.Features.csproj",
       "src/Granit.Geocoding.Abstractions/Granit.Geocoding.Abstractions.csproj",
+      "src/Granit.Geocoding.Endpoints/Granit.Geocoding.Endpoints.csproj",
       "src/Granit.Geocoding.Nominatim/Granit.Geocoding.Nominatim.csproj",
       "src/Granit.Geocoding.Photon/Granit.Geocoding.Photon.csproj",
       "src/Granit.Geocoding/Granit.Geocoding.csproj",

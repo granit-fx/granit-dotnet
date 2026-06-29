@@ -11,6 +11,7 @@ using Granit.DataExchange.Endpoints.Extensions;
 using Granit.DataLookup.Endpoints.Extensions;
 using Granit.Diagnostics.Endpoints.Extensions;
 using Granit.Features.Endpoints.Extensions;
+using Granit.Geocoding.Endpoints.Extensions;
 using Granit.Hostnames.Endpoints.Extensions;
 using Granit.Http.Cookies.Endpoints.Extensions;
 using Granit.Http.SecurityHeaders.Endpoints.Extensions;
@@ -57,6 +58,7 @@ internal static class GeneratorEndpoints
         new("data-lookup", e => e.MapGranitDataLookups()),
         new("diagnostics", e => e.MapGranitDiagnosticsMonitoring()),
         new("features", e => e.MapGranitFeatures()),
+        new("geocoding", e => e.MapGranitGeocoding()),
         new("hostnames", e => e.MapGranitHostnames()),
         new("cookies", e => e.MapGranitCookieConsent()),
         new("security-headers", e => e.MapGranitSecurityHeadersAudit()),

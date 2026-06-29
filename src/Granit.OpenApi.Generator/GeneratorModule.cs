@@ -28,6 +28,7 @@ namespace Granit.OpenApi.Generator;
     typeof(Granit.DataLookup.Endpoints.GranitDataLookupEndpointsModule),
     typeof(Granit.Diagnostics.Endpoints.GranitDiagnosticsEndpointsModule),
     typeof(Granit.Features.Endpoints.GranitFeaturesEndpointsModule),
+    typeof(Granit.Geocoding.Endpoints.GranitGeocodingEndpointsModule),
     typeof(Granit.Hostnames.Endpoints.GranitHostnamesEndpointsModule),
     typeof(Granit.Http.Cookies.Endpoints.GranitHttpCookiesEndpointsModule),
     typeof(Granit.Http.SecurityHeaders.Endpoints.GranitHttpSecurityHeadersEndpointsModule),

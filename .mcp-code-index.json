@@ -1047,6 +1047,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Geocoding.Endpoints",
+      "deps": [
+        "Granit.Geocoding",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Geocoding.Nominatim",
       "deps": [
         "Granit.Geocoding"
@@ -22808,6 +22817,87 @@
       ]
     },
     {
+      "name": "GeocodingAutocompleteResponse",
+      "fqn": "Granit.Geocoding.Endpoints.Dtos.GeocodingAutocompleteResponse",
+      "kind": "record",
+      "project": "Granit.Geocoding.Endpoints",
+      "file": "src/Granit.Geocoding.Endpoints/Dtos/GeocodingAutocompleteResponse.cs",
+      "line": 5,
+      "members": []
+    },
+    {
+      "name": "GeocodingReverseResponse",
+      "fqn": "Granit.Geocoding.Endpoints.Dtos.GeocodingReverseResponse",
+      "kind": "record",
+      "project": "Granit.Geocoding.Endpoints",
+      "file": "src/Granit.Geocoding.Endpoints/Dtos/GeocodingReverseResponse.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "GeocodingSuggestionResponse",
+      "fqn": "Granit.Geocoding.Endpoints.Dtos.GeocodingSuggestionResponse",
+      "kind": "record",
+      "project": "Granit.Geocoding.Endpoints",
+      "file": "src/Granit.Geocoding.Endpoints/Dtos/GeocodingSuggestionResponse.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "GeocodingEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Geocoding.Endpoints.Extensions.GeocodingEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Geocoding.Endpoints",
+      "file": "src/Granit.Geocoding.Endpoints/Extensions/GeocodingEndpointRouteBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "MapGranitGeocoding",
+          "kind": "method",
+          "signature": "MapGranitGeocoding(this IEndpointRouteBuilder endpoints, Action<GeocodingEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitGeocodingEndpointsModule",
+      "fqn": "Granit.Geocoding.Endpoints.GranitGeocodingEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Geocoding.Endpoints",
+      "file": "src/Granit.Geocoding.Endpoints/GranitGeocodingEndpointsModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GeocodingEndpointsOptions",
+      "fqn": "Granit.Geocoding.Endpoints.Options.GeocodingEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Geocoding.Endpoints",
+      "file": "src/Granit.Geocoding.Endpoints/Options/GeocodingEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "AddressExtensions",
       "fqn": "Granit.Geocoding.Extensions.AddressExtensions",
       "kind": "class",
@@ -40984,7 +41074,7 @@
       "kind": "class",
       "project": "Granit.OpenApi.Generator",
       "file": "src/Granit.OpenApi.Generator/GeneratorModule.cs",
-      "line": 50,
+      "line": 51,
       "members": []
     },
     {
