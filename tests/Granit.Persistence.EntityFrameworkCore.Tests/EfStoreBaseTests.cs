@@ -5,9 +5,10 @@
 //   1. Per-call evaluation (no constructor-time caching) — closes the edge
 //      case where a Scoped store was constructed before the tenant was activated
 //      and stayed in cross-tenant mode for the rest of the scope.
-//   2. Bypass when ICurrentTenant.IsAvailable=false — split by IHostAccessContext:
-//        - host-access signaled (via .AllowHostAccess()) → origin=host_endpoint
-//        - no signal → origin=implicit_unsignaled (alert-worthy: leak in flight)
+//   2. Behavior when ICurrentTenant.IsAvailable=false — split by IHostAccessContext:
+//        - host-access signaled (via .AllowHostAccess()) → filter BYPASSED, origin=host_endpoint
+//        - no signal → FAIL CLOSED (filter kept, host partition only),
+//          origin=implicit_unsignaled (alert-worthy: tenant-context loss)
 //   3. Explicit QueryAcrossTenants() → origin=explicit (caller opt-in).
 // =============================================================================
 
@@ -197,6 +198,63 @@ public sealed class EfStoreBaseTests : IDisposable
         collector.GetMeasurementSnapshot().ShouldBeEmpty();
     }
 
+    [Fact]
+    public async Task Query_UnsignaledNoTenant_FailsClosed_ReturnsOnlyHostPartition()
+    {
+        // The core VULN-200 guard: an unsignaled tenant-context loss must NOT widen the query
+        // to every tenant. With the named MultiTenant filter still in place and no active tenant
+        // (filter value == null), only the host partition (TenantId == null) is visible. The
+        // foreign-tenant row stays hidden — pre-fix this branch called IgnoreQueryFilters and
+        // returned both rows.
+        var foreignTenant = Guid.NewGuid();
+        FilteredTenantDbContextFactory factory = new(filterTenantId: null);
+        await SeedAsync(factory, ("host-row", null), ("tenant-row", foreignTenant));
+
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.IsAvailable.Returns(false);
+        FilteredTenantStore store = new(factory, tenant, hostAccess: null, _metrics);
+
+        await using FilteredTenantDbContext db = await factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        List<TestMultiTenantEntity> rows = await store.QueryEntities(db).ToListAsync(TestContext.Current.CancellationToken);
+
+        rows.ShouldHaveSingleItem();
+        rows[0].TenantId.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Query_HostSignalled_BypassesFilter_ReturnsAllTenants()
+    {
+        // The signaled host route (.AllowHostAccess()) is the authorized cross-tenant path:
+        // the filter is bypassed and every tenant's rows are visible.
+        var foreignTenant = Guid.NewGuid();
+        FilteredTenantDbContextFactory factory = new(filterTenantId: null);
+        await SeedAsync(factory, ("host-row", null), ("tenant-row", foreignTenant));
+
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.IsAvailable.Returns(false);
+        IHostAccessContext hostAccess = Substitute.For<IHostAccessContext>();
+        hostAccess.IsHostAccess.Returns(true);
+        FilteredTenantStore store = new(factory, tenant, hostAccess, _metrics);
+
+        await using FilteredTenantDbContext db = await factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        List<TestMultiTenantEntity> rows = await store.QueryEntities(db).ToListAsync(TestContext.Current.CancellationToken);
+
+        rows.Count.ShouldBe(2);
+    }
+
+    private static async Task SeedAsync(
+        FilteredTenantDbContextFactory factory,
+        params (string Name, Guid? TenantId)[] rows)
+    {
+        await using FilteredTenantDbContext db = factory.CreateDbContext();
+        foreach ((string name, Guid? tenantId) in rows)
+        {
+            db.MultiTenantEntities.Add(new TestMultiTenantEntity { Id = Guid.NewGuid(), Name = name, TenantId = tenantId });
+        }
+
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+    }
+
     // ──── Test fixtures ────
 
     private sealed class TestMultiTenantEntity : Entity, IMultiTenant
@@ -262,5 +320,51 @@ public sealed class EfStoreBaseTests : IDisposable
         : EfStoreBase<TestNonTenantEntity, TestDbContext>(contextFactory, currentTenant, hostAccess: null, metrics)
     {
         public IQueryable<TestNonTenantEntity> QueryEntities(TestDbContext db) => Query(db);
+    }
+
+    // A context that actually wires the named MultiTenant query filter, parameterized off an
+    // instance field (mirrors GranitDbContext). Lets the behavioral fail-closed tests observe
+    // row visibility, not just metrics. The filter value is null when no tenant is active, so a
+    // non-bypassed query is restricted to the host partition (TenantId == null).
+    private sealed class FilteredTenantDbContext(
+        DbContextOptions<FilteredTenantDbContext> options,
+        Guid? filterTenantId) : DbContext(options)
+    {
+        public DbSet<TestMultiTenantEntity> MultiTenantEntities => Set<TestMultiTenantEntity>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+            modelBuilder.Entity<TestMultiTenantEntity>(b =>
+            {
+                b.Property(e => e.Id).ValueGeneratedNever();
+                b.HasQueryFilter(GranitFilterNames.MultiTenant, e => e.TenantId == filterTenantId);
+            });
+    }
+
+    private sealed class FilteredTenantDbContextFactory(Guid? filterTenantId)
+        : IDbContextFactory<FilteredTenantDbContext>
+    {
+        private readonly string _databaseName = Guid.NewGuid().ToString();
+
+        public FilteredTenantDbContext CreateDbContext()
+        {
+            DbContextOptions<FilteredTenantDbContext> options =
+                new DbContextOptionsBuilder<FilteredTenantDbContext>()
+                    .UseInMemoryDatabase(_databaseName)
+                    .Options;
+            return new FilteredTenantDbContext(options, filterTenantId);
+        }
+
+        public Task<FilteredTenantDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult(CreateDbContext());
+    }
+
+    private sealed class FilteredTenantStore(
+        IDbContextFactory<FilteredTenantDbContext> contextFactory,
+        ICurrentTenant currentTenant,
+        IHostAccessContext? hostAccess,
+        PersistenceMetrics metrics)
+        : EfStoreBase<TestMultiTenantEntity, FilteredTenantDbContext>(contextFactory, currentTenant, hostAccess, metrics)
+    {
+        public IQueryable<TestMultiTenantEntity> QueryEntities(FilteredTenantDbContext db) => Query(db);
     }
 }

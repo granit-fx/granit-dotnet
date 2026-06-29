@@ -27,12 +27,15 @@ namespace Granit.Persistence.EntityFrameworkCore;
 /// ensuring thread-safe concurrent access and fresh query filter evaluation per operation.
 /// </para>
 /// <para>
-/// <b>Host context bypass:</b> When <c>currentTenant</c> is provided and no
+/// <b>Host context bypass (signaled only):</b> When <c>currentTenant</c> is provided and no
 /// tenant is active (<see cref="ICurrentTenant.IsAvailable"/> is <c>false</c>), the
-/// <see cref="GranitFilterNames.MultiTenant"/> named query filter is bypassed on all read
-/// operations so the caller sees entities across all tenants. This is used for host-level
-/// administration endpoints protected by <c>RequireHostContextEndpointFilter</c>.
-/// All other filters (soft-delete, GDPR, active) remain active.
+/// <see cref="GranitFilterNames.MultiTenant"/> named query filter is bypassed on read
+/// operations <b>only</b> when the request carries an explicit host-access signal
+/// (<see cref="IHostAccessContext.IsHostAccess"/>, set via <c>.AllowHostAccess()</c> behind
+/// <c>RequireHostContextEndpointFilter</c>). An unsignaled absence of a tenant fails CLOSED —
+/// the named filter stays active and only the host partition (<c>TenantId == null</c>) is
+/// visible — so a tenant-context loss can never widen a query to every tenant. All other
+/// filters (soft-delete, GDPR, active) remain active in both cases.
 /// </para>
 /// </remarks>
 /// <typeparam name="TEntity">The entity type (must inherit <see cref="Entity"/>).</typeparam>
@@ -93,23 +96,24 @@ public abstract class EfStoreBase<TEntity, TContext>
 
     /// <summary>
     /// Returns the base queryable for <typeparamref name="TEntity"/>.
-    /// In host context (no active tenant), the <see cref="GranitFilterNames.MultiTenant"/>
-    /// named query filter is bypassed so all entities are visible cross-tenant.
+    /// In a <b>signaled</b> host context (no active tenant + <see cref="IHostAccessContext.IsHostAccess"/>),
+    /// the <see cref="GranitFilterNames.MultiTenant"/> named query filter is bypassed so all entities
+    /// are visible cross-tenant. An unsignaled tenant-context loss fails CLOSED (host partition only).
     /// All other filters (soft-delete, GDPR, active) remain active.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// SECURITY: the bypass is evaluated on every call instead of being cached at
+    /// SECURITY: the tenant state is evaluated on every call instead of being cached at
     /// construction time, closing the edge case where a Scoped store was constructed
     /// before the tenant was activated and then served cross-tenant queries for the
     /// rest of the scope.
     /// </para>
     /// <para>
-    /// Every implicit bypass is recorded as
-    /// <c>granit.persistence.cross_tenant_query</c> with <c>origin=implicit</c> on
-    /// <see cref="PersistenceMetrics"/>. New call-sites that need cross-tenant access
-    /// should prefer the explicit <c>QueryAcrossTenants</c> for
-    /// readability and to receive an <c>origin=explicit</c> metric tag.
+    /// A signaled host bypass is recorded as <c>granit.persistence.cross_tenant_query</c> with
+    /// <c>origin=host_endpoint</c>; an unsignaled tenant-context loss fails CLOSED, is recorded
+    /// with <c>origin=implicit_unsignaled</c>, and is logged at <see cref="LogLevel.Warning"/> for
+    /// SOC alerting. New call-sites that need cross-tenant access should use the explicit
+    /// <c>QueryAcrossTenants</c> (<c>origin=explicit</c>) rather than relying on host context.
     /// </para>
     /// </remarks>
     protected IQueryable<TEntity> Query(TContext db)
@@ -117,19 +121,21 @@ public abstract class EfStoreBase<TEntity, TContext>
         if (s_isMultiTenantEntity && _currentTenant is { IsAvailable: false })
         {
             string entity = typeof(TEntity).Name;
-            bool signaled = _hostAccess?.IsHostAccess == true;
-            string origin = signaled ? "host_endpoint" : "implicit_unsignaled";
-            _metrics?.RecordCrossTenantQuery(entity, origin);
-            if (signaled)
+
+            // Only a signaled host-access route (.AllowHostAccess()) is authorized to read across
+            // tenants. Any UNSIGNALED absence of a tenant is treated as a context loss and fails
+            // CLOSED: the multi-tenant named filter is left in place, so the factory-created
+            // GranitDbContext restricts the result to the host partition
+            // (TenantId == CurrentTenantId == null) instead of leaking every tenant's rows.
+            if (_hostAccess?.IsHostAccess == true)
             {
+                _metrics?.RecordCrossTenantQuery(entity, "host_endpoint");
                 LogHostEndpointCrossTenantQuery(entity);
-            }
-            else
-            {
-                LogUnsignaledCrossTenantQuery(entity);
+                return db.Set<TEntity>().IgnoreQueryFilters([GranitFilterNames.MultiTenant]);
             }
 
-            return db.Set<TEntity>().IgnoreQueryFilters([GranitFilterNames.MultiTenant]);
+            _metrics?.RecordCrossTenantQuery(entity, "implicit_unsignaled");
+            LogUnsignaledCrossTenantQuery(entity);
         }
 
         return db.Set<TEntity>();
@@ -149,10 +155,10 @@ public abstract class EfStoreBase<TEntity, TContext>
     /// <c>origin=explicit</c> for SOC observability.
     /// </para>
     /// <para>
-    /// Prefer this method over the implicit bypass branch of <see cref="Query(TContext)"/>:
-    /// it makes the intent visible in the call site, distinguishes the metric tag, and
-    /// will remain available when a future release flips the implicit bypass to
-    /// fail-closed.
+    /// Prefer this method over the host-context branch of <see cref="Query(TContext)"/>:
+    /// it makes the intent visible in the call site and distinguishes the metric tag.
+    /// The implicit branch is fail-closed — it never widens an unsignaled query to all
+    /// tenants — so cross-tenant reads must come through here or a signaled host route.
     /// </para>
     /// </remarks>
     protected IQueryable<TEntity> QueryAcrossTenants(
@@ -171,10 +177,12 @@ public abstract class EfStoreBase<TEntity, TContext>
 
     private void LogUnsignaledCrossTenantQuery(string entity) =>
         _logger.LogWarning(
-            "Unsignaled cross-tenant query on {Entity}: ICurrentTenant.IsAvailable=false and "
+            "Unsignaled cross-tenant access on {Entity}: ICurrentTenant.IsAvailable=false and "
             + "no host-access signal was set on the request. This signals a tenant-context "
-            + "loss between request entry and the data layer. Investigate the call-site or "
-            + "mark the endpoint with .AllowHostAccess() if the bypass is intentional.",
+            + "loss between request entry and the data layer. The query has been restricted to "
+            + "the host partition (fail-closed) — no foreign-tenant rows are returned. Investigate "
+            + "the call-site, or mark the endpoint with .AllowHostAccess() if cross-tenant access "
+            + "is intended.",
             entity);
 
     private void LogHostEndpointCrossTenantQuery(string entity) =>

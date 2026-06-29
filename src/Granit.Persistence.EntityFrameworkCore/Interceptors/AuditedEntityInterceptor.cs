@@ -22,6 +22,13 @@ namespace Granit.Persistence.EntityFrameworkCore.Interceptors;
 /// automatically set. Set them explicitly in the <c>setPropertyCalls</c> expression,
 /// or load the entity and modify it via the change tracker.
 /// </para>
+/// <para>
+/// <b>Cross-tenant write guard:</b> on insert, a <see cref="IMultiTenant.TenantId"/> left
+/// <c>null</c> is stamped with the active tenant (or <c>null</c> in host context). A pre-set
+/// <c>TenantId</c> that points at a <i>different</i> tenant while a tenant is active throws —
+/// the query filter only protects reads, so this closes the insert-side cross-tenant gap.
+/// Imports/migrations that assign an explicit <c>TenantId</c> must run in host context.
+/// </para>
 /// </remarks>
 public sealed class AuditedEntityInterceptor(
     ICurrentUserService currentUserService,
@@ -89,11 +96,29 @@ public sealed class AuditedEntityInterceptor(
             entity.Id = guidGenerator.Create();
         }
 
-        // Multi-tenant isolation: inject current TenantId if the entity supports it.
-        // Explicit IsAvailable check per soft-dependency contract (NullTenantContext returns null).
-        if (entry.Entity is IMultiTenant multiTenant && multiTenant.TenantId is null)
+        // Multi-tenant isolation. Explicit IsAvailable check per soft-dependency contract
+        // (NullTenantContext returns null).
+        if (entry.Entity is IMultiTenant multiTenant)
         {
-            multiTenant.TenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+            Guid? activeTenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+
+            if (multiTenant.TenantId is null)
+            {
+                // Stamp the active tenant (or null in host context).
+                multiTenant.TenantId = activeTenantId;
+            }
+            else if (activeTenantId is not null && multiTenant.TenantId != activeTenantId)
+            {
+                // A pre-set TenantId that targets a DIFFERENT tenant under an active tenant is a
+                // cross-tenant write: the named query filter guards reads but never insertions.
+                // Fail closed. The explicit-override seam (migration/import) stays supported, but
+                // only in host context (no active tenant), where there is no tenant to violate.
+                throw new InvalidOperationException(
+                    $"Cross-tenant write blocked: '{entry.Entity.GetType().Name}' was created with " +
+                    $"TenantId '{multiTenant.TenantId}' while the active tenant is '{activeTenantId}'. " +
+                    "A multi-tenant entity may only be written for the active tenant; run imports and " +
+                    "migrations in host context (no active tenant) to assign a specific TenantId.");
+            }
         }
     }
 

@@ -119,7 +119,11 @@ public static class MigrationBuilderExtensions
     }
 
     // PostgreSQL identifier quoting (double quotes preserve case + reserved words).
-    private static string Quote(string identifier) => $"\"{identifier}\"";
+    // Embedded double quotes are doubled per the SQL delimited-identifier rule, so a stray
+    // quote in a caller-supplied name can never break out of the identifier (defense in depth —
+    // migration table/column names are authored, not request-supplied).
+    private static string Quote(string identifier) =>
+        $"\"{identifier.Replace("\"", "\"\"", StringComparison.Ordinal)}\"";
 
     private static string QualifyTable(string table, string? schema)
         => schema is null ? Quote(table) : $"{Quote(schema)}.{Quote(table)}";

@@ -417,12 +417,14 @@ public sealed class AuditedEntityInterceptorTests
     }
 
     [Fact]
-    public async Task SaveChangesAsync_MultiTenant_OnAdd_DoesNotOverwriteExistingTenantId()
+    public async Task SaveChangesAsync_MultiTenant_OnAdd_PreservesExplicitTenantId_InHostContext()
     {
-        // Arrange — TenantId déjà défini explicitement (migration, import)
+        // Arrange — TenantId défini explicitement (migration, import) HORS contexte tenant.
+        // Les imports/migrations s'exécutent en contexte hôte (aucun tenant actif), où l'on peut
+        // assigner un TenantId arbitraire sans violer un tenant courant : la valeur est conservée.
         var explicitTenant = Guid.NewGuid();
-        _currentTenant.IsAvailable.Returns(true);
-        _currentTenant.Id.Returns((Guid?)TenantId);
+        _currentTenant.IsAvailable.Returns(false);
+        _currentTenant.Id.Returns((Guid?)null);
         await using TestDbContext context = CreateContext();
         TestMultiTenantEntity entity = new() { Name = "Import", TenantId = explicitTenant };
         context.MultiTenantEntities.Add(entity);
@@ -432,6 +434,43 @@ public sealed class AuditedEntityInterceptorTests
 
         // Assert — le TenantId explicite est conservé
         entity.TenantId.ShouldBe(explicitTenant);
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_MultiTenant_OnAdd_AllowsExplicitTenantId_MatchingActiveTenant()
+    {
+        // Arrange — un TenantId explicite ÉGAL au tenant actif est légitime (round-trip d'une
+        // entité déjà taguée), et ne doit pas déclencher la garde cross-tenant.
+        _currentTenant.IsAvailable.Returns(true);
+        _currentTenant.Id.Returns((Guid?)TenantId);
+        await using TestDbContext context = CreateContext();
+        TestMultiTenantEntity entity = new() { Name = "Same tenant", TenantId = TenantId };
+        context.MultiTenantEntities.Add(entity);
+
+        // Act
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        entity.TenantId.ShouldBe(TenantId);
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_MultiTenant_OnAdd_Throws_WhenExplicitTenantId_MismatchesActiveTenant()
+    {
+        // Arrange — sous un tenant actif, créer une entité taguée pour un AUTRE tenant est une
+        // écriture cross-tenant : le filtre de requête protège les lectures, pas les insertions.
+        // L'intercepteur doit échouer fermé (fail-closed).
+        var foreignTenant = Guid.NewGuid();
+        _currentTenant.IsAvailable.Returns(true);
+        _currentTenant.Id.Returns((Guid?)TenantId);
+        await using TestDbContext context = CreateContext();
+        TestMultiTenantEntity entity = new() { Name = "Cross-tenant", TenantId = foreignTenant };
+        context.MultiTenantEntities.Add(entity);
+
+        // Act + Assert
+        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
+            async () => await context.SaveChangesAsync(TestContext.Current.CancellationToken));
+        ex.Message.ShouldContain("Cross-tenant write blocked");
     }
 
     // -------------------------------------------------------------------------

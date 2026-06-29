@@ -42421,7 +42421,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/EfStoreBase.cs",
-      "line": 40,
+      "line": 43,
       "members": []
     },
     {
@@ -42904,7 +42904,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Interceptors/AuditedEntityInterceptor.cs",
-      "line": 26,
+      "line": 33,
       "members": [
         {
           "name": "SavingChanges",
