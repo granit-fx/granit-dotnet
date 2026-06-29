@@ -17,7 +17,8 @@ namespace Granit.Geocoding.Photon.Internal;
 /// <see cref="PhotonGeocodingOptions.RateLimitPerSecond"/>, honouring komoot's fair-use policy. Failures are caught
 /// here and the address is never logged.
 /// </remarks>
-internal sealed partial class PhotonGeocodingProvider : IGeocodingProvider, IReverseGeocodingProvider, IDisposable
+internal sealed partial class PhotonGeocodingProvider
+    : IGeocodingProvider, IReverseGeocodingProvider, IAddressAutocompleteProvider, IDisposable
 {
     internal const string HttpClientName = "Granit.Geocoding.Photon";
 
@@ -163,6 +164,142 @@ internal sealed partial class PhotonGeocodingProvider : IGeocodingProvider, IRev
             LogLookupFailed(nameof(NotSupportedException));
             return null;
         }
+    }
+
+    public async Task<IReadOnlyList<AddressSuggestion>> SuggestAsync(
+        string query, int limit, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(query);
+
+        string requestQuery = BuildAutocompleteQuery(query, limit, _options.Value.Language);
+        HttpClient client = _httpClientFactory.CreateClient(HttpClientName);
+
+        try
+        {
+            // Shared throttle: autocomplete paces through the same gate as forward/reverse (komoot fair-use policy).
+            await ThrottleAsync(cancellationToken).ConfigureAwait(false);
+
+            using HttpRequestMessage request = new(HttpMethod.Get, $"api?{requestQuery}");
+            using HttpResponseMessage response =
+                await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                LogRequestUnsuccessful((int)response.StatusCode);
+                return [];
+            }
+
+            PhotonResponse? body = await response.Content
+                .ReadFromJsonAsync<PhotonResponse>(cancellationToken)
+                .ConfigureAwait(false);
+
+            return MapSuggestions(body);
+        }
+        catch (HttpRequestException)
+        {
+            LogLookupFailed(nameof(HttpRequestException));
+            return [];
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (OperationCanceledException)
+        {
+            LogLookupFailed("Timeout");
+            return [];
+        }
+        catch (JsonException)
+        {
+            LogLookupFailed(nameof(JsonException));
+            return [];
+        }
+        catch (NotSupportedException)
+        {
+            LogLookupFailed(nameof(NotSupportedException));
+            return [];
+        }
+    }
+
+    private static string BuildAutocompleteQuery(string query, int limit, string? language)
+    {
+        List<string> parameters =
+        [
+            $"q={Uri.EscapeDataString(query.Trim())}",
+            $"limit={limit.ToString(System.Globalization.CultureInfo.InvariantCulture)}",
+        ];
+        if (!string.IsNullOrWhiteSpace(language))
+        {
+            parameters.Add($"lang={Uri.EscapeDataString(language.Trim())}");
+        }
+
+        return string.Join('&', parameters);
+    }
+
+    private static List<AddressSuggestion> MapSuggestions(PhotonResponse? response)
+    {
+        if (response?.Features is not { Count: > 0 } features)
+        {
+            return [];
+        }
+
+        List<AddressSuggestion> suggestions = new(features.Count);
+        foreach (PhotonFeature feature in features)
+        {
+            PhotonProperties? properties = feature.Properties;
+            if (properties is null)
+            {
+                continue;
+            }
+
+            IReadOnlyList<double>? coordinates = feature.Geometry?.Coordinates;
+            GeoCoordinate? coordinate = coordinates is { Count: >= 2 }
+                ? GeoCoordinate.TryCreate(coordinates[1], coordinates[0])
+                : null;
+
+            PostalAddress address = new(
+                Street: BuildStreet(properties),
+                PostalCode: Sanitize(properties.Postcode),
+                Locality: Sanitize(properties.City) ?? string.Empty,
+                Country: Sanitize(properties.CountryCode)?.ToUpperInvariant() ?? string.Empty);
+
+            suggestions.Add(new AddressSuggestion(
+                BuildLabel(properties),
+                address,
+                coordinate,
+                DeterminePrecision(properties)));
+        }
+
+        return suggestions;
+    }
+
+    private static string BuildLabel(PhotonProperties properties)
+    {
+        List<string> parts = [];
+
+        string? street = BuildStreet(properties);
+        if (street is not null)
+        {
+            parts.Add(street);
+        }
+        else if (Sanitize(properties.Name) is { } name)
+        {
+            parts.Add(name);
+        }
+
+        string locality = string.Join(' ', new[] { Sanitize(properties.Postcode), Sanitize(properties.City) }
+            .Where(static p => p is not null));
+        if (locality.Length > 0)
+        {
+            parts.Add(locality);
+        }
+
+        if (Sanitize(properties.CountryCode)?.ToUpperInvariant() is { } country)
+        {
+            parts.Add(country);
+        }
+
+        // Fall back to the raw name so a suggestion always has a non-empty label.
+        return parts.Count > 0 ? string.Join(", ", parts) : Sanitize(properties.Name) ?? string.Empty;
     }
 
     private static string BuildReverseQuery(GeoCoordinate coordinate, string? language)

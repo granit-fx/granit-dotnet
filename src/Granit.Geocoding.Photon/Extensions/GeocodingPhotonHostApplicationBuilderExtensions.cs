@@ -76,6 +76,8 @@ public static class GeocodingPhotonHostApplicationBuilderExtensions
             static sp => sp.GetRequiredService<PhotonGeocodingProvider>());
         builder.Services.AddSingleton<IReverseGeocodingProvider>(
             static sp => sp.GetRequiredService<PhotonGeocodingProvider>());
+        builder.Services.AddSingleton<IAddressAutocompleteProvider>(
+            static sp => sp.GetRequiredService<PhotonGeocodingProvider>());
 
         return builder;
     }

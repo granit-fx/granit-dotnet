@@ -37,5 +37,13 @@ public sealed class GranitGeocodingModule : GranitModule
         context.Services.TryAddSingleton<GeocodingMetrics>();
         context.Services.TryAddSingleton<IGeocodingService, DefaultGeocodingService>();
         context.Services.TryAddSingleton<IReverseGeocodingService, DefaultReverseGeocodingService>();
+        context.Services.TryAddSingleton<IAddressAutocompleteService, DefaultAddressAutocompleteService>();
+
+        // Computed once from the registered provider set so hosts/endpoints can branch on what is available
+        // (e.g. only map an autocomplete endpoint when an autocomplete-capable provider is installed).
+        context.Services.TryAddSingleton(serviceProvider => new GeocodingCapabilities(
+            Forward: serviceProvider.GetServices<IGeocodingProvider>().Any(),
+            Autocomplete: serviceProvider.GetServices<IAddressAutocompleteProvider>().Any(),
+            Reverse: serviceProvider.GetServices<IReverseGeocodingProvider>().Any()));
     }
 }

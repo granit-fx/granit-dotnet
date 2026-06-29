@@ -209,6 +209,59 @@ public sealed class PhotonGeocodingProviderTests
         uri.ShouldContain("lon=4.3572");
     }
 
+    [Fact]
+    public async Task SuggestAsync_ParsesFeaturesToSuggestions()
+    {
+        const string json = """
+            {"features":[
+              {"geometry":{"coordinates":[4.3572,50.8476]},
+               "properties":{"type":"house","street":"Rue de la Loi","housenumber":"16","postcode":"1000","city":"Brussels","countrycode":"BE"}},
+              {"geometry":{"coordinates":[4.35,50.85]},
+               "properties":{"type":"city","name":"Brussels","city":"Brussels","countrycode":"BE"}}]}
+            """;
+        PhotonGeocodingProvider sut = CreateProvider(json, out _);
+
+        IReadOnlyList<AddressSuggestion> suggestions = await sut.SuggestAsync("rue de la loi", 5, Ct);
+
+        suggestions.Count.ShouldBe(2);
+        suggestions[0].Label.ShouldBe("Rue de la Loi 16, 1000 Brussels, BE");
+        suggestions[0].Address.Locality.ShouldBe("Brussels");
+        suggestions[0].Address.Country.ShouldBe("BE");
+        suggestions[0].Coordinate.ShouldBe(new GeoCoordinate(50.8476, 4.3572));
+        suggestions[0].Precision.ShouldBe(GeocodeMatchPrecision.Rooftop);
+    }
+
+    [Fact]
+    public async Task SuggestAsync_EmptyFeatureCollection_ReturnsEmpty()
+    {
+        PhotonGeocodingProvider sut = CreateProvider("""{"features":[]}""", out _);
+
+        (await sut.SuggestAsync("brussels", 5, Ct)).ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task SuggestAsync_BlankQuery_Throws(string query)
+    {
+        PhotonGeocodingProvider sut = CreateProvider("""{"features":[]}""", out _);
+
+        await Should.ThrowAsync<ArgumentException>(async () => await sut.SuggestAsync(query, 5, Ct));
+    }
+
+    [Fact]
+    public async Task SuggestAsync_BuildsQueryWithLimit()
+    {
+        PhotonGeocodingProvider sut = CreateProvider("""{"features":[]}""", out StubHttpMessageHandler handler);
+
+        await sut.SuggestAsync("rue de la loi", 7, Ct);
+
+        string uri = handler.LastRequest!.RequestUri!.AbsoluteUri;
+        uri.ShouldContain("api?");
+        uri.ShouldContain("q=");
+        uri.ShouldContain("limit=7");
+    }
+
     private static PhotonGeocodingProvider CreateProvider(
         string json,
         out StubHttpMessageHandler handler,

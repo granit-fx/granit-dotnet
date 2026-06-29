@@ -22765,6 +22765,15 @@
       ]
     },
     {
+      "name": "AddressSuggestion",
+      "fqn": "Granit.Geocoding.AddressSuggestion",
+      "kind": "record",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/AddressSuggestion.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "GeocodingMetrics",
       "fqn": "Granit.Geocoding.Diagnostics.GeocodingMetrics",
       "kind": "class",
@@ -22815,6 +22824,15 @@
       ]
     },
     {
+      "name": "GeocodingCapabilities",
+      "fqn": "Granit.Geocoding.GeocodingCapabilities",
+      "kind": "record",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/GeocodingCapabilities.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "GeocodingResult",
       "fqn": "Granit.Geocoding.GeocodingResult",
       "kind": "record",
@@ -22836,6 +22854,38 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IAddressAutocompleteProvider",
+      "fqn": "Granit.Geocoding.IAddressAutocompleteProvider",
+      "kind": "interface",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/IAddressAutocompleteProvider.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "SuggestAsync",
+          "kind": "method",
+          "signature": "SuggestAsync(string query, int limit, CancellationToken cancellationToken = default)",
+          "returnType": "string ProviderName { get; } Task<IReadOnlyList<AddressSuggestion>>"
+        }
+      ]
+    },
+    {
+      "name": "IAddressAutocompleteService",
+      "fqn": "Granit.Geocoding.IAddressAutocompleteService",
+      "kind": "interface",
+      "project": "Granit.Geocoding.Abstractions",
+      "file": "src/Granit.Geocoding.Abstractions/IAddressAutocompleteService.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "SuggestAsync",
+          "kind": "method",
+          "signature": "SuggestAsync(string query, int limit = 5, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<AddressSuggestion>>"
         }
       ]
     },
