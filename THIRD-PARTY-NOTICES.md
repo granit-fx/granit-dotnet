@@ -1,37 +1,37 @@
-# Avis relatifs aux composants tiers — granit-dotnet
+# Third-Party Notices — granit-dotnet
 
-Ce fichier répertorie les bibliothèques tierces utilisées par le projet
-**granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
-à chaque ajout ou modification de dépendance externe.
+This file lists the third-party libraries used by the **granit-dotnet**
+project and their respective licenses. It is updated whenever an external
+dependency is added or changed.
 
-Seules les **dépendances directes** y figurent. Les dépendances transitives
-sont couvertes par leurs propres avis de licence, restaurés depuis NuGet par
-le consommateur (les packages Granit ne redistribuent pas leurs binaires).
+Only **direct dependencies** are listed here. Transitive dependencies are
+covered by their own license notices, restored from NuGet by the consumer
+(Granit packages do not redistribute their binaries).
 
-Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.TextExtraction.Ocr.Tesseract lit les dimensions via Granit.Imaging / Magick.NET ; ajout de Markdig pour Granit.TextExtraction.Text ; montées de version : PuppeteerSharp 25.1.1, ModelContextProtocol 1.4.0, OpenTelemetry 1.16.0, Testcontainers.MsSql 4.12.0)
-
----
-
-## Récapitulatif des licences
-
-| Licence      | Nombre de packages |
-| ------------ | ------------------ |
-| MIT          | 95                 |
-| Apache-2.0   | 40                 |
-| BSD-3-Clause | 3                  |
-| BSD-2-Clause | 2                  |
-| PostgreSQL   | 2                  |
+Last updated: 2026-06-30 (global NuGet version refresh via `dotnet restore --force-evaluate`; aligned the OpenTelemetry instrumentation packages on 1.16.*; added three previously unlisted direct dependencies — DnsClient, Microsoft.Extensions.ApiDescription.Server, Npgsql.OpenTelemetry; removed dead central entries (packages referenced by no project, including modules migrated to granit-business); recomputed the license summary; notable bumps: WolverineFx 6.16.0, DocumentFormat.OpenXml 3.5.1, Scalar.AspNetCore 2.16.6, Anthropic 12.32.0, AWSSDK 4.0.100, Microsoft.\* 10.0.9 / 10.7.0, MailKit / MimeKit 4.17.0)
 
 ---
 
-## Dépendances de production
+## License summary
+
+| License      | Package count |
+| ------------ | ------------- |
+| MIT          | 102           |
+| Apache-2.0   | 46            |
+| BSD-3-Clause | 3             |
+| BSD-2-Clause | 2             |
+| PostgreSQL   | 2             |
+
+---
+
+## Production dependencies
 
 ### MIT
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| AngleSharp | 1.4.0 | Copyright (c) 2013-2025 AngleSharp Contributors |
-| Anthropic | 12.22.0 | Copyright 2026 Anthropic |
+| AngleSharp | 1.5.1 | Copyright (c) 2013-2025 AngleSharp Contributors |
+| Anthropic | 12.32.0 | Copyright 2026 Anthropic |
 | Asp.Versioning.Mvc | 10.0.0 | (c) .NET Foundation |
 | Asp.Versioning.Mvc.ApiExplorer | 10.0.0 | (c) .NET Foundation |
 | AspNet.Security.OAuth.Apple | 10.0.0 | (c) .NET Foundation |
@@ -42,72 +42,72 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 | Azure.Identity | 1.21.0 | (c) Microsoft Corporation |
 | Azure.Security.KeyVault.Keys | 4.10.0 | (c) Microsoft Corporation |
 | Azure.Security.KeyVault.Secrets | 4.11.0 | (c) Microsoft Corporation |
-| Azure.Storage.Blobs | 12.28.0 | (c) Microsoft Corporation |
+| Azure.Storage.Blobs | 12.29.1 | (c) Microsoft Corporation |
 | ClosedXML | 0.105.0 | ClosedXML Contributors |
 | Cronos | 0.13.0 | Copyright (c) 2016-2025 Hangfire OU |
-| DocumentFormat.OpenXml | 3.1.1 | Copyright (c) Microsoft Corporation |
+| DocumentFormat.OpenXml | 3.5.1 | Copyright (c) Microsoft Corporation |
 | Lib.Net.Http.WebPush | 3.3.1 | Copyright (c) Tomasz Pęczek |
-| MailKit | 4.16.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
+| MailKit | 4.17.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
 | MessagePack | 2.5.302 | Copyright (c) 2017 Yoshifumi Kawai and contributors |
-| Microsoft.AspNetCore.Authentication.Facebook | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Authentication.Google | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Authentication.MicrosoftAccount | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Authentication.OpenIdConnect | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Identity.EntityFrameworkCore | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.OpenApi | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.OutputCaching.StackExchangeRedis | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.SignalR.StackExchangeRedis | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.Facebook | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.Google | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.MicrosoftAccount | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.OpenIdConnect | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Identity.EntityFrameworkCore | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.OpenApi | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.OutputCaching.StackExchangeRedis | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.SignalR.StackExchangeRedis | 10.0.9 | (c) Microsoft Corporation |
 | Microsoft.Azure.NotificationHubs | 4.2.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.BannedApiAnalyzers | 3.3.4 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.Relational | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.SqlServer | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.Relational | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.SqlServer | 10.0.9 | (c) Microsoft Corporation |
 | Microsoft.Extensions.AI | 10.7.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.AI.Abstractions | 10.6.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.AI.OpenAI | 10.6.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.Abstractions | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.Hybrid | 10.6.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.Memory | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.StackExchangeRedis | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Configuration.Binder | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.DependencyInjection.Abstractions | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Diagnostics.HealthChecks | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Diagnostics.Testing | 10.6.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.FileSystemGlobbing | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Hosting.Abstractions | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Http | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Http.Resilience | 10.6.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Localization | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Localization.Abstractions | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Logging.Abstractions | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Options | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Options.ConfigurationExtensions | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.VectorData.Abstractions | 10.6.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.AI.Abstractions | 10.7.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.AI.OpenAI | 10.7.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.ApiDescription.Server | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.Abstractions | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.Hybrid | 10.7.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.Memory | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.StackExchangeRedis | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Configuration.Binder | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.DependencyInjection.Abstractions | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Diagnostics.HealthChecks | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Diagnostics.Testing | 10.7.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.FileSystemGlobbing | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Hosting.Abstractions | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Http | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Http.Resilience | 10.7.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Localization | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Localization.Abstractions | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Logging.Abstractions | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Options | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Options.ConfigurationExtensions | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.VectorData.Abstractions | 10.7.0 | (c) Microsoft Corporation |
 | Microsoft.IO.RecyclableMemoryStream | 3.0.1 | (c) Microsoft Corporation |
-| Microsoft.Playwright | 1.59.0 | (c) Microsoft Corporation |
-| MimeKit | 4.16.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
+| Microsoft.Playwright | 1.61.0 | (c) Microsoft Corporation |
+| MimeKit | 4.17.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
 | Mjml.Net | 4.11.0 | Copyright (c) Sebastian Stehle |
 | OllamaSharp | 5.4.25 | Copyright (c) 2023-2026 Awalon |
-| PdfPig | 0.1.14 | Copyright (c) Eliot Jones |
+| PdfPig | 0.1.15 | Copyright (c) Eliot Jones |
 | PDFtoImage | 5.2.1 | Copyright (c) David Sungaila |
 | Pgvector.EntityFrameworkCore | 0.3.0 | Copyright (c) Andrew Kane |
-| PuppeteerSharp | 25.1.1 | PuppeteerSharp Contributors |
-| Scalar.AspNetCore | 2.14.14 | Scalar Contributors |
-| Sep | 0.14.1 | Copyright (c) 2023 nietras |
+| PuppeteerSharp | 25.2.1 | PuppeteerSharp Contributors |
+| Scalar.AspNetCore | 2.16.6 | Scalar Contributors |
+| Sep | 0.15.0 | Copyright (c) 2023 nietras |
 | SmartFormat | 3.6.1 | Copyright 2011-2025 SmartFormat Project |
-| StackExchange.Redis | 2.13.1 | Copyright 2014-2026 Stack Exchange, Inc. |
+| StackExchange.Redis | 2.13.17 | Copyright 2014-2026 Stack Exchange, Inc. |
 | Sylvan.Data.Excel | 0.5.6 | Copyright (c) Mark Pflug |
-| System.Composition.AttributedModel | 9.0.16 | (c) Microsoft Corporation |
-| System.Text.Json | 9.0.16 | (c) Microsoft Corporation |
-| WolverineFx | 6.4.1 | JasperFx Contributors |
-| WolverineFx.EntityFrameworkCore | 6.4.1 | JasperFx Contributors |
-| WolverineFx.FluentValidation | 6.4.1 | JasperFx Contributors |
-| WolverineFx.Http.FluentValidation | 6.4.1 | JasperFx Contributors |
-| WolverineFx.Postgresql | 6.4.1 | JasperFx Contributors |
-| WolverineFx.RuntimeCompilation | 6.4.1 | JasperFx Contributors |
-| WolverineFx.SqlServer | 6.4.1 | JasperFx Contributors |
+| System.Composition.AttributedModel | 9.0.17 | (c) Microsoft Corporation |
+| System.Text.Json | 9.0.17 | (c) Microsoft Corporation |
+| WolverineFx | 6.16.0 | JasperFx Contributors |
+| WolverineFx.EntityFrameworkCore | 6.16.0 | JasperFx Contributors |
+| WolverineFx.FluentValidation | 6.16.0 | JasperFx Contributors |
+| WolverineFx.Postgresql | 6.16.0 | JasperFx Contributors |
+| WolverineFx.RuntimeCompilation | 6.16.0 | JasperFx Contributors |
+| WolverineFx.SqlServer | 6.16.0 | JasperFx Contributors |
 | Yarp.ReverseProxy | 2.3.0 | (c) Microsoft Corporation |
 | ZiggyCreatures.FusionCache | 2.6.0 | Copyright (c) Jody Donetti |
 | ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis | 2.6.0 | Copyright (c) Jody Donetti |
@@ -118,12 +118,13 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| AWSSDK.CognitoIdentityProvider | 4.0.8.7 | Amazon Web Services, Inc. |
-| AWSSDK.KeyManagementService | 4.0.11.1 | Amazon Web Services, Inc. |
-| AWSSDK.S3 | 4.0.23.4 | Amazon Web Services, Inc. |
-| AWSSDK.SecretsManager | 4.0.4.24 | Amazon Web Services, Inc. |
-| AWSSDK.SimpleEmailV2 | 4.0.13 | Amazon Web Services, Inc. |
-| AWSSDK.SimpleNotificationService | 4.0.2.34 | Amazon Web Services, Inc. |
+| AWSSDK.CognitoIdentityProvider | 4.0.100 | Amazon Web Services, Inc. |
+| AWSSDK.KeyManagementService | 4.0.100 | Amazon Web Services, Inc. |
+| AWSSDK.S3 | 4.0.100 | Amazon Web Services, Inc. |
+| AWSSDK.SecretsManager | 4.0.100 | Amazon Web Services, Inc. |
+| AWSSDK.SimpleEmailV2 | 4.0.100 | Amazon Web Services, Inc. |
+| AWSSDK.SimpleNotificationService | 4.0.100 | Amazon Web Services, Inc. |
+| DnsClient | 1.8.0 | Copyright (c) Michael Conrad (MichaCo) |
 | Elastic.Clients.Elasticsearch | 9.4.2 | Copyright Elasticsearch B.V. |
 | Fido2 | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.AspNet | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
@@ -133,8 +134,8 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 | FluentValidation.DependencyInjectionExtensions | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
 | Google.Cloud.Kms.V1 | 3.24.0 | Copyright (c) Google LLC |
 | Google.Cloud.SecretManager.V1 | 2.7.0 | Copyright (c) Google LLC |
-| Google.Cloud.Storage.V1 | 4.14.0 | Copyright (c) Google LLC |
-| Magick.NET-Q8-AnyCPU | 14.13.1 | Copyright 2013-2026 Dirk Lemstra |
+| Google.Cloud.Storage.V1 | 4.15.0 | Copyright (c) Google LLC |
+| Magick.NET-Q8-AnyCPU | 14.14.0 | Copyright 2013-2026 Dirk Lemstra |
 | MaxMind.GeoIP2 | 6.0.0 | Copyright (c) MaxMind, Inc. |
 | ModelContextProtocol | 1.4.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | ModelContextProtocol.AspNetCore | 1.4.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
@@ -147,11 +148,11 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 | OpenTelemetry.Api | 1.16.0 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.16.0 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Extensions.Hosting | 1.16.0 | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Instrumentation.AspNetCore | 1.15.2 | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Instrumentation.AWS | 1.15.1 | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Instrumentation.EntityFrameworkCore | 1.15.1-beta.1 | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Instrumentation.Http | 1.15.1 | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Instrumentation.StackExchangeRedis | 1.15.1-beta.1 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Instrumentation.AspNetCore | 1.16.0 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Instrumentation.AWS | 1.16.0 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Instrumentation.EntityFrameworkCore | 1.16.0-beta.1 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Instrumentation.Http | 1.16.0 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Instrumentation.StackExchangeRedis | 1.16.0-beta.1 | Copyright The OpenTelemetry Authors |
 | Serilog.AspNetCore | 10.0.0 | Serilog Contributors |
 | Serilog.Sinks.OpenTelemetry | 4.2.0 | Serilog Contributors |
 | Tesseract | 5.2.0 | Copyright (c) Charles Weld |
@@ -161,8 +162,8 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| Markdig | 1.3.0 | Copyright (c) Alexandre Mutel |
-| Scriban | 7.2.1 | Copyright (c) Alexandre Mutel |
+| Markdig | 1.3.2 | Copyright (c) Alexandre Mutel |
+| Scriban | 7.2.5 | Copyright (c) Alexandre Mutel |
 
 ### BSD-3-Clause
 
@@ -182,12 +183,12 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| Npgsql.EntityFrameworkCore.PostgreSQL | 10.0.1 | Copyright 2025 The Npgsql Development Team |
-| Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite | 10.0.1 | Copyright 2025 The Npgsql Development Team |
+| Npgsql.EntityFrameworkCore.PostgreSQL | 10.0.2 | Copyright 2025 The Npgsql Development Team |
+| Npgsql.OpenTelemetry | 10.0.3 | Copyright 2025 The Npgsql Development Team |
 
 ---
 
-## Dépendances de test uniquement
+## Test-only dependencies
 
 ### MIT (tests)
 
@@ -196,14 +197,14 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 | Bogus | 35.6.5 | Copyright (c) 2015 Brian Chavez |
 | coverlet.collector | 10.0.1 | (c) 2018 Toni Solarin-Sodara |
 | JunitXml.TestLogger | 7.1.0 | JunitXml.TestLogger Contributors |
-| Microsoft.AspNetCore.Mvc.Testing | 10.0.8 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Mvc.Testing | 10.0.9 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.Analyzers | 5.3.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.CSharp | 5.3.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.CSharp.Workspaces | 5.3.0 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.InMemory | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.Sqlite | 10.0.8 | (c) Microsoft Corporation |
-| Microsoft.Extensions.TimeProvider.Testing | 10.6.0 | (c) Microsoft Corporation |
-| Microsoft.NET.Test.Sdk | 18.5.1 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.InMemory | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.Sqlite | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.TimeProvider.Testing | 10.7.0 | (c) Microsoft Corporation |
+| Microsoft.NET.Test.Sdk | 18.7.0 | (c) Microsoft Corporation |
 | Testcontainers.Elasticsearch | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
 | Testcontainers.Keycloak | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
 | Testcontainers.MsSql | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
@@ -218,7 +219,7 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 | SQLitePCLRaw.core | 3.0.3 | Copyright (c) SourceGear, LLC (Eric Sink) |
 | TngTech.ArchUnitNET | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
 | TngTech.ArchUnitNET.xUnit | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
-| WireMock.Net | 2.7.0 | Copyright (c) WireMock.Net Contributors |
+| WireMock.Net | 2.11.0 | Copyright (c) WireMock.Net Contributors |
 | xunit.v3 | 3.2.2 | Copyright (C) .NET Foundation |
 | xunit.runner.visualstudio | 3.1.5 | Copyright (C) .NET Foundation |
 
@@ -231,191 +232,190 @@ Dernière mise à jour : 2026-06-15 (retrait de SixLabors.ImageSharp — Granit.
 
 ---
 
-## Dépendances binaires externes (runtime)
+## External binary dependencies (runtime)
 
 ### LibreOffice
 
-| Champ | Valeur |
+| Field | Value |
 | --- | --- |
-| Nom | LibreOffice |
-| Version | 7.x+ (recommandée) |
-| Licence | MPL-2.0 (binaire) + LGPL-3.0 (composants) |
+| Name | LibreOffice |
+| Version | 7.x+ (recommended) |
+| License | MPL-2.0 (binary) + LGPL-3.0 (components) |
 | Copyright | © The Document Foundation |
-| Date d'ajout | 2026-05-11 |
+| Added | 2026-05-11 |
 
-Binaire `soffice` invoqué par `Granit.Documents.Renditions.Office` via
-`Process.Start` (mode `--headless --convert-to pdf`). Aucun code LibreOffice
-n'est compilé, lié ou redistribué avec le framework — l'hôte installe la
-dépendance sur son image runtime (`apt-get install libreoffice` /
-`apk add libreoffice` / `brew install --cask libreoffice`). Le framework reste
-sous Apache-2.0.
+The `soffice` binary is invoked by `Granit.Documents.Renditions.Office` via
+`Process.Start` (`--headless --convert-to pdf` mode). No LibreOffice code is
+compiled, linked or redistributed with the framework — the host installs the
+dependency on its runtime image (`apt-get install libreoffice` /
+`apk add libreoffice` / `brew install --cask libreoffice`). The framework
+remains under Apache-2.0.
 
-### Bases de données géo-IP (MaxMind GeoLite2 / DB-IP)
+### Geo-IP databases (MaxMind GeoLite2 / DB-IP)
 
-| Champ | Valeur |
+| Field | Value |
 | --- | --- |
-| Nom | MaxMind GeoLite2 / DB-IP Lite (fichiers `.mmdb`) |
-| Licence | GeoLite2 : EULA MaxMind + CC BY-SA 4.0 (attribution) — DB-IP Lite : CC BY 4.0 |
+| Name | MaxMind GeoLite2 / DB-IP Lite (`.mmdb` files) |
+| License | GeoLite2: MaxMind EULA + CC BY-SA 4.0 (attribution) — DB-IP Lite: CC BY 4.0 |
 | Copyright | © MaxMind, Inc. / © db-ip.com |
-| Date d'ajout | 2026-06-12 |
+| Added | 2026-06-12 |
 
-Fichier de base de données lu en lecture seule par le module
-`Granit.IpGeolocation.MaxMind` (provider de géolocalisation IP hors-ligne).
-Le fichier `.mmdb` est **fourni et provisionné par le consommateur** (téléchargé
-depuis MaxMind ou DB-IP) ; il n'est **ni embarqué ni redistribué** par le
-framework. Les obligations d'attribution (CC BY-SA 4.0 / CC BY 4.0) et le respect
-de l'EULA MaxMind incombent au déploiement qui installe la base. Le framework
-reste sous Apache-2.0.
+The database file is read read-only by the `Granit.IpGeolocation.MaxMind`
+module (offline IP geolocation provider). The `.mmdb` file is **supplied and
+provisioned by the consumer** (downloaded from MaxMind or DB-IP); it is
+**neither embedded nor redistributed** by the framework. The attribution
+obligations (CC BY-SA 4.0 / CC BY 4.0) and compliance with the MaxMind EULA
+fall on the deployment that installs the database. The framework remains under
+Apache-2.0.
 
 ---
 
-## Jeux de données embarqués
+## Embedded datasets
 
 ### Franc trigram dataset
 
-| Champ | Valeur |
+| Field | Value |
 | --- | --- |
 | Source | <https://github.com/wooorm/franc> (`packages/franc-all/data.js`) |
-| Auteur | Titus Wormer, 2014+ |
-| Licence | MIT |
+| Author | Titus Wormer, 2014+ |
+| License | MIT |
 | Copyright | © 2014 Titus Wormer ; © 2008 Kent S Johnson ; © 2006 Jacob R Rideout |
-| Date d'ajout | 2026-05-26 |
+| Added | 2026-05-26 |
 
-Le fichier `src/Granit.LanguageDetection.Trigram/Resources/profiles.json` est dérivé
-du dataset Franc (parsé depuis le source JS en JSON compact, ~549 KB). Les profils
-de trigrammes ont été entraînés sur le corpus de la Déclaration universelle des
-droits de l'homme (UDHR) et des extraits Wikipédia. Le code C# du détecteur est
-une réimplémentation **clean-room** ; seules les données statistiques (tables de
-trigrammes ranked) sont reprises. La licence MIT permet l'inclusion sans
-contamination Apache-2.0 du framework, sous réserve du maintien de cette
-attribution.
+The `src/Granit.LanguageDetection.Trigram/Resources/profiles.json` file is
+derived from the Franc dataset (parsed from the JS source into compact JSON,
+~549 KB). The trigram profiles were trained on the Universal Declaration of
+Human Rights (UDHR) corpus and Wikipedia excerpts. The detector's C# code is a
+**clean-room** reimplementation; only the statistical data (ranked trigram
+tables) is reused. The MIT license allows inclusion without Apache-2.0
+contamination of the framework, provided this attribution is preserved.
 
-Le format d'origine (`data.js` JS) est documenté à
+The original format (`data.js` JS) is documented at
 <https://github.com/wooorm/franc/tree/main/packages/franc-all>.
 
 ---
 
-## Notes de conformité
+## Compliance notes
 
 ### AWSSDK.S3
 
-Ce SDK est utilisé uniquement pour la compatibilité S3 avec un stockage objet
-hébergé en Europe (S3-compatible object storage, API S3-compatible).
+This SDK is used solely for S3 compatibility with object storage hosted in
+Europe (S3-compatible object storage, S3-compatible API).
 
 ### AWSSDK.SimpleEmailV2
 
-Ce SDK fournit un canal d'envoi d'emails via Amazon SES. Il est utilisé par le
-package `Granit.Notifications.Email.AwsSes` comme alternative au canal SMTP.
+This SDK provides an email delivery channel via Amazon SES. It is used by the
+`Granit.Notifications.Email.AwsSes` package as an alternative to the SMTP channel.
 
 ### AWSSDK.SimpleNotificationService
 
-Ce SDK est utilisé par le package `Granit.Notifications.Push.Aws` pour l'envoi
-de notifications push mobiles via Amazon SNS comme alternative à Firebase Cloud
-Messaging et Azure Notification Hubs.
+This SDK is used by the `Granit.Notifications.Push.Aws` package to send mobile
+push notifications via Amazon SNS as an alternative to Firebase Cloud Messaging
+and Azure Notification Hubs.
 
 ### AWSSDK.CognitoIdentityProvider
 
-Ce SDK est utilisé par le package `Granit.Identity.Federated.Cognito` pour l'administration
-des utilisateurs AWS Cognito User Pools (CRUD, groupes, sessions, mots de passe)
-comme alternative au provider Keycloak.
+This SDK is used by the `Granit.Identity.Federated.Cognito` package to administer
+AWS Cognito User Pool users (CRUD, groups, sessions, passwords) as an alternative
+to the Keycloak provider.
 
 ### AWSSDK.KeyManagementService / AWSSDK.SecretsManager
 
-Ces SDK sont utilisés par le package `Granit.Vault.Aws` pour le chiffrement
-transit (KMS) et la gestion de credentials de base de données (Secrets Manager)
-comme alternative au provider HashiCorp Vault.
+These SDKs are used by the `Granit.Vault.Aws` package for transit encryption
+(KMS) and database credential management (Secrets Manager) as an alternative to
+the HashiCorp Vault provider.
 
 ### Azure.AI.OpenAI
 
-Ce SDK est utilisé par les modules `Granit.*.AI` pour l'intégration avec Azure
-OpenAI Service. Les données sont traitées dans la région Azure configurée par le
-déploiement. Aucun contenu utilisateur n'est utilisé pour l'entraînement des modèles.
+This SDK is used by the `Granit.*.AI` modules for integration with Azure OpenAI
+Service. Data is processed in the Azure region configured by the deployment. No
+user content is used to train the models.
 
 ### Azure.Security.KeyVault.Keys / Azure.Security.KeyVault.Secrets
 
-Ces SDK sont utilisés par le package `Granit.Vault.Azure` pour le chiffrement
-transit (Key Vault RSA) et la gestion de credentials de base de données
-(Key Vault Secrets) comme alternative au provider HashiCorp Vault.
+These SDKs are used by the `Granit.Vault.Azure` package for transit encryption
+(Key Vault RSA) and database credential management (Key Vault Secrets) as an
+alternative to the HashiCorp Vault provider.
 
 ### Azure.Storage.Blobs
 
-Ce SDK est utilisé par le package `Granit.BlobStorage.AzureBlob` pour le stockage
-d'objets binaires via Azure Blob Storage comme alternative aux providers S3 et
-Google Cloud Storage.
+This SDK is used by the `Granit.BlobStorage.AzureBlob` package for binary object
+storage via Azure Blob Storage as an alternative to the S3 and Google Cloud
+Storage providers.
 
 ### Azure.Communication.Email / Azure.Communication.Sms
 
-Ces SDK sont utilisés par les packages `Granit.Notifications.Email.AzureCommunicationServices`
-et `Granit.Notifications.Sms.AzureCommunicationServices` pour l'envoi d'emails et
-de SMS via Azure Communication Services.
+These SDKs are used by the `Granit.Notifications.Email.AzureCommunicationServices`
+and `Granit.Notifications.Sms.AzureCommunicationServices` packages to send emails
+and SMS via Azure Communication Services.
 
 ### FirebaseAdmin
 
-Ce SDK est utilisé par les packages `Granit.Identity.Firebase` (administration des
-utilisateurs Firebase Authentication) et `Granit.Notifications.Push.Firebase` (envoi
-de notifications push via Firebase Cloud Messaging).
+This SDK is used by the `Granit.Identity.Firebase` (Firebase Authentication user
+administration) and `Granit.Notifications.Push.Firebase` (push notification
+delivery via Firebase Cloud Messaging) packages.
 
 ### Google.Cloud.Kms.V1 / Google.Cloud.SecretManager.V1
 
-Ces SDK sont utilisés par le package `Granit.Vault.GoogleCloud` pour le chiffrement
-transit (Cloud KMS) et la gestion de credentials de base de données (Secret Manager)
-comme alternative au provider HashiCorp Vault.
+These SDKs are used by the `Granit.Vault.GoogleCloud` package for transit
+encryption (Cloud KMS) and database credential management (Secret Manager) as an
+alternative to the HashiCorp Vault provider.
 
 ### Google.Cloud.Storage.V1
 
-Ce SDK est utilisé par le package `Granit.BlobStorage.GoogleCloud` pour le stockage
-d'objets binaires via Google Cloud Storage comme alternative aux providers S3 et
-Azure Blob Storage.
+This SDK is used by the `Granit.BlobStorage.GoogleCloud` package for binary object
+storage via Google Cloud Storage as an alternative to the S3 and Azure Blob
+Storage providers.
 
 ### ipinfo.io (Granit.IpGeolocation.IpApi)
 
-Le package optionnel `Granit.IpGeolocation.IpApi` interroge l'API tierce
-[ipinfo.io](https://ipinfo.io) pour résoudre une adresse IP en localisation
-approximative. **RGPD :** l'adresse IP est une donnée personnelle transmise à un
-sous-traitant ; ce provider est donc **désactivé par défaut** et ne s'active que
-sur enregistrement explicite (`AddGranitIpGeolocationIpApi()`) et inscription dans
-`IpGeolocation:ProviderOrder`. Pour les déploiements sensibles, privilégier le
-provider hors-ligne `Granit.IpGeolocation.MaxMind`, qui n'émet aucun appel externe.
-Aucune bibliothèque ipinfo.io n'est compilée ni redistribuée (appels HTTP via
+The optional `Granit.IpGeolocation.IpApi` package queries the third-party
+[ipinfo.io](https://ipinfo.io) API to resolve an IP address into an approximate
+location. **GDPR:** an IP address is personal data transmitted to a processor, so
+this provider is **disabled by default** and only activates on explicit
+registration (`AddGranitIpGeolocationIpApi()`) and inclusion in
+`IpGeolocation:ProviderOrder`. For sensitive deployments, prefer the offline
+`Granit.IpGeolocation.MaxMind` provider, which emits no external calls. No
+ipinfo.io library is compiled or redistributed (HTTP calls via
 `IHttpClientFactory`).
 
 ### Microsoft.Azure.NotificationHubs
 
-Ce SDK est utilisé par le package `Granit.Notifications.MobilePush.AzureNotificationHubs`
-pour l'envoi de notifications push mobiles (FCM, APNS) via Azure Notification Hubs.
+This SDK is used by the `Granit.Notifications.MobilePush.AzureNotificationHubs`
+package to send mobile push notifications (FCM, APNS) via Azure Notification Hubs.
 
 ### Microsoft.Playwright
 
-Ce SDK est utilisé par le package `Granit.Browsing.Playwright` pour piloter un
-navigateur headless (impressions PDF, captures d'écran, scraping interne). Le
-binaire navigateur est téléchargé par Playwright à la première exécution sur
-l'image runtime — aucun binaire Chromium n'est redistribué avec le framework.
+This SDK is used by the `Granit.Browsing.Playwright` package to drive a headless
+browser (PDF rendering, screenshots, internal scraping). The browser binary is
+downloaded by Playwright on first run on the runtime image — no Chromium binary
+is redistributed with the framework.
 
 ### MimeKit
 
-Ce package est utilisé par `Granit.Notifications.Email.Smtp` pour la construction
-de messages MIME et par `Granit.TextExtraction.Email` pour l'extraction de texte
-depuis des fichiers `.eml` (RFC822). La version est épinglée à 4.16.0 via `Directory.Packages.props`
-pour corriger la vulnérabilité GHSA-g7hc-96xr-gvvx (CVE sur les versions < 4.15.1)
-et s'aligner sur l'exigence transitive de MailKit 4.16.0.
+This package is used by `Granit.Notifications.Email.Smtp` to build MIME messages
+and by `Granit.TextExtraction.Email` to extract text from `.eml` files (RFC822).
+The version is pinned to 4.16.0 via `Directory.Packages.props` to fix the
+GHSA-g7hc-96xr-gvvx vulnerability (CVE affecting versions < 4.15.1) and to align
+with the transitive requirement of MailKit 4.16.0.
 
 ### OllamaSharp
 
-Ce SDK est utilisé par les modules `Granit.*.AI` pour l'intégration avec des
-modèles de langage locaux via Ollama. Les données restent sur l'infrastructure
-de l'organisation (aucun appel vers des services cloud externes).
+This SDK is used by the `Granit.*.AI` modules for integration with local language
+models via Ollama. Data stays on the organization's infrastructure (no calls to
+external cloud services).
 
 ### Tesseract
 
-Ce package est utilisé par `Granit.TextExtraction.Ocr.Tesseract` comme moteur OCR
-local pour images raster (PNG, JPEG, TIFF, BMP). Wrapper .NET autour de la
-bibliothèque native `libtesseract` (Apache-2.0) qui doit être installée séparément
-sur l'hôte (`apt-get install libtesseract5 tesseract-ocr-{lang}`). Aucune donnée
-ne sort de l'hôte — c'est le pendant on-prem du module `Granit.TextExtraction.Ocr.AI`
-(qui s'appuie sur un VLM tiers).
+This package is used by `Granit.TextExtraction.Ocr.Tesseract` as a local OCR
+engine for raster images (PNG, JPEG, TIFF, BMP). A .NET wrapper around the native
+`libtesseract` library (Apache-2.0), which must be installed separately on the
+host (`apt-get install libtesseract5 tesseract-ocr-{lang}`). No data leaves the
+host — it is the on-prem counterpart of the `Granit.TextExtraction.Ocr.AI` module
+(which relies on a third-party VLM).
 
 ### Yarp.ReverseProxy
 
-Ce package est utilisé par `Granit.Bff.Yarp` pour le reverse proxy du Backend
-for Frontend (BFF). Il route les appels API du frontend vers les microservices
-backend sans exposer les tokens d'accès au navigateur.
+This package is used by `Granit.Bff.Yarp` for the Backend for Frontend (BFF)
+reverse proxy. It routes frontend API calls to backend microservices without
+exposing access tokens to the browser.

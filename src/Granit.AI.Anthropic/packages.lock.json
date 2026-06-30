@@ -5,8 +5,8 @@
       "Anthropic": {
         "type": "Direct",
         "requested": "[12.*, )",
-        "resolved": "12.29.1",
-        "contentHash": "EVq7ygOtMejWNXW+Dz+vv/ie50JgZB4jFc4gT2TTpBZXtp64zWRR7DqdGhbEaYThyMuaevN4ZRGUWBrSrb0+rg==",
+        "resolved": "12.32.0",
+        "contentHash": "1fL0MPfy60WNrr76YbhiSGWKccb6ASdSDZJItvb0O+xqFYumP8qr40xPqTYOKU+nV3m9jugNNR9n+NSWmjujew==",
         "dependencies": {
           "Microsoft.Extensions.AI.Abstractions": "10.5.1"
         }

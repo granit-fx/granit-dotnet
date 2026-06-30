@@ -68,7 +68,6 @@
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="10.*" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.*" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.*" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="10.*" />
     <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.3.*" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.*" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.*" />
@@ -107,7 +106,6 @@
     <PackageVersion Include="WolverineFx.Postgresql" Version="6.*" />
     <PackageVersion Include="WolverineFx.SqlServer" Version="6.*" />
     <PackageVersion Include="WolverineFx.FluentValidation" Version="6.*" />
-    <PackageVersion Include="WolverineFx.Http.FluentValidation" Version="6.*" />
     <!-- Roslyn runtime codegen was removed from core WolverineFx in 6.0 and moved to this
          opt-in package. Granit runs the default TypeLoadMode.Dynamic, so without it the host
          fails fast at startup ("no IAssemblyGenerator registered"). Auto-registers via its
@@ -126,16 +124,12 @@
   </ItemGroup>
   <ItemGroup Label="Imaging">
     <PackageVersion Include="Magick.NET-Q8-AnyCPU" Version="14.*" />
-    <PackageVersion Include="MetadataExtractor" Version="2.*" />
   </ItemGroup>
   <ItemGroup Label="Office">
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.*" />
   </ItemGroup>
   <ItemGroup Label="OCR">
     <PackageVersion Include="Tesseract" Version="5.*" />
-  </ItemGroup>
-  <ItemGroup Label="AudioVideo">
-    <PackageVersion Include="TagLibSharp" Version="2.*" />
   </ItemGroup>
   <ItemGroup Label="OpenIddict">
     <PackageVersion Include="OpenIddict" Version="7.*" />
@@ -165,16 +159,6 @@
     <PackageVersion Include="VaultSharp" Version="1.17.*" />
     <PackageVersion Include="Google.Cloud.Kms.V1" Version="3.*" />
     <PackageVersion Include="Google.Cloud.SecretManager.V1" Version="2.*" />
-  </ItemGroup>
-  <ItemGroup Label="Payments">
-    <PackageVersion Include="GoCardless" Version="9.*" />
-    <PackageVersion Include="Mollie.Api" Version="4.*" />
-    <PackageVersion Include="Stripe.net" Version="51.*" />
-  </ItemGroup>
-  <ItemGroup Label="Parties Deduplication">
-    <PackageVersion Include="FuzzySharp" Version="2.*" />
-    <PackageVersion Include="libphonenumber-csharp" Version="9.*" />
-    <PackageVersion Include="SoftWx.Match" Version="2.*" />
   </ItemGroup>
   <ItemGroup Label="Notifications">
     <PackageVersion Include="AWSSDK.SimpleEmailV2" Version="4.*" />
@@ -217,11 +201,11 @@
     <PackageVersion Include="OpenTelemetry" Version="1.16.*" />
     <PackageVersion Include="OpenTelemetry.Api" Version="1.16.*" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.16.*" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.*" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.*" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.15.*-beta.*" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.15.*-beta.*" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AWS" Version="1.15.*" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.16.*" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.16.*" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.16.*-beta.*" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.16.*-beta.*" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AWS" Version="1.16.*" />
     <PackageVersion Include="Npgsql.OpenTelemetry" Version="10.*" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.16.*" />
   </ItemGroup>
