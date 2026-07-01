@@ -1,0 +1,8 @@
+<!-- AUTO-TRANSLATED (manual, 2026-07-01) — REVIEW BEFORE PRODUCTION -->
+<title>您的 SSL/TLS 证书已激活</title>
+<p>您好，</p>
+<p>您的 <strong>{{ model.host }}</strong> 的 SSL/TLS 证书已签发并现已激活。</p>
+{{ if model.expires_at }}
+<p>证书有效期至 <strong>{{ model.expires_at | date.to_string '%Y年%m月%d日 %H:%M UTC' }}</strong>。</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

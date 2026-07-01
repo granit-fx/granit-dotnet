@@ -1,0 +1,8 @@
+<!-- AUTO-TRANSLATED (manual, 2026-07-01) — REVIEW BEFORE PRODUCTION -->
+<title>Váš certifikát SSL/TLS je aktivní</title>
+<p>Dobrý den,</p>
+<p>Váš certifikát SSL/TLS pro <strong>{{ model.host }}</strong> byl vydán a je nyní aktivní.</p>
+{{ if model.expires_at }}
+<p>Certifikát je platný do <strong>{{ model.expires_at | date.to_string '%d. %B %Y v %H:%M UTC' }}</strong>.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

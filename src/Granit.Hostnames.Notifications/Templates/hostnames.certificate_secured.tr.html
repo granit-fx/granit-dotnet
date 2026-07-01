@@ -1,0 +1,8 @@
+<!-- AUTO-TRANSLATED (manual, 2026-07-01) — REVIEW BEFORE PRODUCTION -->
+<title>SSL/TLS sertifikanız etkin</title>
+<p>Merhaba,</p>
+<p><strong>{{ model.host }}</strong> için SSL/TLS sertifikanız verildi ve şu anda etkin.</p>
+{{ if model.expires_at }}
+<p>Sertifika <strong>{{ model.expires_at | date.to_string '%d %B %Y %H:%M UTC' }}</strong> tarihine kadar geçerlidir.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

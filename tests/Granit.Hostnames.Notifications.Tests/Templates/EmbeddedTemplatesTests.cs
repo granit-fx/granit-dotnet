@@ -53,6 +53,47 @@ public sealed class EmbeddedTemplatesTests
         "Templates.hostnames.hostname_verification_failed.sv.html",
         "Templates.hostnames.hostname_verification_failed.tr.html",
         "Templates.hostnames.hostname_verification_failed.zh.html",
+        // ── hostnames.certificate_secured ────────────────────────────────────
+        // Neutral (= EN) variant.
+        "Templates.hostnames.certificate_secured.html",
+        // French — second baseline culture shipped out of the box.
+        "Templates.hostnames.certificate_secured.fr.html",
+        // Auto-translated cultures — review before production.
+        "Templates.hostnames.certificate_secured.cs.html",
+        "Templates.hostnames.certificate_secured.de.html",
+        "Templates.hostnames.certificate_secured.en-GB.html",
+        "Templates.hostnames.certificate_secured.es.html",
+        "Templates.hostnames.certificate_secured.fr-CA.html",
+        "Templates.hostnames.certificate_secured.hi.html",
+        "Templates.hostnames.certificate_secured.it.html",
+        "Templates.hostnames.certificate_secured.ja.html",
+        "Templates.hostnames.certificate_secured.ko.html",
+        "Templates.hostnames.certificate_secured.nl.html",
+        "Templates.hostnames.certificate_secured.pl.html",
+        "Templates.hostnames.certificate_secured.pt-BR.html",
+        "Templates.hostnames.certificate_secured.pt.html",
+        "Templates.hostnames.certificate_secured.sv.html",
+        "Templates.hostnames.certificate_secured.tr.html",
+        "Templates.hostnames.certificate_secured.zh.html",
+        // ── hostnames.certificate_failed ──────────────────────────────────────
+        "Templates.hostnames.certificate_failed.html",
+        "Templates.hostnames.certificate_failed.fr.html",
+        "Templates.hostnames.certificate_failed.cs.html",
+        "Templates.hostnames.certificate_failed.de.html",
+        "Templates.hostnames.certificate_failed.en-GB.html",
+        "Templates.hostnames.certificate_failed.es.html",
+        "Templates.hostnames.certificate_failed.fr-CA.html",
+        "Templates.hostnames.certificate_failed.hi.html",
+        "Templates.hostnames.certificate_failed.it.html",
+        "Templates.hostnames.certificate_failed.ja.html",
+        "Templates.hostnames.certificate_failed.ko.html",
+        "Templates.hostnames.certificate_failed.nl.html",
+        "Templates.hostnames.certificate_failed.pl.html",
+        "Templates.hostnames.certificate_failed.pt-BR.html",
+        "Templates.hostnames.certificate_failed.pt.html",
+        "Templates.hostnames.certificate_failed.sv.html",
+        "Templates.hostnames.certificate_failed.tr.html",
+        "Templates.hostnames.certificate_failed.zh.html",
     ];
 
     [Theory]

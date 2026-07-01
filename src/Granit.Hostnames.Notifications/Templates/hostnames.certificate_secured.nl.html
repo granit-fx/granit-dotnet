@@ -1,0 +1,8 @@
+<!-- AUTO-TRANSLATED (manual, 2026-07-01) — REVIEW BEFORE PRODUCTION -->
+<title>Uw SSL/TLS-certificaat is actief</title>
+<p>Hallo,</p>
+<p>Uw SSL/TLS-certificaat voor <strong>{{ model.host }}</strong> is uitgegeven en nu actief.</p>
+{{ if model.expires_at }}
+<p>Het certificaat is geldig tot <strong>{{ model.expires_at | date.to_string '%d %B %Y om %H:%M UTC' }}</strong>.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

@@ -1,0 +1,8 @@
+<!-- AUTO-TRANSLATED (manual, 2026-07-01) — REVIEW BEFORE PRODUCTION -->
+<title>SSL/TLS 인증서가 활성화되었습니다</title>
+<p>안녕하세요,</p>
+<p><strong>{{ model.host }}</strong>에 대한 SSL/TLS 인증서가 발급되어 현재 활성화되었습니다.</p>
+{{ if model.expires_at }}
+<p>인증서는 <strong>{{ model.expires_at | date.to_string '%Y년 %m월 %d일 %H:%M UTC' }}</strong>까지 유효합니다.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

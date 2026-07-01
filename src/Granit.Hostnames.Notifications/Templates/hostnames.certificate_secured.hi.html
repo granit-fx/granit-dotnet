@@ -1,0 +1,8 @@
+<!-- AUTO-TRANSLATED (manual, 2026-07-01) — REVIEW BEFORE PRODUCTION -->
+<title>आपका SSL/TLS प्रमाणपत्र सक्रिय है</title>
+<p>नमस्ते,</p>
+<p><strong>{{ model.host }}</strong> के लिए आपका SSL/TLS प्रमाणपत्र जारी कर दिया गया है और अब सक्रिय है।</p>
+{{ if model.expires_at }}
+<p>प्रमाणपत्र <strong>{{ model.expires_at | date.to_string '%d %B %Y को %H:%M UTC' }}</strong> तक मान्य है।</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

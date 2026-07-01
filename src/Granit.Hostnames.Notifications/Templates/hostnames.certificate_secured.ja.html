@@ -1,0 +1,8 @@
+<!-- AUTO-TRANSLATED (manual, 2026-07-01) — REVIEW BEFORE PRODUCTION -->
+<title>SSL/TLS 証明書が有効になりました</title>
+<p>こんにちは、</p>
+<p><strong>{{ model.host }}</strong> の SSL/TLS 証明書が発行され、現在有効です。</p>
+{{ if model.expires_at }}
+<p>証明書の有効期限は <strong>{{ model.expires_at | date.to_string '%Y年%m月%d日 %H:%M UTC' }}</strong> までです。</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>

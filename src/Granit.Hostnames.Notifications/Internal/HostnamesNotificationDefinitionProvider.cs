@@ -31,5 +31,25 @@ internal sealed class HostnamesNotificationDefinitionProvider : INotificationDef
             DefaultChannels = [NotificationChannels.Email],
             AllowUserOptOut = true,
         });
+
+        context.Add(new NotificationDefinition(HostnamesCertificateSecuredNotificationType.Instance.Name)
+        {
+            GroupName = GroupName,
+            DisplayName = "Certificate Secured",
+            Description = "Sent to the resource owner when the edge provider issues an SSL/TLS certificate for their hostname.",
+            DefaultSeverity = NotificationSeverity.Success,
+            DefaultChannels = [NotificationChannels.Email],
+            AllowUserOptOut = true,
+        });
+
+        context.Add(new NotificationDefinition(HostnamesCertificateFailedNotificationType.Instance.Name)
+        {
+            GroupName = GroupName,
+            DisplayName = "Certificate Failed",
+            Description = "Sent to the resource owner when SSL/TLS certificate provisioning fails for their hostname.",
+            DefaultSeverity = NotificationSeverity.Warning,
+            DefaultChannels = [NotificationChannels.Email],
+            AllowUserOptOut = true,
+        });
     }
 }

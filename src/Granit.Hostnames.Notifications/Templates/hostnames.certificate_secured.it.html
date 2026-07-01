@@ -1,0 +1,8 @@
+<!-- AUTO-TRANSLATED (manual, 2026-07-01) — REVIEW BEFORE PRODUCTION -->
+<title>Il tuo certificato SSL/TLS è attivo</title>
+<p>Salve,</p>
+<p>Il tuo certificato SSL/TLS per <strong>{{ model.host }}</strong> è stato emesso ed è ora attivo.</p>
+{{ if model.expires_at }}
+<p>Il certificato è valido fino al <strong>{{ model.expires_at | date.to_string '%d %B %Y alle %H:%M UTC' }}</strong>.</p>
+{{ end }}
+<p>Hostname ID: <code>{{ model.hostname_id }}</code></p>
