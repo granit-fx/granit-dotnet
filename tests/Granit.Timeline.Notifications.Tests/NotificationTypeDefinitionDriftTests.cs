@@ -19,6 +19,7 @@ public sealed class NotificationTypeDefinitionDriftTests
         [
             TimelineMentionNotificationType.Instance.Name,
             TimelineCommentNotificationType.Instance.Name,
+            TimelineReactionNotificationType.Instance.Name,
         ];
 
         foreach (string name in expectedNames)

@@ -19,4 +19,11 @@ public interface ITimelineNotifier
         TimelineEntry entry,
         IReadOnlyList<string> mentionedUserIds,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Notifies the entry's author that someone reacted to it. No-op if the reactor is the author.</summary>
+    Task NotifyReactionToggledAsync(
+        TimelineEntry entry,
+        string reactingUserId,
+        string emoji,
+        CancellationToken cancellationToken = default);
 }

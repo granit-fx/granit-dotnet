@@ -145,4 +145,37 @@ public sealed class InMemoryTimelineQueryTests
         page.Items.ShouldContain(e => e.EntryType == TimelineStreamEntryType.SystemLog);
         page.Items.ShouldContain(e => e.EntryType == TimelineStreamEntryType.InternalNote);
     }
+
+    [Fact]
+    public async Task GetByIdAsync_ExistingEntry_ReturnsEntry()
+    {
+        TimelineEntry entry = await _store.PostEntryAsync(
+            "Patient", "p-1", TimelineEntryType.Comment, "Hello", cancellationToken: TestContext.Current.CancellationToken);
+
+        TimelineEntry? result = await _query.GetByIdAsync(entry.Id, TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.Id.ShouldBe(entry.Id);
+        result.Body.ShouldBe("Hello");
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_UnknownEntry_ReturnsNull()
+    {
+        TimelineEntry? result = await _query.GetByIdAsync(Guid.NewGuid(), TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_SoftDeletedEntry_ReturnsNull()
+    {
+        TimelineEntry entry = await _store.PostEntryAsync(
+            "Patient", "p-1", TimelineEntryType.Comment, "To delete", cancellationToken: TestContext.Current.CancellationToken);
+        await _store.DeleteEntryAsync(entry.Id, TestContext.Current.CancellationToken);
+
+        TimelineEntry? result = await _query.GetByIdAsync(entry.Id, TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
 }

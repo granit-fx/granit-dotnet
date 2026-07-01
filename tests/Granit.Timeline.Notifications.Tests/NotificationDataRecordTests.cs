@@ -58,4 +58,31 @@ public sealed class NotificationDataRecordTests
 
         a.ShouldBe(b);
     }
+
+    [Fact]
+    public void TimelineReactionNotificationData_SetsAllProperties()
+    {
+        var entryId = Guid.NewGuid();
+
+        TimelineReactionNotificationData data = new(
+            "Patient", "p-1", entryId, "user-2", "Bob", "👍");
+
+        data.EntityType.ShouldBe("Patient");
+        data.EntityId.ShouldBe("p-1");
+        data.EntryId.ShouldBe(entryId);
+        data.ReactingUserId.ShouldBe("user-2");
+        data.ReactingUserName.ShouldBe("Bob");
+        data.Emoji.ShouldBe("👍");
+    }
+
+    [Fact]
+    public void TimelineReactionNotificationData_RecordEquality()
+    {
+        var entryId = Guid.NewGuid();
+
+        TimelineReactionNotificationData a = new("Patient", "p-1", entryId, "user-2", "Bob", "👍");
+        TimelineReactionNotificationData b = new("Patient", "p-1", entryId, "user-2", "Bob", "👍");
+
+        a.ShouldBe(b);
+    }
 }

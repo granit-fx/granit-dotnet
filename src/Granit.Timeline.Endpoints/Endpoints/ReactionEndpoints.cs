@@ -30,7 +30,7 @@ internal static class ReactionEndpoints
             .RequireAuthorization(TimelinePermissions.Reactions.React)
             .WithName("ToggleTimelineReaction")
             .WithSummary("Toggles a reaction on a timeline entry by the calling user.")
-            .WithDescription("Idempotent toggle — adds the reaction if absent, removes if present. Accepts any well-formed Unicode emoji sequence (see EmojiValidator); rejects malformed input with 400 and Granit:Timeline:InvalidEmoji. Emits ReactionToggledEvent on the local bus on success. Concurrent double-POST is collapsed by the unique (EntryId, UserId, Emoji) DB index.")
+            .WithDescription("Idempotent toggle — adds the reaction if absent, removes if present. Accepts any well-formed Unicode emoji sequence (see EmojiValidator); rejects malformed input with 400 and Granit:Timeline:InvalidEmoji. Emits ReactionToggledEvent on the local bus on success. Notifies the entry's author when a reaction is added (skipped for removals and self-reactions). Concurrent double-POST is collapsed by the unique (EntryId, UserId, Emoji) DB index.")
             .Produces<ReactionToggleResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
@@ -42,6 +42,8 @@ internal static class ReactionEndpoints
         [FromRoute] string emoji,
         [FromServices] IReactionReader reader,
         [FromServices] IReactionWriter writer,
+        [FromServices] ITimelineReader entryReader,
+        [FromServices] ITimelineNotifier notifier,
         [FromServices] ILocalEventBus eventBus,
         [FromServices] ICurrentUserService currentUser,
         [FromServices] ICurrentTenant currentTenant,
@@ -94,6 +96,16 @@ internal static class ReactionEndpoints
         await eventBus
             .PublishAsync(new ReactionToggledEvent(entryId, userId, emoji, action), cancellationToken)
             .ConfigureAwait(false);
+
+        // Notify the entry's author only when a reaction is added (not removed, to avoid noise).
+        if (action == ReactionToggleAction.Added)
+        {
+            TimelineEntry? entry = await entryReader.GetByIdAsync(entryId, cancellationToken).ConfigureAwait(false);
+            if (entry is not null)
+            {
+                await notifier.NotifyReactionToggledAsync(entry, userIdRaw, emoji, cancellationToken).ConfigureAwait(false);
+            }
+        }
 
         IReadOnlyList<Reaction> after = await reader
             .GetByEntryAsync(entryId, cancellationToken)

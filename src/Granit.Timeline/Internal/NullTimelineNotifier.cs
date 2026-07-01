@@ -16,4 +16,8 @@ internal sealed class NullTimelineNotifier : ITimelineNotifier
     /// <inheritdoc/>
     public Task NotifyMentionedUsersAsync(TimelineEntry entry, IReadOnlyList<string> mentionedUserIds, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
+
+    /// <inheritdoc/>
+    public Task NotifyReactionToggledAsync(TimelineEntry entry, string reactingUserId, string emoji, CancellationToken cancellationToken = default) =>
+        Task.CompletedTask;
 }

@@ -92,4 +92,30 @@ public sealed class NullTimelineNotifierTests
         result.IsCompleted.ShouldBeTrue();
         await result;
     }
+
+    [Fact]
+    public async Task NotifyReactionToggledAsync_CompletesWithoutThrowing()
+    {
+        var entry = TimelineEntry.Create(
+            Guid.NewGuid(), new EntityReference("Patient", "123"), TimelineEntryType.Comment,
+            "Test comment", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
+
+        Task act() => _notifier.NotifyReactionToggledAsync(
+            entry, "user-2", "👍", TestContext.Current.CancellationToken);
+
+        await Should.NotThrowAsync(act);
+    }
+
+    [Fact]
+    public async Task NotifyReactionToggledAsync_ReturnsCompletedTask()
+    {
+        var entry = TimelineEntry.Create(
+            Guid.NewGuid(), new EntityReference("Patient", "1"), TimelineEntryType.Comment,
+            "text", new AuthorInfo("user-1", "Bob"), DateTimeOffset.UtcNow, "user-1");
+
+        Task result = _notifier.NotifyReactionToggledAsync(entry, "user-2", "👍", TestContext.Current.CancellationToken);
+
+        result.IsCompleted.ShouldBeTrue();
+        await result;
+    }
 }

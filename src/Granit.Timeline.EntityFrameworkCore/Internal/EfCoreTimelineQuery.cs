@@ -105,6 +105,18 @@ internal sealed class EfCoreTimelineQuery(
         return MapToStreamEntry(entry, attachments);
     }
 
+    /// <inheritdoc/>
+    public async Task<TimelineEntry?> GetByIdAsync(
+        Guid entryId,
+        CancellationToken cancellationToken = default)
+    {
+        await using TimelineDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        return await db.TimelineEntries
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == entryId, cancellationToken).ConfigureAwait(false);
+    }
+
     private static TimelineStreamEntry MapToStreamEntry(
         TimelineEntry entry, IEnumerable<TimelineAttachment> attachments) =>
         new()

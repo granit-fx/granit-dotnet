@@ -59,6 +59,17 @@ internal sealed class InMemoryTimelineQuery(
         return Task.FromResult(entry);
     }
 
+    /// <inheritdoc/>
+    public Task<TimelineEntry?> GetByIdAsync(
+        Guid entryId,
+        CancellationToken cancellationToken = default)
+    {
+        TimelineEntry? entry = store.Entries.TryGetValue(entryId, out TimelineEntry? e) && !e.IsDeleted
+            ? e
+            : null;
+        return Task.FromResult(entry);
+    }
+
     private TimelineStreamEntry MapToStreamEntry(TimelineEntry entry) =>
         new()
         {

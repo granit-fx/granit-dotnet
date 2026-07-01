@@ -94,6 +94,37 @@ internal sealed class NotificationBackedNotifier(
             cancellationToken).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public async Task NotifyReactionToggledAsync(
+        TimelineEntry entry,
+        string reactingUserId,
+        string emoji,
+        CancellationToken cancellationToken = default)
+    {
+        // No self-notification — skip publish entirely if the reactor is the author.
+        if (reactingUserId == entry.AuthorId)
+        {
+            return;
+        }
+
+        TimelineReactionNotificationData data = new(
+            entry.EntityType,
+            entry.EntityId,
+            entry.Id,
+            reactingUserId,
+            null,
+            emoji);
+
+        EntityReference relatedEntity = new(entry.EntityType, entry.EntityId);
+
+        await publisher.PublishAsync(
+            TimelineReactionNotificationType.Instance,
+            data,
+            [entry.AuthorId],
+            relatedEntity,
+            cancellationToken).ConfigureAwait(false);
+    }
+
     private static string TruncateBody(string body)
     {
         if (body.Length <= MaxBodyPreviewLength)

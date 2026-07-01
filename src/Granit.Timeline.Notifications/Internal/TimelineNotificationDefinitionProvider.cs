@@ -32,5 +32,15 @@ internal sealed class TimelineNotificationDefinitionProvider : INotificationDefi
             DefaultChannels = [NotificationChannels.InApp, NotificationChannels.SignalR],
             AllowUserOptOut = true,
         });
+
+        context.Add(new NotificationDefinition(TimelineReactionNotificationType.Instance.Name)
+        {
+            GroupName = GroupName,
+            DisplayName = "Timeline Reaction",
+            Description = "Notifies the entry's author when someone reacts to their timeline entry.",
+            DefaultSeverity = NotificationSeverity.Info,
+            DefaultChannels = [NotificationChannels.InApp, NotificationChannels.SignalR],
+            AllowUserOptOut = true,
+        });
     }
 }

@@ -1,4 +1,5 @@
 using Granit.QueryEngine;
+using Granit.Timeline.Domain;
 using Granit.Timeline.Exceptions;
 
 namespace Granit.Timeline.Abstractions;
@@ -36,6 +37,17 @@ public interface ITimelineReader
     Task<TimelineStreamEntry?> GetEntryAsync(
         string entityType,
         string entityId,
+        Guid entryId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the raw <see cref="TimelineEntry"/> aggregate for a single entry id,
+    /// or <see langword="null"/> when no matching entry exists (soft-deleted or unknown id).
+    /// Used for internal orchestration (e.g. reaction notifications) where the caller only
+    /// has the entry id — unlike <see cref="GetEntryAsync"/>, no entity scoping is required.
+    /// Scoped to the current tenant by the same query filter as <see cref="GetStreamAsync"/>.
+    /// </summary>
+    Task<TimelineEntry?> GetByIdAsync(
         Guid entryId,
         CancellationToken cancellationToken = default);
 }
