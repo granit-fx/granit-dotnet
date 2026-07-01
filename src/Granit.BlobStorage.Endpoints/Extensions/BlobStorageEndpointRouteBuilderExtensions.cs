@@ -48,13 +48,24 @@ public static class BlobStorageEndpointRouteBuilderExtensions
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
-        RouteGroupBuilder blobsGroup = group.MapGranitGroup("blobs");
+        // Each permission tier gets its own "blobs" group: authorization added to a RouteGroupBuilder
+        // is a convention that applies to EVERY endpoint mapped from it, so reusing a single group would
+        // make every endpoint require the union of all policies — read endpoints would silently demand
+        // Manage as well. Distinct group builders sharing the same URL prefix keep the conventions isolated.
+        group.MapGranitGroup("blobs")
+            .RequireAuthorization(BlobStoragePermissions.Administration.Read)
+            .MapReadEndpoints();
 
-        blobsGroup.RequireAuthorization(BlobStoragePermissions.Administration.Read).MapReadEndpoints();
-        blobsGroup.RequireAuthorization(BlobStoragePermissions.Administration.Manage).MapWriteEndpoints();
-        blobsGroup.RequireAuthorization(BlobStoragePermissions.Administration.Manage).MapOperationEndpoints();
+        group.MapGranitGroup("blobs")
+            .RequireAuthorization(BlobStoragePermissions.Administration.Manage)
+            .MapWriteEndpoints();
 
-        blobsGroup.RequireAuthorization(BlobStoragePermissions.Administration.Read)
+        group.MapGranitGroup("blobs")
+            .RequireAuthorization(BlobStoragePermissions.Administration.Manage)
+            .MapOperationEndpoints();
+
+        group.MapGranitGroup("blobs")
+            .RequireAuthorization(BlobStoragePermissions.Administration.Read)
             .MapGranitQuery<BlobDescriptor>();
 
         return group;
