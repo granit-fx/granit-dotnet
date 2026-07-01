@@ -1,3 +1,5 @@
+using Granit.DataProtection;
+using Granit.Encryption;
 using Granit.Events;
 
 namespace Granit.Identity;
@@ -39,7 +41,10 @@ public sealed record SuspiciousUserSessionDetectedEto(
     double RiskScore,
     string? City,
     string? CountryCode,
+    [property: SensitiveData]
     string? UserAgent,
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask), Encrypted]
     string? IpAddress,
     DateTimeOffset DetectedAt,
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Hash), Encrypted]
     string? DeviceId = null) : IIntegrationEvent;

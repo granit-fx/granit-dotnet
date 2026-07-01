@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Domain.ValueObjects;
 
 namespace Granit.IpGeolocation;
@@ -30,6 +31,7 @@ public sealed record GeoLocation
     /// a source provides both or neither — so they are modelled as one range-validated value object rather than two
     /// independently-nullable doubles.
     /// </summary>
+    [SensitiveData(Level = Sensitivity.Confidential)]
     public GeoCoordinate? Coordinate { get; init; }
 
     /// <summary>

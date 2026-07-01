@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.IpGeolocation;
 
 namespace Granit.Identity;
@@ -31,7 +32,10 @@ public sealed record UserSessionDescriptor(
     bool IsCurrent,
     DateTimeOffset CreatedAt,
     DateTimeOffset? LastAccessedAt,
+    [property: SensitiveData]
     string? UserAgent,
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask)]
     string? IpAddress,
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask)]
     GeoLocation? Location,
     DeviceKind Kind = DeviceKind.Unknown);
