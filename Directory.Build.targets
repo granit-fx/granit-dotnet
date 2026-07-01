@@ -31,4 +31,19 @@
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
     <PackageReference Include="SQLitePCLRaw.core" />
   </ItemGroup>
+
+  <!--
+    Security override (GHSA-v5pm-xwqc-g5wc, HIGH / CVSS 7.5 — circular-schema stack overflow).
+    Microsoft.AspNetCore.OpenApi 10.0.x transitively pulls Microsoft.OpenApi 2.0.0, which is affected
+    (vulnerable range 2.0.0-preview11 .. 2.7.4; patched in 2.7.5 on the 2.x line). It is the sole direct
+    parent of the package across the solution, so promoting the patched 2.x version to a DIRECT reference
+    on every project that references Microsoft.AspNetCore.OpenApi removes the vulnerable package from the
+    graph — nearest-wins then propagates 2.7.5 to all transitive consumers — without enabling global
+    transitive pinning, which would disturb the deliberate Roslyn analyzer pins. Version centralised in
+    Directory.Packages.props. Drop this once Microsoft.AspNetCore.OpenApi ships a build that references
+    Microsoft.OpenApi >= 2.7.5.
+  -->
+  <ItemGroup Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.AspNetCore.OpenApi'))">
+    <PackageReference Include="Microsoft.OpenApi" />
+  </ItemGroup>
 </Project>
