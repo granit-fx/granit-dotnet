@@ -33,12 +33,10 @@ public sealed class GranitPrivacyNotificationsModule : GranitModule
         // admin API (DB-backed resolver runs at higher priority than the embedded one).
         context.Services.AddEmbeddedTemplates(typeof(GranitPrivacyNotificationsModule).Assembly);
 
-        // Layout glob — covers both the snake_case notification names and the legacy
-        // PascalCase one (Privacy.LegalDocumentObsolete). The host application registers
-        // the actual `Layout.Email` template; if absent, templates render without layout
-        // (warning logged, no crash).
+        // Layout glob — covers all snake_case notification names. The host application
+        // registers the actual `Layout.Email` template; if absent, templates render
+        // without layout (warning logged, no crash).
         context.Services.AddTemplateLayout("privacy.*", "Layout.Email");
-        context.Services.AddTemplateLayout("Privacy.*", "Layout.Email");
 
         context.Services.AddSingleton<INotificationDefinitionProvider, PrivacyNotificationDefinitionProvider>();
     }

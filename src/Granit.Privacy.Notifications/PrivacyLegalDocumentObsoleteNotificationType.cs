@@ -13,7 +13,9 @@ public sealed class PrivacyLegalDocumentObsoleteNotificationType
     public static readonly PrivacyLegalDocumentObsoleteNotificationType Instance = new();
 
     /// <inheritdoc />
-    public override string Name => "Privacy.LegalDocumentObsolete";
+    // Breaking rename from legacy "Privacy.LegalDocumentObsolete": hosts with stored user
+    // notification-subscription preferences keyed by the old PascalCase name need a host-specific data migration.
+    public override string Name => "privacy.legal_document_obsolete";
 
     /// <inheritdoc />
     public override NotificationSeverity DefaultSeverity => NotificationSeverity.Warning;
