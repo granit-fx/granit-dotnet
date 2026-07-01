@@ -4,7 +4,7 @@ namespace Granit.Authorization;
 /// Singleton aggregator of all <see cref="IPermissionDefinitionProvider"/> registrations.
 /// Provides lookup and enumeration of all declared permissions at runtime.
 /// </summary>
-public interface IPermissionDefinitionManager
+public interface IPermissionDefinitionRegistry
 {
     /// <summary>Returns true if a permission with this exact name has been declared.</summary>
     bool Exists(string name);

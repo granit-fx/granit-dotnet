@@ -3,7 +3,7 @@ namespace Granit.Settings.Providers;
 /// <summary>
 /// Manager of setting value providers, sorted by priority order.
 /// </summary>
-public sealed class SettingValueProviderManager(IEnumerable<ISettingValueProvider> providers)
+public sealed class SettingValueProviderRegistry(IEnumerable<ISettingValueProvider> providers)
 {
     /// <summary>
     /// Ordered list of providers, from highest priority (U=100) to lowest priority (D=500).

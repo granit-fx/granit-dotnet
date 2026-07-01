@@ -1,5 +1,5 @@
 // =============================================================================
-// SettingValueProviderManagerTests - Unit tests for the provider registry
+// SettingValueProviderRegistryTests - Unit tests for the provider registry
 // =============================================================================
 // Verifies that providers are sorted by ascending Order
 // and that GetOrNull returns the correct provider or null.
@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Granit.Settings.Tests;
 
-public sealed class SettingValueProviderManagerTests
+public sealed class SettingValueProviderRegistryTests
 {
     private static ISettingValueProvider MakeProvider(string name, int order)
     {
@@ -29,7 +29,7 @@ public sealed class SettingValueProviderManagerTests
         ISettingValueProvider user = MakeProvider("U", 100);
         ISettingValueProvider defaultP = MakeProvider("D", 500);
 
-        SettingValueProviderManager manager = new([global, user, defaultP]);
+        SettingValueProviderRegistry manager = new([global, user, defaultP]);
 
         manager.Providers.Select(p => p.Name).ShouldBe(new[] { "U", "G", "D" });
     }
@@ -40,7 +40,7 @@ public sealed class SettingValueProviderManagerTests
         ISettingValueProvider user = MakeProvider("U", 100);
         ISettingValueProvider global = MakeProvider("G", 300);
 
-        SettingValueProviderManager manager = new([user, global]);
+        SettingValueProviderRegistry manager = new([user, global]);
 
         ISettingValueProvider? found = manager.GetOrNull("G");
 
@@ -50,7 +50,7 @@ public sealed class SettingValueProviderManagerTests
     [Fact]
     public void GetOrNull_UnknownName_Returns_Null()
     {
-        SettingValueProviderManager manager = new([MakeProvider("G", 300)]);
+        SettingValueProviderRegistry manager = new([MakeProvider("G", 300)]);
 
         ISettingValueProvider? found = manager.GetOrNull("X");
 
@@ -60,7 +60,7 @@ public sealed class SettingValueProviderManagerTests
     [Fact]
     public void EmptyProviders_Produces_EmptyList()
     {
-        SettingValueProviderManager manager = new([]);
+        SettingValueProviderRegistry manager = new([]);
 
         manager.Providers.ShouldBeEmpty();
     }
@@ -78,7 +78,7 @@ public sealed class SettingValueProviderManagerTests
             MakeProvider("U", 100),
         ];
 
-        SettingValueProviderManager manager = new(providers);
+        SettingValueProviderRegistry manager = new(providers);
 
         manager.Providers.Select(p => p.Name).ShouldBe(new[] { "U", "T", "G", "C", "D" });
     }

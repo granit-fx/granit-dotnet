@@ -74,6 +74,6 @@ internal static class ApiKeyCreateEndpoints
             entry.Environment,
             entry.ExpiresAt);
 
-        return TypedResults.Created($"/{entry.Id}", response);
+        return TypedResults.Created($"/authentication/api-keys/{entry.Id}", response);
     }
 }

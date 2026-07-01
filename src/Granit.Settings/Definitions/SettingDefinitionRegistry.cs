@@ -3,11 +3,11 @@ namespace Granit.Settings.Definitions;
 /// <summary>
 /// Centralized registry of all setting definitions declared by modules.
 /// </summary>
-public sealed class SettingDefinitionManager
+public sealed class SettingDefinitionRegistry
 {
     private readonly IReadOnlyDictionary<string, SettingDefinition> _definitions;
 
-    public SettingDefinitionManager(IEnumerable<ISettingDefinitionProvider> providers)
+    public SettingDefinitionRegistry(IEnumerable<ISettingDefinitionProvider> providers)
     {
         SettingDefinitionContext context = new();
         foreach (ISettingDefinitionProvider provider in providers)

@@ -8,21 +8,21 @@ using ZiggyCreatures.Caching.Fusion;
 namespace Granit.Settings.Services;
 
 /// <summary>
-/// Implementation of <see cref="ISettingManager"/>: writes to <see cref="ISettingStoreWriter"/>,
+/// Implementation of <see cref="ISettingWriter"/>: writes to <see cref="ISettingStoreWriter"/>,
 /// invalidates the cache, and publishes <see cref="SettingChangedEvent"/> via <see cref="ILocalEventBus"/>.
 /// </summary>
-public sealed class SettingManager(
+public sealed class SettingWriter(
     ISettingStoreWriter storeWriter,
     ISettingStoreReader storeReader,
     IFusionCache cache,
-    SettingDefinitionManager definitions,
+    SettingDefinitionRegistry definitions,
     ILocalEventBus eventBus,
-    TimeProvider timeProvider) : ISettingManager
+    TimeProvider timeProvider) : ISettingWriter
 {
     private readonly ISettingStoreWriter _storeWriter = storeWriter;
     private readonly ISettingStoreReader _storeReader = storeReader;
     private readonly IFusionCache _cache = cache;
-    private readonly SettingDefinitionManager _definitions = definitions;
+    private readonly SettingDefinitionRegistry _definitions = definitions;
     private readonly ILocalEventBus _eventBus = eventBus;
     private readonly TimeProvider _timeProvider = timeProvider;
 

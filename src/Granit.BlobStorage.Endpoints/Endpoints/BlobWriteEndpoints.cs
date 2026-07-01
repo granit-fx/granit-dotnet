@@ -59,7 +59,7 @@ internal static class BlobWriteEndpoints
             ticket.ExpiresAt,
             ticket.RequiredHeaders);
 
-        return TypedResults.Created($"/{ticket.BlobId}", response);
+        return TypedResults.Created($"/blob-storage/blobs/{ticket.BlobId}", response);
     }
 
     private static async Task<NoContent> DeleteAsync(

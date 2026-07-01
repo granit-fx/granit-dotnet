@@ -3,7 +3,7 @@ namespace Granit.Settings.Services;
 /// <summary>
 /// Setting write service for the Global, Tenant, and User scopes.
 /// </summary>
-public interface ISettingManager
+public interface ISettingWriter
 {
     /// <summary>Sets the value of a setting at the global level.</summary>
     Task SetGlobalAsync(string name, string? value, CancellationToken cancellationToken = default);

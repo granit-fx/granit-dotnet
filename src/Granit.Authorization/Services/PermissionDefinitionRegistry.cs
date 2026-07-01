@@ -5,12 +5,12 @@ namespace Granit.Authorization.Services;
 /// Singleton that aggregates all <see cref="IPermissionDefinitionProvider"/> registrations
 /// into a flat lookup dictionary. Built at first resolution (lazy singleton via DI).
 /// </summary>
-internal sealed class PermissionDefinitionManager : IPermissionDefinitionManager
+internal sealed class PermissionDefinitionRegistry : IPermissionDefinitionRegistry
 {
     private readonly IReadOnlyDictionary<string, PermissionDefinition> _permissions;
     private readonly IReadOnlyList<PermissionGroup> _groups;
 
-    public PermissionDefinitionManager(IEnumerable<IPermissionDefinitionProvider> providers)
+    public PermissionDefinitionRegistry(IEnumerable<IPermissionDefinitionProvider> providers)
     {
         PermissionDefinitionContext context = new();
         foreach (IPermissionDefinitionProvider provider in providers)

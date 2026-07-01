@@ -1,5 +1,5 @@
 // =============================================================================
-// Tests - PermissionDefinitionManager
+// Tests - PermissionDefinitionRegistry
 // =============================================================================
 // Vérifie que le manager :
 //   - Agrège correctement les permissions de plusieurs providers
@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Granit.Authorization.Tests;
 
-public sealed class PermissionDefinitionManagerTests
+public sealed class PermissionDefinitionRegistryTests
 {
     [Fact]
     public void Constructor_SingleProvider_RegistersAllPermissions()
@@ -23,7 +23,7 @@ public sealed class PermissionDefinitionManagerTests
         IPermissionDefinitionProvider[] providers = [new InvoicesPermissionProvider()];
 
         // Act
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         // Assert
         manager.Exists("Invoices.Read").ShouldBeTrue();
@@ -42,7 +42,7 @@ public sealed class PermissionDefinitionManagerTests
         ];
 
         // Act — aucune exception (pattern GetOrAdd sur les groupes)
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         // Assert — les permissions des deux providers sont disponibles
         manager.Exists("Administration.Users.Read").ShouldBeTrue();
@@ -53,7 +53,7 @@ public sealed class PermissionDefinitionManagerTests
     public void Exists_UnknownPermission_ReturnsFalse()
     {
         // Arrange
-        PermissionDefinitionManager manager = new([new InvoicesPermissionProvider()]);
+        PermissionDefinitionRegistry manager = new([new InvoicesPermissionProvider()]);
 
         // Act & Assert
         manager.Exists("Unknown.Permission").ShouldBeFalse();
@@ -70,7 +70,7 @@ public sealed class PermissionDefinitionManagerTests
         ];
 
         // Act
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
         IReadOnlyList<PermissionDefinition> all = manager.GetAll();
 
         // Assert
@@ -84,7 +84,7 @@ public sealed class PermissionDefinitionManagerTests
     {
         // Arrange
         IPermissionDefinitionProvider[] providers = [new InvoicesPermissionProvider()];
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         // Act
         IReadOnlyList<PermissionGroup> groups = manager.GetGroups();
@@ -104,7 +104,7 @@ public sealed class PermissionDefinitionManagerTests
         ];
 
         // Act
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         // Assert — le groupe "Administration" n'est présent qu'une fois
         manager.GetGroups().Where(g => g.Name == "Administration").Count().ShouldBe(1);
@@ -119,7 +119,7 @@ public sealed class PermissionDefinitionManagerTests
     {
         // Arrange — permission names are ordinal-matched
         IPermissionDefinitionProvider[] providers = [new InvoicesPermissionProvider()];
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         // Act
         PermissionDefinition? result = manager.Find("invoices.read");
@@ -132,7 +132,7 @@ public sealed class PermissionDefinitionManagerTests
     public void Exists_CaseSensitive_DifferentCaseReturnsFalse()
     {
         IPermissionDefinitionProvider[] providers = [new InvoicesPermissionProvider()];
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         manager.Exists("INVOICES.READ").ShouldBeFalse();
     }
@@ -151,7 +151,7 @@ public sealed class PermissionDefinitionManagerTests
             new AdminPermissionProvider2()
         ];
 
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
         IReadOnlyList<PermissionDefinition> all = manager.GetAll();
 
         // Should have 5 total: 3 (Invoices) + 1 (Admin1) + 1 (Admin2)
@@ -172,7 +172,7 @@ public sealed class PermissionDefinitionManagerTests
             new AdminPermissionProvider1()
         ];
 
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
         IReadOnlyList<PermissionGroup> groups = manager.GetGroups();
 
         groups.Count.ShouldBe(2);
@@ -193,7 +193,7 @@ public sealed class PermissionDefinitionManagerTests
             new AdminPermissionProvider1()
         ];
 
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         PermissionDefinition? invoicesPerm = manager.Find("Invoices.Read");
         PermissionDefinition? adminPerm = manager.Find("Administration.Users.Read");
@@ -219,7 +219,7 @@ public sealed class PermissionDefinitionManagerTests
             new AdminPermissionProvider3()
         ];
 
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         manager.Exists("Administration.Users.Read").ShouldBeTrue();
         manager.Exists("Administration.Reports.Export").ShouldBeTrue();

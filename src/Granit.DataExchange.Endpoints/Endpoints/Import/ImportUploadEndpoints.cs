@@ -64,7 +64,7 @@ internal static class ImportUploadEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        return TypedResults.Created($"/{result.Job!.Id}", ImportJobResponse.FromJob(result.Job));
+        return TypedResults.Created($"/data-exchange/import/{result.Job!.Id}", ImportJobResponse.FromJob(result.Job));
     }
 
     private static async Task<Results<Ok<ImportPreviewResponse>, ProblemHttpResult>> PreviewAsync(

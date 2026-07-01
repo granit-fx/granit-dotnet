@@ -1,5 +1,5 @@
 // =============================================================================
-// SettingDefinitionManagerTests - Tests unitaires du registre de définitions
+// SettingDefinitionRegistryTests - Tests unitaires du registre de définitions
 // =============================================================================
 
 using Granit.Settings.Definitions;
@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Granit.Settings.Tests;
 
-public sealed class SettingDefinitionManagerTests
+public sealed class SettingDefinitionRegistryTests
 {
     private sealed class FakeProvider(params SettingDefinition[] definitions) : ISettingDefinitionProvider
     {
@@ -24,7 +24,7 @@ public sealed class SettingDefinitionManagerTests
     [Fact]
     public void NoProviders_Returns_EmptyCollection()
     {
-        SettingDefinitionManager manager = new([]);
+        SettingDefinitionRegistry manager = new([]);
 
         manager.GetAll().ShouldBeEmpty();
     }
@@ -33,7 +33,7 @@ public sealed class SettingDefinitionManagerTests
     public void Get_KnownSetting_Returns_Definition()
     {
         SettingDefinition def = new("App.Theme") { DefaultValue = "dark" };
-        SettingDefinitionManager manager = new([new FakeProvider(def)]);
+        SettingDefinitionRegistry manager = new([new FakeProvider(def)]);
 
         SettingDefinition result = manager.Get("App.Theme");
 
@@ -43,7 +43,7 @@ public sealed class SettingDefinitionManagerTests
     [Fact]
     public void Get_UnknownSetting_Throws_InvalidOperationException()
     {
-        SettingDefinitionManager manager = new([]);
+        SettingDefinitionRegistry manager = new([]);
 
         Action act = () => manager.Get("Unknown.Setting");
 
@@ -53,7 +53,7 @@ public sealed class SettingDefinitionManagerTests
     [Fact]
     public void GetOrNull_UnknownSetting_Returns_Null()
     {
-        SettingDefinitionManager manager = new([]);
+        SettingDefinitionRegistry manager = new([]);
 
         SettingDefinition? result = manager.GetOrNull("Unknown.Setting");
 
@@ -65,7 +65,7 @@ public sealed class SettingDefinitionManagerTests
     {
         SettingDefinition def1 = new("App.Theme");
         SettingDefinition def2 = new("App.Language");
-        SettingDefinitionManager manager = new([new FakeProvider(def1, def2)]);
+        SettingDefinitionRegistry manager = new([new FakeProvider(def1, def2)]);
 
         IReadOnlyCollection<SettingDefinition> all = manager.GetAll();
 
@@ -82,7 +82,7 @@ public sealed class SettingDefinitionManagerTests
         FakeProvider providerA = new(first);
         FakeProvider providerB = new(second);
 
-        SettingDefinitionManager manager = new([providerA, providerB]);
+        SettingDefinitionRegistry manager = new([providerA, providerB]);
 
         manager.Get("App.Theme").DefaultValue.ShouldBe("light", "le second provider écrase le premier");
     }
@@ -96,7 +96,7 @@ public sealed class SettingDefinitionManagerTests
         var provider = new FakeProvider(added);
 
         // On utilise un provider qui consulte le contexte pendant Define()
-        SettingDefinitionManager manager = new([
+        SettingDefinitionRegistry manager = new([
             new InspectingProvider(added, ctx =>
             {
                 capturedFromContext = ctx.GetOrNull("App.Theme");
@@ -132,7 +132,7 @@ public sealed class SettingDefinitionManagerTests
         };
 
         InvalidOperationException ex = Should.Throw<InvalidOperationException>(
-            () => new SettingDefinitionManager([new FakeProvider(def)]));
+            () => new SettingDefinitionRegistry([new FakeProvider(def)]));
         ex.Message.ShouldContain("App.MaxRetries");
     }
 
@@ -146,7 +146,7 @@ public sealed class SettingDefinitionManagerTests
         };
 
         InvalidOperationException ex = Should.Throw<InvalidOperationException>(
-            () => new SettingDefinitionManager([new FakeProvider(def)]));
+            () => new SettingDefinitionRegistry([new FakeProvider(def)]));
         ex.Message.ShouldContain("App.LogLevel");
         ex.Message.ShouldContain("AllowedValues");
     }
@@ -161,6 +161,6 @@ public sealed class SettingDefinitionManagerTests
             DefaultValue = "5",
         };
 
-        Should.NotThrow(() => new SettingDefinitionManager([new FakeProvider(def)]));
+        Should.NotThrow(() => new SettingDefinitionRegistry([new FakeProvider(def)]));
     }
 }

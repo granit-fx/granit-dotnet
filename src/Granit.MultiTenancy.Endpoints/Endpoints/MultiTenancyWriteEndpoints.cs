@@ -73,7 +73,7 @@ internal static class MultiTenancyWriteEndpoints
             .FindByIdAsync(id, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Created($"/{id}", MultiTenancyResponseMapper.ToResponse(tenant!));
+        return TypedResults.Created($"/multi-tenancy/tenants/{id}", MultiTenancyResponseMapper.ToResponse(tenant!));
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> UpdateAsync(

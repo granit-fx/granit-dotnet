@@ -91,7 +91,7 @@ internal static class HostnamesWriteEndpoints
         return result.Outcome switch
         {
             HostnameRegistrationOutcome.Succeeded =>
-                TypedResults.Created($"/{result.Hostname!.Id}", HostnamesResponseMapper.ToResponse(result.Hostname)),
+                TypedResults.Created($"/hostnames/{result.Hostname!.Id}", HostnamesResponseMapper.ToResponse(result.Hostname)),
             HostnameRegistrationOutcome.HostAlreadyTaken =>
                 TypedResults.Problem(
                     detail: $"The hostname '{body.Host}' is already registered.",

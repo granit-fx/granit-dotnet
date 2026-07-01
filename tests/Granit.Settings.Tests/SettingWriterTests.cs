@@ -1,7 +1,7 @@
 // =============================================================================
-// SettingManagerTests - Tests for writes and cache invalidation
+// SettingWriterTests - Tests for writes and cache invalidation
 // =============================================================================
-// Verifies that SettingManager writes to the store and invalidates the cache for
+// Verifies that SettingWriter writes to the store and invalidates the cache for
 // the Global, Tenant and User scopes.
 // =============================================================================
 
@@ -18,9 +18,9 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Settings.Tests;
 
-public sealed class SettingManagerTests
+public sealed class SettingWriterTests
 {
-    private static SettingDefinitionManager ManagerWith(params SettingDefinition[] defs) =>
+    private static SettingDefinitionRegistry ManagerWith(params SettingDefinition[] defs) =>
         new([new FakeDefinitionProvider(defs)]);
 
     private sealed class FakeDefinitionProvider(SettingDefinition[] definitions) : ISettingDefinitionProvider
@@ -34,14 +34,14 @@ public sealed class SettingManagerTests
         }
     }
 
-    private static (SettingManager manager, InMemorySettingStore store, IFusionCache cache, ILocalEventBus eventBus)
+    private static (SettingWriter manager, InMemorySettingStore store, IFusionCache cache, ILocalEventBus eventBus)
         CreateManager(params SettingDefinition[] defs)
     {
         InMemorySettingStore store = new();
         IFusionCache cache = Substitute.For<IFusionCache>();
         ILocalEventBus eventBus = Substitute.For<ILocalEventBus>();
-        SettingDefinitionManager defManager = ManagerWith(defs);
-        SettingManager manager = new(store, store, cache, defManager, eventBus, TimeProvider.System);
+        SettingDefinitionRegistry defManager = ManagerWith(defs);
+        SettingWriter manager = new(store, store, cache, defManager, eventBus, TimeProvider.System);
         return (manager, store, cache, eventBus);
     }
 
@@ -53,7 +53,7 @@ public sealed class SettingManagerTests
     public async Task SetGlobalAsync_Writes_ToStore_WithProviderName_G()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, _, _) = CreateManager(def);
+        (SettingWriter manager, InMemorySettingStore store, _, _) = CreateManager(def);
 
         await manager.SetGlobalAsync("App.Theme", "light", TestContext.Current.CancellationToken);
 
@@ -67,7 +67,7 @@ public sealed class SettingManagerTests
     public async Task SetGlobalAsync_Invalidates_Cache()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, _, IFusionCache cache, _) = CreateManager(def);
+        (SettingWriter manager, _, IFusionCache cache, _) = CreateManager(def);
 
         await manager.SetGlobalAsync("App.Theme", "light", TestContext.Current.CancellationToken);
 
@@ -80,7 +80,7 @@ public sealed class SettingManagerTests
     [Fact]
     public async Task SetGlobalAsync_UnknownSetting_Throws()
     {
-        (SettingManager manager, _, _, _) = CreateManager();
+        (SettingWriter manager, _, _, _) = CreateManager();
 
         Func<Task> act = () => manager.SetGlobalAsync("Unknown.Setting", "value");
 
@@ -95,7 +95,7 @@ public sealed class SettingManagerTests
     public async Task SetForTenantAsync_Writes_ToStore_WithProviderName_T_And_TenantKey()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, _, _) = CreateManager(def);
+        (SettingWriter manager, InMemorySettingStore store, _, _) = CreateManager(def);
         var tenantId = Guid.NewGuid();
 
         await manager.SetForTenantAsync(tenantId, "App.Theme", "blue", TestContext.Current.CancellationToken);
@@ -110,7 +110,7 @@ public sealed class SettingManagerTests
     public async Task SetForTenantAsync_Invalidates_Cache_WithTenantKey()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, _, IFusionCache cache, _) = CreateManager(def);
+        (SettingWriter manager, _, IFusionCache cache, _) = CreateManager(def);
         var tenantId = Guid.NewGuid();
 
         await manager.SetForTenantAsync(tenantId, "App.Theme", "blue", TestContext.Current.CancellationToken);
@@ -129,7 +129,7 @@ public sealed class SettingManagerTests
     public async Task SetForUserAsync_Writes_ToStore_WithProviderName_U_And_UserId()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, _, _) = CreateManager(def);
+        (SettingWriter manager, InMemorySettingStore store, _, _) = CreateManager(def);
 
         await manager.SetForUserAsync("user-42", "App.Theme", "red", TestContext.Current.CancellationToken);
 
@@ -142,7 +142,7 @@ public sealed class SettingManagerTests
     [Fact]
     public async Task SetForUserAsync_EmptyUserId_Throws()
     {
-        (SettingManager manager, _, _, _) = CreateManager(new SettingDefinition("App.Theme"));
+        (SettingWriter manager, _, _, _) = CreateManager(new SettingDefinition("App.Theme"));
 
         Func<Task> act = () => manager.SetForUserAsync("", "App.Theme", "value");
 
@@ -157,7 +157,7 @@ public sealed class SettingManagerTests
     public async Task DeleteAsync_Removes_FromStore_And_Invalidates_Cache()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, IFusionCache cache, _) = CreateManager(def);
+        (SettingWriter manager, InMemorySettingStore store, IFusionCache cache, _) = CreateManager(def);
 
         // Seed a value
         await store.SetAsync("App.Theme", "G", null, "light", TestContext.Current.CancellationToken);
@@ -182,7 +182,7 @@ public sealed class SettingManagerTests
     public async Task SetGlobalAsync_Publishes_SettingChangedEvent()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, _, _, ILocalEventBus eventBus) = CreateManager(def);
+        (SettingWriter manager, _, _, ILocalEventBus eventBus) = CreateManager(def);
 
         await manager.SetGlobalAsync("App.Theme", "dark", TestContext.Current.CancellationToken);
 
@@ -200,7 +200,7 @@ public sealed class SettingManagerTests
     public async Task SetGlobalAsync_IncludesOldValue_WhenUpdating()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, _, ILocalEventBus eventBus) = CreateManager(def);
+        (SettingWriter manager, InMemorySettingStore store, _, ILocalEventBus eventBus) = CreateManager(def);
 
         await store.SetAsync("App.Theme", "G", null, "light", TestContext.Current.CancellationToken);
 
@@ -217,7 +217,7 @@ public sealed class SettingManagerTests
     public async Task DeleteAsync_Publishes_SettingChangedEvent_WithNullNewValue()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, _, ILocalEventBus eventBus) = CreateManager(def);
+        (SettingWriter manager, InMemorySettingStore store, _, ILocalEventBus eventBus) = CreateManager(def);
 
         await store.SetAsync("App.Theme", "G", null, "light", TestContext.Current.CancellationToken);
 
@@ -234,7 +234,7 @@ public sealed class SettingManagerTests
     public async Task SetForTenantAsync_Publishes_SettingChangedEvent_WithTenantKey()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, _, _, ILocalEventBus eventBus) = CreateManager(def);
+        (SettingWriter manager, _, _, ILocalEventBus eventBus) = CreateManager(def);
         var tenantId = Guid.NewGuid();
 
         await manager.SetForTenantAsync(tenantId, "App.Theme", "blue", TestContext.Current.CancellationToken);

@@ -3994,11 +3994,11 @@
       ]
     },
     {
-      "name": "IConversationDataManager",
-      "fqn": "Granit.AI.Chat.IConversationDataManager",
+      "name": "IConversationDataStore",
+      "fqn": "Granit.AI.Chat.IConversationDataStore",
       "kind": "interface",
       "project": "Granit.AI.Chat",
-      "file": "src/Granit.AI.Chat/IConversationDataManager.cs",
+      "file": "src/Granit.AI.Chat/IConversationDataStore.cs",
       "line": 11,
       "members": [
         {
@@ -4183,7 +4183,7 @@
         {
           "name": "Handle",
           "kind": "method",
-          "signature": "Handle(PersonalDataDeletionRequestedEto @event, IConversationDataManager dataManager, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "signature": "Handle(PersonalDataDeletionRequestedEto @event, IConversationDataStore dataManager, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -11495,11 +11495,27 @@
       ]
     },
     {
-      "name": "IPermissionDefinitionManager",
-      "fqn": "Granit.Authorization.IPermissionDefinitionManager",
+      "name": "IPermissionDefinitionProvider",
+      "fqn": "Granit.Authorization.IPermissionDefinitionProvider",
       "kind": "interface",
       "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/IPermissionDefinitionManager.cs",
+      "file": "src/Granit.Authorization/IPermissionDefinitionProvider.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "DefinePermissions",
+          "kind": "method",
+          "signature": "DefinePermissions(IPermissionDefinitionContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IPermissionDefinitionRegistry",
+      "fqn": "Granit.Authorization.IPermissionDefinitionRegistry",
+      "kind": "interface",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/IPermissionDefinitionRegistry.cs",
       "line": 7,
       "members": [
         {
@@ -11525,22 +11541,6 @@
           "kind": "method",
           "signature": "GetGroups()",
           "returnType": "IReadOnlyList<PermissionGroup>"
-        }
-      ]
-    },
-    {
-      "name": "IPermissionDefinitionProvider",
-      "fqn": "Granit.Authorization.IPermissionDefinitionProvider",
-      "kind": "interface",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/IPermissionDefinitionProvider.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "DefinePermissions",
-          "kind": "method",
-          "signature": "DefinePermissions(IPermissionDefinitionContext context)",
-          "returnType": "void"
         }
       ]
     },
@@ -32526,7 +32526,7 @@
       "kind": "record",
       "project": "Granit.Identity.Abstractions",
       "file": "src/Granit.Identity.Abstractions/SuspiciousUserSessionDetectedEto.cs",
-      "line": 33,
+      "line": 35,
       "members": []
     },
     {
@@ -32591,7 +32591,7 @@
       "kind": "record",
       "project": "Granit.Identity.Abstractions",
       "file": "src/Granit.Identity.Abstractions/UserSessionCreatedEto.cs",
-      "line": 35,
+      "line": 37,
       "members": []
     },
     {
@@ -32600,7 +32600,7 @@
       "kind": "record",
       "project": "Granit.Identity.Abstractions",
       "file": "src/Granit.Identity.Abstractions/UserSessionDescriptor.cs",
-      "line": 28,
+      "line": 29,
       "members": []
     },
     {
@@ -34391,7 +34391,7 @@
       "kind": "record",
       "project": "Granit.IpGeolocation.Abstractions",
       "file": "src/Granit.IpGeolocation.Abstractions/GeoLocation.cs",
-      "line": 14,
+      "line": 15,
       "members": []
     },
     {
@@ -49794,11 +49794,11 @@
       ]
     },
     {
-      "name": "SettingDefinitionManager",
-      "fqn": "Granit.Settings.Definitions.SettingDefinitionManager",
+      "name": "SettingDefinitionRegistry",
+      "fqn": "Granit.Settings.Definitions.SettingDefinitionRegistry",
       "kind": "class",
       "project": "Granit.Settings",
-      "file": "src/Granit.Settings/Definitions/SettingDefinitionManager.cs",
+      "file": "src/Granit.Settings/Definitions/SettingDefinitionRegistry.cs",
       "line": 6,
       "members": [
         {
@@ -50337,11 +50337,11 @@
       ]
     },
     {
-      "name": "SettingValueProviderManager",
-      "fqn": "Granit.Settings.Providers.SettingValueProviderManager",
+      "name": "SettingValueProviderRegistry",
+      "fqn": "Granit.Settings.Providers.SettingValueProviderRegistry",
       "kind": "class",
       "project": "Granit.Settings",
-      "file": "src/Granit.Settings/Providers/SettingValueProviderManager.cs",
+      "file": "src/Granit.Settings/Providers/SettingValueProviderRegistry.cs",
       "line": 6,
       "members": [
         {
@@ -50431,11 +50431,33 @@
       ]
     },
     {
-      "name": "ISettingManager",
-      "fqn": "Granit.Settings.Services.ISettingManager",
+      "name": "ISettingProvider",
+      "fqn": "Granit.Settings.Services.ISettingProvider",
       "kind": "interface",
       "project": "Granit.Settings",
-      "file": "src/Granit.Settings/Services/ISettingManager.cs",
+      "file": "src/Granit.Settings/Services/ISettingProvider.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetOrNullAsync",
+          "kind": "method",
+          "signature": "GetOrNullAsync(string name, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string?>"
+        },
+        {
+          "name": "GetAllAsync",
+          "kind": "method",
+          "signature": "GetAllAsync(string[] names, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<SettingValue>>"
+        }
+      ]
+    },
+    {
+      "name": "ISettingWriter",
+      "fqn": "Granit.Settings.Services.ISettingWriter",
+      "kind": "interface",
+      "project": "Granit.Settings",
+      "file": "src/Granit.Settings/Services/ISettingWriter.cs",
       "line": 6,
       "members": [
         {
@@ -50465,44 +50487,6 @@
       ]
     },
     {
-      "name": "ISettingProvider",
-      "fqn": "Granit.Settings.Services.ISettingProvider",
-      "kind": "interface",
-      "project": "Granit.Settings",
-      "file": "src/Granit.Settings/Services/ISettingProvider.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "GetOrNullAsync",
-          "kind": "method",
-          "signature": "GetOrNullAsync(string name, CancellationToken cancellationToken = default)",
-          "returnType": "Task<string?>"
-        },
-        {
-          "name": "GetAllAsync",
-          "kind": "method",
-          "signature": "GetAllAsync(string[] names, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<SettingValue>>"
-        }
-      ]
-    },
-    {
-      "name": "SettingManager",
-      "fqn": "Granit.Settings.Services.SettingManager",
-      "kind": "class",
-      "project": "Granit.Settings",
-      "file": "src/Granit.Settings/Services/SettingManager.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "SetGlobalAsync",
-          "kind": "method",
-          "signature": "SetGlobalAsync(string name, string? value, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
       "name": "SettingProvider",
       "fqn": "Granit.Settings.Services.SettingProvider",
       "kind": "class",
@@ -50515,6 +50499,22 @@
           "kind": "method",
           "signature": "GetOrNullAsync(string name, CancellationToken cancellationToken = default)",
           "returnType": "Task<string?>"
+        }
+      ]
+    },
+    {
+      "name": "SettingWriter",
+      "fqn": "Granit.Settings.Services.SettingWriter",
+      "kind": "class",
+      "project": "Granit.Settings",
+      "file": "src/Granit.Settings/Services/SettingWriter.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "SetGlobalAsync",
+          "kind": "method",
+          "signature": "SetGlobalAsync(string name, string? value, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -54807,7 +54807,7 @@
       "kind": "class",
       "project": "Granit.Validation",
       "file": "src/Granit.Validation/GranitValidationModule.cs",
-      "line": 38,
+      "line": 39,
       "members": [
         {
           "name": "ConfigureServices",

@@ -8,7 +8,7 @@ namespace Granit.AI.Chat;
 /// <c>Granit.AI.Chat.Privacy</c> export/erasure handlers and the <c>Granit.AI.Chat.BackgroundJobs</c>
 /// retention job — never by ordinary request handlers.
 /// </summary>
-public interface IConversationDataManager
+public interface IConversationDataStore
 {
     /// <summary>
     /// Returns every conversation (with its messages) owned by <paramref name="ownerId"/>, for a

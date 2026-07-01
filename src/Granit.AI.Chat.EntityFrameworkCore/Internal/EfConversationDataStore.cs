@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.AI.Chat.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// EF Core <see cref="IConversationDataManager"/>. Take-out reads respect the ambient tenant scope;
+/// EF Core <see cref="IConversationDataStore"/>. Take-out reads respect the ambient tenant scope;
 /// erasure and retention bypass every query filter (soft-delete and tenant) to guarantee a true
 /// physical removal of personal data.
 /// </summary>
-internal sealed class EfConversationDataManager(IDbContextFactory<AIChatDbContext> contextFactory) : IConversationDataManager
+internal sealed class EfConversationDataStore(IDbContextFactory<AIChatDbContext> contextFactory) : IConversationDataStore
 {
     public async Task<IReadOnlyList<Conversation>> GetAllForOwnerAsync(Guid ownerId, CancellationToken cancellationToken = default)
     {

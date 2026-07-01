@@ -5,13 +5,13 @@ using Xunit;
 
 namespace Granit.Authorization.Tests;
 
-public sealed class PermissionDefinitionManagerAdditionalTests
+public sealed class PermissionDefinitionRegistryAdditionalTests
 {
     [Fact]
     public void Find_ExistingPermission_ReturnsDefinition()
     {
         IPermissionDefinitionProvider[] providers = [new TestProvider()];
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         PermissionDefinition? result = manager.Find("Test.Read");
 
@@ -24,7 +24,7 @@ public sealed class PermissionDefinitionManagerAdditionalTests
     public void Find_NonExistingPermission_ReturnsNull()
     {
         IPermissionDefinitionProvider[] providers = [new TestProvider()];
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         PermissionDefinition? result = manager.Find("NonExistent.Permission");
 
@@ -34,7 +34,7 @@ public sealed class PermissionDefinitionManagerAdditionalTests
     [Fact]
     public void Constructor_NoProviders_EmptyPermissions()
     {
-        PermissionDefinitionManager manager = new([]);
+        PermissionDefinitionRegistry manager = new([]);
 
         manager.GetAll().ShouldBeEmpty();
         manager.GetGroups().ShouldBeEmpty();
@@ -44,7 +44,7 @@ public sealed class PermissionDefinitionManagerAdditionalTests
     public void GetAll_ReturnsAllPermissionsAsReadOnlyList()
     {
         IPermissionDefinitionProvider[] providers = [new TestProvider()];
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         IReadOnlyList<PermissionDefinition> all = manager.GetAll();
 
@@ -56,7 +56,7 @@ public sealed class PermissionDefinitionManagerAdditionalTests
     public void GetGroups_ReturnsGroupsAsReadOnlyList()
     {
         IPermissionDefinitionProvider[] providers = [new TestProvider()];
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         IReadOnlyList<PermissionGroup> groups = manager.GetGroups();
 
@@ -68,7 +68,7 @@ public sealed class PermissionDefinitionManagerAdditionalTests
     public void Find_WithDisplayName_ReturnsDisplayName()
     {
         IPermissionDefinitionProvider[] providers = [new TestProvider()];
-        PermissionDefinitionManager manager = new(providers);
+        PermissionDefinitionRegistry manager = new(providers);
 
         PermissionDefinition? result = manager.Find("Test.Read");
 
