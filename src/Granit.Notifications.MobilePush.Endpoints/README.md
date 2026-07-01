@@ -35,12 +35,12 @@ during routing setup:
 app.MapGranitMobilePushTokens();
 ```
 
-This exposes, under the configured prefix (default `api/notifications/mobile-push/tokens`):
+This exposes, under the configured prefix (default `notifications/mobile-push`):
 
-- `POST /` — register a device token (upsert). Returns `201 Created` for a new token, `200 OK` for
-  an update.
-- `DELETE /{deviceToken}` — remove a device token.
-- `GET /` — list the current user's registered tokens.
+- `POST /tokens` — register a device token (upsert). Returns `201 Created` for a new token, `200 OK`
+  for an update.
+- `DELETE /tokens/{deviceToken}` — remove a device token.
+- `GET /tokens` — list the current user's registered tokens (device token returned masked).
 
 Mutations require the `Notifications.UserNotifications.Manage` permission; reads require
 `Notifications.UserNotifications.Read`.

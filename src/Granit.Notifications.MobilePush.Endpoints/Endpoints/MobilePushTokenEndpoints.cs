@@ -20,7 +20,7 @@ internal static class MobilePushTokenEndpoints
     /// <summary>Maps the mobile push token management endpoints onto the given route group.</summary>
     public static RouteGroupBuilder MapMobilePushTokenEndpoints(this RouteGroupBuilder group)
     {
-        group.MapPost("/", RegisterTokenAsync)
+        group.MapPost("/tokens", RegisterTokenAsync)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("RegisterMobilePushToken")
             .WithSummary("Registers a mobile device token for push notifications.")
@@ -29,18 +29,18 @@ internal static class MobilePushTokenEndpoints
             .Produces(StatusCodes.Status200OK)
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
-        group.MapDelete("/{deviceToken}", RemoveTokenAsync)
+        group.MapDelete("/tokens/{deviceToken}", RemoveTokenAsync)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("RemoveMobilePushToken")
             .WithSummary("Removes a mobile device token.")
             .WithDescription("Removes the specified device token for the authenticated user in the current tenant. Call this when the user logs out or the token becomes invalid. No-op if the token does not exist.")
             .Produces(StatusCodes.Status204NoContent);
 
-        group.MapGet("/", GetTokensAsync)
+        group.MapGet("/tokens", GetTokensAsync)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
             .WithName("GetMobilePushTokens")
             .WithSummary("Returns the current user's registered device tokens.")
-            .WithDescription("Returns all device tokens registered by the authenticated user for the current tenant, including the platform (iOS, Android) and registration timestamp.")
+            .WithDescription("Returns all device tokens registered by the authenticated user for the current tenant, including the platform (iOS, Android) and registration timestamp. The device token itself is a sendable push credential, so only a masked preview (last 4 characters) is returned — never the plaintext token.")
             .Produces<IReadOnlyList<MobilePushTokenResponse>>();
 
         return group;
@@ -104,9 +104,17 @@ internal static class MobilePushTokenEndpoints
             .ConfigureAwait(false);
 
         IReadOnlyList<MobilePushTokenResponse> response = tokens
-            .Select(t => new MobilePushTokenResponse(t.DeviceToken, t.Platform, t.CreatedAt))
+            .Select(t => new MobilePushTokenResponse(MaskDeviceToken(t.DeviceToken), t.Platform, t.CreatedAt))
             .ToList();
 
         return TypedResults.Ok(response);
     }
+
+    // The device token is a sendable push credential (stored encrypted, keyed by a lookup hash), so
+    // the list endpoint never echoes the plaintext. Deletion uses the token the client already holds
+    // from the FCM/APNs SDK, so a masked preview suffices to disambiguate devices in a management UI.
+    private static string MaskDeviceToken(string deviceToken) =>
+        deviceToken.Length <= 4
+            ? "…"
+            : string.Concat("…", deviceToken.AsSpan(deviceToken.Length - 4));
 }

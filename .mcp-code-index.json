@@ -39036,7 +39036,7 @@
       "kind": "record",
       "project": "Granit.Notifications.MobilePush.Endpoints",
       "file": "src/Granit.Notifications.MobilePush.Endpoints/Dtos/MobilePushTokenResponse.cs",
-      "line": 4,
+      "line": 8,
       "members": []
     },
     {

@@ -36,11 +36,11 @@ routing setup:
 app.MapGranitWebPushSubscriptions();
 ```
 
-This exposes, under the configured prefix (default `notifications`):
+This exposes, under the configured prefix (default `notifications/web-push`):
 
-- `POST /notifications/push/subscriptions` — register a subscription (W3C `PushSubscriptionJSON`
+- `POST /notifications/web-push/subscriptions` — register a subscription (W3C `PushSubscriptionJSON`
   body). Returns `201 Created` for a new subscription, `200 OK` for an update.
-- `DELETE /notifications/push/subscriptions` — unregister by endpoint (JSON body `{ "endpoint": … }`).
+- `DELETE /notifications/web-push/subscriptions` — unregister by endpoint (JSON body `{ "endpoint": … }`).
 
 Both routes require the `Notifications.UserNotifications.Manage` permission.
 

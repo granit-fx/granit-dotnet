@@ -9,11 +9,11 @@ public sealed class WebPushEndpointsOptions
     public const string SectionName = "Notifications:WebPush:Endpoints";
 
     /// <summary>
-    /// Route prefix for the Web Push subscription endpoints. Default: <c>"notifications"</c> — so the
-    /// routes resolve under <c>/notifications/push/subscriptions</c>, alongside the core notification
-    /// endpoints.
+    /// Route prefix for the Web Push subscription endpoints. Default: <c>"notifications/web-push"</c> —
+    /// so the routes resolve under <c>/notifications/web-push/subscriptions</c>, alongside the core
+    /// notification endpoints and the mobile push token routes.
     /// </summary>
-    public string RoutePrefix { get; set; } = "notifications";
+    public string RoutePrefix { get; set; } = "notifications/web-push";
 
     /// <summary>
     /// OpenAPI tag name for the Web Push subscription endpoints.

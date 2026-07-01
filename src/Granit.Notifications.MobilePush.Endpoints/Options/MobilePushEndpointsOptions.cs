@@ -9,10 +9,11 @@ public sealed class MobilePushEndpointsOptions
     public const string SectionName = "Notifications:MobilePush:Endpoints";
 
     /// <summary>
-    /// Route prefix for the mobile push token endpoints.
-    /// Default: <c>"api/notifications/mobile-push/tokens"</c>.
+    /// Route prefix for the mobile push token endpoints. Default: <c>"notifications/mobile-push"</c> —
+    /// so the routes resolve under <c>/notifications/mobile-push/tokens</c>, alongside the core
+    /// notification endpoints and the browser Web Push subscription routes.
     /// </summary>
-    public string RoutePrefix { get; set; } = "api/notifications/mobile-push/tokens";
+    public string RoutePrefix { get; set; } = "notifications/mobile-push";
 
     /// <summary>
     /// OpenAPI tag name for the mobile push token endpoints.

@@ -25,7 +25,7 @@ namespace Granit.Notifications.WebPush.Endpoints.Tests;
 /// </summary>
 public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
 {
-    private const string Route = "/notifications/push/subscriptions";
+    private const string Route = "/notifications/web-push/subscriptions";
     private const string UserId = "user-123";
 
     private const string SampleEndpoint = "https://fcm.googleapis.com/fcm/send/abc-123";

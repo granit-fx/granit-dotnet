@@ -19,7 +19,7 @@ internal static class WebPushSubscriptionEndpoints
     /// <summary>Maps the Web Push subscription endpoints onto the given route group.</summary>
     public static RouteGroupBuilder MapWebPushSubscriptionEndpoints(this RouteGroupBuilder group)
     {
-        group.MapPost("/push/subscriptions", RegisterSubscriptionAsync)
+        group.MapPost("/subscriptions", RegisterSubscriptionAsync)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("RegisterWebPushSubscription")
             .WithSummary("Registers a browser Web Push subscription.")
@@ -28,7 +28,7 @@ internal static class WebPushSubscriptionEndpoints
             .Produces(StatusCodes.Status200OK)
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
-        group.MapDelete("/push/subscriptions", RemoveSubscriptionAsync)
+        group.MapDelete("/subscriptions", RemoveSubscriptionAsync)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("RemoveWebPushSubscription")
             .WithSummary("Removes a browser Web Push subscription.")

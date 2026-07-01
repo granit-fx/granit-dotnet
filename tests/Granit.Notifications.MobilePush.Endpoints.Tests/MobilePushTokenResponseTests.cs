@@ -11,9 +11,9 @@ public sealed class MobilePushTokenResponseTests
     {
         var createdAt = new DateTimeOffset(2026, 3, 1, 10, 0, 0, TimeSpan.Zero);
 
-        var response = new MobilePushTokenResponse("token-abc", MobilePlatform.Ios, createdAt);
+        var response = new MobilePushTokenResponse("…-abc", MobilePlatform.Ios, createdAt);
 
-        response.DeviceToken.ShouldBe("token-abc");
+        response.DeviceTokenPreview.ShouldBe("…-abc");
         response.Platform.ShouldBe(MobilePlatform.Ios);
         response.CreatedAt.ShouldBe(createdAt);
     }

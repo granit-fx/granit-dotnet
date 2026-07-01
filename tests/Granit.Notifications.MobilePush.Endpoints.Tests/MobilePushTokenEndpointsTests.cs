@@ -21,7 +21,7 @@ namespace Granit.Notifications.MobilePush.Endpoints.Tests;
 
 public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
 {
-    private const string Prefix = "/api/notifications/mobile-push/tokens";
+    private const string Prefix = "/notifications/mobile-push/tokens";
 
     private readonly IMobilePushTokenWriter _tokenWriter = Substitute.For<IMobilePushTokenWriter>();
     private readonly IMobilePushTokenReader _tokenReader = Substitute.For<IMobilePushTokenReader>();
@@ -151,9 +151,11 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
             TestContext.Current.CancellationToken);
         result.ShouldNotBeNull();
         result!.Count.ShouldBe(2);
-        result[0].DeviceToken.ShouldBe("token-1");
+        // The plaintext token is a sendable credential — only a masked preview (last 4 chars) is returned.
+        result[0].DeviceTokenPreview.ShouldBe("…en-1");
+        result[0].DeviceTokenPreview.ShouldNotContain("token-1");
         result[0].Platform.ShouldBe(MobilePlatform.Android);
-        result[1].DeviceToken.ShouldBe("token-2");
+        result[1].DeviceTokenPreview.ShouldBe("…en-2");
         result[1].Platform.ShouldBe(MobilePlatform.Ios);
     }
 
