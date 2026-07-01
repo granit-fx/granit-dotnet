@@ -95,6 +95,11 @@
         "resolved": "2.16.0",
         "contentHash": "wwjl3taQ1Z40ESBTIAYwf88nms3sXp6osyAzIAjXugrUCj3D4AIYEYQGxHAPF6Yk6o6Roouw/pnMqJuKS2jM0g=="
       },
+      "Lib.Net.Http.EncryptedContentEncoding": {
+        "type": "Transitive",
+        "resolved": "2.1.1",
+        "contentHash": "n+CuGyBCZ9zLT3p39sab1bSL2FRCoXHXUM/T7jXwZlibOE+mASOqXcKD9LzNjH+VZTdA0mn02EdBww06DzD9IA=="
+      },
       "libsodium": {
         "type": "Transitive",
         "resolved": "1.0.20.1",
@@ -1064,6 +1069,7 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Notifications": "[0.1.0-dev, )",
           "Granit.Notifications.MobilePush": "[0.1.0-dev, )",
+          "Granit.Notifications.WebPush": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
@@ -1072,6 +1078,13 @@
         "type": "Project",
         "dependencies": {
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.notifications.webpush": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
+          "Lib.Net.Http.WebPush": "[3.*, )"
         }
       },
       "granit.oidc": {
@@ -1458,6 +1471,15 @@
         "contentHash": "D0VXh4dtjjX2aQizuaa0g6R8X3U1JaVqJPfGCvLwZX9t/O2h7tkpbitbadQMfwcgSPdDbI2vDxuwRMv/Uf9dHA==",
         "dependencies": {
           "FluentValidation": "12.1.1"
+        }
+      },
+      "Lib.Net.Http.WebPush": {
+        "type": "CentralTransitive",
+        "requested": "[3.*, )",
+        "resolved": "3.3.1",
+        "contentHash": "5ByiHRcY3lF/4LA7ZbgzBEUmX6oYlPTS1NzXEom3uvT7wFHeZ8Q9DOQcPG6awFqS8yGUuyTvxrHyBzTOwe8Fpg==",
+        "dependencies": {
+          "Lib.Net.Http.EncryptedContentEncoding": "2.1.1"
         }
       },
       "Microsoft.AspNetCore.Authentication.JwtBearer": {

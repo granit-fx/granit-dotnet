@@ -1,9 +1,11 @@
 using Granit.Notifications.Endpoints.Endpoints;
 using Granit.Notifications.Endpoints.Options;
+using Granit.Notifications.WebPush;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Notifications.Endpoints.Extensions;
 
@@ -34,6 +36,14 @@ public static class NotificationEndpointRouteBuilderExtensions
         group.MapPreferenceEndpoints();
         group.MapSubscriptionEndpoints();
         group.MapEntityFollowerEndpoints();
+
+        // Web Push subscription routes are mapped only when the Web Push channel is registered
+        // (via AddGranitNotificationsPush). Without the channel there is no IPushSubscriptionWriter
+        // to serve them, so mapping them unconditionally would surface a 500 instead of a clean 404.
+        if (((IEndpointRouteBuilder)group).ServiceProvider.GetService<IPushSubscriptionWriter>() is not null)
+        {
+            group.MapWebPushSubscriptionEndpoints(options.WebPushTagName);
+        }
 
         return endpoints;
     }

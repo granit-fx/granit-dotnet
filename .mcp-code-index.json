@@ -1912,6 +1912,7 @@
         "Granit.Guids",
         "Granit.Notifications",
         "Granit.Notifications.MobilePush",
+        "Granit.Notifications.WebPush",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -38549,6 +38550,33 @@
       "members": []
     },
     {
+      "name": "WebPushSubscriptionKeys",
+      "fqn": "Granit.Notifications.Endpoints.Dtos.WebPushSubscriptionKeys",
+      "kind": "record",
+      "project": "Granit.Notifications.Endpoints",
+      "file": "src/Granit.Notifications.Endpoints/Dtos/WebPushSubscriptionRegisterRequest.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "WebPushSubscriptionRegisterRequest",
+      "fqn": "Granit.Notifications.Endpoints.Dtos.WebPushSubscriptionRegisterRequest",
+      "kind": "record",
+      "project": "Granit.Notifications.Endpoints",
+      "file": "src/Granit.Notifications.Endpoints/Dtos/WebPushSubscriptionRegisterRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "WebPushSubscriptionRemoveRequest",
+      "fqn": "Granit.Notifications.Endpoints.Dtos.WebPushSubscriptionRemoveRequest",
+      "kind": "record",
+      "project": "Granit.Notifications.Endpoints",
+      "file": "src/Granit.Notifications.Endpoints/Dtos/WebPushSubscriptionRemoveRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "MobilePushTokenEndpoints",
       "fqn": "Granit.Notifications.Endpoints.Endpoints.MobilePushTokenEndpoints",
       "kind": "class",
@@ -38570,7 +38598,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/Extensions/NotificationEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitNotifications",
@@ -38586,7 +38614,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/GranitNotificationsEndpointsModule.cs",
-      "line": 29,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",
@@ -38620,6 +38648,12 @@
           "name": "MobilePushTagName",
           "kind": "property",
           "signature": "string MobilePushTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "WebPushTagName",
+          "kind": "property",
+          "signature": "string WebPushTagName",
           "returnType": "string"
         }
       ]
@@ -41115,8 +41149,15 @@
       "kind": "class",
       "project": "Granit.OpenApi.Generator",
       "file": "src/Granit.OpenApi.Generator/GeneratorModule.cs",
-      "line": 51,
-      "members": []
+      "line": 52,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "GranitOpenIddictBackgroundJobsModule",

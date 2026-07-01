@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Notifications\Granit.Notifications.csproj" />
     <ProjectReference Include="..\Granit.Notifications.MobilePush\Granit.Notifications.MobilePush.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.WebPush\Granit.Notifications.WebPush.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
       <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
   </ItemGroup>

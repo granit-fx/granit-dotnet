@@ -14,5 +14,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Notifications.Endpoints\Granit.Notifications.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Notifications.WebPush\Granit.Notifications.WebPush.csproj" />
   </ItemGroup>
 </Project>
