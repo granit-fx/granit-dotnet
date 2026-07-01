@@ -23,5 +23,27 @@ internal sealed class SchedulingNotificationDefinitionProvider : INotificationDe
             AllowUserOptOut = false,
             RequiredPermission = "Scheduling.Actions.Manage",
         });
+
+        context.Add(new NotificationDefinition(SchedulingActionExecutedNotificationType.Instance.Name)
+        {
+            GroupName = GroupName,
+            DisplayName = "Scheduled Action Executed",
+            Description = "Notifies tenant administrators when a scheduled action (report, batch export, …) executed successfully.",
+            DefaultSeverity = NotificationSeverity.Success,
+            DefaultChannels = [NotificationChannels.InApp],
+            AllowUserOptOut = true,
+            RequiredPermission = "Scheduling.Actions.Manage",
+        });
+
+        context.Add(new NotificationDefinition(SchedulingActionCancelledNotificationType.Instance.Name)
+        {
+            GroupName = GroupName,
+            DisplayName = "Scheduled Action Cancelled",
+            Description = "Notifies tenant administrators when a scheduled action is cancelled before execution.",
+            DefaultSeverity = NotificationSeverity.Info,
+            DefaultChannels = [NotificationChannels.InApp],
+            AllowUserOptOut = true,
+            RequiredPermission = "Scheduling.Actions.Manage",
+        });
     }
 }

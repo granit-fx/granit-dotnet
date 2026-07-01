@@ -18,6 +18,8 @@ public sealed class NotificationTypeDefinitionDriftTests
         string[] expectedNames =
         [
             SchedulingActionFailedNotificationType.Instance.Name,
+            SchedulingActionExecutedNotificationType.Instance.Name,
+            SchedulingActionCancelledNotificationType.Instance.Name,
         ];
 
         foreach (string name in expectedNames)
