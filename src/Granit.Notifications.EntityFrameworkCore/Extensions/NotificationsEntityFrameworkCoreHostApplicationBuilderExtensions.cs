@@ -34,6 +34,7 @@ public static class NotificationsEntityFrameworkCoreHostApplicationBuilderExtens
     ///   <item><see cref="EfCoreNotificationSubscriptionStore"/> — replaces <c>InMemoryNotificationSubscriptionStore</c>.</item>
     ///   <item><see cref="EfCoreNotificationDeliveryStore"/> — replaces <c>NullNotificationDeliveryStore</c> (enables ISO 27001 audit trail).</item>
     ///   <item><see cref="EfCoreMobilePushTokenStore"/> — replaces <c>InMemoryMobilePushTokenStore</c>.</item>
+    ///   <item><see cref="EfCoreNotificationsPersonalDataEraser"/> — implements <c>INotificationsPersonalDataEraser</c> (GDPR Art. 17 bulk erasure).</item>
     ///   <item><see cref="Internal.NotificationsDbContext"/> — registered via <c>IDbContextFactory</c> for thread-safe usage in Wolverine handlers.</item>
     /// </list>
     /// </remarks>
@@ -82,6 +83,9 @@ public static class NotificationsEntityFrameworkCoreHostApplicationBuilderExtens
         // Delivery store — write-only (ISO 27001 audit)
         builder.Services.Replace(
             ServiceDescriptor.Scoped<INotificationDeliveryWriter, EfCoreNotificationDeliveryStore>());
+
+        // Personal-data eraser — GDPR Art. 17 bulk purge across inbox/preferences/subscriptions
+        builder.Services.TryAddScoped<INotificationsPersonalDataEraser, EfCoreNotificationsPersonalDataEraser>();
 
         // MobilePush token store — CQRS forwarding pattern
         builder.Services.RemoveAll<InMemoryMobilePushTokenStore>();

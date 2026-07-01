@@ -26,6 +26,7 @@ public static class IdentityFederatedEntityFrameworkCoreHostApplicationBuilderEx
     ///   <item><see cref="CachedUserLookupService"/> — replaces the default <c>NullUserLookupService</c>.</item>
     ///   <item><see cref="EfCoreUserCacheStore"/> — implements <c>IUserCacheStore</c>.</item>
     ///   <item><see cref="EfCoreUserCacheStats"/> — implements <c>IUserCacheStats</c>.</item>
+    ///   <item><see cref="FederatedUserCacheEraserAdapter"/> — implements <c>IFederatedUserCacheEraser</c>.</item>
     ///   <item><see cref="IdentityFederatedDbContext"/> — registered as <c>IDbContextFactory&lt;T&gt;</c> for thread-safe usage in Wolverine handlers.</item>
     /// </list>
     /// <para>
@@ -52,6 +53,7 @@ public static class IdentityFederatedEntityFrameworkCoreHostApplicationBuilderEx
         builder.Services.Replace(ServiceDescriptor.Scoped<IUserCacheStats, EfCoreUserCacheStats>());
         builder.Services.TryAddScoped<IUserCacheStore, EfCoreUserCacheStore>();
         builder.Services.TryAddScoped<IFederatedUserCacheReader, FederatedUserCacheReaderAdapter>();
+        builder.Services.TryAddScoped<IFederatedUserCacheEraser, FederatedUserCacheEraserAdapter>();
         builder.Services.AddOptions<UserCacheOptions>()
             .BindConfiguration(UserCacheOptions.SectionName);
 
