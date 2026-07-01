@@ -66,6 +66,16 @@ public static class WebhooksHostApplicationBuilderExtensions
         }).ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
         {
             ConnectCallback = WebhookSsrfConnectCallback.ConnectAsync,
+
+            // Suppress W3C trace-context propagation: the delivery target is a customer-controlled
+            // URL, so emitting internal traceparent/tracestate headers leaks our service topology
+            // and correlation IDs to an untrusted egress boundary (VULN-100-OBS).
+            ActivityHeadersPropagator = null,
+
+            // A 3xx from a subscriber endpoint is a subscription misconfiguration, not a redirect to
+            // follow: chasing it would defeat the SSRF ConnectCallback (the redirect target bypasses
+            // the vetted URL) and mask the delivery failure the subscriber must see (VULN-300-infra).
+            AllowAutoRedirect = false,
         });
 
         // Default (replaceable) store registrations.

@@ -384,6 +384,39 @@ public sealed partial class SourceCodeAntiPatternTests
             + $"Violators: {string.Join(", ", violations)}");
     }
 
+    /// <summary>
+    /// The webhook delivery <c>SocketsHttpHandler</c> targets customer-controlled URLs at an
+    /// untrusted egress boundary. It MUST suppress W3C trace-context propagation
+    /// (<c>ActivityHeadersPropagator = null</c>) so internal traceparent/tracestate headers never
+    /// leak our topology (VULN-100-OBS), and MUST disable auto-redirect
+    /// (<c>AllowAutoRedirect = false</c>) so a 3xx cannot bypass the SSRF ConnectCallback nor mask a
+    /// delivery failure (VULN-300-infra). This source-regex guard lives in the architecture shard so
+    /// the convention is enforced repo-wide even if the Webhooks unit tests are skipped or the module
+    /// is refactored; a companion runtime probe (<c>WebhookDeliveryEgressTests</c>) asserts the same
+    /// two settings on the actual DI-configured handler instance.
+    /// </summary>
+    [Fact]
+    public void Webhook_delivery_handler_must_suppress_trace_propagation_and_auto_redirect()
+    {
+        string handlerFile = Path.Join(
+            RepoRoot, "src", "Granit.Webhooks", "Extensions", "WebhooksHostApplicationBuilderExtensions.cs");
+
+        File.Exists(handlerFile).ShouldBeTrue(
+            $"Expected webhook egress configuration at {handlerFile}. If the file moved, update this guard.");
+
+        string content = File.ReadAllText(handlerFile);
+
+        WebhookNullsActivityHeadersPropagator().IsMatch(content).ShouldBeTrue(
+            "Webhook delivery SocketsHttpHandler must set 'ActivityHeadersPropagator = null' to stop "
+            + "leaking internal W3C trace context (traceparent/tracestate) to customer-controlled "
+            + "webhook URLs (VULN-100-OBS). Re-enabling propagation is a topology-disclosure regression.");
+
+        WebhookDisablesAutoRedirect().IsMatch(content).ShouldBeTrue(
+            "Webhook delivery SocketsHttpHandler must set 'AllowAutoRedirect = false' — a 3xx from a "
+            + "subscriber is a delivery failure, and following it would bypass the SSRF ConnectCallback "
+            + "(VULN-300-infra).");
+    }
+
     private static string FindRepoRoot()
     {
         string? dir = Path.GetDirectoryName(typeof(SourceCodeAntiPatternTests).Assembly.Location);
@@ -491,4 +524,18 @@ public sealed partial class SourceCodeAntiPatternTests
     /// </summary>
     [GeneratedRegex(@"\bclass\s+\w+[^{]*:\s*[^{]*\bICurrentTenant\b")]
     private static partial Regex LocalICurrentTenantImpl();
+
+    /// <summary>
+    /// Matches <c>ActivityHeadersPropagator = null</c> on the webhook delivery handler —
+    /// the egress guard that stops internal trace-context leaking to customer URLs.
+    /// </summary>
+    [GeneratedRegex(@"ActivityHeadersPropagator\s*=\s*null")]
+    private static partial Regex WebhookNullsActivityHeadersPropagator();
+
+    /// <summary>
+    /// Matches <c>AllowAutoRedirect = false</c> on the webhook delivery handler —
+    /// a subscriber 3xx is a delivery failure, never a redirect to follow.
+    /// </summary>
+    [GeneratedRegex(@"AllowAutoRedirect\s*=\s*false")]
+    private static partial Regex WebhookDisablesAutoRedirect();
 }
