@@ -3,10 +3,9 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Granit.MultiTenancy;
-using Granit.Notifications.Endpoints.Dtos;
-using Granit.Notifications.Endpoints.Endpoints;
-using Granit.Notifications.MobilePush;
 using Granit.Notifications.MobilePush.Domain;
+using Granit.Notifications.MobilePush.Endpoints.Dtos;
+using Granit.Notifications.MobilePush.Endpoints.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -18,11 +17,11 @@ using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Notifications.Endpoints.Tests;
+namespace Granit.Notifications.MobilePush.Endpoints.Tests;
 
 public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
 {
-    private const string Prefix = "/api/notifications/mobile-push/tokens";
+    private const string Prefix = "/notifications/mobile-push/tokens";
 
     private readonly IMobilePushTokenWriter _tokenWriter = Substitute.For<IMobilePushTokenWriter>();
     private readonly IMobilePushTokenReader _tokenReader = Substitute.For<IMobilePushTokenReader>();
@@ -59,8 +58,6 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
 
     public async ValueTask DisposeAsync() => await _app.DisposeAsync();
 
-    // -- POST / (register) -- new token returns 201 --
-
     [Fact]
     public async Task RegisterToken_NewToken_Returns201Created()
     {
@@ -84,8 +81,6 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
             Arg.Any<CancellationToken>());
     }
 
-    // -- POST / (register) -- existing token returns 200 --
-
     [Fact]
     public async Task RegisterToken_ExistingToken_Returns200Ok()
     {
@@ -105,8 +100,6 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
-    // -- POST / (register) -- unauthenticated returns 401 --
-
     [Fact]
     public async Task RegisterToken_Unauthenticated_Returns401()
     {
@@ -120,8 +113,6 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
-
-    // -- DELETE /{deviceToken} --
 
     [Fact]
     public async Task RemoveToken_Returns204()
@@ -142,8 +133,6 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
-    // -- GET / (list tokens) --
-
     [Fact]
     public async Task GetTokens_ReturnsTokenList()
     {
@@ -162,9 +151,11 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
             TestContext.Current.CancellationToken);
         result.ShouldNotBeNull();
         result!.Count.ShouldBe(2);
-        result[0].DeviceToken.ShouldBe("token-1");
+        // The plaintext token is a sendable credential — only a masked preview (last 4 chars) is returned.
+        result[0].DeviceTokenPreview.ShouldBe("…en-1");
+        result[0].DeviceTokenPreview.ShouldNotContain("token-1");
         result[0].Platform.ShouldBe(MobilePlatform.Android);
-        result[1].DeviceToken.ShouldBe("token-2");
+        result[1].DeviceTokenPreview.ShouldBe("…en-2");
         result[1].Platform.ShouldBe(MobilePlatform.Ios);
     }
 
@@ -175,8 +166,6 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
-
-    // -- Multi-tenancy --
 
     [Fact]
     public async Task RegisterToken_WithTenant_PassesTenantId()
@@ -228,8 +217,6 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         await _tokenReader.Received(1).GetTokensAsync("user-456", tenantId, Arg.Any<CancellationToken>());
     }
-
-    // -- Helpers --
 
     private HttpClient BuildClient(string userId)
     {

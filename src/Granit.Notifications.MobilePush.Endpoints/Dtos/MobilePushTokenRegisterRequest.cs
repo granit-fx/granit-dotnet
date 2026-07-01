@@ -1,6 +1,4 @@
-using Granit.Notifications.MobilePush;
-
-namespace Granit.Notifications.Endpoints.Dtos;
+namespace Granit.Notifications.MobilePush.Endpoints.Dtos;
 
 /// <summary>Request to register a mobile push device token.</summary>
 public sealed record MobilePushTokenRegisterRequest

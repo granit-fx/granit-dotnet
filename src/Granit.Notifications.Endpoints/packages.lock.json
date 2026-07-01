@@ -139,12 +139,6 @@
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
-      "granit.notifications.mobilepush": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Notifications.Abstractions": "[0.1.0-dev, )"
-        }
-      },
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {

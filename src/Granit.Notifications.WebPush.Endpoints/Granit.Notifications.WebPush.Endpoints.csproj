@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Notifications.WebPush.Endpoints</PackageId>
+    <Description>Minimal API REST endpoints for browser Web Push (W3C, VAPID) subscription management. Opt-in companion to Granit.Notifications.Endpoints — keeps the Lib.Net.Http.WebPush dependency out of hosts that do not use Web Push.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Notifications.WebPush.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Notifications.Endpoints\Granit.Notifications.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.WebPush\Granit.Notifications.WebPush.csproj" />
+    <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
+  </ItemGroup>
+
+</Project>

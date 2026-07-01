@@ -6,6 +6,10 @@ subscription management, and entity follower management.
 
 Part of the [granit](https://granit-fx.dev) framework.
 
+Channel-specific endpoints are opt-in and ship in their own packages:
+[`Granit.Notifications.MobilePush.Endpoints`](../Granit.Notifications.MobilePush.Endpoints/README.md)
+and [`Granit.Notifications.WebPush.Endpoints`](../Granit.Notifications.WebPush.Endpoints/README.md).
+
 ## Installation
 
 ```bash
@@ -17,7 +21,6 @@ dotnet add package Granit.Notifications.Endpoints
 - `Granit.Http.ApiDocumentation`
 - `Granit.Guids`
 - `Granit.Notifications`
-- `Granit.Notifications.MobilePush`
 - `Granit.Validation`
 
 ## Integration

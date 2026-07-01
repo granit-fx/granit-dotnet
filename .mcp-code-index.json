@@ -1911,7 +1911,6 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Guids",
         "Granit.Notifications",
-        "Granit.Notifications.MobilePush",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -1945,6 +1944,15 @@
       "name": "Granit.Notifications.MobilePush.AzureNotificationHubs",
       "deps": [
         "Granit.Notifications.MobilePush"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.MobilePush.Endpoints",
+      "deps": [
+        "Granit.Notifications.Endpoints",
+        "Granit.Notifications.MobilePush",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -2015,6 +2023,15 @@
       "name": "Granit.Notifications.WebPush",
       "deps": [
         "Granit.Notifications.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.WebPush.Endpoints",
+      "deps": [
+        "Granit.Notifications.Endpoints",
+        "Granit.Notifications.WebPush",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -38486,24 +38503,6 @@
       ]
     },
     {
-      "name": "MobilePushTokenRegisterRequest",
-      "fqn": "Granit.Notifications.Endpoints.Dtos.MobilePushTokenRegisterRequest",
-      "kind": "record",
-      "project": "Granit.Notifications.Endpoints",
-      "file": "src/Granit.Notifications.Endpoints/Dtos/MobilePushTokenRegisterRequest.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "MobilePushTokenResponse",
-      "fqn": "Granit.Notifications.Endpoints.Dtos.MobilePushTokenResponse",
-      "kind": "record",
-      "project": "Granit.Notifications.Endpoints",
-      "file": "src/Granit.Notifications.Endpoints/Dtos/MobilePushTokenResponse.cs",
-      "line": 6,
-      "members": []
-    },
-    {
       "name": "NotificationPreferenceResponse",
       "fqn": "Granit.Notifications.Endpoints.Dtos.NotificationPreferenceResponse",
       "kind": "record",
@@ -38549,22 +38548,6 @@
       "members": []
     },
     {
-      "name": "MobilePushTokenEndpoints",
-      "fqn": "Granit.Notifications.Endpoints.Endpoints.MobilePushTokenEndpoints",
-      "kind": "class",
-      "project": "Granit.Notifications.Endpoints",
-      "file": "src/Granit.Notifications.Endpoints/Endpoints/MobilePushTokenEndpoints.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "MapGranitMobilePushTokens",
-          "kind": "method",
-          "signature": "MapGranitMobilePushTokens(this IEndpointRouteBuilder endpoints, string prefix = \"api/notifications/mobile-push/tokens\", Action<NotificationEndpointsOptions>? configure = null)",
-          "returnType": "IEndpointRouteBuilder"
-        }
-      ]
-    },
-    {
       "name": "NotificationEndpointRouteBuilderExtensions",
       "fqn": "Granit.Notifications.Endpoints.Extensions.NotificationEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -38586,7 +38569,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/GranitNotificationsEndpointsModule.cs",
-      "line": 29,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
@@ -38614,12 +38597,6 @@
           "name": "TagName",
           "kind": "property",
           "signature": "string TagName",
-          "returnType": "string"
-        },
-        {
-          "name": "MobilePushTagName",
-          "kind": "property",
-          "signature": "string MobilePushTagName",
           "returnType": "string"
         }
       ]
@@ -39040,6 +39017,71 @@
           "name": "DeviceTokenHash",
           "kind": "property",
           "signature": "string DeviceTokenHash",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "MobilePushTokenRegisterRequest",
+      "fqn": "Granit.Notifications.MobilePush.Endpoints.Dtos.MobilePushTokenRegisterRequest",
+      "kind": "record",
+      "project": "Granit.Notifications.MobilePush.Endpoints",
+      "file": "src/Granit.Notifications.MobilePush.Endpoints/Dtos/MobilePushTokenRegisterRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "MobilePushTokenResponse",
+      "fqn": "Granit.Notifications.MobilePush.Endpoints.Dtos.MobilePushTokenResponse",
+      "kind": "record",
+      "project": "Granit.Notifications.MobilePush.Endpoints",
+      "file": "src/Granit.Notifications.MobilePush.Endpoints/Dtos/MobilePushTokenResponse.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "MobilePushTokenEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Notifications.MobilePush.Endpoints.Extensions.MobilePushTokenEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush.Endpoints",
+      "file": "src/Granit.Notifications.MobilePush.Endpoints/Extensions/MobilePushTokenEndpointRouteBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapGranitMobilePushTokens",
+          "kind": "method",
+          "signature": "MapGranitMobilePushTokens(this IEndpointRouteBuilder endpoints, Action<MobilePushEndpointsOptions>? configure = null)",
+          "returnType": "IEndpointRouteBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsMobilePushEndpointsModule",
+      "fqn": "Granit.Notifications.MobilePush.Endpoints.GranitNotificationsMobilePushEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush.Endpoints",
+      "file": "src/Granit.Notifications.MobilePush.Endpoints/GranitNotificationsMobilePushEndpointsModule.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "MobilePushEndpointsOptions",
+      "fqn": "Granit.Notifications.MobilePush.Endpoints.Options.MobilePushEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush.Endpoints",
+      "file": "src/Granit.Notifications.MobilePush.Endpoints/Options/MobilePushEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
           "returnType": "string"
         }
       ]
@@ -39931,6 +39973,80 @@
           "kind": "property",
           "signature": "int TimeoutSeconds",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "WebPushSubscriptionKeys",
+      "fqn": "Granit.Notifications.WebPush.Endpoints.Dtos.WebPushSubscriptionKeys",
+      "kind": "record",
+      "project": "Granit.Notifications.WebPush.Endpoints",
+      "file": "src/Granit.Notifications.WebPush.Endpoints/Dtos/WebPushSubscriptionRegisterRequest.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "WebPushSubscriptionRegisterRequest",
+      "fqn": "Granit.Notifications.WebPush.Endpoints.Dtos.WebPushSubscriptionRegisterRequest",
+      "kind": "record",
+      "project": "Granit.Notifications.WebPush.Endpoints",
+      "file": "src/Granit.Notifications.WebPush.Endpoints/Dtos/WebPushSubscriptionRegisterRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "WebPushSubscriptionRemoveRequest",
+      "fqn": "Granit.Notifications.WebPush.Endpoints.Dtos.WebPushSubscriptionRemoveRequest",
+      "kind": "record",
+      "project": "Granit.Notifications.WebPush.Endpoints",
+      "file": "src/Granit.Notifications.WebPush.Endpoints/Dtos/WebPushSubscriptionRemoveRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "WebPushSubscriptionEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Notifications.WebPush.Endpoints.Extensions.WebPushSubscriptionEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush.Endpoints",
+      "file": "src/Granit.Notifications.WebPush.Endpoints/Extensions/WebPushSubscriptionEndpointRouteBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapGranitWebPushSubscriptions",
+          "kind": "method",
+          "signature": "MapGranitWebPushSubscriptions(this IEndpointRouteBuilder endpoints, Action<WebPushEndpointsOptions>? configure = null)",
+          "returnType": "IEndpointRouteBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsWebPushEndpointsModule",
+      "fqn": "Granit.Notifications.WebPush.Endpoints.GranitNotificationsWebPushEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush.Endpoints",
+      "file": "src/Granit.Notifications.WebPush.Endpoints/GranitNotificationsWebPushEndpointsModule.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "WebPushEndpointsOptions",
+      "fqn": "Granit.Notifications.WebPush.Endpoints.Options.WebPushEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush.Endpoints",
+      "file": "src/Granit.Notifications.WebPush.Endpoints/Options/WebPushEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
         }
       ]
     },
@@ -41115,7 +41231,7 @@
       "kind": "class",
       "project": "Granit.OpenApi.Generator",
       "file": "src/Granit.OpenApi.Generator/GeneratorModule.cs",
-      "line": 51,
+      "line": 53,
       "members": []
     },
     {
