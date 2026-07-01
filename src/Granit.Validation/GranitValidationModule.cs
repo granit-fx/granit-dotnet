@@ -12,6 +12,7 @@ using Granit.Validation.OpenApi;
 using Granit.Validation.ServerValidation;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace Granit.Validation;
@@ -78,7 +79,7 @@ public sealed class GranitValidationModule : GranitModule
         // Reusable JSON Schema writer that projects FluentValidation rules onto a
         // JSON Schema Draft 7 fragment. Consumed by the OpenAPI transformer below
         // and by Granit.Entities (manifest schema facet).
-        context.Services.AddSingleton<IJsonSchemaWriter, JsonSchemaWriter>();
+        context.Services.TryAddSingleton<IJsonSchemaWriter, JsonSchemaWriter>();
 
         // Enrich OpenAPI schemas with FluentValidation constraints (maxLength, minLength, pattern,
         // required, etc.) across ALL registered documents without creating a spurious "v1" document.

@@ -55,6 +55,6 @@ public sealed class GranitHostnamesModule : GranitModule
         });
         context.Services.TryAddSingleton<IHostnameVerifier, DnsHostnameVerifier>();
 
-        context.Services.AddScoped<IHostnameRegistrationService, HostnameRegistrationService>();
+        context.Services.TryAddScoped<IHostnameRegistrationService, HostnameRegistrationService>();
     }
 }

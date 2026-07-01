@@ -1,7 +1,7 @@
 using Granit.Modularity;
 using Granit.Scheduling.Wolverine.Internal;
 using Granit.Wolverine;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Wolverine;
 using Wolverine.Runtime.Handlers;
 
@@ -21,7 +21,7 @@ public sealed class GranitSchedulingWolverineModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.AddScoped<IScheduler, WolverineScheduler>();
+        context.Services.TryAddScoped<IScheduler, WolverineScheduler>();
 
         context.Services.ConfigureWolverine(opts =>
         {
