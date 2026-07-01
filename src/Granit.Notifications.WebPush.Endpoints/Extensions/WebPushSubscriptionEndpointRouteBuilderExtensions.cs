@@ -15,7 +15,7 @@ public static class WebPushSubscriptionEndpointRouteBuilderExtensions
     /// <summary>
     /// Maps the Web Push subscription endpoints (<c>POST</c>/<c>DELETE</c>
     /// <c>{prefix}/subscriptions</c>). Requires the Web Push channel to be registered via
-    /// <c>AddGranitNotificationsPush()</c>.
+    /// <c>AddGranitNotificationsWebPush()</c>.
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="WebPushEndpointsOptions"/>.</param>

@@ -12,7 +12,7 @@ namespace Granit.Notifications.WebPush.Extensions;
 public static class PushNotificationsServiceCollectionExtensions
 {
     /// <summary>Registers the W3C Web Push (VAPID) notification channel.</summary>
-    public static IServiceCollection AddGranitNotificationsPush(
+    public static IServiceCollection AddGranitNotificationsWebPush(
         this IServiceCollection services,
         Action<PushChannelOptions>? configure = null)
     {

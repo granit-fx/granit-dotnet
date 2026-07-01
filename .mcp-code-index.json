@@ -40249,9 +40249,9 @@
       "line": 12,
       "members": [
         {
-          "name": "AddGranitNotificationsPush",
+          "name": "AddGranitNotificationsWebPush",
           "kind": "method",
-          "signature": "AddGranitNotificationsPush(this IServiceCollection services, Action<PushChannelOptions>? configure = null)",
+          "signature": "AddGranitNotificationsWebPush(this IServiceCollection services, Action<PushChannelOptions>? configure = null)",
           "returnType": "IServiceCollection"
         }
       ]

@@ -15,7 +15,7 @@ public sealed class PushNotificationsServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-        services.AddGranitNotificationsPush();
+        services.AddGranitNotificationsWebPush();
 
         using ServiceProvider sp = services.BuildServiceProvider();
         IOptions<PushChannelOptions> options = sp.GetRequiredService<IOptions<PushChannelOptions>>();
@@ -28,7 +28,7 @@ public sealed class PushNotificationsServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-        services.AddGranitNotificationsPush();
+        services.AddGranitNotificationsWebPush();
 
         using ServiceProvider sp = services.BuildServiceProvider();
         IPushSubscriptionReader reader = sp.GetRequiredService<IPushSubscriptionReader>();
@@ -41,7 +41,7 @@ public sealed class PushNotificationsServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-        services.AddGranitNotificationsPush();
+        services.AddGranitNotificationsWebPush();
 
         using ServiceProvider sp = services.BuildServiceProvider();
         IPushSubscriptionWriter writer = sp.GetRequiredService<IPushSubscriptionWriter>();
@@ -54,7 +54,7 @@ public sealed class PushNotificationsServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-        services.AddGranitNotificationsPush(opts =>
+        services.AddGranitNotificationsWebPush(opts =>
         {
             opts.VapidSubject = "mailto:test@example.com";
             opts.VapidPublicKey = "test-public-key";
@@ -72,14 +72,14 @@ public sealed class PushNotificationsServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
 
-        Should.NotThrow(() => services.AddGranitNotificationsPush(configure: null));
+        Should.NotThrow(() => services.AddGranitNotificationsWebPush(configure: null));
     }
 
     [Fact]
     public void AddGranitNotificationsPush_ReturnsServiceCollection()
     {
         ServiceCollection services = new();
-        IServiceCollection result = services.AddGranitNotificationsPush();
+        IServiceCollection result = services.AddGranitNotificationsWebPush();
 
         result.ShouldBeSameAs(services);
     }
