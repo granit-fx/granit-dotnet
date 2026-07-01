@@ -36,7 +36,7 @@ internal static class AICredentialCascade
         string? apiKeySettingName,
         string? endpointSettingName,
         (string? ApiKey, string? Endpoint) hostFallback,
-        SettingDefinitionManager definitions,
+        SettingDefinitionRegistry definitions,
         ISettingValueProvider? tenantProvider,
         ISettingValueProvider? globalProvider,
         AIWorkspace workspace,

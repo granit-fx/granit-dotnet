@@ -39,7 +39,7 @@ public sealed class EncryptedSettingMaskingTests : IAsyncDisposable
     private const string AuthenticatedMarker = "authenticated";
 
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
-    private readonly ISettingManager _settingManager = Substitute.For<ISettingManager>();
+    private readonly ISettingWriter _settingManager = Substitute.For<ISettingWriter>();
     private readonly ICurrentUserService _currentUserService = Substitute.For<ICurrentUserService>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly WebApplication _app;
@@ -74,7 +74,7 @@ public sealed class EncryptedSettingMaskingTests : IAsyncDisposable
         builder.Services.AddSingleton(_currentTenant);
         builder.Services.AddSingleton<ISettingDefinitionProvider>(new EncryptedSettingProvider());
         builder.Services.AddSingleton(sp =>
-            new SettingDefinitionManager(sp.GetServices<ISettingDefinitionProvider>()));
+            new SettingDefinitionRegistry(sp.GetServices<ISettingDefinitionProvider>()));
 
         _app = builder.Build();
         _app.MapGranitGlobalSettings();

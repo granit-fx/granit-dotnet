@@ -22,7 +22,7 @@ namespace Granit.AI.Anthropic.Internal;
 /// </list>
 /// </remarks>
 internal sealed class AnthropicCredentialResolver(
-    SettingDefinitionManager definitions,
+    SettingDefinitionRegistry definitions,
     IEnumerable<ISettingValueProvider> settingProviders,
     IOptionsMonitor<AnthropicProviderOptions> options) : IAIProviderCredentialResolver
 {

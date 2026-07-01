@@ -90,22 +90,22 @@ public static class AIServiceCollectionExtensions
         builder.Services.AddQueryDefinition<AIUsageRecord, AIUsageRecordQueryDefinition>();
         builder.Services.AddExportDefinition<AIUsageRecord, AIUsageRecordExportDefinition>();
 
-        // Wrap the configured ISettingManager so that writes to Granit.AI.* keys require the
+        // Wrap the configured ISettingWriter so that writes to Granit.AI.* keys require the
         // AI.Credentials.Manage permission (in addition to the standard Settings.*.Manage). See
         // AISettingsCredentialsGuard for the rationale.
-        DecorateSettingManagerWithCredentialsGuard(builder.Services);
+        DecorateSettingWriterWithCredentialsGuard(builder.Services);
 
         return builder;
     }
 
-    private static void DecorateSettingManagerWithCredentialsGuard(IServiceCollection services)
+    private static void DecorateSettingWriterWithCredentialsGuard(IServiceCollection services)
     {
-        // Find the latest registration (Granit.Settings registers SettingManager via TryAdd
+        // Find the latest registration (Granit.Settings registers SettingWriter via TryAdd
         // before this method runs).
         ServiceDescriptor? existing = null;
         for (int i = services.Count - 1; i >= 0; i--)
         {
-            if (services[i].ServiceType == typeof(ISettingManager))
+            if (services[i].ServiceType == typeof(ISettingWriter))
             {
                 existing = services[i];
                 services.RemoveAt(i);
@@ -122,7 +122,7 @@ public static class AIServiceCollectionExtensions
             return;
         }
 
-        Func<IServiceProvider, ISettingManager>? resolveInner = null;
+        Func<IServiceProvider, ISettingWriter>? resolveInner = null;
         ServiceLifetime guardLifetime = existing.Lifetime;
 
         if (existing.ImplementationType is { } implType)
@@ -130,13 +130,13 @@ public static class AIServiceCollectionExtensions
             // Re-register the underlying implementation under its concrete type so the guard
             // can pull it via DI.
             services.Add(new ServiceDescriptor(implType, implType, existing.Lifetime));
-            resolveInner = sp => (ISettingManager)sp.GetRequiredService(implType);
+            resolveInner = sp => (ISettingWriter)sp.GetRequiredService(implType);
         }
         else if (existing.ImplementationFactory is { } factory)
         {
-            resolveInner = sp => (ISettingManager)factory(sp);
+            resolveInner = sp => (ISettingWriter)factory(sp);
         }
-        else if (existing.ImplementationInstance is ISettingManager instance)
+        else if (existing.ImplementationInstance is ISettingWriter instance)
         {
             resolveInner = _ => instance;
             guardLifetime = ServiceLifetime.Singleton;
@@ -151,10 +151,10 @@ public static class AIServiceCollectionExtensions
     }
 
     private static ServiceDescriptor BuildGuardDescriptor(
-        Func<IServiceProvider, ISettingManager> resolveInner,
+        Func<IServiceProvider, ISettingWriter> resolveInner,
         ServiceLifetime lifetime) =>
         new(
-            typeof(ISettingManager),
+            typeof(ISettingWriter),
             sp => new AISettingsCredentialsGuard(
                 resolveInner(sp),
                 ResolvePermissionChecker(sp, lifetime)),

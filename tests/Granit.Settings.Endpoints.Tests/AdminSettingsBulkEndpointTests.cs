@@ -31,7 +31,7 @@ public sealed class AdminSettingsBulkEndpointTests : IAsyncDisposable
     private const string GlobalOnlySettingName = "App.GlobalOnly";
 
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
-    private readonly ISettingManager _settingManager = Substitute.For<ISettingManager>();
+    private readonly ISettingWriter _settingManager = Substitute.For<ISettingWriter>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly WebApplication _app;
     private readonly HttpClient _globalReadClient;
@@ -67,7 +67,7 @@ public sealed class AdminSettingsBulkEndpointTests : IAsyncDisposable
         builder.Services.AddSingleton(_currentTenant);
         builder.Services.AddSingleton<ISettingDefinitionProvider, TestDefinitionProvider>();
         builder.Services.AddSingleton(sp =>
-            new SettingDefinitionManager(sp.GetServices<ISettingDefinitionProvider>()));
+            new SettingDefinitionRegistry(sp.GetServices<ISettingDefinitionProvider>()));
         builder.Services.AddScoped<IValidator<BulkUpdateSettingsRequest>, BulkUpdateSettingsRequestValidator>();
 
         _app = builder.Build();

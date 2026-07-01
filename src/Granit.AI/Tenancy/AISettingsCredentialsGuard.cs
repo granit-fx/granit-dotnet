@@ -5,7 +5,7 @@ using Granit.Settings.Services;
 namespace Granit.AI.Tenancy;
 
 /// <summary>
-/// Decorator on <see cref="ISettingManager"/> that rejects writes to any setting whose name
+/// Decorator on <see cref="ISettingWriter"/> that rejects writes to any setting whose name
 /// starts with <see cref="AISettingNames.PrefixValue"/> unless the caller has the
 /// <see cref="AIPermissions.Credentials.Manage"/> permission.
 /// </summary>
@@ -17,15 +17,15 @@ namespace Granit.AI.Tenancy;
 /// the credential under which prompts are sent.
 /// </para>
 /// <para>
-/// Registered as a decorator over the underlying <see cref="ISettingManager"/> in DI.
+/// Registered as a decorator over the underlying <see cref="ISettingWriter"/> in DI.
 /// Reads are not gated by this layer: the read endpoints already check
 /// <c>Settings.*.Read</c>, and <c>IsVisibleToClients=false</c> on AI definitions ensures
 /// the public-facing user settings API doesn't return them.
 /// </para>
 /// </remarks>
 internal sealed class AISettingsCredentialsGuard(
-    ISettingManager inner,
-    IPermissionChecker permissionChecker) : ISettingManager
+    ISettingWriter inner,
+    IPermissionChecker permissionChecker) : ISettingWriter
 {
     /// <inheritdoc />
     public async Task SetGlobalAsync(string name, string? value, CancellationToken cancellationToken = default)

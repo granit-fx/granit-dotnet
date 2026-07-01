@@ -14,7 +14,7 @@ namespace Granit.AI.Chat.Privacy.DataExport;
 /// </summary>
 public sealed class ConversationPrivacyDataProvider(
     IConversationStore store,
-    IConversationDataManager dataManager,
+    IConversationDataStore dataManager,
     IStagedFragmentBuilder fragmentBuilder) : IPrivacyDataProvider
 {
     /// <inheritdoc />

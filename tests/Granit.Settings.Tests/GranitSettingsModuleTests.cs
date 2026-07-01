@@ -47,15 +47,15 @@ public sealed class GranitSettingsModuleTests
     // --- Câblage DI ---
 
     [Fact]
-    public void SettingDefinitionManager_Is_Resolvable_And_Singleton()
+    public void SettingDefinitionRegistry_Is_Resolvable_And_Singleton()
     {
         using WebApplication app = BuildApp();
 
-        SettingDefinitionManager first = app.Services.GetRequiredService<SettingDefinitionManager>();
-        SettingDefinitionManager second = app.Services.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry first = app.Services.GetRequiredService<SettingDefinitionRegistry>();
+        SettingDefinitionRegistry second = app.Services.GetRequiredService<SettingDefinitionRegistry>();
 
         first.ShouldNotBeNull();
-        first.ShouldBeSameAs(second, "SettingDefinitionManager doit être un singleton");
+        first.ShouldBeSameAs(second, "SettingDefinitionRegistry doit être un singleton");
     }
 
     [Fact]
@@ -104,12 +104,12 @@ public sealed class GranitSettingsModuleTests
     }
 
     [Fact]
-    public void SettingValueProviderManager_Is_Resolvable_And_Singleton()
+    public void SettingValueProviderRegistry_Is_Resolvable_And_Singleton()
     {
         using WebApplication app = BuildApp();
 
-        SettingValueProviderManager first = app.Services.GetRequiredService<SettingValueProviderManager>();
-        SettingValueProviderManager second = app.Services.GetRequiredService<SettingValueProviderManager>();
+        SettingValueProviderRegistry first = app.Services.GetRequiredService<SettingValueProviderRegistry>();
+        SettingValueProviderRegistry second = app.Services.GetRequiredService<SettingValueProviderRegistry>();
 
         first.ShouldNotBeNull();
         first.ShouldBeSameAs(second);
@@ -128,15 +128,15 @@ public sealed class GranitSettingsModuleTests
     }
 
     [Fact]
-    public void ISettingManager_Is_Resolvable_As_Scoped()
+    public void ISettingWriter_Is_Resolvable_As_Scoped()
     {
         using WebApplication app = BuildApp();
         using IServiceScope scope = app.Services.CreateScope();
 
-        ISettingManager manager = scope.ServiceProvider.GetRequiredService<ISettingManager>();
+        ISettingWriter manager = scope.ServiceProvider.GetRequiredService<ISettingWriter>();
 
         manager.ShouldNotBeNull();
-        manager.ShouldBeOfType<SettingManager>();
+        manager.ShouldBeOfType<SettingWriter>();
     }
 
     // --- Ordre topologique ---
@@ -160,7 +160,7 @@ public sealed class GranitSettingsModuleTests
         using IServiceScope scope = app.Services.CreateScope();
 
         // Déclarer le paramètre via un provider enregistré dans le DI
-        SettingDefinitionManager defManager = scope.ServiceProvider.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry defManager = scope.ServiceProvider.GetRequiredService<SettingDefinitionRegistry>();
         ISettingStoreWriter writer = scope.ServiceProvider.GetRequiredService<ISettingStoreWriter>();
         ISettingStoreReader reader = scope.ServiceProvider.GetRequiredService<ISettingStoreReader>();
 

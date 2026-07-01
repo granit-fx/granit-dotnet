@@ -33,7 +33,7 @@ internal static class PermissionDefinitionsEndpoints
     }
 
     private static Ok<IReadOnlyList<PermissionGroupResponse>> GetDefinitions(
-        [FromServices] IPermissionDefinitionManager definitionManager,
+        [FromServices] IPermissionDefinitionRegistry definitionManager,
         HttpContext httpContext)
     {
         IStringLocalizerFactory? localizerFactory =

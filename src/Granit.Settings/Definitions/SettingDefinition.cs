@@ -70,7 +70,7 @@ public sealed class SettingDefinition
 
     /// <summary>
     /// Verifies configuration-time invariants. Invoked by
-    /// <see cref="SettingDefinitionManager"/> at registration to fail fast on misconfigured
+    /// <see cref="SettingDefinitionRegistry"/> at registration to fail fast on misconfigured
     /// definitions.
     /// </summary>
     /// <exception cref="InvalidOperationException">

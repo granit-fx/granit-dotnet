@@ -150,7 +150,7 @@ public sealed class HostFeedStrictConfigValidatorTests
     }
 
     private static void CallMap(
-        IPermissionDefinitionManager hostPermissions,
+        IPermissionDefinitionRegistry hostPermissions,
         Action<ODataHostExposureOptions> configure)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -193,11 +193,11 @@ public sealed class HostFeedStrictConfigValidatorTests
     }
 
     /// <summary>
-    /// Minimal in-memory <see cref="IPermissionDefinitionManager"/> stub —
-    /// the validator only calls <see cref="IPermissionDefinitionManager.Find"/>,
+    /// Minimal in-memory <see cref="IPermissionDefinitionRegistry"/> stub —
+    /// the validator only calls <see cref="IPermissionDefinitionRegistry.Find"/>,
     /// so the rest of the surface returns empties.
     /// </summary>
-    private sealed class HostPermissionsProvider : IPermissionDefinitionManager
+    private sealed class HostPermissionsProvider : IPermissionDefinitionRegistry
     {
         public static HostPermissionsProvider Empty { get; } = new();
 

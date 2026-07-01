@@ -25,7 +25,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
     private const string Prefix = "/authorization";
 
     private readonly IPermissionChecker _permissionChecker = Substitute.For<IPermissionChecker>();
-    private readonly IPermissionDefinitionManager _definitionManager = Substitute.For<IPermissionDefinitionManager>();
+    private readonly IPermissionDefinitionRegistry _definitionManager = Substitute.For<IPermissionDefinitionRegistry>();
     private readonly IPermissionManagerReader _permissionManagerReader = Substitute.For<IPermissionManagerReader>();
     private readonly IPermissionManagerWriter _permissionManagerWriter = Substitute.For<IPermissionManagerWriter>();
     private readonly IRoleMetadataStore _roleMetadataStore = Substitute.For<IRoleMetadataStore>();

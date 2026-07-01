@@ -72,8 +72,8 @@ public sealed class EndpointNameCollisionTests
         // Host-feed validator looks up the required permission and checks
         // MultiTenancySides.Host — stub a provider with the two permissions
         // referenced by the test.
-        builder.Services.AddSingleton<IPermissionDefinitionManager>(
-            new StubPermissionDefinitionManager
+        builder.Services.AddSingleton<IPermissionDefinitionRegistry>(
+            new StubPermissionDefinitionRegistry
             {
                 ["OData.Test.Users.Read"] = MultiTenancySides.Tenant,
                 ["OData.Test.Users.Host.Read"] = MultiTenancySides.Host,
@@ -92,7 +92,7 @@ public sealed class EndpointNameCollisionTests
         return builder.Build();
     }
 
-    private sealed class StubPermissionDefinitionManager : IPermissionDefinitionManager
+    private sealed class StubPermissionDefinitionRegistry : IPermissionDefinitionRegistry
     {
         private readonly Dictionary<string, PermissionDefinition> _definitions = [];
 

@@ -14,7 +14,7 @@ public static class AIPermissions
         /// <summary>
         /// Grants the right to write per-tenant / per-workspace AI credentials.
         /// Required (in addition to <c>Settings.{Tenant,Global}.Manage</c>) for any
-        /// <c>ISettingManager.Set*Async</c> call where the setting name starts with
+        /// <c>ISettingWriter.Set*Async</c> call where the setting name starts with
         /// <c>Granit.AI.</c>. Required for the workspace credentials endpoint.
         /// </summary>
         public const string Manage = "AI.Credentials.Manage";

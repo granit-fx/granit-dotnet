@@ -36,7 +36,7 @@ public static class AIChatEntityFrameworkCoreServiceCollectionExtensions
             configureTenantSchema);
 
         services.TryAddScoped<IConversationStore, EfConversationStore>();
-        services.TryAddScoped<IConversationDataManager, EfConversationDataManager>();
+        services.TryAddScoped<IConversationDataStore, EfConversationDataStore>();
 
         return services;
     }

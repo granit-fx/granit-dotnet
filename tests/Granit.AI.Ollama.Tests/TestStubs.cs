@@ -104,7 +104,7 @@ internal static class TestFixtures
         DefaultModel = "llama3.2",
     };
 
-    public static SettingDefinitionManager BuildDefinitionManager() =>
+    public static SettingDefinitionRegistry BuildDefinitionManager() =>
         new(new ISettingDefinitionProvider[] { new AISettingDefinitionProvider() });
 
     public static (OllamaProviderFactory Factory,
@@ -128,7 +128,7 @@ internal static class TestFixtures
         var monitor = new TestOptionsMonitor<OllamaProviderOptions>(options ?? DefaultOptions());
         TestSettingValueProvider tenant = new(TenantSettingValueProvider.ProviderName);
         TestSettingValueProvider global = new(GlobalSettingValueProvider.ProviderName);
-        SettingDefinitionManager definitions = BuildDefinitionManager();
+        SettingDefinitionRegistry definitions = BuildDefinitionManager();
         OllamaCredentialResolver resolver = new(definitions, [tenant, global], monitor);
         TestHttpClientFactory httpFactory = new();
         OllamaClientCache cache = new(httpFactory, Microsoft.Extensions.Options.Options.Create(monitor.CurrentValue));

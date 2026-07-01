@@ -17,7 +17,7 @@ public sealed class ConversationPersonalDataDeletionHandlerTests
     [Fact]
     public async Task Handle_erases_the_subjects_conversations_for_the_event_tenant()
     {
-        IConversationDataManager dataManager = Substitute.For<IConversationDataManager>();
+        IConversationDataStore dataManager = Substitute.For<IConversationDataStore>();
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
 
         await ConversationPersonalDataDeletionHandler.Handle(
@@ -29,7 +29,7 @@ public sealed class ConversationPersonalDataDeletionHandlerTests
     [Fact]
     public async Task Handle_falls_back_to_the_ambient_tenant_when_the_event_has_none()
     {
-        IConversationDataManager dataManager = Substitute.For<IConversationDataManager>();
+        IConversationDataStore dataManager = Substitute.For<IConversationDataStore>();
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         currentTenant.Id.Returns(Tenant);
 

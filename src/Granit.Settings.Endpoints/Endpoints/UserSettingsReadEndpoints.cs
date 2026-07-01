@@ -43,8 +43,8 @@ internal static class UserSettingsReadEndpoints
         HttpContext context,
         CancellationToken cancellationToken)
     {
-        SettingDefinitionManager definitionManager =
-            context.RequestServices.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry definitionManager =
+            context.RequestServices.GetRequiredService<SettingDefinitionRegistry>();
         ISettingProvider settingProvider =
             context.RequestServices.GetRequiredService<ISettingProvider>();
 
@@ -78,8 +78,8 @@ internal static class UserSettingsReadEndpoints
         string name,
         CancellationToken cancellationToken)
     {
-        SettingDefinitionManager definitionManager =
-            context.RequestServices.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry definitionManager =
+            context.RequestServices.GetRequiredService<SettingDefinitionRegistry>();
 
         SettingDefinition? definition = definitionManager.GetOrNull(name);
 

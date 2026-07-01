@@ -99,7 +99,7 @@ internal static class TestFixtures
         DefaultEmbeddingModel = "text-embedding-3-small",
     };
 
-    public static SettingDefinitionManager BuildDefinitionManager() =>
+    public static SettingDefinitionRegistry BuildDefinitionManager() =>
         new(new ISettingDefinitionProvider[] { new AISettingDefinitionProvider() });
 
     public static (OpenAIProviderFactory Factory,
@@ -111,7 +111,7 @@ internal static class TestFixtures
         var monitor = new TestOptionsMonitor<OpenAIProviderOptions>(options ?? DefaultOptions());
         TestSettingValueProvider tenant = new(TenantSettingValueProvider.ProviderName);
         TestSettingValueProvider global = new(GlobalSettingValueProvider.ProviderName);
-        SettingDefinitionManager definitions = BuildDefinitionManager();
+        SettingDefinitionRegistry definitions = BuildDefinitionManager();
         OpenAICredentialResolver resolver = new(definitions, [tenant, global], monitor);
         OpenAIClientCache cache = new(new TestHttpClientFactory(), Microsoft.Extensions.Options.Options.Create(monitor.CurrentValue));
         OpenAIProviderFactory factory = new(monitor, resolver, cache, TimeProvider.System);

@@ -74,8 +74,8 @@ internal static class AdminSettingsWriteEndpoints
         UpdateSettingValueRequest body,
         CancellationToken cancellationToken)
     {
-        SettingDefinitionManager definitionManager =
-            context.RequestServices.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry definitionManager =
+            context.RequestServices.GetRequiredService<SettingDefinitionRegistry>();
 
         SettingDefinition? definition = definitionManager.GetOrNull(name);
 
@@ -89,8 +89,8 @@ internal static class AdminSettingsWriteEndpoints
             return SettingsResponseMapper.ProviderNotAllowed(name, "Global");
         }
 
-        ISettingManager settingManager =
-            context.RequestServices.GetRequiredService<ISettingManager>();
+        ISettingWriter settingManager =
+            context.RequestServices.GetRequiredService<ISettingWriter>();
 
         await settingManager
             .SetGlobalAsync(name, body.Value, cancellationToken)
@@ -104,10 +104,10 @@ internal static class AdminSettingsWriteEndpoints
         BulkUpdateSettingsRequest body,
         CancellationToken cancellationToken)
     {
-        SettingDefinitionManager definitionManager =
-            context.RequestServices.GetRequiredService<SettingDefinitionManager>();
-        ISettingManager settingManager =
-            context.RequestServices.GetRequiredService<ISettingManager>();
+        SettingDefinitionRegistry definitionManager =
+            context.RequestServices.GetRequiredService<SettingDefinitionRegistry>();
+        ISettingWriter settingManager =
+            context.RequestServices.GetRequiredService<ISettingWriter>();
 
         var results = new BulkSettingResult[body.Settings.Count];
 
@@ -162,8 +162,8 @@ internal static class AdminSettingsWriteEndpoints
             return SettingsResponseMapper.NoTenantContext();
         }
 
-        SettingDefinitionManager definitionManager =
-            context.RequestServices.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry definitionManager =
+            context.RequestServices.GetRequiredService<SettingDefinitionRegistry>();
 
         SettingDefinition? definition = definitionManager.GetOrNull(name);
 
@@ -177,8 +177,8 @@ internal static class AdminSettingsWriteEndpoints
             return SettingsResponseMapper.ProviderNotAllowed(name, "Tenant");
         }
 
-        ISettingManager settingManager =
-            context.RequestServices.GetRequiredService<ISettingManager>();
+        ISettingWriter settingManager =
+            context.RequestServices.GetRequiredService<ISettingWriter>();
 
         await settingManager
             .SetForTenantAsync(currentTenant.Id!.Value, name, body.Value, cancellationToken)
@@ -200,10 +200,10 @@ internal static class AdminSettingsWriteEndpoints
             return SettingsResponseMapper.NoTenantContext();
         }
 
-        SettingDefinitionManager definitionManager =
-            context.RequestServices.GetRequiredService<SettingDefinitionManager>();
-        ISettingManager settingManager =
-            context.RequestServices.GetRequiredService<ISettingManager>();
+        SettingDefinitionRegistry definitionManager =
+            context.RequestServices.GetRequiredService<SettingDefinitionRegistry>();
+        ISettingWriter settingManager =
+            context.RequestServices.GetRequiredService<ISettingWriter>();
 
         Guid tenantId = currentTenant.Id!.Value;
         var results = new BulkSettingResult[body.Settings.Count];

@@ -19,9 +19,9 @@ public sealed class AIScopeValidationTests
     [Fact]
     public void AddGranitAI_should_pass_scope_validation_when_setting_manager_is_singleton()
     {
-        // Regression: AISettingsCredentialsGuard decorates ISettingManager and previously
+        // Regression: AISettingsCredentialsGuard decorates ISettingWriter and previously
         // captured the scoped IPermissionChecker directly in the decorator factory. When
-        // the underlying ISettingManager was registered as a singleton (e.g. through an
+        // the underlying ISettingWriter was registered as a singleton (e.g. through an
         // ImplementationInstance), the guard was forced to singleton and the captive
         // IPermissionChecker either failed ValidateScopes at startup or silently leaked
         // the first request's scope. The fix routes the checker through a singleton-safe
@@ -38,12 +38,12 @@ public sealed class AIScopeValidationTests
         builder.Services.TryAddScoped(_ => Substitute.For<ICurrentUserService>());
 
         // The scoped registration that previously broke ValidateScopes once the guard
-        // wrapped a singleton ISettingManager.
+        // wrapped a singleton ISettingWriter.
         builder.Services.TryAddScoped(_ => Substitute.For<IPermissionChecker>());
 
-        // Singleton ISettingManager — the path that hardcoded AddSingleton on the
+        // Singleton ISettingWriter — the path that hardcoded AddSingleton on the
         // decorator and triggered the captive dependency.
-        ISettingManager innerSettings = Substitute.For<ISettingManager>();
+        ISettingWriter innerSettings = Substitute.For<ISettingWriter>();
         builder.Services.AddSingleton(innerSettings);
 
         builder.AddGranitAI();
@@ -57,7 +57,7 @@ public sealed class AIScopeValidationTests
                 new ServiceProviderOptions { ValidateScopes = true });
 
             using IServiceScope scope = provider.CreateScope();
-            ISettingManager resolved = scope.ServiceProvider.GetRequiredService<ISettingManager>();
+            ISettingWriter resolved = scope.ServiceProvider.GetRequiredService<ISettingWriter>();
             resolved.ShouldBeOfType<AISettingsCredentialsGuard>();
         });
     }

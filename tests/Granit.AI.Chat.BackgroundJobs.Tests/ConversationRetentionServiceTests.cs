@@ -12,7 +12,7 @@ public sealed class ConversationRetentionServiceTests
 {
     private static readonly DateTimeOffset Now = new(2026, 6, 1, 0, 0, 0, TimeSpan.Zero);
 
-    private readonly IConversationDataManager _dataManager = Substitute.For<IConversationDataManager>();
+    private readonly IConversationDataStore _dataManager = Substitute.For<IConversationDataStore>();
     private readonly IClock _clock = Substitute.For<IClock>();
 
     private ConversationRetentionService Create(GranitAIChatRetentionOptions options)

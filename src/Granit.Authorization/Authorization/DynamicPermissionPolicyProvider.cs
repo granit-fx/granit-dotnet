@@ -11,7 +11,7 @@ namespace Granit.Authorization.Authorization;
 /// </summary>
 internal sealed class DynamicPermissionPolicyProvider(
     IOptions<AuthorizationOptions> options,
-    IPermissionDefinitionManager definitionManager) : IAuthorizationPolicyProvider
+    IPermissionDefinitionRegistry definitionManager) : IAuthorizationPolicyProvider
 {
     private readonly DefaultAuthorizationPolicyProvider _fallback = new(options);
 

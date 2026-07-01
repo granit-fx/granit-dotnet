@@ -34,11 +34,11 @@ public sealed class SettingsServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitSettings_Registers_SettingDefinitionManager()
+    public void AddGranitSettings_Registers_SettingDefinitionRegistry()
     {
         using ServiceProvider sp = BuildProvider();
 
-        SettingDefinitionManager manager = sp.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry manager = sp.GetRequiredService<SettingDefinitionRegistry>();
 
         manager.ShouldNotBeNull();
     }
@@ -80,14 +80,14 @@ public sealed class SettingsServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitSettings_Registers_ISettingManager()
+    public void AddGranitSettings_Registers_ISettingWriter()
     {
         using ServiceProvider sp = BuildProvider();
         using IServiceScope scope = sp.CreateScope();
 
-        ISettingManager manager = scope.ServiceProvider.GetRequiredService<ISettingManager>();
+        ISettingWriter manager = scope.ServiceProvider.GetRequiredService<ISettingWriter>();
 
-        manager.ShouldBeOfType<SettingManager>();
+        manager.ShouldBeOfType<SettingWriter>();
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public sealed class SettingsServiceCollectionExtensionsTests
 
         using ServiceProvider sp = services.BuildServiceProvider();
 
-        SettingDefinitionManager manager = sp.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry manager = sp.GetRequiredService<SettingDefinitionRegistry>();
         manager.ShouldNotBeNull();
     }
 }

@@ -19,7 +19,7 @@ namespace Granit.AI.Ollama.Internal;
 /// Options layer uses the permissive policy (operator-trusted).
 /// </remarks>
 internal sealed class OllamaCredentialResolver(
-    SettingDefinitionManager definitions,
+    SettingDefinitionRegistry definitions,
     IEnumerable<ISettingValueProvider> settingProviders,
     IOptionsMonitor<OllamaProviderOptions> options) : IAIProviderCredentialResolver
 {

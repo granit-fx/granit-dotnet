@@ -18,7 +18,7 @@ namespace Granit.AI.OpenAI.Internal;
 /// rather than silently rotating to the next layer.
 /// </remarks>
 internal sealed class OpenAICredentialResolver(
-    SettingDefinitionManager definitions,
+    SettingDefinitionRegistry definitions,
     IEnumerable<ISettingValueProvider> settingProviders,
     IOptionsMonitor<OpenAIProviderOptions> options) : IAIProviderCredentialResolver
 {

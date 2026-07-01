@@ -7,16 +7,16 @@ namespace Granit.Identity.Local.Tests;
 
 public sealed class IdentityLocalSettingDefinitionProviderTests
 {
-    private static SettingDefinitionManager BuildManager()
+    private static SettingDefinitionRegistry BuildManager()
     {
         IdentityLocalSettingDefinitionProvider provider = new();
-        return new SettingDefinitionManager([provider]);
+        return new SettingDefinitionRegistry([provider]);
     }
 
     [Fact]
     public void Defines_AllowSelfRegistration_Setting()
     {
-        SettingDefinitionManager manager = BuildManager();
+        SettingDefinitionRegistry manager = BuildManager();
 
         SettingDefinition? def = manager.GetOrNull(IdentityLocalSettingNames.AllowSelfRegistration);
 

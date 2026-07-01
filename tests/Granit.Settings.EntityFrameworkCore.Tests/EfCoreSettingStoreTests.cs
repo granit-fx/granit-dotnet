@@ -41,7 +41,7 @@ public sealed class EfCoreSettingStoreTests
     }
 
     private static EfCoreSettingStore CreateStore(string dbName)
-        => new(new TestSettingsDbContextFactory(dbName), new SettingDefinitionManager([]), new PassthroughEncryption());
+        => new(new TestSettingsDbContextFactory(dbName), new SettingDefinitionRegistry([]), new PassthroughEncryption());
 
     private static async Task SeedAsync(
         string dbName,

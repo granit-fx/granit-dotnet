@@ -21,7 +21,7 @@ public sealed class DynamicPermissionPolicyProviderTests
     public async Task GetPolicyAsync_KnownPermission_ReturnsPolicyWithPermissionRequirement()
     {
         // Arrange
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         manager.Exists("Invoices.Delete").Returns(true);
 
         DynamicPermissionPolicyProvider provider = new(
@@ -42,7 +42,7 @@ public sealed class DynamicPermissionPolicyProviderTests
     public async Task GetPolicyAsync_UnknownPolicyName_ReturnsNull()
     {
         // Arrange
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         manager.Exists("Unknown.Policy").Returns(false);
 
         DynamicPermissionPolicyProvider provider = new(
@@ -60,7 +60,7 @@ public sealed class DynamicPermissionPolicyProviderTests
     public async Task GetPolicyAsync_StandardAuthenticatedPolicy_DelegatesToFallback()
     {
         // Arrange
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         manager.Exists("Authenticated").Returns(false); // not a permission name
 
         AuthorizationOptions authOptions = new();
@@ -81,7 +81,7 @@ public sealed class DynamicPermissionPolicyProviderTests
     public async Task GetDefaultPolicyAsync_DelegatesToFallback()
     {
         // Arrange
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         DynamicPermissionPolicyProvider provider = new(
             Microsoft.Extensions.Options.Options.Create(new AuthorizationOptions()),
             manager);
@@ -101,7 +101,7 @@ public sealed class DynamicPermissionPolicyProviderTests
     public async Task GetFallbackPolicyAsync_Default_ReturnsNull()
     {
         // Arrange — default AuthorizationOptions has no fallback policy
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         DynamicPermissionPolicyProvider provider = new(
             Microsoft.Extensions.Options.Options.Create(new AuthorizationOptions()),
             manager);
@@ -117,7 +117,7 @@ public sealed class DynamicPermissionPolicyProviderTests
     public async Task GetFallbackPolicyAsync_WhenConfigured_ReturnsFallback()
     {
         // Arrange
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         AuthorizationOptions authOptions = new()
         {
             FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build()
@@ -142,7 +142,7 @@ public sealed class DynamicPermissionPolicyProviderTests
     public async Task GetPolicyAsync_KnownPermission_PolicyRequiresAuthenticatedUser()
     {
         // Arrange
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         manager.Exists("Orders.Create").Returns(true);
 
         DynamicPermissionPolicyProvider provider = new(
@@ -162,7 +162,7 @@ public sealed class DynamicPermissionPolicyProviderTests
     public async Task GetPolicyAsync_KnownPermission_PermissionRequirementContainsCorrectName()
     {
         // Arrange
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         manager.Exists("BlobStorage.Blobs.Upload").Returns(true);
 
         DynamicPermissionPolicyProvider provider = new(
@@ -182,7 +182,7 @@ public sealed class DynamicPermissionPolicyProviderTests
     public async Task GetPolicyAsync_MultipleKnownPermissions_EachReturnsSeparatePolicy()
     {
         // Arrange
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         manager.Exists("Invoices.Read").Returns(true);
         manager.Exists("Invoices.Delete").Returns(true);
 

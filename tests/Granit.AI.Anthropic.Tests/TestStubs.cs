@@ -110,8 +110,8 @@ internal static class TestFixtures
         DefaultModel = "claude-sonnet-4-6",
     };
 
-    /// <summary>Builds a real <see cref="SettingDefinitionManager"/> seeded with the AI settings.</summary>
-    public static SettingDefinitionManager BuildDefinitionManager() =>
+    /// <summary>Builds a real <see cref="SettingDefinitionRegistry"/> seeded with the AI settings.</summary>
+    public static SettingDefinitionRegistry BuildDefinitionManager() =>
         new(new ISettingDefinitionProvider[] { new AISettingDefinitionProvider() });
 
     /// <summary>Builds a credential resolver wired with in-memory tenant/global providers.</summary>
@@ -124,7 +124,7 @@ internal static class TestFixtures
         var monitor = new TestOptionsMonitor<AnthropicProviderOptions>(options ?? DefaultOptions());
         TestSettingValueProvider tenant = new(TenantSettingValueProvider.ProviderName);
         TestSettingValueProvider global = new(GlobalSettingValueProvider.ProviderName);
-        SettingDefinitionManager definitions = BuildDefinitionManager();
+        SettingDefinitionRegistry definitions = BuildDefinitionManager();
         AnthropicCredentialResolver resolver = new(definitions, [tenant, global], monitor);
         return (resolver, tenant, global, monitor);
     }

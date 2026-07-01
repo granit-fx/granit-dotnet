@@ -24,7 +24,7 @@ namespace Granit.Authorization.Services;
 internal sealed class PermissionChecker(
     ICurrentUserService currentUserService,
     ICurrentTenant currentTenant,
-    IPermissionDefinitionManager definitionManager,
+    IPermissionDefinitionRegistry definitionManager,
     IPermissionGrantStore grantStore,
     IEnumerable<IPermissionGrantProvider> grantProviders,
     IFusionCache cache,

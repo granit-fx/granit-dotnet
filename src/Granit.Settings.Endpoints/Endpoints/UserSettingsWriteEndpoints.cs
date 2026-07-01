@@ -47,8 +47,8 @@ internal static class UserSettingsWriteEndpoints
         UpdateSettingValueRequest body,
         CancellationToken cancellationToken)
     {
-        SettingDefinitionManager definitionManager =
-            context.RequestServices.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry definitionManager =
+            context.RequestServices.GetRequiredService<SettingDefinitionRegistry>();
 
         SettingDefinition? definition = definitionManager.GetOrNull(name);
 
@@ -69,8 +69,8 @@ internal static class UserSettingsWriteEndpoints
 
         ICurrentUserService currentUser =
             context.RequestServices.GetRequiredService<ICurrentUserService>();
-        ISettingManager settingManager =
-            context.RequestServices.GetRequiredService<ISettingManager>();
+        ISettingWriter settingManager =
+            context.RequestServices.GetRequiredService<ISettingWriter>();
 
         await settingManager
             .SetForUserAsync(currentUser.UserId!, name, body.Value, cancellationToken)
@@ -84,8 +84,8 @@ internal static class UserSettingsWriteEndpoints
         string name,
         CancellationToken cancellationToken)
     {
-        SettingDefinitionManager definitionManager =
-            context.RequestServices.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry definitionManager =
+            context.RequestServices.GetRequiredService<SettingDefinitionRegistry>();
 
         SettingDefinition? definition = definitionManager.GetOrNull(name);
 
@@ -96,8 +96,8 @@ internal static class UserSettingsWriteEndpoints
 
         ICurrentUserService currentUser =
             context.RequestServices.GetRequiredService<ICurrentUserService>();
-        ISettingManager settingManager =
-            context.RequestServices.GetRequiredService<ISettingManager>();
+        ISettingWriter settingManager =
+            context.RequestServices.GetRequiredService<ISettingWriter>();
 
         await settingManager
             .DeleteAsync(name, "U", currentUser.UserId, cancellationToken)

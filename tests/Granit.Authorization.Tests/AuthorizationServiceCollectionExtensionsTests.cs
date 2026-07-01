@@ -17,7 +17,7 @@ namespace Granit.Authorization.Tests;
 public sealed class AuthorizationServiceCollectionExtensionsTests
 {
     [Fact]
-    public void AddGranitAuthorization_RegistersPermissionDefinitionManager()
+    public void AddGranitAuthorization_RegistersPermissionDefinitionRegistry()
     {
         // Arrange
         ServiceCollection services = new();
@@ -28,7 +28,7 @@ public sealed class AuthorizationServiceCollectionExtensionsTests
 
         // Assert
         using ServiceProvider sp = services.BuildServiceProvider();
-        IPermissionDefinitionManager manager = sp.GetRequiredService<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = sp.GetRequiredService<IPermissionDefinitionRegistry>();
         manager.ShouldNotBeNull();
     }
 

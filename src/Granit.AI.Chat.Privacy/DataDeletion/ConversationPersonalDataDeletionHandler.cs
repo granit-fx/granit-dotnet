@@ -8,7 +8,7 @@ namespace Granit.AI.Chat.Privacy.DataDeletion;
 /// Wolverine handler that erases a data subject's conversations — including their messages and any
 /// message reports (the user-entered report reason is free-text personal data) — on a
 /// <see cref="PersonalDataDeletionRequestedEto"/> (GDPR Art. 17). Hard deletes via
-/// <see cref="IConversationDataManager.EraseOwnerAsync"/> — soft delete would leave the message
+/// <see cref="IConversationDataStore.EraseOwnerAsync"/> — soft delete would leave the message
 /// content recoverable, which the right to erasure forbids.
 /// </summary>
 /// <remarks>
@@ -22,7 +22,7 @@ public class ConversationPersonalDataDeletionHandler
 {
     public static async Task Handle(
         PersonalDataDeletionRequestedEto @event,
-        IConversationDataManager dataManager,
+        IConversationDataStore dataManager,
         ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {

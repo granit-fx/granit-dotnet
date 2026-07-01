@@ -11,7 +11,7 @@ namespace Granit.Authorization.Services;
 /// </summary>
 internal sealed partial class PermissionManager(
     IPermissionGrantStore grantStore,
-    IPermissionDefinitionManager definitionManager,
+    IPermissionDefinitionRegistry definitionManager,
     IEnumerable<IPermissionGrantValidator> grantValidators,
     ILogger<PermissionManager> logger)
     : IPermissionManagerReader, IPermissionManagerWriter

@@ -30,7 +30,7 @@ public sealed class UserSettingsEndpointAdditionalTests : IAsyncDisposable
     private const string AuthenticatedMarker = "authenticated";
 
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
-    private readonly ISettingManager _settingManager = Substitute.For<ISettingManager>();
+    private readonly ISettingWriter _settingManager = Substitute.For<ISettingWriter>();
     private readonly ICurrentUserService _currentUserService = Substitute.For<ICurrentUserService>();
     private readonly WebApplication _app;
     private readonly HttpClient _authClient;
@@ -57,7 +57,7 @@ public sealed class UserSettingsEndpointAdditionalTests : IAsyncDisposable
         // Register a setting that is NOT visible to clients
         builder.Services.AddSingleton<ISettingDefinitionProvider>(new HiddenSettingProvider());
         builder.Services.AddSingleton(sp =>
-            new SettingDefinitionManager(sp.GetServices<ISettingDefinitionProvider>()));
+            new SettingDefinitionRegistry(sp.GetServices<ISettingDefinitionProvider>()));
 
         _app = builder.Build();
         _app.MapGranitUserSettings();

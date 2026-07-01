@@ -18,7 +18,7 @@ namespace Granit.Settings.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class EfCoreSettingStore(
     IDbContextFactory<SettingsDbContext> contextFactory,
-    SettingDefinitionManager definitions,
+    SettingDefinitionRegistry definitions,
     IStringEncryptionService encryption) : ISettingStoreReader, ISettingStoreWriter
 {
     /// <inheritdoc/>

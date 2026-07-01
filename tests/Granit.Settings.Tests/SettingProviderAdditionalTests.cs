@@ -10,7 +10,7 @@ namespace Granit.Settings.Tests;
 
 public sealed class SettingProviderAdditionalTests
 {
-    private static SettingDefinitionManager ManagerWith(params SettingDefinition[] defs) =>
+    private static SettingDefinitionRegistry ManagerWith(params SettingDefinition[] defs) =>
         new([new FakeDefinitionProvider(defs)]);
 
     private static ISettingValueProvider MockProvider(string name, int order, SettingValue? returnValue)
@@ -41,8 +41,8 @@ public sealed class SettingProviderAdditionalTests
     [Fact]
     public async Task GetAllAsync_UnknownSetting_Returns_EntryWithNullValue()
     {
-        SettingDefinitionManager defManager = ManagerWith();
-        SettingProvider settingProvider = new(new SettingValueProviderManager([]), defManager);
+        SettingDefinitionRegistry defManager = ManagerWith();
+        SettingProvider settingProvider = new(new SettingValueProviderRegistry([]), defManager);
 
         IReadOnlyList<SettingValue> results = await settingProvider.GetAllAsync(
             ["Unknown.Setting"], TestContext.Current.CancellationToken);
@@ -57,12 +57,12 @@ public sealed class SettingProviderAdditionalTests
     public async Task GetAllAsync_MixedKnownAndUnknown_Returns_CorrectValues()
     {
         SettingDefinition def = new("App.Theme");
-        SettingDefinitionManager defManager = ManagerWith(def);
+        SettingDefinitionRegistry defManager = ManagerWith(def);
 
         ISettingValueProvider globalProvider = MockProvider("G", 300,
             new SettingValue("App.Theme", "G", null, "dark"));
 
-        SettingValueProviderManager providerManager = new([globalProvider]);
+        SettingValueProviderRegistry providerManager = new([globalProvider]);
         SettingProvider settingProvider = new(providerManager, defManager);
 
         IReadOnlyList<SettingValue> results = await settingProvider.GetAllAsync(
@@ -86,7 +86,7 @@ public sealed class SettingProviderAdditionalTests
         def.Providers.Add("T");
         def.Providers.Add("G");
 
-        SettingDefinitionManager defManager = ManagerWith(def);
+        SettingDefinitionRegistry defManager = ManagerWith(def);
 
         ISettingValueProvider userProvider = MockProvider("U", 100,
             new SettingValue("App.TenantOrGlobal", "U", "user-1", "user-value"));
@@ -94,7 +94,7 @@ public sealed class SettingProviderAdditionalTests
         ISettingValueProvider globalProvider = MockProvider("G", 300,
             new SettingValue("App.TenantOrGlobal", "G", null, "global-value"));
 
-        SettingValueProviderManager providerManager = new([userProvider, tenantProvider, globalProvider]);
+        SettingValueProviderRegistry providerManager = new([userProvider, tenantProvider, globalProvider]);
         SettingProvider settingProvider = new(providerManager, defManager);
 
         string? result = await settingProvider.GetOrNullAsync("App.TenantOrGlobal", TestContext.Current.CancellationToken);
@@ -111,8 +111,8 @@ public sealed class SettingProviderAdditionalTests
     public async Task NoProviders_RegisteredSetting_Returns_Null()
     {
         SettingDefinition def = new("App.Theme");
-        SettingDefinitionManager defManager = ManagerWith(def);
-        SettingProvider settingProvider = new(new SettingValueProviderManager([]), defManager);
+        SettingDefinitionRegistry defManager = ManagerWith(def);
+        SettingProvider settingProvider = new(new SettingValueProviderRegistry([]), defManager);
 
         string? result = await settingProvider.GetOrNullAsync("App.Theme", TestContext.Current.CancellationToken);
 
@@ -126,8 +126,8 @@ public sealed class SettingProviderAdditionalTests
     [Fact]
     public async Task GetAllAsync_EmptyNames_Returns_EmptyList()
     {
-        SettingDefinitionManager defManager = ManagerWith();
-        SettingProvider settingProvider = new(new SettingValueProviderManager([]), defManager);
+        SettingDefinitionRegistry defManager = ManagerWith();
+        SettingProvider settingProvider = new(new SettingValueProviderRegistry([]), defManager);
 
         IReadOnlyList<SettingValue> results = await settingProvider.GetAllAsync(
             [], TestContext.Current.CancellationToken);

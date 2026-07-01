@@ -36,7 +36,7 @@ public static class SettingsServiceCollectionExtensions
         GranitActivitySourceRegistry.Register(SettingsActivitySource.Name);
 
         // Definition registry (Singleton — loaded once at startup)
-        services.TryAddSingleton<SettingDefinitionManager>();
+        services.TryAddSingleton<SettingDefinitionRegistry>();
 
         // Default in-memory store (replaced by EfCoreSettingStore in production).
         // Register concrete type first, then forward both interfaces to the same instance.
@@ -51,7 +51,7 @@ public static class SettingsServiceCollectionExtensions
         services.AddScoped<ISettingValueProvider, ConfigurationSettingValueProvider>();
         services.AddScoped<ISettingValueProvider, DefaultValueSettingValueProvider>();
 
-        services.TryAddScoped<SettingValueProviderManager>();
+        services.TryAddScoped<SettingValueProviderRegistry>();
 
         // Event bus fallback (in-process default if not already registered)
         services.AddGranitEvents();
@@ -59,7 +59,7 @@ public static class SettingsServiceCollectionExtensions
 
         // Application services (Scoped — tenant/user context per request)
         services.TryAddScoped<ISettingProvider, SettingProvider>();
-        services.TryAddScoped<ISettingManager, SettingManager>();
+        services.TryAddScoped<ISettingWriter, SettingWriter>();
 
         return services;
     }

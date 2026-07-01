@@ -4,7 +4,7 @@ namespace Granit.Settings.Events;
 /// Raised when a setting value is created, updated, or deleted.
 /// </summary>
 /// <remarks>
-/// Published by <see cref="Services.SettingManager"/> after every write operation.
+/// Published by <see cref="Services.SettingWriter"/> after every write operation.
 /// Consumed by audit log handlers for ISO 27001 A.12.4 configuration change logging.
 /// </remarks>
 /// <param name="SettingName">The setting name (e.g. <c>"App.Theme"</c>).</param>

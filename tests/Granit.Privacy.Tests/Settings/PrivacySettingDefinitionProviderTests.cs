@@ -7,10 +7,10 @@ namespace Granit.Privacy.Tests.Settings;
 
 public sealed class PrivacySettingDefinitionProviderTests
 {
-    private static SettingDefinitionManager BuildManager()
+    private static SettingDefinitionRegistry BuildManager()
     {
         PrivacySettingDefinitionProvider provider = new();
-        return new SettingDefinitionManager([provider]);
+        return new SettingDefinitionRegistry([provider]);
     }
 
     public static TheoryData<string> AllSettingNames() =>

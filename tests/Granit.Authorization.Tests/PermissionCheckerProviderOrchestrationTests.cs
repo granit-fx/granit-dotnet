@@ -150,7 +150,7 @@ public sealed class PermissionCheckerProviderOrchestrationTests
         tenant.IsAvailable.Returns(tenantId.HasValue);
         tenant.Id.Returns(tenantId);
 
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         manager.Exists(Permission).Returns(true);
         manager.Find(Permission).Returns(definition
             ?? new PermissionDefinition(Permission, null, "TestGroup", MultiTenancySides.Both));

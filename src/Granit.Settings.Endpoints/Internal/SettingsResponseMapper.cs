@@ -18,8 +18,8 @@ internal static class SettingsResponseMapper
         HttpContext context,
         CancellationToken cancellationToken)
     {
-        SettingDefinitionManager definitionManager =
-            context.RequestServices.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry definitionManager =
+            context.RequestServices.GetRequiredService<SettingDefinitionRegistry>();
         ISettingProvider settingProvider =
             context.RequestServices.GetRequiredService<ISettingProvider>();
 

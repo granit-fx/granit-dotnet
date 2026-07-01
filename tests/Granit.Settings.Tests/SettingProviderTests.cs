@@ -21,7 +21,7 @@ public sealed class SettingProviderTests
     // Helpers
     // -------------------------------------------------------------------------
 
-    private static SettingDefinitionManager ManagerWith(params SettingDefinition[] defs) =>
+    private static SettingDefinitionRegistry ManagerWith(params SettingDefinition[] defs) =>
         new([new FakeDefinitionProvider(defs)]);
 
     private static ISettingValueProvider MockProvider(string name, int order, SettingValue? returnValue)
@@ -52,8 +52,8 @@ public sealed class SettingProviderTests
     [Fact]
     public async Task UnknownSetting_Returns_Null()
     {
-        SettingDefinitionManager defManager = ManagerWith();
-        SettingProvider provider = new(new SettingValueProviderManager([]), defManager);
+        SettingDefinitionRegistry defManager = ManagerWith();
+        SettingProvider provider = new(new SettingValueProviderRegistry([]), defManager);
 
         string? result = await provider.GetOrNullAsync("Unknown.Setting", TestContext.Current.CancellationToken);
 
@@ -64,7 +64,7 @@ public sealed class SettingProviderTests
     public async Task FirstNonNull_Provider_Wins_InCascade()
     {
         SettingDefinition def = new("App.Theme");
-        SettingDefinitionManager defManager = ManagerWith(def);
+        SettingDefinitionRegistry defManager = ManagerWith(def);
 
         ISettingValueProvider userProvider = MockProvider("U", 100, null);
         ISettingValueProvider tenantProvider = MockProvider("T", 200,
@@ -72,7 +72,7 @@ public sealed class SettingProviderTests
         ISettingValueProvider globalProvider = MockProvider("G", 300,
             new SettingValue(def.Name, "G", null, "green"));
 
-        SettingValueProviderManager providerManager = new([userProvider, tenantProvider, globalProvider]);
+        SettingValueProviderRegistry providerManager = new([userProvider, tenantProvider, globalProvider]);
         SettingProvider settingProvider = new(providerManager, defManager);
 
         string? result = await settingProvider.GetOrNullAsync(def.Name, TestContext.Current.CancellationToken);
@@ -84,12 +84,12 @@ public sealed class SettingProviderTests
     public async Task AllProviders_ReturnNull_Returns_Null()
     {
         SettingDefinition def = new("App.Theme");
-        SettingDefinitionManager defManager = ManagerWith(def);
+        SettingDefinitionRegistry defManager = ManagerWith(def);
 
         ISettingValueProvider p1 = MockProvider("G", 300, null);
         ISettingValueProvider p2 = MockProvider("D", 500, null);
 
-        SettingValueProviderManager providerManager = new([p1, p2]);
+        SettingValueProviderRegistry providerManager = new([p1, p2]);
         SettingProvider settingProvider = new(providerManager, defManager);
 
         string? result = await settingProvider.GetOrNullAsync(def.Name, TestContext.Current.CancellationToken);
@@ -101,13 +101,13 @@ public sealed class SettingProviderTests
     public async Task DefaultProvider_IsReturned_WhenOthersNull()
     {
         SettingDefinition def = new("App.Theme");
-        SettingDefinitionManager defManager = ManagerWith(def);
+        SettingDefinitionRegistry defManager = ManagerWith(def);
 
         ISettingValueProvider userProvider = MockProvider("U", 100, null);
         ISettingValueProvider defaultProvider = MockProvider("D", 500,
             new SettingValue(def.Name, "D", null, "dark"));
 
-        SettingValueProviderManager providerManager = new([userProvider, defaultProvider]);
+        SettingValueProviderRegistry providerManager = new([userProvider, defaultProvider]);
         SettingProvider settingProvider = new(providerManager, defManager);
 
         string? result = await settingProvider.GetOrNullAsync(def.Name, TestContext.Current.CancellationToken);
@@ -123,13 +123,13 @@ public sealed class SettingProviderTests
     public async Task IsInherited_False_StopsCascade_WhenProviderReturnsNull()
     {
         SettingDefinition def = new("App.Feature") { IsInherited = false };
-        SettingDefinitionManager defManager = ManagerWith(def);
+        SettingDefinitionRegistry defManager = ManagerWith(def);
 
         ISettingValueProvider userProvider = MockProvider("U", 100, null);
         ISettingValueProvider globalProvider = MockProvider("G", 300,
             new SettingValue(def.Name, "G", null, "enabled"));
 
-        SettingValueProviderManager providerManager = new([userProvider, globalProvider]);
+        SettingValueProviderRegistry providerManager = new([userProvider, globalProvider]);
         SettingProvider settingProvider = new(providerManager, defManager);
 
         string? result = await settingProvider.GetOrNullAsync(def.Name, TestContext.Current.CancellationToken);
@@ -147,14 +147,14 @@ public sealed class SettingProviderTests
         SettingDefinition def = new("App.GlobalOnly");
         def.Providers.Add("G");
 
-        SettingDefinitionManager defManager = ManagerWith(def);
+        SettingDefinitionRegistry defManager = ManagerWith(def);
 
         ISettingValueProvider userProvider = MockProvider("U", 100,
             new SettingValue(def.Name, "U", "user-1", "user-value"));
         ISettingValueProvider globalProvider = MockProvider("G", 300,
             new SettingValue(def.Name, "G", null, "global-value"));
 
-        SettingValueProviderManager providerManager = new([userProvider, globalProvider]);
+        SettingValueProviderRegistry providerManager = new([userProvider, globalProvider]);
         SettingProvider settingProvider = new(providerManager, defManager);
 
         string? result = await settingProvider.GetOrNullAsync(def.Name, TestContext.Current.CancellationToken);
@@ -172,7 +172,7 @@ public sealed class SettingProviderTests
     {
         SettingDefinition def1 = new("App.Theme");
         SettingDefinition def2 = new("App.Language");
-        SettingDefinitionManager defManager = ManagerWith(def1, def2);
+        SettingDefinitionRegistry defManager = ManagerWith(def1, def2);
 
         ISettingValueProvider globalProvider = Substitute.For<ISettingValueProvider>();
         globalProvider.Name.Returns("G");
@@ -182,7 +182,7 @@ public sealed class SettingProviderTests
         globalProvider.GetOrNullAsync(def2, Arg.Any<CancellationToken>())
             .Returns(new SettingValue(def2.Name, "G", null, "fr"));
 
-        SettingValueProviderManager providerManager = new([globalProvider]);
+        SettingValueProviderRegistry providerManager = new([globalProvider]);
         SettingProvider settingProvider = new(providerManager, defManager);
 
         IReadOnlyList<SettingValue> results = await settingProvider.GetAllAsync(

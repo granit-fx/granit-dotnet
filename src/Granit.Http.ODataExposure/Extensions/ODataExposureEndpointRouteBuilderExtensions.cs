@@ -225,9 +225,9 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         List<string> errors = [];
         Dictionary<Type, IReadOnlyList<string>> whitelistByEntity = [];
 
-        IPermissionDefinitionManager? permissionDefinitions =
+        IPermissionDefinitionRegistry? permissionDefinitions =
             descriptors.Any(d => d.FeedKind == ODataFeedKind.Host && d.RequiredPermission is not null)
-                ? services.GetService<IPermissionDefinitionManager>()
+                ? services.GetService<IPermissionDefinitionRegistry>()
                 : null;
 
         // ADR-050 gates: resolve EntityDefinition + Export descriptors once.
@@ -264,7 +264,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// </summary>
     private static void ValidateSharedGates(
         ODataEntitySetDescriptor descriptor,
-        IPermissionDefinitionManager? permissionDefinitions,
+        IPermissionDefinitionRegistry? permissionDefinitions,
         List<string> errors)
     {
         if (descriptor.RequiredPermission is null && !descriptor.AnonymousAccessAcknowledged)
@@ -338,7 +338,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// </summary>
     private static void ValidateHostFeedGates(
         ODataEntitySetDescriptor descriptor,
-        IPermissionDefinitionManager? permissionDefinitions,
+        IPermissionDefinitionRegistry? permissionDefinitions,
         List<string> errors)
     {
         if (descriptor.RequiredPermission is { } perm)

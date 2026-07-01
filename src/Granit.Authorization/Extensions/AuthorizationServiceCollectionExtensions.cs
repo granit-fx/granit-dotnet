@@ -28,7 +28,7 @@ public static class AuthorizationServiceCollectionExtensions
         services.TryAddSingleton<IValidateOptions<GranitAuthorizationOptions>,
             GranitAuthorizationOptionsValidator>();
 
-        services.AddSingleton<IPermissionDefinitionManager, PermissionDefinitionManager>();
+        services.AddSingleton<IPermissionDefinitionRegistry, PermissionDefinitionRegistry>();
 
         services.TryAddSingleton<IPermissionGrantStore, NullPermissionGrantStore>();
         services.TryAddSingleton<IRoleMetadataStore, NullRoleMetadataStore>();

@@ -8,11 +8,11 @@ namespace Granit.Settings.Services;
 /// Implementation of <see cref="ISettingProvider"/> with cascading resolution.
 /// </summary>
 public sealed class SettingProvider(
-    SettingValueProviderManager providerManager,
-    SettingDefinitionManager definitionManager) : ISettingProvider
+    SettingValueProviderRegistry providerManager,
+    SettingDefinitionRegistry definitionManager) : ISettingProvider
 {
-    private readonly SettingValueProviderManager _providerManager = providerManager;
-    private readonly SettingDefinitionManager _definitionManager = definitionManager;
+    private readonly SettingValueProviderRegistry _providerManager = providerManager;
+    private readonly SettingDefinitionRegistry _definitionManager = definitionManager;
 
     /// <inheritdoc/>
     public async Task<string?> GetOrNullAsync(string name, CancellationToken cancellationToken = default)

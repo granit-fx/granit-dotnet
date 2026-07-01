@@ -28,7 +28,7 @@ internal static class MyPermissionsEndpoints
     }
 
     private static async Task<Ok<MyPermissionsResponse>> GetMyPermissionsAsync(
-        [FromServices] IPermissionDefinitionManager definitionManager,
+        [FromServices] IPermissionDefinitionRegistry definitionManager,
         [FromServices] IPermissionChecker permissionChecker,
         CancellationToken cancellationToken)
     {

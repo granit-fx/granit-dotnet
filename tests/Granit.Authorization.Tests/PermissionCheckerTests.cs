@@ -336,7 +336,7 @@ public sealed class PermissionCheckerTests
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(false);
 
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         manager.Exists(DefinedPermission).Returns(true);
         manager.Find(DefinedPermission)
             .Returns(new PermissionDefinition(DefinedPermission, null, "TestGroup", MultiTenancySides.Both));
@@ -427,7 +427,7 @@ public sealed class PermissionCheckerTests
         tenant.IsAvailable.Returns(tenantId.HasValue);
         tenant.Id.Returns(tenantId);
 
-        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry manager = Substitute.For<IPermissionDefinitionRegistry>();
         manager.Exists(DefinedPermission).Returns(true);
         manager.Exists(UndefinedPermission).Returns(false);
         manager.Find(DefinedPermission)

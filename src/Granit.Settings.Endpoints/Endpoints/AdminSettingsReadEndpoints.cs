@@ -68,8 +68,8 @@ internal static class AdminSettingsReadEndpoints
         HttpContext context,
         CancellationToken cancellationToken)
     {
-        SettingDefinitionManager definitionManager =
-            context.RequestServices.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry definitionManager =
+            context.RequestServices.GetRequiredService<SettingDefinitionRegistry>();
         ISettingProvider settingProvider =
             context.RequestServices.GetRequiredService<ISettingProvider>();
 
@@ -118,8 +118,8 @@ internal static class AdminSettingsReadEndpoints
             return SettingsResponseMapper.NoTenantContext();
         }
 
-        SettingDefinitionManager definitionManager =
-            context.RequestServices.GetRequiredService<SettingDefinitionManager>();
+        SettingDefinitionRegistry definitionManager =
+            context.RequestServices.GetRequiredService<SettingDefinitionRegistry>();
         ISettingProvider settingProvider =
             context.RequestServices.GetRequiredService<ISettingProvider>();
 

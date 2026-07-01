@@ -7,11 +7,11 @@ namespace Granit.AI.Chat.BackgroundJobs.Internal;
 
 /// <summary>
 /// Purges conversations whose last activity is older than the configured retention window. Batching
-/// is handled by <see cref="IConversationDataManager.PurgeOlderThanAsync"/> (a fresh DbContext per
+/// is handled by <see cref="IConversationDataStore.PurgeOlderThanAsync"/> (a fresh DbContext per
 /// batch). A no-op when <see cref="GranitAIChatRetentionOptions.RetentionDays"/> is 0.
 /// </summary>
 internal sealed partial class ConversationRetentionService(
-    IConversationDataManager dataManager,
+    IConversationDataStore dataManager,
     IOptions<GranitAIChatRetentionOptions> options,
     IClock clock,
     ILogger<ConversationRetentionService> logger) : IConversationRetentionService

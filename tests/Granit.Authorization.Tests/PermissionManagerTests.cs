@@ -199,7 +199,7 @@ public sealed class PermissionManagerTests
     {
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
 
-        IPermissionDefinitionManager definitionManager = Substitute.For<IPermissionDefinitionManager>();
+        IPermissionDefinitionRegistry definitionManager = Substitute.For<IPermissionDefinitionRegistry>();
         definitionManager.Exists(DefinedPermission).Returns(true);
         definitionManager.Exists(UndefinedPermission).Returns(false);
         definitionManager.Find(DefinedPermission)

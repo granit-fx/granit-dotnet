@@ -7,16 +7,16 @@ namespace Granit.Settings.Endpoints.Tests;
 
 public sealed class WellKnownSettingDefinitionProviderTests
 {
-    private static SettingDefinitionManager BuildManager()
+    private static SettingDefinitionRegistry BuildManager()
     {
         WellKnownSettingDefinitionProvider provider = new();
-        return new SettingDefinitionManager([provider]);
+        return new SettingDefinitionRegistry([provider]);
     }
 
     [Fact]
     public void Defines_PreferredCulture_Setting()
     {
-        SettingDefinitionManager manager = BuildManager();
+        SettingDefinitionRegistry manager = BuildManager();
 
         SettingDefinition? def = manager.GetOrNull(WellKnownSettingNames.PreferredCulture);
 
@@ -26,7 +26,7 @@ public sealed class WellKnownSettingDefinitionProviderTests
     [Fact]
     public void Defines_PreferredTimezone_Setting()
     {
-        SettingDefinitionManager manager = BuildManager();
+        SettingDefinitionRegistry manager = BuildManager();
 
         SettingDefinition? def = manager.GetOrNull(WellKnownSettingNames.PreferredTimezone);
 
@@ -36,7 +36,7 @@ public sealed class WellKnownSettingDefinitionProviderTests
     [Fact]
     public void PreferredCulture_IsVisibleToClients()
     {
-        SettingDefinitionManager manager = BuildManager();
+        SettingDefinitionRegistry manager = BuildManager();
         SettingDefinition def = manager.Get(WellKnownSettingNames.PreferredCulture);
 
         def.IsVisibleToClients.ShouldBeTrue();
@@ -45,7 +45,7 @@ public sealed class WellKnownSettingDefinitionProviderTests
     [Fact]
     public void PreferredTimezone_IsVisibleToClients()
     {
-        SettingDefinitionManager manager = BuildManager();
+        SettingDefinitionRegistry manager = BuildManager();
         SettingDefinition def = manager.Get(WellKnownSettingNames.PreferredTimezone);
 
         def.IsVisibleToClients.ShouldBeTrue();
@@ -54,7 +54,7 @@ public sealed class WellKnownSettingDefinitionProviderTests
     [Fact]
     public void PreferredCulture_HasProviders_UTG()
     {
-        SettingDefinitionManager manager = BuildManager();
+        SettingDefinitionRegistry manager = BuildManager();
         SettingDefinition def = manager.Get(WellKnownSettingNames.PreferredCulture);
 
         def.Providers.ShouldContain("U");
@@ -66,7 +66,7 @@ public sealed class WellKnownSettingDefinitionProviderTests
     [Fact]
     public void PreferredTimezone_HasProviders_UTG()
     {
-        SettingDefinitionManager manager = BuildManager();
+        SettingDefinitionRegistry manager = BuildManager();
         SettingDefinition def = manager.Get(WellKnownSettingNames.PreferredTimezone);
 
         def.Providers.ShouldContain("U");
@@ -78,7 +78,7 @@ public sealed class WellKnownSettingDefinitionProviderTests
     [Fact]
     public void PreferredCulture_HasDisplayName()
     {
-        SettingDefinitionManager manager = BuildManager();
+        SettingDefinitionRegistry manager = BuildManager();
         SettingDefinition def = manager.Get(WellKnownSettingNames.PreferredCulture);
 
         def.DisplayName.ShouldNotBeNullOrWhiteSpace();
@@ -87,7 +87,7 @@ public sealed class WellKnownSettingDefinitionProviderTests
     [Fact]
     public void PreferredTimezone_HasDescription()
     {
-        SettingDefinitionManager manager = BuildManager();
+        SettingDefinitionRegistry manager = BuildManager();
         SettingDefinition def = manager.Get(WellKnownSettingNames.PreferredTimezone);
 
         def.Description.ShouldNotBeNullOrWhiteSpace();

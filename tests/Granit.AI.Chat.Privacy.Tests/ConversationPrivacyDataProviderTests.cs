@@ -14,7 +14,7 @@ public sealed class ConversationPrivacyDataProviderTests
     private static readonly Guid Subject = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
     private readonly IConversationStore _store = Substitute.For<IConversationStore>();
-    private readonly IConversationDataManager _dataManager = Substitute.For<IConversationDataManager>();
+    private readonly IConversationDataStore _dataManager = Substitute.For<IConversationDataStore>();
     private readonly IStagedFragmentBuilder _fragmentBuilder = Substitute.For<IStagedFragmentBuilder>();
 
     private ConversationPrivacyDataProvider CreateProvider() => new(_store, _dataManager, _fragmentBuilder);

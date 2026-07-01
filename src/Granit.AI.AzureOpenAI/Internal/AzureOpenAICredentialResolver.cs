@@ -19,7 +19,7 @@ namespace Granit.AI.AzureOpenAI.Internal;
 /// Endpoint validation uses <see cref="AIEndpointPolicy.AzureOpenAI"/>.
 /// </remarks>
 internal sealed class AzureOpenAICredentialResolver(
-    SettingDefinitionManager definitions,
+    SettingDefinitionRegistry definitions,
     IEnumerable<ISettingValueProvider> settingProviders,
     IOptionsMonitor<AzureOpenAIProviderOptions> options) : IAIProviderCredentialResolver
 {

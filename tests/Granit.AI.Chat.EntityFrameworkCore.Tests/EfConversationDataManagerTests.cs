@@ -5,15 +5,15 @@ using Shouldly;
 
 namespace Granit.AI.Chat.EntityFrameworkCore.Tests;
 
-public sealed class EfConversationDataManagerTests : IDisposable
+public sealed class EfConversationDataStoreTests : IDisposable
 {
     private static readonly Guid UserA = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private static readonly Guid UserB = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
 
     private readonly TestDbContextFactory _factory = TestDbContextFactory.Create();
-    private readonly EfConversationDataManager _sut;
+    private readonly EfConversationDataStore _sut;
 
-    public EfConversationDataManagerTests() => _sut = new EfConversationDataManager(_factory);
+    public EfConversationDataStoreTests() => _sut = new EfConversationDataStore(_factory);
 
     public void Dispose() => _factory.Dispose();
 
