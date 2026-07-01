@@ -27,8 +27,14 @@ public static class MobilePushNotificationsServiceCollectionExtensions
         }
 
         services.TryAddSingleton<IMobilePushTokenHasher, HmacMobilePushTokenHasher>();
-        services.TryAddSingleton<IMobilePushTokenReader, InMemoryMobilePushTokenStore>();
-        services.TryAddSingleton<IMobilePushTokenWriter, InMemoryMobilePushTokenStore>();
+
+        // Reader and writer MUST resolve to the SAME instance: the in-memory store keeps its
+        // tokens in an instance-level dictionary, so registering the two interfaces against the
+        // impl type independently would hand out two stores with two dictionaries — a token
+        // written through IMobilePushTokenWriter would never be visible through IMobilePushTokenReader.
+        services.TryAddSingleton<InMemoryMobilePushTokenStore>();
+        services.TryAddSingleton<IMobilePushTokenReader>(sp => sp.GetRequiredService<InMemoryMobilePushTokenStore>());
+        services.TryAddSingleton<IMobilePushTokenWriter>(sp => sp.GetRequiredService<InMemoryMobilePushTokenStore>());
         services.TryAddScoped<IMobilePushEventPublisher, NullMobilePushEventPublisher>();
         services.AddScoped<INotificationChannel, MobilePushNotificationChannel>();
         return services;

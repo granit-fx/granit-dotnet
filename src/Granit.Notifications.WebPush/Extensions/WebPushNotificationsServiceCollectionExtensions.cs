@@ -4,6 +4,7 @@ using Granit.Notifications.WebPush.Options;
 using Lib.Net.Http.WebPush;
 using Lib.Net.Http.WebPush.Authentication;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Notifications.WebPush.Extensions;
@@ -26,9 +27,13 @@ public static class WebPushNotificationsServiceCollectionExtensions
             services.Configure(configure);
         }
 
-        services.AddSingleton<InMemoryWebPushSubscriptionStore>();
-        services.AddSingleton<IWebPushSubscriptionReader>(sp => sp.GetRequiredService<InMemoryWebPushSubscriptionStore>());
-        services.AddSingleton<IWebPushSubscriptionWriter>(sp => sp.GetRequiredService<InMemoryWebPushSubscriptionStore>());
+        // Reader and writer MUST resolve to the SAME instance: the in-memory store keeps its
+        // subscriptions in an instance-level dictionary, so the two interfaces are forwarded to a
+        // single registration rather than registered against the impl type independently (which
+        // would hand out two stores with two dictionaries).
+        services.TryAddSingleton<InMemoryWebPushSubscriptionStore>();
+        services.TryAddSingleton<IWebPushSubscriptionReader>(sp => sp.GetRequiredService<InMemoryWebPushSubscriptionStore>());
+        services.TryAddSingleton<IWebPushSubscriptionWriter>(sp => sp.GetRequiredService<InMemoryWebPushSubscriptionStore>());
 
         services.AddSingleton(sp =>
         {

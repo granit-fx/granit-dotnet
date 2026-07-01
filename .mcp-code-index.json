@@ -40381,7 +40381,7 @@
       "kind": "class",
       "project": "Granit.Notifications.WebPush",
       "file": "src/Granit.Notifications.WebPush/Extensions/WebPushNotificationsServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitNotificationsWebPush",
