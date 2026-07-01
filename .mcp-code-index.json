@@ -8945,6 +8945,22 @@
       ]
     },
     {
+      "name": "ApiKeyCacheInvalidationHandler",
+      "fqn": "Granit.Authentication.ApiKeys.Cache.ApiKeyCacheInvalidationHandler",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys",
+      "file": "src/Granit.Authentication.ApiKeys/Cache/ApiKeyCacheInvalidationHandler.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ApiKeyRevokedEto evt, IApiKeyCacheService cacheService, ILogger<ApiKeyCacheInvalidationHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "CacheBehavior",
       "fqn": "Granit.Authentication.ApiKeys.CacheBehavior",
       "kind": "enum",
@@ -42838,7 +42854,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceServiceCollectionExtensions.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitPersistence",
@@ -43187,6 +43203,15 @@
           "returnType": "Task<int>"
         }
       ]
+    },
+    {
+      "name": "ITenantQueryScope",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.ITenantQueryScope",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/ITenantQueryScope.cs",
+      "line": 25,
+      "members": []
     },
     {
       "name": "AuditedEntityInterceptor",

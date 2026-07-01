@@ -61,9 +61,10 @@ public static class TemplatingEndpointRouteBuilderExtensions
 
         // Template CRUD + lifecycle + preview + variables + history
         RouteGroupBuilder templateGroup = group.MapGranitGroup("templates");
-        // TODO(VULN-001): cross-tenant reads are now fail-closed by default. A host admin with no
-        // resolved tenant sees only the host partition — add .AllowHostAccess() + a host-scoped
-        // permission if cross-tenant template visibility is intended.
+        // Cross-tenant reads are fail-closed by default: a host operator with no resolved tenant
+        // sees only the host partition. To expose cross-tenant template visibility, mark this route
+        // .AllowHostAccess(); a platform admin holding Templates.Read at global scope then reads
+        // across tenants, while the multi-tenant filter stays enforced for every tenant-scoped caller.
         templateGroup.MapGranitQuery<Granit.Templating.Store.TemplateSummary>(configure: q =>
             q.AuthorizationPolicy = Granit.Templating.Endpoints.Permissions.TemplatingPermissions.Templates.Read);
         templateGroup.MapTemplatingCrudEndpoints();

@@ -66,9 +66,10 @@ public static class WebhooksEndpointRouteBuilderExtensions
             .RequireAuthorization(WebhooksPermissions.Subscriptions.Manage);
 
         // Query endpoints for subscription list and delivery attempts.
-        // TODO(VULN-001): cross-tenant reads are now fail-closed by default. A host admin with no
-        // resolved tenant sees only the host partition — add .AllowHostAccess() + a host-scoped
-        // permission on these groups if cross-tenant webhook visibility is intended.
+        // Cross-tenant reads are fail-closed by default: a host operator with no resolved tenant
+        // sees only the host partition. To expose cross-tenant webhook visibility, mark these
+        // groups .AllowHostAccess(); a platform admin holding Subscriptions.Read at global scope
+        // then reads across tenants, while the multi-tenant filter stays enforced for tenant callers.
         group.MapGranitGroup("subscriptions").MapGranitQuery<WebhookSubscription>();
         group.MapGranitGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>();
 

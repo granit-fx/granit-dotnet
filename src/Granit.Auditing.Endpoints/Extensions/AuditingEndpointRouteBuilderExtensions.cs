@@ -42,16 +42,18 @@ public static class AuditingEndpointRouteBuilderExtensions
 
         // Audit entries: query engine (list/meta/saved-views) + custom lookups + GDPR ops.
         RouteGroupBuilder entriesGroup = group.MapGranitGroup("audit-entries");
-        // TODO(VULN-001): cross-tenant reads are now fail-closed by default — a host admin with no
-        // resolved tenant sees only the host partition. For ISO 27001 cross-tenant audit review,
-        // add .AllowHostAccess() here plus a distinct host-scoped permission (not the tenant Read).
+        // Cross-tenant reads are fail-closed by default: a host operator with no resolved tenant
+        // sees only the host partition. For ISO 27001 cross-tenant audit review, mark this route
+        // .AllowHostAccess(); a platform admin holding AuditEntries.Read at global scope then reads
+        // across tenants, while the multi-tenant filter stays enforced for every tenant-scoped caller.
         entriesGroup.MapGranitQuery<AuditEntry>();
         entriesGroup.MapAuditingReadEndpoints();
         entriesGroup.MapAuditingManagementEndpoints();
 
         // Audit entity changes: query engine only (cross-cutting analysis).
         // Detail of an entity change is reached via the parent AuditEntry detail endpoint.
-        // TODO(VULN-001): add .AllowHostAccess() + host-scoped permission for cross-tenant review.
+        // Fail-closed to the host partition by default; cross-tenant review is opt-in via
+        // .AllowHostAccess() plus a global-scoped AuditEntries.Read grant.
         group.MapGranitGroup("audit-entity-changes").MapGranitQuery<AuditEntityChange>();
 
         return group;

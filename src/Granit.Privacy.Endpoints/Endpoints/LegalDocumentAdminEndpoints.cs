@@ -42,9 +42,10 @@ internal static class LegalDocumentAdminEndpoints
         // GET /meta    → query metadata (columns, filters, sorts, presets)
         // The "published" quick filter is the default; pass ?quickFilters=draft to see drafts.
         // Filter by document ID via ?filter[documentId.eq]=privacy-policy to view version history.
-        // TODO(VULN-001): cross-tenant reads are now fail-closed by default. A host admin with no
-        // resolved tenant sees only the host partition — add .AllowHostAccess() + a host-scoped
-        // permission if cross-tenant legal-document visibility is intended.
+        // Cross-tenant reads are fail-closed by default: a host operator with no resolved tenant
+        // sees only the host partition. To expose cross-tenant legal-document visibility, mark this
+        // route .AllowHostAccess(); a platform admin holding LegalDocuments.Read at global scope then
+        // reads across tenants, while the multi-tenant filter stays enforced for tenant callers.
         group.MapGranitQuery<LegalDocument>(configure: opts =>
             opts.AuthorizationPolicy = PrivacyPermissions.LegalDocuments.Read);
 
