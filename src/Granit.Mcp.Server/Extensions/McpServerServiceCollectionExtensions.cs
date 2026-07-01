@@ -30,11 +30,15 @@ public static class McpServerServiceCollectionExtensions
             .AddOptions<GranitMcpServerOptions>()
             .BindConfiguration(GranitMcpServerOptions.SectionName);
 
-        // SDK: chain HTTP transport + auth onto the existing MCP server (registered by GranitMcpModule)
+        // SDK: chain HTTP transport + auth onto the existing MCP server (registered by GranitMcpModule).
+        // The default-deny call-tool gate is registered first so it wraps the base module's
+        // metrics/sanitizer call-tool filter and rejects un-annotated tools before dispatch.
         services
             .AddMcpServer()
             .WithHttpTransport()
-            .AddAuthorizationFilters();
+            .AddAuthorizationFilters()
+            .WithRequestFilters(filters =>
+                filters.AddCallToolFilter(CallToolAuthorizationFilter.Wrap));
 
         // Granit visibility filters
         services.TryAddEnumerable(
