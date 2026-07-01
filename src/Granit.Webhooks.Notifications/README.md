@@ -26,6 +26,7 @@ dotnet add package Granit.Webhooks.Notifications
 | Name | Severity | Default channels |
 | ---- | -------- | ---------------- |
 | `webhooks.delivery_failure_threshold` | Warning | Email + InApp |
+| `webhooks.signing_key_rotation_due` | Warning | Email + InApp |
 
 Recipients are resolved via the standard notifications subscription system —
 administrators opt in through the admin UI; the bridge itself owns no
