@@ -23785,7 +23785,7 @@
       "kind": "class",
       "project": "Granit.Hostnames",
       "file": "src/Granit.Hostnames/Domain/ManagedHostname.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "WorkflowDefinition",
@@ -24107,6 +24107,38 @@
       ]
     },
     {
+      "name": "CertificateFailedHandler",
+      "fqn": "Granit.Hostnames.Notifications.Handlers.CertificateFailedHandler",
+      "kind": "class",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/Handlers/CertificateFailedHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(HostnameCertificateFailedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CertificateSecuredHandler",
+      "fqn": "Granit.Hostnames.Notifications.Handlers.CertificateSecuredHandler",
+      "kind": "class",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/Handlers/CertificateSecuredHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(HostnameCertificateSecuredEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "HostnameVerificationFailedHandler",
       "fqn": "Granit.Hostnames.Notifications.Handlers.HostnameVerificationFailedHandler",
       "kind": "class",
@@ -24191,6 +24223,68 @@
           "kind": "method",
           "signature": "new()",
           "returnType": "HostnameVerifiedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "HostnamesCertificateFailedNotificationData",
+      "fqn": "Granit.Hostnames.Notifications.HostnamesCertificateFailedNotificationData",
+      "kind": "record",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/HostnamesCertificateFailedNotificationType.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "HostnamesCertificateFailedNotificationType",
+      "fqn": "Granit.Hostnames.Notifications.HostnamesCertificateFailedNotificationType",
+      "kind": "class",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/HostnamesCertificateFailedNotificationType.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "HostnamesCertificateFailedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "HostnamesCertificateSecuredNotificationData",
+      "fqn": "Granit.Hostnames.Notifications.HostnamesCertificateSecuredNotificationData",
+      "kind": "record",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/HostnamesCertificateSecuredNotificationType.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "HostnamesCertificateSecuredNotificationType",
+      "fqn": "Granit.Hostnames.Notifications.HostnamesCertificateSecuredNotificationType",
+      "kind": "class",
+      "project": "Granit.Hostnames.Notifications",
+      "file": "src/Granit.Hostnames.Notifications/HostnamesCertificateSecuredNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "HostnamesCertificateSecuredNotificationType Instance ="
         },
         {
           "name": "Name",
@@ -28795,6 +28889,22 @@
       ]
     },
     {
+      "name": "IFederatedUserCacheEraser",
+      "fqn": "Granit.Identity.Federated.IFederatedUserCacheEraser",
+      "kind": "interface",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/IFederatedUserCacheEraser.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "EraseAsync",
+          "kind": "method",
+          "signature": "EraseAsync(string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IFederatedUserCacheReader",
       "fqn": "Granit.Identity.Federated.IFederatedUserCacheReader",
       "kind": "interface",
@@ -29216,6 +29326,22 @@
           "kind": "property",
           "signature": "int IncrementalSyncBatchSize",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "IdentityFederatedPersonalDataDeletionHandler",
+      "fqn": "Granit.Identity.Federated.Privacy.DataDeletion.IdentityFederatedPersonalDataDeletionHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Privacy",
+      "file": "src/Granit.Identity.Federated.Privacy/DataDeletion/IdentityFederatedPersonalDataDeletionHandler.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Handle",
+          "kind": "method",
+          "signature": "Handle(PersonalDataDeletionRequestedEto @event, IFederatedUserCacheEraser cacheEraser, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -31600,6 +31726,22 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan ChallengeLifetime { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "IdentityLocalPersonalDataDeletionHandler",
+      "fqn": "Granit.Identity.Local.Privacy.DataDeletion.IdentityLocalPersonalDataDeletionHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Privacy",
+      "file": "src/Granit.Identity.Local.Privacy/DataDeletion/IdentityLocalPersonalDataDeletionHandler.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Handle",
+          "kind": "method",
+          "signature": "Handle(PersonalDataDeletionRequestedEto @event, IAccountDeletionService deletionService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -37783,6 +37925,22 @@
       ]
     },
     {
+      "name": "INotificationsPersonalDataEraser",
+      "fqn": "Granit.Notifications.Abstractions.INotificationsPersonalDataEraser",
+      "kind": "interface",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationsPersonalDataEraser.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "EraseUserDataAsync",
+          "kind": "method",
+          "signature": "EraseUserDataAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IRecipientResolver",
       "fqn": "Granit.Notifications.Abstractions.IRecipientResolver",
       "kind": "interface",
@@ -39388,6 +39546,22 @@
           "kind": "property",
           "signature": "int MaxParallelDeliveries",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "NotificationsPersonalDataDeletionHandler",
+      "fqn": "Granit.Notifications.Privacy.DataDeletion.NotificationsPersonalDataDeletionHandler",
+      "kind": "class",
+      "project": "Granit.Notifications.Privacy",
+      "file": "src/Granit.Notifications.Privacy/DataDeletion/NotificationsPersonalDataDeletionHandler.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "Handle",
+          "kind": "method",
+          "signature": "Handle(PersonalDataDeletionRequestedEto @event, INotificationsPersonalDataEraser eraser, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -47283,7 +47457,7 @@
       "kind": "record",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/PrivacyLegalDocumentObsoleteNotificationType.cs",
-      "line": 33,
+      "line": 35,
       "members": []
     },
     {
@@ -49715,6 +49889,38 @@
       ]
     },
     {
+      "name": "ActionCancelledHandler",
+      "fqn": "Granit.Scheduling.Notifications.Handlers.ActionCancelledHandler",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/Handlers/ActionCancelledHandler.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ScheduledActionCancelledEvent evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ActionExecutedHandler",
+      "fqn": "Granit.Scheduling.Notifications.Handlers.ActionExecutedHandler",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/Handlers/ActionExecutedHandler.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ScheduledActionExecutedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "ActionFailedHandler",
       "fqn": "Granit.Scheduling.Notifications.Handlers.ActionFailedHandler",
       "kind": "class",
@@ -49727,6 +49933,92 @@
           "kind": "method",
           "signature": "HandleAsync(ScheduledActionFailedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "SchedulingActionCancelledNotificationData",
+      "fqn": "Granit.Scheduling.Notifications.SchedulingActionCancelledNotificationData",
+      "kind": "record",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/SchedulingActionCancelledNotificationType.cs",
+      "line": 39,
+      "members": []
+    },
+    {
+      "name": "SchedulingActionCancelledNotificationType",
+      "fqn": "Granit.Scheduling.Notifications.SchedulingActionCancelledNotificationType",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/SchedulingActionCancelledNotificationType.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "SchedulingActionCancelledNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        },
+        {
+          "name": "DefaultChannels",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> DefaultChannels",
+          "returnType": "IReadOnlyList<string>"
+        }
+      ]
+    },
+    {
+      "name": "SchedulingActionExecutedNotificationData",
+      "fqn": "Granit.Scheduling.Notifications.SchedulingActionExecutedNotificationData",
+      "kind": "record",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/SchedulingActionExecutedNotificationType.cs",
+      "line": 41,
+      "members": []
+    },
+    {
+      "name": "SchedulingActionExecutedNotificationType",
+      "fqn": "Granit.Scheduling.Notifications.SchedulingActionExecutedNotificationType",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/SchedulingActionExecutedNotificationType.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "SchedulingActionExecutedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        },
+        {
+          "name": "DefaultChannels",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> DefaultChannels",
+          "returnType": "IReadOnlyList<string>"
         }
       ]
     },
@@ -53201,6 +53493,12 @@
           "kind": "method",
           "signature": "NotifyMentionedUsersAsync(TimelineEntry entry, IReadOnlyList<string> mentionedUserIds, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        },
+        {
+          "name": "NotifyReactionToggledAsync",
+          "kind": "method",
+          "signature": "NotifyReactionToggledAsync(TimelineEntry entry, string reactingUserId, string emoji, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -53210,7 +53508,7 @@
       "kind": "interface",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Abstractions/ITimelineReader.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "GetStreamAsync",
@@ -53223,6 +53521,12 @@
           "kind": "method",
           "signature": "GetEntryAsync(string entityType, string entityId, Guid entryId, CancellationToken cancellationToken = default)",
           "returnType": "Task<TimelineStreamEntry?>"
+        },
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid entryId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TimelineEntry?>"
         }
       ]
     },
@@ -53965,6 +54269,37 @@
           "kind": "method",
           "signature": "new()",
           "returnType": "TimelineMentionNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "TimelineReactionNotificationData",
+      "fqn": "Granit.Timeline.Notifications.TimelineReactionNotificationData",
+      "kind": "record",
+      "project": "Granit.Timeline.Notifications",
+      "file": "src/Granit.Timeline.Notifications/TimelineReactionNotificationType.cs",
+      "line": 32,
+      "members": []
+    },
+    {
+      "name": "TimelineReactionNotificationType",
+      "fqn": "Granit.Timeline.Notifications.TimelineReactionNotificationType",
+      "kind": "class",
+      "project": "Granit.Timeline.Notifications",
+      "file": "src/Granit.Timeline.Notifications/TimelineReactionNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "TimelineReactionNotificationType Instance ="
         },
         {
           "name": "Name",
@@ -57995,6 +58330,12 @@
           "kind": "method",
           "signature": "GetWorkflowEntityId()",
           "returnType": "string StatusPropertyName { get; } string WorkflowEntityType { get; } string"
+        },
+        {
+          "name": "RaiseWorkflowStateChangedEvent",
+          "kind": "method",
+          "signature": "RaiseWorkflowStateChangedEvent(string entityType, string previousState, string newState, string transitionedBy)",
+          "returnType": "void"
         }
       ]
     },
@@ -58026,8 +58367,15 @@
       "kind": "class",
       "project": "Granit.Workflow",
       "file": "src/Granit.Workflow/Domain/VersionedWorkflowEntity.cs",
-      "line": 34,
-      "members": []
+      "line": 35,
+      "members": [
+        {
+          "name": "RaiseWorkflowStateChangedEvent",
+          "kind": "method",
+          "signature": "RaiseWorkflowStateChangedEvent(string entityType, string previousState, string newState, string transitionedBy)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "WorkflowLifecycleStatus",
@@ -58765,6 +59113,12 @@
           "kind": "method",
           "signature": "GetAllowedTransitionsAsync(TState currentState, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<WorkflowTransition<TState>>>"
+        },
+        {
+          "name": "TransitionAsync",
+          "kind": "method",
+          "signature": "TransitionAsync(TState currentState, TState targetState, TransitionContext? context = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TransitionResult<TState>>"
         }
       ]
     },
