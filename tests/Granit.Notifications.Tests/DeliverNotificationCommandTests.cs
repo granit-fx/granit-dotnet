@@ -81,7 +81,7 @@ public sealed class DeliverNotificationCommandTests
             NotificationTypeName = "doc.updated",
             Severity = NotificationSeverity.Warning,
             RecipientUserId = "user-admin",
-            ChannelName = NotificationChannels.Push,
+            ChannelName = NotificationChannels.WebPush,
             Data = data,
             RelatedEntity = entity,
             TenantId = tenantId,

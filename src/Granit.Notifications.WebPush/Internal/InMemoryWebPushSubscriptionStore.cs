@@ -3,22 +3,22 @@ using System.Collections.Concurrent;
 namespace Granit.Notifications.WebPush.Internal;
 
 /// <summary>In-memory push subscription store for development/testing.</summary>
-internal sealed class InMemoryPushSubscriptionStore : IPushSubscriptionReader, IPushSubscriptionWriter
+internal sealed class InMemoryWebPushSubscriptionStore : IWebPushSubscriptionReader, IWebPushSubscriptionWriter
 {
-    private readonly ConcurrentDictionary<string, List<PushSubscriptionInfo>> _subscriptions = new();
+    private readonly ConcurrentDictionary<string, List<WebPushSubscriptionInfo>> _subscriptions = new();
 
-    public Task<IReadOnlyList<PushSubscriptionInfo>> GetSubscriptionsAsync(
+    public Task<IReadOnlyList<WebPushSubscriptionInfo>> GetSubscriptionsAsync(
         string userId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
         string key = BuildKey(userId, tenantId);
-        IReadOnlyList<PushSubscriptionInfo> result = _subscriptions.TryGetValue(key, out List<PushSubscriptionInfo>? subs)
+        IReadOnlyList<WebPushSubscriptionInfo> result = _subscriptions.TryGetValue(key, out List<WebPushSubscriptionInfo>? subs)
             ? subs.ToList()
             : [];
         return Task.FromResult(result);
     }
 
     public Task SaveSubscriptionAsync(
-        string userId, PushSubscriptionInfo subscription, Guid? tenantId, CancellationToken cancellationToken = default)
+        string userId, WebPushSubscriptionInfo subscription, Guid? tenantId, CancellationToken cancellationToken = default)
     {
         string key = BuildKey(userId, tenantId);
         _subscriptions.AddOrUpdate(
@@ -35,7 +35,7 @@ internal sealed class InMemoryPushSubscriptionStore : IPushSubscriptionReader, I
 
     public Task RemoveSubscriptionAsync(string endpoint, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        foreach (KeyValuePair<string, List<PushSubscriptionInfo>> kvp in _subscriptions)
+        foreach (KeyValuePair<string, List<WebPushSubscriptionInfo>> kvp in _subscriptions)
         {
             kvp.Value.RemoveAll(s => s.Endpoint == endpoint);
         }

@@ -9,15 +9,15 @@ using Microsoft.Extensions.Options;
 namespace Granit.Notifications.WebPush.Extensions;
 
 /// <summary>Extension methods for Web Push notification channel registration.</summary>
-public static class PushNotificationsServiceCollectionExtensions
+public static class WebPushNotificationsServiceCollectionExtensions
 {
     /// <summary>Registers the W3C Web Push (VAPID) notification channel.</summary>
     public static IServiceCollection AddGranitNotificationsWebPush(
         this IServiceCollection services,
-        Action<PushChannelOptions>? configure = null)
+        Action<WebPushChannelOptions>? configure = null)
     {
-        services.AddOptions<PushChannelOptions>()
-            .BindConfiguration(PushChannelOptions.SectionName)
+        services.AddOptions<WebPushChannelOptions>()
+            .BindConfiguration(WebPushChannelOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
@@ -26,13 +26,13 @@ public static class PushNotificationsServiceCollectionExtensions
             services.Configure(configure);
         }
 
-        services.AddSingleton<InMemoryPushSubscriptionStore>();
-        services.AddSingleton<IPushSubscriptionReader>(sp => sp.GetRequiredService<InMemoryPushSubscriptionStore>());
-        services.AddSingleton<IPushSubscriptionWriter>(sp => sp.GetRequiredService<InMemoryPushSubscriptionStore>());
+        services.AddSingleton<InMemoryWebPushSubscriptionStore>();
+        services.AddSingleton<IWebPushSubscriptionReader>(sp => sp.GetRequiredService<InMemoryWebPushSubscriptionStore>());
+        services.AddSingleton<IWebPushSubscriptionWriter>(sp => sp.GetRequiredService<InMemoryWebPushSubscriptionStore>());
 
         services.AddSingleton(sp =>
         {
-            PushChannelOptions opts = sp.GetRequiredService<IOptions<PushChannelOptions>>().Value;
+            WebPushChannelOptions opts = sp.GetRequiredService<IOptions<WebPushChannelOptions>>().Value;
             PushServiceClient client = new();
             client.DefaultAuthentication = new VapidAuthentication(
                 opts.VapidPublicKey, opts.VapidPrivateKey)
@@ -42,7 +42,7 @@ public static class PushNotificationsServiceCollectionExtensions
             return client;
         });
 
-        services.AddSingleton<INotificationChannel, PushNotificationChannel>();
+        services.AddSingleton<INotificationChannel, WebPushNotificationChannel>();
 
         return services;
     }

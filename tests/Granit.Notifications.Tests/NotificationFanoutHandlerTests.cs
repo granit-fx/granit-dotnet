@@ -83,7 +83,7 @@ public sealed class NotificationFanoutHandlerTests : IDisposable
     public async Task HandleAsync_ExplicitRecipients_TwoUsersThreeChannels_ReturnsSixCommands()
     {
         NotificationDefinition definition = BuildDefinition("test.notification",
-            [NotificationChannels.InApp, NotificationChannels.Email, NotificationChannels.Push]);
+            [NotificationChannels.InApp, NotificationChannels.Email, NotificationChannels.WebPush]);
         _definitionStore.Get("test.notification").Returns(definition);
         _preferenceReader.IsChannelEnabledAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(true));

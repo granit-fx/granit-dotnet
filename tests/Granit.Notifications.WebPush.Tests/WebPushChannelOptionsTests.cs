@@ -4,16 +4,16 @@ using Xunit;
 
 namespace Granit.Notifications.WebPush.Tests;
 
-public sealed class PushChannelOptionsTests
+public sealed class WebPushChannelOptionsTests
 {
     [Fact]
     public void SectionName_IsCorrect() =>
-        PushChannelOptions.SectionName.ShouldBe("Notifications:WebPush");
+        WebPushChannelOptions.SectionName.ShouldBe("Notifications:WebPush");
 
     [Fact]
     public void Defaults_VapidSubjectIsEmpty()
     {
-        PushChannelOptions options = new();
+        WebPushChannelOptions options = new();
 
         options.VapidSubject.ShouldBe(string.Empty);
     }
@@ -21,7 +21,7 @@ public sealed class PushChannelOptionsTests
     [Fact]
     public void Defaults_VapidPublicKeyIsEmpty()
     {
-        PushChannelOptions options = new();
+        WebPushChannelOptions options = new();
 
         options.VapidPublicKey.ShouldBe(string.Empty);
     }
@@ -29,7 +29,7 @@ public sealed class PushChannelOptionsTests
     [Fact]
     public void Defaults_VapidPrivateKeyIsEmpty()
     {
-        PushChannelOptions options = new();
+        WebPushChannelOptions options = new();
 
         options.VapidPrivateKey.ShouldBe(string.Empty);
     }
@@ -37,7 +37,7 @@ public sealed class PushChannelOptionsTests
     [Fact]
     public void Properties_CanBeSet()
     {
-        PushChannelOptions options = new()
+        WebPushChannelOptions options = new()
         {
             VapidSubject = "mailto:test@example.com",
             VapidPublicKey = "public-key",

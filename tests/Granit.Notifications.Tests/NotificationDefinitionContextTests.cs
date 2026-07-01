@@ -45,7 +45,7 @@ public sealed class NotificationDefinitionContextTests
     {
         _context.Add(new NotificationDefinition("notif.one") { DefaultChannels = [NotificationChannels.InApp] });
         _context.Add(new NotificationDefinition("notif.two") { DefaultChannels = [NotificationChannels.Email] });
-        _context.Add(new NotificationDefinition("notif.three") { DefaultChannels = [NotificationChannels.Push] });
+        _context.Add(new NotificationDefinition("notif.three") { DefaultChannels = [NotificationChannels.WebPush] });
 
         IReadOnlyList<NotificationDefinition> definitions = _context.GetDefinitions();
 

@@ -49,7 +49,7 @@ public sealed class PresenceNotificationDeliveryGateTests
     [Theory]
     [InlineData(NotificationChannels.SignalR)]
     [InlineData(NotificationChannels.Sse)]
-    [InlineData(NotificationChannels.Push)]
+    [InlineData(NotificationChannels.WebPush)]
     [InlineData(NotificationChannels.MobilePush)]
     public async Task Push_channels_suppressed_when_dnd(string channelName)
     {
@@ -64,7 +64,7 @@ public sealed class PresenceNotificationDeliveryGateTests
     [Theory]
     [InlineData(NotificationChannels.SignalR)]
     [InlineData(NotificationChannels.Sse)]
-    [InlineData(NotificationChannels.Push)]
+    [InlineData(NotificationChannels.WebPush)]
     [InlineData(NotificationChannels.MobilePush)]
     public async Task Push_channels_suppressed_when_offline(string channelName)
     {

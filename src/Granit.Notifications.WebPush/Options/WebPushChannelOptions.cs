@@ -1,7 +1,7 @@
 namespace Granit.Notifications.WebPush.Options;
 
 /// <summary>Web Push VAPID configuration options.</summary>
-public sealed class PushChannelOptions
+public sealed class WebPushChannelOptions
 {
     /// <summary>Configuration section name.</summary>
     public const string SectionName = "Notifications:WebPush";

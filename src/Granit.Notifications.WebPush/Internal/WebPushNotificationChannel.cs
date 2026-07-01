@@ -14,19 +14,19 @@ namespace Granit.Notifications.WebPush.Internal;
 /// and re-thrown as an <see cref="AggregateException"/> so the caller (Wolverine handler)
 /// can retry the entire delivery.
 /// </remarks>
-internal sealed partial class PushNotificationChannel(
+internal sealed partial class WebPushNotificationChannel(
     PushServiceClient pushServiceClient,
-    IPushSubscriptionReader subscriptionReader,
-    IPushSubscriptionWriter subscriptionWriter,
-    ILogger<PushNotificationChannel> logger) : INotificationChannel
+    IWebPushSubscriptionReader subscriptionReader,
+    IWebPushSubscriptionWriter subscriptionWriter,
+    ILogger<WebPushNotificationChannel> logger) : INotificationChannel
 {
     /// <inheritdoc />
-    public string Name => NotificationChannels.Push;
+    public string Name => NotificationChannels.WebPush;
 
     /// <inheritdoc />
     public async Task SendAsync(NotificationDeliveryContext context, CancellationToken cancellationToken = default)
     {
-        IReadOnlyList<PushSubscriptionInfo> subscriptions = await subscriptionReader.GetSubscriptionsAsync(
+        IReadOnlyList<WebPushSubscriptionInfo> subscriptions = await subscriptionReader.GetSubscriptionsAsync(
             context.RecipientUserId, context.TenantId, cancellationToken).ConfigureAwait(false);
 
         if (subscriptions.Count == 0)
@@ -35,7 +35,7 @@ internal sealed partial class PushNotificationChannel(
             return;
         }
 
-        PushNotificationPayload payload = new()
+        WebPushNotificationPayload payload = new()
         {
             NotificationId = context.NotificationId,
             NotificationTypeName = context.NotificationTypeName,
@@ -47,7 +47,7 @@ internal sealed partial class PushNotificationChannel(
         string serializedPayload = JsonSerializer.Serialize(payload);
         List<Exception>? failures = null;
 
-        foreach (PushSubscriptionInfo sub in subscriptions)
+        foreach (WebPushSubscriptionInfo sub in subscriptions)
         {
             Lib.Net.Http.WebPush.PushSubscription pushSubscription = new()
             {

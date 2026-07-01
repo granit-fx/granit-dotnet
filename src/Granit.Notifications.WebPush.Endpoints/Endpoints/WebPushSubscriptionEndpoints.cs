@@ -41,8 +41,8 @@ internal static class WebPushSubscriptionEndpoints
 
     private static async Task<Results<Created, Ok>> RegisterSubscriptionAsync(
         WebPushSubscriptionRegisterRequest request,
-        [FromServices] IPushSubscriptionWriter writer,
-        [FromServices] IPushSubscriptionReader reader,
+        [FromServices] IWebPushSubscriptionWriter writer,
+        [FromServices] IWebPushSubscriptionReader reader,
         ClaimsPrincipal user,
         [FromServices] ICurrentTenant tenant,
         CancellationToken cancellationToken)
@@ -50,13 +50,13 @@ internal static class WebPushSubscriptionEndpoints
         string userId = NotificationsResponseMapper.GetUserId(user);
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
 
-        IReadOnlyList<PushSubscriptionInfo> existing = await reader
+        IReadOnlyList<WebPushSubscriptionInfo> existing = await reader
             .GetSubscriptionsAsync(userId, tenantId, cancellationToken)
             .ConfigureAwait(false);
 
         bool isUpdate = existing.Any(s => s.Endpoint == request.Endpoint);
 
-        PushSubscriptionInfo subscription = new()
+        WebPushSubscriptionInfo subscription = new()
         {
             Endpoint = request.Endpoint,
             ExpirationTime = request.ExpirationTime,
@@ -73,7 +73,7 @@ internal static class WebPushSubscriptionEndpoints
 
     private static async Task<NoContent> RemoveSubscriptionAsync(
         [FromBody] WebPushSubscriptionRemoveRequest request,
-        [FromServices] IPushSubscriptionWriter writer,
+        [FromServices] IWebPushSubscriptionWriter writer,
         [FromServices] ICurrentTenant tenant,
         CancellationToken cancellationToken)
     {
@@ -82,7 +82,7 @@ internal static class WebPushSubscriptionEndpoints
         // The removal seam is scoped by (endpoint, tenant), not by user: the push endpoint is a
         // cryptographically-unguessable secret minted by the browser's push service, so an
         // attacker cannot target another user's subscription without already knowing it. A
-        // user-scoped overload of IPushSubscriptionWriter.RemoveSubscriptionAsync is a follow-up.
+        // user-scoped overload of IWebPushSubscriptionWriter.RemoveSubscriptionAsync is a follow-up.
         await writer.RemoveSubscriptionAsync(request.Endpoint, tenantId, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();

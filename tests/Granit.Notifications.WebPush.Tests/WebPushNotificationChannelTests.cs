@@ -1,5 +1,5 @@
 // =============================================================================
-// Tests - PushNotificationChannel
+// Tests - WebPushNotificationChannel
 // =============================================================================
 // Verifies the Web Push channel implementation: no-subscription short circuit,
 // name property, store interaction, payload construction, multi-subscription
@@ -21,17 +21,17 @@ using Xunit;
 
 namespace Granit.Notifications.WebPush.Tests;
 
-public sealed class PushNotificationChannelTests
+public sealed class WebPushNotificationChannelTests
 {
     // Pre-generated P-256 subscription key pair for push encryption (test-only).
     private static readonly string TestP256dh;
     private static readonly string TestAuth;
 
-    private readonly IPushSubscriptionReader _subscriptionReader = Substitute.For<IPushSubscriptionReader>();
-    private readonly IPushSubscriptionWriter _subscriptionWriter = Substitute.For<IPushSubscriptionWriter>();
-    private readonly ILogger<PushNotificationChannel> _logger = Substitute.For<ILogger<PushNotificationChannel>>();
+    private readonly IWebPushSubscriptionReader _subscriptionReader = Substitute.For<IWebPushSubscriptionReader>();
+    private readonly IWebPushSubscriptionWriter _subscriptionWriter = Substitute.For<IWebPushSubscriptionWriter>();
+    private readonly ILogger<WebPushNotificationChannel> _logger = Substitute.For<ILogger<WebPushNotificationChannel>>();
 
-    static PushNotificationChannelTests()
+    static WebPushNotificationChannelTests()
     {
         using var ecdsa = ECDsa.Create(ECCurve.NamedCurves.nistP256);
         ECParameters parameters = ecdsa.ExportParameters(includePrivateParameters: false);
@@ -45,11 +45,11 @@ public sealed class PushNotificationChannelTests
     }
 
     [Fact]
-    public void Name_ReturnsPush()
+    public void Name_ReturnsWebPush()
     {
-        PushNotificationChannel channel = BuildChannel();
+        WebPushNotificationChannel channel = BuildChannel();
 
-        channel.Name.ShouldBe(NotificationChannels.Push);
+        channel.Name.ShouldBe(NotificationChannels.WebPush);
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public sealed class PushNotificationChannelTests
     {
         _subscriptionReader.GetSubscriptionsAsync(
             Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<PushSubscriptionInfo>>([]));
-        PushNotificationChannel channel = BuildChannel();
+            .Returns(Task.FromResult<IReadOnlyList<WebPushSubscriptionInfo>>([]));
+        WebPushNotificationChannel channel = BuildChannel();
         NotificationDeliveryContext context = BuildContext();
 
         Func<Task> act = () => channel.SendAsync(context, TestContext.Current.CancellationToken);
@@ -71,8 +71,8 @@ public sealed class PushNotificationChannelTests
     {
         _subscriptionReader.GetSubscriptionsAsync(
             Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<PushSubscriptionInfo>>([]));
-        PushNotificationChannel channel = BuildChannel();
+            .Returns(Task.FromResult<IReadOnlyList<WebPushSubscriptionInfo>>([]));
+        WebPushNotificationChannel channel = BuildChannel();
         NotificationDeliveryContext context = BuildContext();
 
         await channel.SendAsync(context, TestContext.Current.CancellationToken);
@@ -85,7 +85,7 @@ public sealed class PushNotificationChannelTests
     public async Task SendAsync_WithSubscription_SendsEncryptedContent()
     {
         MockHttpMessageHandler handler = new();
-        PushNotificationChannel channel = BuildChannel(handler);
+        WebPushNotificationChannel channel = BuildChannel(handler);
         NotificationDeliveryContext context = BuildContext();
         SetupSubscriptions(context.RecipientUserId, context.TenantId,
             [BuildSubscription("https://push.example.com/sub1")]);
@@ -101,7 +101,7 @@ public sealed class PushNotificationChannelTests
     public async Task SendAsync_WithSubscription_SendsPostRequest()
     {
         MockHttpMessageHandler handler = new();
-        PushNotificationChannel channel = BuildChannel(handler);
+        WebPushNotificationChannel channel = BuildChannel(handler);
         NotificationDeliveryContext context = BuildContext();
         SetupSubscriptions(context.RecipientUserId, context.TenantId,
             [BuildSubscription("https://push.example.com/sub1")]);
@@ -115,9 +115,9 @@ public sealed class PushNotificationChannelTests
     public async Task SendAsync_WithMultipleSubscriptions_SendsToAll()
     {
         MockHttpMessageHandler handler = new();
-        PushNotificationChannel channel = BuildChannel(handler);
+        WebPushNotificationChannel channel = BuildChannel(handler);
         NotificationDeliveryContext context = BuildContext();
-        List<PushSubscriptionInfo> subscriptions =
+        List<WebPushSubscriptionInfo> subscriptions =
         [
             BuildSubscription("https://push.example.com/sub1"),
             BuildSubscription("https://push.example.com/sub2"),
@@ -134,7 +134,7 @@ public sealed class PushNotificationChannelTests
     public async Task SendAsync_WithSubscription_SendsRequestToCorrectEndpoint()
     {
         MockHttpMessageHandler handler = new();
-        PushNotificationChannel channel = BuildChannel(handler);
+        WebPushNotificationChannel channel = BuildChannel(handler);
         NotificationDeliveryContext context = BuildContext();
         SetupSubscriptions(context.RecipientUserId, context.TenantId,
             [BuildSubscription("https://push.example.com/unique-endpoint")]);
@@ -149,7 +149,7 @@ public sealed class PushNotificationChannelTests
     public async Task SendAsync_GoneResponse_RemovesExpiredSubscription()
     {
         MockHttpMessageHandler handler = new() { ResponseStatusCode = HttpStatusCode.Gone };
-        PushNotificationChannel channel = BuildChannel(handler);
+        WebPushNotificationChannel channel = BuildChannel(handler);
         NotificationDeliveryContext context = BuildContext();
         string expiredEndpoint = "https://push.example.com/expired";
         SetupSubscriptions(context.RecipientUserId, context.TenantId,
@@ -165,7 +165,7 @@ public sealed class PushNotificationChannelTests
     public async Task SendAsync_GoneResponse_WithTenantId_RemovesWithCorrectTenantId()
     {
         MockHttpMessageHandler handler = new() { ResponseStatusCode = HttpStatusCode.Gone };
-        PushNotificationChannel channel = BuildChannel(handler);
+        WebPushNotificationChannel channel = BuildChannel(handler);
         var tenantId = Guid.NewGuid();
         NotificationDeliveryContext context = new()
         {
@@ -198,9 +198,9 @@ public sealed class PushNotificationChannelTests
             HttpStatusCode.Gone,
             HttpStatusCode.Created,
         ]);
-        PushNotificationChannel channel = BuildChannel(handler);
+        WebPushNotificationChannel channel = BuildChannel(handler);
         NotificationDeliveryContext context = BuildContext();
-        List<PushSubscriptionInfo> subscriptions =
+        List<WebPushSubscriptionInfo> subscriptions =
         [
             BuildSubscription("https://push.example.com/active1"),
             BuildSubscription("https://push.example.com/expired"),
@@ -225,7 +225,7 @@ public sealed class PushNotificationChannelTests
     public async Task SendAsync_WithTenantId_QueriesStoreWithTenantId()
     {
         MockHttpMessageHandler handler = new();
-        PushNotificationChannel channel = BuildChannel(handler);
+        WebPushNotificationChannel channel = BuildChannel(handler);
         var tenantId = Guid.NewGuid();
         NotificationDeliveryContext context = new()
         {
@@ -251,7 +251,7 @@ public sealed class PushNotificationChannelTests
     public async Task SendAsync_WithSubscription_IncludesVapidAuthorizationHeader()
     {
         MockHttpMessageHandler handler = new();
-        PushNotificationChannel channel = BuildChannel(handler);
+        WebPushNotificationChannel channel = BuildChannel(handler);
         NotificationDeliveryContext context = BuildContext();
         SetupSubscriptions(context.RecipientUserId, context.TenantId,
             [BuildSubscription("https://push.example.com/sub1")]);
@@ -267,10 +267,10 @@ public sealed class PushNotificationChannelTests
     public async Task SendAsync_NoSubscriptions_DoesNotSendAnyPushMessage()
     {
         MockHttpMessageHandler handler = new();
-        PushNotificationChannel channel = BuildChannel(handler);
+        WebPushNotificationChannel channel = BuildChannel(handler);
         _subscriptionReader.GetSubscriptionsAsync(
             Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<PushSubscriptionInfo>>([]));
+            .Returns(Task.FromResult<IReadOnlyList<WebPushSubscriptionInfo>>([]));
         NotificationDeliveryContext context = BuildContext();
 
         await channel.SendAsync(context, TestContext.Current.CancellationToken);
@@ -287,9 +287,9 @@ public sealed class PushNotificationChannelTests
             HttpStatusCode.InternalServerError,
             HttpStatusCode.Created,
         ]);
-        PushNotificationChannel channel = BuildChannel(handler);
+        WebPushNotificationChannel channel = BuildChannel(handler);
         NotificationDeliveryContext context = BuildContext();
-        List<PushSubscriptionInfo> subscriptions =
+        List<WebPushSubscriptionInfo> subscriptions =
         [
             BuildSubscription("https://push.example.com/active1"),
             BuildSubscription("https://push.example.com/failing"),
@@ -309,17 +309,17 @@ public sealed class PushNotificationChannelTests
     // Helpers
     // -------------------------------------------------------------------------
 
-    private PushNotificationChannel BuildChannel() =>
+    private WebPushNotificationChannel BuildChannel() =>
         BuildChannel(new MockHttpMessageHandler());
 
-    private PushNotificationChannel BuildChannel(HttpMessageHandler handler)
+    private WebPushNotificationChannel BuildChannel(HttpMessageHandler handler)
     {
         HttpClient httpClient = new(handler) { BaseAddress = new Uri("https://push.example.com") };
         PushServiceClient pushServiceClient = new(httpClient)
         {
             DefaultAuthentication = CreateTestVapidAuthentication(),
         };
-        return new PushNotificationChannel(pushServiceClient, _subscriptionReader, _subscriptionWriter, _logger);
+        return new WebPushNotificationChannel(pushServiceClient, _subscriptionReader, _subscriptionWriter, _logger);
     }
 
     private static VapidAuthentication CreateTestVapidAuthentication()
@@ -334,11 +334,11 @@ public sealed class PushNotificationChannelTests
     private static string Base64UrlEncode(byte[] bytes) =>
         Convert.ToBase64String(bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
-    private void SetupSubscriptions(string userId, Guid? tenantId, List<PushSubscriptionInfo> subscriptions) =>
+    private void SetupSubscriptions(string userId, Guid? tenantId, List<WebPushSubscriptionInfo> subscriptions) =>
         _subscriptionReader.GetSubscriptionsAsync(userId, tenantId, Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<PushSubscriptionInfo>>(subscriptions));
+            .Returns(Task.FromResult<IReadOnlyList<WebPushSubscriptionInfo>>(subscriptions));
 
-    private static PushSubscriptionInfo BuildSubscription(string endpoint) => new()
+    private static WebPushSubscriptionInfo BuildSubscription(string endpoint) => new()
     {
         Endpoint = endpoint,
         P256dh = TestP256dh,

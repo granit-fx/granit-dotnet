@@ -32,8 +32,8 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
     private const string SampleP256dh = "BFooBarP256dhKey";
     private const string SampleAuth = "AuthSecret123";
 
-    private readonly IPushSubscriptionReader _reader = Substitute.For<IPushSubscriptionReader>();
-    private readonly IPushSubscriptionWriter _writer = Substitute.For<IPushSubscriptionWriter>();
+    private readonly IWebPushSubscriptionReader _reader = Substitute.For<IWebPushSubscriptionReader>();
+    private readonly IWebPushSubscriptionWriter _writer = Substitute.For<IWebPushSubscriptionWriter>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly WebApplication _app;
     private readonly HttpClient _authClient;
@@ -89,7 +89,7 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         await _writer.Received(1).SaveSubscriptionAsync(
             UserId,
-            Arg.Is<PushSubscriptionInfo>(s =>
+            Arg.Is<WebPushSubscriptionInfo>(s =>
                 s.Endpoint == SampleEndpoint &&
                 s.P256dh == SampleP256dh &&
                 s.Auth == SampleAuth &&
@@ -102,7 +102,7 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
     public async Task Register_ExistingSubscription_Returns200()
     {
         _reader.GetSubscriptionsAsync(UserId, null, Arg.Any<CancellationToken>())
-            .Returns([new PushSubscriptionInfo
+            .Returns([new WebPushSubscriptionInfo
             {
                 Endpoint = SampleEndpoint,
                 P256dh = SampleP256dh,
@@ -131,7 +131,7 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         await _writer.Received(1).SaveSubscriptionAsync(
             UserId,
-            Arg.Is<PushSubscriptionInfo>(s => s.ExpirationTime == 1_900_000_000_000L),
+            Arg.Is<WebPushSubscriptionInfo>(s => s.ExpirationTime == 1_900_000_000_000L),
             null,
             Arg.Any<CancellationToken>());
     }
@@ -164,7 +164,7 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
         await _writer.DidNotReceive().SaveSubscriptionAsync(
-            Arg.Any<string>(), Arg.Any<PushSubscriptionInfo>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string>(), Arg.Any<WebPushSubscriptionInfo>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -180,7 +180,7 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         await _writer.Received(1).SaveSubscriptionAsync(
-            UserId, Arg.Any<PushSubscriptionInfo>(), tenantId, Arg.Any<CancellationToken>());
+            UserId, Arg.Any<WebPushSubscriptionInfo>(), tenantId, Arg.Any<CancellationToken>());
     }
 
     // ── DELETE (remove, body-bound) ──────────────────────────────────────────

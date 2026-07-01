@@ -1,11 +1,11 @@
 namespace Granit.Notifications.WebPush;
 
 /// <summary>Write operations for browser push subscriptions per user.</summary>
-public interface IPushSubscriptionWriter
+public interface IWebPushSubscriptionWriter
 {
     /// <summary>Saves a push subscription for a user.</summary>
     Task SaveSubscriptionAsync(
-        string userId, PushSubscriptionInfo subscription, Guid? tenantId, CancellationToken cancellationToken = default);
+        string userId, WebPushSubscriptionInfo subscription, Guid? tenantId, CancellationToken cancellationToken = default);
 
     /// <summary>Removes a push subscription by endpoint.</summary>
     Task RemoveSubscriptionAsync(

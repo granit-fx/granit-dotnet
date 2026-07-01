@@ -7,7 +7,7 @@ namespace Granit.Notifications.WebPush;
 /// </summary>
 /// <remarks>
 /// Registration is done via <c>AddGranitNotificationsWebPush()</c>.
-/// Registers <c>PushNotificationChannel</c> for browser push notifications.
+/// Registers <c>WebPushNotificationChannel</c> for browser push notifications.
 /// </remarks>
 [DependsOn(typeof(GranitNotificationsAbstractionsModule))]
 public sealed class GranitNotificationsWebPushModule : GranitModule;

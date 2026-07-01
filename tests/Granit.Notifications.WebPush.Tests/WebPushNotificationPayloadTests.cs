@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Granit.Notifications.WebPush.Tests;
 
-public sealed class PushNotificationPayloadTests
+public sealed class WebPushNotificationPayloadTests
 {
     [Fact]
     public void Properties_SetCorrectly()
@@ -13,7 +13,7 @@ public sealed class PushNotificationPayloadTests
         DateTimeOffset occurredAt = DateTimeOffset.UtcNow;
         JsonElement data = JsonSerializer.SerializeToElement(new { key = "value" });
 
-        PushNotificationPayload payload = new()
+        WebPushNotificationPayload payload = new()
         {
             NotificationId = notificationId,
             NotificationTypeName = "order.created",
@@ -30,9 +30,9 @@ public sealed class PushNotificationPayloadTests
 
     [Fact]
     public void IsSealed() =>
-        typeof(PushNotificationPayload).IsSealed.ShouldBeTrue();
+        typeof(WebPushNotificationPayload).IsSealed.ShouldBeTrue();
 
     [Fact]
     public void IsRecord() =>
-        typeof(PushNotificationPayload).GetMethod("<Clone>$").ShouldNotBeNull();
+        typeof(WebPushNotificationPayload).GetMethod("<Clone>$").ShouldNotBeNull();
 }

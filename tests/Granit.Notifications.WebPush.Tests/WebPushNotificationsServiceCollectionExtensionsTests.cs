@@ -8,49 +8,49 @@ using Xunit;
 
 namespace Granit.Notifications.WebPush.Tests;
 
-public sealed class PushNotificationsServiceCollectionExtensionsTests
+public sealed class WebPushNotificationsServiceCollectionExtensionsTests
 {
     [Fact]
-    public void AddGranitNotificationsPush_RegistersOptions()
+    public void AddGranitNotificationsWebPush_RegistersOptions()
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitNotificationsWebPush();
 
         using ServiceProvider sp = services.BuildServiceProvider();
-        IOptions<PushChannelOptions> options = sp.GetRequiredService<IOptions<PushChannelOptions>>();
+        IOptions<WebPushChannelOptions> options = sp.GetRequiredService<IOptions<WebPushChannelOptions>>();
 
         options.Value.ShouldNotBeNull();
     }
 
     [Fact]
-    public void AddGranitNotificationsPush_RegistersPushSubscriptionReader()
+    public void AddGranitNotificationsWebPush_RegistersPushSubscriptionReader()
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitNotificationsWebPush();
 
         using ServiceProvider sp = services.BuildServiceProvider();
-        IPushSubscriptionReader reader = sp.GetRequiredService<IPushSubscriptionReader>();
+        IWebPushSubscriptionReader reader = sp.GetRequiredService<IWebPushSubscriptionReader>();
 
         reader.ShouldNotBeNull();
     }
 
     [Fact]
-    public void AddGranitNotificationsPush_RegistersPushSubscriptionWriter()
+    public void AddGranitNotificationsWebPush_RegistersPushSubscriptionWriter()
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitNotificationsWebPush();
 
         using ServiceProvider sp = services.BuildServiceProvider();
-        IPushSubscriptionWriter writer = sp.GetRequiredService<IPushSubscriptionWriter>();
+        IWebPushSubscriptionWriter writer = sp.GetRequiredService<IWebPushSubscriptionWriter>();
 
         writer.ShouldNotBeNull();
     }
 
     [Fact]
-    public void AddGranitNotificationsPush_WithConfigure_AppliesConfiguration()
+    public void AddGranitNotificationsWebPush_WithConfigure_AppliesConfiguration()
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
@@ -62,13 +62,13 @@ public sealed class PushNotificationsServiceCollectionExtensionsTests
         });
 
         using ServiceProvider sp = services.BuildServiceProvider();
-        IOptions<PushChannelOptions> options = sp.GetRequiredService<IOptions<PushChannelOptions>>();
+        IOptions<WebPushChannelOptions> options = sp.GetRequiredService<IOptions<WebPushChannelOptions>>();
 
         options.Value.VapidSubject.ShouldBe("mailto:test@example.com");
     }
 
     [Fact]
-    public void AddGranitNotificationsPush_NullConfigure_DoesNotThrow()
+    public void AddGranitNotificationsWebPush_NullConfigure_DoesNotThrow()
     {
         ServiceCollection services = new();
 
@@ -76,7 +76,7 @@ public sealed class PushNotificationsServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitNotificationsPush_ReturnsServiceCollection()
+    public void AddGranitNotificationsWebPush_ReturnsServiceCollection()
     {
         ServiceCollection services = new();
         IServiceCollection result = services.AddGranitNotificationsWebPush();

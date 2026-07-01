@@ -40241,17 +40241,17 @@
       ]
     },
     {
-      "name": "PushNotificationsServiceCollectionExtensions",
-      "fqn": "Granit.Notifications.WebPush.Extensions.PushNotificationsServiceCollectionExtensions",
+      "name": "WebPushNotificationsServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.WebPush.Extensions.WebPushNotificationsServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Notifications.WebPush",
-      "file": "src/Granit.Notifications.WebPush/Extensions/PushNotificationsServiceCollectionExtensions.cs",
+      "file": "src/Granit.Notifications.WebPush/Extensions/WebPushNotificationsServiceCollectionExtensions.cs",
       "line": 12,
       "members": [
         {
           "name": "AddGranitNotificationsWebPush",
           "kind": "method",
-          "signature": "AddGranitNotificationsWebPush(this IServiceCollection services, Action<PushChannelOptions>? configure = null)",
+          "signature": "AddGranitNotificationsWebPush(this IServiceCollection services, Action<WebPushChannelOptions>? configure = null)",
           "returnType": "IServiceCollection"
         }
       ]
@@ -40266,33 +40266,33 @@
       "members": []
     },
     {
-      "name": "IPushSubscriptionReader",
-      "fqn": "Granit.Notifications.WebPush.IPushSubscriptionReader",
+      "name": "IWebPushSubscriptionReader",
+      "fqn": "Granit.Notifications.WebPush.IWebPushSubscriptionReader",
       "kind": "interface",
       "project": "Granit.Notifications.WebPush",
-      "file": "src/Granit.Notifications.WebPush/IPushSubscriptionReader.cs",
+      "file": "src/Granit.Notifications.WebPush/IWebPushSubscriptionReader.cs",
       "line": 4,
       "members": [
         {
           "name": "GetSubscriptionsAsync",
           "kind": "method",
           "signature": "GetSubscriptionsAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<PushSubscriptionInfo>>"
+          "returnType": "Task<IReadOnlyList<WebPushSubscriptionInfo>>"
         }
       ]
     },
     {
-      "name": "IPushSubscriptionWriter",
-      "fqn": "Granit.Notifications.WebPush.IPushSubscriptionWriter",
+      "name": "IWebPushSubscriptionWriter",
+      "fqn": "Granit.Notifications.WebPush.IWebPushSubscriptionWriter",
       "kind": "interface",
       "project": "Granit.Notifications.WebPush",
-      "file": "src/Granit.Notifications.WebPush/IPushSubscriptionWriter.cs",
+      "file": "src/Granit.Notifications.WebPush/IWebPushSubscriptionWriter.cs",
       "line": 4,
       "members": [
         {
           "name": "SaveSubscriptionAsync",
           "kind": "method",
-          "signature": "SaveSubscriptionAsync(string userId, PushSubscriptionInfo subscription, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "SaveSubscriptionAsync(string userId, WebPushSubscriptionInfo subscription, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
@@ -40304,11 +40304,11 @@
       ]
     },
     {
-      "name": "PushChannelOptions",
-      "fqn": "Granit.Notifications.WebPush.Options.PushChannelOptions",
+      "name": "WebPushChannelOptions",
+      "fqn": "Granit.Notifications.WebPush.Options.WebPushChannelOptions",
       "kind": "class",
       "project": "Granit.Notifications.WebPush",
-      "file": "src/Granit.Notifications.WebPush/Options/PushChannelOptions.cs",
+      "file": "src/Granit.Notifications.WebPush/Options/WebPushChannelOptions.cs",
       "line": 4,
       "members": [
         {
@@ -40332,20 +40332,20 @@
       ]
     },
     {
-      "name": "PushNotificationPayload",
-      "fqn": "Granit.Notifications.WebPush.PushNotificationPayload",
+      "name": "WebPushNotificationPayload",
+      "fqn": "Granit.Notifications.WebPush.WebPushNotificationPayload",
       "kind": "record",
       "project": "Granit.Notifications.WebPush",
-      "file": "src/Granit.Notifications.WebPush/PushNotificationPayload.cs",
+      "file": "src/Granit.Notifications.WebPush/WebPushNotificationPayload.cs",
       "line": 6,
       "members": []
     },
     {
-      "name": "PushSubscriptionInfo",
-      "fqn": "Granit.Notifications.WebPush.PushSubscriptionInfo",
+      "name": "WebPushSubscriptionInfo",
+      "fqn": "Granit.Notifications.WebPush.WebPushSubscriptionInfo",
       "kind": "record",
       "project": "Granit.Notifications.WebPush",
-      "file": "src/Granit.Notifications.WebPush/PushSubscriptionInfo.cs",
+      "file": "src/Granit.Notifications.WebPush/WebPushSubscriptionInfo.cs",
       "line": 4,
       "members": []
     },

@@ -24,7 +24,7 @@ public sealed class PresenceNotificationDeliveryGate(
         {
             NotificationChannels.SignalR,
             NotificationChannels.Sse,
-            NotificationChannels.Push,
+            NotificationChannels.WebPush,
             NotificationChannels.MobilePush,
         }
         .ToFrozenSet();

@@ -3,12 +3,12 @@ using Xunit;
 
 namespace Granit.Notifications.WebPush.Tests;
 
-public sealed class PushSubscriptionInfoTests
+public sealed class WebPushSubscriptionInfoTests
 {
     [Fact]
     public void Properties_SetCorrectly()
     {
-        PushSubscriptionInfo sub = new()
+        WebPushSubscriptionInfo sub = new()
         {
             Endpoint = "https://push.example.com/sub1",
             P256dh = "p256dh-key",
@@ -25,7 +25,7 @@ public sealed class PushSubscriptionInfoTests
     [Fact]
     public void ExpirationTime_DefaultsToNull()
     {
-        PushSubscriptionInfo sub = new()
+        WebPushSubscriptionInfo sub = new()
         {
             Endpoint = "https://push.example.com/sub1",
             P256dh = "p256dh-key",
@@ -37,17 +37,17 @@ public sealed class PushSubscriptionInfoTests
 
     [Fact]
     public void IsSealed() =>
-        typeof(PushSubscriptionInfo).IsSealed.ShouldBeTrue();
+        typeof(WebPushSubscriptionInfo).IsSealed.ShouldBeTrue();
 
     [Fact]
     public void IsRecord() =>
-        typeof(PushSubscriptionInfo).GetMethod("<Clone>$").ShouldNotBeNull();
+        typeof(WebPushSubscriptionInfo).GetMethod("<Clone>$").ShouldNotBeNull();
 
     [Fact]
     public void Equality_SameValues_AreEqual()
     {
-        PushSubscriptionInfo a = new() { Endpoint = "https://push.example.com/1", P256dh = "k", Auth = "a" };
-        PushSubscriptionInfo b = new() { Endpoint = "https://push.example.com/1", P256dh = "k", Auth = "a" };
+        WebPushSubscriptionInfo a = new() { Endpoint = "https://push.example.com/1", P256dh = "k", Auth = "a" };
+        WebPushSubscriptionInfo b = new() { Endpoint = "https://push.example.com/1", P256dh = "k", Auth = "a" };
 
         a.ShouldBe(b);
     }

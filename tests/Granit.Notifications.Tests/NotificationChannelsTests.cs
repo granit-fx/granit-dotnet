@@ -33,6 +33,6 @@ public sealed class NotificationChannelsTests
         NotificationChannels.WhatsApp.ShouldBe("WhatsApp");
 
     [Fact]
-    public void Push_HasExpectedValue() =>
-        NotificationChannels.Push.ShouldBe("Push");
+    public void WebPush_HasExpectedValue() =>
+        NotificationChannels.WebPush.ShouldBe("WebPush");
 }
