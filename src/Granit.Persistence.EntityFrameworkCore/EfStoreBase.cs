@@ -118,24 +118,12 @@ public abstract class EfStoreBase<TEntity, TContext>
     /// </remarks>
     protected IQueryable<TEntity> Query(TContext db)
     {
-        if (s_isMultiTenantEntity && _currentTenant is { IsAvailable: false })
+        if (s_isMultiTenantEntity
+            && _currentTenant is { IsAvailable: false }
+            && CrossTenantFilterDecision.ShouldBypassMultiTenantFilter(
+                typeof(TEntity).Name, _hostAccess, _metrics, _logger))
         {
-            string entity = typeof(TEntity).Name;
-
-            // Only a signaled host-access route (.AllowHostAccess()) is authorized to read across
-            // tenants. Any UNSIGNALED absence of a tenant is treated as a context loss and fails
-            // CLOSED: the multi-tenant named filter is left in place, so the factory-created
-            // GranitDbContext restricts the result to the host partition
-            // (TenantId == CurrentTenantId == null) instead of leaking every tenant's rows.
-            if (_hostAccess?.IsHostAccess == true)
-            {
-                _metrics?.RecordCrossTenantQuery(entity, "host_endpoint");
-                LogHostEndpointCrossTenantQuery(entity);
-                return db.Set<TEntity>().IgnoreQueryFilters([GranitFilterNames.MultiTenant]);
-            }
-
-            _metrics?.RecordCrossTenantQuery(entity, "implicit_unsignaled");
-            LogUnsignaledCrossTenantQuery(entity);
+            return db.Set<TEntity>().IgnoreQueryFilters([GranitFilterNames.MultiTenant]);
         }
 
         return db.Set<TEntity>();
@@ -174,21 +162,6 @@ public abstract class EfStoreBase<TEntity, TContext>
             ? db.Set<TEntity>().IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             : db.Set<TEntity>();
     }
-
-    private void LogUnsignaledCrossTenantQuery(string entity) =>
-        _logger.LogWarning(
-            "Unsignaled cross-tenant access on {Entity}: ICurrentTenant.IsAvailable=false and "
-            + "no host-access signal was set on the request. This signals a tenant-context "
-            + "loss between request entry and the data layer. The query has been restricted to "
-            + "the host partition (fail-closed) — no foreign-tenant rows are returned. Investigate "
-            + "the call-site, or mark the endpoint with .AllowHostAccess() if cross-tenant access "
-            + "is intended.",
-            entity);
-
-    private void LogHostEndpointCrossTenantQuery(string entity) =>
-        _logger.LogInformation(
-            "Host-endpoint cross-tenant query on {Entity}: served via .AllowHostAccess() route.",
-            entity);
 
     private void LogExplicitCrossTenantQuery(
         string entity, string callerMember, string callerFile, int callerLine) =>

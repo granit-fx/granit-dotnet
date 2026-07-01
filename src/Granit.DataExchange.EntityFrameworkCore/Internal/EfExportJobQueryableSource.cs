@@ -1,5 +1,4 @@
 using Granit.DataExchange.Export.Domain;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -13,19 +12,16 @@ namespace Granit.DataExchange.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfExportJobQueryableSource(
     IDbContextFactory<DataExchangeDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<ExportJob>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private DataExchangeDbContext? _context;
 
     public IQueryable<ExportJob> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<ExportJob> query = _context.ExportJobs.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(ExportJob).Name);
     }
 
     public ValueTask DisposeAsync()

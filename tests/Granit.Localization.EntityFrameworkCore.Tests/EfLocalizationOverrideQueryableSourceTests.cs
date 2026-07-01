@@ -1,7 +1,10 @@
 using Granit.Localization.Domain;
 using Granit.Localization.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -71,7 +74,7 @@ public sealed class EfLocalizationOverrideQueryableSourceTests
 
         EfLocalizationOverrideQueryableSource source = new(
             new InMemoryContextFactory(db, tenantAContext),
-            tenantAContext);
+            Scope(tenantAContext));
 
         // Act
         List<LocalizationOverride> rows = await source.GetQueryable()
@@ -82,9 +85,9 @@ public sealed class EfLocalizationOverrideQueryableSourceTests
     }
 
     [Fact]
-    public async Task GetQueryable_HostContext_ReturnsAllOverridesCrossTenant()
+    public async Task GetQueryable_SignaledHostContext_ReturnsAllOverridesCrossTenant()
     {
-        // Arrange — same seeded set, but the source is constructed without a tenant context.
+        // Arrange — same seeded set; the source is constructed for a signaled host-access request.
         string db = Guid.NewGuid().ToString();
         var tenantA = Guid.NewGuid();
         var tenantB = Guid.NewGuid();
@@ -97,14 +100,54 @@ public sealed class EfLocalizationOverrideQueryableSourceTests
 
         EfLocalizationOverrideQueryableSource source = new(
             new InMemoryContextFactory(db, NullTenantContext.Instance),
-            NullTenantContext.Instance);
+            Scope(NullTenantContext.Instance, hostAccess: true));
 
         // Act
         List<LocalizationOverride> rows = await source.GetQueryable()
             .ToListAsync(TestContext.Current.CancellationToken);
 
-        // Assert — host (no tenant context) bypasses the filter and sees every row.
+        // Assert — signaled host access bypasses the filter and sees every row.
         rows.Select(r => r.Key).Order().ShouldBe(["a-key", "b-key", "host-key"]);
+    }
+
+    [Fact]
+    public async Task GetQueryable_UnsignaledNoTenant_FailsClosed_ReturnsOnlyHostPartition()
+    {
+        // VULN-001: an unsignaled absent tenant must not leak foreign-tenant overrides — only the
+        // null-tenant (host) row is visible.
+        string db = Guid.NewGuid().ToString();
+        var tenantA = Guid.NewGuid();
+
+        await SeedAsync(db, NullTenantContext.Instance, tenantA, "a-key", TestContext.Current.CancellationToken);
+        await SeedAsync(db, NullTenantContext.Instance, tenantId: null, key: "host-key", TestContext.Current.CancellationToken);
+
+        EfLocalizationOverrideQueryableSource source = new(
+            new InMemoryContextFactory(db, NullTenantContext.Instance),
+            Scope(NullTenantContext.Instance));
+
+        List<LocalizationOverride> rows = await source.GetQueryable()
+            .ToListAsync(TestContext.Current.CancellationToken);
+
+        rows.Select(r => r.Key).ShouldBe(["host-key"]);
+    }
+
+    // Real ITenantQueryScope (from AddGranitPersistence) wired to the given tenant and optional
+    // host-access signal — the production QueryEngine fail-closed decision.
+    private static ITenantQueryScope Scope(ICurrentTenant tenant, bool hostAccess = false)
+    {
+        ServiceCollection services = new();
+        services.AddMetrics();
+        services.AddLogging();
+        services.AddSingleton(tenant);
+        if (hostAccess)
+        {
+            IHostAccessContext host = Substitute.For<IHostAccessContext>();
+            host.IsHostAccess.Returns(true);
+            services.AddSingleton(host);
+        }
+
+        services.AddGranitPersistence();
+        return services.BuildServiceProvider().GetRequiredService<ITenantQueryScope>();
     }
 
     [Fact]
@@ -117,7 +160,7 @@ public sealed class EfLocalizationOverrideQueryableSourceTests
 
         EfLocalizationOverrideQueryableSource source = new(
             new InMemoryContextFactory(db, NullTenantContext.Instance),
-            NullTenantContext.Instance);
+            Scope(NullTenantContext.Instance));
 
         // Act
         LocalizationOverride row = await source.GetQueryable()

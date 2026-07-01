@@ -1,4 +1,3 @@
-using Granit.MultiTenancy;
 using Granit.Notifications.Domain;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
@@ -13,19 +12,16 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfUserNotificationQueryableSource(
     IDbContextFactory<NotificationsDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<UserNotification>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private NotificationsDbContext? _context;
 
     public IQueryable<UserNotification> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<UserNotification> query = _context.UserNotifications.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(UserNotification).Name);
     }
 
     public ValueTask DisposeAsync()

@@ -1,4 +1,3 @@
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Granit.Webhooks.Domain;
@@ -13,19 +12,16 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfWebhookDeliveryAttemptQueryableSource(
     IDbContextFactory<WebhooksDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<WebhookDeliveryAttempt>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private WebhooksDbContext? _context;
 
     public IQueryable<WebhookDeliveryAttempt> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<WebhookDeliveryAttempt> query = _context.WebhookDeliveryAttempts.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(WebhookDeliveryAttempt).Name);
     }
 
     public ValueTask DisposeAsync()

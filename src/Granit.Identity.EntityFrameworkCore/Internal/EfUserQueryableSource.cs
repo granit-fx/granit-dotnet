@@ -1,5 +1,4 @@
 using Granit.Identity.Domain;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -20,19 +19,16 @@ namespace Granit.Identity.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class EfUserQueryableSource(
     IDbContextFactory<IdentityDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<User>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private IdentityDbContext? _context;
 
     public IQueryable<User> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<User> query = _context.Users.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(User).Name);
     }
 
     public ValueTask DisposeAsync()

@@ -13,10 +13,10 @@ namespace Granit.BlobStorage.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfBlobQueryableSource(
     IDbContextFactory<BlobStorageDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ICurrentTenant currentTenant,
+    ITenantQueryScope scope)
     : IQueryableSource<BlobDescriptor>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private BlobStorageDbContext? _context;
 
     public IQueryable<BlobDescriptor> GetQueryable()
@@ -27,7 +27,7 @@ internal sealed class EfBlobQueryableSource(
             {
                 _context = contextFactory.CreateDbContext();
             }
-            catch (InvalidOperationException) when (_bypassTenantFilter)
+            catch (InvalidOperationException) when (!currentTenant.IsAvailable)
             {
                 // Per-tenant factory (SchemaPerTenant / DatabasePerTenant) requires a resolved
                 // tenant; none is active in the host context. Return empty so analytics runners
@@ -36,10 +36,7 @@ internal sealed class EfBlobQueryableSource(
             }
         }
 
-        IQueryable<BlobDescriptor> query = _context.Blobs.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(_context.Blobs.AsNoTracking(), typeof(BlobDescriptor).Name);
     }
 
     public ValueTask DisposeAsync()

@@ -1,4 +1,3 @@
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Privacy.LegalAgreements.Domain;
 using Granit.QueryEngine;
@@ -17,20 +16,22 @@ namespace Granit.Privacy.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class EfLegalDocumentQueryableSource(
     IDbContextFactory<PrivacyDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<LegalDocument>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private PrivacyDbContext? _context;
 
     public IQueryable<LegalDocument> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
-        IQueryable<LegalDocument> query = _context.LegalDocuments.AsNoTracking();
 
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant, GranitFilterNames.Publishable])
-            : query.IgnoreQueryFilters([GranitFilterNames.Publishable]);
+        // Publishable is always bypassed (admin sees drafts/archived); the multi-tenant filter is
+        // bypassed cross-tenant only for a signaled host-access request, fail-closed otherwise.
+        IQueryable<LegalDocument> query = _context.LegalDocuments
+            .AsNoTracking()
+            .IgnoreQueryFilters([GranitFilterNames.Publishable]);
+
+        return scope.Restrict(query, typeof(LegalDocument).Name);
     }
 
     public ValueTask DisposeAsync()

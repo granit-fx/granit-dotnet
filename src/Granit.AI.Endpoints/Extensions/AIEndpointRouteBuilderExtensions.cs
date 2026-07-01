@@ -51,6 +51,9 @@ public static class AIEndpointRouteBuilderExtensions
         RouteGroupBuilder usageGroup = group.MapGranitGroup("usage")
             .WithTags(options.UsageTagName)
             .RequireAuthorization(AIPermissions.Usage.Read);
+        // TODO(VULN-001): cross-tenant reads are now fail-closed by default. A host admin with no
+        // resolved tenant sees only the host partition — add .AllowHostAccess() + a host-scoped
+        // permission if cross-tenant AI usage visibility is intended.
         usageGroup.MapGranitQuery<AIUsageRecord>();
 
         // Discovery endpoints — provider and model listing

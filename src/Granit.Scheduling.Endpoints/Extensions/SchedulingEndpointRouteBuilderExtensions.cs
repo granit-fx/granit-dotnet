@@ -49,6 +49,9 @@ public static class SchedulingEndpointRouteBuilderExtensions
         actionsGroup.RequireAuthorization(SchedulingPermissions.Actions.Manage).MapWriteEndpoints();
 
         // QueryEngine-powered list endpoint with pagination, filtering, and sorting
+        // TODO(VULN-001): cross-tenant reads are now fail-closed by default. A host admin with no
+        // resolved tenant sees only the host partition — add .AllowHostAccess() + a host-scoped
+        // permission if cross-tenant scheduled-action visibility is intended.
         actionsGroup.RequireAuthorization(SchedulingPermissions.Actions.Read)
             .MapGranitQuery<ScheduledAction>();
 

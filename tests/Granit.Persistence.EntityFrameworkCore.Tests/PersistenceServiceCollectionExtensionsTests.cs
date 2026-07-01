@@ -59,6 +59,24 @@ public sealed class PersistenceServiceCollectionExtensionsTests
     }
 
     [Fact]
+    public void AddGranitPersistence_RegistersScoped_TenantQueryScope()
+    {
+        // VULN-001: the QueryEngine-path guard must be resolvable and Scoped (it reads the
+        // request-local ICurrentTenant / IHostAccessContext live per call).
+        ServiceCollection services = new();
+        AddRequiredDependencies(services);
+
+        services.AddGranitPersistence();
+
+        ServiceDescriptor descriptor = services.First(d => d.ServiceType == typeof(ITenantQueryScope));
+        descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+        using IServiceScope scope = sp.CreateScope();
+        scope.ServiceProvider.GetService<ITenantQueryScope>().ShouldNotBeNull();
+    }
+
+    [Fact]
     public void AddGranitPersistence_RegistersVersioningInterceptor()
     {
         // Arrange

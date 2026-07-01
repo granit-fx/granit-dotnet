@@ -7,6 +7,7 @@ using Granit.Persistence.EntityFrameworkCore.Diagnostics;
 using Granit.Persistence.EntityFrameworkCore.Events;
 using Granit.Persistence.EntityFrameworkCore.ExceptionHandling;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
+using Granit.Persistence.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -52,6 +53,10 @@ public static class PersistenceServiceCollectionExtensions
     {
         GranitActivitySourceRegistry.Register(PersistenceActivitySource.Name);
         services.TryAddSingleton<PersistenceMetrics>();
+
+        // QueryEngine-path tenant guard: mirrors EfStoreBase's fail-closed CRUD decision so a
+        // tenant-context loss on an IQueryableSource<T> can never leak every tenant's rows.
+        services.TryAddScoped<ITenantQueryScope, TenantQueryScope>();
 
         services.AddScoped<AuditedEntityInterceptor>();
         services.AddScoped<VersioningInterceptor>();

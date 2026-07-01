@@ -1,5 +1,6 @@
 using Granit.Guids;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Keys;
@@ -133,7 +134,20 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
     // -------------------------------------------------------------------------
 
     private static EfTemplateSummaryQueryableSource CreateQueryableSource(string dbName) =>
-        new(new InMemoryContextFactory(dbName), GranitDesignTime.CurrentTenant);
+        new(new InMemoryContextFactory(dbName), FailClosedScope());
+
+    // The design-time tenant (NullTenantContext) reports IsAvailable=false with no host signal, so
+    // the scope fails closed to the host partition — which is where these tests seed their rows
+    // (TenantId == null). Mirrors the production QueryEngine decision.
+    private static ITenantQueryScope FailClosedScope()
+    {
+        ServiceCollection services = new();
+        services.AddMetrics();
+        services.AddLogging();
+        services.AddSingleton(GranitDesignTime.CurrentTenant);
+        services.AddGranitPersistence();
+        return services.BuildServiceProvider().GetRequiredService<ITenantQueryScope>();
+    }
 
     [Fact]
     public void TemplateSummary_EmptyStore_ReturnsEmptyQueryable()

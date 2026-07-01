@@ -1,5 +1,4 @@
 using Granit.Auditing.Domain;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -13,19 +12,16 @@ namespace Granit.Auditing.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfAuditEntryQueryableSource(
     IDbContextFactory<AuditingDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<AuditEntry>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private AuditingDbContext? _context;
 
     public IQueryable<AuditEntry> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<AuditEntry> query = _context.AuditEntries.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(AuditEntry).Name);
     }
 
     public ValueTask DisposeAsync()

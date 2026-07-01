@@ -1,4 +1,3 @@
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Granit.Scheduling.Domain;
@@ -13,19 +12,16 @@ namespace Granit.Scheduling.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfScheduledActionQueryableSource(
     IDbContextFactory<SchedulingDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<ScheduledAction>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private SchedulingDbContext? _context;
 
     public IQueryable<ScheduledAction> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<ScheduledAction> query = _context.ScheduledActions.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(ScheduledAction).Name);
     }
 
     public ValueTask DisposeAsync()

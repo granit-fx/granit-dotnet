@@ -58,6 +58,9 @@ public static class AuthorizationEndpointRouteBuilderExtensions
         // Admin query surfaces — paginated/filterable lists for the entity discovery.
         // Routed under their own subgroups so they coexist with the bespoke grant
         // management endpoints under "/roles/{roleName}" without colliding.
+        // TODO(VULN-001): cross-tenant reads are now fail-closed by default. A host admin with no
+        // resolved tenant sees only the host partition — add .AllowHostAccess() + a host-scoped
+        // permission on these groups for ISO 27001 cross-tenant authorization review.
         group.MapGranitGroup("grants").MapGranitQuery<PermissionGrant>(configure: opts =>
         {
             opts.AuthorizationPolicy = AuthorizationEndpointsPermissions.Grants.Manage;

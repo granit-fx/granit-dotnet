@@ -1,4 +1,3 @@
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Granit.Templating.EntityFrameworkCore.Entities;
@@ -21,10 +20,9 @@ namespace Granit.Templating.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class EfTemplateSummaryQueryableSource(
     IDbContextFactory<TemplatingDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<TemplateSummary>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private TemplatingDbContext? _context;
 
     public IQueryable<TemplateSummary> GetQueryable()
@@ -35,10 +33,7 @@ internal sealed class EfTemplateSummaryQueryableSource(
             .IgnoreQueryFilters([GranitFilterNames.Publishable])
             .Where(r => r.LifecycleStatus != WorkflowLifecycleStatus.Archived);
 
-        if (_bypassTenantFilter)
-        {
-            query = query.IgnoreQueryFilters([GranitFilterNames.MultiTenant]);
-        }
+        query = scope.Restrict(query, typeof(TemplateRevisionEntity).Name);
 
         return query
             .GroupBy(r => new { r.TenantId, r.TemplateName, r.Culture })

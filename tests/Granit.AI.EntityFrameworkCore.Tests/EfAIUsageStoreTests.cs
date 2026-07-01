@@ -5,6 +5,7 @@ using Granit.AI.EntityFrameworkCore.Internal;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -84,13 +85,25 @@ public sealed class EfAIUsageStoreTests : IAsyncDisposable
         await _store.RecordAsync(UsageFor(Guid.NewGuid()), TestContext.Current.CancellationToken);
         await _store.RecordAsync(UsageFor(conversationId: null), TestContext.Current.CancellationToken);
 
-        await using var source = new EfAIUsageQueryableSource(_factory, Substitute.For<ICurrentTenant>());
+        await using var source = new EfAIUsageQueryableSource(_factory, TenantQueryScopeFor());
         List<AIUsageRecord> forConversation = await source.GetQueryable()
             .Where(r => r.ConversationId == conversationId)
             .ToListAsync(TestContext.Current.CancellationToken);
 
         forConversation.Count.ShouldBe(2);
         forConversation.ShouldAllBe(r => r.ConversationId == conversationId);
+    }
+
+    // Real ITenantQueryScope wired to a no-tenant / no-host-signal context: fail-closed to the
+    // host partition (TenantId == null), which is exactly what RecordAsync seeds here.
+    private static ITenantQueryScope TenantQueryScopeFor()
+    {
+        ServiceCollection services = new();
+        services.AddMetrics();
+        services.AddLogging();
+        services.AddSingleton(Substitute.For<ICurrentTenant>());
+        services.AddGranitPersistence();
+        return services.BuildServiceProvider().GetRequiredService<ITenantQueryScope>();
     }
 
     private static AIUsageRecord UsageFor(Guid? conversationId) => new()

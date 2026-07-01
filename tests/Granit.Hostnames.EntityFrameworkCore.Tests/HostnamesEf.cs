@@ -3,7 +3,10 @@ using Granit.Hostnames.Diagnostics;
 using Granit.Hostnames.Domain;
 using Granit.Hostnames.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
 namespace Granit.Hostnames.EntityFrameworkCore.Tests;
@@ -33,6 +36,28 @@ internal static class HostnamesEf
         t.IsAvailable.Returns(false);
         t.Id.Returns((Guid?)null);
         return t;
+    }
+
+    /// <summary>
+    /// Builds the real <see cref="ITenantQueryScope"/> (from <c>AddGranitPersistence</c>) wired to
+    /// the given tenant and optional host-access signal — the same fail-closed decision the
+    /// production QueryEngine path uses.
+    /// </summary>
+    public static ITenantQueryScope Scope(ICurrentTenant tenant, bool hostAccess = false)
+    {
+        ServiceCollection services = new();
+        services.AddMetrics();
+        services.AddLogging();
+        services.AddSingleton(tenant);
+        if (hostAccess)
+        {
+            IHostAccessContext host = Substitute.For<IHostAccessContext>();
+            host.IsHostAccess.Returns(true);
+            services.AddSingleton(host);
+        }
+
+        services.AddGranitPersistence();
+        return services.BuildServiceProvider().GetRequiredService<ITenantQueryScope>();
     }
 
     public static HostnamesMetrics Metrics()

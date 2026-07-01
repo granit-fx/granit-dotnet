@@ -64,6 +64,9 @@ public static class BlobStorageEndpointRouteBuilderExtensions
             .RequireAuthorization(BlobStoragePermissions.Administration.Manage)
             .MapOperationEndpoints();
 
+        // TODO(VULN-001): cross-tenant reads are now fail-closed by default. A host admin with no
+        // resolved tenant sees only the host partition — add .AllowHostAccess() + a host-scoped
+        // permission if cross-tenant blob-descriptor visibility is intended.
         group.MapGranitGroup("blobs")
             .RequireAuthorization(BlobStoragePermissions.Administration.Read)
             .MapGranitQuery<BlobDescriptor>();

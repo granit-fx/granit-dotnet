@@ -1,5 +1,4 @@
 using Granit.Authentication.ApiKeys.Domain;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -14,19 +13,16 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfApiKeyEntryQueryableSource(
     IDbContextFactory<AuthenticationApiKeysDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<ApiKeyEntry>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private AuthenticationApiKeysDbContext? _context;
 
     public IQueryable<ApiKeyEntry> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<ApiKeyEntry> query = _context.ApiKeys.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(ApiKeyEntry).Name);
     }
 
     public ValueTask DisposeAsync()

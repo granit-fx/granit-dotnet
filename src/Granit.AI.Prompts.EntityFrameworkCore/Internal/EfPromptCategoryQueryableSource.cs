@@ -1,5 +1,4 @@
 using Granit.AI.Prompts.Domain;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -13,19 +12,16 @@ namespace Granit.AI.Prompts.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfPromptCategoryQueryableSource(
     IDbContextFactory<AIPromptsDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<PromptCategory>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private AIPromptsDbContext? _context;
 
     public IQueryable<PromptCategory> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<PromptCategory> query = _context.PromptCategories.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(PromptCategory).Name);
     }
 
     public ValueTask DisposeAsync()

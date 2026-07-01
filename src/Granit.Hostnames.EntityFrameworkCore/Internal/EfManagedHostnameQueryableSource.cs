@@ -1,5 +1,4 @@
 using Granit.Hostnames.Domain;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -13,19 +12,16 @@ namespace Granit.Hostnames.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfManagedHostnameQueryableSource(
     IDbContextFactory<HostnamesDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<ManagedHostname>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private HostnamesDbContext? _context;
 
     public IQueryable<ManagedHostname> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<ManagedHostname> query = _context.ManagedHostnames.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(ManagedHostname).Name);
     }
 
     public ValueTask DisposeAsync()

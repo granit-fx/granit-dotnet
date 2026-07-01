@@ -1,4 +1,3 @@
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Granit.Timeline.Domain;
@@ -13,19 +12,16 @@ namespace Granit.Timeline.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfTimelineEntryQueryableSource(
     IDbContextFactory<TimelineDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<TimelineEntry>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private TimelineDbContext? _context;
 
     public IQueryable<TimelineEntry> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<TimelineEntry> query = _context.TimelineEntries.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(TimelineEntry).Name);
     }
 
     public ValueTask DisposeAsync()

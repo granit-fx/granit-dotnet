@@ -1,5 +1,4 @@
 using Granit.Localization.Domain;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -14,19 +13,16 @@ namespace Granit.Localization.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfLocalizationOverrideQueryableSource(
     IDbContextFactory<LocalizationDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<LocalizationOverride>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private LocalizationDbContext? _context;
 
     public IQueryable<LocalizationOverride> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<LocalizationOverride> query = _context.LocalizationOverrides.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(LocalizationOverride).Name);
     }
 
     public ValueTask DisposeAsync()

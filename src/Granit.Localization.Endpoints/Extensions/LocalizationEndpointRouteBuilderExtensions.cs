@@ -86,6 +86,9 @@ public static class LocalizationEndpointRouteBuilderExtensions
             .RequireAuthorization(LocalizationOverridesPermissions.Overrides.Manage)
             .WithTags(options.TagName);
 
+        // TODO(VULN-001): cross-tenant reads are now fail-closed by default. A host admin with no
+        // resolved tenant sees only the host partition — add .AllowHostAccess() + a host-scoped
+        // permission if cross-tenant localization-override visibility is intended.
         group.MapGranitQuery<LocalizationOverride>();
         group.MapLocalizationWriteEndpoints();
 

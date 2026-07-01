@@ -1,5 +1,4 @@
 using Granit.DataExchange.Import.Domain;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -13,19 +12,16 @@ namespace Granit.DataExchange.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfImportJobQueryableSource(
     IDbContextFactory<DataExchangeDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<ImportJob>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private DataExchangeDbContext? _context;
 
     public IQueryable<ImportJob> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<ImportJob> query = _context.ImportJobs.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(ImportJob).Name);
     }
 
     public ValueTask DisposeAsync()

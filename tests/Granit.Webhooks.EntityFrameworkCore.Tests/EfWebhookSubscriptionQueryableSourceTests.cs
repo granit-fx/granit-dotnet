@@ -1,9 +1,12 @@
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -46,7 +49,7 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
         ICurrentTenant tenantA = TenantStub(_tenantA, isAvailable: true);
         var sut = new EfWebhookSubscriptionQueryableSource(
             new TenantScopedDbContextFactory(_options, tenantA, _filter),
-            tenantA);
+            ScopeFor(tenantA));
 
         // Act
         WebhookSubscription[] result = [.. sut.GetQueryable()];
@@ -57,7 +60,7 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
     }
 
     [Fact]
-    public async Task GetQueryable_HostContext_ReturnsAllTenants()
+    public async Task GetQueryable_SignaledHostContext_ReturnsAllTenants()
     {
         // Arrange
         await SeedAcrossTenantsAsync(
@@ -65,18 +68,39 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
             CreateSubscription("doc.uploaded", _tenantB),
             CreateSubscription("doc.uploaded", tenantId: null));
 
-        // No tenant — host admin path. IgnoreQueryFilters([MultiTenant]) bypasses the
-        // row-level filter and returns every subscription.
+        // No tenant + signaled .AllowHostAccess() — the authorized cross-tenant path bypasses the
+        // MultiTenant filter and returns every subscription (VULN-001).
         ICurrentTenant host = TenantStub(tenantId: null, isAvailable: false);
         var sut = new EfWebhookSubscriptionQueryableSource(
             new TenantScopedDbContextFactory(_options, host, _filter),
-            host);
+            ScopeFor(host, hostAccess: true));
 
         // Act
         WebhookSubscription[] result = [.. sut.GetQueryable()];
 
-        // Assert — all three rows visible to the host context.
+        // Assert — all three rows visible to the signaled host context.
         result.Length.ShouldBe(3);
+    }
+
+    [Fact]
+    public async Task GetQueryable_UnsignaledNoTenant_FailsClosed_ReturnsOnlyHostPartition()
+    {
+        // VULN-001: an unsignaled absent tenant must NOT leak foreign-tenant rows. Only the
+        // platform (null-tenant) subscription is visible; tenant A/B rows stay hidden.
+        await SeedAcrossTenantsAsync(
+            CreateSubscription("doc.uploaded", _tenantA),
+            CreateSubscription("doc.uploaded", _tenantB),
+            CreateSubscription("doc.uploaded", tenantId: null));
+
+        ICurrentTenant host = TenantStub(tenantId: null, isAvailable: false);
+        var sut = new EfWebhookSubscriptionQueryableSource(
+            new TenantScopedDbContextFactory(_options, host, _filter),
+            ScopeFor(host));
+
+        WebhookSubscription[] result = [.. sut.GetQueryable()];
+
+        result.ShouldHaveSingleItem();
+        result[0].TenantId.ShouldBeNull();
     }
 
     // -------------------------------------------------------------------------
@@ -97,6 +121,25 @@ public sealed class EfWebhookSubscriptionQueryableSourceTests
         tenant.IsAvailable.Returns(isAvailable);
         tenant.Id.Returns(tenantId);
         return tenant;
+    }
+
+    // Real ITenantQueryScope (from AddGranitPersistence) wired to the given tenant and optional
+    // host-access signal — the same fail-closed decision the production QueryEngine path uses.
+    private static ITenantQueryScope ScopeFor(ICurrentTenant tenant, bool hostAccess = false)
+    {
+        ServiceCollection services = new();
+        services.AddMetrics();
+        services.AddLogging();
+        services.AddSingleton(tenant);
+        if (hostAccess)
+        {
+            IHostAccessContext host = Substitute.For<IHostAccessContext>();
+            host.IsHostAccess.Returns(true);
+            services.AddSingleton(host);
+        }
+
+        services.AddGranitPersistence();
+        return services.BuildServiceProvider().GetRequiredService<ITenantQueryScope>();
     }
 
     private static WebhookSubscription CreateSubscription(string eventType, Guid? tenantId) =>

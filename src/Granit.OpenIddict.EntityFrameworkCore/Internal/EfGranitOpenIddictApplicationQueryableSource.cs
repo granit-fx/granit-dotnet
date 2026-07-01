@@ -1,4 +1,3 @@
-using Granit.MultiTenancy;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
@@ -15,10 +14,9 @@ namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfGranitOpenIddictApplicationQueryableSource(
     IDbContextFactory<OpenIddictDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<GranitOpenIddictApplication>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private OpenIddictDbContext? _context;
 
     public IQueryable<GranitOpenIddictApplication> GetQueryable()
@@ -26,9 +24,7 @@ internal sealed class EfGranitOpenIddictApplicationQueryableSource(
         _context ??= contextFactory.CreateDbContext();
         IQueryable<GranitOpenIddictApplication> query =
             _context.Set<GranitOpenIddictApplication>().AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(GranitOpenIddictApplication).Name);
     }
 
     public ValueTask DisposeAsync()

@@ -1,5 +1,4 @@
 using Granit.AI.EntityFrameworkCore.Entities;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -14,20 +13,16 @@ namespace Granit.AI.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfAIUsageQueryableSource(
     IDbContextFactory<AIDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<AIUsageRecord>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private AIDbContext? _context;
 
     public IQueryable<AIUsageRecord> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
-        IQueryable<AIUsageRecordEntity> query = _context.UsageRecords.AsNoTracking();
-        if (_bypassTenantFilter)
-        {
-            query = query.IgnoreQueryFilters([GranitFilterNames.MultiTenant]);
-        }
+        IQueryable<AIUsageRecordEntity> query =
+            scope.Restrict(_context.UsageRecords.AsNoTracking(), typeof(AIUsageRecordEntity).Name);
 
         return query.Select(e => new AIUsageRecord
         {

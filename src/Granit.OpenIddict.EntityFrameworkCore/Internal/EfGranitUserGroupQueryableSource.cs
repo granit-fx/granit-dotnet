@@ -1,5 +1,4 @@
 using Granit.Identity.Local.Domain;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -14,19 +13,16 @@ namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfGranitUserGroupQueryableSource(
     IDbContextFactory<OpenIddictDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ITenantQueryScope scope)
     : IQueryableSource<GranitUserGroup>, IAsyncDisposable, IDisposable
 {
-    private readonly bool _bypassTenantFilter = !currentTenant.IsAvailable;
     private OpenIddictDbContext? _context;
 
     public IQueryable<GranitUserGroup> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
         IQueryable<GranitUserGroup> query = _context.UserGroups.AsNoTracking();
-        return _bypassTenantFilter
-            ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            : query;
+        return scope.Restrict(query, typeof(GranitUserGroup).Name);
     }
 
     public ValueTask DisposeAsync()
