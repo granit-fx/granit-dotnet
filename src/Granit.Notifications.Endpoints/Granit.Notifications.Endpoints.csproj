@@ -2,12 +2,15 @@
 
   <PropertyGroup>
     <PackageId>Granit.Notifications.Endpoints</PackageId>
-    <Description>Minimal API REST endpoints for Granit.Notifications. Inbox, activity feed, preferences, subscriptions/followers, and push subscription management.</Description>
+    <Description>Minimal API REST endpoints for Granit.Notifications. Inbox, activity feed, preferences, and subscriptions/followers. Channel-specific endpoints (mobile push, Web Push) ship in their own opt-in packages.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Notifications.Endpoints.Tests" />
+    <!-- Channel-specific endpoint packages reuse internal helpers (NotificationsResponseMapper). -->
+    <InternalsVisibleTo Include="Granit.Notifications.MobilePush.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Notifications.WebPush.Endpoints" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
@@ -20,9 +23,8 @@
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Notifications\Granit.Notifications.csproj" />
-    <ProjectReference Include="..\Granit.Notifications.MobilePush\Granit.Notifications.MobilePush.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
-      <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

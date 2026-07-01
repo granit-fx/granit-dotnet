@@ -20,6 +20,8 @@ using Granit.Identity.Local.Endpoints.Extensions;
 using Granit.Localization.Endpoints.Extensions;
 using Granit.MultiTenancy.Endpoints.Extensions;
 using Granit.Notifications.Endpoints.Extensions;
+using Granit.Notifications.MobilePush.Endpoints.Extensions;
+using Granit.Notifications.WebPush.Endpoints.Extensions;
 using Granit.OpenApi.Generation;
 using Granit.OpenIddict.Endpoints.Extensions;
 using Granit.Presence.Endpoints.Extensions;
@@ -79,6 +81,8 @@ internal static class GeneratorEndpoints
         }),
         new("multi-tenancy", e => e.MapGranitMultiTenancy()),
         new("notifications", e => e.MapGranitNotifications()),
+        new("notifications-mobile-push", e => e.MapGranitMobilePushTokens()),
+        new("notifications-web-push", e => e.MapGranitWebPushSubscriptions()),
         new("openiddict", e =>
         {
             e.MapGranitOpenIddict();

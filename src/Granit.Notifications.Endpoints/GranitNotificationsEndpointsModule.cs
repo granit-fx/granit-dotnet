@@ -4,7 +4,6 @@ using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Notifications.Endpoints.Internal;
 using Granit.Notifications.Endpoints.Workspaces;
-using Granit.Notifications.MobilePush;
 using Granit.Validation;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
@@ -22,7 +21,6 @@ namespace Granit.Notifications.Endpoints;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
-    typeof(GranitNotificationsMobilePushModule),
     typeof(GranitNotificationsModule),
     typeof(GranitValidationModule),
     typeof(GranitWorkspacesAbstractionsModule))]

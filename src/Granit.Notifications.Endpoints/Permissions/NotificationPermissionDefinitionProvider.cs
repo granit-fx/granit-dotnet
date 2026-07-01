@@ -23,7 +23,7 @@ namespace Granit.Notifications.Endpoints.Permissions;
 /// In production, grant the permission to the desired Keycloak role via one of:
 /// <list type="bullet">
 /// <item>Add the role to <c>GranitAuthorizationOptions.AdminRoles</c> in <c>appsettings.json</c></item>
-/// <item>Call <c>IPermissionManagerWriter.SetAsync("Notifications.Read", "my-role", tenantId, true)</c></item>
+/// <item>Call <c>IPermissionManagerWriter.SetAsync("Notifications.UserNotifications.Read", "my-role", tenantId, true)</c></item>
 /// </list>
 /// </para>
 /// </remarks>

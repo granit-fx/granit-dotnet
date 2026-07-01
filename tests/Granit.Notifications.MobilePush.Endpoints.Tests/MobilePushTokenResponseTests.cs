@@ -1,9 +1,8 @@
-using Granit.Notifications.Endpoints.Dtos;
-using Granit.Notifications.MobilePush;
+using Granit.Notifications.MobilePush.Endpoints.Dtos;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Notifications.Endpoints.Tests;
+namespace Granit.Notifications.MobilePush.Endpoints.Tests;
 
 public sealed class MobilePushTokenResponseTests
 {
@@ -12,9 +11,9 @@ public sealed class MobilePushTokenResponseTests
     {
         var createdAt = new DateTimeOffset(2026, 3, 1, 10, 0, 0, TimeSpan.Zero);
 
-        var response = new MobilePushTokenResponse("token-abc", MobilePlatform.Ios, createdAt);
+        var response = new MobilePushTokenResponse("…-abc", MobilePlatform.Ios, createdAt);
 
-        response.DeviceToken.ShouldBe("token-abc");
+        response.DeviceTokenPreview.ShouldBe("…-abc");
         response.Platform.ShouldBe(MobilePlatform.Ios);
         response.CreatedAt.ShouldBe(createdAt);
     }

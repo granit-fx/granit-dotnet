@@ -13,8 +13,14 @@ namespace Granit.Notifications.Endpoints.Extensions;
 public static class NotificationEndpointRouteBuilderExtensions
 {
     /// <summary>
-    /// Maps all Granit.Notifications REST endpoints.
+    /// Maps the core Granit.Notifications REST endpoints (inbox, activity feed, preferences,
+    /// subscriptions, entity followers).
     /// </summary>
+    /// <remarks>
+    /// Channel-specific endpoints are opt-in and live in their own packages:
+    /// <c>MapGranitWebPushSubscriptions()</c> (Granit.Notifications.WebPush.Endpoints) and
+    /// <c>MapGranitMobilePushTokens()</c> (Granit.Notifications.MobilePush.Endpoints).
+    /// </remarks>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="NotificationEndpointsOptions"/>.</param>
     /// <returns>The endpoint route builder for chaining.</returns>

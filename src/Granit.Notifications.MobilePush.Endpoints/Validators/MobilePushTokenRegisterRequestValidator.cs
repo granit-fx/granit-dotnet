@@ -1,8 +1,8 @@
 using FluentValidation;
-using Granit.Notifications.Endpoints.Dtos;
+using Granit.Notifications.MobilePush.Endpoints.Dtos;
 using Granit.Validation;
 
-namespace Granit.Notifications.Endpoints.Validators;
+namespace Granit.Notifications.MobilePush.Endpoints.Validators;
 
 /// <summary>
 /// Validates the <see cref="MobilePushTokenRegisterRequest"/> body for mobile push token registration.
