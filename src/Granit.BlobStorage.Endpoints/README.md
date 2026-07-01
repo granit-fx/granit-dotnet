@@ -1,6 +1,6 @@
 # Granit.BlobStorage.Endpoints
 
-Minimal API endpoints for administering Granit blob storage. Upload initiation (presigned URLs), upload confirmation (validation pipeline), download URL generation, deletion (crypto-shredding), orphan cleanup, and queryable descriptors. Protected by configurable role-based authorization.
+Minimal API endpoints for administering Granit blob storage. Upload initiation (presigned URLs), upload confirmation (validation pipeline), download URL generation, deletion (crypto-shredding), orphan cleanup, and queryable descriptors. Protected by configurable permission-based authorization.
 
 Part of the [granit](https://granit-fx.dev) framework.
 
@@ -27,12 +27,18 @@ api.MapGranitBlobStorage();
 api.MapGranitBlobStorage(opts => opts.RoutePrefix = "admin/blobs");
 ```
 
-This exposes upload initiation (presigned URLs), confirmation, download,
-deletion (crypto-shredding), orphan cleanup, and queryable `BlobDescriptor`
-endpoints. They are role-gated by the module-provided permissions
-`BlobStoragePermissions.Administration.Read` (list / descriptors / query) and
-`.Manage` (upload / download / delete / confirm / cleanup) — grant these in
-your authorization configuration.
+This exposes upload initiation (presigned URLs), confirmation, presigned
+download-URL generation, deletion (crypto-shredding), orphan cleanup, and
+queryable `BlobDescriptor` endpoints. It also exposes a direct
+`GET /blobs/{id}/download` that resolves the blob by identifier alone and issues
+a 302 redirect to a fresh presigned URL — consumable straight from an
+`<img src>` over a cookie/BFF session, without streaming bytes through the app
+(the module stays Direct-to-Cloud).
+
+Endpoints are gated by the module-provided permissions
+`BlobStoragePermissions.Administration.Read` (list / descriptors / query /
+direct download) and `.Manage` (upload / presigned download URL / delete /
+confirm / cleanup) — grant these in your authorization configuration.
 
 ## Documentation
 
