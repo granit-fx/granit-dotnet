@@ -1,8 +1,13 @@
 using Granit.Guids;
 using Granit.Modularity;
+using Granit.Notifications.Abstractions;
+using Granit.Notifications.Diagnostics;
 using Granit.Notifications.Extensions;
-
+using Granit.Notifications.Internal;
 using Granit.Timing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.Notifications;
 
@@ -24,4 +29,17 @@ public sealed class GranitNotificationsModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Builder.AddGranitNotifications();
+
+    /// <inheritdoc/>
+    public override void OnApplicationInitialization(ApplicationInitializationContext context)
+    {
+        IHostEnvironment environment = context.ServiceProvider.GetRequiredService<IHostEnvironment>();
+
+        if (!environment.IsDevelopment() &&
+            context.ServiceProvider.GetRequiredService<IUserNotificationReader>() is InMemoryUserNotificationStore)
+        {
+            NotificationsLog.InMemoryStoresActiveInNonDevelopment(
+                context.ServiceProvider.GetRequiredService<ILogger<GranitNotificationsModule>>());
+        }
+    }
 }

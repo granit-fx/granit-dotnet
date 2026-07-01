@@ -38977,12 +38977,18 @@
       "kind": "class",
       "project": "Granit.Notifications",
       "file": "src/Granit.Notifications/GranitNotificationsModule.cs",
-      "line": 22,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        },
+        {
+          "name": "OnApplicationInitialization",
+          "kind": "method",
+          "signature": "OnApplicationInitialization(ApplicationInitializationContext context)",
           "returnType": "void"
         }
       ]
@@ -39401,8 +39407,15 @@
       "kind": "class",
       "project": "Granit.Notifications.MobilePush",
       "file": "src/Granit.Notifications.MobilePush/GranitNotificationsMobilePushModule.cs",
-      "line": 13,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "OnApplicationInitialization",
+          "kind": "method",
+          "signature": "OnApplicationInitialization(ApplicationInitializationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IMobilePushEventPublisher",
@@ -40397,8 +40410,15 @@
       "kind": "class",
       "project": "Granit.Notifications.WebPush",
       "file": "src/Granit.Notifications.WebPush/GranitNotificationsWebPushModule.cs",
-      "line": 13,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "OnApplicationInitialization",
+          "kind": "method",
+          "signature": "OnApplicationInitialization(ApplicationInitializationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IWebPushSubscriptionReader",
