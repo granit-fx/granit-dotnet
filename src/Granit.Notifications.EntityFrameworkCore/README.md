@@ -16,7 +16,6 @@ dotnet add package Granit.Notifications.EntityFrameworkCore
 ## Dependencies
 
 - `Granit.Notifications`
-- `Granit.Notifications.MobilePush`
 - `Granit.Persistence`
 
 ## Documentation

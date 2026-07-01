@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Notifications.WebPush.Tests" />
+    <InternalsVisibleTo Include="Granit.Notifications.WebPush.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Notifications.WebPush.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

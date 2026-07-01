@@ -1921,7 +1921,6 @@
       "deps": [
         "Granit.Encryption.EntityFrameworkCore",
         "Granit.Notifications",
-        "Granit.Notifications.MobilePush",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -1953,6 +1952,16 @@
         "Granit.Notifications.Endpoints",
         "Granit.Notifications.MobilePush",
         "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.MobilePush.EntityFrameworkCore",
+      "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
+        "Granit.Notifications.EntityFrameworkCore",
+        "Granit.Notifications.MobilePush",
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -2032,6 +2041,16 @@
         "Granit.Notifications.Endpoints",
         "Granit.Notifications.WebPush",
         "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.WebPush.EntityFrameworkCore",
+      "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
+        "Granit.Notifications.EntityFrameworkCore",
+        "Granit.Notifications.WebPush",
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -38808,7 +38827,7 @@
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
       "file": "src/Granit.Notifications.EntityFrameworkCore/Extensions/NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 22,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitNotificationsEntityFrameworkCore",
@@ -39259,6 +39278,47 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "MobilePushEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Notifications.MobilePush.EntityFrameworkCore.Extensions.MobilePushEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush.EntityFrameworkCore",
+      "file": "src/Granit.Notifications.MobilePush.EntityFrameworkCore/Extensions/MobilePushEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitNotificationsMobilePushEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitNotificationsMobilePushEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "MobilePushModelBuilderExtensions",
+      "fqn": "Granit.Notifications.MobilePush.EntityFrameworkCore.Extensions.MobilePushModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush.EntityFrameworkCore",
+      "file": "src/Granit.Notifications.MobilePush.EntityFrameworkCore/Extensions/MobilePushModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureMobilePushModule",
+          "kind": "method",
+          "signature": "ConfigureMobilePushModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsMobilePushEntityFrameworkCoreModule",
+      "fqn": "Granit.Notifications.MobilePush.EntityFrameworkCore.GranitNotificationsMobilePushEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush.EntityFrameworkCore",
+      "file": "src/Granit.Notifications.MobilePush.EntityFrameworkCore/GranitNotificationsMobilePushEntityFrameworkCoreModule.cs",
+      "line": 22,
+      "members": []
     },
     {
       "name": "MobilePushNotificationsServiceCollectionExtensions",
@@ -40167,6 +40227,40 @@
       ]
     },
     {
+      "name": "WebPushSubscription",
+      "fqn": "Granit.Notifications.WebPush.Domain.WebPushSubscription",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush",
+      "file": "src/Granit.Notifications.WebPush/Domain/WebPushSubscription.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string userId, string endpoint, string p256dh, string auth, long? expirationTime = null, Guid? tenantId = null)",
+          "returnType": "WebPushSubscription"
+        },
+        {
+          "name": "Endpoint",
+          "kind": "property",
+          "signature": "string Endpoint",
+          "returnType": "string"
+        },
+        {
+          "name": "P256dh",
+          "kind": "property",
+          "signature": "string P256dh",
+          "returnType": "string"
+        },
+        {
+          "name": "Auth",
+          "kind": "property",
+          "signature": "string Auth",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "WebPushSubscriptionKeys",
       "fqn": "Granit.Notifications.WebPush.Endpoints.Dtos.WebPushSubscriptionKeys",
       "kind": "record",
@@ -40239,6 +40333,47 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "WebPushEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Notifications.WebPush.EntityFrameworkCore.Extensions.WebPushEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush.EntityFrameworkCore",
+      "file": "src/Granit.Notifications.WebPush.EntityFrameworkCore/Extensions/WebPushEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitNotificationsWebPushEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitNotificationsWebPushEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "WebPushModelBuilderExtensions",
+      "fqn": "Granit.Notifications.WebPush.EntityFrameworkCore.Extensions.WebPushModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush.EntityFrameworkCore",
+      "file": "src/Granit.Notifications.WebPush.EntityFrameworkCore/Extensions/WebPushModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureWebPushModule",
+          "kind": "method",
+          "signature": "ConfigureWebPushModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsWebPushEntityFrameworkCoreModule",
+      "fqn": "Granit.Notifications.WebPush.EntityFrameworkCore.GranitNotificationsWebPushEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush.EntityFrameworkCore",
+      "file": "src/Granit.Notifications.WebPush.EntityFrameworkCore/GranitNotificationsWebPushEntityFrameworkCoreModule.cs",
+      "line": 22,
+      "members": []
     },
     {
       "name": "WebPushNotificationsServiceCollectionExtensions",

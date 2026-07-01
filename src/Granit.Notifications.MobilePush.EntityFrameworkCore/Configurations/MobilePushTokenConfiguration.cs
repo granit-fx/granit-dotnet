@@ -1,8 +1,9 @@
+using Granit.Notifications.EntityFrameworkCore;
 using Granit.Notifications.MobilePush.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Granit.Notifications.EntityFrameworkCore.Configurations;
+namespace Granit.Notifications.MobilePush.EntityFrameworkCore.Configurations;
 
 internal sealed class MobilePushTokenConfiguration : IEntityTypeConfiguration<MobilePushToken>
 {

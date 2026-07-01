@@ -1,13 +1,12 @@
 using Granit.MultiTenancy;
-using Granit.Notifications.EntityFrameworkCore.Internal;
-using Granit.Notifications.MobilePush;
 using Granit.Notifications.MobilePush.Domain;
+using Granit.Notifications.MobilePush.EntityFrameworkCore.Internal;
 using Granit.Notifications.MobilePush.Internal;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Notifications.EntityFrameworkCore.Tests;
+namespace Granit.Notifications.MobilePush.EntityFrameworkCore.Tests;
 
 /// <summary>
 /// Verifies that the EF Core mobile push token store routes upsert / remove

@@ -20,7 +20,6 @@ public static class NotificationsModelBuilderExtensions
         modelBuilder.ApplyConfiguration(new NotificationSubscriptionConfiguration());
         modelBuilder.ApplyConfiguration(new NotificationPreferenceConfiguration());
         modelBuilder.ApplyConfiguration(new NotificationDeliveryAttemptConfiguration());
-        modelBuilder.ApplyConfiguration(new MobilePushTokenConfiguration());
         return modelBuilder;
     }
 }

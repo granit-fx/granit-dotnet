@@ -4,7 +4,6 @@ using Granit.Encryption.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
 using Granit.Notifications.Domain;
 using Granit.Notifications.EntityFrameworkCore.Extensions;
-using Granit.Notifications.MobilePush.Domain;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,9 +32,6 @@ internal sealed class NotificationsDbContext(
 
     /// <summary>Immutable ISO 27001 audit trail of delivery attempts.</summary>
     public DbSet<NotificationDeliveryAttempt> DeliveryAttempts => Set<NotificationDeliveryAttempt>();
-
-    /// <summary>Mobile push device tokens.</summary>
-    public DbSet<MobilePushToken> MobilePushTokens => Set<MobilePushToken>();
 
     /// <inheritdoc/>
     protected override void OnGranitModelCreating(ModelBuilder modelBuilder)

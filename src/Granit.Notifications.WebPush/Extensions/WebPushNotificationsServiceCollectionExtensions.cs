@@ -42,7 +42,10 @@ public static class WebPushNotificationsServiceCollectionExtensions
             return client;
         });
 
-        services.AddSingleton<INotificationChannel, WebPushNotificationChannel>();
+        // Scoped so the channel can depend on the EF-backed subscription stores (Scoped)
+        // registered by AddGranitNotificationsWebPushEntityFrameworkCore without a captive
+        // dependency; harmless for the in-memory (Singleton) default store.
+        services.AddScoped<INotificationChannel, WebPushNotificationChannel>();
 
         return services;
     }

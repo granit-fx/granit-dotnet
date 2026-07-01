@@ -541,6 +541,26 @@
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
+      "granit.notifications.mobilepush": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
+      "granit.notifications.mobilepush.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Notifications.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Notifications.MobilePush": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
       "granit.persistence": {
         "type": "Project",
         "dependencies": {
