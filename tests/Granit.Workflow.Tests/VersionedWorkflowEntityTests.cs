@@ -2,6 +2,7 @@ using System.Reflection;
 using Granit.Domain;
 using Granit.Events;
 using Granit.Workflow.Domain;
+using Granit.Workflow.Events;
 using Shouldly;
 using Xunit;
 
@@ -205,6 +206,31 @@ public sealed class VersionedWorkflowEntityTests
         entity.IntegrationEvents.ShouldHaveSingleItem();
         entity.IntegrationEvents.First().ShouldBeOfType<TestIntegrationEto>()
             .Data.ShouldBe("test-data");
+    }
+
+    // ========================================================================
+    // RaiseWorkflowStateChangedEvent (IWorkflowStateful)
+    // ========================================================================
+
+    [Fact]
+    public void RaiseWorkflowStateChangedEvent_ShouldQueueDomainEventWithGivenValues()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        TestVersionedWorkflowEntity entity = new() { Id = id };
+        IWorkflowStateful stateful = entity;
+
+        // Act
+        stateful.RaiseWorkflowStateChangedEvent("TestDocument", "Draft", "PendingReview", "user-3");
+
+        // Assert
+        entity.DomainEvents.ShouldHaveSingleItem();
+        WorkflowStateChangedEvent evt = entity.DomainEvents.OfType<WorkflowStateChangedEvent>().Single();
+        evt.EntityType.ShouldBe("TestDocument");
+        evt.EntityId.ShouldBe(id.ToString());
+        evt.PreviousState.ShouldBe("Draft");
+        evt.NewState.ShouldBe("PendingReview");
+        evt.TransitionedBy.ShouldBe("user-3");
     }
 
     // ========================================================================

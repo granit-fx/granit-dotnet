@@ -36,4 +36,14 @@ public interface IWorkflowStateful
     /// Typically returns <c>Id.ToString()</c>.
     /// </summary>
     string GetWorkflowEntityId();
+
+    /// <summary>
+    /// Raises the domain event for a detected workflow state transition. Called by
+    /// <c>WorkflowTransitionInterceptor</c> right after recording the transition audit trail.
+    /// Implementations should call the protected <c>AddDomainEvent</c> inherited from
+    /// <c>AggregateRoot</c> with a <see cref="Events.WorkflowStateChangedEvent"/> — kept as an
+    /// interface method (not exposed directly to the interceptor) to preserve encapsulation:
+    /// only the entity itself can queue its own domain events.
+    /// </summary>
+    void RaiseWorkflowStateChangedEvent(string entityType, string previousState, string newState, string transitionedBy);
 }

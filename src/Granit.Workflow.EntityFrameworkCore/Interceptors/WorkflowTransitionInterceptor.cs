@@ -112,6 +112,8 @@ public sealed class WorkflowTransitionInterceptor(
             };
 
             context.Set<WorkflowTransitionRecord>().Add(record);
+
+            stateful.RaiseWorkflowStateChangedEvent(workflowEntityType, previousState ?? string.Empty, newState ?? string.Empty, userId);
         }
     }
 

@@ -5,6 +5,7 @@ using Granit.Timing;
 using Granit.Users;
 using Granit.Workflow.Domain;
 using Granit.Workflow.EntityFrameworkCore.Interceptors;
+using Granit.Workflow.Events;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
@@ -67,6 +68,14 @@ public sealed class WorkflowTransitionInterceptorTests
         record.TransitionedAt.ShouldBe(FixedNow);
         record.TransitionedBy.ShouldBe("user-42");
         record.TenantId.ShouldBe(FixedTenantId);
+
+        entity.DomainEvents.ShouldHaveSingleItem();
+        WorkflowStateChangedEvent stateChangedEvent = entity.DomainEvents.OfType<WorkflowStateChangedEvent>().Single();
+        stateChangedEvent.EntityType.ShouldBe("TestWorkflowEntity");
+        stateChangedEvent.EntityId.ShouldBe(entity.Id.ToString());
+        stateChangedEvent.PreviousState.ShouldBe("Draft");
+        stateChangedEvent.NewState.ShouldBe("Published");
+        stateChangedEvent.TransitionedBy.ShouldBe("user-42");
     }
 
     [Fact]
@@ -274,6 +283,12 @@ public sealed class WorkflowTransitionInterceptorTests
         record.EntityType.ShouldBe("TestExplicit");
         record.PreviousState.ShouldBe("Draft");
         record.NewState.ShouldBe("Published");
+
+        entity.DomainEvents.ShouldHaveSingleItem();
+        WorkflowStateChangedEvent stateChangedEvent = entity.DomainEvents.OfType<WorkflowStateChangedEvent>().Single();
+        stateChangedEvent.EntityType.ShouldBe("TestExplicit");
+        stateChangedEvent.PreviousState.ShouldBe("Draft");
+        stateChangedEvent.NewState.ShouldBe("Published");
     }
 
     // ========================================================================
@@ -295,7 +310,7 @@ public sealed class WorkflowTransitionInterceptorTests
 
     // --- Test entities ---
 
-    private sealed class TestWorkflowEntity : Entity, IWorkflowStateful
+    private sealed class TestWorkflowEntity : AggregateRoot, IWorkflowStateful
     {
         public string Name { get; set; } = string.Empty;
         public WorkflowLifecycleStatus Status { get; set; }
@@ -303,9 +318,12 @@ public sealed class WorkflowTransitionInterceptorTests
         public static string StatusPropertyName => nameof(Status);
         public static string WorkflowEntityType => "TestWorkflowEntity";
         public string GetWorkflowEntityId() => Id.ToString();
+
+        public void RaiseWorkflowStateChangedEvent(string entityType, string previousState, string newState, string transitionedBy) =>
+            AddDomainEvent(new WorkflowStateChangedEvent(entityType, GetWorkflowEntityId(), previousState, newState, transitionedBy));
     }
 
-    private sealed class TestVersionedEntity : Entity, IVersionedEntity, IWorkflowStateful
+    private sealed class TestVersionedEntity : AggregateRoot, IVersionedEntity, IWorkflowStateful
     {
         public Guid VersionId { get; set; }
         public int Version { get; set; }
@@ -315,13 +333,16 @@ public sealed class WorkflowTransitionInterceptorTests
         public static string StatusPropertyName => nameof(LifecycleStatus);
         public static string WorkflowEntityType => "TestVersionedEntity";
         public string GetWorkflowEntityId() => Id.ToString();
+
+        public void RaiseWorkflowStateChangedEvent(string entityType, string previousState, string newState, string transitionedBy) =>
+            AddDomainEvent(new WorkflowStateChangedEvent(entityType, GetWorkflowEntityId(), previousState, newState, transitionedBy));
     }
 
     /// <summary>
     /// Uses explicit interface implementation for static abstract members,
     /// mirroring <see cref="VersionedWorkflowEntity"/>.
     /// </summary>
-    private sealed class TestExplicitEntity : Entity, IPublishable, IWorkflowStateful
+    private sealed class TestExplicitEntity : AggregateRoot, IPublishable, IWorkflowStateful
     {
         public WorkflowLifecycleStatus LifecycleStatus { get; set; }
         public bool IsPublished { get; set; }
@@ -329,6 +350,9 @@ public sealed class WorkflowTransitionInterceptorTests
         static string IWorkflowStateful.StatusPropertyName => nameof(LifecycleStatus);
         static string IWorkflowStateful.WorkflowEntityType => "TestExplicit";
         public string GetWorkflowEntityId() => Id.ToString();
+
+        public void RaiseWorkflowStateChangedEvent(string entityType, string previousState, string newState, string transitionedBy) =>
+            AddDomainEvent(new WorkflowStateChangedEvent(entityType, GetWorkflowEntityId(), previousState, newState, transitionedBy));
     }
 
     // --- Test DbContext ---

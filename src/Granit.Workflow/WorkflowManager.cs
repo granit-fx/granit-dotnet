@@ -51,6 +51,38 @@ public sealed class WorkflowManager<TState>(
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// <para>
+    /// When the outcome is <see cref="TransitionOutcome.ApprovalRequested"/>, the caller — not
+    /// this method — is responsible for actually setting the entity's persisted state to
+    /// <see cref="TransitionResult{TState}.ResultingState"/> and for raising a
+    /// <see cref="Events.WorkflowApprovalRequestedEvent"/> before calling <c>SaveChangesAsync</c>.
+    /// Unlike <see cref="Events.WorkflowStateChangedEvent"/> (auto-raised by
+    /// <c>WorkflowTransitionInterceptor</c> from the EF Core state diff at save time), the
+    /// approval event carries the originally-requested <c>targetState</c> and the
+    /// <c>RequiredPermission</c> that was denied — neither of which survives to persistence,
+    /// since the entity only ever stores the pending-review stand-in state. This context only
+    /// exists here, at the call site, so the framework cannot safely auto-raise it.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// TransitionResult&lt;InvoiceStatus&gt; result = await workflowManager.TransitionAsync(
+    ///     invoice.Status, InvoiceStatus.Approved, cancellationToken: ct);
+    ///
+    /// if (result.Outcome == TransitionOutcome.ApprovalRequested)
+    /// {
+    ///     invoice.SetStatus(result.ResultingState); // e.g. PendingReview — behavior method sets the persisted state
+    ///     invoice.AddDomainEvent(new WorkflowApprovalRequestedEvent(
+    ///         nameof(Invoice), invoice.Id.ToString(), currentUserService.UserId!, "Approved", requiredPermission));
+    ///     await dbContext.SaveChangesAsync(ct);
+    /// }
+    /// </code>
+    /// This is a required manual step: the target state and required permission are not
+    /// recoverable from persisted state alone (the entity only ever stores the pending-review
+    /// stand-in state), so the framework cannot auto-raise this event the way it does for
+    /// <see cref="Events.WorkflowStateChangedEvent"/>.
+    /// </example>
     public async Task<TransitionResult<TState>> TransitionAsync(
         TState currentState,
         TState targetState,

@@ -1,4 +1,5 @@
 using Granit.Domain;
+using Granit.Workflow.Events;
 
 namespace Granit.Workflow.Domain;
 
@@ -109,4 +110,8 @@ public abstract class VersionedWorkflowEntity : AuditedAggregateRoot, IVersioned
 
     /// <inheritdoc/>
     public virtual string GetWorkflowEntityId() => Id.ToString();
+
+    /// <inheritdoc/>
+    public void RaiseWorkflowStateChangedEvent(string entityType, string previousState, string newState, string transitionedBy) =>
+        AddDomainEvent(new WorkflowStateChangedEvent(entityType, GetWorkflowEntityId(), previousState, newState, transitionedBy));
 }

@@ -2,6 +2,7 @@ using Granit.Domain;
 using Granit.Hostnames.Domain.Events;
 using Granit.Workflow;
 using Granit.Workflow.Domain;
+using Granit.Workflow.Events;
 
 namespace Granit.Hostnames.Domain;
 
@@ -142,6 +143,9 @@ public sealed class ManagedHostname : AuditedAggregateRoot, IMultiTenant, IConcu
     static string IWorkflowStateful.StatusPropertyName => nameof(Status);
     static string IWorkflowStateful.WorkflowEntityType => "ManagedHostname";
     string IWorkflowStateful.GetWorkflowEntityId() => Id.ToString();
+
+    void IWorkflowStateful.RaiseWorkflowStateChangedEvent(string entityType, string previousState, string newState, string transitionedBy) =>
+        AddDomainEvent(new WorkflowStateChangedEvent(entityType, Id.ToString(), previousState, newState, transitionedBy));
 
     // ── Factory ─────────────────────────────────────────────────────────────
 
