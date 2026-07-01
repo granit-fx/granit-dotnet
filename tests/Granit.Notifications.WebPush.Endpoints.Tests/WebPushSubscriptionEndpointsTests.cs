@@ -4,10 +4,9 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using FluentValidation;
 using Granit.MultiTenancy;
-using Granit.Notifications.Endpoints.Dtos;
-using Granit.Notifications.Endpoints.Extensions;
-using Granit.Notifications.Endpoints.Validators;
-using Granit.Notifications.WebPush;
+using Granit.Notifications.WebPush.Endpoints.Dtos;
+using Granit.Notifications.WebPush.Endpoints.Extensions;
+using Granit.Notifications.WebPush.Endpoints.Validators;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -18,12 +17,11 @@ using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Notifications.Endpoints.Tests;
+namespace Granit.Notifications.WebPush.Endpoints.Tests;
 
 /// <summary>
-/// HTTP-level tests for the browser Web Push subscription endpoints, folded into
-/// <see cref="NotificationEndpointRouteBuilderExtensions.MapGranitNotifications"/> when the Web Push
-/// channel (<see cref="IPushSubscriptionWriter"/>) is registered.
+/// HTTP-level tests for the browser Web Push subscription endpoints, mapped via the opt-in
+/// <see cref="WebPushSubscriptionEndpointRouteBuilderExtensions.MapGranitWebPushSubscriptions"/>.
 /// </summary>
 public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
 {
@@ -64,7 +62,7 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
         builder.Services.AddScoped<IValidator<WebPushSubscriptionRemoveRequest>, WebPushSubscriptionRemoveRequestValidator>();
 
         _app = builder.Build();
-        _app.MapGranitNotifications();
+        _app.MapGranitWebPushSubscriptions();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _authClient = BuildClient(UserId);
@@ -149,7 +147,7 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
 
     [Theory]
     [InlineData("", SampleP256dh, SampleAuth)]                 // empty endpoint
-    [InlineData("not-a-url", SampleP256dh, SampleAuth)]        // non-absolute URI
+    [InlineData("not-a-url", SampleP256dh, SampleAuth)]        // non-HTTPS URI
     [InlineData(SampleEndpoint, "", SampleAuth)]               // empty p256dh
     [InlineData(SampleEndpoint, SampleP256dh, "")]             // empty auth
     public async Task Register_InvalidBody_Returns422(string endpoint, string p256dh, string auth)

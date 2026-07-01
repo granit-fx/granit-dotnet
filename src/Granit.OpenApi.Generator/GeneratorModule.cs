@@ -1,5 +1,4 @@
 using Granit.Modularity;
-using Granit.Notifications.WebPush.Extensions;
 
 namespace Granit.OpenApi.Generator;
 
@@ -38,6 +37,8 @@ namespace Granit.OpenApi.Generator;
     typeof(Granit.Localization.Endpoints.GranitLocalizationEndpointsModule),
     typeof(Granit.MultiTenancy.Endpoints.GranitMultiTenancyEndpointsModule),
     typeof(Granit.Notifications.Endpoints.GranitNotificationsEndpointsModule),
+    typeof(Granit.Notifications.MobilePush.Endpoints.GranitNotificationsMobilePushEndpointsModule),
+    typeof(Granit.Notifications.WebPush.Endpoints.GranitNotificationsWebPushEndpointsModule),
     typeof(Granit.OpenIddict.Endpoints.GranitOpenIddictEndpointsModule),
     typeof(Granit.Presence.Endpoints.GranitPresenceEndpointsModule),
     typeof(Granit.Privacy.Endpoints.GranitPrivacyEndpointsModule),
@@ -49,16 +50,4 @@ namespace Granit.OpenApi.Generator;
     typeof(Granit.Validation.Endpoints.GranitValidationEndpointsModule),
     typeof(Granit.Webhooks.Endpoints.GranitWebhooksEndpointsModule),
     typeof(Granit.Workflow.Endpoints.GranitWorkflowEndpointsModule))]
-public sealed class GeneratorModule : GranitModule
-{
-    /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
-        // The Web Push subscription routes are mapped by MapGranitNotifications only when the
-        // channel is registered (IPushSubscriptionWriter). Register it here so those routes are
-        // emitted into the notifications contract. Generation is metadata-only: the VAPID
-        // PushServiceClient factory is never resolved, and ValidateOnStart/IValidateOptions are
-        // stripped by the generator, so absent VAPID configuration is harmless.
-        context.Services.AddGranitNotificationsPush();
-    }
-}
+public sealed class GeneratorModule : GranitModule;

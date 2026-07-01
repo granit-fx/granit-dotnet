@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Granit.Notifications.Endpoints.Dtos;
+namespace Granit.Notifications.WebPush.Endpoints.Dtos;
 
 /// <summary>
 /// Request to register a browser Web Push subscription. Mirrors the W3C

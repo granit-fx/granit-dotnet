@@ -1068,8 +1068,6 @@
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Notifications": "[0.1.0-dev, )",
-          "Granit.Notifications.MobilePush": "[0.1.0-dev, )",
-          "Granit.Notifications.WebPush": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
@@ -1080,11 +1078,27 @@
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )"
         }
       },
+      "granit.notifications.mobilepush.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications.Endpoints": "[0.1.0-dev, )",
+          "Granit.Notifications.MobilePush": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
       "granit.notifications.webpush": {
         "type": "Project",
         "dependencies": {
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Lib.Net.Http.WebPush": "[3.*, )"
+        }
+      },
+      "granit.notifications.webpush.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications.Endpoints": "[0.1.0-dev, )",
+          "Granit.Notifications.WebPush": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.oidc": {

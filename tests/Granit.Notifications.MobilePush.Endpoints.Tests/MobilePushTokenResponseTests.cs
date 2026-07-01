@@ -1,9 +1,8 @@
-using Granit.Notifications.Endpoints.Dtos;
-using Granit.Notifications.MobilePush;
+using Granit.Notifications.MobilePush.Endpoints.Dtos;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Notifications.Endpoints.Tests;
+namespace Granit.Notifications.MobilePush.Endpoints.Tests;
 
 public sealed class MobilePushTokenResponseTests
 {

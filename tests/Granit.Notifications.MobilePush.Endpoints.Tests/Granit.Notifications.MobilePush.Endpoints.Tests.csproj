@@ -13,6 +13,7 @@
     <PackageReference Include="coverlet.collector" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.Notifications.Endpoints\Granit.Notifications.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Notifications.MobilePush.Endpoints\Granit.Notifications.MobilePush.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Notifications.MobilePush\Granit.Notifications.MobilePush.csproj" />
   </ItemGroup>
 </Project>

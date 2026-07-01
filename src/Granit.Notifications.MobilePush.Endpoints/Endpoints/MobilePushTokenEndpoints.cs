@@ -1,41 +1,25 @@
 using System.Security.Claims;
 using Granit.MultiTenancy;
-using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.Endpoints.Internal;
-using Granit.Notifications.Endpoints.Options;
 using Granit.Notifications.Endpoints.Permissions;
-using Granit.Notifications.MobilePush;
 using Granit.Notifications.MobilePush.Domain;
-using Granit.Validation.AspNetCore;
+using Granit.Notifications.MobilePush.Endpoints.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace Granit.Notifications.Endpoints.Endpoints;
+namespace Granit.Notifications.MobilePush.Endpoints.Endpoints;
 
 /// <summary>
 /// Minimal API endpoints for mobile push device token management.
 /// </summary>
-public static class MobilePushTokenEndpoints
+internal static class MobilePushTokenEndpoints
 {
-    /// <summary>Maps mobile push token management endpoints.</summary>
-    /// <param name="endpoints">The endpoint route builder.</param>
-    /// <param name="prefix">Route prefix. Default <c>"api/notifications/mobile-push/tokens"</c>.</param>
-    /// <param name="configure">Optional delegate to customize <see cref="NotificationEndpointsOptions"/> (tag only).</param>
-    public static IEndpointRouteBuilder MapGranitMobilePushTokens(
-        this IEndpointRouteBuilder endpoints,
-        string prefix = "api/notifications/mobile-push/tokens",
-        Action<NotificationEndpointsOptions>? configure = null)
+    /// <summary>Maps the mobile push token management endpoints onto the given route group.</summary>
+    public static RouteGroupBuilder MapMobilePushTokenEndpoints(this RouteGroupBuilder group)
     {
-        NotificationEndpointsOptions options = new();
-        configure?.Invoke(options);
-
-        RouteGroupBuilder group = endpoints.MapGranitGroup(prefix)
-            .RequireAuthorization()
-            .WithTags(options.MobilePushTagName);
-
         group.MapPost("/", RegisterTokenAsync)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("RegisterMobilePushToken")
@@ -59,7 +43,7 @@ public static class MobilePushTokenEndpoints
             .WithDescription("Returns all device tokens registered by the authenticated user for the current tenant, including the platform (iOS, Android) and registration timestamp.")
             .Produces<IReadOnlyList<MobilePushTokenResponse>>();
 
-        return endpoints;
+        return group;
     }
 
     private static async Task<Results<Created, Ok>> RegisterTokenAsync(
@@ -125,5 +109,4 @@ public static class MobilePushTokenEndpoints
 
         return TypedResults.Ok(response);
     }
-
 }

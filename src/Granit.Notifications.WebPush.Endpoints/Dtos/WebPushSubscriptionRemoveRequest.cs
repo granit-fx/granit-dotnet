@@ -1,4 +1,4 @@
-namespace Granit.Notifications.Endpoints.Dtos;
+namespace Granit.Notifications.WebPush.Endpoints.Dtos;
 
 /// <summary>Request to unregister a browser Web Push subscription by its endpoint.</summary>
 public sealed record WebPushSubscriptionRemoveRequest

@@ -1,9 +1,9 @@
-using Granit.Notifications.Endpoints.Dtos;
-using Granit.Notifications.Endpoints.Validators;
+using Granit.Notifications.WebPush.Endpoints.Dtos;
+using Granit.Notifications.WebPush.Endpoints.Validators;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Notifications.Endpoints.Tests.Validators;
+namespace Granit.Notifications.WebPush.Endpoints.Tests.Validators;
 
 public sealed class WebPushSubscriptionRemoveRequestValidatorTests
 {

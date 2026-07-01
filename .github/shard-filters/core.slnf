@@ -44,7 +44,6 @@
       "src/Granit.Notifications.EntityFrameworkCore/Granit.Notifications.EntityFrameworkCore.csproj",
       "src/Granit.Notifications.MobilePush/Granit.Notifications.MobilePush.csproj",
       "src/Granit.Notifications.SignalR/Granit.Notifications.SignalR.csproj",
-      "src/Granit.Notifications.WebPush/Granit.Notifications.WebPush.csproj",
       "src/Granit.Notifications/Granit.Notifications.csproj",
       "src/Granit.Observability.AI/Granit.Observability.AI.csproj",
       "src/Granit.Observability/Granit.Observability.csproj",
