@@ -29,7 +29,8 @@ public static class EncryptionServiceCollectionExtensions
 
         services.TryAddSingleton<IStringEncryptionService, DefaultStringEncryptionService>();
 
-        // In-memory fallback for dev/test — replaced by a Vault provider in production
+        // In-memory fallback for dev/test only — it throws on resolution outside Development.
+        // A host must register a Vault-backed IEntityEncryptionKeyStore before this default runs in production.
         services.TryAddScoped<IEntityEncryptionKeyStore, InMemoryEntityEncryptionKeyStore>();
 
         // Crypto-shredding
