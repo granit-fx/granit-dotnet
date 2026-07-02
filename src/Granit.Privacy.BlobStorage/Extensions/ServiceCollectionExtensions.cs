@@ -41,6 +41,14 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<EphemeralExportHmacSigner>();
         services.TryAddSingleton<IExportHmacSigner>(sp => sp.GetRequiredService<EphemeralExportHmacSigner>());
         services.TryAddSingleton<IExportContentSigner>(sp => sp.GetRequiredService<EphemeralExportHmacSigner>());
+
+        // Application-layer confidentiality for the assembled SAR package (GDPR Art. 32):
+        // the manifest is AES-256-GCM encrypted before upload and decrypted server-side on
+        // the download path. The default key is ephemeral/in-process; production hosts
+        // override IExportContentEncryptor with a Vault-backed impl (same story as the
+        // HMAC signer above). The startup guard below fails closed outside Development.
+        services.TryAddSingleton<EphemeralExportContentEncryptor>();
+        services.TryAddSingleton<IExportContentEncryptor>(sp => sp.GetRequiredService<EphemeralExportContentEncryptor>());
         services.TryAddSingleton<IExportAssemblyCheckpointStore, InMemoryExportAssemblyCheckpointStore>();
         services.TryAddScoped<IStagedFragmentBuilder, StagedFragmentBuilder>();
         services.TryAddScoped<IBlobBackedExportSource, BlobBackedExportSource>();
@@ -52,6 +60,12 @@ public static class ServiceCollectionExtensions
         // on any multi-replica or restart scenario. Hosts running outside Development
         // MUST register a shared-state signer (Vault-backed) BEFORE the host starts.
         services.AddHostedService<EphemeralExportHmacSignerStartupGuard>();
+
+        // Fail-fast guard: the in-memory ephemeral encryptor's key is per-process, so an
+        // encrypted SAR package cannot be decrypted after a restart or by another replica —
+        // and shipping personal-data exports with a throwaway key fails GDPR Art. 32. Hosts
+        // outside Development MUST register a shared-state (Vault-backed) IExportContentEncryptor.
+        services.AddHostedService<EphemeralExportContentEncryptorStartupGuard>();
         return services;
     }
 }

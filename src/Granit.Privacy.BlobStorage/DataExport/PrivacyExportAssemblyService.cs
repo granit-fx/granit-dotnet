@@ -56,6 +56,7 @@ internal sealed partial class PrivacyExportAssemblyService(
     IBlobStoreProvider blobStoreProvider,
     IExportHmacSigner hmacSigner,
     IExportContentSigner contentSigner,
+    IExportContentEncryptor contentEncryptor,
     IExportAssemblyCheckpointStore checkpointStore,
     IExportRequestTrackerWriter trackerWriter,
     IDistributedEventBus eventBus,
@@ -423,18 +424,29 @@ internal sealed partial class PrivacyExportAssemblyService(
         byte[] payloadBytes = JsonSerializer.SerializeToUtf8Bytes(manifestPayload, ManifestJsonOptions);
         string integrityTag = contentSigner.SignBytes(payloadBytes);
 
-        byte[] payload = BuildSignedEnvelope(payloadBytes, integrityTag);
+        byte[] signedEnvelope = BuildSignedEnvelope(payloadBytes, integrityTag);
+
+        // Application-layer confidentiality (GDPR Art. 32): the SAR manifest is a full
+        // copy of the subject's personal-data index. We AES-256-GCM encrypt the signed
+        // envelope BEFORE it touches the blob tier so provider SSE is no longer the only
+        // thing standing between a storage-tier compromise and plaintext PII. The HMAC
+        // integrity tag stays sealed inside the ciphertext (defence in depth); GCM's own
+        // authentication tag already guarantees the ciphertext is tamper-evident on
+        // decrypt. The key never leaves the process (ephemeral) or Vault (production);
+        // the subject's client receives the decrypted bytes server-side, streamed over the
+        // step-up-gated download endpoint — it never handles the key itself.
+        byte[] payload = contentEncryptor.Encrypt(signedEnvelope);
 
         PresignedUploadTicket ticket = await blobStorage.InitiateUploadAsync(
             PrivacyExportContainerNames.FragmentContainer,
             new BlobUploadRequest(
-                FileName: $"personal-data-export-{completion.RequestId}-manifest.json",
-                ContentType: "application/json",
+                FileName: $"personal-data-export-{completion.RequestId}-manifest.json.enc",
+                ContentType: "application/octet-stream",
                 MaxAllowedBytes: payload.Length),
             cancellationToken).ConfigureAwait(false);
 
         using ByteArrayContent content = new(payload);
-        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
         foreach ((string key, string value) in ticket.RequiredHeaders)
         {
             content.Headers.TryAddWithoutValidation(key, value);
