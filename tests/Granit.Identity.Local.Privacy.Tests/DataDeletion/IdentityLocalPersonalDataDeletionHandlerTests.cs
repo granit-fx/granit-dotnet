@@ -1,8 +1,11 @@
 using Granit.Identity.Local.Privacy.DataDeletion;
+using Granit.Identity.Local.Privacy.DataExport;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
+using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using NSubstitute;
+using Shouldly;
 using Xunit;
 
 namespace Granit.Identity.Local.Privacy.Tests.DataDeletion;
@@ -54,5 +57,37 @@ public sealed class IdentityLocalPersonalDataDeletionHandlerTests
 
         currentTenant.Received(1).Change(Tenant);
         await deletionService.Received(1).InitiateAsync(User.ToString(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_acknowledges_with_the_registered_provider_name_and_request_id()
+    {
+        IAccountDeletionService deletionService = Substitute.For<IAccountDeletionService>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        currentTenant.Change(Arg.Any<Guid?>()).Returns(Substitute.For<IDisposable>());
+        PersonalDataDeletionRequestedEto eto = Eto(Tenant);
+
+        PersonalDataDeletedEto ack = await IdentityLocalPersonalDataDeletionHandler.Handle(
+            eto, deletionService, currentTenant, TestContext.Current.CancellationToken);
+
+        ack.RequestId.ShouldBe(eto.RequestId);
+        ack.ProviderName.ShouldBe(IdentityLocalPrivacyDataProvider.ProviderName);
+        ack.Action.ShouldBe(DeletionAction.SoftDelete);
+        ack.TenantId.ShouldBe(Tenant);
+    }
+
+    [Fact]
+    public async Task Handle_does_not_acknowledge_when_the_erasure_fails()
+    {
+        IAccountDeletionService deletionService = Substitute.For<IAccountDeletionService>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        currentTenant.Change(Arg.Any<Guid?>()).Returns(Substitute.For<IDisposable>());
+        deletionService.InitiateAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns<Task>(_ => throw new InvalidOperationException("account deletion failed"));
+
+        // The exception propagates so Wolverine retries / dead-letters; no ack is produced,
+        // so the saga correctly keeps this provider pending → PartiallyExecuted on timeout.
+        await Should.ThrowAsync<InvalidOperationException>(() => IdentityLocalPersonalDataDeletionHandler.Handle(
+            Eto(Tenant), deletionService, currentTenant, TestContext.Current.CancellationToken));
     }
 }

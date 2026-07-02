@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
+using Granit.Identity.Local.Privacy.DataExport;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
+using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 
 namespace Granit.Identity.Local.Privacy.DataDeletion;
@@ -22,11 +24,21 @@ namespace Granit.Identity.Local.Privacy.DataDeletion;
 /// <c>@event.TenantId ?? currentTenant.Id</c> fallback used by the other reference deletion
 /// handlers (e.g. <c>ConversationPersonalDataDeletionHandler</c>) rather than relying solely on
 /// implicit restoration by Wolverine's <c>TenantContextBehavior</c> middleware.
+/// <para>
+/// On success the handler returns a <see cref="PersonalDataDeletedEto"/> acknowledgement, which
+/// Wolverine cascades back to the deletion saga (routed by <c>[SagaIdentity]</c> on
+/// <c>RequestId</c>). The saga drains this provider from its pending set; only when every provider
+/// acknowledges does it mark the request Executed. The ack is emitted with the exact provider name
+/// this module registers (<see cref="IdentityLocalPrivacyDataProvider.ProviderName"/>) so the
+/// saga's set matches. If <see cref="IAccountDeletionService.InitiateAsync"/> throws, the return is
+/// never reached, so no ack is published and Wolverine retries / dead-letters — the saga then
+/// correctly surfaces the request as PartiallyExecuted rather than Executed.
+/// </para>
 /// </remarks>
 [SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public class IdentityLocalPersonalDataDeletionHandler
 {
-    public static async Task Handle(
+    public static async Task<PersonalDataDeletedEto> Handle(
         PersonalDataDeletionRequestedEto @event,
         IAccountDeletionService deletionService,
         ICurrentTenant currentTenant,
@@ -39,5 +51,16 @@ public class IdentityLocalPersonalDataDeletionHandler
         Guid? tenantId = @event.TenantId ?? currentTenant.Id;
         using IDisposable scope = currentTenant.Change(tenantId);
         await deletionService.InitiateAsync(@event.UserId.ToString(), cancellationToken).ConfigureAwait(false);
+
+        // Soft-delete + lockout + token revocation — the account row is retained in a
+        // deactivated, unusable state (the identity subsystem's erasure contract), so the
+        // audit action is SoftDelete.
+        return new PersonalDataDeletedEto(
+            @event.RequestId,
+            IdentityLocalPrivacyDataProvider.ProviderName,
+            DeletionAction.SoftDelete,
+            AffectedRecords: 0,
+            Details: null,
+            @event.TenantId);
     }
 }

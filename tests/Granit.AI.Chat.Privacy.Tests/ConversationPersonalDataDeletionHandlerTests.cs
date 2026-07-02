@@ -1,7 +1,10 @@
 using Granit.AI.Chat.Privacy.DataDeletion;
+using Granit.AI.Chat.Privacy.DataExport;
 using Granit.MultiTenancy;
+using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using NSubstitute;
+using Shouldly;
 using Xunit;
 
 namespace Granit.AI.Chat.Privacy.Tests;
@@ -37,5 +40,35 @@ public sealed class ConversationPersonalDataDeletionHandlerTests
             Eto(tenantId: null), dataManager, currentTenant, TestContext.Current.CancellationToken);
 
         await dataManager.Received(1).EraseOwnerAsync(Tenant, User, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_acknowledges_with_the_registered_provider_name_and_erased_count()
+    {
+        IConversationDataStore dataManager = Substitute.For<IConversationDataStore>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        dataManager.EraseOwnerAsync(Tenant, User, Arg.Any<CancellationToken>()).Returns(7);
+        PersonalDataDeletionRequestedEto eto = Eto(Tenant);
+
+        PersonalDataDeletedEto ack = await ConversationPersonalDataDeletionHandler.Handle(
+            eto, dataManager, currentTenant, TestContext.Current.CancellationToken);
+
+        ack.RequestId.ShouldBe(eto.RequestId);
+        ack.ProviderName.ShouldBe(ConversationPrivacyDataProvider.ProviderName);
+        ack.Action.ShouldBe(DeletionAction.PhysicalDelete);
+        ack.AffectedRecords.ShouldBe(7);
+        ack.TenantId.ShouldBe(Tenant);
+    }
+
+    [Fact]
+    public async Task Handle_does_not_acknowledge_when_the_erasure_fails()
+    {
+        IConversationDataStore dataManager = Substitute.For<IConversationDataStore>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        dataManager.EraseOwnerAsync(Arg.Any<Guid?>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns<Task<int>>(_ => throw new InvalidOperationException("conversation erase failed"));
+
+        await Should.ThrowAsync<InvalidOperationException>(() => ConversationPersonalDataDeletionHandler.Handle(
+            Eto(Tenant), dataManager, currentTenant, TestContext.Current.CancellationToken));
     }
 }

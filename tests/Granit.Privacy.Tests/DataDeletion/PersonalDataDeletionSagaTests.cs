@@ -273,6 +273,29 @@ public sealed class PersonalDataDeletionSagaTests : IDisposable
     }
 
     [Fact]
+    public async Task Handle_EndToEnd_RealProviderNames_AllAck_ReachesExecuted()
+    {
+        // Uses the exact provider names the shipped bridge handlers register + acknowledge with
+        // (ai-chat / ai-prompts / identity-local / identity-federated / notifications / auditing).
+        // This is the integration seam that silently breaks if a handler's ack name diverges from
+        // its registered IDataProviderRegistry name — the saga would never drain.
+        string[] providers = ["ai-chat", "ai-prompts", "identity-local", "identity-federated", "notifications", "auditing"];
+        PersonalDataDeletionSaga saga = await StartedSagaAsync(CreateDeferredEvent());
+        await ReachDeadlineAsync(saga, Registry(providers));
+
+        foreach (string provider in providers)
+        {
+            await AcknowledgeAsync(saga, provider);
+        }
+
+        saga.PendingProviders.ShouldBeEmpty();
+        await _tracker.Received(1).MarkExecutedAsync(
+            saga.Id, Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
+        await _tracker.DidNotReceive().MarkPartiallyExecutedAsync(
+            Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Handle_UnknownProviderAcknowledge_DoesNotComplete()
     {
         PersonalDataDeletionSaga saga = await StartedSagaAsync(CreateDeferredEvent());

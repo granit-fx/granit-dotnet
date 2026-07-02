@@ -1,8 +1,11 @@
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Privacy.DataDeletion;
+using Granit.Notifications.Privacy.DataExport;
+using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using NSubstitute;
+using Shouldly;
 using Xunit;
 
 namespace Granit.Notifications.Privacy.Tests.DataDeletion;
@@ -38,5 +41,33 @@ public sealed class NotificationsPersonalDataDeletionHandlerTests
             Eto(tenantId: null), eraser, currentTenant, TestContext.Current.CancellationToken);
 
         await eraser.Received(1).EraseUserDataAsync(User.ToString(), Tenant, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_acknowledges_with_the_registered_provider_name_and_request_id()
+    {
+        INotificationsPersonalDataEraser eraser = Substitute.For<INotificationsPersonalDataEraser>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        PersonalDataDeletionRequestedEto eto = Eto(Tenant);
+
+        PersonalDataDeletedEto ack = await NotificationsPersonalDataDeletionHandler.Handle(
+            eto, eraser, currentTenant, TestContext.Current.CancellationToken);
+
+        ack.RequestId.ShouldBe(eto.RequestId);
+        ack.ProviderName.ShouldBe(NotificationsPrivacyDataProvider.ProviderName);
+        ack.Action.ShouldBe(DeletionAction.PhysicalDelete);
+        ack.TenantId.ShouldBe(Tenant);
+    }
+
+    [Fact]
+    public async Task Handle_does_not_acknowledge_when_the_erasure_fails()
+    {
+        INotificationsPersonalDataEraser eraser = Substitute.For<INotificationsPersonalDataEraser>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        eraser.EraseUserDataAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns<Task>(_ => throw new InvalidOperationException("notifications erase failed"));
+
+        await Should.ThrowAsync<InvalidOperationException>(() => NotificationsPersonalDataDeletionHandler.Handle(
+            Eto(Tenant), eraser, currentTenant, TestContext.Current.CancellationToken));
     }
 }

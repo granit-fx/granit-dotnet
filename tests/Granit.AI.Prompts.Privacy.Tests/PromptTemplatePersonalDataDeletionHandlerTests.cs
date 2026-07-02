@@ -1,7 +1,10 @@
 using Granit.AI.Prompts.Privacy.DataDeletion;
+using Granit.AI.Prompts.Privacy.DataExport;
 using Granit.MultiTenancy;
+using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using NSubstitute;
+using Shouldly;
 using Xunit;
 
 namespace Granit.AI.Prompts.Privacy.Tests;
@@ -37,5 +40,35 @@ public sealed class PromptTemplatePersonalDataDeletionHandlerTests
             Eto(tenantId: null), dataManager, currentTenant, TestContext.Current.CancellationToken);
 
         await dataManager.Received(1).EraseOwnerAsync(Tenant, User, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_acknowledges_with_the_registered_provider_name_and_erased_count()
+    {
+        IPromptTemplateDataManager dataManager = Substitute.For<IPromptTemplateDataManager>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        dataManager.EraseOwnerAsync(Tenant, User, Arg.Any<CancellationToken>()).Returns(3);
+        PersonalDataDeletionRequestedEto eto = Eto(Tenant);
+
+        PersonalDataDeletedEto ack = await PromptTemplatePersonalDataDeletionHandler.Handle(
+            eto, dataManager, currentTenant, TestContext.Current.CancellationToken);
+
+        ack.RequestId.ShouldBe(eto.RequestId);
+        ack.ProviderName.ShouldBe(PromptTemplatePrivacyDataProvider.ProviderName);
+        ack.Action.ShouldBe(DeletionAction.PhysicalDelete);
+        ack.AffectedRecords.ShouldBe(3);
+        ack.TenantId.ShouldBe(Tenant);
+    }
+
+    [Fact]
+    public async Task Handle_does_not_acknowledge_when_the_erasure_fails()
+    {
+        IPromptTemplateDataManager dataManager = Substitute.For<IPromptTemplateDataManager>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        dataManager.EraseOwnerAsync(Arg.Any<Guid?>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns<Task<int>>(_ => throw new InvalidOperationException("prompt erase failed"));
+
+        await Should.ThrowAsync<InvalidOperationException>(() => PromptTemplatePersonalDataDeletionHandler.Handle(
+            Eto(Tenant), dataManager, currentTenant, TestContext.Current.CancellationToken));
     }
 }
