@@ -45,15 +45,59 @@ public sealed class DefaultCryptoShredderTests
     }
 
     [Fact]
-    public async Task ShredAsync_CallsAuditRecorder()
+    public async Task ShredAsync_RecordsRequestedThenConfirmedPhases()
     {
         await _sut.ShredAsync("Patient", "abc-123", TestContext.Current.CancellationToken);
 
         await _auditRecorder.Received(1).RecordAsync(
             "Patient",
             "abc-123",
+            CryptoShreddingPhase.Requested,
             Arg.Any<DateTimeOffset>(),
             Arg.Any<CancellationToken>());
+        await _auditRecorder.Received(1).RecordAsync(
+            "Patient",
+            "abc-123",
+            CryptoShreddingPhase.Confirmed,
+            Arg.Any<DateTimeOffset>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ShredAsync_RecordsRequestedIntent_BeforeKeyDestruction()
+    {
+        List<string> callOrder = [];
+
+        _auditRecorder
+            .When(r => r.RecordAsync(
+                Arg.Any<string>(), Arg.Any<string>(), CryptoShreddingPhase.Requested,
+                Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>()))
+            .Do(_ => callOrder.Add("intent"));
+        _keyStore
+            .When(k => k.DeleteKeyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()))
+            .Do(_ => callOrder.Add("delete"));
+
+        await _sut.ShredAsync("Patient", "abc-123", TestContext.Current.CancellationToken);
+
+        // The durable intent record MUST precede the irreversible key destruction (GDPR Art. 5(2)).
+        callOrder.IndexOf("intent").ShouldBeLessThan(callOrder.IndexOf("delete"));
+    }
+
+    [Fact]
+    public async Task ShredAsync_WhenIntentRecordingFails_DoesNotDestroyKey()
+    {
+        _auditRecorder
+            .RecordAsync(
+                Arg.Any<string>(), Arg.Any<string>(), CryptoShreddingPhase.Requested,
+                Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
+            .Returns(_ => Task.FromException(new InvalidOperationException("audit store down")));
+
+        await Should.ThrowAsync<AggregateException>(
+            () => _sut.ShredAsync("Patient", "abc-123", TestContext.Current.CancellationToken));
+
+        // Fail-closed: no durable trail means no destruction.
+        await _keyStore.DidNotReceive().DeleteKeyAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -91,7 +135,7 @@ public sealed class DefaultCryptoShredderTests
     }
 
     [Fact]
-    public async Task ShredBatchAsync_CallsAuditRecorder_ForEachEntityId()
+    public async Task ShredBatchAsync_RecordsBothPhases_ForEachEntityId()
     {
         string[] entityIds = ["id-1", "id-2"];
 
@@ -100,6 +144,13 @@ public sealed class DefaultCryptoShredderTests
         await _auditRecorder.Received(2).RecordAsync(
             "Patient",
             Arg.Any<string>(),
+            CryptoShreddingPhase.Requested,
+            Arg.Any<DateTimeOffset>(),
+            Arg.Any<CancellationToken>());
+        await _auditRecorder.Received(2).RecordAsync(
+            "Patient",
+            Arg.Any<string>(),
+            CryptoShreddingPhase.Confirmed,
             Arg.Any<DateTimeOffset>(),
             Arg.Any<CancellationToken>());
     }
@@ -137,6 +188,69 @@ public sealed class DefaultCryptoShredderTests
     public async Task ShredAsync_WithWhitespaceEntityId_ThrowsArgumentException() =>
         await Should.ThrowAsync<ArgumentException>(
             () => _sut.ShredAsync("Patient", "   ", TestContext.Current.CancellationToken));
+
+    // ──── Recorder fan-out does not abort on the first failure ────
+
+    [Fact]
+    public async Task ShredAsync_WhenOneConfirmRecorderFails_StillNotifiesTheOthers()
+    {
+        ICryptoShreddingAuditRecorder failing = Substitute.For<ICryptoShreddingAuditRecorder>();
+        ICryptoShreddingAuditRecorder healthy = Substitute.For<ICryptoShreddingAuditRecorder>();
+
+        // Only the confirmation phase fails, so the destruction has already happened by then.
+        failing
+            .RecordAsync(
+                Arg.Any<string>(), Arg.Any<string>(), CryptoShreddingPhase.Confirmed,
+                Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
+            .Returns(_ => Task.FromException(new InvalidOperationException("recorder A down")));
+
+        DefaultCryptoShredder shredder = new(
+            _keyStore,
+            TimeProvider.System,
+            _metrics,
+            NullLogger<DefaultCryptoShredder>.Instance,
+            [failing, healthy]);
+
+        AggregateException ex = await Should.ThrowAsync<AggregateException>(
+            () => shredder.ShredAsync("Patient", "abc-123", TestContext.Current.CancellationToken));
+
+        ex.InnerExceptions.Count.ShouldBe(1);
+
+        // The healthy recorder is still notified of the confirmation despite the sibling failure.
+        await healthy.Received(1).RecordAsync(
+            "Patient", "abc-123", CryptoShreddingPhase.Confirmed,
+            Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ShredAsync_AggregatesFailures_AcrossAllRecorders()
+    {
+        ICryptoShreddingAuditRecorder failingA = Substitute.For<ICryptoShreddingAuditRecorder>();
+        ICryptoShreddingAuditRecorder failingB = Substitute.For<ICryptoShreddingAuditRecorder>();
+
+        failingA
+            .RecordAsync(
+                Arg.Any<string>(), Arg.Any<string>(), CryptoShreddingPhase.Confirmed,
+                Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
+            .Returns(_ => Task.FromException(new InvalidOperationException("A")));
+        failingB
+            .RecordAsync(
+                Arg.Any<string>(), Arg.Any<string>(), CryptoShreddingPhase.Confirmed,
+                Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
+            .Returns(_ => Task.FromException(new InvalidOperationException("B")));
+
+        DefaultCryptoShredder shredder = new(
+            _keyStore,
+            TimeProvider.System,
+            _metrics,
+            NullLogger<DefaultCryptoShredder>.Instance,
+            [failingA, failingB]);
+
+        AggregateException ex = await Should.ThrowAsync<AggregateException>(
+            () => shredder.ShredAsync("Patient", "abc-123", TestContext.Current.CancellationToken));
+
+        ex.InnerExceptions.Count.ShouldBe(2);
+    }
 
     /// <summary>Minimal IMeterFactory for testing.</summary>
     private sealed class TestMeterFactory : System.Diagnostics.Metrics.IMeterFactory

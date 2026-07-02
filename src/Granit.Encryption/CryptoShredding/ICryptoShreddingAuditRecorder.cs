@@ -20,15 +20,23 @@ namespace Granit.Encryption.CryptoShredding;
 public interface ICryptoShreddingAuditRecorder
 {
     /// <summary>
-    /// Records that a per-entity encryption key was permanently destroyed.
+    /// Records a phase of a crypto-shredding operation.
     /// </summary>
+    /// <remarks>
+    /// Called twice per erasure: once with <see cref="CryptoShreddingPhase.Requested"/> before the key
+    /// is destroyed (durable intent), and once with <see cref="CryptoShreddingPhase.Confirmed"/> after
+    /// destruction. Implementations must ensure the <see cref="CryptoShreddingPhase.Requested"/> record
+    /// is durable before returning, so the irreversible destruction is never trail-less (GDPR Art. 5(2)).
+    /// </remarks>
     /// <param name="entityType">Logical entity type name.</param>
     /// <param name="entityId">Entity identifier.</param>
-    /// <param name="shreddedAt">Timestamp of the shredding operation.</param>
+    /// <param name="phase">Which phase of the two-phase erasure this record captures.</param>
+    /// <param name="occurredAt">Timestamp of the shredding operation.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     Task RecordAsync(
         string entityType,
         string entityId,
-        DateTimeOffset shreddedAt,
+        CryptoShreddingPhase phase,
+        DateTimeOffset occurredAt,
         CancellationToken cancellationToken = default);
 }
