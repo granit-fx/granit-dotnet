@@ -13,6 +13,8 @@ using Granit.Encryption.Options;
 using Granit.Encryption.Providers;
 using Granit.Encryption.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -152,5 +154,44 @@ public sealed class EncryptionServiceCollectionExtensionsTests
 
         int count = services.Count(d => d.ServiceType == typeof(ICryptoShredder));
         count.ShouldBe(1);
+    }
+
+    // ──── Fail-closed default key store (resolution behavior, not just declaration) ────
+
+    [Fact]
+    public void ResolvingDefaultKeyStore_InDevelopment_Succeeds()
+    {
+        using ServiceProvider provider = BuildProvider(Environments.Development);
+        using IServiceScope scope = provider.CreateScope();
+
+        IEntityEncryptionKeyStore store = scope.ServiceProvider.GetRequiredService<IEntityEncryptionKeyStore>();
+
+        store.ShouldBeOfType<InMemoryEntityEncryptionKeyStore>();
+    }
+
+    [Theory]
+    [InlineData("Production")]
+    [InlineData("Staging")]
+    public void ResolvingDefaultKeyStore_OutsideDevelopment_Throws(string environmentName)
+    {
+        using ServiceProvider provider = BuildProvider(environmentName);
+        using IServiceScope scope = provider.CreateScope();
+
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(
+            () => scope.ServiceProvider.GetRequiredService<IEntityEncryptionKeyStore>());
+
+        ex.Message.ShouldContain("Vault");
+    }
+
+    private static ServiceProvider BuildProvider(string environmentName)
+    {
+        ServiceCollection services = new();
+
+        IHostEnvironment environment = Substitute.For<IHostEnvironment>();
+        environment.EnvironmentName.Returns(environmentName);
+        services.AddSingleton(environment);
+
+        services.AddGranitEncryption();
+        return services.BuildServiceProvider();
     }
 }

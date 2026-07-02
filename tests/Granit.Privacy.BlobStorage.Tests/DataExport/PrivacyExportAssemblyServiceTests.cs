@@ -37,6 +37,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
     private readonly IExportRequestTrackerWriter _tracker = Substitute.For<IExportRequestTrackerWriter>();
     private readonly InMemoryExportAssemblyCheckpointStore _checkpoints = new();
     private readonly EphemeralExportHmacSigner _hmacSigner = new(NullLogger<EphemeralExportHmacSigner>.Instance);
+    private readonly EphemeralExportContentEncryptor _encryptor = new(NullLogger<EphemeralExportContentEncryptor>.Instance);
     private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
     private readonly IPrivacyExportAuditWriter _auditWriter = Substitute.For<IPrivacyExportAuditWriter>();
     private readonly FakeHttpMessageHandler _http = new();
@@ -54,6 +55,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
     public void Dispose()
     {
         _hmacSigner.Dispose();
+        _encryptor.Dispose();
         _http.Dispose();
         _sp.Dispose();
     }
@@ -102,7 +104,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task AssembleAsync_ManifestIsSigned_AndHmacRoundTrips_Over_PayloadRawBytes()
+    public async Task AssembleAsync_ManifestIsEncrypted_ThenSigned_AndHmacRoundTrips_Over_PayloadRawBytes()
     {
         var requestId = Guid.NewGuid();
         var userId = Guid.NewGuid();
@@ -116,11 +118,20 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
 
         await CreateSut().AssembleAsync(evt, TestContext.Current.CancellationToken);
 
-        // The manifest is the only application/json PUT body captured by the fake HTTP handler.
+        // The manifest is the only PUT body captured by the fake HTTP handler.
         CapturedUpload manifestUpload = _http.CapturedUploads
             .Single(u => u.Url.AbsoluteUri.StartsWith("https://s3.example/upload/", StringComparison.Ordinal));
 
-        using var envelope = JsonDocument.Parse(manifestUpload.Body);
+        // Confidentiality (GDPR Art. 32): the bytes on the wire must NOT be readable JSON —
+        // the SAR package index is application-layer encrypted before upload. The subject's
+        // user id would leak in plaintext if the manifest shipped unencrypted.
+        Should.Throw<JsonException>(() => JsonDocument.Parse(manifestUpload.Body));
+        Encoding.UTF8.GetString(manifestUpload.Body).ShouldNotContain(userId.ToString());
+
+        // Decrypt with the same key material the service used, then verify the sealed
+        // signed envelope round-trips.
+        byte[] decrypted = _encryptor.Decrypt(manifestUpload.Body);
+        using var envelope = JsonDocument.Parse(decrypted);
         JsonElement payloadElement = envelope.RootElement.GetProperty("payload");
         JsonElement tagElement = envelope.RootElement.GetProperty("integrityTag");
 
@@ -139,6 +150,70 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
         {
             shard.GetProperty("sha256").GetString()!.Length.ShouldBe(64);
         }
+    }
+
+    [Fact]
+    public async Task AssembleThenDownload_RoundTrips_EncryptedManifest_BytesMatch()
+    {
+        // Full loop: assemble encrypts + uploads the manifest ciphertext; the download
+        // resolver (sharing the encryptor, as the DI singleton does) reads that exact
+        // ciphertext back and decrypts it to the identical plaintext. Proves encrypt and
+        // decrypt are wired symmetrically end to end.
+        var requestId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var blobA = Guid.NewGuid();
+        SetupFragmentDownload(blobA, """{"id":"u1"}"""u8.ToArray());
+        Guid manifestBlobId = SetupManifestUpload();
+
+        ExportCompletedEto evt = BuildEvent(
+            requestId, userId,
+            [BuildSignedFragment(requestId, userId, "identity", blobA, "identity.json", "application/json")]);
+
+        await CreateSut().AssembleAsync(evt, TestContext.Current.CancellationToken);
+
+        byte[] uploadedCiphertext = _http.CapturedUploads
+            .Single(u => u.Url.AbsoluteUri.StartsWith("https://s3.example/upload/", StringComparison.Ordinal))
+            .Body;
+
+        // Stand up a download resolver over the same ciphertext + the same encryptor.
+        const string objectKey = "personal-data-export/round-trip-manifest.json";
+        IExportRequestTrackerReader tracker = Substitute.For<IExportRequestTrackerReader>();
+        tracker.GetStatusAsync(requestId, Arg.Any<CancellationToken>())
+            .Returns(new ExportRequestStatus(
+                requestId, userId, userId, ExportRequestState.Completed,
+                RequestedAt, _timeProvider.GetUtcNow(),
+                BlobReference.Create(manifestBlobId.ToString()), []));
+
+        IBlobStorage downloadBlobStorage = Substitute.For<IBlobStorage>();
+        downloadBlobStorage.GetDescriptorAsync(
+            PrivacyExportContainerNames.FragmentContainer, manifestBlobId, Arg.Any<CancellationToken>())
+            .Returns(BlobDescriptor.Create(
+                id: manifestBlobId, tenantId: null,
+                containerName: PrivacyExportContainerNames.FragmentContainer, objectKey: objectKey,
+                request: new BlobUploadRequest(
+                    FileName: "m.json.enc", ContentType: "application/octet-stream", MaxAllowedBytes: uploadedCiphertext.Length),
+                createdAt: _timeProvider.GetUtcNow()));
+
+        IBlobStoreProvider downloadProvider = Substitute.For<IBlobStoreProvider>();
+        downloadProvider.OpenReadAsync(PrivacyExportContainerNames.FragmentContainer, objectKey, Arg.Any<CancellationToken>())
+            .Returns(_ => new MemoryStream(uploadedCiphertext, writable: false));
+
+        BlobBackedPrivacyExportDownloadResolver resolver =
+            new(downloadBlobStorage, downloadProvider, _encryptor, tracker);
+
+        PrivacyExportDownloadPayload payload = await resolver
+            .OpenManifestAsync(requestId, TestContext.Current.CancellationToken);
+
+        using StreamReader reader = new(payload.Content);
+        string manifestJson = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+
+        // The decrypted download bytes equal the plaintext signed envelope the service
+        // encrypted (decrypt(encrypt(x)) == x).
+        byte[] expectedPlaintext = _encryptor.Decrypt(uploadedCiphertext);
+        Encoding.UTF8.GetString(expectedPlaintext).ShouldBe(manifestJson);
+
+        using var doc = JsonDocument.Parse(manifestJson);
+        doc.RootElement.GetProperty("payload").GetProperty("userId").GetGuid().ShouldBe(userId);
     }
 
     [Fact]
@@ -322,7 +397,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
 
         GranitPrivacyOptions opts = new() { ExportShardMaxSizeMb = 1 };
         PrivacyExportAssemblyService sut = new(
-            _blobStorage, _blobStoreProvider, _hmacSigner, _hmacSigner, spy, _tracker,
+            _blobStorage, _blobStoreProvider, _hmacSigner, _hmacSigner, _encryptor, spy, _tracker,
             _eventBus, _auditWriter, new FakeHttpClientFactory(_http), ConfigOptions.Create(opts),
             _timeProvider, _metrics, NullLogger<PrivacyExportAssemblyService>.Instance);
 
@@ -408,6 +483,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
             _blobStoreProvider,
             _hmacSigner,
             _hmacSigner,
+            _encryptor,
             _checkpoints,
             _tracker,
             _eventBus,

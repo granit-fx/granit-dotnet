@@ -14,6 +14,8 @@
 // =============================================================================
 
 using Granit.Encryption.Services;
+using Microsoft.Extensions.Hosting;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -21,7 +23,41 @@ namespace Granit.Encryption.Tests;
 
 public sealed class InMemoryEntityEncryptionKeyStoreTests
 {
-    private readonly InMemoryEntityEncryptionKeyStore _sut = new();
+    private readonly InMemoryEntityEncryptionKeyStore _sut = new(DevelopmentEnvironment());
+
+    private static IHostEnvironment DevelopmentEnvironment()
+    {
+        IHostEnvironment env = Substitute.For<IHostEnvironment>();
+        env.EnvironmentName.Returns(Environments.Development);
+        return env;
+    }
+
+    private static IHostEnvironment EnvironmentNamed(string name)
+    {
+        IHostEnvironment env = Substitute.For<IHostEnvironment>();
+        env.EnvironmentName.Returns(name);
+        return env;
+    }
+
+    // ──── Production guard (fails closed) ────
+
+    [Theory]
+    [InlineData("Production")]
+    [InlineData("Staging")]
+    [InlineData("QA")]
+    public void Constructor_ThrowsOutsideDevelopment(string environmentName)
+    {
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(
+            () => new InMemoryEntityEncryptionKeyStore(EnvironmentNamed(environmentName)));
+
+        ex.Message.ShouldContain("Development");
+        ex.Message.ShouldContain("Vault");
+        ex.Message.ShouldContain(environmentName);
+    }
+
+    [Fact]
+    public void Constructor_DoesNotThrow_InDevelopment() =>
+        Should.NotThrow(() => new InMemoryEntityEncryptionKeyStore(EnvironmentNamed(Environments.Development)));
 
     // ──── GetOrCreateKeyAsync ────
 
