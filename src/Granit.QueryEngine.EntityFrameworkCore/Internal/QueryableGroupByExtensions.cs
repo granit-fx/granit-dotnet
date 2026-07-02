@@ -20,16 +20,7 @@ internal static class QueryableGroupByExtensions
         CancellationToken cancellationToken)
         where T : class
     {
-        PropertyInfo? property = typeof(T).GetProperty(
-            groupByField,
-            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-
-        if (property is null)
-        {
-            return new GroupedResult<T>([], 0);
-        }
-
-        // Verify it's a whitelisted group-by field
+        // Verify it's a whitelisted group-by field (dotted complex-type paths compared verbatim).
         bool isAllowed = builder.GroupByFields
             .Any(g => g.PropertyName.Equals(groupByField, StringComparison.OrdinalIgnoreCase));
 
@@ -38,11 +29,17 @@ internal static class QueryableGroupByExtensions
             return new GroupedResult<T>([], 0);
         }
 
-        // Build dynamic GroupBy: source.GroupBy(e => e.Property)
+        // Build dynamic GroupBy: source.GroupBy(e => e.Property) — or e.Value.Country for a dotted
+        // complex-type path. A [QueryableValueObject] leaf groups by its real `.Value` scalar column
+        // (ADR-070), so the key is the underlying primitive and GROUP BY translates.
         ParameterExpression parameter = Expression.Parameter(typeof(T), "e");
-        // A [QueryableValueObject] column groups by its real `.Value` scalar column (ADR-070), so
-        // the key is the underlying primitive (e.g. string) and GROUP BY translates.
-        Expression member = ValueObjectMemberResolver.Resolve(parameter, property);
+        Expression? member = GroupByPathResolver.BuildKeyAccess(parameter, groupByField);
+
+        if (member is null)
+        {
+            return new GroupedResult<T>([], 0);
+        }
+
         LambdaExpression keySelector = Expression.Lambda(member, parameter);
         Type keyType = member.Type;
 

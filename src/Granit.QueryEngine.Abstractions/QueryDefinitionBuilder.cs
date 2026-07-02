@@ -267,13 +267,25 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     /// Allows grouping by the specified property. Only explicitly declared
     /// properties can be used for group-by (whitelist-first).
     /// </summary>
+    /// <remarks>
+    /// Accepts a top-level scalar (<c>a =&gt; a.Kind</c>), a <see cref="QueryableValueObjectAttribute"/>
+    /// column (grouped by its underlying <c>.Value</c> scalar), or a member of an EF Core complex type
+    /// (<c>a =&gt; a.Value.Country</c>) — the latter is stored as the dotted path <c>"Value.Country"</c>
+    /// and surfaces on the wire as <c>?groupBy=Value.Country</c>. Drilling into a
+    /// <see cref="SingleValueObject{T}"/>'s <c>.Value</c> is still rejected: it is a whole-value
+    /// ValueConverter column, not a groupable scalar (issue #2767).
+    /// </remarks>
     /// <typeparam name="TProp">The property type.</typeparam>
     /// <param name="property">Expression selecting the property.</param>
     public QueryDefinitionBuilder<TEntity> AllowGroupBy<TProp>(
         Expression<Func<TEntity, TProp>> property)
     {
-        string propertyName = GetPropertyName(property);
-        if (!IsQueryableValueObjectMember(property.Body))
+        (string propertyName, bool isNested) = GetGroupByPath(property);
+
+        // A nested leaf (a member of an EF complex type) is a plain scalar column, so the whole-value
+        // VO guard does not apply. For a top-level member, reject a converter-mapped SingleValueObject
+        // unless it opted into the queryable (ComplexProperty) strategy.
+        if (!isNested && !IsQueryableValueObjectMember(property.Body))
         {
             ThrowIfValueObjectColumn<TProp>(propertyName, "grouped by", nameof(property));
         }
@@ -521,6 +533,60 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
         }
 
         return member.Member.Name;
+    }
+
+    // Extracts a (possibly dotted) member path for group-by. Unlike the single-level GetPropertyName,
+    // this accepts a chain of member accesses over an EF complex-type member (a => a.Value.Country) and
+    // returns the dotted path "Value.Country" plus whether the access is nested. It still rejects
+    // drilling into a SingleValueObject's `.Value` (#2767): that inner value is a whole-value
+    // ValueConverter column, not an independently groupable scalar column.
+    private static (string Path, bool IsNested) GetGroupByPath<TProp>(Expression<Func<TEntity, TProp>> expression)
+    {
+        Expression body = expression.Body is UnaryExpression { NodeType: ExpressionType.Convert } convert
+            ? convert.Operand
+            : expression.Body;
+
+        List<string> segments = [];
+        for (Expression? current = body; current is MemberExpression member; current = member.Expression)
+        {
+            if (IsSingleValueObjectType(member.Expression?.Type))
+            {
+                throw new ArgumentException(
+                    $"Group-by expression '{expression.Body}' drills into the '.Value' of a " +
+                    $"SingleValueObject ('{member.Expression!.Type.Name}'), which is mapped as an opaque " +
+                    $"whole-value ValueConverter and cannot be a GROUP BY key. To group by a value-object " +
+                    $"column, mark it [QueryableValueObject] and select the object itself (x => x.Slug); to " +
+                    $"group by a nested field, select a member of an EF complex type. See issue #2767.",
+                    nameof(expression));
+            }
+
+            segments.Add(member.Member.Name);
+
+            if (member.Expression is ParameterExpression)
+            {
+                segments.Reverse();
+                return (string.Join('.', segments), segments.Count > 1);
+            }
+        }
+
+        throw new ArgumentException(
+            "Group-by expression must be a property access (e.g. x => x.Kind) or a nested complex-type " +
+            "member access (e.g. x => x.Address.Country).",
+            nameof(expression));
+    }
+
+    private static bool IsSingleValueObjectType(Type? type)
+    {
+        Type openType = typeof(SingleValueObject<>);
+        for (Type? current = type; current is not null && current != typeof(object); current = current.BaseType)
+        {
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == openType)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // A value-object selector is allowed in global search / group-by when the property opts into the

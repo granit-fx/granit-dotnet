@@ -30,12 +30,35 @@ public interface IQueryDefinitionDescriptor
     /// <c>Granit.Identity.Local</c> → <c>Identity.Local</c>). A non-framework assembly name is
     /// returned unchanged, so a consumer's queries group under their own assembly name.
     /// </summary>
+    /// <remarks>
+    /// A single trailing layer suffix (<c>.Abstractions</c>, <c>.EntityFrameworkCore</c>,
+    /// <c>.Endpoints</c>) is stripped as well: an entity may legitimately live in a layer
+    /// project — contracts shared via <c>.Abstractions</c> (so <c>Granit.Auditing.Abstractions</c>
+    /// → <c>Auditing</c>), or a persisted row co-located with a shared DbContext in
+    /// <c>.EntityFrameworkCore</c> — and the layer suffix is never the logical owning module.
+    /// A definition whose entity assembly cannot express its real module (e.g. a feature-scoped
+    /// table hosted in a parent module's DbContext) should override <see cref="ModuleName"/>.
+    /// </remarks>
     static string ModuleOf(Type entityType)
     {
         ArgumentNullException.ThrowIfNull(entityType);
 
         string assembly = entityType.Assembly.GetName().Name ?? entityType.Namespace ?? "Unknown";
         const string prefix = "Granit.";
-        return assembly.StartsWith(prefix, StringComparison.Ordinal) ? assembly[prefix.Length..] : assembly;
+        if (!assembly.StartsWith(prefix, StringComparison.Ordinal))
+        {
+            return assembly;
+        }
+
+        string module = assembly[prefix.Length..];
+        foreach (string suffix in (ReadOnlySpan<string>)[".Abstractions", ".EntityFrameworkCore", ".Endpoints"])
+        {
+            if (module.Length > suffix.Length && module.EndsWith(suffix, StringComparison.Ordinal))
+            {
+                return module[..^suffix.Length];
+            }
+        }
+
+        return module;
     }
 }
