@@ -29,6 +29,7 @@ public sealed class WebhookDeliveryAttemptQueryDefinition : QueryDefinition<Webh
             .Column(d => d.OccurredAt, c => c.Label("Occurred At").LabelKey("Webhooks.Columns.OccurredAt").Sortable())
             .Column(d => d.DurationMs, c => c.Label("Duration (ms)").LabelKey("Webhooks.Columns.DurationMs").Sortable())
             .Column(d => d.ErrorMessage, c => c.Label("Error Message").LabelKey("Webhooks.Columns.ErrorMessage"))
+            .AllowGroupBy(d => d.IsSuccess)
             .GlobalSearch(d => d.EventType, d => d.TargetUrl)
             .DateFilter(d => d.OccurredAt)
             .DefaultSort("-occurredAt")

@@ -34,6 +34,7 @@ public sealed class UserQueryDefinition : QueryDefinition<User>
             .Column(u => u.TenantId, c => c.Label("Tenant").LabelKey("Identity.Columns.Tenant").Filterable().Sortable())
             .Column(u => u.CreatedAt, c => c.Label("Created At").LabelKey("Identity.Columns.CreatedAt").Sortable())
             .Column(u => u.ModifiedAt, c => c.Label("Modified At").LabelKey("Identity.Columns.ModifiedAt").Sortable())
+            .AllowGroupBy(u => u.IsEnabled)
             .GlobalSearch(u => u.DisplayName!, u => u.Email!, u => u.FirstName!, u => u.LastName!)
             .DefaultSort("-CreatedAt")
             .DefaultPageSize(25);

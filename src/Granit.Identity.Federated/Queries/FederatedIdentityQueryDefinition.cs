@@ -32,6 +32,7 @@ public sealed class FederatedIdentityQueryDefinition : QueryDefinition<Federated
             // Audit
             .Column(u => u.CreatedAt, c => c.Label("Created At").LabelKey("Identity.Federated.Columns.CreatedAt").Sortable())
             .Column(u => u.ModifiedAt, c => c.Label("Modified At").LabelKey("Identity.Federated.Columns.ModifiedAt").Sortable())
+            .AllowGroupBy(u => u.Enabled)
             .GlobalSearch(u => u.ExternalUserId, u => u.Username, u => u.Email, u => u.FirstName, u => u.LastName)
             .DateFilter(u => u.LastSyncedAt)
             .DefaultSort("-lastSyncedAt")

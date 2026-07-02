@@ -25,6 +25,7 @@ public sealed class TenantQueryDefinition : QueryDefinition<Tenant>
             .Column(t => t.IsDeleted, c => c.Label("Deleted").LabelKey("MultiTenancy.Columns.IsDeleted").Filterable().Sortable())
             .Column(t => t.CreatedAt, c => c.Label("Created At").LabelKey("MultiTenancy.Columns.CreatedAt").Sortable())
             .Column(t => t.ModifiedAt, c => c.Label("Modified At").LabelKey("MultiTenancy.Columns.ModifiedAt").Sortable())
+            .AllowGroupBy(t => t.Activated)
             .GlobalSearch(t => t.Name, t => t.Identifier, t => t.ContactEmail)
             .DateFilter(t => t.CreatedAt)
             .DefaultSort("-createdAt")
