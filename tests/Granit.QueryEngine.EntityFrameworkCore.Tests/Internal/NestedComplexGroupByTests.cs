@@ -30,10 +30,10 @@ public sealed class NestedComplexGroupByTests : IDisposable
         using PartyCtx seed = new(_options);
         seed.Database.EnsureCreated();
         seed.Addresses.AddRange(
-            new PartyAddress { Id = Guid.NewGuid(), Kind = AddressKind.Billing, Value = new Address { Country = "BE", City = "Brussels" } },
-            new PartyAddress { Id = Guid.NewGuid(), Kind = AddressKind.Shipping, Value = new Address { Country = "BE", City = "Ghent" } },
-            new PartyAddress { Id = Guid.NewGuid(), Kind = AddressKind.Billing, Value = new Address { Country = "FR", City = "Paris" } },
-            new PartyAddress { Id = Guid.NewGuid(), Kind = AddressKind.Billing, Value = new Address { Country = "NL", City = "Amsterdam" } });
+            new PartyAddress { Id = Guid.NewGuid(), Kind = AddressKind.Billing, Value = new Address { Country = "BE", City = "Brussels", Region = new GeoRegion { Continent = "EU" } } },
+            new PartyAddress { Id = Guid.NewGuid(), Kind = AddressKind.Shipping, Value = new Address { Country = "BE", City = "Ghent", Region = new GeoRegion { Continent = "EU" } } },
+            new PartyAddress { Id = Guid.NewGuid(), Kind = AddressKind.Billing, Value = new Address { Country = "FR", City = "Paris", Region = new GeoRegion { Continent = "EU" } } },
+            new PartyAddress { Id = Guid.NewGuid(), Kind = AddressKind.Billing, Value = new Address { Country = "NL", City = "Amsterdam", Region = new GeoRegion { Continent = "NA" } } });
         seed.SaveChanges();
     }
 
@@ -44,7 +44,7 @@ public sealed class NestedComplexGroupByTests : IDisposable
 
         Should.NotThrow(() => definition.GetGroupByFields());
         definition.GetGroupByFields().Select(g => g.PropertyName)
-            .ShouldBe(["Kind", "Value.Country"]);
+            .ShouldBe(["Kind", "Value.Country", "Value.Region.Continent"]);
     }
 
     [Fact]
@@ -66,6 +66,25 @@ public sealed class NestedComplexGroupByTests : IDisposable
 
         // The GROUP BY must execute server-side (no client-eval): EF would throw on an
         // untranslatable GroupBy, and the emitted SQL groups on the mapped complex column.
+        _sql.ShouldContain(s => s.Contains("GROUP BY", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task ExecuteGroupedAsync_groups_by_a_two_level_nested_member()
+    {
+        // Mirrors granit-business Invoice: IssuedBillingAddressSnapshot.Address.Country — a complex
+        // type nested inside another complex type. Proves the dotted path resolves at depth > 1.
+        await using PartyCtx ctx = new(_options);
+        QueryEngine<PartyAddress> engine = NewEngine();
+
+        GroupedResult<PartyAddress> result = await engine.ExecuteGroupedAsync(
+            ctx.Addresses,
+            new QueryRequest { GroupBy = "Value.Region.Continent" },
+            TestContext.Current.CancellationToken);
+
+        result.TotalCount.ShouldBe(4);
+        result.Groups.First(g => (string)g.Value! == "EU").Count.ShouldBe(3);
+        result.Groups.First(g => (string)g.Value! == "NA").Count.ShouldBe(1);
         _sql.ShouldContain(s => s.Contains("GROUP BY", StringComparison.OrdinalIgnoreCase));
     }
 
@@ -142,7 +161,8 @@ public sealed class NestedComplexGroupByTests : IDisposable
             builder
                 .Column(a => a.Kind)
                 .AllowGroupBy(a => a.Kind)
-                .AllowGroupBy(a => a.Value.Country);
+                .AllowGroupBy(a => a.Value.Country)
+                .AllowGroupBy(a => a.Value.Region.Continent);
     }
 
     private sealed record CitySummary(string City);
@@ -158,6 +178,12 @@ public sealed class NestedComplexGroupByTests : IDisposable
     {
         public required string Country { get; init; }
         public required string City { get; init; }
+        public required GeoRegion Region { get; init; }
+    }
+
+    private sealed class GeoRegion
+    {
+        public required string Continent { get; init; }
     }
 
     private sealed class PartyAddress
@@ -188,7 +214,7 @@ public sealed class NestedComplexGroupByTests : IDisposable
             b.Entity<PartyAddress>(e =>
             {
                 e.HasKey(p => p.Id);
-                e.ComplexProperty(p => p.Value);
+                e.ComplexProperty(p => p.Value, v => v.ComplexProperty(a => a.Region));
             });
     }
 }
