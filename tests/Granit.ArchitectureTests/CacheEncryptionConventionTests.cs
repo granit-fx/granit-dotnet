@@ -36,8 +36,9 @@ public sealed class CacheEncryptionConventionTests
     /// </remarks>
     private static readonly string[] CachedTypesCarryingSecrets =
     [
-        "Granit.Bff.BffTokenSet",          // OAuth tokens + DPoP private key
-        "Granit.Vault.SecretDescriptor",   // Vault-cached secret payload
+        "Granit.Bff.BffTokenSet",                              // OAuth tokens + DPoP private key
+        "Granit.Vault.SecretDescriptor",                      // Vault-cached secret payload
+        "Granit.Http.Idempotency.Models.IdempotencyEntry",    // captured response bodies/headers (PII, tokens)
     ];
 
     [Fact]

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
@@ -30,6 +31,17 @@ public sealed class RedisCachingServiceCollectionExtensionsTests
         new ConfigurationBuilder()
             .AddInMemoryCollection(values)
             .Build();
+
+    // The encryptor factory reads CachingOptions.Value, which runs the fail-closed
+    // RedisCacheEncryptionStartupValidator registered by AddGranitCachingRedis. That validator
+    // needs an IHostEnvironment; these encryptor tests target the factory, not the gate, so they
+    // register a Development environment to keep it permissive.
+    private static IHostEnvironment DevelopmentEnvironment()
+    {
+        IHostEnvironment env = Substitute.For<IHostEnvironment>();
+        env.EnvironmentName.Returns("Development");
+        return env;
+    }
 
     [Fact]
     public void AddGranitCachingRedis_AlwaysRegistersRedisCache()
@@ -70,6 +82,7 @@ public sealed class RedisCachingServiceCollectionExtensionsTests
 
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton(DevelopmentEnvironment());
 
         // Register CachingOptions and CacheEncryptionOptions (normally done by AddGranitCaching)
         services
@@ -91,9 +104,9 @@ public sealed class RedisCachingServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitCachingRedis_EncryptValues_False_RegistersNullEncryptor()
+    public void AddGranitCachingRedis_EncryptValues_False_NoKey_RegistersNullEncryptor()
     {
-        // Arrange
+        // Arrange — flag off AND no key: the only case that still falls back to the no-op encryptor.
         IConfiguration configuration = BuildConfiguration(new Dictionary<string, string?>
         {
             ["Cache:Redis:Configuration"] = "localhost:6379",
@@ -102,11 +115,16 @@ public sealed class RedisCachingServiceCollectionExtensionsTests
 
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton(DevelopmentEnvironment());
 
-        // Register CachingOptions (normally done by AddGranitCaching)
+        // Register CachingOptions + CacheEncryptionOptions (normally done by AddGranitCaching)
         services
             .AddOptions<CachingOptions>()
             .BindConfiguration(CachingOptions.SectionName)
+            .ValidateDataAnnotations();
+        services
+            .AddOptions<CacheEncryptionOptions>()
+            .BindConfiguration(CacheEncryptionOptions.SectionName)
             .ValidateDataAnnotations();
 
         // Act
@@ -116,6 +134,45 @@ public sealed class RedisCachingServiceCollectionExtensionsTests
         using ServiceProvider sp = services.BuildServiceProvider();
         ICacheValueEncryptor encryptor = sp.GetRequiredService<ICacheValueEncryptor>();
         encryptor.ShouldBeOfType<NullCacheValueEncryptor>();
+    }
+
+    [Fact]
+    public void AddGranitCachingRedis_KeyPresent_EncryptValuesFalse_RegistersAesEncryptor()
+    {
+        // Arrange — secure-by-default: a resolvable key alone is enough to wire real encryption,
+        // even though the global EncryptValues flag is left off. This is what makes [CacheEncrypted]
+        // types (idempotency responses, BFF token sets) actually encrypt on L2.
+        byte[] keyBytes = new byte[32];
+        System.Security.Cryptography.RandomNumberGenerator.Fill(keyBytes);
+        string testAesKey = Convert.ToBase64String(keyBytes);
+
+        IConfiguration configuration = BuildConfiguration(new Dictionary<string, string?>
+        {
+            ["Cache:Redis:Configuration"] = "localhost:6379",
+            ["Cache:EncryptValues"] = "false",
+            ["Cache:Encryption:Key"] = testAesKey,
+        });
+
+        ServiceCollection services = new();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton(DevelopmentEnvironment());
+
+        services
+            .AddOptions<CachingOptions>()
+            .BindConfiguration(CachingOptions.SectionName)
+            .ValidateDataAnnotations();
+        services
+            .AddOptions<CacheEncryptionOptions>()
+            .BindConfiguration(CacheEncryptionOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        // Act
+        services.AddGranitCachingRedis();
+
+        // Assert — key alone flips the factory to AES
+        using ServiceProvider sp = services.BuildServiceProvider();
+        ICacheValueEncryptor encryptor = sp.GetRequiredService<ICacheValueEncryptor>();
+        encryptor.ShouldBeOfType<AesCacheValueEncryptor>();
     }
 
     [Fact]

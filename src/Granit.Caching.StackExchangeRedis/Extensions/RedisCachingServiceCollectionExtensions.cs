@@ -4,6 +4,7 @@ using Granit.Caching.StackExchangeRedis.Internal;
 using Granit.Caching.StackExchangeRedis.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,15 +19,19 @@ namespace Granit.Caching.StackExchangeRedis.Extensions;
 public static partial class RedisCachingServiceCollectionExtensions
 {
     [LoggerMessage(Level = LogLevel.Warning, Message =
-        "Redis distributed cache is active but Cache:EncryptValues is disabled — " +
-        "cached values are stored in plaintext in Redis. " +
-        "Set Cache:EncryptValues to true for production deployments")]
+        "Redis distributed cache is active but no cache encryption key is resolvable and " +
+        "Cache:EncryptValues is disabled — cached values are stored in plaintext in Redis. " +
+        "This is tolerated only in Development; a RedisCacheEncryptionStartupValidator fails " +
+        "startup in any other environment. Provide a base64 256-bit Cache:Encryption:Key and " +
+        "set Cache:EncryptValues to true")]
     private static partial void LogCacheEncryptionDisabled(ILogger logger);
 
     /// <summary>
     /// Upgrades FusionCache with L2 Redis distributed cache and Redis pub/sub backplane.
-    /// Enables AES-256 encryption (<see cref="AesCacheValueEncryptor"/>) when
-    /// <c>CachingOptions.EncryptValues = true</c>.
+    /// Enables AES-256 encryption (<see cref="AesCacheValueEncryptor"/>) whenever a 256-bit
+    /// <c>Cache:Encryption:Key</c> is resolvable or <c>CachingOptions.EncryptValues = true</c>,
+    /// and registers a fail-closed startup validator that refuses to run with plaintext Redis
+    /// outside Development.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -82,11 +87,21 @@ public static partial class RedisCachingServiceCollectionExtensions
                 redis.InstanceName = granitOpts.Value.InstanceName;
             });
 
-        // Conditional AES-256-GCM encryption: factory resolves at runtime based on CachingOptions.EncryptValues.
+        // AES-256-GCM encryption, resolved at runtime. Secure-by-default: the real AES encryptor is
+        // wired whenever a key is present — not only when the global EncryptValues flag is set — so
+        // [CacheEncrypted] types (idempotency responses, BFF token sets) always encrypt on L2 as long
+        // as an operator has supplied a key, even if they never flipped the cache-wide flag. Only when
+        // BOTH the flag is off AND no key resolves do we fall back to the no-op encryptor; that state is
+        // permitted at runtime for Development but is turned into a hard startup failure elsewhere by the
+        // RedisCacheEncryptionStartupValidator registered below. Defaulting EncryptValues to true instead
+        // was rejected: it would crash every existing keyless Redis host, a silent breaking change.
         services.AddSingleton<ICacheValueEncryptor>(sp =>
         {
             CachingOptions cachingOpts = sp.GetRequiredService<IOptions<CachingOptions>>().Value;
-            if (cachingOpts.EncryptValues)
+            CacheEncryptionOptions encryptionOpts = sp.GetRequiredService<IOptions<CacheEncryptionOptions>>().Value;
+            bool keyResolvable = !string.IsNullOrWhiteSpace(encryptionOpts.Key);
+
+            if (cachingOpts.EncryptValues || keyResolvable)
             {
                 return ActivatorUtilities.CreateInstance<AesCacheValueEncryptor>(sp);
             }
@@ -100,6 +115,13 @@ public static partial class RedisCachingServiceCollectionExtensions
 
             return new NullCacheValueEncryptor();
         });
+
+        // Fail-closed gate: outside Development, refuse to start when the L2 cache would persist values
+        // to Redis in plaintext (no key resolvable AND EncryptValues off). Registered here rather than in
+        // the base module so the check only arms once an L2 distributed provider is actually present.
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IValidateOptions<CachingOptions>, RedisCacheEncryptionStartupValidator>());
+        services.AddOptions<CachingOptions>().ValidateOnStart();
 
         // Register IConnectionMultiplexer singleton (used by backplane + health check)
         if (services.All(d => d.ServiceType != typeof(IConnectionMultiplexer)))
