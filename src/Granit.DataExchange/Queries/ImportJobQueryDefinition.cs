@@ -24,6 +24,7 @@ public sealed class ImportJobQueryDefinition : QueryDefinition<ImportJob>
             .Column(e => e.FileSizeBytes, c => c.Label("Size (bytes)").LabelKey("DataExchange.Columns.FileSizeBytes").Sortable())
             .Column(e => e.CreatedAt, c => c.Label("Created At").LabelKey("DataExchange.Columns.CreatedAt").Sortable())
             .Column(e => e.CompletedAt, c => c.Label("Completed At").LabelKey("DataExchange.Columns.CompletedAt").Sortable())
+            .AllowGroupBy(e => e.Status)
             .GlobalSearch(e => e.OriginalFileName, e => e.DefinitionName, e => e.EntityTypeName)
             .DateFilter(e => e.CreatedAt)
             .DefaultSort("-createdAt")

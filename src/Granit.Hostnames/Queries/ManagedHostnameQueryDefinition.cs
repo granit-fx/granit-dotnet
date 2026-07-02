@@ -25,6 +25,7 @@ public sealed class ManagedHostnameQueryDefinition : QueryDefinition<ManagedHost
             .Column(e => e.Status, c => c.Label("Status").LabelKey("Hostnames.Columns.Status").Filterable().Sortable())
             .Column(e => e.CreatedAt, c => c.Label("Created At").LabelKey("Hostnames.Columns.CreatedAt").Sortable())
             .Column(e => e.ModifiedAt, c => c.Label("Modified At").LabelKey("Hostnames.Columns.ModifiedAt").Sortable())
+            .AllowGroupBy(e => e.Status)
             .GlobalSearch(e => e.OwnerType)
             .DateFilter(e => e.CreatedAt)
             .DefaultSort("host")

@@ -32,6 +32,7 @@ public sealed class WebhookSubscriptionQueryDefinition : QueryDefinition<Webhook
             .Column(s => s.LastSuccessAt, c => c.Label("Last Success At").LabelKey("Webhooks.Columns.LastSuccessAt").Sortable())
             .Column(s => s.SuspendedAt, c => c.Label("Suspended At").LabelKey("Webhooks.Columns.SuspendedAt").Sortable())
             .Column(s => s.SuspendedBy, c => c.Label("Suspended By").LabelKey("Webhooks.Columns.SuspendedBy").Filterable())
+            .AllowGroupBy(s => s.Status)
             .GlobalSearch(s => s.EventType)
             .DefaultSort("-lastSuccessAt")
             .DefaultPageSize(25);

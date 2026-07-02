@@ -24,6 +24,8 @@ public sealed class UserNotificationQueryDefinition : QueryDefinition<UserNotifi
             .Column(e => e.RelatedEntityType, c => c.Label("Related Entity Type").LabelKey("Notifications.Columns.RelatedEntityType").Filterable())
             .Column(e => e.CreatedAt, c => c.Label("Created At").LabelKey("Notifications.Columns.CreatedAt").Sortable())
             .Column(e => e.ReadAt, c => c.Label("Read At").LabelKey("Notifications.Columns.ReadAt").Sortable())
+            .AllowGroupBy(e => e.Severity)
+            .AllowGroupBy(e => e.State)
             .GlobalSearch(e => e.RecipientUserId, e => e.NotificationTypeName)
             .DateFilter(e => e.CreatedAt)
             .DefaultSort("-createdAt")

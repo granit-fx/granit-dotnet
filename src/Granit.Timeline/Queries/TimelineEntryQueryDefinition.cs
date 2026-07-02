@@ -23,6 +23,7 @@ public sealed class TimelineEntryQueryDefinition : QueryDefinition<TimelineEntry
             .Column(e => e.AuthorId, c => c.Label("Author").LabelKey("Timeline.Columns.AuthorId").Filterable().Sortable().Lookup("users", requiredPermission: "Identity.Users.Read"))
             .Column(e => e.IsDeleted, c => c.Label("Deleted").LabelKey("Timeline.Columns.IsDeleted").Filterable().Sortable())
             .Column(e => e.CreatedAt, c => c.Label("Created At").LabelKey("Timeline.Columns.CreatedAt").Sortable())
+            .AllowGroupBy(e => e.EntryType)
             .GlobalSearch(e => e.EntityType, e => e.EntityId, e => e.Body)
             .DateFilter(e => e.CreatedAt)
             .DefaultSort("-createdAt")

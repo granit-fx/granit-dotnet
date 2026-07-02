@@ -24,6 +24,7 @@ public sealed class ExportJobQueryDefinition : QueryDefinition<ExportJob>
             .Column(e => e.RowCount, c => c.Label("Row Count").LabelKey("DataExchange.Columns.RowCount").Sortable())
             .Column(e => e.CreatedAt, c => c.Label("Created At").LabelKey("DataExchange.Columns.CreatedAt").Sortable())
             .Column(e => e.CompletedAt, c => c.Label("Completed At").LabelKey("DataExchange.Columns.CompletedAt").Sortable())
+            .AllowGroupBy(e => e.Status)
             .GlobalSearch(e => e.FileName, e => e.DefinitionName)
             .DateFilter(e => e.CreatedAt)
             .DefaultSort("-createdAt")

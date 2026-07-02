@@ -40,6 +40,7 @@ public sealed class ApiKeyEntryQueryDefinition : QueryDefinition<ApiKeyEntry>
             .Column(e => e.LastUsedAt, c => c.Label("Last Used At").LabelKey("ApiKeys.Columns.LastUsedAt").Sortable())
             .Column(e => e.RevokedAt, c => c.Label("Revoked At").LabelKey("ApiKeys.Columns.RevokedAt").Sortable())
             .Column(e => e.CreatedAt, c => c.Label("Created At").LabelKey("ApiKeys.Columns.CreatedAt").Sortable())
+            .AllowGroupBy(e => e.Type)
             .QuickFilter(
                 "active",
                 "Active keys only",

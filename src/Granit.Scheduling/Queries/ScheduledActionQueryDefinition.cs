@@ -28,6 +28,7 @@ public sealed class ScheduledActionQueryDefinition : QueryDefinition<ScheduledAc
             .Column(a => a.CorrelationId, c => c.Label("Correlation ID").LabelKey("Scheduling.Columns.CorrelationId").Filterable())
             .Column(a => a.CancelledBy, c => c.Label("Cancelled By").LabelKey("Scheduling.Columns.CancelledBy").Filterable())
             .Column(a => a.FailureReason, c => c.Label("Failure Reason").LabelKey("Scheduling.Columns.FailureReason"))
+            .AllowGroupBy(a => a.Status)
             .GlobalSearch(a => a.PayloadType, a => a.CorrelationId)
             .DateFilter(a => a.ExecuteAt)
             .DefaultSort("-executeAt")

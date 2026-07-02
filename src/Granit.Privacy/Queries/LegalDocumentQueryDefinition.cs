@@ -52,6 +52,7 @@ public sealed class LegalDocumentQueryDefinition : QueryDefinition<LegalDocument
                 .Label("Modified At")
                 .LabelKey("Privacy.LegalDocuments.Columns.LastModifiedAt")
                 .Sortable())
+            .AllowGroupBy(e => e.LifecycleStatus)
             .QuickFilter(
                 "draft",
                 "Drafts",

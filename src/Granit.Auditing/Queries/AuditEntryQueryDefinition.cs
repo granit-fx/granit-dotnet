@@ -29,6 +29,7 @@ public sealed class AuditEntryQueryDefinition : QueryDefinition<AuditEntry>
             .Column(e => e.UserName, c => c.Label("User Name").LabelKey("Auditing.Columns.UserName").Filterable().Sortable())
             .Column(e => e.IpAddress, c => c.Label("IP Address").LabelKey("Auditing.Columns.IpAddress").Filterable())
             .Column(e => e.CorrelationId, c => c.Label("Correlation ID").LabelKey("Auditing.Columns.CorrelationId").Filterable())
+            .AllowGroupBy(e => e.Category)
             .GlobalSearch(e => e.UserId, e => e.UserName, e => e.CorrelationId)
             .DateFilter(e => e.Timestamp)
             .DefaultSort("-timestamp")

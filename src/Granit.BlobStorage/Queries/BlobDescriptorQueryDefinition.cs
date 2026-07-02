@@ -30,6 +30,7 @@ public sealed class BlobDescriptorQueryDefinition : QueryDefinition<BlobDescript
             .Column(b => b.ValidatedAt, c => c.Label("Validated At").LabelKey("BlobStorage.Columns.ValidatedAt").Sortable())
             .Column(b => b.DeletedAt, c => c.Label("Deleted At").LabelKey("BlobStorage.Columns.DeletedAt").Sortable())
             .Column(b => b.RejectionReason, c => c.Label("Rejection Reason").LabelKey("BlobStorage.Columns.RejectionReason"))
+            .AllowGroupBy(b => b.Status)
             .QuickFilter(
                 "ValidOnly",
                 "Valid uploads only",

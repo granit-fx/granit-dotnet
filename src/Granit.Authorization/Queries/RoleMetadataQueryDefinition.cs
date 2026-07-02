@@ -24,6 +24,7 @@ public sealed class RoleMetadataQueryDefinition : QueryDefinition<RoleMetadata>
             .Column(r => r.IsSystem, c => c.Label("System").LabelKey("Authorization.Columns.IsSystem").Filterable().Sortable())
             .Column(r => r.CreatedAt, c => c.Label("Created At").LabelKey("Authorization.Columns.CreatedAt").Sortable())
             .Column(r => r.ModifiedAt, c => c.Label("Modified At").LabelKey("Authorization.Columns.ModifiedAt").Sortable())
+            .AllowGroupBy(r => r.MultiTenancySides)
             .GlobalSearch(r => r.Name, r => r.Description!)
             .DateFilter(r => r.CreatedAt)
             .DefaultSort("name")

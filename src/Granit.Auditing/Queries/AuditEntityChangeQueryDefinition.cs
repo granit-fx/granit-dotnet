@@ -21,6 +21,7 @@ public sealed class AuditEntityChangeQueryDefinition : QueryDefinition<AuditEnti
             .Column(e => e.EntityType, c => c.Label("Entity Type").LabelKey("Auditing.Columns.EntityType").Filterable().Sortable())
             .Column(e => e.EntityId, c => c.Label("Entity ID").LabelKey("Auditing.Columns.EntityId").Filterable())
             .Column(e => e.ChangeType, c => c.Label("Change Type").LabelKey("Auditing.Columns.ChangeType").Filterable().Sortable())
+            .AllowGroupBy(e => e.ChangeType)
             .GlobalSearch(e => e.EntityType, e => e.EntityId)
             .DefaultSort("-auditEntryId")
             .DefaultPageSize(25)
