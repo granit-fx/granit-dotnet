@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Granit.MultiTenancy;
 using Granit.QueryEngine.Diagnostics;
@@ -220,14 +219,19 @@ internal sealed class QueryEngine<TEntity>(
                 .ToListSafeAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            PropertyInfo? groupProp = typeof(TEntity).GetProperty(
-                request.GroupBy,
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            // Resolve the same (possibly dotted, VO-drilling) key access used to build the SQL
+            // GROUP BY so in-memory buckets match the materialized group keys.
+            ParameterExpression bucketParam = Expression.Parameter(typeof(TEntity), "e");
+            Expression? keyAccess = GroupByPathResolver.BuildKeyAccess(bucketParam, request.GroupBy);
+            Func<TEntity, object?>? keyGetter = keyAccess is null
+                ? null
+                : Expression.Lambda<Func<TEntity, object?>>(
+                    Expression.Convert(keyAccess, typeof(object)), bucketParam).Compile();
 
-            ILookup<string, TItem>? itemsByKey = groupProp is null
+            ILookup<string, TItem>? itemsByKey = keyGetter is null
                 ? null
                 : allItems.ToLookup(
-                    e => groupProp.GetValue(e)?.ToString() ?? "(null)",
+                    e => keyGetter(e)?.ToString() ?? "(null)",
                     e => projector is null ? (TItem)(object)e : projector(e));
 
             foreach (GroupEntry<TEntity> group in entityResult.Groups)
