@@ -123,6 +123,68 @@ public sealed class EfDeletionRequestTrackerTests : IAsyncDisposable
     }
 
     [Fact]
+    public async Task MarkExecutingAsync_TransitionsDeferred_ToExecuting()
+    {
+        var id = Guid.NewGuid();
+        await _sut.RecordDeferredAsync(id, Guid.NewGuid(), "reason", Now, Now.AddDays(30), TestContext.Current.CancellationToken);
+
+        await _sut.MarkExecutingAsync(id, TestContext.Current.CancellationToken);
+
+        DeletionRequestStatus? status = await _sut.GetStatusAsync(id, TestContext.Current.CancellationToken);
+        status.ShouldNotBeNull();
+        status.State.ShouldBe(DeletionRequestState.Executing);
+        status.ExecutedAt.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task MarkExecutingAsync_DoesNotRegress_AlreadyExecuted()
+    {
+        var id = Guid.NewGuid();
+        await _sut.RecordDeferredAsync(id, Guid.NewGuid(), "reason", Now, Now.AddDays(30), TestContext.Current.CancellationToken);
+        await _sut.MarkExecutedAsync(id, Now.AddDays(31), TestContext.Current.CancellationToken);
+
+        // A late enforcement-fallback / straggler must not drag a completed request back to Executing.
+        await _sut.MarkExecutingAsync(id, TestContext.Current.CancellationToken);
+
+        DeletionRequestStatus? status = await _sut.GetStatusAsync(id, TestContext.Current.CancellationToken);
+        status.ShouldNotBeNull();
+        status.State.ShouldBe(DeletionRequestState.Executed);
+    }
+
+    [Fact]
+    public async Task MarkPartiallyExecutedAsync_PersistsState_AndMissingProviders()
+    {
+        var id = Guid.NewGuid();
+        await _sut.RecordDeferredAsync(id, Guid.NewGuid(), "reason", Now, Now.AddDays(30), TestContext.Current.CancellationToken);
+
+        await _sut.MarkPartiallyExecutedAsync(
+            id, Now.AddDays(31), ["indexing", "notifications"], TestContext.Current.CancellationToken);
+
+        DeletionRequestStatus? status = await _sut.GetStatusAsync(id, TestContext.Current.CancellationToken);
+        status.ShouldNotBeNull();
+        status.State.ShouldBe(DeletionRequestState.PartiallyExecuted);
+        status.ExecutedAt.ShouldBe(Now.AddDays(31));
+        status.MissingProviders.ShouldBe(["indexing", "notifications"]);
+    }
+
+    [Fact]
+    public async Task MarkExecutedAsync_ClearsMissingProviders_FromPriorPartial()
+    {
+        var id = Guid.NewGuid();
+        await _sut.RecordDeferredAsync(id, Guid.NewGuid(), "reason", Now, Now.AddDays(30), TestContext.Current.CancellationToken);
+        await _sut.MarkPartiallyExecutedAsync(id, Now.AddDays(31), ["indexing"], TestContext.Current.CancellationToken);
+
+        // A late acknowledgement reconciles the deletion to fully Executed — the stale
+        // missing-provider marker must be cleared.
+        await _sut.MarkExecutedAsync(id, Now.AddDays(32), TestContext.Current.CancellationToken);
+
+        DeletionRequestStatus? status = await _sut.GetStatusAsync(id, TestContext.Current.CancellationToken);
+        status.ShouldNotBeNull();
+        status.State.ShouldBe(DeletionRequestState.Executed);
+        status.MissingProviders.ShouldBeNull();
+    }
+
+    [Fact]
     public async Task MarkExecutedAsync_UnknownId_NoOp() =>
         await Should.NotThrowAsync(() => _sut.MarkExecutedAsync(
             Guid.NewGuid(), Now, TestContext.Current.CancellationToken));

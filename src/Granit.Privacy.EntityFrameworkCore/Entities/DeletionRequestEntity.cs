@@ -39,6 +39,14 @@ public sealed class DeletionRequestEntity : Entity, IMultiTenant
     /// <summary>Applicable privacy regulation code (e.g., <c>EU_GDPR</c>, <c>BR_LGPD</c>).</summary>
     public string? Regulation { get; set; }
 
+    /// <summary>
+    /// Comma-separated provider names that never acknowledged erasure when the request landed in
+    /// <see cref="DeletionRequestState.PartiallyExecuted"/>; <c>null</c> otherwise. Stored flat
+    /// (not a join table) because it is a rare, human-reconciliation aid rather than a queried
+    /// relationship — the operator reads it once from the stuck-deletion alert.
+    /// </summary>
+    public string? MissingProviders { get; set; }
+
     /// <inheritdoc/>
     public Guid? TenantId { get; set; }
 }

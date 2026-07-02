@@ -22,6 +22,8 @@ public sealed class PrivacyMetrics
     private readonly Counter<long> _deletionDeferred;
     private readonly Counter<long> _deletionCancelled;
     private readonly Counter<long> _deletionExecuted;
+    private readonly Counter<long> _deletionAcknowledged;
+    private readonly Counter<long> _deletionStuck;
     private readonly Counter<long> _deletionReminders;
     private readonly Counter<long> _optOutRequests;
     private readonly Counter<long> _optOutRevocations;
@@ -58,6 +60,17 @@ public sealed class PrivacyMetrics
         _deletionExecuted = meter.CreateCounter<long>(
             "granit.privacy.deletion.executed",
             description: "Number of personal data deletions executed (immediate or after grace period).");
+
+        _deletionAcknowledged = meter.CreateCounter<long>(
+            "granit.privacy.deletion.acknowledged",
+            description: "Number of per-provider deletion acknowledgements received by the deletion saga.");
+
+        _deletionStuck = meter.CreateCounter<long>(
+            "granit.privacy.deletion.stuck",
+            description:
+                "Number of deletion requests that timed out with at least one provider never "
+                + "acknowledging erasure (PartiallyExecuted). Tagged by provider_name so DLQ "
+                + "monitoring can alert on a specific stuck / dead-lettered provider (GDPR Art. 17).");
 
         _deletionReminders = meter.CreateCounter<long>(
             "granit.privacy.deletion.reminders",
@@ -127,6 +140,29 @@ public sealed class PrivacyMetrics
     /// <summary>Records an executed deletion.</summary>
     public void RecordDeletionExecuted(Guid? tenantId, string? regulation = null) =>
         _deletionExecuted.Add(1, CreateTags(tenantId, regulation));
+
+    /// <summary>Records a per-provider deletion acknowledgement received by the saga.</summary>
+    public void RecordDeletionAcknowledged(Guid? tenantId, string providerName, string? regulation = null) =>
+        _deletionAcknowledged.Add(1, new TagList
+        {
+            { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
+            { TagRegulation, regulation ?? DefaultRegulation },
+            { "provider_name", providerName },
+        });
+
+    /// <summary>
+    /// Records a provider that never acknowledged erasure before the acknowledgement window
+    /// elapsed (request landed in <see cref="DataDeletion.DeletionRequestState.PartiallyExecuted"/>).
+    /// One increment per missing provider so DLQ monitoring can alert on the specific
+    /// <c>provider_name</c> that is stuck.
+    /// </summary>
+    public void RecordDeletionStuck(Guid? tenantId, string providerName, string? regulation = null) =>
+        _deletionStuck.Add(1, new TagList
+        {
+            { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
+            { TagRegulation, regulation ?? DefaultRegulation },
+            { "provider_name", providerName },
+        });
 
     /// <summary>Records a deletion reminder notification sent.</summary>
     public void RecordDeletionReminderSent(Guid? tenantId, string? regulation = null) =>

@@ -79,6 +79,7 @@ internal sealed class EfDeletionRequestTracker<TContext>(
         {
             e.State = DeletionRequestState.Executed;
             e.ExecutedAt = executedAt;
+            e.MissingProviders = null;
         }, cancellationToken);
 
     public Task MarkCancelledAsync(Guid requestId, DateTimeOffset cancelledAt, CancellationToken cancellationToken = default) =>
@@ -86,6 +87,29 @@ internal sealed class EfDeletionRequestTracker<TContext>(
         {
             e.State = DeletionRequestState.Cancelled;
             e.CancelledAt = cancelledAt;
+        }, cancellationToken);
+
+    public Task MarkExecutingAsync(Guid requestId, CancellationToken cancellationToken = default) =>
+        ApplyTransitionAsync(requestId, e =>
+        {
+            // Only advance Deferred → Executing. A late acknowledgement or the enforcement-service
+            // fallback may already have driven the row to Executed; never regress it.
+            if (e.State == DeletionRequestState.Deferred)
+            {
+                e.State = DeletionRequestState.Executing;
+            }
+        }, cancellationToken);
+
+    public Task MarkPartiallyExecutedAsync(
+        Guid requestId,
+        DateTimeOffset executedAt,
+        IReadOnlyList<string> missingProviders,
+        CancellationToken cancellationToken = default) =>
+        ApplyTransitionAsync(requestId, e =>
+        {
+            e.State = DeletionRequestState.PartiallyExecuted;
+            e.ExecutedAt = executedAt;
+            e.MissingProviders = missingProviders.Count == 0 ? null : string.Join(',', missingProviders);
         }, cancellationToken);
 
     private async Task ApplyTransitionAsync(
@@ -120,5 +144,8 @@ internal sealed class EfDeletionRequestTracker<TContext>(
             entity.CancelledAt,
             entity.ExecutedAt,
             entity.Regulation,
-            entity.TenantId);
+            entity.TenantId,
+            string.IsNullOrEmpty(entity.MissingProviders)
+                ? null
+                : entity.MissingProviders.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
 }

@@ -71,6 +71,26 @@ public sealed class PrivacySagaWolverineCodegenTests
         chain.ExistingCalls.ShouldContain(c => c.Method.Name == "Handle");
     }
 
+    [Fact]
+    public async Task DeletionSaga_provider_ack_chain_wires_Handle_method()
+    {
+        using IHost host = await BuildHostAsync();
+        SagaChain chain = GetSagaChain(host, typeof(PersonalDataDeletedEto));
+
+        chain.ExistingCalls.ShouldNotBeEmpty();
+        chain.ExistingCalls.ShouldContain(c => c.Method.Name == "Handle");
+    }
+
+    [Fact]
+    public async Task DeletionSaga_ack_timeout_chain_wires_Handle_method()
+    {
+        using IHost host = await BuildHostAsync();
+        SagaChain chain = GetSagaChain(host, typeof(DeletionAcknowledgementTimedOutEvent));
+
+        chain.ExistingCalls.ShouldNotBeEmpty();
+        chain.ExistingCalls.ShouldContain(c => c.Method.Name == "Handle");
+    }
+
     private static Task<IHost> BuildHostAsync() =>
         Host.CreateDefaultBuilder()
             .ConfigureServices(services =>

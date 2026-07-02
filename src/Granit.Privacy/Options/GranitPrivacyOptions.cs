@@ -75,6 +75,18 @@ public sealed class GranitPrivacyOptions
     [Range(0, 30)]
     public int ReminderDaysBefore { get; set; } = 3;
 
+    /// <summary>
+    /// Window, in minutes, the deletion saga waits for every registered provider to acknowledge
+    /// erasure (via <c>PersonalDataDeletedEto</c>) after the deadline is reached. If a provider
+    /// has not acknowledged when this elapses, the request is marked
+    /// <see cref="DataDeletion.DeletionRequestState.PartiallyExecuted"/> and the missing providers
+    /// are surfaced for operator reconciliation. Sized in hours by default because provider
+    /// erasure can be heavy (re-indexing, blob purges) and Wolverine may retry a failing provider
+    /// several times before it succeeds or dead-letters. Default: 720 minutes (12 hours).
+    /// </summary>
+    [Range(1, 43_200)]
+    public int DeletionAcknowledgementTimeoutMinutes { get; set; } = 720;
+
     // ── Per-regulation overrides ────────────────────────────────────────────
 
     /// <summary>

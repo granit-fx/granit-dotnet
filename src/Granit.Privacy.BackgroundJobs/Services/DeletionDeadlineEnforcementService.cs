@@ -7,10 +7,22 @@ using Microsoft.Extensions.Logging;
 namespace Granit.Privacy.BackgroundJobs.Services;
 
 /// <summary>
-/// Scans for expired deferred deletion requests and forces execution.
-/// Idempotent — skips requests already in
-/// <see cref="DeletionRequestState.Executed"/> or <see cref="DeletionRequestState.Cancelled"/> state.
+/// Safety-net that scans for expired deletion requests still in
+/// <see cref="DeletionRequestState.Deferred"/> and forces execution — it only fires when the
+/// saga's own deadline timer never did (job outage, scheduler backlog, persistence lag).
+/// Idempotent by construction: <see cref="IDeletionRequestTrackerReader.GetExpiredDeferredAsync"/>
+/// returns only <see cref="DeletionRequestState.Deferred"/> rows, so requests the saga already
+/// advanced to <see cref="DeletionRequestState.Executing"/>,
+/// <see cref="DeletionRequestState.Executed"/>, <see cref="DeletionRequestState.PartiallyExecuted"/>,
+/// or <see cref="DeletionRequestState.Cancelled"/> are skipped.
 /// </summary>
+/// <remarks>
+/// This fallback path has no saga instance to run the provider-acknowledgement fan-in, so it marks
+/// the request <see cref="DeletionRequestState.Executed"/> directly. That trade-off is deliberate:
+/// reaching this path already means the saga machinery is unhealthy, and a forced execution without
+/// per-provider proof is preferable to leaving a deletion permanently unhonoured (GDPR Art. 17
+/// "without undue delay"). The deadline-slip metric/log already flags that this path was taken.
+/// </remarks>
 public sealed partial class DeletionDeadlineEnforcementService(
     IDeletionRequestTrackerReader trackerReader,
     IDeletionRequestTrackerWriter trackerWriter,

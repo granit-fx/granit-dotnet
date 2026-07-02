@@ -34,6 +34,11 @@ internal sealed class DeletionRequestEntityConfiguration : IEntityTypeConfigurat
         builder.Property(e => e.Regulation)
             .HasMaxLength(40);
 
+        // Comma-joined provider names that never acknowledged erasure (PartiallyExecuted only).
+        // Bounded generously — provider names are short and the list is a handful at most.
+        builder.Property(e => e.MissingProviders)
+            .HasMaxLength(1000);
+
         // User timeline lookup (GET /privacy/erasure → GetByUserAsync).
         builder.HasIndex(e => new { e.TenantId, e.UserId, e.RequestedAt })
             .IsDescending(false, false, true)

@@ -16,4 +16,5 @@ public sealed record DeletionRequestStatus(
     DateTimeOffset? CancelledAt,
     DateTimeOffset? ExecutedAt,
     string? Regulation = null,
-    Guid? TenantId = null);
+    Guid? TenantId = null,
+    IReadOnlyList<string>? MissingProviders = null);
