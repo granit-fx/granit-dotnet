@@ -49,7 +49,7 @@ public sealed class Conversation : FullAuditedAggregateRoot, IMultiTenant, IOwna
     /// </summary>
     public string? WorkspaceKey { get; private set; }
 
-    private List<Message> _messages = [];
+    private readonly List<Message> _messages = [];
 
     /// <summary>The messages exchanged, oldest first.</summary>
     public IReadOnlyList<Message> Messages => _messages;

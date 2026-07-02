@@ -63,7 +63,7 @@ internal static class QueryCatalogEndpoints
         // value is always bound into the matching path segment. Reading RoutePattern.RawText
         // directly would expose the unsubstituted template and the frontend would 404.
         // Same mechanism as Granit.Entities' entity-discovery surface.
-        RouteValueDictionary routeValues = new();
+        RouteValueDictionary routeValues = [];
         if (httpContext.Request.RouteValues.TryGetValue("version", out object? version) && version is not null)
         {
             routeValues["version"] = version;

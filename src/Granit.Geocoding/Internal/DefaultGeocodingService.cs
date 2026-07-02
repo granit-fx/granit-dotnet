@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -69,12 +70,14 @@ internal sealed partial class DefaultGeocodingService : IGeocodingService
         // lookups of the same uncached address await that single result instead of each hitting a provider. This
         // bounds cost, third-party rate limits, and duplicate GDPR transfers. Negative results are cached too —
         // with the shorter FailureCacheDuration applied adaptively inside the factory.
-        bool resolvedFresh = false;
+        // The flag lives in a heap holder so the factory closure can signal back whether it actually executed; a
+        // plain captured local reads as never-assigned to static flow analysis (the delegate's run isn't provable).
+        StrongBox<bool> resolvedFresh = new(false);
         GeocodingResult? resolved = await _cache.GetOrSetAsync<GeocodingResult?>(
             cacheKey,
             async (ctx, ct) =>
             {
-                resolvedFresh = true;
+                resolvedFresh.Value = true;
                 long start = Stopwatch.GetTimestamp();
                 GeocodingResult? r = await QueryProvidersAsync(address, ct).ConfigureAwait(false);
                 ctx.Options.Duration = r is null ? _options.FailureCacheDuration : _options.SuccessCacheDuration;
@@ -85,7 +88,7 @@ internal sealed partial class DefaultGeocodingService : IGeocodingService
 
         // A caller that did not execute the factory was served from the cache (or coalesced onto the in-flight
         // resolution) — count it as a hit; only the factory-executing caller is the real miss.
-        if (resolvedFresh)
+        if (resolvedFresh.Value)
         {
             _metrics.RecordCacheMiss();
             activity?.SetTag("cache.hit", false);

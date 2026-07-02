@@ -269,17 +269,6 @@ public sealed partial class PersonalDataDeletionSaga : Saga
         MarkCompleted();
     }
 
-    private static partial class Log
-    {
-        [LoggerMessage(
-            Level = LogLevel.Warning,
-            Message = "Deletion request {RequestId} (user {UserId}) timed out awaiting provider {Provider} — "
-                + "{Acknowledged}/{Expected} providers acknowledged. Request marked PartiallyExecuted; "
-                + "reconcile the stuck / dead-lettered provider (GDPR Art. 17 provability).")]
-        public static partial void DeletionProviderStuck(
-            ILogger logger, Guid requestId, Guid userId, string provider, int acknowledged, int expected);
-    }
-
     /// <summary>
     /// Handles cancellation — the Saga terminates and future scheduled events
     /// (reminder, deadline) are silently discarded by Wolverine.
@@ -293,5 +282,16 @@ public sealed partial class PersonalDataDeletionSaga : Saga
         await tracker.MarkCancelledAsync(Id, @event.CancelledAt).ConfigureAwait(false);
         metrics.RecordDeletionCancelled(TenantId, Regulation);
         MarkCompleted();
+    }
+
+    private static partial class Log
+    {
+        [LoggerMessage(
+            Level = LogLevel.Warning,
+            Message = "Deletion request {RequestId} (user {UserId}) timed out awaiting provider {Provider} — "
+                + "{Acknowledged}/{Expected} providers acknowledged. Request marked PartiallyExecuted; "
+                + "reconcile the stuck / dead-lettered provider (GDPR Art. 17 provability).")]
+        public static partial void DeletionProviderStuck(
+            ILogger logger, Guid requestId, Guid userId, string provider, int acknowledged, int expected);
     }
 }

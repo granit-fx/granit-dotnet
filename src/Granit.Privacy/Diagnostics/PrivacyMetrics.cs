@@ -13,6 +13,7 @@ public sealed class PrivacyMetrics
 
     private const string TagTenantId = "tenant_id";
     private const string TagRegulation = "regulation";
+    private const string TagProviderName = "provider_name";
     private const string DefaultTenant = "global";
     private const string DefaultRegulation = "EU_GDPR";
 
@@ -122,7 +123,7 @@ public sealed class PrivacyMetrics
         {
             { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
             { TagRegulation, regulation ?? DefaultRegulation },
-            { "provider_name", providerName },
+            { TagProviderName, providerName },
         });
 
     /// <summary>Records a deletion request.</summary>
@@ -147,7 +148,7 @@ public sealed class PrivacyMetrics
         {
             { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
             { TagRegulation, regulation ?? DefaultRegulation },
-            { "provider_name", providerName },
+            { TagProviderName, providerName },
         });
 
     /// <summary>
@@ -161,7 +162,7 @@ public sealed class PrivacyMetrics
         {
             { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
             { TagRegulation, regulation ?? DefaultRegulation },
-            { "provider_name", providerName },
+            { TagProviderName, providerName },
         });
 
     /// <summary>Records a deletion reminder notification sent.</summary>
@@ -208,7 +209,7 @@ public sealed class PrivacyMetrics
         _scopeProbeDuration.Record(duration.TotalMilliseconds, new TagList
         {
             { TagTenantId, tenantId?.ToString() ?? DefaultTenant },
-            { "provider_name", providerName },
+            { TagProviderName, providerName },
         });
 
     /// <summary>

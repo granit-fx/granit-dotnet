@@ -4,6 +4,7 @@ using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 
@@ -73,34 +74,32 @@ internal static partial class CallToolAuthorizationFilter
         IReadOnlyList<object>? matchedPrimitiveMetadata,
         CancellationToken ct)
     {
-        ILogger? logger = services?
-            .GetService<ILoggerFactory>()?
-            .CreateLogger("Granit.Mcp.Server.CallToolAuthorization");
+        // Fail closed: without a service provider nothing — tool type, tenant, permission
+        // checker — can be resolved or reasoned about.
+        if (services is null)
+        {
+            return Deny();
+        }
+
+        ILogger logger = services.GetService<ILoggerFactory>()?
+            .CreateLogger("Granit.Mcp.Server.CallToolAuthorization") ?? NullLogger.Instance;
 
         // Fail closed: a tool we cannot resolve to a CLR type cannot be reasoned about.
-        McpToolTypeRegistry? registry = services?.GetService<McpToolTypeRegistry>();
+        McpToolTypeRegistry? registry = services.GetService<McpToolTypeRegistry>();
         Type? toolType = registry?.Resolve(toolName);
         if (toolType is null)
         {
-            if (logger is not null)
-            {
-                LogUnresolvedTool(logger, toolName);
-            }
-
+            LogUnresolvedTool(logger, toolName);
             return Deny();
         }
 
         // Re-run the tenant-scope check at call time (tools/list only hides, it does not gate).
         if (RequiresTenant(toolType))
         {
-            ICurrentTenant? currentTenant = services?.GetService<ICurrentTenant>();
+            ICurrentTenant? currentTenant = services.GetService<ICurrentTenant>();
             if (currentTenant is not { IsAvailable: true })
             {
-                if (logger is not null)
-                {
-                    LogTenantRequired(logger, toolName);
-                }
-
+                LogTenantRequired(logger, toolName);
                 return Deny();
             }
         }
@@ -113,14 +112,10 @@ internal static partial class CallToolAuthorizationFilter
         }
 
         // Default-deny fallback: the principal must hold the coarse execute permission.
-        IPermissionChecker? permissionChecker = services?.GetService<IPermissionChecker>();
+        IPermissionChecker? permissionChecker = services.GetService<IPermissionChecker>();
         if (permissionChecker is null)
         {
-            if (logger is not null)
-            {
-                LogNoPermissionChecker(logger, toolName);
-            }
-
+            LogNoPermissionChecker(logger, toolName);
             return Deny();
         }
 
@@ -130,11 +125,7 @@ internal static partial class CallToolAuthorizationFilter
 
         if (!granted)
         {
-            if (logger is not null)
-            {
-                LogExecuteDenied(logger, toolName);
-            }
-
+            LogExecuteDenied(logger, toolName);
             return Deny();
         }
 

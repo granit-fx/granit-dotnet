@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using Granit.Domain.ValueObjects;
@@ -63,19 +64,21 @@ internal sealed partial class DefaultReverseGeocodingService : IReverseGeocoding
 
         string cacheKey = BuildCacheKey(coordinate);
 
-        bool resolvedFresh = false;
+        // The flag lives in a heap holder so the factory closure can signal back whether it actually executed; a
+        // plain captured local reads as never-assigned to static flow analysis (the delegate's run isn't provable).
+        StrongBox<bool> resolvedFresh = new(false);
         ReverseGeocodingResult? resolved = await _cache.GetOrSetAsync<ReverseGeocodingResult?>(
             cacheKey,
             async (ctx, ct) =>
             {
-                resolvedFresh = true;
+                resolvedFresh.Value = true;
                 ReverseGeocodingResult? r = await QueryProvidersAsync(coordinate, ct).ConfigureAwait(false);
                 ctx.Options.Duration = r is null ? _options.FailureCacheDuration : _options.SuccessCacheDuration;
                 return r;
             },
             token: cancellationToken).ConfigureAwait(false);
 
-        if (resolvedFresh)
+        if (resolvedFresh.Value)
         {
             _metrics.RecordCacheMiss();
             activity?.SetTag("cache.hit", false);

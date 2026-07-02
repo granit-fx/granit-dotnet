@@ -4,7 +4,7 @@
   <p>La tâche récurrente <strong><code>{{ model.job_name }}</code></strong> a échoué lors de <strong>{{ model.consecutive_failure_count }}</strong> exécutions consécutives et risque d'être suspendue automatiquement. Les traitements critiques pour les SLA (rapports de conformité, clôtures de facturation) risquent de s'interrompre si la cause n'est pas identifiée rapidement.</p>
   {{- if model.last_error_message }}
   <p>Dernière erreur remontée par l'exécuteur :</p>
-  <pre style="background-color: #f3f4f6; border-left: 4px solid #dc2626; padding: 12px 16px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 13px; white-space: pre-wrap; word-break: break-word; color: #111827;">{{ model.last_error_message | html.escape }}</pre>
+  <pre style="background-color: #f3f4f6; border-left: 4px solid #dc2626; padding: 12px 16px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 13px; white-space: pre-wrap; overflow-wrap: break-word; color: #111827;">{{ model.last_error_message | html.escape }}</pre>
   {{- end }}
 </mj-text>
 <mj-button background-color="#1d4ed8" color="#ffffff" font-size="15px" font-weight="bold" border-radius="6px" inner-padding="12px 28px" padding="32px 0" href="{{ app.base_url }}/admin/jobs/{{ model.job_id }}">Ouvrir les diagnostics</mj-button>

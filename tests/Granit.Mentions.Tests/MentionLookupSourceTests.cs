@@ -61,10 +61,8 @@ public sealed class MentionLookupSourceTests
             Scope: type is null ? null : new Dictionary<string, string?> { ["type"] = type });
 
     [Fact]
-    public void Name_is_mentions()
-    {
+    public void Name_is_mentions() =>
         Build([new FakeLookupSource("user")], "user").Name.ShouldBe("mentions");
-    }
 
     [Fact]
     public async Task Search_fans_out_across_tagged_sources_and_stamps_composite_value()

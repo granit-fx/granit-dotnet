@@ -45,43 +45,60 @@ internal static class QueryableSortExtensions
 
             foreach (string part in parts)
             {
-                bool descending = part.StartsWith('-');
-                string fieldName = descending ? part[1..] : part;
-
-                if (!sortableFields.Contains(fieldName))
+                bool applied;
+                (source, applied) = TryApplySortPart(source, part, sortableFields, builder, isFirst);
+                if (applied)
                 {
-                    continue;
-                }
-
-                // Check for shadow property first
-                ColumnDescriptor? shadowCol = builder.Columns
-                    .FirstOrDefault(c => c.IsShadowProperty
-                        && string.Equals(c.PropertyName, fieldName, StringComparison.OrdinalIgnoreCase));
-
-                if (shadowCol is not null)
-                {
-                    source = ApplyOrderByShadow(source, fieldName, shadowCol.ClrType, descending, isFirst);
                     isFirst = false;
-                    continue;
                 }
-
-                PropertyInfo? property = typeof(TEntity).GetProperty(
-                    fieldName,
-                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-
-                if (property is null)
-                {
-                    continue;
-                }
-
-                source = ApplyOrderBy(source, property, descending, isFirst);
-                isFirst = false;
             }
         }
 
         // No explicit ordering resolved — guarantee a deterministic order so that
         // Skip/Take downstream is stable and EF Core does not warn.
         return isFirst ? ApplyFallbackOrder(source, builder) : source;
+    }
+
+    /// <summary>
+    /// Applies a single <c>"field"</c> / <c>"-field"</c> sort token to <paramref name="source"/>,
+    /// resolving it against the whitelisted shadow properties first and then the CLR type. Returns
+    /// the (possibly reordered) queryable and whether an ordering was actually applied — an
+    /// unrecognised or non-whitelisted token leaves the source untouched and reports
+    /// <see langword="false"/>.
+    /// </summary>
+    private static (IQueryable<TEntity> Source, bool Applied) TryApplySortPart<TEntity>(
+        IQueryable<TEntity> source,
+        string part,
+        HashSet<string> sortableFields,
+        QueryDefinitionBuilder<TEntity> builder,
+        bool isFirst)
+        where TEntity : class
+    {
+        bool descending = part.StartsWith('-');
+        string fieldName = descending ? part[1..] : part;
+
+        if (!sortableFields.Contains(fieldName))
+        {
+            return (source, false);
+        }
+
+        // Check for shadow property first
+        ColumnDescriptor? shadowCol = builder.Columns
+            .FirstOrDefault(c => c.IsShadowProperty
+                && string.Equals(c.PropertyName, fieldName, StringComparison.OrdinalIgnoreCase));
+
+        if (shadowCol is not null)
+        {
+            return (ApplyOrderByShadow(source, fieldName, shadowCol.ClrType, descending, isFirst), true);
+        }
+
+        PropertyInfo? property = typeof(TEntity).GetProperty(
+            fieldName,
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+        return property is null
+            ? (source, false)
+            : (ApplyOrderBy(source, property, descending, isFirst), true);
     }
 
     /// <summary>
