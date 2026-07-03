@@ -16,6 +16,14 @@ internal sealed class AspNetIdentityUserLookupService(
     public async Task<IIdentityUser?> FindByIdAsync(
         string userId, CancellationToken cancellationToken = default)
     {
+        // Local identities are Guid-keyed; a malformed id is a non-existent user,
+        // not a server error. Short-circuit before ASP.NET Identity's UserStore
+        // calls Guid.Parse and throws FormatException (unhandled 500).
+        if (!Guid.TryParse(userId, out _))
+        {
+            return null;
+        }
+
         LocalIdentity? user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
         return user;
     }
@@ -24,7 +32,19 @@ internal sealed class AspNetIdentityUserLookupService(
     public async Task<IReadOnlyList<IIdentityUser>> FindByIdsAsync(
         IReadOnlyCollection<string> userIds, CancellationToken cancellationToken = default)
     {
-        var guidIds = userIds.Select(Guid.Parse).ToList();
+        // Silently omit ids that aren't valid Guids — batch resolve treats
+        // unknown ids as absent, and a malformed id can never match a row.
+        var guidIds = userIds
+            .Select(id => Guid.TryParse(id, out Guid guid) ? guid : (Guid?)null)
+            .Where(guid => guid is not null)
+            .Select(guid => guid!.Value)
+            .ToList();
+
+        if (guidIds.Count == 0)
+        {
+            return [];
+        }
+
         List<LocalIdentity> users = await _userManager.Users.AsNoTracking()
             .Where(u => guidIds.Contains(u.Id))
             .ToListAsync(cancellationToken).ConfigureAwait(false);

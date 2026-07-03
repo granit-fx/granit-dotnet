@@ -19,11 +19,12 @@ public sealed class AspNetIdentityUserLookupServiceTests
     [Fact]
     public async Task FindByIdAsync_WhenUserNotFound_ReturnsNull()
     {
+        string userId = Guid.NewGuid().ToString();
         UserManager<LocalIdentity> userManager = CreateUserManager();
         userManager.FindByIdAsync(Arg.Any<string>()).Returns((LocalIdentity?)null);
         AspNetIdentityUserLookupService sut = new(userManager);
 
-        IIdentityUser? result = await sut.FindByIdAsync("nonexistent", TestContext.Current.CancellationToken);
+        IIdentityUser? result = await sut.FindByIdAsync(userId, TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -31,14 +32,30 @@ public sealed class AspNetIdentityUserLookupServiceTests
     [Fact]
     public async Task FindByIdAsync_WhenUserFound_ReturnsUser()
     {
+        string userId = Guid.NewGuid().ToString();
         UserManager<LocalIdentity> userManager = CreateUserManager();
         var user = new LocalIdentity { UserName = "alice" };
-        userManager.FindByIdAsync("user-id").Returns(user);
+        userManager.FindByIdAsync(userId).Returns(user);
         AspNetIdentityUserLookupService sut = new(userManager);
 
-        IIdentityUser? result = await sut.FindByIdAsync("user-id", TestContext.Current.CancellationToken);
+        IIdentityUser? result = await sut.FindByIdAsync(userId, TestContext.Current.CancellationToken);
 
         result.ShouldBeSameAs(user);
+    }
+
+    [Theory]
+    [InlineData("not-a-guid")]
+    [InlineData("")]
+    [InlineData("12345")]
+    public async Task FindByIdAsync_WhenIdIsNotAGuid_ReturnsNullWithoutQueryingStore(string malformedId)
+    {
+        UserManager<LocalIdentity> userManager = CreateUserManager();
+        AspNetIdentityUserLookupService sut = new(userManager);
+
+        IIdentityUser? result = await sut.FindByIdAsync(malformedId, TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+        await userManager.DidNotReceive().FindByIdAsync(Arg.Any<string>());
     }
 
     [Fact]
